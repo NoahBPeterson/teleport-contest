@@ -1,0 +1,51 @@
+#!/bin/bash
+# pre-commit — protect the contest's frozen files.
+#
+# The judge overlays js/isaac64.js, js/terminal.js, js/storage.js from
+# the canonical copies in frozen/ before every scoring run, so any
+# local divergence just fools the local score. This hook rejects a
+# commit that stages one of those files with content differing from
+# its frozen/ canonical copy. Committing the canonical content itself
+# (e.g. after frozen/score.sh overlays it) is allowed.
+#
+# Changes under frozen/ are rejected outright; legitimate upstream
+# syncs can override once with:  TELEPORT_ALLOW_FROZEN=1 git commit ...
+
+set -u
+
+FROZEN_JS="js/isaac64.js js/terminal.js js/storage.js"
+fail=0
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+for f in $FROZEN_JS; do
+    if echo "$staged" | grep -qx "$f"; then
+        canon="frozen/$(basename "$f")"
+        if ! git show ":$f" 2>/dev/null | cmp -s - "$canon"; then
+            echo "REFUSED: $f is frozen and differs from $canon." >&2
+            echo "  The judge overlays the canonical copy at scoring time;" >&2
+            echo "  local edits only fake your local score." >&2
+            echo "  To sync with the canonical copy: bash frozen/score.sh" >&2
+            echo "  (it overlays frozen/ into js/), then stage that." >&2
+            fail=1
+        fi
+    fi
+done
+
+# Deletions of frozen files are never OK.
+for f in $(git diff --cached --name-only --diff-filter=D); do
+    case " $FROZEN_JS " in
+        *" $f "*) echo "REFUSED: $f is frozen; deleting it is not allowed." >&2; fail=1 ;;
+    esac
+done
+
+if [ "${TELEPORT_ALLOW_FROZEN:-0}" != "1" ]; then
+    if echo "$staged" | grep -q '^frozen/'; then
+        echo "REFUSED: commit touches frozen/ (contest infrastructure)." >&2
+        echo "  If this is a deliberate upstream sync, retry with:" >&2
+        echo "  TELEPORT_ALLOW_FROZEN=1 git commit ..." >&2
+        fail=1
+    fi
+fi
+
+exit $fail
