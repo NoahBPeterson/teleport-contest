@@ -1,0 +1,129 @@
+diff --git a/src/allmain.c b/src/allmain.c
+index 280beb3..522118f 100644
+--- a/src/allmain.c
++++ b/src/allmain.c
+@@ -1001,3 +1001,105 @@ timet_delta(time_t etim, time_t stim) /* end and start times */
+ }
+ 
+ /*allmain.c*/
++
++/* --- teleport-contest hidden-state oracle (patch 009) ---
++ *
++ * At every input boundary (same cadence as the NOMUX screen capture),
++ * append one JSON line of hidden game state to the file named by
++ * NETHACK_STATEDUMP.  The point is to make *unscored* state observable
++ * -- monster hp, positions, tameness, chain order -- so a JS port can
++ * be compared field-by-field instead of only screen-by-screen.
++ * Technique credit: Owen Lockwood's "oracle" (see David Bau's
++ * "Hunting Zombies", davidbau.com/archives/2026/07/16).
++ *
++ * With NETHACK_STATEDUMP unset this is a complete no-op.
++ */
++
++#include "attrib.h" /* here, not at top: preserve line numbers for RNG annotations */
++
++void teleport_state_dump(void);
++
++static FILE *tp_sdfp = (FILE *) 0;
++static int tp_sdinit = 0;
++
++void
++teleport_state_dump(void)
++{
++    struct monst *mtmp;
++    struct obj *otmp;
++    const char *path;
++    int first;
++
++    if (!tp_sdinit) {
++        tp_sdinit = 1;
++        path = getenv("NETHACK_STATEDUMP");
++        if (path && *path)
++            tp_sdfp = fopen(path, "a");
++    }
++    if (!tp_sdfp)
++        return;
++
++    fprintf(tp_sdfp, "{\"moves\":%ld", svm.moves);
++    fprintf(tp_sdfp, ",\"dnum\":%d,\"dlevel\":%d",
++            u.uz.dnum, u.uz.dlevel);
++    fprintf(tp_sdfp, ",\"hero\":{\"x\":%d,\"y\":%d,\"hp\":%d,\"hpmax\":%d",
++            (int) u.ux, (int) u.uy, u.uhp, u.uhpmax);
++    fprintf(tp_sdfp, ",\"pw\":%d,\"pwmax\":%d", u.uen, u.uenmax);
++    fprintf(tp_sdfp, ",\"hunger\":%u,\"lvl\":%d,\"exp\":%ld",
++            u.uhs, u.ulevel, u.uexp);
++    fprintf(tp_sdfp, ",\"gold\":%ld", money_cnt(gi.invent));
++    fprintf(tp_sdfp, ",\"luck\":%d", (int) Luck);
++    fprintf(tp_sdfp,
++            ",\"str\":%d,\"dex\":%d,\"con\":%d,\"int\":%d,\"wis\":%d,\"cha\":%d",
++            ACURR(A_STR), ACURR(A_DEX), ACURR(A_CON),
++            ACURR(A_INT), ACURR(A_WIS), ACURR(A_CHA));
++    fprintf(tp_sdfp, "}");
++
++    /* fmon in chain order -- order itself is gameplay semantics
++     * (monster scheduling walks this list). */
++    fprintf(tp_sdfp, ",\"mons\":[");
++    first = 1;
++    for (mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
++        if (!first)
++            fputc(',', tp_sdfp);
++        first = 0;
++        fprintf(tp_sdfp,
++            "{\"id\":%u,\"pm\":%d,\"x\":%d,\"y\":%d,\"hp\":%d,\"hpmax\":%d",
++            mtmp->m_id, (int) mtmp->mnum,
++            (int) mtmp->mx, (int) mtmp->my, mtmp->mhp, mtmp->mhpmax);
++        fprintf(tp_sdfp,
++            ",\"mlvl\":%d,\"tame\":%d,\"peace\":%d,\"flee\":%d,\"fleetim\":%d",
++            (int) mtmp->m_lev, (int) mtmp->mtame, (int) mtmp->mpeaceful,
++            (int) mtmp->mflee, (int) mtmp->mfleetim);
++        fprintf(tp_sdfp,
++            ",\"sleep\":%d,\"canmove\":%d,\"conf\":%d,\"stun\":%d",
++            (int) mtmp->msleeping, (int) mtmp->mcanmove,
++            (int) mtmp->mconf, (int) mtmp->mstun);
++        fprintf(tp_sdfp, ",\"speed\":%d,\"mux\":%d,\"muy\":%d,\"strat\":%lu}",
++            (int) mtmp->mspeed, (int) mtmp->mux, (int) mtmp->muy,
++            mtmp->mstrategy);
++    }
++    fprintf(tp_sdfp, "]");
++
++    fprintf(tp_sdfp, ",\"inv\":[");
++    first = 1;
++    for (otmp = gi.invent; otmp; otmp = otmp->nobj) {
++        if (!first)
++            fputc(',', tp_sdfp);
++        first = 0;
++        fprintf(tp_sdfp,
++            "{\"id\":%u,\"otyp\":%d,\"quan\":%ld,\"oc\":%d,\"let\":%d",
++            otmp->o_id, (int) otmp->otyp, otmp->quan,
++            (int) otmp->oclass, (int) otmp->invlet);
++        fprintf(tp_sdfp, ",\"spe\":%d,\"worn\":%ld",
++            (int) otmp->spe, otmp->owornmask);
++        fprintf(tp_sdfp,
++            ",\"buc\":%d,\"known\":%d,\"dknown\":%d,\"bknown\":%d",
++            otmp->blessed ? 2 : otmp->cursed ? 1 : 0,
++            (int) otmp->known, (int) otmp->dknown, (int) otmp->bknown);
++        fprintf(tp_sdfp, ",\"eroded\":%d,\"eroded2\":%d}",
++            (int) otmp->oeroded, (int) otmp->oeroded2);
++    }
++    fprintf(tp_sdfp, "]}\n");
++    fflush(tp_sdfp);
++}
+diff --git a/win/tty/termcap.c b/win/tty/termcap.c
+index 465ab8b..775d971 100644
+--- a/win/tty/termcap.c
++++ b/win/tty/termcap.c
+@@ -712,6 +712,14 @@ nomux_capture_write_screen(void)
+ void
+ nomux_capture_write_input_boundary(void)
+ {
++    /* patch 009: hidden-state dump for the JS-port oracle; no-op
++     * unless NETHACK_STATEDUMP is set.  Runs BEFORE the marker emit so
++     * the dump line is flushed to disk before the recorder driver sees
++     * the input-boundary marker and reads the dump file. */
++    {
++        extern void teleport_state_dump(void);
++        teleport_state_dump();
++    }
+     nomux_seq++;
+     nomux_emit_marker("input");
+ }

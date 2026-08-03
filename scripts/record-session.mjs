@@ -405,6 +405,7 @@ async function recordSegment({
     installDir,
     envInstallDir,
     rngLogPath,
+    stateDumpPath,
     homeDir,
     tz,
 }) {
@@ -436,6 +437,9 @@ async function recordSegment({
         NOMUX_MARKERS: '1',
         NETHACK_RAW_KEYS: '1',
     };
+    // Hidden-state oracle capture (patch 009): only when the caller
+    // asked for it (TELEPORT_RECORD_STATE=1 → main passes a path).
+    if (stateDumpPath) env.NETHACK_STATEDUMP = stateDumpPath;
 
     // Some legacy sessions have steps[].key populated but moves
     // empty. Fall back to reconstructing moves from step keys
@@ -494,6 +498,33 @@ async function recordSegment({
         return parseRngLines(rngText);
     };
 
+    let lastStateBytes = 0;
+    const readStateDelta = async () => {
+        if (!stateDumpPath) return [];
+        let text = '';
+        try {
+            const fh = await fs.open(stateDumpPath, 'r');
+            try {
+                const st = await fh.stat();
+                if (st.size > lastStateBytes) {
+                    const buf = Buffer.alloc(st.size - lastStateBytes);
+                    await fh.read(buf, 0, buf.length, lastStateBytes);
+                    text = buf.toString('utf8');
+                    lastStateBytes = st.size;
+                }
+            } finally {
+                await fh.close();
+            }
+        } catch {}
+        const out = [];
+        for (const line of text.split('\n')) {
+            const t = line.trim();
+            if (!t) continue;
+            try { out.push(JSON.parse(t)); } catch {}
+        }
+        return out;
+    };
+
     const finish = (reason) => {
         parser.stop();
         if (timeoutHandle) clearTimeout(timeoutHandle);
@@ -528,6 +559,10 @@ async function recordSegment({
             const stepIdx = m.seq - 1;
             const key = stepIdx === 0 ? null : moves[stepIdx - 1] ?? null;
             const step = { key, rng, screen, cursor: [m.cx, m.cy, 1] };
+            if (stateDumpPath) {
+                const states = await readStateDelta();
+                if (states.length) step.state = states[states.length - 1];
+            }
             if (pendingAnimFrames.length) {
                 step.animation_frames = pendingAnimFrames;
                 pendingAnimFrames = [];
@@ -624,6 +659,11 @@ async function main() {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'nh-rec-'));
     const rngLogPath = path.join(tmpDir, 'rng.log');
     const homeDir = path.join(tmpDir, 'home');
+    // TELEPORT_RECORD_STATE=1 → capture per-step hidden-state dumps
+    // (patch 009 oracle) into steps[].state.
+    const recordState = !!process.env.TELEPORT_RECORD_STATE
+        && process.env.TELEPORT_RECORD_STATE !== '0';
+    const stateDumpPath = recordState ? path.join(tmpDir, 'state.jsonl') : null;
 
     // NetHack's nh_getenv() silently rejects env values longer than
     // BUFSZ/2 (128 chars in this build: include/global.h BUFSZ=256).
@@ -648,6 +688,7 @@ async function main() {
                 installDir,
                 envInstallDir,
                 rngLogPath,
+                stateDumpPath,
                 homeDir,
                 tz,
             });

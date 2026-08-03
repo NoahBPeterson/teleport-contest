@@ -16,6 +16,7 @@ import { newgame, moveloop_core } from './allmain.js';
 import { parseNethackrc } from './options.js';
 import { flush_screen } from './display.js';
 import { GameDisplay } from './game_display.js';
+import { dumpState } from './statedump.js';
 
 // ── NethackGame ──
 // Wraps a single game session with replay infrastructure.
@@ -42,6 +43,7 @@ export class NethackGame {
         // calls; committed at each input boundary.
         this._animFramesByStep = [];
         this._pendingAnimFrames = [];
+        this._stateDumps = [];
         this._lastRngIdx = 0;
         this._nhgetchCount = 0;
     }
@@ -148,6 +150,13 @@ export class NethackGame {
             // snapshot and reset here so the next step starts empty.
             nhGame._animFramesByStep.push(nhGame._pendingAnimFrames);
             nhGame._pendingAnimFrames = [];
+
+            // Hidden-state oracle capture (dev-only): enabled by setting
+            // TELEPORT_STATE_DUMP in the environment. Never active under
+            // the judge sandbox, which passes no such env var.
+            if (typeof process !== 'undefined' && process.env?.TELEPORT_STATE_DUMP) {
+                nhGame._stateDumps.push(dumpState(game));
+            }
         };
     }
 
@@ -167,6 +176,9 @@ export class NethackGame {
     // for steps that didn't animate.  SUPPLEMENTAL metric — not part
     // of the official ranking; see API.md.
     getAnimationFramesByStep() { return this._animFramesByStep; }
+    // Per-step hidden-state dumps (oracle). Only populated when
+    // TELEPORT_STATE_DUMP is set; parallel to getScreens().
+    getStateDumps() { return this._stateDumps; }
 }
 
 // ── Per-segment runner — the contest contract ──
