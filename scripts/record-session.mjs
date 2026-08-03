@@ -378,6 +378,7 @@ async function recordSegment({
     isFirstSegment,
     binary,
     installDir,
+    envInstallDir,
     rngLogPath,
     homeDir,
     tz,
@@ -399,8 +400,8 @@ async function recordSegment({
 
     const env = {
         ...process.env,
-        NETHACKDIR: installDir,
-        HACKDIR: installDir,
+        NETHACKDIR: envInstallDir || installDir,
+        HACKDIR: envInstallDir || installDir,
         HOME: homeDir,
         TERM: 'xterm-256color',
         TZ: tz,
@@ -600,6 +601,17 @@ async function main() {
     const rngLogPath = path.join(tmpDir, 'rng.log');
     const homeDir = path.join(tmpDir, 'home');
 
+    // NetHack's nh_getenv() silently rejects env values longer than
+    // BUFSZ/2 (128 chars in this build: include/global.h BUFSZ=256).
+    // A deep checkout path blows past that and the binary silently
+    // falls back to its compiled-in /usr/games/lib/nethackdir
+    // playground. Route NETHACKDIR/HACKDIR through a short symlink.
+    let envInstallDir = installDir;
+    if (installDir.length > 120) {
+        envInstallDir = path.join(tmpDir, 'nhdir');
+        await fs.symlink(installDir, envInstallDir);
+    }
+
     try {
         const newSegments = [];
         for (let i = 0; i < session.segments.length; i++) {
@@ -610,6 +622,7 @@ async function main() {
                 isFirstSegment: i === 0,
                 binary,
                 installDir,
+                envInstallDir,
                 rngLogPath,
                 homeDir,
                 tz,

@@ -139,6 +139,19 @@ cd "$RECORDER_DIR"
 export SOURCE_DATE_EPOCH="${TELEPORT_BUILD_EPOCH:-1777723200}"
 make -j"$NPROC" SYSCFLAGS="$LUA_SYSCFLAGS" >/dev/null
 make install >/dev/null
+
+# The minimal hints don't install a sysconf, but this build has SYSCF
+# enabled and cfgfiles.c exits fatally when SYSCF_FILE can't be opened
+# ("Unable to open SYSCF_FILE."). Install a minimal permissive sysconf:
+# WIZARDS=* is required so playmode:debug sessions (e.g. the wizard
+# world tours) can be recorded by any local user.
+cat > "$INSTALL_PREFIX/games/lib/nethackdir/sysconf" <<'SYSCONF'
+# Minimal sysconf for the teleport-contest recorder build.
+WIZARDS=*
+EXPLORERS=*
+SHELLERS=*
+SYSCONF
+
 echo
 echo "[ok] recorder built: $RECORDER_DIR/src/nethack"
 echo "[ok] installed to:    $INSTALL_PREFIX/games/lib/nethackdir/"
