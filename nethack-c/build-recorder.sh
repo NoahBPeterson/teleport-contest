@@ -147,9 +147,14 @@ make install >/dev/null
 # world tours) can be recorded by any local user.
 cat > "$INSTALL_PREFIX/games/lib/nethackdir/sysconf" <<'SYSCONF'
 # Minimal sysconf for the teleport-contest recorder build.
+# MAXPLAYERS=10: use alock/block/... lock scheme. With per-name locks
+# (locknum=0) the chargen rename path double-calls getlock() and a
+# spurious "Destroy old game?" prompt desyncs replays.
 WIZARDS=*
 EXPLORERS=*
 SHELLERS=*
+MAXPLAYERS=10
+GENERICUSERS=play player game games nethack nethacker ec2-user
 SYSCONF
 
 echo

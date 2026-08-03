@@ -344,7 +344,23 @@ async function ensureScorefiles(installDir) {
     }
 }
 
-async function clearStaleState(installDir) {
+async function clearStaleState(installDir, { locksOnly = false } = {}) {
+    // Per-player in-progress level/lock files ("<uid><name>.<level>",
+    // e.g. "501wizard.0") indicate a *running* game. Between segments
+    // no game is running, so these are always stale: a leftover ".0"
+    // lock makes the next segment's process prompt "Destroy old
+    // game?" and desync the replay. Wizard-mode games force per-name
+    // locks (libnhmain.c: locknum=0 when wizard), and segments that
+    // end mid-prompt (e.g. at a debug-mode "Die? [yn]") leave them.
+    if (locksOnly) {
+        let entries = [];
+        try { entries = await fs.readdir(installDir); } catch {}
+        for (const name of entries) {
+            if (!/^\d+\S*\.\d+$/.test(name)) continue;
+            await fs.unlink(path.join(installDir, name)).catch(() => {});
+        }
+        return;
+    }
     const saveDir = path.join(installDir, 'save');
     try {
         const entries = await fs.readdir(saveDir);
@@ -361,6 +377,15 @@ async function clearStaleState(installDir) {
         try { st = await fs.stat(full); } catch { continue; }
         if (!st.isFile()) continue;
         if (name.endsWith('.lua')) continue;
+        // Per-player in-progress level/lock files: "<uid><name>.<level>"
+        // (e.g. "501Hextra.0"). A stale ".0" lock makes the next game
+        // under the same name prompt "Destroy old game?" and desync the
+        // replay; stale ".1+" level files pollute bones/level state.
+        // Only the ".0" entry was killed before, which left the rest.
+        if (/^\d+\S*\.\d+$/.test(name)) {
+            await fs.unlink(full).catch(() => {});
+            continue;
+        }
         if (killNames.has(lower)
             || lower.startsWith('bon')
             || lower.endsWith('.0')
@@ -388,12 +413,11 @@ async function recordSegment({
     await fs.writeFile(path.join(homeDir, '.nethackrc'), seg.nethackrc || '');
     // Reset rng log
     await fs.writeFile(rngLogPath, '');
-    // Only wipe state on the first segment.  A multi-segment session
-    // can be a save/restore pair: seg 0 ends with save+quit, seg 1
-    // restarts NetHack and restores from the save file in
-    // <install>/save/.  Clearing between segments would destroy that
-    // save file and turn the restore into a fresh game.
+    // Full state wipe on the first segment; lock-only cleanup between
+    // segments (a previous segment killed mid-prompt leaves stale
+    // per-name locks, but save files and bones must survive).
     if (isFirstSegment) await clearStaleState(installDir);
+    else await clearStaleState(installDir, { locksOnly: true });
 
     const playerName = parseNethackrcName(seg.nethackrc) ?? '';
     const args = ['-u', playerName];
