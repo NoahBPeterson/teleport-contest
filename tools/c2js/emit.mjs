@@ -1,13 +1,23 @@
-// emit.mjs — clang-AST→JS emitter, v0 (rnd.c scope).
+// emit.mjs — clang-AST→JS emitter, v1 (rnd.c + hacklib.c scope).
 //
 // Type-directed emission per tools/c2js/DESIGN.md and js/cmachine.js:
 //   int/char/short (signed)  -> number, | 0 / Math.imul / (a / b) | 0
 //   unsigned 32-bit          -> number, >>> 0 / u32div / u32mod
 //   long / long long (LP64)  -> BigInt, native BigInt ops
-//   pointers                 -> JS references (memory model v0)
-//   structs                  -> JS objects; arrays -> JS arrays / Uint8Array
+//   pointers                 -> CPtr { buf, off } via js/cptr.js (memory
+//                               model v0.5; idioms documented in cptr.js)
+//   structs                  -> JS objects (static initializers) or
+//                               byte-packed CPtr locations (malloc'd/POD)
+//   arrays                   -> Uint8Array (char/uchar) / JS array (else)
 //
-// Only the node kinds rnd.c needs are implemented (see census). Anything
+// Emitted value representations (this.rep convention):
+//   'val'  plain JS number/bigint/boolean/null/function
+//   'cptr' { buf, off } pointer — also the lvalue location form for
+//          byte-buffer storage (loads/stores via cptr.ld*/st*)
+//   'obj'  plain JS object (record value, e.g. static datamodel table)
+//   'buf'  raw Uint8Array / JS array (array-typed storage, pre-decay)
+//
+// Only the node kinds rnd.c + hacklib.c need are implemented. Anything
 // else throws so the gap is loud, never silent.
 
 import fs from 'node:fs';
@@ -20,9 +30,19 @@ const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 const INT_RE = /^(signed |unsigned )?(char|short|int|long|long long)$/;
 
+// NetHack/stdint typedefs seen without a desugaredQualType — normalized here.
+const TYPEDEFS = {
+  uint8: 'unsigned char', uint16: 'unsigned short', uint32: 'unsigned int', uint64: 'unsigned long long',
+  sint8: 'signed char', sint16: 'short', sint32: 'int', sint64: 'long long',
+  uchar: 'unsigned char', ushort: 'unsigned short', uint: 'unsigned int', ulong: 'unsigned long',
+  coordxy: 'int', size_t: 'unsigned long', ptrdiff_t: 'long',
+};
+
 function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
+    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t)\b/g,
+      (m) => TYPEDEFS[m])
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -43,9 +63,8 @@ export function parseType(qualType, desugared) {
     const bits = /\bchar\b/.test(q) || q === 'schar' || q === '_Bool' || q === 'boolean' ? 8 : /\bshort\b/.test(q) ? 16 : 32;
     return { cls: 'int', bits, signed };
   }
-  // typedef'd function types like "int (int)" reach here; treat as fn value
-  if (/\(/.test(q)) return { cls: 'ptr' };
-  return { cls: 'record' }; // FILE and friends
+  if (/\(/.test(q)) return { cls: 'ptr' }; // function designator type
+  return { cls: 'record' };
 }
 
 function nodeType(n) {
@@ -56,17 +75,34 @@ function sameClass(a, b) {
   return a.cls === b.cls && a.bits === b.bits && a.signed === b.signed;
 }
 
+/** pointee of a pointer type string ("const char *" -> "char"); null if not a pointer */
+function pointeeOf(qualType, desugared) {
+  let q = (desugared || qualType || '').replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').replace(/\s+/g, ' ').trim();
+  if (!q.includes('*')) return null;
+  return q.replace(/\s*\*\s*$/, '').trim();
+}
+
+/** "char[5][5]" -> { elem: 'char[5]', count: 5 }; "int[5]" -> { elem:'int', count:5 } */
+function arrayParts(qualType, desugared) {
+  const q = (desugared || qualType || '').trim();
+  const m = q.match(/^(.*)\[(\d*)\]$/);
+  if (!m) return null;
+  return { elem: m[1].trim(), count: m[2] ? Number(m[2]) : null };
+}
+
 // JS operator precedence (for minimal parenthesization)
 const PREC = { comma: 1, assign: 2, cond: 3, '||': 4, '&&': 5, '|': 6, '^': 7, '&': 8, eq: 9, rel: 10, shift: 11, add: 12, mul: 13, unary: 15, postfix: 16, atom: 18 };
 const BIN_PREC = { '||': 4, '&&': 5, '|': 6, '^': 7, '&': 8, '==': 9, '!=': 9, '<': 10, '>': 10, '<=': 10, '>=': 10, '<<': 11, '>>': 11, '>>>': 11, '+': 12, '-': 12, '*': 13, '/': 13, '%': 13 };
 
-function atom(code) { return { code, prec: PREC.atom, const: undefined }; }
-
-/** parenthesize child for use as left/right operand of an infix op */
+/** parenthesize child for use as an operand of an infix op */
 function operand(e, parentPrec, side) {
   if (e.prec < parentPrec || (side === 'right' && e.prec === parentPrec)) return { ...e, code: `(${e.code})`, prec: PREC.atom };
   return e;
 }
+
+// libc calls routed to cptr.* (same name)
+const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrchr', 'strstr', 'memcpy',
+  'malloc', 'free', 'qsort', 'read', 'write', 'isupper', 'tolower', 'sprintf', 'snprintf', 'vsnprintf']);
 
 // ------------------------------------------------------------- emitter ----
 
@@ -75,93 +111,138 @@ export class Emitter {
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
-    this.records = new Map(); // struct name -> [field names]
+    this.records = new Map(); // struct name -> [{name, q (desugared qualType)}]
+    this.layouts = new Map(); // struct name -> { size, align, offsets: {field: off} }
     this.cmachine = new Set(); // cmachine.js helpers used
-    this.out = [];
+    this.strings = new Map(); // raw literal -> __slN (dedup)
+    this.stringList = [];
+    this.staticLocals = new Map(); // VarDecl id -> hoisted name (current function)
+    this.usesCptr = false;
     this.collectRecords();
   }
 
   collectRecords() {
     for (const d of this.decls) {
       if (d.kind !== 'RecordDecl' || !d.name) continue;
-      const fields = (d.inner || []).filter((c) => c.kind === 'FieldDecl').map((c) => c.name);
+      const fields = (d.inner || []).filter((c) => c.kind === 'FieldDecl')
+        .map((c) => ({ name: c.name, q: desugar(c.type) }));
       if (fields.length) this.records.set(d.name, fields);
     }
   }
+
+  /** minimal LP64 layout: scalar fields, fixed arrays, nested records */
+  layoutOf(name) {
+    if (this.layouts.has(name)) return this.layouts.get(name);
+    const fields = this.records.get(name);
+    if (!fields) throw new Error(`layout: unknown struct ${name}`);
+    let off = 0, maxAlign = 1;
+    const offsets = {};
+    for (const f of fields) {
+      const { size, align } = this.sizeAlign(f.q);
+      off = Math.ceil(off / align) * align;
+      offsets[f.name] = off;
+      off += size;
+      maxAlign = Math.max(maxAlign, align);
+    }
+    const layout = { size: Math.ceil(off / maxAlign) * maxAlign, align: maxAlign, offsets };
+    this.layouts.set(name, layout);
+    return layout;
+  }
+
+  sizeAlign(q) {
+    const arr = arrayParts(q);
+    if (arr) {
+      const e = this.sizeAlign(arr.elem);
+      return { size: e.size * (arr.count ?? 0), align: e.align };
+    }
+    if (q.includes('*')) return { size: 8, align: 8 };
+    const recM = q.match(/^(?:struct|union) (\w+)$/);
+    if (recM) { const l = this.layoutOf(recM[1]); return { size: l.size, align: l.align }; }
+    if (/\blong\b/.test(q) || q === 'size_t') return { size: 8, align: 8 };
+    if (/\bint\b/.test(q)) return { size: 4, align: 4 };
+    if (/\bshort\b/.test(q)) return { size: 2, align: 2 };
+    if (/\bchar\b/.test(q) || q === 'boolean' || q === 'schar') return { size: 1, align: 1 };
+    throw new Error(`sizeAlign: unsupported field type "${q}"`);
+  }
+
+  cptrCall(name, ...args) { this.usesCptr = true; return `cptr.${name}(${args.join(', ')})`; }
 
   cref(n) {
     const off = n.loc?.offset ?? n.range?.begin?.offset;
     return off !== undefined ? `${this.fileName}:${this.lineOf(off)}` : this.fileName;
   }
 
+  internString(raw) {
+    if (!this.strings.has(raw)) {
+      const name = `__sl${this.stringList.length}`;
+      this.strings.set(raw, name);
+      this.stringList.push(raw);
+    }
+    return this.strings.get(raw);
+  }
+
   // ----- type conversions -----
 
-  /** Emit conversion of e ({code,prec,const?}) from type `from` to type `to`. */
   convert(e, from, to) {
     if (to.cls === 'void') return e;
-    if (from.cls === 'ptr' || to.cls === 'ptr' || from.cls === 'record' || to.cls === 'record') return e; // v0: references pass through
-    if (from.cls === 'f64' || to.cls === 'f64') throw new Error(`float conversion unsupported (v0): ${JSON.stringify(from)} -> ${JSON.stringify(to)}`);
-    // both integer classes now
+    if (from.cls === 'ptr' || to.cls === 'ptr' || from.cls === 'record' || to.cls === 'record') return e;
+    if (from.cls === 'f64' || to.cls === 'f64') throw new Error(`float conversion unsupported (v1): ${JSON.stringify(from)} -> ${JSON.stringify(to)}`);
     if (sameClass(from, to)) return e;
     // constant folding for literal conversions
     if (e.const !== undefined && /^-?\d+$/.test(e.const)) {
       let v = BigInt(e.const);
       v = to.signed ? BigInt.asIntN(to.bits, v) : BigInt.asUintN(to.bits, v);
-      if (to.bits === 64) return { code: `${v}n`, prec: PREC.atom, const: String(v) };
-      return { code: String(Number(v)), prec: Number(v) < 0 ? PREC.unary : PREC.atom, const: String(Number(v)) };
+      if (to.bits === 64) return { code: `${v}n`, prec: PREC.atom, const: String(v), rep: 'val' };
+      return { code: String(Number(v)), prec: Number(v) < 0 ? PREC.unary : PREC.atom, const: String(Number(v)), rep: 'val' };
     }
     if (to.bits === 64) {
-      if (from.bits === 64) return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(64, ${this.group(e, PREC.atom)})`, prec: PREC.atom };
-      return { code: from.signed ? `BigInt(${this.group(e, PREC.atom)})` : `BigInt(${this.group(e, PREC.atom)} >>> 0)`, prec: PREC.atom };
+      if (from.bits === 64) return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(64, ${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      if (from.signed && to.signed) return { code: `BigInt(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      if (from.signed && !to.signed) return { code: `BigInt.asUintN(64, BigInt(${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
+      return { code: `BigInt(${this.group(e, PREC.atom)} >>> 0)`, prec: PREC.atom, rep: 'val' };
     }
     if (from.bits === 64) {
-      return { code: `Number(BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, ${this.group(e, PREC.atom)}))`, prec: PREC.atom };
+      return { code: `Number(BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, ${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
     }
-    // 8..32 -> 8..32
     if (to.bits === 32 && from.bits === 32) {
-      return { code: `${this.group(e, PREC.postfix)} ${to.signed ? '| 0' : '>>> 0'}`, prec: to.signed ? PREC['|'] : PREC.shift };
+      return { code: `${this.group(e, PREC.postfix)} ${to.signed ? '| 0' : '>>> 0'}`, prec: to.signed ? PREC['|'] : PREC.shift, rep: 'val' };
     }
     if (to.bits < from.bits || (to.bits === from.bits && !to.signed) || to.bits < 32) {
       const helper = to.signed ? { 8: 'schar', 16: 'i16', 32: null }[to.bits] : { 8: 'uchar', 16: 'u16', 32: 'u32' }[to.bits];
       if (helper) {
         this.cmachine.add(helper);
-        return { code: `${helper}(${this.group(e, PREC.atom)})`, prec: PREC.atom };
+        return { code: `${helper}(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
       }
     }
-    return e; // widening: value-preserving, no coercion needed
+    return e; // widening: value-preserving
   }
 
-  /** wrap code so it binds as an operand of the given precedence context */
   group(e, ctxPrec) {
     return e.prec < ctxPrec ? `(${e.code})` : e.code;
   }
 
-  to64(e) {
-    const t = e._type || { cls: 'int', bits: 32, signed: true };
-    return this.convert(e, t, { cls: 'int', bits: 64, signed: t.signed });
-  }
-
   // ----- expressions -----
 
-  emitExpr(n) {
+  emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
     const fn = this['expr_' + n.kind];
     if (!fn) throw new Error(`emitExpr: unsupported node kind ${n.kind} (${this.cref(n)})`);
-    return fn.call(this, n);
+    return fn.call(this, n, opts);
   }
 
   expr_IntegerLiteral(n) {
     const t = nodeType(n);
-    if (t.cls === 'int' && t.bits === 64) return { code: `${n.value}n`, prec: PREC.atom, const: n.value, _type: t };
-    return { code: n.value, prec: n.value.startsWith('-') ? PREC.unary : PREC.atom, const: n.value, _type: t };
+    if (t.cls === 'int' && t.bits === 64) return { code: `${n.value}n`, prec: PREC.atom, const: n.value, rep: 'val' };
+    return { code: n.value, prec: n.value.startsWith('-') ? PREC.unary : PREC.atom, const: n.value, rep: 'val' };
   }
 
   expr_CharacterLiteral(n) {
-    return { code: String(n.value), prec: PREC.atom, const: String(n.value), _type: nodeType(n) };
+    return { code: String(n.value), prec: PREC.atom, const: String(n.value), rep: 'val' };
   }
 
   expr_StringLiteral(n) {
-    return { code: n.value, prec: PREC.atom, _type: { cls: 'ptr' } }; // value includes C quotes; valid JS for these literals
+    // value includes the C quotes/escapes; valid JS for these literals
+    return { code: this.internString(n.value), prec: PREC.atom, rep: 'cptr' };
   }
 
   expr_ParenExpr(n) {
@@ -175,18 +256,108 @@ export class Emitter {
   }
 
   expr_DeclRefExpr(n) {
-    return { code: n.name || n.referencedDecl?.name, prec: PREC.atom, _type: nodeType(n) };
+    let name = n.name || n.referencedDecl?.name;
+    const refId = n.referencedDecl?.id;
+    if (refId && this.staticLocals.has(refId)) name = this.staticLocals.get(refId);
+    const t = nodeType(n);
+    const q = desugar(n.type);
+    const rep = arrayParts(q) ? 'buf' : t.cls === 'record' ? 'obj' : t.cls === 'ptr' && !/\(/.test(q) ? 'cptr' : 'val';
+    return { code: name, prec: PREC.atom, _type: t, rep };
+  }
+
+  /** load a scalar rvalue from a cptr location, by access type */
+  loadFrom(locCode, typeQ) {
+    const t = parseType(typeQ);
+    if (t.cls === 'int' && t.bits === 8) return { code: this.cptrCall(t.signed ? 'ld1s' : 'ld1u', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'int' && t.bits === 64) return { code: this.cptrCall('ldU64', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'int' && t.bits === 32) return { code: this.cptrCall('ldI32', locCode), prec: PREC.atom, rep: 'val' };
+    throw new Error(`loadFrom: unsupported access type "${typeQ}"`);
+  }
+
+  storeTo(locCode, typeQ, valueCode) {
+    const t = parseType(typeQ);
+    if (t.cls === 'int' && t.bits === 8) return this.cptrCall('st1', locCode, valueCode);
+    if (t.cls === 'int' && t.bits === 64) return this.cptrCall('stU64', locCode, valueCode);
+    if (t.cls === 'int' && t.bits === 32) return this.cptrCall('stI32', locCode, valueCode);
+    throw new Error(`storeTo: unsupported access type "${typeQ}"`);
+  }
+
+  /** element access location for base[{idx}] — returns {code, elemQ, rep} */
+  subscriptLoc(base, idx, baseQ) {
+    const arr = arrayParts(baseQ);
+    if (arr) { // base is raw buffer storage
+      const elemT = parseType(arr.elem);
+      if (arrayParts(arr.elem) || elemT.cls === 'record') {
+        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: arrayParts(arr.elem) ? 'buf' : 'obj' };
+      }
+      if (arr.elem === 'int' || arr.elem === 'unsigned int') {
+        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'val', plain: true };
+      }
+      // 1-byte element buffer: location through cptr
+      const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code);
+      return { code: loc, elemQ: arr.elem, rep: 'cptr' };
+    }
+    // base is a CPtr
+    const pointee = pointeeOf(baseQ);
+    if (!pointee) throw new Error('subscript on non-pointer/non-array');
+    const elemT = parseType(pointee);
+    if (elemT.cls === 'record') {
+      const recM = pointee.match(/^(?:struct|union) (\w+)$/);
+      const sz = this.layoutOf(recM[1]).size;
+      return { code: this.cptrCall('add', base.code, idx.code, String(sz)), elemQ: pointee, rep: 'cptr' };
+    }
+    return { code: this.cptrCall('add', base.code, idx.code), elemQ: pointee, rep: 'cptr' };
+  }
+
+  expr_ArraySubscriptExpr(n) {
+    // look through array-to-pointer decay to the underlying storage
+    let baseNode = n.inner[0];
+    while (baseNode.kind === 'ImplicitCastExpr' && baseNode.castKind === 'ArrayToPointerDecay') baseNode = baseNode.inner[0];
+    const base = this.emitExpr(baseNode);
+    const idx = this.emitExpr(n.inner[1]);
+    const baseQ = desugar(baseNode.type);
+    const loc = this.subscriptLoc(base, idx, baseQ);
+    if (loc.rep === 'cptr' && !loc.plain) {
+      const elemT = parseType(loc.elemQ);
+      if (elemT.cls === 'record') return { code: loc.code, prec: PREC.atom, rep: 'cptr', elemQ: loc.elemQ };
+      return this.loadFrom(loc.code, loc.elemQ);
+    }
+    return { code: loc.code, prec: PREC.atom, rep: loc.rep, elemQ: loc.elemQ };
+  }
+
+  /** field offset within a byte-packed struct */
+  fieldOffset(recName, fieldName) {
+    const l = this.layoutOf(recName);
+    if (!(fieldName in l.offsets)) throw new Error(`layout: ${recName} has no field ${fieldName}`);
+    return l.offsets[fieldName];
   }
 
   expr_MemberExpr(n) {
     const base = this.emitExpr(n.inner[0]);
-    return { code: `${this.group(base, PREC.atom)}.${n.name}`, prec: PREC.atom, _type: nodeType(n) };
+    if (base.rep === 'obj') {
+      // plain JS object field (function-pointer fields stay plain values)
+      const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
+      const rep = fieldQ && arrayParts(fieldQ) ? 'buf'
+        : fieldQ && parseType(fieldQ).cls === 'ptr' && !/\(/.test(fieldQ) ? 'cptr' : 'val';
+      return { code: `${this.group(base, PREC.atom)}.${n.name}`, prec: PREC.atom, rep, elemQ: fieldQ };
+    }
+    if (base.rep === 'cptr') {
+      // byte-packed struct location + field offset
+      const bq = desugar(n.inner[0].type);
+      const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+      const off = this.fieldOffset(recName, n.name);
+      const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
+      const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
+      return { ...this.loadFrom(loc, fieldQ), locCode: loc, elemQ: fieldQ };
+    }
+    throw new Error(`MemberExpr .${n.name} on rep ${base.rep} unsupported (${this.cref(n)})`);
   }
 
-  expr_ArraySubscriptExpr(n) {
-    const base = this.emitExpr(n.inner[0]);
-    const idx = this.emitExpr(n.inner[1]);
-    return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, prec: PREC.atom, _type: nodeType(n) };
+  fieldTypeOf(baseNode, fieldName) {
+    const bq = desugar(baseNode.type);
+    const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+    const f = this.records.get(recName)?.find((x) => x.name === fieldName);
+    return f?.q;
   }
 
   expr_ImplicitCastExpr(n) {
@@ -196,15 +367,17 @@ export class Emitter {
       case 'NoOp':
       case 'FunctionToPointerDecay':
       case 'BuiltinFnToFnPtr':
-      case 'ArrayToPointerDecay':
       case 'IntegralToBoolean':
-      case 'BitCast': // pointer<->pointer in rnd.c
+      case 'BitCast': // pointer<->pointer
         return { ...inner, _type: nodeType(n) };
+      case 'ArrayToPointerDecay':
+        if (inner.rep === 'buf') return { code: this.cptrCall('decay', inner.code), prec: PREC.atom, rep: 'cptr' };
+        return { ...inner, rep: 'cptr' };
       case 'IntegralCast':
       case 'IntegralConversion':
         return { ...this.convert(inner, nodeType(n.inner[0]), nodeType(n)), _type: nodeType(n) };
       case 'NullToPointer':
-        return { code: 'null', prec: PREC.atom, const: '0', _type: { cls: 'ptr' } };
+        return { code: 'null', prec: PREC.atom, const: '0', rep: 'val' };
       default:
         throw new Error(`unsupported implicit cast ${n.castKind} (${this.cref(n)})`);
     }
@@ -213,15 +386,15 @@ export class Emitter {
   expr_CStyleCastExpr(n) {
     // NetHack SIZE(x) idiom: (int)(sizeof(arr) / sizeof(arr[0])) -> arr.length
     const sizeIdiom = this.matchSizeIdiom(n);
-    if (sizeIdiom) return { code: sizeIdiom, prec: PREC.atom, _type: nodeType(n) };
+    if (sizeIdiom) return { code: sizeIdiom, prec: PREC.atom, rep: 'val' };
     const inner = this.emitExpr(n.inner[0]);
-    if (n.castKind === 'NullToPointer') return { code: 'null', prec: PREC.atom, const: '0', _type: { cls: 'ptr' } };
-    if (n.castKind === 'ToVoid') return { code: `void ${this.group(inner, PREC.unary)}`, prec: PREC.unary };
+    if (n.castKind === 'NullToPointer') return { code: 'null', prec: PREC.atom, const: '0', rep: 'val' };
+    if (n.castKind === 'ToVoid') return { code: `void ${this.group(inner, PREC.unary)}`, prec: PREC.unary, rep: 'val' };
+    if (n.castKind === 'BitCast' || n.castKind === 'NoOp') return { ...inner, _type: nodeType(n) };
     return { ...this.convert(inner, nodeType(n.inner[0]), nodeType(n)), _type: nodeType(n) };
   }
 
   matchSizeIdiom(n) {
-    // unwrap this cast down to a BinaryOperator '/' of two sizeofs
     let cur = n;
     while (cur.kind === 'CStyleCastExpr' || cur.kind === 'ImplicitCastExpr' || cur.kind === 'ParenExpr') {
       if (cur.kind === 'ParenExpr') { cur = cur.inner[0]; continue; }
@@ -231,8 +404,8 @@ export class Emitter {
     if (cur.kind !== 'BinaryOperator' || cur.opcode !== '/') return null;
     const [l, r] = cur.inner;
     if (l.kind !== 'UnaryExprOrTypeTraitExpr' || r.kind !== 'UnaryExprOrTypeTraitExpr') return null;
-    const arrRef = this.sizeofArrayRef(l); // T[N]
-    const eltRef = this.sizeofArrayRef(r, true); // T via arr[0]
+    const arrRef = this.sizeofArrayRef(l);
+    const eltRef = this.sizeofArrayRef(r, true);
     if (arrRef && eltRef && arrRef === eltRef) return `${arrRef}.length`;
     return null;
   }
@@ -253,123 +426,234 @@ export class Emitter {
   }
 
   expr_UnaryExprOrTypeTraitExpr(n) {
-    // sizeof (expr form; rnd.c has no type-form sizeof outside the SIZE idiom)
     let arg = n.inner?.[0];
     while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
-    const q = desugar(arg?.type);
+    const q = arg ? desugar(arg.type) : desugar(n.argType); // expr form vs type form
     const size = this.sizeofType(q);
     const t = nodeType(n); // size_t == unsigned long -> 64-bit class
     const code = t.bits === 64 ? `${size}n` : String(size);
-    return { code, prec: PREC.atom, const: String(size), _type: t };
+    return { code, prec: PREC.atom, const: String(size), rep: 'val' };
   }
 
   sizeofType(q) {
-    const m = q.match(/^(.*)\[(\d+)\]$/);
-    if (m) return Number(m[2]) * this.sizeofType(m[1]);
+    const arr = arrayParts(q);
+    if (arr) return (arr.count ?? 0) * this.sizeofType(arr.elem);
     if (q.includes('*')) return 8;
+    const recM = q.match(/^(?:struct|union) (\w+)$/);
+    if (recM) return this.layoutOf(recM[1]).size;
     if (/\blong\b/.test(q) || q === 'size_t') return 8;
     if (/\bint\b/.test(q)) return 4;
     if (/\bshort\b/.test(q)) return 2;
     if (/\bchar\b/.test(q) || q === 'boolean' || q === 'schar') return 1;
-    throw new Error(`sizeof: unsupported type "${q}" (v0 — record layout not implemented)`);
+    throw new Error(`sizeof: unsupported type "${q}"`);
   }
 
-  expr_UnaryOperator(n) {
+  expr_UnaryOperator(n, opts = {}) {
     const [sub] = n.inner;
-    const e = this.emitExpr(sub);
     const t = nodeType(n);
+    const subT = nodeType(sub);
     switch (n.opcode) {
-      case '++': case '--':
-        return { code: n.isPostfix ? `${this.group(e, PREC.postfix)}${n.opcode}` : `${n.opcode}${this.group(e, PREC.unary)}`, prec: n.isPostfix ? PREC.postfix : PREC.unary, _type: t };
-      case '-': case '!': case '~':
-        return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, _type: t };
-      case '&': // memory model v0: objects are references; &field == the object
-        return { ...e, _type: { cls: 'ptr' } };
-      case '*': { // rnd.c only dereferences char* (first byte of a string)
-        const pointee = desugar(sub.type).replace(/\s*\*$/, '').trim();
-        if (/\bchar\b/.test(pointee)) return { code: `(${this.group(e, PREC.atom)}.charCodeAt(0) || 0)`, prec: PREC.atom, _type: t };
-        throw new Error(`deref of ${pointee}* unsupported (v0) (${this.cref(n)})`);
+      case '++': case '--': {
+        if (subT.cls === 'ptr') {
+          // pointer variable inc/dec
+          if (sub.kind !== 'DeclRefExpr') throw new Error(`++/-- on non-variable pointer (${this.cref(n)})`);
+          const name = this.emitExpr(sub).code;
+          const delta = n.opcode === '++' ? '1' : '-1';
+          if (opts.stmtPos) return { code: `${name} = ${this.cptrCall('add', name, delta)}`, prec: PREC.assign, rep: 'val' };
+          const helper = (n.isPostfix ? 'post' : 'pre') + (n.opcode === '++' ? 'inc' : 'dec');
+          return { code: this.cptrCall(helper, `() => ${name}`, `(v) => { ${name} = v; }`), prec: PREC.atom, rep: 'cptr' };
+        }
+        // scalar location (e.g. tstr[i]++)?
+        if (sub.kind === 'ArraySubscriptExpr' || sub.kind === 'UnaryOperator') {
+          const loc = this.emitLValue(sub);
+          if (loc.kind === 'cptr') {
+            if (n.isPostfix && n.opcode === '++') return { code: this.cptrCall('postinc1', loc.code), prec: PREC.atom, rep: 'val' };
+            throw new Error(`${n.opcode} on scalar cptr location unsupported (v1) (${this.cref(n)})`);
+          }
+        }
+        return { code: n.isPostfix ? `${this.group(this.emitExpr(sub), PREC.postfix)}${n.opcode}` : `${n.opcode}${this.group(this.emitExpr(sub), PREC.unary)}`, prec: n.isPostfix ? PREC.postfix : PREC.unary, rep: 'val' };
+      }
+      case '-': case '!': case '~': {
+        const e = this.emitExpr(sub);
+        return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, rep: 'val' };
+      }
+      case '&': { // address-of: the cptr location IS the address
+        const loc = this.emitLValue(sub);
+        if (loc.kind === 'cptr') return { code: loc.code, prec: PREC.atom, rep: 'cptr' };
+        throw new Error(`address-of ${loc.kind} unsupported (v1) (${this.cref(n)})`);
+      }
+      case '*': { // deref
+        const e = this.emitExpr(sub);
+        const pointee = pointeeOf(desugar(sub.type)) || '';
+        if (/\(/.test(pointee)) return { ...e, rep: 'val' }; // function pointer deref: the function itself
+        const pt = parseType(pointee);
+        if (pt.cls === 'record') return { ...e, rep: 'cptr', elemQ: pointee }; // struct location
+        return this.loadFrom(e.code, pointee);
       }
       default:
         throw new Error(`unsupported unary op ${n.opcode} (${this.cref(n)})`);
     }
   }
 
-  expr_BinaryOperator(n) {
+  /** emit an lvalue: {kind:'var'|'cptr'|'prop', code, elemQ?} */
+  emitLValue(n) {
+    if (n.kind === 'DeclRefExpr') return { kind: 'var', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
+    if (n.kind === 'ParenExpr') return this.emitLValue(n.inner[0]);
+    if (n.kind === 'UnaryOperator' && n.opcode === '*') {
+      return { kind: 'cptr', code: this.emitExpr(n.inner[0]).code, elemQ: pointeeOf(desugar(n.inner[0].type)) };
+    }
+    if (n.kind === 'ArraySubscriptExpr') {
+      let baseNode = n.inner[0];
+      while (baseNode.kind === 'ImplicitCastExpr' && baseNode.castKind === 'ArrayToPointerDecay') baseNode = baseNode.inner[0];
+      const base = this.emitExpr(baseNode);
+      const idx = this.emitExpr(n.inner[1]);
+      const loc = this.subscriptLoc(base, idx, desugar(baseNode.type));
+      if (loc.rep === 'cptr') return { kind: 'cptr', code: loc.code, elemQ: loc.elemQ };
+      return { kind: 'prop', code: loc.code, elemQ: loc.elemQ };
+    }
+    if (n.kind === 'MemberExpr') {
+      const base = this.emitExpr(n.inner[0]);
+      if (base.rep === 'obj') return { kind: 'prop', code: `${this.group(base, PREC.atom)}.${n.name}`, elemQ: this.fieldTypeOf(n.inner[0], n.name) };
+      if (base.rep === 'cptr') {
+        const bq = desugar(n.inner[0].type);
+        const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+        const off = this.fieldOffset(recName, n.name);
+        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldTypeOf(n.inner[0], n.name) };
+      }
+    }
+    throw new Error(`emitLValue: unsupported ${n.kind} (${this.cref(n)})`);
+  }
+
+  expr_BinaryOperator(n, opts = {}) {
     const op = n.opcode;
     const t = nodeType(n);
+    const lQ = desugar(n.inner[0].type);
+    const rQ = desugar(n.inner[1].type);
+    const lT = parseType(lQ), rT = parseType(rQ);
+
+    if (op === '=') {
+      const lv = this.emitLValue(n.inner[0]);
+      const r = this.emitExpr(n.inner[1]);
+      if (lv.kind === 'cptr') return { code: this.storeTo(lv.code, lv.elemQ, r.code), prec: PREC.atom, rep: 'val' };
+      return { code: `${lv.code} = ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
+    }
+    if (op === ',') {
+      const l = this.emitExpr(n.inner[0], opts);
+      const r = this.emitExpr(n.inner[1], opts);
+      return { code: `${l.code}, ${operand(r, PREC.comma, 'right').code}`, prec: PREC.comma, rep: r.rep };
+    }
     const l0 = this.emitExpr(n.inner[0]);
     const r0 = this.emitExpr(n.inner[1]);
 
-    if (op === '=') {
-      return { code: `${this.group(l0, PREC.unary)} = ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, _type: t };
-    }
     if (op === '&&' || op === '||') {
       const p = BIN_PREC[op];
-      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code}`, prec: p, _type: t };
+      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val' };
     }
-    // comparisons: pointer operands get strict equality
+    // pointer arithmetic
+    if ((op === '+' || op === '-') && (lT.cls === 'ptr' || rT.cls === 'ptr') && !(lT.cls === 'ptr' && rT.cls === 'ptr' && op === '+')) {
+      if (lT.cls === 'ptr' && rT.cls === 'ptr') { // ptrdiff (long)
+        return { code: this.cptrCall('diff', l0.code, r0.code), prec: PREC.atom, rep: 'val' };
+      }
+      const [ptrE, intE, intT] = lT.cls === 'ptr' ? [l0, r0, rT] : [r0, l0, lT];
+      const pointee = pointeeOf(lT.cls === 'ptr' ? lQ : rQ) || 'char';
+      const sz = this.sizeofType(pointee);
+      const args = [ptrE.code];
+      if (op === '-') args.push(`-(${intE.code})`); else args.push(intE.code);
+      if (sz !== 1) args.push(String(sz));
+      return { code: this.cptrCall('add', ...args), prec: PREC.atom, rep: 'cptr' };
+    }
     if (['==', '!=', '<', '>', '<=', '>='].includes(op)) {
       const p = op === '==' || op === '!=' ? PREC.eq : PREC.rel;
-      let jsop = op;
-      if ((op === '==' || op === '!=') && (nodeType(n.inner[0]).cls === 'ptr' || nodeType(n.inner[1]).cls === 'ptr')) {
-        jsop = op === '==' ? '===' : '!==';
+      const fnPtr = lQ.includes('(*') || rQ.includes('(*'); // function pointers compare by identity
+      const ptrCmp = !fnPtr && (lT.cls === 'ptr' || rT.cls === 'ptr');
+      if (fnPtr && (op === '==' || op === '!=')) {
+        const jsop = op === '==' ? '===' : '!==';
+        return { code: `${operand(l0, p, 'left').code} ${jsop} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val' };
       }
-      return { code: `${operand(l0, p, 'left').code} ${jsop} ${operand(r0, p, 'right').code}`, prec: p, _type: t };
+      if (ptrCmp) {
+        if (l0.code === 'null' || r0.code === 'null') {
+          const other = l0.code === 'null' ? r0 : l0;
+          const nullOp = op === '==' ? '===' : op === '!=' ? '!==' : null;
+          if (nullOp) return { code: `${operand(other, p, 'left').code} ${nullOp} null`, prec: p, rep: 'val' };
+        }
+        if (op === '==' || op === '!=') {
+          const call = this.cptrCall('eq', l0.code, r0.code);
+          return { code: op === '==' ? call : `!${call}`, prec: op === '==' ? PREC.atom : PREC.unary, rep: 'val' };
+        }
+        return { code: `${this.cptrCall('cmp', l0.code, r0.code)} ${op} 0`, prec: p, rep: 'val' };
+      }
+      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val' };
     }
     const p = BIN_PREC[op];
     if (!p) throw new Error(`unsupported binary op ${op} (${this.cref(n)})`);
-    // shifts with a 64-bit left side need a BigInt shift count
     let r = r0;
-    if ((op === '<<' || op === '>>') && t.cls === 'int' && t.bits === 64) r = this.to64(r0);
+    if ((op === '<<' || op === '>>') && t.cls === 'int' && t.bits === 64) r = this.convert(r0, nodeType(n.inner[1]), t);
     const raw = `${operand(l0, p, 'left').code} ${op} ${operand(r, p, 'right').code}`;
     return this.coerceArith(raw, p, op, t, l0, r0);
   }
 
-  /** apply the DESIGN.md arithmetic coercions for a binary op with C type t */
   coerceArith(raw, p, op, t, l, r) {
-    if (t.cls !== 'int') return { code: raw, prec: p, _type: t };
-    if (t.bits === 64) return { code: raw, prec: p, _type: t }; // BigInt ops are exact (C div/mod truncate like BigInt)
+    if (t.cls !== 'int') return { code: raw, prec: p, rep: 'val' };
+    if (t.bits === 64) return { code: raw, prec: p, rep: 'val' }; // BigInt ops exact; div/mod truncate like C
     if (['<<', '>>', '&', '|', '^', '%'].includes(op)) {
-      if (t.signed) return { code: raw, prec: p, _type: t };
-      // unsigned 32-bit: logical shift right / keep in u32 range
-      if (op === '>>') return { code: `${operand(l, PREC.shift, 'left').code} >>> ${operand(r, PREC.shift, 'right').code}`, prec: PREC.shift, _type: t };
-      if (op === '%') { this.cmachine.add('u32mod'); return { code: `u32mod(${l.code}, ${r.code})`, prec: PREC.atom, _type: t }; }
-      return { code: `(${raw}) >>> 0`, prec: PREC.shift, _type: t };
+      if (t.signed) return { code: raw, prec: p, rep: 'val' };
+      if (op === '>>') return { code: `${operand(l, PREC.shift, 'left').code} >>> ${operand(r, PREC.shift, 'right').code}`, prec: PREC.shift, rep: 'val' };
+      if (op === '%') { this.cmachine.add('u32mod'); return { code: `u32mod(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' }; }
+      return { code: `(${raw}) >>> 0`, prec: PREC.shift, rep: 'val' };
     }
-    if (op === '+') return t.signed ? this.wrapI32(raw) : { code: `(${raw}) >>> 0`, prec: PREC.shift, _type: t };
-    if (op === '-') return t.signed ? this.wrapI32(raw) : { code: `(${raw}) >>> 0`, prec: PREC.shift, _type: t };
-    if (op === '*') return t.signed ? { code: `Math.imul(${l.code}, ${r.code})`, prec: PREC.atom, _type: t } : { code: `Math.imul(${l.code}, ${r.code}) >>> 0`, prec: PREC.shift, _type: t };
+    if (op === '+' || op === '-') return t.signed ? this.wrapI32(raw) : { code: `(${raw}) >>> 0`, prec: PREC.shift, rep: 'val' };
+    if (op === '*') return t.signed ? { code: `Math.imul(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' } : { code: `Math.imul(${l.code}, ${r.code}) >>> 0`, prec: PREC.shift, rep: 'val' };
     if (op === '/') {
-      if (t.signed) return { code: `${p >= PREC['|'] ? `(${raw})` : raw} | 0`, prec: PREC['|'], _type: t };
+      if (t.signed) return { code: `${p >= PREC['|'] ? `(${raw})` : raw} | 0`, prec: PREC['|'], rep: 'val' };
       this.cmachine.add('u32div');
-      return { code: `u32div(${l.code}, ${r.code})`, prec: PREC.atom, _type: t };
+      return { code: `u32div(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' };
     }
-    return { code: raw, prec: p, _type: t };
+    return { code: raw, prec: p, rep: 'val' };
   }
 
   wrapI32(raw) {
-    return { code: `(${raw}) | 0`, prec: PREC['|'], _type: { cls: 'int', bits: 32, signed: true } };
+    return { code: `(${raw}) | 0`, prec: PREC['|'], rep: 'val' };
   }
 
   expr_CompoundAssignOperator(n) {
-    const t = nodeType(n); // computation type
-    const l = this.emitExpr(n.inner[0]);
+    const t = nodeType(n);
+    const lv = this.emitLValue(n.inner[0]);
     const r0 = this.emitExpr(n.inner[1]);
-    const op = n.opcode; // += -= *= /= %= >>= <<= &= |= ^=
+    const op = n.opcode;
     const base = op.slice(0, -1);
+
+    if (lv.kind === 'cptr') {
+      // compound assign through a pointer location (1-byte pointees in scope)
+      if ((base === '+' || base === '-') && parseType(lv.elemQ).cls === 'int' && parseType(lv.elemQ).bits === 8) {
+        throw new Error(`+= through char location unsupported (${this.cref(n)})`);
+      }
+      // read-modify-write; loc must be side-effect-free (hacklib sites are)
+      const ld = parseType(lv.elemQ).signed === false ? 'ld1u' : 'ld1s';
+      return { code: this.cptrCall('st1', lv.code, `${this.cptrCall(ld, lv.code)} ${base} ${r0.code}`), prec: PREC.atom, rep: 'val' };
+    }
+    const l = { code: lv.code, prec: PREC.atom };
+    // pointer variable compound assignment (bp += len)
+    if (parseType(lv.elemQ).cls === 'ptr') {
+      const helper = base === '+' ? 'add' : 'sub';
+      return { code: `${lv.code} = ${this.cptrCall(helper, lv.code, r0.code)}`, prec: PREC.assign, rep: 'val' };
+    }
     if (t.cls === 'int' && t.bits === 64) {
-      const r = this.convert(r0, nodeType(n.inner[1]), t); // e.g. BigInt(rn2(1000)), literal -> 8n
-      return { code: `${l.code} ${op} ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, _type: t };
+      const r = this.convert(r0, nodeType(n.inner[1]), t);
+      return { code: `${lv.code} ${op} ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
     if (t.cls === 'int' && t.bits === 32) {
       const r = operand(r0, PREC.add, 'right');
-      if (base === '+') return { code: `${l.code} = (${l.code} + ${r.code}) | 0`, prec: PREC.assign, _type: t };
-      if (base === '-') return { code: `${l.code} = (${l.code} - ${r.code}) | 0`, prec: PREC.assign, _type: t };
-      if (base === '*') return { code: `${l.code} = Math.imul(${l.code}, ${r0.code})`, prec: PREC.assign, _type: t };
-      if (base === '/') return { code: `${l.code} = (${l.code} / ${r.code}) | 0`, prec: PREC.assign, _type: t };
-      // %= &= |= ^= <<= >>= : native compound assignment is exact for i32
-      return { code: `${l.code} ${op} ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, _type: t };
+      if (base === '+') return { code: `${lv.code} = (${lv.code} + ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
+      if (base === '-') return { code: `${lv.code} = (${lv.code} - ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
+      if (base === '*') return { code: `${lv.code} = Math.imul(${lv.code}, ${r0.code})`, prec: PREC.assign, rep: 'val' };
+      if (base === '/') return { code: `${lv.code} = (${lv.code} / ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
+      return { code: `${lv.code} ${op} ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
+    }
+    // narrow (char) variable compound assign: compute in int, truncate on store
+    if (t.cls === 'int' && t.bits === 8) {
+      const helper = parseType(lv.elemQ).signed === false ? 'uchar' : 'schar';
+      this.cmachine.add(helper);
+      return { code: `${lv.code} = ${helper}(${lv.code} ${base} ${r0.code})`, prec: PREC.assign, rep: 'val' };
     }
     throw new Error(`compound assign ${op} on ${JSON.stringify(t)} unsupported (${this.cref(n)})`);
   }
@@ -378,43 +662,38 @@ export class Emitter {
     const c = this.emitExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);
-    return { code: `${operand(c, PREC.cond, 'left').code} ? ${a.code} : ${operand(b, PREC.cond, 'right').code}`, prec: PREC.cond, _type: nodeType(n) };
+    return { code: `${operand(c, PREC.cond, 'left').code} ? ${a.code} : ${operand(b, PREC.cond, 'right').code}`, prec: PREC.cond, rep: a.rep };
   }
 
   expr_InitListExpr(n) {
     const q = desugar(n.type);
     const inits = (n.inner || []).filter((c) => c.kind);
-    // array of records (e.g. struct rnglist_t[2])
-    const arrM = q.match(/^(?:struct|union) (\w+)\[(\d*)\]$/);
-    if (arrM) {
+    const arrM = q.match(/^(.*)\[(\d*)\]$/);
+    if (arrM && /^(struct|union)/.test(arrM[1].trim())) {
       const items = inits.map((c) => this.emitExpr(c).code);
-      return { code: `[\n${items.map((s) => '    ' + s).join(',\n')}\n]`, prec: PREC.atom, _type: { cls: 'ptr' } };
+      return { code: `[\n${items.map((s) => '    ' + s).join(',\n')}\n]`, prec: PREC.atom, rep: 'buf' };
     }
-    // record literal: zip with field names when the record is known
     const recM = q.match(/^(?:struct|union) (\w+)$/);
     if (recM && this.records.has(recM[1])) {
       const fields = this.records.get(recM[1]);
       const parts = [];
       for (let i = 0; i < fields.length; i++) {
         const init = inits[i];
-        if (!init || init.kind === 'ImplicitValueInitExpr') continue; // zero-init: JS undefined == 0/falsy for our uses
-        parts.push(`${fields[i]}: ${this.emitExpr(init).code}`);
+        if (!init || init.kind === 'ImplicitValueInitExpr') continue;
+        parts.push(`${fields[i].name}: ${this.emitExpr(init).code}`);
       }
-      return { code: `{ ${parts.join(', ')} }`, prec: PREC.atom, _type: { cls: 'record' } };
+      return { code: `{ ${parts.join(', ')} }`, prec: PREC.atom, rep: 'obj' };
     }
-    // record outside the main file (isaac64_ctx): zero-initialized in C;
-    // overwritten by isaac64_init before any read, so null is exact here.
-    if (recM) return { code: 'null', prec: PREC.atom, _type: { cls: 'record' } };
-    // scalar array with explicit inits
-    if (/\[/.test(q)) {
+    if (recM) return { code: 'null', prec: PREC.atom, rep: 'val' }; // zero-init; overwritten before reads (see rnd.c rnglist)
+    if (arrM) {
       const items = inits.filter((c) => c.kind !== 'ImplicitValueInitExpr').map((c) => this.emitExpr(c).code);
-      return { code: `[${items.join(', ')}]`, prec: PREC.atom, _type: { cls: 'ptr' } };
+      return { code: `[${items.join(', ')}]`, prec: PREC.atom, rep: 'buf' };
     }
     throw new Error(`InitListExpr on "${q}" unsupported (${this.cref(n)})`);
   }
 
   expr_ImplicitValueInitExpr(n) {
-    return { code: '0', prec: PREC.atom, const: '0', _type: nodeType(n) };
+    return { code: '0', prec: PREC.atom, const: '0', rep: 'val' };
   }
 
   // ----- calls -----
@@ -428,30 +707,62 @@ export class Emitter {
   expr_CallExpr(n) {
     const name = this.calleeName(n);
     const args = n.inner.slice(1);
+    const t = nodeType(n);
     // frozen binding: isaac64_init(&ctx, bytes, n) -> ctx = isaac64_init(bytes)
     if (name === 'isaac64_init') {
       let target = args[0];
       if (target.kind === 'UnaryOperator' && target.opcode === '&') target = target.inner[0];
-      const bytes = this.emitExpr(args[1]);
-      return { code: `${this.emitExpr(target).code} = isaac64_init(${bytes.code})`, prec: PREC.assign, _type: { cls: 'void' } };
+      // the frozen isaac64_init takes the raw Uint8Array, not a CPtr
+      let bytesNode = args[1];
+      while (bytesNode.kind === 'ImplicitCastExpr') bytesNode = bytesNode.inner[0];
+      const bytes = this.emitExpr(bytesNode);
+      return { code: `${this.emitExpr(target).code} = isaac64_init(${bytes.code})`, prec: PREC.assign, rep: 'val' };
     }
-    // frozen binding: isaac64_next_uint64(&ctx) -> isaac64_next_uint64(ctx)
     if (name === 'isaac64_next_uint64') {
       let target = args[0];
       if (target.kind === 'UnaryOperator' && target.opcode === '&') target = target.inner[0];
-      return { code: `isaac64_next_uint64(${this.emitExpr(target).code})`, prec: PREC.atom, _type: nodeType(n) };
+      return { code: `isaac64_next_uint64(${this.emitExpr(target).code})`, prec: PREC.atom, rep: 'val' };
     }
-    // fortified snprintf: __builtin___snprintf_chk(buf, n, flag, objsize, fmt, ...) -> snprintf(buf, n, fmt, ...)
-    if (name === '__builtin___snprintf_chk') {
+    // fortified libc variants: drop the object-size/chk args
+    if (name === '__builtin___snprintf_chk') { // (buf, n, flag, objsize, fmt, ...)
       const kept = [args[0], args[1], ...args.slice(4)].map((a) => this.emitExpr(a).code);
-      return { code: `snprintf(${kept.join(', ')})`, prec: PREC.atom, _type: nodeType(n) };
+      return { code: this.cptrCall('snprintf', ...kept), prec: PREC.atom, rep: 'val' };
+    }
+    if (name === '__builtin___sprintf_chk') { // (str, flag, objsize, fmt, ...)
+      const kept = [args[0], ...args.slice(3)].map((a) => this.emitExpr(a).code);
+      return { code: this.cptrCall('sprintf', ...kept), prec: PREC.atom, rep: 'val' };
+    }
+    if (name === '__builtin___vsnprintf_chk') { // (str, size, flag, objsize, fmt, ap)
+      const kept = [args[0], args[1], args[4], args[5]].map((a) => this.emitExpr(a).code);
+      return { code: this.cptrCall('vsnprintf', ...kept), prec: PREC.atom, rep: 'val' };
+    }
+    if (name === '__builtin___strcpy_chk' || name === '__builtin___strcat_chk') { // (dst, src, objsize)
+      const kept = [args[0], args[1]].map((a) => this.emitExpr(a).code);
+      return { code: this.cptrCall(name.includes('strcpy') ? 'strcpy' : 'strcat', ...kept), prec: PREC.atom, rep: 'cptr' };
+    }
+    if (name === '__builtin___memcpy_chk') { // (dst, src, n, objsize)
+      const kept = [args[0], args[1], args[2]].map((a) => this.emitExpr(a).code);
+      return { code: this.cptrCall('memcpy', ...kept), prec: PREC.atom, rep: 'cptr' };
+    }
+    // varargs builtins (see variadic function emission)
+    if (name === '__builtin_va_start') {
+      const ap = this.emitExpr(args[0]).code;
+      return { code: `${ap} = ${this.vaRest}`, prec: PREC.assign, rep: 'val' };
+    }
+    if (name === '__builtin_va_end') {
+      const ap = this.emitExpr(args[0]).code;
+      return { code: `${ap} = null`, prec: PREC.assign, rep: 'val' };
     }
     if (name === 'abs') {
-      return { code: `Math.abs(${this.emitExpr(args[0]).code})`, prec: PREC.atom, _type: nodeType(n) };
+      return { code: `Math.abs(${this.emitExpr(args[0]).code})`, prec: PREC.atom, rep: 'val' };
     }
     const callee = this.emitExpr(n.inner[0]);
     const argCodes = args.map((a) => this.emitExpr(a).code);
-    return { code: `${this.group(callee, PREC.atom)}(${argCodes.join(', ')})`, prec: PREC.atom, _type: nodeType(n) };
+    if (name && LIBC.has(name)) {
+      const rep = ['strcpy', 'strcat', 'strchr', 'strrchr', 'strstr', 'memcpy', 'malloc'].includes(name) ? 'cptr' : 'val';
+      return { code: this.cptrCall(name, ...argCodes), prec: PREC.atom, rep };
+    }
+    return { code: `${this.group(callee, PREC.atom)}(${argCodes.join(', ')})`, prec: PREC.atom, rep: t.cls === 'ptr' ? 'cptr' : 'val' };
   }
 
   // ----- statements -----
@@ -461,7 +772,7 @@ export class Emitter {
     const fn = this['stmt_' + n.kind];
     if (!fn) {
       if (n.kind.endsWith('Expr') || n.kind.endsWith('Literal') || n.kind.endsWith('Operator')) {
-        return [`${indent}${this.emitExpr(n).code};`];
+        return [`${indent}${this.emitExpr(n, { stmtPos: true }).code};`];
       }
       throw new Error(`emitStmt: unsupported node kind ${n.kind} (${this.cref(n)})`);
     }
@@ -477,23 +788,37 @@ export class Emitter {
     return lines;
   }
 
-  /** statement position: braces for compounds, indented line otherwise */
   stmt_DeclStmt(n, indent) {
-    const decls = (n.inner || []).filter((c) => c && c.kind === 'VarDecl');
-    const parts = decls.map((d) => this.localVarDecl(d));
-    return [`${indent}${parts.join(' ')}`];
+    const lines = [];
+    for (const d of (n.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
+      if (d.storageClass === 'static') continue; // hoisted by emitFunction
+      lines.push(`${indent}${this.localVarDecl(d)}`);
+    }
+    return lines;
+  }
+
+  /** storage creation expression for an array-typed variable */
+  arrayStorage(q) {
+    const arr = arrayParts(q);
+    if (!arr) return null;
+    if (arrayParts(arr.elem)) { // 2-D char array (visctrl_bufs)
+      const inner = arrayParts(arr.elem);
+      return `Array.from({ length: ${arr.count} }, () => new Uint8Array(${inner.count}))`;
+    }
+    if (/\bchar\b/.test(arr.elem)) return `new Uint8Array(${arr.count})`;
+    if (/\bint\b/.test(arr.elem) && !/\blong\b/.test(arr.elem)) return `new Array(${arr.count}).fill(0)`;
+    throw new Error(`array storage for "${q}" unsupported (v1)`);
   }
 
   localVarDecl(d) {
     const q = desugar(d.type);
-    const arrM = q.match(/^(.*)\[(\d+)\]$/);
-    if (arrM) {
-      const elem = arrM[1].trim();
-      if (/\bchar\b/.test(elem)) return `let ${d.name} = new Uint8Array(${arrM[2]});`;
-      if (/\bint\b/.test(elem) && !/\blong\b/.test(elem)) return `let ${d.name} = new Array(${arrM[2]}).fill(0);`;
-      throw new Error(`local array of "${elem}" unsupported (v0)`);
-    }
     const init = (d.inner || []).find((c) => c && c.kind);
+    const arr = arrayParts(q);
+    if (arr) {
+      if (init && init.kind === 'StringLiteral') return `let ${d.name} = ${this.cptrCall('bytes', init.value)};`;
+      if (init) throw new Error(`array ${d.name} with non-literal init unsupported (${this.cref(d)})`);
+      return `let ${d.name} = ${this.arrayStorage(q)};`;
+    }
     if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
     return `let ${d.name};`;
   }
@@ -516,15 +841,13 @@ export class Emitter {
       const last = lines.length - 1;
       const elseHead = thenWasBlock ? lines[last] + ' else' : `${indent}else`;
       if (!thenWasBlock) lines.push(elseHead);
-      if (elseS.kind === 'IfStmt') { // else-if chain
+      if (elseS.kind === 'IfStmt') {
         const elif = this.stmt_IfStmt(elseS, indent);
-        if (thenWasBlock) lines[last] = elseHead + ' ' + elif[0].trimStart();
-        else lines[lines.length - 1] = elseHead + ' ' + elif[0].trimStart();
+        lines[lines.length - 1] = elseHead + ' ' + elif[0].trimStart();
         lines.push(...elif.slice(1));
       } else if (elseS.kind === 'CompoundStmt') {
         const block = this.stmt_CompoundStmt(elseS, indent);
-        if (thenWasBlock) lines[last] = elseHead + ` ${block[0].trimStart()}`;
-        else lines[lines.length - 1] = elseHead + ` ${block[0].trimStart()}`;
+        lines[lines.length - 1] = elseHead + ` ${block[0].trimStart()}`;
         lines.push(...block.slice(1));
       } else {
         lines.push(...this.emitStmt(elseS, indent + '    '));
@@ -534,13 +857,25 @@ export class Emitter {
   }
 
   stmt_ForStmt(n, indent) {
-    const kids = (n.inner || []).filter((c) => c && c.kind);
-    if (kids.length !== 4) throw new Error(`ForStmt with ${kids.length} parts unsupported (v0) (${this.cref(n)})`);
-    const [init, cond, inc, body] = kids;
-    const initCode = init.kind === 'DeclStmt' ? this.stmt_DeclStmt(init, '').join(' ').trim().replace(/;$/, '')
-      : this.emitExpr(init).code;
-    const condCode = this.emitExpr(cond).code;
-    const incCode = this.emitExpr(inc).code;
+    // clang serializes ForStmt as fixed slots [init, condVar, cond, inc, body]
+    // with {} for absent pieces (condVar is C++-only, always {} in C).
+    const kids = n.inner || [];
+    const body = kids[kids.length - 1];
+    const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
+    let init = null, cond = null, inc = null;
+    if (kids.length === 5) {
+      init = slot(0); cond = slot(2); inc = slot(3);
+    } else {
+      const rest = kids.slice(0, -1).filter((k) => k && k.kind);
+      if (rest.length === 3) [init, cond, inc] = rest;
+      else if (rest.length === 0) { /* for(;;) */ }
+      else throw new Error(`ForStmt shape with ${rest.length} parts unsupported (${this.cref(n)})`);
+    }
+    const initCode = !init ? '' : init.kind === 'DeclStmt'
+      ? this.stmt_DeclStmt(init, '').join(' ').trim().replace(/;$/, '')
+      : this.emitExpr(init, { stmtPos: true }).code;
+    const condCode = cond ? this.emitExpr(cond).code : '';
+    const incCode = inc ? this.emitExpr(inc, { stmtPos: true }).code : '';
     const head = `${indent}for (${initCode}; ${condCode}; ${incCode})`;
     return this.loopBody(head, body, indent);
   }
@@ -564,7 +899,7 @@ export class Emitter {
     const [body, cond] = kids;
     if (body.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(body, indent);
-      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}}} while (${this.emitExpr(cond).code});`];
+      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.emitExpr(cond).code});`];
     }
     return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.emitExpr(cond).code});`];
   }
@@ -585,32 +920,70 @@ export class Emitter {
     if (t.cls === 'int') return t.bits === 64 ? 'CLongLong' : t.signed ? 'CInt' : 'CUInt';
     if (t.cls === 'f64') return 'CDouble';
     if (t.cls === 'void') return 'void';
+    if (t.cls === 'ptr') return 'CPtr';
     return '*';
+  }
+
+  /** find static locals in a function body (they hoist to module scope) */
+  collectStaticLocals(fnName, node, out) {
+    (function w(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'VarDecl' && n.storageClass === 'static') out.push(n);
+      for (const c of n.inner || []) w(c);
+    })(node);
+    for (const v of out) this.staticLocals.set(v.id, `__static_${fnName}_${v.name}`);
+  }
+
+  hoistStaticLocal(d) {
+    const name = this.staticLocals.get(d.id);
+    const q = desugar(d.type);
+    const init = (d.inner || []).find((c) => c && c.kind);
+    if (arrayParts(q)) {
+      if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', init.value)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      return `const ${name} = ${this.arrayStorage(q)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+    }
+    const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
+    return `let ${name} = ${initCode}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
   }
 
   emitFunction(d) {
     const body = (d.inner || []).find((c) => c && c.kind === 'CompoundStmt');
     const params = (d.inner || []).filter((c) => c && c.kind === 'ParmVarDecl');
-    const retQ = d.type.qualType.replace(/\s*\(.*$/, ''); // "int (int)" -> "int"
+    const retQ = d.type.qualType.replace(/\s*\(.*$/, '');
+    // static locals hoist to module scope (C lifetime), renamed to stay unique
+    this.staticLocals = new Map();
+    const statics = [];
+    this.collectStaticLocals(d.name, body, statics);
+    this.vaRest = d.variadic ? '__va' : null;
+
     const lines = [];
     const paramDoc = params.map((p) => `@param {${this.jsdocType(p.type?.qualType, p.type?.desugaredQualType)}} ${p.name}`).join(' ');
     const retDoc = this.jsdocType(retQ) === 'void' ? '' : ` @returns {${this.jsdocType(retQ)}}`;
     lines.push(`/** C ref: ${this.cref(d)}${paramDoc ? ' — ' + paramDoc : ''}${retDoc} */`);
     const isStatic = d.storageClass === 'static';
-    lines.push(`${isStatic ? '' : 'export '}function ${d.name}(${params.map((p) => p.name).join(', ')}) {`);
+    const paramNames = params.map((p) => p.name);
+    if (d.variadic) paramNames.push('...__va');
+    lines.push(`${isStatic ? '' : 'export '}function ${d.name}(${paramNames.join(', ')}) {`);
     for (const c of (body.inner || []).filter((x) => x && x.kind)) {
       lines.push(...this.emitStmt(c, '    '));
     }
     lines.push('}');
+    if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
     return lines;
   }
 
   emitTopVar(d) {
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind);
-    const kw = /\[/.test(q) ? 'const' : 'let';
     const lines = [`/** C ref: ${this.cref(d)} — ${q} */`];
-    lines.push(`${kw} ${d.name}${init ? ' = ' + this.emitExpr(init).code : q.includes('*') ? ' = null' : ' = 0'};`);
+    if (arrayParts(q)) {
+      if (init) lines.push(`const ${d.name} = ${this.emitExpr(init).code};`);
+      else lines.push(`const ${d.name} = ${this.arrayStorage(q)};`);
+      return lines;
+    }
+    const kw = 'let';
+    const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
+    lines.push(`${kw} ${d.name} = ${initCode};`);
     return lines;
   }
 
@@ -628,7 +1001,7 @@ export class Emitter {
 
   emitRecord(d) {
     const fields = this.records.get(d.name) || [];
-    return [`/** C ref: ${this.cref(d)} — struct ${d.name} { ${fields.join(', ')} } (memory model v0: plain JS object) */`];
+    return [`/** C ref: ${this.cref(d)} — struct ${d.name} { ${fields.map((f) => f.name).join(', ')} } (memory model v0.5) */`];
   }
 
   emitModule() {
@@ -637,7 +1010,7 @@ export class Emitter {
       switch (d.kind) {
         case 'FunctionDecl': {
           const hasBody = (d.inner || []).some((c) => c && c.kind === 'CompoundStmt');
-          if (!hasBody) break; // prototype / extern — no emission
+          if (!hasBody) break;
           chunks.push(this.emitFunction(d));
           break;
         }
@@ -661,7 +1034,8 @@ export class Emitter {
   }
 }
 
-/** load the hand-written runtime prelude inlined into generated files */
-export function loadPrelude() {
-  return fs.readFileSync(path.join(TOOLS_DIR, 'runtime', 'rnd-prelude.js'), 'utf8').trimEnd();
+/** load the hand-written runtime prelude for a file, if one exists */
+export function loadPrelude(name) {
+  const p = path.join(TOOLS_DIR, 'runtime', `${name}-prelude.js`);
+  return fs.existsSync(p) ? fs.readFileSync(p, 'utf8').trimEnd() : null;
 }

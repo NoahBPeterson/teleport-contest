@@ -1,0 +1,321 @@
+// cptr.js — C pointer model + libc string/stdio shims for transpiled code.
+//
+// Representation (memory model v0.5, per tools/c2js/DESIGN.md):
+//   A C pointer value is a CPtr: { buf, off } where buf is a Uint8Array
+//   (byte buffer) and off is a byte offset. NULL is null. Pointer values
+//   are IMMUTABLE: never mutate .off on a shared pointer; cptr.add()
+//   returns a fresh object. (Variables holding pointers are plain JS
+//   variables; assigning one copies the reference, which is safe because
+//   the object itself never changes.)
+//
+// Emission idioms (produced by tools/c2js/emit.mjs, documented here):
+//   p + n            cptr.add(p, n)              (n may be BigInt; scaled by
+//   p - n            cptr.add(p, -(n))            pointee size when > 1)
+//   p1 - p2          cptr.diff(p1, p2)            -> BigInt (ptrdiff_t=long)
+//   p1 < p2 (rel.)   cptr.cmp(p1, p2) < 0         (same buffer assumed)
+//   p1 == p2         cptr.eq(p1, p2)              (null-safe)
+//   p == NULL        p === null
+//   *p  (char r/w)   cptr.ld1s(p) / cptr.st1(p, v)   (signed char load!)
+//   *p  (uchar r/w)  cptr.ld1u(p) / cptr.st1(p, v)
+//   u64 field r/w    cptr.ldU64(p) / cptr.stU64(p, v) (little-endian, LP64)
+//   arr[i] via ptr   cptr.add(p, i[, elemSize]) then ld/st
+//   &x / arr decay   cptr.decay(buffer) == { buf: buffer, off: 0 }
+//   p++ (stmt pos)   p = cptr.add(p, 1)
+//   *p++ (expr pos)  cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; }))
+//   p[i]++ (char)    cptr.postinc1(cptr.sub(p, i))
+//
+// All libc shims operate on CPtr (not JS strings) — signedness and
+// mutation semantics follow C byte buffers, not JS strings.
+
+/** @typedef {{ buf: Uint8Array, off: number }} CPtr */
+
+// ------------------------------------------------------------------ core ----
+
+/** Encode a JS string as NUL-terminated bytes and return a pointer to them. @param {string} s @returns {CPtr} */
+export function lit(s) {
+  const b = new Uint8Array(s.length + 1);
+  for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xFF;
+  b[s.length] = 0;
+  return { buf: b, off: 0 };
+}
+
+/** Encode a JS string as NUL-terminated bytes (char[] initializer). @param {string} s @returns {Uint8Array} */
+export function bytes(s) { return lit(s).buf; }
+
+/** Decode a C string to a JS string. Accepts CPtr | Uint8Array | string | null. @returns {string} */
+export function cstr(p) {
+  if (p === null || p === undefined) return '(null)';
+  if (typeof p === 'string') return p;
+  const buf = p.buf !== undefined ? p.buf : p;
+  const off = p.off || 0;
+  let s = '';
+  for (let i = off; i < buf.length && buf[i] !== 0; i++) s += String.fromCharCode(buf[i]);
+  return s;
+}
+
+/** Array lvalue -> pointer to its first element. @param {Uint8Array|Array} buf @returns {CPtr} */
+export function decay(buf) { return { buf, off: 0 }; }
+
+/** Pointer arithmetic: p + n elements of size sz (default 1 = byte). @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
+export function add(p, n, sz = 1) { return { buf: p.buf, off: p.off + Number(n) * sz }; }
+
+/** Pointer subtraction: p - n elements of size sz. @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
+export function sub(p, n, sz = 1) { return { buf: p.buf, off: p.off - Number(n) * sz }; }
+
+/** p1 - p2 in elements (sz=1: bytes). C ptrdiff_t is long -> BigInt. @returns {bigint} */
+export function diff(a, b) { return BigInt(a.off - b.off); }
+
+/** Relational comparison of pointers into the same buffer. @returns {number} negative/zero/positive */
+export function cmp(a, b) { return a.off - b.off; }
+
+/** Pointer equality (null-safe): same buffer identity and same offset. @returns {boolean} */
+export function eq(a, b) {
+  if (a === null || b === null) return a === b;
+  return a.buf === b.buf && a.off === b.off;
+}
+
+// ------------------------------------------------------- scalar load/store ----
+
+/** *p where p is char* (signed on this target). @param {CPtr} p @returns {number} */
+export function ld1s(p) { return (p.buf[p.off] << 24) >> 24; }
+
+/** *p where p is unsigned char*. @param {CPtr} p @returns {number} */
+export function ld1u(p) { return p.buf[p.off]; }
+
+/** *p = v for 1-byte pointees; store truncates mod 256 like C. @param {CPtr} p @param {number|bigint} v */
+export function st1(p, v) { p.buf[p.off] = Number(v) & 0xFF; return v; }
+
+/** 32-bit int load, little-endian. @param {CPtr} p @returns {number} */
+export function ldI32(p) {
+  const b = p.buf, o = p.off;
+  return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
+}
+
+/** 32-bit int store, little-endian. @param {CPtr} p @param {number} v */
+export function stI32(p, v) {
+  const b = p.buf, o = p.off, x = v | 0;
+  b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
+  return v;
+}
+
+/** 64-bit load, little-endian, as BigInt (C int64/uint64/size_t). @param {CPtr} p @returns {bigint} */
+export function ldU64(p) {
+  const b = p.buf, o = p.off;
+  let v = 0n;
+  for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]);
+  return v;
+}
+
+/** 64-bit store, little-endian. @param {CPtr} p @param {bigint|number} v */
+export function stU64(p, v) {
+  const b = p.buf, o = p.off;
+  let x = BigInt(v);
+  for (let i = 0; i < 8; i++) { b[o + i] = Number(x & 0xFFn); x >>= 8n; }
+  return v;
+}
+
+// -------------------------------------------- inc/dec on pointer variables ----
+// Pointer values are immutable, so postfix/prefix ++ and -- on a pointer
+// variable go through accessor closures. get: () => CPtr, set: (v) => void.
+
+/** postfix p++ on a pointer variable; returns the OLD pointer. */
+export function postinc(get, set, sz = 1) { const old = get(); set(add(old, 1, sz)); return old; }
+/** postfix p-- on a pointer variable; returns the OLD pointer. */
+export function postdec(get, set, sz = 1) { const old = get(); set(sub(old, 1, sz)); return old; }
+/** prefix ++p on a pointer variable; returns the NEW pointer. */
+export function preinc(get, set, sz = 1) { const v = add(get(), 1, sz); set(v); return v; }
+/** prefix --p on a pointer variable; returns the NEW pointer. */
+export function predec(get, set, sz = 1) { const v = sub(get(), 1, sz); set(v); return v; }
+
+/** postfix ++ on a signed-char location (e.g. tstr[i]++); returns old value. @param {CPtr} loc */
+export function postinc1(loc) { const old = ld1s(loc); st1(loc, old + 1); return old; }
+
+// ------------------------------------------------------------------ malloc ----
+
+/** @param {number|bigint} n @returns {CPtr} */
+export function malloc(n) { return { buf: new Uint8Array(Number(n)), off: 0 }; }
+/** no-op (GC). @param {CPtr|null} p */
+export function free(p) { /* GC */ }
+
+// ------------------------------------------------------------ libc string ----
+
+/** @param {CPtr} p @returns {bigint} size_t */
+export function strlen(p) {
+  let n = 0;
+  while (p.buf[p.off + n] !== 0) n++;
+  return BigInt(n);
+}
+
+/** @param {CPtr} dst @param {CPtr} src @returns {CPtr} dst */
+export function strcpy(dst, src) {
+  let i = 0, c;
+  do { c = src.buf[src.off + i]; dst.buf[dst.off + i] = c; i++; } while (c !== 0);
+  return dst;
+}
+
+/** @param {CPtr} dst @param {CPtr} src @returns {CPtr} dst */
+export function strcat(dst, src) {
+  return strcpy(add(dst, strlen(dst)), src);
+}
+
+/** @param {CPtr} a @param {CPtr} b @param {number|bigint} n @returns {number} */
+export function strncmp(a, b, n) {
+  n = Number(n);
+  for (let i = 0; i < n; i++) {
+    const ca = a.buf[a.off + i], cb = b.buf[b.off + i];
+    if (ca !== cb) return ca < cb ? -1 : 1;
+    if (ca === 0) return 0;
+  }
+  return 0;
+}
+
+/** @param {CPtr} p @param {number} c @returns {CPtr|null} pointer to first occurrence (NUL if c==0), else null */
+export function strchr(p, c) {
+  c = Number(c) & 0xFF;
+  for (let i = p.off; ; i++) {
+    if (p.buf[i] === c) return { buf: p.buf, off: i };
+    if (p.buf[i] === 0) return null;
+  }
+}
+
+/** @param {CPtr} p @param {number} c @returns {CPtr|null} pointer to last occurrence, else null */
+export function strrchr(p, c) {
+  c = Number(c) & 0xFF;
+  let found = null;
+  for (let i = p.off; ; i++) {
+    if (p.buf[i] === c) found = { buf: p.buf, off: i };
+    if (p.buf[i] === 0) return found;
+  }
+}
+
+/** @param {CPtr} haystack @param {CPtr} needle @returns {CPtr|null} */
+export function strstr(haystack, needle) {
+  if (needle.buf[needle.off] === 0) return haystack;
+  outer: for (let i = haystack.off; haystack.buf[i] !== 0; i++) {
+    for (let j = 0; ; j++) {
+      const c = needle.buf[needle.off + j];
+      if (c === 0) return { buf: haystack.buf, off: i };
+      if (haystack.buf[i + j] !== c) continue outer;
+    }
+  }
+  return null;
+}
+
+/** @param {CPtr} dst @param {CPtr} src @param {number|bigint} n @returns {CPtr} dst */
+export function memcpy(dst, src, n) {
+  n = Number(n);
+  const tmp = src.buf.slice(src.off, src.off + n); // slice: safe even if overlapping
+  dst.buf.set(tmp, dst.off);
+  return dst;
+}
+
+// ------------------------------------------------------------------ ctype ----
+
+/** C locale. @param {number} c @returns {number} */
+export function isupper(c) { return c >= 65 && c <= 90 ? 1 : 0; }
+/** C locale. @param {number} c @returns {number} */
+export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
+
+// ------------------------------------------------------ printf-family --------
+
+/**
+ * Minimal C printf formatter. Supports %d, %+d, %i, %s, %c, %%, with
+ * optional 0/left-justification-free numeric width (e.g. %5d, %02d).
+ * String args may be CPtr; numbers may be BigInt.
+ * @param {CPtr|string} fmt
+ * @param {Array} args
+ * @returns {string}
+ */
+export function sprintfCore(fmt, args) {
+  const f = cstr(fmt);
+  let ai = 0;
+  return f.replace(/%([+0-]*)(\d*)([diucs%])/g, (m, flags, width, spec) => {
+    if (spec === '%') return '%';
+    const a = args[ai++];
+    let s;
+    if (spec === 's') s = cstr(a);
+    else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
+    else if (spec === 'u') s = String(Number(BigInt.asUintN(32, BigInt(a))));
+    else s = String(Number(a)); // %d %i
+    if (flags.includes('+') && !s.startsWith('-') && spec !== 's' && spec !== 'c') s = '+' + s;
+    const w = Number(width || 0);
+    if (s.length < w) s = (flags.includes('0') && !s.startsWith('-') ? '0' : ' ').repeat(w - s.length) + s;
+    return s;
+  });
+}
+
+/** write JS string bytes (with NUL) into a C buffer; returns chars written (excl. NUL). @param {CPtr} p @param {string} s @returns {number} */
+export function writeStr(p, s) {
+  for (let i = 0; i < s.length; i++) p.buf[p.off + i] = s.charCodeAt(i) & 0xFF;
+  p.buf[p.off + s.length] = 0;
+  return s.length;
+}
+
+/** @param {CPtr} str @param {CPtr|string} fmt @param {...*} args @returns {number} */
+export function sprintf(str, fmt, ...args) { return writeStr(str, sprintfCore(fmt, args)); }
+
+/** @param {CPtr} str @param {number|bigint} n @param {CPtr|string} fmt @param {...*} args @returns {number} */
+export function snprintf(str, n, fmt, ...args) {
+  n = Number(n);
+  const s = sprintfCore(fmt, args);
+  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
+  return s.length;
+}
+
+/** @param {CPtr} str @param {number|bigint} n @param {CPtr|string} fmt @param {Array} ap @returns {number} */
+export function vsnprintf(str, n, fmt, ap) {
+  n = Number(n);
+  const s = sprintfCore(fmt, ap);
+  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
+  return s.length;
+}
+
+// ------------------------------------------------------------------ qsort ----
+
+/**
+ * Byte-generic qsort: elements are `size`-byte runs in base's buffer.
+ * compar receives CPtrs to COPY-backed elements (writes through them are
+ * not visible; libc qsort comparators must not mutate anyway).
+ * @param {CPtr} base @param {number|bigint} nmemb @param {number|bigint} size @param {(a: CPtr, b: CPtr) => number} compar
+ */
+export function qsort(base, nmemb, size, compar) {
+  nmemb = Number(nmemb); size = Number(size);
+  const elems = [];
+  for (let i = 0; i < nmemb; i++) elems.push(base.buf.slice(base.off + i * size, base.off + (i + 1) * size));
+  // stable sort (Array.prototype.sort is stable in modern JS)
+  elems.sort((a, b) => Number(compar({ buf: a, off: 0 }, { buf: b, off: 0 })));
+  for (let i = 0; i < nmemb; i++) base.buf.set(elems[i], base.off + i * size);
+}
+
+// -------------------------------------------------- fd shims (copy_bytes) ----
+
+const __fds = new Map(); // fd -> { data: number[], pos: number, writeBuf: number[]|null }
+let __nextFd = 100;
+
+/** Test helper: register an in-memory fd. mode 'r' reads data; 'w' collects writes. @returns {number} fd */
+export function fdNew(data, mode) {
+  const fd = __nextFd++;
+  __fds.set(fd, { data: [...data], pos: 0, writeBuf: mode === 'w' ? [] : null });
+  return fd;
+}
+/** Test helper: bytes written to a 'w' fd. @returns {Uint8Array} */
+export function fdWritten(fd) { return new Uint8Array(__fds.get(fd).writeBuf || []); }
+
+/** @param {number} fd @param {CPtr} buf @param {number|bigint} n @returns {bigint} bytes read (ssize_t) */
+export function read(fd, buf, n) {
+  n = Number(n);
+  const f = __fds.get(fd);
+  if (!f) return -1n;
+  let i = 0;
+  while (i < n && f.pos < f.data.length) { buf.buf[buf.off + i] = f.data[f.pos]; i++; f.pos++; }
+  return BigInt(i);
+}
+
+/** @param {number} fd @param {CPtr} buf @param {number|bigint} n @returns {bigint} bytes written (ssize_t) */
+export function write(fd, buf, n) {
+  n = Number(n);
+  const f = __fds.get(fd);
+  if (!f || !f.writeBuf) return -1n;
+  for (let i = 0; i < n; i++) f.writeBuf.push(buf.buf[buf.off + i]);
+  return BigInt(n);
+}

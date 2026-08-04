@@ -35,17 +35,39 @@ credit: serteal's c2js pipeline for the header idea.
 Division: int → `(a / b) | 0`; unsigned → cmachine.u32div; `%` native.
 Multiplication: Math.imul for 32-bit. Shifts: `<< >> >>>` native.
 
-## Memory model (v0 → v1)
+## Memory model (decided 2026-08-03; supersedes "v0 → v1")
 
-- v0 (rnd.c scope): structs → JS objects (fields as properties);
-  arrays → JS arrays / typed wrappers; function pointers → JS function
-  references (compare with ===, as whichrng does).
-- v1 (full NetHack): hybrid — JS objects for structs + a typed-array
-  heap region only where true address arithmetic occurs (`&field`,
-  pointer casts, array decay into arithmetic). Decided per-declaration
-  via AST analysis. Strings: C `char*` strings → Uint8Array + libc
-  string functions operating on bytes (NOT JS strings; signedness and
-  mutation semantics differ).
+Three tiers, chosen per-declaration by syntactic escape analysis
+("does `&` appear on this decl / does it escape"), cheapest first
+(credit: tiering rule from an external review of this project):
+
+1. **Never address-taken** → plain JS local (`int i` → `let i`).
+   Struct locals whose address never escapes → plain JS object.
+2. **Address-taken scalar** → one-element box (`Int32Array([5])`, uses
+   become `x[0]`).
+3. **Address-taken aggregate / heap / strings** → CPtr: immutable
+   `{ buf: Uint8Array, off }` (js/cptr.js). Alternative considered
+   and rejected for now: TypedArray-view-as-pointer (`subarray` as
+   p+n) — prettier `p[i]` syntax but one allocation per pointer op,
+   element/byte offset duality, and unaligned typed-view throws.
+   Revisit only if cptr emission proves unreadable at scale.
+
+Landmarks: rnd.c + hacklib.c transpiled on this model; hacklib
+differential parity 870/870 vs the recorder's hacklib.o.
+
+## Watch items (from review + census)
+
+- Uninitialized reads (MSan impractical on arm64 macOS) — suspect #1
+  if a divergence ever resists the oracle.
+- Struct padding bytes if any code memcmps/hashes whole structs.
+- Lua `LUA_NUMBER_FMT` = "%.14g": if a script ever prints a float to a
+  scored screen, hand-rolled %g rounding must match musl/macOS libc
+  exactly; escape hatch is transpiling musl's printf.
+- Function-pointer calls with mismatched arity silently produce
+  undefined (not a crash) in JS — emit an arity check in debug builds.
+- Recorder hygiene for NEW self-recordings: build a UBSan variant
+  (-fsanitize=undefined,integer) + -fwrapv -fno-strict-aliasing, so
+  differential trust never rests on UB. (-fwrapv semantics ≡ JS |0.)
 
 ## Frozen-module bindings
 
