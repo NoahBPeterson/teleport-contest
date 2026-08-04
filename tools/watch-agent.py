@@ -78,8 +78,26 @@ def main():
         sys.exit("no such wire file")
 
     with open(wire) as f:
-        if not show_all:
-            f.seek(0, os.SEEK_END)
+        if show_all:
+            pass  # print everything, then follow
+        else:
+            # Print the last N parsed events as backlog, then follow.
+            # (Plain seek-to-end leaves first-time viewers staring at
+            # silence whenever the agent is mid-thought.)
+            backlog = []
+            for line in f:
+                try:
+                    d = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if d.get("type") == "context.append_loop_event":
+                    s = fmt_event(d.get("event", {}))
+                    if s:
+                        backlog.append(s)
+            for s in backlog[-25:]:
+                print(s, flush=True)
+            if backlog:
+                print("\033[2m--- live ---\033[0m", flush=True)
         while True:
             line = f.readline()
             if not line:
