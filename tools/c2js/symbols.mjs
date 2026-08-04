@@ -77,6 +77,21 @@ export function collectFile(target) {
       else if (n.completeDefinition) anonById.set(n.id, rec);
     }
     if (n.kind === 'RecordDecl' && n.completeDefinition) {
+      // resolve a missing line from the offset (clang omits it when the file
+      // is inherited from the previous location context)
+      const resolveLine = (node) => {
+        const l = node.loc?.line !== undefined ? [node.loc.line, node.loc.col]
+          : node.range?.begin?.line !== undefined ? [node.range.begin.line, node.range.begin.col] : null;
+        if (l) return l;
+        const off = node.loc?.offset ?? node.range?.begin?.offset;
+        const file = node.loc?.file || node.range?.begin?.file;
+        if (off === undefined) return null;
+        const text = readForLines(file, target.file);
+        if (!text) return null;
+        let line = 1;
+        for (let i = 0; i < off && i < text.length; i++) if (text.charCodeAt(i) === 10) line++;
+        return [line, node.loc?.col ?? node.range?.begin?.col];
+      };
       // fields of anonymous record type link to the anonymous RecordDecl
       // that directly precedes them among this record's children
       const fields = [];
@@ -97,7 +112,8 @@ export function collectFile(target) {
         if (n.name) { if (!recordDefs.has(n.name)) recordDefs.set(n.name, { tag: n.tagUsed || 'struct', fields }); }
         else {
           anonById.set(n.id, { tag: n.tagUsed || 'struct', fields });
-          const l = n.loc?.line !== undefined ? `${n.loc.line}:${n.loc.col}` : n.range?.begin?.line !== undefined ? `${n.range.begin.line}:${n.range.begin.col}` : null;
+          const rl = resolveLine(n);
+          const l = rl ? `${rl[0]}:${rl[1]}` : null;
           if (l) { if (anonByLoc.has(l)) anonByLoc.delete(l); else anonByLoc.set(l, anonById.get(n.id)); }
         }
       }
@@ -151,6 +167,25 @@ export function buildSymbolMap(perFile) {
 }
 
 // ---- slim IR cache ----
+
+const __lineFileCache = new Map();
+function readForLines(file, mainFile) {
+  const candidates = [];
+  if (file) {
+    if (path.isAbsolute(file)) candidates.push(file);
+    else {
+      candidates.push(path.resolve(path.dirname(mainFile), file));
+      candidates.push(path.resolve(path.dirname(mainFile), '../include', file));
+      candidates.push(path.resolve(repoRoot, file));
+    }
+  }
+  candidates.push(mainFile);
+  for (const c of candidates) {
+    if (__lineFileCache.has(c)) return __lineFileCache.get(c);
+    try { const t = fs.readFileSync(c, 'utf8'); __lineFileCache.set(c, t); return t; } catch { __lineFileCache.set(c, null); }
+  }
+  return null;
+}
 
 const IR_DIR = path.join(repoRoot, '.cache/c2js/ir');
 

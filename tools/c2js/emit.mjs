@@ -49,13 +49,13 @@ const TYPEDEFS = {
   off_t: 'long long', time_t: 'long', ssize_t: 'long', ino_t: 'unsigned long long', ino64_t: 'unsigned long long',
   dev_t: 'int', mode_t: 'unsigned short', nlink_t: 'unsigned short', uid_t: 'unsigned int', gid_t: 'unsigned int',
   pid_t: 'int', blkcnt_t: 'long long', blksize_t: 'int', useconds_t: 'unsigned int', suseconds_t: 'int',
-  va_list: 'char *', genericptr_t: 'void *', nhsym: 'unsigned char',
+  va_list: 'char *', genericptr_t: 'void *', nhsym: 'unsigned char', cmdcount_nht: 'long',
 };
 
 function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
-    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|aligntyp|quint32|winid|CC_LONG|utfint|lu_byte|ls_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|StkId|lua_CFunction|lua_KFunction|lua_Alloc|lua_Writer|lua_Reader|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list|genericptr_t|nhsym)\b/g,
+    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|aligntyp|quint32|winid|CC_LONG|utfint|lu_byte|ls_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|StkId|lua_CFunction|lua_KFunction|lua_Alloc|lua_Writer|lua_Reader|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list|genericptr_t|nhsym|cmdcount_nht)\b/g,
       (m) => TYPEDEFS[m])
     .replace(/\s+/g, ' ')
     .trim();
@@ -704,6 +704,12 @@ export class Emitter {
       return text.slice(defStart, end < 0 ? text.length : end);
     }
     return null;
+  }
+
+  expr_AddrLabelExpr(n) {
+    // &&label inside a dispatch-table initializer: the label's name; the
+    // state machine maps names to numbers via __smNums
+    return { code: `"${n.name}"`, prec: PREC.atom, rep: 'val' };
   }
 
   expr_VAArgExpr(n) {
@@ -1422,6 +1428,298 @@ export class Emitter {
     return { blockLabels, gotoDir };
   }
 
+
+  // ================= per-function state-machine lowering =================
+  //
+  // The general fallback for goto shapes the pattern lowerings don't cover.
+  // The function body becomes an explicit dispatch loop: labels are states,
+  // `goto L` is `__pc = N_L; continue;`, and natural fall-through into a
+  // label is `__pc = N_L; continue;` at its position. Constructs containing
+  // labels are truncated at the label (the label's tail becomes plain
+  // statements in the new case); breaks/continues inside decomposed
+  // switches/loops are remapped to state transitions.
+
+  smCollect(fnName, body) {
+    const labels = new Map(); // name -> LabelStmt node
+    const ordered = [];
+    const declIdOf = new Map(); // declId -> name
+    (function w(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'LabelStmt') { labels.set(n.name, n); ordered.push(n.name); declIdOf.set(n.declId, n.name); }
+      for (const c of n.inner || []) w(c);
+    })(body);
+    const nameToNum = new Map(ordered.map((n, i) => [n, i + 1]));
+    return { labels, ordered, nameToNum, declIdOf };
+  }
+
+  hasLabelInside(n) {
+    if (!n || typeof n !== 'object') return false;
+    if (n.kind === 'LabelStmt') return true;
+    return (n.inner || []).some((c) => this.hasLabelInside(c));
+  }
+
+  /** subtree contains a label or any control transfer (goto) */
+  hasLabelOrGoto(n) {
+    if (!n || typeof n !== 'object') return false;
+    if (n.kind === 'LabelStmt' || n.kind === 'GotoStmt' || n.kind === 'IndirectGotoStmt') return true;
+    return (n.inner || []).some((c) => this.hasLabelOrGoto(c));
+  }
+
+  smOpen(num) {
+    this.sm.cases.push(this.sm.cur = { num, lines: [] });
+  }
+
+  smClose(cont) {
+    if (!this.sm.cur) return;
+    this.sm.cur.lines.push(`${this.sm.ind}__pc = ${cont};`, `${this.sm.ind}continue;`);
+    this.sm.cur = null;
+  }
+
+  smLine(code) {
+    this.sm.cur.lines.push(`${this.sm.ind}${code}`);
+  }
+
+  /** emit one statement into the state machine (labels/gotos/decomposition) */
+  emitSMSeq(items, ctx) {
+    for (const it of items) {
+      if (!it || !it.kind) continue;
+      const ind = this.sm.ind;
+      if (it.kind === 'CompoundStmt') { this.emitSMSeq((it.inner || []).filter((c) => c && c.kind), ctx); continue; }
+      if (it.kind === 'LabelStmt') {
+        const num = this.sm.nameToNum.get(it.name);
+        this.smClose(num);
+        this.smOpen(num);
+        const sub = (it.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
+        if (sub) this.emitSMSeq([sub], ctx);
+        continue;
+      }
+      if (it.kind === 'GotoStmt') {
+        const num = this.sm.nameToNum.get(this.sm.declIdOf.get(it.targetLabelDeclId));
+        if (num === undefined) throw new Error(`sm: goto to unknown label (${this.cref(it)})`);
+        this.smLine(`{ __pc = ${num}; continue; }`);
+        continue;
+      }
+      if (it.kind === 'IndirectGotoStmt') {
+        const target = this.emitExpr(it.inner[0]).code;
+        this.smLine(`{ __pc = __smNums[${target}]; continue; }`);
+        continue;
+      }
+      if (it.kind === 'AddrLabelExpr') {
+        // only reachable inside dispatch-table initializers
+        this.smLine(`/* &&${it.name} */`);
+        continue;
+      }
+      if (it.kind === 'BreakStmt') {
+        this.smLine(ctx.breakTo !== undefined ? `{ __pc = ${ctx.breakTo}; continue; }` : 'break;');
+        continue;
+      }
+      if (it.kind === 'ContinueStmt') {
+        this.smLine(ctx.continueTo !== undefined ? `{ __pc = ${ctx.continueTo}; continue; }` : 'continue;');
+        continue;
+      }
+      if (it.kind === 'IfStmt' && this.hasLabelOrGoto(it)) { this.emitSMIf(it, ctx); continue; }
+      if (it.kind === 'SwitchStmt' && this.hasLabelOrGoto((it.inner || []).filter((c) => c && c.kind)[1])) { this.emitSMSwitch(it, ctx); continue; }
+      if ((it.kind === 'ForStmt' || it.kind === 'WhileStmt' || it.kind === 'DoStmt') && this.hasLabelOrGoto(it)) { this.emitSMLoop(it, ctx); continue; }
+      const lines = this.emitStmt(it, ind);
+      for (const l of lines) this.sm.cur.lines.push(l);
+    }
+  }
+
+  emitSMIf(n, ctx) {
+    // dispatcher form: the if never carries branch content across cases;
+    // it just transfers to then/else states (no cross-case braces)
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const [cond, thenS, elseS] = kids;
+    const cont = this.sm.synth++;
+    const thenState = this.sm.synth++;
+    const elseState = elseS ? this.sm.synth++ : cont;
+    const condCode = this.emitExpr(cond).code;
+    // finish the current case with the pure dispatcher
+    this.smLine(`if (${condCode}) { __pc = ${thenState}; continue; }`);
+    this.smLine(`__pc = ${elseState}; continue;`);
+    this.sm.cur = null;
+    const branchItems = (s) => s.kind === 'CompoundStmt' ? (s.inner || []).filter((c) => c && c.kind) : [s];
+    this.smOpen(thenState);
+    this.emitSMSeq(branchItems(thenS), ctx);
+    this.smClose(cont);
+    if (elseS) {
+      this.smOpen(elseState);
+      this.emitSMSeq(branchItems(elseS), ctx);
+      this.smClose(cont);
+    }
+    this.smOpen(cont);
+  }
+
+  emitSMLoop(n, ctx) {
+    // dispatcher form: head state checks the condition and transfers to the
+    // body state or the after state; the body state loops back (and the inc
+    // state handles the for-increment so `continue` runs it too)
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const cont = this.sm.synth++;
+    const head = this.sm.synth++;
+    const body = this.sm.synth++;
+    const isDo = n.kind === 'DoStmt';
+    const isFor = n.kind === 'ForStmt';
+    const bodyNode = isDo ? kids[0] : kids[kids.length - 1];
+    const bodyItems = bodyNode.kind === 'CompoundStmt' ? (bodyNode.inner || []).filter((c) => c && c.kind) : [bodyNode];
+    const incState = isFor ? this.sm.synth++ : head;
+    // for-init runs once, in the current case, before entering the head
+    if (isFor) {
+      const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
+      const init = kids.length === 5 ? slot(0) : kids.slice(0, -1).filter((k) => k && k.kind)[0];
+      if (init) {
+        const code = init.kind === 'DeclStmt' ? this.stmt_DeclStmt(init, this.sm.ind) : [`${this.sm.ind}${this.emitExpr(init, { stmtPos: true }).code};`];
+        for (const l of code) this.sm.cur.lines.push(l);
+      }
+    }
+    // current case finishes by entering the head
+    this.smLine(`__pc = ${head}; continue;`);
+    this.sm.cur = null;
+    // head state
+    this.smOpen(head);
+    if (isFor) {
+      const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
+      const cond = kids.length === 5 ? slot(2) : kids.slice(0, -1).filter((k) => k && k.kind)[1];
+      if (cond) this.smLine(`if (!(${this.emitExpr(cond).code})) { __pc = ${cont}; continue; }`);
+      this.smLine(`__pc = ${body}; continue;`);
+      this.sm.cur = null;
+    } else if (isDo) {
+      this.smLine(`__pc = ${body}; continue;`);
+      this.sm.cur = null;
+    } else {
+      this.smLine(`if (!(${this.emitExpr(kids[0]).code})) { __pc = ${cont}; continue; }`);
+      this.smLine(`__pc = ${body}; continue;`);
+      this.sm.cur = null;
+    }
+    // body state
+    const ctx2 = { ...ctx, breakTo: cont, continueTo: incState };
+    this.smOpen(body);
+    this.emitSMSeq(bodyItems, ctx2);
+    if (isDo) this.smLine(`if (${this.emitExpr(kids[1]).code}) { __pc = ${body}; continue; }`);
+    if (isFor) this.smClose(incState); else this.smClose(isDo ? cont : head);
+    if (isFor) {
+      this.smOpen(incState);
+      const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
+      const inc = kids.length === 5 ? slot(3) : kids.slice(0, -1).filter((k) => k && k.kind)[2];
+      if (inc) this.smLine(`${this.emitExpr(inc, { stmtPos: true }).code};`);
+      this.smClose(head);
+    }
+    this.smOpen(cont);
+  }
+
+  emitSMSwitch(n, ctx) {
+    // dispatcher form: evaluate once into a temp, then transfer to case
+    // states by equality; fallthrough = region ends with the next case state;
+    // break = transfer to the continuation state. No nested switch text.
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const [cond, bodyStmt] = kids;
+    const cont = this.sm.synth++;
+    const tmp = `__sw${this.sm.synth++}`;
+    const condCode = this.emitExpr(cond).code;
+    this.smLine(`let ${tmp} = ${condCode};`);
+    // flatten case clauses into (value|null for default, items[]) in order,
+    // expanding chained cases (case A: case B: stmt)
+    const clauses = [];
+    const pushClause = (value, items) => clauses.push({ value, items });
+    const walkCases = (list) => {
+      for (const it of list) {
+        if (!it || !it.kind) continue;
+        if (it.kind === 'CaseStmt' || it.kind === 'DefaultStmt') {
+          const kids2 = (it.inner || []).filter((c) => c && c.kind);
+          const value = it.kind === 'CaseStmt' ? this.emitExpr(kids2[0]).code : null;
+          pushClause(value, []);
+          walkCases(it.kind === 'CaseStmt' ? kids2.slice(1) : kids2);
+        } else {
+          if (!clauses.length) throw new Error(`sm: statement before first case label (${this.cref(it)})`);
+          clauses[clauses.length - 1].items.push(it);
+        }
+      }
+    };
+    walkCases((bodyStmt.inner || []).filter((c) => c && c.kind));
+    // allocate states: one per clause, then emit the transfer chain
+    const states = clauses.map(() => this.sm.synth++);
+    const defIdx = clauses.findIndex((c) => c.value === null);
+    for (let i = 0; i < clauses.length; i++) {
+      if (clauses[i].value !== null) {
+        this.smLine(`if (${tmp} === ${clauses[i].value}) { __pc = ${states[i]}; continue; }`);
+      }
+    }
+    this.smLine(`__pc = ${defIdx >= 0 ? states[defIdx] : cont}; continue;`);
+    this.sm.cur = null;
+    // emit each case region
+    for (let i = 0; i < clauses.length; i++) {
+      this.smOpen(states[i]);
+      const next = i + 1 < clauses.length ? states[i + 1] : cont;
+      this.emitSMSeq(clauses[i].items, { ...ctx, breakTo: cont });
+      this.smClose(next);
+    }
+    this.smOpen(cont);
+  }
+
+  /** hoistable locals used by the state machine (declared inside states) */
+  smHoistNames(body) {
+    const names = [];
+    const seen = new Set();
+    (function w(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'DeclStmt') {
+        for (const d of (n.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
+          if (d.storageClass === 'static') continue;
+          if (!seen.has(d.name)) { seen.add(d.name); names.push(d.name); }
+        }
+        return;
+      }
+      for (const c of n.inner || []) w(c);
+    })(body);
+    return names;
+  }
+
+  /**
+   * Per-function state-machine lowering for goto shapes the pattern
+   * lowerings reject: labels become dispatch states; all control transfer is
+   * explicit. Confined to this function.
+   */
+  emitStateMachine(d, body) {
+    const info = this.smCollect(d.name, body);
+    this.sm = {
+      cases: [], cur: null, ind: '        ',
+      nameToNum: info.nameToNum, declIdOf: info.declIdOf,
+      synth: info.ordered.length + 1,
+    };
+    this.smOpen(0);
+    const items = (body.inner || []).filter((c) => c && c.kind);
+    this.emitSMSeq(items, { endState: -1 });
+    this.smClose(-1);
+    const cases = this.sm.cases;
+    const lines = [];
+    // hoisted locals (states share function scope in C)
+    const hoisted = this.smHoistNames(body);
+    if (hoisted.length) lines.push(`    let ${hoisted.map(jsName).join(', ')};`);
+    // dispatch tables (computed goto) index states by label name
+    let usesNumMap = false;
+    (function w(n) {
+      if (!n || typeof n !== 'object' || usesNumMap) return;
+      if (n.kind === 'IndirectGotoStmt' || n.kind === 'AddrLabelExpr') { usesNumMap = true; return; }
+      for (const c of n.inner || []) w(c);
+    })(body);
+    if (usesNumMap) {
+      lines.push(`    const __smNums = { ${info.ordered.map((n, i) => `${JSON.stringify(n)}: ${i + 1}`).join(', ')} };`);
+    }
+    lines.push('    let __pc = 0;');
+    lines.push('    __dispatch: while (true) {');
+    lines.push('        switch (__pc) {');
+    for (const c of cases) {
+      const label = c.num === 0 ? '0' : `${c.num}${c.num <= info.ordered.length ? ` /* ${info.ordered[c.num - 1]}: */` : ''}`;
+      lines.push(`        case ${label}: {`);
+      for (const l of c.lines) lines.push(l);
+      lines.push('        }');
+    }
+    lines.push('        }');
+    lines.push('        if (__pc === -1) break __dispatch;');
+    lines.push('    }');
+    return lines;
+  }
+
   mangleLabel(name) { return `__lbl_${name}`; }
 
   /** does this statement list contain any goto? (spliced regions must be pure) */
@@ -1767,7 +2065,7 @@ export class Emitter {
       }
       return lines; // label not a direct item here; keep going deeper via emitStmt
     }
-    const labelPlan = blockNode && this.gotoPlan?.blockLabels.get(blockNode);
+    const labelPlan = blockNode && !this.smMode && this.gotoPlan?.blockLabels.get(blockNode);
     if (labelPlan && labelPlan.length) {
       if (items.some((s) => s.kind === 'IfStmt' && this.hasSetjmp((s.inner || []).filter((c) => c && c.kind)[0]))) {
         throw new Error('goto+setjmp in one block (unsupported)');
@@ -1820,6 +2118,18 @@ export class Emitter {
     const lines = [];
     for (const d of (n.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
       if (d.storageClass === 'static') continue; // hoisted by emitFunction
+      if (this.smMode) { // state-machine mode: names are hoisted to fn top
+        const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
+        const q = desugar(d.type);
+        if (parseType(q).cls === 'record' && !this.isEnumType(q)) {
+          const recName = this.recordNameForType(q);
+          lines.push(`${indent}${jsName(d.name)} = ${this.cptrCall('alloc', String(this.layoutOf(recName).size))};`);
+          if (init) lines.push(...this.recordInitStores(jsName(d.name), recName, init));
+        } else if (init) {
+          lines.push(`${indent}${jsName(d.name)} = ${this.emitExpr(init).code};`);
+        }
+        continue;
+      }
       if (this.regionHoisted?.has(d.name)) {
         const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
         if (init) lines.push(`${indent}${jsName(d.name)} = ${this.emitExpr(init).code};`);
@@ -2023,7 +2333,7 @@ export class Emitter {
     let lines = [];
     for (const h of hoisted) lines.push(`${indent}${h}`);
     lines.push(`${indent}switch (${this.emitExpr(cond).code}) {`);
-    const bodyPlan = (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir !== 'swloop');
+    const bodyPlan = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir !== 'swloop');
     if (bodyPlan && bodyPlan.length) {
       lines.push(...this.emitLabeledItems(items, indent + '    ', bodyPlan, (it, ind) => this.emitSwitchItem(it, ind)));
     } else {
@@ -2162,7 +2472,14 @@ export class Emitter {
       const q = desugar(v.type);
       if (parseType(q).cls === 'record' && !q.includes('*')) this.recordLocals.add(this.staticLocals.get(v.id));
     }
-    this.gotoPlan = this.analyzeGotos(d.name, body);
+    const lines = [];
+    let smFallback = false;
+    try {
+      this.gotoPlan = this.analyzeGotos(d.name, body);
+    } catch (e) {
+      if (!/goto|label/i.test(String((e && e.message) || e))) throw e;
+      smFallback = true;
+    }
     // local names shadow the global externBoxed set
     this.localNames = new Set(params.map((p) => p.name));
     (function walkLocals(n, self) {
@@ -2189,7 +2506,6 @@ export class Emitter {
     })(body, this);
     this.vaRest = d.variadic ? '__va' : null;
 
-    const lines = [];
     const paramDoc = params.map((p) => `@param {${this.jsdocType(p.type?.qualType, p.type?.desugaredQualType)}} ${p.name}`).join(' ');
     const retDoc = this.jsdocType(retQ) === 'void' ? '' : ` @returns {${this.jsdocType(retQ)}}`;
     lines.push(`/** C ref: ${this.cref(d)}${paramDoc ? ' — ' + paramDoc : ''}${retDoc} */`);
@@ -2204,7 +2520,28 @@ export class Emitter {
       }
     }
     if (this.regionHoisted?.size) lines.push(`    let ${[...this.regionHoisted].map(jsName).join(', ')};`);
-    lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    ', body));
+    if (smFallback) {
+      this.smMode = true;
+      try {
+        lines.push(...this.emitStateMachine(d, body));
+      } finally {
+        this.smMode = false;
+      }
+    } else {
+      try {
+        lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    ', body));
+      } catch (e) {
+        if (!/goto|label/i.test(String((e && e.message) || e))) throw e;
+        // pattern lowerings rejected this function's control flow: fall back
+        // to the per-function state machine (labels as dispatch states)
+        this.smMode = true;
+        try {
+          lines.push(...this.emitStateMachine(d, body));
+        } finally {
+          this.smMode = false;
+        }
+      }
+    }
     lines.push('}');
     if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
     return lines;
