@@ -34,14 +34,16 @@ const INT_RE = /^(signed |unsigned )?(char|short|int|long|long long)$/;
 const TYPEDEFS = {
   uint8: 'unsigned char', uint16: 'unsigned short', uint32: 'unsigned int', uint64: 'unsigned long long',
   sint8: 'signed char', sint16: 'short', sint32: 'int', sint64: 'long long',
+  int8_t: 'signed char', int16_t: 'short', int32_t: 'int', int64_t: 'long long',
+  uint8_t: 'unsigned char', uint16_t: 'unsigned short', uint32_t: 'unsigned int', uint64_t: 'unsigned long long',
   uchar: 'unsigned char', ushort: 'unsigned short', uint: 'unsigned int', ulong: 'unsigned long',
-  coordxy: 'int', size_t: 'unsigned long', ptrdiff_t: 'long',
+  coordxy: 'short', size_t: 'unsigned long', ptrdiff_t: 'long',
 };
 
 function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
-    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t)\b/g,
+    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t)\b/g,
       (m) => TYPEDEFS[m])
     .replace(/\s+/g, ' ')
     .trim();
@@ -107,7 +109,7 @@ const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrch
 // ------------------------------------------------------------- emitter ----
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords }) {
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
@@ -120,9 +122,20 @@ export class Emitter {
     this.recordLocals = new Set(); // names of struct/union value locals (current function)
     this.setjmpVar = null; // substitution variable while emitting a setjmp if
     this.uniq = 0;
+    this.refs = new Map(); // name -> 'FunctionDecl'|'VarDecl' (cross-file import wiring)
+    this.declared = new Set(); // names defined at this file's top level
     this.usesCptr = false;
     this.usesCjmp = false;
     this.collectRecords();
+    // header-defined record layouts (full-TU record table from symbols.mjs);
+    // main-file records take precedence
+    if (extraRecords) {
+      for (const [name, rec] of extraRecords) {
+        if (!this.records.has(name)) {
+          this.records.set(name, { tag: rec.tag, fields: rec.fields.map((f) => ({ name: f.name, q: desugar({ qualType: f.q }) })) });
+        }
+      }
+    }
   }
 
   collectRecords() {
@@ -139,6 +152,7 @@ export class Emitter {
     if (this.layouts.has(name)) return this.layouts.get(name);
     const rec = this.records.get(name);
     if (!rec) throw new Error(`layout: unknown struct ${name}`);
+    if (rec.tag === 'enum') return { size: 4, align: 4, offsets: {} };
     if (rec.tag === 'union') {
       let size = 1, maxAlign = 1;
       const offsets = {};
@@ -173,8 +187,9 @@ export class Emitter {
       return { size: e.size * (arr.count ?? 0), align: e.align };
     }
     if (q.includes('*')) return { size: 8, align: 8 };
-    const recM = q.match(/^(?:struct|union) (\w+)$/);
-    if (recM) { const l = this.layoutOf(recM[1]); return { size: l.size, align: l.align }; }
+    if (/^enum \w+$/.test(q)) return { size: 4, align: 4 };
+    const recName = this.recordNameOf(q);
+    if (recName) { const l = this.layoutOf(recName); return { size: l.size, align: l.align }; }
     if (/\bdouble\b/.test(q)) return { size: 8, align: 8 };
     if (/\bfloat\b/.test(q)) return { size: 4, align: 4 };
     if (/\blong\b/.test(q) || q === 'size_t') return { size: 8, align: 8 };
@@ -288,6 +303,10 @@ export class Emitter {
   expr_DeclRefExpr(n) {
     let name = n.name || n.referencedDecl?.name;
     const refId = n.referencedDecl?.id;
+    const refKind = n.referencedDecl?.kind;
+    if (name && (refKind === 'FunctionDecl' || refKind === 'VarDecl') && !(refId && this.staticLocals.has(refId))) {
+      this.refs.set(name, refKind);
+    }
     if (refId && this.staticLocals.has(refId)) name = this.staticLocals.get(refId);
     const t = nodeType(n);
     const q = desugar(n.type);
@@ -343,8 +362,7 @@ export class Emitter {
     if (!pointee) throw new Error('subscript on non-pointer/non-array');
     const elemT = parseType(pointee);
     if (elemT.cls === 'record') {
-      const recM = pointee.match(/^(?:struct|union) (\w+)$/);
-      const sz = this.layoutOf(recM[1]).size;
+      const sz = this.layoutOf(this.recordNameOf(pointee)).size;
       return { code: this.cptrCall('add', base.code, idx.code, String(sz)), elemQ: pointee, rep: 'cptr' };
     }
     return { code: this.cptrCall('add', base.code, idx.code), elemQ: pointee, rep: 'cptr' };
@@ -366,6 +384,15 @@ export class Emitter {
     return { code: loc.code, prec: PREC.atom, rep: loc.rep, elemQ: loc.elemQ };
   }
 
+  /** resolve a type string to a known record name: "struct x", "union x", or bare typedef */
+  recordNameOf(q) {
+    if (!q) return undefined;
+    const m = q.match(/^(?:struct|union|enum) (\w+)$/);
+    if (m) return this.records.has(m[1]) ? m[1] : m[1];
+    if (/^\w+$/.test(q) && this.records.has(q)) return q;
+    return m ? m[1] : undefined;
+  }
+
   /** field offset within a byte-packed struct */
   fieldOffset(recName, fieldName) {
     const l = this.layoutOf(recName);
@@ -385,7 +412,7 @@ export class Emitter {
     if (base.rep === 'cptr') {
       // byte-packed struct/union location + field offset (0 for union members)
       const bq = desugar(n.inner[0].type);
-      const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+      const recName = this.recordNameOf(pointeeOf(bq) || bq);
       const off = this.fieldOffset(recName, n.name);
       const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
       const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
@@ -400,7 +427,7 @@ export class Emitter {
 
   fieldTypeOf(baseNode, fieldName) {
     const bq = desugar(baseNode.type);
-    const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+    const recName = this.recordNameOf(pointeeOf(bq) || bq);
     const f = this.records.get(recName)?.fields.find((x) => x.name === fieldName);
     return f?.q;
   }
@@ -487,8 +514,9 @@ export class Emitter {
     const arr = arrayParts(q);
     if (arr) return (arr.count ?? 0) * this.sizeofType(arr.elem);
     if (q.includes('*')) return 8;
-    const recM = q.match(/^(?:struct|union) (\w+)$/);
-    if (recM) return this.layoutOf(recM[1]).size;
+    if (/^enum \w+$/.test(q)) return 4;
+    const recName = this.recordNameOf(q);
+    if (recName) return this.layoutOf(recName).size;
     if (/\bdouble\b/.test(q)) return 8;
     if (/\bfloat\b/.test(q)) return 4;
     if (/\blong\b/.test(q) || q === 'size_t') return 8;
@@ -572,7 +600,7 @@ export class Emitter {
       if (base.rep === 'obj') return { kind: 'prop', code: `${this.group(base, PREC.atom)}.${n.name}`, elemQ: this.fieldTypeOf(n.inner[0], n.name) };
       if (base.rep === 'cptr') {
         const bq = desugar(n.inner[0].type);
-        const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
+        const recName = this.recordNameOf(pointeeOf(bq) || bq);
         const off = this.fieldOffset(recName, n.name);
         return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldTypeOf(n.inner[0], n.name) };
       }
@@ -995,8 +1023,7 @@ export class Emitter {
     const t = parseType(q);
     if (t.cls === 'record') {
       // struct/union value local: byte-packed storage, variable holds its CPtr
-      const recM = q.match(/^(?:struct|union) (\w+)$/);
-      const size = this.layoutOf(recM[1]).size;
+      const size = this.layoutOf(this.recordNameOf(q)).size;
       if (init) throw new Error(`record local ${d.name} with init unsupported (v1)`);
       this.recordLocals.add(d.name);
       return `let ${d.name} = ${this.cptrCall('alloc', String(size))};`;
