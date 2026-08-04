@@ -53,11 +53,56 @@ def fmt_event(ev):
             return None
         out = str(out).replace("\n", " | ")[:200]
         return f"\033[2m[done] {out}\033[0m"
-    elif t == "step.end":
-        u = ev.get("usage", {})
-        tot = sum(v for v in u.values() if isinstance(v, int))
-        return f"\033[33m[step end] tokens this step: {tot:,}\033[0m"
     return None
+
+class Telemetry:
+    """Track per-step timing + cumulative token usage from the wire stream."""
+    def __init__(self):
+        self.step_start_wall = None   # wall clock when step.begin seen
+        self.last_event_wall = None
+        self.cum_out = 0
+        self.last_rate = None         # output tokens/sec of last completed step
+        self.last_gap = None          # wall seconds between last two steps
+        self._last_step_begin = None
+
+    def note(self, ev):
+        now = time.time()
+        gap = None
+        if self.last_event_wall is not None:
+            gap = now - self.last_event_wall
+        self.last_event_wall = now
+        t = ev.get("type")
+        if t == "step.begin":
+            if self._last_step_begin is not None:
+                self.last_gap = now - self._last_step_begin
+            self._last_step_begin = now
+            self.step_start_wall = now
+        elif t == "step.end":
+            u = ev.get("usage", {})
+            out_toks = u.get("output", 0) or 0
+            self.cum_out += out_toks
+            dur = (now - self.step_start_wall) if self.step_start_wall else None
+            rate = (out_toks / dur) if dur and dur > 0 else None
+            self.last_rate = rate
+            bits = [f"{out_toks:,} out-tokens"]
+            if dur is not None:
+                bits.append(f"in {dur:.0f}s")
+            if rate:
+                bits.append(f"({rate:.1f} tok/s)")
+            if self.last_gap is not None:
+                bits.append(f"| step gap {self.last_gap:.0f}s")
+            bits.append(f"| cumulative {self.cum_out:,}")
+            return "\033[33m[step end] " + " ".join(bits) + "\033[0m"
+        return None
+
+    def heartbeat(self):
+        if self.last_event_wall is None:
+            return None
+        idle = time.time() - self.last_event_wall
+        gen = (time.time() - self.step_start_wall) if self.step_start_wall else idle
+        rate = f"{self.last_rate:.1f} tok/s last step" if self.last_rate else "no rate yet"
+        return (f"\033[2m[waiting] {idle:.0f}s idle | step running {gen:.0f}s | "
+                f"{rate} | cumulative {self.cum_out:,} out-tokens\033[0m")
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -98,17 +143,22 @@ def main():
                 print(s, flush=True)
             if backlog:
                 print("\033[2m--- live ---\033[0m", flush=True)
+        tele = Telemetry()
         while True:
             line = f.readline()
             if not line:
                 time.sleep(0.4)
+                hb = tele.heartbeat()
+                if hb and int(time.time() * 10) % 100 < 4:  # ~every 10s
+                    print(hb, flush=True)
                 continue
             try:
                 d = json.loads(line)
             except json.JSONDecodeError:
                 continue
             if d.get("type") == "context.append_loop_event":
-                s = fmt_event(d.get("event", {}))
+                ev = d.get("event", {})
+                s = tele.note(ev) or fmt_event(ev)
                 if s:
                     print(s, flush=True)
 
