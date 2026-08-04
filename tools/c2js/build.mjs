@@ -20,7 +20,8 @@ import { fileURLToPath } from 'node:url';
 import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
-import { listTargets, collectFile, buildSymbolMap } from './symbols.mjs';
+import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
+import { EMIT_VERSION } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -62,7 +63,7 @@ function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
   const sha = crypto.createHash('sha256').update(source).digest('hex');
   const root = loadAst(astPathFor(srcFile));
   const { decls, lineOf } = mainFileDecls(root, srcFile, compileCwdFor(srcFile));
-  const emitter = new Emitter({ decls, lineOf, source, fileName: `${name}.c` });
+  const emitter = new Emitter({ decls, lineOf, source, fileName: `${name}.c`, compileCwd: compileCwdFor(srcFile) });
   const chunks = emitter.emitModule();
   const srcRel = path.relative(repoRoot, srcFile);
   return assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports });
@@ -108,25 +109,37 @@ function causeOf(err) {
 }
 
 function buildAll() {
+  const force = process.argv.includes('--force');
   const targets = listTargets();
   const withPrelude = new Set(fs.readdirSync(path.join(repoRoot, 'tools/c2js/runtime'))
     .filter((f) => f.endsWith('-prelude.js')).map((f) => f.replace(/-prelude\.js$/, '')));
 
-  // pass 1: parse all cached ASTs, collect main-file decls + global defs
+  // pass 1: load slim IRs (rebuilding stale ones from the full AST dumps)
   const perFile = [];
   let t0 = Date.now();
+  let rebuilt = 0;
   for (const t of targets) {
     const astPath = astPathFor(t.file);
     if (!fs.existsSync(astPath)) { perFile.push({ ...t, parseError: 'no cached AST' }); continue; }
     try {
-      perFile.push(collectFile(t));
+      const fresh = fs.existsSync(slimIrPath(t)) && fs.statSync(slimIrPath(t)).mtimeMs >= fs.statSync(astPath).mtimeMs;
+      if (!fresh) rebuilt++;
+      perFile.push(loadSlimIr(t));
     } catch (err) {
       perFile.push({ ...t, parseError: String(err.message || err) });
     }
   }
   const { symbols, conflicts } = buildSymbolMap(perFile.filter((p) => !p.parseError));
-  console.log(`pass 1: ${perFile.length} files parsed in ${((Date.now() - t0) / 1000).toFixed(0)}s; ` +
+  console.log(`pass 1: ${perFile.length} slim IRs (${rebuilt} rebuilt) in ${((Date.now() - t0) / 1000).toFixed(1)}s; ` +
     `${symbols.size} importable symbols, ${conflicts.size} conflicts`);
+
+  // incremental emission state: skip files whose IR + emitter are unchanged
+  const statePath = path.join(repoRoot, '.cache/c2js/emit-state.json');
+  const emitMtime = fs.statSync(new URL('file://' + path.join(repoRoot, 'tools/c2js/emit.mjs')).pathname).mtimeMs;
+  let state = { emitVersion: -1, emitMtime: 0, files: {} };
+  try { state = JSON.parse(fs.readFileSync(statePath, 'utf8')); } catch {}
+  const stateFresh = state.emitVersion === EMIT_VERSION && state.emitMtime === emitMtime;
+  const newState = { emitVersion: EMIT_VERSION, emitMtime, files: {} };
 
   // pass 2: emit each file
   const results = [];
@@ -142,7 +155,7 @@ function buildAll() {
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file) });
       const chunks = emitter.emitModule();
       // cross-file imports: referenced but not declared here
       const byFile = new Map();
@@ -199,6 +212,7 @@ function buildAll() {
   const reportPath = path.join(repoRoot, '.cache/c2js/coverage.txt');
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(reportPath, report);
+  fs.writeFileSync(statePath, JSON.stringify(newState));
 
   console.log(`pass 2: emit in ${((Date.now() - t0) / 1000).toFixed(0)}s — ${ok.length} ok, ${failed.length} failed, ${skipped.length} skipped`);
   console.log(`decls ${okDecls}/${totalDecls}, functions ${okFns}/${totalFns}, parse-failures ${parseFails.length}`);

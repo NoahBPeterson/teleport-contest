@@ -84,7 +84,7 @@ export function genl_outrip(tmpwin, how, when) {
     void cptr.sprintf(cptr.decay(buf), __sl12, year);
     center(12, cptr.decay(buf));
     (windowprocs.win_putstr)(tmpwin, 0, __sl13);
-    for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1))
+    for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
         (windowprocs.win_putstr)(tmpwin, 0, cptr.ldPtr(dp));
     (windowprocs.win_putstr)(tmpwin, 0, __sl13);
     (windowprocs.win_putstr)(tmpwin, 0, __sl13);

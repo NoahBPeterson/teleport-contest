@@ -29,6 +29,20 @@
 
 /** @typedef {{ buf: Uint8Array, off: number }} CPtr */
 
+// ------------------------------------------------------------- boxes ----
+// Tier-2 address-of support (DESIGN.md memory model): a scalar whose
+// address is taken lives in a one-element box; the box IS its address.
+// boxProp wraps an object property (or array element) with the same
+// protocol. cptr.ld*/st* are box-aware.
+
+/** one-element cell for an address-taken scalar. @param {*} v @returns {{isBox: true, v: *}} */
+export function box(v) { return { isBox: true, v }; }
+
+/** box view of an object property / array element. @returns {{isBox: true, v: *}} */
+export function boxProp(obj, key) {
+  return { isBox: true, get v() { return obj[key]; }, set v(x) { obj[key] = x; } };
+}
+
 // ------------------------------------------------------------------ core ----
 
 /** Encode a JS string as NUL-terminated bytes and return a pointer to them. @param {string} s @returns {CPtr} */
@@ -77,29 +91,54 @@ export function eq(a, b) {
 // ------------------------------------------------------- scalar load/store ----
 
 /** *p where p is char* (signed on this target). @param {CPtr} p @returns {number} */
-export function ld1s(p) { return (p.buf[p.off] << 24) >> 24; }
+export function ld1s(p) { if (p.isBox) return (p.v << 24) >> 24; return (p.buf[p.off] << 24) >> 24; }
 
 /** *p where p is unsigned char*. @param {CPtr} p @returns {number} */
-export function ld1u(p) { return p.buf[p.off]; }
+export function ld1u(p) { if (p.isBox) return p.v & 0xFF; return p.buf[p.off]; }
 
 /** *p = v for 1-byte pointees; store truncates mod 256 like C. @param {CPtr} p @param {number|bigint} v */
-export function st1(p, v) { p.buf[p.off] = Number(v) & 0xFF; return v; }
+export function st1(p, v) { if (p.isBox) { p.v = Number(v) & 0xFF; return v; } p.buf[p.off] = Number(v) & 0xFF; return v; }
 
 /** 32-bit int load, little-endian. @param {CPtr} p @returns {number} */
 export function ldI32(p) {
+  if (p.isBox) return p.v | 0;
   const b = p.buf, o = p.off;
   return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
 }
 
 /** 32-bit int store, little-endian. @param {CPtr} p @param {number} v */
 export function stI32(p, v) {
+  if (p.isBox) { p.v = v | 0; return v; }
   const b = p.buf, o = p.off, x = v | 0;
   b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
   return v;
 }
 
+/** 16-bit signed load (C short/int16_t), little-endian. @param {CPtr} p @returns {number} */
+export function ldI16(p) {
+  if (p.isBox) return (p.v << 16) >> 16;
+  const b = p.buf, o = p.off;
+  return ((b[o] | (b[o + 1] << 8)) << 16) >> 16;
+}
+
+/** 16-bit unsigned load (C unsigned short/uint16_t), little-endian. @param {CPtr} p @returns {number} */
+export function ldU16(p) {
+  if (p.isBox) return p.v & 0xFFFF;
+  const b = p.buf, o = p.off;
+  return b[o] | (b[o + 1] << 8);
+}
+
+/** 16-bit store, little-endian (truncate mod 2^16 like C). @param {CPtr} p @param {number} v @returns {number} v */
+export function stI16(p, v) {
+  if (p.isBox) { p.v = v & 0xFFFF; return v; }
+  const b = p.buf, o = p.off, x = v & 0xFFFF;
+  b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF;
+  return v;
+}
+
 /** 64-bit load, little-endian, as BigInt (C int64/uint64/size_t). @param {CPtr} p @returns {bigint} */
 export function ldU64(p) {
+  if (p.isBox) return BigInt.asUintN(64, BigInt(p.v));
   const b = p.buf, o = p.off;
   let v = 0n;
   for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]);
@@ -108,6 +147,7 @@ export function ldU64(p) {
 
 /** 64-bit store, little-endian. @param {CPtr} p @param {bigint|number} v */
 export function stU64(p, v) {
+  if (p.isBox) { p.v = BigInt.asUintN(64, BigInt(v)); return v; }
   const b = p.buf, o = p.off;
   let x = BigInt(v);
   for (let i = 0; i < 8; i++) { b[o + i] = Number(x & 0xFFn); x >>= 8n; }
@@ -144,11 +184,13 @@ export function alloc(size) { return { buf: new Uint8Array(Number(size)), off: 0
 
 /** 64-bit double load, little-endian IEEE-754. @param {CPtr} p @returns {number} */
 export function ldF64(p) {
+  if (p.isBox) return Number(p.v);
   return new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 8).getFloat64(0, true);
 }
 
 /** 64-bit double store, little-endian IEEE-754. @param {CPtr} p @param {number} v @returns {number} v */
 export function stF64(p, v) {
+  if (p.isBox) { p.v = Number(v); return v; }
   new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 8).setFloat64(0, Number(v), true);
   return v;
 }
@@ -164,6 +206,7 @@ const __ptrRegistry = [];
 
 /** store a CPtr into 8 bytes of a byte buffer. @param {CPtr} p @param {CPtr|null} v @returns {*} v */
 export function stPtr(p, v) {
+  if (p.isBox) { p.v = v; return v; }
   let id;
   if (v === null || v === undefined) id = 0n;
   else {
@@ -176,6 +219,7 @@ export function stPtr(p, v) {
 
 /** load a CPtr previously stored via stPtr. @param {CPtr} p @returns {CPtr|null} */
 export function ldPtr(p) {
+  if (p.isBox) return p.v === undefined ? null : p.v;
   const id = ldU64(p);
   if (id === 0n) return null;
   return __ptrRegistry[Number(id) - 1];

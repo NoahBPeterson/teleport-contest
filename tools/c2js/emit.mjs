@@ -37,13 +37,24 @@ const TYPEDEFS = {
   int8_t: 'signed char', int16_t: 'short', int32_t: 'int', int64_t: 'long long',
   uint8_t: 'unsigned char', uint16_t: 'unsigned short', uint32_t: 'unsigned int', uint64_t: 'unsigned long long',
   uchar: 'unsigned char', ushort: 'unsigned short', uint: 'unsigned int', ulong: 'unsigned long',
-  coordxy: 'short', size_t: 'unsigned long', ptrdiff_t: 'long',
+  coordxy: 'short', size_t: 'unsigned long', ptrdiff_t: 'long', seenV: 'unsigned char', xint16: 'short', xint8: 'signed char', xint32: 'int', xuint8: 'unsigned char', xuint16: 'unsigned short', xuint32: 'unsigned int',
+  // Lua 5.4.8 scalar typedefs (llimits.h/lua.h/lobject.h)
+  lu_byte: 'unsigned char', l_uint32: 'unsigned int', l_int32: 'int', Instruction: 'unsigned int',
+  lua_Integer: 'long long', lua_Unsigned: 'unsigned long long', lua_Number: 'double', lua_KContext: 'long long',
+  lu_mem: 'unsigned long', l_mem: 'long', l_uacInt: 'unsigned int',
+  // darwin system types (sys/_types.h / sys/stat.h layouts)
+  __int64_t: 'long long', __uint64_t: 'unsigned long long', __int32_t: 'int', __uint32_t: 'unsigned int',
+  __int16_t: 'short', __uint16_t: 'unsigned short', __int8_t: 'signed char', __uint8_t: 'unsigned char',
+  off_t: 'long long', time_t: 'long', ssize_t: 'long', ino_t: 'unsigned long long', ino64_t: 'unsigned long long',
+  dev_t: 'int', mode_t: 'unsigned short', nlink_t: 'unsigned short', uid_t: 'unsigned int', gid_t: 'unsigned int',
+  pid_t: 'int', blkcnt_t: 'long long', blksize_t: 'int', useconds_t: 'unsigned int', suseconds_t: 'int',
+  va_list: 'char *',
 };
 
 function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
-    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t)\b/g,
+    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|lu_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list)\b/g,
       (m) => TYPEDEFS[m])
     .replace(/\s+/g, ' ')
     .trim();
@@ -102,14 +113,22 @@ function operand(e, parentPrec, side) {
   return e;
 }
 
+// JS strict-mode reserved words get a $ suffix when used as identifiers
+const JS_RESERVED = new Set(('in let class const var function delete typeof new yield await enum static implements interface package private protected public arguments eval this super export import extends finally catch instanceof void with debugger default do else if for while switch case break continue return try throw').split(' '));
+export function jsName(name) { return JS_RESERVED.has(name) ? name + '$' : name; }
+
 // libc calls routed to cptr.* (same name)
 const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrchr', 'strstr', 'memcpy',
   'malloc', 'free', 'qsort', 'read', 'write', 'isupper', 'tolower', 'sprintf', 'snprintf', 'vsnprintf', 'printf']);
 
 // ------------------------------------------------------------- emitter ----
 
+// bump when emitter behavior changes (invalidates incremental emission)
+export const EMIT_VERSION = 1;
+
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd }) {
+    this.compileCwd = compileCwd;
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
@@ -120,31 +139,64 @@ export class Emitter {
     this.stringList = [];
     this.staticLocals = new Map(); // VarDecl id -> hoisted name (current function)
     this.recordLocals = new Set(); // names of struct/union value locals (current function)
+    this.recordGlobals = new Set(); // names of struct/union file-scope variables
+    this.cptrArrays = new Set(); // names of byte-packed record arrays (cptr.alloc storage)
     this.setjmpVar = null; // substitution variable while emitting a setjmp if
     this.uniq = 0;
     this.refs = new Map(); // name -> 'FunctionDecl'|'VarDecl' (cross-file import wiring)
     this.declared = new Set(); // names defined at this file's top level
     this.usesCptr = false;
     this.usesCjmp = false;
+    this.anonByLoc = new Map();
     this.collectRecords();
+    if (arguments[0].anonByLoc) {
+      for (const [k, v] of arguments[0].anonByLoc) {
+        const key = `byloc#${k}`;
+        if (!this.records.has(key)) this.records.set(key, v);
+        this.anonByLoc.set(k, key);
+      }
+    }
     // header-defined record layouts (full-TU record table from symbols.mjs);
     // main-file records take precedence
     if (extraRecords) {
       for (const [name, rec] of extraRecords) {
         if (!this.records.has(name)) {
-          this.records.set(name, { tag: rec.tag, fields: rec.fields.map((f) => ({ name: f.name, q: desugar({ qualType: f.q }) })) });
+          this.records.set(name, { tag: rec.tag, fields: rec.fields.map((f) => ({ name: f.name, q: desugar({ qualType: f.q }), recId: f.recId })) });
         }
       }
     }
   }
 
   collectRecords() {
-    for (const d of this.decls) {
-      if (d.kind !== 'RecordDecl' || !d.name) continue;
-      const fields = (d.inner || []).filter((c) => c.kind === 'FieldDecl')
-        .map((c) => ({ name: c.name, q: desugar(c.type) }));
-      if (fields.length) this.records.set(d.name, { tag: d.tagUsed || 'struct', fields });
-    }
+    (function walk(n, self) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'RecordDecl' && n.completeDefinition) {
+        const fields = (n.inner || []).filter((c) => c.kind === 'FieldDecl')
+          .map((c) => ({ name: c.name, q: desugar(c.type), recId: self.fieldRecordId(c) }));
+        if (fields.length && !self.records.has(n.name || `anon#${n.id}`)) {
+          self.records.set(n.name || `anon#${n.id}`, { tag: n.tagUsed || 'struct', fields });
+          if (!n.name) {
+            const l = n.loc?.line !== undefined ? `${n.loc.line}:${n.loc.col}` : null;
+            if (l && !self.anonByLoc.has(l)) {
+              self.records.set(`byloc#${l}`, self.records.get(`anon#${n.id}`));
+              self.anonByLoc.set(l, `byloc#${l}`);
+            }
+          }
+        }
+      }
+      for (const c of n.inner || []) walk(c, self);
+    })({ kind: 'TranslationUnitDecl', inner: this.decls }, this);
+  }
+
+  /** id of the RecordDecl behind a FieldDecl's type, if it's a record type */
+  fieldRecordId(fieldNode) {
+    let recId;
+    (function deep(x) {
+      if (!x || typeof x !== 'object' || recId) return;
+      if ((x.kind === 'RecordType' || x.kind === 'ElaboratedType') && x.decl?.kind === 'RecordDecl') { recId = x.decl.id; return; }
+      for (const c of x.inner || []) deep(c);
+    })(fieldNode);
+    return recId;
   }
 
   /** minimal LP64 layout: scalar fields, fixed arrays, nested records; unions: all offsets 0 */
@@ -157,7 +209,7 @@ export class Emitter {
       let size = 1, maxAlign = 1;
       const offsets = {};
       for (const f of rec.fields) {
-        const { size: fs, align } = this.sizeAlign(f.q);
+        const { size: fs, align } = this.sizeAlignField(f);
         offsets[f.name] = 0;
         size = Math.max(size, fs);
         maxAlign = Math.max(maxAlign, align);
@@ -169,7 +221,7 @@ export class Emitter {
     let off = 0, maxAlign = 1;
     const offsets = {};
     for (const f of rec.fields) {
-      const { size, align } = this.sizeAlign(f.q);
+      const { size, align } = this.sizeAlignField(f);
       off = Math.ceil(off / align) * align;
       offsets[f.name] = off;
       off += size;
@@ -178,6 +230,19 @@ export class Emitter {
     const layout = { size: Math.ceil(off / maxAlign) * maxAlign, align: maxAlign, offsets };
     this.layouts.set(name, layout);
     return layout;
+  }
+
+  /** size/align of a field, resolving anonymous record types by recId */
+  sizeAlignField(f) {
+    try {
+      return this.sizeAlign(f.q);
+    } catch (e) {
+      if (f.recId && this.records.has(`anon#${f.recId}`)) {
+        const l = this.layoutOf(`anon#${f.recId}`);
+        return { size: l.size, align: l.align };
+      }
+      throw e;
+    }
   }
 
   sizeAlign(q) {
@@ -206,7 +271,18 @@ export class Emitter {
     return off !== undefined ? `${this.fileName}:${this.lineOf(off)}` : this.fileName;
   }
 
+  /** convert a raw C string literal to a strict-mode-legal JS literal */
+  cStringToJs(raw) {
+    // raw includes the surrounding quotes; rewrite octal escapes to hex
+    return raw.replace(/\\(\\|[0-7]{1,3}|x[0-9a-fA-F]+|u[0-9a-fA-F]{4}|.)/g, (m, esc) => {
+      if (esc === '\\') return '\\\\';
+      if (/^[0-7]/.test(esc)) return '\\x' + parseInt(esc, 8).toString(16).padStart(2, '0');
+      return '\\' + esc;
+    });
+  }
+
   internString(raw) {
+    raw = this.cStringToJs(raw);
     if (!this.strings.has(raw)) {
       const name = `__sl${this.stringList.length}`;
       this.strings.set(raw, name);
@@ -295,6 +371,14 @@ export class Emitter {
     return { ...inner, code: `(${inner.code})`, prec: PREC.atom };
   }
 
+  expr_PredefinedExpr(n) {
+    // __func__/__FUNCTION__/__PRETTY_FUNCTION__: clang puts the function
+    // name StringLiteral in inner; emit it as a static string
+    const lit = (n.inner || []).find((c) => c && c.kind === 'StringLiteral');
+    if (!lit) throw new Error(`PredefinedExpr without literal (${this.cref(n)})`);
+    return this.expr_StringLiteral(lit);
+  }
+
   expr_ConstantExpr(n) {
     const inner = this.emitExpr(n.inner[0]);
     return { ...inner, const: n.value ?? inner.const };
@@ -308,9 +392,13 @@ export class Emitter {
       this.refs.set(name, refKind);
     }
     if (refId && this.staticLocals.has(refId)) name = this.staticLocals.get(refId);
+    name = jsName(name);
+    if (this.boxedVars?.has(name) || this.topBoxed?.has(name)) name = `${name}.v`;
     const t = nodeType(n);
     const q = desugar(n.type);
-    const rep = arrayParts(q) ? 'buf'
+    const rep = this.cptrArrays.has(name) ? 'cptr'
+      : this.recordGlobals.has(name) ? 'cptr'
+      : arrayParts(q) ? 'buf'
       : this.recordLocals.has(name) ? 'cptr'
       : t.cls === 'record' ? 'obj'
       : t.cls === 'ptr' && !/\(/.test(q) ? 'cptr' : 'val';
@@ -319,20 +407,26 @@ export class Emitter {
 
   /** load a scalar rvalue from a cptr location, by access type */
   loadFrom(locCode, typeQ) {
+    const rn = this.recordNameOf(typeQ);
+    if (/^enum\s/.test(typeQ || '') || (rn && this.records.get(rn)?.tag === 'enum')) return { code: this.cptrCall('ldI32', locCode), prec: PREC.atom, rep: 'val' };
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return { code: this.cptrCall(t.signed ? 'ld1s' : 'ld1u', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'int' && t.bits === 64) return { code: this.cptrCall(t.signed ? 'ldI64' : 'ldU64', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'int' && t.bits === 32) return { code: this.cptrCall('ldI32', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'int' && t.bits === 16) return { code: this.cptrCall(t.signed ? 'ldI16' : 'ldU16', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'f64') return { code: this.cptrCall('ldF64', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'ptr') return { code: this.cptrCall('ldPtr', locCode), prec: PREC.atom, rep: 'cptr' };
     throw new Error(`loadFrom: unsupported access type "${typeQ}"`);
   }
 
   storeTo(locCode, typeQ, valueCode) {
+    const rn = this.recordNameOf(typeQ);
+    if (/^enum\s/.test(typeQ || '') || (rn && this.records.get(rn)?.tag === 'enum')) return this.cptrCall('stI32', locCode, valueCode);
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return this.cptrCall('st1', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 64) return this.cptrCall('stU64', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 32) return this.cptrCall('stI32', locCode, valueCode);
+    if (t.cls === 'int' && t.bits === 16) return this.cptrCall('stI16', locCode, valueCode);
     if (t.cls === 'f64') return this.cptrCall('stF64', locCode, valueCode);
     if (t.cls === 'ptr') return this.cptrCall('stPtr', locCode, valueCode);
     throw new Error(`storeTo: unsupported access type "${typeQ}"`);
@@ -362,7 +456,7 @@ export class Emitter {
     if (!pointee) throw new Error('subscript on non-pointer/non-array');
     const elemT = parseType(pointee);
     if (elemT.cls === 'record') {
-      const sz = this.layoutOf(this.recordNameOf(pointee)).size;
+      const sz = this.layoutOf(this.recordNameForType(pointee)).size;
       return { code: this.cptrCall('add', base.code, idx.code, String(sz)), elemQ: pointee, rep: 'cptr' };
     }
     return { code: this.cptrCall('add', base.code, idx.code), elemQ: pointee, rep: 'cptr' };
@@ -382,6 +476,17 @@ export class Emitter {
       return this.loadFrom(loc.code, loc.elemQ);
     }
     return { code: loc.code, prec: PREC.atom, rep: loc.rep, elemQ: loc.elemQ };
+  }
+
+  /** like recordNameOf, but also resolves anonymous record types via loc */
+  recordNameForType(q) {
+    const named = this.recordNameOf(q);
+    if (named && this.records.has(named)) return named;
+    if (q && /unnamed|anonymous/.test(q)) {
+      const lm = q.match(/:(\d+):(\d+)\)?/);
+      if (lm && this.anonByLoc.has(`${lm[1]}:${lm[2]}`)) return this.anonByLoc.get(`${lm[1]}:${lm[2]}`);
+    }
+    return named;
   }
 
   /** resolve a type string to a known record name: "struct x", "union x", or bare typedef */
@@ -406,19 +511,21 @@ export class Emitter {
       // plain JS object field (function-pointer fields stay plain values)
       const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
       const rep = fieldQ && arrayParts(fieldQ) ? 'buf'
-        : fieldQ && parseType(fieldQ).cls === 'ptr' && !/\(/.test(fieldQ) ? 'cptr' : 'val';
+        : fieldQ && parseType(fieldQ).cls === 'ptr' && !/\(/.test(fieldQ) ? 'cptr'
+        : fieldQ && (parseType(fieldQ).cls === 'record' || this.recordNameForType(fieldQ)) ? 'obj' : 'val';
       return { code: `${this.group(base, PREC.atom)}.${n.name}`, prec: PREC.atom, rep, elemQ: fieldQ };
     }
     if (base.rep === 'cptr') {
       // byte-packed struct/union location + field offset (0 for union members)
       const bq = desugar(n.inner[0].type);
-      const recName = this.recordNameOf(pointeeOf(bq) || bq);
+      const recName = base.elemRec || this.recordNameForType(pointeeOf(bq) || bq);
       const off = this.fieldOffset(recName, n.name);
-      const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
+      const fi = this.fieldInfoOf(n.inner[0], n.name, recName);
+      const fieldQ = fi?.q;
       const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
       // record/array fields: the location itself is the value (decays later)
-      if (arrayParts(fieldQ) || parseType(fieldQ).cls === 'record') {
-        return { code: loc, prec: PREC.atom, rep: 'cptr', elemQ: fieldQ };
+      if (arrayParts(fieldQ) || parseType(fieldQ).cls === 'record' || (fi && this.fieldRecordName(fi) && this.records.get(this.fieldRecordName(fi))?.tag !== 'enum' && parseType(fieldQ).cls === 'record')) {
+        return { code: loc, prec: PREC.atom, rep: 'cptr', elemQ: fieldQ, elemRec: this.fieldRecordName(fi) };
       }
       return { ...this.loadFrom(loc, fieldQ), locCode: loc, elemQ: fieldQ };
     }
@@ -426,10 +533,22 @@ export class Emitter {
   }
 
   fieldTypeOf(baseNode, fieldName) {
+    return this.fieldInfoOf(baseNode, fieldName)?.q;
+  }
+
+  fieldInfoOf(baseNode, fieldName, recNameOverride) {
     const bq = desugar(baseNode.type);
-    const recName = this.recordNameOf(pointeeOf(bq) || bq);
-    const f = this.records.get(recName)?.fields.find((x) => x.name === fieldName);
-    return f?.q;
+    const recName = recNameOverride || this.recordNameForType(pointeeOf(bq) || bq);
+    return this.records.get(recName)?.fields.find((x) => x.name === fieldName);
+  }
+
+  /** record name for a field type that may be an anonymous record */
+  fieldRecordName(fi) {
+    if (!fi) return undefined;
+    const byName = this.recordNameOf(fi.q);
+    if (byName && this.records.has(byName)) return byName;
+    if (fi.recId && this.records.has(`anon#${fi.recId}`)) return `anon#${fi.recId}`;
+    return byName;
   }
 
   expr_ImplicitCastExpr(n) {
@@ -500,6 +619,82 @@ export class Emitter {
     return arg.name || arg.referencedDecl?.name;
   }
 
+  expr_OffsetOfExpr(n) {
+    // clang's JSON dump drops offsetof components; recover offsetof(T, f)
+    // from source text. The expansion site names a macro (or is a direct
+    // offsetof call); BFS through macro bodies for defs containing offsetof;
+    // multiple offsetof in one def are matched by per-site occurrence order.
+    const loc = n.range?.begin?.expansionLoc || n.range?.begin || {};
+    if (!loc.file || loc.offset === undefined) throw new Error(`OffsetOfExpr without expansion site (${this.cref(n)})`);
+    const siteFile = path.isAbsolute(loc.file) ? loc.file : path.resolve(this.compileCwd || '.', loc.file);
+    const src = this.readSourceCached(siteFile);
+    const at = src.slice(loc.offset);
+    let matches = null;
+    const direct = at.match(/^offsetof\s*\(\s*([\w\s*]+?)\s*,\s*(\w+)\s*\)/);
+    if (direct) matches = [[direct[1], direct[2]]];
+    else {
+      // BFS: outer macro, identifiers in its invocation, then macro bodies
+      const ids = [at.match(/^(\w+)/)?.[1], ...[...at.slice(0, 300).matchAll(/\b([a-zA-Z_]\w*)\s*\(/g)].map((m) => m[1])];
+      const seen = new Set();
+      const queue = ids.filter(Boolean);
+      while (queue.length && !matches) {
+        const name = queue.shift();
+        if (seen.has(name)) continue;
+        seen.add(name);
+        const def = this.findMacroDef(name, siteFile);
+        if (!def) continue;
+        const offs = [...def.matchAll(/offsetof\s*\(\s*([\w\s*]+?)\s*,\s*(\w+)\s*\)/g)];
+        if (offs.length) { matches = offs.map((m) => [m[1], m[2]]); break; }
+        for (const m of def.matchAll(/\b([a-zA-Z_]\w*)\s*\(/g)) queue.push(m[1]);
+      }
+    }
+    if (!matches) throw new Error(`OffsetOfExpr: no offsetof macro found (${this.cref(n)})`);
+    if (!this._offsetofSites) this._offsetofSites = new Map();
+    const key = `${siteFile}:${loc.offset}`;
+    const occ = this._offsetofSites.get(key) || 0;
+    this._offsetofSites.set(key, occ + 1);
+    const [typeName, memberName] = matches[Math.min(occ, matches.length - 1)];
+    const recName = this.recordNameOf(typeName.trim().replace(/^(struct|union)\s+/, ''));
+    const off = this.fieldOffset(recName, memberName);
+    const t = nodeType(n);
+    return { code: t.bits === 64 ? `${off}n` : String(off), prec: PREC.atom, const: String(off), rep: 'val' };
+  }
+
+  readSourceCached(file) {
+    if (!this._srcCache) this._srcCache = new Map();
+    const p = file;
+    if (!this._srcCache.has(p)) {
+      // resolve relative header paths against known roots
+      const candidates = [p, path.resolve(this.compileCwd || '.', p)];
+      let text = null;
+      for (const c of candidates) { try { text = fs.readFileSync(c, 'utf8'); break; } catch {} }
+      if (text === null) throw new Error(`cannot read source ${file}`);
+      this._srcCache.set(p, text);
+    }
+    return this._srcCache.get(p);
+  }
+
+  findMacroDef(name, inFile) {
+    const dir = path.dirname(path.isAbsolute(inFile) ? inFile : path.resolve(this.compileCwd || '.', inFile));
+    const candidates = [];
+    for (const d of [dir, path.join(dir, '../include')]) {
+      try { for (const f of fs.readdirSync(d)) if (f.endsWith('.h')) candidates.push(path.join(d, f)); } catch {}
+    }
+    candidates.push(inFile);
+    const startRe = new RegExp(`^\\s*#define\\s+${name}\\b`, 'm');
+    for (const c of candidates) {
+      let text;
+      try { text = this.readSourceCached(c); } catch { continue; }
+      const m = text.match(startRe);
+      if (!m) continue;
+      // consume the logical line (continuations end with backslash)
+      let end = text.indexOf('\n', m.index);
+      while (end > 0 && text[end - 1] === '\\') end = text.indexOf('\n', end + 1);
+      return text.slice(m.index, end < 0 ? text.length : end);
+    }
+    return null;
+  }
+
   expr_UnaryExprOrTypeTraitExpr(n) {
     let arg = n.inner?.[0];
     while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
@@ -533,13 +728,28 @@ export class Emitter {
     switch (n.opcode) {
       case '++': case '--': {
         if (subT.cls === 'ptr') {
+          const pointee = pointeeOf(desugar(sub.type)) || 'char';
+          const sz = this.sizeofType(pointee);
+          const szArg = sz !== 1 ? `, ${sz}` : '';
           // pointer variable inc/dec
-          if (sub.kind !== 'DeclRefExpr') throw new Error(`++/-- on non-variable pointer (${this.cref(n)})`);
-          const name = this.emitExpr(sub).code;
-          const delta = n.opcode === '++' ? '1' : '-1';
-          if (opts.stmtPos) return { code: `${name} = ${this.cptrCall('add', name, delta)}`, prec: PREC.assign, rep: 'val' };
+          if (sub.kind === 'DeclRefExpr') {
+            const name = this.emitExpr(sub).code;
+            const delta = n.opcode === '++' ? '1' : '-1';
+            const addArgs = sz !== 1 ? `${delta}, ${sz}` : delta;
+            if (opts.stmtPos) return { code: `${name} = ${this.cptrCall('add', name, addArgs)}`, prec: PREC.assign, rep: 'val' };
+            const helper = (n.isPostfix ? 'post' : 'pre') + (n.opcode === '++' ? 'inc' : 'dec');
+            return { code: this.cptrCall(helper, `() => ${name}`, `(v) => { ${name} = v; }${szArg}`), prec: PREC.atom, rep: 'cptr' };
+          }
+          // pointer member/element inc/dec: read-modify-write through the location
+          const loc = this.emitLValue(sub);
           const helper = (n.isPostfix ? 'post' : 'pre') + (n.opcode === '++' ? 'inc' : 'dec');
-          return { code: this.cptrCall(helper, `() => ${name}`, `(v) => { ${name} = v; }`), prec: PREC.atom, rep: 'cptr' };
+          if (loc.kind === 'cptr') {
+            return { code: this.cptrCall(helper, `() => ${this.cptrCall('ldPtr', loc.code)}`, `(v) => { ${this.cptrCall('stPtr', loc.code, 'v')}; }${szArg}`), prec: PREC.atom, rep: 'cptr' };
+          }
+          if (loc.kind === 'prop') {
+            return { code: this.cptrCall(helper, `() => ${loc.code}`, `(v) => { ${loc.code} = v; }${szArg}`), prec: PREC.atom, rep: 'cptr' };
+          }
+          throw new Error(`++/-- on pointer lvalue kind ${loc.kind} (${this.cref(n)})`);
         }
         // scalar location (e.g. tstr[i]++)?
         if (sub.kind === 'ArraySubscriptExpr' || sub.kind === 'UnaryOperator') {
@@ -555,9 +765,23 @@ export class Emitter {
         const e = this.emitExpr(sub);
         return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, rep: 'val' };
       }
-      case '&': { // address-of: the cptr location IS the address
+      case '&': { // address-of
+        // boxed local: the variable's box IS the address
+        if (sub.kind === 'DeclRefExpr' && this.boxedVars?.has(sub.name || sub.referencedDecl?.name)) {
+          return { code: sub.name || sub.referencedDecl?.name, prec: PREC.atom, rep: 'cptr' };
+        }
+        // struct/union variable (local, global, or extern): its storage is its address
+        if (sub.kind === 'DeclRefExpr' && parseType(desugar(sub.type)).cls === 'record' && !desugar(sub.type).includes('*')) {
+          return { code: this.emitExpr(sub).code, prec: PREC.atom, rep: 'cptr' };
+        }
         const loc = this.emitLValue(sub);
         if (loc.kind === 'cptr') return { code: loc.code, prec: PREC.atom, rep: 'cptr' };
+        if (loc.kind === 'prop' && loc.objCode !== undefined) {
+          if (loc.viaArray) { // &arr[i] on a plain JS array: pointer into it
+            return { code: this.cptrCall('add', this.cptrCall('decay', loc.objCode), loc.keyCode), prec: PREC.atom, rep: 'cptr' };
+          }
+          return { code: this.cptrCall('boxProp', loc.objCode, loc.keyCode), prec: PREC.atom, rep: 'cptr' };
+        }
         throw new Error(`address-of ${loc.kind} unsupported (v1) (${this.cref(n)})`);
       }
       case '*': { // deref
@@ -577,7 +801,10 @@ export class Emitter {
   emitLValue(n) {
     if (n.kind === 'DeclRefExpr') {
       // struct/union local: the variable itself is the CPtr location
-      if (this.recordLocals.has(n.name || n.referencedDecl?.name)) {
+      const rawName = n.name || n.referencedDecl?.name;
+      const refId = n.referencedDecl?.id;
+      const hoisted = refId && this.staticLocals.get(refId);
+      if (this.recordLocals.has(rawName) || this.recordGlobals.has(rawName) || (hoisted && this.recordLocals.has(hoisted))) {
         return { kind: 'cptr', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
       }
       return { kind: 'var', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
@@ -593,16 +820,16 @@ export class Emitter {
       const idx = this.emitExpr(n.inner[1]);
       const loc = this.subscriptLoc(base, idx, desugar(baseNode.type));
       if (loc.rep === 'cptr') return { kind: 'cptr', code: loc.code, elemQ: loc.elemQ };
-      return { kind: 'prop', code: loc.code, elemQ: loc.elemQ };
+      return { kind: 'prop', code: loc.code, elemQ: loc.elemQ, objCode: base.code, keyCode: idx.code, viaArray: true };
     }
     if (n.kind === 'MemberExpr') {
       const base = this.emitExpr(n.inner[0]);
-      if (base.rep === 'obj') return { kind: 'prop', code: `${this.group(base, PREC.atom)}.${n.name}`, elemQ: this.fieldTypeOf(n.inner[0], n.name) };
+      if (base.rep === 'obj') return { kind: 'prop', code: `${this.group(base, PREC.atom)}.${n.name}`, elemQ: this.fieldTypeOf(n.inner[0], n.name), objCode: base.code, keyCode: `'${n.name}'` };
       if (base.rep === 'cptr') {
         const bq = desugar(n.inner[0].type);
-        const recName = this.recordNameOf(pointeeOf(bq) || bq);
+        const recName = base.elemRec || this.recordNameForType(pointeeOf(bq) || bq);
         const off = this.fieldOffset(recName, n.name);
-        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldTypeOf(n.inner[0], n.name) };
+        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldInfoOf(n.inner[0], n.name, recName)?.q };
       }
     }
     throw new Error(`emitLValue: unsupported ${n.kind} (${this.cref(n)})`);
@@ -620,9 +847,9 @@ export class Emitter {
       const r = this.emitExpr(n.inner[1]);
       if (lv.kind === 'cptr') {
         // struct/union assignment copies the bytes (C11 6.5.16.1)
-        const recM = (lv.elemQ || '').match(/^(?:struct|union) (\w+)$/);
-        if (recM) {
-          return { code: this.cptrCall('memcpy', lv.code, r.code, String(this.layoutOf(recM[1]).size)), prec: PREC.atom, rep: 'val' };
+        const recName = lv.elemQ && this.recordNameOf(lv.elemQ);
+        if (recName && this.records.get(recName)?.tag !== 'enum' && (parseType(lv.elemQ).cls === 'record' || this.records.has(recName))) {
+          return { code: this.cptrCall('memcpy', lv.code, r.code, String(this.layoutOf(recName).size)), prec: PREC.atom, rep: 'val' };
         }
         return { code: this.storeTo(lv.code, lv.elemQ, r.code), prec: PREC.atom, rep: 'val' };
       }
@@ -714,11 +941,8 @@ export class Emitter {
     const base = op.slice(0, -1);
 
     if (lv.kind === 'cptr') {
-      // compound assign through a pointer location (1-byte pointees in scope)
-      if ((base === '+' || base === '-') && parseType(lv.elemQ).cls === 'int' && parseType(lv.elemQ).bits === 8) {
-        throw new Error(`+= through char location unsupported (${this.cref(n)})`);
-      }
-      // read-modify-write; loc must be side-effect-free (hacklib sites are)
+      // read-modify-write through a 1-byte pointer location; loc must be
+      // side-effect-free (double-emitted — documented caveat)
       const ld = parseType(lv.elemQ).signed === false ? 'ld1u' : 'ld1s';
       return { code: this.cptrCall('st1', lv.code, `${this.cptrCall(ld, lv.code)} ${base} ${r0.code}`), prec: PREC.atom, rep: 'val' };
     }
@@ -739,6 +963,12 @@ export class Emitter {
       if (base === '*') return { code: `${lv.code} = Math.imul(${lv.code}, ${r0.code})`, prec: PREC.assign, rep: 'val' };
       if (base === '/') return { code: `${lv.code} = (${lv.code} / ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
       return { code: `${lv.code} ${op} ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
+    }
+    // 16-bit variable compound assign
+    if (t.cls === 'int' && t.bits === 16) {
+      const helper = parseType(lv.elemQ).signed === false ? 'u16' : 'i16';
+      this.cmachine.add(helper);
+      return { code: `${lv.code} = ${helper}(${lv.code} ${base} ${r0.code})`, prec: PREC.assign, rep: 'val' };
     }
     // narrow (char) variable compound assign: compute in int, truncate on store
     if (t.cls === 'int' && t.bits === 8) {
@@ -764,14 +994,20 @@ export class Emitter {
       const items = inits.map((c) => this.emitExpr(c).code);
       return { code: `[\n${items.map((s) => '    ' + s).join(',\n')}\n]`, prec: PREC.atom, rep: 'buf' };
     }
+    // record literal (named or anonymous): zip initializers with field names
+    let initFields = null;
     const recM = q.match(/^(?:struct|union) (\w+)$/);
-    if (recM && this.records.has(recM[1])) {
-      const fields = this.records.get(recM[1]).fields;
+    if (recM && this.records.has(recM[1])) initFields = this.records.get(recM[1]).fields;
+    else if (/unnamed|anonymous/.test(q)) {
+      const lm = q.match(/:(\d+):(\d+)\)?/);
+      if (lm && this.anonByLoc.has(`${lm[1]}:${lm[2]}`)) initFields = this.records.get(this.anonByLoc.get(`${lm[1]}:${lm[2]}`)).fields;
+    }
+    if (initFields) {
       const parts = [];
-      for (let i = 0; i < fields.length; i++) {
+      for (let i = 0; i < initFields.length; i++) {
         const init = inits[i];
         if (!init || init.kind === 'ImplicitValueInitExpr') continue;
-        parts.push(`${fields[i].name}: ${this.emitExpr(init).code}`);
+        parts.push(`${initFields[i].name}: ${this.emitExpr(init).code}`);
       }
       return { code: `{ ${parts.join(', ')} }`, prec: PREC.atom, rep: 'obj' };
     }
@@ -887,6 +1123,216 @@ export class Emitter {
   }
 
   /**
+   * Per-function goto analysis. Returns {
+   *   blockLabels: Map(blockNode -> [{name, index, dir}]),
+   *   gotoDir: Map(GotoStmt node -> {kind:'break'|'continue', label})
+   * } or null when the function has no gotos. Throws on shapes we do not
+   * lower (mixed forward/backward per label, goto into nested blocks).
+   */
+  analyzeGotos(fnName, body) {
+    const labels = new Map(); // name -> {block, index}
+    const gotos = [];
+    (function walk(n, block) {
+      if (!n || typeof n !== 'object') return;
+      const isBlock = n.kind === 'CompoundStmt' || n === body;
+      const blk = isBlock ? n : block;
+      if (isBlock) {
+        const items = (n.inner || []).filter((c) => c && c.kind);
+        items.forEach((c, i) => {
+          if (c.kind === 'LabelStmt') labels.set(c.name, { block: n, index: i });
+        });
+      }
+      if (n.kind === 'GotoStmt') gotos.push(n);
+      for (const c of n.inner || []) walk(c, blk);
+    })(body, body);
+    if (!gotos.length && !labels.size) return null;
+
+    // index of the goto's ancestor item within the label's block
+    const indexWithin = (gotoNode, block) => {
+      // walk parents is unavailable; instead search the block subtree
+      const items = (block.inner || []).filter((c) => c && c.kind);
+      for (let i = 0; i < items.length; i++) {
+        if (items[i] === gotoNode) return i;
+        let found = false;
+        (function deep(x) {
+          if (!x || typeof x !== 'object' || found) return;
+          if (x === gotoNode) { found = true; return; }
+          for (const c of x.inner || []) deep(c);
+        })(items[i]);
+        if (found) return i;
+      }
+      return -1;
+    };
+
+    const blockLabels = new Map();
+    const gotoDir = new Map();
+    // declId -> name mapping (GotoStmt links by declId)
+    const declIdOf = new Map(); // label name -> declId
+    (function walk(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'LabelStmt') declIdOf.set(n.declId, n.name);
+      for (const c of n.inner || []) walk(c);
+    })(body);
+
+    for (const g of gotos) {
+      const name = declIdOf.get(g.targetLabelDeclId);
+      if (!name || !labels.has(name)) throw new Error(`goto: unknown/extern label in ${fnName}`);
+      const lab = labels.get(name);
+      const idx = indexWithin(g, lab.block);
+      if (idx === -1) throw new Error(`goto ${name}: jumps across blocks in ${fnName} (unsupported)`);
+      gotoDir.set(g, { label: name, index: idx, dir: idx <= lab.index ? 'fwd' : 'bwd' });
+      lab.sites = lab.sites || [];
+      lab.sites.push(idx);
+    }
+    // labels owned by a switch body: forward-only, region must terminate
+    const switchBodies = new Set();
+    (function find(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'SwitchStmt') {
+        const b = (n.inner || []).filter((c) => c && c.kind)[1];
+        if (b) switchBodies.add(b);
+      }
+      for (const c of n.inner || []) find(c);
+    })(body);
+    for (const [name, lab] of labels) {
+      if (switchBodies.has(lab.block)) {
+        const items = (lab.block.inner || []).filter((c) => c && c.kind);
+        const seq = [];
+        let boundary = -1;
+        for (const it of items) {
+          if (it.kind === 'LabelStmt' && it.name === name) boundary = seq.length;
+          if (it.kind === 'LabelStmt') {
+            const sub = (it.inner || []).find((c) => c && c.kind);
+            if (sub) seq.push(sub);
+          } else seq.push(it);
+        }
+        if (!(lab.sites || []).every((i) => i <= lab.index)) throw new Error(`goto: switch-internal label ${name} with backward jump in ${fnName} (unsupported)`);
+        let end = boundary;
+        while (end < seq.length && seq[end].kind !== 'CaseStmt' && seq[end].kind !== 'DefaultStmt') end++;
+        const region = seq.slice(boundary, end);
+        const last = region[region.length - 1];
+        if (!region.length || (last.kind !== 'ReturnStmt' && last.kind !== 'BreakStmt')) {
+          throw new Error(`goto: switch-internal label ${name} region does not terminate in ${fnName} (unsupported)`);
+        }
+        lab.dir = 'inline';
+        lab.region = region;
+        if (!blockLabels.has(lab.block)) blockLabels.set(lab.block, []);
+        blockLabels.get(lab.block).push({ name, index: lab.index, dir: 'inline', region });
+        continue;
+      }
+      lab.dir = (lab.sites || []).every((i) => i <= lab.index) ? 'fwd'
+        : (lab.sites || []).every((i) => i >= lab.index) ? 'bwd' : 'mixed';
+      // labels with no gotos are harmless (C allows them); treat as fwd
+      if (!blockLabels.has(lab.block)) blockLabels.set(lab.block, []);
+      blockLabels.get(lab.block).push({ name, index: lab.index, dir: lab.dir });
+    }
+    for (const [, arr] of blockLabels) arr.sort((a, b) => a.index - b.index);
+    return { blockLabels, gotoDir };
+  }
+
+  mangleLabel(name) { return `__lbl_${name}`; }
+
+  /**
+   * Emit block items with labels lowered:
+   *  - forward labels: nested labeled blocks L: { ...region... } with
+   *    `goto L` -> `break L` (region = block start .. label position).
+   *  - backward labels: labeled one-shot loops L: do { ... } while (false)
+   *    with `goto L` -> `continue L` (region = label position .. block end).
+   */
+  emitLabeledItems(items, indent, labelPlan) {
+    const fwds = labelPlan.filter((l) => l.dir === 'fwd');
+    const bwds = labelPlan.filter((l) => l.dir === 'bwd');
+    const mixed = labelPlan.filter((l) => l.dir === 'mixed');
+    if (mixed.length && labelPlan.length > 1) throw new Error('goto: mixed label combined with other labels in one block (unsupported)');
+    if (fwds.length && bwds.length) throw new Error('goto: forward+backward labels in one block (unsupported)');
+    // normalize: replace LabelStmt items by their substatement, remember boundaries
+    const seq = [];
+    const bounds = new Map(); // label name -> boundary index in seq
+    for (const it of items) {
+      if (it.kind === 'LabelStmt') {
+        bounds.set(it.name, seq.length);
+        const sub = (it.inner || []).find((c) => c && c.kind);
+        if (sub) seq.push(sub);
+      } else seq.push(it);
+    }
+    if (mixed.length) {
+      // one label, both directions: skip-block for forward jumps, then a
+      // labeled loop re-entering at the label for backward jumps
+      const name = mixed[0].name;
+      const b = bounds.get(name);
+      return [
+        `${indent}__skip_${name}: {`,
+        ...seq.slice(0, b).flatMap((x) => this.emitStmt(x, indent + '    ')),
+        `${indent}}`,
+        `${indent}${this.mangleLabel(name)}: for (;;) {`,
+        ...seq.slice(b).flatMap((x) => this.emitStmt(x, indent + '    ')),
+        `${indent}    break;`,
+        `${indent}}`,
+      ];
+    }
+    if (fwds.length) {
+      const bs = fwds.map((l) => ({ name: l.name, b: bounds.get(l.name) })).sort((a, b) => a.b - b.b);
+      // matryoshka: L1 innermost (region block-start..b1), each next label
+      // wraps the previous block plus the slice up to its own boundary
+      const regions = [];
+      let prev = 0;
+      for (const { name, b } of bs) {
+        regions.push({ name, seg: seq.slice(prev, b) });
+        prev = b;
+      }
+      const tail = seq.slice(prev);
+      let inner = [
+        `${indent}${this.mangleLabel(regions[0].name)}: {`,
+        ...regions[0].seg.flatMap((x) => this.emitStmt(x, indent + '    ')),
+        `${indent}}`,
+      ];
+      for (let j = 1; j < regions.length; j++) {
+        inner = [
+          `${indent}${this.mangleLabel(regions[j].name)}: {`,
+          ...inner,
+          ...regions[j].seg.flatMap((x) => this.emitStmt(x, indent + '    ')),
+          `${indent}}`,
+        ];
+      }
+      return [...inner, ...tail.flatMap((x) => this.emitStmt(x, indent))];
+    }
+    // backward labels: nest labeled do-loops (outermost = smallest boundary)
+    const bs = bwds.map((l) => ({ name: l.name, b: bounds.get(l.name) })).sort((a, b) => a.b - b.b);
+    // nested labeled do-loops, outermost = smallest boundary
+    const build = (j, ind) => {
+      const start = bs[j].b;
+      const end = j + 1 < bs.length ? bs[j + 1].b : seq.length;
+      const lines2 = [`${ind}${this.mangleLabel(bs[j].name)}: do {`];
+      lines2.push(...seq.slice(start, end).flatMap((x) => this.emitStmt(x, ind + '    ')));
+      if (j + 1 < bs.length) lines2.push(...build(j + 1, ind + '    '));
+      lines2.push(`${ind}} while (false);`);
+      return lines2;
+    };
+    return [...seq.slice(0, bs[0].b).flatMap((x) => this.emitStmt(x, indent)), ...build(0, indent)];
+  }
+
+  stmt_GotoStmt(n, indent) {
+    const dir = this.gotoPlan?.gotoDir.get(n);
+    if (!dir) throw new Error(`goto outside analyzed function (${this.cref(n)})`);
+    const plan = [...(this.gotoPlan.blockLabels.values())].flat().find((l) => l.name === dir.label);
+    if (plan.dir === 'inline') {
+      // switch-internal label with a terminating region: splice it in
+      return plan.region.flatMap((x) => this.emitStmt(x, indent));
+    }
+    if (plan.dir === 'mixed') {
+      return [`${indent}${dir.dir === 'fwd' ? `break __skip_${dir.label}` : `continue ${this.mangleLabel(dir.label)}`};`];
+    }
+    return [`${indent}${plan.dir === 'bwd' ? 'continue' : 'break'} ${this.mangleLabel(dir.label)};`];
+  }
+
+  stmt_LabelStmt(n, indent) {
+    // labels are consumed by emitLabeledItems; a label reaching here is in a
+    // non-analyzed position — emit its substatement (harmless) and note
+    const sub = (n.inner || []).find((c) => c && c.kind);
+    return sub ? this.emitStmt(sub, indent) : [`${indent};`];
+  }
+
+  /**
    * if (setjmp(jb)) / if (setjmp(jb) == 0) / assignment-then-test shapes:
    * emit try/catch with the if re-emitted on both paths; the setjmp call
    * evaluates to 0 on the direct path, to the longjmp value on the catch path
@@ -921,6 +1367,7 @@ export class Emitter {
 
   emitStmt(n, indent) {
     if (!n || !n.kind) return [];
+    if (n.kind.endsWith('Attr')) return []; // attribute annotations are no-ops
     const fn = this['stmt_' + n.kind];
     if (!fn) {
       if (n.kind.endsWith('Expr') || n.kind.endsWith('Literal') || n.kind.endsWith('Operator')) {
@@ -933,7 +1380,7 @@ export class Emitter {
 
   stmt_CompoundStmt(n, indent) {
     const lines = [`${indent}{`];
-    lines.push(...this.emitBlockItems((n.inner || []).filter((x) => x && x.kind), indent + '    '));
+    lines.push(...this.emitBlockItems((n.inner || []).filter((x) => x && x.kind), indent + '    ', n));
     lines.push(`${indent}}`);
     return lines;
   }
@@ -946,7 +1393,14 @@ export class Emitter {
    * all code that runs after the setjmp returns 0, and a longjmp re-runs
    * the if and everything after it.
    */
-  emitBlockItems(items, indent) {
+  emitBlockItems(items, indent, blockNode) {
+    const labelPlan = blockNode && this.gotoPlan?.blockLabels.get(blockNode);
+    if (labelPlan && labelPlan.length) {
+      if (items.some((s) => s.kind === 'IfStmt' && this.hasSetjmp((s.inner || []).filter((c) => c && c.kind)[0]))) {
+        throw new Error('goto+setjmp in one block (unsupported)');
+      }
+      return this.emitLabeledItems(items, indent, labelPlan);
+    }
     const sjIdx = items.findIndex((s) => s.kind === 'IfStmt' && this.hasSetjmp((s.inner || []).filter((c) => c && c.kind)[0]));
     if (sjIdx === -1) return items.flatMap((s) => this.emitStmt(s, indent));
     const lines = items.slice(0, sjIdx).flatMap((s) => this.emitStmt(s, indent));
@@ -1008,6 +1462,17 @@ export class Emitter {
     }
     if (/\bchar\b/.test(arr.elem)) return `new Uint8Array(${arr.count})`;
     if (/\bint\b/.test(arr.elem) && !/\blong\b/.test(arr.elem)) return `new Array(${arr.count}).fill(0)`;
+    if (/\bshort\b/.test(arr.elem)) return `new Array(${arr.count}).fill(0)`;
+    if (/^enum\s/.test(arr.elem) || (this.recordNameOf(arr.elem) && this.records.get(this.recordNameOf(arr.elem))?.tag === 'enum')) {
+      return `new Array(${arr.count}).fill(0)`; // enum elements are int-sized
+    }
+    if (arr.elem === 'boolean') return `new Uint8Array(${arr.count})`;
+    if (parseType(arr.elem).cls === 'record' || this.recordNameForType(arr.elem)) {
+      // struct/union array without initializer: byte-packed elements
+      const recName = this.recordNameForType(arr.elem);
+      const sz = this.layoutOf(recName).size;
+      return this.cptrCall('alloc', `${arr.count} * ${sz}`);
+    }
     throw new Error(`array storage for "${q}" unsupported (v1)`);
   }
 
@@ -1015,18 +1480,26 @@ export class Emitter {
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind);
     const arr = arrayParts(q);
+    d = { ...d, name: jsName(d.name) };
     if (arr) {
       if (init && init.kind === 'StringLiteral') return `let ${d.name} = ${this.cptrCall('bytes', init.value)};`;
-      if (init) throw new Error(`array ${d.name} with non-literal init unsupported (${this.cref(d)})`);
+      if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
+      if (!arrayParts(arr.elem) && (parseType(arr.elem).cls === 'record' || this.recordNameForType(arr.elem))) this.cptrArrays.add(d.name);
       return `let ${d.name} = ${this.arrayStorage(q)};`;
     }
     const t = parseType(q);
     if (t.cls === 'record') {
       // struct/union value local: byte-packed storage, variable holds its CPtr
-      const size = this.layoutOf(this.recordNameOf(q)).size;
-      if (init) throw new Error(`record local ${d.name} with init unsupported (v1)`);
+      const recName = this.recordNameForType(q);
+      const size = this.layoutOf(recName).size;
       this.recordLocals.add(d.name);
-      return `let ${d.name} = ${this.cptrCall('alloc', String(size))};`;
+      let code = `let ${d.name} = ${this.cptrCall('alloc', String(size))};`;
+      if (init) code += ' ' + this.recordInitStores(d.name, recName, init).join(' ');
+      return code;
+    }
+    if (this.boxedVars?.has(d.name)) {
+      this.usesCptr = true;
+      return `let ${d.name} = cptr.box(${init ? this.emitExpr(init).code : 0});`;
     }
     if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
     return `let ${d.name};`;
@@ -1124,6 +1597,90 @@ export class Emitter {
     return [`${indent}return${e ? ' ' + this.emitExpr(e).code : ''};`];
   }
 
+  stmt_SwitchStmt(n, indent) {
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const [cond, body] = kids;
+    if (!body || body.kind !== 'CompoundStmt') throw new Error(`switch without compound body (${this.cref(n)})`);
+    // Duff's device check: case/default labels must be reachable from the
+    // switch body directly or through case chains only (case-in-loop/if is
+    // legal C that JS cannot express)
+    const items = (body.inner || []).filter((c) => c && c.kind);
+    const self = this;
+    (function check(items) {
+      for (const it of items) {
+        if (it.kind === 'CaseStmt' || it.kind === 'DefaultStmt') {
+          check((it.inner || []).filter((c) => c && c.kind).slice(1)); // case chains stay legal
+          continue;
+        }
+        (function walk(x) {
+          if (!x || typeof x !== 'object') return;
+          if (x.kind === 'CaseStmt' || x.kind === 'DefaultStmt') {
+            throw new Error(`duff-style nested case label (${self.cref(n)})`);
+          }
+          for (const c of x.inner || []) walk(c);
+        })(it);
+      }
+    })(items);
+    // C allows declarations between case labels; hoisting keeps JS out of TDZ
+    const hoisted = [];
+    for (const it of items) {
+      if (it.kind === 'DeclStmt') {
+        for (const d of (it.inner || []).filter((c) => c.kind === 'VarDecl')) {
+          const q = (d.type?.desugaredQualType || d.type?.qualType || '');
+          if (/\[/.test(q)) throw new Error(`array decl inside switch body (${this.cref(d)})`);
+          hoisted.push(`let ${d.name};`);
+        }
+      }
+    }
+    const lines = [];
+    for (const h of hoisted) lines.push(`${indent}${h}`);
+    lines.push(`${indent}switch (${this.emitExpr(cond).code}) {`);
+    for (const it of items) lines.push(...this.emitSwitchItem(it, indent + '    '));
+    lines.push(`${indent}}`);
+    return lines;
+  }
+
+  emitSwitchItem(it, indent) {
+    if (it.kind === 'LabelStmt') {
+      const sub = (it.inner || []).find((c) => c && c.kind);
+      return sub ? this.emitStmt(sub, indent) : [`${indent};`];
+    }
+    if (it.kind === 'CaseStmt') {
+      const kids = (it.inner || []).filter((c) => c && c.kind);
+      const val = this.emitExpr(kids[0]);
+      const lines = [`${indent}case ${val.code}:`];
+      if (kids.length > 1) lines.push(...this.emitSwitchItem(kids[1], indent));
+      return lines;
+    }
+    if (it.kind === 'DefaultStmt') {
+      const kids = (it.inner || []).filter((c) => c && c.kind);
+      const lines = [`${indent}default:`];
+      if (kids.length) lines.push(...this.emitSwitchItem(kids[0], indent));
+      return lines;
+    }
+    if (it.kind === 'DeclStmt') {
+      // hoisted above the switch; keep only the initializers as assignments
+      const lines = [];
+      for (const d of (it.inner || []).filter((c) => c.kind === 'VarDecl')) {
+        const init = (d.inner || []).find((c) => c && c.kind);
+        if (init) lines.push(`${indent}${d.name} = ${this.emitExpr(init).code};`);
+      }
+      return lines.length ? lines : [`${indent};`];
+    }
+    return this.emitStmt(it, indent);
+  }
+
+  stmt_AttributedStmt(n, indent) {
+    // statement attributes ([[fallthrough]], gcc attrs): transparent — emit
+    // the wrapped statement(s), keep the attr as a comment for provenance
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const stmts = kids.filter((c) => !c.kind.endsWith('Attr'));
+    const attrs = kids.filter((c) => c.kind.endsWith('Attr')).map((c) => c.kind.replace(/Attr$/, '')).join(',');
+    const lines = attrs ? [`${indent}// @${attrs}`] : [];
+    for (const st of stmts) lines.push(...this.emitStmt(st, indent));
+    return lines;
+  }
+
   stmt_BreakStmt(n, indent) { return [`${indent}break;`]; }
   stmt_ContinueStmt(n, indent) { return [`${indent}continue;`]; }
   stmt_NullStmt(n, indent) { return [`${indent};`]; }
@@ -1149,12 +1706,41 @@ export class Emitter {
     for (const v of out) this.staticLocals.set(v.id, `__static_${fnName}_${v.name}`);
   }
 
+  /** module-scope field stores for a record initializer */
+  recordInitStores(name, recName, initNode) {
+    const rec = this.records.get(recName);
+    if (!rec || !rec.fields) throw new Error(`recordInitStores: unknown record ${recName}`);
+    if (initNode.kind !== 'InitListExpr') {
+      // whole-record copy initializer: struct x a = b;
+      return [`${this.cptrCall('memcpy', name, this.emitExpr(initNode).code, String(this.layoutOf(recName).size))};`];
+    }
+    const inits = (initNode.inner || []).filter((c) => c.kind);
+    const lines = [];
+    for (let i = 0; i < rec.fields.length; i++) {
+      const init = inits[i];
+      if (!init || init.kind === 'ImplicitValueInitExpr') continue;
+      const f = rec.fields[i];
+      const off = this.layoutOf(recName).offsets[f.name];
+      const loc = off === 0 ? name : this.cptrCall('add', name, String(off));
+      lines.push(`${this.storeTo(loc, f.q, this.emitExpr(init).code)};`);
+    }
+    return lines;
+  }
+
   hoistStaticLocal(d) {
     const name = this.staticLocals.get(d.id);
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind);
+    if (parseType(q).cls === 'record' && !q.includes('*')) {
+      const recName = this.recordNameForType(q);
+      const size = this.layoutOf(recName).size;
+      let out = `let ${name} = ${this.cptrCall('alloc', String(size))}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      if (init) out += "\n" + this.recordInitStores(name, recName, init).join("\n");
+      return out;
+    }
     if (arrayParts(q)) {
       if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', init.value)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      if (init) return `const ${name} = ${this.emitExpr(init).code}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
       return `const ${name} = ${this.arrayStorage(q)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
     }
     const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
@@ -1170,6 +1756,28 @@ export class Emitter {
     this.recordLocals = new Set();
     const statics = [];
     this.collectStaticLocals(d.name, body, statics);
+    for (const v of statics) {
+      const q = desugar(v.type);
+      if (parseType(q).cls === 'record' && !q.includes('*')) this.recordLocals.add(this.staticLocals.get(v.id));
+    }
+    this.gotoPlan = this.analyzeGotos(d.name, body);
+    // tier-2 address-of: locals/params whose address is taken become boxes
+    this.boxedVars = new Set();
+    (function walk(n, self) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'UnaryOperator' && n.opcode === '&') {
+        const sub = n.inner[0];
+        if (sub.kind === 'DeclRefExpr') {
+          const q = (sub.type?.desugaredQualType || sub.type?.qualType || '');
+          const nm = sub.name || sub.referencedDecl?.name;
+          const isRecordValue = /^(struct|union)\b[^*]*$/.test(q.trim());
+          if (nm && !/\[/.test(q) && !/\(/.test(q) && !isRecordValue && !self.recordLocals.has(nm)) {
+            self.boxedVars.add(nm);
+          }
+        }
+      }
+      for (const c of n.inner || []) walk(c, self);
+    })(body, this);
     this.vaRest = d.variadic ? '__va' : null;
 
     const lines = [];
@@ -1177,25 +1785,49 @@ export class Emitter {
     const retDoc = this.jsdocType(retQ) === 'void' ? '' : ` @returns {${this.jsdocType(retQ)}}`;
     lines.push(`/** C ref: ${this.cref(d)}${paramDoc ? ' — ' + paramDoc : ''}${retDoc} */`);
     const isStatic = d.storageClass === 'static';
-    const paramNames = params.map((p) => p.name);
+    const paramNames = params.map((p) => jsName(p.name));
     if (d.variadic) paramNames.push('...__va');
-    lines.push(`${isStatic ? '' : 'export '}function ${d.name}(${paramNames.join(', ')}) {`);
-    lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    '));
+    lines.push(`${isStatic ? '' : 'export '}function ${jsName(d.name)}(${paramNames.join(', ')}) {`);
+    for (const p of params) {
+      if (this.boxedVars.has(p.name)) {
+        this.usesCptr = true;
+        lines.push(`    ${p.name} = cptr.box(${p.name});`);
+      }
+    }
+    lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    ', body));
     lines.push('}');
     if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
     return lines;
   }
 
   emitTopVar(d) {
+    d = { ...d, name: jsName(d.name) };
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind);
     const lines = [`/** C ref: ${this.cref(d)} — ${q} */`];
+    if (parseType(q).cls === 'record' && !q.includes('*') && this.recordNameForType(q)) {
+      this.recordGlobals.add(d.name);
+      const recName = this.recordNameForType(q);
+      const size = this.layoutOf(recName).size;
+      lines.push(`let ${d.name} = ${this.cptrCall('alloc', String(size))};`);
+      if (init) lines.push(...this.recordInitStores(d.name, recName, init));
+      return lines;
+    }
     if (arrayParts(q)) {
       if (init) lines.push(`const ${d.name} = ${this.emitExpr(init).code};`);
-      else lines.push(`const ${d.name} = ${this.arrayStorage(q)};`);
+      else {
+        const arr = arrayParts(q);
+        if (!arrayParts(arr.elem) && (parseType(arr.elem).cls === 'record' || this.recordNameForType(arr.elem))) this.cptrArrays.add(d.name);
+        lines.push(`const ${d.name} = ${this.arrayStorage(q)};`);
+      }
       return lines;
     }
     const kw = 'let';
+    if (this.topBoxed?.has(d.name)) {
+      this.usesCptr = true;
+      lines.push(`let ${d.name} = cptr.box(${init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0'});`);
+      return lines;
+    }
     const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
     lines.push(`${kw} ${d.name} = ${initCode};`);
     return lines;
@@ -1229,6 +1861,7 @@ export class Emitter {
           break;
         }
         case 'VarDecl':
+          if (d.storageClass === 'extern') break; // declaration only; defined elsewhere
           chunks.push(this.emitTopVar(d));
           break;
         case 'EnumDecl':
@@ -1241,6 +1874,7 @@ export class Emitter {
           chunks.push([`/** C ref: ${this.cref(d)} — typedef ${d.name} (type alias only, no runtime output) */`]);
           break;
         default:
+          if (d.kind.endsWith('Attr')) break; // attribute annotations are no-ops
           throw new Error(`unsupported top-level decl ${d.kind} ${d.name || ''} (${this.cref(d)})`);
       }
     }

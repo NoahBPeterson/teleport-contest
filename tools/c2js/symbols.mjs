@@ -7,6 +7,10 @@
 //
 // Only non-static definitions are importable. Names defined in more than one
 // file (or shadowed locally) are recorded as conflicts and never imported.
+//
+// Slim IR cache: collectFile's output is large-AST-derived but small; it is
+// cached per source file in .cache/c2js/ir/<name>.ir.json, keyed by the mtime
+// of the full AST dump. Batch runs load slim IRs and rebuild only stale ones.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -52,6 +56,7 @@ export function collectFile(target) {
   }
   const recordDefs = new Map(); // name -> { tag, fields } (first complete definition wins)
   const anonById = new Map(); // anonymous RecordDecl id -> { tag, fields }
+  const anonByLoc = new Map(); // "line:col" -> anon record (unnamed-at recovery)
   const typedefOwned = new Map(); // typedef name -> anonymous RecordDecl id
   const typedefAlias = new Map(); // typedef name -> named record name
   (function walk(n) {
@@ -62,11 +67,29 @@ export function collectFile(target) {
       else anonById.set(n.id, rec);
     }
     if (n.kind === 'RecordDecl' && n.completeDefinition) {
-      const fields = (n.inner || []).filter((c) => c.kind === 'FieldDecl')
-        .map((c) => ({ name: c.name, q: (c.type?.desugaredQualType || c.type?.qualType || '') }));
+      // fields of anonymous record type link to the anonymous RecordDecl
+      // that directly precedes them among this record's children
+      const fields = [];
+      let lastAnon = null;
+      for (const c of n.inner || []) {
+        if (c.kind === 'RecordDecl' && !c.name) { lastAnon = c; continue; }
+        if (c.kind !== 'FieldDecl') continue;
+        let recId;
+        (function deep(x) {
+          if (!x || typeof x !== 'object' || recId) return;
+          if ((x.kind === 'RecordType' || x.kind === 'ElaboratedType') && x.decl?.kind === 'RecordDecl') { recId = x.decl.id; return; }
+          for (const cc of x.inner || []) deep(cc);
+        })(c);
+        if (!recId && lastAnon && /unnamed|anonymous/.test(c.type?.qualType || '')) recId = lastAnon.id;
+        fields.push({ name: c.name, q: (c.type?.desugaredQualType || c.type?.qualType || ''), recId });
+      }
       if (fields.length) {
         if (n.name) { if (!recordDefs.has(n.name)) recordDefs.set(n.name, { tag: n.tagUsed || 'struct', fields }); }
-        else anonById.set(n.id, { tag: n.tagUsed || 'struct', fields });
+        else {
+          anonById.set(n.id, { tag: n.tagUsed || 'struct', fields });
+          const l = n.loc?.line !== undefined ? `${n.loc.line}:${n.loc.col}` : n.range?.begin?.line !== undefined ? `${n.range.begin.line}:${n.range.begin.col}` : null;
+          if (l) { if (anonByLoc.has(l)) anonByLoc.delete(l); else anonByLoc.set(l, anonById.get(n.id)); }
+        }
       }
     }
     if (n.kind === 'TypedefDecl' && n.name) {
@@ -84,7 +107,9 @@ export function collectFile(target) {
   })(root);
   for (const [name, id] of typedefOwned) if (anonById.has(id)) recordDefs.set(name, anonById.get(id));
   for (const [name, recName] of typedefAlias) if (recordDefs.has(recName)) recordDefs.set(name, recordDefs.get(recName));
-  return { ...target, decls, lineOf, defs, recordDefs };
+  // anonymous nested records are addressable by id (field recId linkage)
+  for (const [id, rec] of anonById) recordDefs.set(`anon#${id}`, rec);
+  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc };
 }
 
 /**
@@ -107,4 +132,56 @@ export function buildSymbolMap(perFile) {
     else conflicts.set(name, files.map((f) => f.file));
   }
   return { symbols, conflicts };
+}
+
+// ---- slim IR cache ----
+
+const IR_DIR = path.join(repoRoot, '.cache/c2js/ir');
+
+export function slimIrPath(target) {
+  return path.join(IR_DIR, `${target.name}.ir.json`);
+}
+
+/**
+ * Load a target's slim IR, (re)building it from the full AST when missing or
+ * stale (AST dump newer than the IR). Returns the collectFile() shape:
+ * { name, file, group, decls, defs, recordDefs, anonByLoc, lineStarts } —
+ * with lineOf(offset) reconstructed from lineStarts.
+ */
+export function loadSlimIr(target) {
+  const irPath = slimIrPath(target);
+  const astPath = astPathFor(target.file);
+  if (!fs.existsSync(astPath)) throw new Error(`no cached AST: ${astPath}`);
+  const astMtime = fs.statSync(astPath).mtimeMs;
+  if (fs.existsSync(irPath) && fs.statSync(irPath).mtimeMs >= astMtime) {
+    const ir = JSON.parse(fs.readFileSync(irPath, 'utf8'));
+    return { ...target, ...ir, lineOf: (o) => lineOfStarts(ir.lineStarts, o) };
+  }
+  const pf = collectFile(target);
+  fs.mkdirSync(IR_DIR, { recursive: true });
+  const src = fs.readFileSync(target.file, 'utf8');
+  const lineStarts = [0];
+  for (let i = 0; i < src.length; i++) if (src.charCodeAt(i) === 10) lineStarts.push(i + 1);
+  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], lineStarts };
+  const tmp = irPath + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(ir));
+  fs.renameSync(tmp, irPath);
+  return { ...target, ...pf, lineStarts, lineOf: (o) => lineOfStarts(lineStarts, o) };
+}
+
+function lineOfStarts(starts, offset) {
+  let lo = 0, hi = starts.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (starts[mid] <= offset) lo = mid; else hi = mid - 1;
+  }
+  return lo + 1;
+}
+
+/** recordDefs/anonByLoc round-trip as [key, value] pairs; rebuild Maps */
+export function irMaps(pf) {
+  return {
+    recordDefs: pf.recordDefs instanceof Map ? pf.recordDefs : new Map(pf.recordDefs),
+    anonByLoc: pf.anonByLoc instanceof Map ? pf.anonByLoc : new Map(pf.anonByLoc),
+  };
 }

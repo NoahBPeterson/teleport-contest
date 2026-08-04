@@ -35,7 +35,7 @@ const loadedlibs = [{ name: __sl0, func: luaopen_base }, { name: __sl1, func: lu
 /** C ref: linit.c:57 — @param {CPtr} L */
 export function luaL_openlibs(L) {
     let lib;
-    for (lib = cptr.decay(loadedlibs); cptr.ldPtr(cptr.add(lib, 8)); lib = cptr.add(lib, 1)) {
+    for (lib = cptr.decay(loadedlibs); cptr.ldPtr(cptr.add(lib, 8)); lib = cptr.add(lib, 1, 16)) {
         luaL_requiref(L, cptr.ldPtr(lib), cptr.ldPtr(cptr.add(lib, 8)), 1);
         lua_settop(L, (-(1) - 1) | 0);
     }
