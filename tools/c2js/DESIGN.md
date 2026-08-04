@@ -84,3 +84,17 @@ matching how the C recorder's patches log.
    scripts + themerooms.lua with stub nh.*)
 4. Subsystem merges → oracle (state dumps) green at every step
 5. Full port → 44/44 public + sessions-extra corpus
+
+## Swarm policy (DeepSeek v4-flash via opencode)
+
+- Model: `deepseek-v4-flash`. `max_tokens` unset (provider default).
+- reasoning_effort: `low` for bulk mechanical tasks, default (`high`)
+  otherwise, `max` for gnarly debugging.
+- **Circuit breaker: if one task burns >500k cumulative tokens
+  (prompt+completion, tracked from API `usage`), stop that task and
+  notify Noah WITH SOUND (`afplay /System/Library/Sounds/Glass.aiff`)
+  to escalate to a smarter model (Qwen 3.8 / Kimi K3 class).** A task
+  that expensive is stuck, not working — cheap models grind; the
+  harness judges; humans break deadlocks.
+- Swarm output is never self-certified: everything lands through the
+  oracle / rng-diff / scorer gates.
