@@ -15,14 +15,20 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const NETHACK_SRC = path.join(repoRoot, 'nethack-c/recorder/src');
 export const LUA_SRC = path.join(repoRoot, 'nethack-c/recorder/lib/lua-5.4.8/src');
+export const FIXTURE_SRC = path.join(repoRoot, 'tools/c2js/fixtures');
 export const AST_DIR = path.join(repoRoot, '.cache/c2js/ast');
 
 // Flags taken from sys/unix/hints/macosx-minimal and the Lua build (SYSCFLAGS).
 const NETHACK_FLAGS = ['-I../include', '-DNOTPARMDECL', '-DNO_TIMED_DELAY'];
 const LUA_FLAGS = ['-DLUA_USE_MACOSX', '-I.'];
+const FIXTURE_FLAGS = []; // standalone fixtures: system headers only
 
 export function isLuaFile(absFile) {
   return path.resolve(absFile).startsWith(LUA_SRC + path.sep);
+}
+
+export function isFixtureFile(absFile) {
+  return path.resolve(absFile).startsWith(FIXTURE_SRC + path.sep);
 }
 
 export function astPathFor(absFile) {
@@ -31,7 +37,15 @@ export function astPathFor(absFile) {
 }
 
 export function compileCwdFor(absFile) {
-  return isLuaFile(absFile) ? LUA_SRC : NETHACK_SRC;
+  if (isLuaFile(absFile)) return LUA_SRC;
+  if (isFixtureFile(absFile)) return FIXTURE_SRC;
+  return NETHACK_SRC;
+}
+
+function flagsFor(absFile) {
+  if (isLuaFile(absFile)) return LUA_FLAGS;
+  if (isFixtureFile(absFile)) return FIXTURE_FLAGS;
+  return NETHACK_FLAGS;
 }
 
 /**
@@ -50,7 +64,7 @@ export function dumpAst(file, { force = false } = {}) {
   }
 
   const cwd = compileCwdFor(abs);
-  const flags = isLuaFile(abs) ? LUA_FLAGS : NETHACK_FLAGS;
+  const flags = flagsFor(abs);
   const args = ['-Xclang', '-ast-dump=json', '-fsyntax-only', ...flags, abs];
 
   return new Promise((resolve, reject) => {

@@ -102,7 +102,7 @@ function operand(e, parentPrec, side) {
 
 // libc calls routed to cptr.* (same name)
 const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrchr', 'strstr', 'memcpy',
-  'malloc', 'free', 'qsort', 'read', 'write', 'isupper', 'tolower', 'sprintf', 'snprintf', 'vsnprintf']);
+  'malloc', 'free', 'qsort', 'read', 'write', 'isupper', 'tolower', 'sprintf', 'snprintf', 'vsnprintf', 'printf']);
 
 // ------------------------------------------------------------- emitter ----
 
@@ -117,7 +117,11 @@ export class Emitter {
     this.strings = new Map(); // raw literal -> __slN (dedup)
     this.stringList = [];
     this.staticLocals = new Map(); // VarDecl id -> hoisted name (current function)
+    this.recordLocals = new Set(); // names of struct/union value locals (current function)
+    this.setjmpVar = null; // substitution variable while emitting a setjmp if
+    this.uniq = 0;
     this.usesCptr = false;
+    this.usesCjmp = false;
     this.collectRecords();
   }
 
@@ -126,18 +130,31 @@ export class Emitter {
       if (d.kind !== 'RecordDecl' || !d.name) continue;
       const fields = (d.inner || []).filter((c) => c.kind === 'FieldDecl')
         .map((c) => ({ name: c.name, q: desugar(c.type) }));
-      if (fields.length) this.records.set(d.name, fields);
+      if (fields.length) this.records.set(d.name, { tag: d.tagUsed || 'struct', fields });
     }
   }
 
-  /** minimal LP64 layout: scalar fields, fixed arrays, nested records */
+  /** minimal LP64 layout: scalar fields, fixed arrays, nested records; unions: all offsets 0 */
   layoutOf(name) {
     if (this.layouts.has(name)) return this.layouts.get(name);
-    const fields = this.records.get(name);
-    if (!fields) throw new Error(`layout: unknown struct ${name}`);
+    const rec = this.records.get(name);
+    if (!rec) throw new Error(`layout: unknown struct ${name}`);
+    if (rec.tag === 'union') {
+      let size = 1, maxAlign = 1;
+      const offsets = {};
+      for (const f of rec.fields) {
+        const { size: fs, align } = this.sizeAlign(f.q);
+        offsets[f.name] = 0;
+        size = Math.max(size, fs);
+        maxAlign = Math.max(maxAlign, align);
+      }
+      const layout = { size: Math.ceil(size / maxAlign) * maxAlign, align: maxAlign, offsets };
+      this.layouts.set(name, layout);
+      return layout;
+    }
     let off = 0, maxAlign = 1;
     const offsets = {};
-    for (const f of fields) {
+    for (const f of rec.fields) {
       const { size, align } = this.sizeAlign(f.q);
       off = Math.ceil(off / align) * align;
       offsets[f.name] = off;
@@ -158,6 +175,8 @@ export class Emitter {
     if (q.includes('*')) return { size: 8, align: 8 };
     const recM = q.match(/^(?:struct|union) (\w+)$/);
     if (recM) { const l = this.layoutOf(recM[1]); return { size: l.size, align: l.align }; }
+    if (/\bdouble\b/.test(q)) return { size: 8, align: 8 };
+    if (/\bfloat\b/.test(q)) return { size: 4, align: 4 };
     if (/\blong\b/.test(q) || q === 'size_t') return { size: 8, align: 8 };
     if (/\bint\b/.test(q)) return { size: 4, align: 4 };
     if (/\bshort\b/.test(q)) return { size: 2, align: 2 };
@@ -186,7 +205,13 @@ export class Emitter {
   convert(e, from, to) {
     if (to.cls === 'void') return e;
     if (from.cls === 'ptr' || to.cls === 'ptr' || from.cls === 'record' || to.cls === 'record') return e;
-    if (from.cls === 'f64' || to.cls === 'f64') throw new Error(`float conversion unsupported (v1): ${JSON.stringify(from)} -> ${JSON.stringify(to)}`);
+    if (from.cls === 'f64' || to.cls === 'f64') {
+      // int <-> double conversions (C truncates toward zero)
+      if (from.cls === 'f64' && to.cls === 'int' && to.bits <= 32) return { code: `${this.group(e, PREC.postfix)} | 0`, prec: PREC['|'], rep: 'val' };
+      if (from.cls === 'f64' && to.cls === 'int') return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(64, BigInt(Math.trunc(${this.group(e, PREC.atom)})))`, prec: PREC.atom, rep: 'val' };
+      if (to.cls === 'f64' && from.cls === 'int' && from.bits === 64) return { code: `Number(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      return e; // int32 -> double: identity (JS number)
+    }
     if (sameClass(from, to)) return e;
     // constant folding for literal conversions
     if (e.const !== undefined && /^-?\d+$/.test(e.const)) {
@@ -240,6 +265,11 @@ export class Emitter {
     return { code: String(n.value), prec: PREC.atom, const: String(n.value), rep: 'val' };
   }
 
+  expr_FloatingLiteral(n) {
+    // value may be a JSON number; emit a JS double literal
+    return { code: typeof n.value === 'number' ? String(n.value) : String(n.value), prec: PREC.atom, rep: 'val' };
+  }
+
   expr_StringLiteral(n) {
     // value includes the C quotes/escapes; valid JS for these literals
     return { code: this.internString(n.value), prec: PREC.atom, rep: 'cptr' };
@@ -261,7 +291,10 @@ export class Emitter {
     if (refId && this.staticLocals.has(refId)) name = this.staticLocals.get(refId);
     const t = nodeType(n);
     const q = desugar(n.type);
-    const rep = arrayParts(q) ? 'buf' : t.cls === 'record' ? 'obj' : t.cls === 'ptr' && !/\(/.test(q) ? 'cptr' : 'val';
+    const rep = arrayParts(q) ? 'buf'
+      : this.recordLocals.has(name) ? 'cptr'
+      : t.cls === 'record' ? 'obj'
+      : t.cls === 'ptr' && !/\(/.test(q) ? 'cptr' : 'val';
     return { code: name, prec: PREC.atom, _type: t, rep };
   }
 
@@ -269,8 +302,10 @@ export class Emitter {
   loadFrom(locCode, typeQ) {
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return { code: this.cptrCall(t.signed ? 'ld1s' : 'ld1u', locCode), prec: PREC.atom, rep: 'val' };
-    if (t.cls === 'int' && t.bits === 64) return { code: this.cptrCall('ldU64', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'int' && t.bits === 64) return { code: this.cptrCall(t.signed ? 'ldI64' : 'ldU64', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'int' && t.bits === 32) return { code: this.cptrCall('ldI32', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'f64') return { code: this.cptrCall('ldF64', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'ptr') return { code: this.cptrCall('ldPtr', locCode), prec: PREC.atom, rep: 'cptr' };
     throw new Error(`loadFrom: unsupported access type "${typeQ}"`);
   }
 
@@ -279,14 +314,20 @@ export class Emitter {
     if (t.cls === 'int' && t.bits === 8) return this.cptrCall('st1', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 64) return this.cptrCall('stU64', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 32) return this.cptrCall('stI32', locCode, valueCode);
+    if (t.cls === 'f64') return this.cptrCall('stF64', locCode, valueCode);
+    if (t.cls === 'ptr') return this.cptrCall('stPtr', locCode, valueCode);
     throw new Error(`storeTo: unsupported access type "${typeQ}"`);
   }
 
   /** element access location for base[{idx}] — returns {code, elemQ, rep} */
   subscriptLoc(base, idx, baseQ) {
     const arr = arrayParts(baseQ);
-    if (arr) { // base is raw buffer storage
+    if (arr) { // base has array type
       const elemT = parseType(arr.elem);
+      if (base.rep === 'cptr') {
+        // byte-packed array member of a struct/union: scaled location
+        return { code: this.cptrCall('add', base.code, idx.code, String(this.sizeofType(arr.elem))), elemQ: arr.elem, rep: 'cptr' };
+      }
       if (arrayParts(arr.elem) || elemT.cls === 'record') {
         return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: arrayParts(arr.elem) ? 'buf' : 'obj' };
       }
@@ -342,12 +383,16 @@ export class Emitter {
       return { code: `${this.group(base, PREC.atom)}.${n.name}`, prec: PREC.atom, rep, elemQ: fieldQ };
     }
     if (base.rep === 'cptr') {
-      // byte-packed struct location + field offset
+      // byte-packed struct/union location + field offset (0 for union members)
       const bq = desugar(n.inner[0].type);
       const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
       const off = this.fieldOffset(recName, n.name);
       const fieldQ = this.fieldTypeOf(n.inner[0], n.name);
       const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
+      // record/array fields: the location itself is the value (decays later)
+      if (arrayParts(fieldQ) || parseType(fieldQ).cls === 'record') {
+        return { code: loc, prec: PREC.atom, rep: 'cptr', elemQ: fieldQ };
+      }
       return { ...this.loadFrom(loc, fieldQ), locCode: loc, elemQ: fieldQ };
     }
     throw new Error(`MemberExpr .${n.name} on rep ${base.rep} unsupported (${this.cref(n)})`);
@@ -356,7 +401,7 @@ export class Emitter {
   fieldTypeOf(baseNode, fieldName) {
     const bq = desugar(baseNode.type);
     const recName = (pointeeOf(bq) || bq).match(/^(?:struct|union) (\w+)$/)?.[1];
-    const f = this.records.get(recName)?.find((x) => x.name === fieldName);
+    const f = this.records.get(recName)?.fields.find((x) => x.name === fieldName);
     return f?.q;
   }
 
@@ -375,6 +420,9 @@ export class Emitter {
         return { ...inner, rep: 'cptr' };
       case 'IntegralCast':
       case 'IntegralConversion':
+      case 'IntegralToFloating':
+      case 'FloatingToIntegral':
+      case 'FloatingCast':
         return { ...this.convert(inner, nodeType(n.inner[0]), nodeType(n)), _type: nodeType(n) };
       case 'NullToPointer':
         return { code: 'null', prec: PREC.atom, const: '0', rep: 'val' };
@@ -441,6 +489,8 @@ export class Emitter {
     if (q.includes('*')) return 8;
     const recM = q.match(/^(?:struct|union) (\w+)$/);
     if (recM) return this.layoutOf(recM[1]).size;
+    if (/\bdouble\b/.test(q)) return 8;
+    if (/\bfloat\b/.test(q)) return 4;
     if (/\blong\b/.test(q) || q === 'size_t') return 8;
     if (/\bint\b/.test(q)) return 4;
     if (/\bshort\b/.test(q)) return 2;
@@ -497,7 +547,13 @@ export class Emitter {
 
   /** emit an lvalue: {kind:'var'|'cptr'|'prop', code, elemQ?} */
   emitLValue(n) {
-    if (n.kind === 'DeclRefExpr') return { kind: 'var', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
+    if (n.kind === 'DeclRefExpr') {
+      // struct/union local: the variable itself is the CPtr location
+      if (this.recordLocals.has(n.name || n.referencedDecl?.name)) {
+        return { kind: 'cptr', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
+      }
+      return { kind: 'var', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
+    }
     if (n.kind === 'ParenExpr') return this.emitLValue(n.inner[0]);
     if (n.kind === 'UnaryOperator' && n.opcode === '*') {
       return { kind: 'cptr', code: this.emitExpr(n.inner[0]).code, elemQ: pointeeOf(desugar(n.inner[0].type)) };
@@ -534,7 +590,14 @@ export class Emitter {
     if (op === '=') {
       const lv = this.emitLValue(n.inner[0]);
       const r = this.emitExpr(n.inner[1]);
-      if (lv.kind === 'cptr') return { code: this.storeTo(lv.code, lv.elemQ, r.code), prec: PREC.atom, rep: 'val' };
+      if (lv.kind === 'cptr') {
+        // struct/union assignment copies the bytes (C11 6.5.16.1)
+        const recM = (lv.elemQ || '').match(/^(?:struct|union) (\w+)$/);
+        if (recM) {
+          return { code: this.cptrCall('memcpy', lv.code, r.code, String(this.layoutOf(recM[1]).size)), prec: PREC.atom, rep: 'val' };
+        }
+        return { code: this.storeTo(lv.code, lv.elemQ, r.code), prec: PREC.atom, rep: 'val' };
+      }
       return { code: `${lv.code} = ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
     if (op === ',') {
@@ -675,7 +738,7 @@ export class Emitter {
     }
     const recM = q.match(/^(?:struct|union) (\w+)$/);
     if (recM && this.records.has(recM[1])) {
-      const fields = this.records.get(recM[1]);
+      const fields = this.records.get(recM[1]).fields;
       const parts = [];
       for (let i = 0; i < fields.length; i++) {
         const init = inits[i];
@@ -753,6 +816,15 @@ export class Emitter {
       const ap = this.emitExpr(args[0]).code;
       return { code: `${ap} = null`, prec: PREC.assign, rep: 'val' };
     }
+    if (name === 'longjmp' || name === '_longjmp') {
+      this.usesCjmp = true;
+      return { code: `cjmp.longjmp(${this.setjmpArg(args[0])}, ${this.emitExpr(args[1]).code})`, prec: PREC.atom, rep: 'val' };
+    }
+    if (name === 'setjmp' || name === '_setjmp') {
+      if (!this.setjmpVar) throw new Error(`setjmp outside a recognized if-condition (${this.cref(n)})`);
+      this.usesCjmp = true;
+      return { code: this.setjmpVar, prec: PREC.atom, rep: 'val' };
+    }
     if (name === 'abs') {
       return { code: `Math.abs(${this.emitExpr(args[0]).code})`, prec: PREC.atom, rep: 'val' };
     }
@@ -763,6 +835,58 @@ export class Emitter {
       return { code: this.cptrCall(name, ...argCodes), prec: PREC.atom, rep };
     }
     return { code: `${this.group(callee, PREC.atom)}(${argCodes.join(', ')})`, prec: PREC.atom, rep: t.cls === 'ptr' ? 'cptr' : 'val' };
+  }
+
+  /** identity expression for a jmp_buf argument (decay/member forms) */
+  setjmpArg(node) {
+    let a = node;
+    while (a && (a.kind === 'ImplicitCastExpr' || a.kind === 'ParenExpr' || a.kind === 'CStyleCastExpr')) a = a.inner[0];
+    if (a.kind === 'DeclRefExpr' && arrayParts(desugar(a.type))) {
+      return this.cptrCall('decay', this.emitExpr(a).code);
+    }
+    if (a.kind === 'DeclRefExpr') return this.emitExpr(a).code; // pointer variable
+    return this.emitLValue(a).code; // member/element: location is the identity
+  }
+
+  /** does this subtree contain a setjmp/_setjmp call? */
+  hasSetjmp(n) {
+    if (!n || typeof n !== 'object') return false;
+    if (n.kind === 'CallExpr') {
+      const nm = this.calleeName(n);
+      if (nm === 'setjmp' || nm === '_setjmp') return true;
+    }
+    return (n.inner || []).some((c) => this.hasSetjmp(c));
+  }
+
+  /**
+   * if (setjmp(jb)) / if (setjmp(jb) == 0) / assignment-then-test shapes:
+   * emit try/catch with the if re-emitted on both paths; the setjmp call
+   * evaluates to 0 on the direct path, to the longjmp value on the catch path
+   * (C evaluates the condition once per setjmp return — and so do we).
+   */
+  emitSetjmpIf(n, indent) {
+    const kids = (n.inner || []).filter((c) => c && c.kind);
+    const [cond, thenS, elseS] = kids;
+    const sj = this.findSetjmp(cond);
+    const id = ++this.uniq;
+    const idV = `__sj${id}`, valV = `__sv${id}`, errV = `__e${id}`;
+    const prevVar = this.setjmpVar;
+    const lines = [
+      `${indent}{`,
+      `${indent}    const ${idV} = cjmp.idOf(${this.setjmpArg(sj.inner[1])});`,
+      `${indent}    let ${valV} = 0;`,
+      `${indent}    try {`,
+    ];
+    this.setjmpVar = valV;
+    lines.push(...this.emitPlainIf(n, indent + '        '));
+    lines.push(`${indent}    } catch (${errV}) {`);
+    lines.push(`${indent}        if (!cjmp.matches(${errV}, ${idV})) throw ${errV};`);
+    lines.push(`${indent}        ${valV} = cjmp.jbval(${errV});`);
+    lines.push(...this.emitPlainIf(n, indent + '        '));
+    lines.push(`${indent}    }`);
+    lines.push(`${indent}}`);
+    this.setjmpVar = prevVar;
+    return lines;
   }
 
   // ----- statements -----
@@ -781,11 +905,60 @@ export class Emitter {
 
   stmt_CompoundStmt(n, indent) {
     const lines = [`${indent}{`];
-    for (const c of (n.inner || []).filter((x) => x && x.kind)) {
-      lines.push(...this.emitStmt(c, indent + '    '));
-    }
+    lines.push(...this.emitBlockItems((n.inner || []).filter((x) => x && x.kind), indent + '    '));
     lines.push(`${indent}}`);
     return lines;
+  }
+
+  /**
+   * Emit a list of block items. A block containing an if-with-setjmp at
+   * position k is split there: everything from the if to the end of the
+   * block goes into both the try arm (setjmp -> 0) and the catch arm
+   * (setjmp -> longjmp value). This matches C: the setjmp handler protects
+   * all code that runs after the setjmp returns 0, and a longjmp re-runs
+   * the if and everything after it.
+   */
+  emitBlockItems(items, indent) {
+    const sjIdx = items.findIndex((s) => s.kind === 'IfStmt' && this.hasSetjmp((s.inner || []).filter((c) => c && c.kind)[0]));
+    if (sjIdx === -1) return items.flatMap((s) => this.emitStmt(s, indent));
+    const lines = items.slice(0, sjIdx).flatMap((s) => this.emitStmt(s, indent));
+    const rest = items.slice(sjIdx);
+    const sjCall = this.findSetjmp((rest[0].inner || []).filter((c) => c && c.kind)[0]);
+    const id = ++this.uniq;
+    const idV = `__sj${id}`, valV = `__sv${id}`, errV = `__e${id}`;
+    const prevVar = this.setjmpVar;
+    this.setjmpVar = valV;
+    const emitRest = (ind) => [
+      ...this.emitPlainIf(rest[0], ind),
+      ...rest.slice(1).flatMap((s) => this.emitStmt(s, ind)),
+    ];
+    lines.push(`${indent}{`);
+    lines.push(`${indent}    const ${idV} = cjmp.idOf(${this.setjmpArg(sjCall.inner[1])});`);
+    lines.push(`${indent}    let ${valV} = 0;`);
+    lines.push(`${indent}    try {`);
+    lines.push(...emitRest(indent + '        '));
+    lines.push(`${indent}    } catch (${errV}) {`);
+    lines.push(`${indent}        if (!cjmp.matches(${errV}, ${idV})) throw ${errV};`);
+    lines.push(`${indent}        ${valV} = cjmp.jbval(${errV});`);
+    lines.push(...emitRest(indent + '        '));
+    lines.push(`${indent}    }`);
+    lines.push(`${indent}}`);
+    this.setjmpVar = prevVar;
+    return lines;
+  }
+
+  /** find the first setjmp/_setjmp CallExpr in a subtree */
+  findSetjmp(n) {
+    if (!n || typeof n !== 'object') return null;
+    if (n.kind === 'CallExpr') {
+      const nm = this.calleeName(n);
+      if (nm === 'setjmp' || nm === '_setjmp') return n;
+    }
+    for (const c of n.inner || []) {
+      const r = this.findSetjmp(c);
+      if (r) return r;
+    }
+    return null;
   }
 
   stmt_DeclStmt(n, indent) {
@@ -819,11 +992,26 @@ export class Emitter {
       if (init) throw new Error(`array ${d.name} with non-literal init unsupported (${this.cref(d)})`);
       return `let ${d.name} = ${this.arrayStorage(q)};`;
     }
+    const t = parseType(q);
+    if (t.cls === 'record') {
+      // struct/union value local: byte-packed storage, variable holds its CPtr
+      const recM = q.match(/^(?:struct|union) (\w+)$/);
+      const size = this.layoutOf(recM[1]).size;
+      if (init) throw new Error(`record local ${d.name} with init unsupported (v1)`);
+      this.recordLocals.add(d.name);
+      return `let ${d.name} = ${this.cptrCall('alloc', String(size))};`;
+    }
     if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
     return `let ${d.name};`;
   }
 
   stmt_IfStmt(n, indent) {
+    const kids0 = (n.inner || []).filter((c) => c && c.kind);
+    if (kids0.length && this.hasSetjmp(kids0[0])) return this.emitSetjmpIf(n, indent);
+    return this.emitPlainIf(n, indent);
+  }
+
+  emitPlainIf(n, indent) {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [cond, thenS, elseS] = kids;
     const lines = [];
@@ -952,6 +1140,7 @@ export class Emitter {
     const retQ = d.type.qualType.replace(/\s*\(.*$/, '');
     // static locals hoist to module scope (C lifetime), renamed to stay unique
     this.staticLocals = new Map();
+    this.recordLocals = new Set();
     const statics = [];
     this.collectStaticLocals(d.name, body, statics);
     this.vaRest = d.variadic ? '__va' : null;
@@ -964,9 +1153,7 @@ export class Emitter {
     const paramNames = params.map((p) => p.name);
     if (d.variadic) paramNames.push('...__va');
     lines.push(`${isStatic ? '' : 'export '}function ${d.name}(${paramNames.join(', ')}) {`);
-    for (const c of (body.inner || []).filter((x) => x && x.kind)) {
-      lines.push(...this.emitStmt(c, '    '));
-    }
+    lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    '));
     lines.push('}');
     if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
     return lines;
@@ -1000,7 +1187,7 @@ export class Emitter {
   }
 
   emitRecord(d) {
-    const fields = this.records.get(d.name) || [];
+    const fields = this.records.get(d.name)?.fields || [];
     return [`/** C ref: ${this.cref(d)} — struct ${d.name} { ${fields.map((f) => f.name).join(', ')} } (memory model v0.5) */`];
   }
 

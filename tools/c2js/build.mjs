@@ -21,9 +21,10 @@ function main() {
     console.error('usage: node tools/c2js/build.mjs <name>   # e.g. rnd, hacklib');
     process.exit(2);
   }
-  const srcFile = path.join(repoRoot, 'nethack-c/recorder/src', `${name}.c`);
+  let srcFile = path.join(repoRoot, 'nethack-c/recorder/src', `${name}.c`);
+  if (!fs.existsSync(srcFile)) srcFile = path.join(repoRoot, 'tools/c2js/fixtures', `${name}.c`);
   const astPath = astPathFor(srcFile);
-  if (!fs.existsSync(srcFile)) { console.error(`no such source: ${srcFile}`); process.exit(1); }
+  if (!fs.existsSync(srcFile)) { console.error(`no such source: ${name}.c (looked in src/ and fixtures/)`); process.exit(1); }
   if (!fs.existsSync(astPath)) { console.error(`no cached AST: ${astPath} (run tools/c2js/ast-dump.mjs first)`); process.exit(1); }
 
   const source = fs.readFileSync(srcFile, 'utf8');
@@ -49,6 +50,9 @@ function main() {
   if (emitter.cmachine.size) imports.push(`import { ${[...emitter.cmachine].sort().join(', ')} } from '../cmachine.js';`);
   if (emitter.usesCptr || emitter.stringList.length || (prelude && /\bcptr\./.test(prelude))) {
     imports.push("import * as cptr from '../cptr.js';");
+  }
+  if (emitter.usesCjmp || (prelude && /\bcjmp\./.test(prelude))) {
+    imports.push("import * as cjmp from '../cjmp.js';");
   }
 
   const stringTable = emitter.stringList.length

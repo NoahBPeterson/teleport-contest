@@ -137,6 +137,50 @@ export function malloc(n) { return { buf: new Uint8Array(Number(n)), off: 0 }; }
 /** no-op (GC). @param {CPtr|null} p */
 export function free(p) { /* GC */ }
 
+/** zeroed byte storage for a struct/union value local; returns its location. @param {number|bigint} size @returns {CPtr} */
+export function alloc(size) { return { buf: new Uint8Array(Number(size)), off: 0 }; }
+
+// ------------------------------------------------- f64 / i64 / ptr access ----
+
+/** 64-bit double load, little-endian IEEE-754. @param {CPtr} p @returns {number} */
+export function ldF64(p) {
+  return new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 8).getFloat64(0, true);
+}
+
+/** 64-bit double store, little-endian IEEE-754. @param {CPtr} p @param {number} v @returns {number} v */
+export function stF64(p, v) {
+  new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 8).setFloat64(0, Number(v), true);
+  return v;
+}
+
+/** 64-bit signed load (two's complement). @param {CPtr} p @returns {bigint} */
+export function ldI64(p) { return BigInt.asIntN(64, ldU64(p)); }
+
+// Pointer values stored in byte buffers: serialized through a registry.
+// Round-trips are exact (write ptr, read ptr -> identical). The integer
+// bits are registry ids, NOT addresses — do not print them expecting
+// C address values (differential tests must not depend on them).
+const __ptrRegistry = [];
+
+/** store a CPtr into 8 bytes of a byte buffer. @param {CPtr} p @param {CPtr|null} v @returns {*} v */
+export function stPtr(p, v) {
+  let id;
+  if (v === null || v === undefined) id = 0n;
+  else {
+    id = BigInt(__ptrRegistry.length + 1);
+    __ptrRegistry.push(v);
+  }
+  stU64(p, id);
+  return v;
+}
+
+/** load a CPtr previously stored via stPtr. @param {CPtr} p @returns {CPtr|null} */
+export function ldPtr(p) {
+  const id = ldU64(p);
+  if (id === 0n) return null;
+  return __ptrRegistry[Number(id) - 1];
+}
+
 // ------------------------------------------------------------ libc string ----
 
 /** @param {CPtr} p @returns {bigint} size_t */
@@ -219,9 +263,9 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 // ------------------------------------------------------ printf-family --------
 
 /**
- * Minimal C printf formatter. Supports %d, %+d, %i, %s, %c, %%, with
- * optional 0/left-justification-free numeric width (e.g. %5d, %02d).
- * String args may be CPtr; numbers may be BigInt.
+ * Minimal C printf formatter. Supports %d %i %u %x %s %c %f %%, optional
+ * +/0 flags and numeric width, and the ll length modifier (for i64/u64
+ * BigInts). String args may be CPtr; integers may be BigInt.
  * @param {CPtr|string} fmt
  * @param {Array} args
  * @returns {string}
@@ -229,19 +273,29 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 export function sprintfCore(fmt, args) {
   const f = cstr(fmt);
   let ai = 0;
-  return f.replace(/%([+0-]*)(\d*)([diucs%])/g, (m, flags, width, spec) => {
+  return f.replace(/%([+0-]*)(\d*)(ll|l)?([diuxscf%])/g, (m, flags, width, len, spec) => {
     if (spec === '%') return '%';
     const a = args[ai++];
+    const w = Number(width || 0);
     let s;
     if (spec === 's') s = cstr(a);
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
-    else if (spec === 'u') s = String(Number(BigInt.asUintN(32, BigInt(a))));
+    else if (spec === 'f') s = Number(a).toFixed(6);
+    else if (spec === 'x') s = (len === 'll' || len === 'l') ? BigInt.asUintN(64, BigInt(a)).toString(16) : (Number(a) >>> 0).toString(16);
+    else if (spec === 'u') s = (len === 'll' || len === 'l') ? String(BigInt.asUintN(64, BigInt(a))) : String(Number(a) >>> 0);
+    else if (len === 'll' || len === 'l') s = String(BigInt.asIntN(64, BigInt(a))); // %lld/%ld
     else s = String(Number(a)); // %d %i
-    if (flags.includes('+') && !s.startsWith('-') && spec !== 's' && spec !== 'c') s = '+' + s;
-    const w = Number(width || 0);
+    if (flags.includes('+') && !s.startsWith('-') && 'di'.includes(spec)) s = '+' + s;
     if (s.length < w) s = (flags.includes('0') && !s.startsWith('-') ? '0' : ' ').repeat(w - s.length) + s;
     return s;
   });
+}
+
+/** printf to stdout. @param {CPtr|string} fmt @returns {number} */
+export function printf(fmt, ...args) {
+  const s = sprintfCore(fmt, args);
+  process.stdout.write(s);
+  return s.length;
 }
 
 /** write JS string bytes (with NUL) into a C buffer; returns chars written (excl. NUL). @param {CPtr} p @param {string} s @returns {number} */
