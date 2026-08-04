@@ -90,7 +90,7 @@ matching how the C recorder's patches log.
 - Model: `deepseek-v4-flash`. `max_tokens` unset (provider default).
 - reasoning_effort: `low` for bulk mechanical tasks, default (`high`)
   otherwise, `max` for gnarly debugging.
-- **Circuit breaker: if one task burns >500k cumulative tokens
+- **Circuit breaker: if one task burns >5,000,000 cumulative tokens
   (prompt+completion, tracked from API `usage`), stop that task and
   notify Noah WITH SOUND (`afplay /System/Library/Sounds/Glass.aiff`)
   to escalate to a smarter model (Qwen 3.8 / Kimi K3 class).** A task
