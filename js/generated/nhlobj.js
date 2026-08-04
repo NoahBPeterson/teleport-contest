@@ -387,7 +387,7 @@ function l_obj_new_readobjnam(L) {
         lua_settop(L, (-(1) - 1) | 0);
         void l_obj_push(L, otmp);
         return 1;
-    }
+    } else
         nhl_error(L, __sl83);
     return 0;
 }
@@ -404,7 +404,7 @@ function l_obj_at(L) {
         lua_settop(L, (-(2) - 1) | 0);
         void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[x.v]), y.v)));
         return 1;
-    }
+    } else
         nhl_error(L, __sl84);
     return 0;
 }
@@ -475,7 +475,7 @@ function l_obj_timer_has(L) {
             lua_pushboolean(L, 0);
             return 1;
         }
-    }
+    } else
         nhl_error(L, __sl86);
     return 0;
 }
@@ -493,7 +493,7 @@ function l_obj_timer_peek(L) {
             lua_pushinteger(L, 0n);
             return 1;
         }
-    }
+    } else
         nhl_error(L, __sl87);
     return 0;
 }
@@ -516,7 +516,7 @@ function l_obj_timer_stop(L) {
             lua_pushinteger(L, 0n);
             return 1;
         }
-    }
+    } else
         nhl_error(L, __sl88);
     return 0;
 }
@@ -533,7 +533,7 @@ function l_obj_timer_start(L) {
                 stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
             start_timer(when, i16(TIMER_OBJECT), timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
         }
-    }
+    } else
         nhl_error(L, __sl89);
     return 0;
 }
@@ -552,7 +552,7 @@ function l_obj_bury(L) {
         x.v = Number(BigInt.asIntN(16, lua_tointegerx(L, (2), null)));
         y.v = Number(BigInt.asIntN(16, lua_tointegerx(L, (3), null)));
         cvt_to_abscoord(x, y);
-    }
+    } else
         nhl_error(L, __sl90);
     if (((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8) && isok(x.v, y.v)) {
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28), x.v);
@@ -584,7 +584,10 @@ const l_obj_methods = [
 ];
 
 /** C ref: nhlobj.c:648 — luaL_Reg[2] */
-const l_obj_meta = [{ name: __sl105, func: l_obj_gc }, { name: null, func: null }];
+const l_obj_meta = [
+    { name: __sl105, func: l_obj_gc },
+    { name: null, func: null }
+];
 
 /** C ref: nhlobj.c:654 — @param {CPtr} L @returns {CInt} */
 export function l_obj_register(L) {

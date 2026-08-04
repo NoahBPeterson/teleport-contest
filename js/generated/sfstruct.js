@@ -85,13 +85,153 @@ export function historical_sfi_bitfield(nhfp, d_bitfield, myname, bflen) {
 }
 
 /** C ref: sfstruct.c:149 — struct sf_structlevel_procs */
-let historical_sfo_procs = { ext: __sl0, fn: { sf_arti_info: historical_sfo_arti_info, sf_nhrect: historical_sfo_nhrect, sf_branch: historical_sfo_branch, sf_bubble: historical_sfo_bubble, sf_cemetery: historical_sfo_cemetery, sf_context_info: historical_sfo_context_info, sf_nhcoord: historical_sfo_nhcoord, sf_damage: historical_sfo_damage, sf_dest_area: historical_sfo_dest_area, sf_dgn_topology: historical_sfo_dgn_topology, sf_dungeon: historical_sfo_dungeon, sf_d_level: historical_sfo_d_level, sf_ebones: historical_sfo_ebones, sf_edog: historical_sfo_edog, sf_egd: historical_sfo_egd, sf_emin: historical_sfo_emin, sf_engr: historical_sfo_engr, sf_epri: historical_sfo_epri, sf_eshk: historical_sfo_eshk, sf_fe: historical_sfo_fe, sf_flag: historical_sfo_flag, sf_fruit: historical_sfo_fruit, sf_gamelog_line: historical_sfo_gamelog_line, sf_kinfo: historical_sfo_kinfo, sf_levelflags: historical_sfo_levelflags, sf_ls_t: historical_sfo_ls_t, sf_linfo: historical_sfo_linfo, sf_mapseen_feat: historical_sfo_mapseen_feat, sf_mapseen_flags: historical_sfo_mapseen_flags, sf_mapseen_rooms: historical_sfo_mapseen_rooms, sf_mkroom: historical_sfo_mkroom, sf_monst: historical_sfo_monst, sf_mvitals: historical_sfo_mvitals, sf_obj: historical_sfo_obj, sf_objclass: historical_sfo_objclass, sf_q_score: historical_sfo_q_score, sf_rm: historical_sfo_rm, sf_spell: historical_sfo_spell, sf_stairway: historical_sfo_stairway, sf_s_level: historical_sfo_s_level, sf_trap: historical_sfo_trap, sf_version_info: historical_sfo_version_info, sf_you: historical_sfo_you, sf_any: historical_sfo_any, sf_aligntyp: historical_sfo_aligntyp, sf_boolean: historical_sfo_boolean, sf_coordxy: historical_sfo_coordxy, sf_genericptr: historical_sfo_genericptr_t, sf_int: historical_sfo_int, sf_int16: historical_sfo_int16, sf_int32: historical_sfo_int32, sf_int64: historical_sfo_int64, sf_long: historical_sfo_long, sf_schar: historical_sfo_schar, sf_short: historical_sfo_short, sf_size_t: historical_sfo_size_t, sf_time_t: historical_sfo_time_t, sf_uchar: historical_sfo_uchar, sf_uint16: historical_sfo_uint16, sf_uint32: historical_sfo_uint32, sf_uint64: historical_sfo_uint64, sf_ulong: historical_sfo_ulong, sf_unsigned: historical_sfo_unsigned, sf_ushort: historical_sfo_ushort, sf_xint16: historical_sfo_xint16, sf_xint8: historical_sfo_xint8, sf_char: historical_sfo_char, sf_bitfield: historical_sfo_bitfield } };
+let historical_sfo_procs = cptr.alloc(552);
+cptr.stPtr(historical_sfo_procs, __sl0);
+cptr.stPtr(cptr.add(historical_sfo_procs, 8), historical_sfo_arti_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 8), historical_sfo_nhrect);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 16), historical_sfo_branch);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 24), historical_sfo_bubble);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 32), historical_sfo_cemetery);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 40), historical_sfo_context_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 48), historical_sfo_nhcoord);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 56), historical_sfo_damage);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 64), historical_sfo_dest_area);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 72), historical_sfo_dgn_topology);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 80), historical_sfo_dungeon);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 88), historical_sfo_d_level);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 96), historical_sfo_ebones);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 104), historical_sfo_edog);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 112), historical_sfo_egd);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 120), historical_sfo_emin);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 128), historical_sfo_engr);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 136), historical_sfo_epri);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 144), historical_sfo_eshk);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 152), historical_sfo_fe);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 160), historical_sfo_flag);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 168), historical_sfo_fruit);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 176), historical_sfo_gamelog_line);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 184), historical_sfo_kinfo);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 192), historical_sfo_levelflags);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 200), historical_sfo_ls_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 208), historical_sfo_linfo);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 216), historical_sfo_mapseen_feat);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 224), historical_sfo_mapseen_flags);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 232), historical_sfo_mapseen_rooms);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 240), historical_sfo_mkroom);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 248), historical_sfo_monst);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 256), historical_sfo_mvitals);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 264), historical_sfo_obj);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 272), historical_sfo_objclass);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 280), historical_sfo_q_score);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 288), historical_sfo_rm);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 296), historical_sfo_spell);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 304), historical_sfo_stairway);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 312), historical_sfo_s_level);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 320), historical_sfo_trap);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 328), historical_sfo_version_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 336), historical_sfo_you);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 344), historical_sfo_any);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 352), historical_sfo_aligntyp);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 360), historical_sfo_boolean);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 368), historical_sfo_coordxy);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 376), historical_sfo_genericptr_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 384), historical_sfo_int);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 392), historical_sfo_int16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 400), historical_sfo_int32);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 408), historical_sfo_int64);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 416), historical_sfo_long);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 424), historical_sfo_schar);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 432), historical_sfo_short);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 440), historical_sfo_size_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 448), historical_sfo_time_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 456), historical_sfo_uchar);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 464), historical_sfo_uint16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 472), historical_sfo_uint32);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 480), historical_sfo_uint64);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 488), historical_sfo_ulong);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 496), historical_sfo_unsigned);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 504), historical_sfo_ushort);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 512), historical_sfo_xint16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 520), historical_sfo_xint8);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 528), historical_sfo_char);
+cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 536), historical_sfo_bitfield);
 
 /** C ref: sfstruct.c:225 — struct sf_structlevel_procs */
-let historical_sfi_procs = { ext: __sl0, fn: { sf_arti_info: historical_sfi_arti_info, sf_nhrect: historical_sfi_nhrect, sf_branch: historical_sfi_branch, sf_bubble: historical_sfi_bubble, sf_cemetery: historical_sfi_cemetery, sf_context_info: historical_sfi_context_info, sf_nhcoord: historical_sfi_nhcoord, sf_damage: historical_sfi_damage, sf_dest_area: historical_sfi_dest_area, sf_dgn_topology: historical_sfi_dgn_topology, sf_dungeon: historical_sfi_dungeon, sf_d_level: historical_sfi_d_level, sf_ebones: historical_sfi_ebones, sf_edog: historical_sfi_edog, sf_egd: historical_sfi_egd, sf_emin: historical_sfi_emin, sf_engr: historical_sfi_engr, sf_epri: historical_sfi_epri, sf_eshk: historical_sfi_eshk, sf_fe: historical_sfi_fe, sf_flag: historical_sfi_flag, sf_fruit: historical_sfi_fruit, sf_gamelog_line: historical_sfi_gamelog_line, sf_kinfo: historical_sfi_kinfo, sf_levelflags: historical_sfi_levelflags, sf_ls_t: historical_sfi_ls_t, sf_linfo: historical_sfi_linfo, sf_mapseen_feat: historical_sfi_mapseen_feat, sf_mapseen_flags: historical_sfi_mapseen_flags, sf_mapseen_rooms: historical_sfi_mapseen_rooms, sf_mkroom: historical_sfi_mkroom, sf_monst: historical_sfi_monst, sf_mvitals: historical_sfi_mvitals, sf_obj: historical_sfi_obj, sf_objclass: historical_sfi_objclass, sf_q_score: historical_sfi_q_score, sf_rm: historical_sfi_rm, sf_spell: historical_sfi_spell, sf_stairway: historical_sfi_stairway, sf_s_level: historical_sfi_s_level, sf_trap: historical_sfi_trap, sf_version_info: historical_sfi_version_info, sf_you: historical_sfi_you, sf_any: historical_sfi_any, sf_aligntyp: historical_sfi_aligntyp, sf_boolean: historical_sfi_boolean, sf_coordxy: historical_sfi_coordxy, sf_genericptr: historical_sfi_genericptr_t, sf_int: historical_sfi_int, sf_int16: historical_sfi_int16, sf_int32: historical_sfi_int32, sf_int64: historical_sfi_int64, sf_long: historical_sfi_long, sf_schar: historical_sfi_schar, sf_short: historical_sfi_short, sf_size_t: historical_sfi_size_t, sf_time_t: historical_sfi_time_t, sf_uchar: historical_sfi_uchar, sf_uint16: historical_sfi_uint16, sf_uint32: historical_sfi_uint32, sf_uint64: historical_sfi_uint64, sf_ulong: historical_sfi_ulong, sf_unsigned: historical_sfi_unsigned, sf_ushort: historical_sfi_ushort, sf_xint16: historical_sfi_xint16, sf_xint8: historical_sfi_xint8, sf_char: historical_sfi_char, sf_bitfield: historical_sfi_bitfield } };
+let historical_sfi_procs = cptr.alloc(552);
+cptr.stPtr(historical_sfi_procs, __sl0);
+cptr.stPtr(cptr.add(historical_sfi_procs, 8), historical_sfi_arti_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 8), historical_sfi_nhrect);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 16), historical_sfi_branch);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 24), historical_sfi_bubble);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 32), historical_sfi_cemetery);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 40), historical_sfi_context_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 48), historical_sfi_nhcoord);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 56), historical_sfi_damage);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 64), historical_sfi_dest_area);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 72), historical_sfi_dgn_topology);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 80), historical_sfi_dungeon);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 88), historical_sfi_d_level);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 96), historical_sfi_ebones);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 104), historical_sfi_edog);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 112), historical_sfi_egd);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 120), historical_sfi_emin);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 128), historical_sfi_engr);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 136), historical_sfi_epri);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 144), historical_sfi_eshk);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 152), historical_sfi_fe);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 160), historical_sfi_flag);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 168), historical_sfi_fruit);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 176), historical_sfi_gamelog_line);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 184), historical_sfi_kinfo);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 192), historical_sfi_levelflags);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 200), historical_sfi_ls_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 208), historical_sfi_linfo);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 216), historical_sfi_mapseen_feat);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 224), historical_sfi_mapseen_flags);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 232), historical_sfi_mapseen_rooms);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 240), historical_sfi_mkroom);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 248), historical_sfi_monst);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 256), historical_sfi_mvitals);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 264), historical_sfi_obj);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 272), historical_sfi_objclass);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 280), historical_sfi_q_score);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 288), historical_sfi_rm);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 296), historical_sfi_spell);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 304), historical_sfi_stairway);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 312), historical_sfi_s_level);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 320), historical_sfi_trap);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 328), historical_sfi_version_info);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 336), historical_sfi_you);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 344), historical_sfi_any);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 352), historical_sfi_aligntyp);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 360), historical_sfi_boolean);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 368), historical_sfi_coordxy);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 376), historical_sfi_genericptr_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 384), historical_sfi_int);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 392), historical_sfi_int16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 400), historical_sfi_int32);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 408), historical_sfi_int64);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 416), historical_sfi_long);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 424), historical_sfi_schar);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 432), historical_sfi_short);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 440), historical_sfi_size_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 448), historical_sfi_time_t);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 456), historical_sfi_uchar);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 464), historical_sfi_uint16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 472), historical_sfi_uint32);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 480), historical_sfi_uint64);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 488), historical_sfi_ulong);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 496), historical_sfi_unsigned);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 504), historical_sfi_ushort);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 512), historical_sfi_xint16);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 520), historical_sfi_xint8);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 528), historical_sfi_char);
+cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 536), historical_sfi_bitfield);
 
 /** C ref: sfstruct.c:320 — struct restore_info */
-let restoreinfo = { name: __sl1, mread_flags: 0 };
+let restoreinfo = cptr.alloc(16);
+cptr.stPtr(restoreinfo, __sl1);
+cptr.stI32(cptr.add(restoreinfo, 8), 0);
 
 /** C ref: sfstruct.c:325 — enum */
 const NOFLG = 0;
@@ -165,7 +305,7 @@ export function bclose(fd) {
         if (cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) {
             void fclose(cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx)));
             cptr.stPtr(cptr.add(cptr.decay(bw_FILE), idx), null);
-        }
+        } else
             close(fd);
         bw_sticky[idx] = -1;
     }
@@ -203,7 +343,7 @@ export function bwrite(fd, loc, num) {
             else
                 panic(__sl6, num, fd);
         }
-    }
+    } else
         impossible(__sl7, fd);
 }
 
@@ -212,8 +352,8 @@ export function mread(fd, buf, len) {
     let rlen;
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
-        if ((restoreinfo.mread_flags == 1) || (program_state.reading_bonesfile == 1)) {
-            restoreinfo.mread_flags = -1;
+        if ((cptr.ldI32(cptr.add(restoreinfo, 8)) == 1) || (program_state.reading_bonesfile == 1)) {
+            cptr.stI32(cptr.add(restoreinfo, 8), -1);
             return;
         } else {
             pline(__sl8, rlen | 0, len);

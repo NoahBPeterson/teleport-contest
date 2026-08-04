@@ -323,7 +323,7 @@ export function adjattrib(ndx, incr, msgflg) {
     let attrstr;
     if (u.uprops[FIXED_ABIL].extrinsic || !incr)
         return (0);
-    if ((ndx == A_INT || ndx == A_WIS) && uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP) {
+    if ((ndx == A_INT || ndx == A_WIS) && uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP) {
         if (msgflg == 0)
             Your(__sl37);
         return (0);
@@ -496,7 +496,7 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     } else if (i > 5) {
         let cloud = schar((!strcmp(reason, __sl73)));
         loss = thrown_weapon ? (rng_log_enabled() ? (rng_log_set_caller(__sl38, 388, __sl71), rnd(6)) : rnd(6)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl38, 388, __sl71), rn2(10)) : rn2(10)) + (6)) | 0);
-        if ((blast || cloud) && (ublindf && cptr.ldI16(cptr.add(ublindf, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf, 48)) > 0))
+        if ((blast || cloud) && (ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0))
             loss = (((loss + 1) | 0) / 2) | 0;
         losehp(loss, pkiller, schar(kprefix));
     } else {
@@ -938,11 +938,11 @@ export function from_what(propidx) {
             else if (innateness == 5)
                 void cptr.strcpy(cptr.decay(__static_from_what_buf), __sl115);
             else if (propidx == FAST && ((u.uprops[FAST].intrinsic & ~(67108864n | 33554432n | 16777216n)) || u.uprops[FAST].extrinsic))
-                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((u.uprops[FAST].intrinsic & 16777215n) != 0n) ? __sl116 : (((u.uprops[FAST].extrinsic & 32n) != 0n && cptr.ldI32(cptr.add(uarmf, 84)) | 0 && objects[cptr.ldI16(cptr.add(uarmf, 32))].oc_name_known | 0) ? ysimple_name(uarmf) : (u.uprops[FAST].extrinsic ? __sl117 : c_common_strings.c_something)));
+                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((u.uprops[FAST].intrinsic & 16777215n) != 0n) ? __sl116 : (((u.uprops[FAST].extrinsic & 32n) != 0n && cptr.ldI32(cptr.add(uarmf.v, 84)) | 0 && objects[cptr.ldI16(cptr.add(uarmf.v, 32))].oc_name_known | 0) ? ysimple_name(uarmf.v) : (u.uprops[FAST].extrinsic ? __sl117 : c_common_strings.c_something)));
             else if (flags.debug && (obj = what_gives(cptr.boxProp(u.uprops[propidx], 'extrinsic'))) !== null)
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), cptr.ld1s(cptr.add(obj, 51)) ? bare_artifactname(obj) : ysimple_name(obj));
             else if (propidx == BLINDED && (u.uprops[BLINDED].extrinsic && !(u.uprops[BLINDED].intrinsic && !u.uprops[BLINDED].blocked)))
-                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(ublindf));
+                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(ublindf.v));
             else if (propidx == BLINDED && u.ucreamed && (u.uprops[BLINDED].intrinsic & 16777215n) == BigInt(u.ucreamed >>> 0) && !u.uprops[BLINDED].extrinsic && !(u.uprops[BLINDED].intrinsic & ~16777215n))
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), __sl118, body_part(FACE));
             if ((p = strstri(cptr.decay(__static_from_what_buf), __sl119)) !== null)
@@ -952,16 +952,16 @@ export function from_what(propidx) {
         } else {
             switch (-propidx) {
                 case BLINDED:
-                if (u.uprops[BLINDED].blocked && is_art(ublindf, ART_EYES_OF_THE_OVERWORLD))
-                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), bare_artifactname(ublindf));
+                if (u.uprops[BLINDED].blocked && is_art(ublindf.v, ART_EYES_OF_THE_OVERWORLD))
+                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), bare_artifactname(ublindf.v));
                 break;
                 case INVIS:
                 if (u.uprops[INVIS].blocked & 2n)
-                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmc));
+                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmc.v));
                 break;
                 case CLAIRVOYANT:
                 if (flags.debug && (u.uprops[CLAIRVOYANT].blocked & 4n))
-                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmh));
+                    void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmh.v));
                 break;
             }
         }
@@ -1133,7 +1133,7 @@ export function acurr(chridx) {
     (__builtin_expect(BigInt((!(chridx >= 0 && chridx < A_MAX))), 0n) ? __assert_rtn(__sl124, __sl125, 1204, __sl126) : void 0);
     tmp = (((cptr.ld1s(cptr.add(cptr.decay(u.abon.a), chridx)) + cptr.ld1s(cptr.add(cptr.decay(u.atemp.a), chridx))) | 0) + cptr.ld1s(cptr.add(cptr.decay(u.acurr.a), chridx))) | 0;
     if (chridx == A_STR) {
-        if (tmp >= ((100 + (25)) | 0) || (uarmg && cptr.ldI16(cptr.add(uarmg, 32)) == GAUNTLETS_OF_POWER))
+        if (tmp >= ((100 + (25)) | 0) || (uarmg.v && cptr.ldI16(cptr.add(uarmg.v, 32)) == GAUNTLETS_OF_POWER))
             result = ((100 + (25)) | 0);
         else
             result = ((tmp) > (3) ? (tmp) : (3));
@@ -1141,10 +1141,10 @@ export function acurr(chridx) {
         if (tmp < 18 && (cptr.ld1s(cptr.add(gy.youmonst.data, 28)) == S_NYMPH || u.umonnum == PM_AMOROUS_DEMON))
             result = 18;
     } else if (chridx == A_CON) {
-        if (is_art(uwep, ART_OGRESMASHER))
+        if (is_art(uwep.v, ART_OGRESMASHER))
             result = 25;
     } else if (chridx == A_INT || chridx == A_WIS) {
-        if (uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP)
+        if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP)
             result = 6;
     } else if (chridx == A_DEX) {
         ;
@@ -1174,14 +1174,14 @@ export function extremeattr(attrindx) {
     let curval = (acurr(attrindx));
     if (attrindx == A_STR) {
         hilimit = ((100 + (25)) | 0);
-        if (uarmg && cptr.ldI16(cptr.add(uarmg, 32)) == GAUNTLETS_OF_POWER)
+        if (uarmg.v && cptr.ldI16(cptr.add(uarmg.v, 32)) == GAUNTLETS_OF_POWER)
             lolimit = hilimit;
     } else if (attrindx == A_CON) {
-        if (is_art(uwep, ART_OGRESMASHER))
+        if (is_art(uwep.v, ART_OGRESMASHER))
             lolimit = hilimit;
     }
     if (attrindx == A_INT || attrindx == A_WIS) {
-        if (uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP)
+        if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP)
             hilimit = (lolimit = 6);
     }
     return schar(((curval == lolimit || curval == hilimit) ? 1 : 0));
@@ -1212,9 +1212,9 @@ export function uchangealign(newalign, reason) {
     disp.botl = (1);
     if (reason == A_CG_CONVERT) {
         livelog_printf(512n, __sl127, aligns[(1 - newalign) | 0].adj);
-        u.ualignbase[0] = schar(newalign);
-        if (!uarmh || cptr.ldI16(cptr.add(uarmh, 32)) != HELM_OF_OPPOSITE_ALIGNMENT)
-            u.ualign.type = u.ualignbase[0];
+        cptr.st1(cptr.add(cptr.decay(u.ualignbase), 0), schar(newalign));
+        if (!uarmh.v || cptr.ldI16(cptr.add(uarmh.v, 32)) != HELM_OF_OPPOSITE_ALIGNMENT)
+            u.ualign.type = cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0));
         You(__sl128, (u.ualign.type != oldalign) ? __sl129 : __sl18);
     } else {
         u.ualign.type = schar(newalign);

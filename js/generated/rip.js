@@ -77,7 +77,7 @@ export function genl_outrip(tmpwin, how, when) {
         if (tmpchar != 32) {
             cptr.st1(cptr.add(dpx, i0), tmpchar);
             dpx = cptr.add(dpx, i0);
-        }
+        } else
             dpx = cptr.add(dpx, (i0 + 1) | 0);
     }
     year = Number(BigInt.asIntN(32, ((yyyymmdd(when) / 10000n) % 10000n)));

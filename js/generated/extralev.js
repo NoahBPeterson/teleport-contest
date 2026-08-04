@@ -146,7 +146,7 @@ function roguecorr(x, y, dir) {
         }
         roguejoin(fromx, fromy, tox, toy, 1);
         return;
-    }
+    } else
         impossible(__sl8, dir);
 }
 

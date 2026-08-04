@@ -502,7 +502,7 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                 }
             }
         }
-    }
+    } else
         appr = 1;
     if (cptr.ldI32(cptr.add(mtmp, 164)))
         appr = 0;
@@ -783,7 +783,7 @@ export function dog_move(mtmp, after) {
             else if (j == 1)
                 break __lbl_newdogpos;
             whappr = (svm.moves - cptr.ldI64(cptr.add(edog, 24)) < 5n);
-        }
+        } else
             whappr = 0;
         appr = dog_goal(mtmp, edog, after, udist, whappr);
         if (appr == -2)

@@ -76,7 +76,7 @@ export function luaT_gettm(events, event, ename) {
     if ((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) {
         cptr.st1(cptr.add(events, 10), cptr.ld1u(cptr.add(events, 10)) | (uchar((((1 << event) >>> 0)))));
         return null;
-    }
+    } else
         return tm;
 }
 
@@ -289,7 +289,7 @@ export function luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
     if (flip) {
         p2 = p1;
         p1 = aux;
-    }
+    } else
         p2 = aux;
     return luaT_callorderTM(L, p1, p2, event);
 }

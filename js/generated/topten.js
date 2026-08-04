@@ -311,7 +311,7 @@ function readentry(rfile, tt) {
                 cptr.st1(cptr.add(cptr.add(tt, 76), 1, 1), cptr.st1(cptr.add(cptr.add(tt, 84), 1, 1), 0));
                 copynchars(cptr.add(tt, 92), cptr.decay(s1), (11 - 1) | 0);
                 copynchars(cptr.add(tt, 103), cptr.decay(s2), (101 - 1) | 0);
-            }
+            } else
                 cptr.stU64(cptr.add(tt, 8), 0n);
             cptr.st1(cptr.add(cptr.add(tt, 76), 1, 1), 0);
             if ((i = str2role(cptr.add(tt, 76))) >= 0)
@@ -326,7 +326,7 @@ function readentry(rfile, tt) {
             copynchars(cptr.add(tt, 88), cptr.decay(s4), (4 - 1) | 0);
             copynchars(cptr.add(tt, 92), cptr.decay(s5), (11 - 1) | 0);
             copynchars(cptr.add(tt, 103), cptr.decay(s6), (101 - 1) | 0);
-        }
+        } else
             cptr.stU64(cptr.add(tt, 8), 0n);
     }
     if (cptr.ldI64(cptr.add(tt, 8)) > 0n) {
@@ -358,9 +358,9 @@ function writexlentry(rfile, tt, how) {
     let tmpbuf = new Uint8Array(101);
     let achbuf = new Uint8Array(1280);
     void cptr.sprintf(cptr.decay(buf), __sl20, cptr.ldI32(cptr.add(tt, 40)), cptr.ldI32(cptr.add(tt, 44)), cptr.ldI32(cptr.add(tt, 48)));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl21, 9, cptr.ldI64(cptr.add(tt, 8)), 9, cptr.ldI32(cptr.add(tt, 16)), 9, cptr.ldI32(cptr.add(tt, 20)));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl22, 9, cptr.ldI32(cptr.add(tt, 24)), 9, cptr.ldI32(cptr.add(tt, 28)), 9, cptr.ldI32(cptr.add(tt, 32)));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl23, 9, cptr.ldI32(cptr.add(tt, 36)), 9, cptr.ldI64(cptr.add(tt, 56)), 9, cptr.ldI64(cptr.add(tt, 64)), 9, cptr.ldI32(cptr.add(tt, 72)));
+    void cptr.sprintf(eos.v(cptr.decay(buf)), __sl21, 9, cptr.ldI64(cptr.add(tt, 8)), 9, cptr.ldI32(cptr.add(tt, 16)), 9, cptr.ldI32(cptr.add(tt, 20)));
+    void cptr.sprintf(eos.v(cptr.decay(buf)), __sl22, 9, cptr.ldI32(cptr.add(tt, 24)), 9, cptr.ldI32(cptr.add(tt, 28)), 9, cptr.ldI32(cptr.add(tt, 32)));
+    void cptr.sprintf(eos.v(cptr.decay(buf)), __sl23, 9, cptr.ldI32(cptr.add(tt, 36)), 9, cptr.ldI64(cptr.add(tt, 56)), 9, cptr.ldI64(cptr.add(tt, 64)), 9, cptr.ldI32(cptr.add(tt, 72)));
     void fprintf(rfile, __sl24, cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __sl25, 9, cptr.add(tt, 76), 9, cptr.add(tt, 80), 9, cptr.add(tt, 84), 9, cptr.add(tt, 88));
     formatkiller(cptr.decay(tmpbuf), 101, how, (0));
@@ -370,8 +370,8 @@ function writexlentry(rfile, tt, how) {
     void fprintf(rfile, __sl29, 9, encodeconduct(), 9, svm.moves, 9, encodeachieve((0)));
     void fprintf(rfile, __sl30, 9, encode_extended_achievements(cptr.decay(achbuf)));
     void fprintf(rfile, __sl31, 9, encode_extended_conducts(cptr.decay(buf)));
-    void fprintf(rfile, __sl32, 9, urealtime.realtime, 9, timet_to_seconds(ubirthday), 9, timet_to_seconds(urealtime.finish_time));
-    void fprintf(rfile, __sl33, 9, genders[flags.initgend].filecode, 9, aligns[(1 - u.ualignbase[1]) | 0].filecode);
+    void fprintf(rfile, __sl32, 9, urealtime.realtime, 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(urealtime.finish_time));
+    void fprintf(rfile, __sl33, 9, genders[flags.initgend].filecode, 9, aligns[(1 - cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) | 0].filecode);
     void fprintf(rfile, __sl34, 9, encodexlogflags());
     void fprintf(rfile, __sl35, 9, money_cnt(gi.invent) + hidden_gold((1)));
     void fprintf(rfile, __sl36, 9, u.uconduct.wishes);
@@ -630,7 +630,7 @@ export function topten(how, when) {
         copynchars(cptr.add(t0, 88), aligns[(1 - u.ualign.type) | 0].filecode, 3);
         copynchars(cptr.add(t0, 92), cptr.decay(svp.plname), 10);
         formatkiller(cptr.add(t0, 103), 101, how, (1));
-        cptr.stU64(cptr.add(t0, 64), yyyymmdd(ubirthday));
+        cptr.stU64(cptr.add(t0, 64), yyyymmdd(ubirthday.v));
         cptr.stU64(cptr.add(t0, 56), yyyymmdd(when));
         cptr.stPtr(t0, null);
         if (lock_file(__sl84, 5, 10)) {
@@ -692,7 +692,7 @@ export function topten(how, when) {
                 t0_used = (1);
                 occ_cnt--;
                 flg++;
-            }
+            } else
                 tprev = t1;
             if (cptr.ldI64(cptr.add(t1, 8)) == 0n)
                 break;
@@ -796,7 +796,7 @@ function outheader() {
     let linebuf = new Uint8Array(256);
     let bp;
     void cptr.strcpy(cptr.decay(linebuf), __sl100);
-    bp = eos(cptr.decay(linebuf));
+    bp = eos.v(cptr.decay(linebuf));
     while (cptr.cmp(bp, cptr.add(cptr.add(cptr.decay(linebuf), 80), -(9))) < 0)
         cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
     void cptr.strcpy(bp, __sl101);
@@ -814,25 +814,25 @@ function outentry(rank, t1, so) {
     let lngr;
     cptr.st1(cptr.add(cptr.decay(linebuf), 0), 0);
     if (rank)
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl102, rank);
+        void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl102, rank);
     else
         void cptr.strcat(cptr.decay(linebuf), __sl103);
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl104, cptr.ldI64(cptr.add(t1, 8)) ? cptr.ldI64(cptr.add(t1, 8)) : u.urexp, cptr.add(t1, 92));
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 76));
+    void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl104, cptr.ldI64(cptr.add(t1, 8)) ? cptr.ldI64(cptr.add(t1, 8)) : u.urexp, cptr.add(t1, 92));
+    void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl105, cptr.add(t1, 76));
     if (cptr.ld1s(cptr.add(cptr.add(t1, 80), 0, 1)) != 63)
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 80));
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 84));
+        void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl105, cptr.add(t1, 80));
+    void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl105, cptr.add(t1, 84));
     if (cptr.ld1s(cptr.add(cptr.add(t1, 88), 0, 1)) != 63)
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl106, cptr.add(t1, 88));
+        void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl106, cptr.add(t1, 88));
     else
         void cptr.strcat(cptr.decay(linebuf), __sl63);
     if (!cptr.strncmp(__sl107, cptr.add(t1, 103), 7n)) {
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl108, !cptr.strncmp(__sl109, cptr.add(cptr.add(t1, 103), 7), 2n) ? cptr.add(cptr.add(cptr.add(t1, 103), 7), 2) : __sl14, cptr.ldI32(cptr.add(t1, 24)));
+        void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl108, !cptr.strncmp(__sl109, cptr.add(cptr.add(t1, 103), 7), 2n) ? cptr.add(cptr.add(cptr.add(t1, 103), 7), 2) : __sl14, cptr.ldI32(cptr.add(t1, 24)));
         if ((bp = cptr.strchr(cptr.decay(linebuf), 41)) !== null)
             cptr.st1(bp, schar(((cptr.ldI32(cptr.add(t1, 16)) == (svd.dungeon_topology.d_astral_level).dnum) ? 0 : 32)));
         second_line = (0);
     } else if (!cptr.strncmp(__sl41, cptr.add(t1, 103), 8n)) {
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl110, (cptr.ld1s(cptr.add(cptr.add(t1, 84), 0, 1)) == 70) ? __sl111 : __sl14);
+        void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl110, (cptr.ld1s(cptr.add(cptr.add(t1, 84), 0, 1)) == 70) ? __sl111 : __sl14);
         second_line = (0);
     } else {
         if (!cptr.strncmp(cptr.add(t1, 103), __sl112, 4n)) {
@@ -842,14 +842,14 @@ function outentry(rank, t1, so) {
             void cptr.strcat(cptr.decay(linebuf), __sl114);
             second_line = (0);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl115, 6n)) {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl116, (cptr.ld1s(cptr.add(cptr.add(t1, 84), 0, 1)) == 70) ? __sl117 : __sl118);
+            void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl116, (cptr.ld1s(cptr.add(cptr.add(t1, 84), 0, 1)) == 70) ? __sl117 : __sl118);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl119, 8n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl120);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl121, 7n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl122);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl12, 13n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl123);
-        }
+        } else
             void cptr.strcat(cptr.decay(linebuf), __sl124);
         if (cptr.ldI32(cptr.add(t1, 16)) == (svd.dungeon_topology.d_astral_level).dnum) {
             let arg;
@@ -875,20 +875,20 @@ function outentry(rank, t1, so) {
                 arg = __sl132;
                 break;
             }
-            void cptr.sprintf(eos(cptr.decay(linebuf)), fmt, arg);
+            void cptr.sprintf(eos.v(cptr.decay(linebuf)), fmt, arg);
         } else {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl133, cptr.decay(svd.dungeons[cptr.ldI32(cptr.add(t1, 16))].dname));
+            void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl133, cptr.decay(svd.dungeons[cptr.ldI32(cptr.add(t1, 16))].dname));
             if (cptr.ldI32(cptr.add(t1, 16)) != (svd.dungeon_topology.d_knox_level).dnum)
-                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl134, cptr.ldI32(cptr.add(t1, 20)));
+                void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl134, cptr.ldI32(cptr.add(t1, 20)));
             if (cptr.ldI32(cptr.add(t1, 20)) != cptr.ldI32(cptr.add(t1, 24)))
-                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl135, cptr.ldI32(cptr.add(t1, 24)));
+                void cptr.sprintf(eos.v(cptr.decay(linebuf)), __sl135, cptr.ldI32(cptr.add(t1, 24)));
         }
         if (!cptr.strncmp(cptr.add(t1, 103), __sl136, 5n))
             void cptr.strcat(cptr.decay(linebuf), cptr.add(cptr.add(t1, 103), 4));
     }
     void cptr.strcat(cptr.decay(linebuf), __sl137);
     if (second_line) {
-        bp = eos(cptr.decay(linebuf));
+        bp = eos.v(cptr.decay(linebuf));
         void cptr.sprintf(bp, __sl138, highc(cptr.ld1s((cptr.add(t1, 103)))), cptr.add(cptr.add(t1, 103), 1));
         void strsubst(bp, __sl139, __sl140);
     }
@@ -899,7 +899,7 @@ function outentry(rank, t1, so) {
         void cptr.sprintf(cptr.decay(hpbuf), __sl141, cptr.ldI32(cptr.add(t1, 28)));
     hppos = (80 - Number(BigInt.asIntN(32, (11n - 1n)))) | 0;
     while (lngr >= hppos) {
-        for (bp = eos(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos)); bp = cptr.add(bp, -1))
+        for (bp = eos.v(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos)); bp = cptr.add(bp, -1))
             ;
         if (cptr.cmp(cptr.add(cptr.decay(linebuf), 15), bp) >= 0)
             bp = cptr.add(cptr.add(cptr.decay(linebuf), hppos), -(1));
@@ -915,26 +915,26 @@ function outentry(rank, t1, so) {
                 cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
             cptr.st1(bp, 0);
             topten_print_bold(cptr.decay(linebuf));
-        }
+        } else
             topten_print(cptr.decay(linebuf));
         nh_snprintf(__sl143, 1082, cptr.decay(linebuf), 256n, __sl144, __sl14, cptr.decay(linebuf3));
         lngr = Strlen_(cptr.decay(linebuf), __sl143, 1083) | 0;
     }
     hppos = (((80 - 7) | 0) - Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(hpbuf))))) | 0;
-    bp = eos(cptr.decay(linebuf));
+    bp = eos.v(cptr.decay(linebuf));
     if (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), hppos)) <= 0) {
         while (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), hppos)) < 0)
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
         void cptr.strcpy(bp, cptr.decay(hpbuf));
-        void cptr.sprintf(eos(bp), __sl145, (cptr.ldI32(cptr.add(t1, 32)) < 10) ? __sl146 : ((cptr.ldI32(cptr.add(t1, 32)) < 100) ? __sl63 : __sl14), cptr.ldI32(cptr.add(t1, 32)));
+        void cptr.sprintf(eos.v(bp), __sl145, (cptr.ldI32(cptr.add(t1, 32)) < 10) ? __sl146 : ((cptr.ldI32(cptr.add(t1, 32)) < 100) ? __sl63 : __sl14), cptr.ldI32(cptr.add(t1, 32)));
     }
     if (so) {
-        bp = eos(cptr.decay(linebuf));
+        bp = eos.v(cptr.decay(linebuf));
         while (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), ((80 - 1) | 0))) < 0)
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
         cptr.st1(bp, 0);
         topten_print_bold(cptr.decay(linebuf));
-    }
+    } else
         topten_print(cptr.decay(linebuf));
 }
 

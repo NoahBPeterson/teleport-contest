@@ -1471,7 +1471,7 @@ function invoke_create_portal(obj) {
         }
         i = (cptr.ldI32(cptr.add(selected.v, 0, 24)) - 1) | 0;
         cptr.free(selected.v);
-    }
+    } else
         i = last_ok_dungeon;
     (windowprocs.win_destroy_nhwindow)(tmpwin);
     cptr.stI16(newlev, i16(i));
@@ -1509,7 +1509,7 @@ function invoke_create_ammo(obj) {
     } else if (cptr.ldI32(cptr.add(obj, 56))) {
         if (cptr.ld1s(cptr.add(otmp, 48)) > 0)
             cptr.st1(cptr.add(otmp, 48), 0);
-    }
+    } else
         cptr.st1(cptr.add(otmp, 40), cptr.ld1s(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl3, 1954, __sl116), rnd(5)) : rnd(5))));
     cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     otmp = hold_another_object(otmp, __sl117, aobjnam(otmp, __sl118), null);
@@ -1558,7 +1558,7 @@ function invoke_banish(obj) {
     if (nvanished) {
         let subject = cptr.bytes("demons");
         if (nvanished == 1)
-            cptr.st1((cptr.add(eos(cptr.decay(subject)), -(1))), 0);
+            cptr.st1((cptr.add(eos.v(cptr.decay(subject)), -(1))), 0);
         pline(__sl120, nstayed ? ((nvanished > nstayed) ? __sl121 : __sl122) : __sl123, cptr.decay(subject), vtense(cptr.decay(subject), __sl124));
     }
     return 1;
@@ -1738,7 +1738,7 @@ function arti_invoke(obj) {
             if (on) {
                 float_up();
                 spoteffects((0));
-            }
+            } else
                 void float_down(536870912n | 16777215n, 8192n);
             break;
             case INVIS:
@@ -1881,7 +1881,7 @@ export function what_gives(abil) {
                     if ((cptr.ldU64(cptr.add(art, 16)) & spfx) == spfx && cptr.ldI64(cptr.add(obj, 192)))
                         return obj;
                 }
-                if (cptr.eq(obj, uwep) && cptr.eq(abil, cptr.boxProp(u.uprops[BLND_RES], 'extrinsic')) && (cptr.ldI64(abil) & 256n) != 0n) {
+                if (cptr.eq(obj, uwep.v) && cptr.eq(abil, cptr.boxProp(u.uprops[BLND_RES], 'extrinsic')) && (cptr.ldI64(abil) & 256n) != 0n) {
                     return obj;
                 }
             }
@@ -1920,19 +1920,19 @@ export function glow_verb(count, ingsfx) {
 
 /** C ref: artifact.c:2466 — @param {CInt} orc_count */
 export function Sting_effects(orc_count) {
-    if (is_art(uwep, ART_STING) || is_art(uwep, ART_ORCRIST) || is_art(uwep, ART_GRIMTOOTH)) {
+    if (is_art(uwep.v, ART_STING) || is_art(uwep.v, ART_ORCRIST) || is_art(uwep.v, ART_GRIMTOOTH)) {
         let oldstr = glow_strength(gw.warn_obj_cnt);
         let newstr = glow_strength(orc_count);
         if (orc_count == -1 && gw.warn_obj_cnt > 0) {
-            pline(__sl149, bare_artifactname(uwep), glow_verb(((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? 0 : gw.warn_obj_cnt, (1)));
+            pline(__sl149, bare_artifactname(uwep.v), glow_verb(((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? 0 : gw.warn_obj_cnt, (1)));
         } else if (newstr > 0 && newstr != oldstr) {
             maybe_lvltport_feedback();
             if (!((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
-                pline(__sl65, bare_artifactname(uwep), otense(uwep, glow_verb(orc_count, (0))), glow_color(cptr.ld1s(cptr.add(uwep, 51))), (newstr > oldstr) ? 33 : 46);
+                pline(__sl65, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, (0))), glow_color(cptr.ld1s(cptr.add(uwep.v, 51))), (newstr > oldstr) ? 33 : 46);
             else if (oldstr == 0)
-                pline(__sl150, bare_artifactname(uwep), otense(uwep, glow_verb(0, (0))));
+                pline(__sl150, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, (0))));
         } else if (orc_count == 0 && gw.warn_obj_cnt > 0) {
-            pline(__sl151, bare_artifactname(uwep), glow_verb(((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? 0 : gw.warn_obj_cnt, (1)));
+            pline(__sl151, bare_artifactname(uwep.v), glow_verb(((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? 0 : gw.warn_obj_cnt, (1)));
         }
     }
 }
@@ -2023,18 +2023,18 @@ let __static_retouch_equipment_nesting = 0; /** C ref: artifact.c:2643 — int (
 export function retouch_equipment(dropflag) {
     let obj;
     let dropit;
-    let had_gloves = schar((uarmg !== null));
-    let had_rings = ((!!uleft + !!uright) | 0);
+    let had_gloves = schar((uarmg.v !== null));
+    let had_rings = ((!!uleft.v + !!uright.v) | 0);
     if (!__static_retouch_equipment_nesting++)
         clear_bypasses();
     dropit = schar((dropflag > 0));
     if (u.twoweap) {
-        bypass_obj(uswapwep);
-        void untouchable(uswapwep, dropit);
+        bypass_obj(uswapwep.v);
+        void untouchable(uswapwep.v, dropit);
     }
-    if (uwep) {
-        bypass_obj(uwep);
-        void untouchable(uwep, dropit);
+    if (uwep.v) {
+        bypass_obj(uwep.v);
+        void untouchable(uwep.v, dropit);
     }
     if (u.usteed && (obj = which_armor(u.usteed, 1048576n)) !== null) {
         if (untouchable(obj, (0)))
@@ -2043,9 +2043,9 @@ export function retouch_equipment(dropflag) {
     dropit = schar((dropflag == 1));
     while ((obj = nxt_unbypassed_obj(gi.invent)) !== null)
         void untouchable(obj, dropit);
-    if (had_rings != ((!!uleft + !!uright) | 0) && uarmg && cptr.ldI32(cptr.add(uarmg, 56)) | 0)
-        uncurse(uarmg);
-    if (had_gloves && !uarmg)
+    if (had_rings != ((!!uleft.v + !!uright.v) | 0) && uarmg.v && cptr.ldI32(cptr.add(uarmg.v, 56)) | 0)
+        uncurse(uarmg.v);
+    if (had_gloves && !uarmg.v)
         selftouch(__sl159);
     if (!--__static_retouch_equipment_nesting)
         clear_bypasses();
@@ -2088,7 +2088,7 @@ const __static_mkot_trap_warn_heat = [__sl161, __sl162, __sl163, __sl164, __sl16
 
 /** C ref: artifact.c:2753 */
 export function mkot_trap_warn() {
-    if (!uarmg && is_art(uwep, ART_MASTER_KEY_OF_THIEVERY)) {
+    if (!uarmg.v && is_art(uwep.v, ART_MASTER_KEY_OF_THIEVERY)) {
         let idx;
         let ntraps = count_surround_traps(u.ux, u.uy);
         if (ntraps != gm.mkot_trap_warn_count) {
@@ -2096,7 +2096,7 @@ export function mkot_trap_warn() {
             pline_The(__sl160, cptr.ldPtr(cptr.add(cptr.decay(__static_mkot_trap_warn_heat), idx)), (ntraps > 3) ? 33 : 46);
         }
         gm.mkot_trap_warn_count = ntraps;
-    }
+    } else
         gm.mkot_trap_warn_count = 0;
 }
 

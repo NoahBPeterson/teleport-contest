@@ -30,7 +30,19 @@ const __sl8 = cptr.lit("utf8");
 const __sl9 = cptr.lit("debug");
 
 /** C ref: linit.c:42 — luaL_Reg[11] */
-const loadedlibs = [{ name: __sl0, func: luaopen_base }, { name: __sl1, func: luaopen_package }, { name: __sl2, func: luaopen_coroutine }, { name: __sl3, func: luaopen_table }, { name: __sl4, func: luaopen_io }, { name: __sl5, func: luaopen_os }, { name: __sl6, func: luaopen_string }, { name: __sl7, func: luaopen_math }, { name: __sl8, func: luaopen_utf8 }, { name: __sl9, func: luaopen_debug }, { name: null, func: null }];
+const loadedlibs = [
+    { name: __sl0, func: luaopen_base },
+    { name: __sl1, func: luaopen_package },
+    { name: __sl2, func: luaopen_coroutine },
+    { name: __sl3, func: luaopen_table },
+    { name: __sl4, func: luaopen_io },
+    { name: __sl5, func: luaopen_os },
+    { name: __sl6, func: luaopen_string },
+    { name: __sl7, func: luaopen_math },
+    { name: __sl8, func: luaopen_utf8 },
+    { name: __sl9, func: luaopen_debug },
+    { name: null, func: null }
+];
 
 /** C ref: linit.c:57 — @param {CPtr} L */
 export function luaL_openlibs(L) {

@@ -17,7 +17,7 @@ import { t_at, trapname } from './trap.js';
 import { obj_descr, objects } from './objects.js';
 import { timet_delta } from './allmain.js';
 import { getnow, midnight, night } from './calendar.js';
-import { enc_stat, rank_of, rank_to_xlev } from './botl.js';
+import { rank_of, rank_to_xlev } from './botl.js';
 import { genders } from './role.js';
 import { mons } from './monst.js';
 import { align_gname, can_pray, u_gname } from './pray.js';
@@ -35,10 +35,10 @@ import { You, impossible, livelog_printf, pline } from './pline.js';
 import { defended, dmgtype, dmgtype_fromattack, hates_silver, sticks } from './mondata.js';
 import { dxdy_to_dist_descr } from './getpos.js';
 import { find_mac, which_armor } from './worn.js';
-import { hu_stat, temp_resist } from './eat.js';
 import { empty_handed } from './wield.js';
 import { can_advance, skill_level_name, skill_name, weapon_descr, weapon_type } from './weapon.js';
 import { item_what, u_adtyp_resistance_obj } from './zap.js';
+import { temp_resist } from './eat.js';
 import { magic_negation } from './mhitu.js';
 import { debugcore } from './files.js';
 import { mhidden_description, waterbody_name } from './pager.js';
@@ -856,7 +856,7 @@ const achieve_msg = [
 function enlght_out(buf) {
     if (ge.en_via_menu) {
         add_menu_str(ge.en_win, buf);
-    }
+    } else
         (windowprocs.win_putstr)(ge.en_win, 0, buf);
 }
 
@@ -903,7 +903,7 @@ function enlght_combatinc(inctyp, incamt, final, outbuf) {
     invrt = schar((strcmp(inctyp, __sl56) ? 1 : 0));
     void cptr.sprintf(outbuf, __sl57, modif, invrt ? inctyp : bonus, invrt ? bonus : inctyp);
     if (final || flags.debug)
-        void cptr.sprintf(eos(outbuf), __sl58, (incamt > 0) ? __sl59 : __sl10, incamt);
+        void cptr.sprintf(eos.v(outbuf), __sl58, (incamt > 0) ? __sl59 : __sl10, incamt);
     return outbuf;
 }
 
@@ -950,11 +950,11 @@ export function trap_predicament(outbuf, final, wizxtra) {
         default:
         void cptr.strcpy(outbuf, __sl72);
         if ((t = t_at(u.ux, u.uy)) !== null)
-            void cptr.sprintf(eos(outbuf), __sl73, an(trapname(cptr.ldI32(cptr.add(t, 20)) | 0, (0))));
+            void cptr.sprintf(eos.v(outbuf), __sl73, an(trapname(cptr.ldI32(cptr.add(t, 20)) | 0, (0))));
         break;
     }
     if (wizxtra) {
-        void cptr.sprintf(eos(outbuf), __sl74, u.utrap);
+        void cptr.sprintf(eos.v(outbuf), __sl74, u.utrap);
     }
     return outbuf;
 }
@@ -1000,24 +1000,24 @@ function fmt_elapsed_time(outbuf, final) {
     fieldcnt = (((((!!edays + !!ehours) | 0) + !!eminutes) | 0) + !!eseconds) | 0;
     void cptr.strcpy(outbuf, fieldcnt ? __sl10 : __sl77);
     if (edays) {
-        void cptr.sprintf(eos(outbuf), __sl78, edays, (((edays) == 1n) ? __sl10 : __sl79));
+        void cptr.sprintf(eos.v(outbuf), __sl78, edays, (((edays) == 1n) ? __sl10 : __sl79));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, (fieldcnt == 2) ? __sl80 : __sl81);
         --fieldcnt;
     }
     if (ehours) {
-        void cptr.sprintf(eos(outbuf), __sl82, ehours, (((ehours) == 1n) ? __sl10 : __sl79));
+        void cptr.sprintf(eos.v(outbuf), __sl82, ehours, (((ehours) == 1n) ? __sl10 : __sl79));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, (fieldcnt == 2) ? __sl80 : __sl81);
         --fieldcnt;
     }
     if (eminutes) {
-        void cptr.sprintf(eos(outbuf), __sl83, eminutes, (((eminutes) == 1n) ? __sl10 : __sl79));
+        void cptr.sprintf(eos.v(outbuf), __sl83, eminutes, (((eminutes) == 1n) ? __sl10 : __sl79));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, __sl80);
     }
     if (eseconds)
-        void cptr.sprintf(eos(outbuf), __sl84, eseconds, (((eseconds) == 1n) ? __sl10 : __sl79));
+        void cptr.sprintf(eos.v(outbuf), __sl84, eseconds, (((eseconds) == 1n) ? __sl10 : __sl79));
     return outbuf;
 }
 
@@ -1116,7 +1116,7 @@ function background_enlightenment(unused_mode, final) {
         if (!((cptr.ldU64(cptr.add((uasmon), 80)) & 65536n) != 0n) && !((cptr.ldU64(cptr.add((uasmon), 80)) & 131072n) != 0n) && !((cptr.ldU64(cptr.add((uasmon), 80)) & 262144n) != 0n))
             void cptr.sprintf(cptr.decay(tmpbuf), __sl105, genders[flags.female ? 1 : 0].adj);
         if (altphrasing)
-            void cptr.sprintf(eos(cptr.decay(tmpbuf)), __sl106, pmname(cptr.add(cptr.decay(mons), gy.youmonst.cham), flags.female ? FEMALE : MALE));
+            void cptr.sprintf(eos.v(cptr.decay(tmpbuf)), __sl106, pmname(cptr.add(cptr.decay(mons), gy.youmonst.cham), flags.female ? FEMALE : MALE));
         nh_snprintf(__sl107, 506, cptr.decay(buf), 256n, __sl108, !final ? __sl109 : __sl10, altphrasing ? just_an(cptr.decay(anbuf), cptr.decay(tmpbuf)) : __sl110, cptr.decay(tmpbuf), pmname(uasmon, flags.female ? FEMALE : MALE));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
@@ -1127,31 +1127,31 @@ function background_enlightenment(unused_mode, final) {
     if ((u.umonnum != u.umonster))
         void cptr.strcpy(cptr.decay(buf), __sl111);
     if (!strncmpi((rank_titl), (role_titl), -1)) {
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl112, an(rank_titl), u.ulevel, cptr.decay(tmpbuf), gu.urace.noun);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl112, an(rank_titl), u.ulevel, cptr.decay(tmpbuf), gu.urace.noun);
     } else {
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl113, an(rank_titl), u.ulevel, cptr.decay(tmpbuf), gu.urace.adj, role_titl);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl113, an(rank_titl), u.ulevel, cptr.decay(tmpbuf), gu.urace.adj, role_titl);
     }
     enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
-    void cptr.sprintf(cptr.decay(buf), __sl114, cptr.decay(You_), !final ? cptr.decay(are) : cptr.decay(were), align_str(u.ualign.type), (u.ualign.type != u.ualignbase[0]) ? (!final ? __sl109 : __sl115) : ((u.ualign.type != u.ualignbase[1]) ? (!final ? __sl116 : __sl117) : ((!u.uconduct.gnostic && svm.moves > 1000n) ? __sl118 : __sl10)), u_gname());
+    void cptr.sprintf(cptr.decay(buf), __sl114, cptr.decay(You_), !final ? cptr.decay(are) : cptr.decay(were), align_str(u.ualign.type), (u.ualign.type != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0))) ? (!final ? __sl109 : __sl115) : ((u.ualign.type != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) ? (!final ? __sl116 : __sl117) : ((!u.uconduct.gnostic && svm.moves > 1000n) ? __sl118 : __sl10)), u_gname());
     enlght_out(cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __sl119, !final ? __sl103 : __sl102);
     if (u.ualign.type != 1)
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl120, align_gname(1), align_str(1));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl120, align_gname(1), align_str(1));
     if (u.ualign.type != 0)
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl121, align_gname(0), align_str(0), (u.ualign.type != (-1)) ? __sl80 : __sl10);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl121, align_gname(0), align_str(0), (u.ualign.type != (-1)) ? __sl80 : __sl10);
     if (u.ualign.type != (-1))
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl122, align_gname(schar((-1))), align_str(schar((-1))));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl122, align_gname(schar((-1))), align_str(schar((-1))));
     void cptr.strcat(cptr.decay(buf), __sl123);
     enlght_out(cptr.decay(buf));
     difgend = (innategend != flags.initgend);
-    difalgn = ((((u.ualign.type != u.ualignbase[0]) ? 1 : 0) + ((u.ualignbase[0] != u.ualignbase[1]) ? 2 : 0)) | 0);
+    difalgn = ((((u.ualign.type != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0))) ? 1 : 0) + ((cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) ? 2 : 0)) | 0);
     if (difalgn & 1) {
-        void cptr.sprintf(cptr.decay(buf), __sl124, align_str(u.ualignbase[0]));
+        void cptr.sprintf(cptr.decay(buf), __sl124, align_str(cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0))));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
         difalgn &= ~1;
     }
     if (difgend || difalgn) {
-        void cptr.sprintf(cptr.decay(buf), __sl125, difgend ? genders[flags.initgend].adj : __sl10, (difgend && difalgn) ? __sl126 : __sl10, difalgn ? align_str(u.ualignbase[1]) : __sl10);
+        void cptr.sprintf(cptr.decay(buf), __sl125, difgend ? genders[flags.initgend].adj : __sl10, (difgend && difalgn) ? __sl126 : __sl10, difalgn ? align_str(cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) : __sl10);
         enlght_out(cptr.decay(buf));
     }
     void cptr.sprintf(cptr.decay(buf), __sl127, !strcmp(body_part(HANDED), __sl128) ? __sl10 : __sl129, ((u.uhandedness | 0) == 0) ? __sl130 : __sl131);
@@ -1201,7 +1201,7 @@ function background_enlightenment(unused_mode, final) {
         if (ulvl < 30 && (final || flags.debug)) {
             let nxtlvl = newuexp(ulvl);
             let delta = nxtlvl - u.uexp;
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl161, delta, (u.uexp > 0n) ? __sl162 : __sl10, !final ? __sl10 : ((delta == 1n) ? __sl145 : __sl2), (ulvl < 18) ? __sl163 : __sl164, ((ulvl + 1) | 0));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl161, delta, (u.uexp > 0n) ? __sl162 : __sl10, !final ? __sl10 : ((delta == 1n) ? __sl145 : __sl2), (ulvl < 18) ? __sl163 : __sl164, ((ulvl + 1) | 0));
         }
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__sl10)));
     }
@@ -1249,7 +1249,7 @@ function basics_enlightenment(mode, final) {
     find_ac();
     void cptr.sprintf(cptr.decay(buf), __sl75, u.uac);
     if (Math.abs(u.uac) == 99)
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl175, (u.uac < 0) ? __sl176 : __sl177);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl175, (u.uac < 0) ? __sl176 : __sl177);
     enlght_line((__sl178), final ? (__sl145) : (__sl146), cptr.decay((buf)), (__sl10));
     {
         let umoney = money_cnt(gi.invent);
@@ -1273,13 +1273,13 @@ function basics_enlightenment(mode, final) {
             void cptr.strcat(cptr.decay(buf), __sl188);
         } else {
             oc_to_str(cptr.decay(flags.pickup_types), cptr.decay(ocl));
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl189, cptr.ld1s(cptr.decay(ocl)) ? __sl190 : __sl10, cptr.ld1s(cptr.decay(ocl)) ? cptr.decay(ocl) : __sl191, cptr.ld1s(cptr.decay(ocl)) ? __sl190 : __sl10);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl189, cptr.ld1s(cptr.decay(ocl)) ? __sl190 : __sl10, cptr.ld1s(cptr.decay(ocl)) ? cptr.decay(ocl) : __sl191, cptr.ld1s(cptr.decay(ocl)) ? __sl190 : __sl10);
             if (flags.pickup_thrown && cptr.ld1s(cptr.decay(ocl)))
                 void cptr.strcat(cptr.decay(buf), __sl192);
             if (ga.apelist)
                 void cptr.strcat(cptr.decay(buf), __sl193);
         }
-    }
+    } else
         void cptr.strcpy(cptr.decay(buf), __sl194);
     enlght_line((__sl195), final ? (__sl145) : (__sl146), cptr.decay((buf)), (__sl10));
 }
@@ -1314,26 +1314,26 @@ function one_characteristic(mode, final, attrindx) {
     if ((u.umonnum != u.umonster)) {
         hide_innate_value = (1);
     } else if (u.uprops[FIXED_ABIL].extrinsic) {
-        if (stuck_ring(uleft, RIN_SUSTAIN_ABILITY) || stuck_ring(uright, RIN_SUSTAIN_ABILITY))
+        if (stuck_ring(uleft.v, RIN_SUSTAIN_ABILITY) || stuck_ring(uright.v, RIN_SUSTAIN_ABILITY))
             hide_innate_value = (1);
     }
     switch (attrindx) {
         case A_STR:
-        if (uarmg && cptr.ldI16(cptr.add(uarmg, 32)) == GAUNTLETS_OF_POWER && cptr.ldI32(cptr.add(uarmg, 56)) | 0)
+        if (uarmg.v && cptr.ldI16(cptr.add(uarmg.v, 32)) == GAUNTLETS_OF_POWER && cptr.ldI32(cptr.add(uarmg.v, 56)) | 0)
             hide_innate_value = (1);
         break;
         case A_DEX:
         break;
         case A_CON:
-        if (is_art(uwep, ART_OGRESMASHER) && cptr.ldI32(cptr.add(uwep, 56)) | 0)
+        if (is_art(uwep.v, ART_OGRESMASHER) && cptr.ldI32(cptr.add(uwep.v, 56)) | 0)
             hide_innate_value = (1);
         break;
         case A_INT:
-        if (uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP && cptr.ldI32(cptr.add(uarmh, 56)) | 0)
+        if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP && cptr.ldI32(cptr.add(uarmh.v, 56)) | 0)
             hide_innate_value = (1);
         break;
         case A_WIS:
-        if (uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP && cptr.ldI32(cptr.add(uarmh, 56)) | 0)
+        if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP && cptr.ldI32(cptr.add(uarmh.v, 56)) | 0)
             hide_innate_value = (1);
         break;
         case A_CHA:
@@ -1354,15 +1354,15 @@ function one_characteristic(mode, final, attrindx) {
         interesting_alimit = schar((final ? 1 : (alimit != (attrindx != A_STR ? 18 : ((18 + (100)) | 0)))));
         paren_pfx = final ? __sl199 : __sl200;
         if (acurrent != abase) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __sl201, paren_pfx, attrval(attrindx, abase, cptr.decay(valstring)));
+            void cptr.sprintf(eos.v(cptr.decay(valubuf)), __sl201, paren_pfx, attrval(attrindx, abase, cptr.decay(valstring)));
             paren_pfx = __sl202;
         }
         if (abase != apeak) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __sl203, paren_pfx, attrval(attrindx, apeak, cptr.decay(valstring)));
+            void cptr.sprintf(eos.v(cptr.decay(valubuf)), __sl203, paren_pfx, attrval(attrindx, apeak, cptr.decay(valstring)));
             paren_pfx = __sl202;
         }
         if (interesting_alimit) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __sl204, paren_pfx, (acurrent > alimit) ? __sl205 : __sl10, attrval(attrindx, alimit, cptr.decay(valstring)));
+            void cptr.sprintf(eos.v(cptr.decay(valubuf)), __sl204, paren_pfx, (acurrent > alimit) ? __sl205 : __sl10, attrval(attrindx, alimit, cptr.decay(valstring)));
         }
         if (acurrent != abase || abase != apeak || interesting_alimit)
             void cptr.strcat(cptr.decay(valubuf), __sl206);
@@ -1385,13 +1385,13 @@ function status_enlightenment(mode, final) {
     if ((u.umonnum != u.umonster)) {
         void cptr.strcpy(cptr.decay(buf), __sl210);
         if (ugenocided())
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl211, final ? __sl212 : __sl213, udeadinside());
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl211, final ? __sl212 : __sl213, udeadinside());
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
     if (Riding) {
         void cptr.sprintf(cptr.decay(buf), __sl214, steedname);
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
-        void cptr.sprintf(eos(cptr.decay(youtoo)), __sl215, steedname);
+        void cptr.sprintf(eos.v(cptr.decay(youtoo)), __sl215, steedname);
     }
     if (((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked)) {
         if ((((u.uprops[LEVITATION].intrinsic & 536870912n) != 0n || (u.uprops[LEVITATION].extrinsic & 8192n) != 0n) && (u.uprops[LEVITATION].intrinsic & ~(536870912n | 16777215n)) == 0n && (u.uprops[LEVITATION].extrinsic & ~8192n) == 0n) && magic)
@@ -1432,7 +1432,7 @@ function status_enlightenment(mode, final) {
             } else {
                 void cptr.strcpy(cptr.decay(buf), __sl230);
                 if (flags.debug)
-                    void cptr.sprintf(eos(cptr.decay(buf)), __sl231, (u.uprops[STRANGLED].intrinsic & 16777215n));
+                    void cptr.sprintf(eos.v(cptr.decay(buf)), __sl231, (u.uprops[STRANGLED].intrinsic & 16777215n));
                 enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((from_what(STRANGLED))));
             }
         }
@@ -1459,14 +1459,14 @@ function status_enlightenment(mode, final) {
     if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
         void cptr.sprintf(cptr.decay(buf), __sl241, (u.uprops[BLINDED].intrinsic & 67108864n) != 0n ? __sl242 : ((u.uprops[BLINDED].intrinsic & 268435456n) ? __sl243 : ((u.uprops[BLINDED].extrinsic && !(u.uprops[BLINDED].intrinsic && !u.uprops[BLINDED].blocked)) ? __sl244 : __sl245)));
         if (flags.debug && (u.uprops[BLINDED].intrinsic == (u.uprops[BLINDED].intrinsic & 16777215n) && !u.uprops[BLINDED].extrinsic))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl231, (u.uprops[BLINDED].intrinsic & 16777215n));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl231, (u.uprops[BLINDED].intrinsic & 16777215n));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((!((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 4096n) == 0n) ? __sl10 : from_what(BLINDED))));
     }
     if ((u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf))
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__sl246)), ((from_what(DEAF))));
-    if ((uball !== null)) {
-        if (uball) {
-            void cptr.sprintf(cptr.decay(buf), __sl247, ansimpleoname(uball));
+    if ((uball.v !== null)) {
+        if (uball.v) {
+            void cptr.sprintf(cptr.decay(buf), __sl247, ansimpleoname(uball.v));
         } else {
             impossible(__sl248);
             void cptr.strcpy(cptr.decay(buf), __sl249);
@@ -1481,7 +1481,7 @@ function status_enlightenment(mode, final) {
             void cptr.sprintf(cptr.decay(buf), __sl250, anchored ? __sl251 : __sl10, steedname);
             cptr.st1(cptr.decay(buf), highc(cptr.ld1s(cptr.decay(buf))));
             enlght_line(cptr.decay((buf)), final ? ((anchored ? __sl2 : __sl145)) : ((anchored ? __sl1 : __sl146)), cptr.decay((predicament)), (__sl10));
-        }
+        } else
             enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((predicament))), ((__sl10)));
     }
     cptr.st1(cptr.add(cptr.decay(heldmon), 0), 0);
@@ -1497,10 +1497,10 @@ function status_enlightenment(mode, final) {
             if (final && !u.uswldtim)
                 void cptr.strcat(cptr.decay(buf), __sl260);
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl261, final ? __sl262 : __sl263);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl261, final ? __sl262 : __sl263);
         }
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl264, u.uswldtim);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl264, u.uswldtim);
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     } else if (u.ustuck) {
         let ustick = schar(((u.umonnum != u.umonster) && sticks(gy.youmonst.data)));
@@ -1540,7 +1540,7 @@ function status_enlightenment(mode, final) {
     if (u.uprops[GLIB].intrinsic) {
         void cptr.sprintf(cptr.decay(buf), __sl275, fingers_or_gloves((1)));
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl231, (u.uprops[GLIB].intrinsic & 16777215n));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl231, (u.uprops[GLIB].intrinsic & 16777215n));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__sl10)));
     }
     if ((u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic)) {
@@ -1551,7 +1551,7 @@ function status_enlightenment(mode, final) {
         if (magic || cause_known(SLEEPY)) {
             void cptr.strcpy(cptr.decay(buf), from_what(SLEEPY));
             if (flags.debug)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl231, (u.uprops[SLEEPY].intrinsic & 16777215n));
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl231, (u.uprops[SLEEPY].intrinsic & 16777215n));
             enlght_line((__sl0), final ? (__sl278) : (__sl279), (__sl280), cptr.decay((buf)));
         }
     }
@@ -1570,7 +1570,7 @@ function status_enlightenment(mode, final) {
         else if (!cptr.strncmp(cptr.decay(buf), __sl287, 5n))
             void cptr.strcat(cptr.decay(buf), __sl288);
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl289, u.uhunger);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl289, u.uhunger);
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
     if ((cap = near_capacity()) > UNENCUMBERED) {
@@ -1595,22 +1595,22 @@ function status_enlightenment(mode, final) {
             break;
         }
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl289, inv_weight());
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl296, !final ? __sl103 : __sl102, adj, (cap < OVERLOADED) ? __sl297 : __sl10);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl289, inv_weight());
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl296, !final ? __sl103 : __sl102, adj, (cap < OVERLOADED) ? __sl297 : __sl10);
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     } else {
         void cptr.strcpy(cptr.decay(buf), __sl298);
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl289, inv_weight());
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl289, inv_weight());
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
     weapon_insight(final);
     if (iflags.tux_penalty && !(u.umonnum != u.umonster)) {
         void enlght_combatinc(__sl56, -gu.urole.spelarmr, final, cptr.decay(buf));
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl299, suit_simple_name(uarm));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl299, suit_simple_name(uarm.v));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__sl10)));
     }
-    if (!uarm && !uarmu && !uarmc && !uarms && !uarmg && !uarmf && !uarmh) {
+    if (!uarm.v && !uarmu.v && !uarmc.v && !uarms.v && !uarmg.v && !uarmf.v && !uarmh.v) {
         if (u.uroleplay.nudist)
             enlght_line(cptr.decay((You_)), final ? (__sl300) : (__sl301), (__sl302), (__sl10));
         else
@@ -1625,23 +1625,23 @@ const __static_weapon_insight_also_wik_ = cptr.bytes(" and also with "); /** C r
 function weapon_insight(final) {
     let buf = new Uint8Array(256);
     let wtype;
-    if (!uwep) {
+    if (!uwep.v) {
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((empty_handed())), ((__sl10)));
     } else if (u.twoweap) {
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__sl304)), ((__sl10)));
     } else {
-        let what = weapon_descr(uwep);
-        if (cptr.ldI16(cptr.add(uwep, 32)) == SHIELD_OF_REFLECTION)
-            what = shield_simple_name(uwep);
-        else if ((cptr.ldI16(cptr.add((uwep), 32)) == TOWEL && cptr.ld1s(cptr.add((uwep), 48)) > 0))
+        let what = weapon_descr(uwep.v);
+        if (cptr.ldI16(cptr.add(uwep.v, 32)) == SHIELD_OF_REFLECTION)
+            what = shield_simple_name(uwep.v);
+        else if ((cptr.ldI16(cptr.add((uwep.v), 32)) == TOWEL && cptr.ld1s(cptr.add((uwep.v), 48)) > 0))
             what = __sl305;
         if (!strncmpi((what), (__sl306), -1) || !strncmpi((what), (__sl307), -1) || !strncmpi((what), (__sl308), -1))
             void cptr.sprintf(cptr.decay(buf), __sl309, what);
         else
-            void cptr.sprintf(cptr.decay(buf), __sl310, (cptr.ldI64(cptr.add(uwep, 40)) == 1n) ? an(what) : makeplural(what));
+            void cptr.sprintf(cptr.decay(buf), __sl310, (cptr.ldI64(cptr.add(uwep.v, 40)) == 1n) ? an(what) : makeplural(what));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
-    if ((wtype = weapon_type(uwep)) != P_NONE && (!uwep || !((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= -P_BOW))) {
+    if ((wtype = weapon_type(uwep.v)) != P_NONE && (!uwep.v || !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= -P_BOW))) {
         let sklvlbuf = new Uint8Array(20);
         let sklvl = (u.weapon_skills[wtype].skill);
         let hav = schar((sklvl != P_UNSKILLED && sklvl != P_SKILLED));
@@ -1652,7 +1652,7 @@ function weapon_insight(final) {
         void cptr.sprintf(cptr.decay(buf), __sl57, cptr.decay(sklvlbuf), hav ? __sl311 : __sl312, skill_name(wtype));
         if (!u.twoweap) {
             if (can_advance(wtype, (0)))
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl313, !final ? __sl314 : __sl315);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl313, !final ? __sl314 : __sl315);
             if (hav)
                 enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__sl10)));
             else
@@ -1668,7 +1668,7 @@ function weapon_insight(final) {
             let also3 = null;
             let verb_present;
             let verb_past;
-            let wtype2 = weapon_type(uswapwep);
+            let wtype2 = weapon_type(uswapwep.v);
             let sklvl2 = (u.weapon_skills[wtype2].skill);
             let twoskl = (u.weapon_skills[P_TWO_WEAPON_COMBAT].skill);
             let a1;
@@ -1690,10 +1690,10 @@ function weapon_insight(final) {
                 void cptr.strcpy(cptr.decay(pfx), __sl319);
                 void cptr.strcpy(cptr.decay(sfx), __sl320);
                 if (sklvl > P_ISRESTRICTED)
-                    void cptr.sprintf(eos(cptr.decay(sfx)), __sl321, cptr.decay(sklvlbuf));
+                    void cptr.sprintf(eos.v(cptr.decay(sfx)), __sl321, cptr.decay(sklvlbuf));
                 else
-                    void cptr.sprintf(eos(cptr.decay(sfx)), __sl322);
-                void cptr.sprintf(eos(cptr.decay(sfx)), __sl323, skill_name(wtype));
+                    void cptr.sprintf(eos.v(cptr.decay(sfx)), __sl322);
+                void cptr.sprintf(eos.v(cptr.decay(sfx)), __sl323, skill_name(wtype));
                 also2 = cptr.decay(__static_weapon_insight_also_);
             } else {
                 void cptr.strcat(cptr.decay(buf), __sl324);
@@ -1717,10 +1717,10 @@ function weapon_insight(final) {
                     void cptr.strcpy(cptr.decay(pfx), __sl319);
                     void cptr.sprintf(cptr.decay(sfx), __sl326, also2);
                     if (sklvl2 > P_ISRESTRICTED)
-                        void cptr.sprintf(eos(cptr.decay(sfx)), __sl321, cptr.decay(sklvlbuf2));
+                        void cptr.sprintf(eos.v(cptr.decay(sfx)), __sl321, cptr.decay(sklvlbuf2));
                     else
-                        void cptr.strcat(eos(cptr.decay(sfx)), __sl322);
-                    void cptr.sprintf(eos(cptr.decay(sfx)), __sl323, cptr.decay(sknambuf2));
+                        void cptr.strcat(eos.v(cptr.decay(sfx)), __sl322);
+                    void cptr.sprintf(eos.v(cptr.decay(sfx)), __sl323, cptr.decay(sknambuf2));
                 } else {
                     void cptr.sprintf(cptr.decay(buf), __sl57, cptr.decay(sklvlbuf2), hav2 ? __sl311 : __sl312, cptr.decay(sknambuf2));
                     void cptr.strcat(cptr.decay(buf), __sl324);
@@ -1866,7 +1866,7 @@ function attributes_enlightenment(unused_mode, final) {
         if (flags.debug) {
             let detectmon_timeout = (u.uprops[DETECT_MONSTERS].intrinsic & 16777215n);
             if (detectmon_timeout)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl231, detectmon_timeout);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl231, detectmon_timeout);
         }
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
@@ -1876,16 +1876,16 @@ function attributes_enlightenment(unused_mode, final) {
             if (u.umconf == 1)
                 void cptr.strcat(cptr.decay(buf), __sl395);
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl396, u.umconf);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl396, u.umconf);
         }
         enlght_line(cptr.decay((You_)), final ? (__sl397) : (__sl398), cptr.decay((buf)), (__sl10));
     }
     if (u.uprops[ADORNED].extrinsic) {
         let adorn = 0;
-        if (uleft && cptr.ldI16(cptr.add(uleft, 32)) == RIN_ADORNMENT)
-            adorn = (adorn + cptr.ld1s(cptr.add(uleft, 48))) | 0;
-        if (uright && cptr.ldI16(cptr.add(uright, 32)) == RIN_ADORNMENT)
-            adorn = (adorn + cptr.ld1s(cptr.add(uright, 48))) | 0;
+        if (uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == RIN_ADORNMENT)
+            adorn = (adorn + cptr.ld1s(cptr.add(uleft.v, 48))) | 0;
+        if (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == RIN_ADORNMENT)
+            adorn = (adorn + cptr.ld1s(cptr.add(uright.v, 48))) | 0;
         void cptr.sprintf(cptr.decay(buf), __sl399, (adorn > 0) ? __sl162 : ((adorn < 0) ? __sl400 : __sl10));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((from_what(ADORNED))));
     }
@@ -1958,18 +1958,18 @@ function attributes_enlightenment(unused_mode, final) {
     if (u.uhitinc) {
         void enlght_combatinc(__sl56, u.uhitinc, final, cptr.decay(buf));
         if (iflags.tux_penalty && !(u.umonnum != u.umonster))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl441, (u.uhitinc < 0) ? __sl442 : ((u.uhitinc < ((Math.imul(4, gu.urole.spelarmr) / 5) | 0)) ? __sl443 : ((u.uhitinc < gu.urole.spelarmr) ? __sl444 : __sl445)));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl441, (u.uhitinc < 0) ? __sl442 : ((u.uhitinc < ((Math.imul(4, gu.urole.spelarmr) / 5) | 0)) ? __sl443 : ((u.uhitinc < gu.urole.spelarmr) ? __sl444 : __sl445)));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__sl10)));
     }
     if (u.udaminc)
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((enlght_combatinc(__sl446, u.udaminc, final, cptr.decay(buf)))), ((__sl10)));
     if (u.uspellprot || (u.uprops[PROTECTION].intrinsic || u.uprops[PROTECTION].extrinsic)) {
         let prot = 0;
-        if (uleft && cptr.ldI16(cptr.add(uleft, 32)) == RIN_PROTECTION)
-            prot = (prot + cptr.ld1s(cptr.add(uleft, 48))) | 0;
-        if (uright && cptr.ldI16(cptr.add(uright, 32)) == RIN_PROTECTION)
-            prot = (prot + cptr.ld1s(cptr.add(uright, 48))) | 0;
-        if (uamul && cptr.ldI16(cptr.add(uamul, 32)) == AMULET_OF_GUARDING)
+        if (uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == RIN_PROTECTION)
+            prot = (prot + cptr.ld1s(cptr.add(uleft.v, 48))) | 0;
+        if (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == RIN_PROTECTION)
+            prot = (prot + cptr.ld1s(cptr.add(uright.v, 48))) | 0;
+        if (uamul.v && cptr.ldI16(cptr.add(uamul.v, 32)) == AMULET_OF_GUARDING)
             prot = (prot + 2) | 0;
         if (u.uprops[PROTECTION].intrinsic & (67108864n | 33554432n | 16777216n))
             prot = (prot + u.ublessed) | 0;
@@ -1986,12 +1986,12 @@ function attributes_enlightenment(unused_mode, final) {
         enlght_halfdmg(HALF_PHDAM, final);
     if ((u.uprops[HALF_SPDAM].intrinsic || u.uprops[HALF_SPDAM].extrinsic))
         enlght_halfdmg(HALF_SPDAM, final);
-    if ((ublindf && cptr.ldI16(cptr.add(ublindf, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf, 48)) > 0))
+    if ((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0))
         enlght_line(cptr.decay((You_)), final ? (__sl66) : (__sl67), (__sl447), (__sl10));
     if (svs.spl_book[0].sp_id > 0) {
         let cast_adj = new Uint8Array(128);
-        let suit = schar((uarm && ((objects[cptr.ldI16(cptr.add(uarm, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarm, 32))].oc_material | 0) <= MITHRIL)));
-        let robe = schar((uarmc && cptr.ldI16(cptr.add(uarmc, 32)) == ROBE));
+        let suit = schar((uarm.v && ((objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) <= MITHRIL)));
+        let robe = schar((uarmc.v && cptr.ldI16(cptr.add(uarmc.v, 32)) == ROBE));
         cptr.st1(cptr.decay(cast_adj), 0);
         if (suit)
             void cptr.sprintf(cptr.decay(cast_adj), __sl448, robe ? __sl449 : __sl10);
@@ -2025,7 +2025,7 @@ function attributes_enlightenment(unused_mode, final) {
         else
             void cptr.sprintf(cptr.decay(buf), __sl463, an(pmname(cptr.add(cptr.decay(mons), gy.youmonst.cham), flags.female ? FEMALE : MALE)), pmname(gy.youmonst.data, flags.female ? FEMALE : MALE));
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl464, u.mtimedone);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl464, u.mtimedone);
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
     if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 4194304n) != 0n) && flags.female)
@@ -2035,7 +2035,7 @@ function attributes_enlightenment(unused_mode, final) {
         if (u.umonnum == u.ulycn) {
             void cptr.strcat(cptr.decay(buf), __sl466);
             if (flags.debug)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl464, u.mtimedone);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl464, u.mtimedone);
         }
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     }
@@ -2057,7 +2057,7 @@ function attributes_enlightenment(unused_mode, final) {
         ltmp = Math.abs(((u.uluck + u.moreluck) | 0));
         void cptr.sprintf(cptr.decay(buf), __sl476, ltmp >= 10 ? __sl477 : (ltmp >= 5 ? __sl478 : __sl10), ((u.uluck + u.moreluck) | 0) < 0 ? __sl479 : __sl10);
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl464, ((u.uluck + u.moreluck) | 0));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl464, ((u.uluck + u.moreluck) | 0));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl10)));
     } else if (flags.debug)
         enlght_line((__sl480), final ? (__sl102) : (__sl103), (__sl481), (__sl10));
@@ -2075,13 +2075,13 @@ function attributes_enlightenment(unused_mode, final) {
     if (u.ugangr) {
         void cptr.sprintf(cptr.decay(buf), __sl488, u.ugangr > 6 ? __sl477 : (u.ugangr > 3 ? __sl478 : __sl10));
         if (flags.debug)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl464, u.ugangr);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl464, u.ugangr);
         enlght_line((u_gname()), final ? (__sl489) : (__sl490), cptr.decay((buf)), (__sl10));
     } else {
         if (!final) {
             void cptr.sprintf(cptr.decay(buf), __sl491, can_pray((0)) ? __sl10 : __sl492);
             if (flags.debug)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl464, u.ublesscnt);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl464, u.ublesscnt);
             enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), cptr.decay(((buf))), ((__sl10)));
         }
     }
@@ -2139,7 +2139,7 @@ export function youhiding(via_enlghtmt, msgflag) {
     let buf = new Uint8Array(256);
     void cptr.strcpy(cptr.decay(buf), __sl509);
     if ((gy.youmonst.m_ap_type & 7) != M_AP_NOTHING) {
-        bp = eos(cptr.strcpy(cptr.decay(buf), __sl510));
+        bp = eos.v(cptr.strcpy(cptr.decay(buf), __sl510));
         if ((gy.youmonst.m_ap_type & 7) == M_AP_OBJECT) {
             void cptr.sprintf(bp, __sl329, an(simple_typename(gy.youmonst.mappearance | 0)));
         } else if ((gy.youmonst.m_ap_type & 7) == M_AP_FURNITURE) {
@@ -2150,7 +2150,7 @@ export function youhiding(via_enlghtmt, msgflag) {
             ;
         }
     } else if (u.uundetected) {
-        bp = eos(cptr.decay(buf));
+        bp = eos.v(cptr.decay(buf));
         if (cptr.ld1s(cptr.add(gy.youmonst.data, 28)) == S_EEL) {
             if (is_pool(u.ux, u.uy))
                 void cptr.sprintf(bp, __sl513, waterbody_name(u.ux, u.uy));
@@ -2164,7 +2164,7 @@ export function youhiding(via_enlghtmt, msgflag) {
             if (u.utrap && u.utraptype == TT_PIT >>> 0) {
                 let t = t_at(u.ux, u.uy);
                 void cptr.sprintf(bp, __sl516, (t && (cptr.ldI32(cptr.add(t, 20)) | 0) == SPIKED_PIT) ? __sl517 : __sl10);
-            }
+            } else
                 void cptr.sprintf(bp, __sl515, surface(u.ux, u.uy));
         }
     } else {
@@ -2255,10 +2255,10 @@ export function show_conduct(final) {
         void cptr.sprintf(cptr.decay(buf), __sl550, u.uconduct.wishes, (u.uconduct.wishes > 1n) ? __sl551 : __sl10);
         if (u.uconduct.wisharti) {
             if (u.uconduct.wisharti == u.uconduct.wishes)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl552, (u.uconduct.wisharti > 2n) ? __sl553 : ((u.uconduct.wisharti == 2n) ? __sl554 : __sl10));
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl552, (u.uconduct.wisharti > 2n) ? __sl553 : ((u.uconduct.wisharti == 2n) ? __sl554 : __sl10));
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl555, u.uconduct.wisharti);
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl556, (u.uconduct.wisharti == 1n) ? __sl557 : __sl558);
+                void cptr.sprintf(eos.v(cptr.decay(buf)), __sl555, u.uconduct.wisharti);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl556, (u.uconduct.wisharti == 1n) ? __sl557 : __sl558);
         }
         enlght_line(cptr.decay((You_)), final ? (__sl10) : cptr.decay((have)), cptr.decay(((buf))), (__sl10));
         if (!u.uconduct.wisharti)
@@ -2727,7 +2727,7 @@ export function list_vanquished(defquery, ask) {
                 if (((mons[i].geno & 4096) != 0 && i != PM_HIGH_CLERIC)) {
                     void cptr.sprintf(cptr.decay(buf), __sl636, !((cptr.ldU64(cptr.add((cptr.add(cptr.decay(mons), i)), 80)) & 524288n) != 0n) ? __sl637 : __sl10, cptr.ldPtr(cptr.add(cptr.decay(mons[i].pmnames), NEUTRAL)));
                     if (nkilled > 1)
-                        void cptr.sprintf(eos(cptr.decay(buf)), __sl638, N_times(BigInt(nkilled), cptr.decay(buftoo)));
+                        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl638, N_times(BigInt(nkilled), cptr.decay(buftoo)));
                     was_uniq = (1);
                 } else {
                     if (uniq_header && was_uniq) {
@@ -3004,9 +3004,9 @@ export function mstatusline(mtmp) {
     if (cptr.ld1s(cptr.add(mtmp, 65))) {
         void cptr.strcat(cptr.decay(info), __sl681);
         if (flags.debug) {
-            void cptr.sprintf(eos(cptr.decay(info)), __sl682, cptr.ld1s(cptr.add(mtmp, 65)));
+            void cptr.sprintf(eos.v(cptr.decay(info)), __sl682, cptr.ld1s(cptr.add(mtmp, 65)));
             if (!cptr.ldI32(cptr.add(mtmp, 184)))
-                void cptr.sprintf(eos(cptr.decay(info)), __sl683, cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 20)));
+                void cptr.sprintf(eos.v(cptr.decay(info)), __sl683, cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 20)));
             void cptr.strcat(cptr.decay(info), __sl206);
         }
     } else if (cptr.ldI32(cptr.add(mtmp, 168)))
@@ -3019,7 +3019,7 @@ export function mstatusline(mtmp) {
         } else {
             ++nsegs;
             segndx = wseg_at(mtmp, gb.bhitpos.x, gb.bhitpos.y);
-            void cptr.sprintf(eos(cptr.decay(info)), __sl686, segndx, ordin(segndx), nsegs);
+            void cptr.sprintf(eos.v(cptr.decay(info)), __sl686, segndx, ordin(segndx), nsegs);
         }
     }
     if (((cptr.ldI16(cptr.add(mtmp, 22))) >= LOW_PM && (cptr.ldI16(cptr.add(mtmp, 22))) < NUMMONS) && !cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), cptr.ldI16(cptr.add(mtmp, 22)))))
@@ -3027,7 +3027,7 @@ export function mstatusline(mtmp) {
     if (cptr.ldI32(cptr.add(mtmp, 308)))
         void cptr.strcat(cptr.decay(info), __sl688);
     if (cptr.ldI32(cptr.add(mtmp, 108)) | 0 || cptr.ld1u(cptr.add(mtmp, 64)) || visible_region_at(gb.bhitpos.x, gb.bhitpos.y))
-        mhidden_description(mtmp, (1 | 2 | 4 | 8) >>> 0, eos(cptr.decay(info)));
+        mhidden_description(mtmp, (1 | 2 | 4 | 8) >>> 0, eos.v(cptr.decay(info)));
     if (cptr.ldI32(cptr.add(mtmp, 100)))
         void cptr.strcat(cptr.decay(info), __sl689);
     if (cptr.ldI32(cptr.add(mtmp, 164)))
@@ -3061,7 +3061,7 @@ export function mstatusline(mtmp) {
             let what = mbodypart(mtmp, LEG);
             if (legs == (131072n | 262144n))
                 what = makeplural(what);
-            void cptr.sprintf(eos(cptr.decay(info)), __sl708, what);
+            void cptr.sprintf(eos.v(cptr.decay(info)), __sl708, what);
         }
     }
     if (cptr.ldI32(cptr.add(mtmp, 176)))
@@ -3111,10 +3111,10 @@ export function ustatusline() {
         let what = body_part(LEG);
         if (legs == (131072n | 262144n))
             what = makeplural(what);
-        void cptr.sprintf(eos(cptr.decay(info)), __sl708, what);
+        void cptr.sprintf(eos.v(cptr.decay(info)), __sl708, what);
     }
     if (u.uprops[GLIB].intrinsic)
-        void cptr.sprintf(eos(cptr.decay(info)), __sl720, fingers_or_gloves((1)));
+        void cptr.sprintf(eos.v(cptr.decay(info)), __sl720, fingers_or_gloves((1)));
     if (u.utrap)
         void cptr.strcat(cptr.decay(info), __sl697);
     if ((u.uprops[FAST].intrinsic || u.uprops[FAST].extrinsic))
@@ -3135,6 +3135,6 @@ export function ustatusline() {
         void cptr.strcat(cptr.decay(info), a_monnam(u.ustuck));
     }
     if (!u.uswallow && (reg = visible_region_at(u.ux, u.uy)) !== null && (ln = cptr.strlen(cptr.decay(info))) < 256n)
-        nh_snprintf(__sl728, 3483, eos(cptr.decay(info)), 256n - ln, __sl729, reg_damg(reg) ? __sl730 : __sl731);
+        nh_snprintf(__sl728, 3483, eos.v(cptr.decay(info)), 256n - ln, __sl729, reg_damg(reg) ? __sl730 : __sl731);
     pline(__sl732, cptr.decay(svp.plname), piousness((0), align_str(u.ualign.type)), (u.umonnum != u.umonster) ? mons[u.umonnum].mlevel : u.ulevel, (u.umonnum != u.umonster) ? u.mh : u.uhp, (u.umonnum != u.umonster) ? u.mhmax : u.uhpmax, u.uac, cptr.decay(info));
 }

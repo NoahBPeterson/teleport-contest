@@ -478,7 +478,7 @@ export function flooreffects(obj, x, y, verb) {
                     if (!(u.uprops[PASSES_WALLS].intrinsic || u.uprops[PASSES_WALLS].extrinsic) && !((cptr.ldU64(cptr.add((gy.youmonst.data), 80)) & 134217728n) != 0n)) {
                         losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl2, 232, __sl27), rnd(15)) : rnd(15))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 232, __sl27), rnd(15)) : rnd(15)))), __sl28, 2);
                         break __lbl_deletedwithboulder;
-                    }
+                    } else
                         reset_utrap((1));
                 }
             }
@@ -668,10 +668,12 @@ function dosinkring(obj) {
     switch (cptr.ldI16(cptr.add(obj, 32))) {
         case RIN_SEARCHING:
         You(__sl59, yname(obj));
-        cptr.stI32(cptr.add(obj, 144), 0);
-        dropx(obj);
-        trycall(obj);
-        return;
+        {
+            cptr.stI32(cptr.add(obj, 144), 0);
+            dropx(obj);
+            trycall(obj);
+            return;
+        }
         case RIN_SLOW_DIGESTION:
         pline_The(__sl60);
         cptr.stI32(cptr.add(obj, 144), 0);
@@ -713,7 +715,7 @@ function dosinkring(obj) {
         ideed = (0);
         for (otmp = cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[u.ux]), u.uy)); otmp; otmp = otmp2) {
             otmp2 = cptr.ldPtr(cptr.add(otmp, 8));
-            if (!cptr.eq(otmp, uball) && !cptr.eq(otmp, uchain) && !obj_resists(otmp, 1, 99)) {
+            if (!cptr.eq(otmp, uball.v) && !cptr.eq(otmp, uchain.v) && !obj_resists(otmp, 1, 99)) {
                 if (!((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
                     pline(__sl79, doname(otmp), otense(otmp, __sl80));
                     ideed = (1);
@@ -801,7 +803,7 @@ function dosinkring(obj) {
         cptr.stI16(cptr.add(obj, 28), u.ux);
         cptr.stI16(cptr.add(obj, 30), u.uy);
         add_to_buried(obj);
-    }
+    } else
         useup(obj);
 }
 
@@ -812,10 +814,10 @@ export function canletgo(obj, word) {
             Norep(__sl101, word, c_common_strings.c_something);
         return (0);
     }
-    if (cptr.eq(obj, uwep) && welded(uwep)) {
+    if (cptr.eq(obj, uwep.v) && welded(uwep.v)) {
         if (cptr.ld1s(word)) {
             let hand = body_part(HAND);
-            if (((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0))
+            if (((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))
                 hand = makeplural(hand);
             Norep(__sl102, word, c_common_strings.c_something, hand);
         }
@@ -852,17 +854,17 @@ function drop(obj) {
         return 4;
     if (cptr.ldI16(cptr.add(obj, 32)) == CORPSE && better_not_try_to_drop_that(obj))
         return 4;
-    if (cptr.eq(obj, uwep)) {
-        if (welded(uwep)) {
+    if (cptr.eq(obj, uwep.v)) {
+        if (welded(uwep.v)) {
             weldmsg(obj);
             return 4;
         }
         setuwep(null);
     }
-    if (cptr.eq(obj, uquiver)) {
+    if (cptr.eq(obj, uquiver.v)) {
         setuqwep(null);
     }
-    if (cptr.eq(obj, uswapwep)) {
+    if (cptr.eq(obj, uswapwep.v)) {
         setuswapwep(null);
     }
     if (u.uswallow) {
@@ -922,14 +924,14 @@ export function dropy(obj) {
 
 /** C ref: do.c:807 — @param {CPtr} obj @param {CInt} with_impact */
 export function dropz(obj, with_impact) {
-    if (cptr.eq(obj, uwep))
+    if (cptr.eq(obj, uwep.v))
         setuwep(null);
-    if (cptr.eq(obj, uquiver))
+    if (cptr.eq(obj, uquiver.v))
         setuqwep(null);
-    if (cptr.eq(obj, uswapwep))
+    if (cptr.eq(obj, uswapwep.v))
         setuswapwep(null);
     if (u.uswallow) {
-        if (!cptr.eq(obj, uball)) {
+        if (!cptr.eq(obj, uball.v)) {
             if (is_unpaid(obj))
                 void stolen_value(obj, u.ux, u.uy, (1), (0));
             if (!engulfer_digests_food(obj))
@@ -942,7 +944,7 @@ export function dropz(obj, with_impact) {
         if (with_impact)
             container_impact_dmg(obj, u.ux, u.uy);
         impact_disturbs_zombies(obj, with_impact);
-        if (cptr.eq(obj, uball))
+        if (cptr.eq(obj, uball.v))
             drop_ball(u.ux, u.uy);
         else if (svl.level.flags.has_shop)
             sellobj(obj, u.ux, u.uy);
@@ -1223,8 +1225,8 @@ export function dodown() {
             dotrap(trap, 16);
             return 1;
         } else if (!trap || !(((cptr.ldI32(cptr.add(trap, 20))) | 0) == HOLE || ((cptr.ldI32(cptr.add(trap, 20))) | 0) == TRAPDOOR) || !Can_fall_thru(cptr.boxProp(u, 'uz')) || !cptr.ldI32(cptr.add(trap, 24))) {
-            if (flags.autodig && !svc.context.nopick && uwep && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp == P_PICK_AXE)) {
-                return use_pick_axe2(uwep);
+            if (flags.autodig && !svc.context.nopick && uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_PICK_AXE)) {
+                return use_pick_axe2(uwep.v);
             } else {
                 You_cant(__sl136, (trap && (cptr.ldI32(cptr.add(trap, 20)) | 0) == VIBRATING_SQUARE) ? __sl137 : __sl13);
                 return 0;
@@ -1473,7 +1475,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
     if (falling)
         impact_drop(null, u.ux, u.uy, cptr.ldI16(cptr.add(newlevel, 2)));
     check_special_room((1));
-    if ((uball !== null))
+    if ((uball.v !== null))
         unplacebc();
     reset_utrap((0));
     fill_pit(u.ux, u.uy);
@@ -1576,7 +1578,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
                 u_on_sstairs(1);
             else
                 u_on_dnstairs();
-            great_effort = schar(((uball !== null) && !((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked)));
+            great_effort = schar(((uball.v !== null) && !((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked)));
             if (flags.verbose || great_effort)
                 pline(__sl180, great_effort ? __sl181 : __sl182, u_locomotion(__sl183), (((u.uprops[FLYING].intrinsic || u.uprops[FLYING].extrinsic || (u.usteed && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(u.usteed, 8))), 72)) & 1n) != 0n))) && !u.uprops[FLYING].blocked) && ga.at_ladder) ? __sl184 : __sl13, ga.at_ladder ? __sl132 : __sl131);
         } else {
@@ -1593,11 +1595,11 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
             } else if (((u.uprops[FLYING].intrinsic || u.uprops[FLYING].extrinsic || (u.usteed && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(u.usteed, 8))), 72)) & 1n) != 0n))) && !u.uprops[FLYING].blocked)) {
                 if (flags.verbose)
                     You(__sl185, ga.at_ladder ? __sl186 : __sl187);
-            } else if (near_capacity() > UNENCUMBERED || (uball !== null) || (u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic)) {
+            } else if (near_capacity() > UNENCUMBERED || (uball.v !== null) || (u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic)) {
                 You(__sl188, ga.at_ladder ? __sl132 : __sl131);
-                if ((uball !== null)) {
+                if ((uball.v !== null)) {
                     drag_down();
-                    if (!welded(uball))
+                    if (!welded(uball.v))
                         ballrelease((0));
                 }
                 if (u.usteed)
@@ -1613,13 +1615,13 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
     } else {
         u_on_rndspot((up ? 1 : 0) | (was_in_W_tower ? 2 : 0));
         if (falling) {
-            if ((uball !== null) && !welded(uball))
+            if ((uball.v !== null) && !welded(uball.v))
                 ballfall();
             selftouch(__sl191);
             do_fall_dmg = (1);
         }
     }
-    if ((uball !== null))
+    if ((uball.v !== null))
         placebc();
     obj_delivery((0));
     losedogs();
@@ -1822,7 +1824,7 @@ export function revive_corpse(corpse) {
     where = i16(cptr.ld1s(cptr.add(corpse, 52)));
     montype = cptr.ldI32(cptr.add(corpse, 168));
     is_zomb = schar((mons[montype].mlet == S_ZOMBIE || (where == 6 && ((cptr.eq((cptr.add(cptr.decay(mons), montype)), cptr.add(cptr.decay(mons), PM_DEATH)) || cptr.eq((cptr.add(cptr.decay(mons), montype)), cptr.add(cptr.decay(mons), PM_FAMINE)) || cptr.eq((cptr.add(cptr.decay(mons), montype)), cptr.add(cptr.decay(mons), PM_PESTILENCE))) || cptr.ld1s(cptr.add((cptr.add(cptr.decay(mons), montype)), 28)) == S_TROLL))));
-    is_uwep = schar((cptr.eq(corpse, uwep)));
+    is_uwep = schar((cptr.eq(corpse, uwep.v)));
     chewed = schar((cptr.ldI32(cptr.add(corpse, 176)) != 0));
     void cptr.strcpy(cptr.decay(cname), corpse_xname(corpse, chewed ? __sl220 : null, 1));
     mcarry = (where == 4) ? cptr.ldPtr(cptr.add(corpse, 8)) : null;

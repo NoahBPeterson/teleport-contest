@@ -169,7 +169,7 @@ export function use_saddle(otmp) {
         return 1;
     }
     ptr = cptr.ldPtr(cptr.add(mtmp, 8));
-    if ((cptr.eq((ptr), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((ptr), cptr.add(cptr.decay(mons), PM_CHICKATRICE))) && !uarmg && !(u.uprops[STONE_RES].intrinsic || u.uprops[STONE_RES].extrinsic)) {
+    if ((cptr.eq((ptr), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((ptr), cptr.add(cptr.decay(mons), PM_CHICKATRICE))) && !uarmg.v && !(u.uprops[STONE_RES].intrinsic || u.uprops[STONE_RES].extrinsic)) {
         let kbuf = new Uint8Array(256);
         You(__sl5, mon_nam(mtmp));
         if (!(poly_when_stoned(gy.youmonst.data) && polymon(PM_STONE_GOLEM))) {
@@ -213,9 +213,9 @@ export function use_saddle(otmp) {
     }
     if (u.uprops[CONFUSION].intrinsic || (u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic) || u.uprops[GLIB].intrinsic)
         chance = (chance - 20) | 0;
-    else if (uarmg && objdescr_is(uarmg, __sl10))
+    else if (uarmg.v && objdescr_is(uarmg.v, __sl10))
         chance = (chance + 10) | 0;
-    else if (uarmf && objdescr_is(uarmf, __sl11))
+    else if (uarmf.v && objdescr_is(uarmf.v, __sl11))
         chance = (chance + 10) | 0;
     if (cptr.ldI32(cptr.add(otmp, 56)))
         chance = (chance - 50) | 0;
@@ -226,7 +226,7 @@ export function use_saddle(otmp) {
             remove_worn_item(otmp, (0));
         freeinv(otmp);
         put_saddle_on_mon(otmp, mtmp);
-    }
+    } else
         pline(__sl15, Monnam(mtmp));
     return 1;
 }
@@ -311,8 +311,8 @@ export function mount_steed(mtmp, force) {
         You(__sl27, a_monnam(mtmp));
         return (0);
     }
-    if (u.uswallow | 0 || u.ustuck || u.utrap || (uball !== null) || !test_move(u.ux, u.uy, i16(((cptr.ldI16(cptr.add(mtmp, 28)) - u.ux) | 0)), i16(((cptr.ldI16(cptr.add(mtmp, 30)) - u.uy) | 0)), 1)) {
-        if ((uball !== null) || !(u.uswallow | 0 || u.ustuck || u.utrap))
+    if (u.uswallow | 0 || u.ustuck || u.utrap || (uball.v !== null) || !test_move(u.ux, u.uy, i16(((cptr.ldI16(cptr.add(mtmp, 28)) - u.ux) | 0)), i16(((cptr.ldI16(cptr.add(mtmp, 30)) - u.uy) | 0)), 1)) {
+        if ((uball.v !== null) || !(u.uswallow | 0 || u.ustuck || u.utrap))
             You(__sl28, body_part(LEG));
         else
             You(__sl29);
@@ -358,8 +358,8 @@ export function mount_steed(mtmp, force) {
         You(__sl38, mon_nam(mtmp));
         return ((0));
     }
-    if (!force && uarm && ((objects[cptr.ldI16(cptr.add(uarm, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarm, 32))].oc_material | 0) <= MITHRIL) && ((cptr.ldI32(cptr.add((uarm), 112)) | 0) > (cptr.ldI32(cptr.add((uarm), 116)) | 0) ? cptr.ldI32(cptr.add((uarm), 112)) | 0 : cptr.ldI32(cptr.add((uarm), 116)) | 0)) {
-        Your(__sl39, cptr.ldI32(cptr.add(uarm, 112)) | 0 ? __sl40 : __sl41, mon_nam(mtmp));
+    if (!force && uarm.v && ((objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) <= MITHRIL) && ((cptr.ldI32(cptr.add((uarm.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarm.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarm.v), 112)) | 0 : cptr.ldI32(cptr.add((uarm.v), 116)) | 0)) {
+        Your(__sl39, cptr.ldI32(cptr.add(uarm.v, 112)) | 0 ? __sl40 : __sl41, mon_nam(mtmp));
         return ((0));
     }
     if (!force && (u.uprops[CONFUSION].intrinsic || (u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic) || u.uprops[GLIB].intrinsic || (u.uprops[WOUNDED_LEGS].intrinsic || u.uprops[WOUNDED_LEGS].extrinsic) || cptr.ldI32(cptr.add(otmp, 56)) | 0 || cptr.ldI32(cptr.add(otmp, 140)) | 0 || (((u.ulevel + cptr.ld1s(cptr.add(mtmp, 65))) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl12, 341, __sl42), rnd((((30 / 2) | 0) + 5) | 0)) : rnd((((30 / 2) | 0) + 5) | 0))))) {
@@ -380,7 +380,7 @@ export function mount_steed(mtmp, force) {
         if (((u.uprops[FLYING].intrinsic || u.uprops[FLYING].extrinsic || (u.usteed && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(u.usteed, 8))), 72)) & 1n) != 0n))) && !u.uprops[FLYING].blocked))
             You(__sl48, mon_nam(mtmp));
     }
-    if (uwep && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && (objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp == P_POLEARMS || objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp == P_LANCE || is_art(uwep, ART_SNICKERSNEE))))
+    if (uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && (objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_POLEARMS || objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_LANCE || is_art(uwep.v, ART_SNICKERSNEE))))
         gu.unweapon = (0);
     u.usteed = mtmp;
     {
@@ -427,7 +427,7 @@ export function kick_steed() {
                 pline(__sl51, cptr.decay(He));
             else
                 pline(__sl52, monverbself(u.usteed, cptr.decay(He), __sl53, null));
-        }
+        } else
             pline(__sl54, cptr.decay(He));
         return;
     }
@@ -592,7 +592,7 @@ export function dismount_steed(reason) {
             pline(__sl68, an(pmname(cptr.ldPtr(cptr.add(mtmp, 8)), Mgender(mtmp))));
             if ((u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic)))
                 pline(__sl69);
-        }
+        } else
             You(__sl70, mon_nam(mtmp));
     }
     if (repair_leg_damage)
@@ -669,9 +669,9 @@ export function dismount_steed(reason) {
         disp.botl = (1);
         encumber_msg();
         gv.vision_full_recalc = 1;
-    }
+    } else
         disp.botl = (1);
-    if (uwep && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && (objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp == P_POLEARMS || objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp == P_LANCE || is_art(uwep, ART_SNICKERSNEE))))
+    if (uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && (objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_POLEARMS || objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_LANCE || is_art(uwep.v, ART_SNICKERSNEE))))
         gu.unweapon = (1);
     return;
 }

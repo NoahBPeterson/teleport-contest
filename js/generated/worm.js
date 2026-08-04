@@ -247,7 +247,7 @@ export function cutworm(worm, x, y, cuttier) {
         if (svc.context.mon_moving) {
             if ((canseemon(worm) || sensemon(worm)))
                 pline(__sl6, s_suffix(mon_nam(worm)));
-        }
+        } else
             You(__sl7, mon_nam(worm));
         toss_wsegs(new_tail, (1));
         if (cptr.ldI32(cptr.add(worm, 52)) > 1)

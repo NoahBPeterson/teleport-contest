@@ -231,7 +231,7 @@ export function fightm(mtmp) {
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl9, 133, __sl10), rn2(4)) : rn2(4))) {
                         set_ustuck(null);
                         pline(__sl11, Monnam(mtmp));
-                    }
+                    } else
                         break;
                 }
                 gb.bhitpos.x = cptr.ldI16(cptr.add(mon, 28)), gb.bhitpos.y = cptr.ldI16(cptr.add(mon, 30));
@@ -445,7 +445,7 @@ export function mattackm(magr, mdef) {
                             res[i] |= 4;
                     }
                 }
-            }
+            } else
                 missmm(magr, mdef, mattk);
             break;
             case 7:
@@ -468,7 +468,7 @@ export function mattackm(magr, mdef) {
             if (res[i] == 0) {
                 strike = 0;
                 attk = 0;
-            }
+            } else
                 strike = 1;
             break;
             case 11:
@@ -617,7 +617,7 @@ function hitmm(magr, mdef, mattk, mwep, dieroll) {
                 pline(__sl55, cptr.decay(magr_name), simpleonames(mwep), mdef_name);
             }
         }
-    }
+    } else
         noises(magr, mattk);
     return mdamagem(magr, mdef, mattk, mwep, dieroll);
 }
@@ -1033,7 +1033,7 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
                         pline(__sl99, Monnam(magr));
                     tmp = 0;
                 }
-            }
+            } else
                 tmp = 0;
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl9, 1345, __sl96), rn2(30)) : rn2(30)))
                 erode_armor(magr, 3);

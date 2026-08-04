@@ -501,8 +501,8 @@ export function visible_region_summary(win) {
             void cptr.sprintf(cptr.decay(typbuf), __sl12, damg);
         else
             void cptr.strcpy(cptr.decay(typbuf), __sl13);
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl14, fldsep, cptr.decay(typbuf));
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl15, fldsep, cptr.ldI16(reg), cptr.ldI16(cptr.add(reg, 2)), cptr.ldI16(cptr.add(reg, 4)), cptr.ldI16(cptr.add(reg, 6)));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl14, fldsep, cptr.decay(typbuf));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl15, fldsep, cptr.ldI16(reg), cptr.ldI16(cptr.add(reg, 2)), cptr.ldI16(cptr.add(reg, 4)), cptr.ldI16(cptr.add(reg, 6)));
         (windowprocs.win_putstr)(win, 0, cptr.decay(buf));
     }
 }
@@ -767,7 +767,7 @@ export function inside_gas_cloud(p1, p2) {
             You(__sl43);
             wake_nearto(u.ux, u.uy, 2);
             dam = (((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
-            if ((ublindf && cptr.ldI16(cptr.add(ublindf, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf, 48)) > 0))
+            if ((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == TOWEL && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0))
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __sl46, 0);
             monstunseesu(BigInt.asUintN(64, BigInt(M_SEEN_POISON)));
@@ -859,7 +859,12 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
             break;
         let xx = cptr.ldI16(cptr.add(cptr.decay(xcoords), curridx));
         let yy = cptr.ldI16(cptr.add(cptr.decay(ycoords), curridx));
-        let dirs = [{ x: 0, y: i16((-1)) }, { x: 0, y: 1 }, { x: i16((-1)), y: 0 }, { x: 1, y: 0 }];
+        let dirs = [
+    { x: 0, y: i16((-1)) },
+    { x: 0, y: 1 },
+    { x: i16((-1)), y: 0 },
+    { x: 1, y: 0 }
+];
         for (i = 4; i > 0; --i) {
             let swapidx = i16((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1255, __sl53), rn2(i)) : rn2(i)));
             let tmp = cptr.alloc(4); cptr.memcpy(tmp, dirs[swapidx], 4);

@@ -481,7 +481,7 @@ function finishpcall(L, status, extra) {
         lua_pushboolean(L, 0);
         lua_pushvalue(L, -2);
         return 2;
-    }
+    } else
         return (lua_gettop(L) - Number(BigInt.asIntN(32, extra))) | 0;
 }
 
@@ -515,7 +515,34 @@ function luaB_tostring(L) {
 }
 
 /** C ref: lbaselib.c:506 — luaL_Reg[26] */
-const base_funcs = [{ name: __sl26, func: luaB_assert }, { name: __sl27, func: luaB_collectgarbage }, { name: __sl28, func: luaB_dofile }, { name: __sl29, func: luaB_error }, { name: __sl30, func: luaB_getmetatable }, { name: __sl31, func: luaB_ipairs }, { name: __sl32, func: luaB_loadfile }, { name: __sl33, func: luaB_load }, { name: __sl34, func: luaB_next }, { name: __sl35, func: luaB_pairs }, { name: __sl36, func: luaB_pcall }, { name: __sl37, func: luaB_print }, { name: __sl38, func: luaB_warn }, { name: __sl39, func: luaB_rawequal }, { name: __sl40, func: luaB_rawlen }, { name: __sl41, func: luaB_rawget }, { name: __sl42, func: luaB_rawset }, { name: __sl43, func: luaB_select }, { name: __sl44, func: luaB_setmetatable }, { name: __sl45, func: luaB_tonumber }, { name: __sl46, func: luaB_tostring }, { name: __sl47, func: luaB_type }, { name: __sl48, func: luaB_xpcall }, { name: __sl49, func: null }, { name: __sl50, func: null }, { name: null, func: null }];
+const base_funcs = [
+    { name: __sl26, func: luaB_assert },
+    { name: __sl27, func: luaB_collectgarbage },
+    { name: __sl28, func: luaB_dofile },
+    { name: __sl29, func: luaB_error },
+    { name: __sl30, func: luaB_getmetatable },
+    { name: __sl31, func: luaB_ipairs },
+    { name: __sl32, func: luaB_loadfile },
+    { name: __sl33, func: luaB_load },
+    { name: __sl34, func: luaB_next },
+    { name: __sl35, func: luaB_pairs },
+    { name: __sl36, func: luaB_pcall },
+    { name: __sl37, func: luaB_print },
+    { name: __sl38, func: luaB_warn },
+    { name: __sl39, func: luaB_rawequal },
+    { name: __sl40, func: luaB_rawlen },
+    { name: __sl41, func: luaB_rawget },
+    { name: __sl42, func: luaB_rawset },
+    { name: __sl43, func: luaB_select },
+    { name: __sl44, func: luaB_setmetatable },
+    { name: __sl45, func: luaB_tonumber },
+    { name: __sl46, func: luaB_tostring },
+    { name: __sl47, func: luaB_type },
+    { name: __sl48, func: luaB_xpcall },
+    { name: __sl49, func: null },
+    { name: __sl50, func: null },
+    { name: null, func: null }
+];
 
 /** C ref: lbaselib.c:537 — @param {CPtr} L @returns {CInt} */
 export function luaopen_base(L) {

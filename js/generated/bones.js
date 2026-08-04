@@ -337,7 +337,7 @@ export function savebones(how, when, corpse) {
         }
     }
     unleash_all();
-    if ((uball !== null))
+    if ((uball.v !== null))
         unpunish();
     if (u.usteed)
         dismount_steed(DISMOUNT_BONES);
@@ -553,7 +553,7 @@ export function getbones() {
                         } while (0);
                     }
                     mongone(mtmp);
-                }
+                } else
                     resetobjs(cptr.ldPtr(cptr.add(mtmp, 280)), (1));
             }
             resetobjs(svl.level.objlist, (1));

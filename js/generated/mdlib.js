@@ -168,7 +168,7 @@ const save_bones_compat_buf = new Uint8Array(256);
 /** C ref: mdlib.c:393 */
 function build_savebones_compat_string() {
     void cptr.strcpy(cptr.decay(save_bones_compat_buf), __sl16);
-    void cptr.sprintf(eos(cptr.decay(save_bones_compat_buf)), __sl17, 5, 0, 0);
+    void cptr.sprintf(eos.v(cptr.decay(save_bones_compat_buf)), __sl17, 5, 0, 0);
 }
 
 /** C ref: mdlib.c:417 — char *[26] */
@@ -207,9 +207,9 @@ function opt_out_words(str, length_p) {
             (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(cptr.decay(opttext), idxopttext++), dupstr(cptr.decay(optbuf)))) : null));
             void cptr.sprintf(cptr.decay(optbuf), __sl43, cptr.decay(opt_indent)), cptr.stI32(length_p, Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent)))));
         } else {
-            void cptr.sprintf(eos(cptr.decay(optbuf)), __sl44), (cptr.ldI32(length_p))++;
+            void cptr.sprintf(eos.v(cptr.decay(optbuf)), __sl44), (cptr.ldI32(length_p))++;
         }
-        void cptr.sprintf(eos(cptr.decay(optbuf)), __sl43, str), cptr.st1(length_p, cptr.ld1s(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str))));
+        void cptr.sprintf(eos.v(cptr.decay(optbuf)), __sl43, str), cptr.st1(length_p, cptr.ld1s(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str))));
         str = cptr.add(str, cptr.strlen(str) + BigInt.asUintN(64, BigInt((word ? 1 : 0))));
     }
 }
@@ -252,7 +252,7 @@ function build_options() {
             continue;
         void cptr.sprintf(cptr.decay(buf), __sl51, window_opts[i].id);
         if (strcmp(window_opts[i].name, window_opts[i].id))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl52, window_opts[i].name);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl52, window_opts[i].name);
         void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __sl9 : ((winsyscnt == 2 && cnt == 0) ? __sl53 : ((cnt == ((winsyscnt - 2) | 0)) ? __sl54 : __sl48)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;

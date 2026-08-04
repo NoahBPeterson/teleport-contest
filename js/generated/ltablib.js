@@ -43,7 +43,7 @@ function checktab(L, arg, what) {
         let n = 1;
         if (lua_getmetatable(L, arg) && (!(what & 1) || checkfield(L, __sl0, ++n)) && (!(what & 2) || checkfield(L, __sl1, ++n)) && (!(what & 4) || checkfield(L, __sl2, ++n))) {
             lua_settop(L, (-(n) - 1) | 0);
-        }
+        } else
             luaL_checktype(L, arg, 5);
     }
 }
@@ -316,7 +316,16 @@ function sort(L) {
 }
 
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
-const tab_funcs = [{ name: __sl13, func: tconcat }, { name: __sl14, func: tinsert }, { name: __sl15, func: tpack }, { name: __sl16, func: tunpack }, { name: __sl17, func: tremove }, { name: __sl18, func: tmove }, { name: __sl19, func: sort }, { name: null, func: null }];
+const tab_funcs = [
+    { name: __sl13, func: tconcat },
+    { name: __sl14, func: tinsert },
+    { name: __sl15, func: tpack },
+    { name: __sl16, func: tunpack },
+    { name: __sl17, func: tremove },
+    { name: __sl18, func: tmove },
+    { name: __sl19, func: sort },
+    { name: null, func: null }
+];
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {

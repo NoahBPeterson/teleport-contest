@@ -606,7 +606,7 @@ function nameshk(shk, nlp) {
         shname = __sl373;
         cptr.stI32(cptr.add(shk, 84), 0);
     } else {
-        let nseed = Number(BigInt.asIntN(32, (ubirthday / 257n)));
+        let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
         name_wanted = (name_wanted + ((((ledger_no(cptr.boxProp(u, 'uz')) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) | 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + ((13 + 5) | 0)) | 0;

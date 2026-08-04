@@ -462,7 +462,26 @@ function db_setcstacklimit(L) {
 }
 
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
-const dblib = [{ name: __sl39, func: db_debug }, { name: __sl40, func: db_getuservalue }, { name: __sl41, func: db_gethook }, { name: __sl42, func: db_getinfo }, { name: __sl43, func: db_getlocal }, { name: __sl44, func: db_getregistry }, { name: __sl45, func: db_getmetatable }, { name: __sl46, func: db_getupvalue }, { name: __sl47, func: db_upvaluejoin }, { name: __sl48, func: db_upvalueid }, { name: __sl49, func: db_setuservalue }, { name: __sl50, func: db_sethook }, { name: __sl51, func: db_setlocal }, { name: __sl52, func: db_setmetatable }, { name: __sl53, func: db_setupvalue }, { name: __sl54, func: db_traceback }, { name: __sl55, func: db_setcstacklimit }, { name: null, func: null }];
+const dblib = [
+    { name: __sl39, func: db_debug },
+    { name: __sl40, func: db_getuservalue },
+    { name: __sl41, func: db_gethook },
+    { name: __sl42, func: db_getinfo },
+    { name: __sl43, func: db_getlocal },
+    { name: __sl44, func: db_getregistry },
+    { name: __sl45, func: db_getmetatable },
+    { name: __sl46, func: db_getupvalue },
+    { name: __sl47, func: db_upvaluejoin },
+    { name: __sl48, func: db_upvalueid },
+    { name: __sl49, func: db_setuservalue },
+    { name: __sl50, func: db_sethook },
+    { name: __sl51, func: db_setlocal },
+    { name: __sl52, func: db_setmetatable },
+    { name: __sl53, func: db_setupvalue },
+    { name: __sl54, func: db_traceback },
+    { name: __sl55, func: db_setcstacklimit },
+    { name: null, func: null }
+];
 
 /** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
 export function luaopen_debug(L) {

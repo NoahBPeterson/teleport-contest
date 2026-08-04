@@ -297,7 +297,7 @@ export function explode(x, y, type, dam, olet, expltype) {
                     impossible(__sl15, type);
                     type = 0;
                 }
-            }
+            } else
                 type = 0;
         }
         switch ((gu.urole.mnum)) {
@@ -333,7 +333,7 @@ export function explode(x, y, type, dam, olet, expltype) {
             grabbed = (1);
         cptr.stI16(grabxy, cptr.ldI16(cptr.add(u.ustuck, 28)));
         cptr.stI16(cptr.add(grabxy, 2), cptr.ldI16(cptr.add(u.ustuck, 30)));
-    }
+    } else
         cptr.stI16(grabxy, cptr.stI16(cptr.add(grabxy, 2), 0));
     if (olet == ((MAXOCLASSES + 2) | 0) && !you_exploding) {
         str = cptr.strcpy(cptr.decay(killr_buf), cptr.decay(svk.killer.name));
@@ -638,8 +638,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
     if (shop_origin)
         credit_report(shkp, 0, (1));
     while ((otmp = (individual_object ? obj : cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[sx]), sy)))) !== null) {
-        if (cptr.eq(otmp, uball) || cptr.eq(otmp, uchain)) {
-            let waschain = schar((cptr.eq(otmp, uchain)));
+        if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v)) {
+            let waschain = schar((cptr.eq(otmp, uchain.v)));
             ;
             pline_The(__sl52);
             unpunish();

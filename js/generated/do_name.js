@@ -523,7 +523,7 @@ function do_mgivenname() {
             pline(__sl16, beautiful(), cptr.decay(svp.plname));
             return;
         }
-    }
+    } else
         mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cx]), cy)));
     if (!mtmp && u.uswallow | 0) {
         let glyph = glyph_at(i16(cx), i16(cy));
@@ -614,9 +614,9 @@ export function oname(obj, name, oflgs) {
     if (lth)
         artifact_exists(obj, name, (1), oflgs);
     if (cptr.ld1s(cptr.add(obj, 51))) {
-        if (cptr.eq(obj, uswapwep))
+        if (cptr.eq(obj, uswapwep.v))
             untwoweapon();
-        if (cptr.eq(obj, uwep))
+        if (cptr.eq(obj, uwep.v))
             set_artifact_intrinsic(obj, (1), 256n);
         if (cptr.ldI32(cptr.add(obj, 64)))
             alter_cost(obj, 0n);
@@ -720,7 +720,7 @@ export function docallcmd() {
         if (select_menu(win, 1, pick_list) > 0) {
             ch = cptr.ld1s(cptr.add(pick_list.v, 0, 24));
             cptr.free(pick_list.v);
-        }
+        } else
             ch = 113;
         (windowprocs.win_destroy_nhwindow)(win);
     }
@@ -966,10 +966,10 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     } else if (do_name && (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))))) {
         let name = (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312))));
         if (cptr.eq(mdat, cptr.add(cptr.decay(mons), PM_GHOST))) {
-            void cptr.sprintf(eos(buf), __sl111, s_suffix(name));
+            void cptr.sprintf(eos.v(buf), __sl111, s_suffix(name));
             name_at_start = (1);
         } else if (called) {
-            void cptr.sprintf(eos(buf), __sl112, pm_name, name);
+            void cptr.sprintf(eos.v(buf), __sl112, pm_name, name);
             name_at_start = schar(((cptr.ldU64(cptr.add((mdat), 80)) & 524288n) != 0n));
         } else if (((cptr.cmp((mdat), cptr.add(cptr.decay(mons), PM_ARCHEOLOGIST)) >= 0) && (cptr.cmp((mdat), cptr.add(cptr.decay(mons), PM_WIZARD)) <= 0)) && (bp = strstri(name, __sl109)) !== null) {
             let pbuf = new Uint8Array(256);
@@ -1188,7 +1188,7 @@ export function minimal_monnam(mon, ckloc) {
     } else {
         void cptr.sprintf(outbuf, __sl125, cptr.ld1s(cptr.add(mon, 65)) ? __sl126 : (cptr.ldI32(cptr.add(mon, 168)) | 0 ? __sl127 : __sl0), mon_pmname(mon), cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
         if (cptr.ldI16(cptr.add(mon, 22)) != NON_PM)
-            void cptr.sprintf(eos(outbuf), __sl128, pmname(cptr.add(cptr.decay(mons), cptr.ldI16(cptr.add(mon, 22))), Mgender(mon)));
+            void cptr.sprintf(eos.v(outbuf), __sl128, pmname(cptr.add(cptr.decay(mons), cptr.ldI16(cptr.add(mon, 22))), Mgender(mon)));
     }
     return outbuf;
 }
@@ -1347,7 +1347,7 @@ export function rndorcname(s) {
         cptr.st1(s, 0);
         for (i = 0; i < iend; ++i) {
             vstart = (1 - vstart) | 0;
-            void cptr.sprintf(eos(s), __sl280, (i > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl102, 1549, __sl279), rn2(30)) : rn2(30))) ? __sl281 : __sl0, vstart ? cptr.ldPtr(cptr.add(cptr.decay(__static_rndorcname_v), (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl279), rn2(v.length)) : rn2(v.length)))) : cptr.ldPtr(cptr.add(cptr.decay(__static_rndorcname_snd), (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl279), rn2(snd.length)) : rn2(snd.length)))));
+            void cptr.sprintf(eos.v(s), __sl280, (i > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl102, 1549, __sl279), rn2(30)) : rn2(30))) ? __sl281 : __sl0, vstart ? cptr.ldPtr(cptr.add(cptr.decay(__static_rndorcname_v), (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl279), rn2(v.length)) : rn2(v.length)))) : cptr.ldPtr(cptr.add(cptr.decay(__static_rndorcname_snd), (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl279), rn2(snd.length)) : rn2(snd.length)))));
         }
     }
     return s;

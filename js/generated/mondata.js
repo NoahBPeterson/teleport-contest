@@ -219,7 +219,7 @@ export function defended(mon, adtyp) {
     let otemp = cptr.alloc(216);
     let mndx;
     let is_you = schar((cptr.eq(mon, cptr.boxProp(gy, 'youmonst'))));
-    o = is_you ? uwep : (cptr.ldPtr(cptr.add((mon), 288)));
+    o = is_you ? uwep.v : (cptr.ldPtr(cptr.add((mon), 288)));
     if (o && cptr.ld1s(cptr.add(o, 51)) && defends(adtyp, o))
         return (1);
     mndx = (cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24));
@@ -229,7 +229,7 @@ export function defended(mon, adtyp) {
         cptr.stI16(cptr.add(otemp, 32), i16(((GRAY_DRAGON_SCALES + ((mndx - PM_GRAY_DRAGON) | 0)) | 0)));
         o = otemp;
     } else {
-        o = is_you ? uarm : which_armor(mon, 1n);
+        o = is_you ? uarm.v : which_armor(mon, 1n);
     }
     if (o && ((cptr.ldI16(cptr.add((o), 32)) >= GRAY_DRAGON_SCALES && cptr.ldI16(cptr.add((o), 32)) <= YELLOW_DRAGON_SCALES) || (cptr.ldI16(cptr.add((o), 32)) >= GRAY_DRAGON_SCALE_MAIL && cptr.ldI16(cptr.add((o), 32)) <= YELLOW_DRAGON_SCALE_MAIL)) && defends(adtyp, o))
         return (1);
@@ -269,12 +269,12 @@ export function Resists_Elem(mon, propindx) {
     }
     if (is_you ? u_resist : (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 68)) | cptr.ldU16(cptr.add((mon), 68)) | cptr.ldU16(cptr.add((mon), 66))) & rsstmask) != 0))
         return (1);
-    o = is_you ? uwep : (cptr.ldPtr(cptr.add((mon), 288)));
+    o = is_you ? uwep.v : (cptr.ldPtr(cptr.add((mon), 288)));
     if (o && cptr.ld1s(cptr.add(o, 51)) && defends(damgtype, o))
         return (1);
     o = is_you ? gi.invent : cptr.ldPtr(cptr.add(mon, 280));
     slotmask = (1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n);
-    if (!is_you || (uwep && (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((uwep), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp != P_NONE))))
+    if (!is_you || (uwep.v && (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE))))
         slotmask |= 256n;
     if (is_you && u.twoweap)
         slotmask |= 1024n;
@@ -300,12 +300,12 @@ export function resists_magm(mon) {
     let o;
     if (dmgtype(ptr, 1) || cptr.eq(ptr, cptr.add(cptr.decay(mons), PM_BABY_GRAY_DRAGON)) || dmgtype(ptr, 242))
         return (1);
-    o = is_you ? uwep : (cptr.ldPtr(cptr.add((mon), 288)));
+    o = is_you ? uwep.v : (cptr.ldPtr(cptr.add((mon), 288)));
     if (o && cptr.ld1s(cptr.add(o, 51)) && defends(1, o))
         return (1);
     o = is_you ? gi.invent : cptr.ldPtr(cptr.add(mon, 280));
     slotmask = (1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n);
-    if (!is_you || (uwep && (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((uwep), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp != P_NONE))))
+    if (!is_you || (uwep.v && (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE))))
         slotmask |= 256n;
     if (is_you && u.twoweap)
         slotmask |= 1024n;
@@ -336,7 +336,7 @@ export function resists_blnd(mon) {
 export function resists_blnd_by_arti(mon) {
     let o;
     let is_you = schar((cptr.eq(mon, cptr.boxProp(gy, 'youmonst'))));
-    o = is_you ? uwep : (cptr.ldPtr(cptr.add((mon), 288)));
+    o = is_you ? uwep.v : (cptr.ldPtr(cptr.add((mon), 288)));
     if (o && cptr.ld1s(cptr.add(o, 51)) && defends(11, o))
         return (1);
     o = is_you ? gi.invent : cptr.ldPtr(cptr.add(mon, 280));
@@ -373,12 +373,12 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             if (is_you && u.uprops[BLINDED].extrinsic)
                 return (0);
         } else if (obj && (cptr.ldI16(cptr.add(obj, 32)) == BLINDING_VENOM)) {
-            if (is_you && (ublindf || u.ucreamed))
+            if (is_you && (ublindf.v || u.ucreamed))
                 return (0);
             check_visor = (1);
         } else if (obj && (cptr.ldI16(cptr.add(obj, 32)) == POT_BLINDNESS)) {
             return (1);
-        }
+        } else
             return (0);
         if ((cptr.eq(magr, cptr.boxProp(gy, 'youmonst'))) && u.uswallow | 0)
             return (0);
@@ -390,7 +390,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             return (0);
         break;
         case 1:
-        if (is_you && ublindf)
+        if (is_you && ublindf.v)
             return (0);
         if ((cptr.eq(magr, cptr.boxProp(gy, 'youmonst'))) && u.uswallow | 0)
             return (0);
@@ -545,7 +545,7 @@ export function can_be_strangled(mon) {
 
 /** C ref: mondata.c:623 — @param {CPtr} ptr @returns {CInt} */
 export function can_track(ptr) {
-    if (is_art(uwep, ART_EXCALIBUR))
+    if (is_art(uwep.v, ART_EXCALIBUR))
         return (1);
     return schar(((cptr.ldU64(cptr.add((ptr), 72)) & 4096n) == 0n));
 }

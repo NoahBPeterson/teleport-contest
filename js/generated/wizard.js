@@ -120,7 +120,7 @@ export function amulet() {
     let mtmp;
     let ttmp;
     let amu;
-    if ((((amu = uamul) !== null && cptr.ldI16(cptr.add(amu, 32)) == AMULET_OF_YENDOR) || ((amu = uwep) !== null && cptr.ldI16(cptr.add(amu, 32)) == AMULET_OF_YENDOR)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl1), rn2(15)) : rn2(15))) {
+    if ((((amu = uamul.v) !== null && cptr.ldI16(cptr.add(amu, 32)) == AMULET_OF_YENDOR) || ((amu = uwep.v) !== null && cptr.ldI16(cptr.add(amu, 32)) == AMULET_OF_YENDOR)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl1), rn2(15)) : rn2(15))) {
         for (ttmp = gf.ftrap; ttmp; ttmp = cptr.ldPtr(ttmp)) {
             if ((cptr.ldI32(cptr.add(ttmp, 20)) | 0) == MAGIC_PORTAL) {
                 let du = dist2((cptr.ldI16(cptr.add(ttmp, 8))), (cptr.ldI16(cptr.add(ttmp, 10))), u.ux, u.uy);
@@ -396,7 +396,7 @@ export function tactics(mtmp) {
                         obj_extract_self(otmp);
                         void mpickobj(mtmp, otmp);
                         return 1;
-                    }
+                    } else
                         return 0;
                 } else {
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 453, __sl7), rn2(5)) : rn2(5)) && !noteleport_level(mtmp))

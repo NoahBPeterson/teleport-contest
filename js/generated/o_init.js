@@ -527,7 +527,7 @@ function disco_typename(otyp) {
             void cptr.sprintf(cptr.decay(buf), __sl37, actualn);
             void strsubst(result, __sl36, cptr.decay(buf));
         } else {
-            void cptr.sprintf(eos(result), __sl38, actualn);
+            void cptr.sprintf(eos.v(result), __sl38, actualn);
         }
     }
     return result;

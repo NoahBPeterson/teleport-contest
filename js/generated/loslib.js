@@ -196,7 +196,7 @@ function os_date(L) {
     if (cptr.ld1s(s) == 33) {
         stm = gmtime_r(t, tmr);
         s = cptr.add(s, 1);
-    }
+    } else
         stm = localtime_r(t, tmr);
     if (cptr.eq(stm, (null)))
         return luaL_error(L, __sl18);
@@ -284,7 +284,20 @@ function os_exit(L) {
 }
 
 /** C ref: loslib.c:407 — luaL_Reg[12] */
-const syslib = [{ name: __sl27, func: os_clock }, { name: __sl28, func: os_date }, { name: __sl29, func: os_difftime }, { name: __sl30, func: os_execute }, { name: __sl31, func: os_exit }, { name: __sl32, func: os_getenv }, { name: __sl33, func: os_remove }, { name: __sl34, func: os_rename }, { name: __sl35, func: os_setlocale }, { name: __sl26, func: os_time }, { name: __sl36, func: os_tmpname }, { name: null, func: null }];
+const syslib = [
+    { name: __sl27, func: os_clock },
+    { name: __sl28, func: os_date },
+    { name: __sl29, func: os_difftime },
+    { name: __sl30, func: os_execute },
+    { name: __sl31, func: os_exit },
+    { name: __sl32, func: os_getenv },
+    { name: __sl33, func: os_remove },
+    { name: __sl34, func: os_rename },
+    { name: __sl35, func: os_setlocale },
+    { name: __sl26, func: os_time },
+    { name: __sl36, func: os_tmpname },
+    { name: null, func: null }
+];
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_os(L) {

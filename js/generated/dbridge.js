@@ -710,7 +710,7 @@ function do_entity(etmp) {
                     You(__sl46);
                 else
                     pline_The(__sl47);
-            }
+            } else
                 pline(__sl48, E_phrase(etmp, __sl49));
         }
         if (!e_survives_at(etmp, i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20))))) {

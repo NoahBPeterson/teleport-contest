@@ -189,7 +189,17 @@ function luaB_close(L) {
 }
 
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
-const co_funcs = [{ name: __sl8, func: luaB_cocreate }, { name: __sl9, func: luaB_coresume }, { name: __sl3, func: luaB_corunning }, { name: __sl10, func: luaB_costatus }, { name: __sl11, func: luaB_cowrap }, { name: __sl12, func: luaB_yield }, { name: __sl13, func: luaB_yieldable }, { name: __sl14, func: luaB_close }, { name: null, func: null }];
+const co_funcs = [
+    { name: __sl8, func: luaB_cocreate },
+    { name: __sl9, func: luaB_coresume },
+    { name: __sl3, func: luaB_corunning },
+    { name: __sl10, func: luaB_costatus },
+    { name: __sl11, func: luaB_cowrap },
+    { name: __sl12, func: luaB_yield },
+    { name: __sl13, func: luaB_yieldable },
+    { name: __sl14, func: luaB_close },
+    { name: null, func: null }
+];
 
 /** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
 export function luaopen_coroutine(L) {

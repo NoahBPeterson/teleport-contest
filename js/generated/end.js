@@ -299,7 +299,7 @@ export function done_in_by(mtmp, how) {
         void cptr.strcat(cptr.decay(buf), __sl32);
         svk.killer.format = 1;
     }
-    void monhealthdescr(mtmp, 1, eos(cptr.decay(buf)));
+    void monhealthdescr(mtmp, 1, eos.v(cptr.decay(buf)));
     if (cptr.ldI32(cptr.add(mtmp, 88)))
         void cptr.strcat(cptr.decay(buf), __sl33);
     if (distorted)
@@ -321,23 +321,23 @@ export function done_in_by(mtmp, how) {
             void cptr.sprintf(cptr.decay(shape), __sl38, fakenm);
         else
             void cptr.strcpy(cptr.decay(shape), an(fakenm));
-        void cptr.sprintf(eos(cptr.decay(buf)), alt ? __sl39 : (mimicker ? __sl40 : __sl41), realnm, cptr.decay(shape));
+        void cptr.sprintf(eos.v(cptr.decay(buf)), alt ? __sl39 : (mimicker ? __sl40 : __sl41), realnm, cptr.decay(shape));
         mptr = cptr.ldPtr(cptr.add(mtmp, 8));
     } else if (cptr.eq(mptr, cptr.add(cptr.decay(mons), PM_GHOST))) {
         void cptr.strcat(cptr.decay(buf), __sl42);
         if ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312))))))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl43, (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl43, (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))));
     } else if (cptr.ldI32(cptr.add(mtmp, 180))) {
         let shknm = shkname(mtmp);
         let honorific = shkname_is_pname(mtmp) ? __sl44 : (cptr.ldI32(cptr.add(mtmp, 84)) | 0 ? __sl45 : __sl46);
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl47, honorific, shknm);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl47, honorific, shknm);
         svk.killer.format = 1;
     } else if (cptr.ldI32(cptr.add(mtmp, 192)) | 0 || cptr.ldI32(cptr.add(mtmp, 184)) | 0) {
         void cptr.strcat(cptr.decay(buf), m_monnam(mtmp));
     } else {
         void cptr.strcat(cptr.decay(buf), pmname(mptr, Mgender(mtmp)));
         if ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))))) {
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl48, (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 48)))) ? __sl49 : __sl50, (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl48, (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 48)))) ? __sl49 : __sl50, (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))));
         }
     }
     void cptr.strcpy(cptr.decay(svk.killer.name), cptr.decay(buf));
@@ -397,7 +397,7 @@ export function panic(str, ...__va) {
     let the_args;
     {
         let buf = new Uint8Array(256);
-        the_args = __va;
+        the_args = cptr.vaList(__va);
         ;
         if (program_state.panicking++)
             NH_abort(null);
@@ -596,14 +596,14 @@ function get_valuables(list) {
             if (!ga.amulets[i].count) {
                 ga.amulets[i].count = cptr.ldI64(cptr.add(obj, 40));
                 ga.amulets[i].typ = cptr.ldI16(cptr.add(obj, 32));
-            }
+            } else
                 ga.amulets[i].count += cptr.ldI64(cptr.add(obj, 40));
         } else if (cptr.ld1s(cptr.add(obj, 49)) == GEM_CLASS && cptr.ldI16(cptr.add(obj, 32)) <= LAST_GLASS_GEM) {
             i = (((cptr.ldI16(cptr.add(obj, 32))) < ((LAST_REAL_GEM + 1) | 0) ? (cptr.ldI16(cptr.add(obj, 32))) : ((LAST_REAL_GEM + 1) | 0)) - FIRST_REAL_GEM) | 0;
             if (!gg.gems[i].count) {
                 gg.gems[i].count = cptr.ldI64(cptr.add(obj, 40));
                 gg.gems[i].typ = cptr.ldI16(cptr.add(obj, 32));
-            }
+            } else
                 gg.gems[i].count += cptr.ldI64(cptr.add(obj, 40));
         }
     return;
@@ -644,7 +644,7 @@ export function done_object_cleanup() {
         place_object(gk.kickedobj, i16(ox), i16(oy));
         stackobj(gk.kickedobj), gk.kickedobj = null;
     }
-    if (uchain && cptr.ld1s(cptr.add(uchain, 52)) == 0) {
+    if (uchain.v && cptr.ld1s(cptr.add(uchain.v, 52)) == 0) {
         lift_covet_and_placebc(override_restriction);
     }
     if (iflags.perm_invent) {
@@ -770,8 +770,8 @@ export function done(how) {
             You(__sl87);
         You_feel(__sl88);
         pline_The(__sl89);
-        if (uamul)
-            useup(uamul);
+        if (uamul.v)
+            useup(uamul.v);
         void adjattrib(A_CON, -1, 1);
         savelife(how);
         if (how == GENOCIDED) {
@@ -863,7 +863,7 @@ function really_done(how) {
         taken = paybill((how == ESCAPED) ? -1 : (how != QUIT), silently);
         paygd(silently);
         clearpriests();
-    }
+    } else
         taken = 0;
     clearlocks();
     if (have_windows)
@@ -881,12 +881,12 @@ function really_done(how) {
                     observe_quantum_cat(obj, 0, 0);
                     if ((cptr.ldI16(cptr.add((obj), 32)) == LARGE_BOX && cptr.ld1s(cptr.add((obj), 48)) == 1))
                         Schroedingers_cat = 1;
-                }
+                } else
                     cptr.st1(cptr.add(obj, 48), 0);
             }
         }
         if (strcmp(cptr.decay(flags.end_disclose), __sl98))
-            disclose(how, taken);
+            disclose.v(how, taken);
         formatkiller(cptr.decay(pbuf), 256, how, 1);
         if (!cptr.ld1s(cptr.decay(pbuf)))
             void cptr.strcpy(cptr.decay(pbuf), cptr.ldPtr(cptr.add(cptr.decay(deaths), how)));
@@ -902,7 +902,7 @@ function really_done(how) {
         let was_already_grave = ((svl.level.locations[u.ux][u.uy].typ) == GRAVE);
         corpse = mk_named_object(CORPSE, cptr.add(cptr.decay(mons), mnum), u.ux, u.uy, cptr.decay(svp.plname));
         void cptr.sprintf(cptr.decay(pbuf), __sl99, cptr.decay(svp.plname));
-        formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, (256n - BigInt(Strlen_(cptr.decay(pbuf), __sl100, 1317) >>> 0)))), how, 1);
+        formatkiller(eos.v(cptr.decay(pbuf)), Number(BigInt.asUintN(32, (256n - BigInt(Strlen_(cptr.decay(pbuf), __sl100, 1317) >>> 0)))), how, 1);
         make_grave(u.ux, u.uy, cptr.decay(pbuf));
         if (((svl.level.locations[u.ux][u.uy].typ) == GRAVE) && !was_already_grave)
             svl.level.locations[u.ux][u.uy].flags = 1;
@@ -922,8 +922,8 @@ function really_done(how) {
         if (deepest > 20)
             tmp += 1000n * BigInt(((deepest > 30) ? 10 : (deepest - 20) | 0));
         u.urexp = ((u.urexp) <= (9223372036854775807n - (tmp)) ? ((u.urexp) + (tmp)) : 9223372036854775807n);
-        if (how == ASCENDED && u.ualign.type == u.ualignbase[1]) {
-            tmp = (u.ualignbase[0] == u.ualignbase[1]) ? u.urexp : (u.urexp / 2n);
+        if (how == ASCENDED && u.ualign.type == cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) {
+            tmp = (cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) == cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1))) ? u.urexp : (u.urexp / 2n);
             u.urexp = ((u.urexp) <= (9223372036854775807n - (tmp)) ? ((u.urexp) + (tmp)) : 9223372036854775807n);
         }
     }
@@ -953,7 +953,7 @@ function really_done(how) {
             endwin = (windowprocs.win_create_nhwindow)(5);
         if (how < GENOCIDED && flags.tombstone && endwin != (-1))
             (windowprocs.win_outrip)(endwin, how, endtime);
-    }
+    } else
         program_state.stopprint = 1;
     if (u.uhave.amulet) {
         void cptr.strcat(cptr.decay(svk.killer.name), __sl105);
@@ -988,7 +988,7 @@ function really_done(how) {
         void cptr.strcpy(cptr.decay(pbuf), __sl111);
         if (mtmp || Schroedingers_cat) {
             while (mtmp) {
-                void cptr.sprintf(eos(cptr.decay(pbuf)), __sl112, mon_nam(mtmp));
+                void cptr.sprintf(eos.v(cptr.decay(pbuf)), __sl112, mon_nam(mtmp));
                 if (cptr.ld1s(cptr.add(mtmp, 65)))
                     u.urexp = ((u.urexp) <= (9223372036854775807n - BigInt((cptr.ldI32(cptr.add(mtmp, 52))))) ? ((u.urexp) + BigInt((cptr.ldI32(cptr.add(mtmp, 52))))) : 9223372036854775807n);
                 mtmp = cptr.ldPtr(mtmp);
@@ -998,14 +998,14 @@ function really_done(how) {
                 let m_lev = adj_lev(cptr.add(cptr.decay(mons), PM_HOUSECAT));
                 mhp = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 1468, __sl100), d((m_lev), (8))) : d((m_lev), (8)));
                 u.urexp = ((u.urexp) <= (9223372036854775807n - BigInt((mhp))) ? ((u.urexp) + BigInt((mhp))) : 9223372036854775807n);
-                void cptr.strcat(eos(cptr.decay(pbuf)), __sl113);
+                void cptr.strcat(eos.v(cptr.decay(pbuf)), __sl113);
             }
             dump_forward_putstr(endwin, 0, cptr.decay(pbuf), program_state.stopprint);
             cptr.st1(cptr.add(cptr.decay(pbuf), 0), 0);
         } else {
             void cptr.strcat(cptr.decay(pbuf), __sl114);
         }
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __sl115, (how == ASCENDED) ? __sl116 : __sl117, u.urexp, (((u.urexp) == 1n) ? __sl44 : __sl118));
+        void cptr.sprintf(eos.v(cptr.decay(pbuf)), __sl115, (how == ASCENDED) ? __sl116 : __sl117, u.urexp, (((u.urexp) == 1n) ? __sl44 : __sl118));
         dump_forward_putstr(endwin, 0, cptr.decay(pbuf), program_state.stopprint);
         if (!program_state.stopprint)
             artifact_score(gi.invent, 0, endwin);
@@ -1041,9 +1041,9 @@ function really_done(how) {
                 where = __sl123;
             void cptr.sprintf(cptr.decay(pbuf), __sl124, cptr.ldPtr(cptr.add(cptr.decay(ends), how)), where);
             if (!(cptr.ldI16((cptr.boxProp(u, 'uz'))) == (svd.dungeon_topology.d_astral_level).dnum) && !single_level_branch(cptr.boxProp(u, 'uz')))
-                void cptr.sprintf(eos(cptr.decay(pbuf)), __sl125, In_quest(cptr.boxProp(u, 'uz')) ? dunlev(cptr.boxProp(u, 'uz')) : depth(cptr.boxProp(u, 'uz')));
+                void cptr.sprintf(eos.v(cptr.decay(pbuf)), __sl125, In_quest(cptr.boxProp(u, 'uz')) ? dunlev(cptr.boxProp(u, 'uz')) : depth(cptr.boxProp(u, 'uz')));
         }
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __sl126, u.urexp, (((u.urexp) == 1n) ? __sl44 : __sl118));
+        void cptr.sprintf(eos.v(cptr.decay(pbuf)), __sl126, u.urexp, (((u.urexp) == 1n) ? __sl44 : __sl118));
         dump_forward_putstr(endwin, 0, cptr.decay(pbuf), program_state.stopprint);
     }
     void cptr.sprintf(cptr.decay(pbuf), __sl127, umoney, (((umoney) == 1n) ? __sl44 : __sl118), svm.moves, (((svm.moves) == 1n) ? __sl44 : __sl118));

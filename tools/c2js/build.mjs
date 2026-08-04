@@ -130,6 +130,10 @@ function buildAll() {
     }
   }
   const { symbols, conflicts } = buildSymbolMap(perFile.filter((p) => !p.parseError));
+  // globals whose address is taken anywhere in the program must be boxed at
+  // their definition (cross-file &uarm etc.)
+  const externBoxed = new Set();
+  for (const pf of perFile) for (const nm of pf.addressTaken || []) externBoxed.add(nm);
   console.log(`pass 1: ${perFile.length} slim IRs (${rebuilt} rebuilt) in ${((Date.now() - t0) / 1000).toFixed(1)}s; ` +
     `${symbols.size} importable symbols, ${conflicts.size} conflicts`);
 
@@ -155,7 +159,7 @@ function buildAll() {
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file) });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed });
       const chunks = emitter.emitModule();
       // cross-file imports: referenced but not declared here
       const byFile = new Map();
@@ -212,6 +216,10 @@ function buildAll() {
   const reportPath = path.join(repoRoot, '.cache/c2js/coverage.txt');
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(reportPath, report);
+  // punted goto shapes (Rule 3): recorded for later decision
+  const punted = failed.filter((r) => /^goto/.test(r.cause)).map((r) => `${r.name}: ${r.detail || r.cause}`);
+  fs.writeFileSync(path.join(repoRoot, '.cache/c2js/punted.txt'),
+    `# goto shapes that loud-threw in the latest batch (${new Date().toISOString()})\n` + punted.join('\n') + (punted.length ? '\n' : ''));
   fs.writeFileSync(statePath, JSON.stringify(newState));
 
   console.log(`pass 2: emit in ${((Date.now() - t0) / 1000).toFixed(0)}s — ${ok.length} ok, ${failed.length} failed, ${skipped.length} skipped`);

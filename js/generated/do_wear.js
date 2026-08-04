@@ -321,7 +321,7 @@ const takeoff_order = [524288n, 256n, 8n, 16n, 131072n, 262144n, 2n, 4n, 65536n,
 
 /** C ref: do_wear.c:60 — @param {CInt} check_gloves @returns {CPtr} */
 export function fingers_or_gloves(check_gloves) {
-    return ((check_gloves && uarmg) ? gloves_simple_name(uarmg) : makeplural(body_part(FINGER)));
+    return ((check_gloves && uarmg.v) ? gloves_simple_name(uarmg.v) : makeplural(body_part(FINGER)));
 }
 
 /** C ref: do_wear.c:68 — @param {CPtr} otmp */
@@ -382,8 +382,8 @@ export function toggle_displacement(obj, oldprop, on) {
 
 /** C ref: do_wear.c:187 @returns {CInt} */
 export function Boots_on() {
-    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmf, 32))].oc_oprop].extrinsic & ~32n;
-    switch (cptr.ldI16(cptr.add(uarmf, 32))) {
+    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmf.v, 32))].oc_oprop].extrinsic & ~32n;
+    switch (cptr.ldI16(cptr.add(uarmf.v, 32))) {
         case LOW_BOOTS:
         case IRON_SHOES:
         case HIGH_BOOTS:
@@ -401,12 +401,12 @@ export function Boots_on() {
         break;
         case SPEED_BOOTS:
         if (!oldprop && !(u.uprops[FAST].intrinsic & 16777215n)) {
-            discover_object((cptr.ldI16(cptr.add(uarmf, 32))), (1), (1), (1));
+            discover_object((cptr.ldI16(cptr.add(uarmf.v, 32))), (1), (1), (1));
             You_feel(__sl26, (oldprop || u.uprops[FAST].intrinsic) ? __sl27 : __sl23);
         }
         break;
         case ELVEN_BOOTS:
-        toggle_stealth(uarmf, oldprop, (1));
+        toggle_stealth(uarmf.v, oldprop, (1));
         break;
         case FUMBLE_BOOTS:
         if (!oldprop && !(u.uprops[FUMBLING].intrinsic & ~16777215n))
@@ -414,9 +414,9 @@ export function Boots_on() {
         break;
         case LEVITATION_BOOTS:
         if (!oldprop && !u.uprops[LEVITATION].intrinsic && !(u.uprops[LEVITATION].blocked & 67108864n)) {
-            cptr.stI32(cptr.add(uarmf, 80), 1);
+            cptr.stI32(cptr.add(uarmf.v, 80), 1);
             disp.botl = (1);
-            discover_object((cptr.ldI16(cptr.add(uarmf, 32))), (1), (1), (1));
+            discover_object((cptr.ldI16(cptr.add(uarmf.v, 32))), (1), (1), (1));
             float_up();
             if (((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked))
                 spoteffects((0));
@@ -425,10 +425,10 @@ export function Boots_on() {
         }
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_boots), cptr.ldI16(cptr.add(uarmf, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_boots), cptr.ldI16(cptr.add(uarmf.v, 32)));
     }
-    if (uarmf && !cptr.ldI32(cptr.add(uarmf, 80))) {
-        cptr.stI32(cptr.add(uarmf, 80), 1);
+    if (uarmf.v && !cptr.ldI32(cptr.add(uarmf.v, 80))) {
+        cptr.stI32(cptr.add(uarmf.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -436,7 +436,7 @@ export function Boots_on() {
 
 /** C ref: do_wear.c:262 @returns {CInt} */
 export function Boots_off() {
-    let otmp = uarmf;
+    let otmp = uarmf.v;
     let otyp = cptr.ldI16(cptr.add(otmp, 32));
     let oldprop = u.uprops[objects[otyp].oc_oprop].extrinsic & ~32n;
     svc.context.takeoff.mask &= ~32n;
@@ -485,8 +485,8 @@ export function Boots_off() {
 
 /** C ref: do_wear.c:326 @returns {CInt} */
 function Cloak_on() {
-    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmc, 32))].oc_oprop].extrinsic & ~2n;
-    switch (cptr.ldI16(cptr.add(uarmc, 32))) {
+    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmc.v, 32))].oc_oprop].extrinsic & ~2n;
+    switch (cptr.ldI16(cptr.add(uarmc.v, 32))) {
         case ORCISH_CLOAK:
         case DWARVISH_CLOAK:
         case CLOAK_OF_MAGIC_RESISTANCE:
@@ -494,13 +494,13 @@ function Cloak_on() {
         case LEATHER_CLOAK:
         break;
         case CLOAK_OF_PROTECTION:
-        discover_object((cptr.ldI16(cptr.add(uarmc, 32))), (1), (1), (1));
+        discover_object((cptr.ldI16(cptr.add(uarmc.v, 32))), (1), (1), (1));
         break;
         case ELVEN_CLOAK:
-        toggle_stealth(uarmc, oldprop, (1));
+        toggle_stealth(uarmc.v, oldprop, (1));
         break;
         case CLOAK_OF_DISPLACEMENT:
-        toggle_displacement(uarmc, oldprop, (1));
+        toggle_displacement(uarmc.v, oldprop, (1));
         break;
         case MUMMY_WRAPPING:
         if ((u.uprops[INVIS].intrinsic || u.uprops[INVIS].extrinsic) && !((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
@@ -510,22 +510,22 @@ function Cloak_on() {
         break;
         case CLOAK_OF_INVISIBILITY:
         if (!oldprop && !u.uprops[INVIS].intrinsic && !((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
-            discover_object((cptr.ldI16(cptr.add(uarmc, 32))), (1), (1), (1));
+            discover_object((cptr.ldI16(cptr.add(uarmc.v, 32))), (1), (1), (1));
             newsym(u.ux, u.uy);
             pline(__sl34, (u.uprops[SEE_INVIS].intrinsic || u.uprops[SEE_INVIS].extrinsic) ? __sl35 : __sl36);
         }
         break;
         case OILSKIN_CLOAK:
-        pline(__sl37, Tobjnam(uarmc, __sl38));
+        pline(__sl37, Tobjnam(uarmc.v, __sl38));
         break;
         case ALCHEMY_SMOCK:
         u.uprops[ACID_RES].extrinsic |= 2n;
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), cptr.ldI16(cptr.add(uarmc, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), cptr.ldI16(cptr.add(uarmc.v, 32)));
     }
-    if (uarmc && !cptr.ldI32(cptr.add(uarmc, 80))) {
-        cptr.stI32(cptr.add(uarmc, 80), 1);
+    if (uarmc.v && !cptr.ldI32(cptr.add(uarmc.v, 80))) {
+        cptr.stI32(cptr.add(uarmc.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -533,7 +533,7 @@ function Cloak_on() {
 
 /** C ref: do_wear.c:383 @returns {CInt} */
 export function Cloak_off() {
-    let otmp = uarmc;
+    let otmp = uarmc.v;
     let otyp = cptr.ldI16(cptr.add(otmp, 32));
     let oldprop = u.uprops[objects[otyp].oc_oprop].extrinsic & ~2n;
     svc.context.takeoff.mask &= ~2n;
@@ -577,7 +577,7 @@ export function Cloak_off() {
 
 /** C ref: do_wear.c:434 @returns {CInt} */
 function Helmet_on() {
-    switch (cptr.ldI16(cptr.add(uarmh, 32))) {
+    switch (cptr.ldI16(cptr.add(uarmh.v, 32))) {
         case FEDORA:
         if ((gu.urole.mnum == (PM_ARCHEOLOGIST)))
             change_luck(1);
@@ -593,46 +593,46 @@ function Helmet_on() {
         see_monsters();
         break;
         case HELM_OF_BRILLIANCE:
-        adj_abon(uarmh, cptr.ld1s(cptr.add(uarmh, 48)));
+        adj_abon(uarmh.v, cptr.ld1s(cptr.add(uarmh.v, 48)));
         break;
         case CORNUTHAUM:
         cptr.st1(cptr.add(cptr.decay(u.abon.a), A_CHA), cptr.ld1s(cptr.add(cptr.decay(u.abon.a), A_CHA)) + ((gu.urole.mnum == (PM_WIZARD)) ? 1 : -1));
         disp.botl = (1);
-        discover_object((cptr.ldI16(cptr.add(uarmh, 32))), (1), (1), (1));
+        discover_object((cptr.ldI16(cptr.add(uarmh.v, 32))), (1), (1), (1));
         break;
         case HELM_OF_OPPOSITE_ALIGNMENT:
-        cptr.stI32(cptr.add(uarmh, 80), 1);
-        uchangealign((u.ualign.type != 0) ? -u.ualign.type : ((u32mod(cptr.ldI32(cptr.add(uarmh, 24)), 2)) ? (-1) : 1), A_CG_HELM_ON);
+        cptr.stI32(cptr.add(uarmh.v, 80), 1);
+        uchangealign((u.ualign.type != 0) ? -u.ualign.type : ((u32mod(cptr.ldI32(cptr.add(uarmh.v, 24)), 2)) ? (-1) : 1), A_CG_HELM_ON);
         // @FallThrough
         ;
         case DUNCE_CAP:
-        if (uarmh && !cptr.ldI32(cptr.add(uarmh, 56))) {
+        if (uarmh.v && !cptr.ldI32(cptr.add(uarmh.v, 56))) {
             if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
-                pline(__sl43, Tobjnam(uarmh, __sl44));
+                pline(__sl43, Tobjnam(uarmh.v, __sl44));
             else
-                pline(__sl45, Tobjnam(uarmh, __sl46), hcolor(c_color_names.c_black));
-            curse(uarmh);
+                pline(__sl45, Tobjnam(uarmh.v, __sl46), hcolor(c_color_names.c_black));
+            curse(uarmh.v);
             if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
-                set_bknown(uarmh, 0);
+                set_bknown(uarmh.v, 0);
             else if ((gu.urole.mnum == (PM_CLERIC)))
-                set_bknown(uarmh, 1);
-            else if (cptr.ldI32(cptr.add(uarmh, 88)))
+                set_bknown(uarmh.v, 1);
+            else if (cptr.ldI32(cptr.add(uarmh.v, 88)))
                 update_inventory();
         }
         disp.botl = (1);
         if ((u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic))) {
             pline(__sl47);
-        } else if (uarmh && cptr.ldI16(cptr.add(uarmh, 32)) == DUNCE_CAP) {
+        } else if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == DUNCE_CAP) {
             You_feel(__sl48, (acurr(A_INT)) <= (((((cptr.ld1s(cptr.add(cptr.decay(u.acurr.a), A_INT))) + (cptr.ld1s(cptr.add(cptr.decay(u.abon.a), A_INT)))) | 0) + (cptr.ld1s(cptr.add(cptr.decay(u.atemp.a), A_INT)))) | 0) ? __sl49 : __sl50);
         } else {
             discover_object((HELM_OF_OPPOSITE_ALIGNMENT), (1), (1), (1));
         }
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16(cptr.add(uarmh, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16(cptr.add(uarmh.v, 32)));
     }
-    if (uarmh && !cptr.ldI32(cptr.add(uarmh, 80))) {
-        cptr.stI32(cptr.add(uarmh, 80), 1);
+    if (uarmh.v && !cptr.ldI32(cptr.add(uarmh.v, 80))) {
+        cptr.stI32(cptr.add(uarmh.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -641,7 +641,7 @@ function Helmet_on() {
 /** C ref: do_wear.c:518 @returns {CInt} */
 export function Helmet_off() {
     svc.context.takeoff.mask &= ~4n;
-    switch (cptr.ldI16(cptr.add(uarmh, 32))) {
+    switch (cptr.ldI16(cptr.add(uarmh.v, 32))) {
         case FEDORA:
         if ((gu.urole.mnum == (PM_ARCHEOLOGIST)))
             change_luck(schar((-1)));
@@ -668,13 +668,13 @@ export function Helmet_off() {
         return 0;
         case HELM_OF_BRILLIANCE:
         if (!svc.context.takeoff.cancelled_don)
-            adj_abon(uarmh, schar((-cptr.ld1s(cptr.add(uarmh, 48)))));
+            adj_abon(uarmh.v, schar((-cptr.ld1s(cptr.add(uarmh.v, 48)))));
         break;
         case HELM_OF_OPPOSITE_ALIGNMENT:
-        uchangealign(u.ualignbase[0], A_CG_HELM_OFF);
+        uchangealign(cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)), A_CG_HELM_OFF);
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16(cptr.add(uarmh, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16(cptr.add(uarmh.v, 32)));
     }
     setworn(null, 4n);
     svc.context.takeoff.cancelled_don = (0);
@@ -690,8 +690,8 @@ export function hard_helmet(obj) {
 
 /** C ref: do_wear.c:576 @returns {CInt} */
 function Gloves_on() {
-    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmg, 32))].oc_oprop].extrinsic & ~16n;
-    switch (cptr.ldI16(cptr.add(uarmg, 32))) {
+    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmg.v, 32))].oc_oprop].extrinsic & ~16n;
+    switch (cptr.ldI16(cptr.add(uarmg.v, 32))) {
         case LEATHER_GLOVES:
         break;
         case GAUNTLETS_OF_FUMBLING:
@@ -699,17 +699,17 @@ function Gloves_on() {
             incr_itimeout(cptr.boxProp(u.uprops[FUMBLING], 'intrinsic'), (rng_log_enabled() ? (rng_log_set_caller(__sl28, 586, __sl51), rnd(20)) : rnd(20)));
         break;
         case GAUNTLETS_OF_POWER:
-        discover_object((cptr.ldI16(cptr.add(uarmg, 32))), (1), (1), (1));
+        discover_object((cptr.ldI16(cptr.add(uarmg.v, 32))), (1), (1), (1));
         disp.botl = (1);
         break;
         case GAUNTLETS_OF_DEXTERITY:
-        adj_abon(uarmg, cptr.ld1s(cptr.add(uarmg, 48)));
+        adj_abon(uarmg.v, cptr.ld1s(cptr.add(uarmg.v, 48)));
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16(cptr.add(uarmg, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16(cptr.add(uarmg.v, 32)));
     }
-    if (!cptr.ldI32(cptr.add(uarmg, 80))) {
-        cptr.stI32(cptr.add(uarmg, 80), 1);
+    if (!cptr.ldI32(cptr.add(uarmg.v, 80))) {
+        cptr.stI32(cptr.add(uarmg.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -717,9 +717,9 @@ function Gloves_on() {
 
 /** C ref: do_wear.c:608 — @param {CPtr} obj @param {CPtr} how @param {CInt} voluntary */
 export function wielding_corpse(obj, how, voluntary) {
-    if (!obj || cptr.ldI16(cptr.add(obj, 32)) != CORPSE || uarmg)
+    if (!obj || cptr.ldI16(cptr.add(obj, 32)) != CORPSE || uarmg.v)
         return;
-    if (!cptr.eq(obj, uwep) && (!cptr.eq(obj, uswapwep) || !u.twoweap))
+    if (!cptr.eq(obj, uwep.v) && (!cptr.eq(obj, uswapwep.v) || !u.twoweap))
         return;
     if ((cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(obj, 168)))), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(obj, 168)))), cptr.add(cptr.decay(mons), PM_CHICKATRICE))) && !(u.uprops[STONE_RES].intrinsic || u.uprops[STONE_RES].extrinsic)) {
         let kbuf = new Uint8Array(256);
@@ -738,11 +738,11 @@ export function wielding_corpse(obj, how, voluntary) {
 
 /** C ref: do_wear.c:646 @returns {CInt} */
 export function Gloves_off() {
-    let gloves = uarmg;
-    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmg, 32))].oc_oprop].extrinsic & ~16n;
-    let on_purpose = schar((!svc.context.mon_moving && !cptr.ldI32(cptr.add(uarmg, 144))));
+    let gloves = uarmg.v;
+    let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(uarmg.v, 32))].oc_oprop].extrinsic & ~16n;
+    let on_purpose = schar((!svc.context.mon_moving && !cptr.ldI32(cptr.add(uarmg.v, 144))));
     svc.context.takeoff.mask &= ~16n;
-    switch (cptr.ldI16(cptr.add(uarmg, 32))) {
+    switch (cptr.ldI16(cptr.add(uarmg.v, 32))) {
         case LEATHER_GLOVES:
         break;
         case GAUNTLETS_OF_FUMBLING:
@@ -750,25 +750,25 @@ export function Gloves_off() {
             u.uprops[FUMBLING].intrinsic = (u.uprops[FUMBLING].extrinsic = 0n);
         break;
         case GAUNTLETS_OF_POWER:
-        discover_object((cptr.ldI16(cptr.add(uarmg, 32))), (1), (1), (1));
+        discover_object((cptr.ldI16(cptr.add(uarmg.v, 32))), (1), (1), (1));
         disp.botl = (1);
         break;
         case GAUNTLETS_OF_DEXTERITY:
         if (!svc.context.takeoff.cancelled_don)
-            adj_abon(uarmg, schar((-cptr.ld1s(cptr.add(uarmg, 48)))));
+            adj_abon(uarmg.v, schar((-cptr.ld1s(cptr.add(uarmg.v, 48)))));
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16(cptr.add(uarmg, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16(cptr.add(uarmg.v, 32)));
     }
     setworn(null, 16n);
     svc.context.takeoff.cancelled_don = (0);
     encumber_msg();
     if (u.uprops[GLIB].intrinsic)
         make_glib(0);
-    if (uwep && cptr.ldI16(cptr.add(uwep, 32)) == CORPSE)
-        wielding_corpse(uwep, gloves, on_purpose);
-    if (u.twoweap && uswapwep && cptr.ldI16(cptr.add(uswapwep, 32)) == CORPSE)
-        wielding_corpse(uswapwep, gloves, on_purpose);
+    if (uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == CORPSE)
+        wielding_corpse(uwep.v, gloves, on_purpose);
+    if (u.twoweap && uswapwep.v && cptr.ldI16(cptr.add(uswapwep.v, 32)) == CORPSE)
+        wielding_corpse(uswapwep.v, gloves, on_purpose);
     if (condtests[bl_bareh].enabled)
         disp.botl = (1);
     return 0;
@@ -776,7 +776,7 @@ export function Gloves_off() {
 
 /** C ref: do_wear.c:705 @returns {CInt} */
 function Shield_on() {
-    switch (cptr.ldI16(cptr.add(uarms, 32))) {
+    switch (cptr.ldI16(cptr.add(uarms.v, 32))) {
         case SMALL_SHIELD:
         case SHIELD_OF_DRAIN_RESISTANCE:
         case SHIELD_OF_SHOCK_RESISTANCE:
@@ -788,10 +788,10 @@ function Shield_on() {
         case SHIELD_OF_REFLECTION:
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16(cptr.add(uarms, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16(cptr.add(uarms.v, 32)));
     }
-    if (!cptr.ldI32(cptr.add(uarms, 80))) {
-        cptr.stI32(cptr.add(uarms, 80), 1);
+    if (!cptr.ldI32(cptr.add(uarms.v, 80))) {
+        cptr.stI32(cptr.add(uarms.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -800,7 +800,7 @@ function Shield_on() {
 /** C ref: do_wear.c:733 @returns {CInt} */
 export function Shield_off() {
     svc.context.takeoff.mask &= ~8n;
-    switch (cptr.ldI16(cptr.add(uarms, 32))) {
+    switch (cptr.ldI16(cptr.add(uarms.v, 32))) {
         case SMALL_SHIELD:
         case SHIELD_OF_DRAIN_RESISTANCE:
         case SHIELD_OF_SHOCK_RESISTANCE:
@@ -812,7 +812,7 @@ export function Shield_off() {
         case SHIELD_OF_REFLECTION:
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16(cptr.add(uarms, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16(cptr.add(uarms.v, 32)));
     }
     setworn(null, 8n);
     return 0;
@@ -820,15 +820,15 @@ export function Shield_off() {
 
 /** C ref: do_wear.c:759 @returns {CInt} */
 function Shirt_on() {
-    switch (cptr.ldI16(cptr.add(uarmu, 32))) {
+    switch (cptr.ldI16(cptr.add(uarmu.v, 32))) {
         case HAWAIIAN_SHIRT:
         case T_SHIRT:
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16(cptr.add(uarmu, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16(cptr.add(uarmu.v, 32)));
     }
-    if (!cptr.ldI32(cptr.add(uarmu, 80))) {
-        cptr.stI32(cptr.add(uarmu, 80), 1);
+    if (!cptr.ldI32(cptr.add(uarmu.v, 80))) {
+        cptr.stI32(cptr.add(uarmu.v, 80), 1);
         update_inventory();
     }
     return 0;
@@ -837,12 +837,12 @@ function Shirt_on() {
 /** C ref: do_wear.c:778 @returns {CInt} */
 export function Shirt_off() {
     svc.context.takeoff.mask &= ~64n;
-    switch (cptr.ldI16(cptr.add(uarmu, 32))) {
+    switch (cptr.ldI16(cptr.add(uarmu.v, 32))) {
         case HAWAIIAN_SHIRT:
         case T_SHIRT:
         break;
         default:
-        impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16(cptr.add(uarmu, 32)));
+        impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16(cptr.add(uarmu.v, 32)));
     }
     setworn(null, 64n);
     return 0;
@@ -908,8 +908,8 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
             u.uprops[STONE_RES].extrinsic |= 1n;
         } else {
             u.uprops[STONE_RES].extrinsic &= ~1n;
-            wielding_corpse(uwep, otmp, on_purpose);
-            wielding_corpse(uswapwep, otmp, on_purpose);
+            wielding_corpse(uwep.v, otmp, on_purpose);
+            wielding_corpse(uswapwep.v, otmp, on_purpose);
         }
         break;
         case WHITE_DRAGON_SCALES:
@@ -927,24 +927,24 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
 
 /** C ref: do_wear.c:887 @returns {CInt} */
 function Armor_on() {
-    if (!uarm)
+    if (!uarm.v)
         return 0;
-    if (!cptr.ldI32(cptr.add(uarm, 80))) {
-        cptr.stI32(cptr.add(uarm, 80), 1);
+    if (!cptr.ldI32(cptr.add(uarm.v, 80))) {
+        cptr.stI32(cptr.add(uarm.v, 80), 1);
         update_inventory();
     }
-    dragon_armor_handling(uarm, (1), (1));
-    if (artifact_light(uarm) && !cptr.ldI32(cptr.add(uarm, 76))) {
-        begin_burn(uarm, (0));
+    dragon_armor_handling(uarm.v, (1), (1));
+    if (artifact_light(uarm.v) && !cptr.ldI32(cptr.add(uarm.v, 76))) {
+        begin_burn(uarm.v, (0));
         if (!((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
-            pline(__sl64, Yname2(uarm), otense(uarm, __sl65), arti_light_description(uarm));
+            pline(__sl64, Yname2(uarm.v), otense(uarm.v, __sl65), arti_light_description(uarm.v));
     }
     return 0;
 }
 
 /** C ref: do_wear.c:909 @returns {CInt} */
 export function Armor_off() {
-    let otmp = uarm;
+    let otmp = uarm.v;
     let was_arti_light = schar((otmp && cptr.ldI32(cptr.add(otmp, 76)) | 0 && artifact_light(otmp)));
     svc.context.takeoff.mask &= ~1n;
     setworn(null, 1n);
@@ -960,10 +960,10 @@ export function Armor_off() {
 
 /** C ref: do_wear.c:939 @returns {CInt} */
 export function Armor_gone() {
-    let otmp = uarm;
+    let otmp = uarm.v;
     let was_arti_light = schar((otmp && cptr.ldI32(cptr.add(otmp, 76)) | 0 && artifact_light(otmp)));
     svc.context.takeoff.mask &= ~1n;
-    setnotworn(uarm);
+    setnotworn(uarm.v);
     svc.context.takeoff.cancelled_don = (0);
     if (was_arti_light && !artifact_light(otmp)) {
         end_burn(otmp, (0));
@@ -979,7 +979,7 @@ function Amulet_on(amul) {
     let on_msg_done = (0);
     remove_worn_item(amul, (0));
     setworn(amul, 65536n);
-    switch (cptr.ldI16(cptr.add(uamul, 32))) {
+    switch (cptr.ldI16(cptr.add(uamul.v, 32))) {
         case AMULET_OF_ESP:
         case AMULET_OF_LIFE_SAVING:
         case AMULET_VERSUS_POISON:
@@ -994,7 +994,7 @@ function Amulet_on(amul) {
             u.uprops[MAGICAL_BREATHING].extrinsic |= 65536n;
             if (was_in_poison_gas) {
                 discover_object((AMULET_OF_MAGICAL_BREATHING), (1), (1), (1));
-                on_msg(uamul);
+                on_msg(uamul.v);
                 on_msg_done = (1);
                 You(__sl68);
             }
@@ -1014,7 +1014,7 @@ function Amulet_on(amul) {
             new_sex = poly_gender();
             if (new_sex != orig_sex)
                 discover_object((AMULET_OF_CHANGE), (1), (1), (1));
-            on_msg(uamul);
+            on_msg(uamul.v);
             on_msg_done = (1);
             if (new_sex != orig_sex) {
                 newsym(u.ux, u.uy);
@@ -1022,13 +1022,13 @@ function Amulet_on(amul) {
                 You(__sl69, flags.female ? __sl70 : __sl71);
             } else {
                 You(__sl72);
-                call_it = schar(((cptr.ldI32(cptr.add(uamul, 84)) | 0) != 0));
+                call_it = schar(((cptr.ldI32(cptr.add(uamul.v, 84)) | 0) != 0));
             }
             livelog_newform((0), orig_sex, new_sex);
             pline_The(__sl73);
             if (call_it)
-                trycall(uamul);
-            useup(uamul);
+                trycall(uamul.v);
+            useup(uamul.v);
             break;
         }
         case AMULET_OF_STRANGULATION:
@@ -1036,7 +1036,7 @@ function Amulet_on(amul) {
             discover_object((AMULET_OF_STRANGULATION), (1), (1), (1));
             u.uprops[STRANGLED].intrinsic = 6n;
             disp.botl = (1);
-            on_msg(uamul);
+            on_msg(uamul.v);
             on_msg_done = (1);
             pline(__sl74);
         }
@@ -1058,7 +1058,7 @@ function Amulet_on(amul) {
             u.uprops[FLYING].extrinsic |= 65536n;
             if (!already_flying) {
                 discover_object((AMULET_OF_FLYING), (1), (1), (1));
-                on_msg(uamul);
+                on_msg(uamul.v);
                 on_msg_done = (1);
                 disp.botl = (1);
                 You(__sl76);
@@ -1073,16 +1073,16 @@ function Amulet_on(amul) {
         break;
     }
     if (!on_msg_done)
-        on_msg(uamul);
+        on_msg(uamul.v);
 }
 
 /** C ref: do_wear.c:1090 */
 export function Amulet_off() {
-    let amul = uamul;
+    let amul = uamul.v;
     let mkn = (0);
     let early_off_msg = (0);
     svc.context.takeoff.mask &= ~65536n;
-    switch (cptr.ldI16(cptr.add(uamul, 32))) {
+    switch (cptr.ldI16(cptr.add(uamul.v, 32))) {
         case AMULET_OF_ESP:
         setworn(null, 65536n);
         off_msg(amul);
@@ -1192,11 +1192,11 @@ function adjust_attrib(obj, which, val) {
 export function Ring_on(obj) {
     let oldprop = u.uprops[objects[cptr.ldI16(cptr.add(obj, 32))].oc_oprop].extrinsic;
     let observable;
-    if (cptr.eq(obj, uwep))
+    if (cptr.eq(obj, uwep.v))
         setuwep(null);
-    else if (cptr.eq(obj, uswapwep))
+    else if (cptr.eq(obj, uswapwep.v))
         setuswapwep(null);
-    else if (cptr.eq(obj, uquiver))
+    else if (cptr.eq(obj, uquiver.v))
         setuqwep(null);
     if ((oldprop & (131072n | 262144n)) != (131072n | 262144n))
         oldprop &= ~(131072n | 262144n);
@@ -1391,14 +1391,14 @@ export function Blindf_on(otmp) {
         changed = (1);
         if (flags.verbose)
             You_cant(__sl90);
-        if ((uball !== null))
+        if ((uball.v !== null))
             set_bc(0);
     } else if (already_blind && !((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
         changed = (1);
         if (u.uroleplay.blind) {
             pline(__sl91);
             u.uroleplay.blind = (0);
-        }
+        } else
             You(__sl92);
     }
     if (changed) {
@@ -1412,7 +1412,7 @@ export function Blindf_off(otmp) {
     let changed = (0);
     let nooffmsg = schar((!otmp));
     if (!otmp)
-        otmp = ublindf;
+        otmp = ublindf.v;
     if (!otmp) {
         impossible(__sl93);
         return;
@@ -1428,7 +1428,7 @@ export function Blindf_off(otmp) {
         } else {
             changed = (1);
             You_cant(__sl95);
-            if ((uball !== null))
+            if ((uball.v !== null))
                 set_bc(0);
         }
     } else if (was_blind) {
@@ -1445,27 +1445,27 @@ export function Blindf_off(otmp) {
 /** C ref: do_wear.c:1539 — @param {CPtr} obj */
 export function set_wear(obj) {
     gi.initial_don = schar((!obj));
-    if (!obj ? ublindf !== null : (cptr.eq(obj, ublindf)))
-        void Blindf_on(ublindf);
-    if (!obj ? uright !== null : (cptr.eq(obj, uright)))
-        void Ring_on(uright);
-    if (!obj ? uleft !== null : (cptr.eq(obj, uleft)))
-        void Ring_on(uleft);
-    if (!obj ? uamul !== null : (cptr.eq(obj, uamul)))
-        void Amulet_on(uamul);
-    if (!obj ? uarmu !== null : (cptr.eq(obj, uarmu)))
+    if (!obj ? ublindf.v !== null : (cptr.eq(obj, ublindf.v)))
+        void Blindf_on(ublindf.v);
+    if (!obj ? uright.v !== null : (cptr.eq(obj, uright.v)))
+        void Ring_on(uright.v);
+    if (!obj ? uleft.v !== null : (cptr.eq(obj, uleft.v)))
+        void Ring_on(uleft.v);
+    if (!obj ? uamul.v !== null : (cptr.eq(obj, uamul.v)))
+        void Amulet_on(uamul.v);
+    if (!obj ? uarmu.v !== null : (cptr.eq(obj, uarmu.v)))
         void Shirt_on();
-    if (!obj ? uarm !== null : (cptr.eq(obj, uarm)))
+    if (!obj ? uarm.v !== null : (cptr.eq(obj, uarm.v)))
         void Armor_on();
-    if (!obj ? uarmc !== null : (cptr.eq(obj, uarmc)))
+    if (!obj ? uarmc.v !== null : (cptr.eq(obj, uarmc.v)))
         void Cloak_on();
-    if (!obj ? uarmf !== null : (cptr.eq(obj, uarmf)))
+    if (!obj ? uarmf.v !== null : (cptr.eq(obj, uarmf.v)))
         void Boots_on();
-    if (!obj ? uarmg !== null : (cptr.eq(obj, uarmg)))
+    if (!obj ? uarmg.v !== null : (cptr.eq(obj, uarmg.v)))
         void Gloves_on();
-    if (!obj ? uarmh !== null : (cptr.eq(obj, uarmh)))
+    if (!obj ? uarmh.v !== null : (cptr.eq(obj, uarmh.v)))
         void Helmet_on();
-    if (!obj ? uarms !== null : (cptr.eq(obj, uarms)))
+    if (!obj ? uarms.v !== null : (cptr.eq(obj, uarms.v)))
         void Shield_on();
     gi.initial_don = (0);
 }
@@ -1475,19 +1475,19 @@ export function donning(otmp) {
     let result = (0);
     if (doffing(otmp))
         result = (1);
-    else if (cptr.eq(otmp, uarm))
+    else if (cptr.eq(otmp, uarm.v))
         result = schar((ga.afternmv === Armor_on));
-    else if (cptr.eq(otmp, uarmu))
+    else if (cptr.eq(otmp, uarmu.v))
         result = schar((ga.afternmv === Shirt_on));
-    else if (cptr.eq(otmp, uarmc))
+    else if (cptr.eq(otmp, uarmc.v))
         result = schar((ga.afternmv === Cloak_on));
-    else if (cptr.eq(otmp, uarmf))
+    else if (cptr.eq(otmp, uarmf.v))
         result = schar((ga.afternmv === Boots_on));
-    else if (cptr.eq(otmp, uarmh))
+    else if (cptr.eq(otmp, uarmh.v))
         result = schar((ga.afternmv === Helmet_on));
-    else if (cptr.eq(otmp, uarmg))
+    else if (cptr.eq(otmp, uarmg.v))
         result = schar((ga.afternmv === Gloves_on));
-    else if (cptr.eq(otmp, uarms))
+    else if (cptr.eq(otmp, uarms.v))
         result = schar((ga.afternmv === Shield_on));
     return result;
 }
@@ -1496,33 +1496,33 @@ export function donning(otmp) {
 export function doffing(otmp) {
     let what = svc.context.takeoff.what;
     let result = (0);
-    if (cptr.eq(otmp, uarm))
+    if (cptr.eq(otmp, uarm.v))
         result = schar((ga.afternmv === Armor_off || what == 1n));
-    else if (cptr.eq(otmp, uarmu))
+    else if (cptr.eq(otmp, uarmu.v))
         result = schar((ga.afternmv === Shirt_off || what == 64n));
-    else if (cptr.eq(otmp, uarmc))
+    else if (cptr.eq(otmp, uarmc.v))
         result = schar((ga.afternmv === Cloak_off || what == 2n));
-    else if (cptr.eq(otmp, uarmf))
+    else if (cptr.eq(otmp, uarmf.v))
         result = schar((ga.afternmv === Boots_off || what == 32n));
-    else if (cptr.eq(otmp, uarmh))
+    else if (cptr.eq(otmp, uarmh.v))
         result = schar((ga.afternmv === Helmet_off || what == 4n));
-    else if (cptr.eq(otmp, uarmg))
+    else if (cptr.eq(otmp, uarmg.v))
         result = schar((ga.afternmv === Gloves_off || what == 16n));
-    else if (cptr.eq(otmp, uarms))
+    else if (cptr.eq(otmp, uarms.v))
         result = schar((ga.afternmv === Shield_off || what == 8n));
-    else if (cptr.eq(otmp, uamul))
+    else if (cptr.eq(otmp, uamul.v))
         result = schar((what == 65536n));
-    else if (cptr.eq(otmp, uleft))
+    else if (cptr.eq(otmp, uleft.v))
         result = schar((what == 131072n));
-    else if (cptr.eq(otmp, uright))
+    else if (cptr.eq(otmp, uright.v))
         result = schar((what == 262144n));
-    else if (cptr.eq(otmp, ublindf))
+    else if (cptr.eq(otmp, ublindf.v))
         result = schar((what == 524288n));
-    else if (cptr.eq(otmp, uwep))
+    else if (cptr.eq(otmp, uwep.v))
         result = schar((what == 256n));
-    else if (cptr.eq(otmp, uswapwep))
+    else if (cptr.eq(otmp, uswapwep.v))
         result = schar((what == 1024n));
-    else if (cptr.eq(otmp, uquiver))
+    else if (cptr.eq(otmp, uquiver.v))
         result = schar((what == 512n));
     return result;
 }
@@ -1582,75 +1582,75 @@ function count_worn_stuff(which, accessorizing) {
     Narmorpieces = (Naccessories = 0);
     otmp = null;
     do {
-        if (uarmh) {
+        if (uarmh.v) {
             Narmorpieces++;
-            otmp = uarmh;
+            otmp = uarmh.v;
         }
     } while (0);
     do {
-        if (uarms) {
+        if (uarms.v) {
             Narmorpieces++;
-            otmp = uarms;
+            otmp = uarms.v;
         }
     } while (0);
     do {
-        if (uarmg) {
+        if (uarmg.v) {
             Narmorpieces++;
-            otmp = uarmg;
+            otmp = uarmg.v;
         }
     } while (0);
     do {
-        if (uarmf) {
+        if (uarmf.v) {
             Narmorpieces++;
-            otmp = uarmf;
+            otmp = uarmf.v;
         }
     } while (0);
-    if (uarmc)
+    if (uarmc.v)
         do {
-            if (uarmc) {
+            if (uarmc.v) {
                 Narmorpieces++;
-                otmp = uarmc;
+                otmp = uarmc.v;
             }
         } while (0);
-    else if (uarm)
+    else if (uarm.v)
         do {
-            if (uarm) {
+            if (uarm.v) {
                 Narmorpieces++;
-                otmp = uarm;
+                otmp = uarm.v;
             }
         } while (0);
-    else if (uarmu)
+    else if (uarmu.v)
         do {
-            if (uarmu) {
+            if (uarmu.v) {
                 Narmorpieces++;
-                otmp = uarmu;
+                otmp = uarmu.v;
             }
         } while (0);
     if (!accessorizing)
         cptr.stPtr(which, otmp);
     otmp = null;
     do {
-        if (uleft) {
+        if (uleft.v) {
             Naccessories++;
-            otmp = uleft;
+            otmp = uleft.v;
         }
     } while (0);
     do {
-        if (uright) {
+        if (uright.v) {
             Naccessories++;
-            otmp = uright;
+            otmp = uright.v;
         }
     } while (0);
     do {
-        if (uamul) {
+        if (uamul.v) {
             Naccessories++;
-            otmp = uamul;
+            otmp = uamul.v;
         }
     } while (0);
     do {
-        if (ublindf) {
+        if (ublindf.v) {
             Naccessories++;
-            otmp = ublindf;
+            otmp = ublindf.v;
         }
     } while (0);
     if (accessorizing)
@@ -1663,17 +1663,17 @@ function armor_or_accessory_off(obj) {
         You(__sl100);
         return 0;
     }
-    if (cptr.eq(obj, uskin) || ((cptr.eq(obj, uarm)) && uarmc) || ((cptr.eq(obj, uarmu)) && (uarmc || uarm))) {
+    if (cptr.eq(obj, uskin) || ((cptr.eq(obj, uarm.v)) && uarmc.v) || ((cptr.eq(obj, uarmu.v)) && (uarmc.v || uarm.v))) {
         let why = new Uint8Array(128);
         let what = new Uint8Array(128);
         cptr.st1(cptr.add(cptr.decay(why), 0), cptr.st1(cptr.add(cptr.decay(what), 0), 0));
         if (!cptr.eq(obj, uskin)) {
-            if (uarmc)
-                void cptr.strcat(cptr.decay(what), cloak_simple_name(uarmc));
-            if ((cptr.eq(obj, uarmu)) && uarm) {
-                if (uarmc)
+            if (uarmc.v)
+                void cptr.strcat(cptr.decay(what), cloak_simple_name(uarmc.v));
+            if ((cptr.eq(obj, uarmu.v)) && uarm.v) {
+                if (uarmc.v)
                     void cptr.strcat(cptr.decay(what), __sl101);
-                void cptr.strcat(cptr.decay(what), suit_simple_name(uarm));
+                void cptr.strcat(cptr.decay(what), suit_simple_name(uarm.v));
             }
             nh_snprintf(__sl102, 1792, cptr.decay(why), 128n, __sl103, cptr.decay(what));
         } else {
@@ -1689,12 +1689,12 @@ function armor_or_accessory_off(obj) {
     reset_remarm();
     if (cptr.ldI64(cptr.add(obj, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n)) {
         void armoroff(obj);
-    } else if (cptr.eq(obj, uright) || cptr.eq(obj, uleft)) {
+    } else if (cptr.eq(obj, uright.v) || cptr.eq(obj, uleft.v)) {
         off_msg(obj);
         Ring_off(obj);
-    } else if (cptr.eq(obj, uamul)) {
+    } else if (cptr.eq(obj, uamul.v)) {
         Amulet_off();
-    } else if (cptr.eq(obj, ublindf)) {
+    } else if (cptr.eq(obj, ublindf.v)) {
         Blindf_off(obj);
     } else {
         impossible(__sl106, safe_typename(cptr.ldI16(cptr.add(obj, 32))));
@@ -1752,9 +1752,9 @@ export function cursed(otmp) {
         impossible(__sl114);
         return 0;
     }
-    if ((cptr.eq(otmp, uwep)) ? welded(otmp) : cptr.ldI32(cptr.add(otmp, 56)) | 0) {
+    if ((cptr.eq(otmp, uwep.v)) ? welded(otmp) : cptr.ldI32(cptr.add(otmp, 56)) | 0) {
         let use_plural = schar(((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_BOOTS) || (cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_GLOVES) || cptr.ldI16(cptr.add(otmp, 32)) == LENSES || cptr.ldI64(cptr.add(otmp, 40)) > 1n));
-        if (u.uprops[GLIB].intrinsic && cptr.ldI32(cptr.add(otmp, 88)) | 0 && (uarmg ? (cptr.eq(otmp, uwep)) : ((cptr.ldI64(cptr.add(otmp, 192)) & (256n | (131072n | 262144n))) != 0n)))
+        if (u.uprops[GLIB].intrinsic && cptr.ldI32(cptr.add(otmp, 88)) | 0 && (uarmg.v ? (cptr.eq(otmp, uwep.v)) : ((cptr.ldI64(cptr.add(otmp, 192)) & (256n | (131072n | 262144n))) != 0n)))
             pline(__sl115, fingers_or_gloves((1)));
         else
             You(__sl116, use_plural ? __sl117 : __sl118);
@@ -1874,39 +1874,39 @@ export function canwearobj(otmp, mask, noisy) {
             already_wearing(cptr.decay(c_that_));
         return 0;
     }
-    if (welded(uwep) && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0) && ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SUIT) || (cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SHIRT))) {
+    if (welded(uwep.v) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0) && ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SUIT) || (cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SHIRT))) {
         if (noisy)
-            You(__sl128, (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
+            You(__sl128, (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
         return 0;
     }
     if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_HELM)) {
-        if (uarmh) {
+        if (uarmh.v) {
             if (noisy)
-                already_wearing(an(helm_simple_name(uarmh)));
+                already_wearing(an(helm_simple_name(uarmh.v)));
             err++;
         } else if ((u.umonnum != u.umonster) && (num_horns(gy.youmonst.data) > 0) && !((objects[cptr.ldI16(cptr.add((otmp), 32))].oc_material | 0) <= LEATHER || cptr.ldI16(cptr.add((otmp), 32)) == RUBBER_HOSE)) {
             if (noisy)
                 pline_The(__sl129, helm_simple_name(otmp), (((num_horns(gy.youmonst.data)) == 1) ? __sl23 : __sl130));
             err++;
-        }
+        } else
             cptr.stU64(mask, 4n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SHIELD)) {
-        if (uarms) {
+        if (uarms.v) {
             if (noisy)
                 already_wearing(an(cptr.decay(c_shield)));
             err++;
-        } else if (uwep && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0)) {
+        } else if (uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)) {
             if (noisy)
-                You(__sl131, (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : ((cptr.ldI16(cptr.add(uwep, 32)) == BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
+                You(__sl131, (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : ((cptr.ldI16(cptr.add(uwep.v, 32)) == BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
             err++;
         } else if (u.twoweap) {
             if (noisy)
                 You(__sl132);
             err++;
-        }
+        } else
             cptr.stU64(mask, 8n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_BOOTS)) {
-        if (uarmf) {
+        if (uarmf.v) {
             if (noisy)
                 already_wearing(cptr.decay(c_boots));
             err++;
@@ -1930,52 +1930,52 @@ export function canwearobj(otmp, mask, noisy) {
                     Your(__sl137, body_part(LEG));
             }
             err++;
-        }
+        } else
             cptr.stU64(mask, 32n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_GLOVES)) {
-        if (uarmg) {
+        if (uarmg.v) {
             if (noisy)
                 already_wearing(cptr.decay(c_gloves));
             err++;
-        } else if (welded(uwep)) {
+        } else if (welded(uwep.v)) {
             if (noisy)
-                You(__sl138, (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
+                You(__sl138, (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
             err++;
         } else if (u.uprops[GLIB].intrinsic) {
             if (noisy)
                 Your(__sl139, fingers_or_gloves((0)), gloves_simple_name(otmp));
             err++;
-        }
+        } else
             cptr.stU64(mask, 16n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SHIRT)) {
-        if (uarm || uarmc || uarmu) {
-            if (uarmu) {
+        if (uarm.v || uarmc.v || uarmu.v) {
+            if (uarmu.v) {
                 if (noisy)
                     already_wearing(an(cptr.decay(c_shirt)));
             } else {
                 if (noisy)
-                    You_cant(__sl140, (uarm && !uarmc) ? cptr.decay(c_armor) : cloak_simple_name(uarmc));
+                    You_cant(__sl140, (uarm.v && !uarmc.v) ? cptr.decay(c_armor) : cloak_simple_name(uarmc.v));
             }
             err++;
-        }
+        } else
             cptr.stU64(mask, 64n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_CLOAK)) {
-        if (uarmc) {
+        if (uarmc.v) {
             if (noisy)
-                already_wearing(an(cloak_simple_name(uarmc)));
+                already_wearing(an(cloak_simple_name(uarmc.v)));
             err++;
-        }
+        } else
             cptr.stU64(mask, 2n);
     } else if ((cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp == ARM_SUIT)) {
-        if (uarmc) {
+        if (uarmc.v) {
             if (noisy)
-                You(__sl141, cloak_simple_name(uarmc));
+                You(__sl141, cloak_simple_name(uarmc.v));
             err++;
-        } else if (uarm) {
+        } else if (uarm.v) {
             if (noisy)
                 already_wearing(__sl142);
             err++;
-        }
+        } else
             cptr.stU64(mask, 1n);
     } else {
         if (noisy)
@@ -2005,7 +2005,7 @@ function accessory_or_armor_on(obj) {
         if (!canwearobj(obj.v, mask, (1)))
             return 0;
         if (cptr.ldI16(cptr.add(obj.v, 32)) == HELM_OF_OPPOSITE_ALIGNMENT && (svd.dungeon_topology.d_qstart_level).dnum == u.uz.dnum) {
-            if (u.ualignbase[0] == u.ualignbase[1])
+            if (cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) == cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1)))
                 You(__sl144);
             else
                 You(__sl145);
@@ -2023,13 +2023,13 @@ function accessory_or_armor_on(obj) {
                 You(__sl146);
                 return 0;
             }
-            if (uleft && uright) {
+            if (uleft.v && uright.v) {
                 There(__sl147, ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 131072n) != 0n) ? __sl148 : __sl23, fingers_or_gloves((0)));
                 return 0;
             }
-            if (uleft) {
+            if (uleft.v) {
                 mask.v = 262144n;
-            } else if (uright) {
+            } else if (uright.v) {
                 mask.v = 131072n;
             } else {
                 do {
@@ -2050,28 +2050,28 @@ function accessory_or_armor_on(obj) {
                     }
                 } while (!mask.v);
             }
-            if (uarmg && u.uprops[GLIB].intrinsic) {
-                Your(__sl150, gloves_simple_name(uarmg));
+            if (uarmg.v && u.uprops[GLIB].intrinsic) {
+                Your(__sl150, gloves_simple_name(uarmg.v));
                 return 1;
             }
-            if (uarmg && cptr.ldI32(cptr.add(uarmg, 56)) | 0) {
-                res = !cptr.ldI32(cptr.add(uarmg, 88));
-                set_bknown(uarmg, 1);
+            if (uarmg.v && cptr.ldI32(cptr.add(uarmg.v, 56)) | 0) {
+                res = !cptr.ldI32(cptr.add(uarmg.v, 88));
+                set_bknown(uarmg.v, 1);
                 You(__sl151, cptr.decay(c_gloves));
                 return res ? 1 : 0;
             }
-            if (uwep) {
-                res = !cptr.ldI32(cptr.add(uwep, 88));
-                if (((mask.v == 262144n && ((u.uhandedness | 0) == 0)) || (mask.v == 131072n && ((u.uhandedness | 0) == 1)) || ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0)) && welded(uwep)) {
+            if (uwep.v) {
+                res = !cptr.ldI32(cptr.add(uwep.v, 88));
+                if (((mask.v == 262144n && ((u.uhandedness | 0) == 0)) || (mask.v == 131072n && ((u.uhandedness | 0) == 1)) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)) && welded(uwep.v)) {
                     let hand = body_part(HAND);
-                    if (((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0))
+                    if (((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))
                         hand = makeplural(hand);
                     You(__sl152, hand);
                     return res ? 1 : 0;
                 }
             }
         } else if (amulet) {
-            if (uamul) {
+            if (uamul.v) {
                 already_wearing(__sl153);
                 return 0;
             }
@@ -2080,15 +2080,15 @@ function accessory_or_armor_on(obj) {
                 You(__sl154, ansimpleoname(obj.v));
                 return 0;
             }
-            if (ublindf) {
-                if (cptr.ldI16(cptr.add(ublindf, 32)) == TOWEL)
+            if (ublindf.v) {
+                if (cptr.ldI16(cptr.add(ublindf.v, 32)) == TOWEL)
                     Your(__sl155, body_part(FACE));
-                else if (cptr.ldI16(cptr.add(ublindf, 32)) == BLINDFOLD) {
+                else if (cptr.ldI16(cptr.add(ublindf.v, 32)) == BLINDFOLD) {
                     if (cptr.ldI16(cptr.add(obj.v, 32)) == LENSES)
                         already_wearing2(__sl156, __sl157);
                     else
                         already_wearing(__sl157);
-                } else if (cptr.ldI16(cptr.add(ublindf, 32)) == LENSES) {
+                } else if (cptr.ldI16(cptr.add(ublindf.v, 32)) == LENSES) {
                     if (cptr.ldI16(cptr.add(obj.v, 32)) == BLINDFOLD)
                         already_wearing2(__sl157, __sl158);
                     else
@@ -2111,19 +2111,19 @@ function accessory_or_armor_on(obj) {
             remove_worn_item(obj.v, (0));
         gw.wasinwater = uchar(u.uinwater);
         setworn(obj.v, mask.v);
-        if (cptr.eq(obj.v, uarm))
+        if (cptr.eq(obj.v, uarm.v))
             ga.afternmv = Armor_on;
-        else if (cptr.eq(obj.v, uarmh))
+        else if (cptr.eq(obj.v, uarmh.v))
             ga.afternmv = Helmet_on;
-        else if (cptr.eq(obj.v, uarmg))
+        else if (cptr.eq(obj.v, uarmg.v))
             ga.afternmv = Gloves_on;
-        else if (cptr.eq(obj.v, uarmf))
+        else if (cptr.eq(obj.v, uarmf.v))
             ga.afternmv = Boots_on;
-        else if (cptr.eq(obj.v, uarms))
+        else if (cptr.eq(obj.v, uarms.v))
             ga.afternmv = Shield_on;
-        else if (cptr.eq(obj.v, uarmc))
+        else if (cptr.eq(obj.v, uarmc.v))
             ga.afternmv = Cloak_on;
-        else if (cptr.eq(obj.v, uarmu))
+        else if (cptr.eq(obj.v, uarmu.v))
             ga.afternmv = Shirt_on;
         else
             panic(__sl160, cptr.ldI64(cptr.add(obj.v, 192)));
@@ -2161,7 +2161,7 @@ export function dowear() {
         pline(__sl164);
         return 0;
     }
-    if (uarm && uarmu && uarmc && uarmh && uarms && uarmg && uarmf && uleft && uright && uamul && ublindf) {
+    if (uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v && uleft.v && uright.v && uamul.v && ublindf.v) {
         You(__sl165);
         return 0;
     }
@@ -2172,8 +2172,8 @@ export function dowear() {
 /** C ref: do_wear.c:2454 @returns {CInt} */
 export function doputon() {
     let otmp;
-    if (uleft && uright && uamul && ublindf && uarm && uarmu && uarmc && uarmh && uarms && uarmg && uarmf) {
-        Your(__sl166, ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 131072n) != 0n) ? __sl148 : __sl23, fingers_or_gloves((0)), (cptr.ldI16(cptr.add(ublindf, 32)) == LENSES) ? __sl158 : __sl157);
+    if (uleft.v && uright.v && uamul.v && ublindf.v && uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v) {
+        Your(__sl166, ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 131072n) != 0n) ? __sl148 : __sl23, fingers_or_gloves((0)), (cptr.ldI16(cptr.add(ublindf.v, 32)) == LENSES) ? __sl158 : __sl157);
         return 0;
     }
     otmp = getobj(__sl167, puton_ok, 0);
@@ -2183,25 +2183,25 @@ export function doputon() {
 /** C ref: do_wear.c:2473 */
 export function find_ac() {
     let uac = mons[u.umonnum].ac;
-    if (uarm)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarm), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarm), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarm), 112)) | 0) > (cptr.ldI32(cptr.add((uarm), 116)) | 0) ? cptr.ldI32(cptr.add((uarm), 112)) | 0 : cptr.ldI32(cptr.add((uarm), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarm), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarm), 112)) | 0) > (cptr.ldI32(cptr.add((uarm), 116)) | 0) ? cptr.ldI32(cptr.add((uarm), 112)) | 0 : cptr.ldI32(cptr.add((uarm), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarm), 32))].oc_oc1))) | 0)) | 0;
-    if (uarmc)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmc), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmc), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmc), 112)) | 0) > (cptr.ldI32(cptr.add((uarmc), 116)) | 0) ? cptr.ldI32(cptr.add((uarmc), 112)) | 0 : cptr.ldI32(cptr.add((uarmc), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmc), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmc), 112)) | 0) > (cptr.ldI32(cptr.add((uarmc), 116)) | 0) ? cptr.ldI32(cptr.add((uarmc), 112)) | 0 : cptr.ldI32(cptr.add((uarmc), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmc), 32))].oc_oc1))) | 0)) | 0;
-    if (uarmh)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmh), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmh), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmh), 112)) | 0) > (cptr.ldI32(cptr.add((uarmh), 116)) | 0) ? cptr.ldI32(cptr.add((uarmh), 112)) | 0 : cptr.ldI32(cptr.add((uarmh), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmh), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmh), 112)) | 0) > (cptr.ldI32(cptr.add((uarmh), 116)) | 0) ? cptr.ldI32(cptr.add((uarmh), 112)) | 0 : cptr.ldI32(cptr.add((uarmh), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmh), 32))].oc_oc1))) | 0)) | 0;
-    if (uarmf)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmf), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmf), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmf), 112)) | 0) > (cptr.ldI32(cptr.add((uarmf), 116)) | 0) ? cptr.ldI32(cptr.add((uarmf), 112)) | 0 : cptr.ldI32(cptr.add((uarmf), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmf), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmf), 112)) | 0) > (cptr.ldI32(cptr.add((uarmf), 116)) | 0) ? cptr.ldI32(cptr.add((uarmf), 112)) | 0 : cptr.ldI32(cptr.add((uarmf), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmf), 32))].oc_oc1))) | 0)) | 0;
-    if (uarms)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarms), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarms), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarms), 112)) | 0) > (cptr.ldI32(cptr.add((uarms), 116)) | 0) ? cptr.ldI32(cptr.add((uarms), 112)) | 0 : cptr.ldI32(cptr.add((uarms), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarms), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarms), 112)) | 0) > (cptr.ldI32(cptr.add((uarms), 116)) | 0) ? cptr.ldI32(cptr.add((uarms), 112)) | 0 : cptr.ldI32(cptr.add((uarms), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarms), 32))].oc_oc1))) | 0)) | 0;
-    if (uarmg)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmg), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmg), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmg), 112)) | 0) > (cptr.ldI32(cptr.add((uarmg), 116)) | 0) ? cptr.ldI32(cptr.add((uarmg), 112)) | 0 : cptr.ldI32(cptr.add((uarmg), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmg), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmg), 112)) | 0) > (cptr.ldI32(cptr.add((uarmg), 116)) | 0) ? cptr.ldI32(cptr.add((uarmg), 112)) | 0 : cptr.ldI32(cptr.add((uarmg), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmg), 32))].oc_oc1))) | 0)) | 0;
-    if (uarmu)
-        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmu), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmu), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmu), 112)) | 0) > (cptr.ldI32(cptr.add((uarmu), 116)) | 0) ? cptr.ldI32(cptr.add((uarmu), 112)) | 0 : cptr.ldI32(cptr.add((uarmu), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmu), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmu), 112)) | 0) > (cptr.ldI32(cptr.add((uarmu), 116)) | 0) ? cptr.ldI32(cptr.add((uarmu), 112)) | 0 : cptr.ldI32(cptr.add((uarmu), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmu), 32))].oc_oc1))) | 0)) | 0;
-    if (uleft && cptr.ldI16(cptr.add(uleft, 32)) == RIN_PROTECTION)
-        uac = (uac - cptr.ld1s(cptr.add(uleft, 48))) | 0;
-    if (uright && cptr.ldI16(cptr.add(uright, 32)) == RIN_PROTECTION)
-        uac = (uac - cptr.ld1s(cptr.add(uright, 48))) | 0;
-    if (uamul && cptr.ldI16(cptr.add(uamul, 32)) == AMULET_OF_GUARDING)
+    if (uarm.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarm.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarm.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarm.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarm.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarm.v), 112)) | 0 : cptr.ldI32(cptr.add((uarm.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarm.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarm.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarm.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarm.v), 112)) | 0 : cptr.ldI32(cptr.add((uarm.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarm.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarmc.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmc.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmc.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmc.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmc.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmc.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmc.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmc.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmc.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmc.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmc.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmc.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmc.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarmh.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmh.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmh.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmh.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmh.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmh.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmh.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmh.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmh.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmh.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmh.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmh.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmh.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarmf.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmf.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmf.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmf.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmf.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmf.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmf.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmf.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmf.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmf.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmf.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmf.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmf.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarms.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarms.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarms.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarms.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarms.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarms.v), 112)) | 0 : cptr.ldI32(cptr.add((uarms.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarms.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarms.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarms.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarms.v), 112)) | 0 : cptr.ldI32(cptr.add((uarms.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarms.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarmg.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmg.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmg.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmg.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmg.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmg.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmg.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmg.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmg.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmg.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmg.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmg.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmg.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uarmu.v)
+        uac = (uac - ((((objects[cptr.ldI16(cptr.add((uarmu.v), 32))].oc_oc1 + cptr.ld1s(cptr.add((uarmu.v), 48))) | 0) - ((((cptr.ldI32(cptr.add((uarmu.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmu.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmu.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmu.v), 116)) | 0)) < (objects[cptr.ldI16(cptr.add((uarmu.v), 32))].oc_oc1) ? (((cptr.ldI32(cptr.add((uarmu.v), 112)) | 0) > (cptr.ldI32(cptr.add((uarmu.v), 116)) | 0) ? cptr.ldI32(cptr.add((uarmu.v), 112)) | 0 : cptr.ldI32(cptr.add((uarmu.v), 116)) | 0)) : (objects[cptr.ldI16(cptr.add((uarmu.v), 32))].oc_oc1))) | 0)) | 0;
+    if (uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == RIN_PROTECTION)
+        uac = (uac - cptr.ld1s(cptr.add(uleft.v, 48))) | 0;
+    if (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == RIN_PROTECTION)
+        uac = (uac - cptr.ld1s(cptr.add(uright.v, 48))) | 0;
+    if (uamul.v && cptr.ldI16(cptr.add(uamul.v, 32)) == AMULET_OF_GUARDING)
         uac = (uac - 2) | 0;
     if (u.uprops[PROTECTION].intrinsic & (67108864n | 33554432n | 16777216n))
         uac = (uac - u.ublessed) | 0;
@@ -2225,25 +2225,25 @@ export function glibr() {
     let thiswep;
     let which;
     let hand;
-    leftfall = schar((uleft && !cptr.ldI32(cptr.add(uleft, 56)) && (!uwep || !(welded(uwep) && ((u.uhandedness | 0) == 1)) || !((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0))));
-    rightfall = schar((uright && !cptr.ldI32(cptr.add(uright, 56)) && (!uwep || !(welded(uwep) && ((u.uhandedness | 0) == 0)) || !((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0))));
-    if (!uarmg && (leftfall || rightfall) && !((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 24576n) == 24576n)) {
+    leftfall = schar((uleft.v && !cptr.ldI32(cptr.add(uleft.v, 56)) && (!uwep.v || !(welded(uwep.v) && ((u.uhandedness | 0) == 1)) || !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))));
+    rightfall = schar((uright.v && !cptr.ldI32(cptr.add(uright.v, 56)) && (!uwep.v || !(welded(uwep.v) && ((u.uhandedness | 0) == 0)) || !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))));
+    if (!uarmg.v && (leftfall || rightfall) && !((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 24576n) == 24576n)) {
         Your(__sl168, (leftfall && rightfall) ? __sl169 : __sl170, (leftfall && rightfall) ? fingers_or_gloves((0)) : body_part(FINGER));
         xfl++;
         if (leftfall) {
-            otmp = uleft;
-            Ring_off(uleft);
+            otmp = uleft.v;
+            Ring_off(uleft.v);
             dropx(otmp);
             cmdq_clear(CQ_CANNED);
         }
         if (rightfall) {
-            otmp = uright;
-            Ring_off(uright);
+            otmp = uright.v;
+            Ring_off(uright.v);
             dropx(otmp);
             cmdq_clear(CQ_CANNED);
         }
     }
-    otmp = uswapwep;
+    otmp = uswapwep.v;
     if (u.twoweap && otmp) {
         otherwep = (cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : weapon_descr(otmp);
         if (cptr.ldI64(cptr.add(otmp, 40)) > 1n)
@@ -2258,7 +2258,7 @@ export function glibr() {
         if (canletgo(otmp, __sl23))
             dropx(otmp);
     }
-    otmp = uwep;
+    otmp = uwep.v;
     if (otmp && cptr.ldI16(cptr.add(otmp, 32)) != AKLYS && !welded(otmp)) {
         let savequan = cptr.ldI64(cptr.add(otmp, 40));
         thiswep = (cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : weapon_descr(otmp);
@@ -2290,21 +2290,21 @@ export function glibr() {
 export function some_armor(victim) {
     let otmph;
     let otmp;
-    otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmc : which_armor(victim, 2n);
+    otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmc.v : which_armor(victim, 2n);
     if (!otmph)
-        otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarm : which_armor(victim, 1n);
+        otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarm.v : which_armor(victim, 1n);
     if (!otmph)
-        otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmu : which_armor(victim, 64n);
-    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmh : which_armor(victim, 4n);
+        otmph = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmu.v : which_armor(victim, 64n);
+    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmh.v : which_armor(victim, 4n);
     if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl28, 2641, __sl182), rn2(4)) : rn2(4))))
         otmph = otmp;
-    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmg : which_armor(victim, 16n);
+    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmg.v : which_armor(victim, 16n);
     if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl28, 2644, __sl182), rn2(4)) : rn2(4))))
         otmph = otmp;
-    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmf : which_armor(victim, 32n);
+    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarmf.v : which_armor(victim, 32n);
     if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl28, 2647, __sl182), rn2(4)) : rn2(4))))
         otmph = otmp;
-    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarms : which_armor(victim, 8n);
+    otmp = (cptr.eq(victim, cptr.boxProp(gy, 'youmonst'))) ? uarms.v : which_armor(victim, 8n);
     if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl28, 2650, __sl182), rn2(4)) : rn2(4))))
         otmph = otmp;
     return otmph;
@@ -2312,29 +2312,29 @@ export function some_armor(victim) {
 
 /** C ref: do_wear.c:2657 — @param {CPtr} ring @param {CInt} otyp @returns {CPtr} */
 export function stuck_ring(ring, otyp) {
-    if (!cptr.eq(ring, uleft) && !cptr.eq(ring, uright)) {
+    if (!cptr.eq(ring, uleft.v) && !cptr.eq(ring, uright.v)) {
         impossible(__sl183);
         return null;
     }
     if (ring && cptr.ldI16(cptr.add(ring, 32)) == otyp) {
-        if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 24576n) == 24576n) && uamul && cptr.ldI16(cptr.add(uamul, 32)) == AMULET_OF_UNCHANGING && cptr.ldI32(cptr.add(uamul, 56)) | 0)
-            return uamul;
-        if (welded(uwep) && ((cptr.eq(ring, (((u.uhandedness | 0) == 1) ? uleft : uright))) || ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0)))
-            return uwep;
-        if (uarmg && cptr.ldI32(cptr.add(uarmg, 56)) | 0)
-            return uarmg;
+        if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 24576n) == 24576n) && uamul.v && cptr.ldI16(cptr.add(uamul.v, 32)) == AMULET_OF_UNCHANGING && cptr.ldI32(cptr.add(uamul.v, 56)) | 0)
+            return uamul.v;
+        if (welded(uwep.v) && ((cptr.eq(ring, (((u.uhandedness | 0) == 1) ? uleft.v : uright.v))) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)))
+            return uwep.v;
+        if (uarmg.v && cptr.ldI32(cptr.add(uarmg.v, 56)) | 0)
+            return uarmg.v;
         if (cptr.ldI32(cptr.add(ring, 56)))
             return ring;
-        if (uarmg && u.uprops[GLIB].intrinsic)
-            return uarmg;
+        if (uarmg.v && u.uprops[GLIB].intrinsic)
+            return uarmg.v;
     }
     return null;
 }
 
 /** C ref: do_wear.c:2687 @returns {CPtr} */
 export function unchanger() {
-    if (uamul && cptr.ldI16(cptr.add(uamul, 32)) == AMULET_OF_UNCHANGING)
-        return uamul;
+    if (uamul.v && cptr.ldI16(cptr.add(uamul.v, 32)) == AMULET_OF_UNCHANGING)
+        return uamul.v;
     return null;
 }
 
@@ -2345,7 +2345,7 @@ function select_off(otmp) {
     if (!otmp)
         return 0;
     cptr.st1(cptr.decay(buf), 0);
-    if (cptr.eq(otmp, uright) || cptr.eq(otmp, uleft)) {
+    if (cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) {
         let glibdummy = cptr.alloc(216);
         if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 24576n) == 24576n)) {
             pline_The(__sl184);
@@ -2353,12 +2353,12 @@ function select_off(otmp) {
         }
         cptr.memcpy(glibdummy, cg.zeroobj, 216);
         why = null;
-        if (welded(uwep) && ((cptr.eq(otmp, (((u.uhandedness | 0) == 1) ? uleft : uright))) || ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0))) {
+        if (welded(uwep.v) && ((cptr.eq(otmp, (((u.uhandedness | 0) == 1) ? uleft.v : uright.v))) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))) {
             void cptr.sprintf(cptr.decay(buf), __sl185, body_part(HAND));
-            why = uwep;
-        } else if (uarmg && (cptr.ldI32(cptr.add(uarmg, 56)) | 0 || u.uprops[GLIB].intrinsic)) {
-            void cptr.sprintf(cptr.decay(buf), __sl186, u.uprops[GLIB].intrinsic ? __sl187 : __sl23, gloves_simple_name(uarmg));
-            why = !u.uprops[GLIB].intrinsic ? uarmg : glibdummy;
+            why = uwep.v;
+        } else if (uarmg.v && (cptr.ldI32(cptr.add(uarmg.v, 56)) | 0 || u.uprops[GLIB].intrinsic)) {
+            void cptr.sprintf(cptr.decay(buf), __sl186, u.uprops[GLIB].intrinsic ? __sl187 : __sl23, gloves_simple_name(uarmg.v));
+            why = !u.uprops[GLIB].intrinsic ? uarmg.v : glibdummy;
         }
         if (why) {
             You(__sl188, cptr.decay(buf));
@@ -2366,19 +2366,19 @@ function select_off(otmp) {
             return 0;
         }
     }
-    if (cptr.eq(otmp, uarmg)) {
-        if (welded(uwep)) {
-            You(__sl189, cptr.decay(c_gloves), (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
-            set_bknown(uwep, 1);
+    if (cptr.eq(otmp, uarmg.v)) {
+        if (welded(uwep.v)) {
+            You(__sl189, cptr.decay(c_gloves), (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
+            set_bknown(uwep.v, 1);
             return 0;
         } else if (u.uprops[GLIB].intrinsic) {
-            pline(__sl190, cptr.ldI32(cptr.add(uarmg, 64)) | 0 ? __sl179 : __sl180, gloves_simple_name(uarmg));
+            pline(__sl190, cptr.ldI32(cptr.add(uarmg.v, 64)) | 0 ? __sl179 : __sl180, gloves_simple_name(uarmg.v));
             return 0;
         }
         if (better_not_take_that_off(otmp))
             return 0;
     }
-    if (cptr.eq(otmp, uarmf)) {
+    if (cptr.eq(otmp, uarmf.v)) {
         if (u.utrap && u.utraptype == TT_BEARTRAP >>> 0) {
             pline_The(__sl191, body_part(FOOT));
             return 0;
@@ -2387,17 +2387,17 @@ function select_off(otmp) {
             return 0;
         }
     }
-    if (cptr.eq(otmp, uarm) || cptr.eq(otmp, uarmu)) {
+    if (cptr.eq(otmp, uarm.v) || cptr.eq(otmp, uarmu.v)) {
         why = null;
-        if (uarmc && cptr.ldI32(cptr.add(uarmc, 56)) | 0) {
-            void cptr.sprintf(cptr.decay(buf), __sl193, cloak_simple_name(uarmc));
-            why = uarmc;
-        } else if (cptr.eq(otmp, uarmu) && uarm && cptr.ldI32(cptr.add(uarm, 56)) | 0) {
+        if (uarmc.v && cptr.ldI32(cptr.add(uarmc.v, 56)) | 0) {
+            void cptr.sprintf(cptr.decay(buf), __sl193, cloak_simple_name(uarmc.v));
+            why = uarmc.v;
+        } else if (cptr.eq(otmp, uarmu.v) && uarm.v && cptr.ldI32(cptr.add(uarm.v, 56)) | 0) {
             void cptr.sprintf(cptr.decay(buf), __sl193, cptr.decay(c_suit));
-            why = uarm;
-        } else if (welded(uwep) && ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0)) {
-            void cptr.sprintf(cptr.decay(buf), __sl194, (cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : ((cptr.ldI16(cptr.add(uwep, 32)) == BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
-            why = uwep;
+            why = uarm.v;
+        } else if (welded(uwep.v) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)) {
+            void cptr.sprintf(cptr.decay(buf), __sl194, (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_SHORT_SWORD && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) ? cptr.decay(c_sword) : ((cptr.ldI16(cptr.add(uwep.v, 32)) == BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
+            why = uwep.v;
         }
         if (why) {
             You(__sl195, cptr.decay(buf), the(xname(otmp)));
@@ -2405,39 +2405,39 @@ function select_off(otmp) {
             return 0;
         }
     }
-    if (cptr.eq(otmp, uquiver) || (cptr.eq(otmp, uswapwep) && !u.twoweap)) {
+    if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !u.twoweap)) {
         ;
     } else {
         if (cursed(otmp))
             return 0;
     }
-    if (cptr.eq(otmp, uarm))
+    if (cptr.eq(otmp, uarm.v))
         svc.context.takeoff.mask |= 1n;
-    else if (cptr.eq(otmp, uarmc))
+    else if (cptr.eq(otmp, uarmc.v))
         svc.context.takeoff.mask |= 2n;
-    else if (cptr.eq(otmp, uarmf))
+    else if (cptr.eq(otmp, uarmf.v))
         svc.context.takeoff.mask |= 32n;
-    else if (cptr.eq(otmp, uarmg))
+    else if (cptr.eq(otmp, uarmg.v))
         svc.context.takeoff.mask |= 16n;
-    else if (cptr.eq(otmp, uarmh))
+    else if (cptr.eq(otmp, uarmh.v))
         svc.context.takeoff.mask |= 4n;
-    else if (cptr.eq(otmp, uarms))
+    else if (cptr.eq(otmp, uarms.v))
         svc.context.takeoff.mask |= 8n;
-    else if (cptr.eq(otmp, uarmu))
+    else if (cptr.eq(otmp, uarmu.v))
         svc.context.takeoff.mask |= 64n;
-    else if (cptr.eq(otmp, uleft))
+    else if (cptr.eq(otmp, uleft.v))
         svc.context.takeoff.mask |= 131072n;
-    else if (cptr.eq(otmp, uright))
+    else if (cptr.eq(otmp, uright.v))
         svc.context.takeoff.mask |= 262144n;
-    else if (cptr.eq(otmp, uamul))
+    else if (cptr.eq(otmp, uamul.v))
         svc.context.takeoff.mask |= 65536n;
-    else if (cptr.eq(otmp, ublindf))
+    else if (cptr.eq(otmp, ublindf.v))
         svc.context.takeoff.mask |= 524288n;
-    else if (cptr.eq(otmp, uwep))
+    else if (cptr.eq(otmp, uwep.v))
         svc.context.takeoff.mask |= 256n;
-    else if (cptr.eq(otmp, uswapwep))
+    else if (cptr.eq(otmp, uswapwep.v))
         svc.context.takeoff.mask |= 1024n;
-    else if (cptr.eq(otmp, uquiver))
+    else if (cptr.eq(otmp, uquiver.v))
         svc.context.takeoff.mask |= 512n;
     else
         impossible(__sl196, doname(otmp));
@@ -2451,7 +2451,7 @@ function do_takeoff() {
     let doff = cptr.boxProp(svc.context, 'takeoff');
     svc.context.takeoff.mask |= 536870912n;
     if (cptr.ldI64(cptr.add(doff, 8)) == 256n) {
-        if (!cursed(uwep)) {
+        if (!cursed(uwep.v)) {
             setuwep(null);
             if (was_twoweap)
                 You(__sl197);
@@ -2465,48 +2465,48 @@ function do_takeoff() {
         setuqwep(null);
         You(__sl203);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 1n) {
-        otmp = uarm;
+        otmp = uarm.v;
         if (!cursed(otmp))
             void Armor_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 2n) {
-        otmp = uarmc;
+        otmp = uarmc.v;
         if (!cursed(otmp))
             void Cloak_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 32n) {
-        otmp = uarmf;
+        otmp = uarmf.v;
         if (!cursed(otmp))
             void Boots_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 16n) {
-        otmp = uarmg;
+        otmp = uarmg.v;
         if (!cursed(otmp))
             void Gloves_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 4n) {
-        otmp = uarmh;
+        otmp = uarmh.v;
         if (!cursed(otmp))
             void Helmet_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 8n) {
-        otmp = uarms;
+        otmp = uarms.v;
         if (!cursed(otmp))
             void Shield_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 64n) {
-        otmp = uarmu;
+        otmp = uarmu.v;
         if (!cursed(otmp))
             void Shirt_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 65536n) {
-        otmp = uamul;
+        otmp = uamul.v;
         if (!cursed(otmp))
             Amulet_off();
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 131072n) {
-        otmp = uleft;
+        otmp = uleft.v;
         if (!cursed(otmp))
-            Ring_off(uleft);
+            Ring_off(uleft.v);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 262144n) {
-        otmp = uright;
+        otmp = uright.v;
         if (!cursed(otmp))
-            Ring_off(uright);
+            Ring_off(uright.v);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 524288n) {
-        if (!cursed(ublindf))
-            Blindf_off(ublindf);
+        if (!cursed(ublindf.v))
+            Blindf_off(ublindf.v);
     } else {
         impossible(__sl204, cptr.ldI64(cptr.add(doff, 8)));
     }
@@ -2546,25 +2546,25 @@ function take_off() {
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 512n) {
         cptr.stI32(cptr.add(doff, 16), 1);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 1n) {
-        otmp = uarm;
-        if (uarmc)
-            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + (Math.imul(2, objects[cptr.ldI16(cptr.add(uarmc, 32))].oc_delay) + 1) | 0);
+        otmp = uarm.v;
+        if (uarmc.v)
+            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + (Math.imul(2, objects[cptr.ldI16(cptr.add(uarmc.v, 32))].oc_delay) + 1) | 0);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 2n) {
-        otmp = uarmc;
+        otmp = uarmc.v;
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 32n) {
-        otmp = uarmf;
+        otmp = uarmf.v;
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 16n) {
-        otmp = uarmg;
+        otmp = uarmg.v;
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 4n) {
-        otmp = uarmh;
+        otmp = uarmh.v;
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 8n) {
-        otmp = uarms;
+        otmp = uarms.v;
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 64n) {
-        otmp = uarmu;
-        if (uarm)
-            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + Math.imul(2, objects[cptr.ldI16(cptr.add(uarm, 32))].oc_delay));
-        if (uarmc)
-            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + (Math.imul(2, objects[cptr.ldI16(cptr.add(uarmc, 32))].oc_delay) + 1) | 0);
+        otmp = uarmu.v;
+        if (uarm.v)
+            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + Math.imul(2, objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_delay));
+        if (uarmc.v)
+            cptr.st1(cptr.add(doff, 16), cptr.ld1s(cptr.add(doff, 16)) + (Math.imul(2, objects[cptr.ldI16(cptr.add(uarmc.v, 32))].oc_delay) + 1) | 0);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 65536n) {
         cptr.stI32(cptr.add(doff, 16), 1);
     } else if (cptr.ldI64(cptr.add(doff, 8)) == 131072n) {
@@ -2609,7 +2609,7 @@ export function doddoremarm() {
         You(__sl209, cptr.decay(svc.context.takeoff.disrobing));
         set_occupation(take_off, cptr.decay(svc.context.takeoff.disrobing), 0n);
         return 0;
-    } else if (!uwep && !uswapwep && !uquiver && !uamul && !ublindf && !uleft && !uright && !wearing_armor()) {
+    } else if (!uwep.v && !uswapwep.v && !uquiver.v && !uamul.v && !ublindf.v && !uleft.v && !uright.v && !wearing_armor()) {
         You(__sl210);
         return 0;
     }
@@ -2635,13 +2635,13 @@ export function remarm_swapwep() {
         cptr.stI32(cq, CMDQ_KEY);
         cptr.st1(cptr.add(cq, 4), 0);
     }
-    if (cptr.ldI32(cq) != CMDQ_KEY || cptr.ld1s(cptr.add(cq, 4)) != 45 || !uswapwep)
+    if (cptr.ldI32(cq) != CMDQ_KEY || cptr.ld1s(cptr.add(cq, 4)) != 45 || !uswapwep.v)
         return 4;
-    oldbknown = cptr.ldI32(cptr.add(uswapwep, 88));
+    oldbknown = cptr.ldI32(cptr.add(uswapwep.v, 88));
     reset_remarm();
     svc.context.takeoff.what = (svc.context.takeoff.mask = 1024n);
     void do_takeoff();
-    return (!uswapwep || cptr.ldI32(cptr.add(uswapwep, 88)) != oldbknown) ? 1 : 0;
+    return (!uswapwep.v || cptr.ldI32(cptr.add(uswapwep.v, 88)) != oldbknown) ? 1 : 0;
 }
 
 /** C ref: do_wear.c:3090 — @param {CInt} retry @returns {CInt} */
@@ -2691,19 +2691,19 @@ function wornarm_destroyed(wornarm) {
     let wornoid = cptr.ldI32(cptr.add(wornarm, 24));
     if (donning(wornarm))
         cancel_don();
-    if (cptr.eq(wornarm, uarmc))
+    if (cptr.eq(wornarm, uarmc.v))
         void Cloak_off();
-    else if (cptr.eq(wornarm, uarm))
+    else if (cptr.eq(wornarm, uarm.v))
         void Armor_off();
-    else if (cptr.eq(wornarm, uarmu))
+    else if (cptr.eq(wornarm, uarmu.v))
         void Shirt_off();
-    else if (cptr.eq(wornarm, uarmh))
+    else if (cptr.eq(wornarm, uarmh.v))
         void Helmet_off();
-    else if (cptr.eq(wornarm, uarmg))
+    else if (cptr.eq(wornarm, uarmg.v))
         void Gloves_off();
-    else if (cptr.eq(wornarm, uarmf))
+    else if (cptr.eq(wornarm, uarmf.v))
         void Boots_off();
-    else if (cptr.eq(wornarm, uarms))
+    else if (cptr.eq(wornarm, uarms.v))
         void Shield_off();
     for (invobj = gi.invent; invobj; invobj = nextobj) {
         nextobj = cptr.ldPtr(invobj);
@@ -2730,23 +2730,23 @@ export function disintegrate_arm(atmp) {
     let resisted = cptr.box((0));
     let resistedc = cptr.box((0));
     let resistedsuit = cptr.box((0));
-    if ((otmp = maybe_destroy_armor(uarmc, atmp, resistedc)) !== null) {
+    if ((otmp = maybe_destroy_armor(uarmc.v, atmp, resistedc)) !== null) {
         urgent_pline(__sl215, cloak_simple_name(otmp));
-    } else if (!resistedc.v && (otmp = maybe_destroy_armor(uarm, atmp, resistedsuit)) !== null) {
+    } else if (!resistedc.v && (otmp = maybe_destroy_armor(uarm.v, atmp, resistedsuit)) !== null) {
         let suit = suit_simple_name(otmp);
         if (cptr.ldI32(cptr.add(otmp, 76)))
             end_burn(otmp, (0));
         urgent_pline(__sl216, suit, vtense(suit, __sl217), vtense(suit, __sl218), surface(u.ux, u.uy));
-    } else if (!resistedc.v && !resistedsuit.v && (otmp = maybe_destroy_armor(uarmu, atmp, resisted)) !== null) {
+    } else if (!resistedc.v && !resistedsuit.v && (otmp = maybe_destroy_armor(uarmu.v, atmp, resisted)) !== null) {
         urgent_pline(__sl219, shirt_simple_name(otmp));
-    } else if ((otmp = maybe_destroy_armor(uarmh, atmp, resisted)) !== null) {
+    } else if ((otmp = maybe_destroy_armor(uarmh.v, atmp, resisted)) !== null) {
         urgent_pline(__sl220, helm_simple_name(otmp));
-    } else if ((otmp = maybe_destroy_armor(uarmg, atmp, resisted)) !== null) {
+    } else if ((otmp = maybe_destroy_armor(uarmg.v, atmp, resisted)) !== null) {
         urgent_pline(__sl221, gloves_simple_name(otmp));
         losing_gloves = (1);
-    } else if ((otmp = maybe_destroy_armor(uarmf, atmp, resisted)) !== null) {
+    } else if ((otmp = maybe_destroy_armor(uarmf.v, atmp, resisted)) !== null) {
         urgent_pline(__sl222, boots_simple_name(otmp));
-    } else if ((otmp = maybe_destroy_armor(uarms, atmp, resisted)) !== null) {
+    } else if ((otmp = maybe_destroy_armor(uarms.v, atmp, resisted)) !== null) {
         urgent_pline(__sl223, shield_simple_name(otmp));
     } else {
         return 0;
@@ -2783,20 +2783,20 @@ export function destroy_arm() {
     let idx = 0;
     let hits = ((rng_log_enabled() ? (rng_log_set_caller(__sl28, 3282, __sl225), rn2(4)) : rn2(4)) + 1) | 0;
     let ret = 0;
-    if (uarm)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarm);
-    if (uarmc)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmc);
-    if (uarmh)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmh);
-    if (uarms)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarms);
-    if (uarmg)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmg);
-    if (uarmf)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmf);
-    if (uarmu)
-        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmu);
+    if (uarm.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarm.v);
+    if (uarmc.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmc.v);
+    if (uarmh.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmh.v);
+    if (uarms.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarms.v);
+    if (uarmg.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmg.v);
+    if (uarmf.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmf.v);
+    if (uarmu.v)
+        cptr.stPtr(cptr.add(cptr.decay(armors), idx++), uarmu.v);
     if (!idx)
         return 0;
     for (i = 0; i < hits; i++) {
@@ -2819,16 +2819,16 @@ export function destroy_arm() {
 
 /** C ref: do_wear.c:3319 — @param {CPtr} otmp @param {CInt} delta */
 export function adj_abon(otmp, delta) {
-    if (uarmg && cptr.eq(uarmg, otmp) && cptr.ldI16(cptr.add(otmp, 32)) == GAUNTLETS_OF_DEXTERITY) {
+    if (uarmg.v && cptr.eq(uarmg.v, otmp) && cptr.ldI16(cptr.add(otmp, 32)) == GAUNTLETS_OF_DEXTERITY) {
         if (delta) {
-            discover_object((cptr.ldI16(cptr.add(uarmg, 32))), (1), (1), (1));
+            discover_object((cptr.ldI16(cptr.add(uarmg.v, 32))), (1), (1), (1));
             cptr.st1(cptr.add(cptr.decay(u.abon.a), A_DEX), cptr.ld1s(cptr.add(cptr.decay(u.abon.a), A_DEX)) + (delta));
         }
         disp.botl = (1);
     }
-    if (uarmh && cptr.eq(uarmh, otmp) && cptr.ldI16(cptr.add(otmp, 32)) == HELM_OF_BRILLIANCE) {
+    if (uarmh.v && cptr.eq(uarmh.v, otmp) && cptr.ldI16(cptr.add(otmp, 32)) == HELM_OF_BRILLIANCE) {
         if (delta) {
-            discover_object((cptr.ldI16(cptr.add(uarmh, 32))), (1), (1), (1));
+            discover_object((cptr.ldI16(cptr.add(uarmh.v, 32))), (1), (1), (1));
             cptr.st1(cptr.add(cptr.decay(u.abon.a), A_INT), cptr.ld1s(cptr.add(cptr.decay(u.abon.a), A_INT)) + (delta));
             cptr.st1(cptr.add(cptr.decay(u.abon.a), A_WIS), cptr.ld1s(cptr.add(cptr.decay(u.abon.a), A_WIS)) + (delta));
         }
@@ -2844,32 +2844,32 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     let anycovering = schar((!only_if_known_cursed));
     if (!obj || !cptr.ldI64(cptr.add(obj, 192)))
         return (0);
-    if (cptr.eq(obj, uarm) && uarmc && (anycovering || (cptr.ldI32(cptr.add((uarmc), 56)) | 0 && cptr.ldI32(cptr.add((uarmc), 88)) | 0))) {
+    if (cptr.eq(obj, uarm.v) && uarmc.v && (anycovering || (cptr.ldI32(cptr.add((uarmc.v), 56)) | 0 && cptr.ldI32(cptr.add((uarmc.v), 88)) | 0))) {
         if (verb) {
-            void cptr.strcpy(cptr.decay(buf), yname(uarmc));
+            void cptr.strcpy(cptr.decay(buf), yname(uarmc.v));
             You(cptr.decay(__static_inaccessible_equipment_need_to_take_off_outer_armor), cptr.decay(buf), verb, yname(obj));
         }
         return (1);
     }
-    if (cptr.eq(obj, uarmu) && ((uarm && (anycovering || (cptr.ldI32(cptr.add((uarm), 56)) | 0 && cptr.ldI32(cptr.add((uarm), 88)) | 0))) || (uarmc && (anycovering || (cptr.ldI32(cptr.add((uarmc), 56)) | 0 && cptr.ldI32(cptr.add((uarmc), 88)) | 0))))) {
+    if (cptr.eq(obj, uarmu.v) && ((uarm.v && (anycovering || (cptr.ldI32(cptr.add((uarm.v), 56)) | 0 && cptr.ldI32(cptr.add((uarm.v), 88)) | 0))) || (uarmc.v && (anycovering || (cptr.ldI32(cptr.add((uarmc.v), 56)) | 0 && cptr.ldI32(cptr.add((uarmc.v), 88)) | 0))))) {
         if (verb) {
             let cloaktmp = new Uint8Array(128);
             let suittmp = new Uint8Array(128);
-            let sameprefix = schar((uarm && uarmc && !strcmp(shk_your(cptr.decay(cloaktmp), uarmc), shk_your(cptr.decay(suittmp), uarm))));
+            let sameprefix = schar((uarm.v && uarmc.v && !strcmp(shk_your(cptr.decay(cloaktmp), uarmc.v), shk_your(cptr.decay(suittmp), uarm.v))));
             cptr.st1(cptr.decay(buf), 0);
-            if (uarmc)
-                void cptr.strcat(cptr.decay(buf), yname(uarmc));
-            if (uarm && uarmc)
+            if (uarmc.v)
+                void cptr.strcat(cptr.decay(buf), yname(uarmc.v));
+            if (uarm.v && uarmc.v)
                 void cptr.strcat(cptr.decay(buf), __sl101);
-            if (uarm)
-                void cptr.strcat(cptr.decay(buf), sameprefix ? xname(uarm) : yname(uarm));
+            if (uarm.v)
+                void cptr.strcat(cptr.decay(buf), sameprefix ? xname(uarm.v) : yname(uarm.v));
             You(cptr.decay(__static_inaccessible_equipment_need_to_take_off_outer_armor), cptr.decay(buf), verb, yname(obj));
         }
         return (1);
     }
-    if ((cptr.eq(obj, uleft) || cptr.eq(obj, uright)) && uarmg && (anycovering || (cptr.ldI32(cptr.add((uarmg), 56)) | 0 && cptr.ldI32(cptr.add((uarmg), 88)) | 0))) {
+    if ((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v)) && uarmg.v && (anycovering || (cptr.ldI32(cptr.add((uarmg.v), 56)) | 0 && cptr.ldI32(cptr.add((uarmg.v), 88)) | 0))) {
         if (verb) {
-            void cptr.strcpy(cptr.decay(buf), yname(uarmg));
+            void cptr.strcpy(cptr.decay(buf), yname(uarmg.v));
             You(cptr.decay(__static_inaccessible_equipment_need_to_take_off_outer_armor), cptr.decay(buf), verb, yname(obj));
         }
         return (1);
@@ -2931,19 +2931,19 @@ export function any_worn_armor_ok(obj) {
 /** C ref: do_wear.c:3489 @returns {CInt} */
 export function count_worn_armor() {
     let ret = 0;
-    if (uarm)
+    if (uarm.v)
         ret++;
-    if (uarmc)
+    if (uarmc.v)
         ret++;
-    if (uarmh)
+    if (uarmh.v)
         ret++;
-    if (uarms)
+    if (uarms.v)
         ret++;
-    if (uarmg)
+    if (uarmg.v)
         ret++;
-    if (uarmf)
+    if (uarmf.v)
         ret++;
-    if (uarmu)
+    if (uarmu.v)
         ret++;
     return ret;
 }

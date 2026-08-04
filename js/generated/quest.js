@@ -169,11 +169,11 @@ function not_capable() {
 /** C ref: quest.c:153 — @param {CInt} talk @returns {CInt} */
 function is_pure(talk) {
     let purity;
-    let original_alignment = u.ualignbase[1];
+    let original_alignment = cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1));
     if (flags.debug && talk) {
         if (u.ualign.type != original_alignment) {
             You(__sl10, align_str(u.ualign.type), align_str(original_alignment));
-        } else if (u.ualignbase[0] != original_alignment) {
+        } else if (cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) != original_alignment) {
             You(__sl11);
         } else if (u.ualign.record < 20) {
             You(__sl12, u.ualign.record, 20);
@@ -181,7 +181,7 @@ function is_pure(talk) {
                 u.ualign.record = 20;
         }
     }
-    purity = (u.ualign.record >= 20 && u.ualign.type == original_alignment && u.ualignbase[0] == original_alignment) ? 1 : ((u.ualignbase[0] != original_alignment) ? -1 : 0);
+    purity = (u.ualign.record >= 20 && u.ualign.type == original_alignment && cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) == original_alignment) ? 1 : ((cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -271,7 +271,7 @@ function chat_with_leader(mtmp) {
             qt_pager(__sl24);
             svq.quest_status.met_leader = 1;
             svq.quest_status.not_ready = 0;
-        }
+        } else
             qt_pager(__sl25);
         if (!on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')))
             return;

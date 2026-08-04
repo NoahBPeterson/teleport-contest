@@ -503,7 +503,7 @@ export function dipfountain(obj) {
         if (in_town(u.ux, u.uy))
             void angry_guards((0));
         return;
-    } else if (is_hands || cptr.eq(obj, uarmg)) {
+    } else if (is_hands || cptr.eq(obj, uarmg.v)) {
         er = wash_hands();
     } else {
         er = water_damage(obj, null, (1));
@@ -606,13 +606,13 @@ export function wash_hands() {
     let hands = makeplural(body_part(HAND));
     let res = 0;
     let was_glib = schar((!!u.uprops[GLIB].intrinsic));
-    You(__sl68, uarmg ? __sl69 : __sl70, hands, hliquid(__sl50));
+    You(__sl68, uarmg.v ? __sl69 : __sl70, hands, hliquid(__sl50));
     if (u.uprops[GLIB].intrinsic) {
         make_glib(0);
         Your(__sl71, fingers_or_gloves((1)));
     }
-    if (uarmg)
-        res = water_damage(uarmg, null, (1));
+    if (uarmg.v)
+        res = water_damage(uarmg.v, null, (1));
     if (was_glib && res == 0)
         res = 1;
     return res;
@@ -687,7 +687,7 @@ export function drinksink() {
             svl.level.locations[u.ux][u.uy].flags |= 4;
             exercise(A_WIS, (1));
             newsym(u.ux, u.uy);
-        }
+        } else
             pline(__sl86, hliquid(__sl50));
         break;
         case 6:
@@ -743,7 +743,7 @@ export function drinksink() {
 export function dipsink(obj) {
     let try_call = (0);
     let not_looted_yet = schar((((svl.level.locations[u.ux][u.uy].flags | 0) & 4) == 0));
-    let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg && cptr.eq(obj, uarmg))));
+    let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg.v && cptr.eq(obj, uarmg.v))));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 722, __sl101), rn2(not_looted_yet ? 25 : 15)) : rn2(not_looted_yet ? 25 : 15))) {
         breaksink(u.ux, u.uy);
         if (u.uprops[GLIB].intrinsic && is_hands)

@@ -804,7 +804,17 @@ const l_selection_methods = [
 ];
 
 /** C ref: nhlsel.c:1009 — luaL_Reg[9] */
-const l_selection_meta = [{ name: __sl54, func: l_selection_gc }, { name: __sl55, func: l_selection_not }, { name: __sl56, func: l_selection_and }, { name: __sl57, func: l_selection_or }, { name: __sl58, func: l_selection_xor }, { name: __sl59, func: l_selection_not }, { name: __sl60, func: l_selection_or }, { name: __sl61, func: l_selection_sub }, { name: null, func: null }];
+const l_selection_meta = [
+    { name: __sl54, func: l_selection_gc },
+    { name: __sl55, func: l_selection_not },
+    { name: __sl56, func: l_selection_and },
+    { name: __sl57, func: l_selection_or },
+    { name: __sl58, func: l_selection_xor },
+    { name: __sl59, func: l_selection_not },
+    { name: __sl60, func: l_selection_or },
+    { name: __sl61, func: l_selection_sub },
+    { name: null, func: null }
+];
 
 /** C ref: nhlsel.c:1025 — @param {CPtr} L @returns {CInt} */
 export function l_selection_register(L) {

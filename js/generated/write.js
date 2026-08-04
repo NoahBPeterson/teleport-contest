@@ -296,7 +296,7 @@ export function dowrite(pen) {
             if (by_descr) {
                 void cptr.strcpy(cptr.decay(namebuf), (obj_descr[(objects[cptr.ldI16(cptr.add(new_obj, 32))]).oc_descr_idx].oc_descr));
                 wipeout_text(cptr.decay(namebuf), (((((6 + 30) | 0) - u.ulevel) | 0) / 6) | 0, 0);
-            }
+            } else
                 void cptr.sprintf(cptr.decay(namebuf), __sl45, cptr.decay(svp.plname));
             You(__sl46, cptr.decay(namebuf));
             useup(paper);

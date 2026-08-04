@@ -323,7 +323,7 @@ export function thitu(tlev, dam, objp, name) {
             if (!cptr.eq(onm, cptr.decay(onmbuf)))
                 void cptr.strcpy(cptr.decay(onmbuf), onm);
             pline(__sl114, upstart(cptr.decay(onmbuf)), vtense(cptr.decay(onmbuf), __sl115));
-        }
+        } else
             You(__sl116, onm);
         return 0;
     } else {
@@ -1035,9 +1035,9 @@ export function breamm(mtmp, mattk, mtarg) {
                     if (cptr.ldI64(cptr.add(dog, 32)) >= 10n)
                         cptr.st1(cptr.add(dog, 32), cptr.ld1s(cptr.add(dog, 32)) - 10n);
                 }
-            }
+            } else
                 impossible(__sl202, (typ - 1) | 0);
-        }
+        } else
             return 0;
     }
     return 1;
@@ -1208,7 +1208,14 @@ export function m_carrying(mtmp, type) {
     return otmp;
 }
 
-const __static_hit_bars_se = [se_zero_invalid, se_bars_whang, se_bars_whap, se_bars_flapp, se_bars_clink, se_bars_clonk]; /** C ref: mthrowu.c:1448 — enum sound_effect_entries[6] (function-static) */
+const __static_hit_bars_se = [
+    se_zero_invalid,
+    se_bars_whang,
+    se_bars_whap,
+    se_bars_flapp,
+    se_bars_clink,
+    se_bars_clonk
+]; /** C ref: mthrowu.c:1448 — enum sound_effect_entries[6] (function-static) */
 const __static_hit_bars_barsounds = [__sl128, __sl213, __sl214, __sl215, __sl216, __sl217]; /** C ref: mthrowu.c:1453 — char *[6] (function-static) */
 
 /** C ref: mthrowu.c:1417 — @param {CPtr} objp @param {CInt} objx @param {CInt} objy @param {CInt} barsx @param {CInt} barsy @param {CUInt} breakflags */

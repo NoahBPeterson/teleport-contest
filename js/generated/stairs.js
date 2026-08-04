@@ -178,7 +178,7 @@ export function stairs_description(sway, outbuf, stcase) {
         if (cptr.ld1s(cptr.add(sway, 10))) {
             let specialdepth = schar((cptr.ldI16(tolev) == (svd.dungeon_topology.d_quest_dnum) || single_level_branch(tolev)));
             let to_dlev = specialdepth ? dunlev(tolev) : depth(tolev);
-            void cptr.sprintf(eos(outbuf), __sl6, to_dlev);
+            void cptr.sprintf(eos.v(outbuf), __sl6, to_dlev);
         }
     } else if (u.uz.dnum == 0 && u.uz.dlevel == 1 && cptr.ld1s(cptr.add(sway, 8))) {
         void cptr.sprintf(outbuf, __sl7, !u.uhave.amulet ? __sl8 : __sl9, stairs, updown, !u.uhave.amulet ? __sl10 : ((on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_earth_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_air_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_fire_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_water_level'))) ? __sl11 : __sl12));

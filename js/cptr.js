@@ -363,6 +363,7 @@ export function snprintf(str, n, fmt, ...args) {
 /** @param {CPtr} str @param {number|bigint} n @param {CPtr|string} fmt @param {Array} ap @returns {number} */
 export function vsnprintf(str, n, fmt, ap) {
   n = Number(n);
+  if (ap && Array.isArray(ap.args)) ap = ap.args.slice(ap.i); // va_list cursor
   const s = sprintfCore(fmt, ap);
   writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
   return s.length;
@@ -383,6 +384,35 @@ export function qsort(base, nmemb, size, compar) {
   // stable sort (Array.prototype.sort is stable in modern JS)
   elems.sort((a, b) => Number(compar({ buf: a, off: 0 }, { buf: b, off: 0 })));
   for (let i = 0; i < nmemb; i++) base.buf.set(elems[i], base.off + i * size);
+}
+
+// ------------------------------------------------------- varargs ----
+// va_list is a cursor object { args, i } over the JS rest-parameter array.
+// va_arg(ap, T) honors C default argument promotions (char/short -> int,
+// float -> double); va_copy is a shallow clone; va_end is a no-op at the
+// emission level (the cursor is simply dropped).
+
+/** build a va_list cursor from the variadic rest array. @param {Array} args @returns {{args: Array, i: number}} */
+export function vaList(args) { return { args, i: 0 }; }
+
+/** shallow-clone a va_list cursor (va_copy). @returns {{args: Array, i: number}} */
+export function vaCopy(ap) { return { args: ap.args, i: ap.i }; }
+
+/**
+ * va_arg with default argument promotions.
+ * @param {{args: Array, i: number}} ap
+ * @param {'i32'|'u32'|'i64'|'u64'|'f64'|'ptr'} tag
+ */
+export function vaArg(ap, tag) {
+  const v = ap.args[ap.i++];
+  switch (tag) {
+    case 'i32': return v | 0;
+    case 'u32': return v >>> 0;
+    case 'i64': return BigInt.asIntN(64, BigInt(v));
+    case 'u64': return BigInt.asUintN(64, BigInt(v));
+    case 'f64': return Number(v);
+    default: return v; // ptr
+  }
 }
 
 // -------------------------------------------------- fd shims (copy_bytes) ----

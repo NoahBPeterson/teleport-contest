@@ -414,9 +414,9 @@ export function death_inflicted_by(outbuf, deathreason, mtmp) {
         let fakenm = pmname(mptr, Mgender(mtmp));
         if (!((cptr.ldU64(cptr.add((champtr), 80)) & 524288n) != 0n) && !the_unique_pm(mptr))
             realnm = an(realnm);
-        void cptr.sprintf(eos(outbuf), __sl33, the_unique_pm(mptr) ? __sl34 : __sl18, realnm);
+        void cptr.sprintf(eos.v(outbuf), __sl33, the_unique_pm(mptr) ? __sl34 : __sl18, realnm);
         if (!cptr.eq(champtr, mptr))
-            void cptr.sprintf(eos(outbuf), __sl35, an(fakenm));
+            void cptr.sprintf(eos.v(outbuf), __sl35, an(fakenm));
     }
     return outbuf;
 }
@@ -447,7 +447,7 @@ function mcast_clone_wiz(mtmp) {
     if (cptr.ldI32(cptr.add(mtmp, 196)) | 0 && svc.context.no_of_wizards == 1) {
         pline(__sl41);
         clonewiz();
-    }
+    } else
         impossible(__sl42);
 }
 
@@ -512,7 +512,7 @@ function mcast_disappear(mtmp) {
         mon_set_minvis(mtmp, (0));
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, cptr.ldI16(cptr.add(mtmp, 30)))), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
             map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
-    }
+    } else
         impossible(__sl62);
 }
 
@@ -709,7 +709,7 @@ function mcast_blind_you() {
         make_blinded((u.uprops[HALF_SPDAM].intrinsic || u.uprops[HALF_SPDAM].extrinsic) ? 100n : 200n, (0));
         if (!((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
             Your(__sl95, c_common_strings.c_vision_clears);
-    }
+    } else
         impossible(__sl96);
 }
 

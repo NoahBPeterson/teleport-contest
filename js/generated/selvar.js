@@ -339,7 +339,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
             cptr.stI16(cptr.add(cptr.decay(dx), idx), (x));
             cptr.stI16(cptr.add(cptr.decay(dy), idx), (y));
             idx++;
-        }
+        } else
             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
     } while (0);
     do {
@@ -357,7 +357,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                         cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
                         cptr.stI16(cptr.add(cptr.decay(dy), idx), ((y)));
                         idx++;
-                    }
+                    } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
@@ -368,7 +368,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                         cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
                         cptr.stI16(cptr.add(cptr.decay(dy), idx), ((y)));
                         idx++;
-                    }
+                    } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
@@ -379,7 +379,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                         cptr.stI16(cptr.add(cptr.decay(dx), idx), ((x)));
                         cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
                         idx++;
-                    }
+                    } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
@@ -390,7 +390,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                         cptr.stI16(cptr.add(cptr.decay(dx), idx), ((x)));
                         cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
                         idx++;
-                    }
+                    } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
@@ -402,7 +402,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                             cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
                             cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
                             idx++;
-                        }
+                        } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
@@ -413,7 +413,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                             cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
                             cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
                             idx++;
-                        }
+                        } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
@@ -424,7 +424,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                             cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
                             cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
                             idx++;
-                        }
+                        } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
@@ -435,7 +435,7 @@ export function selection_floodfill(ov, x, y, diagonals) {
                             cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
                             cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
                             idx++;
-                        }
+                        } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
@@ -629,7 +629,7 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
             if (d0 >= 0) {
                 y1 = i16(y1 + yi);
                 d0 = (d0 + ai) | 0;
-            }
+            } else
                 d0 = (d0 + bi) | 0;
             x1 = i16(x1 + xi);
             selection_setpoint(x1, y1, ov, 1);
@@ -642,7 +642,7 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
             if (d0 >= 0) {
                 x1 = i16(x1 + xi);
                 d0 = (d0 + ai) | 0;
-            }
+            } else
                 d0 = (d0 + bi) | 0;
             y1 = i16(y1 + yi);
             selection_setpoint(x1, y1, ov, 1);

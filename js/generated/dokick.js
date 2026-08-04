@@ -261,7 +261,7 @@ function kickdmg(mon, clumsy) {
     let specialdmg;
     let kick_skill = P_NONE;
     let trapkilled = (0);
-    if (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)
+    if (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)
         dmg = (dmg + 5) | 0;
     if (clumsy)
         dmg = (dmg / 2) | 0;
@@ -286,7 +286,7 @@ function kickdmg(mon, clumsy) {
     }
     if (dmg > 0) {
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl2, 81, __sl3), rnd(dmg)) : rnd(dmg));
-        if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS))) {
+        if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS))) {
             if (dmg > 1)
                 kick_skill = P_BARE_HANDED_COMBAT;
             dmg = (dmg + (rng_log_enabled() ? (rng_log_set_caller(__sl2, 85, __sl3), rn2(((((acurr(A_DEX)) / 2) | 0) + 1) | 0)) : rn2(((((acurr(A_DEX)) / 2) | 0) + 1) | 0))) | 0;
@@ -294,12 +294,12 @@ function kickdmg(mon, clumsy) {
         exercise(A_DEX, (1));
     }
     dmg = (dmg + specialdmg) | 0;
-    if (uarmf)
-        dmg = (dmg + cptr.ld1s(cptr.add(uarmf, 48))) | 0;
+    if (uarmf.v)
+        dmg = (dmg + cptr.ld1s(cptr.add(uarmf.v, 48))) | 0;
     dmg = (dmg + u.udaminc) | 0;
     if (dmg > 0)
         cptr.st1(cptr.add(mon, 52), cptr.ld1s(cptr.add(mon, 52)) - dmg);
-    if (!(cptr.ldI32(cptr.add((mon), 52)) < 1) && (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) && !(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 67)) >= 3) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 96, __sl3), rn2(3)) : rn2(3)) && cptr.ldI32(cptr.add(mon, 160)) | 0 && !cptr.eq(mon, u.ustuck) && !cptr.ldI32(cptr.add(mon, 172))) {
+    if (!(cptr.ldI32(cptr.add((mon), 52)) < 1) && (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) && !(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 67)) >= 3) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 96, __sl3), rn2(3)) : rn2(3)) && cptr.ldI32(cptr.add(mon, 160)) | 0 && !cptr.eq(mon, u.ustuck) && !cptr.ldI32(cptr.add(mon, 172))) {
         mdx = (cptr.ldI16(cptr.add(mon, 28)) + u.dx) | 0;
         mdy = (cptr.ldI16(cptr.add(mon, 30)) + u.dy) | 0;
         if (goodpos(i16(mdx), i16(mdy), mon, 0)) {
@@ -315,7 +315,7 @@ function kickdmg(mon, clumsy) {
             }
         }
     }
-    void passive(mon, uarmf, (1), schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1))), 3, (0));
+    void passive(mon, uarmf.v, (1), schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1))), 3, (0));
     if ((cptr.ldI32(cptr.add((mon), 52)) < 1) && !trapkilled)
         killed(mon);
     if (kick_skill != P_NONE)
@@ -347,7 +347,7 @@ function kick_monster(mon, x, y) {
         if (((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 154, __sl5), rn2(3)) : rn2(3)) && (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 67)) < 1) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 1n) != 0n)) {
             pline(__sl6);
             exercise(A_DEX, (0));
-            void passive(mon, uarmf, (0), 1, 3, (0));
+            void passive(mon, uarmf.v, (0), 1, 3, (0));
             return;
         }
         if (cptr.ldI32(cptr.add(mon, 108)) | 0 || ((cptr.ld1u(cptr.add((mon), 64)) & 7) && (cptr.ld1u(cptr.add((mon), 64)) & 7) != M_AP_MONSTER)) {
@@ -383,12 +383,12 @@ function kick_monster(mon, x, y) {
                 } else if (tmp > kickdieroll) {
                     You(__sl10, mon_nam(mon));
                     sum = damageum(mon, uattk, specialdmg);
-                    void passive(mon, uarmf, schar((sum != 0)), schar((!(sum & 2))), 3, (0));
+                    void passive(mon, uarmf.v, schar((sum != 0)), schar((!(sum & 2))), 3, (0));
                     if ((sum & 2))
                         break;
                 } else {
                     missum(mon, uattk, schar((((tmp + armorpenalty.v) | 0) > kickdieroll)));
-                    void passive(mon, uarmf, (0), 1, 3, (0));
+                    void passive(mon, uarmf.v, (0), 1, 3, (0));
                 }
             }
             return;
@@ -397,10 +397,10 @@ function kick_monster(mon, x, y) {
         j = weight_cap();
         if (i < (((Math.imul(j, 3)) / 10) | 0)) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 237, __sl5), rn2((i < ((j / 10) | 0)) ? 2 : ((i < ((j / 5) | 0)) ? 3 : 4))) : rn2((i < ((j / 10) | 0)) ? 2 : ((i < ((j / 5) | 0)) ? 3 : 4)))) {
-                if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)))
+                if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)))
                     break __lbl_doit;
                 Your(__sl11);
-                void passive(mon, uarmf, (0), 1, 3, (0));
+                void passive(mon, uarmf.v, (0), 1, 3, (0));
                 return;
             }
             if (i < ((j / 10) | 0))
@@ -410,21 +410,21 @@ function kick_monster(mon, x, y) {
         }
         if ((u.uprops[FUMBLING].intrinsic || u.uprops[FUMBLING].extrinsic))
             clumsy = (1);
-        else if (uarm && objects[cptr.ldI16(cptr.add(uarm, 32))].oc_big | 0 && (acurr(A_DEX)) < (rng_log_enabled() ? (rng_log_set_caller(__sl2, 253, __sl5), rnd(25)) : rnd(25)))
+        else if (uarm.v && objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_big | 0 && (acurr(A_DEX)) < (rng_log_enabled() ? (rng_log_set_caller(__sl2, 253, __sl5), rnd(25)) : rnd(25)))
             clumsy = (1);
     }
     You(__sl10, mon_nam(mon));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 257, __sl5), rn2(clumsy ? 3 : 4)) : rn2(clumsy ? 3 : 4)) && (clumsy || !(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 67)) >= 3)) && cptr.ldI32(cptr.add(mon, 112)) | 0 && !cptr.ldI32(cptr.add(mon, 172)) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 2097152n) != 0n) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 28)) != S_EEL && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 4096n) == 0n) && cptr.ldI32(cptr.add(mon, 160)) | 0 && !cptr.ldI32(cptr.add(mon, 152)) && !cptr.ldI32(cptr.add(mon, 164)) && !cptr.ldI32(cptr.add(mon, 144)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 30)) >= 12) {
-        if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 8192n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 262, __sl5), rn2((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) ? 5 : 3)) : rn2((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) ? 5 : 3))) {
+        if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 8192n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 262, __sl5), rn2((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) ? 5 : 3)) : rn2((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) ? 5 : 3))) {
             pline(__sl12, Monnam(mon), clumsy ? __sl13 : __sl14);
-            void passive(mon, uarmf, (0), 1, 3, (0));
+            void passive(mon, uarmf.v, (0), 1, 3, (0));
             return;
         } else {
             maybe_mnexto(mon);
             if (cptr.ldI16(cptr.add(mon, 28)) != x || cptr.ldI16(cptr.add(mon, 30)) != y) {
                 void unmap_invisible(x, y);
                 pline(__sl15, Monnam(mon), (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 33554432n) != 0n) && !noteleport_level(mon)) ? __sl16 : ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 28)) == S_EYE || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 28)) == S_LIGHT) ? __sl17 : (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 1n) != 0n) ? __sl18 : ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 24576n) == 24576n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 524288n) != 0n)) ? __sl19 : __sl20))), clumsy ? __sl21 : __sl22, clumsy ? __sl13 : __sl14);
-                void passive(mon, uarmf, (0), 1, 3, (0));
+                void passive(mon, uarmf.v, (0), 1, 3, (0));
                 return;
             }
         }
@@ -469,7 +469,7 @@ export function ghitm(mtmp, gold) {
                 if (cptr.ldI32(cptr.add(mtmp, 168))) {
                     cptr.st1(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16), cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16)) + value);
                     You(__sl30, cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16)), currency(cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16))));
-                }
+                } else
                     verbalize(__sl31);
             }
         } else if (cptr.ldI32(cptr.add(mtmp, 192))) {
@@ -606,7 +606,7 @@ function really_kick_object(x, y) {
     let costly;
     let isgold;
     let slide = (0);
-    if (!gk.kickedobj || cptr.ldI16(cptr.add(gk.kickedobj, 32)) == BOULDER || cptr.eq(gk.kickedobj, uball) || cptr.eq(gk.kickedobj, uchain))
+    if (!gk.kickedobj || cptr.ldI16(cptr.add(gk.kickedobj, 32)) == BOULDER || cptr.eq(gk.kickedobj, uball.v) || cptr.eq(gk.kickedobj, uchain.v))
         return 0;
     if ((trap = t_at(x, y)) !== null) {
         if (((((cptr.ldI32(cptr.add(trap, 20))) | 0) == PIT || ((cptr.ldI32(cptr.add(trap, 20))) | 0) == SPIKED_PIT) && !(u.uprops[PASSES_WALLS].intrinsic || u.uprops[PASSES_WALLS].extrinsic)) || (cptr.ldI32(cptr.add(trap, 20)) | 0) == WEB) {
@@ -624,7 +624,7 @@ function really_kick_object(x, y) {
         Your(__sl54);
         return 1;
     }
-    if (!uarmf && cptr.ldI16(cptr.add(gk.kickedobj, 32)) == CORPSE && (cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(gk.kickedobj, 168)))), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(gk.kickedobj, 168)))), cptr.add(cptr.decay(mons), PM_CHICKATRICE))) && !(u.uprops[STONE_RES].intrinsic || u.uprops[STONE_RES].extrinsic)) {
+    if (!uarmf.v && cptr.ldI16(cptr.add(gk.kickedobj, 32)) == CORPSE && (cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(gk.kickedobj, 168)))), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(gk.kickedobj, 168)))), cptr.add(cptr.decay(mons), PM_CHICKATRICE))) && !(u.uprops[STONE_RES].intrinsic || u.uprops[STONE_RES].extrinsic)) {
         You(__sl55, corpse_xname(gk.kickedobj, null, 4), makeplural(body_part(FOOT)));
         if (poly_when_stoned(gy.youmonst.data) && polymon(PM_STONE_GOLEM)) {
             ;
@@ -644,7 +644,7 @@ function really_kick_object(x, y) {
         }
         range = (((((acurrstr())) / 2) | 0) - ((k_owt / 40) | 0)) | 0;
     }
-    if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)))
+    if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)))
         range = (range + (rng_log_enabled() ? (rng_log_set_caller(__sl2, 579, __sl53), rnd(3)) : rnd(3))) | 0;
     if (is_pool(x, y)) {
         range = (((range / 3) | 0) + 1) | 0;
@@ -664,12 +664,12 @@ function really_kick_object(x, y) {
     costly = schar((shkp && (costly_spot(x, y) || (costly_adjacent(shkp, x, y) && cptr.ldI32(cptr.add(gk.kickedobj, 64)) | 0))));
     Norep(__sl57, !isgold ? singular(gk.kickedobj, doname) : doname(gk.kickedobj));
     if (((svl.level.locations[x][y].typ) < POOL) || closed_door(x, y)) {
-        if ((!(((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 616, __sl53), rn2(20)) : rn2(20)) > (acurr(A_DEX))) || ((svl.level.locations[u.ux][u.uy].typ) < POOL) || closed_door(u.ux, u.uy)) {
+        if ((!(((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 616, __sl53), rn2(20)) : rn2(20)) > (acurr(A_DEX))) || ((svl.level.locations[u.ux][u.uy].typ) < POOL) || closed_door(u.ux, u.uy)) {
             if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
                 pline(__sl58);
             else
                 pline(__sl59, The(distant_name(gk.kickedobj, xname)), otense(gk.kickedobj, __sl60));
-            return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 624, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)));
+            return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 624, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)));
         }
         if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
             pline(__sl61);
@@ -697,7 +697,7 @@ function really_kick_object(x, y) {
             pline(__sl65);
         container_impact_dmg(gk.kickedobj, x, y);
         if (cptr.ldI32(cptr.add(gk.kickedobj, 124))) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 657, __sl53), rn2(5)) : rn2(5)) || ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 657, __sl53), rn2(2)) : rn2(2)))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 657, __sl53), rn2(5)) : rn2(5)) || ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 657, __sl53), rn2(2)) : rn2(2)))) {
                 You(__sl66);
                 breakchestlock(gk.kickedobj, (0));
                 if (otrp)
@@ -705,7 +705,7 @@ function really_kick_object(x, y) {
                 return 1;
             }
         } else {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 665, __sl53), rn2(3)) : rn2(3)) || ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 665, __sl53), rn2(2)) : rn2(2)))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 665, __sl53), rn2(3)) : rn2(3)) || ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl2, 665, __sl53), rn2(2)) : rn2(2)))) {
                 pline_The(__sl67);
                 cptr.stI32(cptr.add(gk.kickedobj, 100), 1);
                 if (otrp)
@@ -721,7 +721,7 @@ function really_kick_object(x, y) {
     if (range < 2) {
         if (!(cptr.ldI16(cptr.add((gk.kickedobj), 32)) == LARGE_BOX || cptr.ldI16(cptr.add((gk.kickedobj), 32)) == CHEST))
             pline(__sl68);
-        return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 689, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)));
+        return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 689, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)));
     }
     if (cptr.ldI64(cptr.add(gk.kickedobj, 40)) > 1n) {
         if (!isgold) {
@@ -737,7 +737,7 @@ function really_kick_object(x, y) {
             }
             if (cptr.ldI64(cptr.add(gk.kickedobj, 40)) > 300n) {
                 pline(__sl68);
-                return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 712, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)));
+                return (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 712, __sl53), rn2(3)) : rn2(3)) || (((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)));
             }
         }
     }
@@ -848,7 +848,7 @@ function watchman_door_damage(mtmp, x, y) {
 /** C ref: dokick.c:864 — @param {CInt} x @param {CInt} y */
 function kick_dumb(x, y) {
     exercise(A_DEX, (0));
-    if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) || (acurr(A_DEX)) >= 16 || (rng_log_enabled() ? (rng_log_set_caller(__sl2, 867, __sl96), rn2(3)) : rn2(3))) {
+    if ((((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) || (acurr(A_DEX)) >= 16 || (rng_log_enabled() ? (rng_log_set_caller(__sl2, 867, __sl96), rn2(3)) : rn2(3))) {
         You(__sl97);
         if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
             feel_location(x, y);
@@ -901,7 +901,7 @@ function kick_door(x, y, avrg_attrib) {
     }
     exercise(A_DEX, (1));
     doorbuster = schar(((u.umonnum != u.umonster) && ((cptr.ldU64(cptr.add((gy.youmonst.data), 80)) & 8192n) != 0n)));
-    if (doorbuster || ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 930, __sl102), rnl(35)) : rnl(35)) < ((avrg_attrib + (!(((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)) ? 0 : (acurr(A_DEX)))) | 0))) {
+    if (doorbuster || ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 930, __sl102), rnl(35)) : rnl(35)) < ((avrg_attrib + (!(((gu.urole.mnum == (PM_SAMURAI)) || (gu.urole.mnum == (PM_MONK))) || (cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_SASQUATCH))) || (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)) ? 0 : (acurr(A_DEX)))) | 0))) {
         let shopdoor = schar((cptr.ld1s(in_rooms(x, y, SHOPBASE)) ? 1 : 0));
         if ((cptr.ldI32(cptr.add(gm.maploc, 8)) | 0) & 16) {
             if (flags.verbose)
@@ -1044,8 +1044,8 @@ function kick_nondoor(x, y, avrg_attrib) {
             kick_ouch(x, y, __sl14);
             return 1;
         }
-        if (uarmf && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 1090, __sl111), rn2(3)) : rn2(3)))
-            if (water_damage(uarmf, __sl122, (1)) == 0) {
+        if (uarmf.v && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 1090, __sl111), rn2(3)) : rn2(3)))
+            if (water_damage(uarmf.v, __sl122, (1)) == 0) {
                 Your(__sl123);
             }
         exercise(A_DEX, (1));
@@ -1249,7 +1249,7 @@ export function dokick() {
     x = i16(((u.ux + u.dx) | 0));
     y = i16(((u.uy + u.dy) | 0));
     gk.kickedloc.x = x, gk.kickedloc.y = y;
-    if (uarmf && cptr.ldI16(cptr.add(uarmf, 32)) == KICKING_BOOTS)
+    if (uarmf.v && cptr.ldI16(cptr.add(uarmf.v, 32)) == KICKING_BOOTS)
         avrg_attrib = 99;
     else
         avrg_attrib = ((((((acurrstr()) + (acurr(A_DEX))) | 0) + (acurr(A_CON))) | 0) / 3) | 0;
@@ -1418,7 +1418,7 @@ export function impact_drop(missile, x, y, dlev) {
         if (cptr.eq(obj, missile))
             continue;
         oct += cptr.ldI64(cptr.add(obj, 40));
-        if (cptr.eq(obj, uball) || cptr.eq(obj, uchain))
+        if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v))
             continue;
         if ((isrock && cptr.ldI16(cptr.add(obj, 32)) == BOULDER) || (rng_log_enabled() ? (rng_log_set_caller(__sl2, 1569, __sl156), rn2(cptr.ldI16(cptr.add(obj, 32)) == BOULDER ? 30 : 3)) : rn2(cptr.ldI16(cptr.add(obj, 32)) == BOULDER ? 30 : 3)))
             continue;
@@ -1455,7 +1455,7 @@ export function impact_drop(missile, x, y, dlev) {
                     pline(__sl169, Shknam(shkp));
                 else
                     pline(__sl170, cptr.decay(svp.plname));
-            }
+            } else
                 You_hear(__sl171);
             hot_pursuit(shkp);
             void angry_guards((0));
@@ -1489,12 +1489,12 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
     drop_to(cc, toloc, x, y);
     if (!cptr.ldI16(cptr.add(cc, 2)))
         return (0);
-    nodrop = schar(((cptr.eq(otmp, uball)) || (cptr.eq(otmp, uchain)) || (toloc != 5 && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 1660, __sl173), rn2(3)) : rn2(3)))));
+    nodrop = schar(((cptr.eq(otmp, uball.v)) || (cptr.eq(otmp, uchain.v)) || (toloc != 5 && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 1660, __sl173), rn2(3)) : rn2(3)))));
     container = schar((cptr.ldPtr(cptr.add((otmp), 16)) !== null));
     unpaid = is_unpaid(otmp);
     if ((cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[x]), y)) !== null)) {
         for (obj = cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[x]), y)); obj; obj = cptr.ldPtr(cptr.add(obj, 8))) {
-            if (cptr.eq(obj, uchain))
+            if (cptr.eq(obj, uchain.v))
                 chainthere = (1);
             else if (!cptr.eq(obj, otmp))
                 n += cptr.ldI64(cptr.add(obj, 40));
@@ -1700,9 +1700,9 @@ function otransit_msg(otmp, nodrop, chainthere, num) {
             void cptr.sprintf(cptr.decay(xbuf), __sl183, otense(otmp, __sl184));
         }
         if (nodrop)
-            void cptr.sprintf(eos(cptr.decay(xbuf)), __sl185);
+            void cptr.sprintf(eos.v(cptr.decay(xbuf)), __sl185);
         else
-            void cptr.sprintf(eos(cptr.decay(xbuf)), __sl186, otense(otmp, __sl64), gg.gate_str);
+            void cptr.sprintf(eos.v(cptr.decay(xbuf)), __sl186, otense(otmp, __sl64), gg.gate_str);
         pline(__sl187, cptr.decay(obuf), cptr.decay(xbuf));
     } else if (!nodrop)
         pline(__sl188, cptr.decay(obuf), otense(otmp, __sl64), gg.gate_str);

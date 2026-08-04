@@ -369,14 +369,14 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
             silverhit |= armask;
         }
     } else if ((left_ring || right_ring) && cptr.eq(magr, cptr.boxProp(gy, 'youmonst'))) {
-        if (left_ring && uleft) {
-            if ((objects[cptr.ldI16(cptr.add(uleft, 32))].oc_material | 0) == SILVER && mon_hates_silver(mdef)) {
+        if (left_ring && uleft.v) {
+            if ((objects[cptr.ldI16(cptr.add(uleft.v, 32))].oc_material | 0) == SILVER && mon_hates_silver(mdef)) {
                 bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__sl29, 412, __sl31), rnd(20)) : rnd(20))) | 0;
                 silverhit |= 131072n;
             }
         }
-        if (right_ring && uright) {
-            if ((objects[cptr.ldI16(cptr.add(uright, 32))].oc_material | 0) == SILVER && mon_hates_silver(mdef)) {
+        if (right_ring && uright.v) {
+            if ((objects[cptr.ldI16(cptr.add(uright.v, 32))].oc_material | 0) == SILVER && mon_hates_silver(mdef)) {
                 if (!(silverhit & 131072n))
                     bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__sl29, 422, __sl31), rnd(20)) : rnd(20))) | 0;
                 silverhit |= 262144n;
@@ -391,11 +391,11 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
 /** C ref: weapon.c:436 — @param {CPtr} magr @param {CPtr} mdef @param {CLongLong} silverhit */
 export function silver_sears(magr, mdef, silverhit) {
     let rings = new Uint8Array(20);
-    let ltyp = ((uleft && (silverhit & 131072n) != 0n) ? cptr.ldI16(cptr.add(uleft, 32)) : STRANGE_OBJECT);
-    let rtyp = ((uright && (silverhit & 262144n) != 0n) ? cptr.ldI16(cptr.add(uright, 32)) : STRANGE_OBJECT);
+    let ltyp = ((uleft.v && (silverhit & 131072n) != 0n) ? cptr.ldI16(cptr.add(uleft.v, 32)) : STRANGE_OBJECT);
+    let rtyp = ((uright.v && (silverhit & 262144n) != 0n) ? cptr.ldI16(cptr.add(uright.v, 32)) : STRANGE_OBJECT);
     let both;
-    let l_dknown = schar((uleft && cptr.ldI32(cptr.add(uleft, 84)) | 0));
-    let r_dknown = schar((uright && cptr.ldI32(cptr.add(uright, 84)) | 0));
+    let l_dknown = schar((uleft.v && cptr.ldI32(cptr.add(uleft.v, 84)) | 0));
+    let r_dknown = schar((uright.v && cptr.ldI32(cptr.add(uright.v, 84)) | 0));
     let l_ag = schar(((objects[ltyp].oc_material | 0) == SILVER && l_dknown));
     let r_ag = schar(((objects[rtyp].oc_material | 0) == SILVER && r_dknown));
     if ((silverhit & (131072n | 262144n)) != 0n) {
@@ -525,7 +525,7 @@ export function select_rwep(mtmp) {
             if (rwep[i] != LOADSTONE) {
                 if ((otmp = oselect(mtmp, rwep[i])) && !cptr.ld1s(cptr.add(otmp, 51)) && !(cptr.eq(otmp, (cptr.ldPtr(cptr.add((mtmp), 288)))) && mwelded(otmp)))
                     return otmp;
-            }
+            } else
                 for (otmp = cptr.ldPtr(cptr.add(mtmp, 280)); otmp; otmp = cptr.ldPtr(otmp)) {
                     if (cptr.ldI16(cptr.add(otmp, 32)) == LOADSTONE && !cptr.ldI32(cptr.add(otmp, 56)))
                         return otmp;
@@ -562,7 +562,7 @@ export function select_hwep(mtmp) {
             if ((otmp = oselect(mtmp, CLUB)) !== null)
                 return otmp;
         } while (0);
-    else if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), PM_BALROG)) && uwep)
+    else if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), PM_BALROG)) && uwep.v)
         do {
             if ((otmp = oselect(mtmp, BULLWHIP)) !== null)
                 return otmp;
@@ -782,7 +782,7 @@ export function dbon() {
 function finish_towel_change(obj, newspe) {
     newspe = ((newspe) < (7) ? (newspe) : (7));
     cptr.st1(cptr.add(obj, 48), schar(((newspe) > (0) ? (newspe) : (0))));
-    if (cptr.eq(obj, uwep))
+    if (cptr.eq(obj, uwep.v))
         gu.unweapon = schar((!(cptr.ldI16(cptr.add((obj), 32)) == TOWEL && cptr.ld1s(cptr.add((obj), 48)) > 0)));
     if ((cptr.ld1s(cptr.add((obj), 52)) == 3))
         update_inventory();
@@ -1010,7 +1010,7 @@ export function enhance_weapon_skill() {
         add_skills_to_menu(win, schar((((((to_advance + eventually_advance) | 0) + maxxed_cnt) | 0) > 0)), speedy);
         void cptr.strcpy(cptr.decay(buf), (to_advance > 0) ? __sl95 : __sl96);
         if (flags.debug && !speedy)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl97, u.weapon_slots, (((u.weapon_slots) == 1) ? __sl18 : __sl33));
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl97, u.weapon_slots, (((u.weapon_slots) == 1) ? __sl18 : __sl33));
         (windowprocs.win_end_menu)(win, cptr.decay(buf));
         n = select_menu(win, to_advance ? 1 : 0, selected);
         (windowprocs.win_destroy_nhwindow)(win);
@@ -1131,7 +1131,7 @@ export function weapon_type(obj) {
 export function uwep_skill_type() {
     if (u.twoweap)
         return P_TWO_WEAPON_COMBAT;
-    return weapon_type(uwep);
+    return weapon_type(uwep.v);
 }
 
 const __static_weapon_hit_bonus_bad_skill = cptr.bytes("weapon_hit_bonus: bad skill %d"); /** C ref: weapon.c:1548 — char[31] (function-static) */
@@ -1143,7 +1143,7 @@ export function weapon_hit_bonus(weapon) {
     let skill;
     let bonus = 0;
     wep_type = weapon_type(weapon);
-    type = (u.twoweap && (cptr.eq(weapon, uwep) || cptr.eq(weapon, uswapwep))) ? P_TWO_WEAPON_COMBAT : wep_type;
+    type = (u.twoweap && (cptr.eq(weapon, uwep.v) || cptr.eq(weapon, uswapwep.v))) ? P_TWO_WEAPON_COMBAT : wep_type;
     if (type == P_NONE) {
         bonus = 0;
     } else if (type <= P_UNICORN_HORN) {
@@ -1221,7 +1221,7 @@ export function weapon_dam_bonus(weapon) {
     let skill;
     let bonus = 0;
     wep_type = weapon_type(weapon);
-    type = (u.twoweap && (cptr.eq(weapon, uwep) || cptr.eq(weapon, uswapwep))) ? P_TWO_WEAPON_COMBAT : wep_type;
+    type = (u.twoweap && (cptr.eq(weapon, uwep.v) || cptr.eq(weapon, uswapwep.v))) ? P_TWO_WEAPON_COMBAT : wep_type;
     if (type == P_NONE) {
         bonus = 0;
     } else if (type <= P_UNICORN_HORN) {

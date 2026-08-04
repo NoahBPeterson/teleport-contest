@@ -78,7 +78,7 @@ function testnext(ls, c) {
     if (cptr.ldI32(cptr.add(ls, 16)) == c) {
         luaX_next(ls);
         return 1;
-    }
+    } else
         return 0;
 }
 
@@ -451,7 +451,7 @@ function solvegotos(ls, lb) {
         if ((cptr.eq((cptr.ldPtr(cptr.add(cptr.ldPtr(gl), i, 24))), (cptr.ldPtr(lb))))) {
             needsclose |= cptr.ld1u(cptr.add(cptr.add(cptr.ldPtr(gl), i, 24), 17));
             solvegoto(ls, i, lb);
-        }
+        } else
             i++;
     }
     return needsclose;
@@ -1117,27 +1117,27 @@ const priority = [
 
 /** C ref: lparser.c:1259 — @param {CPtr} ls @param {CPtr} v @param {CInt} limit @returns {*} */
 function subexpr(ls, v, limit) {
-    let op = cptr.alloc(4);
-    let uop = cptr.alloc(4);
+    let op;
+    let uop;
     luaE_incCstack(cptr.ldPtr(cptr.add(ls, 56)));
-    cptr.stI32(uop, getunopr(cptr.ldI32(cptr.add(ls, 16))));
+    uop = getunopr(cptr.ldI32(cptr.add(ls, 16)));
     if (uop != OPR_NOUNOPR >>> 0) {
         let line = cptr.ldI32(cptr.add(ls, 4));
         luaX_next(ls);
         subexpr(ls, v, 12);
         luaK_prefix(cptr.ldPtr(cptr.add(ls, 48)), uop, v, line);
-    }
+    } else
         simpleexp(ls, v);
-    cptr.stI32(op, getbinopr(cptr.ldI32(cptr.add(ls, 16))));
+    op = getbinopr(cptr.ldI32(cptr.add(ls, 16)));
     while (op != OPR_NOBINOPR >>> 0 && priority[op].left > limit) {
         let v2 = cptr.alloc(24);
-        let nextop = cptr.alloc(4);
+        let nextop;
         let line = cptr.ldI32(cptr.add(ls, 4));
         luaX_next(ls);
         luaK_infix(cptr.ldPtr(cptr.add(ls, 48)), op, v);
-        cptr.stI32(nextop, subexpr(ls, v2, priority[op].right));
+        nextop = subexpr(ls, v2, priority[op].right);
         luaK_posfix(cptr.ldPtr(cptr.add(ls, 48)), op, v, v2, line);
-        cptr.stI32(op, nextop);
+        op = nextop;
     }
     (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176))--);
     return op;
@@ -1341,8 +1341,14 @@ function fixforjump(fs, pc, dest, back) {
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (((((0 + 7) | 0) + 8) | 0))) >>> 0))) >>> 0) | ((((((offset) >>> 0) << ((((0 + 7) | 0) + 8) | 0)) >>> 0) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (((((0 + 7) | 0) + 8) | 0))) >>> 0)) >>> 0)) >>> 0)));
 }
 
-const __static_forbody_forprep = [OP_FORPREP, OP_TFORPREP]; /** C ref: lparser.c:1545 — OpCode[2] (function-static) */
-const __static_forbody_forloop = [OP_FORLOOP, OP_TFORLOOP]; /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
+const __static_forbody_forprep = [
+    OP_FORPREP,
+    OP_TFORPREP
+]; /** C ref: lparser.c:1545 — OpCode[2] (function-static) */
+const __static_forbody_forloop = [
+    OP_FORLOOP,
+    OP_TFORLOOP
+]; /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
 
 /** C ref: lparser.c:1543 — @param {CPtr} ls @param {CInt} base @param {CInt} line @param {CInt} nvars @param {CInt} isgen */
 function forbody(ls, base, line, nvars, isgen) {
@@ -1464,7 +1470,7 @@ function test_then_block(ls, escapelist) {
         if (block_follow(ls, 0)) {
             leaveblock(fs);
             return;
-        }
+        } else
             jf = luaK_jump(fs);
     } else {
         luaK_goiftrue(cptr.ldPtr(cptr.add(ls, 48)), v);

@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
 import { nh_getenv } from './options.js';
-import { shtypes } from './shknam.js';
 import { def_oc_syms } from './drawing.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { occupied, topologize } from './mklev.js';
@@ -258,8 +257,10 @@ export function fill_zoo(sroom) {
             for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16(cptr.add(sroom, 2)); tx++)
                 for (ty = cptr.ldI16(cptr.add(sroom, 4)); ty <= cptr.ldI16(cptr.add(sroom, 6)); ty++)
                     if (((svl.level.locations[tx][ty].typ) == THRONE))
-                        mk_zoo_thronemon(tx, ty);
-                        break;
+                        {
+                            mk_zoo_thronemon(tx, ty);
+                            break;
+                        }
         }
         i = 100;
         do {
@@ -308,7 +309,7 @@ export function fill_zoo(sroom) {
                 if (cptr.ld1s(cptr.add(sroom, 13))) {
                     let distval = dist2(i16(sx), i16(sy), cptr.ldI16(cptr.add(svd.doors, sh, 4)), cptr.ldI16(cptr.add(cptr.add(svd.doors, sh, 4), 2)));
                     i = (Math.imul((distval), (distval)));
-                }
+                } else
                     i = goldlim;
                 if (i >= goldlim)
                     i = Math.imul(5, level_difficulty());
@@ -419,7 +420,7 @@ export function antholemon() {
     let mtyp;
     let indx;
     let trycnt = 0;
-    indx = Number(BigInt.asIntN(32, (ubirthday % 3n)));
+    indx = Number(BigInt.asIntN(32, (ubirthday.v % 3n)));
     indx = (indx + level_difficulty()) | 0;
     do {
         switch (((indx + trycnt) | 0) % 3) {

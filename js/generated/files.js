@@ -261,7 +261,7 @@ export function fopen_datafile(filename, mode, prefix) {
 }
 
 /** C ref: files.c:457 — int */
-let bei = 1;
+let bei = cptr.box(1);
 
 /** C ref: files.c:461 — @param {CPtr} nhfp */
 export function init_nhfile(nhfp) {
@@ -373,7 +373,7 @@ export function set_levelfile_name(file, lev) {
     let tf;
     tf = cptr.strrchr(file, 46);
     if (!tf)
-        tf = eos(file);
+        tf = eos.v(file);
     void cptr.sprintf(tf, __sl5, lev);
     return;
 }
@@ -470,15 +470,15 @@ function set_bonesfile_name(file, lev) {
     void cptr.strcpy(file, __sl8);
     if (sysopt.bones_pools > 1) {
         let poolnum = ((sysopt.bones_pools >>> 0) < 10 ? (sysopt.bones_pools >>> 0) : 10);
-        poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday)), poolnum);
-        void cptr.sprintf(eos(file), __sl9, poolnum);
+        poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);
+        void cptr.sprintf(eos.v(file), __sl9, poolnum);
     }
-    dptr = eos(file);
+    dptr = eos.v(file);
     void cptr.sprintf(dptr, __sl10, svd.dungeons[cptr.ldI16(lev)].boneid, In_quest(lev) ? gu.urole.filecode : __sl11);
     if ((sptr = Is_special(lev)) !== null)
-        void cptr.sprintf(eos(dptr), __sl12, cptr.ld1s(cptr.add(sptr, 27)));
+        void cptr.sprintf(eos.v(dptr), __sl12, cptr.ld1s(cptr.add(sptr, 27)));
     else
-        void cptr.sprintf(eos(dptr), __sl5, cptr.ldI16(cptr.add(lev, 2)));
+        void cptr.sprintf(eos.v(dptr), __sl5, cptr.ldI16(cptr.add(lev, 2)));
     return dptr;
 }
 
@@ -487,7 +487,7 @@ function set_bonestemp_name() {
     let tf;
     tf = cptr.strrchr(cptr.decay(gl.lock), 46);
     if (!tf)
-        tf = eos(cptr.decay(gl.lock));
+        tf = eos.v(cptr.decay(gl.lock));
     void cptr.sprintf(tf, __sl13);
     return cptr.decay(gl.lock);
 }
@@ -609,7 +609,7 @@ export function set_savefile_name(regularize_it) {
     if (cptr.strlen(__sl17) > 0n && !overflow) {
         if (cptr.strlen(cptr.decay(gs.SAVEF)) + cptr.strlen(__sl17) < ((32n + 13n + 1n + 8n) - 1n)) {
             void cptr.strcat(cptr.decay(gs.SAVEF), __sl17);
-        }
+        } else
             overflow = 3;
     }
     if (indicator_spot == 2 && sfindicator && !overflow) {
@@ -1392,13 +1392,13 @@ export function reveal_paths(code) {
         copynchars(cptr.decay(buf), envp, (((256 - 1) | 0) - 1) | 0);
         void cptr.strcat(cptr.decay(buf), __sl52);
     }
-    endp = eos(cptr.decay(buf));
+    endp = eos.v(cptr.decay(buf));
     copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (256n - 1n - cptr.strlen(cptr.decay(buf))))));
     if (envp) {
         if (access(cptr.decay(buf), 4) == -1) {
             copynchars(endp, __sl90, Number(BigInt.asIntN(32, (256n - 1n - cptr.strlen(cptr.decay(buf))))));
             if (access(cptr.decay(buf), 4) == -1) {
-                copynchars(eos(cptr.decay(buf)), __sl91, Number(BigInt.asIntN(32, (256n - 1n - cptr.strlen(cptr.decay(buf))))));
+                copynchars(eos.v(cptr.decay(buf)), __sl91, Number(BigInt.asIntN(32, (256n - 1n - cptr.strlen(cptr.decay(buf))))));
                 if (access(cptr.decay(buf), 4) == -1) {
                     copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (256n - 1n - cptr.strlen(cptr.decay(buf))))));
                 }
@@ -1605,7 +1605,7 @@ export function livelog_add(ll_type, str) {
         now = getnow();
         gindx = flags.female ? 1 : 0;
         aindx = (1 - u.ualign.type) | 0;
-        void fprintf(livelogfile, __sl111, (ll_type & sysopt.livelog), cptr.decay(svp.plname), gu.urole.filecode, gu.urace.filecode, genders[gindx].filecode, aligns[aindx].filecode, svm.moves, timet_to_seconds(ubirthday), timet_to_seconds(now), str);
+        void fprintf(livelogfile, __sl111, (ll_type & sysopt.livelog), cptr.decay(svp.plname), gu.urole.filecode, gu.urace.filecode, genders[gindx].filecode, aligns[aindx].filecode, svm.moves, timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
         unlock_file(__sl109);
     }

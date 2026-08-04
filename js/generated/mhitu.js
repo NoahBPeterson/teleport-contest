@@ -436,7 +436,7 @@ function mswings(mtmp, otemp, bash) {
 /** C ref: mhitu.c:145 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CPtr} */
 export function mpoisons_subj(mtmp, mattk) {
     if (cptr.ld1u(mattk) == 254) {
-        let mwep = (cptr.eq(mtmp, cptr.boxProp(gy, 'youmonst'))) ? uwep : (cptr.ldPtr(cptr.add((mtmp), 288)));
+        let mwep = (cptr.eq(mtmp, cptr.boxProp(gy, 'youmonst'))) ? uwep.v : (cptr.ldPtr(cptr.add((mtmp), 288)));
         return (!mwep || !cptr.ldI32(cptr.add(mwep, 132))) ? __sl30 : __sl31;
     } else {
         return (cptr.ld1u(mattk) == 5) ? __sl32 : ((cptr.ld1u(mattk) == 15) ? __sl33 : ((cptr.ld1u(mattk) == 2) ? __sl34 : __sl35));
@@ -549,7 +549,7 @@ export function expels(mtmp, mdat, message) {
 export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
     let mptr = cptr.ldPtr(cptr.add(magr, 8));
     let attk = cptr.add(cptr.add(mptr, 36), indx, 4);
-    let weap = (cptr.eq(magr, cptr.boxProp(gy, 'youmonst'))) ? uwep : (cptr.ldPtr(cptr.add((magr), 288)));
+    let weap = (cptr.eq(magr, cptr.boxProp(gy, 'youmonst'))) ? uwep.v : (cptr.ldPtr(cptr.add((magr), 288)));
     let udefend = schar(cptr.eq(mdef, cptr.boxProp(gy, 'youmonst')));
     if (!sysopt.seduce) {
         let c_sa_no = cptr.alloc(6 * 4);
@@ -717,7 +717,7 @@ export function mattacku(mtmp) {
                     pline(__sl66, Monnam(mtmp));
                     if ((cptr.st1(cptr.add(mtmp, 52), cptr.ld1s(cptr.add(mtmp, 52)) - (rng_log_enabled() ? (rng_log_set_caller(__sl22, 607, __sl62), d((3), (6))) : d((3), (6))))) < 1)
                         killed(mtmp);
-                }
+                } else
                     pline(__sl67, Monnam(mtmp));
             }
         } else {
@@ -738,7 +738,7 @@ export function mattacku(mtmp) {
                         pline(__sl70, m_monnam(mtmp), pmname(gy.youmonst.data, (((u.umonnum != u.umonster) ? u.mfemale | 0 : flags.female) ? 1 : 0)), cptr.decay(svp.plname), doname(cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[u.ux]), u.uy))));
                     if (obj)
                         cptr.st1(cptr.add(obj, 48), schar(save_spe));
-                }
+                } else
                     impossible(__sl71);
             }
             newsym(u.ux, u.uy);
@@ -845,7 +845,7 @@ export function mattacku(mtmp) {
                             continue;
                         if (cptr.ld1u(mattk) != 3 || !((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 2097152n) != 0n))
                             sum[i] = hitmu(mtmp, mattk);
-                    }
+                    } else
                         missmu(mtmp, schar((tmp == j)), mattk);
                 } else {
                     wildmiss(mtmp, mattk);
@@ -1030,11 +1030,11 @@ export function u_slip_free(mtmp, mattk) {
     let obj;
     if (cptr.ld1u(mattk) == 11)
         return (0);
-    obj = (uarmc ? uarmc : uarm);
+    obj = (uarmc.v ? uarmc.v : uarm.v);
     if (!obj)
-        obj = uarmu;
+        obj = uarmu.v;
     if (cptr.ld1u(cptr.add(mattk, 1)) == 32)
-        obj = uarmh;
+        obj = uarmh.v;
     if (obj && (cptr.ldI32(cptr.add(obj, 140)) | 0 || cptr.ldI16(cptr.add(obj, 32)) == OILSKIN_CLOAK) && (!cptr.ldI32(cptr.add(obj, 56)) || (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1066, __sl100), rn2(3)) : rn2(3)))) {
         pline_mon(mtmp, __sl101, Monnam(mtmp), (cptr.ld1u(cptr.add(mattk, 1)) == 28) ? __sl102 : __sl103, cptr.ldI32(cptr.add(obj, 140)) | 0 ? __sl104 : __sl105, (cptr.ldI32(cptr.add(obj, 140)) | 0 || objects[cptr.ldI16(cptr.add(obj, 32))].oc_name_known | 0) ? xname(obj) : cloak_simple_name(obj));
         if (cptr.ldI32(cptr.add(obj, 140)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 1077, __sl100), rn2(2)) : rn2(2))) {
@@ -1133,7 +1133,7 @@ function hitmu(mtmp, mattk) {
             cptr.stI32(mhm, 1);
     }
     if (cptr.ldI32(mhm) > 0) {
-        if ((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic) || ((gu.urole.mnum == (PM_CLERIC)) && uarmh && is_quest_artifact(uarmh) && mon_hates_blessings(mtmp)))
+        if ((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic) || ((gu.urole.mnum == (PM_CLERIC)) && uarmh.v && is_quest_artifact(uarmh.v) && mon_hates_blessings(mtmp)))
             cptr.stI32(mhm, (((cptr.ldI32(mhm) + 1) | 0) / 2) | 0);
         if (cptr.ld1s(cptr.add(mhm, 9))) {
             let lowerlimit;
@@ -1197,7 +1197,7 @@ function gulpmu(mtmp, mattk) {
             return 0;
         if (failed_grab(mtmp, cptr.boxProp(gy, 'youmonst'), mattk))
             return 0;
-        if ((uball !== null))
+        if ((uball.v !== null))
             unplacebc();
         cptr.stPtr(cptr.add(cptr.decay(svl.level.monsters[omx]), omy), null);
         cptr.stI32(cptr.add(mtmp, 172), 0);
@@ -1228,7 +1228,7 @@ function gulpmu(mtmp, mattk) {
             cptr.stPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cptr.add(mtmp, 28))]), cptr.ldI16(cptr.add(mtmp, 30))), null);
             place_monster(mtmp, i16(omx), i16(omy));
             minstapetrify(mtmp, (1));
-            if ((uball !== null))
+            if ((uball.v !== null))
                 placebc();
             set_ustuck(null);
             return (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1)) ? 0 : 4;
@@ -1256,11 +1256,11 @@ function gulpmu(mtmp, mattk) {
     }
     if (!cptr.eq(mtmp, u.ustuck))
         return 0;
-    if ((uball !== null)) {
-        if (cptr.ld1s(cptr.add(uchain, 52)) == 0)
-            cptr.stI16(cptr.add(uchain, 28), cptr.ldI16(cptr.add(mtmp, 28))), cptr.stI16(cptr.add(uchain, 30), cptr.ldI16(cptr.add(mtmp, 30)));
-        if (cptr.ld1s(cptr.add(uball, 52)) == 0)
-            cptr.stI16(cptr.add(uball, 28), cptr.ldI16(cptr.add(mtmp, 28))), cptr.stI16(cptr.add(uball, 30), cptr.ldI16(cptr.add(mtmp, 30)));
+    if ((uball.v !== null)) {
+        if (cptr.ld1s(cptr.add(uchain.v, 52)) == 0)
+            cptr.stI16(cptr.add(uchain.v, 28), cptr.ldI16(cptr.add(mtmp, 28))), cptr.stI16(cptr.add(uchain.v, 30), cptr.ldI16(cptr.add(mtmp, 30)));
+        if (cptr.ld1s(cptr.add(uball.v, 52)) == 0)
+            cptr.stI16(cptr.add(uball.v, 28), cptr.ldI16(cptr.add(mtmp, 28))), cptr.stI16(cptr.add(uball.v, 30), cptr.ldI16(cptr.add(mtmp, 30)));
     }
     if (u.uswldtim > 0)
         u.uswldtim = (u.uswldtim - 1) | 0;
@@ -1314,7 +1314,7 @@ function gulpmu(mtmp, mattk) {
                 make_blinded(BigInt(tmp), (0));
                 if (!was_blinded && !((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
                     Your(__sl143, c_common_strings.c_vision_clears);
-            }
+            } else
                 incr_itimeout(cptr.boxProp(u.uprops[BLINDED], 'intrinsic'), 1);
         }
         tmp = 0;
@@ -1331,7 +1331,7 @@ function gulpmu(mtmp, mattk) {
             } else {
                 monstunseesu(BigInt.asUintN(64, BigInt(M_SEEN_ELEC)));
             }
-        }
+        } else
             tmp = 0;
         break;
         case 3:
@@ -1346,7 +1346,7 @@ function gulpmu(mtmp, mattk) {
                 You(__sl147);
                 monstunseesu(BigInt.asUintN(64, BigInt(M_SEEN_COLD)));
             }
-        }
+        } else
             tmp = 0;
         break;
         case 2:
@@ -1362,7 +1362,7 @@ function gulpmu(mtmp, mattk) {
                 monstunseesu(BigInt.asUintN(64, BigInt(M_SEEN_FIRE)));
             }
             burn_away_slime();
-        }
+        } else
             tmp = 0;
         break;
         case 33:
@@ -1708,17 +1708,17 @@ export function doseduce(mon) {
         You_feel(__sl204, mon_nam(mon));
     void cptr.strcpy(cptr.decay(Who), (!seewho ? (fem ? __sl205 : __sl206) : Monnam(mon)));
     void stop_donning(null);
-    if (welded(uwep))
+    if (welded(uwep.v))
         tried_gloves = 1;
     for (ring = gi.invent; ring; ring = nring) {
         nring = cptr.ldPtr(ring);
         if (cptr.ldI16(cptr.add(ring, 32)) != RIN_ADORNMENT)
             continue;
         if (fem) {
-            if (cptr.ldI64(cptr.add(ring, 192)) && uarmg) {
+            if (cptr.ldI64(cptr.add(ring, 192)) && uarmg.v) {
                 if (!tried_gloves++)
-                    mayberem(mon, cptr.decay(Who), uarmg, __sl207);
-                if (uarmg)
+                    mayberem(mon, cptr.decay(Who), uarmg.v, __sl207);
+                if (uarmg.v)
                     continue;
             }
             if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 2032, __sl208), rn2(20)) : rn2(20)) < (acurr(A_CHA))) {
@@ -1727,7 +1727,7 @@ export function doseduce(mon) {
                 ;
                 if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, (1)) == 110)
                     continue;
-            }
+            } else
                 pline(__sl212, cptr.decay(Who), yname(ring));
             discover_object((RIN_ADORNMENT), (1), (1), (1));
             if (cptr.ldI64(cptr.add(ring, 192)))
@@ -1735,14 +1735,14 @@ export function doseduce(mon) {
             freeinv(ring);
             void mpickobj(mon, ring);
         } else {
-            if (uleft && uright && cptr.ldI16(cptr.add(uleft, 32)) == RIN_ADORNMENT && cptr.ldI16(cptr.add(uright, 32)) == RIN_ADORNMENT)
+            if (uleft.v && uright.v && cptr.ldI16(cptr.add(uleft.v, 32)) == RIN_ADORNMENT && cptr.ldI16(cptr.add(uright.v, 32)) == RIN_ADORNMENT)
                 break;
-            if (cptr.eq(ring, uleft) || cptr.eq(ring, uright))
+            if (cptr.eq(ring, uleft.v) || cptr.eq(ring, uright.v))
                 continue;
-            if (uarmg) {
+            if (uarmg.v) {
                 if (!tried_gloves++)
-                    mayberem(mon, cptr.decay(Who), uarmg, __sl207);
-                if (uarmg)
+                    mayberem(mon, cptr.decay(Who), uarmg.v, __sl207);
+                if (uarmg.v)
                     break;
             }
             if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 2063, __sl208), rn2(20)) : rn2(20)) < (acurr(A_CHA))) {
@@ -1756,45 +1756,45 @@ export function doseduce(mon) {
                 pline(__sl215);
             }
             discover_object((RIN_ADORNMENT), (1), (1), (1));
-            if (!uright) {
+            if (!uright.v) {
                 pline(__sl216, cptr.decay(Who), the(xname(ring)), body_part(HAND));
                 setworn(ring, 262144n);
-            } else if (!uleft) {
+            } else if (!uleft.v) {
                 pline(__sl217, cptr.decay(Who), the(xname(ring)), body_part(HAND));
                 setworn(ring, 131072n);
-            } else if (uright && cptr.ldI16(cptr.add(uright, 32)) != RIN_ADORNMENT) {
-                pline(__sl218, cptr.decay(Who), yname(uright), yname(ring));
-                Ring_gone(uright);
+            } else if (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) != RIN_ADORNMENT) {
+                pline(__sl218, cptr.decay(Who), yname(uright.v), yname(ring));
+                Ring_gone(uright.v);
                 if (u.utotype || !(dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), u.ux, u.uy) <= 2))
                     return 1;
                 setworn(ring, 262144n);
-            } else if (uleft && cptr.ldI16(cptr.add(uleft, 32)) != RIN_ADORNMENT) {
-                pline(__sl218, cptr.decay(Who), yname(uleft), yname(ring));
-                Ring_gone(uleft);
+            } else if (uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) != RIN_ADORNMENT) {
+                pline(__sl218, cptr.decay(Who), yname(uleft.v), yname(ring));
+                Ring_gone(uleft.v);
                 if (u.utotype || !(dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), u.ux, u.uy) <= 2))
                     return 1;
                 setworn(ring, 131072n);
-            }
+            } else
                 impossible(__sl219);
             Ring_on(ring);
             prinv(null, ring, 0n);
         }
     }
-    naked = schar((!uarmc && !uarmf && !uarmg && !uarms && !uarmh && !uarmu));
+    naked = schar((!uarmc.v && !uarmf.v && !uarmg.v && !uarms.v && !uarmh.v && !uarmu.v));
     urgent_pline(__sl220, cptr.decay(Who), (u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) ? __sl221 : (naked ? __sl222 : __sl223), naked ? __sl17 : __sl224);
-    mayberem(mon, cptr.decay(Who), uarmc, cloak_simple_name(uarmc));
-    if (!uarmc)
-        mayberem(mon, cptr.decay(Who), uarm, suit_simple_name(uarm));
-    mayberem(mon, cptr.decay(Who), uarmf, __sl225);
+    mayberem(mon, cptr.decay(Who), uarmc.v, cloak_simple_name(uarmc.v));
+    if (!uarmc.v)
+        mayberem(mon, cptr.decay(Who), uarm.v, suit_simple_name(uarm.v));
+    mayberem(mon, cptr.decay(Who), uarmf.v, __sl225);
     if (!tried_gloves)
-        mayberem(mon, cptr.decay(Who), uarmg, __sl207);
-    mayberem(mon, cptr.decay(Who), uarms, __sl226);
-    mayberem(mon, cptr.decay(Who), uarmh, helm_simple_name(uarmh));
-    if (!uarmc && !uarm)
-        mayberem(mon, cptr.decay(Who), uarmu, __sl227);
+        mayberem(mon, cptr.decay(Who), uarmg.v, __sl207);
+    mayberem(mon, cptr.decay(Who), uarms.v, __sl226);
+    mayberem(mon, cptr.decay(Who), uarmh.v, helm_simple_name(uarmh.v));
+    if (!uarmc.v && !uarm.v)
+        mayberem(mon, cptr.decay(Who), uarmu.v, __sl227);
     if (u.utotype || !(dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), u.ux, u.uy) <= 2))
         return 1;
-    if (uarm || uarmc) {
+    if (uarm.v || uarmc.v) {
         if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf)) {
             if (!(((yyyymmdd(0n) - (BigInt(getyear()) * 10000n)) == 229n) && cptr.ldI32(cptr.add(mon, 84)) | 0)) {
                 ;
@@ -1955,7 +1955,7 @@ function mayberem(mon, seducer, obj, str) {
         let hairbuf = new Uint8Array(256);
         void cptr.sprintf(cptr.decay(hairbuf), __sl262, body_part(HAIR));
         ;
-        verbalize(__sl263, str, (cptr.eq(obj, uarm)) ? __sl264 : ((cptr.eq(obj, uarmc) || cptr.eq(obj, uarms)) ? __sl265 : ((cptr.eq(obj, uarmf)) ? __sl266 : ((cptr.eq(obj, uarmg)) ? __sl267 : ((cptr.eq(obj, uarmu)) ? __sl268 : cptr.decay(hairbuf))))));
+        verbalize(__sl263, str, (cptr.eq(obj, uarm.v)) ? __sl264 : ((cptr.eq(obj, uarmc.v) || cptr.eq(obj, uarms.v)) ? __sl265 : ((cptr.eq(obj, uarmf.v)) ? __sl266 : ((cptr.eq(obj, uarmg.v)) ? __sl267 : ((cptr.eq(obj, uarmu.v)) ? __sl268 : cptr.decay(hairbuf))))));
     }
     remove_worn_item(obj, (1));
 }
@@ -2018,7 +2018,7 @@ function passiveum(olduasmon, mtmp, mattk) {
                 pline_mon(mtmp, __sl274, Monnam(mtmp));
                 tmp = 0;
             }
-        }
+        } else
             tmp = 0;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 2477, __sl270), rn2(30)) : rn2(30)))
             erode_armor(mtmp, 3);

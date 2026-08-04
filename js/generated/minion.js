@@ -136,7 +136,7 @@ export function msummon(mon) {
     let mtmp;
     if (mon) {
         ptr = cptr.ldPtr(cptr.add(mon, 8));
-        if (is_art(uwep, ART_DEMONBANE) && ((cptr.ldU64(cptr.add((ptr), 80)) & 256n) != 0n)) {
+        if (is_art(uwep.v, ART_DEMONBANE) && ((cptr.ldU64(cptr.add((ptr), 80)) & 256n) != 0n)) {
             if (canseemon(mon))
                 pline(__sl0, Monnam(mon));
             return 0;
@@ -277,7 +277,7 @@ export function demon_talk(mtmp) {
     let cash;
     let demand;
     let offer;
-    if (is_art(uwep, ART_EXCALIBUR) || is_art(uwep, ART_DEMONBANE)) {
+    if (is_art(uwep.v, ART_EXCALIBUR) || is_art(uwep.v, ART_DEMONBANE)) {
         if ((canseemon(mtmp) || sensemon(mtmp)))
             pline(__sl10, Amonnam(mtmp));
         else

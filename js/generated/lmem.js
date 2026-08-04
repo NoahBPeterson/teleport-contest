@@ -63,7 +63,7 @@ function tryagain(L, block, osize, nsize) {
     if (((((((cptr.ld1u(cptr.add(((cptr.add(g, 80))), 8)))) & 15)) == (0)) && !cptr.ld1u(cptr.add(g, 103)))) {
         luaC_fullgc(L, 1);
         return ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, nsize));
-    }
+    } else
         return (null);
 }
 

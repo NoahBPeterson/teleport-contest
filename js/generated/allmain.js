@@ -659,7 +659,7 @@ export function newgame() {
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
     let currentgend = schar(((u.umonnum != u.umonster) ? u.mfemale | 0 : flags.female));
-    let adrift = schar((u.ualign.type != u.ualignbase[0]));
+    let adrift = schar((u.ualign.type != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0))));
     l_nhcore_call(new_game ? NHCORE_START_NEW_GAME : NHCORE_RESTORE_OLD_GAME);
     if (!new_game && (u.umonnum != u.umonster) && ugenocided()) {
         pline(__sl23, udeadinside());
@@ -668,11 +668,11 @@ export function welcome(new_game) {
     if ((u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic)))
         pline(__sl24);
     cptr.st1(cptr.decay(buf), 0);
-    if (new_game || u.ualignbase[1] != u.ualignbase[0] || adrift)
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl25, adrift ? __sl26 : __sl27, adrift ? align_str(u.ualign.type) : align_str(u.ualignbase[0]));
+    if (new_game || cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1)) != cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) || adrift)
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl25, adrift ? __sl26 : __sl27, adrift ? align_str(u.ualign.type) : align_str(cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0))));
     if (!gu.urole.name.f && (new_game ? (gu.urole.allow & 61440) == (4096 | 8192) : currentgend != flags.initgend))
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl28, genders[currentgend].adj);
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl29, gu.urace.adj, (currentgend && gu.urole.name.f) ? gu.urole.name.f : gu.urole.name.m);
+        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl28, genders[currentgend].adj);
+    void cptr.sprintf(eos.v(cptr.decay(buf)), __sl29, gu.urace.adj, (currentgend && gu.urole.name.f) ? gu.urole.name.f : gu.urole.name.m);
     pline(new_game ? __sl30 : __sl31, Hello(null), cptr.decay(svp.plname), cptr.decay(buf));
     if (new_game) {
         livelog_printf(2n, __sl32, cptr.decay(svp.plname), cptr.decay(buf));

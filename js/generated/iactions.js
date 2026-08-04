@@ -268,7 +268,7 @@ function itemactions_pushkeys(otmp, act) {
         case IA_NONE:
         break;
         case IA_UNWIELD:
-        cmdq_add_ec(CQ_CANNED, (cptr.eq(otmp, uwep)) ? dowield : ((cptr.eq(otmp, uswapwep)) ? remarm_swapwep : ((cptr.eq(otmp, uquiver)) ? dowieldquiver : donull)));
+        cmdq_add_ec(CQ_CANNED, (cptr.eq(otmp, uwep.v)) ? dowield : ((cptr.eq(otmp, uswapwep.v)) ? remarm_swapwep : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull)));
         cmdq_add_key(CQ_CANNED, 45);
         break;
         case IA_APPLY_OBJ:
@@ -390,9 +390,9 @@ export function itemactions(otmp) {
     let already_worn = schar(((cptr.ldI64(cptr.add(otmp, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n))) != 0n));
     win = (windowprocs.win_create_nhwindow)(4);
     (windowprocs.win_start_menu)(win, 0n);
-    if (cptr.eq(otmp, uwep) || cptr.eq(otmp, uswapwep) || cptr.eq(otmp, uquiver)) {
-        let verb = (cptr.eq(otmp, uquiver)) ? __sl21 : __sl22;
-        let action = (cptr.eq(otmp, uquiver)) ? __sl23 : __sl24;
+    if (cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) || cptr.eq(otmp, uquiver.v)) {
+        let verb = (cptr.eq(otmp, uquiver.v)) ? __sl21 : __sl22;
+        let action = (cptr.eq(otmp, uquiver.v)) ? __sl23 : __sl24;
         let which = (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? __sl25 : __sl26;
         let what = ((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((otmp), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp != P_NONE)) ? __sl27 : __sl28);
         void cptr.sprintf(cptr.decay(buf), __sl29, verb, 45, action, which, (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? makeplural(what) : what);
@@ -484,7 +484,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, IA_DROP_OBJ, 100, cptr.decay(buf));
     }
     if (cptr.ldI16(cptr.add(otmp, 32)) == TIN) {
-        void cptr.sprintf(cptr.decay(buf), __sl70, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl71 : __sl72, (cptr.ldI16(cptr.add(otmp, 32)) == TIN && uwep && cptr.ldI16(cptr.add(uwep, 32)) == TIN_OPENER) ? __sl73 : __sl10);
+        void cptr.sprintf(cptr.decay(buf), __sl70, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl71 : __sl72, (cptr.ldI16(cptr.add(otmp, 32)) == TIN && uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == TIN_OPENER) ? __sl73 : __sl10);
         ia_addmenu(win, IA_EAT_OBJ, 101, cptr.decay(buf));
     } else if (is_edible(otmp)) {
         void cptr.sprintf(cptr.decay(buf), __sl74, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl55 : __sl26);
@@ -498,12 +498,12 @@ export function itemactions(otmp) {
         void cptr.sprintf(cptr.decay(buf), __sl77, ((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= P_DAGGER && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= P_SABER) || cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS || ((cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == RING_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_tough | 0)) ? __sl78 : __sl79, surface(u.ux, u.uy), (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl80 : __sl81);
         ia_addmenu(win, IA_ENGRAVE_OBJ, 69, cptr.decay(buf));
     }
-    if (cptr.eq(otmp, uquiver)) {
-        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp)));
+    if (cptr.eq(otmp, uquiver.v)) {
+        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)));
         void cptr.sprintf(cptr.decay(buf), __sl82, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl55 : __sl26);
         if (shoot) {
-            (__builtin_expect(BigInt((!(!cptr.eq(uwep, (null))))), 0n) ? __assert_rtn(__sl85, __sl86, 456, __sl87) : void 0);
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl88, simpleonames(uwep));
+            (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__sl85, __sl86, 456, __sl87) : void 0);
+            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl88, simpleonames(uwep.v));
         }
         ia_addmenu(win, IA_FIRE_OBJ, 102, cptr.decay(buf));
     }
@@ -524,14 +524,14 @@ export function itemactions(otmp) {
     if (!already_worn) {
         cptr.st1(cptr.decay(buf), 0);
         if (cptr.ld1s(cptr.add(otmp, 49)) == AMULET_CLASS) {
-            void cptr.strcpy(cptr.decay(buf), !uamul ? __sl95 : __sl96);
+            void cptr.strcpy(cptr.decay(buf), !uamul.v ? __sl95 : __sl96);
         } else if (cptr.ld1s(cptr.add(otmp, 49)) == RING_CLASS || cptr.ldI16(cptr.add(otmp, 32)) == MEAT_RING) {
-            if (!uleft || !uright)
+            if (!uleft.v || !uright.v)
                 void cptr.strcpy(cptr.decay(buf), __sl97);
             else
                 void cptr.sprintf(cptr.decay(buf), __sl98, makeplural(body_part(FINGER)));
         } else if (cptr.ldI16(cptr.add(otmp, 32)) == BLINDFOLD || cptr.ldI16(cptr.add(otmp, 32)) == TOWEL || cptr.ldI16(cptr.add(otmp, 32)) == LENSES) {
-            if (ublindf)
+            if (ublindf.v)
                 void cptr.strcpy(cptr.decay(buf), __sl99);
             else if (cptr.ldI16(cptr.add(otmp, 32)) == LENSES)
                 void cptr.strcpy(cptr.decay(buf), __sl100);
@@ -545,8 +545,8 @@ export function itemactions(otmp) {
         void cptr.sprintf(cptr.decay(buf), __sl103, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl104 : __sl105);
         ia_addmenu(win, IA_QUAFF_OBJ, 113, cptr.decay(buf));
     }
-    if ((cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS) && !cptr.eq(otmp, uquiver)) {
-        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, (((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp)) ? __sl107 : __sl108);
+    if ((cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS) && !cptr.eq(otmp, uquiver.v)) {
+        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, (((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)) ? __sl107 : __sl108);
         ia_addmenu(win, IA_QUIVER_OBJ, 81, cptr.decay(buf));
     }
     if (item_reading_classification(otmp, cptr.decay(buf)) == IA_READ_OBJ)
@@ -561,8 +561,8 @@ export function itemactions(otmp) {
     } else if (cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS && (cptr.ldI16(cptr.add((otmp), 32)) == LUCKSTONE || cptr.ldI16(cptr.add((otmp), 32)) == LOADSTONE || cptr.ldI16(cptr.add((otmp), 32)) == FLINT || cptr.ldI16(cptr.add((otmp), 32)) == TOUCHSTONE))
         ia_addmenu(win, IA_RUB_OBJ, 82, __sl115);
     if (!already_worn) {
-        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp)));
-        void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) == 1n) ? __sl81 : ((cptr.ldI16(cptr.add(otmp, 32)) == GOLD_PIECE) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver) && (cptr.ldI16(cptr.add(otmp, 32)) != GOLD_PIECE || cptr.ldI64(cptr.add(otmp, 40)) == 1n)) ? __sl117 : __sl10);
+        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)));
+        void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) == 1n) ? __sl81 : ((cptr.ldI16(cptr.add(otmp, 32)) == GOLD_PIECE) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16(cptr.add(otmp, 32)) != GOLD_PIECE || cptr.ldI64(cptr.add(otmp, 40)) == 1n)) ? __sl117 : __sl10);
         ia_addmenu(win, IA_THROW_OBJ, 116, cptr.decay(buf));
     }
     if (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n))
@@ -571,7 +571,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, IA_TIP_CONTAINER, 84, __sl119);
     if ((cptr.ldI16(cptr.add(otmp, 32)) == FAKE_AMULET_OF_YENDOR && !cptr.ldI32(cptr.add(otmp, 80))) || cptr.ld1s(cptr.add(otmp, 51)) || objects[cptr.ldI16(cptr.add(otmp, 32))].oc_unique | 0 || cptr.ldI16(cptr.add(otmp, 32)) == CRYSTAL_BALL)
         ia_addmenu(win, IA_INVOKE_OBJ, 86, __sl120);
-    if (cptr.eq(otmp, uwep) || (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((gy.youmonst.data), 67)) < 1))) {
+    if (cptr.eq(otmp, uwep.v) || (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((gy.youmonst.data), 67)) < 1))) {
         ;
     } else if (cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((otmp), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp != P_NONE) || (cptr.ldI16(cptr.add((otmp), 32)) == TOWEL && cptr.ld1s(cptr.add((otmp), 48)) > 0) || cptr.ldI16(cptr.add(otmp, 32)) == HEAVY_IRON_BALL) {
         void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28);
@@ -593,13 +593,13 @@ export function itemactions(otmp) {
             ia_addmenu(win, IA_WEAR_OBJ, 87, cptr.decay(buf));
         }
     }
-    if (cptr.eq(otmp, uwep) && uswapwep)
+    if (cptr.eq(otmp, uwep.v) && uswapwep.v)
         ia_addmenu(win, IA_SWAPWEAPON, 120, __sl126);
-    else if (cptr.eq(otmp, uwep))
+    else if (cptr.eq(otmp, uwep.v))
         ia_addmenu(win, IA_SWAPWEAPON, 120, __sl127);
-    else if (cptr.eq(otmp, uswapwep))
+    else if (cptr.eq(otmp, uswapwep.v))
         ia_addmenu(win, IA_SWAPWEAPON, 120, __sl128);
-    if ((cptr.eq(otmp, uwep) || cptr.eq(otmp, uswapwep)) && (u.twoweap || (((((((cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 2, 4)) == 254)) | 0) > 1) && !uarms && uwep && (((cptr.ld1s(cptr.add((uwep), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uwep), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep, 32))].oc_big | 0)) && uswapwep && (((cptr.ld1s(cptr.add((uswapwep), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uswapwep, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uswapwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uswapwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uswapwep), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uswapwep), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uswapwep, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep, 32))].oc_big | 0))))) {
+    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) && (u.twoweap || (((((((cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 2, 4)) == 254)) | 0) > 1) && !uarms.v && uwep.v && (((cptr.ld1s(cptr.add((uwep.v), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)) && uswapwep.v && (((cptr.ld1s(cptr.add((uswapwep.v), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uswapwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uswapwep.v), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_big | 0))))) {
         void cptr.sprintf(cptr.decay(buf), __sl129, u.twoweap ? __sl130 : __sl131);
         ia_addmenu(win, IA_TWOWEAPON, 88, cptr.decay(buf));
     }

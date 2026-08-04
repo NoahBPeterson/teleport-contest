@@ -55,16 +55,26 @@ export function collectFile(target) {
     }
   }
   const recordDefs = new Map(); // name -> { tag, fields } (first complete definition wins)
+  const addressTaken = new Set(); // globals whose address is taken somewhere in the program
+  (function wAddrs(n) {
+    if (!n || typeof n !== 'object') return;
+    if (n.kind === 'UnaryOperator' && n.opcode === '&' && n.inner?.[0]?.kind === 'DeclRefExpr') {
+      const q = (n.inner[0].type?.desugaredQualType || n.inner[0].type?.qualType || '');
+      const nm = n.inner[0].name || n.inner[0].referencedDecl?.name;
+      if (nm && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q.trim())) addressTaken.add(nm);
+    }
+    for (const c of n.inner || []) wAddrs(c);
+  })(root);
   const anonById = new Map(); // anonymous RecordDecl id -> { tag, fields }
   const anonByLoc = new Map(); // "line:col" -> anon record (unnamed-at recovery)
   const typedefOwned = new Map(); // typedef name -> anonymous RecordDecl id
   const typedefAlias = new Map(); // typedef name -> named record name
   (function walk(n) {
     if (!n || typeof n !== 'object') return;
-    if (n.kind === 'EnumDecl' && n.completeDefinition) {
+    if (n.kind === 'EnumDecl') {
       const rec = { tag: 'enum', fields: [] };
       if (n.name) { if (!recordDefs.has(n.name)) recordDefs.set(n.name, rec); }
-      else anonById.set(n.id, rec);
+      else if (n.completeDefinition) anonById.set(n.id, rec);
     }
     if (n.kind === 'RecordDecl' && n.completeDefinition) {
       // fields of anonymous record type link to the anonymous RecordDecl
@@ -95,9 +105,10 @@ export function collectFile(target) {
     if (n.kind === 'TypedefDecl' && n.name) {
       const owned = n.inner?.[0]?.ownedTagDecl?.id; // typedef union {...} Name;
       if (owned) typedefOwned.set(n.name, owned);
-      // also plain aliases (typedef struct x Name;) — present even when ownedTagDecl exists
+      // also plain aliases (typedef struct x Name; / typedef x Name;)
       const m = (n.type?.qualType || '').match(/^(?:struct|union) (\w+)$/);
       if (m) typedefAlias.set(n.name, m[1]);
+      else if (/^\w+$/.test(n.type?.qualType || '')) typedefAlias.set(n.name, n.type.qualType);
       // enum typedefs (typedef enum {...} Name;) — enums are int-sized for layout
       if (/^enum \w+$/.test(n.type?.qualType || '') || n.inner?.[0]?.ownedTagDecl?.kind === 'EnumDecl') {
         recordDefs.set(n.name, { tag: 'enum', fields: [] });
@@ -106,10 +117,15 @@ export function collectFile(target) {
     for (const c of n.inner || []) walk(c);
   })(root);
   for (const [name, id] of typedefOwned) if (anonById.has(id)) recordDefs.set(name, anonById.get(id));
-  for (const [name, recName] of typedefAlias) if (recordDefs.has(recName)) recordDefs.set(name, recordDefs.get(recName));
+  for (const [name, recName] of typedefAlias) {
+    // chase alias chains (typedef x A; typedef A B;)
+    let target = recName, depth = 0;
+    while (!recordDefs.has(target) && typedefAlias.has(target) && depth++ < 8) target = typedefAlias.get(target);
+    if (recordDefs.has(target)) recordDefs.set(name, recordDefs.get(target));
+  }
   // anonymous nested records are addressable by id (field recId linkage)
   for (const [id, rec] of anonById) recordDefs.set(`anon#${id}`, rec);
-  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc };
+  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc, addressTaken };
 }
 
 /**
@@ -148,11 +164,13 @@ export function slimIrPath(target) {
  * { name, file, group, decls, defs, recordDefs, anonByLoc, lineStarts } —
  * with lineOf(offset) reconstructed from lineStarts.
  */
+const SYMBOLS_MTIME = fs.statSync(fileURLToPath(import.meta.url)).mtimeMs;
+
 export function loadSlimIr(target) {
   const irPath = slimIrPath(target);
   const astPath = astPathFor(target.file);
   if (!fs.existsSync(astPath)) throw new Error(`no cached AST: ${astPath}`);
-  const astMtime = fs.statSync(astPath).mtimeMs;
+  const astMtime = Math.max(fs.statSync(astPath).mtimeMs, SYMBOLS_MTIME);
   if (fs.existsSync(irPath) && fs.statSync(irPath).mtimeMs >= astMtime) {
     const ir = JSON.parse(fs.readFileSync(irPath, 'utf8'));
     return { ...target, ...ir, lineOf: (o) => lineOfStarts(ir.lineStarts, o) };
@@ -162,7 +180,7 @@ export function loadSlimIr(target) {
   const src = fs.readFileSync(target.file, 'utf8');
   const lineStarts = [0];
   for (let i = 0; i < src.length; i++) if (src.charCodeAt(i) === 10) lineStarts.push(i + 1);
-  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], lineStarts };
+  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], addressTaken: [...pf.addressTaken], lineStarts };
   const tmp = irPath + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(ir));
   fs.renameSync(tmp, irPath);

@@ -266,7 +266,7 @@ const __static_sfvalue_aligntyp_buf = new Uint8Array(20); /** C ref: sfbase.c:44
 
 /** C ref: sfbase.c:440 — @param {CPtr} a @returns {CPtr} */
 export function sfvalue_aligntyp(a) {
-    nh_snprintf(__sl7, 444, cptr.decay(__static_sfvalue_aligntyp_buf), 20n, __sl6, a);
+    nh_snprintf(__sl7, 444, cptr.decay(__static_sfvalue_aligntyp_buf), 20n, __sl6, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_aligntyp_buf);
 }
 
