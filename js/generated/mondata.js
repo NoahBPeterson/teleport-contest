@@ -1533,11 +1533,11 @@ export function mon_knows_traps(mtmp, ttyp) {
 /** C ref: mondata.c:1629 — @param {CPtr} mtmp @param {CInt} ttyp */
 export function mon_learns_traps(mtmp, ttyp) {
     if (ttyp == -1)
-        cptr.stU64(cptr.add(mtmp, 240), BigInt.asIntN(64, ~0n));
+        cptr.stI64(cptr.add(mtmp, 240), BigInt.asIntN(64, ~0n));
     else if (ttyp == 0)
-        cptr.stU64(cptr.add(mtmp, 240), 0n);
+        cptr.stI64(cptr.add(mtmp, 240), 0n);
     else
-        cptr.stU64(cptr.add(mtmp, 240), cptr.ldI64(cptr.add(mtmp, 240)) | (1n << BigInt(((ttyp - 1) | 0))));
+        cptr.stI64(cptr.add(mtmp, 240), cptr.ldI64(cptr.add(mtmp, 240)) | (1n << BigInt(((ttyp - 1) | 0))));
 }
 
 /** C ref: mondata.c:1641 — @param {CPtr} ttmp */

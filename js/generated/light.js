@@ -395,10 +395,10 @@ export function restore_light_sources(nhfp) {
 export function light_stats(hdrfmt, hdrbuf, count, size) {
     let ls;
     void cptr.sprintf(hdrbuf, hdrfmt, 32n);
-    cptr.stU64(count, cptr.stU64(size, 0n));
+    cptr.stI64(count, cptr.stI64(size, 0n));
     for (ls = cptr.ldPtr(cptr.add(gl, 72)); ls; ls = cptr.ldPtr(ls)) {
-        cptr.stU64(count, cptr.ldU64(count) + 1n);
-        cptr.stU64(size, cptr.ldI64(size) + 32n);
+        cptr.stI64(count, cptr.ldI64(count) + 1n);
+        cptr.stI64(size, cptr.ldI64(size) + 32n);
     }
 }
 

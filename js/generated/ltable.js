@@ -47,7 +47,7 @@ function l_hashfloat(n) {
     let i = cptr.box(0);
     let ni = cptr.box(0n);
     n = frexp(n, i) * -(((((-2147483647 - 1) | 0))));
-    if (!(((n) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (n) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stU64((ni), BigInt.asIntN(64, BigInt(Math.trunc((n))))), 1) ? 1 : 0)) {
+    if (!(((n) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (n) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stI64((ni), BigInt.asIntN(64, BigInt(Math.trunc((n))))), 1) ? 1 : 0)) {
         (void 0);
         return 0;
     } else {
@@ -216,7 +216,7 @@ export function luaH_next(L, t, key) {
         if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16))), 8)))) & 15)) == (0))) {
             {
                 let io = (((key)));
-                cptr.stU64(((io)), BigInt(((i + 1) >>> 0) >>> 0));
+                cptr.stI64(((io)), BigInt(((i + 1) >>> 0) >>> 0));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -493,7 +493,7 @@ function luaH_newkey(L, t, key, value) {
         if (luaV_flttointeger(f, k, 0)) {
             {
                 let io = (aux);
-                cptr.stU64(((io)), (k.v));
+                cptr.stI64(((io)), (k.v));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -660,7 +660,7 @@ export function luaH_setint(L, t, key, value) {
         let k = cptr.alloc(16);
         {
             let io = (k);
-            cptr.stU64(((io)), (key));
+            cptr.stI64(((io)), (key));
             (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
         }
         ;

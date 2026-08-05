@@ -1029,7 +1029,7 @@ export function erode_obj(otmp, ostr, type, ef_flags) {
                 extract_from_minvent(cptr.ldPtr(cptr.add(otmp, 8)), otmp, (1), (0));
             } else {
                 impossible(__sl34, type, cptr.ld1s(cptr.add(otmp, 52)), cptr.ldI64(cptr.add(otmp, 192)), simpleonames(otmp));
-                cptr.stU64(cptr.add(otmp, 192), 0n);
+                cptr.stI64(cptr.add(otmp, 192), 0n);
             }
         }
         delobj(otmp);
@@ -1085,7 +1085,7 @@ function mk_trap_statue(x, y) {
         return;
     while (cptr.ldPtr(cptr.add(mtmp, 280))) {
         otmp = cptr.ldPtr(cptr.add(mtmp, 280));
-        cptr.stU64(cptr.add(otmp, 192), 0n);
+        cptr.stI64(cptr.add(otmp, 192), 0n);
         obj_extract_self(otmp);
         void add_to_container(statue, otmp);
     }
@@ -1476,7 +1476,7 @@ function mu_maybe_destroy_web(mtmp, domsg, trap) {
 /** C ref: trap.c:1018 — @param {CInt} otyp @param {CPtr} trap @returns {CPtr} */
 function t_missile(otyp, trap) {
     let otmp = mksobj(otyp, (1), (0));
-    cptr.stU64(cptr.add(otmp, 40), 1n);
+    cptr.stI64(cptr.add(otmp, 40), 1n);
     cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     cptr.stI32(cptr.add(otmp, 132), 0);
     cptr.stI16(cptr.add(otmp, 28), cptr.ldI16(cptr.add(trap, 8))), cptr.stI16(cptr.add(otmp, 30), cptr.ldI16(cptr.add(trap, 10)));
@@ -2663,8 +2663,8 @@ function trapeffect_poly_trap(mtmp, trap, trflags) {
             }
             shoes = poly_obj(shoes, cptr.ldI16(cptr.add(shoes, 32)) == 164 ? 170 : 164);
             if (shoes) {
-                cptr.stU64(cptr.add(mtmp, 296), cptr.ldI64(cptr.add(mtmp, 296)) | 32n);
-                cptr.stU64(cptr.add(shoes, 192), 32n);
+                cptr.stI64(cptr.add(mtmp, 296), cptr.ldI64(cptr.add(mtmp, 296)) | 32n);
+                cptr.stI64(cptr.add(shoes, 192), 32n);
                 update_mon_extrinsics(mtmp, shoes, (1), (1));
             }
         } else if (resists_magm(mtmp)) {
@@ -2761,7 +2761,7 @@ function trapeffect_landmine(mtmp, trap, trflags) {
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
             trapkilled = (1);
         if (unconscious()) {
-            cptr.stU64(cptr.add(gm, 8), BigInt((-1)));
+            cptr.stI64(cptr.add(gm, 8), BigInt((-1)));
             cptr.stPtr(cptr.add(gn, 8), __sl262);
         }
         return trapkilled ? 2 : (cptr.ldI32(cptr.add(mtmp, 172)) | 0 ? 1 : 0);
@@ -3395,7 +3395,7 @@ export function launch_obj(otyp, x1, y1, x2, y2, style) {
                             get_level(dest, newlev);
                             cptr.stI16(cptr.add(singleobj.v, 28), cptr.ldI16(dest));
                             cptr.stI16(cptr.add(singleobj.v, 30), cptr.ldI16(cptr.add(dest, 2)));
-                            cptr.stU64(cptr.add(singleobj.v, 192), 0n);
+                            cptr.stI64(cptr.add(singleobj.v, 192), 0n);
                         }
                         seetrap(t);
                         used_up = (1);
@@ -3568,7 +3568,7 @@ function mkroll_launch(ttmp, x, y, otyp, ocount) {
         cptr.stI16(cptr.add(cc, 2), y);
     } else {
         otmp = mksobj(otyp, (1), (0));
-        cptr.stU64(cptr.add(otmp, 40), ocount);
+        cptr.stI64(cptr.add(otmp, 40), ocount);
         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
         place_object(otmp, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         stackobj(otmp);
@@ -3825,8 +3825,8 @@ export function float_down(hmask, emask) {
     let trap = null;
     let current_dungeon_level = cptr.alloc(4);
     let no_msg = (0);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~hmask));
-    cptr.stU64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & BigInt.asIntN(64, ~emask));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~hmask));
+    cptr.stI64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & BigInt.asIntN(64, ~emask));
     if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0))
         return 0;
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8))) {
@@ -4081,7 +4081,7 @@ function domagictrap() {
             } else {
                 You_feel(__sl396, cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) ? __sl397 : __sl398);
             }
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) ? 0n : cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) | 67108864n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) ? 0n : cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) | 67108864n);
             newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
             break;
             case 12:
@@ -4131,9 +4131,9 @@ function domagictrap() {
                 cptr.memcpy(pseudo, cg, 216);
                 cptr.stI16(cptr.add(pseudo, 32), 395);
                 cptr.st1(cptr.add(pseudo, 49), 10);
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), 0n);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), 0n);
                 void seffects(pseudo);
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_conf);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_conf);
                 break;
             }
             default:
@@ -4770,7 +4770,7 @@ function untrap_prob(ttmp) {
 export function cnv_trap_obj(otyp, cnt, ttmp, bury_it) {
     let otmp = mksobj(otyp, (1), (0));
     let mtmp;
-    cptr.stU64(cptr.add(otmp, 40), BigInt(cnt));
+    cptr.stI64(cptr.add(otmp, 40), BigInt(cnt));
     cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     if (otyp != 24)
         cptr.stI32(cptr.add(otmp, 132), 0);
@@ -5982,7 +5982,7 @@ export function sink_into_lava() {
 /** C ref: trap.c:7039 */
 export function sokoban_guilt() {
     if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 64))) {
-        (cptr.stU64(cptr.add(cptr.add(u, 1968), 96), cptr.ldU64(cptr.add(cptr.add(u, 1968), 96)) + 1n)) - (1n);
+        (cptr.stI64(cptr.add(cptr.add(u, 1968), 96), cptr.ldI64(cptr.add(cptr.add(u, 1968), 96)) + 1n)) - (1n);
         change_luck(schar((-1)));
     }
 }

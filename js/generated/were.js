@@ -50,7 +50,7 @@ export function were_change(mon) {
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 8n) != 0n)) {
         if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50))) : rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50))) ? 1 : 0) {
             new_were(mon);
-            (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - (1n);
+            (cptr.stI64(cptr.add(gw, 176), cptr.ldI64(cptr.add(gw, 176)) + 1n)) - (1n);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && !canseemon(mon) ? 1 : 0) {
                 let howler;
                 switch ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24)))) {
@@ -73,7 +73,7 @@ export function were_change(mon) {
         }
     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(30)) : rn2(30)) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) {
         new_were(mon);
-        (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - (1n);
+        (cptr.stI64(cptr.add(gw, 176), cptr.ldI64(cptr.add(gw, 176)) + 1n)) - (1n);
     }
 }
 
@@ -206,7 +206,7 @@ export function you_were() {
     } else if (monster_nearby()) {
         return;
     }
-    (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - (1n);
+    (cptr.stI64(cptr.add(gw, 176), cptr.ldI64(cptr.add(gw, 176)) + 1n)) - (1n);
     void polymon(cptr.ldI32(cptr.add(u, 1836)));
 }
 

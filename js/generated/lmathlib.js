@@ -109,7 +109,7 @@ function math_toint(L) {
 /** C ref: lmathlib.c:86 — @param {CPtr} L @param {CDouble} d */
 function pushnumint(L, d) {
     let n = cptr.box(0n);
-    if ((((d) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (d) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stU64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1) ? 1 : 0))
+    if ((((d) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (d) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stI64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1) ? 1 : 0))
         lua_pushinteger(L, n.v);
     else
         lua_pushnumber(L, d);

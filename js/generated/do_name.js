@@ -584,7 +584,7 @@ function do_oname(obj) {
         pline(__sl30, body_part(6));
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (0));
         You(__sl31, cptr.decay(buf));
-        (cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n);
+        (cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n);
     } else if (cptr.ldI16(cptr.add(obj, 32)) == objtyp.v) {
         (__builtin_expect(BigInt((!(aname !== null))), 0n) ? __assert_rtn(__sl32, __sl33, 359, __sl34) : void 0);
         void cptr.strcpy(cptr.decay(buf), aname);
@@ -620,7 +620,7 @@ export function oname(obj, name, oflgs) {
         if (cptr.ldI32(cptr.add(obj, 64)))
             alter_cost(obj, 0n);
         if (via_naming) {
-            if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+            if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
                 livelog_printf(32n | 64n, __sl35, bare_artifactname(obj));
             else
                 livelog_printf(64n, __sl36, ansimpleoname(obj), bare_artifactname(obj));
@@ -764,7 +764,7 @@ function docall_xname(obj) {
     let otemp = cptr.alloc(216);
     cptr.memcpy(otemp, obj, 216);
     cptr.stPtr(cptr.add(otemp, 208), null);
-    cptr.stU64(cptr.add(otemp, 40), 1n);
+    cptr.stI64(cptr.add(otemp, 40), 1n);
     cptr.stI32(cptr.add(otemp, 60), cptr.stI32(cptr.add(otemp, 56), 0));
     if (cptr.ld1s(cptr.add(otemp, 49)) == 2)
         cptr.stI32(cptr.add(otemp, 132), 0);
@@ -953,11 +953,11 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         let save_prop = cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24));
         let save_invis = cptr.ldI32(cptr.add(mtmp, 88));
         if (!do_hallu)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
         if (!do_invis)
             cptr.stI32(cptr.add(mtmp, 88), 0);
         name = priestname(mtmp, article, do_exact, cptr.decay(buf2));
-        cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
+        cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
         cptr.stI32(cptr.add(mtmp, 88), save_invis);
         if (article == 0 && !cptr.strncmp(name, __sl6, 4n) ? 1 : 0)
             name = cptr.add(name, 4);

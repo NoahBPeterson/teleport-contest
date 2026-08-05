@@ -894,9 +894,9 @@ export function merged(potmp, pobj) {
     let discovered = (0);
     if (mergable(otmp, obj)) {
         if (!cptr.ldI32(cptr.add(obj, 76)) && !cptr.ldI32(cptr.add(obj, 136)) ? 1 : 0)
-            cptr.stU64(cptr.add(otmp, 184), (BigInt.asIntN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add(otmp, 184)) * cptr.ldI64(cptr.add(otmp, 40)))) + (BigInt.asIntN(64, cptr.ldI64(cptr.add(obj, 184)) * cptr.ldI64(cptr.add(obj, 40)))))) / (BigInt.asIntN(64, cptr.ldI64(cptr.add(otmp, 40)) + cptr.ldI64(cptr.add(obj, 40)))));
+            cptr.stI64(cptr.add(otmp, 184), (BigInt.asIntN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add(otmp, 184)) * cptr.ldI64(cptr.add(otmp, 40)))) + (BigInt.asIntN(64, cptr.ldI64(cptr.add(obj, 184)) * cptr.ldI64(cptr.add(obj, 40)))))) / (BigInt.asIntN(64, cptr.ldI64(cptr.add(otmp, 40)) + cptr.ldI64(cptr.add(obj, 40)))));
         if (!cptr.ldI32(cptr.add(otmp, 136)))
-            cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + cptr.ldI64(cptr.add(obj, 40)));
+            cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + cptr.ldI64(cptr.add(obj, 40)));
         if (cptr.ld1s(cptr.add(otmp, 49)) == 12)
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0), cptr.stI32(cptr.add(otmp, 88), 0);
         else if (!(((cptr.ldI16(cptr.add(otmp, 32)) == 271 || cptr.ldI16(cptr.add(otmp, 32)) == 272 ? 1 : 0) || cptr.ldI16(cptr.add(otmp, 32)) == 273 ? 1 : 0) || cptr.ldI16(cptr.add(otmp, 32)) == 274 ? 1 : 0))
@@ -1010,7 +1010,7 @@ export function addinv_core2(obj) {
         observe_object(obj);
         pline(__sl19, yname(obj));
         discover_object((cptr.ldI16(cptr.add(obj, 32))), (1), (1), (1));
-        if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+        if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
             livelog_printf(32n, __sl20);
     }
 }
@@ -1193,7 +1193,7 @@ export function useupall(obj) {
 export function useup(obj) {
     if (cptr.ldI64(cptr.add(obj, 40)) > 1n) {
         cptr.stI32(cptr.add(obj, 144), 0);
-        (cptr.stU64(cptr.add(obj, 40), cptr.ldU64(cptr.add(obj, 40)) + -1n)) - (-1n);
+        (cptr.stI64(cptr.add(obj, 40), cptr.ldI64(cptr.add(obj, 40)) + -1n)) - (-1n);
         cptr.stI32(cptr.add(obj, 36), weight(obj) >>> 0);
         update_inventory();
     } else {
@@ -2309,7 +2309,7 @@ export function reroll_menu() {
     }
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     if (option == 121) {
-        cptr.stU64(cptr.add(cptr.add(u, 2112), 16), cptr.ldU64(cptr.add(cptr.add(u, 2112), 16)) + 1n);
+        cptr.stI64(cptr.add(cptr.add(u, 2112), 16), cptr.ldI64(cptr.add(cptr.add(u, 2112), 16)) + 1n);
         return (1);
     }
     return (0);
@@ -2493,7 +2493,7 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
     let savequan = 0n;
     if (quan && obj ? 1 : 0) {
         savequan = cptr.ldI64(cptr.add(obj, 40));
-        cptr.stU64(cptr.add(obj, 40), quan);
+        cptr.stI64(cptr.add(obj, 40), quan);
     }
     fmt = __sl130;
     if (!txt) {
@@ -2520,7 +2520,7 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
         txtlen = (((256 - 1) | 0) - ((4 + sfxlen) | 0)) | 0;
     void cptr.sprintf(cptr.decay(__static_xprname_li), fmt, let$, txtlen, txt, cptr.decay(suffix));
     if (savequan)
-        cptr.stU64(cptr.add(obj, 40), savequan);
+        cptr.stI64(cptr.add(obj, 40), savequan);
     return cptr.decay(__static_xprname_li);
 }
 
@@ -2662,7 +2662,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
                 ret = (cptr.ldPtr(cptr.add(windowprocs, 200)))(cptr.ld1s(cptr.add(otmp, 50)), want_reply ? 1 : 0, xprname(otmp, null, cptr.ld1s(cptr.add(lets, 0)), (1), 0n, 0n));
         }
         if (out_cnt)
-            cptr.stU64(out_cnt, -1n);
+            cptr.stI64(out_cnt, -1n);
         return ret;
     }
     sortflags = ((cptr.ld1s(cptr.add(flags, 97)) == 102) ? 4 : 2) >>> 0;
@@ -2676,7 +2676,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         if (!uwep.v) {
             cptr.memcpy(inuse_fakeobj, cg, 216);
             cptr.st1(cptr.add(inuse_fakeobj, 50), 45);
-            cptr.stU64(cptr.add(inuse_fakeobj, 192), 256n);
+            cptr.stI64(cptr.add(inuse_fakeobj, 192), 256n);
             cptr.st1(cptr.add(inuse_fakeobj, 52), 3);
             cptr.stPtr(inuse_fakeobj, cptr.ldPtr(cptr.add(gi, 8)));
             cptr.stPtr(cptr.add(gi, 8), inuse_fakeobj);
@@ -2820,7 +2820,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
             } else {
                 ret = cptr.ld1s(cptr.add(selected.v, 0, 24));
                 if (out_cnt)
-                    cptr.stU64(out_cnt, cptr.ldI64(cptr.add(cptr.add(selected.v, 0, 24), 8)));
+                    cptr.stI64(out_cnt, cptr.ldI64(cptr.add(cptr.add(selected.v, 0, 24), 8)));
             }
             cptr.free(selected.v);
         } else

@@ -998,7 +998,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
 
 /** C ref: windows.c:1765 — struct win_request_info_t */
 export let zerowri = cptr.alloc(48);
-cptr.stU64(zerowri, 0n);
+cptr.stI64(zerowri, 0n);
 cptr.st1(cptr.add(zerowri, 8), 0);
 cptr.st1(cptr.add(zerowri, 9), 0);
 cptr.stI32(cptr.add(zerowri, 12), 0);

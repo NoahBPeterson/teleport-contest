@@ -163,7 +163,7 @@ function noises(magr, mattk) {
     let farq = schar((dist2((cptr.ldI16(cptr.add((magr), 28))), (cptr.ldI16(cptr.add((magr), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) > 15));
     if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && (farq != cptr.ld1s(cptr.add(gf, 97)) || BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(gn, 64))) > 10n ? 1 : 0) ? 1 : 0) {
         cptr.st1(cptr.add(gf, 97), farq);
-        cptr.stU64(cptr.add(gn, 64), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(gn, 64), cptr.ldI64(cptr.add(svm, 8)));
         You_hear(__sl0, (cptr.ld1u(mattk) == 13) ? __sl1 : __sl2, farq ? __sl3 : __sl4);
     }
 }
@@ -373,7 +373,7 @@ export function mattackm(magr, mdef) {
     if (((cptr.ldU64(cptr.add((pa), 80)) & 16n) != 0n) && ((cptr.ldU64(cptr.add((pd), 80)) & 128n) != 0n) ? 1 : 0)
         tmp++;
     cptr.st1(cptr.add(gv, 80), schar(((((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(magr, 30)), 8)), cptr.ldI16(cptr.add(magr, 28)))) & 2) != 0) && (canseemon(magr) || sensemon(magr) ? 1 : 0) ? 1 : 0) || (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mdef, 30)), 8)), cptr.ldI16(cptr.add(mdef, 28)))) & 2) != 0) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0) ? 1 : 0)));
-    cptr.stU64(cptr.add(magr, 248), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(magr, 248), cptr.ldI64(cptr.add(svm, 8)));
     cptr.st1(cptr.add(gs, 944), (0));
     for (i = 0; i < 6; i++) {
         cptr.stI32(cptr.add(res, i, 4), 0);

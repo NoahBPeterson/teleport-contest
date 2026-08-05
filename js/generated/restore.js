@@ -243,7 +243,7 @@ function restdamage(nhfp) {
         tmp_dam = alloc(32);
         sfi_damage(nhfp, tmp_dam, __sl4);
         if (ghostly)
-            cptr.stU64(cptr.add(tmp_dam, 8), cptr.ldI64(cptr.add(tmp_dam, 8)) + (BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(svo, 16)))));
+            cptr.stI64(cptr.add(tmp_dam, 8), cptr.ldI64(cptr.add(tmp_dam, 8)) + (BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(svo, 16)))));
         cptr.stPtr(tmp_dam, cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87384)));
         cptr.stPtr(cptr.add(cptr.add(svl, 1680), 87384), tmp_dam);
     } while (--counter > 0);
@@ -312,7 +312,7 @@ function restobjchn(nhfp, frozen) {
         if (ghostly && cptr.ldI16(cptr.add(otmp, 32)) == 285 ? 1 : 0)
             ghostfruit(otmp);
         if ((ghostly && !frozen ? 1 : 0) && !(((((cptr.ldI16(cptr.add((otmp), 32)) == 226 || cptr.ldI16(cptr.add((otmp), 32)) == 227 ? 1 : 0) || cptr.ldI16(cptr.add((otmp), 32)) == 262 ? 1 : 0) || cptr.ldI16(cptr.add((otmp), 32)) == 224 ? 1 : 0) || cptr.ldI16(cptr.add((otmp), 32)) == 225 ? 1 : 0) || cptr.ldI16(cptr.add((otmp), 32)) == 321 ? 1 : 0) ? 1 : 0)
-            cptr.stU64(cptr.add(otmp, 184), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(svo, 16))) + cptr.ldI64(cptr.add(otmp, 184))));
+            cptr.stI64(cptr.add(otmp, 184), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(svo, 16))) + cptr.ldI64(cptr.add(otmp, 184))));
         if ((cptr.ldPtr(cptr.add((otmp), 16)) !== null)) {
             let otmp3;
             cptr.stPtr(cptr.add(otmp, 16), restobjchn(nhfp, schar((cptr.ldI16(cptr.add((otmp), 32)) == 216 ? 1 : 0))));
@@ -565,8 +565,8 @@ function restgamestate(nhfp) {
     ;
     sfi_char(nhfp, cptr.decay(timebuf), __sl51, 14);
     cptr.st1(cptr.add(cptr.decay(timebuf), 14, 1), 0);
-    cptr.stU64(cptr.add(urealtime, 8), time_from_yyyymmddhhmmss(cptr.decay(timebuf)));
-    cptr.stU64(cptr.add(urealtime, 8), getnow());
+    cptr.stI64(cptr.add(urealtime, 8), time_from_yyyymmddhhmmss(cptr.decay(timebuf)));
+    cptr.stI64(cptr.add(urealtime, 8), getnow());
     set_uasmon();
     (cptr.ldPtr(cptr.add(windowprocs, 224)))(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     if (cptr.ldI32(cptr.add(u, 2196)) <= 0 && (!(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) || cptr.ldI32(cptr.add(u, 1812)) <= 0 ? 1 : 0) ? 1 : 0) {
@@ -611,7 +611,7 @@ function restgamestate(nhfp) {
         cptr.st1(cptr.add(gu, 1), (1));
     restore_dungeon(nhfp);
     restlevchn(nhfp);
-    cptr.stU64(cptr.add(gh, 8), cptr.ldI64(cptr.add(svm, 8)) << 3n);
+    cptr.stI64(cptr.add(gh, 8), cptr.ldI64(cptr.add(svm, 8)) << 3n);
     sfi_q_score(nhfp, svq, __sl54);
     for (i = 0; i < ((42 + 1) | 0); ++i) {
         sfi_spell(nhfp, cptr.add(svs, i, 8), __sl55);
@@ -1005,13 +1005,13 @@ export function rest_adjust_levelflags() {
 /** C ref: restore.c:1320 — @param {CPtr} timestamp */
 export function moves_to_relative_time(timestamp) {
     let prevts = cptr.ldI64(timestamp);
-    cptr.stU64(timestamp, BigInt.asIntN(64, prevts - cptr.ldI64(cptr.add(svm, 8))));
+    cptr.stI64(timestamp, BigInt.asIntN(64, prevts - cptr.ldI64(cptr.add(svm, 8))));
 }
 
 /** C ref: restore.c:1328 — @param {CPtr} timestamp */
 export function relative_time_to_moves(timestamp) {
     let prevts = cptr.ldI64(timestamp);
-    cptr.stU64(timestamp, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + prevts));
+    cptr.stI64(timestamp, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + prevts));
 }
 
 /** C ref: restore.c:1338 — @param {CPtr} nhfp @param {CPtr} outbuf @param {CInt} name_only */
@@ -1042,7 +1042,7 @@ function rest_bubbles(nhfp) {
 function restore_gamelog(nhfp) {
     let slen = cptr.box(0);
     let msg = new Uint8Array(512);
-    let tmp = cptr.alloc(32); cptr.stU64(tmp, 0n);
+    let tmp = cptr.alloc(32); cptr.stI64(tmp, 0n);
     while (1) {
         sfi_int(nhfp, slen, __sl89);
         ;

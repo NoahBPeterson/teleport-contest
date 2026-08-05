@@ -247,8 +247,8 @@ export function put_saddle_on_mon(saddle, mtmp) {
     }
     if (mpickobj(mtmp, saddle))
         panic(__sl17);
-    cptr.stU64(cptr.add(mtmp, 296), cptr.ldI64(cptr.add(mtmp, 296)) | 1048576n);
-    cptr.stU64(cptr.add(saddle, 192), 1048576n);
+    cptr.stI64(cptr.add(mtmp, 296), cptr.ldI64(cptr.add(mtmp, 296)) | 1048576n);
+    cptr.stI64(cptr.add(saddle, 192), 1048576n);
     cptr.stI32(cptr.add(saddle, 168), cptr.ldI32(cptr.add(mtmp, 16)) | 0);
     update_mon_extrinsics(mtmp, saddle, (1), (0));
 }
@@ -441,7 +441,7 @@ export function kick_steed() {
         return;
     }
     pline(__sl55, Monnam(cptr.ldPtr(cptr.add(u, 2424))));
-    cptr.stU64(cptr.add(u, 2440), cptr.ldI64(cptr.add(u, 2440)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 448, __sl50), rn2(20)) : rn2(20)) + (30)) | 0)));
+    cptr.stI64(cptr.add(u, 2440), cptr.ldI64(cptr.add(u, 2440)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 448, __sl50), rn2(20)) : rn2(20)) + (30)) | 0)));
     return;
 }
 
@@ -598,7 +598,7 @@ export function dismount_steed(reason) {
     if (repair_leg_damage)
         heal_legs(1);
     cptr.stPtr(cptr.add(u, 2424), (null));
-    cptr.stU64(cptr.add(u, 2440), 0n);
+    cptr.stI64(cptr.add(u, 2440), 0n);
     {
         let was_stealthy = schar((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 42, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8)) ? 1 : 0) != 0));
         steed_vs_stealth();
@@ -750,5 +750,5 @@ export function place_monster(mon, x, y) {
     }
     cptr.stI16(cptr.add(mon, 28), x), cptr.stI16(cptr.add(mon, 30), y);
     cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8), mon);
-    cptr.stU64(cptr.add(mon, 256), 0n);
+    cptr.stI64(cptr.add(mon, 256), 0n);
 }

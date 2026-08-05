@@ -937,7 +937,7 @@ export function rename_disco() {
             cptr.memcpy(odummy, cg, 216);
             cptr.stI16(cptr.add(odummy, 32), i16(dis));
             cptr.st1(cptr.add(odummy, 49), cptr.ld1s(cptr.add(cptr.add(objects, dis, 120), 70)));
-            cptr.stU64(cptr.add(odummy, 40), 1n);
+            cptr.stI64(cptr.add(odummy, 40), 1n);
             cptr.stI32(cptr.add(odummy, 80), (!cptr.ldI32(cptr.add(cptr.add(objects, dis, 120), 24))) >>> 0);
             cptr.stI32(cptr.add(odummy, 84), 1);
             docall(odummy);

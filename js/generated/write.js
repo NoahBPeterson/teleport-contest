@@ -254,7 +254,7 @@ export function dowrite(pen) {
         pline(__sl35);
         return 1;
     }
-    if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+    if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
         livelog_printf(32n, __sl36, an(typeword));
     new_obj = mksobj(i, (0), (0));
     cptr.stI32(cptr.add(new_obj, 88), (cptr.ldI32(cptr.add(paper, 88)) | 0 && cptr.ldI32(cptr.add(pen, 88)) | 0 ? 1 : 0) >>> 0);

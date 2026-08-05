@@ -240,7 +240,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
     let obj_name;
     cptr.st1(cptr.add(cptr.decay(objnambuf), 0, 1), 0);
     if (cptr.ldI64(cptr.add(edog, 32)) < cptr.ldI64(cptr.add(svm, 8)))
-        cptr.stU64(cptr.add(edog, 32), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(edog, 32), cptr.ldI64(cptr.add(svm, 8)));
     nutrit = dog_nutrition(mtmp, obj);
     if (devour) {
         if (cptr.ldI32(cptr.add(mtmp, 308)) > 1)
@@ -248,7 +248,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
         if (nutrit > 1)
             nutrit = ((Math.imul(nutrit, 3)) / 4) | 0;
     }
-    cptr.stU64(cptr.add(edog, 32), cptr.ldI64(cptr.add(edog, 32)) + BigInt(nutrit));
+    cptr.stI64(cptr.add(edog, 32), cptr.ldI64(cptr.add(edog, 32)) + BigInt(nutrit));
     cptr.stI32(cptr.add(mtmp, 164), 0);
     if (cptr.ldI32(cptr.add(edog, 52))) {
         cptr.stI32(cptr.add(mtmp, 56), (cptr.ldI32(cptr.add(mtmp, 56)) + cptr.ldI32(cptr.add(edog, 52))) | 0);
@@ -330,7 +330,7 @@ function dog_starve(mtmp) {
 function dog_hunger(mtmp, edog) {
     if (cptr.ldI64(cptr.add(svm, 8)) > BigInt.asIntN(64, cptr.ldI64(cptr.add(edog, 32)) + 500n)) {
         if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 536870912n) != 0n) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1073741824n) != 0n) ? 1 : 0) {
-            cptr.stU64(cptr.add(edog, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 500n));
+            cptr.stI64(cptr.add(edog, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 500n));
         } else if (!cptr.ldI32(cptr.add(edog, 52))) {
             let newmhpmax = (cptr.ldI32(cptr.add(mtmp, 56)) / 3) | 0;
             cptr.stI32(cptr.add(mtmp, 164), 1);
@@ -376,7 +376,7 @@ function dog_invent(mtmp, edog, udist) {
                 if (cptr.ldI32(cptr.add(edog, 20)) > 1)
                     (cptr.stI32(cptr.add(edog, 20), cptr.ldI32(cptr.add(edog, 20)) + -1)) - (-1);
                 cptr.stI32(cptr.add(edog, 16), udist >>> 0);
-                cptr.stU64(cptr.add(edog, 8), cptr.ldI64(cptr.add(svm, 8)));
+                cptr.stI64(cptr.add(edog, 8), cptr.ldI64(cptr.add(svm, 8)));
             }
     } else {
         if ((((obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), omx, 168), omy, 8))) !== null && !cptr.strchr(cptr.decay(nofetch), cptr.ld1s(cptr.add(obj, 49))) ? 1 : 0) && cptr.ldI16(cptr.add(obj, 32)) != 364 ? 1 : 0) && !((cptr.ldI32(cptr.add((obj), 24)) == cptr.ldI32(cptr.add(svc, 672))) || (cptr.ldI32(cptr.add((obj), 24)) == cptr.ldI32(cptr.add(cptr.add(svc, 672), 4))) ? 1 : 0) ? 1 : 0) {

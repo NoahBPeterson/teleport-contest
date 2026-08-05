@@ -164,14 +164,14 @@ export function more_experienced(exper, rexp) {
     if (newrexp < 0n && rexpincr > 0n ? 1 : 0)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
-        cptr.stU64(cptr.add(u, 2376), newexp);
+        cptr.stI64(cptr.add(u, 2376), newexp);
         if (cptr.ld1s(cptr.add(flags, 38)))
             cptr.st1(disp, (1));
         if (!cptr.ld1s(disp) && exp_percent_changing() ? 1 : 0)
             cptr.st1(disp, (1));
     }
     if (newrexp != oldrexp) {
-        cptr.stU64(cptr.add(u, 2384), newrexp);
+        cptr.stI64(cptr.add(u, 2384), newrexp);
     }
     if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) ? 1000 : 2000)))
         cptr.st1(cptr.add(flags, 5), (0));
@@ -202,7 +202,7 @@ export function losexp(drainer) {
         }
         if (cptr.ldI32(cptr.add(u, 48)) > 1)
             return;
-        cptr.stU64(cptr.add(u, 2376), 0n);
+        cptr.stI64(cptr.add(u, 2376), 0n);
         livelog_printf(4096n, __sl5);
     }
     (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < 30 ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
@@ -229,7 +229,7 @@ export function losexp(drainer) {
     else if (cptr.ldI32(cptr.add(u, 2208)) > cptr.ldI32(cptr.add(u, 2212)))
         cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2212)));
     if (cptr.ldI64(cptr.add(u, 2376)) > 0n)
-        cptr.stU64(cptr.add(u, 2376), BigInt.asIntN(64, newuexp(cptr.ldI32(cptr.add(u, 48))) - 1n));
+        cptr.stI64(cptr.add(u, 2376), BigInt.asIntN(64, newuexp(cptr.ldI32(cptr.add(u, 48))) - 1n));
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         num = monhp_per_lvl(cptr.add(gy, 8));
         cptr.stI32(cptr.add(u, 1816), (cptr.ldI32(cptr.add(u, 1816)) - num) | 0);
@@ -272,9 +272,9 @@ export function pluslvl(incr) {
         if (incr) {
             let tmp = newuexp((cptr.ldI32(cptr.add(u, 48)) + 1) | 0);
             if (cptr.ldI64(cptr.add(u, 2376)) >= tmp)
-                cptr.stU64(cptr.add(u, 2376), BigInt.asIntN(64, tmp - 1n));
+                cptr.stI64(cptr.add(u, 2376), BigInt.asIntN(64, tmp - 1n));
         } else {
-            cptr.stU64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))));
+            cptr.stI64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))));
         }
         cptr.stI32(cptr.add(u, 48), cptr.ldI32(cptr.add(u, 48)) + 1);
         pline(__sl10, (cptr.ldI32(cptr.add(u, 52)) < cptr.ldI32(cptr.add(u, 48))) ? __sl11 : __sl12, cptr.ldI32(cptr.add(u, 48)));

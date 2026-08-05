@@ -235,11 +235,11 @@ function ready_weapon(wep) {
             set_bknown(wep.v, 1);
         } else {
             let dummy = cptr.ldI64(cptr.add(wep.v, 192));
-            cptr.stU64(cptr.add(wep.v, 192), cptr.ldI64(cptr.add(wep.v, 192)) | 256n);
+            cptr.stI64(cptr.add(wep.v, 192), cptr.ldI64(cptr.add(wep.v, 192)) | 256n);
             if (cptr.ldI16(cptr.add(wep.v, 32)) == 80 && (cptr.ldI64(cptr.add(wep.v, 192)) & 256n) != 0n ? 1 : 0)
                 You(__sl21);
             prinv(null, wep.v, 0n);
-            cptr.stU64(cptr.add(wep.v, 192), dummy);
+            cptr.stI64(cptr.add(wep.v, 192), dummy);
         }
         setuwep(wep.v);
         if ((was_twoweap && !cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0) && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0) {
@@ -319,7 +319,7 @@ export function dowield() {
     let oldwep;
     let result;
     __lbl_wielding: {
-        cptr.stU64(cptr.add(gm, 8), 0n);
+        cptr.stI64(cptr.add(gm, 8), 0n);
         if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
             pline(__sl26);
             return 4;
@@ -398,7 +398,7 @@ export function doswapweapon() {
     let oldwep;
     let oldswap;
     let result = 0;
-    cptr.stU64(cptr.add(gm, 8), 0n);
+    cptr.stI64(cptr.add(gm, 8), 0n);
     if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
         pline(__sl26);
         return 4;
@@ -438,7 +438,7 @@ export function doquiver_core(verb) {
     let was_uwep = (0);
     let was_twoweap = cptr.ld1s(cptr.add(u, 2816));
     __lbl_quivering: {
-        cptr.stU64(cptr.add(gm, 8), 0n);
+        cptr.stI64(cptr.add(gm, 8), 0n);
         if (!cptr.ldPtr(cptr.add(gi, 8))) {
             You(__sl41);
             return 0;
@@ -759,7 +759,7 @@ export function chwepon(otmp, amount) {
         cptr.stI16(cptr.add(uwep.v, 32), 43);
         cptr.stI32(cptr.add(uwep.v, 120), 0);
         if (multiple) {
-            cptr.stU64(cptr.add(uwep.v, 40), 1n);
+            cptr.stI64(cptr.add(uwep.v, 40), 1n);
             cptr.stI32(cptr.add(uwep.v, 36), weight(uwep.v) >>> 0);
         }
         if (cptr.ldI32(cptr.add(uwep.v, 56)))
@@ -778,7 +778,7 @@ export function chwepon(otmp, amount) {
         cptr.stI16(cptr.add(uwep.v, 32), 42);
         cptr.stI32(cptr.add(uwep.v, 120), 0);
         if (multiple) {
-            cptr.stU64(cptr.add(uwep.v, 40), 1n);
+            cptr.stI64(cptr.add(uwep.v, 40), 1n);
             cptr.stI32(cptr.add(uwep.v, 36), weight(uwep.v) >>> 0);
         }
         if (otyp != 0 && cptr.ldI32(cptr.add(otmp, 88)) | 0 ? 1 : 0)
@@ -841,9 +841,9 @@ export function weldmsg(obj) {
     if (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0 ? 1 : 0))
         hand = makeplural(hand);
     savewornmask = cptr.ldI64(cptr.add(obj, 192));
-    cptr.stU64(cptr.add(obj, 192), 0n);
+    cptr.stI64(cptr.add(obj, 192), 0n);
     pline(__sl123, Yobjnam2(obj, __sl78), hand);
-    cptr.stU64(cptr.add(obj, 192), savewornmask);
+    cptr.stI64(cptr.add(obj, 192), savewornmask);
 }
 
 /** C ref: wield.c:1078 — @param {CPtr} obj @returns {CInt} */

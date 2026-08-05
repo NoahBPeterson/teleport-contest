@@ -63,8 +63,8 @@ export function luaE_setdebt(g, debt) {
     (void 0);
     if (debt < BigInt.asIntN(64, tb - (BigInt.asIntN(64, (((BigInt.asUintN(64, ~0n))) >> 1n)))))
         debt = BigInt.asIntN(64, tb - (BigInt.asIntN(64, (((BigInt.asUintN(64, ~0n))) >> 1n))));
-    cptr.stU64(cptr.add(g, 16), BigInt.asIntN(64, tb - debt));
-    cptr.stU64(cptr.add(g, 24), debt);
+    cptr.stI64(cptr.add(g, 16), BigInt.asIntN(64, tb - debt));
+    cptr.stI64(cptr.add(g, 24), debt);
 }
 
 /** C ref: lstate.c:99 — @param {CPtr} L @param {CUInt} limit @returns {CInt} */
@@ -227,7 +227,7 @@ function preinit_thread(L, g) {
     (cptr.stI32(cptr.add(L, 188), cptr.ldI32(cptr.add(L, 184))));
     cptr.stPtr(cptr.add(L, 56), null);
     cptr.st1(cptr.add(L, 10), 0);
-    cptr.stU64(cptr.add(L, 168), 0n);
+    cptr.stI64(cptr.add(L, 168), 0n);
     cptr.stI32(cptr.add(L, 180), 0);
 }
 
@@ -238,7 +238,7 @@ function close_state(L) {
         luaC_freeallobjects(L);
     else {
         cptr.stPtr(cptr.add(L, 32), cptr.add(L, 96));
-        cptr.stU64(cptr.add(L, 168), 0n);
+        cptr.stI64(cptr.add(L, 168), 0n);
         luaD_closeprotected(L, 1n, 0);
         cptr.stPtr(cptr.add(L, 16), cptr.add(cptr.ldPtr(cptr.add(L, 48)), 1, 16));
         luaC_freeallobjects(L);
@@ -312,7 +312,7 @@ export function luaE_resetthread(L, status) {
     if (status == 1)
         status = 0;
     cptr.st1(cptr.add(L, 10), 0);
-    cptr.stU64(cptr.add(L, 168), 0n);
+    cptr.stI64(cptr.add(L, 168), 0n);
     status = luaD_closeprotected(L, 1n, status);
     if (status != 0)
         luaD_seterrorobj(L, status, cptr.add(cptr.ldPtr(cptr.add(L, 48)), 1, 16));
@@ -377,12 +377,12 @@ export function lua_newstate(f, ud) {
     cptr.stPtr(cptr.add(g, 136), cptr.stPtr(cptr.add(g, 144), null));
     cptr.stPtr(cptr.add(g, 152), cptr.stPtr(cptr.add(g, 160), cptr.stPtr(cptr.add(g, 168), null)));
     cptr.stPtr(cptr.add(g, 248), null);
-    cptr.stU64(cptr.add(g, 16), 1624n);
-    cptr.stU64(cptr.add(g, 24), 0n);
+    cptr.stI64(cptr.add(g, 16), 1624n);
+    cptr.stI64(cptr.add(g, 24), 0n);
     cptr.stU64(cptr.add(g, 40), 0n);
     {
         let io = (cptr.add(g, 80));
-        cptr.stU64(((io)), 0n);
+        cptr.stI64(((io)), 0n);
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;

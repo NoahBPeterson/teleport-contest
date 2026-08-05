@@ -279,7 +279,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 0), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 0), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 0), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 0), 59), 0);
-cptr.stU64(cptr.add(cptr.add(artilist, 0), 64), 0n);
+cptr.stI64(cptr.add(cptr.add(artilist, 0), 64), 0n);
 cptr.st1(cptr.add(cptr.add(artilist, 0), 72), 8);
 cptr.stI16(cptr.add(artilist, 80), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 80), 8), __sl1);
@@ -304,7 +304,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 80), 54), 335);
 cptr.stI16(cptr.add(cptr.add(artilist, 80), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 80), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 80), 59), 10);
-cptr.stU64(cptr.add(cptr.add(artilist, 80), 64), 4000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 80), 64), 4000n);
 cptr.st1(cptr.add(cptr.add(artilist, 80), 72), 8);
 cptr.stI16(cptr.add(artilist, 160), 58);
 cptr.stPtr(cptr.add(cptr.add(artilist, 160), 8), __sl2);
@@ -329,7 +329,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 160), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 160), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 160), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 160), 59), 9);
-cptr.stU64(cptr.add(cptr.add(artilist, 160), 64), 8000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 160), 64), 8000n);
 cptr.st1(cptr.add(cptr.add(artilist, 160), 72), 8);
 cptr.stI16(cptr.add(artilist, 240), 76);
 cptr.stPtr(cptr.add(cptr.add(artilist, 240), 8), __sl3);
@@ -354,7 +354,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 240), 54), 342);
 cptr.stI16(cptr.add(cptr.add(artilist, 240), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 240), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 240), 59), 8);
-cptr.stU64(cptr.add(cptr.add(artilist, 240), 64), 4000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 240), 64), 4000n);
 cptr.st1(cptr.add(cptr.add(artilist, 240), 72), 8);
 cptr.stI16(cptr.add(artilist, 320), 45);
 cptr.stPtr(cptr.add(cptr.add(artilist, 320), 8), __sl4);
@@ -379,7 +379,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 320), 54), 332);
 cptr.stI16(cptr.add(cptr.add(artilist, 320), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 320), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 320), 59), 8);
-cptr.stU64(cptr.add(cptr.add(artilist, 320), 64), 1500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 320), 64), 1500n);
 cptr.st1(cptr.add(cptr.add(artilist, 320), 72), 8);
 cptr.stI16(cptr.add(artilist, 400), 36);
 cptr.stPtr(cptr.add(cptr.add(artilist, 400), 8), __sl5);
@@ -404,7 +404,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 400), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 400), 56), 72);
 cptr.st1(cptr.add(cptr.add(artilist, 400), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 400), 59), 5);
-cptr.stU64(cptr.add(cptr.add(artilist, 400), 64), 1200n);
+cptr.stI64(cptr.add(cptr.add(artilist, 400), 64), 1200n);
 cptr.st1(cptr.add(cptr.add(artilist, 400), 72), 1);
 cptr.stI16(cptr.add(artilist, 480), 53);
 cptr.stPtr(cptr.add(cptr.add(artilist, 480), 8), __sl6);
@@ -429,7 +429,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 480), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 480), 56), 264);
 cptr.st1(cptr.add(cptr.add(artilist, 480), 58), 3);
 cptr.st1(cptr.add(cptr.add(artilist, 480), 59), 4);
-cptr.stU64(cptr.add(cptr.add(artilist, 480), 64), 2000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 480), 64), 2000n);
 cptr.st1(cptr.add(cptr.add(artilist, 480), 72), 12);
 cptr.stI16(cptr.add(artilist, 560), 35);
 cptr.stPtr(cptr.add(cptr.add(artilist, 560), 8), __sl7);
@@ -454,7 +454,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 560), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 560), 56), 264);
 cptr.st1(cptr.add(cptr.add(artilist, 560), 58), 3);
 cptr.st1(cptr.add(cptr.add(artilist, 560), 59), 1);
-cptr.stU64(cptr.add(cptr.add(artilist, 560), 64), 800n);
+cptr.stI64(cptr.add(cptr.add(artilist, 560), 64), 800n);
 cptr.st1(cptr.add(cptr.add(artilist, 560), 72), 12);
 cptr.stI16(cptr.add(artilist, 640), 38);
 cptr.stPtr(cptr.add(cptr.add(artilist, 640), 8), __sl8);
@@ -479,7 +479,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 640), 54), 343);
 cptr.stI16(cptr.add(cptr.add(artilist, 640), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 640), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 640), 59), 7);
-cptr.stU64(cptr.add(cptr.add(artilist, 640), 64), 3500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 640), 64), 3500n);
 cptr.st1(cptr.add(cptr.add(artilist, 640), 72), 8);
 cptr.stI16(cptr.add(artilist, 720), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 720), 8), __sl9);
@@ -504,7 +504,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 720), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 720), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 720), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 720), 59), 9);
-cptr.stU64(cptr.add(cptr.add(artilist, 720), 64), 3000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 720), 64), 3000n);
 cptr.st1(cptr.add(cptr.add(artilist, 720), 72), 8);
 cptr.stI16(cptr.add(artilist, 800), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 800), 8), __sl10);
@@ -529,7 +529,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 800), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 800), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 800), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 800), 59), 5);
-cptr.stU64(cptr.add(cptr.add(artilist, 800), 64), 3000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 800), 64), 3000n);
 cptr.st1(cptr.add(cptr.add(artilist, 800), 72), 8);
 cptr.stI16(cptr.add(artilist, 880), 52);
 cptr.stPtr(cptr.add(cptr.add(artilist, 880), 8), __sl11);
@@ -554,7 +554,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 880), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 880), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 880), 58), 2);
 cptr.st1(cptr.add(cptr.add(artilist, 880), 59), 5);
-cptr.stU64(cptr.add(cptr.add(artilist, 880), 64), 500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 880), 64), 500n);
 cptr.st1(cptr.add(cptr.add(artilist, 880), 72), 8);
 cptr.stI16(cptr.add(artilist, 960), 74);
 cptr.stPtr(cptr.add(cptr.add(artilist, 960), 8), __sl12);
@@ -579,7 +579,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 960), 54), 337);
 cptr.stI16(cptr.add(cptr.add(artilist, 960), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 960), 58), 1);
 cptr.st1(cptr.add(cptr.add(artilist, 960), 59), 3);
-cptr.stU64(cptr.add(cptr.add(artilist, 960), 64), 2500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 960), 64), 2500n);
 cptr.st1(cptr.add(cptr.add(artilist, 960), 72), 8);
 cptr.stI16(cptr.add(artilist, 1040), 51);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1040), 8), __sl13);
@@ -604,7 +604,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1040), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1040), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1040), 58), 1);
 cptr.st1(cptr.add(cptr.add(artilist, 1040), 59), 4);
-cptr.stU64(cptr.add(cptr.add(artilist, 1040), 64), 1500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1040), 64), 1500n);
 cptr.st1(cptr.add(cptr.add(artilist, 1040), 72), 8);
 cptr.stI16(cptr.add(artilist, 1120), 51);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1120), 8), __sl14);
@@ -629,7 +629,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1120), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1120), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1120), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1120), 59), 10);
-cptr.stU64(cptr.add(cptr.add(artilist, 1120), 64), 8000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1120), 64), 8000n);
 cptr.st1(cptr.add(cptr.add(artilist, 1120), 72), 8);
 cptr.stI16(cptr.add(artilist, 1200), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1200), 8), __sl15);
@@ -654,7 +654,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1200), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1200), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1200), 58), 2);
 cptr.st1(cptr.add(cptr.add(artilist, 1200), 59), 4);
-cptr.stU64(cptr.add(cptr.add(artilist, 1200), 64), 200n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1200), 64), 200n);
 cptr.st1(cptr.add(cptr.add(artilist, 1200), 72), 8);
 cptr.stI16(cptr.add(artilist, 1280), 76);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1280), 8), __sl16);
@@ -679,7 +679,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1280), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1280), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1280), 58), 2);
 cptr.st1(cptr.add(cptr.add(artilist, 1280), 59), 1);
-cptr.stU64(cptr.add(cptr.add(artilist, 1280), 64), 200n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1280), 64), 200n);
 cptr.st1(cptr.add(cptr.add(artilist, 1280), 72), 8);
 cptr.stI16(cptr.add(artilist, 1360), 75);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1360), 8), __sl17);
@@ -704,7 +704,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1360), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1360), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1360), 58), 2);
 cptr.st1(cptr.add(cptr.add(artilist, 1360), 59), 1);
-cptr.stU64(cptr.add(cptr.add(artilist, 1360), 64), 200n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1360), 64), 200n);
 cptr.st1(cptr.add(cptr.add(artilist, 1360), 72), 8);
 cptr.stI16(cptr.add(artilist, 1440), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1440), 8), __sl18);
@@ -729,7 +729,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1440), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1440), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1440), 58), 1);
 cptr.st1(cptr.add(cptr.add(artilist, 1440), 59), 5);
-cptr.stU64(cptr.add(cptr.add(artilist, 1440), 64), 4000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1440), 64), 4000n);
 cptr.st1(cptr.add(cptr.add(artilist, 1440), 72), 8);
 cptr.stI16(cptr.add(artilist, 1520), 56);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1520), 8), __sl19);
@@ -754,7 +754,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1520), 54), 340);
 cptr.stI16(cptr.add(cptr.add(artilist, 1520), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1520), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1520), 59), 8);
-cptr.stU64(cptr.add(cptr.add(artilist, 1520), 64), 1200n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1520), 64), 1200n);
 cptr.st1(cptr.add(cptr.add(artilist, 1520), 72), 8);
 cptr.stI16(cptr.add(artilist, 1600), 54);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1600), 8), __sl20);
@@ -779,7 +779,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1600), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 1600), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1600), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1600), 59), 6);
-cptr.stU64(cptr.add(cptr.add(artilist, 1600), 64), 1500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1600), 64), 1500n);
 cptr.st1(cptr.add(cptr.add(artilist, 1600), 72), 8);
 cptr.stI16(cptr.add(artilist, 1680), 231);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1680), 8), __sl21);
@@ -804,7 +804,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1680), 54), 331);
 cptr.stI16(cptr.add(cptr.add(artilist, 1680), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1680), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1680), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 1680), 64), 2500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1680), 64), 2500n);
 cptr.st1(cptr.add(cptr.add(artilist, 1680), 72), 8);
 cptr.stI16(cptr.add(artilist, 1760), 470);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1760), 8), __sl22);
@@ -829,7 +829,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1760), 54), 332);
 cptr.stI16(cptr.add(cptr.add(artilist, 1760), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1760), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1760), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 1760), 64), 2500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1760), 64), 2500n);
 cptr.st1(cptr.add(cptr.add(artilist, 1760), 72), 8);
 cptr.stI16(cptr.add(artilist, 1840), 73);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1840), 8), __sl23);
@@ -854,7 +854,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1840), 54), 333);
 cptr.stI16(cptr.add(cptr.add(artilist, 1840), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1840), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1840), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 1840), 64), 2500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1840), 64), 2500n);
 cptr.st1(cptr.add(cptr.add(artilist, 1840), 72), 8);
 cptr.stI16(cptr.add(artilist, 1920), 79);
 cptr.stPtr(cptr.add(cptr.add(artilist, 1920), 8), __sl24);
@@ -879,7 +879,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 1920), 54), 334);
 cptr.stI16(cptr.add(cptr.add(artilist, 1920), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 1920), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 1920), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 1920), 64), 5000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 1920), 64), 5000n);
 cptr.st1(cptr.add(cptr.add(artilist, 1920), 72), 8);
 cptr.stI16(cptr.add(artilist, 2000), 230);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2000), 8), __sl25);
@@ -904,7 +904,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2000), 54), 335);
 cptr.stI16(cptr.add(cptr.add(artilist, 2000), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2000), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2000), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2000), 64), 1500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2000), 64), 1500n);
 cptr.st1(cptr.add(cptr.add(artilist, 2000), 72), 8);
 cptr.stI16(cptr.add(artilist, 2080), 232);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2080), 8), __sl26);
@@ -929,7 +929,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2080), 54), 336);
 cptr.stI16(cptr.add(cptr.add(artilist, 2080), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2080), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2080), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2080), 64), 2500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2080), 64), 2500n);
 cptr.st1(cptr.add(cptr.add(artilist, 2080), 72), 8);
 cptr.stI16(cptr.add(artilist, 2160), 96);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2160), 8), __sl27);
@@ -954,7 +954,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2160), 54), 337);
 cptr.stI16(cptr.add(cptr.add(artilist, 2160), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2160), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2160), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2160), 64), 2000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2160), 64), 2000n);
 cptr.st1(cptr.add(cptr.add(artilist, 2160), 72), 8);
 cptr.stI16(cptr.add(artilist, 2240), 83);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2240), 8), __sl28);
@@ -979,7 +979,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2240), 54), 338);
 cptr.stI16(cptr.add(cptr.add(artilist, 2240), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2240), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2240), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2240), 64), 4000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2240), 64), 4000n);
 cptr.st1(cptr.add(cptr.add(artilist, 2240), 72), 8);
 cptr.stI16(cptr.add(artilist, 2320), 221);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2320), 8), __sl29);
@@ -1004,7 +1004,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2320), 54), 339);
 cptr.stI16(cptr.add(cptr.add(artilist, 2320), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2320), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2320), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2320), 64), 3500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2320), 64), 3500n);
 cptr.st1(cptr.add(cptr.add(artilist, 2320), 72), 8);
 cptr.stI16(cptr.add(artilist, 2400), 57);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2400), 8), __sl30);
@@ -1029,7 +1029,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2400), 54), 340);
 cptr.stI16(cptr.add(cptr.add(artilist, 2400), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2400), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2400), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2400), 64), 4500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2400), 64), 4500n);
 cptr.st1(cptr.add(cptr.add(artilist, 2400), 72), 8);
 cptr.stI16(cptr.add(artilist, 2480), 223);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2480), 8), __sl31);
@@ -1054,7 +1054,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2480), 54), 341);
 cptr.stI16(cptr.add(cptr.add(artilist, 2480), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2480), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2480), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2480), 64), 7000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2480), 64), 7000n);
 cptr.st1(cptr.add(cptr.add(artilist, 2480), 72), 8);
 cptr.stI16(cptr.add(artilist, 2560), 231);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2560), 8), __sl32);
@@ -1079,7 +1079,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2560), 54), 342);
 cptr.stI16(cptr.add(cptr.add(artilist, 2560), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2560), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2560), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2560), 64), 3500n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2560), 64), 3500n);
 cptr.st1(cptr.add(cptr.add(artilist, 2560), 72), 8);
 cptr.stI16(cptr.add(artilist, 2640), 201);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2640), 8), __sl33);
@@ -1104,7 +1104,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2640), 54), 343);
 cptr.stI16(cptr.add(cptr.add(artilist, 2640), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2640), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2640), 59), 12);
-cptr.stU64(cptr.add(cptr.add(artilist, 2640), 64), 4000n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2640), 64), 4000n);
 cptr.st1(cptr.add(cptr.add(artilist, 2640), 72), 8);
 cptr.stI16(cptr.add(artilist, 2720), 0);
 cptr.stPtr(cptr.add(cptr.add(artilist, 2720), 8), null);
@@ -1129,7 +1129,7 @@ cptr.stI16(cptr.add(cptr.add(artilist, 2720), 54), -1);
 cptr.stI16(cptr.add(cptr.add(artilist, 2720), 56), -1);
 cptr.st1(cptr.add(cptr.add(artilist, 2720), 58), 0);
 cptr.st1(cptr.add(cptr.add(artilist, 2720), 59), 0);
-cptr.stU64(cptr.add(cptr.add(artilist, 2720), 64), 0n);
+cptr.stI64(cptr.add(cptr.add(artilist, 2720), 64), 0n);
 cptr.st1(cptr.add(cptr.add(artilist, 2720), 72), 8);
 
 /** C ref: artifact.c:70 — struct arti_info[34] */
@@ -1317,7 +1317,7 @@ export function artifact_exists(otmp, name, mod, flgs) {
             if (cptr.ldI16(a) == cptr.ldI16(cptr.add(otmp, 32)) && !strcmp(cptr.ldPtr(cptr.add(a, 8)), name) ? 1 : 0) {
                 let m = Number(BigInt.asIntN(32, (cptr.diff(a, artilist) / 80n)));
                 cptr.st1(cptr.add(otmp, 51), schar((mod ? m : 0)));
-                cptr.stU64(cptr.add(otmp, 184), 0n);
+                cptr.stI64(cptr.add(otmp, 184), 0n);
                 if (cptr.ldI16(cptr.add(otmp, 32)) == 177)
                     cptr.st1(cptr.add(otmp, 48), 0);
                 if (mod) {
@@ -1574,9 +1574,9 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
     if (mask) {
         if (on)
-            cptr.stU64(mask, cptr.ldI64(mask) | wp_mask);
+            cptr.stI64(mask, cptr.ldI64(mask) | wp_mask);
         else
-            cptr.stU64(mask, cptr.ldI64(mask) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(mask, cptr.ldI64(mask) & BigInt.asIntN(64, ~wp_mask));
     }
     spfx = BigInt.asIntN(64, ((wp_mask != 4096n) ? cptr.ldU64(cptr.add(oart, 16)) : cptr.ldU64(cptr.add(oart, 24))));
     if ((spfx && wp_mask == 4096n ? 1 : 0) && !on ? 1 : 0) {
@@ -1589,73 +1589,73 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
     if (spfx & 512n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 34, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 34, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 34, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 34, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 34, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 34, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 34, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 34, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 2048n) {
         void make_hallucinated(BigInt((!on)), schar((cptr.ldI32(cptr.add(program_state, 32)) ? 0 : 1)), wp_mask);
     }
     if (spfx & 4096n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 30, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 30, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 30, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 30, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 30, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 30, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 30, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 30, 24)) & BigInt.asIntN(64, ~wp_mask));
         recalc_telepat_range();
         see_monsters();
     }
     if (spfx & 8192n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 42, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 42, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 42, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 42, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 42, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 42, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 42, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 42, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 16384n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 57, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 57, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 57, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 57, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 57, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 57, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 57, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 57, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 262144n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 47, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 47, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 47, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 47, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 47, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 47, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 47, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 47, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 32n) {
         if (spec_m2(otmp)) {
             if (on) {
-                cptr.stU64(cptr.add(cptr.add(u, 112), 32, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) | wp_mask);
+                cptr.stI64(cptr.add(cptr.add(u, 112), 32, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) | wp_mask);
                 cptr.stU64(cptr.add(svc, 552), cptr.ldU64(cptr.add(svc, 552)) | BigInt.asUintN(64, spec_m2(otmp)));
             } else {
-                cptr.stU64(cptr.add(cptr.add(u, 112), 32, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) & BigInt.asIntN(64, ~wp_mask));
+                cptr.stI64(cptr.add(cptr.add(u, 112), 32, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) & BigInt.asIntN(64, ~wp_mask));
                 cptr.stU64(cptr.add(svc, 552), cptr.ldU64(cptr.add(svc, 552)) & BigInt.asUintN(64, BigInt.asIntN(64, ~spec_m2(otmp))));
             }
             see_monsters();
         } else {
             if (on)
-                cptr.stU64(cptr.add(cptr.add(u, 112), 31, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 31, 24)) | wp_mask);
+                cptr.stI64(cptr.add(cptr.add(u, 112), 31, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 31, 24)) | wp_mask);
             else
-                cptr.stU64(cptr.add(cptr.add(u, 112), 31, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 31, 24)) & BigInt.asIntN(64, ~wp_mask));
+                cptr.stI64(cptr.add(cptr.add(u, 112), 31, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 31, 24)) & BigInt.asIntN(64, ~wp_mask));
         }
     }
     if (spfx & 32768n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 58, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 58, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 58, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 58, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 58, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 58, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 58, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 58, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 65536n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 55, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 55, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 55, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 55, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 55, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 55, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 55, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 55, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 131072n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 56, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 56, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 56, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 56, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 33554432n) {
         if (on)
@@ -1666,15 +1666,15 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
     if ((spfx & 67108864n) && (wp_mask & 256n) ? 1 : 0) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 65, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 65, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 65, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 65, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 65, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 65, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 65, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 65, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 134217728n) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 59, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 59, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 59, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 59, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 59, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 59, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 59, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 59, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
     if ((wp_mask == 4096n && !on ? 1 : 0) && cptr.ld1u(cptr.add(oart, 52)) ? 1 : 0) {
         if (cptr.ld1u(cptr.add(oart, 52)) <= 68 && (cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) & 8192n) ? 1 : 0)
@@ -1682,9 +1682,9 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
     if (wp_mask == 256n && is_art(otmp, 20) ? 1 : 0) {
         if (on)
-            cptr.stU64(cptr.add(cptr.add(u, 112), 38, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 38, 24)) | wp_mask);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 38, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 38, 24)) | wp_mask);
         else
-            cptr.stU64(cptr.add(cptr.add(u, 112), 38, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 38, 24)) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 38, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 38, 24)) & BigInt.asIntN(64, ~wp_mask));
     }
 }
 
@@ -2339,7 +2339,7 @@ function invoke_energy_boost(obj) {
 /** C ref: artifact.c:1838 — @param {CPtr} obj @returns {CInt} */
 function invoke_untrap(obj) {
     if (!untrap((1), 0, 0, null)) {
-        cptr.stU64(cptr.add(obj, 184), 0n);
+        cptr.stI64(cptr.add(obj, 184), 0n);
         return 2;
     }
     return 1;
@@ -2351,7 +2351,7 @@ function invoke_charge_obj(obj) {
     let otmp = getobj(__sl144, charge_ok, (2 | 1) >>> 0);
     let b_effect;
     if (!otmp) {
-        cptr.stU64(cptr.add(obj, 184), 0n);
+        cptr.stI64(cptr.add(obj, 184), 0n);
         return 2;
     }
     b_effect = schar((cptr.ldI32(cptr.add(obj, 60)) | 0 && (cptr.ldI16(cptr.add(oart, 54)) == (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))) || cptr.ldI16(cptr.add(oart, 54)) == -1 ? 1 : 0) ? 1 : 0));
@@ -2427,12 +2427,12 @@ function invoke_create_ammo(obj) {
     if (cptr.ldI32(cptr.add(obj, 60))) {
         if (cptr.ld1s(cptr.add(otmp, 48)) < 0)
             cptr.st1(cptr.add(otmp, 48), 0);
-        cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1949, __sl149), rnd(10)) : rnd(10))));
+        cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1949, __sl149), rnd(10)) : rnd(10))));
     } else if (cptr.ldI32(cptr.add(obj, 56))) {
         if (cptr.ld1s(cptr.add(otmp, 48)) > 0)
             cptr.st1(cptr.add(otmp, 48), 0);
     } else
-        cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1954, __sl149), rnd(5)) : rnd(5))));
+        cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1954, __sl149), rnd(5)) : rnd(5))));
     cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     otmp = hold_another_object(otmp, __sl150, aobjnam(otmp, __sl151), null);
     (void (otmp));
@@ -2495,7 +2495,7 @@ function invoke_fling_poison(obj) {
         throwit(otmp, 0n, (0), null);
     } else {
         pline(__sl159, cptr.ldPtr(cptr.add(c_common_strings, 64)));
-        cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
         return 2;
     }
     return 1;
@@ -2531,7 +2531,7 @@ function invoke_blinding_ray(obj) {
         }
     } else {
         pline(__sl159, cptr.ldPtr(cptr.add(c_common_strings, 64)));
-        cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
         return 2;
     }
     return 1;
@@ -2552,7 +2552,7 @@ function arti_invoke_cost(obj) {
         let pw_cost = arti_invoke_cost_pw(obj);
         if (pw_cost < 0 || cptr.ldI32(cptr.add(u, 2208)) < pw_cost ? 1 : 0) {
             You_feel(__sl162, the(xname(obj)), otense(obj, __sl56));
-            cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl163), d((3), (10))) : d((3), (10)))));
+            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl163), d((3), (10))) : d((3), (10)))));
             return (0);
         } else {
             You_feel(__sl164);
@@ -2560,7 +2560,7 @@ function arti_invoke_cost(obj) {
             cptr.st1(disp, (1));
         }
     } else {
-        cptr.stU64(cptr.add(obj, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2125, __sl163), rnz(100)) : rnz(100)))));
+        cptr.stI64(cptr.add(obj, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2125, __sl163), rnz(100)) : rnz(100)))));
     }
     return (1);
 }
@@ -2634,16 +2634,16 @@ function arti_invoke(obj) {
         }
         return res;
     } else {
-        let eprop = (cptr.stU64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) ^ 8192n));
+        let eprop = (cptr.stI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) ^ 8192n));
         let iprop = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), 16));
         let on = schar(((eprop & 8192n) != 0n));
         if (on && cptr.ldI64(cptr.add(obj.v, 184)) > cptr.ldI64(cptr.add(svm, 8)) ? 1 : 0) {
-            cptr.stU64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) ^ 8192n);
+            cptr.stI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) ^ 8192n);
             You_feel(__sl162, the(xname(obj.v)), otense(obj.v, __sl56));
-            cptr.stU64(cptr.add(obj.v, 184), cptr.ldI64(cptr.add(obj.v, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl167), d((3), (10))) : d((3), (10)))));
+            cptr.stI64(cptr.add(obj.v, 184), cptr.ldI64(cptr.add(obj.v, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl167), d((3), (10))) : d((3), (10)))));
             return 1;
         } else if (!on) {
-            cptr.stU64(cptr.add(obj.v, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2194, __sl167), rnz(100)) : rnz(100)))));
+            cptr.stI64(cptr.add(obj.v, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2194, __sl167), rnz(100)) : rnz(100)))));
         }
         if ((eprop & BigInt.asIntN(64, ~8192n)) || iprop ? 1 : 0) {
             nothing_special(obj.v);
@@ -2687,8 +2687,8 @@ export function finesse_ahriman(obj) {
     if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) || cptr.eq((oart = get_artifact(obj)), cptr.add(artilist, 0, 80)) ? 1 : 0) || cptr.ld1u(cptr.add(oart, 52)) != 48 ? 1 : 0) || !(cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & 8192n) ? 1 : 0)
         return (0);
     cptr.memcpy(save_Lev, cptr.add(cptr.add(u, 112), 48, 24), 24);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~(536870912n | 16777215n)));
-    cptr.stU64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & BigInt.asIntN(64, ~8192n));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~(536870912n | 16777215n)));
+    cptr.stI64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & BigInt.asIntN(64, ~8192n));
     result = schar((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0)));
     cptr.memcpy(cptr.add(cptr.add(u, 112), 48, 24), save_Lev, 24);
     return result;

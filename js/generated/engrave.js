@@ -604,7 +604,7 @@ export function make_engr_at(x, y, s, pristine_s, e_time, e_type) {
         else
             exercise(2, (1));
     }
-    cptr.stU64(cptr.add(ep, 48), e_time);
+    cptr.stI64(cptr.add(ep, 48), e_time);
     cptr.st1(cptr.add(ep, 56), schar(((e_type > 0) ? e_type : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 452, __sl59), rnd((6 - 1) | 0)) : rnd((6 - 1) | 0)))));
     cptr.stI32(cptr.add(ep, 36), smem);
     cptr.stI32(cptr.add(ep, 40), Math.imul(smem, 3) >>> 0);
@@ -967,7 +967,7 @@ export function doengrave() {
             return 4;
         de = alloc(1224);
         doengrave_ctx_init(de);
-        cptr.stU64(cptr.add(gm, 8), 0n);
+        cptr.stI64(cptr.add(gm, 8), 0n);
         cptr.stPtr(cptr.add(gn, 8), null);
         cptr.stPtr(cptr.add(de, 24), getobj(__sl124, stylus_ok, 2));
         if (!cptr.ldPtr(cptr.add(de, 24))) {
@@ -1132,7 +1132,7 @@ export function doengrave() {
             }
         }
         if (cptr.ldU64(cptr.add(de, 1216)) != 1n || (!cptr.strchr(cptr.add(de, 296), 120) && !cptr.strchr(cptr.add(de, 296), 88) ? 1 : 0) ? 1 : 0)
-            if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+            if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
                 livelog_printf(32n, __sl157, cptr.add(de, 296));
         for (sp = cptr.add(de, 296); cptr.ld1s(sp); sp = cptr.add(sp, 1)) {
             if (cptr.ld1s(sp) == 32)
@@ -1227,7 +1227,7 @@ function engrave() {
             if (firsttime)
                 pline(__sl163, yname(stylus));
             stylus = cptr.stPtr(cptr.add(cptr.add(svc, 168), 264), splitobj(stylus, 1n));
-            cptr.stU64(cptr.add(stylus, 192), 0n);
+            cptr.stI64(cptr.add(stylus, 192), 0n);
             splitstack = (1);
         } else {
             if (firsttime)
@@ -1426,7 +1426,7 @@ export function rest_engravings(nhfp) {
             cptr.postinc(() => cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), (v) => { cptr.stPtr(cptr.add(cptr.add(ep, 8), 0, 8), v); });
         while (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(ep, 8), 1, 8)), 0)) == 32)
             cptr.postinc(() => cptr.ldPtr(cptr.add(cptr.add(ep, 8), 1, 8)), (v) => { cptr.stPtr(cptr.add(cptr.add(ep, 8), 1, 8), v); });
-        cptr.stU64(cptr.add(ep, 48), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(ep, 48), cptr.ldI64(cptr.add(svm, 8)));
     }
 }
 
@@ -1434,10 +1434,10 @@ export function rest_engravings(nhfp) {
 export function engr_stats(hdrfmt, hdrbuf, count, size) {
     let ep;
     void cptr.sprintf(hdrbuf, hdrfmt, 80n);
-    cptr.stU64(count, cptr.stU64(size, 0n));
+    cptr.stI64(count, cptr.stI64(size, 0n));
     for (ep = head_engr.v; ep; ep = cptr.ldPtr(ep)) {
-        cptr.stU64(count, cptr.ldU64(count) + 1n);
-        cptr.stU64(size, cptr.ldI64(size) + BigInt.asIntN(64, 80n + BigInt(cptr.ldI32(cptr.add(ep, 40)) >>> 0)));
+        cptr.stI64(count, cptr.ldI64(count) + 1n);
+        cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, 80n + BigInt(cptr.ldI32(cptr.add(ep, 40)) >>> 0)));
     }
 }
 

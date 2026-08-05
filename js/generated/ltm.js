@@ -290,7 +290,7 @@ export function luaT_trybiniTM(L, p1, i2, flip, res, event) {
     let aux = cptr.alloc(16);
     {
         let io = (aux);
-        cptr.stU64(((io)), (i2));
+        cptr.stI64(((io)), (i2));
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;
@@ -318,7 +318,7 @@ export function luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
         ;
     } else {
         let io = (aux);
-        cptr.stU64(((io)), BigInt((v2)));
+        cptr.stI64(((io)), BigInt((v2)));
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;

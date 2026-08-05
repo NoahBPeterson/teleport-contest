@@ -854,7 +854,7 @@ function known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dieroll
         let oldhp = cptr.ldI32(cptr.add(mon, 52));
         let oldweaphit = cptr.ldI64(cptr.add(cptr.add(u, 1968), 32));
         if (weapon && (cptr.ld1s(cptr.add(weapon, 49)) == 2 || (cptr.ld1s(cptr.add((weapon), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((weapon), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-            (cptr.stU64(cptr.add(cptr.add(u, 1968), 32), cptr.ldU64(cptr.add(cptr.add(u, 1968), 32)) + 1n)) - (1n);
+            (cptr.stI64(cptr.add(cptr.add(u, 1968), 32), cptr.ldI64(cptr.add(cptr.add(u, 1968), 32)) + 1n)) - (1n);
         cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(mon, 28)) != cptr.ldI16(cptr.add(gb, 4768)) || cptr.ldI16(cptr.add(mon, 30)) != cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)) ? 1 : 0)));
         malive = hmon(mon, weapon, 0, dieroll);
         if (malive) {
@@ -865,7 +865,7 @@ function known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dieroll
             }
             if (cptr.ldI32(cptr.add(mon, 52)) == oldhp) {
                 cptr.stI32(mhit, 0);
-                cptr.stU64(cptr.add(cptr.add(u, 1968), 32), oldweaphit);
+                cptr.stI64(cptr.add(cptr.add(u, 1968), 32), oldweaphit);
             }
             if (cptr.ldI32(cptr.add(mon, 200)) | 0 && cptr.ldI32(mhit) ? 1 : 0)
                 cutworm(mon, cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), slice_or_chop);
@@ -3564,7 +3564,7 @@ export function mhitm_ad_dgst(magr, mattk, mdef, mhm) {
                 cptr.stI32(cptr.add(magr, 308), (((cptr.ldI32(cptr.add(magr, 308)) + 3) | 0) / 4) | 0);
             if (nutrit > 1)
                 nutrit = (nutrit / 2) | 0;
-            cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((magr), 312)), 40))), 32), cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((magr), 312)), 40))), 32)) + BigInt(nutrit));
+            cptr.stI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((magr), 312)), 40))), 32), cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((magr), 312)), 40))), 32)) + BigInt(nutrit));
         }
     }
 }

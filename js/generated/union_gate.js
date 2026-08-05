@@ -60,7 +60,7 @@ export function main() {
     cptr.printf(__sl0, 8, 16, 8, 8, 16);
     {
         let v = cptr.alloc(8);
-        cptr.stU64(v, 4607182418800017408n);
+        cptr.stI64(v, 4607182418800017408n);
         cptr.printf(__sl1, cptr.ldF64(v));
         cptr.stF64(v, 1.5);
         cptr.printf(__sl2, cptr.ldI64(v));
@@ -70,7 +70,7 @@ export function main() {
     {
         let t = cptr.alloc(16);
         cptr.st1(cptr.add(t, 8), 9);
-        cptr.stU64(t, 42n);
+        cptr.stI64(t, 42n);
         cptr.printf(__sl4, cptr.ld1u(cptr.add(t, 8)), cptr.ldI64(t));
         cptr.stF64(t, 2.5);
         cptr.printf(__sl5, cptr.ld1u(cptr.add(t, 8)), cptr.ldF64(t));
@@ -78,7 +78,7 @@ export function main() {
     {
         let u = cptr.alloc(8);
         let k;
-        cptr.stU64(u, 72623859790382856n);
+        cptr.stI64(u, 72623859790382856n);
         cptr.printf(__sl6);
         for (k = 0; k < 8; k++)
             cptr.printf(__sl7, cptr.ld1u(cptr.add(u, k, 1)));
@@ -91,14 +91,14 @@ export function main() {
     {
         let tg = cptr.alloc(16);
         cptr.stI32(tg, 7);
-        cptr.stU64(cptr.add(tg, 8), 1234605616436508552n);
+        cptr.stI64(cptr.add(tg, 8), 1234605616436508552n);
         cptr.printf(__sl11, cptr.ldI32(tg), cptr.ld1u(cptr.add(cptr.add(tg, 8), 0, 1)), BigInt.asUintN(64, cptr.ldI64(cptr.add(tg, 8))));
     }
     {
         let u = cptr.alloc(8);
         let pi = u;
         cptr.printf(__sl12, (cptr.eq(u, cptr.add(u, 0, 1))));
-        cptr.stU64(pi, 5n);
+        cptr.stI64(pi, 5n);
         cptr.printf(__sl13, cptr.ld1u(cptr.add(u, 0, 1)), cptr.ld1u(cptr.add(u, 7, 1)));
     }
     {

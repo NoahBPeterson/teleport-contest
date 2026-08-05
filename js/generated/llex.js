@@ -286,7 +286,7 @@ function read_numeral(ls, seminfo) {
     if (luaO_str2num((cptr.ldPtr((cptr.ldPtr(cptr.add(ls, 72))))), obj) == 0n)
         lexerror(ls, __sl48, 289);
     if (((cptr.ld1u(cptr.add(((obj)), 8))) == (((3) | ((0) << 4))))) {
-        cptr.stU64(seminfo, (cptr.ldI64(((obj)))));
+        cptr.stI64(seminfo, (cptr.ldI64(((obj)))));
         return 290;
     } else {
         (void 0);

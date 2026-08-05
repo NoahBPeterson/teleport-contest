@@ -460,13 +460,13 @@ export function ghitm(mtmp, gold) {
                 if (robbed < 0n)
                     robbed = 0n;
                 pline_The(__sl27, !robbed ? __sl13 : __sl28, (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 24))));
-                cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 8), robbed);
+                cptr.stI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 8), robbed);
                 if (!robbed)
                     make_happy_shk(mtmp, (0));
             } else {
                 ;
                 if (cptr.ldI32(cptr.add(mtmp, 168))) {
-                    cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16), cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16)) + value);
+                    cptr.stI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16), cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16)) + value);
                     You(__sl29, cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16)), currency(cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 24))), 16))));
                 } else
                     verbalize(__sl30);
@@ -640,9 +640,9 @@ function really_kick_object(x, y) {
         let k_owt = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 36)) | 0;
         if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40)) > 1n && !isgold ? 1 : 0) {
             let save_quan = cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40));
-            cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40), 1n);
+            cptr.stI64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40), 1n);
             k_owt = weight(cptr.ldPtr(cptr.add(gk, 8)));
-            cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40), save_quan);
+            cptr.stI64(cptr.add(cptr.ldPtr(cptr.add(gk, 8)), 40), save_quan);
         }
         range = (((((acurrstr())) / 2) | 0) - ((k_owt / 40) | 0)) | 0;
     }
@@ -1094,7 +1094,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             let nfruit = BigInt.asIntN(64, 8n - BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1147, __sl110), rnl(7)) : rnl(7))));
             let nfall;
             let frtype = cptr.ldI16(cptr.add(treefruit, 32));
-            cptr.stU64(cptr.add(treefruit, 40), nfruit);
+            cptr.stI64(cptr.add(treefruit, 40), nfruit);
             cptr.stI32(cptr.add(treefruit, 36), weight(treefruit) >>> 0);
             if ((cptr.ldI64(cptr.add((treefruit), 40)) != 1n || (cptr.ld1s(cptr.add((treefruit), 51)) == 26 && !undiscovered_artifact(26) ? 1 : 0) ? 1 : 0))
                 pline(__sl126, xname(treefruit));
@@ -1103,7 +1103,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             nfall = scatter(x, y, 2, (2 | 4) >>> 0, treefruit);
             if (nfall != nfruit) {
                 treefruit = mksobj(frtype, (1), (0));
-                cptr.stU64(cptr.add(treefruit, 40), BigInt.asIntN(64, nfruit - nfall));
+                cptr.stI64(cptr.add(treefruit, 40), BigInt.asIntN(64, nfruit - nfall));
                 pline(__sl128, BigInt.asIntN(64, nfruit - nfall), xname(treefruit));
                 dealloc_obj(treefruit);
             }
@@ -1435,7 +1435,7 @@ export function impact_drop(missile, x, y, dlev) {
         add_to_migration(obj);
         cptr.stI16(cptr.add(obj, 28), cptr.ldI16(cc));
         cptr.stI16(cptr.add(obj, 30), cptr.ldI16(cptr.add(cc, 2)));
-        cptr.stU64(cptr.add(obj, 192), BigInt(toloc));
+        cptr.stI64(cptr.add(obj, 192), BigInt(toloc));
         dct += cptr.ldI64(cptr.add(obj, 40));
     }
     if (dct && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) ? 1 : 0) {
@@ -1557,7 +1557,7 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
     add_to_migration(otmp);
     cptr.stI16(cptr.add(otmp, 28), cptr.ldI16(cc));
     cptr.stI16(cptr.add(otmp, 30), cptr.ldI16(cptr.add(cc, 2)));
-    cptr.stU64(cptr.add(otmp, 192), BigInt(toloc));
+    cptr.stI64(cptr.add(otmp, 192), BigInt(toloc));
     if (cptr.ldI16(cptr.add(otmp, 32)) == 475)
         cptr.stI32(cptr.add(otmp, 132), 0);
     if (impact) {
@@ -1592,7 +1592,7 @@ export function obj_delivery(near_hero) {
         if (!near_hero ^ (where == 9))
             continue;
         obj_extract_self(otmp);
-        cptr.stU64(cptr.add(otmp, 192), 0n);
+        cptr.stI64(cptr.add(otmp, 192), 0n);
         cptr.stI16(fromdlev, cptr.ldI16(cptr.add(otmp, 204)));
         cptr.stI16(cptr.add(fromdlev, 2), cptr.ldI16(cptr.add(otmp, 206)));
         isladder = (0);
@@ -1664,7 +1664,7 @@ export function deliver_obj_to_mon(mtmp, cnt, deliverflags) {
             continue;
         if (cptr.ldI32(cptr.add(otmp, 168)) != -1 && ((cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 80)) & BigInt.asUintN(64, (2n | 4n | 8n | 16n | 32n | 64n | 128n | 256n | 8192n))) == BigInt((cptr.ldI32(cptr.add(otmp, 168)) >>> 0) >>> 0)) ? 1 : 0) {
             obj_extract_self(otmp);
-            cptr.stU64(cptr.add(otmp, 192), 0n);
+            cptr.stI64(cptr.add(otmp, 192), 0n);
             cptr.stI16(cptr.add(otmp, 28), cptr.stI16(cptr.add(otmp, 30), 0));
             if ((BigInt(cptr.ldI32(cptr.add(otmp, 168))) & 128n) != 0n && (cptr.ldPtr(cptr.add((otmp), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((otmp), 208)))) ? 1 : 0) ? 1 : 0) {
                 if (!(cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0)) {

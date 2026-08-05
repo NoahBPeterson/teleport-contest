@@ -358,7 +358,7 @@ export function fill_zoo(sroom) {
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4), 29);
             void somexyspace(sroom, mm);
             gold = mksobj(438, (1), (0));
-            cptr.stU64(cptr.add(gold, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 426, __sl7), rn2(Math.imul(50, level_difficulty()))) : rn2(Math.imul(50, level_difficulty()))) + (10)) | 0)));
+            cptr.stI64(cptr.add(gold, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 426, __sl7), rn2(Math.imul(50, level_difficulty()))) : rn2(Math.imul(50, level_difficulty()))) + (10)) | 0)));
             cptr.stI32(cptr.add(gold, 36), weight(gold) >>> 0);
             chest = mksobj_at(215, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), (1), (0));
             add_to_container(chest, gold);

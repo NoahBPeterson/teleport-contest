@@ -180,7 +180,7 @@ function m_initgrp(mtmp, x, y, n, mmflags) {
 function m_initthrow(mtmp, otyp, oquan) {
     let otmp;
     otmp = mksobj(otyp, (1), (0));
-    cptr.stU64(cptr.add(otmp, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 153, __sl2), rn2(oquan)) : rn2(oquan)) + (3)) | 0)));
+    cptr.stI64(cptr.add(otmp, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 153, __sl2), rn2(oquan)) : rn2(oquan)) + (3)) | 0)));
     cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     if (otyp == 20)
         cptr.stI32(cptr.add(otmp, 132), 1);
@@ -557,7 +557,7 @@ function m_initweap(mtmp) {
 export function mkmonmoney(mtmp, amount) {
     if (amount > 0n) {
         let gold = mksobj(438, (0), (0));
-        cptr.stU64(cptr.add(gold, 40), amount);
+        cptr.stI64(cptr.add(gold, 40), amount);
         cptr.stI32(cptr.add(gold, 36), weight(gold) >>> 0);
         add_to_minv(mtmp, gold);
     }
@@ -707,7 +707,7 @@ function m_initinv(mtmp) {
         } else if (((cptr.ldU64(cptr.add((ptr), 80)) & 8192n) != 0n)) {
             for (cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 743, __sl7), rn2(((cptr.ld1u(cptr.add(mtmp, 26)) / 2) | 0))) : rn2(((cptr.ld1u(cptr.add(mtmp, 26)) / 2) | 0))); cnt; cnt--) {
                 otmp = mksobj(rnd_class(439, (470 - 1) | 0), (0), (0));
-                cptr.stU64(cptr.add(otmp, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 746, __sl7), rn2(2)) : rn2(2)) + (3)) | 0)));
+                cptr.stI64(cptr.add(otmp, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 746, __sl7), rn2(2)) : rn2(2)) + (3)) | 0)));
                 cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
                 void mpickobj(mtmp, otmp);
             }
@@ -764,7 +764,7 @@ function m_initinv(mtmp) {
         case 33:
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 810, __sl7), rn2((In_mines(cptr.add(u, 24)) && cptr.ld1s(cptr.add(gi, 4)) ? 1 : 0) ? 20 : 60)) : rn2((In_mines(cptr.add(u, 24)) && cptr.ld1s(cptr.add(gi, 4)) ? 1 : 0) ? 20 : 60))) {
             otmp = mksobj((rng_log_enabled() ? (rng_log_set_caller(__sl0, 811, __sl7), rn2(4)) : rn2(4)) ? 224 : 225, (1), (0));
-            cptr.stU64(cptr.add(otmp, 40), 1n);
+            cptr.stI64(cptr.add(otmp, 40), 1n);
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
             if (!mpickobj(mtmp, otmp) && !cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(mtmp, 28)), 756), cptr.ldI16(cptr.add(mtmp, 30)), 36), 16)) ? 1 : 0)
                 begin_burn(otmp, (0));
@@ -1739,7 +1739,7 @@ export function mongets(mtmp, otyp) {
         }
         if (cptr.ldI16(cptr.add(otmp, 32)) == 262) {
             cptr.st1(cptr.add(otmp, 48), 0);
-            cptr.stU64(cptr.add(otmp, 184), 0n);
+            cptr.stI64(cptr.add(otmp, 184), 0n);
             cptr.stI32(cptr.add(otmp, 76), 0);
             cptr.stI32(cptr.add(otmp, 60), cptr.stI32(cptr.add(otmp, 56), 0));
         } else if (cptr.ldI16(cptr.add(otmp, 32)) == 263) {

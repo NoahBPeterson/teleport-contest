@@ -145,10 +145,10 @@ export function initedog(mtmp, everything) {
     if (everything) {
         cptr.stI32(cptr.add(mtmp, 176), 0);
         cptr.stI32(cptr.add(mtmp, 308), 0);
-        cptr.stU64(cptr.add(edogp, 8), 0n);
+        cptr.stI64(cptr.add(edogp, 8), 0n);
         cptr.stI32(cptr.add(edogp, 16), 10000);
         cptr.stI32(cptr.add(edogp, 20), (acurr(5)));
-        cptr.stU64(cptr.add(edogp, 24), 0n);
+        cptr.stI64(cptr.add(edogp, 24), 0n);
         cptr.stI16(cptr.add(edogp, 40), i16((-1)));
         cptr.stI16(cptr.add(cptr.add(edogp, 40), 2), i16((-1)));
         cptr.stI32(cptr.add(edogp, 44), 0);
@@ -160,11 +160,11 @@ export function initedog(mtmp, everything) {
             cptr.stI32(cptr.add(edogp, 20), 1);
     }
     if (cptr.ldI64(cptr.add(edogp, 32)) < minhungry)
-        cptr.stU64(cptr.add(edogp, 32), minhungry);
+        cptr.stI64(cptr.add(edogp, 32), minhungry);
     if (!cptr.ldI64(cptr.add(cptr.add(u, 1968), 104)) && cptr.ldI32(cptr.add(program_state, 44)) ? 1 : 0) {
         livelog_printf(32n, __sl0, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))), an(mon_pmname(mtmp)));
     }
-    (cptr.stU64(cptr.add(cptr.add(u, 1968), 104), cptr.ldU64(cptr.add(cptr.add(u, 1968), 104)) + 1n)) - (1n);
+    (cptr.stI64(cptr.add(cptr.add(u, 1968), 104), cptr.ldI64(cptr.add(cptr.add(u, 1968), 104)) + 1n)) - (1n);
 }
 
 /** C ref: dog.c:91 @returns {CInt} */
@@ -307,7 +307,7 @@ export function makedog() {
 
 /** C ref: dog.c:287 — @param {CPtr} mtmp */
 function set_mon_lastmove(mtmp) {
-    cptr.stU64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
 }
 
 /** C ref: dog.c:295 */
@@ -388,7 +388,7 @@ export function mon_arrive(mtmp, when) {
     let failed_to_place = (0);
     let stway;
     let fromdlev = cptr.alloc(4);
-    cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 256n);
+    cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 256n);
     cptr.stPtr(mtmp, cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)));
     cptr.stPtr(cptr.add(cptr.add(svl, 1680), 87376), mtmp);
     if (cptr.ldI32(cptr.add(mtmp, 180)))
@@ -401,7 +401,7 @@ export function mon_arrive(mtmp, when) {
     } else
         cptr.stI32(cptr.add(mtmp, 200), 0);
     cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) | 1073741824n);
-    cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~(4 | 8))));
+    cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~(4 | 8))));
     cptr.stI16(cptr.add(mtmp, 32), cptr.ldI16(u)), cptr.stI16(cptr.add(mtmp, 34), cptr.ldI16(cptr.add(u, 2)));
     xyloc = cptr.ldI16(cptr.add(cptr.add(mtmp, 36), 0, 4));
     xyflags = cptr.ldI16(cptr.add(cptr.add(cptr.add(mtmp, 36), 0, 4), 2));
@@ -418,7 +418,7 @@ export function mon_arrive(mtmp, when) {
             rloc_to(mtmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
         else
             mnexto(mtmp, 4);
-        cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~256)));
+        cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~256)));
         return;
     } else if (when == -1) {
         xyloc = 9;
@@ -528,7 +528,7 @@ export function mon_arrive(mtmp, when) {
         else
             m_into_limbo(mtmp);
     }
-    cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~256)));
+    cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~256)));
 }
 
 /** C ref: dog.c:627 — @param {CPtr} mtmp @param {CLongLong} nmv */
@@ -683,7 +683,7 @@ export function keepdogs(pets_only) {
             relmon(mtmp, cptr.add(gm, 184));
             cptr.stI16(cptr.add(mtmp, 28), cptr.stI16(cptr.add(mtmp, 30), 0));
             cptr.stI32(cptr.add(mtmp, 200), num_segs >>> 0);
-            cptr.stU64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
+            cptr.stI64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
         } else if (keep_mon_accessible(mtmp)) {
             migrate_to_level(mtmp, ledger_no(cptr.add(u, 24)), 2, null);
         } else if (cptr.ldI32(cptr.add(mtmp, 176))) {
@@ -706,14 +706,14 @@ export function migrate_to_level(mtmp, tolev, xyloc, cc) {
     }
     num_segs = mon_leave(mtmp);
     relmon(mtmp, cptr.add(gm, 192));
-    cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 4n);
+    cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 4n);
     cptr.stI16(new_lev, ledger_to_dnum(tolev));
     cptr.stI16(cptr.add(new_lev, 2), ledger_to_dlev(tolev));
     xyflags = i16((depth(new_lev) < depth(cptr.add(u, 24))));
     if (In_W_tower(mx, my, cptr.add(u, 24)))
         xyflags = i16(xyflags | 2);
     cptr.stI32(cptr.add(mtmp, 200), num_segs >>> 0);
-    cptr.stU64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(mtmp, 248), cptr.ldI64(cptr.add(svm, 8)));
     cptr.stI16(cptr.add(cptr.add(mtmp, 36), 2, 4), cptr.ldI16(cptr.add(u, 24)));
     cptr.stI16(cptr.add(cptr.add(cptr.add(mtmp, 36), 2, 4), 2), cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
     cptr.stI16(cptr.add(cptr.add(mtmp, 36), 1, 4), i16((cc ? cptr.ldI16(cc) : mx)));
@@ -757,7 +757,7 @@ export function discard_migrations() {
             cptr.stPtr(oprev, cptr.ldPtr(otmp));
             cptr.stPtr(otmp, null);
             cptr.st1(cptr.add(otmp, 52), 0);
-            cptr.stU64(cptr.add(otmp, 192), 0n);
+            cptr.stI64(cptr.add(otmp, 192), 0n);
             obfree(otmp, null);
         }
     }
@@ -986,11 +986,11 @@ export function wary_dog(mtmp, was_dead) {
         cptr.stI32(cptr.add(edog, 44), 0);
         cptr.stI16(cptr.add(edog, 40), cptr.stI16(cptr.add(cptr.add(edog, 40), 2), i16((-1))));
         if (was_dead || cptr.ldI64(cptr.add(edog, 32)) < BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 500n) ? 1 : 0)
-            cptr.stU64(cptr.add(edog, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 500n));
+            cptr.stI64(cptr.add(edog, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 500n));
         if (was_dead) {
-            cptr.stU64(cptr.add(edog, 8), 0n);
+            cptr.stI64(cptr.add(edog, 8), 0n);
             cptr.stI32(cptr.add(edog, 16), 10000);
-            cptr.stU64(cptr.add(edog, 24), 0n);
+            cptr.stI64(cptr.add(edog, 24), 0n);
             cptr.stI32(cptr.add(edog, 20), 5);
         }
     }

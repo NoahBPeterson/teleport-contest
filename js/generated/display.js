@@ -1715,11 +1715,11 @@ export function reset_glyphmap(trigger) {
     let has_rogue_ibm_graphics = schar((cptr.ldI32(cptr.add(gc, 428)) == 1 && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 1) ? 1 : 0));
     let has_rogue_color = schar((has_rogue_ibm_graphics && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 32)) | 0) == 0 ? 1 : 0));
     if (trigger == 2)
-        cptr.stU64(cptr.add(gg, 94984), 0n);
+        cptr.stI64(cptr.add(gg, 94984), 0n);
     if (!cptr.ldI64(cptr.add(gg, 94984))) {
-        cptr.stU64(cptr.add(gg, 94984), cptr.ldI64(cptr.add(gg, 94984)) | 1n);
+        cptr.stI64(cptr.add(gg, 94984), cptr.ldI64(cptr.add(gg, 94984)) | 1n);
         if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8)) ? 1 : 0))) {
-            cptr.stU64(cptr.add(gg, 94984), cptr.ldI64(cptr.add(gg, 94984)) | 2n);
+            cptr.stI64(cptr.add(gg, 94984), cptr.ldI64(cptr.add(gg, 94984)) | 2n);
         }
     }
     for (glyph = 0; glyph < 9624; ++glyph) {
@@ -1998,7 +1998,7 @@ export function reset_glyphmap(trigger) {
             color = 8;
         cptr.stI32(cptr.add(gmap, 4), color);
     }
-    cptr.stU64(cptr.add(gg, 94568), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(gg, 94568), cptr.ldI64(cptr.add(svm, 8)));
 }
 
 /** C ref: display.c:3130 — @param {CInt} x @param {CInt} y @param {CInt} which @returns {CInt} */

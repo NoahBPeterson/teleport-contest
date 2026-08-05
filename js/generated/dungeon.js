@@ -2263,8 +2263,8 @@ export function overview_stats(win, statsfmt, total_count, total_size) {
         void cptr.sprintf(cptr.decay(buf), statsfmt, cptr.decay(hdrbuf), acount, asize);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
-    cptr.stU64(total_count, cptr.ldI64(total_count) + BigInt.asIntN(64, BigInt.asIntN(64, ocount + bcount) + acount));
-    cptr.stU64(total_size, cptr.ldI64(total_size) + BigInt.asIntN(64, BigInt.asIntN(64, osize + bsize) + asize));
+    cptr.stI64(total_count, cptr.ldI64(total_count) + BigInt.asIntN(64, BigInt.asIntN(64, ocount + bcount) + acount));
+    cptr.stI64(total_size, cptr.ldI64(total_size) + BigInt.asIntN(64, BigInt.asIntN(64, osize + bsize) + asize));
 }
 
 /** C ref: dungeon.c:2811 — @param {CInt} dnum */

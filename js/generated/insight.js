@@ -813,71 +813,71 @@ const never = cptr.bytes("never ");
 
 /** C ref: insight.c:57 — struct ll_achieve_msg[33] */
 const achieve_msg = cptr.alloc(33 * 16);
-cptr.stU64(cptr.add(achieve_msg, 0), 0n);
+cptr.stI64(cptr.add(achieve_msg, 0), 0n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 0), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 16), 2n);
+cptr.stI64(cptr.add(achieve_msg, 16), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 16), 8), __sl1);
-cptr.stU64(cptr.add(achieve_msg, 32), 2n);
+cptr.stI64(cptr.add(achieve_msg, 32), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 32), 8), __sl2);
-cptr.stU64(cptr.add(achieve_msg, 48), 2n);
+cptr.stI64(cptr.add(achieve_msg, 48), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 48), 8), __sl3);
-cptr.stU64(cptr.add(achieve_msg, 64), 2n);
+cptr.stI64(cptr.add(achieve_msg, 64), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 64), 8), __sl4);
-cptr.stU64(cptr.add(achieve_msg, 80), 2n);
+cptr.stI64(cptr.add(achieve_msg, 80), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 80), 8), __sl5);
-cptr.stU64(cptr.add(achieve_msg, 96), 2n);
+cptr.stI64(cptr.add(achieve_msg, 96), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 96), 8), __sl6);
-cptr.stU64(cptr.add(achieve_msg, 112), 2n);
+cptr.stI64(cptr.add(achieve_msg, 112), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 112), 8), __sl7);
-cptr.stU64(cptr.add(achieve_msg, 128), 2n);
+cptr.stI64(cptr.add(achieve_msg, 128), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 128), 8), __sl8);
-cptr.stU64(cptr.add(achieve_msg, 144), 2n);
+cptr.stI64(cptr.add(achieve_msg, 144), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 144), 8), __sl9);
-cptr.stU64(cptr.add(achieve_msg, 160), 2n | 8192n);
+cptr.stI64(cptr.add(achieve_msg, 160), 2n | 8192n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 160), 8), __sl10);
-cptr.stU64(cptr.add(achieve_msg, 176), 2n | 8192n);
+cptr.stI64(cptr.add(achieve_msg, 176), 2n | 8192n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 176), 8), __sl11);
-cptr.stU64(cptr.add(achieve_msg, 192), 2n | 4n);
+cptr.stI64(cptr.add(achieve_msg, 192), 2n | 4n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 192), 8), __sl12);
-cptr.stU64(cptr.add(achieve_msg, 208), 0n);
+cptr.stI64(cptr.add(achieve_msg, 208), 0n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 208), 8), __sl13);
-cptr.stU64(cptr.add(achieve_msg, 224), 0n);
+cptr.stI64(cptr.add(achieve_msg, 224), 0n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 224), 8), __sl14);
-cptr.stU64(cptr.add(achieve_msg, 240), 4096n | 16384n);
+cptr.stI64(cptr.add(achieve_msg, 240), 4096n | 16384n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 240), 8), __sl15);
-cptr.stU64(cptr.add(achieve_msg, 256), 2n);
+cptr.stI64(cptr.add(achieve_msg, 256), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 256), 8), __sl16);
-cptr.stU64(cptr.add(achieve_msg, 272), 4096n);
+cptr.stI64(cptr.add(achieve_msg, 272), 4096n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 272), 8), __sl17);
-cptr.stU64(cptr.add(achieve_msg, 288), 4096n);
+cptr.stI64(cptr.add(achieve_msg, 288), 4096n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 288), 8), __sl18);
-cptr.stU64(cptr.add(achieve_msg, 304), 2n);
+cptr.stI64(cptr.add(achieve_msg, 304), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 304), 8), __sl19);
-cptr.stU64(cptr.add(achieve_msg, 320), 4096n | 16384n);
+cptr.stI64(cptr.add(achieve_msg, 320), 4096n | 16384n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 320), 8), __sl20);
-cptr.stU64(cptr.add(achieve_msg, 336), 2n);
+cptr.stI64(cptr.add(achieve_msg, 336), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 336), 8), __sl21);
-cptr.stU64(cptr.add(achieve_msg, 352), 2n);
+cptr.stI64(cptr.add(achieve_msg, 352), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 352), 8), __sl22);
-cptr.stU64(cptr.add(achieve_msg, 368), 4096n | 16384n);
+cptr.stI64(cptr.add(achieve_msg, 368), 4096n | 16384n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 368), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 384), 4096n | 16384n);
+cptr.stI64(cptr.add(achieve_msg, 384), 4096n | 16384n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 384), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 400), 4096n | 16384n);
+cptr.stI64(cptr.add(achieve_msg, 400), 4096n | 16384n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 400), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 416), 2n);
+cptr.stI64(cptr.add(achieve_msg, 416), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 416), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 432), 2n);
+cptr.stI64(cptr.add(achieve_msg, 432), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 432), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 448), 2n);
+cptr.stI64(cptr.add(achieve_msg, 448), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 448), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 464), 2n);
+cptr.stI64(cptr.add(achieve_msg, 464), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 464), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 480), 2n);
+cptr.stI64(cptr.add(achieve_msg, 480), 2n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 480), 8), __sl0);
-cptr.stU64(cptr.add(achieve_msg, 496), 4096n);
+cptr.stI64(cptr.add(achieve_msg, 496), 4096n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 496), 8), __sl23);
-cptr.stU64(cptr.add(achieve_msg, 512), 0n);
+cptr.stI64(cptr.add(achieve_msg, 512), 0n);
 cptr.stPtr(cptr.add(cptr.add(achieve_msg, 512), 8), __sl0);
 
 /** C ref: insight.c:118 — @param {CPtr} buf */
@@ -1954,22 +1954,22 @@ function attributes_enlightenment(unused_mode, final) {
         enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__sl412)), ((from_what(47))));
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8))) {
         let save_BLev = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8));
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), 0n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), 0n);
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0)) {
             let trapped = schar(((save_BLev & 536870912n) != 0n));
             let terrain = schar(((save_BLev & 67108864n) != 0n));
             void cptr.sprintf(cptr.decay(buf), __sl413, trapped ? __sl414 : __sl0, (trapped && terrain ? 1 : 0) ? __sl70 : __sl0, terrain ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __sl0);
             enlght_line(cptr.decay((You_)), final ? (__sl415) : (__sl416), cptr.decay((buf)), (__sl0));
         }
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), save_BLev);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), save_BLev);
     }
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8))) {
         let save_BFly = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8));
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), 0n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), 0n);
         if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0)) {
             enlght_line(cptr.decay((You_)), final ? (__sl417) : (__sl418), (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) ? __sl419 : ((save_BFly == 536870912n) ? __sl420 : ((save_BFly == 67108864n) ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __sl421))), (__sl0));
         }
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), save_BFly);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), save_BFly);
     }
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 16n) != 0n)) {
         let has_lid = has_ceiling(cptr.add(u, 24));

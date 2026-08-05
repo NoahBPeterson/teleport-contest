@@ -968,7 +968,7 @@ function simpleexp(ls, v) {
         case 290:
         {
             init_exp(v, 6, 0);
-            cptr.stU64(cptr.add(v, 8), cptr.ldI64(cptr.add(cptr.add(ls, 16), 8)));
+            cptr.stI64(cptr.add(v, 8), cptr.ldI64(cptr.add(cptr.add(ls, 16), 8)));
             break;
         }
         case 292:

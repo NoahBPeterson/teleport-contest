@@ -940,7 +940,7 @@ export function exerchk() {
             }
             cptr.st1(cptr.add(cptr.add(u, 2142), i, 1), schar(Math.imul(((Math.abs(ax) / 2) | 0), mod_val)));
         }
-        cptr.stU64(cptr.add(svc, 40), cptr.ldI64(cptr.add(svc, 40)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 673, __sl100), rn2(200)) : rn2(200)) + (800)) | 0)));
+        cptr.stI64(cptr.add(svc, 40), cptr.ldI64(cptr.add(svc, 40)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 673, __sl100), rn2(200)) : rn2(200)) + (800)) | 0)));
         do {
             if (debugcore(__sl38, (1))) {
                 let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
@@ -1189,15 +1189,15 @@ export function adjabil(oldlevel, newlevel) {
         prevabil = cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8))));
         if (oldlevel < cptr.ld1s(abil) && newlevel >= cptr.ld1s(abil) ? 1 : 0) {
             if (cptr.ld1s(abil) == 1)
-                cptr.stU64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) | (mask | 67108864n));
+                cptr.stI64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) | (mask | 67108864n));
             else
-                cptr.stU64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) | mask);
+                cptr.stI64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) | mask);
             if (!(cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) & (67108864n | 33554432n | 16777216n) & BigInt.asIntN(64, ~mask))) {
                 if (cptr.ld1s((cptr.ldPtr(cptr.add(abil, 16)))))
                     You_feel(__sl121, cptr.ldPtr(cptr.add(abil, 16)));
             }
         } else if (oldlevel >= cptr.ld1s(abil) && newlevel < cptr.ld1s(abil) ? 1 : 0) {
-            cptr.stU64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) & BigInt.asIntN(64, ~mask));
+            cptr.stI64((cptr.ldPtr(cptr.add(abil, 8))), cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) & BigInt.asIntN(64, ~mask));
             if (!(cptr.ldI64((cptr.ldPtr(cptr.add(abil, 8)))) & (67108864n | 33554432n | 16777216n))) {
                 if (cptr.ld1s((cptr.ldPtr(cptr.add(abil, 24)))))
                     You_feel(__sl121, cptr.ldPtr(cptr.add(abil, 24)));

@@ -474,7 +474,7 @@ export function gain_guardian_angel() {
             cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, ~2147483648n));
             if (cptr.ldI64(cptr.add(cptr.add(u, 1968), 104))) {
                 cptr.st1(cptr.add(mtmp, 65), 10);
-                (cptr.stU64(cptr.add(cptr.add(u, 1968), 104), cptr.ldU64(cptr.add(cptr.add(u, 1968), 104)) + 1n)) - (1n);
+                (cptr.stI64(cptr.add(cptr.add(u, 1968), 104), cptr.ldI64(cptr.add(cptr.add(u, 1968), 104)) + 1n)) - (1n);
             }
             newsym(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))

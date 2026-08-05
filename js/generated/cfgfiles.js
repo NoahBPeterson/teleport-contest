@@ -752,7 +752,7 @@ function cnf_line_LIVELOG(bufp) {
         config_error_add(__sl33);
         return 0;
     }
-    cptr.stU64(cptr.add(sysopt, 96), L);
+    cptr.stI64(cptr.add(sysopt, 96), L);
     return (1);
 }
 

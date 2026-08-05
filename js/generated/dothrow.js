@@ -385,7 +385,7 @@ function throw_obj(obj, shotlimit) {
 /** C ref: dothrow.c:297 — @param {CPtr} shotlimit_p @returns {CInt} */
 function ok_to_throw(shotlimit_p) {
     cptr.stI32(shotlimit_p, (Number(BigInt.asIntN(32, ((cptr.ldI64(cptr.add(gc, 328))) < 0n ? 0n : ((cptr.ldI64(cptr.add(gc, 328))) > 32767n ? 32767n : (cptr.ldI64(cptr.add(gc, 328)))))))));
-    cptr.stU64(cptr.add(gm, 8), 0n);
+    cptr.stI64(cptr.add(gm, 8), 0n);
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 2048n) != 0n)) {
         You(__sl12);
         return (0);
@@ -529,9 +529,9 @@ export function dofire() {
             autoquiver();
             obj = uquiver.v;
             if (obj) {
-                cptr.stU64(cptr.add(uquiver.v, 192), cptr.ldI64(cptr.add(uquiver.v, 192)) & BigInt.asIntN(64, ~512n));
+                cptr.stI64(cptr.add(uquiver.v, 192), cptr.ldI64(cptr.add(uquiver.v, 192)) & BigInt.asIntN(64, ~512n));
                 prinv(__sl15, obj, 0n);
-                cptr.stU64(cptr.add(uquiver.v, 192), cptr.ldI64(cptr.add(uquiver.v, 192)) | 512n);
+                cptr.stI64(cptr.add(uquiver.v, 192), cptr.ldI64(cptr.add(uquiver.v, 192)) | 512n);
             } else {
                 You(__sl16);
             }
@@ -682,9 +682,9 @@ export function walk_path(src_cc, dest_cc, check_proc, arg) {
 export function hurtle_jump(arg, x, y) {
     let res;
     let save_EWwalking = cptr.ldI64(cptr.add(cptr.add(u, 112), 50, 24));
-    cptr.stU64(cptr.add(cptr.add(u, 112), 50, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 50, 24)) | 536870912n);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 50, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 50, 24)) | 536870912n);
     res = hurtle_step(arg, x, y);
-    cptr.stU64(cptr.add(cptr.add(u, 112), 50, 24), save_EWwalking);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 50, 24), save_EWwalking);
     return res;
 }
 
@@ -797,7 +797,7 @@ export function hurtle_step(arg, x, y) {
     check_special_room((0));
     if (is_pool(x, y) && !cptr.ldI32(cptr.add(u, 1852)) ? 1 : 0) {
         if (is_waterwall(x, y) || !((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 50, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 50, 24)) ? 1 : 0) && !(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-            cptr.stU64(cptr.add(gm, 8), 0n);
+            cptr.stI64(cptr.add(gm, 8), 0n);
             void drown();
             return (0);
         } else if (!(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) && !stopping_short ? 1 : 0) {
@@ -1662,7 +1662,7 @@ export function thitmonst(mon, obj) {
             let wasthrown = schar((cptr.ldPtr(cptr.add(gt, 328)) !== null));
             let chopper = schar(((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 3 ? 1 : 0));
             if (hmode == 3) {
-                (cptr.stU64(cptr.add(cptr.add(u, 1968), 32), cptr.ldU64(cptr.add(cptr.add(u, 1968), 32)) + 1n)) - (1n);
+                (cptr.stI64(cptr.add(cptr.add(u, 1968), 32), cptr.ldI64(cptr.add(cptr.add(u, 1968), 32)) + 1n)) - (1n);
             }
             if (hmon(mon, obj, hmode, dieroll)) {
                 if (cptr.ldI32(cptr.add(mon, 200)))
@@ -1903,7 +1903,7 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
                     cptr.st1(cptr.add(eshkp, 4888), schar(cptr.ldI32(cptr.add(shkp, 168))));
                 if (((stolen_value(obj, x, y, cptr.ld1s(cptr.add(eshkp, 4888)), (0)) > 0n) && (cptr.ld1s(o_shop) != cptr.ld1s(cptr.add(cptr.add(u, 83), 0, 1)) || !inside_shop(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) ? 1 : 0) && cptr.ldI64(cptr.add(gh, 8)) != cptr.ldI64(cptr.add(eshkp, 4880)) ? 1 : 0)
                     make_angry_shk(shkp, x, y);
-                cptr.stU64(cptr.add(eshkp, 4880), cptr.ldI64(cptr.add(gh, 8)));
+                cptr.stI64(cptr.add(eshkp, 4880), cptr.ldI64(cptr.add(gh, 8)));
             }
         }
     }

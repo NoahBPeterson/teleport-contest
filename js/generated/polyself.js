@@ -428,190 +428,190 @@ export function set_uasmon() {
     cptr.stI16(cptr.add(u, 2818), cptr.ldI16(cptr.add(cptr.add(gy, 8), 22)));
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (1)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (2)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (4)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (8)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (16)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (32)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (64)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 68)) & (128)) != 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     {
         let save_uwep = uwep.v;
         uwep.v = null;
         do {
             if (resists_drli(cptr.add(gy, 8)))
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) | 268435456n);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) | 268435456n);
             else
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) & BigInt.asIntN(64, ~268435456n));
         } while (0);
         uwep.v = save_uwep;
     }
     do {
         if (((dmgtype(mdat, 1) || cptr.eq(mdat, cptr.add(mons, 133, 96)) ? 1 : 0) || dmgtype(mdat, 242) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((cptr.ld1s(cptr.add(mdat, 28)) == 32 || cptr.eq(mdat, cptr.add(mons, 246, 96)) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((cptr.eq(mdat, cptr.add(mons, 153, 96)) || ((cptr.eq((mdat), cptr.add(mons, 126, 96)) || cptr.eq((mdat), cptr.add(mons, 127, 96)) ? 1 : 0) || cptr.eq((mdat), cptr.add(mons, 129, 96)) ? 1 : 0) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (dmgtype(mdat, 36))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 16777216n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.eq((mdat), cptr.add(mons, 28, 96)) || cptr.eq((mdat), cptr.add(mons, 48, 96)) ? 1 : 0) || cptr.eq((mdat), cptr.add(mons, 49, 96)) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU16(cptr.add(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? mdat : cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)), 96)), 88)) & 256)))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 36, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((cptr.eq((mdat), cptr.add(mons, 153, 96)) || cptr.eq((mdat), cptr.add(mons, 119, 96)) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 33554432n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 67108864n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 47, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((cptr.ld1s(cptr.add((mdat), 28)) == 5 || cptr.ld1s(cptr.add((mdat), 28)) == 25 ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((((cptr.ldU64(cptr.add((mdat), 72)) & 1n) != 0n) && !(cptr.ld1s(cptr.add((mdat), 28)) == 5 || cptr.ld1s(cptr.add((mdat), 28)) == 25 ? 1 : 0) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 2n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 8n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (((cptr.ldU64(cptr.add((mdat), 72)) & 8388608n) != 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 57, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((cptr.eq(mdat, cptr.add(mons, 145, 96))))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 65, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if (!((cptr.ldU64(cptr.add((mdat), 72)) & 4096n) == 0n))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     do {
         if ((dmgtype_fromattack(mdat, 11, 13) || dmgtype_fromattack(mdat, 11, 15) ? 1 : 0))
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16)) | 268435456n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16)) | 268435456n);
         else
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16)) & BigInt.asIntN(64, ~268435456n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 38, 24), 16)) & BigInt.asIntN(64, ~268435456n));
     } while (0);
     if (!cptr.ldI32(cptr.add(program_state, 32)))
         float_vs_flight();
     polysense();
     if (((cptr.ldU64(cptr.add(windowprocs, 24)) & BigInt.asUintN(64, (8n | 128n))) != 0n))
         status_initialize((1));
-    cptr.stU64(cptr.add(gw, 176), 0n);
+    cptr.stI64(cptr.add(gw, 176), 0n);
 }
 
 /** C ref: polyself.c:131 */
 export function float_vs_flight() {
     let stuck_in_floor = schar((cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) != 2 ? 1 : 0));
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) && stuck_in_floor ? 1 : 0) ? 1 : 0)
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) | 536870912n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) | 536870912n);
     else
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) & BigInt.asIntN(64, ~536870912n));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) & BigInt.asIntN(64, ~536870912n));
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && stuck_in_floor ? 1 : 0)
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) | 536870912n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) | 536870912n);
     else
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) & BigInt.asIntN(64, ~536870912n));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) & BigInt.asIntN(64, ~536870912n));
     steed_vs_stealth();
     cptr.st1(disp, (1));
 }
@@ -619,9 +619,9 @@ export function float_vs_flight() {
 /** C ref: polyself.c:158 */
 export function steed_vs_stealth() {
     if ((cptr.ldPtr(cptr.add(u, 2424)) && !(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) ? 1 : 0)
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8)) | 67108864n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8)) | 67108864n);
     else
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8)) & BigInt.asIntN(64, ~67108864n));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 8)) & BigInt.asIntN(64, ~67108864n));
 }
 
 /** C ref: polyself.c:168 — @param {CInt} on */
@@ -629,14 +629,14 @@ function check_strangling(on) {
     if (on) {
         let was_strangled = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16)) != 0n));
         if ((uamul.v && cptr.ldI16(cptr.add(uamul.v, 32)) == 203 ? 1 : 0) && can_be_strangled(cptr.add(gy, 8)) ? 1 : 0) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16), 6n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16), 6n);
             cptr.st1(disp, (1));
             Your(__sl0, simpleonames(uamul.v), was_strangled ? __sl1 : __sl2, body_part(11));
             discover_object((203), (1), (1), (1));
         }
     } else {
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16)) && !can_be_strangled(cptr.add(gy, 8)) ? 1 : 0) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16), 0n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16), 0n);
             cptr.st1(disp, (1));
             You(__sl3);
         }
@@ -772,7 +772,7 @@ function newman() {
     if (cptr.ldI32(cptr.add(gs, 1384)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 361, __sl12), rn2(10)) : rn2(10)) ? 1 : 0)
         change_sex();
     adjabil(oldlvl, cptr.ldI32(cptr.add(u, 48)));
-    cptr.stU64(cptr.add(u, 2376), rndexp((0)));
+    cptr.stI64(cptr.add(u, 2376), rndexp((0)));
     redist_attr();
     hpmax = cptr.ldI32(cptr.add(u, 2200));
     for (i = 0; i < oldlvl; i++)
@@ -1079,7 +1079,7 @@ export function polyself(psflags) {
             }
             uskin.v = uarm.v;
             uarm.v = null;
-            cptr.stU64(cptr.add(uskin.v, 192), cptr.ldI64(cptr.add(uskin.v, 192)) | 536870912n);
+            cptr.stI64(cptr.add(uskin.v, 192), cptr.ldI64(cptr.add(uskin.v, 192)) | 536870912n);
             if (was_lit)
                 maybe_adjust_light(uskin.v, arm_light);
             update_inventory();
@@ -1202,7 +1202,7 @@ export function polymon(mntmp) {
         exercise(2, (1));
         return 0;
     }
-    if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 64), cptr.ldU64(cptr.add(cptr.add(u, 1968), 64)) + 1n)) - (1n)))
+    if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 64), cptr.ldI64(cptr.add(cptr.add(u, 1968), 64)) + 1n)) - (1n)))
         livelog_printf(32n, __sl35, an(pmname(cptr.add(mons, mntmp, 96), cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0)));
     exercise(4, (0));
     exercise(2, (1));
@@ -2095,7 +2095,7 @@ export function skinback(silently) {
             Your(__sl197);
         uarm.v = uskin.v;
         uskin.v = null;
-        cptr.stU64(cptr.add(uarm.v, 192), cptr.ldI64(cptr.add(uarm.v, 192)) & BigInt.asIntN(64, ~536870912n));
+        cptr.stI64(cptr.add(uarm.v, 192), cptr.ldI64(cptr.add(uarm.v, 192)) & BigInt.asIntN(64, ~536870912n));
         if (artifact_light(uarm.v))
             maybe_adjust_light(uarm.v, old_light);
     }
@@ -2497,7 +2497,7 @@ function polysense() {
     cptr.stI16(cptr.add(cptr.add(svc, 552), 24), -1);
     cptr.stPtr(cptr.add(cptr.add(svc, 552), 16), null);
     cptr.stU64(cptr.add(cptr.add(svc, 552), 8), 0n);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) & BigInt.asIntN(64, ~33554432n));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) & BigInt.asIntN(64, ~33554432n));
     switch (cptr.ldI32(cptr.add(u, 1808))) {
         case 115:
         case 113:
@@ -2506,13 +2506,13 @@ function polysense() {
         case 226:
         case 227:
         cptr.stU64(cptr.add(cptr.add(svc, 552), 8), BigInt.asUintN(64, (8n | 16n)));
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) | 33554432n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) | 33554432n);
         return;
     }
     if (((warnidx) >= 0 && (warnidx) < 383 ? 1 : 0)) {
         cptr.stI16(cptr.add(cptr.add(svc, 552), 24), warnidx);
         cptr.stPtr(cptr.add(cptr.add(svc, 552), 16), cptr.add(mons, warnidx, 96));
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) | 33554432n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) | 33554432n);
     }
 }
 

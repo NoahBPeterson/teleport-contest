@@ -282,8 +282,8 @@ function makemap_unmakemon(mtmp, migratory) {
         setpaid(mtmp);
     }
     if (migratory) {
-        cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 1n);
-        cptr.stU64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~(4 | 8 | 64))));
+        cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) | 1n);
+        cptr.stI64(cptr.add(mtmp, 256), cptr.ldI64(cptr.add(mtmp, 256)) & BigInt((~(4 | 8 | 64))));
         cptr.stPtr(mtmp, cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)));
         cptr.stPtr(cptr.add(cptr.add(svl, 1680), 87376), mtmp);
     }
@@ -338,7 +338,7 @@ export function wiz_map() {
         do {
             (cptr.stI32(cptr.add(a11y, 8), cptr.ldI32(cptr.add(a11y, 8)) + 1)) - (1);
         } while (0);
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16), 0n));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16), 0n));
         for (t = cptr.ldPtr(gf); t !== null; t = cptr.ldPtr(t)) {
             cptr.stI32(cptr.add(t, 24), 1);
             map_trap(t, 1);
@@ -353,8 +353,8 @@ export function wiz_map() {
                 cptr.stI32(cptr.add(a11y, 8), 0);
             }
         } while (0);
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_Hconf);
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16), save_Hhallu);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_Hconf);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16), save_Hhallu);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_map));
     return 0;
@@ -1108,8 +1108,8 @@ function count_obj(chain, total_count, total_size, top, recurse) {
         if (recurse && cptr.ldPtr(cptr.add(obj, 16)) ? 1 : 0)
             count_obj(cptr.ldPtr(cptr.add(obj, 16)), total_count, total_size, (1), (1));
     }
-    cptr.stU64(total_count, cptr.ldI64(total_count) + count);
-    cptr.stU64(total_size, cptr.ldI64(total_size) + size);
+    cptr.stI64(total_count, cptr.ldI64(total_count) + count);
+    cptr.stI64(total_size, cptr.ldI64(total_size) + size);
 }
 
 /** C ref: wizcmds.c:1156 — @param {CInt} win @param {CPtr} src @param {CPtr} chain @param {CInt} force @param {CPtr} total_count @param {CPtr} total_size */
@@ -1119,8 +1119,8 @@ function obj_chain(win, src, chain, force, total_count, total_size) {
     let size = cptr.box(0n);
     count_obj(chain, count, size, (1), (0));
     if ((count.v || size.v ? 1 : 0) || force ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1135,8 +1135,8 @@ function mon_invent_chain(win, src, chain, total_count, total_size) {
     for (mon = chain; mon; mon = cptr.ldPtr(mon))
         count_obj(cptr.ldPtr(cptr.add(mon, 280)), count, size, (1), (0));
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1157,8 +1157,8 @@ function contained_stats(win, src, total_count, total_size) {
     for (mon = cptr.ldPtr(cptr.add(gm, 192)); mon; mon = cptr.ldPtr(mon))
         count_obj(cptr.ldPtr(cptr.add(mon, 280)), count, size, (0), (1));
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1202,8 +1202,8 @@ function mon_chain(win, src, chain, force, total_count, total_size) {
         size += BigInt(size_monst(mon, incl_wsegs));
     }
     if ((count || size ? 1 : 0) || force ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count, size);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1225,30 +1225,30 @@ function misc_stats(win, total_count, total_size) {
         ++count.v;
         size.v += 40n;
     }
-    cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-    cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+    cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+    cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
     void cptr.sprintf(cptr.decay(hdrbuf), __sl107, 40n);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     count.v = (size.v = 0n);
     engr_stats(__sl108, cptr.decay(hdrbuf), count, size);
-    cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-    cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+    cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+    cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     count.v = (size.v = 0n);
     light_stats(__sl109, cptr.decay(hdrbuf), count, size);
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     timer_stats(__sl110, cptr.decay(hdrbuf), count, size);
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1258,8 +1258,8 @@ function misc_stats(win, total_count, total_size) {
         size.v += 32n;
     }
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl111, 32n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
@@ -1267,8 +1267,8 @@ function misc_stats(win, total_count, total_size) {
     count.v = (size.v = 0n);
     region_stats(__sl112, cptr.decay(hdrbuf), count, size);
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     }
@@ -1278,8 +1278,8 @@ function misc_stats(win, total_count, total_size) {
         size.v += 272n;
     }
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl113, (((count.v) == 1n) ? __sl41 : __sl114), 272n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
@@ -1290,8 +1290,8 @@ function misc_stats(win, total_count, total_size) {
         size.v += 184n;
     }
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl115, 184n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
@@ -1303,8 +1303,8 @@ function misc_stats(win, total_count, total_size) {
             size.v += BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(cptr.add(objects, idx, 120), 8))) + 1n)));
         }
     if (count.v || size.v ? 1 : 0) {
-        cptr.stU64(total_count, cptr.ldI64(total_count) + count.v);
-        cptr.stU64(total_size, cptr.ldI64(total_size) + size.v);
+        cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
+        cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.strcpy(cptr.decay(hdrbuf), __sl116);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));

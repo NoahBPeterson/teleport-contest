@@ -226,7 +226,7 @@ export function dosave0() {
             break __lbl_done;
         }
         if (nhfp && cptr.ldPtr(cptr.add(nhfp, 56)) ? 1 : 0) {
-            cptr.stU64(cptr.add(nhfp, 16), cptr.stU64(cptr.add(nhfp, 24), 0n));
+            cptr.stI64(cptr.add(nhfp, 16), cptr.stI64(cptr.add(nhfp, 24), 0n));
         }
         vision_recalc(2);
         if (cptr.ldI32(cptr.add(flags, 64)) == 4)
@@ -335,8 +335,8 @@ function savegamestate(nhfp) {
     relative_time_to_moves(cptr.add(svc, 48));
     relative_time_to_moves(cptr.add(cptr.add(svc, 96), 16));
     sfo_flag(nhfp, flags, __sl18);
-    cptr.stU64(cptr.add(urealtime, 16), getnow());
-    cptr.stU64(urealtime, cptr.ldI64(urealtime) + timet_delta(cptr.ldI64(cptr.add(urealtime, 16)), cptr.ldI64(cptr.add(urealtime, 8))));
+    cptr.stI64(cptr.add(urealtime, 16), getnow());
+    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(cptr.ldI64(cptr.add(urealtime, 16)), cptr.ldI64(cptr.add(urealtime, 8))));
     sfo_long(nhfp, svw, __sl19);
     ;
     sfo_int32(nhfp, cptr.add(svw, 8), __sl20);
@@ -345,7 +345,7 @@ function savegamestate(nhfp) {
     sfo_long(nhfp, urealtime, __sl23);
     ;
     sfo_char(nhfp, yyyymmddhhmmss(cptr.ldI64(cptr.add(urealtime, 8))), __sl24, 14);
-    cptr.stU64(cptr.add(urealtime, 8), cptr.ldI64(cptr.add(urealtime, 16)));
+    cptr.stI64(cptr.add(urealtime, 8), cptr.ldI64(cptr.add(urealtime, 16)));
     save_killers(nhfp);
     save_timers(nhfp, 1);
     save_light_sources(nhfp, 1);
@@ -717,7 +717,7 @@ function saveobjchn(nhfp, obj_p) {
             cptr.stI32(cptr.add(otmp, 168), 0);
             if ((cptr.ldI64(cptr.add(otmp, 192)) & (2097152n | 4194304n)) != 0n)
                 setworn(null, cptr.ldI64(cptr.add(otmp, 192)) & (2097152n | 4194304n));
-            cptr.stU64(cptr.add(otmp, 192), 0n);
+            cptr.stI64(cptr.add(otmp, 192), 0n);
             (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + 1)) - (1);
             dealloc_obj(otmp);
             (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + -1)) - (-1);

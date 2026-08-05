@@ -125,10 +125,10 @@ function init_rumors(fp) {
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
     if ((sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64(cptr.add(gt, 400)) > 0n ? 1 : 0) && cptr.ldI64(cptr.add(gf, 104)) > 0n ? 1 : 0) {
-        cptr.stU64(cptr.add(gt, 416), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gt, 408))) + cptr.ldI64(cptr.add(gt, 400))));
-        cptr.stU64(cptr.add(gf, 120), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gf, 112))) + cptr.ldI64(cptr.add(gf, 104))));
+        cptr.stI64(cptr.add(gt, 416), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gt, 408))) + cptr.ldI64(cptr.add(gt, 400))));
+        cptr.stI64(cptr.add(gf, 120), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gf, 112))) + cptr.ldI64(cptr.add(gf, 104))));
     } else {
-        cptr.stU64(cptr.add(gt, 400), -1n);
+        cptr.stI64(cptr.add(gt, 400), -1n);
         void fclose(fp);
     }
 }
@@ -182,7 +182,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
             exercise(2, schar((adjtruth > 0)));
     } else {
         couldnt_open_file(__sl0);
-        cptr.stU64(cptr.add(gt, 400), BigInt((-1)));
+        cptr.stI64(cptr.add(gt, 400), BigInt((-1)));
     }
     if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0) {
         let src = cptr.add(rumor_buf, marklen);
@@ -255,7 +255,7 @@ export function rumor_check() {
             __go_no_rumors = true; break __skip_no_rumors;
         } else {
             couldnt_open_file(__sl0);
-            cptr.stU64(cptr.add(gt, 400), BigInt((-1)));
+            cptr.stI64(cptr.add(gt, 400), BigInt((-1)));
         }
     }
     if (__go_no_rumors) {
@@ -552,7 +552,7 @@ export function doconsult(oracl) {
     let major_cost = (500 + Math.imul(50, cptr.ldI32(cptr.add(u, 48)))) | 0;
     let add_xpts;
     let qbuf = new Uint8Array(128);
-    cptr.stU64(cptr.add(gm, 8), 0n);
+    cptr.stI64(cptr.add(gm, 8), 0n);
     umoney = money_cnt(cptr.ldPtr(cptr.add(gi, 8)));
     if (!oracl) {
         There(__sl52);

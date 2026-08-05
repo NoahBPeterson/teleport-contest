@@ -136,7 +136,7 @@ export function create_region(rects, nrect) {
             cptr.stI16(cptr.add(reg, 6), cptr.ldI16(cptr.add(cptr.add(rects, i, 8), 6)));
         cptr.memcpy(cptr.add(cptr.ldPtr(cptr.add(reg, 8)), i, 8), cptr.add(rects, i, 8), 8);
     }
-    cptr.stU64(cptr.add(reg, 40), -1n);
+    cptr.stI64(cptr.add(reg, 40), -1n);
     cptr.st1(cptr.add(reg, 18), (0));
     cptr.stI32(cptr.add(reg, 20), 0);
     cptr.stPtr(cptr.add(reg, 24), null);
@@ -288,7 +288,7 @@ export function remove_region(reg) {
     if (cptr.stI32(cptr.add(svn, 48), cptr.ldI32(cptr.add(svn, 48)) + -1) != i)
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), cptr.ldI32(cptr.add(svn, 48)), 8)));
     cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), cptr.ldI32(cptr.add(svn, 48)), 8), null);
-    cptr.stU64(cptr.add(reg, 40), -2n);
+    cptr.stI64(cptr.add(reg, 40), -2n);
     if (cptr.ld1s(cptr.add(reg, 76))) {
         let pass;
         let tmp_uinwater = schar(cptr.ldI32(cptr.add(u, 1852)));
@@ -339,7 +339,7 @@ export function run_regions() {
     }
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
         if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40)) > 0n)
-            (cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40), cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40)) + -1n)) - (-1n);
+            (cptr.stI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40), cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40)) + -1n)) - (-1n);
         f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58));
         if (f_indx != (-1) && ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) ? 1 : 0)
             void (callbacks[f_indx])(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), null);
@@ -637,7 +637,7 @@ export function rest_regions(nhfp) {
         sfi_long(nhfp, cptr.add(r, 40), __sl27);
         ;
         if (cptr.ldI64(cptr.add(r, 40)) >= 0n)
-            cptr.stU64(cptr.add(r, 40), (cptr.ldI64(cptr.add(r, 40)) > tmstamp.v) ? BigInt.asIntN(64, cptr.ldI64(cptr.add(r, 40)) - tmstamp.v) : 0n);
+            cptr.stI64(cptr.add(r, 40), (cptr.ldI64(cptr.add(r, 40)) > tmstamp.v) ? BigInt.asIntN(64, cptr.ldI64(cptr.add(r, 40)) - tmstamp.v) : 0n);
         sfi_short(nhfp, cptr.add(r, 48), __sl28);
         sfi_short(nhfp, cptr.add(r, 50), __sl29);
         sfi_short(nhfp, cptr.add(r, 52), __sl30);
@@ -679,16 +679,16 @@ export function region_stats(hdrfmt, hdrbuf, count, size) {
     let rg;
     let i;
     void cptr.sprintf(hdrbuf, hdrfmt, 96n, 8n);
-    cptr.stU64(count, BigInt(cptr.ldI32(cptr.add(svn, 48))));
-    cptr.stU64(size, BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(gm, 372))) * 96n));
+    cptr.stI64(count, BigInt(cptr.ldI32(cptr.add(svn, 48))));
+    cptr.stI64(size, BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(gm, 372))) * 96n));
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); ++i) {
         rg = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8));
-        cptr.stU64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16(cptr.add(rg, 16))) * 8n));
+        cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16(cptr.add(rg, 16))) * 8n));
         if (cptr.ldPtr(cptr.add(rg, 24)))
-            cptr.stU64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(rg, 24))) + 1n))));
+            cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(rg, 24))) + 1n))));
         if (cptr.ldPtr(cptr.add(rg, 32)))
-            cptr.stU64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(rg, 32))) + 1n))));
-        cptr.stU64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16(cptr.add(rg, 74))) * 4n));
+            cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(rg, 32))) + 1n))));
+        cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16(cptr.add(rg, 74))) * 4n));
     }
 }
 
@@ -720,7 +720,7 @@ export function expire_gas_cloud(p1, p2) {
         damage = (damage / 2) | 0;
         cptr.memcpy(cptr.add(reg, 88), cptr.add(cg, 536), 8);
         cptr.stI32(cptr.add(reg, 88), damage);
-        cptr.stU64(cptr.add(reg, 40), 2n);
+        cptr.stI64(cptr.add(reg, 40), 2n);
         return (0);
     }
     for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
@@ -752,7 +752,7 @@ export function inside_gas_cloud(p1, p2) {
     let umon = mtmp ? mtmp : cptr.add(gy, 8);
     let dam = cptr.ldI32(cptr.add(reg, 88));
     if ((cptr.ldI64(cptr.add(reg, 40)) < 20n && umon ? 1 : 0) && cptr.eq(cptr.ldPtr(cptr.add(umon, 8)), cptr.add(mons, 106, 96)) ? 1 : 0)
-        cptr.stU64(cptr.add(reg, 40), cptr.ldI64(cptr.add(reg, 40)) + 5n);
+        cptr.stI64(cptr.add(reg, 40), cptr.ldI64(cptr.add(reg, 40)) + 5n);
     if (dam < 1)
         return (0);
     if (!mtmp) {
@@ -898,8 +898,8 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
         cptr.stI16(cptr.add(tmprect, 2), cptr.stI16(cptr.add(tmprect, 6), cptr.ldI16(cptr.add(ycoords, i, 2))));
         add_rect_to_reg(cloud, tmprect);
     }
-    cptr.stU64(cptr.add(cloud, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1303, __sl53), rn2(3)) : rn2(3)) + (4)) | 0)));
-    cptr.stU64(cptr.add(cloud, 40), (BigInt.asIntN(64, cptr.ldI64(cptr.add(cloud, 40)) * BigInt(cloudsize))) / BigInt(newidx));
+    cptr.stI64(cptr.add(cloud, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1303, __sl53), rn2(3)) : rn2(3)) + (4)) | 0)));
+    cptr.stI64(cptr.add(cloud, 40), (BigInt.asIntN(64, cptr.ldI64(cptr.add(cloud, 40)) * BigInt(cloudsize))) / BigInt(newidx));
     make_gas_cloud(cloud, damage, inside_cloud);
     return cloud;
 }

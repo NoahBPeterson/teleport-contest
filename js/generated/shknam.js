@@ -1289,7 +1289,7 @@ function shkinit(shp, sroom) {
     cptr.memcpy(cptr.add(eshkp, 54), cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4), 4);
     cptr.stI16(cptr.add(eshkp, 50), sx.v);
     cptr.stI16(cptr.add(cptr.add(eshkp, 50), 2), sy.v);
-    cptr.stU64(cptr.add(eshkp, 8), cptr.stU64(cptr.add(eshkp, 16), cptr.stU64(cptr.add(eshkp, 24), cptr.stU64(cptr.add(eshkp, 32), 0n))));
+    cptr.stI64(cptr.add(eshkp, 8), cptr.stI64(cptr.add(eshkp, 16), cptr.stI64(cptr.add(eshkp, 24), cptr.stI64(cptr.add(eshkp, 32), 0n))));
     cptr.st1(cptr.add(eshkp, 46), cptr.st1(cptr.add(eshkp, 47), cptr.st1(cptr.add(eshkp, 48), (0))));
     cptr.stI32(cptr.add(eshkp, 64), cptr.stI32(cptr.add(eshkp, 4892), 0));
     cptr.stPtr(cptr.add(eshkp, 4872), null);

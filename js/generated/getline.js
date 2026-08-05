@@ -62,7 +62,7 @@ function hooked_tty_getlin(query, bufp, hook) {
                 cptr.st1(cptr.add(obufp, 0), 0);
                 bufp = obufp;
                 tty_clear_nhwindow(WIN_MESSAGE.v);
-                cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
+                cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 addtopl(query);
                 addtopl(__sl1);
                 addtopl(obufp);
@@ -91,7 +91,7 @@ function hooked_tty_getlin(query, bufp, hook) {
                 cptr.stI32(cptr.add(ttyDisplay, 36), sav);
                 doprev = 0;
                 tty_clear_nhwindow(WIN_MESSAGE.v);
-                cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
+                cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 addtopl(query);
                 addtopl(__sl1);
                 cptr.st1(bufp, 0);
@@ -99,7 +99,7 @@ function hooked_tty_getlin(query, bufp, hook) {
             }
         } else if (doprev) {
             tty_clear_nhwindow(WIN_MESSAGE.v);
-            cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
+            cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
             doprev = 0;
             addtopl(query);
             addtopl(__sl1);

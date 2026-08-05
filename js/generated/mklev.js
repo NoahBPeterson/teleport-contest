@@ -832,7 +832,7 @@ export function clear_level_structures() {
     cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 100), 0);
     cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 104), 0);
     cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 108), 0);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 120), 0n);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 120), 0n);
     cptr.stI32(cptr.add(svn, 44), 0);
     cptr.stI16(cptr.add(cptr.add(svr, 0, 224), 2), i16((-1)));
     cptr.stI32(cptr.add(gn, 16), 0);
@@ -941,7 +941,7 @@ function fill_ordinary_room(croom, bonus_items) {
                     otyp = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1063, __sl21), rn2(2)) : rn2(2)) ? 307 : cptr.ldI32(cptr.add(__static_fill_ordinary_room_supply_items, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1063, __sl21), rn2(9)) : rn2(9)), 4));
                     otmp = mksobj(otyp, (1), (0));
                     if (otyp == 307 && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1065, __sl21), rn2(2)) : rn2(2)) ? 1 : 0) {
-                        cptr.stU64(cptr.add(otmp, 40), 2n);
+                        cptr.stI64(cptr.add(otmp, 40), 2n);
                         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
                     }
                     cursed = schar(cptr.ldI32(cptr.add(otmp, 56)));
@@ -1254,7 +1254,7 @@ export function mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_che
                 if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1515, __sl40), rn2(1000)) : rn2(1000)) < goldprob) {
                     if ((otmp = mksobj(438, (0), (0))) !== null) {
                         cptr.stI16(cptr.add(otmp, 28), x), cptr.stI16(cptr.add(otmp, 30), y);
-                        cptr.stU64(cptr.add(otmp, 40), BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1518, __sl40), rnd(Math.imul(goldprob, 3))) : rnd(Math.imul(goldprob, 3))))));
+                        cptr.stI64(cptr.add(otmp, 40), BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1518, __sl40), rnd(Math.imul(goldprob, 3))) : rnd(Math.imul(goldprob, 3))))));
                         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
                         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1520, __sl40), rn2(3)) : rn2(3)))
                             add_to_buried(otmp);
@@ -1529,7 +1529,7 @@ function mktrap_victim(ttmp) {
         victim_mnum = 165;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1912, __sl45), rn2(10)) : rn2(10))) {
             otmp = mksobj((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1913, __sl45), rn2(4)) : rn2(4)) ? 224 : 225, (1), (0));
-            cptr.stU64(cptr.add(otmp, 40), 1n);
+            cptr.stI64(cptr.add(otmp, 40), 1n);
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
             curse(otmp);
             place_object(otmp, x, y);
@@ -1544,7 +1544,7 @@ function mktrap_victim(ttmp) {
     if (victim_mnum == 260 && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1930, __sl45), rn2(25)) : rn2(25)) ? 1 : 0)
         victim_mnum = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1931, __sl45), rn2((343 - 331) | 0)) : rn2((343 - 331) | 0)) + (331)) | 0);
     otmp = mkcorpstat(265, null, cptr.add(mons, victim_mnum, 96), x, y, 8);
-    cptr.stU64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(otmp, 184)) - (BigInt.asIntN(64, (50n) + 1n)));
+    cptr.stI64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(otmp, 184)) - (BigInt.asIntN(64, (50n) + 1n)));
 }
 
 /** C ref: mklev.c:1938 — @param {CUInt} mktrapflags @returns {CInt} */
@@ -1839,7 +1839,7 @@ function mkgrave(croom) {
     make_grave(cptr.ldI16(m), cptr.ldI16(cptr.add(m, 2)), dobell ? __sl61 : null);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2370, __sl60), rn2(3)) : rn2(3))) {
         let gold = mksobj(438, (1), (0));
-        cptr.stU64(cptr.add(gold, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2378, __sl60), rnd(20)) : rnd(20)) + Math.imul(level_difficulty(), (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2378, __sl60), rnd(5)) : rnd(5)))) | 0)));
+        cptr.stI64(cptr.add(gold, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2378, __sl60), rnd(20)) : rnd(20)) + Math.imul(level_difficulty(), (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2378, __sl60), rnd(5)) : rnd(5)))) | 0)));
         cptr.stI32(cptr.add(gold, 36), weight(gold) >>> 0);
         cptr.stI16(cptr.add(gold, 28), cptr.ldI16(m)), cptr.stI16(cptr.add(gold, 30), cptr.ldI16(cptr.add(m, 2)));
         add_to_buried(gold);

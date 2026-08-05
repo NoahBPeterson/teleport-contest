@@ -167,13 +167,25 @@ export function ldU64(p) {
   return v;
 }
 
-/** 64-bit store, little-endian. @param {CPtr} p @param {bigint|number} v */
+/** 64-bit store into an unsigned 64-bit location, little-endian. @param {CPtr} p @param {bigint|number} v */
 export function stU64(p, v) {
   if (p.isBox) { p.v = BigInt.asUintN(64, BigInt(v)); return v; }
   const b = p.buf, o = p.off;
   let x = BigInt(v);
   for (let i = 0; i < 8; i++) { b[o + i] = Number(x & 0xFFn); x >>= 8n; }
   return v;
+}
+
+/**
+ * 64-bit store into a *signed* 64-bit location (long/long long/int64_t).
+ * Byte-identical to stU64 for buffer locations; boxes keep the signed
+ * canonical form so raw `.v` reads see C's value (like stI32's `v|0` and
+ * stI16's sign-extension).
+ * @param {CPtr} p @param {bigint|number} v
+ */
+export function stI64(p, v) {
+  if (p.isBox) { p.v = BigInt.asIntN(64, BigInt(v)); return v; }
+  return stU64(p, v);
 }
 
 // -------------------------------------------- inc/dec on pointer variables ----

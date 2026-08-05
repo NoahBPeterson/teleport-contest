@@ -288,7 +288,7 @@ export function init_nhfile(nhfp) {
     cptr.st1(cptr.add(nhfp, 36), schar(((cptr.ld1s(bei)) == 0)));
     cptr.stPtr(cptr.add(nhfp, 56), null);
     cptr.stPtr(cptr.add(nhfp, 64), null);
-    cptr.stU64(cptr.add(nhfp, 16), cptr.stU64(cptr.add(nhfp, 24), 0n));
+    cptr.stI64(cptr.add(nhfp, 16), cptr.stI64(cptr.add(nhfp, 24), 0n));
     cptr.st1(cptr.add(nhfp, 35), 0);
     cptr.stI32(cptr.add(nhfp, 12), 0);
     cptr.st1(cptr.add(nhfp, 72), 0);
@@ -1128,8 +1128,8 @@ export function lock_file(filename, whichprefix, retryct) {
     }
     cptr.stI16(cptr.add(sflock, 20), 3);
     cptr.stI16(cptr.add(sflock, 22), 0);
-    cptr.stU64(sflock, 0n);
-    cptr.stU64(cptr.add(sflock, 8), 0n);
+    cptr.stI64(sflock, 0n);
+    cptr.stI64(cptr.add(sflock, 8), 0n);
     while (fcntl(lockfd, 8, sflock) == -1) {
         if (retryct--) {
             if (!cptr.ldI32(cptr.add(program_state, 8)))
@@ -1205,7 +1205,7 @@ function wizkit_addinv(obj) {
         add_to_migration(obj);
         cptr.stI16(cptr.add(obj, 28), 0);
         cptr.stI16(cptr.add(obj, 30), 1);
-        cptr.stU64(cptr.add(obj, 192), BigInt((9 | 1024 | 2048)));
+        cptr.stI64(cptr.add(obj, 192), BigInt((9 | 1024 | 2048)));
     } else {
         void addinv(obj);
     }

@@ -520,7 +520,7 @@ export function object_from_map(glyph, x, y, obj_p) {
             obj_stop_timers(otmp);
         fakeobj = (1);
         if (cptr.ld1s(cptr.add(otmp, 49)) == 12)
-            cptr.stU64(cptr.add(otmp, 40), 2n);
+            cptr.stI64(cptr.add(otmp, 40), 2n);
         else if (cptr.ldI16(cptr.add(otmp, 32)) == 285)
             cptr.st1(cptr.add(otmp, 48), schar(cptr.ldI32(cptr.add(svc, 16))));
         if (mtmp && (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 56))) != -1 ? 1 : 0) ? 1 : 0) {
@@ -1105,9 +1105,9 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
         } else {
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4), schar(((idx == 48) ? 18 : ((idx == 40) ? 20 : ((idx == 41) ? 21 : 33)))));
         }
-        cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
+        cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
         void cptr.strcpy(mbuf, waterbody_name(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))));
-        cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
+        cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4), save_ltyp);
         if (!strcmp(mbuf, __sl137))
             cptr.st1(cptr.add(mbuf, 4), 0);

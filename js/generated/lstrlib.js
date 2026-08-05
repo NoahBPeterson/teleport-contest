@@ -552,7 +552,7 @@ function start_capture(ms, s, p, what) {
     if (level >= 32)
         luaL_error(cptr.ldPtr(cptr.add(ms, 24)), __sl20);
     cptr.stPtr(cptr.add(cptr.add(ms, 40), level, 16), s);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(ms, 40), level, 16), 8), BigInt(what));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(ms, 40), level, 16), 8), BigInt(what));
     cptr.st1(cptr.add(ms, 36), uchar(((level + 1) | 0)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
         (cptr.st1(cptr.add(ms, 36), cptr.ld1u(cptr.add(ms, 36)) + -1)) - (-1);
@@ -563,9 +563,9 @@ function start_capture(ms, s, p, what) {
 function end_capture(ms, s, p) {
     let l = capture_to_close(ms);
     let res;
-    cptr.stU64(cptr.add(cptr.add(cptr.add(ms, 40), l, 16), 8), cptr.diff(s, cptr.ldPtr(cptr.add(cptr.add(ms, 40), l, 16))));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(ms, 40), l, 16), 8), cptr.diff(s, cptr.ldPtr(cptr.add(cptr.add(ms, 40), l, 16))));
     if (cptr.eq((res = match(ms, s, p)), (null)))
-        cptr.stU64(cptr.add(cptr.add(cptr.add(ms, 40), l, 16), 8), BigInt((-1)));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(ms, 40), l, 16), 8), BigInt((-1)));
     return res;
 }
 

@@ -54,7 +54,7 @@ export function luaM_free_(L, block, osize) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     (void 0);
     ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, 0n));
-    cptr.stU64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) - BigInt.asIntN(64, osize));
+    cptr.stI64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) - BigInt.asIntN(64, osize));
 }
 
 /** C ref: lmem.c:162 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
@@ -79,7 +79,7 @@ export function luaM_realloc_(L, block, osize, nsize) {
             return (null);
     }
     (void 0);
-    cptr.stU64(cptr.add(g, 24), BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64(cptr.add(g, 24))) + nsize)) - osize)));
+    cptr.stI64(cptr.add(g, 24), BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64(cptr.add(g, 24))) + nsize)) - osize)));
     return newblock;
 }
 
@@ -103,7 +103,7 @@ export function luaM_malloc_(L, size, tag) {
             if (cptr.eq(newblock, (null)))
                 luaD_throw(L, 4);
         }
-        cptr.stU64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) + BigInt.asIntN(64, size));
+        cptr.stI64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) + BigInt.asIntN(64, size));
         return newblock;
     }
 }

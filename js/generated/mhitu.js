@@ -445,7 +445,7 @@ export function mpoisons_subj(mtmp, mattk) {
 
 /** C ref: mhitu.c:163 */
 export function u_slow_down() {
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
     if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 64, 24)) ? 1 : 0))
         You(__sl36);
     else
@@ -941,7 +941,7 @@ export function mattacku(mtmp) {
             bot();
         if (cptr.ldI32(cptr.add(sum, i, 4)) == 1) {
             if ((cptr.ldI64(cptr.add(u, 2400)) && cptr.ldI64(cptr.add(u, 2400)) < cptr.ldI64(cptr.add(svm, 8)) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 940, __sl62), rn2(10)) : rn2(10)) ? 1 : 0) {
-                cptr.stU64(cptr.add(gm, 8), BigInt((-1)));
+                cptr.stI64(cptr.add(gm, 8), BigInt((-1)));
                 cptr.stPtr(cptr.add(gn, 8), __sl88);
             }
         }

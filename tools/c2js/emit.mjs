@@ -453,7 +453,7 @@ export class Emitter {
     if (/^enum\s/.test(typeQ || '') || (rn && this.records.get(rn)?.tag === 'enum')) return this.cptrCall('stI32', locCode, valueCode);
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return this.cptrCall('st1', locCode, valueCode);
-    if (t.cls === 'int' && t.bits === 64) return this.cptrCall('stU64', locCode, valueCode);
+    if (t.cls === 'int' && t.bits === 64) return this.cptrCall(t.signed ? 'stI64' : 'stU64', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 32) return this.cptrCall('stI32', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 16) return this.cptrCall('stI16', locCode, valueCode);
     if (t.cls === 'f64') return this.cptrCall('stF64', locCode, valueCode);
@@ -850,8 +850,8 @@ export class Emitter {
             const t = parseType(loc.elemQ);
             if (t.bits === 8 && n.isPostfix && n.opcode === '++') return { code: this.cptrCall('postinc1', loc.code), prec: PREC.atom, rep: 'val' };
             const one = t.bits === 64 ? '1n' : '1';
-            const ld = t.bits === 64 ? 'ldU64' : t.bits === 32 ? 'ldI32' : t.bits === 16 ? 'ldI16' : t.signed ? 'ld1s' : 'ld1u';
-            const st = t.bits === 64 ? 'stU64' : t.bits === 32 ? 'stI32' : t.bits === 16 ? 'stI16' : 'st1';
+            const ld = t.bits === 64 ? (t.signed ? 'ldI64' : 'ldU64') : t.bits === 32 ? 'ldI32' : t.bits === 16 ? 'ldI16' : t.signed ? 'ld1s' : 'ld1u';
+            const st = t.bits === 64 ? (t.signed ? 'stI64' : 'stU64') : t.bits === 32 ? 'stI32' : t.bits === 16 ? 'stI16' : 'st1';
             const delta = n.opcode === '++' ? one : `-${one}`;
             const store = this.cptrCall(st, loc.code, `${this.cptrCall(ld, loc.code)} + ${delta}`);
             // prefix: the store yields the new value; postfix: subtract the

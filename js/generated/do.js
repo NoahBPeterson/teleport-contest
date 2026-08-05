@@ -567,7 +567,7 @@ export function doaltarobj(obj) {
     if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
         return;
     if (cptr.ld1s(cptr.add(obj, 49)) != 12) {
-        if (!cptr.ld1s(cptr.add(svc, 77)) && !((cptr.stU64(cptr.add(cptr.add(u, 1968), 24), cptr.ldU64(cptr.add(cptr.add(u, 1968), 24)) + 1n)) - (1n)) ? 1 : 0)
+        if (!cptr.ld1s(cptr.add(svc, 77)) && !((cptr.stI64(cptr.add(cptr.add(u, 1968), 24), cptr.ldI64(cptr.add(cptr.add(u, 1968), 24)) + 1n)) - (1n)) ? 1 : 0)
             livelog_printf(32n, __sl49, doname(obj));
     } else {
         cptr.stI32(cptr.add(obj, 60), cptr.stI32(cptr.add(obj, 56), 0));
@@ -889,7 +889,7 @@ function drop(obj) {
         if (!can_reach_floor((1))) {
             let levhack = finesse_ahriman(obj);
             if (levhack)
-                cptr.stU64(cptr.add(cptr.add(u, 112), 48, 24), 4096n);
+                cptr.stI64(cptr.add(cptr.add(u, 112), 48, 24), 4096n);
             if (cptr.ld1s(cptr.add(flags, 48)))
                 You(__sl111, doname(obj));
             freeinv(obj);
@@ -1173,8 +1173,8 @@ export function dodown() {
                 for (obj = cptr.ldPtr(cptr.add(gi, 8)); obj; obj = cptr.ldPtr(obj)) {
                     if (cptr.ld1s(cptr.add(obj, 51)) && artifact_has_invprop(obj, 48) ? 1 : 0) {
                         if (cptr.ldI64(cptr.add(obj, 184)) < cptr.ldI64(cptr.add(svm, 8)))
-                            cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
-                        cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl2, 1165, __sl125), rnz(100)) : rnz(100))));
+                            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
+                        cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl2, 1165, __sl125), rnz(100)) : rnz(100))));
                     }
                 }
             }
@@ -2066,7 +2066,7 @@ export function set_wounded_legs(side, timex) {
         (cptr.st1(cptr.add(cptr.add(u, 2160), 3, 1), cptr.ld1s(cptr.add(cptr.add(u, 2160), 3, 1)) + -1)) - (-1);
     if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 26, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 26, 24)) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 26, 24), 16)) & 16777215n) < BigInt(timex) ? 1 : 0)
         set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), 26, 24), 16), BigInt(timex));
-    cptr.stU64(cptr.add(cptr.add(u, 112), 26, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 26, 24)) | side);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 26, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 26, 24)) | side);
     encumber_msg();
 }
 
@@ -2082,7 +2082,7 @@ export function heal_legs(how) {
                 legs = makeplural(legs);
             Your(__sl260, legs, vtense(legs, __sl261));
         }
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 26, 24), 16), cptr.stU64(cptr.add(cptr.add(u, 112), 26, 24), 0n));
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 26, 24), 16), cptr.stI64(cptr.add(cptr.add(u, 112), 26, 24), 0n));
         if (how == 0)
             encumber_msg();
     }

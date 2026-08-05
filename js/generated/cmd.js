@@ -782,7 +782,7 @@ function doprev_message() {
 function timed_occupation() {
     (timed_occ_fn)();
     if (cptr.ldI64(cptr.add(gm, 8)) > 0n)
-        (cptr.stU64(cptr.add(gm, 8), cptr.ldU64(cptr.add(gm, 8)) + -1n)) - (-1n);
+        (cptr.stI64(cptr.add(gm, 8), cptr.ldI64(cptr.add(gm, 8)) + -1n)) - (-1n);
     return cptr.ldI64(cptr.add(gm, 8)) > 0n;
 }
 
@@ -1684,7 +1684,7 @@ export function set_move_cmd(dir, run) {
     cptr.st1(cptr.add(svc, 72), cptr.st1(cptr.add(svc, 73), 0));
     if (!cptr.ldI64(cptr.add(gd, 16)) && !cptr.ldI32(cptr.add(u, 12)) ? 1 : 0) {
         cptr.stI32(cptr.add(svc, 8), run >>> 0);
-        cptr.stU64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | BigInt((!run ? 1 : 2)));
+        cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | BigInt((!run ? 1 : 2)));
     }
 }
 
@@ -1848,11 +1848,11 @@ export function do_rush() {
     if ((cptr.ldI64(cptr.add(gd, 16)) & 2n)) {
         Norep(__sl107);
         cptr.stI32(cptr.add(svc, 8), 0);
-        cptr.stU64(cptr.add(gd, 16), 0n);
+        cptr.stI64(cptr.add(gd, 16), 0n);
         return 2;
     }
     cptr.stI32(cptr.add(svc, 8), 2);
-    cptr.stU64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
+    cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
     return 0;
 }
 
@@ -1861,11 +1861,11 @@ export function do_run() {
     if ((cptr.ldI64(cptr.add(gd, 16)) & 2n)) {
         Norep(__sl108);
         cptr.stI32(cptr.add(svc, 8), 0);
-        cptr.stU64(cptr.add(gd, 16), 0n);
+        cptr.stI64(cptr.add(gd, 16), 0n);
         return 2;
     }
     cptr.stI32(cptr.add(svc, 8), 3);
-    cptr.stU64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
+    cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
     return 0;
 }
 
@@ -1874,11 +1874,11 @@ export function do_fight() {
     if (cptr.ld1s(cptr.add(svc, 74))) {
         Norep(__sl109);
         cptr.st1(cptr.add(svc, 74), 0);
-        cptr.stU64(cptr.add(gd, 16), 0n);
+        cptr.stI64(cptr.add(gd, 16), 0n);
         return 2;
     }
     cptr.st1(cptr.add(svc, 74), 1);
-    cptr.stU64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 1n);
+    cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 1n);
     return 0;
 }
 
@@ -4216,8 +4216,8 @@ function reset_cmd_vars(reset_cmdq) {
     cptr.stI32(cptr.add(svc, 8), 0);
     cptr.st1(cptr.add(svc, 75), cptr.st1(cptr.add(svc, 74), (0)));
     cptr.st1(cptr.add(svc, 78), cptr.st1(cptr.add(svc, 79), (0)));
-    cptr.stU64(cptr.add(gd, 16), 0n);
-    cptr.stU64(cptr.add(gm, 8), 0n);
+    cptr.stI64(cptr.add(gd, 16), 0n);
+    cptr.stI64(cptr.add(gm, 8), 0n);
     cptr.st1(cptr.add(iflags, 135), (0));
     cptr.st1(cptr.add(svc, 72), cptr.st1(cptr.add(svc, 73), 0));
     if (cptr.ldPtr(cptr.add(gt, 368))) {
@@ -4400,7 +4400,7 @@ export function rhack(key) {
         } else if ((cptr.ldI64(cptr.add(gd, 16)) & 2n) != 0n) {
             if (firsttime) {
                 if (!cptr.ldI64(cptr.add(gm, 8)))
-                    cptr.stU64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
+                    cptr.stI64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
                 cptr.stI32(cptr.add(u, 44), 0);
             }
             cptr.st1(cptr.add(svc, 79), (1));
@@ -4445,7 +4445,7 @@ export function rhack(key) {
             cptr.st1(cptr.add(iflags, 84), cptr.ld1s(cptr.add(iflags, 83)));
         }
         cptr.st1(cptr.add(svc, 78), (0));
-        cptr.stU64(cptr.add(gm, 8), 0n);
+        cptr.stI64(cptr.add(gm, 8), 0n);
         return;
         __pc = -1;
         continue;
@@ -5406,7 +5406,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let historicmsg = schar((((gc_flags & 1) >>> 0) != 0));
     let conditionalmsg = schar((((gc_flags & 2) >>> 0) != 0));
     let echoalways = schar((((gc_flags & 4) >>> 0) != 0));
-    cptr.stU64(count, 0n);
+    cptr.stI64(count, 0n);
     for (; ; ) {
         if (inkey) {
             key = inkey;
@@ -5432,7 +5432,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
         } else if (key == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) {
             break;
         } else if (!allowchars || cptr.strchr(allowchars, key) ? 1 : 0) {
-            cptr.stU64(count, cnt);
+            cptr.stI64(count, cnt);
             if (cptr.ldI64(count) != cnt)
                 impossible(__sl638);
             break;
@@ -5462,7 +5462,7 @@ function parse() {
     let foo;
     let bind;
     cptr.st1(cptr.add(iflags, 92), (1));
-    cptr.stU64(cptr.add(gc, 328), 0n);
+    cptr.stI64(cptr.add(gc, 328), 0n);
     cptr.st1(cptr.add(svc, 78), (1));
     flush_screen(1);
     cptr.stI32(cptr.add(program_state, 104), 1);
@@ -5470,19 +5470,19 @@ function parse() {
         cptr.stI32(cptr.add(program_state, 104), 1);
         foo = get_count(null, 0, 32767n, cptr.add(gc, 328), 0);
     }
-    cptr.stU64(gl, cptr.ldI64(cptr.add(gc, 328)));
+    cptr.stI64(gl, cptr.ldI64(cptr.add(gc, 328)));
     if (foo == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) {
         (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
-        cptr.stU64(cptr.add(gc, 328), 0n);
-        cptr.stU64(gl, 0n);
+        cptr.stI64(cptr.add(gc, 328), 0n);
+        cptr.stI64(gl, 0n);
     } else if (cptr.ldI32(gi)) {
-        cptr.stU64(cptr.add(gc, 328), cptr.ldI64(gl));
+        cptr.stI64(cptr.add(gc, 328), cptr.ldI64(gl));
     } else if ((((foo && (bind = cmdbind_get(uchar((foo & 255)))) !== null ? 1 : 0) && bind ? 1 : 0) && cptr.ldPtr(cptr.add(bind, 16)) ? 1 : 0) && ((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 24)) === do_repeat || cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 24)) === doprev_message ? 1 : 0) || cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 24)) === doextcmd ? 1 : 0) ? 1 : 0) {
-        cptr.stU64(cptr.add(gc, 328), cptr.ldI64(gl));
+        cptr.stI64(cptr.add(gc, 328), cptr.ldI64(gl));
     }
-    cptr.stU64(cptr.add(gm, 8), cptr.ldI64(cptr.add(gc, 328)));
+    cptr.stI64(cptr.add(gm, 8), cptr.ldI64(cptr.add(gc, 328)));
     if (cptr.ldI64(cptr.add(gm, 8)))
-        (cptr.stU64(cptr.add(gm, 8), cptr.ldU64(cptr.add(gm, 8)) + -1n)) - (-1n);
+        (cptr.stI64(cptr.add(gm, 8), cptr.ldI64(cptr.add(gm, 8)) + -1n)) - (-1n);
     cptr.stI32(cptr.add(gc, 316), foo);
     (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
     cptr.st1(cptr.add(iflags, 92), (0));
@@ -5618,9 +5618,9 @@ function dotravel_target() {
     cptr.st1(cptr.add(svc, 73), 1);
     cptr.stI32(cptr.add(svc, 8), 8);
     cptr.st1(cptr.add(svc, 75), 1);
-    cptr.stU64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
+    cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
     if (!cptr.ldI64(cptr.add(gm, 8)))
-        cptr.stU64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
+        cptr.stI64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
     cptr.stI32(cptr.add(u, 44), 0);
     cptr.st1(cptr.add(svc, 79), (1));
     domove();
@@ -5808,10 +5808,10 @@ export function paranoid_query(be_paranoid, prompt) {
 function dosuspend_core() {
     if ((cptr.ldPtr(cptr.add(windowprocs, 392)))()) {
         let now = getnow();
-        cptr.stU64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64(cptr.add(urealtime, 8))));
-        cptr.stU64(cptr.add(urealtime, 8), now);
+        cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64(cptr.add(urealtime, 8))));
+        cptr.stI64(cptr.add(urealtime, 8), now);
         dosuspend();
-        cptr.stU64(cptr.add(urealtime, 8), getnow());
+        cptr.stI64(cptr.add(urealtime, 8), getnow());
     } else
         Norep(cptr.decay(cmdnotavail), __sl672);
     return 0;
@@ -5820,10 +5820,10 @@ function dosuspend_core() {
 /** C ref: cmd.c:5682 @returns {CInt} */
 function dosh_core() {
     let now = getnow();
-    cptr.stU64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64(cptr.add(urealtime, 8))));
-    cptr.stU64(cptr.add(urealtime, 8), now);
+    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64(cptr.add(urealtime, 8))));
+    cptr.stI64(cptr.add(urealtime, 8), now);
     dosh();
-    cptr.stU64(cptr.add(urealtime, 8), getnow());
+    cptr.stI64(cptr.add(urealtime, 8), getnow());
     return 0;
 }
 

@@ -160,9 +160,9 @@ function resetobjs(ochain, restore) {
                 if (cptr.ldI32(cptr.add(otmp, 76)))
                     end_burn(otmp, (1));
                 cptr.stI16(cptr.add(otmp, 32), 225);
-                cptr.stU64(cptr.add(otmp, 184), 50n);
+                cptr.stI64(cptr.add(otmp, 184), 50n);
                 if (cptr.ld1s(cptr.add(otmp, 48)) > 0)
-                    cptr.stU64(cptr.add(otmp, 40), BigInt(cptr.ld1s(cptr.add(otmp, 48))));
+                    cptr.stI64(cptr.add(otmp, 40), BigInt(cptr.ld1s(cptr.add(otmp, 48))));
                 cptr.st1(cptr.add(otmp, 48), 0);
                 cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
                 curse(otmp);
@@ -231,7 +231,7 @@ export function drop_upon_death(mtmp, cont, x, y) {
             obj_no_longer_held(otmp);
         if ((cont || artifact_light(otmp) ? 1 : 0) && obj_is_burning(otmp) ? 1 : 0)
             end_burn(otmp, (1));
-        cptr.stU64(cptr.add(otmp, 192), 0n);
+        cptr.stI64(cptr.add(otmp, 192), 0n);
         if (cptr.ldI16(cptr.add(otmp, 32)) == 285)
             goodfruit(cptr.ld1s(cptr.add(otmp, 48)));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 290, __sl2), rn2(5)) : rn2(5)))
@@ -414,7 +414,7 @@ export function savebones(how, when, corpse) {
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         set_ghostly_objlist(cptr.ldPtr(cptr.add(mtmp, 280)));
         resetobjs(cptr.ldPtr(cptr.add(mtmp, 280)), (0));
-        cptr.stU64(cptr.add(mtmp, 248), 0n);
+        cptr.stI64(cptr.add(mtmp, 248), 0n);
         if (cptr.ld1s(cptr.add(mtmp, 65)))
             cptr.st1(cptr.add(mtmp, 65), schar(cptr.stI32(cptr.add(mtmp, 168), 0)));
         cptr.stU64(cptr.add(mtmp, 72), 0n);
@@ -564,7 +564,7 @@ export function getbones() {
     close_nhfile(nhfp);
     cptr.stI32(cptr.add(program_state, 92), 0);
     sanitize_engravings();
-    (cptr.stU64(cptr.add(cptr.add(u, 2112), 8), cptr.ldU64(cptr.add(cptr.add(u, 2112), 8)) + 1n)) - (1n);
+    (cptr.stI64(cptr.add(cptr.add(u, 2112), 8), cptr.ldI64(cptr.add(cptr.add(u, 2112), 8)) + 1n)) - (1n);
     if (cptr.ld1s(cptr.add(flags, 10))) {
         if (yn_function(__sl18, cptr.decay(ynchars), 110, (1)) == 110) {
             compress_bonesfile();

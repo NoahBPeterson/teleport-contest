@@ -138,13 +138,13 @@ export function luaD_rawrunprotected(L, f, ud) {
 function relstack(L) {
     let ci;
     let up;
-    cptr.stU64(cptr.add(L, 16), (cptr.diff((((cptr.ldPtr(cptr.add(L, 16))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
-    cptr.stU64(cptr.add(L, 64), (cptr.diff((((cptr.ldPtr(cptr.add(L, 64))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
+    cptr.stI64(cptr.add(L, 16), (cptr.diff((((cptr.ldPtr(cptr.add(L, 16))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
+    cptr.stI64(cptr.add(L, 64), (cptr.diff((((cptr.ldPtr(cptr.add(L, 64))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
     for (up = cptr.ldPtr(cptr.add(L, 56)); !cptr.eq(up, (null)); up = cptr.ldPtr(cptr.add(up, 24)))
-        cptr.stU64(cptr.add(up, 16), (cptr.diff(((((((cptr.ldPtr(cptr.add((up), 16)))))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
+        cptr.stI64(cptr.add(up, 16), (cptr.diff(((((((cptr.ldPtr(cptr.add((up), 16)))))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
     for (ci = cptr.ldPtr(cptr.add(L, 32)); !cptr.eq(ci, (null)); ci = cptr.ldPtr(cptr.add(ci, 16))) {
-        cptr.stU64(cptr.add(ci, 8), (cptr.diff((((cptr.ldPtr(cptr.add(ci, 8))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
-        cptr.stU64(ci, (cptr.diff((((cptr.ldPtr(ci)))), (((cptr.ldPtr(cptr.add(L, 48))))))));
+        cptr.stI64(cptr.add(ci, 8), (cptr.diff((((cptr.ldPtr(cptr.add(ci, 8))))), (((cptr.ldPtr(cptr.add(L, 48))))))));
+        cptr.stI64(ci, (cptr.diff((((cptr.ldPtr(ci)))), (((cptr.ldPtr(cptr.add(L, 48))))))));
     }
 }
 
@@ -667,7 +667,7 @@ function finishpcallk(L, ci) {
         ((cptr.stI16(cptr.add((ci), 62), u16(((cptr.ldU16(cptr.add((ci), 62)) & ~(7 << 10)) | ((0) << 10))))));
     }
     cptr.stI16(cptr.add(ci, 62), cptr.ldU16(cptr.add(ci, 62)) & ~(1 << 4));
-    cptr.stU64(cptr.add(L, 168), cptr.ldI64(cptr.add(cptr.add(ci, 32), 8)));
+    cptr.stI64(cptr.add(L, 168), cptr.ldI64(cptr.add(cptr.add(ci, 32), 8)));
     return status;
 }
 
@@ -836,7 +836,7 @@ export function lua_yieldk(L, nresults, ctx, k) {
         (void L, (void 0));
     } else {
         if ((cptr.stPtr(cptr.add(ci, 32), k)) !== (null))
-            cptr.stU64(cptr.add(cptr.add(ci, 32), 16), ctx);
+            cptr.stI64(cptr.add(cptr.add(ci, 32), 16), ctx);
         luaD_throw(L, 1);
     }
     (void 0);
@@ -876,7 +876,7 @@ export function luaD_pcall(L, func, u, old_top, ef) {
     let old_ci = cptr.ldPtr(cptr.add(L, 32));
     let old_allowhooks = cptr.ld1u(cptr.add(L, 11));
     let old_errfunc = cptr.ldI64(cptr.add(L, 168));
-    cptr.stU64(cptr.add(L, 168), ef);
+    cptr.stI64(cptr.add(L, 168), ef);
     status = luaD_rawrunprotected(L, func, u);
     if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
         cptr.stPtr(cptr.add(L, 32), old_ci);
@@ -885,7 +885,7 @@ export function luaD_pcall(L, func, u, old_top, ef) {
         luaD_seterrorobj(L, status, ((cptr.add((((cptr.ldPtr(cptr.add(L, 48))))), (old_top)))));
         luaD_shrinkstack(L);
     }
-    cptr.stU64(cptr.add(L, 168), old_errfunc);
+    cptr.stI64(cptr.add(L, 168), old_errfunc);
     return status;
 }
 

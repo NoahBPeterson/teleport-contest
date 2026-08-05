@@ -994,14 +994,14 @@ export function montraits(obj, cc, adjacentok) {
         cptr.stI16(cptr.add(mtmp2, 34), cptr.ldI16(cptr.add(mtmp, 34)));
         cptr.stPtr(cptr.add(mtmp2, 288), cptr.ldPtr(cptr.add(mtmp, 288)));
         cptr.stI32(cptr.add(mtmp2, 200), cptr.ldI32(cptr.add(mtmp, 200)));
-        cptr.stU64(cptr.add(mtmp2, 296), cptr.ldI64(cptr.add(mtmp, 296)));
+        cptr.stI64(cptr.add(mtmp2, 296), cptr.ldI64(cptr.add(mtmp, 296)));
         cptr.stI16(cptr.add(mtmp2, 304), cptr.ldI16(cptr.add(mtmp, 304)));
-        cptr.stU64(cptr.add(mtmp2, 240), cptr.ldI64(cptr.add(mtmp, 240)));
+        cptr.stI64(cptr.add(mtmp2, 240), cptr.ldI64(cptr.add(mtmp, 240)));
         cptr.stI32(cptr.add(mtmp2, 136), cptr.ldI32(cptr.add(mtmp, 136)));
         cptr.stI32(cptr.add(mtmp2, 104), cptr.ldI32(cptr.add(mtmp, 104)));
         cptr.stI32(cptr.add(mtmp2, 108), cptr.ldI32(cptr.add(mtmp, 108)));
         cptr.stI32(cptr.add(mtmp2, 140), cptr.ldI32(cptr.add(mtmp, 140)));
-        cptr.stU64(cptr.add(mtmp2, 248), cptr.ldI64(cptr.add(mtmp, 248)));
+        cptr.stI64(cptr.add(mtmp2, 248), cptr.ldI64(cptr.add(mtmp, 248)));
         cptr.st1(cptr.add(mtmp2, 64), cptr.ld1u(cptr.add(mtmp, 64)));
         cptr.stI32(cptr.add(mtmp2, 124), 1);
         cptr.stI32(cptr.add(mtmp2, 132), 0);
@@ -1168,10 +1168,10 @@ export function revive(corpse, by_hero) {
             void cptr.strcpy(cptr.decay(buf), one_of ? __sl53 : __sl6);
             void shk_your(eos(cptr.decay(buf)), corpse);
             if (one_of)
-                (cptr.stU64(cptr.add(corpse, 40), cptr.ldU64(cptr.add(corpse, 40)) + 1n)) - (1n);
+                (cptr.stI64(cptr.add(corpse, 40), cptr.ldI64(cptr.add(corpse, 40)) + 1n)) - (1n);
             void cptr.strcat(cptr.decay(buf), corpse_xname(corpse, null, 2));
             if (one_of)
-                (cptr.stU64(cptr.add(corpse, 40), cptr.ldU64(cptr.add(corpse, 40)) + -1n)) - (-1n);
+                (cptr.stI64(cptr.add(corpse, 40), cptr.ldI64(cptr.add(corpse, 40)) + -1n)) - (-1n);
             pline(__sl54, upstart(cptr.decay(buf)));
             cptr.stI32(cptr.add(iflags, 40), 5);
         } else if (shkp) {
@@ -1678,7 +1678,7 @@ export function poly_obj(obj, id) {
         if ((((cptr.ldI16(cptr.add(obj, 32))) == 265 || (cptr.ldI16(cptr.add(obj, 32))) == 476 ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32))) == 241 ? 1 : 0) && (((id) == 265 || (id) == 476 ? 1 : 0) || (id) == 241 ? 1 : 0) ? 1 : 0)
             set_corpsenm(otmp, cptr.ldI32(cptr.add(obj, 168)));
     }
-    cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(obj, 40)));
+    cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(obj, 40)));
     cptr.stI32(cptr.add(otmp, 68), cptr.ldI32(cptr.add(obj, 68)));
     if (obj_location == 3)
         cptr.st1(cptr.add(otmp, 50), cptr.ld1s(cptr.add(obj, 50)));
@@ -1730,7 +1730,7 @@ export function poly_obj(obj, id) {
             cptr.st1(cptr.add(otmp, 48), 0);
             cptr.stI32(cptr.add(otmp, 112), 0);
             cptr.stI32(cptr.add(otmp, 120), 1);
-            cptr.stU64(cptr.add(otmp, 40), 1n);
+            cptr.stI64(cptr.add(otmp, 40), 1n);
             cptr.stI32(cptr.add(otmp, 56), 0);
         }
     }
@@ -1745,12 +1745,12 @@ export function poly_obj(obj, id) {
     if ((cptr.ldPtr(cptr.add((otmp), 16)) !== null))
         delete_contents(otmp);
     if (cptr.ldI64(cptr.add(otmp, 40)) > 1n && (!cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) || (can_merge && cptr.ldI64(cptr.add(otmp, 40)) > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl21, 1833, __sl88), rn2(1000)) : rn2(1000))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        cptr.stU64(cptr.add(otmp, 40), 1n);
+        cptr.stI64(cptr.add(otmp, 40), 1n);
     switch (cptr.ld1s(cptr.add(otmp, 49))) {
         case 6:
         if (cptr.ldI16(cptr.add(otmp, 32)) == 228) {
             cptr.stI16(cptr.add(otmp, 32), 227);
-            cptr.stU64(cptr.add(otmp, 184), 1500n);
+            cptr.stI64(cptr.add(otmp, 184), 1500n);
         } else if (cptr.ldI16(cptr.add(otmp, 32)) == 242) {
             cptr.stI32(cptr.add(otmp, 72), 1);
         }
@@ -1781,7 +1781,7 @@ export function poly_obj(obj, id) {
         case 13:
         if ((cptr.ldI64(cptr.add(otmp, 40)) > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl21, 1884, __sl88), rnd(4)) : rnd(4))) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) | 0) == 21 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) | 0) != 21 ? 1 : 0) {
             cptr.stI16(cptr.add(otmp, 32), 474);
-            cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) / 2n);
+            cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) / 2n);
         }
         break;
     }
@@ -1984,7 +1984,7 @@ export function bhito(obj, otmp) {
                 res = 0;
                 break;
             }
-            if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 56), cptr.ldU64(cptr.add(cptr.add(u, 1968), 56)) + 1n)) - (1n)))
+            if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 56), cptr.ldI64(cptr.add(cptr.add(u, 1968), 56)) + 1n)) - (1n)))
                 livelog_printf(32n, __sl98, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))));
             if ((cptr.ldI16(cptr.add((obj), 32)) == 214 || cptr.ldI16(cptr.add((obj), 32)) == 215 ? 1 : 0))
                 void boxlock(obj, otmp);
@@ -2256,7 +2256,7 @@ export function zapnodir(obj) {
         {
             let tmp_until = BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl21, 2560, __sl117), rn2(21)) : rn2(21)) + (10)) | 0)));
             if (tmp_until > cptr.ldI64(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 120)))
-                cptr.stU64(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 120), tmp_until);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 120), tmp_until);
             break;
         }
         case 413:
@@ -3816,16 +3816,16 @@ export function burn_floor_objects(x, y, give_feedback, u_caused) {
                     delquan++;
             if (delquan) {
                 if (give_feedback) {
-                    cptr.stU64(cptr.add(obj, 40), 1n);
+                    cptr.stI64(cptr.add(obj, 40), 1n);
                     void cptr.strcpy(cptr.decay(buf1), ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? xname(obj) : distant_name(obj, xname));
-                    cptr.stU64(cptr.add(obj, 40), 2n);
+                    cptr.stI64(cptr.add(obj, 40), 2n);
                     void cptr.strcpy(cptr.decay(buf2), ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? xname(obj) : distant_name(obj, xname));
-                    cptr.stU64(cptr.add(obj, 40), scrquan);
+                    cptr.stI64(cptr.add(obj, 40), scrquan);
                 }
                 if (u_caused)
                     useupf(obj, delquan);
                 else if (delquan < scrquan) {
-                    cptr.stU64(cptr.add(obj, 40), cptr.ldI64(cptr.add(obj, 40)) - delquan);
+                    cptr.stI64(cptr.add(obj, 40), cptr.ldI64(cptr.add(obj, 40)) - delquan);
                     cptr.stI32(cptr.add(obj, 36), weight(obj) >>> 0);
                 } else
                     delobj(obj);
@@ -4536,7 +4536,7 @@ export function fracture_rock(obj) {
         sokoban_guilt();
     cptr.stI16(cptr.add(obj, 32), 474);
     cptr.st1(cptr.add(obj, 49), 13);
-    cptr.stU64(cptr.add(obj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl21, 5560, __sl319), rn2(60)) : rn2(60)) + (7)) | 0)));
+    cptr.stI64(cptr.add(obj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl21, 5560, __sl319), rn2(60)) : rn2(60)) + (7)) | 0)));
     cptr.stI32(cptr.add(obj, 36), weight(obj) >>> 0);
     cptr.stI32(cptr.add(obj, 84), cptr.stI32(cptr.add(obj, 88), cptr.stI32(cptr.add(obj, 92), 0)));
     cptr.stI32(cptr.add(obj, 80), (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 24)) | 0 ? 0 : 1) >>> 0);
@@ -5141,7 +5141,7 @@ export function makewish() {
         }
         maybe_LL_arti = ((oldwisharti < cptr.ldI64(cptr.add(cptr.add(u, 1968), 80))) ? 64n : 0n);
         nh_snprintf(__sl378, 6388, cptr.decay(wish), 256n, __sl379, cptr.decay(bufcpy), doname(otmp));
-        if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 72), cptr.ldU64(cptr.add(cptr.add(u, 1968), 72)) + 1n)) - (1n)))
+        if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 72), cptr.ldI64(cptr.add(cptr.add(u, 1968), 72)) + 1n)) - (1n)))
             livelog_printf((32n | 1n | maybe_LL_arti), __sl380, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))), cptr.decay(wish));
         else if (!oldwisharti && cptr.ldI64(cptr.add(cptr.add(u, 1968), 80)) ? 1 : 0)
             livelog_printf((32n | 1n | 64n), __sl381, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))), cptr.decay(wish));

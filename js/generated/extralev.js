@@ -274,7 +274,7 @@ export function makerogueghost() {
     (void (ghost));
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 306, __sl14), rn2(4)) : rn2(4))) {
         ghostobj = mksobj_at(293, x, y, (0), (0));
-        cptr.stU64(cptr.add(ghostobj, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
+        cptr.stI64(cptr.add(ghostobj, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
         cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl14), rn2(2)) : rn2(2))) {
@@ -294,7 +294,7 @@ export function makerogueghost() {
         curse(ghostobj);
     ghostobj = mksobj_at(18, x, y, (0), (0));
     cptr.st1(cptr.add(ghostobj, 48), 0);
-    cptr.stU64(cptr.add(ghostobj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + (25)) | 0)));
+    cptr.stI64(cptr.add(ghostobj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + (25)) | 0)));
     cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 331, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);

@@ -846,7 +846,7 @@ function use_stethoscope(obj) {
     if (!getdir(null))
         return 2;
     res.v = (cptr.ldI64(cptr.add(gh, 8)) == cptr.ldI64(cptr.add(svc, 64))) ? 1 : 0;
-    cptr.stU64(cptr.add(svc, 64), cptr.ldI64(cptr.add(gh, 8)));
+    cptr.stI64(cptr.add(svc, 64), cptr.ldI64(cptr.add(gh, 8)));
     cptr.stI16(cptr.add(gb, 4768), cptr.ldI16(u)), cptr.stI16(cptr.add(cptr.add(gb, 4768), 2), cptr.ldI16(cptr.add(u, 2)));
     cptr.st1(cptr.add(gn, 86), schar(cptr.ldI32(cptr.add(u, 1848))));
     if (cptr.ldPtr(cptr.add(u, 2424)) && cptr.ldI32(cptr.add(u, 12)) > 0 ? 1 : 0) {
@@ -1295,7 +1295,7 @@ export function check_leash(x, y) {
                     Your(__sl130, mon_nam(mtmp));
                     xkilled(mtmp, 1);
                     if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1))
-                        cptr.stU64(cptr.add(cptr.add(u, 1968), 40), save_pacifism);
+                        cptr.stI64(cptr.add(cptr.add(u, 1968), 40), save_pacifism);
                 } else {
                     pline_mon(mtmp, __sl131, Monnam(mtmp));
                     if (cptr.ld1s(cptr.add(mtmp, 65)) && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 967, __sl129), rn2(cptr.ld1s(cptr.add(mtmp, 65)))) : rn2(cptr.ld1s(cptr.add(mtmp, 65)))) ? 1 : 0)
@@ -1544,7 +1544,7 @@ function use_bell(optr) {
             wakem = (1);
         } else if (invoking) {
             pline(__sl189, Tobjnam(obj, __sl190));
-            cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
+            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
             learno = (1);
             wakem = (1);
         } else if (cptr.ldI32(cptr.add(obj, 60))) {
@@ -1621,10 +1621,10 @@ function use_candelabrum(obj) {
     }
     if (!invocation_pos(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) || On_stairs(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) {
         pline_The(__sl210, s, vtense(s, __sl38));
-        cptr.stU64(cptr.add(obj, 184), (BigInt.asIntN(64, cptr.ldI64(cptr.add(obj, 184)) + 1n)) / 2n);
+        cptr.stI64(cptr.add(obj, 184), (BigInt.asIntN(64, cptr.ldI64(cptr.add(obj, 184)) + 1n)) / 2n);
         if (cptr.ldI64(cptr.add(obj, 184)) == 0n) {
             impossible(__sl211);
-            cptr.stU64(cptr.add(obj, 184), 1n);
+            cptr.stI64(cptr.add(obj, 184), 1n);
         }
     } else {
         if (cptr.ld1s(cptr.add(obj, 48)) == 7) {
@@ -1674,7 +1674,7 @@ function use_candle(optr) {
             end_burn(obj, (1));
         You(__sl222, cptr.ldI64(cptr.add(obj, 40)), !cptr.ld1s(cptr.add(otmp, 48)) ? __sl35 : __sl223, s, the(xname(otmp)));
         if (!cptr.ld1s(cptr.add(otmp, 48)) || cptr.ldI64(cptr.add(otmp, 184)) > cptr.ldI64(cptr.add(obj, 184)) ? 1 : 0)
-            cptr.stU64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(obj, 184)));
+            cptr.stI64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(obj, 184)));
         cptr.st1(cptr.add(otmp, 48), cptr.ld1s(cptr.add(otmp, 48)) + Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(obj, 40)))));
         if (cptr.ldI32(cptr.add(otmp, 76)) | 0 && !was_lamplit ? 1 : 0)
             pline_The(__sl224, s, vtense(s, __sl225));
@@ -1761,7 +1761,7 @@ export function splash_lit(obj) {
     }
     result = snuff_lit(obj);
     if (dunk) {
-        cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - ((cptr.ldI64(cptr.add(obj, 184)) > 200n) ? 100n : (cptr.ldI64(cptr.add(obj, 184)) / 2n)));
+        cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - ((cptr.ldI64(cptr.add(obj, 184)) > 200n) ? 100n : (cptr.ldI64(cptr.add(obj, 184)) / 2n)));
     }
     return result;
 }
@@ -1937,7 +1937,7 @@ export function dorub() {
             check_unpaid_usage(uwep.v, (1));
             cptr.stI16(cptr.add(uwep.v, 32), 227);
             cptr.st1(cptr.add(uwep.v, 48), 0);
-            cptr.stU64(cptr.add(uwep.v, 184), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl2, 1826, __sl279), rn2(500)) : rn2(500)) + (1000)) | 0)));
+            cptr.stI64(cptr.add(uwep.v, 184), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl2, 1826, __sl279), rn2(500)) : rn2(500)) + (1000)) | 0)));
             if (cptr.ldI32(cptr.add(uwep.v, 76)))
                 begin_burn(uwep.v, (1));
             djinni_from_bottle(uwep.v);
@@ -2517,7 +2517,7 @@ function use_figurine(optr) {
             return 0;
     }
     if (!getdir(null)) {
-        cptr.st1(cptr.add(svc, 78), Number(BigInt.asIntN(8, cptr.stU64(cptr.add(gm, 8), 0n))));
+        cptr.st1(cptr.add(svc, 78), Number(BigInt.asIntN(8, cptr.stI64(cptr.add(gm, 8), 0n))));
         return 2;
     }
     x = i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0));
@@ -3224,7 +3224,7 @@ export function use_pole(obj, autohit) {
         cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(gb, 4768)) != cptr.ldI16(cptr.add(mtmp, 28)) || cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)) != cptr.ldI16(cptr.add(mtmp, 30)) ? 1 : 0)));
         if (cptr.eq(obj, uwep.v) && is_art(uwep.v, 19) ? 1 : 0) {
             freehit = schar((cptr.ldI64(cptr.add(svm, 8)) != cptr.ldI64(cptr.add(svc, 56))));
-            cptr.stU64(cptr.add(svc, 56), cptr.ldI64(cptr.add(svm, 8)));
+            cptr.stI64(cptr.add(svc, 56), cptr.ldI64(cptr.add(svm, 8)));
             if (freehit && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) {
                 ;
                 pline(__sl457);

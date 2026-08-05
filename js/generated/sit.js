@@ -317,7 +317,7 @@ function throne_sit_effect() {
                         break;
                     }
                 }
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 67108864n);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 67108864n);
                 newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
             }
             break;
@@ -423,9 +423,9 @@ function special_throne_effect(effect) {
             cptr.stI16(cptr.add(fake_spellbook, 32), 395);
             cptr.st1(cptr.add(fake_spellbook, 49), 10);
             cptr.stI32(cptr.add(fake_spellbook, 60), 1);
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), 1n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), 1n);
             void seffects(fake_spellbook);
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_confusion);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16), save_confusion);
             break;
         }
         case 11:
@@ -475,7 +475,7 @@ function lay_an_egg() {
     }
     uegg = mksobj(266, (0), (0));
     cptr.st1(cptr.add(uegg, 48), 1);
-    cptr.stU64(cptr.add(uegg, 40), 1n);
+    cptr.stI64(cptr.add(uegg, 40), 1n);
     cptr.stI32(cptr.add(uegg, 36), weight(uegg) >>> 0);
     set_corpsenm(uegg, egg_type_from_parent(cptr.ldI32(cptr.add(u, 1808)), (0)));
     cptr.stI32(cptr.add(uegg, 80), 1);
@@ -698,7 +698,7 @@ export function attrcurse() {
     switch ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 648, __sl112), rnd(11)) : rnd(11))) {
         case 1:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl113);
             ret = 1;
             break;
@@ -707,7 +707,7 @@ export function attrcurse() {
         ;
         case 2:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl114);
             ret = 46;
             break;
@@ -716,7 +716,7 @@ export function attrcurse() {
         ;
         case 3:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl115);
             ret = 6;
             break;
@@ -725,7 +725,7 @@ export function attrcurse() {
         ;
         case 4:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 30, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 30, 24)) ? 1 : 0) ? 1 : 0)
                 see_monsters();
             Your(__sl116);
@@ -736,7 +736,7 @@ export function attrcurse() {
         ;
         case 5:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl117);
             ret = 2;
             break;
@@ -745,7 +745,7 @@ export function attrcurse() {
         ;
         case 6:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl118);
             ret = 40;
             break;
@@ -754,7 +754,7 @@ export function attrcurse() {
         ;
         case 7:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0)) {
                 set_mimic_blocking();
                 see_monsters();
@@ -768,7 +768,7 @@ export function attrcurse() {
         ;
         case 8:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl121);
             ret = 64;
             break;
@@ -777,7 +777,7 @@ export function attrcurse() {
         ;
         case 9:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 42, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl122);
             ret = 42;
             break;
@@ -786,7 +786,7 @@ export function attrcurse() {
         ;
         case 10:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl123);
             ret = 59;
             break;
@@ -795,7 +795,7 @@ export function attrcurse() {
         ;
         case 11:
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 43, 24), 16)) & (67108864n | 33554432n | 16777216n)) {
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 43, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 43, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 43, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 43, 24), 16)) & BigInt.asIntN(64, ~(67108864n | 33554432n | 16777216n)));
             You_feel(__sl124);
             ret = 43;
             break;

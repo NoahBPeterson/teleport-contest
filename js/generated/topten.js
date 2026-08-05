@@ -312,7 +312,7 @@ function readentry(rfile, tt) {
     let s5 = new Uint8Array(129);
     let s6 = new Uint8Array(129);
     if (fscanf(rfile, cptr.decay(__static_readentry_fmt), cptr.add(tt, 40), cptr.add(tt, 44), cptr.add(tt, 48), cptr.add(tt, 8), cptr.add(tt, 16), cptr.add(tt, 20), cptr.add(tt, 24), cptr.add(tt, 28), cptr.add(tt, 32), cptr.add(tt, 36), cptr.add(tt, 56), cptr.add(tt, 64), cptr.add(tt, 72)) != 13) {
-        cptr.stU64(cptr.add(tt, 8), 0n);
+        cptr.stI64(cptr.add(tt, 8), 0n);
         discardexcess(rfile);
     } else {
         if (!fgets(cptr.decay(inbuf), 129, rfile)) {
@@ -328,7 +328,7 @@ function readentry(rfile, tt) {
                 copynchars(cptr.add(tt, 92), cptr.decay(s1), (11 - 1) | 0);
                 copynchars(cptr.add(tt, 103), cptr.decay(s2), (101 - 1) | 0);
             } else
-                cptr.stU64(cptr.add(tt, 8), 0n);
+                cptr.stI64(cptr.add(tt, 8), 0n);
             cptr.st1(cptr.add(cptr.add(tt, 76), 1, 1), 0);
             if ((i = str2role(cptr.add(tt, 76))) >= 0)
                 void cptr.strcpy(cptr.add(tt, 76), cptr.ldPtr(cptr.add(cptr.add(roles, i, 312), 184)));
@@ -343,13 +343,13 @@ function readentry(rfile, tt) {
             copynchars(cptr.add(tt, 92), cptr.decay(s5), (11 - 1) | 0);
             copynchars(cptr.add(tt, 103), cptr.decay(s6), (101 - 1) | 0);
         } else
-            cptr.stU64(cptr.add(tt, 8), 0n);
+            cptr.stI64(cptr.add(tt, 8), 0n);
     }
     if (cptr.ldI64(cptr.add(tt, 8)) > 0n) {
         if (cptr.ldI64(cptr.add(tt, 64)) < 19000000n)
-            cptr.stU64(cptr.add(tt, 64), cptr.ldI64(cptr.add(tt, 64)) + 19000000n);
+            cptr.stI64(cptr.add(tt, 64), cptr.ldI64(cptr.add(tt, 64)) + 19000000n);
         if (cptr.ldI64(cptr.add(tt, 56)) < 19000000n)
-            cptr.stU64(cptr.add(tt, 56), cptr.ldI64(cptr.add(tt, 56)) + 19000000n);
+            cptr.stI64(cptr.add(tt, 56), cptr.ldI64(cptr.add(tt, 56)) + 19000000n);
     }
 }
 
@@ -632,7 +632,7 @@ export function topten(how, when) {
         cptr.stI32(cptr.add(t0, 40), 5);
         cptr.stI32(cptr.add(t0, 44), 0);
         cptr.stI32(cptr.add(t0, 48), 0);
-        cptr.stU64(cptr.add(t0, 8), cptr.ldI64(cptr.add(u, 2384)));
+        cptr.stI64(cptr.add(t0, 8), cptr.ldI64(cptr.add(u, 2384)));
         cptr.stI32(cptr.add(t0, 16), cptr.ldI16(cptr.add(u, 24)));
         cptr.stI32(cptr.add(t0, 20), observable_depth(cptr.add(u, 24)));
         cptr.stI32(cptr.add(t0, 24), deepest_lev_reached((1)));
@@ -646,8 +646,8 @@ export function topten(how, when) {
         copynchars(cptr.add(t0, 88), cptr.ldPtr(cptr.add(cptr.add(aligns, (1 - cptr.ld1s(cptr.add(u, 2172))) | 0, 32), 16)), 3);
         copynchars(cptr.add(t0, 92), svp, 10);
         formatkiller(cptr.add(t0, 103), 101, how, (1));
-        cptr.stU64(cptr.add(t0, 64), yyyymmdd(ubirthday.v));
-        cptr.stU64(cptr.add(t0, 56), yyyymmdd(when));
+        cptr.stI64(cptr.add(t0, 64), yyyymmdd(ubirthday.v));
+        cptr.stI64(cptr.add(t0, 56), yyyymmdd(when));
         cptr.stPtr(t0, null);
         if (lock_file(__sl84, 5, 10)) {
             if (!(lfile = fopen_datafile(__sl84, __sl85, 5))) {
@@ -691,13 +691,13 @@ export function topten(how, when) {
         if (!cptr.ldI32(cptr.add(program_state, 8)))
             topten_print(__sl14);
         if (cptr.ldI64(cptr.add(t0, 8)) < BigInt(cptr.ldI32(cptr.add(sysopt, 116))))
-            cptr.stU64(cptr.add(t0, 8), 0n);
+            cptr.stI64(cptr.add(t0, 8), 0n);
         t1 = (tt_head = alloc(208));
         tprev = null;
         for (rank = 1; ; ) {
             readentry(rfile, t1);
             if (cptr.ldI64(cptr.add(t1, 8)) < BigInt(cptr.ldI32(cptr.add(sysopt, 116))))
-                cptr.stU64(cptr.add(t1, 8), 0n);
+                cptr.stI64(cptr.add(t1, 8), 0n);
             if (rank0 < 0 && cptr.ldI64(cptr.add(t1, 8)) < cptr.ldI64(cptr.add(t0, 8)) ? 1 : 0) {
                 rank0 = rank++;
                 if (tprev === null)
@@ -734,7 +734,7 @@ export function topten(how, when) {
                 rank++;
             }
             if (rank > cptr.ldI32(cptr.add(sysopt, 112))) {
-                cptr.stU64(cptr.add(t1, 8), 0n);
+                cptr.stI64(cptr.add(t1, 8), 0n);
                 break;
             }
         }

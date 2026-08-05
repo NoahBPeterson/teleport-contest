@@ -1641,7 +1641,7 @@ cptr.stPtr(cptr.add(__static_u_init_role_M_spell, 16), Confuse_monster_book); /*
 /** C ref: u_init.c:637 */
 function u_init_role() {
     let i;
-    cptr.stU64(cptr.add(svm, 8), 1n);
+    cptr.stI64(cptr.add(svm, 8), 1n);
     switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
         case 331:
         ini_inv(Archeologist);
@@ -1669,7 +1669,7 @@ function u_init_role() {
         ini_inv(Cave_man);
         break;
         case 334:
-        cptr.stU64(cptr.add(u, 2360), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl1), rn2(1000)) : rn2(1000)) + (1001)) | 0)));
+        cptr.stI64(cptr.add(u, 2360), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl1), rn2(1000)) : rn2(1000)) + (1001)) | 0)));
         ini_inv(Healer);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 682, __sl1), rn2(25)) : rn2(25)))
             ini_inv(Lamp);
@@ -1679,7 +1679,7 @@ function u_init_role() {
         ini_inv(Knight);
         knows_class(2);
         knows_class(3);
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16)) | 67108864n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16)) | 67108864n);
         break;
         case 336:
         {
@@ -1706,7 +1706,7 @@ function u_init_role() {
         knows_class(2);
         break;
         case 339:
-        cptr.stU64(cptr.add(u, 2360), 0n);
+        cptr.stI64(cptr.add(u, 2360), 0n);
         ini_inv(Rogue);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 731, __sl1), rn2(5)) : rn2(5)))
             ini_inv(Blindfold);
@@ -1727,7 +1727,7 @@ function u_init_role() {
         }
         break;
         case 341:
-        cptr.stU64(cptr.add(u, 2360), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 756, __sl1), rnd(1000)) : rnd(1000))));
+        cptr.stI64(cptr.add(u, 2360), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 756, __sl1), rnd(1000)) : rnd(1000))));
         ini_inv(Tourist);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 758, __sl1), rn2(25)) : rn2(25)))
             ini_inv(Tinopener);
@@ -1914,7 +1914,7 @@ export function u_init_misc() {
     cptr.stI32(cptr.add(u, 1780), -1);
     cptr.stI32(cptr.add(u, 1784), -1);
     if (cptr.ld1s(cptr.add(u, 2112)))
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) | 67108864n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) | 67108864n);
     cptr.stI32(cptr.add(u, 1876), ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1028, __sl3), rn2(10)) : rn2(10)) ? 0 : 1) >>> 0);
     max_rank_sz();
     return;
@@ -2032,7 +2032,7 @@ function ini_inv_obj_substitution(trop, obj) {
 function ini_inv_adjust_obj(trop, obj) {
     let stop = (0);
     if (cptr.ld1s(cptr.add(trop, 3)) == 12) {
-        cptr.stU64(cptr.add(obj, 40), cptr.ldI64(cptr.add(u, 2360)));
+        cptr.stI64(cptr.add(obj, 40), cptr.ldI64(cptr.add(u, 2360)));
     } else {
         if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 24)))
             cptr.stI32(cptr.add(obj, 80), 1);
@@ -2045,10 +2045,10 @@ function ini_inv_adjust_obj(trop, obj) {
         if (cptr.ldI32(cptr.add(obj, 132)) | 0 && cptr.ld1s(cptr.add(u, 2172)) != (-1) ? 1 : 0)
             cptr.stI32(cptr.add(obj, 132), 0);
         if (cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) {
-            cptr.stU64(cptr.add(obj, 40), trquan(trop));
+            cptr.stI64(cptr.add(obj, 40), trquan(trop));
             stop = (1);
         } else if ((cptr.ld1s(cptr.add(obj, 49)) == 13 && (((cptr.ldI16(cptr.add((obj), 32)) == 470 || cptr.ldI16(cptr.add((obj), 32)) == 471 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 473 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 472 ? 1 : 0) ? 1 : 0) && cptr.ldI16(cptr.add(obj, 32)) != 473 ? 1 : 0) {
-            cptr.stU64(cptr.add(obj, 40), 1n);
+            cptr.stI64(cptr.add(obj, 40), 1n);
         }
         if (cptr.ld1s(cptr.add(trop, 2)) != 127) {
             cptr.st1(cptr.add(obj, 48), cptr.ld1s(cptr.add(trop, 2)));
@@ -2156,14 +2156,14 @@ export function u_init_inventory_attrs() {
     cptr.stI32(cptr.add(gl, 64), 51);
     while (cptr.ldPtr(cptr.add(gi, 8)))
         useupall(cptr.ldPtr(cptr.add(gi, 8)));
-    cptr.stU64(cptr.add(u, 2360), 0n);
+    cptr.stI64(cptr.add(u, 2360), 0n);
     u_init_role();
     u_init_race();
     if (cptr.ld1s(cptr.add(flags, 12)))
         ini_inv(Wishing);
     if (cptr.ldI64(cptr.add(u, 2360)))
         ini_inv(Money);
-    cptr.stU64(cptr.add(u, 2360), cptr.ldI64(cptr.add(u, 2360)) + hidden_gold((1)));
+    cptr.stI64(cptr.add(u, 2360), cptr.ldI64(cptr.add(u, 2360)) + hidden_gold((1)));
     init_attr(75);
     vary_init_attr();
     u_init_carry_attr_boost();

@@ -90,7 +90,7 @@ export function getmailstatus() {
         }
     } while (0);
     if (mailbox && stat(mailbox, omstat) ? 1 : 0) {
-        cptr.stU64(cptr.add(omstat, 48), 0n);
+        cptr.stI64(cptr.add(omstat, 48), 0n);
     }
 }
 
@@ -328,7 +328,7 @@ export function ckmailstatus() {
         return;
     laststattime = cptr.ldI64(cptr.add(svm, 8));
     if (stat(mailbox, nmstat)) {
-        cptr.stU64(cptr.add(nmstat, 48), 0n);
+        cptr.stI64(cptr.add(nmstat, 48), 0n);
     } else if (cptr.ldI64(cptr.add(nmstat, 48)) > cptr.ldI64(cptr.add(omstat, 48))) {
         if (cptr.ldI64(cptr.add(nmstat, 96))) {
             newmail(__static_ckmailstatus_deliver);

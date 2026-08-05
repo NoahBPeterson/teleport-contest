@@ -474,7 +474,7 @@ export function gold_detect(sobj) {
         if (findgold(cptr.ldPtr(cptr.add(mtmp, 280))) || (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))) == 252 ? 1 : 0) {
             cptr.memcpy(gold, cg, 216);
             cptr.stI16(cptr.add(gold, 32), 438);
-            cptr.stU64(cptr.add(gold, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 442, __sl8), rnd(10)) : rnd(10))));
+            cptr.stI64(cptr.add(gold, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 442, __sl8), rnd(10)) : rnd(10))));
             cptr.stI16(cptr.add(gold, 28), cptr.ldI16(cptr.add(mtmp, 28)));
             cptr.stI16(cptr.add(gold, 30), cptr.ldI16(cptr.add(mtmp, 30)));
             map_object(gold, 1);
@@ -733,7 +733,7 @@ export function object_detect(detector, class$) {
             let temp = cptr.alloc(216);
             cptr.memcpy(temp, cg, 216);
             cptr.stI16(cptr.add(temp, 32), i16(cptr.ldI32(cptr.add(mtmp, 60))));
-            cptr.stU64(cptr.add(temp, 40), 1n);
+            cptr.stI64(cptr.add(temp, 40), 1n);
             cptr.stI16(cptr.add(temp, 28), cptr.ldI16(cptr.add(mtmp, 28)));
             cptr.stI16(cptr.add(temp, 30), cptr.ldI16(cptr.add(mtmp, 30)));
             cptr.stI32(cptr.add(temp, 168), (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 56))) != -1 ? 1 : 0) ? (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 56))) : 55);
@@ -742,7 +742,7 @@ export function object_detect(detector, class$) {
             let gold = cptr.alloc(216);
             cptr.memcpy(gold, cg, 216);
             cptr.stI16(cptr.add(gold, 32), 438);
-            cptr.stU64(cptr.add(gold, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 770, __sl30), rnd(10)) : rnd(10))));
+            cptr.stI64(cptr.add(gold, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 770, __sl30), rnd(10)) : rnd(10))));
             cptr.stI16(cptr.add(gold, 28), cptr.ldI16(cptr.add(mtmp, 28)));
             cptr.stI16(cptr.add(gold, 30), cptr.ldI16(cptr.add(mtmp, 30)));
             map_object(gold, 1);
@@ -800,9 +800,9 @@ export function monster_detect(otmp, mclass) {
         if ((otmp && cptr.ldI32(cptr.add(otmp, 60)) | 0 ? 1 : 0) && !unconstrained ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MAP.v, (1));
         } else {
-            cptr.stU64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) | 536870912n);
+            cptr.stI64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) | 536870912n);
             browse_map((32 | 8) >>> 0, __sl39);
-            cptr.stU64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) & BigInt.asIntN(64, ~536870912n));
+            cptr.stI64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) & BigInt.asIntN(64, ~536870912n));
         }
         map_redisplay();
     }
@@ -822,7 +822,7 @@ function sense_trap(trap, x, y, src_cursed) {
             cptr.stI16(cptr.add(obj, 30), y);
         }
         cptr.stI16(cptr.add(obj, 32), i16((!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 438 : (((rn2)((481 - 18) | 0) + 18) | 0))));
-        cptr.stU64(cptr.add(obj, 40), BigInt(((cptr.ldI16(cptr.add(obj, 32)) == 438) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 879, __sl40), rnd(10)) : rnd(10)) : (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 20)) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 880, __sl40), rnd(2)) : rnd(2)) : 1))));
+        cptr.stI64(cptr.add(obj, 40), BigInt(((cptr.ldI16(cptr.add(obj, 32)) == 438) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 879, __sl40), rnd(10)) : rnd(10)) : (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 20)) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 880, __sl40), rnd(2)) : rnd(2)) : 1))));
         cptr.stI32(cptr.add(obj, 168), ((rn2)(383)));
         map_object(obj, 1);
     } else if (trap) {
@@ -1294,7 +1294,7 @@ export function do_vicinity_map(sobj) {
     if (cptr.ldI32(cptr.add(u, 1848)))
         cptr.st1(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | 2);
     save_EDetect_mons = cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24));
-    cptr.stU64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) | 536870912n);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 37, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) | 536870912n);
     unconstrained = unconstrain_map();
     for (zx = lo_x; zx <= hi_x; zx++)
         for (zy = lo_y; zy <= hi_y; zy++) {
@@ -1330,7 +1330,7 @@ export function do_vicinity_map(sobj) {
         refresh = (1);
     }
     reconstrain_map();
-    cptr.stU64(cptr.add(cptr.add(u, 112), 37, 24), save_EDetect_mons);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 37, 24), save_EDetect_mons);
     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), uchar(save_viz_uyux));
     for (zx = lo_x; zx <= hi_x; zx++)
         for (zy = lo_y; zy <= hi_y; zy++) {

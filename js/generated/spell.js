@@ -587,7 +587,7 @@ export function study_book(spellbook) {
         if (booktype == 408) {
             let tribtitle = noveltitle(cptr.add(spellbook, 168));
             if (read_tribute(__sl53, tribtitle, 0, null, 0, cptr.ldI32(cptr.add(spellbook, 24)))) {
-                if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+                if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
                     livelog_printf(32n, __sl54, tribtitle);
                 check_unpaid(spellbook);
                 discover_object((booktype), (1), (1), (1));
@@ -1156,7 +1156,7 @@ export function spelleffects(spell_otyp, atme, force) {
     exercise(2, (1));
     pseudo = mksobj(force ? spell : cptr.ldI16(cptr.add(svs, spell, 8)), (0), (0));
     cptr.stI32(cptr.add(pseudo, 60), cptr.stI32(cptr.add(pseudo, 56), 0));
-    cptr.stU64(cptr.add(pseudo, 40), 20n);
+    cptr.stI64(cptr.add(pseudo, 40), 20n);
     otyp = cptr.ldI16(cptr.add(pseudo, 32));
     skill = spell_skilltype(otyp);
     role_skill = (cptr.ldI16(cptr.add(cptr.add(u, 2588), skill, 6)));

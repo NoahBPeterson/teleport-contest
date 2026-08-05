@@ -614,14 +614,14 @@ function migrate_orc(mtmp, mflags) {
         nlev = max_depth;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 732, __sl12), rn2(40)) : rn2(40)))
             nlev--;
-        cptr.stU64(cptr.add(mtmp, 264), cptr.ldI64(cptr.add(mtmp, 264)) | 8192n);
+        cptr.stI64(cptr.add(mtmp, 264), cptr.ldI64(cptr.add(mtmp, 264)) | 8192n);
     } else {
         nlev = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 736, __sl12), rn2((((max_depth - cur_depth) | 0) + 1) | 0)) : rn2((((max_depth - cur_depth) | 0) + 1) | 0)) + cur_depth) | 0;
         if (nlev == cur_depth)
             nlev++;
         if (nlev > max_depth)
             nlev = max_depth;
-        cptr.stU64(cptr.add(mtmp, 264), (cptr.ldI64(cptr.add(mtmp, 264)) & BigInt((~8192))));
+        cptr.stI64(cptr.add(mtmp, 264), (cptr.ldI64(cptr.add(mtmp, 264)) & BigInt((~8192))));
     }
     get_level(dest, nlev);
     migrate_to_level(mtmp, ledger_no(dest), 0, null);
@@ -638,7 +638,7 @@ function shiny_orc_stuff(mtmp) {
     gemprob = (goldprob / 4) | 0;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 757, __sl13), rn2(1000)) : rn2(1000)) < goldprob) {
         if ((otmp = mksobj(438, (1), (0))) !== null) {
-            cptr.stU64(cptr.add(otmp, 40), BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 759, __sl13), rnd(goldprob)) : rnd(goldprob)))));
+            cptr.stI64(cptr.add(otmp, 40), BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 759, __sl13), rnd(goldprob)) : rnd(goldprob)))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
             add_to_minv(mtmp, otmp);
         }
@@ -668,7 +668,7 @@ function migr_booty_item(otyp, gang) {
         if (cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 70)) == 7) {
             if (otyp == 285)
                 cptr.st1(cptr.add(otmp, 48), schar(fruitadd(cptr.ldPtr(cptr.add(orcfruit, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 790, __sl14), rn2(2)) : rn2(2)), 8)), null)));
-            cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 792, __sl14), rn2(3)) : rn2(3))));
+            cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 792, __sl14), rn2(3)) : rn2(3))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
         }
     }
@@ -1369,7 +1369,7 @@ export function movebubbles() {
                                 cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8), null);
                             newsym(x, y);
                             cptr.stI16(cptr.add(mon, 28), cptr.stI16(cptr.add(mon, 30), 0));
-                            cptr.stU64(cptr.add(mon, 256), cptr.ldI64(cptr.add(mon, 256)) | 16n);
+                            cptr.stI64(cptr.add(mon, 256), cptr.ldI64(cptr.add(mon, 256)) | 16n);
                         }
                         if (!cptr.ldI32(cptr.add(u, 1848)) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) {
                             cons = alloc(24);

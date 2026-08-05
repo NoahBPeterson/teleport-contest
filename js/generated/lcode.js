@@ -35,7 +35,7 @@ function tonumeral(e, v) {
         case 6:
         if (v) {
             let io = (v);
-            cptr.stU64(((io)), (cptr.ldI64(cptr.add(e, 8))));
+            cptr.stI64(((io)), (cptr.ldI64(cptr.add(e, 8))));
             (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
         }
         ;
@@ -411,7 +411,7 @@ function addk(fs, key, v) {
     k = cptr.ldI32(cptr.add(fs, 44));
     {
         let io = (val);
-        cptr.stU64(((io)), BigInt((k)));
+        cptr.stI64(((io)), BigInt((k)));
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;
@@ -452,7 +452,7 @@ function luaK_intK(fs, n) {
     let o = cptr.alloc(16);
     {
         let io = (o);
-        cptr.stU64(((io)), (n));
+        cptr.stI64(((io)), (n));
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;
@@ -549,7 +549,7 @@ function const2exp(v, e) {
     switch ((((cptr.ld1u(cptr.add((v), 8)))) & 63)) {
         case ((3) | ((0) << 4)):
         cptr.stI32(e, 6);
-        cptr.stU64(cptr.add(e, 8), (cptr.ldI64(((v)))));
+        cptr.stI64(cptr.add(e, 8), (cptr.ldI64(((v)))));
         break;
         case ((3) | ((1) << 4)):
         cptr.stI32(e, 5);
@@ -1137,7 +1137,7 @@ function constfolding(fs, op, e1, e2) {
     luaO_rawarith(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(fs, 16)), 56)), op, v1, v2, res);
     if (((cptr.ld1u(cptr.add(((res)), 8))) == (((3) | ((0) << 4))))) {
         cptr.stI32(e1, 6);
-        cptr.stU64(cptr.add(e1, 8), (cptr.ldI64(((res)))));
+        cptr.stI64(cptr.add(e1, 8), (cptr.ldI64(((res)))));
     } else {
         let n = (cptr.ldF64(((res))));
         if ((!(((n)) == ((n)))) || n == 0 ? 1 : 0)
@@ -1329,7 +1329,7 @@ function codeeq(fs, opr, e1, e2) {
 
 let __static_luaK_prefix_ef = cptr.alloc(24); /** C ref: lcode.c:1617 — struct expdesc (function-static) */
 cptr.stI32(__static_luaK_prefix_ef, 6);
-cptr.stU64(cptr.add(__static_luaK_prefix_ef, 8), 0n);
+cptr.stI64(cptr.add(__static_luaK_prefix_ef, 8), 0n);
 cptr.stI32(cptr.add(__static_luaK_prefix_ef, 16), (-1));
 cptr.stI32(cptr.add(__static_luaK_prefix_ef, 20), (-1));
 

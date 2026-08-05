@@ -58,7 +58,7 @@ cptr.stPtr(cptr.add(wtails, 0), null);
 
 /** C ref: worm.c:79 — long[32] */
 const wgrowtime = cptr.alloc(32 * 8);
-cptr.stU64(cptr.add(wgrowtime, 0), 0n);
+cptr.stI64(cptr.add(wgrowtime, 0), 0n);
 
 /** C ref: worm.c:96 @returns {CInt} */
 export function get_wormno() {
@@ -87,7 +87,7 @@ export function initworm(worm, wseg_count) {
     }
     cptr.stI16(cptr.add(seg, 8), cptr.ldI16(cptr.add(worm, 28)));
     cptr.stI16(cptr.add(seg, 10), cptr.ldI16(cptr.add(worm, 30)));
-    cptr.stU64(cptr.add(wgrowtime, wnum, 8), 0n);
+    cptr.stI64(cptr.add(wgrowtime, wnum, 8), 0n);
 }
 
 /** C ref: worm.c:146 — @param {CPtr} curr @param {CInt} display_update */
@@ -136,12 +136,12 @@ export function worm_move(worm) {
         let prev_mhp;
         let wsegs = count_wsegs(worm);
         if (!cptr.ldI64(cptr.add(wgrowtime, wnum, 8))) {
-            cptr.stU64(cptr.add(wgrowtime, wnum, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl1), rnd(5)) : rnd(5)))));
+            cptr.stI64(cptr.add(wgrowtime, wnum, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl1), rnd(5)) : rnd(5)))));
         } else {
             let mmove = mcalcmove(worm, (0));
             let incr = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl1), rn2(10)) : rn2(10)) + (2)) | 0);
             incr = ((Math.imul(incr, 12)) / ((mmove) > (1) ? (mmove) : (1))) | 0;
-            cptr.stU64(cptr.add(wgrowtime, wnum, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt(incr)));
+            cptr.stI64(cptr.add(wgrowtime, wnum, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt(incr)));
         }
         whplimit = !cptr.ld1u(cptr.add(worm, 26)) ? 4 : (Math.imul(8, cptr.ld1u(cptr.add(worm, 26))));
         if (wsegs > 33)
@@ -188,7 +188,7 @@ export function wormgone(worm) {
     cptr.stI32(cptr.add(worm, 200), 0);
     toss_wsegs(cptr.ldPtr(cptr.add(wtails, wnum, 8)), (1));
     cptr.stPtr(cptr.add(wheads, wnum, 8), cptr.stPtr(cptr.add(wtails, wnum, 8), null));
-    cptr.stU64(cptr.add(wgrowtime, wnum, 8), 0n);
+    cptr.stI64(cptr.add(wgrowtime, wnum, 8), 0n);
     if (cptr.eq(cptr.ldPtr(cptr.add(worm, 8)), cptr.add(mons, 114, 96)) && (cptr.ldPtr(cptr.add((worm), 312)) && (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56))) != -1 ? 1 : 0) ? 1 : 0)
         cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56), -1);
 }
@@ -264,7 +264,7 @@ export function cutworm(worm, x, y, cuttier) {
         cptr.stI32(cptr.add(worm, 52), cptr.ldI32(cptr.add(worm, 56)));
     cptr.stPtr(cptr.add(wtails, new_wnum, 8), new_tail);
     cptr.stPtr(cptr.add(wheads, new_wnum, 8), curr);
-    cptr.stU64(cptr.add(wgrowtime, new_wnum, 8), 0n);
+    cptr.stI64(cptr.add(wgrowtime, new_wnum, 8), 0n);
     place_wsegs(new_worm, worm);
     if (cptr.ld1s(cptr.add(svc, 77)))
         pline(__sl8, Monnam(worm));
@@ -325,7 +325,7 @@ export function save_worm(nhfp) {
                 curr = temp;
             }
             cptr.stPtr(cptr.add(wheads, i, 8), cptr.stPtr(cptr.add(wtails, i, 8), null));
-            cptr.stU64(cptr.add(wgrowtime, i, 8), 0n);
+            cptr.stI64(cptr.add(wgrowtime, i, 8), 0n);
         }
     }
 }

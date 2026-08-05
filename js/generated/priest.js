@@ -431,8 +431,8 @@ export function intemple(roomno) {
                 cptr.stI32(cptr.add(priest, 192), 0);
             pline(__sl18, canseemon(priest) ? Monnam(priest) : __sl19);
             cptr.stI32(cptr.add(priest, 192), save_priest);
-            cptr.stU64(cptr.add(epri_p, 24), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 443, __sl20), d((10), (500))) : d((10), (500))))));
-            cptr.stU64(cptr.add(epri_p, 32), 0n);
+            cptr.stI64(cptr.add(epri_p, 24), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 443, __sl20), d((10), (500))) : d((10), (500))))));
+            cptr.stI64(cptr.add(epri_p, 32), 0n);
         }
         msg1 = (msg2 = null);
         if (sanctum && (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 56)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 56))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 56)) ? 1 : 0)) ? 1 : 0) {
@@ -453,7 +453,7 @@ export function intemple(roomno) {
             verbalize(__sl27, msg1);
             if (msg2)
                 verbalize(__sl27, msg2);
-            cptr.stU64(cptr.add(epri_p, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 471, __sl20), d((10), (100))) : d((10), (100))))));
+            cptr.stI64(cptr.add(epri_p, 32), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 471, __sl20), d((10), (100))) : d((10), (100))))));
         }
         if (!sanctum) {
             if ((!shrined || !p_coaligned(priest) ? 1 : 0) || cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) <= (-4) ? 1 : 0) {
@@ -469,9 +469,9 @@ export function intemple(roomno) {
             }
             if (cptr.ldI64(cptr.add(svm, 8)) >= cptr.ldI64(this_time) || cptr.ldI64(other_time) >= cptr.ldI64(this_time) ? 1 : 0) {
                 You(msg1, msg2);
-                cptr.stU64(this_time, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 491, __sl20), d((10), (20))) : d((10), (20))))));
+                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 491, __sl20), d((10), (20))) : d((10), (20))))));
                 if (cptr.ldI64(this_time) <= cptr.ldI64(other_time))
-                    cptr.stU64(other_time, BigInt.asIntN(64, cptr.ldI64(this_time) - 1n));
+                    cptr.stI64(other_time, BigInt.asIntN(64, cptr.ldI64(this_time) - 1n));
             }
         }
         mapseen_temple(priest);
@@ -513,7 +513,7 @@ export function forget_temple_entry(priest) {
         impossible(__sl43);
         return;
     }
-    cptr.stU64(cptr.add(epri_p, 24), cptr.stU64(cptr.add(epri_p, 32), cptr.stU64(cptr.add(epri_p, 48), cptr.stU64(cptr.add(epri_p, 40), 0n))));
+    cptr.stI64(cptr.add(epri_p, 24), cptr.stI64(cptr.add(epri_p, 32), cptr.stI64(cptr.add(epri_p, 48), cptr.stI64(cptr.add(epri_p, 40), 0n))));
 }
 
 const __static_priest_talk_cranky_msg = cptr.alloc(3 * 8);
@@ -528,7 +528,7 @@ export function priest_talk(priest) {
     let cheapskate = null;
     if ((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((priest), 312)), 16))))
         cheapskate = cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((priest), 312)), 16))), 16);
-    if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 24), cptr.ldU64(cptr.add(cptr.add(u, 1968), 24)) + 1n)) - (1n)))
+    if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 24), cptr.ldI64(cptr.add(cptr.add(u, 1968), 24)) + 1n)) - (1n)))
         livelog_printf(32n, __sl44, mon_nam(priest));
     if (cptr.ldI32(cptr.add(priest, 136)) | 0 || ((!cptr.ldI32(cptr.add(priest, 192)) && coaligned ? 1 : 0) && strayed ? 1 : 0) ? 1 : 0) {
         pline(__sl45, Monnam(priest));
@@ -608,7 +608,7 @@ export function priest_talk(priest) {
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32(cptr.add(u, 2348));
             if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) & (67108864n | 33554432n | 16777216n))) {
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) | 67108864n);
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 59, 24), 16)) | 67108864n);
                 orig_ublessed = -1;
             }
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
@@ -629,7 +629,7 @@ export function priest_talk(priest) {
             if (money_cnt(cptr.ldPtr(cptr.add(gi, 8))) < (BigInt.asIntN(64, offer * 2n)) && coaligned ? 1 : 0) {
                 if (strayed && (BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(u, 2392)))) > 5000n ? 1 : 0) {
                     cptr.stI32(cptr.add(cptr.add(u, 2172), 4), 0);
-                    cptr.stU64(cptr.add(u, 2392), cptr.ldI64(cptr.add(svm, 8)));
+                    cptr.stI64(cptr.add(u, 2392), cptr.ldI64(cptr.add(svm, 8)));
                 } else {
                     adjalign(2);
                 }

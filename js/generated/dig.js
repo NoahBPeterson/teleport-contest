@@ -670,7 +670,7 @@ function dig() {
                 newsym(dpx, dpy);
             }
         }
-        cptr.stU64(cptr.add(cptr.add(svc, 96), 16), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(cptr.add(svc, 96), 16), cptr.ldI64(cptr.add(svm, 8)));
         cptr.st1(cptr.add(cptr.add(svc, 96), 27), (0));
         cptr.stI16(cptr.add(cptr.add(svc, 96), 4), 0);
         cptr.stI16(cptr.add(cptr.add(cptr.add(svc, 96), 4), 2), i16((-1)));
@@ -1072,7 +1072,7 @@ function dig_up_grave(cc) {
         case 1:
         You(__sl92);
         if ((otmp = mk_tt_object(265, dig_x, dig_y)) !== null)
-            cptr.stU64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(otmp, 184)) - (BigInt.asIntN(64, (50n) + 1n)));
+            cptr.stI64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(otmp, 184)) - (BigInt.asIntN(64, (50n) + 1n)));
         break;
         case 2:
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
@@ -1908,7 +1908,7 @@ export function rot_corpse(arg, timeout) {
         if (cptr.ldI64(cptr.add(obj, 192)) && cptr.eq(obj, (cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(obj, 8))), 288)))) ? 1 : 0)
             setmnotwielded(cptr.ldPtr(cptr.add(obj, 8)), obj);
     } else if (cptr.ld1s(cptr.add(obj, 52)) == 5) {
-        cptr.stU64(cptr.add(obj, 192), 0n);
+        cptr.stI64(cptr.add(obj, 192), 0n);
     }
     rot_organic(arg, timeout);
     if (on_floor) {

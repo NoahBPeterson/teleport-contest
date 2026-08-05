@@ -171,7 +171,7 @@ function loadConstants(S, f) {
             case ((3) | ((0) << 4)):
             {
                 let io = (o);
-                cptr.stU64(((io)), (loadInteger(S)));
+                cptr.stI64(((io)), (loadInteger(S)));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;

@@ -387,8 +387,8 @@ export function gamelog_add(glflags, gltime, str) {
     let tmp;
     let lst = cptr.ldPtr(cptr.add(gg, 94968));
     tmp = alloc(32);
-    cptr.stU64(tmp, gltime);
-    cptr.stU64(cptr.add(tmp, 8), glflags);
+    cptr.stI64(tmp, gltime);
+    cptr.stI64(cptr.add(tmp, 8), glflags);
     cptr.stPtr(cptr.add(tmp, 16), dupstr(str));
     cptr.stPtr(cptr.add(tmp, 24), null);
     while (lst && cptr.ldPtr(cptr.add(lst, 24)) ? 1 : 0)

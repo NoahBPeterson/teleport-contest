@@ -344,7 +344,7 @@ export function breakchestlock(box, destroyit) {
                 useup(otmp);
             }
             if (cptr.ldI16(cptr.add(box, 32)) == 216 && cptr.ldI16(cptr.add(otmp, 32)) == 265 ? 1 : 0) {
-                cptr.stU64(cptr.add(otmp, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184))));
+                cptr.stI64(cptr.add(otmp, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184))));
                 start_corpse_timeout(otmp);
             }
             place_object(otmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -1199,9 +1199,9 @@ function chest_shatter_msg(otmp) {
         return;
     }
     save_HBlinded = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)), save_BBlinded = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8));
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), 1n), cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), 0n);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), 1n), cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), 0n);
     thing = singular(otmp, xname);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), save_HBlinded), cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), save_BBlinded);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), save_HBlinded), cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), save_BBlinded);
     switch (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) | 0) {
         case 5:
         disposition = __sl145;

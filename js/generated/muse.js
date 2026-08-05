@@ -2158,7 +2158,7 @@ function you_aggravate(mtmp) {
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MAP.v, (1));
     docrt();
     if (unconscious()) {
-        cptr.stU64(cptr.add(gm, 8), BigInt((-1)));
+        cptr.stI64(cptr.add(gm, 8), BigInt((-1)));
         cptr.stPtr(cptr.add(gn, 8), __sl147);
     }
     newsym(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
@@ -2358,9 +2358,9 @@ function mon_consume_unstone(mon, obj, by_you, stoning) {
         mon_adjust_speed(mon, -3, null);
     if (vis) {
         let save_quan = cptr.ldI64(cptr.add(obj, 40));
-        cptr.stU64(cptr.add(obj, 40), 1n);
+        cptr.stI64(cptr.add(obj, 40), 1n);
         pline_mon(mon, __sl157, Monnam(mon), ((cptr.ld1s(cptr.add(obj, 49)) == 8) ? __sl158 : ((cptr.ldI16(cptr.add(obj, 32)) == 296) ? __sl159 : __sl160)), distant_name(obj, doname));
-        cptr.stU64(cptr.add(obj, 40), save_quan);
+        cptr.stI64(cptr.add(obj, 40), save_quan);
     } else if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0))
         You_hear(__sl161, (cptr.ld1s(cptr.add(obj, 49)) == 8) ? __sl162 : __sl163);
     m_useup(mon, obj);
@@ -2392,12 +2392,12 @@ function mon_consume_unstone(mon, obj, by_you, stoning) {
     if ((cptr.ld1s(cptr.add(mon, 65)) && !cptr.ldI32(cptr.add(mon, 184)) ? 1 : 0) && nutrit > 0 ? 1 : 0) {
         let edog = (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 40)));
         if (cptr.ldI64(cptr.add(edog, 32)) < cptr.ldI64(cptr.add(svm, 8)))
-            cptr.stU64(cptr.add(edog, 32), cptr.ldI64(cptr.add(svm, 8)));
-        cptr.stU64(cptr.add(edog, 32), cptr.ldI64(cptr.add(edog, 32)) + BigInt(nutrit));
+            cptr.stI64(cptr.add(edog, 32), cptr.ldI64(cptr.add(svm, 8)));
+        cptr.stI64(cptr.add(edog, 32), cptr.ldI64(cptr.add(edog, 32)) + BigInt(nutrit));
         cptr.stI32(cptr.add(mon, 164), 0);
     }
     cptr.stI16(cptr.add(mon, 24), cptr.ldI16(cptr.add(mon, 24)) - 12);
-    cptr.stU64(cptr.add(mon, 248), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(mon, 248), cptr.ldI64(cptr.add(svm, 8)));
 }
 
 /** C ref: muse.c:2985 — @param {CPtr} mon @param {CPtr} obj @param {CInt} tinok @returns {CInt} */
@@ -2578,7 +2578,7 @@ function muse_unslime(mon, obj, trap, by_you) {
             discover_object((otyp), (1), (1), (1));
     }
     cptr.stI16(cptr.add(mon, 24), cptr.ldI16(cptr.add(mon, 24)) - 12);
-    cptr.stU64(cptr.add(mon, 248), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(mon, 248), cptr.ldI64(cptr.add(svm, 8)));
     return res;
 }
 

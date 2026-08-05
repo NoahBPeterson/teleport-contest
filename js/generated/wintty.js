@@ -264,8 +264,8 @@ function resize_tty() {
     cptr.stI16(ttyDisplay, i16(cptr.ldI32(cptr.add(cptr.add(gt, 336), 16))));
     cptr.stI16(cptr.add(ttyDisplay, 2), i16(cptr.ldI32(cptr.add(cptr.add(gt, 336), 20))));
     cw = cptr.ldPtr(cptr.add(wins, BASE_WINDOW, 8));
-    cptr.stU64(cptr.add(cw, 16), BigInt(cptr.ldI16(ttyDisplay)));
-    cptr.stU64(cptr.add(cw, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
+    cptr.stI64(cptr.add(cw, 16), BigInt(cptr.ldI16(ttyDisplay)));
+    cptr.stI64(cptr.add(cw, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
     if (!cptr.ld1s(cptr.add(iflags, 81)))
         return;
     cw = (WIN_MAP.v != (-1)) ? cptr.ldPtr(cptr.add(wins, WIN_MAP.v, 8)) : null;
@@ -541,18 +541,18 @@ export function tty_create_nhwindow(type) {
     cptr.stI16(cptr.add(newwin, 4), i16(type));
     cptr.stI32(newwin, 0);
     cptr.st1(cptr.add(newwin, 6), 0);
-    cptr.stU64(cptr.add(newwin, 32), cptr.stU64(cptr.add(newwin, 40), 0n));
+    cptr.stI64(cptr.add(newwin, 32), cptr.stI64(cptr.add(newwin, 40), 0n));
     cptr.stPtr(cptr.add(newwin, 88), null);
     cptr.stPtr(cptr.add(newwin, 96), null);
     cptr.stPtr(cptr.add(newwin, 104), null);
-    cptr.stU64(cptr.add(newwin, 120), cptr.stU64(cptr.add(newwin, 112), cptr.stU64(cptr.add(newwin, 128), BigInt(cptr.stI16(cptr.add(newwin, 136), 0)))));
+    cptr.stI64(cptr.add(newwin, 120), cptr.stI64(cptr.add(newwin, 112), cptr.stI64(cptr.add(newwin, 128), BigInt(cptr.stI16(cptr.add(newwin, 136), 0)))));
     cptr.stU64(cptr.add(newwin, 64), 0n);
     switch (type) {
         case ((6 + 1) | 0):
         cptr.stI16(cptr.add(newwin, 8), cptr.stI16(cptr.add(newwin, 10), 0));
-        cptr.stU64(cptr.add(newwin, 16), BigInt(cptr.ldI16(ttyDisplay)));
-        cptr.stU64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
-        cptr.stU64(cptr.add(newwin, 48), cptr.stU64(cptr.add(newwin, 56), 0n));
+        cptr.stI64(cptr.add(newwin, 16), BigInt(cptr.ldI16(ttyDisplay)));
+        cptr.stI64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
+        cptr.stI64(cptr.add(newwin, 48), cptr.stI64(cptr.add(newwin, 56), 0n));
         break;
         case 1:
         cptr.stI16(cptr.add(newwin, 8), cptr.stI16(cptr.add(newwin, 10), 0));
@@ -560,8 +560,8 @@ export function tty_create_nhwindow(type) {
             cptr.stI32(cptr.add(iflags, 96), 20);
         else if (cptr.ldI32(cptr.add(iflags, 96)) > 128)
             cptr.stI32(cptr.add(iflags, 96), 128);
-        cptr.stU64(cptr.add(newwin, 48), cptr.stU64(cptr.add(newwin, 16), BigInt(cptr.ldI32(cptr.add(iflags, 96)) >>> 0)));
-        cptr.stU64(cptr.add(newwin, 56), cptr.stU64(cptr.add(newwin, 24), 0n));
+        cptr.stI64(cptr.add(newwin, 48), cptr.stI64(cptr.add(newwin, 16), BigInt(cptr.ldI32(cptr.add(iflags, 96)) >>> 0)));
+        cptr.stI64(cptr.add(newwin, 56), cptr.stI64(cptr.add(newwin, 24), 0n));
         break;
         case 2:
         if (cptr.ldI32(cptr.add(iflags, 388)) < 2 || cptr.ldI32(cptr.add(iflags, 388)) > 3 ? 1 : 0)
@@ -569,23 +569,23 @@ export function tty_create_nhwindow(type) {
         cptr.stI16(cptr.add(newwin, 8), 0);
         rowoffset = (cptr.ldI16(ttyDisplay) - cptr.ldI32(cptr.add(iflags, 388))) | 0;
         cptr.stI16(cptr.add(newwin, 10), i16(((rowoffset) < ((21 + 1) | 0) ? (rowoffset) : ((21 + 1) | 0))));
-        cptr.stU64(cptr.add(newwin, 16), cptr.stU64(cptr.add(newwin, 48), BigInt(cptr.ldI32(cptr.add(iflags, 388)))));
-        cptr.stU64(cptr.add(newwin, 24), cptr.stU64(cptr.add(newwin, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2)))));
+        cptr.stI64(cptr.add(newwin, 16), cptr.stI64(cptr.add(newwin, 48), BigInt(cptr.ldI32(cptr.add(iflags, 388)))));
+        cptr.stI64(cptr.add(newwin, 24), cptr.stI64(cptr.add(newwin, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2)))));
         break;
         case 3:
         cptr.stI16(cptr.add(newwin, 8), 0);
         cptr.stI16(cptr.add(newwin, 10), 1);
-        cptr.stU64(cptr.add(newwin, 16), 21n);
-        cptr.stU64(cptr.add(newwin, 24), 80n);
-        cptr.stU64(cptr.add(newwin, 48), 0n);
-        cptr.stU64(cptr.add(newwin, 56), 0n);
+        cptr.stI64(cptr.add(newwin, 16), 21n);
+        cptr.stI64(cptr.add(newwin, 24), 80n);
+        cptr.stI64(cptr.add(newwin, 48), 0n);
+        cptr.stI64(cptr.add(newwin, 56), 0n);
         break;
         case 4:
         case 5:
         cptr.stI16(cptr.add(newwin, 8), cptr.stI16(cptr.add(newwin, 10), 0));
-        cptr.stU64(cptr.add(newwin, 16), 0n);
-        cptr.stU64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
-        cptr.stU64(cptr.add(newwin, 48), cptr.stU64(cptr.add(newwin, 56), 0n));
+        cptr.stI64(cptr.add(newwin, 16), 0n);
+        cptr.stI64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
+        cptr.stI64(cptr.add(newwin, 48), cptr.stI64(cptr.add(newwin, 56), 0n));
         break;
         default:
         panic(__sl14, type);
@@ -604,7 +604,7 @@ export function tty_create_nhwindow(type) {
             }
         }
         if (cptr.ldI16(cptr.add(newwin, 4)) == 1)
-            cptr.stU64(cptr.add(newwin, 48), 0n);
+            cptr.stI64(cptr.add(newwin, 48), 0n);
     } else {
         cptr.stPtr(cptr.add(newwin, 80), null);
         cptr.stPtr(cptr.add(newwin, 72), null);
@@ -634,7 +634,7 @@ function free_window_info(cw, free_data) {
     let i;
     if (cptr.ldPtr(cptr.add(cw, 80))) {
         if ((WIN_MESSAGE.v != (-1) && cptr.eq(cw, cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8))) ? 1 : 0) && cptr.ldI64(cptr.add(cw, 16)) > cptr.ldI64(cptr.add(cw, 48)) ? 1 : 0)
-            cptr.stU64(cptr.add(cw, 48), cptr.ldI64(cptr.add(cw, 16)));
+            cptr.stI64(cptr.add(cw, 48), cptr.ldI64(cptr.add(cw, 16)));
         for (i = 0; BigInt(i) < cptr.ldI64(cptr.add(cw, 48)); i++)
             if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8))) {
                 cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)));
@@ -648,10 +648,10 @@ function free_window_info(cw, free_data) {
             if (cptr.ldPtr(cptr.add(cw, 72)))
                 cptr.free(cptr.ldPtr(cptr.add(cw, 72)));
             cptr.stPtr(cptr.add(cw, 72), null);
-            cptr.stU64(cptr.add(cw, 16), 0n);
+            cptr.stI64(cptr.add(cw, 16), 0n);
         }
     }
-    cptr.stU64(cptr.add(cw, 48), cptr.stU64(cptr.add(cw, 56), 0n));
+    cptr.stI64(cptr.add(cw, 48), cptr.stI64(cptr.add(cw, 56), 0n));
     if (cptr.ldPtr(cptr.add(cw, 96))) {
         let temp;
         while ((temp = cptr.ldPtr(cptr.add(cw, 96))) !== null) {
@@ -665,7 +665,7 @@ function free_window_info(cw, free_data) {
         cptr.free(cptr.ldPtr(cptr.add(cw, 104)));
         cptr.stPtr(cptr.add(cw, 104), null);
     }
-    cptr.stU64(cptr.add(cw, 112), cptr.stU64(cptr.add(cw, 120), cptr.stU64(cptr.add(cw, 128), BigInt(cptr.stI16(cptr.add(cw, 136), 0)))));
+    cptr.stI64(cptr.add(cw, 112), cptr.stI64(cptr.add(cw, 120), cptr.stI64(cptr.add(cw, 128), BigInt(cptr.stI16(cptr.add(cw, 136), 0)))));
     if (cptr.ldPtr(cptr.add(cw, 88))) {
         cptr.free(cptr.ldPtr(cptr.add(cw, 88)));
         cptr.stPtr(cptr.add(cw, 88), null);
@@ -698,7 +698,7 @@ export function tty_clear_nhwindow(window) {
                 if (cptr.ldI64(cptr.add(cw, 40)))
                     docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
             }
-            cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
+            cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
             cptr.stI32(cptr.add(ttyDisplay, 24), 0);
         }
         break;
@@ -734,27 +734,27 @@ export function tty_clear_nhwindow(window) {
         }
         break;
     }
-    cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
+    cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
 }
 
 /** C ref: wintty.c:1138 — @param {CInt} window @param {CPtr} curr @param {CInt} lineno @param {CInt} in_view @param {CInt} counting @param {CLongLong} count @returns {CInt} */
 function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
     if (cptr.ld1s(cptr.add(curr, 88))) {
         if (counting && count > 0n ? 1 : 0) {
-            cptr.stU64(cptr.add(curr, 16), count);
+            cptr.stI64(cptr.add(curr, 16), count);
             if (in_view)
                 set_item_state(window, lineno, curr);
             return 1;
         } else {
             cptr.st1(cptr.add(curr, 88), 0);
-            cptr.stU64(cptr.add(curr, 16), -1n);
+            cptr.stI64(cptr.add(curr, 16), -1n);
             if (in_view)
                 set_item_state(window, lineno, curr);
             return 1;
         }
     } else {
         if (counting && count > 0n ? 1 : 0) {
-            cptr.stU64(cptr.add(curr, 16), count);
+            cptr.stI64(cptr.add(curr, 16), count);
             cptr.st1(cptr.add(curr, 88), 1);
             if (in_view)
                 set_item_state(window, lineno, curr);
@@ -839,7 +839,7 @@ function unset_all_on_page(window, page_start, page_end) {
         if ((!cptr.ldPtr(cptr.add(curr, 8)) || !cptr.ld1s(cptr.add(curr, 88)) ? 1 : 0) || !menuitem_invert_test(2, cptr.ldI32(cptr.add(curr, 92)), 1) ? 1 : 0)
             continue;
         cptr.st1(cptr.add(curr, 88), 0);
-        cptr.stU64(cptr.add(curr, 16), -1n);
+        cptr.stI64(cptr.add(curr, 16), -1n);
         set_item_state(window, n, curr);
     }
 }
@@ -853,11 +853,11 @@ function invert_all_on_page(window, page_start, page_end, acc, count) {
             continue;
         if (cptr.ld1s(cptr.add(curr, 88))) {
             cptr.st1(cptr.add(curr, 88), 0);
-            cptr.stU64(cptr.add(curr, 16), -1n);
+            cptr.stI64(cptr.add(curr, 16), -1n);
         } else {
             cptr.st1(cptr.add(curr, 88), 1);
             if (count > 0n)
-                cptr.stU64(cptr.add(curr, 16), count);
+                cptr.stI64(cptr.add(curr, 16), count);
         }
         set_item_state(window, n, curr);
     }
@@ -878,11 +878,11 @@ function invert_all(window, page_start, page_end, acc, count) {
             continue;
         if (cptr.ld1s(cptr.add(curr, 88))) {
             cptr.st1(cptr.add(curr, 88), 0);
-            cptr.stU64(cptr.add(curr, 16), BigInt((-1)));
+            cptr.stI64(cptr.add(curr, 16), BigInt((-1)));
         } else {
             cptr.st1(cptr.add(curr, 88), 1);
             if (count > 0n)
-                cptr.stU64(cptr.add(curr, 16), count);
+                cptr.stI64(cptr.add(curr, 16), count);
         }
     }
 }
@@ -1116,7 +1116,7 @@ function process_menu_window(window, cw) {
             if (!counting) {
                 for (curr = cptr.ldPtr(cptr.add(cw, 96)); curr; curr = cptr.ldPtr(curr)) {
                     cptr.st1(cptr.add(curr, 88), 0);
-                    cptr.stU64(cptr.add(curr, 16), -1n);
+                    cptr.stI64(cptr.add(curr, 16), -1n);
                 }
                 cptr.stI32(cw, cptr.ldI32(cw) | 1);
                 finished = 1;
@@ -1182,7 +1182,7 @@ function process_menu_window(window, cw) {
                 if ((!cptr.ldPtr(cptr.add(curr, 8)) || !cptr.ld1s(cptr.add(curr, 88)) ? 1 : 0) || !menuitem_invert_test(2, cptr.ldI32(cptr.add(curr, 92)), 1) ? 1 : 0)
                     continue;
                 cptr.st1(cptr.add(curr, 88), 0);
-                cptr.stU64(cptr.add(curr, 16), BigInt((-1)));
+                cptr.stI64(cptr.add(curr, 16), BigInt((-1)));
             }
             break;
             case 64:
@@ -1355,7 +1355,7 @@ export function tty_display_nhwindow(window, blocking) {
             void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == 0)) || (nhassert_failed(__sl23, __sl24, 1926), 0) ? 1 : 0);
         } else
             cptr.stI32(cptr.add(ttyDisplay, 24), 0);
-        cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
+        cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
         if (!cptr.ld1s(cptr.add(cw, 6)))
             cptr.st1(cptr.add(iflags, 81), 1);
         break;
@@ -1373,7 +1373,7 @@ export function tty_display_nhwindow(window, blocking) {
         void fflush(__stdoutp);
         break;
         case 5:
-        cptr.stU64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
+        cptr.stI64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
         // @FallThrough
         ;
         case 4:
@@ -1535,8 +1535,8 @@ export function tty_curs(window, x, y) {
                 }
             } while (0);
     }
-    cptr.stU64(cptr.add(cw, 32), BigInt((--x)));
-    cptr.stU64(cptr.add(cw, 40), BigInt(y));
+    cptr.stI64(cptr.add(cw, 32), BigInt((--x)));
+    cptr.stI64(cptr.add(cw, 40), BigInt(y));
     x = (x + cptr.ldI16(cptr.add(cw, 8))) | 0;
     y = (y + cptr.ldI16(cptr.add(cw, 10))) | 0;
     if (clipping && window == WIN_MAP.v ? 1 : 0) {
@@ -1648,8 +1648,8 @@ export function tty_putstr(window, attr, str) {
             str = cptr.add(str, 1);
             (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
         }
-        cptr.stU64(cptr.add(cw, 32), 0n);
-        (cptr.stU64(cptr.add(cw, 40), cptr.ldU64(cptr.add(cw, 40)) + 1n)) - (1n);
+        cptr.stI64(cptr.add(cw, 32), 0n);
+        (cptr.stI64(cptr.add(cw, 40), cptr.ldI64(cptr.add(cw, 40)) + 1n)) - (1n);
         term_end_attr(attr);
         break;
         case ((6 + 1) | 0):
@@ -1657,8 +1657,8 @@ export function tty_putstr(window, attr, str) {
         term_start_attr(attr);
         while (cptr.ld1s(str)) {
             if (cptr.ldI16(cptr.add(ttyDisplay, 4)) >= ((cptr.ldI16(cptr.add(ttyDisplay, 2)) - 1) | 0)) {
-                cptr.stU64(cptr.add(cw, 32), 0n);
-                (cptr.stU64(cptr.add(cw, 40), cptr.ldU64(cptr.add(cw, 40)) + 1n)) - (1n);
+                cptr.stI64(cptr.add(cw, 32), 0n);
+                (cptr.stI64(cptr.add(cw, 40), cptr.ldI64(cptr.add(cw, 40)) + 1n)) - (1n);
                 tty_curs(window, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
             }
             void putchar(cptr.ld1s(str));
@@ -1666,25 +1666,25 @@ export function tty_putstr(window, attr, str) {
             str = cptr.add(str, 1);
             (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
         }
-        cptr.stU64(cptr.add(cw, 32), 0n);
-        (cptr.stU64(cptr.add(cw, 40), cptr.ldU64(cptr.add(cw, 40)) + 1n)) - (1n);
+        cptr.stI64(cptr.add(cw, 32), 0n);
+        (cptr.stI64(cptr.add(cw, 40), cptr.ldI64(cptr.add(cw, 40)) + 1n)) - (1n);
         term_end_attr(attr);
         break;
         case 4:
         case 5:
         if (cptr.ldI16(cptr.add(cw, 4)) == 5 && (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + BigInt(cptr.ldI16(cptr.add(cw, 10))))) == BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0)) ? 1 : 0) {
-            cptr.stU64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
+            cptr.stI64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
             tty_display_nhwindow(window, 1);
             for (i = 0n; i < cptr.ldI64(cptr.add(cw, 48)); i++)
                 if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8))) {
                     cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)));
                     cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8), null);
                 }
-            cptr.stU64(cptr.add(cw, 48), cptr.stU64(cptr.add(cw, 40), 0n));
+            cptr.stI64(cptr.add(cw, 48), cptr.stI64(cptr.add(cw, 40), 0n));
         }
         if (cptr.ldI64(cptr.add(cw, 40)) >= cptr.ldI64(cptr.add(cw, 16))) {
             let tmp;
-            cptr.stU64(cptr.add(cw, 16), cptr.ldI64(cptr.add(cw, 16)) + 12n);
+            cptr.stI64(cptr.add(cw, 16), cptr.ldI64(cptr.add(cw, 16)) + 12n);
             tmp = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt(Number(BigInt.asUintN(32, cptr.ldI64(cptr.add(cw, 16)))) >>> 0)))));
             for (i = 0n; i < cptr.ldI64(cptr.add(cw, 48)); i++)
                 cptr.stPtr(cptr.add(tmp, i, 8), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)));
@@ -1701,9 +1701,9 @@ export function tty_putstr(window, attr, str) {
         cptr.st1(cptr.postinc(() => ob, (v) => { ob = v; }), schar(((attr + 1) | 0)));
         void cptr.strcpy(ob, str);
         if (n0 > cptr.ldI64(cptr.add(cw, 56)))
-            cptr.stU64(cptr.add(cw, 56), n0);
-        if (cptr.stU64(cptr.add(cw, 40), cptr.ldU64(cptr.add(cw, 40)) + 1n) > cptr.ldI64(cptr.add(cw, 48)))
-            cptr.stU64(cptr.add(cw, 48), cptr.ldI64(cptr.add(cw, 40)));
+            cptr.stI64(cptr.add(cw, 56), n0);
+        if (cptr.stI64(cptr.add(cw, 40), cptr.ldI64(cptr.add(cw, 40)) + 1n) > cptr.ldI64(cptr.add(cw, 48)))
+            cptr.stI64(cptr.add(cw, 48), cptr.ldI64(cptr.add(cw, 40)));
         if (n0 > BigInt(cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)))) {
             for (i = BigInt(((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 1) | 0)); (i && cptr.ld1s(cptr.add(str, i)) != 32 ? 1 : 0) && cptr.ld1s(cptr.add(str, i)) != 10 ? 1 : 0; )
                 i--;
@@ -1790,7 +1790,7 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
         return;
     if ((window == (-1) || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != 4 ? 1 : 0)
         panic(cptr.decay(winpanicstr), window, __sl39);
-    (cptr.stU64(cptr.add(cw, 128), cptr.ldU64(cptr.add(cw, 128)) + 1n)) - (1n);
+    (cptr.stI64(cptr.add(cw, 128), cptr.ldI64(cptr.add(cw, 128)) + 1n)) - (1n);
     if (cptr.ldPtr(identifier)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(str)));
         if (len >= 256) {
@@ -1805,7 +1805,7 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
         newstr = str;
     item = alloc(104);
     cptr.memcpy(cptr.add(item, 8), identifier, 8);
-    cptr.stU64(cptr.add(item, 16), -1n);
+    cptr.stI64(cptr.add(item, 16), -1n);
     cptr.st1(cptr.add(item, 88), preselected);
     cptr.stI32(cptr.add(item, 92), itemflags);
     cptr.st1(cptr.add(item, 96), ch);
@@ -1858,14 +1858,14 @@ export function tty_end_menu(window, prompt) {
         tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32(cptr.add(tty_menu_promptstyle, 4)), cptr.ldI32(tty_menu_promptstyle), prompt, 0);
     }
     lmax = ((52) < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? (52) : ((cptr.ldI16(ttyDisplay) - 1) | 0));
-    cptr.stU64(cptr.add(cw, 120), (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 128)) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));
+    cptr.stI64(cptr.add(cw, 120), (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 128)) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));
     if (cptr.ldI64(cptr.add(cw, 112)) < BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 120)) + 1n)) {
         if (cptr.ldPtr(cptr.add(cw, 104)))
             cptr.free(cptr.ldPtr(cptr.add(cw, 104)));
-        cptr.stU64(cptr.add(cw, 112), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 120)) + 1n));
+        cptr.stI64(cptr.add(cw, 112), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 120)) + 1n));
         cptr.stPtr(cptr.add(cw, 104), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64(cptr.add(cw, 112))) * 8n)))));
     }
-    cptr.stU64(cptr.add(cw, 24), 0n);
+    cptr.stI64(cptr.add(cw, 24), 0n);
     menu_ch = 63;
     for (n = 0, curr = cptr.ldPtr(cptr.add(cw, 96)); curr; n++, curr = cptr.ldPtr(curr)) {
         if ((n % lmax) == 0) {
@@ -1883,7 +1883,7 @@ export function tty_end_menu(window, prompt) {
             len = cptr.ldI16(cptr.add(ttyDisplay, 2));
         }
         if (BigInt(len) > cptr.ldI64(cptr.add(cw, 24)))
-            cptr.stU64(cptr.add(cw, 24), BigInt(len));
+            cptr.stI64(cptr.add(cw, 24), BigInt(len));
     }
     cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 104)), cptr.ldI64(cptr.add(cw, 120)), 8), null);
     if (cptr.ldI64(cptr.add(cw, 120)) > 1n) {
@@ -1901,12 +1901,12 @@ export function tty_end_menu(window, prompt) {
         len = cptr.ldI16(cptr.add(ttyDisplay, 2));
     }
     if (BigInt(len) > cptr.ldI64(cptr.add(cw, 24)))
-        cptr.stU64(cptr.add(cw, 24), BigInt(len));
-    cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 24)));
+        cptr.stI64(cptr.add(cw, 24), BigInt(len));
+    cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 24)));
     if (cptr.ldI64(cptr.add(cw, 120)) > 1n)
-        cptr.stU64(cptr.add(cw, 48), cptr.stU64(cptr.add(cw, 16), BigInt(((lmax + 1) | 0))));
+        cptr.stI64(cptr.add(cw, 48), cptr.stI64(cptr.add(cw, 16), BigInt(((lmax + 1) | 0))));
     else
-        cptr.stU64(cptr.add(cw, 48), cptr.stU64(cptr.add(cw, 16), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 128)) + 1n)));
+        cptr.stI64(cptr.add(cw, 48), cptr.stI64(cptr.add(cw, 16), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 128)) + 1n)));
 }
 
 /** C ref: wintty.c:2832 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
@@ -1939,7 +1939,7 @@ export function tty_select_menu(window, how, menu_list) {
         for (mi = cptr.ldPtr(menu_list), curr = cptr.ldPtr(cptr.add(cw, 96)); curr; curr = cptr.ldPtr(curr))
             if (cptr.ld1s(cptr.add(curr, 88))) {
                 cptr.memcpy(mi, cptr.add(curr, 8), 8);
-                cptr.stU64(cptr.add(mi, 8), cptr.ldI64(cptr.add(curr, 16)));
+                cptr.stI64(cptr.add(mi, 8), cptr.ldI64(cptr.add(curr, 16)));
                 mi = cptr.add(mi, 1, 24);
             }
     }
@@ -2241,7 +2241,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
             term_end_extracolor();
     }
     ;
-    (cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(wins, window, 8)), 32), cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(wins, window, 8)), 32)) + 1n)) - (1n);
+    (cptr.stI64(cptr.add(cptr.ldPtr(cptr.add(wins, window, 8)), 32), cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(wins, window, 8)), 32)) + 1n)) - (1n);
     (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
 }
 
@@ -2805,7 +2805,7 @@ function tty_putstatusfield(text, x, y) {
                 void putchar(cptr.ld1s(text));
                 nomux_putch(cptr.ld1s(text));
                 (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
-                (cptr.stU64(cptr.add(cw, 32), cptr.ldU64(cptr.add(cw, 32)) + 1n)) - (1n);
+                (cptr.stI64(cptr.add(cw, 32), cptr.ldI64(cptr.add(cw, 32)) + 1n)) - (1n);
                 cptr.st1(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), y, 8)), (n - 1) | 0), cptr.ld1s(text));
                 text = cptr.add(text, 1);
             }

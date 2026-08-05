@@ -399,7 +399,7 @@ export function lua_tonumberx(L, idx, pisnum) {
 export function lua_tointegerx(L, idx, pisnum) {
     let res = cptr.box(0n);
     let o = index2value(L, idx);
-    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, 0));
+    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stI64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, 0));
     if (pisnum)
         cptr.stI32(pisnum, isnum);
     return res.v;
@@ -547,7 +547,7 @@ export function lua_pushinteger(L, n) {
     (void 0);
     {
         let io = (((cptr.ldPtr(cptr.add(L, 16)))));
-        cptr.stU64(((io)), (n));
+        cptr.stI64(((io)), (n));
         (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
     }
     ;
@@ -877,7 +877,7 @@ export function lua_geti(L, idx, n) {
         let aux = cptr.alloc(16);
         {
             let io = (aux);
-            cptr.stU64(((io)), (n));
+            cptr.stI64(((io)), (n));
             (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
         }
         ;
@@ -1164,7 +1164,7 @@ export function lua_seti(L, idx, n) {
         let aux = cptr.alloc(16);
         {
             let io = (aux);
-            cptr.stU64(((io)), (n));
+            cptr.stI64(((io)), (n));
             (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
         }
         ;
@@ -1298,7 +1298,7 @@ export function lua_callk(L, nargs, nresults, ctx, k) {
     func = cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(((nargs + 1) | 0)), 16);
     if (k !== (null) && (((cptr.ldI32(cptr.add((L), 176)) & 4294901760) >>> 0) == 0) ? 1 : 0) {
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 32), k);
-        cptr.stU64(cptr.add(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 32), 16), ctx);
+        cptr.stI64(cptr.add(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 32), 16), ctx);
         luaD_call(L, func, nresults);
     } else
         luaD_callnoyield(L, func, nresults);
@@ -1342,15 +1342,15 @@ export function lua_pcallk(L, nargs, nresults, errfunc, ctx, k) {
     } else {
         let ci = cptr.ldPtr(cptr.add(L, 32));
         cptr.stPtr(cptr.add(ci, 32), k);
-        cptr.stU64(cptr.add(cptr.add(ci, 32), 16), ctx);
+        cptr.stI64(cptr.add(cptr.add(ci, 32), 16), ctx);
         cptr.stI32(cptr.add(ci, 56), (Number(BigInt.asIntN(32, (((cptr.diff((((cptr.ldPtr(c)))), (((cptr.ldPtr(cptr.add(L, 48)))))))))))));
-        cptr.stU64(cptr.add(cptr.add(ci, 32), 8), cptr.ldI64(cptr.add(L, 168)));
-        cptr.stU64(cptr.add(L, 168), func);
+        cptr.stI64(cptr.add(cptr.add(ci, 32), 8), cptr.ldI64(cptr.add(L, 168)));
+        cptr.stI64(cptr.add(L, 168), func);
         (cptr.stI16(cptr.add(ci, 62), u16((((cptr.ldU16(cptr.add(ci, 62))) & ~(1 << 0)) | (cptr.ld1u(cptr.add(L, 11)))))));
         cptr.stI16(cptr.add(ci, 62), cptr.ldU16(cptr.add(ci, 62)) | (1 << 4));
         luaD_call(L, cptr.ldPtr(c), nresults);
         cptr.stI16(cptr.add(ci, 62), cptr.ldU16(cptr.add(ci, 62)) & ~(1 << 4));
-        cptr.stU64(cptr.add(L, 168), cptr.ldI64(cptr.add(cptr.add(ci, 32), 8)));
+        cptr.stI64(cptr.add(L, 168), cptr.ldI64(cptr.add(cptr.add(ci, 32), 8)));
         status = 0;
     }
     {

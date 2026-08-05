@@ -439,7 +439,7 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
         }
     }
     if (silverhit_p)
-        cptr.stU64(silverhit_p, silverhit);
+        cptr.stI64(silverhit_p, silverhit);
     return bonus;
 }
 
@@ -827,9 +827,9 @@ export function mon_wield_item(mon) {
             pline_mon(mon, __sl48, Monnam(mon), doname(obj), exclaim ? 33 : 46);
             if ((arw = autoreturn_weapon(obj)) !== null && (cptr.ldI32(cptr.add(arw, 8)) | 0) != 0 ? 1 : 0)
                 pline_mon(mon, __sl49, Monnam(mon), the(xname(obj)));
-            cptr.stU64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) | 256n);
+            cptr.stI64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) | 256n);
             newly_welded = mwelded(obj);
-            cptr.stU64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~256n));
+            cptr.stI64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~256n));
             if (newly_welded) {
                 let mon_hand = mbodypart(mon, 6);
                 if (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0 ? 1 : 0))
@@ -845,7 +845,7 @@ export function mon_wield_item(mon) {
             else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)), 8)), cptr.ldI16(cptr.add(mon, 28)))) & 2) != 0))
                 pline(__sl56, (dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= Math.imul(5, 5)) ? __sl57 : __sl58);
         }
-        cptr.stU64(cptr.add(obj, 192), 256n);
+        cptr.stI64(cptr.add(obj, 192), 256n);
         return 1;
     }
     cptr.stI16(cptr.add(mon, 304), 1);
@@ -1491,5 +1491,5 @@ export function setmnotwielded(mon, obj) {
     }
     if (cptr.eq((cptr.ldPtr(cptr.add((mon), 288))), obj))
         (cptr.stPtr(cptr.add((mon), 288), null));
-    cptr.stU64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~256n));
+    cptr.stI64(cptr.add(obj, 192), cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~256n));
 }

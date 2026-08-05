@@ -549,7 +549,7 @@ function stoned_dialogue() {
     }
     switch (Number(BigInt.asIntN(32, i))) {
         case 5:
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
         if (cptr.ldI64(cptr.add(gm, 8)) > 0n)
             nomul(0);
         break;
@@ -770,7 +770,7 @@ function slime_dialogue() {
     }
     switch (i) {
         case 3n:
-        cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
+        cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 64, 24), 16), 0n);
         if (!Popeye(22))
             stop_occupation();
         if (cptr.ldI64(cptr.add(gm, 8)) > 0n)
@@ -856,10 +856,10 @@ function region_dialogue() {
     let in_poison_gas_cloud;
     let r = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) & 16777215n);
     let i = r / 2n;
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) & BigInt.asIntN(64, ~16777215n));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) & BigInt.asIntN(64, ~16777215n));
     no_need_to_breathe = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 1024n) != 0n) ? 1 : 0));
     in_poison_gas_cloud = region_danger();
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) | r);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) | r);
     if (no_need_to_breathe || !in_poison_gas_cloud ? 1 : 0)
         return;
     if (((r % 2n) && i > 0n ? 1 : 0) && i <= BigInt(2) ? 1 : 0)
@@ -869,9 +869,9 @@ function region_dialogue() {
 /** C ref: timeout.c:575 — @param {CInt} how @param {CInt} which */
 function done_timeout(how, which) {
     let intrinsic_p = cptr.add(cptr.add(cptr.add(u, 112), which, 24), 16);
-    cptr.stU64(intrinsic_p, cptr.ldI64(intrinsic_p) | 536870912n);
+    cptr.stI64(intrinsic_p, cptr.ldI64(intrinsic_p) | 536870912n);
     done(how);
-    cptr.stU64(intrinsic_p, cptr.ldI64(intrinsic_p) & BigInt.asIntN(64, ~536870912n));
+    cptr.stI64(intrinsic_p, cptr.ldI64(intrinsic_p) & BigInt.asIntN(64, ~536870912n));
     cptr.st1(disp, (1));
 }
 
@@ -937,12 +937,12 @@ export function nh_timeout() {
         }
     }
     if (cptr.ldI64(cptr.add(u, 2440))) {
-        if (cptr.stU64(cptr.add(u, 2440), cptr.ldU64(cptr.add(u, 2440)) + -1n) == 0n && cptr.ldPtr(cptr.add(u, 2424)) ? 1 : 0)
+        if (cptr.stI64(cptr.add(u, 2440), cptr.ldI64(cptr.add(u, 2440)) + -1n) == 0n && cptr.ldPtr(cptr.add(u, 2424)) ? 1 : 0)
             pline(__sl138, Monnam(cptr.ldPtr(cptr.add(u, 2424))));
     }
     was_flying = schar((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0));
     for (upp = cptr.add(u, 112); cptr.cmp(upp, cptr.add(cptr.add(u, 112), Number(BigInt.asIntN(32, (1656n / 24n))), 24)) < 0; upp = cptr.add(upp, 1, 24))
-        if ((cptr.ldI64(cptr.add(upp, 16)) & 16777215n) && !(cptr.stU64(cptr.add(upp, 16), cptr.ldU64(cptr.add(upp, 16)) + -1n) & 16777215n) ? 1 : 0) {
+        if ((cptr.ldI64(cptr.add(upp, 16)) & 16777215n) && !(cptr.stI64(cptr.add(upp, 16), cptr.ldI64(cptr.add(upp, 16)) + -1n) & 16777215n) ? 1 : 0) {
             kptr = find_delayed_killer(Number(BigInt.asIntN(32, (cptr.diff(upp, cptr.add(u, 112)) / 24n))));
             switch (cptr.diff(upp, cptr.add(u, 112)) / 24n) {
                 case 18n:
@@ -1145,7 +1145,7 @@ export function nh_timeout() {
                         wake_nearby((0));
                     }
                 }
-                cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16)) & BigInt.asIntN(64, ~67108864n));
+                cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16)) & BigInt.asIntN(64, ~67108864n));
                 if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 25, 24)) ? 1 : 0))
                     incr_itimeout(cptr.add(cptr.add(cptr.add(u, 112), 25, 24), 16), (rng_log_enabled() ? (rng_log_set_caller(__sl84, 924, __sl134), rnd(20)) : rnd(20)));
                 if (cptr.ld1s(cptr.add(iflags, 129))) {
@@ -1172,7 +1172,7 @@ export function fall_asleep(how_long, wakeup_msg) {
     stop_occupation();
     nomul(how_long);
     cptr.stPtr(cptr.add(gm, 16), __sl165);
-    cptr.stU64(cptr.add(u, 2400), cptr.ldI64(cptr.add(svm, 8)));
+    cptr.stI64(cptr.add(u, 2400), cptr.ldI64(cptr.add(svm, 8)));
     cptr.stPtr(cptr.add(gn, 8), wakeup_msg ? __sl166 : cptr.ldPtr(cptr.add(c_common_strings, 56)));
 }
 
@@ -1239,7 +1239,7 @@ export function hatch_egg(arg, timeout) {
             if (!mon)
                 mon = mon2;
             hatchcount = (hatchcount - i) | 0;
-            cptr.stU64(cptr.add(egg, 40), cptr.ldI64(cptr.add(egg, 40)) - BigInt(hatchcount));
+            cptr.stI64(cptr.add(egg, 40), cptr.ldI64(cptr.add(egg, 40)) - BigInt(hatchcount));
         }
     }
     if (mon) {
@@ -1440,7 +1440,7 @@ export function burn_object(arg, timeout) {
     if (timeout != cptr.ldI64(cptr.add(svm, 8))) {
         let how_long = BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - timeout);
         if (how_long >= cptr.ldI64(cptr.add(obj, 184))) {
-            cptr.stU64(cptr.add(obj, 184), 0n);
+            cptr.stI64(cptr.add(obj, 184), 0n);
             end_burn(obj, (0));
             if (menorah) {
                 cptr.st1(cptr.add(obj, 48), 0);
@@ -1456,7 +1456,7 @@ export function burn_object(arg, timeout) {
                     maybe_unhide_at(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
             }
         } else {
-            cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - how_long);
+            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - how_long);
             begin_burn(obj, (1));
         }
         return;
@@ -1491,7 +1491,7 @@ export function burn_object(arg, timeout) {
             useupall(obj);
         } else {
             if (cptr.ld1s(cptr.add(obj, 52)) == 5)
-                cptr.stU64(cptr.add(obj, 192), 0n);
+                cptr.stI64(cptr.add(obj, 192), 0n);
             obj_extract_self(obj);
             obfree(obj, null);
         }
@@ -1627,7 +1627,7 @@ export function burn_object(arg, timeout) {
                 } else {
                     let onfloor = schar((cptr.ld1s(cptr.add(obj, 52)) == 1));
                     if (cptr.ld1s(cptr.add(obj, 52)) == 5)
-                        cptr.stU64(cptr.add(obj, 192), 0n);
+                        cptr.stI64(cptr.add(obj, 192), 0n);
                     obj_extract_self(obj);
                     if (onfloor)
                         maybe_unhide_at(x.v, y.v);
@@ -1708,7 +1708,7 @@ export function begin_burn(obj, already_lit) {
     if (do_timer) {
         if (start_timer(turns, 3, 4, obj_to_any(obj))) {
             cptr.stI32(cptr.add(obj, 76), 1);
-            cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - turns);
+            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) - turns);
             if ((cptr.ld1s(cptr.add((obj), 52)) == 3) && !already_lit ? 1 : 0)
                 update_inventory();
         } else {
@@ -1753,7 +1753,7 @@ function cleanup_burn(arg, expire_time) {
         return;
     }
     del_light_source(1, obj_to_any(obj));
-    cptr.stU64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt.asIntN(64, expire_time - cptr.ldI64(cptr.add(svm, 8))));
+    cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt.asIntN(64, expire_time - cptr.ldI64(cptr.add(svm, 8))));
     cptr.stI32(cptr.add(obj, 76), 0);
     if (cptr.ld1s(cptr.add(obj, 52)) == 3)
         update_inventory();
@@ -2033,7 +2033,7 @@ export function start_timer(when, kind, func_index, arg) {
     void __builtin___memset_chk(gnu, 0, 48n, __builtin_object_size(gnu, 0));
     cptr.stPtr(gnu, null);
     cptr.stU64(cptr.add(gnu, 16), (cptr.stU64(cptr.add(svt, 8), cptr.ldU64(cptr.add(svt, 8)) + 1n)) - (1n));
-    cptr.stU64(cptr.add(gnu, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + when));
+    cptr.stI64(cptr.add(gnu, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + when));
     cptr.stI16(cptr.add(gnu, 24), kind);
     cptr.stI32(cptr.add(gnu, 40), 0);
     cptr.stI16(cptr.add(gnu, 26), func_index);
@@ -2357,7 +2357,7 @@ export function restore_timers(nhfp, range, adjust) {
         curr = alloc(48);
         sfi_fe(nhfp, curr, __sl312);
         if (ghostly)
-            cptr.stU64(cptr.add(curr, 8), cptr.ldI64(cptr.add(curr, 8)) + adjust);
+            cptr.stI64(cptr.add(curr, 8), cptr.ldI64(cptr.add(curr, 8)) + adjust);
         insert_timer(curr);
     }
 }
@@ -2366,10 +2366,10 @@ export function restore_timers(nhfp, range, adjust) {
 export function timer_stats(hdrfmt, hdrbuf, count, size) {
     let te;
     void cptr.sprintf(hdrbuf, hdrfmt, 48n);
-    cptr.stU64(count, cptr.stU64(size, 0n));
+    cptr.stI64(count, cptr.stI64(size, 0n));
     for (te = cptr.ldPtr(cptr.add(gt, 432)); te; te = cptr.ldPtr(te)) {
-        cptr.stU64(count, cptr.ldU64(count) + 1n);
-        cptr.stU64(size, cptr.ldI64(size) + 48n);
+        cptr.stI64(count, cptr.ldI64(count) + 1n);
+        cptr.stI64(size, cptr.ldI64(size) + 48n);
     }
 }
 

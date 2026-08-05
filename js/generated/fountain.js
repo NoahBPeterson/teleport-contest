@@ -424,7 +424,7 @@ export function drinkfountain() {
                 You_see(__sl47);
                 pline(__sl48);
             }
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 67108864n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) | 67108864n);
             newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
             exercise(2, (1));
             break;
@@ -568,7 +568,7 @@ export function dipfountain(obj) {
                         let denomination = cptr.ldI16(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 80));
                         let coin_loss = (BigInt.asIntN(64, BigInt.asIntN(64, money + BigInt(denomination)) - 1n)) / BigInt(denomination);
                         coin_loss = ((coin_loss) < (cptr.ldI64(cptr.add(otmp, 40))) ? (coin_loss) : (cptr.ldI64(cptr.add(otmp, 40))));
-                        cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) - coin_loss);
+                        cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) - coin_loss);
                         money -= BigInt.asIntN(64, coin_loss * BigInt(denomination));
                         if (!cptr.ldI64(cptr.add(otmp, 40)))
                             delobj(otmp);
@@ -675,7 +675,7 @@ export function drinksink() {
         pline(__sl83, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl84 : hcolor((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120)), 2)), 16), 8)))));
         if (!(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0))
             observe_object(otmp);
-        (cptr.stU64(cptr.add(otmp, 40), cptr.ldU64(cptr.add(otmp, 40)) + 1n)) - (1n);
+        (cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + 1n)) - (1n);
         cptr.stI32(cptr.add(otmp, 168), 1);
         void dopotion(otmp);
         obfree(otmp, null);

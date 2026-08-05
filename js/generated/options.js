@@ -8579,12 +8579,12 @@ function optfn_statushilites(optidx, req, negated, opts, op) {
     }
     if (req == 2) {
         if (negated) {
-            cptr.stU64(cptr.add(iflags, 152), 0n);
+            cptr.stI64(cptr.add(iflags, 152), 0n);
         } else {
             op = string_for_opt(opts, (1));
-            cptr.stU64(cptr.add(iflags, 152), (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op) ? 1 : 0) ? 3n : atol(op));
+            cptr.stI64(cptr.add(iflags, 152), (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op) ? 1 : 0) ? 3n : atol(op));
             if (cptr.ldI64(cptr.add(iflags, 152)) < 0n)
-                cptr.stU64(cptr.add(iflags, 152), 1n);
+                cptr.stI64(cptr.add(iflags, 152), 1n);
         }
         if (!cptr.ld1s(cptr.add(go, 525)))
             reset_status_hilites();
@@ -10803,7 +10803,7 @@ export function initoptions_finish() {
     reset_glyphmap(3);
     if (cptr.ldI64(cptr.add(iflags, 152)) && !wc2_supported(__sl351) ? 1 : 0) {
         raw_printf(__sl830, cptr.ldPtr(windowprocs));
-        cptr.stU64(cptr.add(iflags, 152), 0n);
+        cptr.stI64(cptr.add(iflags, 152), 0n);
     }
     update_rest_on_space();
     if (cptr.ld1s(cptr.add(iflags, 187)) && !wc_supported(__sl374) ? 1 : 0)

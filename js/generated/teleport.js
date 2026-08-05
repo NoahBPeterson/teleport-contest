@@ -755,15 +755,15 @@ export function dotelecmd() {
         }
         switch (tmode) {
             case 110:
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) | 536870912n);
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16)) | 536870912n);
             hidden = tport_spell(1);
             break;
             case 115:
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.stU64(cptr.add(cptr.add(u, 112), 46, 24), 0n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.stI64(cptr.add(cptr.add(u, 112), 46, 24), 0n));
             added = tport_spell(2);
             break;
             case 116:
-            cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.stU64(cptr.add(cptr.add(u, 112), 46, 24), 0n));
+            cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), cptr.stI64(cptr.add(cptr.add(u, 112), 46, 24), 0n));
             hidden = tport_spell(1);
             break;
             case 119:
@@ -772,8 +772,8 @@ export function dotelecmd() {
         }
     }
     res = dotele(ignore_restrictions);
-    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), save_HTele);
-    cptr.stU64(cptr.add(cptr.add(u, 112), 46, 24), save_ETele);
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 46, 24), 16), save_HTele);
+    cptr.stI64(cptr.add(cptr.add(u, 112), 46, 24), save_ETele);
     if (added != 0 || hidden != 0 ? 1 : 0)
         void tport_spell((((added + hidden) | 0) - 0) | 0);
     return res ? 1 : 0;
