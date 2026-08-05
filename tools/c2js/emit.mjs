@@ -1625,6 +1625,16 @@ export class Emitter {
             node = par;
             par = parent.get(par);
           }
+          // No break/return anywhere outward means the region just falls off
+          // the end of the enclosing loop/switch/function. A spliced copy at
+          // the goto site has no such boundary under it: it runs the region
+          // and then keeps going through everything the goto meant to skip.
+          // dobuzz()'s `goto make_bounce` did exactly that — the ray bounced,
+          // then fell into the monster/hero-hit code for the wall square and
+          // bounced a second time at the natural label, desyncing the PRNG.
+          // Without a terminator to splice, hand the label to the xblock
+          // (entry-flag dispatch) lowering, which preserves the skip.
+          if (!terminal && !outward.length) inlineOk = false;
         }
         if (inlineOk && this.regionHasGoto(region)) inlineOk = false;
         if (inlineOk) {
@@ -2123,6 +2133,15 @@ export class Emitter {
 
     // xforward: per-label skip block + dispatch at the label's item
     const lines = [];
+    // Skip blocks are emitted flat and in item order, so one label's `break
+    // __skip_L` must not sit inside an earlier label's skip block — that
+    // reference would be out of scope (`Undefined label`). Properly nesting
+    // them is the state machine's job; bail to it.
+    for (const a of xfwd)
+      for (const b of xfwd)
+        if (a !== b && a.xblock.itemIdx < b.xblock.itemIdx
+            && (b.xsites || []).some((gi) => gi <= a.xblock.itemIdx))
+          throw new Error(`goto ${b.name}: xforward skip block nests inside ${a.name}'s (sm fallback)`);
     let rest = items;
     for (const lab of xfwd.sort((a, b) => a.xblock.itemIdx - b.xblock.itemIdx)) {
       const idx = lab.xblock.itemIdx;

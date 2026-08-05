@@ -347,9 +347,9 @@ const __sl273 = cptr.lit("aren't transformed.");
 const __sl274 = cptr.lit("%s reaches out, and your body shrivels.");
 const __sl275 = cptr.lit("mhitm_ad_famn");
 const __sl276 = cptr.lit("%s reaches out, and you feel fever and chills.");
-const __sl277 = cptr.lit("mhitm_ad_deth");
-const __sl278 = cptr.lit("%s reaches out with its deadly touch.");
-const __sl279 = cptr.lit("Was that the touch of death?");
+const __sl277 = cptr.lit("%s reaches out with its deadly touch.");
+const __sl278 = cptr.lit("Was that the touch of death?");
+const __sl279 = cptr.lit("mhitm_ad_deth");
 const __sl280 = cptr.lit("your life force draining away...");
 const __sl281 = cptr.lit("Lucky for you, it didn't work!");
 const __sl282 = cptr.lit("%s looks %sconfused.");
@@ -3006,18 +3006,22 @@ export function mhitm_ad_poly(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3777 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_famn(magr, mattk, mdef, mhm) {
-    let pd = cptr.ldPtr(cptr.add(mdef, 8));
-    if (cptr.eq(magr, cptr.add(gy, 8))) {
-        {
-            if (!((((cptr.ldU64(cptr.add((pd), 72)) & 536870912n) != 0n) || ((cptr.ldU64(cptr.add((pd), 72)) & 1073741824n) != 0n) ? 1 : 0) || ((cptr.ldU64(cptr.add((pd), 72)) & 2147483648n) != 0n) ? 1 : 0))
-                cptr.stI32(mhm, 0);
+    let pd;
+    let __go_mhitm_famn = false;
+    __skip_mhitm_famn: {
+        pd = cptr.ldPtr(cptr.add(mdef, 8));
+        if (cptr.eq(magr, cptr.add(gy, 8))) {
+            { __go_mhitm_famn = true; break __skip_mhitm_famn; }
+        } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
+            pline_mon(magr, __sl274, Monnam(magr));
+            exercise(4, (0));
+            if (!is_fainted())
+                morehungry((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3795, __sl275), rn2(40)) : rn2(40)) + (40)) | 0));
+        } else {
+            __go_mhitm_famn = true; break __skip_mhitm_famn;
         }
-    } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
-        pline_mon(magr, __sl274, Monnam(magr));
-        exercise(4, (0));
-        if (!is_fainted())
-            morehungry((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3795, __sl275), rn2(40)) : rn2(40)) + (40)) | 0));
-    } else {
+    }
+    if (__go_mhitm_famn) {
         if (!((((cptr.ldU64(cptr.add((pd), 72)) & 536870912n) != 0n) || ((cptr.ldU64(cptr.add((pd), 72)) & 1073741824n) != 0n) ? 1 : 0) || ((cptr.ldU64(cptr.add((pd), 72)) & 2147483648n) != 0n) ? 1 : 0))
             cptr.stI32(mhm, 0);
     }
@@ -3025,69 +3029,103 @@ export function mhitm_ad_famn(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3808 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_pest(magr, mattk, mdef, mhm) {
-    let alt_attk = cptr.alloc(4);
-    let pa = cptr.ldPtr(cptr.add(magr, 8));
-    if (cptr.eq(magr, cptr.add(gy, 8))) {
-        {
-            cptr.memcpy(alt_attk, mattk, 4);
-            cptr.st1(cptr.add(alt_attk, 1), 33);
-            mhitm_ad_dise(magr, alt_attk, mdef, mhm);
+    let alt_attk, pa;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        alt_attk = cptr.alloc(4);
+        pa = cptr.ldPtr(cptr.add(magr, 8));
+        if (cptr.eq(magr, cptr.add(gy, 8))) { __pc = 3; continue; }
+        __pc = 4; continue;
         }
-    } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
+        case 3: {
+        { __pc = 1; continue; }
+        __pc = 2;
+        continue;
+        }
+        case 4: {
+        if (cptr.eq(mdef, cptr.add(gy, 8))) { __pc = 6; continue; }
+        __pc = 7; continue;
+        }
+        case 6: {
         pline_mon(magr, __sl276, Monnam(magr));
         void diseasemu(pa);
-    } else {
+        __pc = 5;
+        continue;
+        }
+        case 7: {
+        __pc = 1;
+        continue;
+        }
+        case 1 /* mhitm_pest: */: {
         cptr.memcpy(alt_attk, mattk, 4);
         cptr.st1(cptr.add(alt_attk, 1), 33);
         mhitm_ad_dise(magr, alt_attk, mdef, mhm);
+        __pc = 5;
+        continue;
+        }
+        case 5: {
+        __pc = 2;
+        continue;
+        }
+        case 2: {
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
 }
 
 /** C ref: uhitm.c:3837 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_deth(magr, mattk, mdef, mhm) {
-    let pd = cptr.ldPtr(cptr.add(mdef, 8));
-    if (cptr.eq(magr, cptr.add(gy, 8))) {
-        {
-            if (((cptr.ldU64(cptr.add((pd), 80)) & 2n) != 0n) && cptr.ldI32(mhm) > 1 ? 1 : 0)
-                cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3890, __sl277), rnd((cptr.ldI32(mhm) / 2) | 0)) : rnd((cptr.ldI32(mhm) / 2) | 0)));
-            mhitm_ad_drli(magr, mattk, mdef, mhm);
-        }
-    } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
-        pline_mon(magr, __sl278, Monnam(magr));
-        if (((cptr.ldU64(cptr.add((pd), 80)) & 2n) != 0n)) {
-            cptr.stI32(mhm, (((cptr.ldI32(mhm) + 1) | 0) / 2) | 0);
-            pline(__sl279);
-            return;
-        }
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3858, __sl277), rn2(20)) : rn2(20))) {
-            case 19:
-            case 18:
-            case 17:
-            if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0)) {
-                touch_of_death(magr);
+    let pd;
+    let __go_mhitm_deth = false;
+    __skip_mhitm_deth: {
+        pd = cptr.ldPtr(cptr.add(mdef, 8));
+        if (cptr.eq(magr, cptr.add(gy, 8))) {
+            { __go_mhitm_deth = true; break __skip_mhitm_deth; }
+        } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
+            pline_mon(magr, __sl277, Monnam(magr));
+            if (((cptr.ldU64(cptr.add((pd), 80)) & 2n) != 0n)) {
+                cptr.stI32(mhm, (((cptr.ldI32(mhm) + 1) | 0) / 2) | 0);
+                pline(__sl278);
+                return;
+            }
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3858, __sl279), rn2(20)) : rn2(20))) {
+                case 19:
+                case 18:
+                case 17:
+                if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0)) {
+                    touch_of_death(magr);
+                    cptr.stI32(mhm, 0);
+                    return;
+                }
+                // @FallThrough
+                ;
+                default:
+                You_feel(__sl280);
+                cptr.st1(cptr.add(mhm, 9), 1);
+                return;
+                case 4:
+                case 3:
+                case 2:
+                case 1:
+                case 0:
+                if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0))
+                    shieldeff(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+                pline(__sl281);
                 cptr.stI32(mhm, 0);
                 return;
             }
-            // @FallThrough
-            ;
-            default:
-            You_feel(__sl280);
-            cptr.st1(cptr.add(mhm, 9), 1);
-            return;
-            case 4:
-            case 3:
-            case 2:
-            case 1:
-            case 0:
-            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0))
-                shieldeff(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
-            pline(__sl281);
-            cptr.stI32(mhm, 0);
-            return;
+        } else {
+            __go_mhitm_deth = true; break __skip_mhitm_deth;
         }
-    } else {
+    }
+    if (__go_mhitm_deth) {
         if (((cptr.ldU64(cptr.add((pd), 80)) & 2n) != 0n) && cptr.ldI32(mhm) > 1 ? 1 : 0)
-            cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3890, __sl277), rnd((cptr.ldI32(mhm) / 2) | 0)) : rnd((cptr.ldI32(mhm) / 2) | 0)));
+            cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3890, __sl279), rnd((cptr.ldI32(mhm) / 2) | 0)) : rnd((cptr.ldI32(mhm) / 2) | 0)));
         mhitm_ad_drli(magr, mattk, mdef, mhm);
     }
 }
@@ -3584,18 +3622,22 @@ export function mhitm_ad_samu(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:4593 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_dise(magr, mattk, mdef, mhm) {
-    let pa = cptr.ldPtr(cptr.add(magr, 8));
-    let pd = cptr.ldPtr(cptr.add(mdef, 8));
-    if (cptr.eq(magr, cptr.add(gy, 8))) {
-        {
-            if ((cptr.ld1s(cptr.add(pd, 28)) == 32 || cptr.eq(pd, cptr.add(mons, 246, 96)) ? 1 : 0) || defended(mdef, 33) ? 1 : 0)
+    let pd;
+    let __go_mhitm_dise = false;
+    __skip_mhitm_dise: {
+        let pa = cptr.ldPtr(cptr.add(magr, 8));
+        pd = cptr.ldPtr(cptr.add(mdef, 8));
+        if (cptr.eq(magr, cptr.add(gy, 8))) {
+            { __go_mhitm_dise = true; break __skip_mhitm_dise; }
+        } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
+            hitmsg(magr, mattk);
+            if (!diseasemu(pa))
                 cptr.stI32(mhm, 0);
+        } else {
+            __go_mhitm_dise = true; break __skip_mhitm_dise;
         }
-    } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
-        hitmsg(magr, mattk);
-        if (!diseasemu(pa))
-            cptr.stI32(mhm, 0);
-    } else {
+    }
+    if (__go_mhitm_dise) {
         if ((cptr.ld1s(cptr.add(pd, 28)) == 32 || cptr.eq(pd, cptr.add(mons, 246, 96)) ? 1 : 0) || defended(mdef, 33) ? 1 : 0)
             cptr.stI32(mhm, 0);
     }
