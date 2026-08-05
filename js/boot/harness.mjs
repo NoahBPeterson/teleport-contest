@@ -180,18 +180,34 @@ export async function runBootGame(opts) {
   function openFd(p, mode) {
     const fd = nextFd++;
     if (mode === 'w' || mode === 'w+') {
-      fds.set(fd, { path: p, pos: 0, written: [], write: true });
+      // truncating open: the file becomes exactly what this fd writes
+      fds.set(fd, { path: p, pos: 0, written: [], write: true, trunc: true, base: null, wbase: 0 });
       realWrite(p, new Uint8Array(0));
     } else {
-      const data = realRead(p);
+      const append = mode === 'a' || mode === 'a+';
+      const data = realRead(p) || (append ? new Uint8Array(0) : null);
       if (!data) { setErrno(2); return -1; }
-      fds.set(fd, { path: p, pos: 0, data, written: [], write: mode !== 'r' });
+      const wbase = append ? data.length : 0;
+      fds.set(fd, { path: p, pos: wbase, data, written: [], write: mode !== 'r', trunc: false, base: data, wbase });
     }
     return fd;
   }
   function fdFlush(fd) {
     const f = fds.get(fd);
-    if (f && f.write) realWrite(f.path, new Uint8Array(f.written));
+    if (!f || !f.write) return;
+    if (f.trunc) { realWrite(f.path, new Uint8Array(f.written)); return; }
+    // Non-truncating open (O_RDWR / "r+" / "a"): the file keeps its existing
+    // bytes and this fd's writes overlay them from the position it opened at.
+    // Flushing `written` wholesale truncated the file instead — files.c
+    // check_recordfile() opens `record` O_RDWR purely to prove it exists and
+    // closes it without writing, which wiped the high-score list at the end
+    // of every segment, so seed0030 showed only the current game's death.
+    if (!f.written.length) return;
+    const base = f.base || new Uint8Array(0);
+    const outb = new Uint8Array(Math.max(base.length, f.wbase + f.written.length));
+    outb.set(base, 0);
+    outb.set(Uint8Array.from(f.written), f.wbase);
+    realWrite(f.path, outb);
   }
 
   // ---------------- output collection + shims ----------------
