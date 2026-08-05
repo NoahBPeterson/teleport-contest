@@ -11,7 +11,7 @@ jobs:
     steps:
       # Bare clone, no submodules: nethack-c/recorder/ is gitignored build
       # output and is NOT available here. The game's data files come from
-      # data/nethackdir/, vendored as JS modules by tools/vendor-data.mjs, and
+      # js/data-nethackdir/, vendored as JS modules by tools/vendor-data.mjs, and
       # js/boot/harness.mjs serves them through an in-memory VFS.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

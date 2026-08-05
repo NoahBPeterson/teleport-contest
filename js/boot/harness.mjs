@@ -23,7 +23,7 @@
 // The vendored playground. Relative specifier so this resolves the same way
 // from Node and from a browser module graph; it lives outside js/ on purpose
 // (baked game data is not hand-written port code — see tools/vendor-data.mjs).
-import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../../data/nethackdir/index.mjs';
+import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../data-nethackdir/index.mjs';
 
 // Mount point of the playground inside the VFS. nh_getenv() rejects values
 // longer than 128 chars, and the C code copies this into fixed-size buffers,

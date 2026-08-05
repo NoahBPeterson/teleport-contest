@@ -39,7 +39,7 @@ const CHUNK_CHARS = 512 * 1024;
 function parseArgs(argv) {
     const out = {
         src: path.join(ROOT, 'nethack-c/recorder/install/games/lib/nethackdir'),
-        out: path.join(ROOT, 'data/nethackdir'),
+        out: path.join(ROOT, 'js/data-nethackdir'),
     };
     for (let i = 0; i < argv.length; i++) {
         if (argv[i] === '--src') out.src = path.resolve(argv[++i]);
