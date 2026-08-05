@@ -42,10 +42,10 @@ export function newuexp(lev) {
     if (lev < 1)
         return 0n;
     if (lev < 10)
-        return (10n * (1n << BigInt(lev)));
+        return (BigInt.asIntN(64, 10n * (1n << BigInt(lev))));
     if (lev < 20)
-        return (10000n * (1n << BigInt(((lev - 10) | 0))));
-    return (10000000n * (BigInt(((lev - 19) | 0))));
+        return (BigInt.asIntN(64, 10000n * (1n << BigInt(((lev - 10) | 0)))));
+    return (BigInt.asIntN(64, 10000000n * (BigInt(((lev - 19) | 0)))));
 }
 
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
@@ -124,15 +124,15 @@ export function experience(mtmp, nk) {
     }
     for (i = 0; i < 6; i++) {
         tmp2 = cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 1));
-        if (tmp2 > 0 && tmp2 < 11)
+        if (tmp2 > 0 && tmp2 < 11 ? 1 : 0)
             tmp = (tmp + Math.imul(2, cptr.ld1u(cptr.add(mtmp, 26)))) | 0;
-        else if ((tmp2 == 15) || (tmp2 == 18) || (tmp2 == 40))
+        else if (((tmp2 == 15) || (tmp2 == 18) ? 1 : 0) || (tmp2 == 40) ? 1 : 0)
             tmp = (tmp + 50) | 0;
         else if (tmp2 != 0)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
         if ((Math.imul(cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 3)), cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 2)))) > 23)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
-        if (tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 512n) != 0n)))
+        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64(cptr.add((ptr), 80)) & 33554432n) != 0n))
@@ -141,8 +141,8 @@ export function experience(mtmp, nk) {
         tmp = (tmp + 50) | 0;
     if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 314, 96)))
         tmp = 1;
-    if (cptr.ldI32(cptr.add(mtmp, 124)) | 0 || cptr.ldI32(cptr.add(mtmp, 128)) | 0) {
-        for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
+    if (cptr.ldI32(cptr.add(mtmp, 124)) | 0 || cptr.ldI32(cptr.add(mtmp, 128)) | 0 ? 1 : 0) {
+        for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1 ? 1 : 0; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;
             if (i & 1)
@@ -156,18 +156,18 @@ export function experience(mtmp, nk) {
 export function more_experienced(exper, rexp) {
     let oldexp = cptr.ldI64(cptr.add(u, 2376));
     let oldrexp = cptr.ldI64(cptr.add(u, 2384));
-    let newexp = oldexp + BigInt(exper);
+    let newexp = BigInt.asIntN(64, oldexp + BigInt(exper));
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
-    let newrexp = oldrexp + rexpincr;
-    if (newexp < 0n && exper > 0)
+    let newrexp = BigInt.asIntN(64, oldrexp + rexpincr);
+    if (newexp < 0n && exper > 0 ? 1 : 0)
         newexp = 9223372036854775807n;
-    if (newrexp < 0n && rexpincr > 0n)
+    if (newrexp < 0n && rexpincr > 0n ? 1 : 0)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
         cptr.stU64(cptr.add(u, 2376), newexp);
         if (cptr.ld1s(cptr.add(flags, 38)))
             cptr.st1(disp, (1));
-        if (!cptr.ld1s(disp) && exp_percent_changing())
+        if (!cptr.ld1s(disp) && exp_percent_changing() ? 1 : 0)
             cptr.st1(disp, (1));
     }
     if (newrexp != oldrexp) {
@@ -182,14 +182,14 @@ export function losexp(drainer) {
     let num;
     let uhpmin;
     let olduhpmax;
-    if (drainer && !strcmp(drainer, __sl2))
+    if (drainer && !strcmp(drainer, __sl2) ? 1 : 0)
         drainer = null;
     else if (resists_drli(cptr.add(gy, 8)))
         return;
-    if (cptr.ldI32(cptr.add(u, 48)) > 1 || drainer)
+    if (cptr.ldI32(cptr.add(u, 48)) > 1 || drainer ? 1 : 0)
         pline(__sl3, Goodbye(), cptr.ldI32(cptr.add(u, 48)));
     if (cptr.ldI32(cptr.add(u, 48)) > 1) {
-        cptr.st1(cptr.add(u, 48), cptr.ld1s(cptr.add(u, 48)) - 1);
+        cptr.stI32(cptr.add(u, 48), (cptr.ldI32(cptr.add(u, 48)) - 1) | 0);
         adjabil((cptr.ldI32(cptr.add(u, 48)) + 1) | 0, cptr.ldI32(cptr.add(u, 48)));
         livelog_printf(4096n, __sl4, (cptr.ldI32(cptr.add(u, 48)) + 1) | 0);
         ;
@@ -205,35 +205,35 @@ export function losexp(drainer) {
         cptr.stU64(cptr.add(u, 2376), 0n);
         livelog_printf(4096n, __sl5);
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < 30))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < 30 ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
     olduhpmax = cptr.ldI32(cptr.add(u, 2200));
     uhpmin = minuhpmax(10);
     num = cptr.ldI16(cptr.add(cptr.add(u, 2220), cptr.ldI32(cptr.add(u, 48)), 2));
-    cptr.st1(cptr.add(u, 2200), cptr.ld1s(cptr.add(u, 2200)) - num);
+    cptr.stI32(cptr.add(u, 2200), (cptr.ldI32(cptr.add(u, 2200)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2200)) < uhpmin)
         setuhpmax(uhpmin, (1));
     if (cptr.ldI32(cptr.add(u, 2200)) > olduhpmax)
         setuhpmax(olduhpmax, (1));
-    cptr.st1(cptr.add(u, 2196), cptr.ld1s(cptr.add(u, 2196)) - num);
+    cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2196)) < 1)
         cptr.stI32(cptr.add(u, 2196), 1);
     else if (cptr.ldI32(cptr.add(u, 2196)) > cptr.ldI32(cptr.add(u, 2200)))
         cptr.stI32(cptr.add(u, 2196), cptr.ldI32(cptr.add(u, 2200)));
     num = cptr.ldI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2));
-    cptr.st1(cptr.add(u, 2212), cptr.ld1s(cptr.add(u, 2212)) - num);
+    cptr.stI32(cptr.add(u, 2212), (cptr.ldI32(cptr.add(u, 2212)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2212)) < 0)
         cptr.stI32(cptr.add(u, 2212), 0);
-    cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - num);
+    cptr.stI32(cptr.add(u, 2208), (cptr.ldI32(cptr.add(u, 2208)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2208)) < 0)
         cptr.stI32(cptr.add(u, 2208), 0);
     else if (cptr.ldI32(cptr.add(u, 2208)) > cptr.ldI32(cptr.add(u, 2212)))
         cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2212)));
     if (cptr.ldI64(cptr.add(u, 2376)) > 0n)
-        cptr.stU64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))) - 1n);
+        cptr.stU64(cptr.add(u, 2376), BigInt.asIntN(64, newuexp(cptr.ldI32(cptr.add(u, 48))) - 1n));
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         num = monhp_per_lvl(cptr.add(gy, 8));
-        cptr.st1(cptr.add(u, 1816), cptr.ld1s(cptr.add(u, 1816)) - num);
-        cptr.st1(cptr.add(u, 1812), cptr.ld1s(cptr.add(u, 1812)) - num);
+        cptr.stI32(cptr.add(u, 1816), (cptr.ldI32(cptr.add(u, 1816)) - num) | 0);
+        cptr.stI32(cptr.add(u, 1812), (cptr.ldI32(cptr.add(u, 1812)) - num) | 0);
         if (cptr.ldI32(cptr.add(u, 1812)) <= 0)
             rehumanize();
     }
@@ -242,7 +242,7 @@ export function losexp(drainer) {
 
 /** C ref: exper.c:300 */
 export function newexplevel() {
-    if (cptr.ldI32(cptr.add(u, 48)) < 30 && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))))
+    if (cptr.ldI32(cptr.add(u, 48)) < 30 && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))) ? 1 : 0)
         pluslvl((1));
 }
 
@@ -254,17 +254,17 @@ export function pluslvl(incr) {
         You_feel(__sl9);
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         hpinc = monhp_per_lvl(cptr.add(gy, 8));
-        cptr.st1(cptr.add(u, 1812), cptr.ld1s(cptr.add(u, 1812)) + hpinc);
+        cptr.stI32(cptr.add(u, 1812), (cptr.ldI32(cptr.add(u, 1812)) + hpinc) | 0);
         setuhpmax(cptr.ldI32(cptr.add(u, 1816)), (0));
     }
     hpinc = newhp();
-    cptr.st1(cptr.add(u, 2196), cptr.ld1s(cptr.add(u, 2196)) + hpinc);
+    cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) + hpinc) | 0);
     setuhpmax((cptr.ldI32(cptr.add(u, 2200)) + hpinc) | 0, (1));
     eninc = newpw();
-    cptr.st1(cptr.add(u, 2212), cptr.ld1s(cptr.add(u, 2212)) + eninc);
+    cptr.stI32(cptr.add(u, 2212), (cptr.ldI32(cptr.add(u, 2212)) + eninc) | 0);
     if (cptr.ldI32(cptr.add(u, 2212)) > cptr.ldI32(cptr.add(u, 2216)))
         cptr.stI32(cptr.add(u, 2216), cptr.ldI32(cptr.add(u, 2212)));
-    cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) + eninc);
+    cptr.stI32(cptr.add(u, 2208), (cptr.ldI32(cptr.add(u, 2208)) + eninc) | 0);
     if (cptr.ldI32(cptr.add(u, 48)) < 30) {
         let old_ach_cnt;
         let newrank;
@@ -272,7 +272,7 @@ export function pluslvl(incr) {
         if (incr) {
             let tmp = newuexp((cptr.ldI32(cptr.add(u, 48)) + 1) | 0);
             if (cptr.ldI64(cptr.add(u, 2376)) >= tmp)
-                cptr.stU64(cptr.add(u, 2376), tmp - 1n);
+                cptr.stU64(cptr.add(u, 2376), BigInt.asIntN(64, tmp - 1n));
         } else {
             cptr.stU64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))));
         }
@@ -303,12 +303,12 @@ export function rndexp(gaining) {
     let result;
     minexp = (cptr.ldI32(cptr.add(u, 48)) == 1) ? 0n : newuexp((cptr.ldI32(cptr.add(u, 48)) - 1) | 0);
     maxexp = newuexp(cptr.ldI32(cptr.add(u, 48)));
-    diff = maxexp - minexp, factor = 1n;
+    diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = minexp + factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))));
-    if (cptr.ldI32(cptr.add(u, 48)) == 30 && gaining) {
-        result += (cptr.ldI64(cptr.add(u, 2376)) - minexp);
+    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
+    if (cptr.ldI32(cptr.add(u, 48)) == 30 && gaining ? 1 : 0) {
+        result += (BigInt.asIntN(64, cptr.ldI64(cptr.add(u, 2376)) - minexp));
         if (result < cptr.ldI64(cptr.add(u, 2376)))
             result = cptr.ldI64(cptr.add(u, 2376));
     }

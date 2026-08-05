@@ -59,7 +59,7 @@ let nh_qsort_cmp_fn = null;
 function nh_qsort_idx_cmp(va, vb) {
     let a = va;
     let b = vb;
-    let c = (nh_qsort_cmp_fn)((cptr.add(nh_qsort_base, (cptr.ldU64(a) * nh_qsort_size))), (cptr.add(nh_qsort_base, (cptr.ldU64(b) * nh_qsort_size))));
+    let c = (nh_qsort_cmp_fn)((cptr.add(nh_qsort_base, (BigInt.asUintN(64, cptr.ldU64(a) * nh_qsort_size)))), (cptr.add(nh_qsort_base, (BigInt.asUintN(64, cptr.ldU64(b) * nh_qsort_size)))));
     if (c)
         return c;
     if (cptr.ldU64(a) < cptr.ldU64(b))
@@ -73,11 +73,11 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
     let order;
     let tmp;
     let i;
-    if (!base || !compar || size == 0n || nmemb < 2n)
+    if (((!base || !compar ? 1 : 0) || size == 0n ? 1 : 0) || nmemb < 2n ? 1 : 0)
         return;
-    order = cptr.malloc(nmemb * 8n);
-    tmp = cptr.malloc(nmemb * size);
-    if (!order || !tmp) {
+    order = cptr.malloc(BigInt.asUintN(64, nmemb * 8n));
+    tmp = cptr.malloc(BigInt.asUintN(64, nmemb * size));
+    if (!order || !tmp ? 1 : 0) {
         if (tmp)
             cptr.free(tmp);
         if (order)
@@ -91,37 +91,37 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
     nh_qsort_cmp_fn = compar;
     cptr.qsort(order, nmemb, 8n, nh_qsort_idx_cmp);
     for (i = 0n; i < nmemb; ++i)
-        void cptr.memcpy((cptr.add(tmp, (i * size))), (cptr.add(bytes, (cptr.ldU64(cptr.add(order, i, 8)) * size))), size);
-    void cptr.memcpy(bytes, tmp, nmemb * size);
+        void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64(cptr.add(order, i, 8)) * size)))), size);
+    void cptr.memcpy(bytes, tmp, BigInt.asUintN(64, nmemb * size));
     cptr.free(tmp);
     cptr.free(order);
 }
 
 /** C ref: hacklib.c:126 — @param {CInt} c @returns {CInt} */
 export function digit(c) {
-    return schar((48 <= c && c <= 57));
+    return schar((48 <= c && c <= 57 ? 1 : 0));
 }
 
 /** C ref: hacklib.c:133 — @param {CInt} c @returns {CInt} */
 export function letter(c) {
-    return schar((schar((64 <= c && c <= 90)) || (97 <= c && c <= 122)));
+    return schar((schar((64 <= c && c <= 90 ? 1 : 0)) || (97 <= c && c <= 122 ? 1 : 0) ? 1 : 0));
 }
 
 /** C ref: hacklib.c:140 — @param {CInt} c @returns {CInt} */
 export function highc(c) {
-    return schar(((97 <= c && c <= 122) ? (c & ~32) : c));
+    return schar(((97 <= c && c <= 122 ? 1 : 0) ? (c & ~32) : c));
 }
 
 /** C ref: hacklib.c:147 — @param {CInt} c @returns {CInt} */
 export function lowc(c) {
-    return schar(((65 <= c && c <= 90) ? (c | 32) : c));
+    return schar(((65 <= c && c <= 90 ? 1 : 0) ? (c | 32) : c));
 }
 
 /** C ref: hacklib.c:154 — @param {CPtr} s @returns {CPtr} */
 export function lcase(s) {
     let p;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
-        if (65 <= cptr.ld1s(p) && cptr.ld1s(p) <= 90)
+        if (65 <= cptr.ld1s(p) && cptr.ld1s(p) <= 90 ? 1 : 0)
             cptr.st1(p, cptr.ld1s(p) | 32);
     return s;
 }
@@ -130,7 +130,7 @@ export function lcase(s) {
 export function ucase(s) {
     let p;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
-        if (97 <= cptr.ld1s(p) && cptr.ld1s(p) <= 122)
+        if (97 <= cptr.ld1s(p) && cptr.ld1s(p) <= 122 ? 1 : 0)
             cptr.st1(p, cptr.ld1s(p) & ~32);
     return s;
 }
@@ -149,7 +149,7 @@ export function upwords(s) {
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (cptr.ld1s(p) == 32) {
             space = (1);
-        } else if (space && letter(cptr.ld1s(p))) {
+        } else if (space && letter(cptr.ld1s(p)) ? 1 : 0) {
             cptr.st1(p, highc(cptr.ld1s(p)));
             space = (0);
         } else {
@@ -169,11 +169,11 @@ export function mungspaces(bp) {
             break;
         if (c == 9)
             c = 32;
-        if (c != 32 || !was_space)
+        if (c != 32 || !was_space ? 1 : 0)
             cptr.st1(cptr.postinc(() => p2, (v) => { p2 = v; }), c);
         was_space = schar((c == 32));
     }
-    if (was_space && cptr.cmp(p2, bp) > 0)
+    if (was_space && cptr.cmp(p2, bp) > 0 ? 1 : 0)
         p2 = cptr.add(p2, -1);
     cptr.st1(p2, 0);
     return bp;
@@ -182,10 +182,10 @@ export function mungspaces(bp) {
 /** C ref: hacklib.c:228 — @param {CPtr} txt @returns {CPtr} */
 export function trimspaces(txt) {
     let end;
-    while (cptr.ld1s(txt) == 32 || cptr.ld1s(txt) == 9)
+    while (cptr.ld1s(txt) == 32 || cptr.ld1s(txt) == 9 ? 1 : 0)
         txt = cptr.add(txt, 1);
     end = eos(txt);
-    while (cptr.cmp(cptr.predec(() => end, (v) => { end = v; }), txt) >= 0 && (cptr.ld1s(end) == 32 || cptr.ld1s(end) == 9))
+    while (cptr.cmp(cptr.predec(() => end, (v) => { end = v; }), txt) >= 0 && (cptr.ld1s(end) == 32 || cptr.ld1s(end) == 9 ? 1 : 0) ? 1 : 0)
         cptr.st1(end, 0);
     return txt;
 }
@@ -194,7 +194,7 @@ export function trimspaces(txt) {
 export function strip_newline(str) {
     let p = cptr.strrchr(str, 10);
     if (p) {
-        if (cptr.cmp(p, str) > 0 && cptr.ld1s((cptr.add(p, -(1)))) == 13)
+        if (cptr.cmp(p, str) > 0 && cptr.ld1s((cptr.add(p, -(1)))) == 13 ? 1 : 0)
             p = cptr.add(p, -1);
         cptr.st1(p, 0);
     }
@@ -249,7 +249,7 @@ export function str_lines_maxlen(str) {
     let len;
     let max_len = 0;
     s1 = str;
-    while (s1 && cptr.ld1s(s1)) {
+    while (s1 && cptr.ld1s(s1) ? 1 : 0) {
         s2 = cptr.strchr(s1, 10);
         if (s2) {
             len = Number(BigInt.asIntN(32, (cptr.diff(s2, s1))));
@@ -274,7 +274,7 @@ export function strkitten(s, c) {
 
 /** C ref: hacklib.c:351 — @param {CPtr} dst @param {CPtr} src @param {CInt} n */
 export function copynchars(dst, src, n) {
-    while (n > 0 && cptr.ld1s(src) != 0 && cptr.ld1s(src) != 10) {
+    while ((n > 0 && cptr.ld1s(src) != 0 ? 1 : 0) && cptr.ld1s(src) != 10 ? 1 : 0) {
         cptr.st1(cptr.postinc(() => dst, (v) => { dst = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
         --n;
     }
@@ -283,11 +283,11 @@ export function copynchars(dst, src, n) {
 
 /** C ref: hacklib.c:365 — @param {CInt} oc @param {CInt} nc @returns {CInt} */
 export function chrcasecpy(oc, nc) {
-    if (97 <= oc && oc <= 122) {
-        if (65 <= nc && nc <= 90)
+    if (97 <= oc && oc <= 122 ? 1 : 0) {
+        if (65 <= nc && nc <= 90 ? 1 : 0)
             nc = (nc + ((97 - 65) | 0)) | 0;
-    } else if (65 <= oc && oc <= 90) {
-        if (97 <= nc && nc <= 122)
+    } else if (65 <= oc && oc <= 90 ? 1 : 0) {
+        if (97 <= nc && nc <= 122 ? 1 : 0)
             nc = (nc + ((65 - 97) | 0)) | 0;
     }
     return schar(nc);
@@ -300,7 +300,7 @@ export function strcasecpy(dst, src) {
     let oc;
     let dst_exhausted = 0;
     while ((ic = cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))) != 0) {
-        if (!dst_exhausted && !cptr.ld1s(dst))
+        if (!dst_exhausted && !cptr.ld1s(dst) ? 1 : 0)
             dst_exhausted = 1;
         oc = cptr.ld1s((cptr.add(dst, -(dst_exhausted))));
         cptr.st1(cptr.postinc(() => dst, (v) => { dst = v; }), chrcasecpy(oc, ic));
@@ -335,19 +335,19 @@ export function ing_suffix(s) {
     void cptr.strcpy(cptr.decay(__static_ing_suffix_buf), s);
     p = eos(cptr.decay(__static_ing_suffix_buf));
     cptr.st1(cptr.add(cptr.decay(onoff), 0, 1), cptr.st1(p, cptr.st1((cptr.add(p, 1)), 0)));
-    if ((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !strncmpi((cptr.add(p, -(3))), (__sl6), -1)) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 4, 1)) >= 0 && !strncmpi((cptr.add(p, -(4))), (__sl7), -1)) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 5, 1)) >= 0 && !strncmpi((cptr.add(p, -(5))), (__sl8), -1))) {
+    if (((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !strncmpi((cptr.add(p, -(3))), (__sl6), -1) ? 1 : 0) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 4, 1)) >= 0 && !strncmpi((cptr.add(p, -(4))), (__sl7), -1) ? 1 : 0) ? 1 : 0) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 5, 1)) >= 0 && !strncmpi((cptr.add(p, -(5))), (__sl8), -1) ? 1 : 0) ? 1 : 0) {
         p = cptr.strrchr(cptr.decay(__static_ing_suffix_buf), 32);
         void cptr.strcpy(cptr.decay(onoff), p);
         cptr.st1(p, 0);
     }
-    if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !strncmpi((cptr.add(p, -(2))), (__sl9), -1)) {
-    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(1))))) && cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(2))))) && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(3)))))) {
+    if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !strncmpi((cptr.add(p, -(2))), (__sl9), -1) ? 1 : 0) {
+    } else if (((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(1))))) ? 1 : 0) && cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(2))))) ? 1 : 0) && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(3))))) ? 1 : 0) {
         cptr.st1(p, cptr.ld1s((cptr.add(p, -(1)))));
         cptr.st1((cptr.add(p, 1)), 0);
-    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !strncmpi((cptr.add(p, -(2))), (__sl10), -1)) {
+    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !strncmpi((cptr.add(p, -(2))), (__sl10), -1) ? 1 : 0) {
         cptr.st1((cptr.add(p, -(2))), 121);
         cptr.st1((cptr.add(p, -(1))), 0);
-    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 1, 1)) >= 0 && cptr.ld1s((cptr.add(p, -(1)))) == 101)
+    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 1, 1)) >= 0 && cptr.ld1s((cptr.add(p, -(1)))) == 101 ? 1 : 0)
         cptr.st1((cptr.add(p, -(1))), 0);
     void cptr.strcat(cptr.decay(__static_ing_suffix_buf), __sl11);
     if (cptr.ld1s(cptr.add(cptr.decay(onoff), 0, 1)))
@@ -374,7 +374,7 @@ export function xcrypt(str, buf) {
 /** C ref: hacklib.c:483 — @param {CPtr} s @returns {CInt} */
 export function onlyspace(s) {
     for (; cptr.ld1s(s); s = cptr.add(s, 1))
-        if (cptr.ld1s(s) != 32 && cptr.ld1s(s) != 9)
+        if (cptr.ld1s(s) != 32 && cptr.ld1s(s) != 9 ? 1 : 0)
             return (0);
     return (1);
 }
@@ -405,7 +405,7 @@ export function tabexpand(sbuf) {
     return cptr.strcpy(sbuf, cptr.decay(buf));
 }
 
-const __static_visctrl_visctrl_bufs = Array.from({ length: 5 }, () => new Uint8Array(5 * 1)); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
+const __static_visctrl_visctrl_bufs = (function () { const flat = new Uint8Array(5 * (5 * 1)); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (5 * 1), (r + 1) * (5 * 1))); a.buf = flat; return a; })(); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
 let __static_visctrl_nbuf = 0; /** C ref: hacklib.c:536 — int (function-static) */
 
 /** C ref: hacklib.c:533 — @param {CInt} c @returns {CPtr} */
@@ -435,7 +435,7 @@ export function visctrl(c) {
 export function stripchars(bp, stuff_to_strip, orig) {
     let i = 0;
     let s = bp;
-    while (cptr.ld1s(orig) && i < ((256 - 1) | 0)) {
+    while (cptr.ld1s(orig) && i < ((256 - 1) | 0) ? 1 : 0) {
         if (!cptr.strchr(stuff_to_strip, cptr.ld1s(orig))) {
             cptr.st1(cptr.postinc(() => s, (v) => { s = v; }), cptr.ld1s(orig));
             i++;
@@ -451,7 +451,7 @@ export function stripdigits(s) {
     let s1;
     let s2;
     for (s1 = (s2 = s); cptr.ld1s(s1); s1 = cptr.add(s1, 1))
-        if (cptr.ld1s(s1) < 48 || cptr.ld1s(s1) > 57)
+        if (cptr.ld1s(s1) < 48 || cptr.ld1s(s1) > 57 ? 1 : 0)
             cptr.st1(cptr.postinc(() => s2, (v) => { s2 = v; }), cptr.ld1s(s1));
     cptr.st1(s2, 0);
     return s;
@@ -479,9 +479,9 @@ export function strNsubst(inoutbuf, orig, replacement, n) {
     let len = Number(BigInt.asUintN(32, cptr.strlen(orig)));
     let ocount = 0;
     let rcount = 0;
-    for (bp = inoutbuf, op = cptr.decay(workbuf); cptr.ld1s(bp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0; ) {
-        if ((!len || !cptr.strncmp(bp, orig, BigInt(len >>> 0))) && (++ocount == n || n == 0)) {
-            for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0; )
+    for (bp = inoutbuf, op = cptr.decay(workbuf); cptr.ld1s(bp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; ) {
+        if ((!len || !cptr.strncmp(bp, orig, BigInt(len >>> 0)) ? 1 : 0) && (++ocount == n || n == 0 ? 1 : 0) ? 1 : 0) {
+            for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; )
                 cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
             ++rcount;
             if (len) {
@@ -491,8 +491,8 @@ export function strNsubst(inoutbuf, orig, replacement, n) {
         }
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => bp, (v) => { bp = v; })));
     }
-    if (!len && n == ((ocount + 1) | 0)) {
-        for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0; )
+    if (!len && n == ((ocount + 1) | 0) ? 1 : 0) {
+        for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; )
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
         ++rcount;
     }
@@ -511,7 +511,7 @@ export function findword(list, word, wordlen, ignorecase) {
             p = cptr.add(p, 1);
         if (!cptr.ld1s(p))
             break;
-        if ((ignorecase ? !strncmpi(p, word, wordlen) : !cptr.strncmp(p, word, BigInt.asUintN(64, BigInt(wordlen)))) && (cptr.ld1s(cptr.add(p, wordlen)) == 0 || cptr.ld1s(cptr.add(p, wordlen)) == 32))
+        if ((ignorecase ? !strncmpi(p, word, wordlen) : !cptr.strncmp(p, word, BigInt.asUintN(64, BigInt(wordlen)))) && (cptr.ld1s(cptr.add(p, wordlen)) == 0 || cptr.ld1s(cptr.add(p, wordlen)) == 32 ? 1 : 0) ? 1 : 0)
             return p;
         p = cptr.strchr(cptr.add(p, 1), 32);
     }
@@ -521,7 +521,7 @@ export function findword(list, word, wordlen, ignorecase) {
 /** C ref: hacklib.c:689 — @param {CInt} n @returns {CPtr} */
 export function ordin(n) {
     let dd = n % 10;
-    return (dd == 0 || dd > 3 || (((n % 100) / 10) | 0) == 1) ? __sl12 : ((dd == 1) ? __sl13 : ((dd == 2) ? __sl14 : __sl15));
+    return ((dd == 0 || dd > 3 ? 1 : 0) || (((n % 100) / 10) | 0) == 1 ? 1 : 0) ? __sl12 : ((dd == 1) ? __sl13 : ((dd == 2) ? __sl14 : __sl15));
 }
 
 const __static_sitoa_buf = new Uint8Array(13); /** C ref: hacklib.c:704 — char[13] (function-static) */
@@ -571,7 +571,7 @@ export function isqrt(val) {
 export function online2(x0, y0, x1, y1) {
     let dx = (x0 - x1) | 0;
     let dy = (y0 - y1) | 0;
-    return schar((!dy || !dx || dy == dx || dy == -dx));
+    return schar((((!dy || !dx ? 1 : 0) || dy == dx ? 1 : 0) || dy == -dx ? 1 : 0));
 }
 
 /** C ref: hacklib.c:781 — @param {CPtr} s1 @param {CPtr} s2 @param {CInt} n @returns {CInt} */
@@ -627,18 +627,18 @@ export function fuzzymatch(s1, s2, ignore_chars, caseblind) {
     let c1;
     let c2;
     do {
-        while ((c1 = cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; }))) != 0 && cptr.strchr(ignore_chars, c1) !== null)
+        while ((c1 = cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; }))) != 0 && cptr.strchr(ignore_chars, c1) !== null ? 1 : 0)
             continue;
-        while ((c2 = cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; }))) != 0 && cptr.strchr(ignore_chars, c2) !== null)
+        while ((c2 = cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; }))) != 0 && cptr.strchr(ignore_chars, c2) !== null ? 1 : 0)
             continue;
-        if (!c1 || !c2)
+        if (!c1 || !c2 ? 1 : 0)
             break;
         if (caseblind) {
             c1 = lowc(c1);
             c2 = lowc(c2);
         }
     } while (c1 == c2);
-    return schar((!c1 && !c2));
+    return schar((!c1 && !c2 ? 1 : 0));
 }
 
 /** C ref: hacklib.c:896 — @param {CInt} val @param {CInt} bita @param {CInt} bitb @returns {CInt} */
@@ -654,8 +654,8 @@ export function nh_snprintf(func, line, str, size, fmt, ...__va) {
     ap = cptr.vaList(__va);
     n = cptr.vsnprintf(str, size, fmt, ap);
     ap = null;
-    if (n < 0 || BigInt.asUintN(64, BigInt(n)) >= size) {
-        cptr.st1(cptr.add(str, size - 1n), 0);
+    if (n < 0 || BigInt.asUintN(64, BigInt(n)) >= size ? 1 : 0) {
+        cptr.st1(cptr.add(str, BigInt.asUintN(64, size - 1n)), 0);
     }
 }
 
@@ -699,7 +699,7 @@ export function case_insensitive_comp(s1, s2) {
         u2 = uchar(cptr.ld1s(s2));
         if (cptr.isupper(u2))
             u2 = uchar(cptr.tolower(u2));
-        if (u1 == 0 || u1 != u2)
+        if (u1 == 0 || u1 != u2 ? 1 : 0)
             break;
     }
     return (u1 - u2) | 0;
@@ -713,9 +713,9 @@ export function copy_bytes(ifd, ofd) {
     do {
         nto = 0n;
         nfrom = cptr.read(ifd, cptr.decay(buf), 1024n);
-        if (nfrom >= 0n && nfrom <= 1024n)
+        if (nfrom >= 0n && nfrom <= 1024n ? 1 : 0)
             nto = cptr.write(ofd, cptr.decay(buf), BigInt.asUintN(64, nfrom));
-        if (nto != nfrom || nfrom < 0n)
+        if (nto != nfrom || nfrom < 0n ? 1 : 0)
             return (0);
     } while (nfrom == 1024n);
     return (1);
@@ -786,7 +786,7 @@ let __static_what_datamodel_is_this_unknown = __sl27; /** C ref: hacklib.c:1068 
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
     for (i = 1; i < 5; ++i) {
-        if (szshort == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 0, 4)) && szint == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 1, 4)) && szlong == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 2, 4)) && szll == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 3, 4)) && szptr == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 4, 4)))
+        if ((((szshort == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 0, 4)) && szint == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 1, 4)) ? 1 : 0) && szlong == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 2, 4)) ? 1 : 0) && szll == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 3, 4)) ? 1 : 0) && szptr == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 4, 4)) ? 1 : 0)
             return (retidx == 0) ? cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 24)) : cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 32));
     }
     return __static_what_datamodel_is_this_unknown;

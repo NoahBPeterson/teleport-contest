@@ -89,26 +89,26 @@ export function main(argc, argv) {
     rng_log_init();
     {
         let mac_cwd = new Uint8Array(1024);
-        let mac_exe = cptr.ldPtr(cptr.add(argv.v, 0));
+        let mac_exe = cptr.ldPtr(cptr.add(argv.v, 0, 8));
         let mac_tmp;
         let arg0_len = Number(BigInt.asIntN(32, cptr.strlen(mac_exe)));
         let mac_tmp_len;
         let mac_lhs_len = 0;
         getcwd(cptr.decay(mac_cwd), 1024n);
-        if (cptr.ld1s(cptr.add(mac_exe, 0)) == 47 && !strcmp(cptr.decay(mac_cwd), __sl0)) {
+        if (cptr.ld1s(cptr.add(mac_exe, 0)) == 47 && !strcmp(cptr.decay(mac_cwd), __sl0) ? 1 : 0) {
             if ((mac_exe = cptr.strrchr(mac_exe, 47)))
                 mac_exe = cptr.add(mac_exe, 1);
             else
-                mac_exe = cptr.ldPtr(cptr.add(argv.v, 0));
-            mac_tmp_len = Number(BigInt.asIntN(32, ((cptr.strlen(mac_exe) * 2n) + cptr.strlen(__sl1))));
+                mac_exe = cptr.ldPtr(cptr.add(argv.v, 0, 8));
+            mac_tmp_len = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n)) + cptr.strlen(__sl1))));
             if (mac_tmp_len <= arg0_len) {
                 mac_tmp = cptr.malloc(BigInt.asUintN(64, BigInt(((mac_tmp_len + 1) | 0))));
                 cptr.sprintf(mac_tmp, __sl2, mac_exe, __sl1, mac_exe);
-                if (!strcmp(cptr.add(cptr.ldPtr(cptr.add(argv.v, 0)), ((arg0_len - mac_tmp_len) | 0)), mac_tmp)) {
-                    mac_lhs_len = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt(((arg0_len - mac_tmp_len) | 0))) + cptr.strlen(mac_exe) + 5n)));
+                if (!strcmp(cptr.add(cptr.ldPtr(cptr.add(argv.v, 0, 8)), ((arg0_len - mac_tmp_len) | 0)), mac_tmp)) {
+                    mac_lhs_len = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((arg0_len - mac_tmp_len) | 0))) + cptr.strlen(mac_exe)) + 5n)));
                     if (mac_lhs_len > ((mac_tmp_len - 1) | 0))
                         mac_tmp = realloc(mac_tmp, BigInt.asUintN(64, BigInt(mac_lhs_len)));
-                    __builtin___strncpy_chk(mac_tmp, cptr.ldPtr(cptr.add(argv.v, 0)), BigInt.asUintN(64, BigInt(mac_lhs_len)), __builtin_object_size(mac_tmp, 2 > 1 ? 1 : 0));
+                    __builtin___strncpy_chk(mac_tmp, cptr.ldPtr(cptr.add(argv.v, 0, 8)), BigInt.asUintN(64, BigInt(mac_lhs_len)), __builtin_object_size(mac_tmp, 2 > 1 ? 1 : 0));
                     cptr.st1(cptr.add(mac_tmp, mac_lhs_len), 0);
                     chdir(mac_tmp);
                 }
@@ -116,7 +116,7 @@ export function main(argc, argv) {
             }
         }
     }
-    cptr.stPtr(gh, cptr.ldPtr(cptr.add(argv.v, 0)));
+    cptr.stPtr(gh, cptr.ldPtr(cptr.add(argv.v, 0, 8)));
     cptr.stI32(svh, getpid());
     void umask(u16((511 & ~432)));
     choose_windows(__sl3);
@@ -128,7 +128,7 @@ export function main(argc, argv) {
     cptr.stI32(cptr.add(program_state, 108), 0);
     chdirx(dir.v, (1));
     initoptions();
-    ARGV0 = cptr.ldPtr(gh);
+    ARGV0.v = cptr.ldPtr(gh);
     panictrace_setsignals((1));
     exact_username = whoami();
     cptr.stI32(cptr.add(u, 2196), 1);
@@ -154,7 +154,7 @@ export function main(argc, argv) {
             getlock();
             cptr.stI32(cptr.add(program_state, 12), 0);
         }
-        if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null) {
+        if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null ? 1 : 0) {
             let fq_save = fqname(cptr.add(gs, 884), 2, 1);
             void chmod(fq_save, 0);
             void signal(2, done1);
@@ -170,7 +170,7 @@ export function main(argc, argv) {
             if (dorecover(nhfp)) {
                 resuming = (1);
                 wd_message();
-                if (cptr.ld1s(cptr.add(flags, 12)) || cptr.ld1s(cptr.add(flags, 10))) {
+                if (cptr.ld1s(cptr.add(flags, 12)) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) {
                     if (yn_function(__sl8, cptr.decay(ynchars), 110, (1)) == 110) {
                         void delete_savefile();
                     } else {
@@ -185,11 +185,11 @@ export function main(argc, argv) {
         }
         if (!resuming) {
             let neednewlock = schar((!cptr.ld1s(svp)));
-            if (!cptr.ld1s(cptr.add(iflags, 143)) || cptr.ld1s(iflags) || neednewlock) {
+            if ((!cptr.ld1s(cptr.add(iflags, 143)) || cptr.ld1s(iflags) ? 1 : 0) || neednewlock ? 1 : 0) {
                 if (!plsel_once)
                     (cptr.ldPtr(cptr.add(windowprocs, 56)))();
                 plsel_once = (1);
-                if (neednewlock && cptr.ld1s(svp))
+                if (neednewlock && cptr.ld1s(svp) ? 1 : 0)
                     continue __lbl_attempt_restore;
                 if (cptr.ld1s(cptr.add(iflags, 143))) {
                     if (!cptr.ldI32(cptr.add(gl, 8))) {
@@ -217,21 +217,21 @@ function process_options(argc, argv) {
     let i;
     let l;
     config_error_init((0), __sl9, (0));
-    while (argc > 1 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1)), 0)) == 45) {
+    while (argc > 1 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1, 8)), 0)) == 45 ? 1 : 0) {
         argv = cptr.add(argv, 1, 8);
         argc--;
-        arg = (origarg = cptr.ldPtr(cptr.add(argv, 0)));
-        if (cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 45 && cptr.ld1s(cptr.add(arg, 2)) != 0 && (cptr.ld1s(cptr.add(arg, 3)) != 0 && cptr.ld1s(cptr.add(arg, 3)) != 61 && cptr.ld1s(cptr.add(arg, 3)) != 58))
+        arg = (origarg = cptr.ldPtr(cptr.add(argv, 0, 8)));
+        if (((cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 45 ? 1 : 0) && cptr.ld1s(cptr.add(arg, 2)) != 0 ? 1 : 0) && ((cptr.ld1s(cptr.add(arg, 3)) != 0 && cptr.ld1s(cptr.add(arg, 3)) != 61 ? 1 : 0) && cptr.ld1s(cptr.add(arg, 3)) != 58 ? 1 : 0) ? 1 : 0)
             arg = cptr.add(arg, 1);
         l = Number(BigInt.asIntN(32, cptr.strlen(arg)));
-        if (l < 6 && !cptr.strncmp(arg, __sl10, 4n))
+        if (l < 6 && !cptr.strncmp(arg, __sl10, 4n) ? 1 : 0)
             l = 6;
         else if (l < 4)
             l = 4;
         switch (cptr.ld1s(cptr.add(arg, 1))) {
             case 68:
             case 100:
-            if ((cptr.ld1s(cptr.add(arg, 1)) == 68 && !cptr.ld1s(cptr.add(arg, 2))) || !strncmpi((arg), (__sl11), -1)) {
+            if ((cptr.ld1s(cptr.add(arg, 1)) == 68 && !cptr.ld1s(cptr.add(arg, 2)) ? 1 : 0) || !strncmpi((arg), (__sl11), -1) ? 1 : 0) {
                 cptr.st1(cptr.add(flags, 10), (1)), cptr.st1(cptr.add(flags, 12), (0));
             } else if (!strncmpi(arg, __sl12, l)) {
                 load_symset(__sl13, 0);
@@ -244,7 +244,7 @@ function process_options(argc, argv) {
             cptr.st1(cptr.add(flags, 12), (1)), cptr.st1(cptr.add(flags, 10), (0));
             break;
             case 110:
-            if (!cptr.ld1s(cptr.add(arg, 2)) || !strcmp(arg, __sl15)) {
+            if (!cptr.ld1s(cptr.add(arg, 2)) || !strcmp(arg, __sl15) ? 1 : 0) {
                 cptr.st1(cptr.add(iflags, 137), (0));
                 break;
             } else if (!strcmp(arg, __sl16)) {
@@ -254,12 +254,12 @@ function process_options(argc, argv) {
             break;
             case 117:
             if (cptr.ld1s(cptr.add(arg, 2))) {
-                void __builtin___strncpy_chk(svp, cptr.add(arg, 2), 32n - 1n, __builtin_object_size(svp, 2 > 1 ? 1 : 0));
+                void __builtin___strncpy_chk(svp, cptr.add(arg, 2), BigInt.asUintN(64, 32n - 1n), __builtin_object_size(svp, 2 > 1 ? 1 : 0));
                 cptr.stI32(cptr.add(gp, 8), 0);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
-                void __builtin___strncpy_chk(svp, cptr.ldPtr(cptr.add(argv, 0)), 32n - 1n, __builtin_object_size(svp, 2 > 1 ? 1 : 0));
+                void __builtin___strncpy_chk(svp, cptr.ldPtr(cptr.add(argv, 0, 8)), BigInt.asUintN(64, 32n - 1n), __builtin_object_size(svp, 2 > 1 ? 1 : 0));
                 cptr.stI32(cptr.add(gp, 8), 0);
             } else {
                 config_error_add(__sl17);
@@ -288,7 +288,7 @@ function process_options(argc, argv) {
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
-                if ((i = str2role(cptr.ldPtr(cptr.add(argv, 0)))) >= 0)
+                if ((i = str2role(cptr.ldPtr(cptr.add(argv, 0, 8)))) >= 0)
                     cptr.stI32(cptr.add(flags, 144), i);
             }
             break;
@@ -299,7 +299,7 @@ function process_options(argc, argv) {
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
-                if ((i = str2race(cptr.ldPtr(cptr.add(argv, 0)))) >= 0)
+                if ((i = str2race(cptr.ldPtr(cptr.add(argv, 0, 8)))) >= 0)
                     cptr.stI32(cptr.add(flags, 148), i);
             }
             break;
@@ -310,18 +310,18 @@ function process_options(argc, argv) {
             config_error_add(__sl14, origarg);
             break;
             default:
-            if ((i = str2role(cptr.add(cptr.ldPtr(cptr.add(argv, 0)), 1))) >= 0) {
+            if ((i = str2role(cptr.add(cptr.ldPtr(cptr.add(argv, 0, 8)), 1))) >= 0) {
                 cptr.stI32(cptr.add(flags, 144), i);
                 break;
             }
         }
     }
     if (argc > 1) {
-        let mxplyrs = atoi(cptr.ldPtr(cptr.add(argv, 1)));
+        let mxplyrs = atoi(cptr.ldPtr(cptr.add(argv, 1, 8)));
         let mx_ok = schar((mxplyrs > 0));
-        config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtr(cptr.add(argv, 1)), mx_ok ? __sl24 : __sl25);
+        config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtr(cptr.add(argv, 1, 8)), mx_ok ? __sl24 : __sl25);
     }
-    if (!cptr.ldI32(cptr.add(gl, 8)) || (cptr.ldI32(cptr.add(sysopt, 76)) && cptr.ldI32(cptr.add(gl, 8)) > cptr.ldI32(cptr.add(sysopt, 76))))
+    if (!cptr.ldI32(cptr.add(gl, 8)) || (cptr.ldI32(cptr.add(sysopt, 76)) && cptr.ldI32(cptr.add(gl, 8)) > cptr.ldI32(cptr.add(sysopt, 76)) ? 1 : 0) ? 1 : 0)
         cptr.stI32(cptr.add(gl, 8), cptr.ldI32(cptr.add(sysopt, 76)));
     config_error_done();
     return;
@@ -329,12 +329,12 @@ function process_options(argc, argv) {
 
 /** C ref: unixmain.c:491 — @param {CPtr} dir @param {CInt} wr */
 export function chdirx(dir, wr) {
-    if (dir && strcmp(dir, __sl26)) {
+    if (dir && strcmp(dir, __sl26) ? 1 : 0) {
     } else {
     }
     if (!dir)
         dir = __sl26;
-    if (dir && chdir(dir) < 0) {
+    if (dir && chdir(dir) < 0 ? 1 : 0) {
         perror(dir);
         error(__sl27, dir);
     }
@@ -349,12 +349,12 @@ export function whoami() {
     if (!cptr.ld1s(svp)) {
         let s;
         s = nh_getenv(__sl28);
-        if (!s || !cptr.ld1s(s))
+        if (!s || !cptr.ld1s(s) ? 1 : 0)
             s = nh_getenv(__sl29);
-        if (!s || !cptr.ld1s(s))
+        if (!s || !cptr.ld1s(s) ? 1 : 0)
             s = getlogin();
-        if (s && cptr.ld1s(s)) {
-            void __builtin___strncpy_chk(svp, s, 32n - 1n, __builtin_object_size(svp, 2 > 1 ? 1 : 0));
+        if (s && cptr.ld1s(s) ? 1 : 0) {
+            void __builtin___strncpy_chk(svp, s, BigInt.asUintN(64, 32n - 1n), __builtin_object_size(svp, 2 > 1 ? 1 : 0));
             if (cptr.strchr(svp, 45))
                 return (1);
         }
@@ -373,7 +373,7 @@ export function sethanguphandler(handler) {
 
 /** C ref: unixmain.c:629 @returns {CInt} */
 export function authorize_wizard_mode() {
-    if (cptr.ldPtr(cptr.add(sysopt, 16)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 16)), 0))) {
+    if (cptr.ldPtr(cptr.add(sysopt, 16)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 16)), 0)) ? 1 : 0) {
         if (check_user_string(cptr.ldPtr(cptr.add(sysopt, 16))))
             return (1);
     }
@@ -383,7 +383,7 @@ export function authorize_wizard_mode() {
 
 /** C ref: unixmain.c:641 @returns {CInt} */
 export function authorize_explore_mode() {
-    if (cptr.ldPtr(cptr.add(sysopt, 32)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 32)), 0))) {
+    if (cptr.ldPtr(cptr.add(sysopt, 32)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 32)), 0)) ? 1 : 0) {
         if (check_user_string(cptr.ldPtr(cptr.add(sysopt, 32))))
             return (1);
     }
@@ -394,7 +394,7 @@ export function authorize_explore_mode() {
 /** C ref: unixmain.c:656 */
 function wd_message() {
     if (cptr.ld1s(cptr.add(iflags, 424))) {
-        if (cptr.ldPtr(cptr.add(sysopt, 16)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 16)), 0))) {
+        if (cptr.ldPtr(cptr.add(sysopt, 16)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 16)), 0)) ? 1 : 0) {
             let tmp = build_english_list(cptr.ldPtr(cptr.add(sysopt, 16)));
             pline(__sl30, cptr.strchr(cptr.ldPtr(cptr.add(sysopt, 16)), 32) ? __sl31 : __sl24, tmp);
             cptr.free(tmp);
@@ -416,7 +416,7 @@ export function append_slash(name) {
     let ptr;
     if (!cptr.ld1s(name))
         return;
-    ptr = cptr.add(name, (cptr.strlen(name) - 1n));
+    ptr = cptr.add(name, (BigInt.asUintN(64, cptr.strlen(name) - 1n)));
     if (cptr.ld1s(ptr) != 47) {
         cptr.st1(cptr.preinc(() => ptr, (v) => { ptr = v; }), 47);
         cptr.st1(cptr.preinc(() => ptr, (v) => { ptr = v; }), 0);
@@ -437,7 +437,7 @@ export function check_user_string(optstr) {
         pwname = svp;
     else if ((pw = get_unix_pw()) !== null)
         pwname = cptr.ldPtr(pw);
-    if (!pwname || !cptr.ld1s(pwname))
+    if (!pwname || !cptr.ld1s(pwname) ? 1 : 0)
         return (0);
     pwlen = Number(BigInt.asIntN(32, cptr.strlen(pwname)));
     eop = eos(optstr);
@@ -450,10 +450,10 @@ export function check_user_string(optstr) {
             continue;
         }
         if (!cptr.strncmp(w, pwname, BigInt.asUintN(64, BigInt(pwlen)))) {
-            if (!cptr.ld1s(cptr.add(w, pwlen)) || isspace(cptr.ld1s(cptr.add(w, pwlen))))
+            if (!cptr.ld1s(cptr.add(w, pwlen)) || isspace(cptr.ld1s(cptr.add(w, pwlen))) ? 1 : 0)
                 return (1);
         }
-        while (cptr.ld1s(w) && !isspace(cptr.ld1s(w)))
+        while (cptr.ld1s(w) && !isspace(cptr.ld1s(w)) ? 1 : 0)
             w = cptr.add(w, 1);
     }
     return (0);
@@ -471,14 +471,14 @@ function get_unix_pw() {
     user = getlogin();
     if (user) {
         __static_get_unix_pw_pw = getpwnam(user);
-        if (__static_get_unix_pw_pw && (cptr.ldI32(cptr.add(__static_get_unix_pw_pw, 16)) != uid))
+        if (__static_get_unix_pw_pw && (cptr.ldI32(cptr.add(__static_get_unix_pw_pw, 16)) != uid) ? 1 : 0)
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
         user = nh_getenv(__sl28);
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
-            if (__static_get_unix_pw_pw && (cptr.ldI32(cptr.add(__static_get_unix_pw_pw, 16)) != uid))
+            if (__static_get_unix_pw_pw && (cptr.ldI32(cptr.add(__static_get_unix_pw_pw, 16)) != uid) ? 1 : 0)
                 __static_get_unix_pw_pw = null;
         }
         if (__static_get_unix_pw_pw === null) {
@@ -501,16 +501,16 @@ export function get_login_name() {
 
 /** C ref: unixmain.c:780 — @param {CPtr} buf */
 export function port_insert_pastebuf(buf) {
+    let errarg;
+    let len;
+    let PB = popen(__sl36, __sl37);
     __lbl_error: {
-        let errarg;
-        let len;
-        let PB = popen(__sl36, __sl37);
         if (!PB) {
             errarg = __sl38;
             break __lbl_error;
         }
         len = cptr.strlen(buf);
-        if (len > 0n && cptr.ld1s(cptr.add(buf, len - 1n)) == 10)
+        if (len > 0n && cptr.ld1s(cptr.add(buf, BigInt.asUintN(64, len - 1n))) == 10 ? 1 : 0)
             len--;
         if (len != fwrite(buf, 1n, len, PB)) {
             errarg = __sl39;
@@ -540,7 +540,7 @@ export function sys_random_seed() {
     fptr = fopen(__sl43, __sl44);
     if (fptr) {
         fread(seed, 8n, 1n, fptr);
-        has_strong_rngseed = (1);
+        has_strong_rngseed.v = (1);
         no_seed = (0);
         void fclose(fptr);
     } else {

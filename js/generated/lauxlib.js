@@ -84,7 +84,7 @@ const __sl69 = cptr.lit("version mismatch: app. needs %f, Lua core provides %f")
 
 /** C ref: lauxlib.c:52 — @param {CPtr} L @param {CInt} objidx @param {CInt} level @returns {CInt} */
 function findfield(L, objidx, level) {
-    if (level == 0 || !(lua_type(L, (-1)) == 5))
+    if (level == 0 || !(lua_type(L, (-1)) == 5) ? 1 : 0)
         return 0;
     lua_pushnil(L);
     while (lua_next(L, -2)) {
@@ -168,7 +168,7 @@ export function luaL_traceback(L, L1, msg, level) {
     luaL_buffinit(L, b);
     if (msg) {
         luaL_addstring(b, msg);
-        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 10)));
+        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), 10)));
     }
     luaL_addstring(b, __sl10);
     while (lua_getstack(L1, level++, ar)) {
@@ -273,18 +273,18 @@ export function luaL_fileresult(L, stat, fname) {
 
 /** C ref: lauxlib.c:288 — @param {CPtr} L @param {CInt} stat @returns {CInt} */
 export function luaL_execresult(L, stat) {
-    if (stat != 0 && (cptr.ldI32(__error())) != 0)
+    if (stat != 0 && (cptr.ldI32(__error())) != 0 ? 1 : 0)
         return luaL_fileresult(L, 0, null);
     else {
         let what = __sl29;
         if ((((stat) & 127) == 0)) {
             stat = (((stat) >> 8) & 255);
-        } else if ((((stat) & 127) != 127 && ((stat) & 127) != 0)) {
+        } else if ((((stat) & 127) != 127 && ((stat) & 127) != 0 ? 1 : 0)) {
             stat = (((stat) & 127));
             what = __sl30;
         }
         ;
-        if (cptr.ld1s(what) == 101 && stat == 0)
+        if (cptr.ld1s(what) == 101 && stat == 0 ? 1 : 0)
             lua_pushboolean(L, 1);
         else
             lua_pushnil(L);
@@ -331,7 +331,7 @@ export function luaL_testudata(L, ud, tname) {
 /** C ref: lauxlib.c:348 — @param {CPtr} L @param {CInt} ud @param {CPtr} tname @returns {CPtr} */
 export function luaL_checkudata(L, ud, tname) {
     let p = luaL_testudata(L, ud, tname);
-    (void ((__builtin_expect(BigInt(((!cptr.eq(p, (null))) != 0)), 1n)) || luaL_typeerror(L, (ud), (tname))));
+    (void ((__builtin_expect(BigInt(((!cptr.eq(p, (null))) != 0)), 1n)) || luaL_typeerror(L, (ud), (tname)) ? 1 : 0));
     return p;
 }
 
@@ -339,8 +339,8 @@ export function luaL_checkudata(L, ud, tname) {
 export function luaL_checkoption(L, arg, def, lst) {
     let name = (def) ? (luaL_optlstring(L, (arg), (def), null)) : (luaL_checklstring(L, (arg), null));
     let i;
-    for (i = 0; cptr.ldPtr(cptr.add(lst, i)); i++)
-        if (strcmp(cptr.ldPtr(cptr.add(lst, i)), name) == 0)
+    for (i = 0; cptr.ldPtr(cptr.add(lst, i, 8)); i++)
+        if (strcmp(cptr.ldPtr(cptr.add(lst, i, 8)), name) == 0)
             return i;
     return luaL_argerror(L, arg, lua_pushfstring(L, __sl31, name));
 }
@@ -432,7 +432,7 @@ function resizebox(L, idx, newsize) {
     let allocf = lua_getallocf(L, ud);
     let box = lua_touserdata(L, idx);
     let temp = allocf(ud.v, cptr.ldPtr(box), cptr.ldU64(cptr.add(box, 8)), newsize);
-    if ((__builtin_expect(BigInt(((cptr.eq(temp, (null)) && newsize > 0n) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.eq(temp, (null)) && newsize > 0n ? 1 : 0) != 0)), 0n))) {
         lua_pushstring(L, __sl36);
         lua_error(L);
     }
@@ -468,18 +468,18 @@ function newbox(L) {
 
 /** C ref: lauxlib.c:535 — @param {CPtr} B @param {CLongLong} sz @returns {*} */
 function newbuffsize(B, sz) {
-    let newsize = (cptr.ldU64(cptr.add(B, 8)) / 2n) * 3n;
-    if ((__builtin_expect(BigInt(((((~0n)) - sz < cptr.ldU64(cptr.add(B, 16))) != 0)), 0n)))
+    let newsize = BigInt.asUintN(64, (cptr.ldU64(cptr.add(B, 8)) / 2n) * 3n);
+    if ((__builtin_expect(BigInt(((BigInt.asUintN(64, ((BigInt.asUintN(64, ~0n))) - sz) < cptr.ldU64(cptr.add(B, 16))) != 0)), 0n)))
         return BigInt.asUintN(64, BigInt(luaL_error(cptr.ldPtr(cptr.add(B, 24)), __sl40)));
-    if (newsize < cptr.ldU64(cptr.add(B, 16)) + sz)
-        newsize = cptr.ldU64(cptr.add(B, 16)) + sz;
+    if (newsize < BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 16)) + sz))
+        newsize = BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 16)) + sz);
     return newsize;
 }
 
 /** C ref: lauxlib.c:550 — @param {CPtr} B @param {CLongLong} sz @param {CInt} boxidx @returns {CPtr} */
 function prepbuffsize(B, sz, boxidx) {
     (void 0);
-    if (cptr.ldU64(cptr.add(B, 8)) - cptr.ldU64(cptr.add(B, 16)) >= sz)
+    if (BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 8)) - cptr.ldU64(cptr.add(B, 16))) >= sz)
         return cptr.add(cptr.ldPtr(B), cptr.ldU64(cptr.add(B, 16)));
     else {
         let L = cptr.ldPtr(cptr.add(B, 24));
@@ -493,7 +493,7 @@ function prepbuffsize(B, sz, boxidx) {
             lua_rotate(L, (boxidx), 1);
             lua_toclose(L, boxidx);
             newbuff = resizebox(L, boxidx, newsize);
-            cptr.memcpy(newbuff, cptr.ldPtr(B), cptr.ldU64(cptr.add(B, 16)) * 1n);
+            cptr.memcpy(newbuff, cptr.ldPtr(B), BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 16)) * 1n));
         }
         cptr.stPtr(B, newbuff);
         cptr.stU64(cptr.add(B, 8), newsize);
@@ -510,8 +510,8 @@ export function luaL_prepbuffsize(B, sz) {
 export function luaL_addlstring(B, s, l) {
     if (l > 0n) {
         let b = prepbuffsize(B, l, -1);
-        cptr.memcpy(b, s, l * 1n);
-        (cptr.st1(cptr.add((B), 16), cptr.ld1u(cptr.add((B), 16)) + (l)));
+        cptr.memcpy(b, s, BigInt.asUintN(64, l * 1n));
+        (cptr.stU64(cptr.add((B), 16), cptr.ldU64(cptr.add((B), 16)) + (l)));
     }
 }
 
@@ -532,18 +532,18 @@ export function luaL_pushresult(B) {
 
 /** C ref: lauxlib.c:607 — @param {CPtr} B @param {CLongLong} sz */
 export function luaL_pushresultsize(B, sz) {
-    (cptr.st1(cptr.add((B), 16), cptr.ld1u(cptr.add((B), 16)) + (sz)));
+    (cptr.stU64(cptr.add((B), 16), cptr.ldU64(cptr.add((B), 16)) + (sz)));
     luaL_pushresult(B);
 }
 
 /** C ref: lauxlib.c:622 — @param {CPtr} B */
 export function luaL_addvalue(B) {
     let L = cptr.ldPtr(cptr.add(B, 24));
-    let len = cptr.box(0);
+    let len = cptr.box(0n);
     let s = lua_tolstring(L, -1, len);
     let b = prepbuffsize(B, len.v, -2);
-    cptr.memcpy(b, s, len.v * 1n);
-    (cptr.st1(cptr.add((B), 16), cptr.ld1u(cptr.add((B), 16)) + (len.v)));
+    cptr.memcpy(b, s, BigInt.asUintN(64, len.v * 1n));
+    (cptr.stU64(cptr.add((B), 16), cptr.ldU64(cptr.add((B), 16)) + (len.v)));
     lua_settop(L, (-(1) - 1) | 0);
 }
 
@@ -552,7 +552,7 @@ export function luaL_buffinit(L, B) {
     cptr.stPtr(cptr.add(B, 24), L);
     cptr.stPtr(B, cptr.add(B, 32));
     cptr.stU64(cptr.add(B, 16), 0n);
-    cptr.stU64(cptr.add(B, 8), BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (16n * 8n * 8n)))))));
+    cptr.stU64(cptr.add(B, 8), BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))));
     lua_pushlightuserdata(L, B);
 }
 
@@ -634,7 +634,7 @@ function errfile(L, what, fnameindex) {
 /** C ref: lauxlib.c:755 — @param {CPtr} f @returns {CInt} */
 function skipBOM(f) {
     let c = getc(f);
-    if (c == 239 && getc(f) == 187 && getc(f) == 191)
+    if ((c == 239 && getc(f) == 187 ? 1 : 0) && getc(f) == 191 ? 1 : 0)
         return getc(f);
     else
         return c;
@@ -646,7 +646,7 @@ function skipcomment(f, cp) {
     if (c == 35) {
         do {
             c = getc(f);
-        } while (c != (-1) && c != 10);
+        } while (c != (-1) && c != 10 ? 1 : 0);
         cptr.stI32(cp, getc(f));
         return 1;
     } else
@@ -672,7 +672,7 @@ export function luaL_loadfilex(L, filename, mode) {
     }
     cptr.stI32(lf, 0);
     if (skipcomment(cptr.ldPtr(cptr.add(lf, 8)), c))
-        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - 1, 1), 10);
+        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1), 10);
     if (c.v == cptr.ld1s(cptr.add(__sl47, 0, 1))) {
         cptr.stI32(lf, 0);
         if (filename) {
@@ -684,7 +684,7 @@ export function luaL_loadfilex(L, filename, mode) {
         }
     }
     if (c.v != (-1))
-        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - 1, 1), schar(c.v));
+        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1), schar(c.v));
     cptr.stI32(__error(), 0);
     status = lua_load(L, getF, lf, lua_tolstring(L, (-1), null), mode);
     readstatus = ferror(cptr.ldPtr(cptr.add(lf, 8)));
@@ -894,7 +894,7 @@ function panic(L) {
 
 /** C ref: lauxlib.c:1066 — @param {CPtr} L @param {CPtr} message @param {CInt} tocont @returns {CInt} */
 function checkcontrol(L, message, tocont) {
-    if (tocont || cptr.ld1s((cptr.postinc(() => message, (v) => { message = v; }))) != 64)
+    if (tocont || cptr.ld1s((cptr.postinc(() => message, (v) => { message = v; }))) != 64 ? 1 : 0)
         return 0;
     else {
         if (strcmp(message, __sl63) == 0)
@@ -943,7 +943,7 @@ export function luaL_newstate() {
 /** C ref: lauxlib.c:1118 — @param {CPtr} L @param {CDouble} ver @param {CLongLong} sz */
 export function luaL_checkversion_(L, ver, sz) {
     let v = lua_version(L);
-    if (sz != (8n * 16n + 8n))
+    if (sz != (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n)))
         luaL_error(L, __sl68);
     else if (v != ver)
         luaL_error(L, __sl69, ver, v);

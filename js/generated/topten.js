@@ -261,8 +261,8 @@ export function formatkiller(buf, siz, how, incl_helpless) {
         cptr.st1(cptr.postinc(() => buf, (v) => { buf = v; }), c);
     }
     cptr.st1(buf, 0);
-    if (incl_helpless && cptr.ldI64(cptr.add(gm, 8)) < 0n) {
-        if (cptr.ldPtr(cptr.add(gm, 16)) && cptr.strlen(cptr.ldPtr(cptr.add(gm, 16))) + 9n <= BigInt(siz >>> 0))
+    if (incl_helpless && cptr.ldI64(cptr.add(gm, 8)) < 0n ? 1 : 0) {
+        if (cptr.ldPtr(cptr.add(gm, 16)) && BigInt.asUintN(64, cptr.strlen(cptr.ldPtr(cptr.add(gm, 16))) + 9n) <= BigInt(siz >>> 0) ? 1 : 0)
             void cptr.sprintf(buf, __sl2, cptr.ldPtr(cptr.add(gm, 16)));
         else if (17n <= BigInt(siz >>> 0))
             void cptr.strcpy(buf, __sl3);
@@ -295,7 +295,7 @@ function discardexcess(rfile) {
     let c;
     do {
         c = fgetc(rfile);
-    } while (c != 10 && c != (-1));
+    } while (c != 10 && c != (-1) ? 1 : 0);
 }
 
 const __static_readentry_fmt = cptr.bytes("%d.%d.%d %ld %d %d %d %d %d %d %ld %ld %d "); /** C ref: topten.c:230 — char[43] (function-static) */
@@ -318,10 +318,10 @@ function readentry(rfile, tt) {
         if (!fgets(cptr.decay(inbuf), 129, rfile)) {
             cptr.st1(cptr.decay(inbuf), 0);
         } else if (!cptr.strchr(cptr.decay(inbuf), 10)) {
-            void cptr.strcpy(cptr.add(cptr.decay(inbuf), 129n - 2n, 1), __sl15);
+            void cptr.strcpy(cptr.add(cptr.decay(inbuf), BigInt.asUintN(64, 129n - 2n), 1), __sl15);
             discardexcess(rfile);
         }
-        if (cptr.ldI32(cptr.add(tt, 40)) < 3 || (cptr.ldI32(cptr.add(tt, 40)) == 3 && cptr.ldI32(cptr.add(tt, 44)) < 3)) {
+        if (cptr.ldI32(cptr.add(tt, 40)) < 3 || (cptr.ldI32(cptr.add(tt, 40)) == 3 && cptr.ldI32(cptr.add(tt, 44)) < 3 ? 1 : 0) ? 1 : 0) {
             let i;
             if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt32), cptr.add(tt, 76), cptr.add(tt, 84), cptr.decay(s1), cptr.decay(s2)) == 4) {
                 cptr.st1(cptr.add(cptr.add(tt, 76), 1, 1), cptr.st1(cptr.add(cptr.add(tt, 84), 1, 1), 0));
@@ -347,9 +347,9 @@ function readentry(rfile, tt) {
     }
     if (cptr.ldI64(cptr.add(tt, 8)) > 0n) {
         if (cptr.ldI64(cptr.add(tt, 64)) < 19000000n)
-            cptr.st1(cptr.add(tt, 64), cptr.ld1s(cptr.add(tt, 64)) + 19000000n);
+            cptr.stU64(cptr.add(tt, 64), cptr.ldI64(cptr.add(tt, 64)) + 19000000n);
         if (cptr.ldI64(cptr.add(tt, 56)) < 19000000n)
-            cptr.st1(cptr.add(tt, 56), cptr.ld1s(cptr.add(tt, 56)) + 19000000n);
+            cptr.stU64(cptr.add(tt, 56), cptr.ldI64(cptr.add(tt, 56)) + 19000000n);
     }
 }
 
@@ -361,7 +361,7 @@ const __static_writeentry_fmtX = cptr.bytes("%s,%s\n"); /** C ref: topten.c:307 
 /** C ref: topten.c:301 — @param {CPtr} rfile @param {CPtr} tt */
 function writeentry(rfile, tt) {
     void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32(cptr.add(tt, 40)), cptr.ldI32(cptr.add(tt, 44)), cptr.ldI32(cptr.add(tt, 48)), cptr.ldI64(cptr.add(tt, 8)), cptr.ldI32(cptr.add(tt, 16)), cptr.ldI32(cptr.add(tt, 20)), cptr.ldI32(cptr.add(tt, 24)), cptr.ldI32(cptr.add(tt, 28)), cptr.ldI32(cptr.add(tt, 32)), cptr.ldI32(cptr.add(tt, 36)), cptr.ldI64(cptr.add(tt, 56)), cptr.ldI64(cptr.add(tt, 64)), cptr.ldI32(cptr.add(tt, 72)));
-    if (cptr.ldI32(cptr.add(tt, 40)) < 3 || (cptr.ldI32(cptr.add(tt, 40)) == 3 && cptr.ldI32(cptr.add(tt, 44)) < 3))
+    if (cptr.ldI32(cptr.add(tt, 40)) < 3 || (cptr.ldI32(cptr.add(tt, 40)) == 3 && cptr.ldI32(cptr.add(tt, 44)) < 3 ? 1 : 0) ? 1 : 0)
         void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1s(cptr.add(cptr.add(tt, 76), 0, 1)), cptr.ld1s(cptr.add(cptr.add(tt, 84), 0, 1)));
     else
         void fprintf(rfile, cptr.decay(__static_writeentry_fmt33), cptr.add(tt, 76), cptr.add(tt, 80), cptr.add(tt, 84), cptr.add(tt, 88));
@@ -389,7 +389,7 @@ function writexlentry(rfile, tt, how) {
     void fprintf(rfile, __sl32, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64(cptr.add(urealtime, 16))));
     void fprintf(rfile, __sl33, 9, cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ldI32(cptr.add(flags, 152)), 48), 32)), 9, cptr.ldPtr(cptr.add(cptr.add(aligns, (1 - cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1))) | 0, 32), 16)));
     void fprintf(rfile, __sl34, 9, encodexlogflags());
-    void fprintf(rfile, __sl35, 9, money_cnt(cptr.ldPtr(cptr.add(gi, 8))) + hidden_gold((1)));
+    void fprintf(rfile, __sl35, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtr(cptr.add(gi, 8))) + hidden_gold((1))));
     void fprintf(rfile, __sl36, 9, cptr.ldI64(cptr.add(cptr.add(u, 1968), 72)));
     void fprintf(rfile, __sl37, 9, cptr.ldI64(cptr.add(cptr.add(u, 1968), 80)));
     void fprintf(rfile, __sl38, 9, cptr.ldI64(cptr.add(cptr.add(u, 2112), 8)));
@@ -438,7 +438,7 @@ function encodeconduct() {
         e |= 1n << 10n;
     if (!num_genocides())
         e |= 1n << 11n;
-    if (!cptr.ldI64(cptr.add(cptr.add(u, 1968), 96)) && sokoban_in_play())
+    if (!cptr.ldI64(cptr.add(cptr.add(u, 1968), 96)) && sokoban_in_play() ? 1 : 0)
         e |= 1n << 12n;
     if (!cptr.ldI64(cptr.add(cptr.add(u, 1968), 104)))
         e |= 1n << 13n;
@@ -454,7 +454,7 @@ function encodeachieve(secondlong) {
     offset = secondlong ? ((32 - 1) | 0) : 0;
     for (i = 0; cptr.ld1s(cptr.add(cptr.add(u, 2822), i, 1)); ++i) {
         achidx = (cptr.ld1s(cptr.add(cptr.add(u, 2822), i, 1)) - offset) | 0;
-        if (achidx > 0 && achidx < 32)
+        if (achidx > 0 && achidx < 32 ? 1 : 0)
             r |= 1n << BigInt(((achidx - 1) | 0));
     }
     return r;
@@ -605,22 +605,22 @@ function free_ttlist(tt) {
 
 /** C ref: topten.c:628 — @param {CInt} how @param {CLongLong} when */
 export function topten(how, when) {
+    let t0;
+    let tprev;
+    let t1;
+    let rfile;
+    let lfile;
+    let xlfile;
+    let uid = getuid() | 0;
+    let rank;
+    let rank0 = -1;
+    let rank1 = 0;
+    let occ_cnt = cptr.ldI32(cptr.add(sysopt, 104));
+    let flg = 0;
+    let t0_used;
+    let skip_scores;
     __lbl_destroywin: {
     __lbl_showwin: {
-        let t0;
-        let tprev;
-        let t1;
-        let rfile;
-        let lfile;
-        let xlfile;
-        let uid = getuid() | 0;
-        let rank;
-        let rank0 = -1;
-        let rank1 = 0;
-        let occ_cnt = cptr.ldI32(cptr.add(sysopt, 104));
-        let flg = 0;
-        let t0_used;
-        let skip_scores;
         if (cptr.ldI32(cptr.add(program_state, 20)))
             return;
         if (cptr.ld1s(cptr.add(iflags, 146))) {
@@ -669,7 +669,7 @@ export function topten(how, when) {
             }
             unlock_file(__sl87);
         }
-        if (cptr.ld1s(cptr.add(flags, 10)) || cptr.ld1s(cptr.add(flags, 12))) {
+        if (cptr.ld1s(cptr.add(flags, 10)) || cptr.ld1s(cptr.add(flags, 12)) ? 1 : 0) {
             if (how != 11)
                 if (!cptr.ldI32(cptr.add(program_state, 8))) {
                     let pbuf = new Uint8Array(256);
@@ -698,7 +698,7 @@ export function topten(how, when) {
             readentry(rfile, t1);
             if (cptr.ldI64(cptr.add(t1, 8)) < BigInt(cptr.ldI32(cptr.add(sysopt, 116))))
                 cptr.stU64(cptr.add(t1, 8), 0n);
-            if (rank0 < 0 && cptr.ldI64(cptr.add(t1, 8)) < cptr.ldI64(cptr.add(t0, 8))) {
+            if (rank0 < 0 && cptr.ldI64(cptr.add(t1, 8)) < cptr.ldI64(cptr.add(t0, 8)) ? 1 : 0) {
                 rank0 = rank++;
                 if (tprev === null)
                     tt_head = t0;
@@ -712,7 +712,7 @@ export function topten(how, when) {
                 tprev = t1;
             if (cptr.ldI64(cptr.add(t1, 8)) == 0n)
                 break;
-            if ((cptr.ldI32(cptr.add(sysopt, 108)) ? cptr.ldI32(cptr.add(t1, 72)) == cptr.ldI32(cptr.add(t0, 72)) : cptr.strncmp(cptr.add(t1, 92), cptr.add(t0, 92), 10n) == 0) && !cptr.strncmp(cptr.add(t1, 76), cptr.add(t0, 76), 3n) && --occ_cnt <= 0) {
+            if (((cptr.ldI32(cptr.add(sysopt, 108)) ? cptr.ldI32(cptr.add(t1, 72)) == cptr.ldI32(cptr.add(t0, 72)) : cptr.strncmp(cptr.add(t1, 92), cptr.add(t0, 92), 10n) == 0) && !cptr.strncmp(cptr.add(t1, 76), cptr.add(t0, 76), 3n) ? 1 : 0) && --occ_cnt <= 0 ? 1 : 0) {
                 if (rank0 < 0) {
                     rank0 = 0;
                     rank1 = rank;
@@ -759,20 +759,20 @@ export function topten(how, when) {
                     topten_print(__sl14);
                 }
         }
-        skip_scores = schar((!cptr.ldI32(cptr.add(flags, 52)) && !cptr.ldI32(cptr.add(flags, 56)) && !cptr.ld1s(cptr.add(flags, 11))));
+        skip_scores = schar(((!cptr.ldI32(cptr.add(flags, 52)) && !cptr.ldI32(cptr.add(flags, 56)) ? 1 : 0) && !cptr.ld1s(cptr.add(flags, 11)) ? 1 : 0));
         if (rank0 == 0)
             rank0 = rank1;
         if (rank0 <= 0)
             rank0 = rank;
-        if (!skip_scores && !cptr.ldI32(cptr.add(program_state, 4)))
+        if (!skip_scores && !cptr.ldI32(cptr.add(program_state, 4)) ? 1 : 0)
             outheader();
         for (t1 = tt_head, rank = 1; cptr.ldI64(cptr.add(t1, 8)) != 0n; t1 = cptr.ldPtr(t1), ++rank) {
             if (flg)
                 writeentry(rfile, t1);
-            if (skip_scores || cptr.ldI32(cptr.add(program_state, 4)))
+            if (skip_scores || cptr.ldI32(cptr.add(program_state, 4)) ? 1 : 0)
                 continue;
-            if (rank <= cptr.ldI32(cptr.add(flags, 52)) || (rank >= ((rank0 - cptr.ldI32(cptr.add(flags, 56))) | 0) && rank <= ((rank0 + cptr.ldI32(cptr.add(flags, 56))) | 0)) || (cptr.ld1s(cptr.add(flags, 11)) && (cptr.ldI32(cptr.add(sysopt, 108)) ? cptr.ldI32(cptr.add(t1, 72)) == cptr.ldI32(cptr.add(t0, 72)) : !cptr.strncmp(cptr.add(t1, 92), cptr.add(t0, 92), 10n)))) {
-                if (rank == ((rank0 - cptr.ldI32(cptr.add(flags, 56))) | 0) && rank0 > ((((cptr.ldI32(cptr.add(flags, 52)) + cptr.ldI32(cptr.add(flags, 56))) | 0) + 1) | 0) && !cptr.ld1s(cptr.add(flags, 11)))
+            if ((rank <= cptr.ldI32(cptr.add(flags, 52)) || (rank >= ((rank0 - cptr.ldI32(cptr.add(flags, 56))) | 0) && rank <= ((rank0 + cptr.ldI32(cptr.add(flags, 56))) | 0) ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(flags, 11)) && (cptr.ldI32(cptr.add(sysopt, 108)) ? cptr.ldI32(cptr.add(t1, 72)) == cptr.ldI32(cptr.add(t0, 72)) : !cptr.strncmp(cptr.add(t1, 92), cptr.add(t0, 92), 10n)) ? 1 : 0) ? 1 : 0) {
+                if ((rank == ((rank0 - cptr.ldI32(cptr.add(flags, 56))) | 0) && rank0 > ((((cptr.ldI32(cptr.add(flags, 52)) + cptr.ldI32(cptr.add(flags, 56))) | 0) + 1) | 0) ? 1 : 0) && !cptr.ld1s(cptr.add(flags, 11)) ? 1 : 0)
                     topten_print(__sl14);
                 if (rank != rank0) {
                     outentry(rank, t1, (0));
@@ -785,7 +785,7 @@ export function topten(how, when) {
             }
         }
         if (rank0 >= rank)
-            if (!skip_scores && !cptr.ldI32(cptr.add(program_state, 4)))
+            if (!skip_scores && !cptr.ldI32(cptr.add(program_state, 4)) ? 1 : 0)
                 outentry(0, t0, (1));
         void fclose(rfile);
         unlock_file(__sl92);
@@ -913,13 +913,13 @@ function outentry(rank, t1, so) {
         cptr.st1(cptr.add(cptr.decay(hpbuf), 0, 1), 45), cptr.st1(cptr.add(cptr.decay(hpbuf), 1, 1), 0);
     else
         void cptr.sprintf(cptr.decay(hpbuf), __sl141, cptr.ldI32(cptr.add(t1, 28)));
-    hppos = (80 - Number(BigInt.asIntN(32, (11n - 1n)))) | 0;
+    hppos = (80 - Number(BigInt.asIntN(32, (BigInt.asUintN(64, 11n - 1n))))) | 0;
     while (lngr >= hppos) {
-        for (bp = eos(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos)); bp = cptr.add(bp, -1))
+        for (bp = eos(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos) ? 1 : 0); bp = cptr.add(bp, -1))
             ;
         if (cptr.cmp(cptr.add(cptr.decay(linebuf), 15), bp) >= 0)
             bp = cptr.add(cptr.add(cptr.decay(linebuf), hppos), -(1));
-        if (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), 5)) > 0 && !cptr.strncmp(cptr.add(bp, -(5)), __sl142, 5n))
+        if (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), 5)) > 0 && !cptr.strncmp(cptr.add(bp, -(5)), __sl142, 5n) ? 1 : 0)
             bp = cptr.sub(bp, 5);
         if (cptr.ld1s(bp) != 32)
             void cptr.strcpy(cptr.decay(linebuf3), bp);
@@ -959,20 +959,20 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
     let arg;
     let nxt;
     let i;
-    if (current_ver && (cptr.ldI32(cptr.add(t1, 40)) != 5 || cptr.ldI32(cptr.add(t1, 44)) != 0 || cptr.ldI32(cptr.add(t1, 48)) != 0))
+    if (current_ver && ((cptr.ldI32(cptr.add(t1, 40)) != 5 || cptr.ldI32(cptr.add(t1, 44)) != 0 ? 1 : 0) || cptr.ldI32(cptr.add(t1, 48)) != 0 ? 1 : 0) ? 1 : 0)
         return 0;
-    if (cptr.ldI32(cptr.add(sysopt, 108)) && !playerct && cptr.ldI32(cptr.add(t1, 72)) == uid)
+    if ((cptr.ldI32(cptr.add(sysopt, 108)) && !playerct ? 1 : 0) && cptr.ldI32(cptr.add(t1, 72)) == uid ? 1 : 0)
         return 1;
     for (i = 0; i < playerct; i++) {
-        arg = cptr.ldPtr(cptr.add(players, i));
-        if (cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 117 && cptr.ld1s(cptr.add(arg, 2)) != 0)
+        arg = cptr.ldPtr(cptr.add(players, i, 8));
+        if ((cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 117 ? 1 : 0) && cptr.ld1s(cptr.add(arg, 2)) != 0 ? 1 : 0)
             arg = cptr.add(arg, 2);
-        if (cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.strchr(__sl147, cptr.ld1s(cptr.add(arg, 1))) && !cptr.ld1s(cptr.add(arg, 2)) && ((i + 1) | 0) < playerct) {
-            nxt = cptr.ldPtr(cptr.add(players, (i + 1) | 0));
-            if ((cptr.ld1s(cptr.add(arg, 1)) == 112 && str2role(nxt) == str2role(cptr.add(t1, 76))) || (cptr.ld1s(cptr.add(arg, 1)) == 114 && str2race(nxt) == str2race(cptr.add(t1, 80))) || (cptr.ld1s(cptr.add(arg, 1)) == 117 && (!strcmp(nxt, __sl148) || !cptr.strncmp(cptr.add(t1, 92), nxt, 10n))))
+        if (((cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.strchr(__sl147, cptr.ld1s(cptr.add(arg, 1))) ? 1 : 0) && !cptr.ld1s(cptr.add(arg, 2)) ? 1 : 0) && ((i + 1) | 0) < playerct ? 1 : 0) {
+            nxt = cptr.ldPtr(cptr.add(players, (i + 1) | 0, 8));
+            if (((cptr.ld1s(cptr.add(arg, 1)) == 112 && str2role(nxt) == str2role(cptr.add(t1, 76)) ? 1 : 0) || (cptr.ld1s(cptr.add(arg, 1)) == 114 && str2race(nxt) == str2race(cptr.add(t1, 80)) ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(arg, 1)) == 117 && (!strcmp(nxt, __sl148) || !cptr.strncmp(cptr.add(t1, 92), nxt, 10n) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 return 1;
             i++;
-        } else if (!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, 92), arg, 10n) || (cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == cptr.ld1s(cptr.add(cptr.add(t1, 76), 0, 1)) && !cptr.ld1s(cptr.add(arg, 2))) || (digit(cptr.ld1s(cptr.add(arg, 0))) && rank <= atoi(arg)))
+        } else if (((!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, 92), arg, 10n) ? 1 : 0) || ((cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == cptr.ld1s(cptr.add(cptr.add(t1, 76), 0, 1)) ? 1 : 0) && !cptr.ld1s(cptr.add(arg, 2)) ? 1 : 0) ? 1 : 0) || (digit(cptr.ld1s(cptr.add(arg, 0))) && rank <= atoi(arg) ? 1 : 0) ? 1 : 0)
             return 1;
     }
     return 0;
@@ -994,8 +994,8 @@ export function prscore(argc, argv) {
     let current_ver = (1);
     let init_done = (0);
     let match_found = (0);
-    ln = (argc < 2) ? 0 : (((p = cptr.strchr(cptr.ldPtr(cptr.add(argv, 1)), 32)) !== null) ? Number(BigInt.asUintN(32, (cptr.diff(p, cptr.ldPtr(cptr.add(argv, 1)))))) : Strlen_(cptr.ldPtr(cptr.add(argv, 1)), __sl149, 1208));
-    if (ln < 2 || (cptr.strncmp(cptr.ldPtr(cptr.add(argv, 1)), __sl150, 2n) && strcmp(cptr.ldPtr(cptr.add(argv, 1)), __sl151))) {
+    ln = (argc < 2) ? 0 : (((p = cptr.strchr(cptr.ldPtr(cptr.add(argv, 1, 8)), 32)) !== null) ? Number(BigInt.asUintN(32, (cptr.diff(p, cptr.ldPtr(cptr.add(argv, 1, 8)))))) : Strlen_(cptr.ldPtr(cptr.add(argv, 1, 8)), __sl149, 1208));
+    if (ln < 2 || (cptr.strncmp(cptr.ldPtr(cptr.add(argv, 1, 8)), __sl150, 2n) && strcmp(cptr.ldPtr(cptr.add(argv, 1, 8)), __sl151) ? 1 : 0) ? 1 : 0) {
         raw_printf(__sl152, argc);
         return;
     }
@@ -1009,13 +1009,13 @@ export function prscore(argc, argv) {
         init_dungeons();
         init_done = (1);
     }
-    if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1)), 1)) == 45 || !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1)), 2))) {
+    if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1, 8)), 1)) == 45 || !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1, 8)), 2)) ? 1 : 0) {
         argc--;
         argv = cptr.add(argv, 1, 8);
     } else {
-        cptr.st1(cptr.add(argv, 1), cptr.ld1s(cptr.add(argv, 1)) + 2);
+        cptr.stPtr(cptr.add(argv, 1, 8), cptr.add(cptr.ldPtr(cptr.add(argv, 1, 8)), 2));
     }
-    if (argc > 1 && !strcmp(cptr.ldPtr(cptr.add(argv, 1)), __sl153)) {
+    if (argc > 1 && !strcmp(cptr.ldPtr(cptr.add(argv, 1, 8)), __sl153) ? 1 : 0) {
         current_ver = (0);
         argc--;
         argv = cptr.add(argv, 1, 8);
@@ -1042,7 +1042,7 @@ export function prscore(argc, argv) {
         readentry(rfile, t1);
         if (cptr.ldI64(cptr.add(t1, 8)) == 0n)
             break;
-        if (!match_found && score_wanted(current_ver, rank, t1, playerct, players, uid))
+        if (!match_found && score_wanted(current_ver, rank, t1, playerct, players, uid) ? 1 : 0)
             match_found = (1);
         cptr.stPtr(t1, alloc(208));
         t1 = cptr.ldPtr(t1);
@@ -1067,21 +1067,21 @@ export function prscore(argc, argv) {
             if (playerct > 1)
                 void cptr.strcat(cptr.decay(pbuf), __sl157);
             for (i = 0; i < playerct; i++) {
-                if (!cptr.strncmp(cptr.ldPtr(cptr.add(players, i)), __sl158, 2n)) {
-                    if (!cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i)), 2)))
+                if (!cptr.strncmp(cptr.ldPtr(cptr.add(players, i, 8)), __sl158, 2n)) {
+                    if (!cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i, 8)), 2)))
                         continue;
-                    cptr.st1(cptr.add(players, i), cptr.ld1s(cptr.add(players, i)) + 2);
+                    cptr.stPtr(cptr.add(players, i, 8), cptr.add(cptr.ldPtr(cptr.add(players, i, 8)), 2));
                 }
-                if (cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtr(cptr.add(players, i))) + 2n >= 256n) {
+                if (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtr(cptr.add(players, i, 8)))) + 2n) >= 256n) {
                     if (cptr.strlen(cptr.decay(pbuf)) < BigInt.asUintN(64, BigInt(((256 - 4) | 0))))
                         void cptr.strcat(cptr.decay(pbuf), __sl159);
                     else
                         void cptr.strcpy(cptr.add(cptr.add(cptr.decay(pbuf), cptr.strlen(cptr.decay(pbuf))), -(4)), __sl159);
                     break;
                 }
-                void cptr.strcat(cptr.decay(pbuf), cptr.ldPtr(cptr.add(players, i)));
+                void cptr.strcat(cptr.decay(pbuf), cptr.ldPtr(cptr.add(players, i, 8)));
                 if (i < ((playerct - 1) | 0)) {
-                    if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i)), 0)) == 45 && cptr.strchr(__sl160, cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i)), 1))) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i)), 2)) == 0)
+                    if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i, 8)), 0)) == 45 && cptr.strchr(__sl160, cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i, 8)), 1))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(players, i, 8)), 2)) == 0 ? 1 : 0)
                         void cptr.strcat(cptr.decay(pbuf), __sl63);
                     else
                         void cptr.strcat(cptr.decay(pbuf), __sl161);

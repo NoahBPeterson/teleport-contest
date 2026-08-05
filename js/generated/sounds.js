@@ -368,8 +368,8 @@ cptr.stPtr(cptr.add(__static_throne_mon_sound_throne_msg, 24), __sl6); /** C ref
 
 /** C ref: sounds.c:30 — @param {CPtr} mtmp @returns {CInt} */
 function throne_mon_sound(mtmp) {
-    if ((cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 1024n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2048n) != 0n)) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n) && mon_in_room(mtmp, 2)) {
-        let which = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(3)) : rn2(3)) + ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0)) | 0;
+    if ((((cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 1024n) != 0n) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2048n) != 0n) ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n) ? 1 : 0) && mon_in_room(mtmp, 2) ? 1 : 0) {
+        let which = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(3)) : rn2(3)) + ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) | 0;
         if (which != 2) {
             if (which == 0) {
                 ;
@@ -387,8 +387,8 @@ function throne_mon_sound(mtmp) {
 
 /** C ref: sounds.c:62 — @param {CPtr} mtmp @returns {CInt} */
 function beehive_mon_sound(mtmp) {
-    if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 1 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n)) && mon_in_room(mtmp, 5)) {
-        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
+    if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 1 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n) ? 1 : 0) && mon_in_room(mtmp, 5) ? 1 : 0) {
+        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
         switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 68, __sl7), rn2(2)) : rn2(2)) + hallu) | 0) {
             case 0:
             ;
@@ -410,8 +410,8 @@ function beehive_mon_sound(mtmp) {
 
 /** C ref: sounds.c:89 — @param {CPtr} mtmp @returns {CInt} */
 function morgue_mon_sound(mtmp) {
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || (cptr.ldI16(cptr.add((mtmp), 22)) == 226 || cptr.ldI16(cptr.add((mtmp), 22)) == 227 || cptr.ldI16(cptr.add((mtmp), 22)) == 228)) && mon_in_room(mtmp, 6)) {
-        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || ((cptr.ldI16(cptr.add((mtmp), 22)) == 226 || cptr.ldI16(cptr.add((mtmp), 22)) == 227 ? 1 : 0) || cptr.ldI16(cptr.add((mtmp), 22)) == 228 ? 1 : 0) ? 1 : 0) && mon_in_room(mtmp, 6) ? 1 : 0) {
+        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
         let hair = body_part(14);
         switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 96, __sl13), rn2(2)) : rn2(2)) + hallu) | 0) {
             case 0:
@@ -436,8 +436,8 @@ cptr.stPtr(cptr.add(__static_zoo_mon_sound_zoo_msg, 16), __sl22); /** C ref: sou
 
 /** C ref: sounds.c:115 — @param {CPtr} mtmp @returns {CInt} */
 function zoo_mon_sound(mtmp) {
-    if ((cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n)) && mon_in_room(mtmp, 8)) {
-        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
+    if ((cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n) ? 1 : 0) && mon_in_room(mtmp, 8) ? 1 : 0) {
+        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
         let selection = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 119, __sl19), rn2(2)) : rn2(2)) + hallu) | 0;
         You_hear(__sl2, cptr.ldPtr(cptr.add(__static_zoo_mon_sound_zoo_msg, selection, 8)));
         return (1);
@@ -453,19 +453,19 @@ cptr.stPtr(cptr.add(__static_temple_priest_sound_temple_msg, 24), __sl27); /** C
 
 /** C ref: sounds.c:131 — @param {CPtr} mtmp @returns {CInt} */
 function temple_priest_sound(mtmp) {
-    if (cptr.ldI32(cptr.add(mtmp, 192)) | 0 && inhistemple(mtmp) && !(cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) && temple_occupied(cptr.add(u, 68)) != cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 16))), 5))) {
+    if (((cptr.ldI32(cptr.add(mtmp, 192)) | 0 && inhistemple(mtmp) ? 1 : 0) && !(cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) ? 1 : 0) && temple_occupied(cptr.add(u, 68)) != cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 16))), 5)) ? 1 : 0) {
         let msg;
-        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
+        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
         let trycount = 0;
         let ax = cptr.ldI16(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 16))), 6));
         let ay = cptr.ldI16(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 16))), 6), 2));
         let speechless = schar((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) <= 17));
-        let in_sight = schar((canseemon(mtmp) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), ay)), ax)) & 2) != 0)));
+        let in_sight = schar((canseemon(mtmp) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), ay, 8)), ax)) & 2) != 0) ? 1 : 0));
         do {
             msg = cptr.ldPtr(cptr.add(__static_temple_priest_sound_temple_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 160, __sl23), rn2((((4 - 1) | 0) + hallu) | 0)) : rn2((((4 - 1) | 0) + hallu) | 0)), 8));
-            if (cptr.strchr(msg, 42) && speechless)
+            if (cptr.strchr(msg, 42) && speechless ? 1 : 0)
                 continue;
-            if (cptr.strchr(msg, 35) && in_sight)
+            if (cptr.strchr(msg, 35) && in_sight ? 1 : 0)
                 continue;
             break;
         } while (++trycount < 50);
@@ -491,8 +491,8 @@ cptr.stPtr(cptr.add(__static_oracle_sound_ora_msg, 32), __sl33); /** C ref: soun
 function oracle_sound(mtmp) {
     if (!cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 274, 96)))
         return (0);
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) || !canseemon(mtmp)) {
-        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) || !canseemon(mtmp) ? 1 : 0) {
+        let hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
         You_hear(__sl2, cptr.ldPtr(cptr.add(__static_oracle_sound_ora_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 196, __sl28), rn2(3)) : rn2(3)) + Math.imul(hallu, 2)) | 0, 8)));
     }
     return (1);
@@ -528,24 +528,24 @@ export function dosounds() {
     let vx;
     let vy;
     let mtmp;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) || !cptr.ld1s(flags) || cptr.ldI32(cptr.add(u, 1848)) | 0 || (cptr.ldI32(cptr.add(u, 1852))) | 0)
+    if (((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1852))) | 0 ? 1 : 0)
         return;
-    hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? 1 : 0;
-    if (cptr.ld1u(cptr.add(cptr.add(svl, 1680), 87400)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 213, __sl34), rn2(400)) : rn2(400))) {
+    hallu = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0;
+    if (cptr.ld1u(cptr.add(cptr.add(svl, 1680), 87400)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 213, __sl34), rn2(400)) : rn2(400)) ? 1 : 0) {
         You_hear(__sl2, cptr.ldPtr(cptr.add(__static_dosounds_fountain_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 218, __sl34), rn2(3)) : rn2(3)) + hallu) | 0, 8)));
     }
-    if (cptr.ld1u(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 1)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl34), rn2(300)) : rn2(300))) {
+    if (cptr.ld1u(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 1)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl34), rn2(300)) : rn2(300)) ? 1 : 0) {
         You_hear(__sl2, cptr.ldPtr(cptr.add(__static_dosounds_sink_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8)));
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 16)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 16)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (get_iter_mons(throne_mon_sound))
             return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 36)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 36)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         You(__sl2, cptr.ldPtr(cptr.add(__static_dosounds_swamp_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 235, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8)));
         return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 8)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 238, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 8)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 238, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (!(sroom = search_special(4))) {
             cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 8), 0);
             return;
@@ -559,7 +559,7 @@ export function dosounds() {
                         for (vy = cptr.ldI16(cptr.add(sroom, 4)); vy <= cptr.ldI16(cptr.add(sroom, 6)); vy++)
                             if (g_at(i16(vx), i16(vy)))
                                 gold_in_vault = (1);
-                    if (BigInt(vault_occupied(cptr.add(u, 68))) != ((cptr.diff((sroom), svr)) + 3n)) {
+                    if (BigInt(vault_occupied(cptr.add(u, 68))) != (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))) {
                         if (gold_in_vault) {
                             You_hear(!hallu ? __sl35 : __sl36);
                         } else {
@@ -581,45 +581,45 @@ export function dosounds() {
             }
         return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 24)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 278, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 24)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 278, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (get_iter_mons(beehive_mon_sound))
             return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 20)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 282, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 20)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 282, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (get_iter_mons(morgue_mon_sound))
             return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 28)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 286, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 28)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 286, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         let count = 0;
         for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
                 continue;
-            if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 512n) != 0n) && mon_in_room(mtmp, 7) && (cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ++count > 5)) {
+            if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 512n) != 0n) && mon_in_room(mtmp, 7) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 144)) | 0 || ++count > 5 ? 1 : 0) ? 1 : 0) {
                 You_hear(__sl2, cptr.ldPtr(cptr.add(__static_dosounds_barracks_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 304, __sl34), rn2(3)) : rn2(3)) + hallu) | 0, 8)));
                 return;
             }
         }
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 12)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 309, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 12)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 309, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (get_iter_mons(zoo_mon_sound))
             return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 4)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl34), rn2(200)) : rn2(200))) {
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 4)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) {
         if (!(sroom = search_special(schar((-2))))) {
             cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 4), 0);
             return;
         }
-        if (tended_shop(sroom) && !cptr.strchr(cptr.add(u, 83), Number(BigInt.asIntN(32, ((cptr.diff((sroom), svr)) + 3n))))) {
+        if (tended_shop(sroom) && !cptr.strchr(cptr.add(u, 83), Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))))) ? 1 : 0) {
             You_hear(__sl2, cptr.ldPtr(cptr.add(__static_dosounds_shop_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8)));
             noisy_shop(sroom);
         }
         return;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 32)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 330, __sl34), rn2(200)) : rn2(200)) && !((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 76)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 76)))) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 56)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 56)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 56)))))) {
+    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 32)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 330, __sl34), rn2(200)) : rn2(200)) ? 1 : 0) && !((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 76)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 76)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 56)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 56))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 56)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) {
         if (get_iter_mons(temple_priest_sound))
             return;
     }
-    if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1792)), 2)) || cptr.ldI16((cptr.add(svd, 1792)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1792)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 335, __sl34), rn2(400)) : rn2(400))) {
+    if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1792)), 2)) || cptr.ldI16((cptr.add(svd, 1792))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1792)) ? 1 : 0)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 335, __sl34), rn2(400)) : rn2(400)) ? 1 : 0) {
         if (get_iter_mons(oracle_sound))
             return;
     }
@@ -714,14 +714,14 @@ export function growl_sound(mtmp) {
 /** C ref: sounds.c:402 — @param {CPtr} mtmp */
 export function growl(mtmp) {
     let growl_verb = null;
-    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) == 0)
+    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) == 0 ? 1 : 0)
         return;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))))
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0))
         growl_verb = cptr.ldPtr(cptr.add(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 411, __sl93), rn2(35)) : rn2(35)), 8));
     else
         growl_verb = growl_sound(mtmp);
     if (growl_verb) {
-        if (canseemon(mtmp) || !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) {
+        if (canseemon(mtmp) || !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) {
             pline(__sl105, Monnam(mtmp), vtense(null, growl_verb));
             cptr.stI32(cptr.add(iflags, 40), 9);
             if (cptr.ldI32(cptr.add(svc, 8)))
@@ -735,35 +735,35 @@ export function growl(mtmp) {
 export function yelp(mtmp) {
     let yelp_verb = null;
     let se = 195;
-    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) || !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)))
+    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) || !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) ? 1 : 0)
         return;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))))
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0))
         yelp_verb = cptr.ldPtr(cptr.add(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 437, __sl106), rn2(35)) : rn2(35)), 8));
     else
         switch (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66))) {
             case 2:
             se = 84;
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl107 : __sl108;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl107 : __sl108;
             break;
             case 1:
             case 5:
             se = 32;
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl106 : __sl109;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl106 : __sl109;
             break;
             case 3:
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl110 : __sl111;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl110 : __sl111;
             break;
             case 6:
             se = 181;
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl97 : __sl112;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl97 : __sl112;
             break;
             case 7:
             se = 7;
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl113 : __sl114;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl113 : __sl114;
             break;
             case 14:
             se = 192;
-            yelp_verb = (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) ? __sl100 : __sl115;
+            yelp_verb = (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) ? __sl100 : __sl115;
             break;
         }
     if (yelp_verb) {
@@ -780,9 +780,9 @@ export function yelp(mtmp) {
 export function whimper(mtmp) {
     let whimper_verb = null;
     let se = 31;
-    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) || !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)))
+    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) || !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) ? 1 : 0)
         return;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))))
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0))
         whimper_verb = cptr.ldPtr(cptr.add(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl116), rn2(35)) : rn2(35)), 8));
     else
         switch (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66))) {
@@ -799,7 +799,7 @@ export function whimper(mtmp) {
             break;
         }
     if (whimper_verb) {
-        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24))))) {
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0)) {
             ;
         }
         pline(__sl118, Monnam(mtmp), vtense(null, whimper_verb));
@@ -812,17 +812,17 @@ export function whimper(mtmp) {
 
 /** C ref: sounds.c:519 — @param {CPtr} mtmp */
 export function beg(mtmp) {
-    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) || !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 536870912n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1073741824n) != 0n)))
+    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) || !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 536870912n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1073741824n) != 0n) ? 1 : 0) ? 1 : 0)
         return;
-    if (!(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == 0) && cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) <= 17) {
+    if (!(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == 0) && cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) <= 17 ? 1 : 0) {
         void domonnoise(mtmp);
     } else if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) >= 25) {
-        if (!(canseemon(mtmp) || sensemon(mtmp)))
+        if (!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
             map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
         ;
         verbalize(__sl119);
     } else {
-        if ((canseemon(mtmp) || sensemon(mtmp)))
+        if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
             pline(__sl120, Monnam(mtmp));
     }
 }
@@ -839,9 +839,9 @@ export function maybe_gasp(mon) {
     let mptr = cptr.ldPtr(cptr.add(mon, 8));
     let msound = cptr.ld1u(cptr.add(mptr, 66));
     let dogasp = (0);
-    if ((msound == 38 && !cptr.eq(mptr, cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 214)), 96))) || (msound == 41 && !p_coaligned(mon)))
+    if ((msound == 38 && !cptr.eq(mptr, cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 214)), 96)) ? 1 : 0) || (msound == 41 && !p_coaligned(mon) ? 1 : 0) ? 1 : 0)
         msound = 0;
-    else if (msound == 34 && (cptr.ldPtr(cptr.add((mon), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32)))) && (p_coaligned(mon) ? !cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 5)) : cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 5))))
+    else if ((msound == 34 && (cptr.ldPtr(cptr.add((mon), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))) ? 1 : 0) ? 1 : 0) && (p_coaligned(mon) ? !cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 5)) : cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 5))) ? 1 : 0)
         msound = 25;
     switch (msound) {
         case 25:
@@ -927,7 +927,7 @@ function mon_is_gecko(mon) {
     if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 114, 96)))
         return (0);
     glyph = glyph_at(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
-    return schar(((((glyph) >= 383 && (glyph) < ((383 + 383) | 0)) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < ((0 + 383) | 0)) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0)) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < ((766 + 383) | 0)) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0)) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0)) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0)) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0)) ? (((glyph) - 2682) | 0) : 383)))))))) == 323));
+    return schar(((((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) ? (((glyph) - 2682) | 0) : 383)))))))) == 323));
 }
 
 const __static_domonnoise_vampmsg = cptr.alloc(2 * 8);
@@ -960,23 +960,23 @@ export function domonnoise(mtmp) {
     let ptr = cptr.ldPtr(cptr.add(mtmp, 8));
     let msound = cptr.ld1u(cptr.add(ptr, 66));
     let gnomeplan = 0;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))))
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0))
         return 0;
-    if ((cptr.ld1u(cptr.add((ptr), 66)) == 0) && !cptr.ldI32(cptr.add(mtmp, 180)))
+    if ((cptr.ld1u(cptr.add((ptr), 66)) == 0) && !cptr.ldI32(cptr.add(mtmp, 180)) ? 1 : 0)
         return 0;
-    if (cptr.ldI32(cptr.add(mtmp, 16)) == cptr.ldI32(cptr.add(svq, 84)) && msound > 17)
+    if (cptr.ldI32(cptr.add(mtmp, 16)) == cptr.ldI32(cptr.add(svq, 84)) && msound > 17 ? 1 : 0)
         msound = 36;
-    else if (msound == 38 && !cptr.eq(ptr, cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 214)), 96)))
-        msound = cptr.ld1u(cptr.add(cptr.add(mons, genus((cptr.add((ptr), 24)), 1), 96), 66));
+    else if (msound == 38 && !cptr.eq(ptr, cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 214)), 96)) ? 1 : 0)
+        msound = cptr.ld1u(cptr.add(cptr.add(mons, genus((cptr.ldI32(cptr.add((ptr), 24))), 1), 96), 66));
     else if (cptr.ldI32(cptr.add(mtmp, 180)))
         msound = 39;
-    else if (msound == 24 && ((same_race(ptr, cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) || same_race(ptr, cptr.add(mons, (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48))), 96))) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24))))))
+    else if (msound == 24 && ((same_race(ptr, cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) || same_race(ptr, cptr.add(mons, (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48))), 96)) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
         msound = 25;
-    else if (msound == 13 && !cptr.ld1s(cptr.add(mtmp, 65)))
+    else if (msound == 13 && !cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0)
         msound = 4;
-    else if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) && mon_is_gecko(mtmp))
+    else if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && mon_is_gecko(mtmp) ? 1 : 0)
         msound = 39;
-    if (!(canseemon(mtmp) || sensemon(mtmp)))
+    if (!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
         map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
     switch (msound) {
         case 40:
@@ -990,7 +990,7 @@ export function domonnoise(mtmp) {
         quest_chat(mtmp);
         break;
         case 39:
-        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) || (cptr.ld1u(cptr.add((ptr), 66)) == 0) || (cptr.ldI32(cptr.add(mtmp, 180)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 734, __sl132), rn2(2)) : rn2(2)))) {
+        if ((!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) || (cptr.ld1u(cptr.add((ptr), 66)) == 0) ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 180)) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 734, __sl132), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) {
             shk_chat(mtmp);
         } else {
             void cptr.sprintf(cptr.decay(verbuf), __sl133, currency(15n));
@@ -1000,9 +1000,9 @@ export function domonnoise(mtmp) {
         case 32:
         {
             let isnight = schar(night());
-            let kindred = schar(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && (cptr.ldI32(cptr.add(u, 1808)) == 226 || cptr.ldI32(cptr.add(u, 1808)) == 227)));
-            let nightchild = schar(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && (cptr.ldI32(cptr.add(u, 1808)) == 20 || cptr.ldI32(cptr.add(u, 1808)) == 24 || cptr.ldI32(cptr.add(u, 1808)) == 22)));
-            let racenoun = (cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(cptr.add(cptr.add(gu, 320), 32), 8))) ? cptr.ldPtr(cptr.add(cptr.add(cptr.add(gu, 320), 32), 8)) : ((cptr.ldPtr(cptr.add(cptr.add(gu, 320), 32))) ? cptr.ldPtr(cptr.add(cptr.add(gu, 320), 32)) : cptr.ldPtr(cptr.add(gu, 320)));
+            let kindred = schar(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && (cptr.ldI32(cptr.add(u, 1808)) == 226 || cptr.ldI32(cptr.add(u, 1808)) == 227 ? 1 : 0) ? 1 : 0));
+            let nightchild = schar(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && ((cptr.ldI32(cptr.add(u, 1808)) == 20 || cptr.ldI32(cptr.add(u, 1808)) == 24 ? 1 : 0) || cptr.ldI32(cptr.add(u, 1808)) == 22 ? 1 : 0) ? 1 : 0));
+            let racenoun = (cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(cptr.add(cptr.add(gu, 320), 32), 8)) ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.add(cptr.add(gu, 320), 32), 8)) : ((cptr.ldPtr(cptr.add(cptr.add(gu, 320), 32))) ? cptr.ldPtr(cptr.add(cptr.add(gu, 320), 32)) : cptr.ldPtr(cptr.add(gu, 320)));
             if (cptr.ld1s(cptr.add(mtmp, 65))) {
                 if (kindred) {
                     void cptr.sprintf(cptr.decay(verbuf), __sl134, isnight ? __sl135 : __sl136, isnight ? __sl137 : __sl138);
@@ -1012,10 +1012,10 @@ export function domonnoise(mtmp) {
                     verbl_msg = cptr.decay(verbuf);
                 }
             } else if (cptr.ldI32(cptr.add(mtmp, 168))) {
-                if (kindred && isnight) {
+                if (kindred && isnight ? 1 : 0) {
                     void cptr.sprintf(cptr.decay(verbuf), __sl144, cptr.ld1s(cptr.add(flags, 13)) ? __sl145 : __sl146);
                     verbl_msg = cptr.decay(verbuf);
-                } else if (nightchild && isnight) {
+                } else if (nightchild && isnight ? 1 : 0) {
                     void cptr.sprintf(cptr.decay(verbuf), __sl147);
                     verbl_msg = cptr.decay(verbuf);
                 } else
@@ -1024,7 +1024,7 @@ export function domonnoise(mtmp) {
                 let vampindex;
                 if (kindred) {
                     verbl_msg = __sl149;
-                } else if (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 145, 96)) || cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 135, 96))) {
+                } else if (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 145, 96)) || cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 135, 96)) ? 1 : 0) {
                     void cptr.sprintf(cptr.decay(verbuf), __sl150, (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 145, 96))) ? __sl151 : __sl152);
                     verbl_msg = cptr.decay(verbuf);
                 } else {
@@ -1042,7 +1042,7 @@ export function domonnoise(mtmp) {
             break;
         }
         case 23:
-        if (cptr.ldI32(cptr.add(flags, 64)) == 4 && (night() ^ !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 824, __sl132), rn2(13)) : rn2(13)))) {
+        if (cptr.ldI32(cptr.add(flags, 64)) == 4 && (night() ^ !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 824, __sl132), rn2(13)) : rn2(13))) ? 1 : 0) {
             pline(__sl153, Monnam(mtmp), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 24))), (cptr.eq(ptr, cptr.add(mons, 261, 96))) ? __sl154 : __sl155);
             ;
             wake_nearto(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)), Math.imul(11, 11));
@@ -1051,12 +1051,12 @@ export function domonnoise(mtmp) {
         }
         break;
         case 1:
-        if (cptr.ldI32(cptr.add(flags, 64)) == 4 && night()) {
+        if (cptr.ldI32(cptr.add(flags, 64)) == 4 && night() ? 1 : 0) {
             pline_msg = __sl157;
         } else if (cptr.ldI32(cptr.add(mtmp, 168))) {
-            if (cptr.ld1s(cptr.add(mtmp, 65)) && (cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 136)) | 0 || cptr.ldI32(cptr.add(mtmp, 172)) | 0 || cptr.ldI64(cptr.add(svm, 8)) > cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) || cptr.ld1s(cptr.add(mtmp, 65)) < 5))
+            if (cptr.ld1s(cptr.add(mtmp, 65)) && ((((cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 136)) | 0 ? 1 : 0) || cptr.ldI32(cptr.add(mtmp, 172)) | 0 ? 1 : 0) || cptr.ldI64(cptr.add(svm, 8)) > cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) ? 1 : 0) || cptr.ld1s(cptr.add(mtmp, 65)) < 5 ? 1 : 0) ? 1 : 0)
                 pline_msg = __sl158;
-            else if (cptr.ld1s(cptr.add(mtmp, 65)) && cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) > cptr.ldI64(cptr.add(svm, 8)) + 1000n)
+            else if (cptr.ld1s(cptr.add(mtmp, 65)) && cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) > BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 1000n) ? 1 : 0)
                 pline_msg = __sl159;
             else {
                 if (!cptr.eq(ptr, cptr.add(mons, 17, 96)))
@@ -1068,13 +1068,13 @@ export function domonnoise(mtmp) {
         break;
         case 2:
         if (cptr.ld1s(cptr.add(mtmp, 65))) {
-            if (cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 136)) | 0 || cptr.ldI32(cptr.add(mtmp, 172)) | 0 || cptr.ld1s(cptr.add(mtmp, 65)) < 5) {
+            if (((cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 136)) | 0 ? 1 : 0) || cptr.ldI32(cptr.add(mtmp, 172)) | 0 ? 1 : 0) || cptr.ld1s(cptr.add(mtmp, 65)) < 5 ? 1 : 0) {
                 ;
                 pline_msg = __sl162;
             } else if (cptr.ldI64(cptr.add(svm, 8)) > cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32))) {
                 ;
                 pline_msg = __sl163;
-            } else if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) > cptr.ldI64(cptr.add(svm, 8)) + 1000n) {
+            } else if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) > BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + 1000n)) {
                 ;
                 pline_msg = __sl164;
             } else {
@@ -1098,7 +1098,7 @@ export function domonnoise(mtmp) {
         pline_msg = __sl169;
         break;
         case 7:
-        if (cptr.eq(ptr, cptr.add(mons, 128, 96)) && !cptr.ldI32(cptr.add(mtmp, 168))) {
+        if (cptr.eq(ptr, cptr.add(mons, 128, 96)) && !cptr.ldI32(cptr.add(mtmp, 168)) ? 1 : 0) {
             verbl_msg = __sl170;
         } else {
             ;
@@ -1232,7 +1232,7 @@ export function domonnoise(mtmp) {
         ;
         case 25:
         if (!cptr.ldI32(cptr.add(mtmp, 168))) {
-            if ((cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) && ((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0)))
+            if ((cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) && ((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0) ? 1 : 0)
                 mplayer_talk(mtmp);
             else
                 pline_msg = __sl200;
@@ -1242,7 +1242,7 @@ export function domonnoise(mtmp) {
             pline_msg = __sl201;
         else if (cptr.ldI32(cptr.add(mtmp, 52)) < ((cptr.ldI32(cptr.add(mtmp, 56)) / 4) | 0))
             pline_msg = __sl202;
-        else if (cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 152)) | 0)
+        else if (cptr.ldI32(cptr.add(mtmp, 164)) | 0 || cptr.ldI32(cptr.add(mtmp, 152)) | 0 ? 1 : 0)
             verbl_msg = !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1039, __sl132), rn2(3)) : rn2(3)) ? __sl203 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1039, __sl132), rn2(2)) : rn2(2)) ? __sl125 : __sl204);
         else if (!cptr.ldI32(cptr.add(mtmp, 112)))
             verbl_msg = __sl205;
@@ -1253,7 +1253,7 @@ export function domonnoise(mtmp) {
             verbl_msg = __sl206;
         } else if (cptr.ldI32(cptr.add(mtmp, 52)) < ((cptr.ldI32(cptr.add(mtmp, 56)) / 2) | 0))
             pline_msg = __sl207;
-        else if (cptr.ld1s(cptr.add(mtmp, 65)) && !cptr.ldI32(cptr.add(mtmp, 184)) && cptr.ldI64(cptr.add(svm, 8)) > cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)))
+        else if ((cptr.ld1s(cptr.add(mtmp, 65)) && !cptr.ldI32(cptr.add(mtmp, 184)) ? 1 : 0) && cptr.ldI64(cptr.add(svm, 8)) > cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 40))), 32)) ? 1 : 0)
             verbl_msg = __sl119;
         else if (((cptr.ldU64(cptr.add((ptr), 80)) & 16n) != 0n))
             pline_msg = __sl208;
@@ -1264,15 +1264,15 @@ export function domonnoise(mtmp) {
         else if (cptr.ld1s(cptr.add(ptr, 28)) == 29)
             pline_msg = __sl211;
         else if (((cptr.ldU64(cptr.add((ptr), 80)) & 64n) != 0n)) {
-            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) && (gnomeplan = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1063, __sl132), rn2(4)) : rn2(4))) % 2) {
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && (gnomeplan = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1063, __sl132), rn2(4)) : rn2(4))) % 2 ? 1 : 0) {
                 verbl_msg = (gnomeplan == 1) ? __sl212 : __sl213;
             } else {
                 verbl_msg = __sl214;
             }
         } else
-            switch ((cptr.add((ptr), 24))) {
+            switch ((cptr.ldI32(cptr.add((ptr), 24)))) {
                 case 43:
-                pline_msg = (cptr.ldI32(cptr.add(mtmp, 52)) < cptr.ldI32(cptr.add(mtmp, 56)) && (cptr.ldI32(cptr.add(mtmp, 56)) <= 10 || cptr.ldI32(cptr.add(mtmp, 52)) <= ((cptr.ldI32(cptr.add(mtmp, 56)) - 10) | 0))) ? __sl215 : __sl216;
+                pline_msg = (cptr.ldI32(cptr.add(mtmp, 52)) < cptr.ldI32(cptr.add(mtmp, 56)) && (cptr.ldI32(cptr.add(mtmp, 56)) <= 10 || cptr.ldI32(cptr.add(mtmp, 52)) <= ((cptr.ldI32(cptr.add(mtmp, 56)) - 10) | 0) ? 1 : 0) ? 1 : 0) ? __sl215 : __sl216;
                 break;
                 case 331:
                 pline_msg = __sl217;
@@ -1289,7 +1289,7 @@ export function domonnoise(mtmp) {
         {
             let swval;
             if (cptr.ldI32(cptr.add(sysopt, 80))) {
-                if (cptr.ld1s(cptr.add(ptr, 28)) != 14 && (could_seduce(mtmp, cptr.add(gy, 8), null) == 1)) {
+                if (cptr.ld1s(cptr.add(ptr, 28)) != 14 && (could_seduce(mtmp, cptr.add(gy, 8), null) == 1) ? 1 : 0) {
                     void doseduce(mtmp);
                     break;
                 }
@@ -1317,7 +1317,7 @@ export function domonnoise(mtmp) {
         }
         break;
         case 33:
-        if (cptr.ldI32(cptr.add(mtmp, 168)) | 0 && !cptr.ld1s(cptr.add(mtmp, 65))) {
+        if (cptr.ldI32(cptr.add(mtmp, 168)) | 0 && !cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0) {
             void demon_talk(mtmp);
             break;
         }
@@ -1326,7 +1326,7 @@ export function domonnoise(mtmp) {
         case 34:
         if (!cptr.ldI32(cptr.add(mtmp, 168)))
             cuss(mtmp);
-        else if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 80)) & 4096n) != 0n) && mon_aligntyp(mtmp) == 1))
+        else if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 80)) & 4096n) != 0n) && mon_aligntyp(mtmp) == 1 ? 1 : 0))
             verbl_msg = __sl226;
         else
             verbl_msg = __sl227;
@@ -1336,9 +1336,9 @@ export function domonnoise(mtmp) {
         break;
         case 30:
         verbl_msg_mcan = __sl229;
-        if (uwep.v && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0)))
+        if (uwep.v && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
             verbl_msg = __sl230;
-        else if (uarmc.v || uarm.v || uarmh.v || uarms.v || uarmg.v || uarmf.v)
+        else if (((((uarmc.v || uarm.v ? 1 : 0) || uarmh.v ? 1 : 0) || uarms.v ? 1 : 0) || uarmg.v ? 1 : 0) || uarmf.v ? 1 : 0)
             verbl_msg = (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (334)) ? __sl231 : __sl232;
         else if (uarmu.v)
             verbl_msg = __sl233;
@@ -1361,17 +1361,17 @@ export function domonnoise(mtmp) {
             let tribtitle;
             let book = null;
             let ms_Death = schar((cptr.eq(ptr, cptr.add(mons, 311, 96))));
-            if (ms_Death && !cptr.ldI32(cptr.add(cptr.add(svc, 608), 16)) && (book = u_have_novel()) !== null) {
+            if ((ms_Death && !cptr.ldI32(cptr.add(cptr.add(svc, 608), 16)) ? 1 : 0) && (book = u_have_novel()) !== null ? 1 : 0) {
                 if ((tribtitle = noveltitle(cptr.add(book, 168))) !== null) {
                     void cptr.sprintf(cptr.decay(verbuf), __sl237, tribtitle);
-                    if (strncmpi((tribtitle), (__sl238), -1) && strncmpi((tribtitle), (__sl239), -1))
+                    if (strncmpi((tribtitle), (__sl238), -1) && strncmpi((tribtitle), (__sl239), -1) ? 1 : 0)
                         void cptr.strcat(cptr.decay(verbuf), __sl240);
                     verbl_msg = cptr.decay(verbuf);
                 }
                 cptr.stI32(cptr.add(cptr.add(svc, 608), 16), 1);
-            } else if (ms_Death && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1210, __sl132), rn2(3)) : rn2(3)) && Death_quote(cptr.decay(verbuf), 256)) {
+            } else if ((ms_Death && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1210, __sl132), rn2(3)) : rn2(3)) ? 1 : 0) && Death_quote(cptr.decay(verbuf), 256) ? 1 : 0) {
                 verbl_msg = cptr.decay(verbuf);
-            } else if (ms_Death && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1214, __sl132), rn2(10)) : rn2(10))) {
+            } else if (ms_Death && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1214, __sl132), rn2(10)) : rn2(10)) ? 1 : 0) {
                 pline_msg = __sl241;
             } else
                 verbl_msg = __sl242;
@@ -1380,7 +1380,7 @@ export function domonnoise(mtmp) {
     }
     if (pline_msg) {
         pline(__sl243, Monnam(mtmp), pline_msg);
-    } else if (cptr.ldI32(cptr.add(mtmp, 100)) | 0 && verbl_msg_mcan) {
+    } else if (cptr.ldI32(cptr.add(mtmp, 100)) | 0 && verbl_msg_mcan ? 1 : 0) {
         ;
         verbalize(__sl2, verbl_msg_mcan);
     } else if (verbl_msg) {
@@ -1436,15 +1436,15 @@ function dochat() {
         Your(__sl262);
         return 0;
     }
-    if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) && (otmp = shop_object(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) !== null) {
+    if ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0) && (otmp = shop_object(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) !== null ? 1 : 0) {
         price_quote(otmp);
         return 1;
     }
     if (!getdir(__sl263)) {
         return 2;
     }
-    if (cptr.ldPtr(cptr.add(u, 2424)) && cptr.ldI32(cptr.add(u, 12)) > 0) {
-        if ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 144)) | 0 || !cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 160)))) {
+    if (cptr.ldPtr(cptr.add(u, 2424)) && cptr.ldI32(cptr.add(u, 12)) > 0 ? 1 : 0) {
+        if ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 144)) | 0 || !cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 160)) ? 1 : 0)) {
             pline(__sl264, Monnam(cptr.ldPtr(cptr.add(u, 2424))));
             return 1;
         } else
@@ -1454,7 +1454,7 @@ function dochat() {
         pline(__sl265, cptr.ldI32(cptr.add(u, 12)) < 0 ? __sl266 : __sl267);
         return 0;
     }
-    if (cptr.ldI32(cptr.add(u, 4)) == 0 && cptr.ldI32(cptr.add(u, 8)) == 0) {
+    if (cptr.ldI32(cptr.add(u, 4)) == 0 && cptr.ldI32(cptr.add(u, 8)) == 0 ? 1 : 0) {
         pline(__sl268);
         return 0;
     }
@@ -1463,16 +1463,16 @@ function dochat() {
     if (!isok(i16(tx), i16(ty)))
         return 0;
     mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), tx, 168), ty, 8)));
-    if (!mtmp || cptr.ldI32(cptr.add(mtmp, 108)) | 0) {
-        if ((otmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), tx, 168), ty, 8)))) !== null && cptr.ldI16(cptr.add(otmp, 32)) == 476) {
-            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))))
-                pline_The(__sl264, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? rndmonnam(null) : __sl269);
+    if (!mtmp || cptr.ldI32(cptr.add(mtmp, 108)) | 0 ? 1 : 0) {
+        if ((otmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), tx, 168), ty, 8)))) !== null && cptr.ldI16(cptr.add(otmp, 32)) == 476 ? 1 : 0) {
+            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
+                pline_The(__sl264, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? rndmonnam(null) : __sl269);
             return 0;
         }
-        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) <= 12) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4)) == 14)) {
-            if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) && !((cptr.ld1s(cptr.add(cptr.add(svl, tx, 21), ty, 1))) && (cptr.ld1s(cptr.add(cptr.add(svl, tx, 21), ty, 1))) <= 12)) {
+        if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) <= 12 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4)) == 14 ? 1 : 0) ? 1 : 0) {
+            if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !((cptr.ld1s(cptr.add(cptr.add(svl, tx, 21), ty, 1))) && (cptr.ld1s(cptr.add(cptr.add(svl, tx, 21), ty, 1))) <= 12 ? 1 : 0) ? 1 : 0) {
                 ;
-            } else if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24))))) {
+            } else if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0)) {
                 pline(__sl270);
             } else {
                 let idx = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1364, __sl271), rn2(10)) : rn2(10));
@@ -1483,23 +1483,23 @@ function dochat() {
             return 0;
         }
     }
-    if (!mtmp || cptr.ldI32(cptr.add(mtmp, 108)) | 0 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2)
+    if (((!mtmp || cptr.ldI32(cptr.add(mtmp, 108)) | 0 ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2 ? 1 : 0)
         return 0;
-    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) && !cptr.ldI32(cptr.add(mtmp, 192))) {
-        if ((canseemon(mtmp) || sensemon(mtmp)))
+    if ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) && !cptr.ldI32(cptr.add(mtmp, 192)) ? 1 : 0) {
+        if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
             pline(__sl264, Monnam(mtmp));
         return 0;
     }
-    cptr.st1(cptr.add(mtmp, 224), cptr.ld1u(cptr.add(mtmp, 224)) & BigInt.asUintN(64, (~(268435456n | 536870912n))));
-    if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && cptr.ld1s(cptr.add(mtmp, 65)) && cptr.ldI32(cptr.add(mtmp, 308))) {
-        if (!(canseemon(mtmp) || sensemon(mtmp)))
+    cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
+    if ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0) && cptr.ldI32(cptr.add(mtmp, 308)) ? 1 : 0) {
+        if (!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
             map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
         pline(__sl273, Monnam(mtmp));
         return 0;
     }
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) {
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) {
         let xresponse = ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 131072n) != 0n) ? __sl274 : __sl275;
-        pline(__sl276, (canseemon(mtmp) || sensemon(mtmp)) ? __sl277 : __sl11, (canseemon(mtmp) || sensemon(mtmp)) ? mon_nam(mtmp) : __sl11, xresponse);
+        pline(__sl276, (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? __sl277 : __sl11, (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? mon_nam(mtmp) : __sl11, xresponse);
         return 0;
     }
     return domonnoise(mtmp);
@@ -1508,7 +1508,7 @@ function dochat() {
 /** C ref: sounds.c:1413 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 function responsive_mon_at(x, y) {
     let mtmp = isok(i16(x), i16(y)) ? (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8))) : null;
-    if (mtmp && ((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) || !cptr.ldI32(cptr.add(mtmp, 112)) || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8))) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 16777216n) != 0n)) || (x != cptr.ldI16(cptr.add(mtmp, 28)) || y != cptr.ldI16(cptr.add(mtmp, 30)))))
+    if (mtmp && (((((cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) || !cptr.ldI32(cptr.add(mtmp, 112)) ? 1 : 0) || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 16777216n) != 0n) ? 1 : 0) ? 1 : 0) || (x != cptr.ldI16(cptr.add(mtmp, 28)) || y != cptr.ldI16(cptr.add(mtmp, 30)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
         mtmp = null;
     return mtmp;
 }
@@ -1539,9 +1539,9 @@ export function tiphat() {
         return res;
     res = 1;
     You(__sl286, helm_simple_name(uarmh.v));
-    if (!cptr.ldI32(cptr.add(u, 4)) && !cptr.ldI32(cptr.add(u, 8))) {
-        if (cptr.ldPtr(cptr.add(u, 2424)) && cptr.ldI32(cptr.add(u, 12)) > 0) {
-            if ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 144)) | 0 || !cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 160))))
+    if (!cptr.ldI32(cptr.add(u, 4)) && !cptr.ldI32(cptr.add(u, 8)) ? 1 : 0) {
+        if (cptr.ldPtr(cptr.add(u, 2424)) && cptr.ldI32(cptr.add(u, 12)) > 0 ? 1 : 0) {
+            if ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 144)) | 0 || !cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(u, 2424))), 160)) ? 1 : 0))
                 pline(__sl287, Monnam(cptr.ldPtr(cptr.add(u, 2424))));
             else
                 void domonnoise(cptr.ldPtr(cptr.add(u, 2424)));
@@ -1557,23 +1557,23 @@ export function tiphat() {
     x = cptr.ldI16(u), y = cptr.ldI16(cptr.add(u, 2));
     for (range = 1; range <= ((8 + 1) | 0); ++range) {
         x = (x + cptr.ldI32(cptr.add(u, 4))) | 0, y = (y + cptr.ldI32(cptr.add(u, 8))) | 0;
-        if (!isok(i16(x), i16(y)) || (range > 1 && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 1) != 0))) {
+        if (!isok(i16(x), i16(y)) || (range > 1 && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 1) != 0) ? 1 : 0) ? 1 : 0) {
             x = (x - cptr.ldI32(cptr.add(u, 4))) | 0, y = (y - cptr.ldI32(cptr.add(u, 8))) | 0;
             break;
         }
         mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)));
-        vismon = (mtmp && canseemon(mtmp));
+        vismon = (mtmp && canseemon(mtmp) ? 1 : 0);
         glyph = glyph_at(i16(x), i16(y));
         unseen = ((glyph) == 1532);
-        statue = ((((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0))) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)))) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0))) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0))))) || (!vismon && !unseen && (otmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8)))) !== null && cptr.ldI16(cptr.add(otmp, 32)) == 476));
-        if (vismon && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2))
+        statue = ((((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((!vismon && !unseen ? 1 : 0) && (otmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8)))) !== null ? 1 : 0) && cptr.ldI16(cptr.add(otmp, 32)) == 476 ? 1 : 0) ? 1 : 0);
+        if (vismon && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2 ? 1 : 0) ? 1 : 0)
             vismon = 0, mtmp = null;
-        if (vismon || unseen || (statue && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24))))) || (range == 1 && mtmp && responsive_mon_at(x, y) && !(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == 0)) || !(accessible(i16(x), i16(y)) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 22))
+        if ((((vismon || unseen ? 1 : 0) || (statue && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((range == 1 && mtmp ? 1 : 0) && responsive_mon_at(x, y) ? 1 : 0) && !(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == 0) ? 1 : 0) ? 1 : 0) || !(accessible(i16(x), i16(y)) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 22 ? 1 : 0) ? 1 : 0)
             break;
     }
-    if (unseen || (statue && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))))) {
+    if (unseen || (statue && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         pline(__sl290, unseen ? __sl291 : __sl11);
-    } else if (!mtmp || !responsive_mon_at(x, y)) {
+    } else if (!mtmp || !responsive_mon_at(x, y) ? 1 : 0) {
         if (vismon)
             pline(__sl264, Monnam(mtmp));
         else
@@ -1582,8 +1582,8 @@ export function tiphat() {
                 return res;
             }
     } else {
-        cptr.st1(cptr.add(mtmp, 224), cptr.ld1u(cptr.add(mtmp, 224)) & BigInt.asUintN(64, (~(268435456n | 536870912n))));
-        if (vismon && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n) && cptr.ldI32(cptr.add(mtmp, 168)) | 0 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 44, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 44, 24)))) {
+        cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
+        if (((vismon && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n) ? 1 : 0) && cptr.ldI32(cptr.add(mtmp, 168)) | 0 ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 44, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 44, 24)) ? 1 : 0) ? 1 : 0) {
             if ((otmp = which_armor(mtmp, 4n)) === null) {
                 pline(__sl292, Monnam(mtmp));
             } else if (cptr.ldI32(cptr.add(otmp, 56))) {
@@ -1592,11 +1592,11 @@ export function tiphat() {
             } else {
                 pline(__sl294, Monnam(mtmp), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 24))), helm_simple_name(otmp));
             }
-        } else if (vismon && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n)) {
-            let which = !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(2)) : rn2(2)) + (1)) | 0);
-            let twice = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) || which > 0 || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(3)) : rn2(3))) ? 0 : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(2)) : rn2(2)) + (1)) | 0);
+        } else if (vismon && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n) ? 1 : 0) {
+            let which = !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(2)) : rn2(2)) + (1)) | 0);
+            let twice = ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) || which > 0 ? 1 : 0) || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(3)) : rn2(3)) ? 1 : 0) ? 0 : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(2)) : rn2(2)) + (1)) | 0);
             pline(__sl296, Monnam(mtmp), cptr.ldPtr(cptr.add(__static_tiphat_reaction, which, 8)), twice ? __sl297 : __sl11, twice ? cptr.ldPtr(cptr.add(__static_tiphat_reaction, twice, 8)) : __sl11);
-        } else if ((dist2(i16(((x))), i16(((y))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && domonnoise(mtmp)) {
+        } else if (((dist2(i16(((x))), i16(((y))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) && domonnoise(mtmp) ? 1 : 0) {
             if (!vismon)
                 map_invisible(i16(x), i16(y));
         } else if (vismon) {
@@ -1633,25 +1633,25 @@ cptr.stPtr(cptr.add(soundlib_choices, 0), nosound_procs);
 
 /** C ref: sounds.c:1779 */
 export function activate_chosen_soundlib() {
-    let idx = cptr.add(gc, 564);
-    if (!((idx) >= 0 && (idx) < 1))
+    let idx = cptr.ldI32(cptr.add(gc, 564));
+    if (!((idx) >= 0 && (idx) < 1 ? 1 : 0))
         panic(__sl303, idx);
-    if (cptr.add(ga, 256) != 0 || idx != 0) {
+    if (cptr.ldI32(cptr.add(ga, 256)) != 0 || idx != 0 ? 1 : 0) {
         if (cptr.ldPtr(cptr.add(soundprocs, 32)))
             (cptr.ldPtr(cptr.add(soundprocs, 32)))(__sl304);
     }
     cptr.memcpy(soundprocs, cptr.ldPtr(cptr.add(soundlib_choices, idx, 8)), 88);
     if (cptr.ldPtr(cptr.add(soundprocs, 24)))
         (cptr.ldPtr(cptr.add(soundprocs, 24)))();
-    cptr.stI32(cptr.add(ga, 256), cptr.add(soundprocs, 8));
-    cptr.stI32(cptr.add(gc, 564), cptr.add(ga, 256));
+    cptr.stI32(cptr.add(ga, 256), cptr.ldI32(cptr.add(soundprocs, 8)));
+    cptr.stI32(cptr.add(gc, 564), cptr.ldI32(cptr.add(ga, 256)));
 }
 
 /** C ref: sounds.c:1798 — @param {CInt} idx */
 export function assign_soundlib(idx) {
-    if (!((idx) >= 0 && (idx) < 1))
+    if (!((idx) >= 0 && (idx) < 1 ? 1 : 0))
         panic(__sl305, idx);
-    cptr.stI32(cptr.add(gc, 564), cptr.add(cptr.ldPtr(cptr.add(soundlib_choices, idx, 8)), 8));
+    cptr.stI32(cptr.add(gc, 564), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(soundlib_choices, idx, 8)), 8)));
 }
 
 /** C ref: sounds.c:1864 — @param {CPtr} dest @param {CInt} maxlen */
@@ -1659,12 +1659,12 @@ export function get_soundlib_name(dest, maxlen) {
     let count;
     let idx;
     let src;
-    idx = cptr.add(ga, 256);
-    if (!((idx) >= 0 && (idx) < 1))
+    idx = cptr.ldI32(cptr.add(ga, 256));
+    if (!((idx) >= 0 && (idx) < 1 ? 1 : 0))
         panic(__sl306, idx);
     src = cptr.ldPtr(cptr.ldPtr(cptr.add(soundlib_choices, idx, 8)));
     for (count = 1; count < maxlen; count++) {
-        if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0)
+        if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0 ? 1 : 0)
             break;
         cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
     }
@@ -1679,9 +1679,9 @@ export function soundlib_id_from_opt(op) {
     for (idx = 0; idx < 1; ++idx) {
         sp = cptr.ldPtr(cptr.add(soundlib_choices, idx, 8));
         if (!strcmp(cptr.ldPtr(sp), op))
-            return cptr.add(sp, 8);
+            return cptr.ldI32(cptr.add(sp, 8));
     }
-    return cptr.add(defproc, 8);
+    return cptr.ldI32(cptr.add(defproc, 8));
 }
 
 const __static_base_soundname_to_filename_suffix = cptr.bytes(".wav"); /** C ref: sounds.c:2090 — char[5] (function-static) */
@@ -1702,17 +1702,17 @@ export function base_soundname_to_filename(basename, buf, bufsz, approach) {
         if (existinglen > 0n) {
             cp = cptr.add(buf, existinglen);
             cp = cptr.add(cp, -1);
-            if (cptr.ld1s(cp) == 47 || cptr.ld1s(cp) == 92)
+            if (cptr.ld1s(cp) == 47 || cptr.ld1s(cp) == 92 ? 1 : 0)
                 needslash = (0);
             cp = cptr.add(cp, 1);
         }
         if (needslash)
             consumes++;
         consumes += existinglen;
-        consumes += (5n - 1n);
+        consumes += (BigInt.asUintN(64, 5n - 1n));
     }
     consumes += 1n;
-    if (!baselen || consumes > bufsz || existinglen >= bufsz)
+    if ((!baselen || consumes > bufsz ? 1 : 0) || existinglen >= bufsz ? 1 : 0)
         return null;
     if (approach == 2) {
         if (needslash) {
@@ -1721,7 +1721,7 @@ export function base_soundname_to_filename(basename, buf, bufsz, approach) {
             cptr.st1(cp, 0);
             existinglen++;
         }
-        nh_snprintf(__sl307, 2144, cp, bufsz - (existinglen + 1n), __sl139, basename, cptr.decay(__static_base_soundname_to_filename_suffix));
+        nh_snprintf(__sl307, 2144, cp, BigInt.asUintN(64, bufsz - (BigInt.asUintN(64, existinglen + 1n))), __sl139, basename, cptr.decay(__static_base_soundname_to_filename_suffix));
     } else if (approach == 1) {
         nh_snprintf(__sl307, 2146, buf, bufsz, __sl2, basename);
     } else {

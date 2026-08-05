@@ -67,14 +67,14 @@ function roguecorr(x, y, dir) {
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             fromx = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             fromy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
-            fromx = i16(fromx + (1 + Math.imul(26, x)) | 0);
+            fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
         } else {
             fromx = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))))) | 0));
             fromy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0));
-            fromx = i16(fromx + (1 + Math.imul(26, x)) | 0);
+            fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12 ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
@@ -89,14 +89,14 @@ function roguecorr(x, y, dir) {
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             tox = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             toy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
-            tox = i16(tox + (1 + Math.imul(26, x)) | 0);
+            tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
         } else {
             tox = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 79, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))))) | 0));
             toy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) - 1) | 0));
-            tox = i16(tox + (1 + Math.imul(26, x)) | 0);
+            tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12 ? 1 : 0))
                 impossible(__sl5, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
@@ -109,14 +109,14 @@ function roguecorr(x, y, dir) {
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             fromx = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             fromy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
-            fromx = i16(fromx + (1 + Math.imul(26, x)) | 0);
+            fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
         } else {
             fromx = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0));
             fromy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 100, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))))) | 0));
-            fromx = i16(fromx + (1 + Math.imul(26, x)) | 0);
+            fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12 ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
@@ -131,14 +131,14 @@ function roguecorr(x, y, dir) {
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             tox = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             toy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
-            tox = i16(tox + (1 + Math.imul(26, x)) | 0);
+            tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
         } else {
             tox = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16)) - 1) | 0));
             toy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 122, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))))) | 0));
-            tox = i16(tox + (1 + Math.imul(26, x)) | 0);
+            tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12 ? 1 : 0))
                 impossible(__sl7, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
@@ -157,13 +157,13 @@ function miniwalk(x, y) {
     let dirs = cptr.alloc(4 * 4);
     while (1) {
         q = 0;
-        if (x > 0 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 4)) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), (x - 1) | 0, 48), y, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10))))
+        if ((x > 0 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 4)) ? 1 : 0) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), (x - 1) | 0, 48), y, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
             cptr.stI32(cptr.add(dirs, q++, 4), 0);
-        if (x < 2 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 8)) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), (x + 1) | 0, 48), y, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10))))
+        if ((x < 2 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 8)) ? 1 : 0) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), (x + 1) | 0, 48), y, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
             cptr.stI32(cptr.add(dirs, q++, 4), 1);
-        if (y > 0 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 1)) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), (y - 1) | 0, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10))))
+        if ((y > 0 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 1)) ? 1 : 0) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), (y - 1) | 0, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
             cptr.stI32(cptr.add(dirs, q++, 4), 2);
-        if (y < 2 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 2)) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), (y + 1) | 0, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10))))
+        if ((y < 2 && (!((cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9))) & 2)) ? 1 : 0) && (!cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), (y + 1) | 0, 16), 9)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
             cptr.stI32(cptr.add(dirs, q++, 4), 3);
         if (!q)
             return;
@@ -201,7 +201,7 @@ export function makeroguerooms() {
     cptr.stI32(cptr.add(svn, 44), 0);
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32(cptr.add(svn, 44)) || (x < 2 && y < 2))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32(cptr.add(svn, 44)) || (x < 2 && y < 2 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
                 cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8), (0));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + (2)) | 0)));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + (2)) | 0)));
@@ -211,7 +211,7 @@ export function makeroguerooms() {
                 cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + (2)) | 0)));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl10), rnd((((23 - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) + 1) | 0)) : rnd((((23 - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) + 1) | 0))));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2), i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 234, __sl10), rnd((((((y == 2) ? 5 : 4) - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) + 1) | 0)) : rnd((((((y == 2) ? 5 : 4) - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) + 1) | 0))));
-                (cptr.stI32(cptr.add(svn, 44), cptr.ldI32(cptr.add(svn, 44)) + 1)) - 1;
+                (cptr.stI32(cptr.add(svn, 44), cptr.ldI32(cptr.add(svn, 44)) + 1)) - (1);
             }
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), 0);
         }

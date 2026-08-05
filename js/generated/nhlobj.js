@@ -150,10 +150,10 @@ function l_obj_gc(L) {
     let obj;
     let otmp;
     let lo = l_obj_check(L, 1);
-    if (lo && (obj = cptr.ldPtr(cptr.add(lo, 8))) !== null) {
+    if (lo && (obj = cptr.ldPtr(cptr.add(lo, 8))) !== null ? 1 : 0) {
         if (cptr.ldI32(cptr.add(obj, 200)) > 0)
-            (cptr.stI32(cptr.add(obj, 200), cptr.ldI32(cptr.add(obj, 200)) + -1)) - 1;
-        if (!cptr.ldI32(cptr.add(obj, 200)) && (cptr.ld1s(cptr.add(obj, 52)) == 0 || cptr.ld1s(cptr.add(obj, 52)) == 8)) {
+            (cptr.stI32(cptr.add(obj, 200), cptr.ldI32(cptr.add(obj, 200)) + -1)) - (-1);
+        if (!cptr.ldI32(cptr.add(obj, 200)) && (cptr.ld1s(cptr.add(obj, 52)) == 0 || cptr.ld1s(cptr.add(obj, 52)) == 8 ? 1 : 0) ? 1 : 0) {
             if ((cptr.ldPtr(cptr.add((obj), 16)) !== null)) {
                 while ((otmp = cptr.ldPtr(cptr.add(obj, 16))) !== null) {
                     obj_extract_self(otmp);
@@ -176,7 +176,7 @@ function l_obj_push(L, otmp) {
     cptr.stI32(lo, 0);
     cptr.stPtr(cptr.add(lo, 8), otmp);
     if (otmp)
-        (cptr.stI32(cptr.add(otmp, 200), cptr.ldI32(cptr.add(otmp, 200)) + 1)) - 1;
+        (cptr.stI32(cptr.add(otmp, 200), cptr.ldI32(cptr.add(otmp, 200)) + 1)) - (1);
     return lo;
 }
 
@@ -201,14 +201,14 @@ function l_obj_add_to_container(L) {
     let lo = l_obj_check(L, 2);
     let otmp;
     let refs;
-    if (!((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8) || !((lobox) && cptr.ldPtr(cptr.add((lobox), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lobox), 8)), 52)) != 8))
+    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) || !(((lobox) && cptr.ldPtr(cptr.add((lobox), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lobox), 8)), 52)) != 8 ? 1 : 0) ? 1 : 0)
         return 0;
     refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
     obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
     otmp = add_to_container(cptr.ldPtr(cptr.add(lobox, 8)), cptr.ldPtr(cptr.add(lo, 8)));
     if (!cptr.eq(otmp, cptr.ldPtr(cptr.add(lo, 8)))) {
         cptr.stPtr(cptr.add(lo, 8), otmp);
-        cptr.st1(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + refs >>> 0);
+        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + (refs >>> 0)) | 0);
     }
     cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lobox, 8)), 36), weight(cptr.ldPtr(cptr.add(lobox, 8))) >>> 0);
     return 0;
@@ -219,13 +219,13 @@ export function nhl_obj_u_giveobj(L) {
     let lo = l_obj_check(L, 1);
     let otmp;
     let refs;
-    if (!((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 3)
+    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 3 ? 1 : 0)
         return 0;
     refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
     obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
     otmp = addinv(cptr.ldPtr(cptr.add(lo, 8)));
     if (!cptr.eq(otmp, cptr.ldPtr(cptr.add(lo, 8)))) {
-        cptr.st1(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + refs >>> 0);
+        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + (refs >>> 0)) | 0);
         cptr.stPtr(cptr.add(lo, 8), otmp);
     }
     return 0;
@@ -244,7 +244,7 @@ function l_obj_objects_to_table(L) {
         otyp = Number(BigInt.asIntN(32, luaL_checkinteger(L, 1)));
     } else if (lua_type(L, 1) == 7) {
         let lo = l_obj_check(L, 1);
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)))
+        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
             otyp = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 32));
     }
     lua_settop(L, (-(1) - 1) | 0);
@@ -290,12 +290,12 @@ function l_obj_to_table(L) {
     let lo = l_obj_check(L, 1);
     let obj = cptr.ldPtr(cptr.add(lo, 8));
     lua_createtable(L, 0, 0);
-    if (!obj || cptr.ld1s(cptr.add(obj, 52)) == 8) {
+    if (!obj || cptr.ld1s(cptr.add(obj, 52)) == 8 ? 1 : 0) {
         nhl_add_table_entry_int(L, __sl29, 1n);
         return 1;
     }
     nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtr(cptr.add((obj), 16)) !== null)));
-    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16(cptr.add((obj), 32)) >= 214 && cptr.ldI16(cptr.add((obj), 32)) <= 220)));
+    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16(cptr.add((obj), 32)) >= 214 && cptr.ldI16(cptr.add((obj), 32)) <= 220 ? 1 : 0)));
     nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32(cptr.add(obj, 24)) >>> 0));
     nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16(cptr.add(obj, 28))));
     nhl_add_table_entry_int(L, __sl34, BigInt(cptr.ldI16(cptr.add(obj, 30))));
@@ -309,7 +309,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1s(cptr.add(obj, 48))));
     if (cptr.ldI16(cptr.add(obj, 32)) == 476)
         nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 4) != 0)));
-    if (cptr.ldI16(cptr.add(obj, 32)) == 265 || cptr.ldI16(cptr.add(obj, 32)) == 476) {
+    if (cptr.ldI16(cptr.add(obj, 32)) == 265 || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) {
         nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 2) != 0)));
         nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 1) != 0)));
     }
@@ -333,7 +333,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl59, BigInt(cptr.ldI32(cptr.add(obj, 120)) >>> 0));
     nhl_add_table_entry_int(L, __sl60, BigInt(cptr.ldI32(cptr.add(obj, 124)) >>> 0));
     nhl_add_table_entry_int(L, __sl61, BigInt(cptr.ldI32(cptr.add(obj, 128)) >>> 0));
-    if (((cptr.ld1s(cptr.add(obj, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20) || permapoisoned(obj)))
+    if ((((cptr.ld1s(cptr.add(obj, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
         nhl_add_table_entry_int(L, __sl62, BigInt(cptr.ldI32(cptr.add(obj, 132)) >>> 0));
     else
         nhl_add_table_entry_int(L, __sl63, BigInt(cptr.ldI32(cptr.add(obj, 132)) >>> 0));
@@ -348,14 +348,14 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl72, BigInt(cptr.ldI32(cptr.add(obj, 96)) >>> 0));
     nhl_add_table_entry_int(L, __sl73, BigInt(cptr.ldI32(cptr.add(obj, 100)) >>> 0));
     nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32(cptr.add(obj, 168))));
-    if (cptr.ldI32(cptr.add(obj, 168)) != -1 && (cptr.ldI16(cptr.add(obj, 32)) == 296 || cptr.ldI16(cptr.add(obj, 32)) == 265 || cptr.ldI16(cptr.add(obj, 32)) == 266 || cptr.ldI16(cptr.add(obj, 32)) == 241 || cptr.ldI16(cptr.add(obj, 32)) == 476))
+    if (cptr.ldI32(cptr.add(obj, 168)) != -1 && ((((cptr.ldI16(cptr.add(obj, 32)) == 296 || cptr.ldI16(cptr.add(obj, 32)) == 265 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 266 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 241 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) ? 1 : 0)
         nhl_add_table_entry_str(L, __sl75, cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), 2, 8)));
     nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32(cptr.add(obj, 172))));
     nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32(cptr.add(obj, 176)) >>> 0));
     nhl_add_table_entry_int(L, __sl78, cptr.ldI64(cptr.add(obj, 184)));
     nhl_add_table_entry_int(L, __sl79, cptr.ldI64(cptr.add(obj, 192)));
-    nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))))));
-    if ((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208))))))
+    nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))) ? 1 : 0)));
+    if ((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))) ? 1 : 0))
         nhl_add_table_entry_str(L, __sl81, (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))));
     return 1;
 }
@@ -363,7 +363,7 @@ function l_obj_to_table(L) {
 /** C ref: nhlobj.c:350 — @param {CPtr} L @returns {CInt} */
 function l_obj_new_readobjnam(L) {
     let argc = lua_gettop(L);
-    if (argc == 1 && lua_type(L, 1) == 4) {
+    if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
         let buf = new Uint8Array(256);
         let otmp;
         void cptr.sprintf(cptr.decay(buf), __sl82, (luaL_checklstring(L, (1), null)));
@@ -372,7 +372,7 @@ function l_obj_new_readobjnam(L) {
             otmp = null;
         void l_obj_push(L, otmp);
         return 1;
-    } else if (argc == 1 && lua_type(L, 1) == 5) {
+    } else if (argc == 1 && lua_type(L, 1) == 5 ? 1 : 0) {
         let id = i16(get_table_objtype(L));
         let class$ = i16(get_table_objclass(L));
         let otmp;
@@ -421,7 +421,7 @@ function l_obj_placeobj(L) {
     y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
     cvt_to_abscoord(x, y);
     lua_settop(L, (-(3) - 1) | 0);
-    if (((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8)) {
+    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0)) {
         obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
         place_object(cptr.ldPtr(cptr.add(lo, 8)), x.v, y.v);
         newsym(x.v, y.v);
@@ -439,8 +439,8 @@ function l_obj_nextobj(L) {
         let use_nexthere = (0);
         if (argc == 2)
             use_nexthere = schar(lua_toboolean(L, 2));
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)))
-            void l_obj_push(L, (use_nexthere && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 1) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)) : cptr.ldPtr(cptr.ldPtr(cptr.add(lo, 8))));
+        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
+            void l_obj_push(L, (use_nexthere && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 1 ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)) : cptr.ldPtr(cptr.ldPtr(cptr.add(lo, 8))));
     }
     return 1;
 }
@@ -448,7 +448,7 @@ function l_obj_nextobj(L) {
 /** C ref: nhlobj.c:469 — @param {CPtr} L @returns {CInt} */
 function l_obj_container(L) {
     let lo = l_obj_check(L, 1);
-    if (lo && cptr.ldPtr(cptr.add(lo, 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 2)
+    if ((lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 2 ? 1 : 0)
         void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)));
     else
         void l_obj_push(L, null);
@@ -458,7 +458,7 @@ function l_obj_container(L) {
 /** C ref: nhlobj.c:483 — @param {CPtr} L @returns {CInt} */
 function l_obj_isnull(L) {
     let lo = l_obj_check(L, 1);
-    lua_pushboolean(L, !((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8));
+    lua_pushboolean(L, !(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0));
     return 1;
 }
 
@@ -468,7 +468,7 @@ function l_obj_timer_has(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if (((timertype) == 0 || (timertype) == 1 || (timertype) == 2 || (timertype) == 3 || (timertype) == 4 || (timertype) == 5 || (timertype) == 6 || (timertype) == 7) && lo && cptr.ldPtr(cptr.add(lo, 8))) {
+        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushboolean(L, obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype));
             return 1;
         } else {
@@ -486,7 +486,7 @@ function l_obj_timer_peek(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if (((timertype) == 0 || (timertype) == 1 || (timertype) == 2 || (timertype) == 3 || (timertype) == 4 || (timertype) == 5 || (timertype) == 6 || (timertype) == 7) && lo && cptr.ldPtr(cptr.add(lo, 8))) {
+        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
             return 1;
         } else {
@@ -503,13 +503,13 @@ function l_obj_timer_stop(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
         let lo = l_obj_check(L, 1);
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)))
+        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
             obj_stop_timers(cptr.ldPtr(cptr.add(lo, 8)));
         return 0;
     } else if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if (((timertype) == 0 || (timertype) == 1 || (timertype) == 2 || (timertype) == 3 || (timertype) == 4 || (timertype) == 5 || (timertype) == 6 || (timertype) == 7) && lo && cptr.ldPtr(cptr.add(lo, 8))) {
+        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushinteger(L, stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
             return 1;
         } else {
@@ -528,7 +528,7 @@ function l_obj_timer_start(L) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
         let when = luaL_checkinteger(L, 3);
-        if (((timertype) == 0 || (timertype) == 1 || (timertype) == 2 || (timertype) == 3 || (timertype) == 4 || (timertype) == 5 || (timertype) == 6 || (timertype) == 7) && lo && cptr.ldPtr(cptr.add(lo, 8)) && when > 0n) {
+        if (((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && when > 0n ? 1 : 0) {
             if (obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype))
                 stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
             start_timer(when, 3, timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
@@ -554,7 +554,7 @@ function l_obj_bury(L) {
         cvt_to_abscoord(x, y);
     } else
         nhl_error(L, __sl90);
-    if (((lo) && cptr.ldPtr(cptr.add((lo), 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8) && isok(x.v, y.v)) {
+    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28), x.v);
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 30), y.v);
         void bury_an_obj(cptr.ldPtr(cptr.add(lo, 8)), dealloced);
@@ -607,12 +607,12 @@ cptr.stPtr(cptr.add(cptr.add(l_obj_meta, 16), 8), null);
 
 /** C ref: nhlobj.c:654 — @param {CPtr} L @returns {CInt} */
 export function l_obj_register(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (256n / 16n - 1n)))), luaL_setfuncs(L, l_obj_methods, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n)))), luaL_setfuncs(L, l_obj_methods, 0));
     luaL_newmetatable(L, __sl0);
     luaL_setfuncs(L, l_obj_meta, 0);
     lua_pushvalue(L, -2);
     lua_setfield(L, -2, __sl106);
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (32n / 16n - 1n)))), luaL_setfuncs(L, l_obj_meta, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 32n / 16n - 1n)))), luaL_setfuncs(L, l_obj_meta, 0));
     lua_setfield(L, -2, __sl107);
     lua_settop(L, (-(1) - 1) | 0);
     lua_setglobal(L, __sl0);

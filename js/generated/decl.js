@@ -190,10 +190,10 @@ export const zdir = [0, 0, 0, 0, 0, 0, 0, 0, 1, schar((-1))];
 export const dirs_ord = [0, 2, 4, 6, 1, 3, 5, 7];
 
 /** C ref: decl.c:84 — signed char */
-export let has_strong_rngseed = (0);
+export let has_strong_rngseed = cptr.box((0));
 
 /** C ref: decl.c:85 — struct engr * */
-export let head_engr = null;
+export let head_engr = cptr.box(null);
 
 /** C ref: decl.c:86 — struct instance_flags */
 export let iflags = cptr.alloc(432);
@@ -257,7 +257,7 @@ cptr.stI32(cptr.add(shield_static, 80), 85);
 export let u = cptr.alloc(2864);
 
 /** C ref: decl.c:103 — long */
-export let ubirthday = cptr.box(0);
+export let ubirthday = cptr.box(0n);
 
 /** C ref: decl.c:104 — struct u_realtime */
 export let urealtime = cptr.alloc(24);
@@ -278,7 +278,7 @@ export let uquiver = cptr.box(null);
 export let uarmu = cptr.box(null);
 
 /** C ref: decl.c:108 — struct obj * */
-export let uskin = null;
+export let uskin = cptr.box(null);
 
 /** C ref: decl.c:109 — struct obj * */
 export let uarmc = cptr.box(null);
@@ -317,16 +317,16 @@ export let uball = cptr.box(null);
 export const vowels = cptr.bytes("aeiouAEIOU");
 
 /** C ref: decl.c:112 — int */
-export let WIN_MESSAGE = 0;
+export let WIN_MESSAGE = cptr.box(0);
 
 /** C ref: decl.c:112 — int */
-export let WIN_STATUS = 0;
+export let WIN_STATUS = cptr.box(0);
 
 /** C ref: decl.c:112 — int */
-export let WIN_MAP = 0;
+export let WIN_MAP = cptr.box(0);
 
 /** C ref: decl.c:112 — int */
-export let WIN_INVEN = 0;
+export let WIN_INVEN = cptr.box(0);
 
 /** C ref: decl.c:113 — char[3] */
 export const ynchars = cptr.bytes("yn");
@@ -347,10 +347,10 @@ export const rightleftchars = cptr.bytes("rl");
 export const hidespinchars = cptr.bytes("hsq");
 
 /** C ref: decl.c:119 — long */
-export let yn_number = 0n;
+export let yn_number = cptr.box(0n);
 
 /** C ref: decl.c:121 — char * */
-export let ARGV0 = null;
+export let ARGV0 = cptr.box(null);
 
 /** C ref: decl.c:124 — struct Role */
 let urole_init_data = cptr.alloc(312);
@@ -1521,10 +1521,10 @@ export function decl_globals_init() {
     __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
     __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
-    uwep.v = (uarm.v = (uswapwep.v = (uquiver.v = (uarmu.v = (uskin = (uarmc.v = null))))));
+    uwep.v = (uarm.v = (uswapwep.v = (uquiver.v = (uarmu.v = (uskin.v = (uarmc.v = null))))));
     uarmh.v = (uarms.v = (uarmg.v = (uarmf.v = (uamul.v = (uright.v = (uleft.v = null))))));
     ublindf.v = (uchain.v = (uball.v = null));
-    WIN_MESSAGE = (WIN_STATUS = (WIN_MAP = (WIN_INVEN = (-1))));
+    WIN_MESSAGE.v = (WIN_STATUS.v = (WIN_MAP.v = (WIN_INVEN.v = (-1))));
     cptr.memcpy(cptr.add(gu, 8), urole_init_data, 312);
     cptr.memcpy(cptr.add(gu, 320), urace_init_data, 112);
 }

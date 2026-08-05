@@ -19,13 +19,13 @@ export function unicode_val(cp) {
     let dp;
     let cval = 0;
     let dcount;
-    if (cp && cptr.ld1s(cp)) {
+    if (cp && cptr.ld1s(cp) ? 1 : 0) {
         cval = (dcount = 0);
-        if ((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117) && cptr.ld1s(cptr.add(cp, 1)) == 43 && cptr.ld1s(cptr.add(cp, 2)) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cptr.add(cp, 2)))) !== null) {
+        if ((((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117 ? 1 : 0) && cptr.ld1s(cptr.add(cp, 1)) == 43 ? 1 : 0) && cptr.ld1s(cptr.add(cp, 2)) ? 1 : 0) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cptr.add(cp, 2)))) !== null ? 1 : 0) {
             cp = cptr.add(cp, 2);
             do {
                 cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
-            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 7);
+            } while ((cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null ? 1 : 0) && ++dcount < 7 ? 1 : 0);
         }
     }
     return cval;
@@ -34,7 +34,7 @@ export function unicode_val(cp) {
 /** C ref: utf8map.c:37 — @param {CPtr} gmap @param {CUInt} utf32ch @param {CPtr} utf8str @returns {CInt} */
 export function set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
-    if (!tmpgm || !utf32ch)
+    if (!tmpgm || !utf32ch ? 1 : 0)
         return 0;
     if (cptr.ldPtr(cptr.add(gmap, 24)) === null) {
         cptr.stPtr(cptr.add(gmap, 24), alloc(16));
@@ -77,7 +77,7 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
     if (!str)
         return cptr.strcpy(buf, __sl0);
-    while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0) {
+    while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0) {
         if (cptr.ld1s(str) == 92) {
             let dcount;
             let so;
@@ -89,9 +89,9 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)), 8))) {
+                    if (cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)), 8)) ? 1 : 0) {
                         let ucp = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)), 8));
-                        while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
+                        while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0)
                             cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
                         if (retflags)
                             cptr.stI32(retflags, 1);
@@ -151,7 +151,7 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
     }
     newdetails = alloc(32);
     cptr.stI32(newdetails, glyphidx);
-    if (utf8str && cptr.ld1u(utf8str)) {
+    if (utf8str && cptr.ld1u(utf8str) ? 1 : 0) {
         cptr.stPtr(cptr.add(cptr.add(newdetails, 8), 8), dupstr(utf8str));
     } else {
         cptr.stPtr(cptr.add(cptr.add(newdetails, 8), 8), null);
@@ -164,7 +164,7 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gdc, 24)), 24), newdetails);
     }
     cptr.stPtr(cptr.add(gdc, 24), newdetails);
-    (cptr.stI32(cptr.add(gdc, 8), cptr.ldI32(cptr.add(gdc, 8)) + 1)) - 1;
+    (cptr.stI32(cptr.add(gdc, 8), cptr.ldI32(cptr.add(gdc, 8)) + 1)) - (1);
     return 1;
 }
 

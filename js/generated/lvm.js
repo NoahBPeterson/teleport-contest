@@ -34,7 +34,7 @@ function l_strton(obj, result) {
         return 0;
     else {
         let st = ((((((cptr.ldPtr(((obj)))))))));
-        return (luaO_str2num((cptr.add((st), 24)), result) == (cptr.ld1u(cptr.add((st), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((st), 11)) >>> 0) : cptr.ldU64(cptr.add((st), 16))) + 1n);
+        return (luaO_str2num((cptr.add((st), 24)), result) == BigInt.asUintN(64, (cptr.ld1u(cptr.add((st), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((st), 11)) >>> 0) : cptr.ldU64(cptr.add((st), 16))) + 1n));
     }
 }
 
@@ -60,7 +60,7 @@ export function luaV_flttointeger(n, p, mode) {
         else if (mode == 2)
             f += 1;
     }
-    return ((f) >= Number(((-9223372036854775807n - 1n))) && (f) < -Number(((-9223372036854775807n - 1n))) && (cptr.stU64((p), BigInt.asIntN(64, BigInt(Math.trunc((f))))), 1));
+    return (((f) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (f) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stU64((p), BigInt.asIntN(64, BigInt(Math.trunc((f))))), 1) ? 1 : 0);
 }
 
 /** C ref: lvm.c:139 — @param {CPtr} obj @param {CPtr} p @param {*} mode @returns {CInt} */
@@ -95,7 +95,7 @@ function forlimit(L, init, lim, p, step) {
         } else {
             if (step > 0n)
                 return 1;
-            cptr.stU64(p, (-9223372036854775807n - 1n));
+            cptr.stU64(p, (BigInt.asIntN(64, -9223372036854775807n - 1n)));
         }
     }
     return (step > 0n ? init > cptr.ldI64(p) : init < cptr.ldI64(p));
@@ -106,10 +106,10 @@ function forprep(L, ra) {
     let pinit = ((ra));
     let plimit = ((cptr.add(ra, 1, 16)));
     let pstep = ((cptr.add(ra, 2, 16)));
-    if (((cptr.ld1u(cptr.add(((pinit)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((pstep)), 8))) == (((3) | ((0) << 4))))) {
+    if (((cptr.ld1u(cptr.add(((pinit)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((pstep)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
         let init = cptr.box((cptr.ldI64(((pinit)))));
         let step = cptr.box((cptr.ldI64(((pstep)))));
-        let limit = cptr.box(0);
+        let limit = cptr.box(0n);
         if (step.v == 0n)
             luaG_runerror(L, __sl1);
         {
@@ -123,12 +123,12 @@ function forprep(L, ra) {
         else {
             let count;
             if (step.v > 0n) {
-                count = (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init.v)));
+                count = BigInt.asUintN(64, (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init.v))));
                 if (step.v != 1n)
                     count /= (BigInt.asUintN(64, (step.v)));
             } else {
-                count = (BigInt.asUintN(64, (init.v))) - (BigInt.asUintN(64, (limit.v)));
-                count /= (BigInt.asUintN(64, (-(step.v + 1n)))) + 1n;
+                count = BigInt.asUintN(64, (BigInt.asUintN(64, (init.v))) - (BigInt.asUintN(64, (limit.v))));
+                count /= BigInt.asUintN(64, (BigInt.asUintN(64, (-(BigInt.asIntN(64, step.v + 1n))))) + 1n);
             }
             {
                 let io = (plimit);
@@ -266,7 +266,7 @@ export function luaV_finishset(L, t, key, val, slot) {
                 luaH_finishset(L, h, key, slot, val);
                 cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
                 (cptr.st1(cptr.add((h), 10), cptr.ld1u(cptr.add((h), 10)) & ~(~((~0 << ((5 + 1) | 0)) >>> 0))));
-                (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, ((((h))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, ((((h))))) : (void ((0)))) : (void ((0))));
                 return;
             }
         } else {
@@ -290,7 +290,7 @@ export function luaV_finishset(L, t, key, val, slot) {
                     (void 0);
                 }
                 ;
-                (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((t))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, (cptr.ldPtr(((t))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((t))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, (cptr.ldPtr(((t))))) : (void ((0)))) : (void ((0))));
             }
             ;
             return;
@@ -328,10 +328,10 @@ function l_strcmp(ts1, ts2) {
 
 /** C ref: lvm.c:416 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LTintfloat(i, f) {
-    if ((((1n << 53n) + (BigInt.asUintN(64, (i)))) <= (2n * (1n << 53n))))
+    if (((BigInt.asUintN(64, (1n << 53n) + (BigInt.asUintN(64, (i))))) <= (BigInt.asUintN(64, 2n * (1n << 53n)))))
         return (((Number(((i))))) < (f));
     else {
-        let fi = cptr.box(0);
+        let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, 2))
             return i < fi.v;
         else
@@ -341,10 +341,10 @@ function LTintfloat(i, f) {
 
 /** C ref: lvm.c:433 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LEintfloat(i, f) {
-    if ((((1n << 53n) + (BigInt.asUintN(64, (i)))) <= (2n * (1n << 53n))))
+    if (((BigInt.asUintN(64, (1n << 53n) + (BigInt.asUintN(64, (i))))) <= (BigInt.asUintN(64, 2n * (1n << 53n)))))
         return (((Number(((i))))) <= (f));
     else {
-        let fi = cptr.box(0);
+        let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, 1))
             return i <= fi.v;
         else
@@ -354,10 +354,10 @@ function LEintfloat(i, f) {
 
 /** C ref: lvm.c:450 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LTfloatint(f, i) {
-    if ((((1n << 53n) + (BigInt.asUintN(64, (i)))) <= (2n * (1n << 53n))))
+    if (((BigInt.asUintN(64, (1n << 53n) + (BigInt.asUintN(64, (i))))) <= (BigInt.asUintN(64, 2n * (1n << 53n)))))
         return ((f) < ((Number(((i))))));
     else {
-        let fi = cptr.box(0);
+        let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, 1))
             return fi.v < i;
         else
@@ -367,10 +367,10 @@ function LTfloatint(f, i) {
 
 /** C ref: lvm.c:467 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LEfloatint(f, i) {
-    if ((((1n << 53n) + (BigInt.asUintN(64, (i)))) <= (2n * (1n << 53n))))
+    if (((BigInt.asUintN(64, (1n << 53n) + (BigInt.asUintN(64, (i))))) <= (BigInt.asUintN(64, 2n * (1n << 53n)))))
         return ((f) <= ((Number(((i))))));
     else {
-        let fi = cptr.box(0);
+        let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, 2))
             return fi.v <= i;
         else
@@ -417,7 +417,7 @@ function LEnum(l, r) {
 /** C ref: lvm.c:527 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
 function lessthanothers(L, l, r) {
     (void 0);
-    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)))
+    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)) ? 1 : 0)
         return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0;
     else
         return luaT_callorderTM(L, l, r, 20);
@@ -425,7 +425,7 @@ function lessthanothers(L, l, r) {
 
 /** C ref: lvm.c:539 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
 export function luaV_lessthan(L, l, r) {
-    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (3)))
+    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (3)) ? 1 : 0)
         return LTnum(l, r);
     else
         return lessthanothers(L, l, r);
@@ -434,7 +434,7 @@ export function luaV_lessthan(L, l, r) {
 /** C ref: lvm.c:549 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
 function lessequalothers(L, l, r) {
     (void 0);
-    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)))
+    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)) ? 1 : 0)
         return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0;
     else
         return luaT_callorderTM(L, l, r, 21);
@@ -442,7 +442,7 @@ function lessequalothers(L, l, r) {
 
 /** C ref: lvm.c:561 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
 export function luaV_lessequal(L, l, r) {
-    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (3)))
+    if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (3)) ? 1 : 0)
         return LEnum(l, r);
     else
         return lessequalothers(L, l, r);
@@ -452,12 +452,12 @@ export function luaV_lessequal(L, l, r) {
 export function luaV_equalobj(L, t1, t2) {
     let tm;
     if ((((cptr.ld1u(cptr.add((t1), 8)))) & 63) != (((cptr.ld1u(cptr.add((t2), 8)))) & 63)) {
-        if (((((cptr.ld1u(cptr.add((t1), 8)))) & 15)) != ((((cptr.ld1u(cptr.add((t2), 8)))) & 15)) || ((((cptr.ld1u(cptr.add((t1), 8)))) & 15)) != 3)
+        if (((((cptr.ld1u(cptr.add((t1), 8)))) & 15)) != ((((cptr.ld1u(cptr.add((t2), 8)))) & 15)) || ((((cptr.ld1u(cptr.add((t1), 8)))) & 15)) != 3 ? 1 : 0)
             return 0;
         else {
-            let i1 = cptr.box(0);
-            let i2 = cptr.box(0);
-            return (luaV_tointegerns(t1, i1, 0) && luaV_tointegerns(t2, i2, 0) && i1.v == i2.v);
+            let i1 = cptr.box(0n);
+            let i2 = cptr.box(0n);
+            return ((luaV_tointegerns(t1, i1, 0) && luaV_tointegerns(t2, i2, 0) ? 1 : 0) && i1.v == i2.v ? 1 : 0);
         }
     }
     switch ((((cptr.ld1u(cptr.add((t1), 8)))) & 63)) {
@@ -506,7 +506,7 @@ export function luaV_equalobj(L, t1, t2) {
         return 0;
     else {
         luaT_callTMres(L, tm, t1, t2, cptr.ldPtr(cptr.add(L, 16)));
-        return !(((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8)))) & 15)) == (0)));
+        return !(((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8)))) & 15)) == (0)) ? 1 : 0);
     }
 }
 
@@ -516,7 +516,7 @@ function copy2buff(top, n, buff) {
     do {
         let st = ((((((cptr.ldPtr(((((cptr.add(top, -(n), 16))))))))))));
         let l = (cptr.ld1u(cptr.add((st), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((st), 11)) >>> 0) : cptr.ldU64(cptr.add((st), 16)));
-        cptr.memcpy(cptr.add(buff, tl), (cptr.add((st), 24)), l * 1n);
+        cptr.memcpy(cptr.add(buff, tl), (cptr.add((st), 24)), BigInt.asUintN(64, l * 1n));
         tl += l;
     } while (--n > 0);
 }
@@ -528,11 +528,11 @@ export function luaV_concat(L, total) {
     do {
         let top = cptr.ldPtr(cptr.add(L, 16));
         let n = 2;
-        if (!((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (4)) || (((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (3))) || !((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(top, -(1), 16)))), 1))))
+        if (!((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (4)) || (((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (3)) ? 1 : 0) || !((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(top, -(1), 16)))), 1) ? 1 : 0) ? 1 : 0) ? 1 : 0)
             luaT_tryconcatTM(L);
-        else if ((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8))) == (((((4) | ((0) << 4))) | (1 << 6)))) && cptr.ld1u(cptr.add(((((((cptr.ldPtr(((((cptr.add(top, -(1), 16)))))))))))), 11)) == 0))
-            (void ((((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(top, -(2), 16)))), 1))))));
-        else if ((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8))) == (((((4) | ((0) << 4))) | (1 << 6)))) && cptr.ld1u(cptr.add(((((((cptr.ldPtr(((((cptr.add(top, -(2), 16)))))))))))), 11)) == 0)) {
+        else if ((((cptr.ld1u(cptr.add(((((cptr.add(top, -(1), 16))))), 8))) == (((((4) | ((0) << 4))) | (1 << 6)))) && cptr.ld1u(cptr.add(((((((cptr.ldPtr(((((cptr.add(top, -(1), 16)))))))))))), 11)) == 0 ? 1 : 0))
+            (void ((((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(top, -(2), 16)))), 1) ? 1 : 0) ? 1 : 0))));
+        else if ((((cptr.ld1u(cptr.add(((((cptr.add(top, -(2), 16))))), 8))) == (((((4) | ((0) << 4))) | (1 << 6)))) && cptr.ld1u(cptr.add(((((((cptr.ldPtr(((((cptr.add(top, -(2), 16)))))))))))), 11)) == 0 ? 1 : 0)) {
             {
                 let io1 = (((cptr.add(top, -(2), 16))));
                 let io2 = (((cptr.add(top, -(1), 16))));
@@ -545,9 +545,9 @@ export function luaV_concat(L, total) {
         } else {
             let tl = (cptr.ld1u(cptr.add((((((((cptr.ldPtr(((((cptr.add(top, -(1), 16))))))))))))), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((((((((cptr.ldPtr(((((cptr.add(top, -(1), 16))))))))))))), 11)) >>> 0) : cptr.ldU64(cptr.add((((((((cptr.ldPtr(((((cptr.add(top, -(1), 16))))))))))))), 16)));
             let ts;
-            for (n = 1; n < total && ((((((cptr.ld1u(cptr.add(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(cptr.add(top, -(n), 16), -(1), 16)))), 1))); n++) {
+            for (n = 1; n < total && ((((((cptr.ld1u(cptr.add(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))), 8)))) & 15)) == (4)) || ((((((cptr.ld1u(cptr.add(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))), 8)))) & 15)) == (3)) && (luaO_tostring(L, ((cptr.add(cptr.add(top, -(n), 16), -(1), 16)))), 1) ? 1 : 0) ? 1 : 0) ? 1 : 0; n++) {
                 let l = (cptr.ld1u(cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), 11)) >>> 0) : cptr.ldU64(cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), 16)));
-                if ((__builtin_expect(BigInt(((l >= (8n < 8n ? ((~0n)) : 9223372036854775807n) - 32n - tl) != 0)), 0n))) {
+                if ((__builtin_expect(BigInt(((l >= BigInt.asUintN(64, BigInt.asUintN(64, (8n < 8n ? ((BigInt.asUintN(64, ~0n))) : 9223372036854775807n) - 32n) - tl)) != 0)), 0n))) {
                     cptr.stPtr(cptr.add(L, 16), cptr.add(top, -(total), 16));
                     luaG_runerror(L, __sl7);
                 }
@@ -571,7 +571,7 @@ export function luaV_concat(L, total) {
             ;
         }
         total = (total - ((n - 1) | 0)) | 0;
-        cptr.st1(cptr.add(L, 16), cptr.ld1s(cptr.add(L, 16)) - (n - 1) | 0);
+        cptr.stPtr(cptr.add(L, 16), cptr.sub(cptr.ldPtr(cptr.add(L, 16)), (n - 1) | 0, 16));
     } while (total > 1);
 }
 
@@ -626,13 +626,13 @@ export function luaV_objlen(L, ra, rb) {
 
 /** C ref: lvm.c:728 — @param {CPtr} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
 export function luaV_idiv(L, m, n) {
-    if ((__builtin_expect(BigInt((((BigInt.asUintN(64, (n))) + 1n <= 1n) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
             luaG_runerror(L, __sl9);
-        return (BigInt.asIntN(64, ((0n) - (BigInt.asUintN(64, (m))))));
+        return (BigInt.asIntN(64, (BigInt.asUintN(64, (0n) - (BigInt.asUintN(64, (m)))))));
     } else {
         let q = m / n;
-        if ((m ^ n) < 0n && m % n != 0n)
+        if ((m ^ n) < 0n && m % n != 0n ? 1 : 0)
             q -= 1n;
         return q;
     }
@@ -640,13 +640,13 @@ export function luaV_idiv(L, m, n) {
 
 /** C ref: lvm.c:748 — @param {CPtr} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
 export function luaV_mod(L, m, n) {
-    if ((__builtin_expect(BigInt((((BigInt.asUintN(64, (n))) + 1n <= 1n) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
             luaG_runerror(L, __sl10);
         return 0n;
     } else {
         let r = m % n;
-        if (r != 0n && (r ^ n) < 0n)
+        if (r != 0n && (r ^ n) < 0n ? 1 : 0)
             r += n;
         return r;
     }
@@ -658,7 +658,7 @@ export function luaV_modf(L, m, n) {
     {
         void L;
         r = fmod(m, n);
-        if (((r) > 0) ? (n) < 0 : ((r) < 0 && (n) > 0))
+        if (((r) > 0) ? (n) < 0 : ((r) < 0 && (n) > 0 ? 1 : 0))
             r += (n);
     }
     ;
@@ -668,12 +668,12 @@ export function luaV_modf(L, m, n) {
 /** C ref: lvm.c:780 — @param {CLongLong} x @param {CLongLong} y @returns {*} */
 export function luaV_shiftl(x, y) {
     if (y < 0n) {
-        if (y <= BigInt((-(Number(BigInt.asIntN(32, ((8n * 8n))))))))
+        if (y <= BigInt((-(Number(BigInt.asIntN(32, ((BigInt.asUintN(64, 8n * 8n)))))))))
             return 0n;
         else
             return (BigInt.asIntN(64, ((BigInt.asUintN(64, (x))) >> (BigInt.asUintN(64, (-y))))));
     } else {
-        if (y >= BigInt((Number(BigInt.asIntN(32, ((8n * 8n)))))))
+        if (y >= BigInt((Number(BigInt.asIntN(32, ((BigInt.asUintN(64, 8n * 8n))))))))
             return 0n;
         else
             return (BigInt.asIntN(64, ((BigInt.asUintN(64, (x))) << (BigInt.asUintN(64, (y))))));
@@ -699,8 +699,8 @@ function pushclosure(L, p, encup, base, ra) {
         if (cptr.ld1u(cptr.add(cptr.add(uv, i, 16), 8)))
             cptr.stPtr(cptr.add(cptr.add(ncl, 32), i, 8), luaF_findupval(L, cptr.add(base, cptr.ld1u(cptr.add(cptr.add(uv, i, 16), 9)), 16)));
         else
-            cptr.stPtr(cptr.add(cptr.add(ncl, 32), i, 8), cptr.ldPtr(cptr.add(encup, cptr.ld1u(cptr.add(cptr.add(uv, i, 16), 9)))));
-        ((((cptr.ld1u(cptr.add((ncl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(ncl, 32), i, 8))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(L, ((((ncl)))), ((((cptr.ldPtr(cptr.add(cptr.add(ncl, 32), i, 8))))))) : (void ((0))));
+            cptr.stPtr(cptr.add(cptr.add(ncl, 32), i, 8), cptr.ldPtr(cptr.add(encup, cptr.ld1u(cptr.add(cptr.add(uv, i, 16), 9)), 8)));
+        ((((cptr.ld1u(cptr.add((ncl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(ncl, 32), i, 8))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((ncl)))), ((((cptr.ldPtr(cptr.add(cptr.add(ncl, 32), i, 8))))))) : (void ((0))));
     }
 }
 
@@ -754,7 +754,7 @@ export function luaV_finishOp(L) {
         case 65:
         case 57:
         {
-            let res = !(((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8)))) & 15)) == (0)));
+            let res = !(((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8)))) & 15)) == (0)) ? 1 : 0);
             cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
             (void 0);
             if (res != ((((((((inst) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
@@ -765,7 +765,7 @@ export function luaV_finishOp(L) {
         {
             let top = cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16);
             let a = (((((((inst) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0));
-            let total = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.add(top, -(1), 16), (cptr.add(base, a, 16))))))));
+            let total = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.add(top, -(1), 16), (cptr.add(base, a, 16))) / 16n)))));
             {
                 let io1 = (((cptr.add(top, -(2), 16))));
                 let io2 = (((top)));
@@ -886,7 +886,7 @@ cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 656), "L_OP_EXTRAARG"); /** C
 
 /** C ref: lvm.c:1154 — @param {CPtr} L @param {CPtr} ci */
 export function luaV_execute(L, ci) {
-    let cl, k, base, pc, trap, i, ra, io1, io2, b, io, rb, uv, slot, upval, rc, key, n, c, t, x_, v1, imm, iv1, nb, fimm, v2, i1, i2, n1, n2, ic, ib, pi, tm, result, flip, cond, ni, ia, im, fa, fim, isf, newci, nresults, nparams1, delta, nres, count, step, idx, last, h, val, p;
+    let cl, k, base, pc, trap, i, ra, io1, io2, b, io, rb, uv, slot, upval, rc, key, n, c, t, x_, v1, imm, iv1, nb, fimm, v2, i1 = cptr.box(0), i2 = cptr.box(0), n1, n2, ic, ib = cptr.box(0), pi, tm, result, flip, cond, ni, ia, im, fa, fim, isf, newci, nresults, nparams1, delta, nres, count, step, idx, last, h, val, p;
     const __smNums = { "startfunc": 1, "returning": 2, "L_OP_MOVE": 3, "L_OP_LOADI": 4, "L_OP_LOADF": 5, "L_OP_LOADK": 6, "L_OP_LOADKX": 7, "L_OP_LOADFALSE": 8, "L_OP_LFALSESKIP": 9, "L_OP_LOADTRUE": 10, "L_OP_LOADNIL": 11, "L_OP_GETUPVAL": 12, "L_OP_SETUPVAL": 13, "L_OP_GETTABUP": 14, "L_OP_GETTABLE": 15, "L_OP_GETI": 16, "L_OP_GETFIELD": 17, "L_OP_SETTABUP": 18, "L_OP_SETTABLE": 19, "L_OP_SETI": 20, "L_OP_SETFIELD": 21, "L_OP_NEWTABLE": 22, "L_OP_SELF": 23, "L_OP_ADDI": 24, "L_OP_ADDK": 25, "L_OP_SUBK": 26, "L_OP_MULK": 27, "L_OP_MODK": 28, "L_OP_POWK": 29, "L_OP_DIVK": 30, "L_OP_IDIVK": 31, "L_OP_BANDK": 32, "L_OP_BORK": 33, "L_OP_BXORK": 34, "L_OP_SHRI": 35, "L_OP_SHLI": 36, "L_OP_ADD": 37, "L_OP_SUB": 38, "L_OP_MUL": 39, "L_OP_MOD": 40, "L_OP_POW": 41, "L_OP_DIV": 42, "L_OP_IDIV": 43, "L_OP_BAND": 44, "L_OP_BOR": 45, "L_OP_BXOR": 46, "L_OP_SHR": 47, "L_OP_SHL": 48, "L_OP_MMBIN": 49, "L_OP_MMBINI": 50, "L_OP_MMBINK": 51, "L_OP_UNM": 52, "L_OP_BNOT": 53, "L_OP_NOT": 54, "L_OP_LEN": 55, "L_OP_CONCAT": 56, "L_OP_CLOSE": 57, "L_OP_TBC": 58, "L_OP_JMP": 59, "L_OP_EQ": 60, "L_OP_LT": 61, "L_OP_LE": 62, "L_OP_EQK": 63, "L_OP_EQI": 64, "L_OP_LTI": 65, "L_OP_LEI": 66, "L_OP_GTI": 67, "L_OP_GEI": 68, "L_OP_TEST": 69, "L_OP_TESTSET": 70, "L_OP_CALL": 71, "L_OP_TAILCALL": 72, "L_OP_RETURN": 73, "L_OP_RETURN0": 74, "L_OP_RETURN1": 75, "ret": 76, "L_OP_FORLOOP": 77, "L_OP_FORPREP": 78, "L_OP_TFORPREP": 79, "L_OP_TFORCALL": 80, "l_tforcall": 81, "L_OP_TFORLOOP": 82, "l_tforloop": 83, "L_OP_SETLIST": 84, "L_OP_CLOSURE": 85, "L_OP_VARARG": 86, "L_OP_VARARGPREP": 87, "L_OP_EXTRAARG": 88 };
     let __pc = 0;
     __dispatch: while (true) {
@@ -1126,7 +1126,7 @@ export function luaV_execute(L, ci) {
         (void L, (void 0));
         (void 0);
         ;
-        (((cptr.ld1u(cptr.add((((ra))), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((uv), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((((ra))))))))))) : (void ((0)))) : (void ((0))));
+        (((cptr.ld1u(cptr.add((((ra))), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((uv), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((((ra))))))))))) : (void ((0)))) : (void ((0))));
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
             (base = cptr.add(cptr.ldPtr(ci), 1, 16));
@@ -1172,7 +1172,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         rc = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1u(cptr.add(((rc)), 8))) == (((3) | ((0) << 4)))) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))), (!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (((n)) - 1n < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((rb))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((rb))))))))), 16)), n - 1n, 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) : (!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
+        if (((cptr.ld1u(cptr.add(((rc)), 8))) == (((3) | ((0) << 4)))) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))), (!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((rb))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((rb))))))))), 16)), BigInt.asUintN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) : (!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
             {
                 io1 = (((ra)));
                 io2 = (slot);
@@ -1200,7 +1200,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         c = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
-        if ((!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = ((BigInt.asUintN(64, BigInt((c)))) - 1n < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((rb))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((rb))))))))), 16)), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
+        if ((!((cptr.ld1u(cptr.add(((rb)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((rb))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((rb))))))))), 16)), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
             {
                 io1 = (((ra)));
                 io2 = (slot);
@@ -1277,7 +1277,7 @@ export function luaV_execute(L, ci) {
                     (void 0);
                 }
                 ;
-                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((upval))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, (cptr.ldPtr(((upval))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((upval))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, (cptr.ldPtr(((upval))))) : (void ((0)))) : (void ((0))));
             }
             ;
         } else
@@ -1298,7 +1298,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         rc = ((((((((((i) & ((1 << ((((0 + 7) | 0) + 8) | 0)) >>> 0)) >>> 0))) | 0)))) ? cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16) : ((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4)))) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))), (!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (((n)) - 1n < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 16)), n - 1n, 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) : (!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
+        if (((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4)))) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))), (!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 16)), BigInt.asUintN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) : (!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
             {
                 {
                     io1 = (((slot)));
@@ -1309,7 +1309,7 @@ export function luaV_execute(L, ci) {
                     (void 0);
                 }
                 ;
-                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
             }
             ;
         } else
@@ -1330,7 +1330,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         c = ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
         rc = ((((((((((i) & ((1 << ((((0 + 7) | 0) + 8) | 0)) >>> 0)) >>> 0))) | 0)))) ? cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16) : ((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = ((BigInt.asUintN(64, BigInt((c)))) - 1n < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 16)), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
+        if ((!((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 12)) >>> 0)) ? cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((ra))))))))))), 16)), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)), !(((((cptr.ld1u(cptr.add(((slot)), 8)))) & 15)) == (0))))) {
             {
                 {
                     io1 = (((slot)));
@@ -1341,7 +1341,7 @@ export function luaV_execute(L, ci) {
                     (void 0);
                 }
                 ;
-                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
             }
             ;
         } else {
@@ -1382,7 +1382,7 @@ export function luaV_execute(L, ci) {
                     (void 0);
                 }
                 ;
-                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
+                (((cptr.ld1u(cptr.add((rc), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add(((cptr.ldPtr(((((ra))))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((rc))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, (cptr.ldPtr(((((ra))))))) : (void ((0)))) : (void ((0))));
             }
             ;
         } else
@@ -1417,7 +1417,7 @@ export function luaV_execute(L, ci) {
         (cptr.st1(cptr.add((io), 8), uchar((((((5) | ((0) << 4))) | (1 << 6))))));
         (void L, (void 0));
         ;
-        if (b != 0 || c != 0)
+        if (b != 0 || c != 0 ? 1 : 0)
             luaH_resize(L, t, c >>> 0, b >>> 0);
         if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 24)) > 0n) {
             ((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), (cptr.add(ra, 1, 16))));
@@ -1488,7 +1488,7 @@ export function luaV_execute(L, ci) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm)))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm))))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -1521,18 +1521,18 @@ export function luaV_execute(L, ci) {
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1562,18 +1562,18 @@ export function luaV_execute(L, ci) {
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1603,18 +1603,18 @@ export function luaV_execute(L, ci) {
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1645,9 +1645,9 @@ export function luaV_execute(L, ci) {
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1656,7 +1656,7 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1686,7 +1686,7 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
-        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1714,7 +1714,7 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
-        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1743,9 +1743,9 @@ export function luaV_execute(L, ci) {
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         (void 0);
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1754,7 +1754,7 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1783,7 +1783,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
-        i2 = (cptr.ldI64(((v2))));
+        i2.v = (cptr.ldI64(((v2))));
         if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
@@ -1810,7 +1810,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
-        i2 = (cptr.ldI64(((v2))));
+        i2.v = (cptr.ldI64(((v2))));
         if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
@@ -1837,7 +1837,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
-        i2 = (cptr.ldI64(((v2))));
+        i2.v = (cptr.ldI64(((v2))));
         if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
@@ -1914,18 +1914,18 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1954,18 +1954,18 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -1994,18 +1994,18 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -2035,9 +2035,9 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2046,7 +2046,7 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -2075,7 +2075,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2102,7 +2102,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+        if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2130,9 +2130,9 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) {
-            i1 = (cptr.ldI64(((v1))));
-            i2 = (cptr.ldI64(((v2))));
+        if (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
+            i1.v = (cptr.ldI64(((v1))));
+            i2.v = (cptr.ldI64(((v2))));
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2141,7 +2141,7 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else {
-            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0))) {
+            if ((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((1) << 4)))) ? (n1 = (cptr.ldF64(((v1)))), 1) : (((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4)))) ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1) : 0)) && (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((1) << 4)))) ? (n2 = (cptr.ldF64(((v2)))), 1) : (((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4)))) ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1) : 0)) ? 1 : 0) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
@@ -2170,7 +2170,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2196,7 +2196,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2222,7 +2222,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2248,11 +2248,11 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
-                cptr.stU64(((io)), (luaV_shiftl(i1.v, (BigInt.asIntN(64, ((0n) - (BigInt.asUintN(64, (i2.v)))))))));
+                cptr.stU64(((io)), (luaV_shiftl(i1.v, (BigInt.asIntN(64, (BigInt.asUintN(64, (0n) - (BigInt.asUintN(64, (i2.v))))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -2274,7 +2274,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0)) ? 1 : 0) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2360,10 +2360,10 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         if (((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) {
-            ib = (cptr.ldI64(((rb))));
+            ib.v = (cptr.ldI64(((rb))));
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, ((0n) - (BigInt.asUintN(64, (ib.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (BigInt.asUintN(64, (0n) - (BigInt.asUintN(64, (ib.v)))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -2394,7 +2394,7 @@ export function luaV_execute(L, ci) {
         if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, 0))) {
             {
                 io = (((ra)));
-                cptr.stU64(((io)), ((BigInt.asIntN(64, (((~(0n))) ^ (BigInt.asUintN(64, (ib.v))))))));
+                cptr.stU64(((io)), ((BigInt.asIntN(64, (((BigInt.asUintN(64, ~(0n)))) ^ (BigInt.asUintN(64, (ib.v))))))));
                 (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
             }
             ;
@@ -2415,7 +2415,7 @@ export function luaV_execute(L, ci) {
         case 54 /* L_OP_NOT: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((((cptr.ld1u(cptr.add(((rb)), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (0))))
+        if ((((cptr.ld1u(cptr.add(((rb)), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (0)) ? 1 : 0))
             (cptr.st1(cptr.add((((ra))), 8), uchar((((1) | ((1) << 4))))));
         else
             (cptr.st1(cptr.add((((ra))), 8), uchar((((1) | ((0) << 4))))));
@@ -2506,7 +2506,7 @@ export function luaV_execute(L, ci) {
         continue;
         }
         case 59 /* L_OP_JMP: */: {
-        pc = cptr.add(pc, ((((((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 0) | 0);
+        pc = cptr.add(pc, ((((((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 0) | 0, 4);
         (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
         ;
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -2530,7 +2530,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2552,11 +2552,11 @@ export function luaV_execute(L, ci) {
         case 61 /* L_OP_LT: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) {
+        if (((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
             ia = (cptr.ldI64(((((ra))))));
-            ib = (cptr.ldI64(((rb))));
+            ib.v = (cptr.ldI64(((rb))));
             cond = (ia < ib.v);
-        } else if ((((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (3)))
+        } else if ((((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (3)) ? 1 : 0)
             cond = LTnum(((ra)), rb);
         else
             (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = lessthanothers(L, ((ra)), rb)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
@@ -2565,7 +2565,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2588,11 +2588,11 @@ export function luaV_execute(L, ci) {
         case 62 /* L_OP_LE: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) {
+        if (((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((3) | ((0) << 4)))) && ((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4)))) ? 1 : 0) {
             ia = (cptr.ldI64(((((ra))))));
-            ib = (cptr.ldI64(((rb))));
+            ib.v = (cptr.ldI64(((rb))));
             cond = (ia <= ib.v);
-        } else if ((((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (3)))
+        } else if ((((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (3)) ? 1 : 0)
             cond = LEnum(((ra)), rb);
         else
             (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = lessequalothers(L, ((ra)), rb)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
@@ -2601,7 +2601,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2630,7 +2630,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2663,7 +2663,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2700,7 +2700,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2738,7 +2738,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2776,7 +2776,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2814,7 +2814,7 @@ export function luaV_execute(L, ci) {
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2836,13 +2836,13 @@ export function luaV_execute(L, ci) {
         }
         case 69 /* L_OP_TEST: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        cond = !(((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (0)));
+        cond = !(((cptr.ld1u(cptr.add(((((ra)))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((ra)))), 8)))) & 15)) == (0)) ? 1 : 0);
         if (cond != ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
         else {
             ni = cptr.ldI32(pc);
             {
-                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                 (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
             }
             ;
@@ -2864,7 +2864,7 @@ export function luaV_execute(L, ci) {
         case 70 /* L_OP_TESTSET: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((((cptr.ld1u(cptr.add(((rb)), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (0))) == ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
+        if ((((cptr.ld1u(cptr.add(((rb)), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((rb)), 8)))) & 15)) == (0)) ? 1 : 0) == ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
         else {
             {
@@ -2879,7 +2879,7 @@ export function luaV_execute(L, ci) {
             {
                 ni = cptr.ldI32(pc);
                 {
-                    pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0);
+                    pc = cptr.add(pc, ((((((((((ni) >>> (((0 + 7) | 0))) & (((~(((~0) << (((((((8 + 8) | 0) + 1) | 0) + 8) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)) - ((((1 << ((((((8 + 8) | 0) + 1) | 0) + 8) | 0)) - 1) | 0) >> 1)) | 0) + 1) | 0, 4);
                     (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
                 }
                 ;
@@ -2940,7 +2940,7 @@ export function luaV_execute(L, ci) {
         if (b != 0)
             cptr.stPtr(cptr.add(L, 16), cptr.add(ra, b, 16));
         else
-            b = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra))))));
+            b = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra) / 16n)))));
         (cptr.stPtr(cptr.add(ci, 32), pc));
         if (((((((((i) & ((1 << ((((0 + 7) | 0) + 8) | 0)) >>> 0)) >>> 0))) | 0)))) {
             luaF_closeupval(L, base);
@@ -2956,7 +2956,7 @@ export function luaV_execute(L, ci) {
         continue;
         }
         case 98: {
-        cptr.st1(ci, cptr.ld1s(ci) - delta);
+        cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
         luaD_poscall(L, ci, n);
         (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
         { __pc = 76; continue; }
@@ -2972,7 +2972,7 @@ export function luaV_execute(L, ci) {
         n = (((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))) - 1) | 0;
         nparams1 = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
         if (n < 0)
-            n = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra))))));
+            n = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra) / 16n)))));
         (cptr.stPtr(cptr.add(ci, 32), pc));
         if (((((((((i) & ((1 << ((((0 + 7) | 0) + 8) | 0)) >>> 0)) >>> 0))) | 0)))) {
             cptr.stI32(cptr.add(ci, 56), n);
@@ -2989,7 +2989,7 @@ export function luaV_execute(L, ci) {
             ;
         }
         if (nparams1)
-            cptr.st1(ci, cptr.ld1s(ci) - (cptr.ldI32(cptr.add(cptr.add(ci, 32), 12)) + nparams1) | 0);
+            cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), (cptr.ldI32(cptr.add(cptr.add(ci, 32), 12)) + nparams1) | 0, 16));
         cptr.stPtr(cptr.add(L, 16), cptr.add(ra, n, 16));
         luaD_poscall(L, ci, n);
         (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
@@ -3074,10 +3074,10 @@ export function luaV_execute(L, ci) {
                 {
                     io = (((cptr.add(ra, 1, 16))));
                     (void 0);
-                    cptr.stU64(((io)), BigInt.asIntN(64, (count - 1n)));
+                    cptr.stU64(((io)), BigInt.asIntN(64, (BigInt.asUintN(64, count - 1n))));
                 }
                 ;
-                idx = (BigInt.asIntN(64, ((BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step))))));
+                idx = (BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step)))))));
                 {
                     io = (((ra)));
                     (void 0);
@@ -3090,10 +3090,10 @@ export function luaV_execute(L, ci) {
                     (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
                 }
                 ;
-                pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))));
+                pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 4);
             }
         } else if (floatforloop(ra))
-            pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))));
+            pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 4);
         (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8)));
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
@@ -3111,7 +3111,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         ((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8))));
         if (forprep(L, ra))
-            pc = cptr.add(pc, (((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))) + 1) | 0);
+            pc = cptr.add(pc, (((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))) + 1) | 0, 4);
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
             (base = cptr.add(cptr.ldPtr(ci), 1, 16));
@@ -3127,7 +3127,7 @@ export function luaV_execute(L, ci) {
         case 79 /* L_OP_TFORPREP: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (luaF_newtbcupval(L, cptr.add(ra, 3, 16))));
-        pc = cptr.add(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))));
+        pc = cptr.add(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 4);
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         (void 0);
         { __pc = 81; continue; }
@@ -3140,7 +3140,7 @@ export function luaV_execute(L, ci) {
         }
         case 81 /* l_tforcall: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        cptr.memcpy(cptr.add(ra, 4, 16), ra, 3n * 16n);
+        cptr.memcpy(cptr.add(ra, 4, 16), ra, BigInt.asUintN(64, 3n * 16n));
         cptr.stPtr(cptr.add(L, 16), cptr.add(cptr.add(ra, 4, 16), 3, 16));
         ((cptr.stPtr(cptr.add(ci, 32), pc)), (luaD_call(L, cptr.add(ra, 4, 16), ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -3170,7 +3170,7 @@ export function luaV_execute(L, ci) {
                 (void 0);
             }
             ;
-            pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))));
+            pc = cptr.sub(pc, ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 4);
         }
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
@@ -3190,7 +3190,7 @@ export function luaV_execute(L, ci) {
         last = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))) >>> 0;
         h = ((((((cptr.ldPtr(((((ra)))))))))));
         if (n == 0)
-            n = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra)))))) - 1) | 0;
+            n = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), ra) / 16n))))) - 1) | 0;
         else
             cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)));
         last = (last + (n >>> 0)) | 0;
@@ -3212,7 +3212,7 @@ export function luaV_execute(L, ci) {
             }
             ;
             last--;
-            (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, ((((h))))) : (void ((0)))) : (void ((0))));
+            (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, ((((h))))) : (void ((0)))) : (void ((0))));
         }
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
@@ -3228,7 +3228,7 @@ export function luaV_execute(L, ci) {
         }
         case 85 /* L_OP_CLOSURE: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
-        p = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cl, 24)), 72)), ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)))));
+        p = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cl, 24)), 72)), ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 8));
         (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (pushclosure(L, p, cptr.add(cl, 32), base, ra)));
         if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 24)) > 0n) {
             ((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), (cptr.add(ra, 1, 16))));

@@ -152,21 +152,21 @@ const __sl91 = cptr.lit("Stored %d messages into savefile.");
 
 /** C ref: save.c:43 @returns {CInt} */
 export function dosave() {
-    (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+    (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
     if (yn_function(__sl0, cptr.decay(ynchars), 110, (1)) == 110) {
-        (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+        (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
         if (cptr.ldI64(cptr.add(gm, 8)) > 0n)
             nomul(0);
     } else {
-        (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+        (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
         pline(__sl1);
         cptr.stI32(cptr.add(program_state, 8), 0);
         if (dosave0()) {
-            (cptr.stI32(cptr.add(program_state, 88), cptr.ldI32(cptr.add(program_state, 88)) + 1)) - 1;
+            (cptr.stI32(cptr.add(program_state, 88), cptr.ldI32(cptr.add(program_state, 88)) + 1)) - (1);
             cptr.stI32(cptr.add(u, 2196), -1);
             if (cptr.ldPtr(cptr.add(soundprocs, 32)))
                 (cptr.ldPtr(cptr.add(soundprocs, 32)))(__sl2);
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
             (cptr.ldPtr(cptr.add(windowprocs, 80)))(__sl3);
             nh_terminate(0);
         } else
@@ -177,16 +177,16 @@ export function dosave() {
 
 /** C ref: save.c:74 @returns {CInt} */
 export function dosave0() {
+    let fq_save;
+    let ltmp = cptr.box(0);
+    let whynot = new Uint8Array(256);
+    let nhfp;
+    let onhfp;
+    let res = 0;
     __lbl_done: {
-        let fq_save;
-        let ltmp = cptr.box(0);
-        let whynot = new Uint8Array(256);
-        let nhfp;
-        let onhfp;
-        let res = 0;
-        (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - 1;
+        (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - (1);
         do {
-            (cptr.stI32(cptr.add(a11y, 8), cptr.ldI32(cptr.add(a11y, 8)) + 1)) - 1;
+            (cptr.stI32(cptr.add(a11y, 8), cptr.ldI32(cptr.add(a11y, 8)) + 1)) - (1);
         } while (0);
         cptr.stI32(cptr.add(u, 1864), 0);
         if (cptr.ldI32(cptr.add(iflags, 400)))
@@ -196,7 +196,7 @@ export function dosave0() {
         if (cptr.ldI32(cptr.add(iflags, 408)))
             cptr.stI32(cptr.add(u, 1868), 1), cptr.stI32(cptr.add(iflags, 408), 0);
         done_object_cleanup();
-        if (!cptr.ldI32(cptr.add(program_state, 16)) || !cptr.ld1s(cptr.add(cptr.add(gs, 884), 0, 1)))
+        if (!cptr.ldI32(cptr.add(program_state, 16)) || !cptr.ld1s(cptr.add(cptr.add(gs, 884), 0, 1)) ? 1 : 0)
             break __lbl_done;
         fq_save = fqname(cptr.add(gs, 884), 2, 1);
         sethanguphandler(1);
@@ -207,7 +207,7 @@ export function dosave0() {
                 nhfp = open_savefile();
                 if (nhfp) {
                     close_nhfile(nhfp);
-                    (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+                    (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
                     There(__sl4);
                     if (yn_function(__sl5, cptr.decay(ynchars), 110, (1)) == 110) {
                         nh_sfconvert(fq_save);
@@ -225,7 +225,7 @@ export function dosave0() {
             void delete_savefile();
             break __lbl_done;
         }
-        if (nhfp && cptr.ldPtr(cptr.add(nhfp, 56))) {
+        if (nhfp && cptr.ldPtr(cptr.add(nhfp, 56)) ? 1 : 0) {
             cptr.stU64(cptr.add(nhfp, 16), cptr.stU64(cptr.add(nhfp, 24), 0n));
         }
         vision_recalc(2);
@@ -235,12 +235,12 @@ export function dosave0() {
             change_luck(1);
         if (cptr.ld1s(cptr.add(iflags, 81)))
             if (!cptr.ldI32(cptr.add(program_state, 8)))
-                (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+                (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
         cptr.stI32(cptr.add(nhfp, 4), 2 | 4);
         store_version(nhfp);
         store_plname_in_file(nhfp);
-        cptr.stPtr(cptr.add(gl, 496), (cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v && cptr.ld1s(cptr.add(uball.v, 52)) == 0) ? uball.v : null);
-        cptr.stPtr(cptr.add(gl, 504), (cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v && cptr.ld1s(cptr.add(uchain.v, 52)) == 0) ? uchain.v : null);
+        cptr.stPtr(cptr.add(gl, 496), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
+        cptr.stPtr(cptr.add(gl, 504), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
         savelev(nhfp, schar(ledger_no(cptr.add(u, 24))));
         savegamestate(nhfp);
         cptr.memcpy(cptr.add(gu, 432), cptr.add(u, 24), 4);
@@ -287,7 +287,7 @@ export function dosave0() {
             cptr.stI32(cptr.add(a11y, 8), 0);
         }
     } while (0);
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
     return res;
 }
 
@@ -321,8 +321,8 @@ function save_gamelog(nhfp) {
 /** C ref: save.c:265 — @param {CPtr} nhfp */
 function savegamestate(nhfp) {
     let i;
-    let uid = cptr.box(0);
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - 1;
+    let uid = cptr.box(0n);
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - (1);
     uid.v = BigInt(getuid() >>> 0);
     sfo_ulong(nhfp, uid, __sl14);
     ;
@@ -336,7 +336,7 @@ function savegamestate(nhfp) {
     relative_time_to_moves(cptr.add(cptr.add(svc, 96), 16));
     sfo_flag(nhfp, flags, __sl18);
     cptr.stU64(cptr.add(urealtime, 16), getnow());
-    cptr.st1(urealtime, cptr.ld1s(urealtime) + timet_delta(cptr.ldI64(cptr.add(urealtime, 16)), cptr.ldI64(cptr.add(urealtime, 8))));
+    cptr.stU64(urealtime, cptr.ldI64(urealtime) + timet_delta(cptr.ldI64(cptr.add(urealtime, 16)), cptr.ldI64(cptr.add(urealtime, 8))));
     sfo_long(nhfp, svw, __sl19);
     ;
     sfo_int32(nhfp, cptr.add(svw, 8), __sl20);
@@ -375,7 +375,7 @@ function savegamestate(nhfp) {
     save_luadata(nhfp);
     if (cptr.ld1s(cptr.add(nhfp, 32)))
         bflush(cptr.ldI32(nhfp));
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
     return;
 }
 
@@ -396,11 +396,11 @@ export function savestateinlock() {
     let hpid = cptr.box(0);
     let whynot = new Uint8Array(256);
     let nhfp;
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - 1;
-    if (cptr.ld1s(cptr.add(flags, 21)) || cptr.ld1s(cptr.add(gh, 96))) {
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - (1);
+    if (cptr.ld1s(cptr.add(flags, 21)) || cptr.ld1s(cptr.add(gh, 96)) ? 1 : 0) {
         nhfp = open_levelfile(0, cptr.decay(whynot));
         if (tricked_fileremoved(nhfp, cptr.decay(whynot))) {
-            (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+            (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
             return;
         }
         sfi_int(nhfp, hpid, __sl31);
@@ -409,7 +409,7 @@ export function savestateinlock() {
             void cptr.sprintf(cptr.decay(whynot), __sl32, hpid.v, cptr.ldI32(svh));
             {
                 void cptr.strcpy(cptr.add(svk, 16), cptr.decay(whynot));
-                (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+                (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
                 done(12);
                 return;
             }
@@ -419,7 +419,7 @@ export function savestateinlock() {
         if (!nhfp) {
             pline(__sl7, cptr.decay(whynot));
             void cptr.strcpy(cptr.add(svk, 16), cptr.decay(whynot));
-            (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+            (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
             done(12);
             return;
         }
@@ -431,22 +431,22 @@ export function savestateinlock() {
             save_savefile_name(nhfp);
             store_version(nhfp);
             store_plname_in_file(nhfp);
-            cptr.stPtr(cptr.add(gl, 496), (cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v && cptr.ld1s(cptr.add(uball.v, 52)) == 0) ? uball.v : null);
-            cptr.stPtr(cptr.add(gl, 504), (cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v && cptr.ld1s(cptr.add(uchain.v, 52)) == 0) ? uchain.v : null);
+            cptr.stPtr(cptr.add(gl, 496), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
+            cptr.stPtr(cptr.add(gl, 504), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
             savegamestate(nhfp);
         }
         close_nhfile(nhfp);
     }
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
     cptr.st1(cptr.add(gh, 96), cptr.ld1s(cptr.add(flags, 21)));
     return;
 }
 
 /** C ref: save.c:429 — @param {CPtr} nhfp @param {CInt} lev */
 export function savelev(nhfp, lev) {
-    let set_uz_save = schar((cptr.ldI16(cptr.add(gu, 432)) == 0 && cptr.ldI16(cptr.add(cptr.add(gu, 432), 2)) == 0));
-    if (set_uz_save && (cptr.ldI32(cptr.add(nhfp, 4)) & (1 | 2))) {
-        if (cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) == 0) {
+    let set_uz_save = schar((cptr.ldI16(cptr.add(gu, 432)) == 0 && cptr.ldI16(cptr.add(cptr.add(gu, 432), 2)) == 0 ? 1 : 0));
+    if (set_uz_save && (cptr.ldI32(cptr.add(nhfp, 4)) & (1 | 2)) ? 1 : 0) {
+        if (cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) == 0 ? 1 : 0) {
             cptr.stI32(cptr.add(program_state, 16), 0);
             panic(__sl34);
         }
@@ -460,12 +460,12 @@ export function savelev(nhfp, lev) {
 /** C ref: save.c:452 — @param {CPtr} nhfp @param {CInt} lev */
 function savelev_core(nhfp, lev) {
     lev = cptr.box(lev);
+    let i;
+    let c;
+    let r;
+    let tmpc;
     __lbl_skip_lots: {
-        let i;
-        let c;
-        let r;
-        let tmpc;
-        (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - 1;
+        (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - (1);
         if (!nhfp)
             panic(__sl35);
         if (cptr.ldI32(cptr.add(nhfp, 4)) != 4) {
@@ -473,7 +473,7 @@ function savelev_core(nhfp, lev) {
                 dmonsfree();
             if (cptr.ldPtr(go))
                 dobjsfree();
-            if (lev.v >= 0 && lev.v <= maxledgerno())
+            if (lev.v >= 0 && lev.v <= maxledgerno() ? 1 : 0)
                 cptr.st1(cptr.add(cptr.add(svl, 89208), lev.v, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev.v, 1)) | 1);
             sfo_int(nhfp, svh, __sl31);
             sfo_xint8(nhfp, lev, __sl36);
@@ -524,7 +524,7 @@ function savelev_core(nhfp, lev) {
         if (cptr.ld1s(cptr.add(nhfp, 32)))
             bflush(cptr.ldI32(nhfp));
     }
-    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - 1;
+    (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
         clear_level_structures();
         cptr.stPtr(gf, null);
@@ -555,7 +555,7 @@ function savelevl(nhfp) {
 function save_bubbles(nhfp, lev) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
-    if (lev == ledger_no(cptr.add(cptr.add(svd, 1792), 64)) || lev == ledger_no(cptr.add(cptr.add(svd, 1792), 72)))
+    if (lev == ledger_no(cptr.add(cptr.add(svd, 1792), 64)) || lev == ledger_no(cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)
         bbubbly.v = lev;
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2)))
         sfo_xint8(nhfp, bbubbly, __sl45);
@@ -616,14 +616,14 @@ function save_stairs(nhfp) {
     let buflen = cptr.box(24);
     while (stway) {
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
-            let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(stway, 4)) == cptr.ldI16(cptr.add(u, 24))));
+            let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(stway, 4)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
             if (use_relative) {
-                cptr.st1(cptr.add(cptr.add(stway, 4), 2), cptr.ld1s(cptr.add(cptr.add(stway, 4), 2)) - cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
+                cptr.stI16(cptr.add(cptr.add(stway, 4), 2), cptr.ldI16(cptr.add(cptr.add(stway, 4), 2)) - cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
             }
             sfo_int(nhfp, buflen, __sl50);
             sfo_stairway(nhfp, stway, __sl51);
             if (use_relative) {
-                cptr.st1(cptr.add(cptr.add(stway, 4), 2), cptr.ld1s(cptr.add(cptr.add(stway, 4), 2)) + cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
+                cptr.stI16(cptr.add(cptr.add(stway, 4), 2), cptr.ldI16(cptr.add(cptr.add(stway, 4), 2)) + cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
             }
         }
         stway = cptr.ldPtr(cptr.add(stway, 16));
@@ -687,7 +687,7 @@ function saveobj(nhfp, otmp) {
 function saveobjchn(nhfp, obj_p) {
     let otmp = cptr.ldPtr(obj_p);
     let otmp2;
-    let is_invent = schar((otmp && cptr.eq(otmp, cptr.ldPtr(cptr.add(gi, 8)))));
+    let is_invent = schar((otmp && cptr.eq(otmp, cptr.ldPtr(cptr.add(gi, 8))) ? 1 : 0));
     let minusone = cptr.box(-1);
     while (otmp) {
         otmp2 = cptr.ldPtr(otmp);
@@ -718,9 +718,9 @@ function saveobjchn(nhfp, obj_p) {
             if ((cptr.ldI64(cptr.add(otmp, 192)) & (2097152n | 4194304n)) != 0n)
                 setworn(null, cptr.ldI64(cptr.add(otmp, 192)) & (2097152n | 4194304n));
             cptr.stU64(cptr.add(otmp, 192), 0n);
-            (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + 1)) - 1;
+            (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + 1)) - (1);
             dealloc_obj(otmp);
-            (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + -1)) - 1;
+            (cptr.stI32(cptr.add(program_state, 36), cptr.ldI32(cptr.add(program_state, 36)) + -1)) - (-1);
         }
         otmp = otmp2;
     }
@@ -793,7 +793,7 @@ function savemonchn(nhfp, mtmp) {
     while (mtmp) {
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
-            cptr.stI16(cptr.add(mtmp, 20), (cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24)));
+            cptr.stI16(cptr.add(mtmp, 20), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))));
             if (cptr.ldI32(cptr.add(mtmp, 192)))
                 forget_temple_entry(mtmp);
             savemon(nhfp, mtmp);
@@ -825,15 +825,15 @@ let __static_savetrapchn_zerotrap = cptr.alloc(40); /** C ref: save.c:922 — st
 function savetrapchn(nhfp, trap) {
     let trap2;
     while (trap) {
-        let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(trap, 12)) == cptr.ldI16(cptr.add(u, 24))));
+        let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(trap, 12)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
         trap2 = cptr.ldPtr(trap);
         if (use_relative)
-            cptr.st1(cptr.add(cptr.add(trap, 12), 2), cptr.ld1s(cptr.add(cptr.add(trap, 12), 2)) - cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
+            cptr.stI16(cptr.add(cptr.add(trap, 12), 2), cptr.ldI16(cptr.add(cptr.add(trap, 12), 2)) - cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
             sfo_trap(nhfp, trap, __sl77);
         }
         if (use_relative)
-            cptr.st1(cptr.add(cptr.add(trap, 12), 2), cptr.ld1s(cptr.add(cptr.add(trap, 12), 2)) + cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
+            cptr.stI16(cptr.add(cptr.add(trap, 12), 2), cptr.ldI16(cptr.add(cptr.add(trap, 12), 2)) + cptr.ldI16(cptr.add(cptr.add(u, 24), 2)));
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
             cptr.free((trap));
         trap = trap2;
@@ -852,7 +852,7 @@ export function savefruitchn(nhfp) {
     f1 = cptr.ldPtr(cptr.add(gf, 88));
     while (f1) {
         f2 = cptr.ldPtr(cptr.add(f1, 40));
-        if (cptr.ldI32(cptr.add(f1, 32)) >= 0 && (cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
+        if (cptr.ldI32(cptr.add(f1, 32)) >= 0 && (cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2)) ? 1 : 0) {
             sfo_fruit(nhfp, f1, __sl78);
         }
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))

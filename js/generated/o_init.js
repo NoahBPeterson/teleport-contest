@@ -105,7 +105,7 @@ function setgemprobs(dlev) {
     for (j = 0; j < ((9 - ((lev / 3) | 0)) | 0); j++)
         cptr.stI16(cptr.add(cptr.add(objects, (first + j) | 0, 120), 74), 0);
     first = (first + j) | 0;
-    if (first > 460 || cptr.ld1s(cptr.add(cptr.add(objects, first, 120), 70)) != 13 || (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, first, 120))), 16))) === null) {
+    if ((first > 460 || cptr.ld1s(cptr.add(cptr.add(objects, first, 120), 70)) != 13 ? 1 : 0) || (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, first, 120))), 16))) === null ? 1 : 0) {
         raw_printf(__sl0, first, j, 460);
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
     }
@@ -183,7 +183,7 @@ export function init_objects() {
     let oclass;
     for (i = 0; i <= 18; i++) {
         cptr.stI32(cptr.add(cptr.add(svb, 16), i, 4), 0);
-        if (i > 0 && i < 18 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) != i)
+        if ((i > 0 && i < 18 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) != i ? 1 : 0)
             panic(__sl4, i, cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)));
     }
     for (i = 0; i < 481; i++)
@@ -195,7 +195,7 @@ export function init_objects() {
         if (oclass < prevoclass)
             panic(__sl5, first, oclass);
         last = (first + 1) | 0;
-        while (last < 481 && cptr.ld1s(cptr.add(cptr.add(objects, last, 120), 70)) == oclass)
+        while (last < 481 && cptr.ld1s(cptr.add(cptr.add(objects, last, 120), 70)) == oclass ? 1 : 0)
             last++;
         cptr.stI32(cptr.add(cptr.add(svb, 16), oclass, 4), first);
         if (oclass == 13) {
@@ -233,7 +233,7 @@ export function init_oclass_probs() {
         for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < cptr.ldI32(cptr.add(cptr.add(svb, 16), (oclass + 1) | 0, 4)); ++i) {
             sum = i16(sum + cptr.ldI16(cptr.add(cptr.add(objects, i, 120), 74)));
         }
-        if (sum <= 0 && oclass != 1 && cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)) != cptr.ldI32(cptr.add(cptr.add(svb, 16), (oclass + 1) | 0, 4))) {
+        if ((sum <= 0 && oclass != 1 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)) != cptr.ldI32(cptr.add(cptr.add(svb, 16), (oclass + 1) | 0, 4)) ? 1 : 0) {
             impossible(__sl12, !sum ? __sl13 : __sl14, sum, oclass);
             for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < cptr.ldI32(cptr.add(cptr.add(svb, 16), (oclass + 1) | 0, 4)); ++i) {
                 cptr.stI16(cptr.add(cptr.add(objects, i, 120), 74), 1);
@@ -251,13 +251,13 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
     cptr.stI32(lo_p, cptr.stI32(hi_p, otyp));
     switch (ocls) {
         case 3:
-        if (otyp >= 97 && otyp <= 100)
+        if (otyp >= 97 && otyp <= 100 ? 1 : 0)
             cptr.stI32(lo_p, 97), cptr.stI32(hi_p, 100);
-        else if (otyp >= 159 && otyp <= 162)
+        else if (otyp >= 159 && otyp <= 162 ? 1 : 0)
             cptr.stI32(lo_p, 159), cptr.stI32(hi_p, 162);
-        else if (otyp >= 146 && otyp <= 149)
+        else if (otyp >= 146 && otyp <= 149 ? 1 : 0)
             cptr.stI32(lo_p, 146), cptr.stI32(hi_p, 149);
-        else if (otyp >= 166 && otyp <= 172)
+        else if (otyp >= 166 && otyp <= 172 ? 1 : 0)
             cptr.stI32(lo_p, 166), cptr.stI32(hi_p, 172);
         break;
         case 8:
@@ -269,7 +269,7 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
         case 10:
         cptr.stI32(lo_p, cptr.ldI32(cptr.add(cptr.add(svb, 16), ocls, 4)));
         for (i = cptr.ldI32(lo_p); cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == ocls; i++)
-            if (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 40)) | 0 || !cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 32)))
+            if (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 40)) | 0 || !cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 32)) ? 1 : 0)
                 break;
         cptr.stI32(hi_p, (i - 1) | 0);
         break;
@@ -280,7 +280,7 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
         cptr.stI32(hi_p, (cptr.ldI32(cptr.add(cptr.add(svb, 16), (ocls + 1) | 0, 4)) - 1) | 0);
         break;
     }
-    if (otyp < cptr.ldI32(lo_p) || otyp > cptr.ldI32(hi_p))
+    if (otyp < cptr.ldI32(lo_p) || otyp > cptr.ldI32(hi_p) ? 1 : 0)
         cptr.stI32(lo_p, cptr.stI32(hi_p, otyp));
     return;
 }
@@ -382,7 +382,7 @@ export function restnames(nhfp) {
 /** C ref: o_init.c:442 — @param {CPtr} obj */
 export function observe_object(obj) {
     let oindx = cptr.ldI16(cptr.add(obj, 32));
-    if (oindx >= 18 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24))))) {
+    if (oindx >= 18 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         cptr.stI32(cptr.add(obj, 84), 1);
         discover_object(oindx, (0), (1), (0));
     }
@@ -392,7 +392,7 @@ export function observe_object(obj) {
 export function discover_object(oindx, mark_as_known, mark_as_encountered, credit_hero) {
     if (oindx < 18)
         return;
-    if ((!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && mark_as_known) || (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 28)) && mark_as_encountered) || ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(oindx, null))) {
+    if (((!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && mark_as_known ? 1 : 0) || (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 28)) && mark_as_encountered ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(oindx, null) ? 1 : 0) ? 1 : 0) {
         let dindx;
         let acls = cptr.ld1s(cptr.add(cptr.add(objects, oindx, 120), 70));
         for (dindx = cptr.ldI32(cptr.add(cptr.add(svb, 16), acls, 4)); cptr.ldI16(cptr.add(cptr.add(svd, 1940), dindx, 2)) != 0; dindx++)
@@ -401,11 +401,11 @@ export function discover_object(oindx, mark_as_known, mark_as_encountered, credi
         cptr.stI16(cptr.add(cptr.add(svd, 1940), dindx, 2), i16(oindx));
         if (mark_as_encountered)
             cptr.stI32(cptr.add(cptr.add(objects, oindx, 120), 28), 1);
-        if (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && mark_as_known) {
+        if (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && mark_as_known ? 1 : 0) {
             cptr.stI32(cptr.add(cptr.add(objects, oindx, 120), 16), 1);
             if (credit_hero)
                 exercise(2, (1));
-            if (cptr.ldI32(cptr.add(program_state, 44)) && !cptr.ldI32(program_state)) {
+            if (cptr.ldI32(cptr.add(program_state, 44)) && !cptr.ldI32(program_state) ? 1 : 0) {
                 if (cptr.ld1s(cptr.add(cptr.add(objects, oindx, 120), 70)) == 13)
                     gem_learned(oindx);
                 update_inventory();
@@ -416,11 +416,11 @@ export function discover_object(oindx, mark_as_known, mark_as_encountered, credi
 
 /** C ref: o_init.c:498 — @param {CInt} oindx */
 export function undiscover_object(oindx) {
-    if (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && !cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 28))) {
+    if (!cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 16)) && !cptr.ldI32(cptr.add(cptr.add(objects, oindx, 120), 28)) ? 1 : 0) {
         let dindx;
         let acls = cptr.ld1s(cptr.add(cptr.add(objects, oindx, 120), 70));
         let found = (0);
-        for (dindx = cptr.ldI32(cptr.add(cptr.add(svb, 16), acls, 4)); dindx < 481 && cptr.ldI16(cptr.add(cptr.add(svd, 1940), dindx, 2)) != 0 && cptr.ld1s(cptr.add(cptr.add(objects, dindx, 120), 70)) == acls; dindx++)
+        for (dindx = cptr.ldI32(cptr.add(cptr.add(svb, 16), acls, 4)); (dindx < 481 && cptr.ldI16(cptr.add(cptr.add(svd, 1940), dindx, 2)) != 0 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, dindx, 120), 70)) == acls ? 1 : 0; dindx++)
             if (found)
                 cptr.stI16(cptr.add(cptr.add(svd, 1940), (dindx - 1) | 0, 2), cptr.ldI16(cptr.add(cptr.add(svd, 1940), dindx, 2)));
             else if (cptr.ldI16(cptr.add(cptr.add(svd, 1940), dindx, 2)) == oindx)
@@ -436,9 +436,9 @@ export function undiscover_object(oindx) {
 
 /** C ref: o_init.c:526 — @param {CInt} i @returns {CInt} */
 export function interesting_to_discover(i) {
-    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(i, null))
+    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(i, null) ? 1 : 0)
         return (1);
-    return schar((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)) !== null || ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) | 0 || cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 28)) | 0) && (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, i, 120)), 2)), 16), 8))) !== null)));
+    return schar((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)) !== null || ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) | 0 || cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 28)) | 0 ? 1 : 0) && (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, i, 120)), 2)), 16), 8))) !== null ? 1 : 0) ? 1 : 0));
 }
 
 /** C ref: o_init.c:543 — short[4] */
@@ -467,7 +467,7 @@ function sortloot_descr(otyp, outbuf) {
     cptr.stI16(cptr.add(o, 32), i16(otyp));
     cptr.st1(cptr.add(o, 49), cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 70)));
     cptr.stI32(cptr.add(o, 84), 1);
-    cptr.stI32(cptr.add(o, 80), ((cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 || !cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 24))) ? 1 : 0) >>> 0);
+    cptr.stI32(cptr.add(o, 80), ((cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 || !cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 24)) ? 1 : 0) ? 1 : 0) >>> 0);
     cptr.stI32(cptr.add(o, 168), -1);
     if (otyp == 285)
         cptr.st1(cptr.add(o, 48), schar(cptr.ldI32(cptr.add(svc, 16))));
@@ -504,7 +504,7 @@ export function choose_disco_sort(mode) {
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 0; cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)); ++i) {
         cptr.stI32(any, cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)));
-        add_menu(tmpwin, nul_glyphinfo, any, schar(cptr.ldI32(any)), 0, 0, clr, cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)), (cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)) == cptr.ld1s(cptr.add(flags, 96))) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, 0, clr, cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)), (cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)) == cptr.ld1s(cptr.add(flags, 96))) ? 1 : 0);
     }
     if (mode == 2) {
         add_menu_str(tmpwin, __sl9);
@@ -517,7 +517,7 @@ export function choose_disco_sort(mode) {
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (n > 0) {
         choice = cptr.ldI32(cptr.add(selected.v, 0, 24));
-        if (n > 1 && choice == cptr.ld1s(cptr.add(flags, 96)))
+        if (n > 1 && choice == cptr.ld1s(cptr.add(flags, 96)) ? 1 : 0)
             choice = cptr.ldI32(cptr.add(selected.v, 1, 24));
         cptr.free(selected.v);
         cptr.st1(cptr.add(flags, 96), schar(choice));
@@ -528,9 +528,9 @@ export function choose_disco_sort(mode) {
 /** C ref: o_init.c:661 — @param {CInt} otyp @returns {CPtr} */
 function disco_typename(otyp) {
     let result = obj_typename(otyp);
-    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(otyp, null)) {
+    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && Japanese_item_name(otyp, null) ? 1 : 0) {
         let buf = new Uint8Array(256);
-        let actualn = (((otyp != 254 && otyp != 253) || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0) ? (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))) : __sl32);
+        let actualn = (((otyp != 254 && otyp != 253 ? 1 : 0) || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0) ? (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))) : __sl32);
         if (!actualn) {
             ;
         } else if (strstri(result, __sl33)) {
@@ -553,16 +553,16 @@ function disco_append_typename(buf, dis) {
     let typnm = disco_typename(dis);
     let typnm_len = cptr.strlen(typnm);
     let eos = cptr.box(0);
-    if (len + typnm_len < 256n) {
+    if (BigInt.asUintN(64, len + typnm_len) < 256n) {
         void cptr.strcat(buf, typnm);
         eos.v = cptr.add(cptr.add(buf, len), typnm_len);
-    } else if ((p = cptr.strrchr(typnm, 40)) !== null && cptr.cmp(p, typnm) > 0 && cptr.ld1s(cptr.add(p, -1)) == 32 && cptr.strchr(p, 41) !== null) {
+    } else if ((((p = cptr.strrchr(typnm, 40)) !== null && cptr.cmp(p, typnm) > 0 ? 1 : 0) && cptr.ld1s(cptr.add(p, -1)) == 32 ? 1 : 0) && cptr.strchr(p, 41) !== null ? 1 : 0) {
         p = cptr.add(p, -1);
-        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, BigInt(((256 - 1) | 0))) - (len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0)), __builtin_object_size(buf, 2 > 1 ? 1 : 0));
+        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((256 - 1) | 0))) - (BigInt.asUintN(64, len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0)))), __builtin_object_size(buf, 2 > 1 ? 1 : 0));
         void cptr.strcat(buf, p);
         eos.v = cptr.add(buf, cptr.strlen(buf));
     } else {
-        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, BigInt(((256 - 1) | 0))) - len, __builtin_object_size(buf, 2 > 1 ? 1 : 0));
+        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((256 - 1) | 0))) - len), __builtin_object_size(buf, 2 > 1 ? 1 : 0));
         eos.v = cptr.add(buf, cptr.strlen(buf));
     }
     append_price_quote(buf, eos, dis);
@@ -571,7 +571,7 @@ function disco_append_typename(buf, dis) {
 /** C ref: o_init.c:725 — @param {CInt} uidx @param {CPtr} outbuf */
 function disco_fmt_uniq(uidx, outbuf) {
     void cptr.sprintf(outbuf, __sl38, cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 ? (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, uidx, 120))), 16))) : (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, uidx, 120)), 2)), 16), 8))));
-    if (!cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) && cptr.ld1s(cptr.add(cptr.add(objects, uidx, 120), 70)) == 10)
+    if (!cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) && cptr.ld1s(cptr.add(cptr.add(objects, uidx, 120), 70)) == 10 ? 1 : 0)
         void cptr.strcat(outbuf, __sl39);
 }
 
@@ -581,14 +581,14 @@ function disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort) {
     let j;
     nh_deterministic_qsort((sorted_lines), BigInt.asUintN(64, BigInt((sorted_ct))), (8n), (discovered_cmp));
     for (j = 0; j < sorted_ct; ++j) {
-        p = cptr.ldPtr(cptr.add(sorted_lines, j));
+        p = cptr.ldPtr(cptr.add(sorted_lines, j, 8));
         (__builtin_expect(BigInt((!(!cptr.eq(p, (null))))), 0n) ? __assert_rtn(__sl40, __sl41, 752, __sl42) : void 0);
         if (lootsort) {
             cptr.st1(cptr.add(p, 6), cptr.ld1s(cptr.add(p, 0)));
             p = cptr.add(p, 6);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, p);
-        cptr.free(cptr.ldPtr(cptr.add(sorted_lines, j))), cptr.stPtr(cptr.add(sorted_lines, j), null);
+        cptr.free(cptr.ldPtr(cptr.add(sorted_lines, j, 8))), cptr.stPtr(cptr.add(sorted_lines, j, 8), null);
     }
 }
 
@@ -613,14 +613,14 @@ export function dodiscovered() {
     let alphabetized;
     let alphabyclass;
     let lootsort;
-    if (!cptr.ld1s(cptr.add(flags, 96)) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96)))))
+    if (!cptr.ld1s(cptr.add(flags, 96)) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96)))) ? 1 : 0)
         cptr.st1(cptr.add(flags, 96), 111);
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         if (choose_disco_sort(1) < 0)
             return 0;
     }
     alphabyclass = schar((cptr.ld1s(cptr.add(flags, 96)) == 99));
-    alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || alphabyclass));
+    alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || alphabyclass ? 1 : 0));
     lootsort = schar((cptr.ld1s(cptr.add(flags, 96)) == 115));
     sortindx = cptr.diff(cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96))), cptr.decay(disco_order_let));
     tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
@@ -630,7 +630,7 @@ export function dodiscovered() {
     uniq_ct = 0;
     for (i = (dis = 0); i < 4; i++) {
         uidx = cptr.ldI16(cptr.add(uniq_objs, i, 2));
-        if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213)) {
+        if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213 ? 1 : 0) ? 1 : 0) {
             if (!dis++)
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), __sl44);
             ++uniq_ct;
@@ -647,15 +647,15 @@ export function dodiscovered() {
     for (s = cptr.decay(classes); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         prev_class = schar(((oclass + 1) | 0));
-        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass; i++) {
-            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis)) {
+        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass ? 1 : 0; i++) {
+            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis) ? 1 : 0) {
                 ct++;
                 if (oclass != prev_class) {
-                    if ((alphabyclass || lootsort) && sorted_ct) {
+                    if ((alphabyclass || lootsort ? 1 : 0) && sorted_ct ? 1 : 0) {
                         disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort);
                         sorted_ct = 0;
                     }
-                    if (!alphabetized || alphabyclass) {
+                    if (!alphabetized || alphabyclass ? 1 : 0) {
                         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), let_to_name(oclass, (0), (0)));
                         prev_class = oclass;
                     }
@@ -664,7 +664,7 @@ export function dodiscovered() {
                 if (lootsort)
                     void sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1));
                 disco_append_typename(cptr.decay(buf), dis);
-                if (!alphabetized && !lootsort)
+                if (!alphabetized && !lootsort ? 1 : 0)
                     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
                 else
                     cptr.stPtr(cptr.add(sorted_lines, sorted_ct++, 8), dupstr(cptr.decay(buf)));
@@ -675,7 +675,7 @@ export function dodiscovered() {
         You(__sl47);
     } else {
         if (sorted_ct) {
-            if ((uniq_ct || arti_ct) && alphabetized && !alphabyclass)
+            if (((uniq_ct || arti_ct ? 1 : 0) && alphabetized ? 1 : 0) && !alphabyclass ? 1 : 0)
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), __sl48);
             disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort);
         }
@@ -723,16 +723,16 @@ export function doclassdisco() {
     let alphabetized;
     let lootsort;
     let clr = 8;
-    if (!cptr.ld1s(cptr.add(flags, 96)) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96)))))
+    if (!cptr.ld1s(cptr.add(flags, 96)) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96)))) ? 1 : 0)
         cptr.st1(cptr.add(flags, 96), 111);
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         if (choose_disco_sort(2) < 0)
             return 0;
     }
-    alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || cptr.ld1s(cptr.add(flags, 96)) == 99));
+    alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || cptr.ld1s(cptr.add(flags, 96)) == 99 ? 1 : 0));
     lootsort = schar((cptr.ld1s(cptr.add(flags, 96)) == 115));
     cptr.st1(cptr.add(cptr.decay(discosyms), 0, 1), 0);
-    traditional = schar((cptr.ld1s(cptr.add(flags, 142)) == 0 || cptr.ld1s(cptr.add(flags, 142)) == 1));
+    traditional = schar((cptr.ld1s(cptr.add(flags, 142)) == 0 || cptr.ld1s(cptr.add(flags, 142)) == 1 ? 1 : 0));
     if (!traditional) {
         tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
@@ -741,11 +741,11 @@ export function doclassdisco() {
     menulet = 97;
     for (i = 0; i < 4; i++) {
         uidx = cptr.ldI16(cptr.add(uniq_objs, i, 2));
-        if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213)) {
+        if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213 ? 1 : 0) ? 1 : 0) {
             void cptr.strcat(cptr.decay(discosyms), __sl49);
             if (!traditional) {
                 cptr.stI32(any, 117);
-                add_menu(tmpwin, nul_glyphinfo, any, menulet++, 114, 0, clr, cptr.decay(__static_doclassdisco_unique_items), 0);
+                add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 114, 0, clr, cptr.decay(__static_doclassdisco_unique_items), 0);
             }
             break;
         }
@@ -754,7 +754,7 @@ export function doclassdisco() {
         void cptr.strcat(cptr.decay(discosyms), __sl50);
         if (!traditional) {
             cptr.stI32(any, 97);
-            add_menu(tmpwin, nul_glyphinfo, any, menulet++, 0, 0, clr, cptr.decay(__static_doclassdisco_artifact_items), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 0, 0, clr, cptr.decay(__static_doclassdisco_artifact_items), 0);
         }
     }
     void cptr.strcpy(cptr.decay(allclasses), cptr.add(flags, 99));
@@ -763,13 +763,13 @@ export function doclassdisco() {
     for (s = cptr.decay(allclasses); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         c = cptr.ld1s(cptr.add(def_oc_syms, oclass, 24));
-        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass; ++i)
-            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis)) {
+        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass ? 1 : 0; ++i)
+            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis) ? 1 : 0) {
                 if (!cptr.strchr(cptr.decay(discosyms), c)) {
                     void strkitten(cptr.decay(discosyms), c);
                     if (!traditional) {
                         cptr.stI32(any, c);
-                        add_menu(tmpwin, nul_glyphinfo, any, menulet++, c, 0, clr, oclass_to_name(oclass, cptr.decay(buf)), 0);
+                        add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, c, 0, clr, oclass_to_name(oclass, cptr.decay(buf)), 0);
                     }
                 }
             }
@@ -794,9 +794,9 @@ export function doclassdisco() {
         }
         c = yn_function(cptr.decay(__static_doclassdisco_prompt), cptr.decay(discosyms), 0, (1));
         if (!c)
-            (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+            (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
     } else {
-        if (!cptr.ld1s(cptr.add(cptr.decay(discosyms), 1, 1)) && cptr.ld1s(cptr.add(flags, 142)) == 3) {
+        if (!cptr.ld1s(cptr.add(cptr.decay(discosyms), 1, 1)) && cptr.ld1s(cptr.add(flags, 142)) == 3 ? 1 : 0) {
             c = cptr.ld1s(cptr.add(cptr.decay(discosyms), 0, 1));
         } else {
             (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(__static_doclassdisco_prompt));
@@ -818,7 +818,7 @@ export function doclassdisco() {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items))));
         for (i = 0; i < 4; i++) {
             uidx = cptr.ldI16(cptr.add(uniq_objs, i, 2));
-            if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213)) {
+            if (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 16)) | 0 || (cptr.ldI32(cptr.add(cptr.add(objects, uidx, 120), 28)) | 0 && uidx != 213 ? 1 : 0) ? 1 : 0) {
                 ++ct;
                 disco_fmt_uniq(uidx, cptr.decay(buf));
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
@@ -828,7 +828,7 @@ export function doclassdisco() {
             You(cptr.decay(__static_doclassdisco_havent_discovered_any), cptr.decay(__static_doclassdisco_unique_items));
         break;
         case 97:
-        if (cptr.ld1s(cptr.add(flags, 10)) && yn_function(__sl54, cptr.decay(ynchars), 110, (1)) == 121) {
+        if (cptr.ld1s(cptr.add(flags, 10)) && yn_function(__sl54, cptr.decay(ynchars), 110, (1)) == 121 ? 1 : 0) {
             dump_artifact_info(tmpwin);
             ct = 33;
             break;
@@ -845,13 +845,13 @@ export function doclassdisco() {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
         sorted_ct = 0;
         for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i <= ((cptr.ldI32(cptr.add(cptr.add(svb, 16), (oclass + 1) | 0, 4)) - 1) | 0); ++i) {
-            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis)) {
+            if ((dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2))) != 0 && interesting_to_discover(dis) ? 1 : 0) {
                 ++ct;
                 void cptr.strcpy(cptr.decay(buf), cptr.ldI32(cptr.add(cptr.add(objects, dis, 120), 28)) | 0 ? __sl45 : __sl46);
                 if (lootsort)
                     void sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1));
                 disco_append_typename(cptr.decay(buf), dis);
-                if (!alphabetized && !lootsort)
+                if (!alphabetized && !lootsort ? 1 : 0)
                     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
                 else
                     cptr.stPtr(cptr.add(sorted_lines, sorted_ct++, 8), dupstr(cptr.decay(buf)));
@@ -901,9 +901,9 @@ export function rename_disco() {
     for (s = cptr.add(flags, 99); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         prev_class = schar(((oclass + 1) | 0));
-        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass; i++) {
+        for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), oclass, 4)); i < 481 && cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) == oclass ? 1 : 0; i++) {
             dis = cptr.ldI16(cptr.add(cptr.add(svd, 1940), i, 2));
-            if (!dis || !interesting_to_discover(dis))
+            if (!dis || !interesting_to_discover(dis) ? 1 : 0)
                 continue;
             ct++;
             if (!objtyp_is_callable(dis))
@@ -917,7 +917,7 @@ export function rename_disco() {
             cptr.stI32(any, dis);
             cptr.st1(cptr.decay(buf), 0);
             disco_append_typename(cptr.decay(buf), dis);
-            add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
         }
     }
     if (ct == 0) {

@@ -17,8 +17,8 @@ const __sl4 = cptr.lit("Overflow at %s:%d");
 export function alloc(lth) {
     let ptr;
     do {
-        if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n)
-            lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + (8n - BigInt((lth) >>> 0) % 8n)));
+        if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n ? 1 : 0)
+            lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)));
     } while (0);
     ptr = cptr.malloc(BigInt(lth >>> 0));
     if (!ptr)
@@ -30,17 +30,17 @@ export function alloc(lth) {
 export function re_alloc(oldptr, newlth) {
     let newptr;
     do {
-        if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n)
-            newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + (8n - BigInt((newlth) >>> 0) % 8n)));
+        if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n ? 1 : 0)
+            newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)));
     } while (0);
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
-    if (newlth && !newptr)
+    if (newlth && !newptr ? 1 : 0)
         panic(__sl1, newlth);
     return newptr;
 }
 
 /** C ref: alloc.c:120 — char[4][32] */
-const ptrbuf = Array.from({ length: 4 }, () => new Uint8Array(32 * 1));
+const ptrbuf = (function () { const flat = new Uint8Array(4 * (32 * 1)); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (32 * 1), (r + 1) * (32 * 1))); a.buf = flat; return a; })();
 
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;
@@ -60,7 +60,7 @@ export function dupstr(string) {
     let len = cptr.strlen(string);
     if (len > BigInt(((~0 - 1) >>> 0) >>> 0))
         panic(__sl3);
-    return cptr.strcpy(alloc(Number(BigInt.asUintN(32, (len + 1n)))), string);
+    return cptr.strcpy(alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n)))), string);
 }
 
 /** C ref: alloc.c:266 — @param {CLongLong} i @param {CPtr} file @param {CInt} line @returns {CInt} */

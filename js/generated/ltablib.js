@@ -41,7 +41,7 @@ function checkfield(L, key, n) {
 function checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;
-        if (lua_getmetatable(L, arg) && (!(what & 1) || checkfield(L, __sl0, ++n)) && (!(what & 2) || checkfield(L, __sl1, ++n)) && (!(what & 4) || checkfield(L, __sl2, ++n))) {
+        if (((lua_getmetatable(L, arg) && (!(what & 1) || checkfield(L, __sl0, ++n) ? 1 : 0) ? 1 : 0) && (!(what & 2) || checkfield(L, __sl1, ++n) ? 1 : 0) ? 1 : 0) && (!(what & 4) || checkfield(L, __sl2, ++n) ? 1 : 0) ? 1 : 0) {
             lua_settop(L, (-(n) - 1) | 0);
         } else
             luaL_checktype(L, arg, 5);
@@ -52,7 +52,7 @@ function checktab(L, arg, what) {
 function tinsert(L) {
     let pos;
     let e = (checktab(L, 1, ((1 | 2)) | 4), luaL_len(L, 1));
-    e = (BigInt.asIntN(64, (BigInt.asUintN(64, (e)) + 1n)));
+    e = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (e)) + 1n))));
     switch (lua_gettop(L)) {
         case 2:
         {
@@ -63,9 +63,9 @@ function tinsert(L) {
         {
             let i;
             pos = luaL_checkinteger(L, 2);
-            (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, pos) - 1n < BigInt.asUintN(64, e)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3))));
+            (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) < BigInt.asUintN(64, e)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3)) ? 1 : 0));
             for (i = e; i > pos; i--) {
-                lua_geti(L, 1, i - 1n);
+                lua_geti(L, 1, BigInt.asIntN(64, i - 1n));
                 lua_seti(L, 1, i);
             }
             break;
@@ -84,10 +84,10 @@ function tremove(L) {
     let size = (checktab(L, 1, ((1 | 2)) | 4), luaL_len(L, 1));
     let pos = luaL_optinteger(L, 2, size);
     if (pos != size)
-        (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, pos) - 1n <= BigInt.asUintN(64, size)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3))));
+        (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <= BigInt.asUintN(64, size)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3)) ? 1 : 0));
     lua_geti(L, 1, pos);
     for (; pos < size; pos++) {
-        lua_geti(L, 1, pos + 1n);
+        lua_geti(L, 1, BigInt.asIntN(64, pos + 1n));
         lua_seti(L, 1, pos);
     }
     lua_pushnil(L);
@@ -106,18 +106,18 @@ function tmove(L) {
     if (e >= f) {
         let n;
         let i;
-        (void ((__builtin_expect(BigInt(((f > 0n || e < 9223372036854775807n + f) != 0)), 1n)) || luaL_argerror(L, (3), (__sl5))));
-        n = e - f + 1n;
-        (void ((__builtin_expect(BigInt(((t <= 9223372036854775807n - n + 1n) != 0)), 1n)) || luaL_argerror(L, (4), (__sl6))));
-        if (t > e || t <= f || (tt != 1 && !lua_compare(L, 1, tt, 0))) {
+        (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, (3), (__sl5)) ? 1 : 0));
+        n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);
+        (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || luaL_argerror(L, (4), (__sl6)) ? 1 : 0));
+        if ((t > e || t <= f ? 1 : 0) || (tt != 1 && !lua_compare(L, 1, tt, 0) ? 1 : 0) ? 1 : 0) {
             for (i = 0n; i < n; i++) {
-                lua_geti(L, 1, f + i);
-                lua_seti(L, tt, t + i);
+                lua_geti(L, 1, BigInt.asIntN(64, f + i));
+                lua_seti(L, tt, BigInt.asIntN(64, t + i));
             }
         } else {
-            for (i = n - 1n; i >= 0n; i--) {
-                lua_geti(L, 1, f + i);
-                lua_seti(L, tt, t + i);
+            for (i = BigInt.asIntN(64, n - 1n); i >= 0n; i--) {
+                lua_geti(L, 1, BigInt.asIntN(64, f + i));
+                lua_seti(L, tt, BigInt.asIntN(64, t + i));
             }
         }
     }
@@ -137,7 +137,7 @@ function addfield(L, b, i) {
 function tconcat(L) {
     let b = cptr.alloc(1056);
     let last = (checktab(L, 1, (1) | 4), luaL_len(L, 1));
-    let lsep = cptr.box(0);
+    let lsep = cptr.box(0n);
     let sep = luaL_optlstring(L, 2, __sl8, lsep);
     let i = luaL_optinteger(L, 3, 1n);
     last = luaL_optinteger(L, 4, last);
@@ -172,8 +172,8 @@ function tunpack(L) {
     let e = ((lua_type(L, ((3))) <= 0) ? (luaL_len(L, 1)) : luaL_checkinteger(L, (3)));
     if (i > e)
         return 0;
-    n = BigInt.asUintN(64, e) - BigInt.asUintN(64, i);
-    if ((__builtin_expect(BigInt(((n >= 2147483647n || !lua_checkstack(L, Number(BigInt.asIntN(32, (++n))))) != 0)), 0n)))
+    n = BigInt.asUintN(64, BigInt.asUintN(64, e) - BigInt.asUintN(64, i));
+    if ((__builtin_expect(BigInt(((n >= 2147483647n || !lua_checkstack(L, Number(BigInt.asIntN(32, (++n)))) ? 1 : 0) != 0)), 0n)))
         return luaL_error(L, __sl10);
     for (; i < e; i++) {
         lua_geti(L, 1, i);
@@ -191,8 +191,8 @@ function l_randomizePivot() {
     let buff = cptr.alloc(4 * 4);
     let i;
     let rnd = 0;
-    cptr.memcpy(buff, c, (8n / 4n) * 4n);
-    cptr.memcpy(cptr.add(buff, (8n / 4n), 4), t, (8n / 4n) * 4n);
+    cptr.memcpy(buff, c, BigInt.asUintN(64, (8n / 4n) * 4n));
+    cptr.memcpy(cptr.add(buff, (8n / 4n), 4), t, BigInt.asUintN(64, (8n / 4n) * 4n));
     for (i = 0; BigInt(i >>> 0) < (16n / 4n); i++)
         rnd = (rnd + cptr.ldI32(cptr.add(buff, i, 4))) | 0;
     return rnd;
@@ -265,7 +265,7 @@ function auxsort(L, lo, up, rnd) {
             lua_settop(L, (-(2) - 1) | 0);
         if ((up - lo) >>> 0 == 1)
             return;
-        if ((up - lo) >>> 0 < 100 || rnd == 0)
+        if ((up - lo) >>> 0 < 100 || rnd == 0 ? 1 : 0)
             p = u32div(((lo + up) >>> 0), 2);
         else
             p = choosePivot(lo, up, rnd);
@@ -306,7 +306,7 @@ function auxsort(L, lo, up, rnd) {
 function sort(L) {
     let n = (checktab(L, 1, ((1 | 2)) | 4), luaL_len(L, 1));
     if (n > 1n) {
-        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) || luaL_argerror(L, (1), (__sl12))));
+        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) || luaL_argerror(L, (1), (__sl12)) ? 1 : 0));
         if (!(lua_type(L, (2)) <= 0))
             luaL_checktype(L, 2, 6);
         lua_settop(L, 2);
@@ -336,6 +336,6 @@ cptr.stPtr(cptr.add(cptr.add(tab_funcs, 112), 8), null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (128n / 16n - 1n)))), luaL_setfuncs(L, tab_funcs, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n)))), luaL_setfuncs(L, tab_funcs, 0));
     return 1;
 }

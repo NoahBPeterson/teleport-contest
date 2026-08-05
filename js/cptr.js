@@ -67,12 +67,15 @@ export function cstr(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new E
   return s;
 }
 
-/** Array lvalue -> pointer to its first element. @param {Uint8Array|Array} buf @returns {CPtr} */
-export function decay(buf) { return { buf, off: 0 }; }
+/** Array lvalue -> pointer to its first element. A multi-dim array carries its
+ * flat backing in .buf (rows are subarrays of it) — unwrap so pointer-to-array
+ * arithmetic (and memset over the whole array) sees contiguous storage.
+ * @param {Uint8Array|Array} buf @returns {CPtr} */
+export function decay(buf) { return { buf: Array.isArray(buf) && buf.buf !== undefined ? buf.buf : buf, off: 0 }; }
 
 /** Pointer arithmetic: p + n elements of size sz (default 1 = byte). @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
 let __wdTicks = 0;
-export function add(p, n, sz = 1) { if (++__wdTicks > 3e8) { __wdTicks = -1e9; throw new Error('WATCHDOG cptr.add'); } return { buf: p.buf, off: p.off + Number(n) * sz }; }
+export function add(p, n, sz = 1) { if (++__wdTicks > 3e8) { __wdTicks = -1e9; throw new Error('WATCHDOG cptr.add'); } const off = p.off + Number(n) * sz; if (Number.isNaN(off)) throw new Error(`cptr.add NaN (n=${String(n)} sz=${sz})`); return { buf: p.buf, off }; } // TEMP NaN tripwire
 
 /** Pointer subtraction: p - n elements of size sz. @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
 export function sub(p, n, sz = 1) { return { buf: p.buf, off: p.off - Number(n) * sz }; }
@@ -87,6 +90,21 @@ export function cmp(a, b) { return a.off - b.off; }
 export function eq(a, b) {
   if (a === null || b === null) return a === b;
   return a.buf === b.buf && a.off === b.off;
+}
+
+// numeric identity for pointer→integer casts ((size_t)p, point2uint): stable
+// within a run, NOT a C address — suitable for hash seeds and integer compares
+const __bufIds = new WeakMap();
+let __nextBufId = 1;
+/** @param {CPtr|null} p @returns {bigint} */
+export function addr(p) {
+  if (p === null || p === undefined) return 0n;
+  if (typeof p !== 'object' && typeof p !== 'function') return BigInt(p) || 0n;
+  if (p.isBox) { let id = __bufIds.get(p); if (!id) { id = __nextBufId++ * (1 << 26); __bufIds.set(p, id); } return BigInt(id); }
+  const key = p.buf !== undefined ? p.buf : p; // function designators: identity
+  let base = __bufIds.get(key);
+  if (!base) { base = __nextBufId++ * (1 << 26); __bufIds.set(key, base); }
+  return BigInt(base + (p.off || 0));
 }
 
 // ------------------------------------------------------- scalar load/store ----
@@ -141,6 +159,7 @@ export function stI16(p, v) {
 export function ldU64(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
   if (p.isBox) return BigInt.asUintN(64, BigInt(p.v));
   const b = p.buf, o = p.off;
+  if (o + 8 > b.length) throw new Error(`ldU64 OOB: buflen=${b.length} off=${o}`); // TEMP debug aid
   let v = 0n;
   for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]);
   return v;
@@ -293,6 +312,22 @@ export function strstr(haystack, needle) {
 /** @param {CPtr} dst @param {CPtr} src @param {number|bigint} n @returns {CPtr} dst */
 export function memcpy(dst, src, n) {
   n = Number(n);
+  // boxed scalars (tier-2 &x): stage through a little-endian byte buffer
+  if (src && src.isBox) {
+    const tmp = new Uint8Array(n);
+    const v = src.v;
+    if (v && v.buf !== undefined) { const id = __ptrRegistry.indexOf(v) + 1; let x = BigInt(id); for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
+    else if (typeof v === 'bigint') { let x = v; for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
+    else { let x = Number(v) >>> 0; for (let i = 0; i < n; i++) { tmp[i] = x & 0xFF; x >>>= 8; } }
+    src = { buf: tmp, off: 0 };
+  }
+  if (dst && dst.isBox) {
+    const tmp = alloc(n);
+    const r = memcpy(tmp, src, n);
+    if (n <= 4) { let x = 0; for (let i = n - 1; i >= 0; i--) x = (x << 8) | tmp.buf[i]; dst.v = x; }
+    else { let x = 0n; for (let i = Math.min(n, 8) - 1; i >= 0; i--) x = (x << 8n) | BigInt(tmp.buf[i]); dst.v = x; }
+    return r;
+  }
   const tmp = src.buf.slice(src.off, src.off + n); // slice: safe even if overlapping
   dst.buf.set(tmp, dst.off);
   return dst;
@@ -319,20 +354,24 @@ export function sprintfCore(fmt, args) {
   if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
   const f = cstr(fmt);
   let ai = 0;
-  return f.replace(/%([+0-]*)(\d*)(ll|l)?([diuxscf%])/g, (m, flags, width, len, spec) => {
+  return f.replace(/%([+0-]*)(\d*)(?:\.(\d*))?(ll|l|z)?([diuxXscf%])/g, (m, flags, width, prec, len, spec) => {
     if (spec === '%') return '%';
     const a = args[ai++];
     const w = Number(width || 0);
     let s;
-    if (spec === 's') s = cstr(a);
+    if (spec === 's') { s = cstr(a); if (prec !== undefined && prec !== '') s = s.slice(0, Number(prec)); }
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
-    else if (spec === 'f') s = Number(a).toFixed(6);
-    else if (spec === 'x') s = (len === 'll' || len === 'l') ? BigInt.asUintN(64, BigInt(a)).toString(16) : (Number(a) >>> 0).toString(16);
-    else if (spec === 'u') s = (len === 'll' || len === 'l') ? String(BigInt.asUintN(64, BigInt(a))) : String(Number(a) >>> 0);
-    else if (len === 'll' || len === 'l') s = String(BigInt.asIntN(64, BigInt(a))); // %lld/%ld
+    else if (spec === 'f') s = prec !== undefined && prec !== '' ? Number(a).toFixed(Number(prec)) : Number(a).toFixed(6);
+    else if (spec === 'x' || spec === 'X') { s = (len === 'll' || len === 'l' || len === 'z') ? BigInt.asUintN(64, BigInt(a)).toString(16) : (Number(a) >>> 0).toString(16); if (spec === 'X') s = s.toUpperCase(); }
+    else if (spec === 'u') s = (len === 'll' || len === 'l' || len === 'z') ? String(BigInt.asUintN(64, BigInt(a))) : String(Number(a) >>> 0);
+    else if (len === 'll' || len === 'l' || len === 'z') s = String(BigInt.asIntN(64, BigInt(a))); // %lld/%ld/%zd
     else s = String(Number(a)); // %d %i
+    if (prec !== undefined && prec !== '' && 'diuxX'.includes(spec) && !s.startsWith('-')) s = s.padStart(Number(prec), '0');
     if (flags.includes('+') && !s.startsWith('-') && 'di'.includes(spec)) s = '+' + s;
-    if (s.length < w) s = (flags.includes('0') && !s.startsWith('-') ? '0' : ' ').repeat(w - s.length) + s;
+    if (s.length < w) {
+      if (flags.includes('-')) s = s + ' '.repeat(w - s.length); // left-justify
+      else s = (flags.includes('0') && !s.startsWith('-') ? '0' : ' ').repeat(w - s.length) + s;
+    }
     return s;
   });
 }
@@ -422,6 +461,13 @@ export function vaArg(ap, tag) {
 const __fds = new Map(); // fd -> { data: number[], pos: number, writeBuf: number[]|null }
 let __nextFd = 100;
 
+// boot-harness bridge: when installed, route fd I/O to the harness fd table
+// (generated code sometimes resolves read/write to cptr.* while open/creat
+// resolve to harness globals — the two tables must be one)
+let __fdHooks = null; // { read(fd, buf, n), write(fd, buf, n) }
+/** @param {{read: Function, write: Function}|null} h */
+export function setFdHooks(h) { __fdHooks = h; }
+
 /** Test helper: register an in-memory fd. mode 'r' reads data; 'w' collects writes. @returns {number} fd */
 export function fdNew(data, mode) {
   const fd = __nextFd++;
@@ -433,6 +479,7 @@ export function fdWritten(fd) { return new Uint8Array(__fds.get(fd).writeBuf || 
 
 /** @param {number} fd @param {CPtr} buf @param {number|bigint} n @returns {bigint} bytes read (ssize_t) */
 export function read(fd, buf, n) {
+  if (__fdHooks) return BigInt(__fdHooks.read(fd, buf, n));
   n = Number(n);
   const f = __fds.get(fd);
   if (!f) return -1n;
@@ -443,6 +490,7 @@ export function read(fd, buf, n) {
 
 /** @param {number} fd @param {CPtr} buf @param {number|bigint} n @returns {bigint} bytes written (ssize_t) */
 export function write(fd, buf, n) {
+  if (__fdHooks) return BigInt(__fdHooks.write(fd, buf, n));
   n = Number(n);
   const f = __fds.get(fd);
   if (!f || !f.writeBuf) return -1n;

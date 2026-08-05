@@ -48,11 +48,11 @@ let buf = cptr.alloc(144);
 
 /** C ref: unixunix.c:38 — @param {CInt} fd @returns {CInt} */
 function veryold(fd) {
-    let date = cptr.box(0);
+    let date = cptr.box(0n);
     if (fstat(fd, buf))
         return 0;
     void time(date);
-    if (date.v - cptr.ldI64(cptr.add(buf, 48)) < 3n * 24n * 60n * 60n) {
+    if (BigInt.asIntN(64, date.v - cptr.ldI64(cptr.add(buf, 48))) < BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, 3n * 24n) * 60n) * 60n)) {
         let lockedpid = cptr.box(0);
         if (BigInt.asUintN(64, cptr.read(fd, lockedpid, 4n)) != 4n)
             return 0;
@@ -79,14 +79,14 @@ const __static_getlock_destroy_old_game_prompt = cptr.bytes("There is already a 
 
 /** C ref: unixunix.c:103 */
 export function getlock() {
+    let i = 0;
+    let fd;
+    let c;
+    let too_old;
+    let fq_lock;
     __lbl_gotlock: {
-        let i = 0;
-        let fd;
-        let c;
-        let too_old;
-        let fq_lock;
         if (!strcmp(cptr.ldPtr(windowprocs), __sl0))
-            if (!isatty(0) && !getenv(__sl1))
+            if (!isatty(0) && !getenv(__sl1) ? 1 : 0)
                 error(__sl2);
         if (!lock_file(__sl3, 6, 10)) {
             (cptr.ldPtr(cptr.add(windowprocs, 216)))();
@@ -111,7 +111,7 @@ export function getlock() {
                 }
                 too_old = veryold(fd);
                 void close(fd);
-                if (too_old && eraseoldlocks())
+                if (too_old && eraseoldlocks() ? 1 : 0)
                     break __lbl_gotlock;
             } while (i < cptr.ldI32(cptr.add(gl, 8)));
             unlock_file(__sl3);
@@ -127,7 +127,7 @@ export function getlock() {
             }
             too_old = veryold(fd);
             void close(fd);
-            if (too_old && eraseoldlocks())
+            if (too_old && eraseoldlocks() ? 1 : 0)
                 break __lbl_gotlock;
             unlock_file(__sl3);
             if (cptr.ld1s(cptr.add(iflags, 81))) {
@@ -139,11 +139,11 @@ export function getlock() {
                     let tmp;
                     void putchar(c);
                     void fflush(__stdoutp);
-                    while ((tmp = getchar()) != 10 && tmp != (-1))
+                    while ((tmp = getchar()) != 10 && tmp != (-1) ? 1 : 0)
                         ;
                 }
             }
-            if (c == 121 || c == 89) {
+            if (c == 121 || c == 89 ? 1 : 0) {
                 if (eraseoldlocks()) {
                     break __lbl_gotlock;
                 } else {
@@ -184,7 +184,7 @@ export function ask_about_panic_save() {
         void fflush(__stdoutp);
         do {
             c = getchar();
-            if (c == (-1) || c == 27 || c == 0)
+            if ((c == (-1) || c == 27 ? 1 : 0) || c == 0 ? 1 : 0)
                 break;
             c = lowc(schar(c));
         } while (!cptr.strchr(__sl18, c));
@@ -202,14 +202,14 @@ export function ask_about_panic_save() {
 /** C ref: unixunix.c:297 — @param {CPtr} s */
 export function regularize(s) {
     let lp;
-    while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
+    while (((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null ? 1 : 0) || (lp = cptr.strchr(s, 32)) !== null ? 1 : 0)
         cptr.st1(lp, 95);
 }
 
 /** C ref: unixunix.c:344 @returns {CInt} */
 export function dosh() {
     let str;
-    if (!cptr.ldPtr(cptr.add(sysopt, 40)) || !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 40)), 0)) || !check_user_string(cptr.ldPtr(cptr.add(sysopt, 40)))) {
+    if ((!cptr.ldPtr(cptr.add(sysopt, 40)) || !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(sysopt, 40)), 0)) ? 1 : 0) || !check_user_string(cptr.ldPtr(cptr.add(sysopt, 40))) ? 1 : 0) {
         Norep(__sl19);
         return 0;
     }

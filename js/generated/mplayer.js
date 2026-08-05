@@ -156,15 +156,15 @@ function dev_name() {
         match = (0);
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
         for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 343, 96)) <= 0)))
+            if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtr(cptr.add(developers, i, 8)), ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))))) ? (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) : __sl39, cptr.strlen(cptr.ldPtr(cptr.add(developers, i, 8))))) {
+            if (!cptr.strncmp(cptr.ldPtr(cptr.add(developers, i, 8)), ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) : __sl39, cptr.strlen(cptr.ldPtr(cptr.add(developers, i, 8))))) {
                 match = (1);
                 break;
             }
         }
         m++;
-    } while (match && m < 100);
+    } while (match && m < 100 ? 1 : 0);
     if (match)
         return null;
     return (cptr.ldPtr(cptr.add(developers, i, 8)));
@@ -177,16 +177,16 @@ function get_mplname(mtmp, nam) {
     devnam = dev_name();
     if (!devnam)
         void cptr.strcpy(nam, fmlkind ? __sl42 : __sl43);
-    else if (fmlkind && !!strcmp(devnam, __sl6))
+    else if (fmlkind && !!strcmp(devnam, __sl6) ? 1 : 0)
         void cptr.strcpy(nam, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 81, __sl44), rn2(2)) : rn2(2)) ? __sl45 : __sl42);
     else
         void cptr.strcpy(nam, devnam);
-    if (fmlkind || !strcmp(nam, __sl6))
+    if (fmlkind || !strcmp(nam, __sl6) ? 1 : 0)
         cptr.stI32(cptr.add(mtmp, 84), 1);
     else
         cptr.stI32(cptr.add(mtmp, 84), 0);
     void cptr.strcat(nam, __sl46);
-    void cptr.strcat(nam, rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24)), schar(cptr.ldI32(cptr.add(mtmp, 84)))));
+    void cptr.strcat(nam, rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))), schar(cptr.ldI32(cptr.add(mtmp, 84)))));
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
@@ -210,7 +210,7 @@ function mk_mplayer_armor(mon, typ) {
 export function mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
-    if (!((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0)))
+    if (!((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
         return (null);
     if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)) !== null))
         void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8))), (1 | 4) >>> 0);
@@ -238,7 +238,7 @@ export function mk_mplayer(ptr, x, y, special) {
         cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(142, 149)));
         helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(89, 100)));
         shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(153, 158)));
-        switch ((cptr.add((ptr), 24))) {
+        switch ((cptr.ldI32(cptr.add((ptr), 24)))) {
             case 331:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 161, __sl48), rn2(2)) : rn2(2)))
                 weapon = 82;
@@ -340,10 +340,10 @@ export function mk_mplayer(ptr, x, y, special) {
                 cptr.stI32(cptr.add(otmp, 120), 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
                 cptr.stI32(cptr.add(otmp, 140), 1);
-            if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)))
+            if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
                 otmp = mk_artifact(otmp, schar((-128)), 99, (0));
-            if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) && monmightthrowwep(otmp))
-                cptr.st1(cptr.add(otmp, 40), cptr.ld1s(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17) ? 4 : 8))));
+            if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
+                cptr.stU64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
             if (is_art(otmp, 8))
                 cptr.st1(cptr.add(otmp, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
@@ -398,7 +398,7 @@ export function create_mplayers(num, special) {
         do {
             x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2((80 - 4) | 0)) : rn2((80 - 4) | 0)) + (2)) | 0);
             y = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 343, __sl50), rnd((21 - 2) | 0)) : rnd((21 - 2) | 0));
-        } while (!goodpos(i16(x), i16(y), fakemon, 0) && tryct++ <= 50);
+        } while (!goodpos(i16(x), i16(y), fakemon, 0) && tryct++ <= 50 ? 1 : 0);
         if (tryct > 50)
             return;
         void mk_mplayer(cptr.add(mons, pm, 96), i16(x), i16(y), special);

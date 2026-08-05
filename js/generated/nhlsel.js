@@ -163,11 +163,11 @@ function l_selection_setpoint(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
         val = Number(BigInt.asIntN(32, luaL_optinteger(L, 4, 1n)));
     }
-    if (!sel || !cptr.ldPtr(cptr.add(sel, 24))) {
+    if (!sel || !cptr.ldPtr(cptr.add(sel, 24)) ? 1 : 0) {
         nhl_error(L, __sl2);
         return 0;
     }
-    if (x.v == -1 && y.v == -1)
+    if (x.v == -1 && y.v == -1 ? 1 : 0)
         crd = (16777216n | 0n);
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
@@ -199,8 +199,8 @@ function l_selection_getpoint(L) {
     let sel = l_selection_check(L, 1);
     let x = cptr.box(0);
     let y = cptr.box(0);
-    let ix = cptr.box(0);
-    let iy = cptr.box(0);
+    let ix = cptr.box(0n);
+    let iy = cptr.box(0n);
     let val;
     let crd;
     (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
@@ -210,7 +210,7 @@ function l_selection_getpoint(L) {
     }
     x.v = Number(BigInt.asIntN(16, ix.v));
     y.v = Number(BigInt.asIntN(16, iy.v));
-    if (x.v == -1 && y.v == -1)
+    if (x.v == -1 && y.v == -1 ? 1 : 0)
         crd = (16777216n | 0n);
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
@@ -341,9 +341,9 @@ function l_selection_rndcoord(L) {
     let x = cptr.box(i16((-1)));
     let y = cptr.box(i16((-1)));
     selection_rndcoord(sel, x, y, schar(removeit));
-    if (!(x.v == -1 && y.v == -1)) {
+    if (!(x.v == -1 && y.v == -1 ? 1 : 0)) {
         update_croom();
-        if (cptr.ldPtr(cptr.add(gc, 568)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8))) {
+        if (cptr.ldPtr(cptr.add(gc, 568)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) ? 1 : 0) {
             x.v = i16(x.v - cptr.ldI16(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8))));
             y.v = i16(y.v - cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)), 4)));
         } else {
@@ -365,7 +365,7 @@ function l_selection_room(L) {
     let croom = null;
     if (argc == 1) {
         let i = Number(BigInt.asIntN(32, luaL_checkinteger(L, -1)));
-        croom = (i >= 0 && i < cptr.ldI32(cptr.add(svn, 44))) ? cptr.add(svr, i, 224) : null;
+        croom = (i >= 0 && i < cptr.ldI32(cptr.add(svn, 44)) ? 1 : 0) ? cptr.add(svr, i, 224) : null;
     }
     sel = selection_from_mkroom(croom);
     l_selection_push_copy(L, sel);
@@ -495,7 +495,7 @@ function l_selection_randline(L) {
         y2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 5)));
         roughness = Number(BigInt.asIntN(32, luaL_checkinteger(L, 6)));
         lua_settop(L, (-(5) - 1) | 0);
-    } else if (argc == 5 && lua_type(L, 1) == 3) {
+    } else if (argc == 5 && lua_type(L, 1) == 3 ? 1 : 0) {
         x1.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y1.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         x2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
@@ -600,7 +600,7 @@ function l_selection_flood(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     let diagonals = (0);
-    if (argc == 2 || argc == 3) {
+    if (argc == 2 || argc == 3 ? 1 : 0) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         if (argc == 3)
@@ -635,7 +635,7 @@ function l_selection_circle(L) {
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
         filled = 0;
-    } else if (argc == 4 && lua_type(L, 1) == 3) {
+    } else if (argc == 4 && lua_type(L, 1) == 3 ? 1 : 0) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
@@ -643,7 +643,7 @@ function l_selection_circle(L) {
         lua_settop(L, (-(4) - 1) | 0);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
-    } else if (argc == 4 || argc == 5) {
+    } else if (argc == 4 || argc == 5 ? 1 : 0) {
         sel = l_selection_check(L, 1);
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
@@ -676,7 +676,7 @@ function l_selection_ellipse(L) {
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
         filled = 0;
-    } else if (argc == 5 && lua_type(L, 1) == 3) {
+    } else if (argc == 5 && lua_type(L, 1) == 3 ? 1 : 0) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r1 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
@@ -685,7 +685,7 @@ function l_selection_ellipse(L) {
         lua_settop(L, (-(5) - 1) | 0);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
-    } else if (argc == 5 || argc == 6) {
+    } else if (argc == 5 || argc == 6 ? 1 : 0) {
         sel = l_selection_check(L, 1);
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
@@ -721,7 +721,7 @@ function l_selection_gradient(L) {
     let mindist = 0;
     let maxdist = 0;
     let type = 0n;
-    if (argc == 1 && lua_type(L, 1) == 5) {
+    if (argc == 1 && lua_type(L, 1) == 5 ? 1 : 0) {
         lcheck_param_table(L);
         type = BigInt(cptr.ldI32(cptr.add(__static_l_selection_gradient_gradtypes2i, get_table_option(L, __sl21, __sl22, __static_l_selection_gradient_gradtypes), 4)));
         x.v = i16(get_table_int(L, __sl4));
@@ -738,7 +738,7 @@ function l_selection_gradient(L) {
     } else {
         nhl_error(L, __sl27);
     }
-    if (x2.v == -1 && y2.v == -1) {
+    if (x2.v == -1 && y2.v == -1 ? 1 : 0) {
         x2.v = x.v;
         y2.v = y.v;
     }
@@ -749,13 +749,13 @@ function l_selection_gradient(L) {
 
 /** C ref: nhlsel.c:925 — @param {CPtr} L @returns {CInt} */
 function l_selection_iterate(L) {
+    let argc = lua_gettop(L);
+    let sel = null;
+    let x;
+    let y;
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     __lbl_out: {
-        let argc = lua_gettop(L);
-        let sel = null;
-        let x;
-        let y;
-        let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
-        if (argc == 2 && lua_type(L, 2) == 6) {
+        if (argc == 2 && lua_type(L, 2) == 6 ? 1 : 0) {
             sel = l_selection_check(L, 1);
             selection_getbounds(sel, rect);
             for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++) {
@@ -870,12 +870,12 @@ cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 128), 8), null);
 
 /** C ref: nhlsel.c:1025 — @param {CPtr} L @returns {CInt} */
 export function l_selection_register(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (400n / 16n - 1n)))), luaL_setfuncs(L, l_selection_methods, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n)))), luaL_setfuncs(L, l_selection_methods, 0));
     luaL_newmetatable(L, __sl0);
     luaL_setfuncs(L, l_selection_meta, 0);
     lua_pushvalue(L, -2);
     lua_setfield(L, -2, __sl62);
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (144n / 16n - 1n)))), luaL_setfuncs(L, l_selection_meta, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, l_selection_meta, 0));
     lua_setfield(L, -2, __sl63);
     lua_settop(L, (-(1) - 1) | 0);
     lua_setglobal(L, __sl0);

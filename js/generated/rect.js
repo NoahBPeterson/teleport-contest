@@ -29,7 +29,7 @@ let rect_cnt = 0;
 export function init_rect() {
     if (!rect) {
         n_rects = ((Math.imul(80, 21)) / 30) | 0;
-        rect = alloc(Number(BigInt.asUintN(32, (8n * BigInt.asUintN(64, BigInt(n_rects))))));
+        rect = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt.asUintN(64, BigInt(n_rects))))));
         if (!rect)
             panic(__sl0);
     }
@@ -60,7 +60,7 @@ export function get_rect_ind(r) {
     hx = cptr.ldI16(cptr.add(r, 4));
     hy = cptr.ldI16(cptr.add(r, 6));
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (lx == cptr.ldI16(rectp) && ly == cptr.ldI16(cptr.add(rectp, 2)) && hx == cptr.ldI16(cptr.add(rectp, 4)) && hy == cptr.ldI16(cptr.add(rectp, 6)))
+        if (((lx == cptr.ldI16(rectp) && ly == cptr.ldI16(cptr.add(rectp, 2)) ? 1 : 0) && hx == cptr.ldI16(cptr.add(rectp, 4)) ? 1 : 0) && hy == cptr.ldI16(cptr.add(rectp, 6)) ? 1 : 0)
             return i;
     return -1;
 }
@@ -78,7 +78,7 @@ export function get_rect(r) {
     hx = cptr.ldI16(cptr.add(r, 4));
     hy = cptr.ldI16(cptr.add(r, 6));
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16(cptr.add(rectp, 2)) && hx <= cptr.ldI16(cptr.add(rectp, 4)) && hy <= cptr.ldI16(cptr.add(rectp, 6)))
+        if (((lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16(cptr.add(rectp, 2)) ? 1 : 0) && hx <= cptr.ldI16(cptr.add(rectp, 4)) ? 1 : 0) && hy <= cptr.ldI16(cptr.add(rectp, 6)) ? 1 : 0)
             return rectp;
     return null;
 }
@@ -90,13 +90,13 @@ export function rnd_rect() {
 
 /** C ref: rect.c:116 — @param {CPtr} r1 @param {CPtr} r2 @param {CPtr} r3 @returns {CInt} */
 function intersect(r1, r2, r3) {
-    if (cptr.ldI16(r2) > cptr.ldI16(cptr.add(r1, 4)) || cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 6)) || cptr.ldI16(cptr.add(r2, 4)) < cptr.ldI16(r1) || cptr.ldI16(cptr.add(r2, 6)) < cptr.ldI16(cptr.add(r1, 2)))
+    if (((cptr.ldI16(r2) > cptr.ldI16(cptr.add(r1, 4)) || cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 6)) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 4)) < cptr.ldI16(r1) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 6)) < cptr.ldI16(cptr.add(r1, 2)) ? 1 : 0)
         return (0);
     cptr.stI16(r3, i16((cptr.ldI16(r2) > cptr.ldI16(r1) ? cptr.ldI16(r2) : cptr.ldI16(r1))));
     cptr.stI16(cptr.add(r3, 2), i16((cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 2)) ? cptr.ldI16(cptr.add(r2, 2)) : cptr.ldI16(cptr.add(r1, 2)))));
     cptr.stI16(cptr.add(r3, 4), i16((cptr.ldI16(cptr.add(r2, 4)) > cptr.ldI16(cptr.add(r1, 4)) ? cptr.ldI16(cptr.add(r1, 4)) : cptr.ldI16(cptr.add(r2, 4)))));
     cptr.stI16(cptr.add(r3, 6), i16((cptr.ldI16(cptr.add(r2, 6)) > cptr.ldI16(cptr.add(r1, 6)) ? cptr.ldI16(cptr.add(r1, 6)) : cptr.ldI16(cptr.add(r2, 6)))));
-    if (cptr.ldI16(r3) > cptr.ldI16(cptr.add(r3, 4)) || cptr.ldI16(cptr.add(r3, 2)) > cptr.ldI16(cptr.add(r3, 6)))
+    if (cptr.ldI16(r3) > cptr.ldI16(cptr.add(r3, 4)) || cptr.ldI16(cptr.add(r3, 2)) > cptr.ldI16(cptr.add(r3, 6)) ? 1 : 0)
         return (0);
     return (1);
 }

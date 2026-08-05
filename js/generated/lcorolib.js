@@ -30,7 +30,7 @@ const __sl14 = cptr.lit("close");
 /** C ref: lcorolib.c:21 — @param {CPtr} L @returns {CPtr} */
 function getco(L) {
     let co = lua_tothread(L, 1);
-    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, (1), (__sl0))));
+    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, (1), (__sl0)) ? 1 : 0));
     return co;
 }
 
@@ -44,7 +44,7 @@ function auxresume(L, co, narg) {
     }
     lua_xmove(L, co, narg);
     status = lua_resume(co, L, narg, nres);
-    if ((__builtin_expect(BigInt(((status == 0 || status == 1) != 0)), 1n))) {
+    if ((__builtin_expect(BigInt(((status == 0 || status == 1 ? 1 : 0) != 0)), 1n))) {
         if ((__builtin_expect(BigInt(((!lua_checkstack(L, (nres.v + 1) | 0)) != 0)), 0n))) {
             lua_settop(co, (-(nres.v) - 1) | 0);
             lua_pushstring(L, __sl2);
@@ -80,12 +80,12 @@ function luaB_auxwrap(L) {
     let r = auxresume(L, co, lua_gettop(L));
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         let stat = lua_status(co);
-        if (stat != 0 && stat != 1) {
+        if (stat != 0 && stat != 1 ? 1 : 0) {
             stat = lua_closethread(co, L);
             (void 0);
             lua_xmove(co, L, 1);
         }
-        if (stat != 4 && lua_type(L, -1) == 4) {
+        if (stat != 4 && lua_type(L, -1) == 4 ? 1 : 0) {
             luaL_where(L, 1);
             lua_rotate(L, (-2), 1);
             lua_concat(L, 2);
@@ -215,6 +215,6 @@ cptr.stPtr(cptr.add(cptr.add(co_funcs, 128), 8), null);
 
 /** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
 export function luaopen_coroutine(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
     return 1;
 }

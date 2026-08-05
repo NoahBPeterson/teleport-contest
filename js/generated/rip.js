@@ -50,7 +50,7 @@ function center(line, text) {
     let ip;
     let op;
     ip = text;
-    op = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), line)), 28n - ((cptr.strlen(text) + 1n) >> 1n));
+    op = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), line, 8)), BigInt.asUintN(64, 28n - ((BigInt.asUintN(64, cptr.strlen(text) + 1n)) >> 1n)));
     while (cptr.ld1s(ip))
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => ip, (v) => { ip = v; })));
 }
@@ -66,8 +66,8 @@ export function genl_outrip(tmpwin, how, when) {
     let cash;
     cptr.stPtr(cptr.add(gr, 352), dp = alloc(128));
     for (x = 0; cptr.ldPtr(cptr.add(rip_txt, x, 8)); ++x)
-        cptr.stPtr(cptr.add(dp, x), dupstr(cptr.ldPtr(cptr.add(rip_txt, x, 8))));
-    cptr.stPtr(cptr.add(dp, x), null);
+        cptr.stPtr(cptr.add(dp, x, 8), dupstr(cptr.ldPtr(cptr.add(rip_txt, x, 8))));
+    cptr.stPtr(cptr.add(dp, x, 8), null);
     void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
     center(6, cptr.decay(buf));
     cash = ((cptr.ldI64(cptr.add(gd, 8))) > (0n) ? (cptr.ldI64(cptr.add(gd, 8))) : (0n));
@@ -81,7 +81,7 @@ export function genl_outrip(tmpwin, how, when) {
         let i;
         let i0 = Number(BigInt.asIntN(32, cptr.strlen(dpx)));
         if (i0 > 16) {
-            for (i = 16; (i > 0) && (i0 > 16); --i)
+            for (i = 16; (i > 0) && (i0 > 16) ? 1 : 0; --i)
                 if (cptr.ld1s(cptr.add(dpx, i)) == 32)
                     i0 = i;
             if (!i)
@@ -105,7 +105,7 @@ export function genl_outrip(tmpwin, how, when) {
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
     for (x = 0; cptr.ldPtr(cptr.add(rip_txt, x, 8)); x++) {
-        cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), x)));
+        cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), x, 8)));
     }
     cptr.free(cptr.ldPtr(cptr.add(gr, 352)));
     cptr.stPtr(cptr.add(gr, 352), null);

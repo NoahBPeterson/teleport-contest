@@ -28,7 +28,7 @@ export function luaM_growaux_(L, block, nelems, psize, size_elems, limit, what) 
             size = 4;
     }
     (void 0);
-    newblock = luaM_saferealloc_(L, block, (BigInt.asUintN(64, BigInt(((cptr.ldI32(psize)))))) * BigInt.asUintN(64, BigInt(size_elems)), (BigInt.asUintN(64, BigInt(((size))))) * BigInt.asUintN(64, BigInt(size_elems)));
+    newblock = luaM_saferealloc_(L, block, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt(((cptr.ldI32(psize)))))) * BigInt.asUintN(64, BigInt(size_elems))), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt(((size))))) * BigInt.asUintN(64, BigInt(size_elems))));
     cptr.stI32(psize, size);
     return newblock;
 }
@@ -54,13 +54,13 @@ export function luaM_free_(L, block, osize) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     (void 0);
     ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, 0n));
-    cptr.st1(cptr.add(g, 24), cptr.ld1s(cptr.add(g, 24)) - osize);
+    cptr.stU64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) - BigInt.asIntN(64, osize));
 }
 
 /** C ref: lmem.c:162 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
 function tryagain(L, block, osize, nsize) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    if (((((((cptr.ld1u(cptr.add(((cptr.add(g, 80))), 8)))) & 15)) == (0)) && !cptr.ld1u(cptr.add(g, 103)))) {
+    if (((((((cptr.ld1u(cptr.add(((cptr.add(g, 80))), 8)))) & 15)) == (0)) && !cptr.ld1u(cptr.add(g, 103)) ? 1 : 0)) {
         luaC_fullgc(L, 1);
         return ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, nsize));
     } else
@@ -73,20 +73,20 @@ export function luaM_realloc_(L, block, osize, nsize) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     (void 0);
     newblock = ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, nsize));
-    if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n ? 1 : 0) != 0)), 0n))) {
         newblock = tryagain(L, block, osize, nsize);
         if (cptr.eq(newblock, (null)))
             return (null);
     }
     (void 0);
-    cptr.stU64(cptr.add(g, 24), BigInt.asIntN(64, ((BigInt.asUintN(64, cptr.ldI64(cptr.add(g, 24))) + nsize) - osize)));
+    cptr.stU64(cptr.add(g, 24), BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64(cptr.add(g, 24))) + nsize)) - osize)));
     return newblock;
 }
 
 /** C ref: lmem.c:192 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
 export function luaM_saferealloc_(L, block, osize, nsize) {
     let newblock = luaM_realloc_(L, block, osize, nsize);
-    if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n ? 1 : 0) != 0)), 0n)))
         luaD_throw(L, 4);
     return newblock;
 }
@@ -103,7 +103,7 @@ export function luaM_malloc_(L, size, tag) {
             if (cptr.eq(newblock, (null)))
                 luaD_throw(L, 4);
         }
-        cptr.st1(cptr.add(g, 24), cptr.ld1s(cptr.add(g, 24)) + size);
+        cptr.stU64(cptr.add(g, 24), cptr.ldI64(cptr.add(g, 24)) + BigInt.asIntN(64, size));
         return newblock;
     }
 }

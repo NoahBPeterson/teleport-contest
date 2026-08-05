@@ -38,10 +38,10 @@ const __sl17 = cptr.lit("ttyDisplay == NULL || ttyDisplay->toplin != TOPLINE_NEE
 
 /** C ref: topl.c:20 @returns {CInt} */
 export function tty_doprev_message() {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     let prevmsg_win;
     let i;
-    if ((cptr.ld1s(cptr.add(iflags, 176)) != 115) && !cptr.ldI32(cptr.add(ttyDisplay, 36))) {
+    if ((cptr.ld1s(cptr.add(iflags, 176)) != 115) && !cptr.ldI32(cptr.add(ttyDisplay, 36)) ? 1 : 0) {
         if (cptr.ld1s(cptr.add(iflags, 176)) == 102) {
             prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl0);
@@ -49,8 +49,8 @@ export function tty_doprev_message() {
             cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
             i = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 56))));
             do {
-                if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)) && strcmp(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)), __sl1))
-                    (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)));
+                if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)) && strcmp(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)), __sl1) ? 1 : 0)
+                    (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)));
                 i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64(cptr.add(cw, 16)))));
             } while (BigInt(i) != cptr.ldI64(cptr.add(cw, 56)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.add(gt, 26));
@@ -58,22 +58,22 @@ export function tty_doprev_message() {
             (cptr.ldPtr(cptr.add(windowprocs, 128)))(prevmsg_win);
         } else if (cptr.ld1s(cptr.add(iflags, 176)) == 99) {
             do {
-                morc = 0;
+                morc.v = 0;
                 if (cptr.ldI64(cptr.add(cw, 56)) == cptr.ldI64(cptr.add(cw, 48))) {
                     cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
                     redotoplin(cptr.add(gt, 26));
-                    (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - 1n;
+                    (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - (-1n);
                     if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
-                        cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 16)) - 1n);
-                    if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))))
+                        cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
+                    if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                         cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
-                } else if (cptr.ldI64(cptr.add(cw, 56)) == (cptr.ldI64(cptr.add(cw, 48)) - 1n)) {
+                } else if (cptr.ldI64(cptr.add(cw, 56)) == (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 48)) - 1n))) {
                     cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
-                    redotoplin(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))));
-                    (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - 1n;
+                    redotoplin(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)));
+                    (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - (-1n);
                     if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
-                        cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 16)) - 1n);
-                    if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))))
+                        cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
+                    if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                         cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 } else {
                     prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
@@ -82,31 +82,31 @@ export function tty_doprev_message() {
                     cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                     i = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 56))));
                     do {
-                        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)) && strcmp(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)), __sl1))
-                            (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i)));
+                        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)) && strcmp(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)), __sl1) ? 1 : 0)
+                            (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)));
                         i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64(cptr.add(cw, 16)))));
                     } while (BigInt(i) != cptr.ldI64(cptr.add(cw, 56)));
                     (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.add(gt, 26));
                     (cptr.ldPtr(cptr.add(windowprocs, 120)))(prevmsg_win, 1);
                     (cptr.ldPtr(cptr.add(windowprocs, 128)))(prevmsg_win);
                 }
-            } while (morc == (31 & (112)));
+            } while (morc.v == (31 & (112)));
             cptr.st1(cptr.add(ttyDisplay, 48), 0);
         } else {
-            morc = 0;
+            morc.v = 0;
             prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl0);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl1);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.add(gt, 26));
-            cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)) - 1n);
+            cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 48)) - 1n));
             if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
-                cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 16)) - 1n);
+                cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
             do {
-                (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))));
-                (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - 1n;
+                (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)));
+                (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - (-1n);
                 if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
-                    cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 16)) - 1n);
-                if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))))
+                    cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
+                if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                     cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
             } while (cptr.ldI64(cptr.add(cw, 56)) != cptr.ldI64(cptr.add(cw, 48)));
             (cptr.ldPtr(cptr.add(windowprocs, 120)))(prevmsg_win, 1);
@@ -117,17 +117,17 @@ export function tty_doprev_message() {
     } else if (cptr.ld1s(cptr.add(iflags, 176)) == 115) {
         cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
         do {
-            morc = 0;
+            morc.v = 0;
             if (cptr.ldI64(cptr.add(cw, 56)) == cptr.ldI64(cptr.add(cw, 48)))
                 redotoplin(cptr.add(gt, 26));
-            else if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))))
-                redotoplin(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))));
-            (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - 1n;
+            else if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
+                redotoplin(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)));
+            (cptr.stU64(cptr.add(cw, 56), cptr.ldU64(cptr.add(cw, 56)) + -1n)) - (-1n);
             if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
-                cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 16)) - 1n);
-            if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)))))
+                cptr.stU64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
+            if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                 cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
-        } while (morc == (31 & (112)));
+        } while (morc.v == (31 & (112)));
         cptr.st1(cptr.add(ttyDisplay, 48), 0);
     }
     return 0;
@@ -138,50 +138,50 @@ function redotoplin(str) {
     let otoplin = cptr.ldI32(cptr.add(ttyDisplay, 24));
     home();
     if (!cptr.ldI32(cptr.add(ttyDisplay, 52))) {
-        if (cptr.ldI32(cptr.add(ttyDisplay, 56)) && (cptr.ld1s(str) & 128)) {
+        if (cptr.ldI32(cptr.add(ttyDisplay, 56)) && (cptr.ld1s(str) & 128) ? 1 : 0) {
             g_putch(cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; })));
-            (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - 1;
+            (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
         }
         end_glyphout();
     }
     putsyms(str);
     cl_end();
     cptr.stI32(cptr.add(ttyDisplay, 24), 1);
-    if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && otoplin != 3)
+    if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && otoplin != 3 ? 1 : 0)
         more();
 }
 
 /** C ref: topl.c:145 — @param {CPtr} str */
 export function show_topl(str) {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     if ((cptr.ldI32(cw) & (1 | 4)) != 1) {
-        cptr.st1(cw, cptr.ld1s(cw) & ~(1 | 4));
-        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 2)
-            tty_clear_nhwindow(WIN_MESSAGE);
+        cptr.stI32(cw, cptr.ldI32(cw) & ~(1 | 4));
+        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 2 ? 1 : 0)
+            tty_clear_nhwindow(WIN_MESSAGE.v);
         cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
         home();
         cl_end();
         addtopl(str);
-        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) != 3)
+        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) != 3 ? 1 : 0)
             cptr.stI32(cptr.add(ttyDisplay, 24), 2);
     }
 }
 
 /** C ref: topl.c:170 */
 export function remember_topl() {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     let idx = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 48))));
-    let len = Number(BigInt.asUintN(32, (cptr.strlen(cptr.add(gt, 26)) + 1n)));
-    if ((cptr.ldI32(cw) & 2) || !cptr.ld1s(cptr.add(gt, 26)))
+    let len = Number(BigInt.asUintN(32, BigInt.asUintN(64, cptr.strlen(cptr.add(gt, 26)) + 1n)));
+    if ((cptr.ldI32(cw) & 2) || !cptr.ld1s(cptr.add(gt, 26)) ? 1 : 0)
         return;
-    if (len > cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), idx))) {
-        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx)))
-            cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx)));
+    if (len > cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), idx, 2))) {
+        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx, 8)));
         len = (len + ((8 - ((len & 7) >>> 0)) >>> 0)) | 0;
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx), alloc(len));
-        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), idx), i16(len));
+        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx, 8), alloc(len));
+        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), idx, 2), i16(len));
     }
-    void cptr.strcpy(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx)), cptr.add(gt, 26));
+    void cptr.strcpy(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx, 8)), cptr.add(gt, 26));
     if (!cptr.ldI32(cptr.add(program_state, 60))) {
         cptr.st1(cptr.add(gt, 26), 0);
         cptr.stU64(cptr.add(cw, 56), cptr.stU64(cptr.add(cw, 48), BigInt(((idx + 1) | 0)) % cptr.ldI64(cptr.add(cw, 16))));
@@ -190,8 +190,8 @@ export function remember_topl() {
 
 /** C ref: topl.c:194 — @param {CPtr} s */
 export function addtopl(s) {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
-    tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, (cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
+    tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
     putsyms(s);
     cl_end();
     cptr.stI32(cptr.add(ttyDisplay, 24), 1);
@@ -199,14 +199,14 @@ export function addtopl(s) {
 
 /** C ref: topl.c:205 */
 export function more() {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     if (cptr.ld1s(cptr.add(iflags, 15)))
         return;
     if (cptr.ldI32(cptr.add(ttyDisplay, 32)))
         return;
-    (cptr.stI32(cptr.add(ttyDisplay, 32), cptr.ldI32(cptr.add(ttyDisplay, 32)) + 1)) - 1;
+    (cptr.stI32(cptr.add(ttyDisplay, 32), cptr.ldI32(cptr.add(ttyDisplay, 32)) + 1)) - (1);
     if (cptr.ldI32(cptr.add(ttyDisplay, 24))) {
-        tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, (cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
+        tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
         if (cptr.ldI64(cptr.add(cw, 32)) >= BigInt(((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 8) | 0)))
             topl_putsym(10);
     }
@@ -216,15 +216,15 @@ export function more() {
     if (cptr.ld1s(cptr.add(flags, 44)))
         standoutend();
     xwaitforspace(__sl2);
-    if (morc == 27) {
+    if (morc.v == 27) {
         if (!(cptr.ldI32(cw) & 4))
-            cptr.st1(cw, cptr.ld1s(cw) | 1);
+            cptr.stI32(cw, cptr.ldI32(cw) | 1);
     }
-    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) && cptr.ldI64(cptr.add(cw, 40))) {
-        docorner(1, Number(BigInt.asIntN(32, (cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
+    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) && cptr.ldI64(cptr.add(cw, 40)) ? 1 : 0) {
+        docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
         cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
         home();
-    } else if (morc == 27) {
+    } else if (morc.v == 27) {
         cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
         home();
         cl_end();
@@ -239,13 +239,13 @@ export function update_topl(bp) {
     let otl;
     let n0;
     let notdied = 1;
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     let skip = schar(((cptr.ldI32(cw) & (1 | 4)) == 1));
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
-    if ((cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 || skip) && cptr.ldI64(cptr.add(cw, 40)) == 0n && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 8) | 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0) {
+    if ((((cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 || skip ? 1 : 0) && cptr.ldI64(cptr.add(cw, 40)) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
         void cptr.strcat(cptr.add(gt, 26), __sl4);
         void cptr.strcat(cptr.add(gt, 26), bp);
-        cptr.st1(cptr.add(cw, 32), cptr.ld1s(cptr.add(cw, 32)) + 2n);
+        cptr.stU64(cptr.add(cw, 32), cptr.ldI64(cptr.add(cw, 32)) + 2n);
         if (!skip)
             addtopl(bp);
         return;
@@ -253,7 +253,7 @@ export function update_topl(bp) {
         if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1) {
             more();
         } else if (cptr.ldI64(cptr.add(cw, 40))) {
-            docorner(1, Number(BigInt.asIntN(32, (cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
+            docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
             cptr.stU64(cptr.add(cw, 32), cptr.stU64(cptr.add(cw, 40), 0n));
         }
     }
@@ -274,35 +274,35 @@ export function update_topl(bp) {
         n0 = Number(BigInt.asIntN(32, cptr.strlen(tl)));
     }
     if (!notdied)
-        cptr.st1(cw, cptr.ld1s(cw) & ~1), skip = 0;
+        cptr.stI32(cw, cptr.ldI32(cw) & ~1), skip = 0;
     if (!skip)
         redotoplin(cptr.add(gt, 26));
 }
 
 /** C ref: topl.c:305 — @param {CInt} c */
 function topl_putsym(c) {
-    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     if (cw === null)
         panic(__sl5);
     switch (c) {
         case 8:
-        if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == 0 && cptr.ldI16(cptr.add(ttyDisplay, 6)) > 0)
+        if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == 0 && cptr.ldI16(cptr.add(ttyDisplay, 6)) > 0 ? 1 : 0)
             tty_curs(BASE_WINDOW, cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)), (cptr.ldI16(cptr.add(ttyDisplay, 6)) - 1) | 0);
         backsp();
-        void ((!!(cptr.ldI16(cptr.add(ttyDisplay, 4)) > 0)) || (nhassert_failed(__sl6, __sl7, 317), 0));
-        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + -1)) - 1;
+        void ((!!(cptr.ldI16(cptr.add(ttyDisplay, 4)) > 0)) || (nhassert_failed(__sl6, __sl7, 317), 0) ? 1 : 0);
+        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + -1)) - (-1);
         cptr.stU64(cptr.add(cw, 32), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 4))));
         return;
         case 10:
         cl_end();
         cptr.stI16(cptr.add(ttyDisplay, 4), 0);
-        (cptr.stI16(cptr.add(ttyDisplay, 6), cptr.ldI16(cptr.add(ttyDisplay, 6)) + 1)) - 1;
+        (cptr.stI16(cptr.add(ttyDisplay, 6), cptr.ldI16(cptr.add(ttyDisplay, 6)) + 1)) - (1);
         cptr.stU64(cptr.add(cw, 40), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 6))));
         break;
         default:
         if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 1) | 0))
             topl_putsym(10);
-        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - 1;
+        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
     }
     cptr.stU64(cptr.add(cw, 32), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 4))));
     if (cptr.ldI64(cptr.add(cw, 32)) == 0n)
@@ -310,7 +310,7 @@ function topl_putsym(c) {
     void putchar(c);
     {
         let svx = cptr.ldI16(cptr.add(ttyDisplay, 4));
-        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + -1)) - 1;
+        (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + -1)) - (-1);
         nomux_putch(c);
         cptr.stI16(cptr.add(ttyDisplay, 4), i16(svx));
     }
@@ -330,28 +330,28 @@ function removetopl(n) {
 
 /** C ref: topl.c:373 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @returns {CInt} */
 export function tty_yn_function(query, resp, def) {
+    let q;
+    let rtmp = new Uint8Array(40);
+    let digit_ok;
+    let allow_num;
+    let preserve_case = 0;
+    let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
+    let doprev = 0;
+    let prompt = new Uint8Array(256);
     __lbl_clean_up: {
-        let q;
-        let rtmp = new Uint8Array(40);
-        let digit_ok;
-        let allow_num;
-        let preserve_case = 0;
-        let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
-        let doprev = 0;
-        let prompt = new Uint8Array(256);
-        yn_number = 0n;
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && (cptr.ldI32(cw) & (1 | 4)) != 1)
+        yn_number.v = 0n;
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && (cptr.ldI32(cw) & (1 | 4)) != 1 ? 1 : 0)
             more();
-        cptr.st1(cw, cptr.ld1s(cw) & ~(1 | 4));
+        cptr.stI32(cw, cptr.ldI32(cw) & ~(1 | 4));
         cptr.stI32(cptr.add(ttyDisplay, 24), 3);
-        (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + 1)) - 1;
+        (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + 1)) - (1);
         if (resp) {
             let rb;
             let respbuf = new Uint8Array(128);
             allow_num = schar((cptr.strchr(resp, 35) !== null));
             void cptr.strcpy(cptr.decay(respbuf), resp);
             for (rb = cptr.decay(respbuf); cptr.ld1s(rb); rb = cptr.add(rb, 1))
-                if (65 <= cptr.ld1s(rb) && cptr.ld1s(rb) <= 90) {
+                if (65 <= cptr.ld1s(rb) && cptr.ld1s(rb) <= 90 ? 1 : 0) {
                     preserve_case = 1;
                     break;
                 }
@@ -380,7 +380,7 @@ export function tty_yn_function(query, resp, def) {
                     cptr.stI32(cptr.add(ttyDisplay, 36), 0);
                     void tty_doprev_message();
                     cptr.stI32(cptr.add(ttyDisplay, 36), sav);
-                    tty_clear_nhwindow(WIN_MESSAGE);
+                    tty_clear_nhwindow(WIN_MESSAGE.v);
                     cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                     addtopl(cptr.decay(prompt));
                 } else {
@@ -392,14 +392,14 @@ export function tty_yn_function(query, resp, def) {
                 q = 0;
                 continue;
             } else if (doprev) {
-                tty_clear_nhwindow(WIN_MESSAGE);
+                tty_clear_nhwindow(WIN_MESSAGE.v);
                 cptr.stU64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 doprev = 0;
                 addtopl(cptr.decay(prompt));
                 q = 0;
                 continue;
             }
-            digit_ok = schar((allow_num && digit(q)));
+            digit_ok = schar((allow_num && digit(q) ? 1 : 0));
             if (q == 27) {
                 if (cptr.strchr(resp, 113))
                     q = 113;
@@ -412,10 +412,10 @@ export function tty_yn_function(query, resp, def) {
                 q = def;
                 break;
             }
-            if (!cptr.strchr(resp, q) && !digit_ok) {
+            if (!cptr.strchr(resp, q) && !digit_ok ? 1 : 0) {
                 tty_nhbell();
                 q = 0;
-            } else if (q == 35 || digit_ok) {
+            } else if (q == 35 || digit_ok ? 1 : 0) {
                 let z;
                 let digit_string = new Uint8Array(2);
                 let n_len = 0;
@@ -434,16 +434,16 @@ export function tty_yn_function(query, resp, def) {
                         z = lowc(z);
                     if (digit(z)) {
                         let dgt = BigInt(((z - 48) | 0));
-                        value = (((value) < 9223372036854775807n / 10n || ((value) == 9223372036854775807n / 10n && (dgt) <= 9223372036854775807n % 10n)) ? (value) * 10n + (dgt) : -1n);
+                        value = (((value) < 9223372036854775807n / 10n || ((value) == 9223372036854775807n / 10n && (dgt) <= 9223372036854775807n % 10n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt)) : -1n);
                         if (value < 0n)
                             break;
                         cptr.st1(cptr.add(cptr.decay(digit_string), 0, 1), z);
                         addtopl(cptr.decay(digit_string)), n_len++;
-                    } else if (z == 121 || cptr.strchr(cptr.decay(quitchars), z)) {
+                    } else if (z == 121 || cptr.strchr(cptr.decay(quitchars), z) ? 1 : 0) {
                         if (z == 27)
                             value = BigInt((-1));
                         z = 10;
-                    } else if (z == erase_char || z == 8) {
+                    } else if (z == erase_char || z == 8 ? 1 : 0) {
                         if (n_len <= 1) {
                             value = BigInt((-1));
                             break;
@@ -458,7 +458,7 @@ export function tty_yn_function(query, resp, def) {
                     }
                 } while (z != 10);
                 if (value > 0n)
-                    yn_number = value;
+                    yn_number.v = value;
                 else if (value == 0n)
                     q = 110;
                 else {
@@ -468,18 +468,18 @@ export function tty_yn_function(query, resp, def) {
             }
         } while (!q);
     }
-    if (yn_number)
-        void cptr.sprintf(cptr.decay(rtmp), __sl15, yn_number);
+    if (yn_number.v)
+        void cptr.sprintf(cptr.decay(rtmp), __sl15, yn_number.v);
     else
         void key2txt(uchar(q), cptr.decay(rtmp));
     void cptr.sprintf(cptr.add(gt, 26), __sl16, cptr.decay(prompt), cptr.decay(rtmp));
     dumplogmsg(cptr.add(gt, 26));
-    (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + -1)) - 1;
+    (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + -1)) - (-1);
     cptr.stI32(cptr.add(ttyDisplay, 24), 2);
     if (cptr.ldI32(cptr.add(ttyDisplay, 40)))
-        (cptr.stI32(cptr.add(ttyDisplay, 40), cptr.ldI32(cptr.add(ttyDisplay, 40)) + -1)) - 1;
-    if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8)), 40)))
-        tty_clear_nhwindow(WIN_MESSAGE);
+        (cptr.stI32(cptr.add(ttyDisplay, 40), cptr.ldI32(cptr.add(ttyDisplay, 40)) + -1)) - (-1);
+    if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), 40)))
+        tty_clear_nhwindow(WIN_MESSAGE.v);
     return q;
 }
 
@@ -493,28 +493,28 @@ function msghistory_snapshot(purge) {
     let inidx;
     let outidx;
     let cw;
-    if (WIN_MESSAGE == (-1) || !cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8)))
+    if (WIN_MESSAGE.v == (-1) || !cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)) ? 1 : 0)
         return;
-    cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8));
+    cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     remember_topl();
     if (!purge)
-        cptr.st1(cw, cptr.ld1s(cw) | 2);
-    snapshot_mesgs = alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, (cptr.ldI64(cptr.add(cw, 16)) + 1n)) * 8n))));
+        cptr.stI32(cw, cptr.ldI32(cw) | 2);
+    snapshot_mesgs = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) + 1n))) * 8n))));
     outidx = 0;
     inidx = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 48))));
     for (i = 0; BigInt(i) < cptr.ldI64(cptr.add(cw, 16)); ++i) {
-        cptr.stPtr(cptr.add(snapshot_mesgs, i), null);
-        mesg = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), inidx));
-        if (mesg && cptr.ld1s(mesg)) {
-            cptr.stPtr(cptr.add(snapshot_mesgs, outidx++), mesg);
+        cptr.stPtr(cptr.add(snapshot_mesgs, i, 8), null);
+        mesg = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), inidx, 8));
+        if (mesg && cptr.ld1s(mesg) ? 1 : 0) {
+            cptr.stPtr(cptr.add(snapshot_mesgs, outidx++, 8), mesg);
             if (purge) {
-                cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), inidx), null);
-                cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), inidx), 0);
+                cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), inidx, 8), null);
+                cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), inidx, 2), 0);
             }
         }
         inidx = Number(BigInt.asIntN(32, (BigInt(((inidx + 1) | 0)) % cptr.ldI64(cptr.add(cw, 16)))));
     }
-    cptr.stPtr(cptr.add(snapshot_mesgs, cptr.ldI64(cptr.add(cw, 16))), null);
+    cptr.stPtr(cptr.add(snapshot_mesgs, cptr.ldI64(cptr.add(cw, 16)), 8), null);
     if (purge)
         cptr.stU64(cptr.add(cw, 56), cptr.stU64(cptr.add(cw, 48), 0n));
 }
@@ -524,12 +524,12 @@ function free_msghistory_snapshot(purged) {
     if (snapshot_mesgs) {
         if (purged) {
             let i;
-            for (i = 0; cptr.ldPtr(cptr.add(snapshot_mesgs, i)); ++i)
-                cptr.free(cptr.ldPtr(cptr.add(snapshot_mesgs, i)));
+            for (i = 0; cptr.ldPtr(cptr.add(snapshot_mesgs, i, 8)); ++i)
+                cptr.free(cptr.ldPtr(cptr.add(snapshot_mesgs, i, 8)));
         }
         cptr.free(snapshot_mesgs), snapshot_mesgs = null;
         if (!purged)
-            cptr.st1(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8)), cptr.ld1s(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE, 8))) & ~2);
+            cptr.stI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), cptr.ldI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8))) & ~2);
     }
 }
 
@@ -544,7 +544,7 @@ export function tty_getmsghistory(init) {
         __static_tty_getmsghistory_nxtidx = 0;
     }
     if (snapshot_mesgs) {
-        nextmesg = cptr.ldPtr(cptr.add(snapshot_mesgs, __static_tty_getmsghistory_nxtidx++));
+        nextmesg = cptr.ldPtr(cptr.add(snapshot_mesgs, __static_tty_getmsghistory_nxtidx++, 8));
         if (nextmesg) {
             result = nextmesg;
         } else {
@@ -559,22 +559,22 @@ let __static_tty_putmsghistory_initd = 0; /** C ref: topl.c:687 — signed char 
 /** C ref: topl.c:685 — @param {CPtr} msg @param {CInt} restoring_msghist */
 export function tty_putmsghistory(msg, restoring_msghist) {
     let idx;
-    if (restoring_msghist && !__static_tty_putmsghistory_initd) {
+    if (restoring_msghist && !__static_tty_putmsghistory_initd ? 1 : 0) {
         msghistory_snapshot(1);
         __static_tty_putmsghistory_initd = 1;
         cptr.stI32(cptr.add(gs, 980), 0);
     }
     if (msg) {
-        if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1)
+        if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 ? 1 : 0)
             cptr.stI32(cptr.add(ttyDisplay, 24), 2);
         remember_topl();
         void cptr.strcpy(cptr.add(gt, 26), msg);
         dumplogmsg(cptr.add(gt, 26));
     } else if (snapshot_mesgs) {
-        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32(cptr.add(ttyDisplay, 24)) != 1)) || (nhassert_failed(__sl17, __sl7, 720), 0));
-        for (idx = 0; cptr.ldPtr(cptr.add(snapshot_mesgs, idx)); ++idx) {
+        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32(cptr.add(ttyDisplay, 24)) != 1 ? 1 : 0)) || (nhassert_failed(__sl17, __sl7, 720), 0) ? 1 : 0);
+        for (idx = 0; cptr.ldPtr(cptr.add(snapshot_mesgs, idx, 8)); ++idx) {
             remember_topl();
-            void cptr.strcpy(cptr.add(gt, 26), cptr.ldPtr(cptr.add(snapshot_mesgs, idx)));
+            void cptr.strcpy(cptr.add(gt, 26), cptr.ldPtr(cptr.add(snapshot_mesgs, idx, 8)));
             dumplogmsg(cptr.add(gt, 26));
         }
         free_msghistory_snapshot(1);

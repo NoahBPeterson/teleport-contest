@@ -18,7 +18,7 @@ const __sl2 = cptr.lit("%04ld%02d%02d%02d%02d%02d");
 export function getnow() {
     let fixed_dt = nh_getenv(__sl0);
     let datetime = cptr.box(0n);
-    if (fixed_dt && cptr.ld1s(fixed_dt)) {
+    if (fixed_dt && cptr.ld1s(fixed_dt) ? 1 : 0) {
         let parsed = time_from_yyyymmddhhmmss(fixed_dt);
         if (parsed != 0n)
             return parsed;
@@ -48,11 +48,11 @@ export function yyyymmdd(date) {
     else
         lt = localtime(date);
     if (cptr.ldI32(cptr.add(lt, 20)) < 70)
-        datenum = BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n;
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n);
     else
-        datenum = BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n;
-    datenum = datenum * 100n + BigInt(((cptr.ldI32(cptr.add(lt, 16)) + 1) | 0));
-    datenum = datenum * 100n + BigInt(cptr.ldI32(cptr.add(lt, 12)));
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n);
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32(cptr.add(lt, 16)) + 1) | 0)));
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32(cptr.add(lt, 12))));
     return datenum;
 }
 
@@ -65,7 +65,7 @@ export function hhmmss(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    timenum = BigInt(cptr.ldI32(cptr.add(lt, 8))) * 10000n + BigInt(cptr.ldI32(cptr.add(lt, 4))) * 100n + BigInt(cptr.ldI32(lt));
+    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 8))) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 4))) * 100n)) + BigInt(cptr.ldI32(lt)));
     return timenum;
 }
 
@@ -81,9 +81,9 @@ export function yyyymmddhhmmss(date) {
     else
         lt = localtime(date);
     if (cptr.ldI32(cptr.add(lt, 20)) < 70)
-        datenum = BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n;
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n);
     else
-        datenum = BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n;
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n);
     nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32(cptr.add(lt, 16)) + 1) | 0, cptr.ldI32(cptr.add(lt, 12)), cptr.ldI32(cptr.add(lt, 8)), cptr.ldI32(cptr.add(lt, 4)), cptr.ldI32(lt));
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
@@ -94,7 +94,7 @@ export function time_from_yyyymmddhhmmss(buf) {
     let timeresult = 0n;
     let t = cptr.alloc(56);
     let lt;
-    let now = cptr.box(0);
+    let now = cptr.box(0n);
     let d;
     let p;
     let y = new Uint8Array(5);
@@ -103,7 +103,7 @@ export function time_from_yyyymmddhhmmss(buf) {
     let h = new Uint8Array(3);
     let mi = new Uint8Array(3);
     let s = new Uint8Array(3);
-    if (buf && cptr.strlen(buf) == 14n) {
+    if (buf && cptr.strlen(buf) == 14n ? 1 : 0) {
         d = buf;
         p = cptr.decay(y);
         for (k = 0; k < 4; ++k)
@@ -158,7 +158,7 @@ export function phase_of_the_moon() {
     diy = cptr.ldI32(cptr.add(lt, 28));
     goldn = ((cptr.ldI32(cptr.add(lt, 20)) % 19) + 1) | 0;
     epact = ((Math.imul(11, goldn) + 18) | 0) % 30;
-    if ((epact == 25 && goldn > 11) || epact == 24)
+    if ((epact == 25 && goldn > 11 ? 1 : 0) || epact == 24 ? 1 : 0)
         epact++;
     return (((((((Math.imul(((diy + epact) | 0), 6)) + 11) | 0) % 177) / 22) | 0) & 7);
 }
@@ -166,13 +166,13 @@ export function phase_of_the_moon() {
 /** C ref: calendar.c:215 @returns {CInt} */
 export function friday_13th() {
     let lt = getlt();
-    return schar((cptr.ldI32(cptr.add(lt, 24)) == 5 && cptr.ldI32(cptr.add(lt, 12)) == 13));
+    return schar((cptr.ldI32(cptr.add(lt, 24)) == 5 && cptr.ldI32(cptr.add(lt, 12)) == 13 ? 1 : 0));
 }
 
 /** C ref: calendar.c:224 @returns {CInt} */
 export function night() {
     let hour = cptr.ldI32(cptr.add(getlt(), 8));
-    return (hour < 6 || hour > 21);
+    return (hour < 6 || hour > 21 ? 1 : 0);
 }
 
 /** C ref: calendar.c:232 @returns {CInt} */

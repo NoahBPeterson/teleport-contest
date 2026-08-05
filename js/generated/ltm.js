@@ -135,7 +135,7 @@ export function luaT_gettmbyobj(L, o, event) {
 /** C ref: ltm.c:91 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */
 export function luaT_objtypename(L, o) {
     let mt;
-    if ((((cptr.ld1u(cptr.add(((o)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 40))), (null))) || (((cptr.ld1u(cptr.add(((o)), 8))) == (((((7) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 24))), (null)))) {
+    if ((((cptr.ld1u(cptr.add(((o)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 40))), (null)) ? 1 : 0) || (((cptr.ld1u(cptr.add(((o)), 8))) == (((((7) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 24))), (null)) ? 1 : 0) ? 1 : 0) {
         let name = luaH_getshortstr(mt, luaS_new(L, __sl35));
         if ((((((cptr.ld1u(cptr.add(((name)), 8)))) & 15)) == (4)))
             return (cptr.add((((((((cptr.ldPtr(((name)))))))))), 24));
@@ -220,7 +220,7 @@ export function luaT_callTMres(L, f, p1, p2, res) {
         (void 0);
     }
     ;
-    cptr.st1(cptr.add(L, 16), cptr.ld1s(cptr.add(L, 16)) + 3);
+    cptr.stPtr(cptr.add(L, 16), cptr.add(cptr.ldPtr(cptr.add(L, 16)), 3, 16));
     if ((!(cptr.ldU16(cptr.add((cptr.ldPtr(cptr.add(L, 32))), 62)) & ((1 << 1) | (1 << 3)))))
         luaD_call(L, func, 1);
     else
@@ -259,7 +259,7 @@ export function luaT_trybinTM(L, p1, p2, res, event) {
             case 17:
             case 19:
             {
-                if ((((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((p2)), 8)))) & 15)) == (3)))
+                if ((((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((p2)), 8)))) & 15)) == (3)) ? 1 : 0)
                     luaG_tointerror(L, p1, p2);
                 else
                     luaG_opinterror(L, p1, p2, __sl36);
@@ -300,7 +300,7 @@ export function luaT_trybiniTM(L, p1, i2, flip, res, event) {
 /** C ref: ltm.c:201 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {*} event @returns {CInt} */
 export function luaT_callorderTM(L, p1, p2, event) {
     if (callbinTM(L, p1, p2, cptr.ldPtr(cptr.add(L, 16)), event))
-        return !(((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8)))) & 15)) == (0)));
+        return !(((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.ldPtr(cptr.add(L, 16)))))), 8)))) & 15)) == (0)) ? 1 : 0);
     luaG_ordererror(L, p1, p2);
     return 0;
 }
@@ -333,10 +333,10 @@ export function luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
 /** C ref: ltm.c:238 — @param {CPtr} L @param {CInt} nfixparams @param {CPtr} ci @param {CPtr} p */
 export function luaT_adjustvarargs(L, nfixparams, ci, p) {
     let i;
-    let actual = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), cptr.ldPtr(ci))))))) - 1) | 0;
+    let actual = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtr(cptr.add(L, 16)), cptr.ldPtr(ci)) / 16n))))) - 1) | 0;
     let nextra = (actual - nfixparams) | 0;
     cptr.stI32(cptr.add(cptr.add(ci, 32), 12), nextra);
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtr(cptr.add(L, 40)), cptr.ldPtr(cptr.add(L, 16))) <= BigInt(((cptr.ld1u(cptr.add(p, 12)) + 1) | 0))) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtr(cptr.add(L, 40)), cptr.ldPtr(cptr.add(L, 16))) / 16n <= BigInt(((cptr.ld1u(cptr.add(p, 12)) + 1) | 0))) != 0)), 0n))) {
         void 0;
         luaD_growstack(L, (cptr.ld1u(cptr.add(p, 12)) + 1) | 0, 1);
         void 0;
@@ -365,8 +365,8 @@ export function luaT_adjustvarargs(L, nfixparams, ci, p) {
         ;
         (cptr.st1(cptr.add((((cptr.add(cptr.ldPtr(ci), i, 16)))), 8), uchar((((0) | ((0) << 4))))));
     }
-    cptr.st1(ci, cptr.ld1s(ci) + (actual + 1) | 0);
-    cptr.st1(cptr.add(ci, 8), cptr.ld1s(cptr.add(ci, 8)) + (actual + 1) | 0);
+    cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), (actual + 1) | 0, 16));
+    cptr.stPtr(cptr.add(ci, 8), cptr.add(cptr.ldPtr(cptr.add(ci, 8)), (actual + 1) | 0, 16));
     (void 0);
 }
 
@@ -376,7 +376,7 @@ export function luaT_getvarargs(L, ci, where, wanted) {
     let nextra = cptr.ldI32(cptr.add(cptr.add(ci, 32), 12));
     if (wanted < 0) {
         wanted = nextra;
-        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtr(cptr.add(L, 40)), cptr.ldPtr(cptr.add(L, 16))) <= BigInt((nextra))) != 0)), 0n))) {
+        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtr(cptr.add(L, 40)), cptr.ldPtr(cptr.add(L, 16))) / 16n <= BigInt((nextra))) != 0)), 0n))) {
             let t__ = (cptr.diff((((where))), (((cptr.ldPtr(cptr.add(L, 48)))))));
             {
                 if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 24)) > 0n) {
@@ -396,7 +396,7 @@ export function luaT_getvarargs(L, ci, where, wanted) {
         ;
         cptr.stPtr(cptr.add(L, 16), cptr.add(where, nextra, 16));
     }
-    for (i = 0; i < wanted && i < nextra; i++) {
+    for (i = 0; i < wanted && i < nextra ? 1 : 0; i++) {
         let io1 = (((cptr.add(where, i, 16))));
         let io2 = (((cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), i, 16))));
         cptr.memcpy(io1, io2, 8);

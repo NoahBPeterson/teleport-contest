@@ -62,7 +62,7 @@ export function dumplogmsg(line) {
     let oldest = cptr.ldPtr(cptr.add(cptr.add(gs, 984), indx, 8));
     if (!cptr.strncmp(line, __sl0, 15n))
         return;
-    if (oldest && cptr.strlen(oldest) >= cptr.strlen(line)) {
+    if (oldest && cptr.strlen(oldest) >= cptr.strlen(line) ? 1 : 0) {
         void cptr.strcpy(oldest, line);
     } else {
         if (oldest)
@@ -86,19 +86,19 @@ function putmesg(line) {
     let attr = 0;
     if (cptr.ld1s(cptr.add(iflags, 88)))
         return;
-    if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 16384n) != 0n)
+    if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 16384n) != 0n ? 1 : 0)
         attr |= 16;
-    if (((cptr.ldI32(cptr.add(gp, 240)) & 4) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 32768n) != 0n)
+    if (((cptr.ldI32(cptr.add(gp, 240)) & 4) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 32768n) != 0n ? 1 : 0)
         attr |= 32;
-    (cptr.ldPtr(cptr.add(windowprocs, 144)))(WIN_MESSAGE, attr, line);
+    (cptr.ldPtr(cptr.add(windowprocs, 144)))(WIN_MESSAGE.v, attr, line);
     ;
 }
 
 /** C ref: pline.c:84 — @param {CInt} dir */
 export function set_msg_dir(dir) {
     dirtocoord(cptr.add(a11y, 2), dir);
-    cptr.st1(cptr.add(a11y, 2), cptr.ld1s(cptr.add(a11y, 2)) + cptr.ldI16(u));
-    cptr.st1(cptr.add(cptr.add(a11y, 2), 2), cptr.ld1s(cptr.add(cptr.add(a11y, 2), 2)) + cptr.ldI16(cptr.add(u, 2)));
+    cptr.stI16(cptr.add(a11y, 2), cptr.ldI16(cptr.add(a11y, 2)) + cptr.ldI16(u));
+    cptr.stI16(cptr.add(cptr.add(a11y, 2), 2), cptr.ldI16(cptr.add(cptr.add(a11y, 2), 2)) + cptr.ldI16(cptr.add(u, 2)));
 }
 
 /** C ref: pline.c:93 — @param {CInt} x @param {CInt} y */
@@ -149,26 +149,26 @@ let __static_vpline_in_pline = 0; /** C ref: pline.c:155 — int (function-stati
 
 /** C ref: pline.c:153 — @param {CPtr} line @param {CPtr} the_args */
 function vpline(line, the_args) {
+    let pbuf = new Uint8Array(1280);
+    let ln;
+    let msgtyp;
+    let no_repeat;
+    let a11y_mesgxy = cptr.alloc(4);
     __lbl_pline_done: {
-        let pbuf = new Uint8Array(1280);
-        let ln;
-        let msgtyp;
-        let no_repeat;
-        let a11y_mesgxy = cptr.alloc(4);
         cptr.memcpy(a11y_mesgxy, cptr.add(a11y, 2), 4);
         cptr.stI16(cptr.add(a11y, 2), cptr.stI16(cptr.add(cptr.add(a11y, 2), 2), 0));
-        if (!line || !cptr.ld1s(line))
+        if (!line || !cptr.ld1s(line) ? 1 : 0)
             return;
         if (cptr.ldI32(cptr.add(program_state, 8)))
             return;
         if (cptr.ldI32(cptr.add(program_state, 100)))
             return;
-        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16(cptr.add(a11y_mesgxy, 2)))) {
+        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16(cptr.add(a11y_mesgxy, 2))) ? 1 : 0) {
             let tmp;
             let dirstr;
             let dirstrbuf = new Uint8Array(128);
             dirstr = coord_desc(cptr.ldI16(a11y_mesgxy), cptr.ldI16(cptr.add(a11y_mesgxy, 2)), cptr.decay(dirstrbuf), schar(((cptr.ldI32(cptr.add(iflags, 100)) == 110) ? 102 : cptr.ldI32(cptr.add(iflags, 100)))));
-            tmp = alloc(Number(BigInt.asUintN(32, (cptr.strlen(line) + 3n + cptr.strlen(dirstr)))));
+            tmp = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(line) + 3n) + cptr.strlen(dirstr)))));
             void cptr.strcpy(tmp, dirstr);
             void cptr.strcat(tmp, __sl1);
             void cptr.strcat(tmp, line);
@@ -178,7 +178,7 @@ function vpline(line, the_args) {
         }
         if (!cptr.strchr(line, 37)) {
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
-        } else if (cptr.ld1s(cptr.add(line, 0)) == 37 && cptr.ld1s(cptr.add(line, 1)) == 115 && !cptr.ld1s(cptr.add(line, 2))) {
+        } else if ((cptr.ld1s(cptr.add(line, 0)) == 37 && cptr.ld1s(cptr.add(line, 1)) == 115 ? 1 : 0) && !cptr.ld1s(cptr.add(line, 2)) ? 1 : 0) {
             line = cptr.vaArg(the_args, 'ptr');
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
         } else {
@@ -200,7 +200,7 @@ function vpline(line, the_args) {
         msgtyp = 0;
         if (((cptr.ldI32(cptr.add(gp, 240)) & 4) >>> 0) == 0)
             dumplogmsg(line);
-        if (__static_vpline_in_pline++ || !cptr.ld1s(cptr.add(iflags, 81))) {
+        if (__static_vpline_in_pline++ || !cptr.ld1s(cptr.add(iflags, 81)) ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 240)))(line);
             cptr.stI32(cptr.add(iflags, 40), 0);
             break __lbl_pline_done;
@@ -208,7 +208,7 @@ function vpline(line, the_args) {
         no_repeat = schar((((cptr.ldI32(cptr.add(gp, 240)) & 1) >>> 0) ? 1 : 0));
         if (((cptr.ldI32(cptr.add(gp, 240)) & 2) >>> 0) == 0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) == 0 && (msgtyp == 2 || (msgtyp == 1 && !strcmp(line, cptr.add(gp, 244)))))
+            if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) == 0 && (msgtyp == 2 || (msgtyp == 1 && !strcmp(line, cptr.add(gp, 244)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 break __lbl_pline_done;
         }
         if (cptr.ld1s(cptr.add(gv, 144))) {
@@ -224,7 +224,7 @@ function vpline(line, the_args) {
         cptr.stI32(cptr.add(iflags, 40), 0);
         void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 2 > 1 ? 1 : 0)), cptr.st1(cptr.add(cptr.add(gp, 244), (256 - 1) | 0, 1), 0);
         if (msgtyp == 3)
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
     }
     --__static_vpline_in_pline;
 }
@@ -282,7 +282,7 @@ export function You(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 5n))))), __sl3), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __sl3), tmp), line), the_args);
     the_args = null;
 }
 
@@ -291,7 +291,7 @@ export function Your(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 6n))))), __sl4), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 6n)))))), __sl4), tmp), line), the_args);
     the_args = null;
 }
 
@@ -300,10 +300,10 @@ export function You_feel(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 25n))))), __sl5);
+    if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl5);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 10n))))), __sl6);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl6);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -313,7 +313,7 @@ export function You_cant(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 11n))))), __sl7), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl7), tmp), line), the_args);
     the_args = null;
 }
 
@@ -322,7 +322,7 @@ export function pline_The(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 5n))))), __sl8), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __sl8), tmp), line), the_args);
     the_args = null;
 }
 
@@ -331,7 +331,7 @@ export function There(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 7n))))), __sl9), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 7n)))))), __sl9), tmp), line), the_args);
     the_args = null;
 }
 
@@ -339,15 +339,15 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
+    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
         return;
     the_args = cptr.vaList(__va);
     if ((cptr.ldI32(cptr.add(u, 1852))))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 17n))))), __sl10);
-    else if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 25n))))), __sl11);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n)))))), __sl10);
+    else if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl11);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 10n))))), __sl12);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl12);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -357,12 +357,12 @@ export function You_see(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 24n))))), __sl13);
-    else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 11n))))), __sl14);
+    if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
+    else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (cptr.strlen(line) + 9n))))), __sl15);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __sl15);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -372,13 +372,13 @@ export function verbalize(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    cptr.st1(cptr.add(gp, 240), cptr.ld1u(cptr.add(gp, 240)) | 16);
-    tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n))));
+    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) | 16);
+    tmp = You_buf(Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n))));
     void cptr.strcpy(tmp, __sl16);
     void cptr.strcat(tmp, line);
     void cptr.strcat(tmp, __sl16);
     vpline(tmp, the_args);
-    cptr.st1(cptr.add(gp, 240), cptr.ld1u(cptr.add(gp, 240)) & (~16) >>> 0);
+    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) & ((~16) >>> 0));
     the_args = null;
 }
 
@@ -391,7 +391,7 @@ export function gamelog_add(glflags, gltime, str) {
     cptr.stU64(cptr.add(tmp, 8), glflags);
     cptr.stPtr(cptr.add(tmp, 16), dupstr(str));
     cptr.stPtr(cptr.add(tmp, 24), null);
-    while (lst && cptr.ldPtr(cptr.add(lst, 24)))
+    while (lst && cptr.ldPtr(cptr.add(lst, 24)) ? 1 : 0)
         lst = cptr.ldPtr(cptr.add(lst, 24));
     if (!lst)
         cptr.stPtr(cptr.add(gg, 94968), tmp);
@@ -418,7 +418,7 @@ export function raw_printf(line, ...__va) {
     vraw_printf(line, the_args);
     the_args = null;
     if (!cptr.ldI32(cptr.add(program_state, 84)))
-        (cptr.stI32(cptr.add(ge, 32), cptr.ldI32(cptr.add(ge, 32)) + 1)) - 1;
+        (cptr.stI32(cptr.add(ge, 32), cptr.ldI32(cptr.add(ge, 32)) + 1)) - (1);
 }
 
 /** C ref: pline.c:563 — @param {CPtr} line @param {CPtr} the_args */
@@ -436,7 +436,7 @@ function vraw_printf(line, the_args) {
     (cptr.ldPtr(cptr.add(windowprocs, 240)))(line);
     execplinehandler(line);
     if (!cptr.ldI32(cptr.add(program_state, 84)))
-        (cptr.stI32(cptr.add(ge, 32), cptr.ldI32(cptr.add(ge, 32)) + 1)) - 1;
+        (cptr.stI32(cptr.add(ge, 32), cptr.ldI32(cptr.add(ge, 32)) + 1)) - (1);
 }
 
 /** C ref: pline.c:584 — @param {CPtr} s */
@@ -486,7 +486,7 @@ let use_pline_handler = (1);
 function execplinehandler(line) {
     let f;
     let args = cptr.alloc(3 * 8);
-    if (!use_pline_handler || !cptr.ldPtr(cptr.add(sysopt, 64)))
+    if (!use_pline_handler || !cptr.ldPtr(cptr.add(sysopt, 64)) ? 1 : 0)
         return;
     f = fork();
     if (f == 0) {

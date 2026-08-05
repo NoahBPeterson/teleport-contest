@@ -196,7 +196,7 @@ export function do_write_config_file() {
         pline(__sl4);
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
     }
-    void cptr.sprintf(cptr.decay(tmp), __sl5, Number(BigInt.asIntN(32, (256n - 28n - 2n))), cptr.decay(configfile));
+    void cptr.sprintf(cptr.decay(tmp), __sl5, Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 256n - 28n) - 2n)))), cptr.decay(configfile));
     if (!paranoid_query((1), cptr.decay(tmp)))
         return 0;
     fp = fopen(cptr.decay(configfile), __sl6);
@@ -218,8 +218,8 @@ export function do_write_config_file() {
 
 /** C ref: cfgfiles.c:216 — @param {CPtr} fname */
 export function set_configfile_name(fname) {
-    void __builtin___strncpy_chk(cptr.decay(configfile), fname, 256n - 1n, __builtin_object_size(cptr.decay(configfile), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(configfile), 256n - 1n, 1), 0);
+    void __builtin___strncpy_chk(cptr.decay(configfile), fname, BigInt.asUintN(64, 256n - 1n), __builtin_object_size(cptr.decay(configfile), 2 > 1 ? 1 : 0));
+    cptr.st1(cptr.add(cptr.decay(configfile), BigInt.asUintN(64, 256n - 1n), 1), 0);
 }
 
 /** C ref: cfgfiles.c:223 — @param {CPtr} filename @param {CInt} src @returns {CPtr} */
@@ -228,16 +228,16 @@ function fopen_config_file(filename, src) {
     let tmp_config = new Uint8Array(256);
     let envp;
     if (src == 0) {
-        if (filename && cptr.ld1s(filename)) {
+        if (filename && cptr.ld1s(filename) ? 1 : 0) {
             set_configfile_name(fqname(filename, 7, 0));
             fp = fopen(cptr.decay(configfile), __sl8);
         } else
             fp = null;
         return fp;
     }
-    if (filename && cptr.ld1s(filename)) {
+    if (filename && cptr.ld1s(filename) ? 1 : 0) {
         set_configfile_name(filename);
-        if (!cptr.strncmp(cptr.decay(configfile), __sl9, 2n) && (envp = nh_getenv(__sl10)) !== null) {
+        if (!cptr.strncmp(cptr.decay(configfile), __sl9, 2n) && (envp = nh_getenv(__sl10)) !== null ? 1 : 0) {
             nh_snprintf(__sl11, 251, cptr.decay(tmp_config), 256n, __sl12, envp, cptr.add(cptr.decay(configfile), 2));
             set_configfile_name(cptr.decay(tmp_config));
         }
@@ -295,13 +295,13 @@ function get_uchars(bufp, list, modlist, size, name) {
             case 9:
             case 10:
             if (havenum) {
-                if (num || !modlist)
+                if (num || !modlist ? 1 : 0)
                     cptr.st1(cptr.add(list, count), uchar(num));
                 count++;
                 num = 0;
                 havenum = (0);
             }
-            if (count == size || !cptr.ld1s(bufp))
+            if (count == size || !cptr.ld1s(bufp) ? 1 : 0)
                 return count;
             bufp = cptr.add(bufp, 1);
             break;
@@ -349,7 +349,7 @@ function choose_random_part(str, sep) {
     }
     csep = (rng_log_enabled() ? (rng_log_set_caller(__sl20, 480, __sl21), rn2(nsep)) : rn2(nsep));
     str = begin;
-    while ((csep > 0) && cptr.ld1s(str)) {
+    while ((csep > 0) && cptr.ld1s(str) ? 1 : 0) {
         str = cptr.add(str, 1);
         if (cptr.ld1s(str) == sep)
             csep--;
@@ -358,7 +358,7 @@ function choose_random_part(str, sep) {
         if (cptr.ld1s(str) == sep)
             str = cptr.add(str, 1);
         begin = str;
-        while (cptr.ld1s(str) && cptr.ld1s(str) != sep) {
+        while (cptr.ld1s(str) && cptr.ld1s(str) != sep ? 1 : 0) {
             str = cptr.add(str, 1);
             len++;
         }
@@ -394,7 +394,7 @@ function is_config_section(str) {
         return null;
     for (c = cptr.add(z, 1); cptr.ld1s(c) == 32; c = cptr.add(c, 1))
         continue;
-    if (cptr.ld1s(c) && cptr.ld1s(c) != 35)
+    if (cptr.ld1s(c) && cptr.ld1s(c) != 35 ? 1 : 0)
         return null;
     cptr.st1(z, 0);
     return trimspaces(a);
@@ -446,7 +446,7 @@ function find_optparam(buf) {
     let altp;
     bufp = cptr.strchr(buf, 61);
     altp = cptr.strchr(buf, 58);
-    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0))
+    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0 ? 1 : 0) ? 1 : 0)
         bufp = altp;
     return bufp;
 }
@@ -565,7 +565,7 @@ function cnf_line_WIZARDS(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 16)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 16)));
     cptr.stPtr(cptr.add(sysopt, 16), dupstr(bufp));
-    if (cptr.strlen(cptr.ldPtr(cptr.add(sysopt, 16))) && strcmp(cptr.ldPtr(cptr.add(sysopt, 16)), __sl25)) {
+    if (cptr.strlen(cptr.ldPtr(cptr.add(sysopt, 16))) && strcmp(cptr.ldPtr(cptr.add(sysopt, 16)), __sl25) ? 1 : 0) {
         if (cptr.ldPtr(cptr.add(sysopt, 24)))
             cptr.free(cptr.ldPtr(cptr.add(sysopt, 24)));
         cptr.stPtr(cptr.add(sysopt, 24), build_english_list(cptr.ldPtr(cptr.add(sysopt, 16))));
@@ -663,7 +663,7 @@ function cnf_line_SEDUCE(bufp) {
     let n = !!atoi(bufp);
     let src = cptr.ldI32(cptr.add(iflags, 52));
     let in_sysconf = schar((src == 0));
-    if (!in_sysconf && !cptr.ldI32(cptr.add(sysopt, 80)) && n != 0) {
+    if ((!in_sysconf && !cptr.ldI32(cptr.add(sysopt, 80)) ? 1 : 0) && n != 0 ? 1 : 0) {
         config_error_add(__sl26);
         n = 0;
     }
@@ -682,7 +682,7 @@ function cnf_line_HIDEUSAGE(bufp) {
 /** C ref: cfgfiles.c:955 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_MAXPLAYERS(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 25) {
+    if (n < 0 || n > 25 ? 1 : 0) {
         config_error_add(__sl27);
         n = 5;
     }
@@ -704,7 +704,7 @@ function cnf_line_PERSMAX(bufp) {
 /** C ref: cfgfiles.c:982 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PERS_IS_UID(bufp) {
     let n = atoi(bufp);
-    if (n != 0 && n != 1) {
+    if (n != 0 && n != 1 ? 1 : 0) {
         config_error_add(__sl29);
         n = 0;
     }
@@ -748,7 +748,7 @@ function cnf_line_MAX_STATUENAME_RANK(bufp) {
 /** C ref: cfgfiles.c:1035 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_LIVELOG(bufp) {
     let L = strtol(bufp, null, 0);
-    if (L < 0n || L > 65535n) {
+    if (L < 0n || L > 65535n ? 1 : 0) {
         config_error_add(__sl33);
         return 0;
     }
@@ -759,7 +759,7 @@ function cnf_line_LIVELOG(bufp) {
 /** C ref: cfgfiles.c:1052 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_LIBC(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 2) {
+    if (n < 0 || n > 2 ? 1 : 0) {
         config_error_add(__sl34);
         n = 0;
     }
@@ -770,7 +770,7 @@ function cnf_line_PANICTRACE_LIBC(bufp) {
 /** C ref: cfgfiles.c:1067 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_GDB(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 2) {
+    if (n < 0 || n > 2 ? 1 : 0) {
         config_error_add(__sl35);
         n = 0;
     }
@@ -813,7 +813,7 @@ function cnf_line_CRASHREPORTURL(bufp) {
 /** C ref: cfgfiles.c:1121 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_ACCESSIBILITY(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 1) {
+    if (n < 0 || n > 1 ? 1 : 0) {
         config_error_add(__sl38);
         n = 0;
     }
@@ -1215,10 +1215,10 @@ export function parse_config_line(origbuf) {
     let bufp;
     let buf = new Uint8Array(1024);
     let i;
-    while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9)
+    while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9 ? 1 : 0)
         origbuf = cptr.add(origbuf, 1);
-    void __builtin___strncpy_chk(cptr.decay(buf), origbuf, 1024n - 1n, __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(buf), 1024n - 1n, 1), 0);
+    void __builtin___strncpy_chk(cptr.decay(buf), origbuf, BigInt.asUintN(64, 1024n - 1n), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
+    cptr.st1(cptr.add(cptr.decay(buf), BigInt.asUintN(64, 1024n - 1n), 1), 0);
     mungspaces(cptr.decay(buf));
     bufp = find_optparam(cptr.decay(buf));
     if (!bufp) {
@@ -1230,7 +1230,7 @@ export function parse_config_line(origbuf) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1s(cptr.add(cptr.add(config_line_stmt, i, 24), 12)) && !in_sysconf)
+        if (cptr.ld1s(cptr.add(cptr.add(config_line_stmt, i, 24), 12)) && !in_sysconf ? 1 : 0)
             continue;
         if (match_optname(cptr.decay(buf), cptr.ldPtr(cptr.add(config_line_stmt, i, 24)), cptr.ldI32(cptr.add(cptr.add(config_line_stmt, i, 24), 8)), (1))) {
             let parm = cptr.ld1s(cptr.add(cptr.add(config_line_stmt, i, 24), 13)) ? origbuf : bufp;
@@ -1262,9 +1262,9 @@ export function config_error_init(from_file, sourcename, secure) {
     cptr.st1(cptr.add(tmp, 9), from_file);
     cptr.st1(cptr.add(tmp, 10), secure);
     cptr.st1(cptr.add(cptr.add(tmp, 11), 0, 1), 0);
-    if (sourcename && cptr.ld1s(cptr.add(sourcename, 0))) {
-        void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, 256n - 1n, __builtin_object_size(cptr.add(tmp, 1035), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.add(tmp, 1035), 256n - 1n, 1), 0);
+    if (sourcename && cptr.ld1s(cptr.add(sourcename, 0)) ? 1 : 0) {
+        void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, BigInt.asUintN(64, 256n - 1n), __builtin_object_size(cptr.add(tmp, 1035), 2 > 1 ? 1 : 0));
+        cptr.st1(cptr.add(cptr.add(tmp, 1035), BigInt.asUintN(64, 256n - 1n), 1), 0);
     } else
         cptr.st1(cptr.add(cptr.add(tmp, 1035), 0, 1), 0);
     cptr.stPtr(cptr.add(tmp, 1296), config_error_data);
@@ -1277,13 +1277,13 @@ function config_error_nextline(line) {
     let ced = config_error_data;
     if (!ced)
         return (0);
-    if (cptr.ldI32(cptr.add(ced, 4)) && cptr.ld1s(cptr.add(ced, 10)))
+    if (cptr.ldI32(cptr.add(ced, 4)) && cptr.ld1s(cptr.add(ced, 10)) ? 1 : 0)
         return (0);
-    (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - 1;
+    (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
     cptr.st1(cptr.add(ced, 8), (0));
-    if (line && cptr.ld1s(cptr.add(line, 0))) {
-        void __builtin___strncpy_chk(cptr.add(ced, 11), line, 1024n - 1n, __builtin_object_size(cptr.add(ced, 11), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.add(ced, 11), 1024n - 1n, 1), 0);
+    if (line && cptr.ld1s(cptr.add(line, 0)) ? 1 : 0) {
+        void __builtin___strncpy_chk(cptr.add(ced, 11), line, BigInt.asUintN(64, 1024n - 1n), __builtin_object_size(cptr.add(ced, 11), 2 > 1 ? 1 : 0));
+        cptr.st1(cptr.add(cptr.add(ced, 11), BigInt.asUintN(64, 1024n - 1n), 1), 0);
     } else
         cptr.st1(cptr.add(cptr.add(ced, 11), 0, 1), 0);
     return (1);
@@ -1315,7 +1315,7 @@ export function l_get_config_errors(L) {
 export function config_erradd(buf) {
     let lineno = new Uint8Array(128);
     let punct;
-    if (!buf || !cptr.ld1s(buf))
+    if (!buf || !cptr.ld1s(buf) ? 1 : 0)
         buf = __sl105;
     punct = cptr.add(c_eos(buf), -(1));
     punct = cptr.strchr(__sl106, cptr.ld1s(punct)) ? __sl17 : __sl107;
@@ -1332,12 +1332,12 @@ export function config_erradd(buf) {
         config_error_msg = dat;
         return;
     }
-    (cptr.stI32(cptr.add(config_error_data, 4), cptr.ldI32(cptr.add(config_error_data, 4)) + 1)) - 1;
-    if (!cptr.ld1s(cptr.add(config_error_data, 8)) && !cptr.ld1s(cptr.add(config_error_data, 10))) {
+    (cptr.stI32(cptr.add(config_error_data, 4), cptr.ldI32(cptr.add(config_error_data, 4)) + 1)) - (1);
+    if (!cptr.ld1s(cptr.add(config_error_data, 8)) && !cptr.ld1s(cptr.add(config_error_data, 10)) ? 1 : 0) {
         pline(__sl110, cptr.add(config_error_data, 11));
         cptr.st1(cptr.add(config_error_data, 8), (1));
     }
-    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1s(cptr.add(config_error_data, 10))) {
+    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1s(cptr.add(config_error_data, 10)) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(lineno), __sl111, cptr.ldI32(config_error_data));
     } else
         cptr.st1(cptr.add(cptr.decay(lineno), 0, 1), 0);
@@ -1430,10 +1430,10 @@ function parse_conf_buf(p, proc) {
             let len;
             let ignoreline = (0);
             let oldline = (0);
-            cptr.st1(cptr.add(p, 33), schar((cptr.cmp(cptr.predec(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 92)));
+            cptr.st1(cptr.add(p, 33), schar((cptr.cmp(cptr.predec(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 92 ? 1 : 0)));
             if (cptr.ld1s(cptr.add(p, 33)))
                 cptr.st1(cptr.ldPtr(cptr.add(p, 16)), 0);
-            while (cptr.cmp(cptr.ldPtr(cptr.add(p, 16)), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 32 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 9 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 13))
+            while (cptr.cmp(cptr.ldPtr(cptr.add(p, 16)), cptr.ldPtr(p)) >= 0 && ((cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 32 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 9 ? 1 : 0) || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 13 ? 1 : 0) ? 1 : 0)
                 cptr.st1(cptr.postdec(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); }), 0);
             if (!config_error_nextline(cptr.ldPtr(p))) {
                 cptr.stI32(cptr.add(p, 12), 0);
@@ -1443,9 +1443,9 @@ function parse_conf_buf(p, proc) {
                 return;
             }
             cptr.stPtr(cptr.add(p, 16), cptr.ldPtr(p));
-            while (cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 32 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 9)
+            while (cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 32 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 9 ? 1 : 0)
                 cptr.preinc(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); });
-            if (!cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 35)
+            if (!cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 35 ? 1 : 0)
                 ignoreline = (1);
             if (cptr.ldPtr(cptr.add(p, 24)))
                 oldline = (1);
@@ -1463,7 +1463,7 @@ function parse_conf_buf(p, proc) {
                 if (cptr.strlen(cptr.ldPtr(cptr.add(p, 24))) >= BigInt(cptr.ldI32(cptr.add(p, 8)) >>> 0))
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(p, 24)), (cptr.ldI32(cptr.add(p, 8)) - 1) >>> 0), 0);
             }
-            if (cptr.ld1s(cptr.add(p, 33)) || (ignoreline && !oldline))
+            if (cptr.ld1s(cptr.add(p, 33)) || (ignoreline && !oldline ? 1 : 0) ? 1 : 0)
                 return;
             if (handle_config_section(cptr.ldPtr(cptr.add(p, 24)))) {
                 cptr.free(cptr.ldPtr(cptr.add(p, 24))), cptr.stPtr(cptr.add(p, 24), null);
@@ -1505,13 +1505,13 @@ export function parse_conf_str(str, proc) {
     cnf_parser_init(parser);
     free_config_sections();
     config_error_init((0), __sl125, (0));
-    while (str && cptr.ld1s(str)) {
+    while (str && cptr.ld1s(str) ? 1 : 0) {
         len = 0n;
-        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32(cptr.add(parser, 8)) - 1) >>> 0) >>> 0)) {
+        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32(cptr.add(parser, 8)) - 1) >>> 0) >>> 0) ? 1 : 0) {
             cptr.st1(cptr.add(cptr.ldPtr(parser), len), cptr.ld1s(str));
             len++;
             str = cptr.add(str, 1);
-            if (cptr.ld1s(cptr.add(cptr.ldPtr(parser), len - 1n)) == 10)
+            if (cptr.ld1s(cptr.add(cptr.ldPtr(parser), BigInt.asUintN(64, len - 1n))) == 10)
                 break;
         }
         cptr.st1(cptr.add(cptr.ldPtr(parser), len), 0);
@@ -1576,9 +1576,9 @@ export function rcfile() {
         namesrc = __sl115;
         nameval = cptr.ldPtr(cptr.add(gc, 432));
         xtraopts = opts;
-        if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64))
+        if (opts && ((cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 ? 1 : 0) || cptr.ld1s(opts) == 64 ? 1 : 0) ? 1 : 0)
             xtraopts = null;
-    } else if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64)) {
+    } else if (opts && ((cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 ? 1 : 0) || cptr.ld1s(opts) == 64 ? 1 : 0) ? 1 : 0) {
         if (cptr.ld1s(opts) == 64)
             opts = cptr.add(opts, 1);
         namesrc = envname;
@@ -1589,7 +1589,7 @@ export function rcfile() {
         xtraopts = opts;
     }
     cptr.stI32(cptr.add(go, 520), 3);
-    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= ((256 / 2) | 0)) {
+    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= ((256 / 2) | 0) ? 1 : 0) {
         config_error_init((1), namesrc, (0));
         config_error_add(__sl128, nameval);
         config_error_done();
@@ -1644,13 +1644,13 @@ export function disregard_all_config_statements() {
 
 /** C ref: cfgfiles.c:1997 — @param {CInt} statement_idx */
 export function heed_this_config_statement(statement_idx) {
-    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length)
+    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
         cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), (0));
 }
 
 /** C ref: cfgfiles.c:2003 — @param {CInt} statement_idx */
 export function disregard_this_config_statement(statement_idx) {
-    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length)
+    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
         cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), (1));
 }
 

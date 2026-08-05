@@ -108,7 +108,7 @@ function os_clock(L) {
 
 /** C ref: loslib.c:211 — @param {CPtr} L @param {CPtr} key @param {CInt} value @param {CInt} delta */
 function setfield(L, key, value, delta) {
-    lua_pushinteger(L, BigInt(value) + BigInt(delta));
+    lua_pushinteger(L, BigInt.asIntN(64, BigInt(value) + BigInt(delta)));
     lua_setfield(L, -2, key);
 }
 
@@ -153,7 +153,7 @@ function getfield(L, key, d, delta) {
             return luaL_error(L, __sl12, key);
         res = BigInt(d);
     } else {
-        if (!(res >= 0n ? res - BigInt(delta) <= 2147483647n : BigInt(((((-2147483647 - 1) | 0) + delta) | 0)) <= res))
+        if (!(res >= 0n ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n : BigInt(((((-2147483647 - 1) | 0) + delta) | 0)) <= res))
             return luaL_error(L, __sl13, key);
         res -= BigInt(delta);
     }
@@ -165,7 +165,7 @@ function getfield(L, key, d, delta) {
 function checkoption(L, conv, convlen, buff) {
     let option = __sl14;
     let oplen = 1;
-    for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen; option = cptr.add(option, oplen)) {
+    for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen ? 1 : 0; option = cptr.add(option, oplen)) {
         if (cptr.ld1s(option) == 124)
             oplen++;
         else if (memcmp(conv, option, BigInt.asUintN(64, BigInt(oplen))) == 0) {
@@ -181,13 +181,13 @@ function checkoption(L, conv, convlen, buff) {
 /** C ref: loslib.c:293 — @param {CPtr} L @param {CInt} arg @returns {*} */
 function l_checktime(L, arg) {
     let t = luaL_checkinteger(L, arg);
-    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl16))));
+    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl16)) ? 1 : 0));
     return t;
 }
 
 /** C ref: loslib.c:304 — @param {CPtr} L @returns {CInt} */
 function os_date(L) {
-    let slen = cptr.box(0);
+    let slen = cptr.box(0n);
     let s = luaL_optlstring(L, 1, __sl17, slen);
     let t = cptr.box(((lua_type(L, ((2))) <= 0) ? (time(null)) : l_checktime(L, (2))));
     let se = cptr.add(s, slen.v);
@@ -210,14 +210,14 @@ function os_date(L) {
         luaL_buffinit(L, b);
         while (cptr.cmp(s, se) < 0) {
             if (cptr.ld1s(s) != 37)
-                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
+                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
             else {
                 let reslen;
                 let buff = luaL_prepbuffsize(b, 250n);
                 s = cptr.add(s, 1);
                 s = checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1));
                 reslen = strftime(buff, 250n, cptr.decay(cc), stm);
-                (cptr.st1(cptr.add((b), 16), cptr.ld1u(cptr.add((b), 16)) + (reslen)));
+                (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + (reslen)));
             }
         }
         luaL_pushresult(b);
@@ -244,7 +244,7 @@ function os_time(L) {
         t = mktime(ts);
         setallfields(L, ts);
     }
-    if (t != t || t == BigInt((-1)))
+    if (t != t || t == BigInt((-1)) ? 1 : 0)
         return luaL_error(L, __sl20);
     lua_pushinteger(L, (t));
     return 1;
@@ -325,6 +325,6 @@ cptr.stPtr(cptr.add(cptr.add(syslib, 176), 8), null);
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_os(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
     return 1;
 }

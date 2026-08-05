@@ -131,7 +131,7 @@ const __sl108 = cptr.lit("I32LP64");
 
 /** C ref: version.c:22 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
 export function version_string(buf, bufsz) {
-    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtr(cptr.add(nomakedefs, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(nomakedefs, 40)), 0))) ? cptr.ldPtr(cptr.add(nomakedefs, 40)) : mdlib_version_string(buf, __sl2)));
+    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtr(cptr.add(nomakedefs, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(nomakedefs, 40)), 0)) ? 1 : 0) ? cptr.ldPtr(cptr.add(nomakedefs, 40)) : mdlib_version_string(buf, __sl2)));
     return buf;
 }
 
@@ -141,20 +141,20 @@ export function getversionstring(buf, bufsz) {
     {
         let c = 0;
         let p = eos(buf);
-        let dotoff = schar((cptr.cmp(p, buf) > 0 && cptr.ld1s(cptr.add(p, -1)) == 46));
+        let dotoff = schar((cptr.cmp(p, buf) > 0 && cptr.ld1s(cptr.add(p, -1)) == 46 ? 1 : 0));
         if (dotoff)
             p = cptr.add(p, -1);
         void cptr.strcpy(p, __sl3);
         if (cptr.ldPtr(cptr.add(nomakedefs, 16)))
-            nh_snprintf(__sl4, 58, eos(buf), (bufsz - cptr.strlen(buf)) - 1n, __sl5, c++ ? __sl6 : __sl7, cptr.ldPtr(cptr.add(nomakedefs, 16)));
+            nh_snprintf(__sl4, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl5, c++ ? __sl6 : __sl7, cptr.ldPtr(cptr.add(nomakedefs, 16)));
         if (cptr.ldPtr(cptr.add(nomakedefs, 32)))
-            nh_snprintf(__sl4, 68, eos(buf), (bufsz - cptr.strlen(buf)) - 1n, __sl8, c++ ? __sl6 : __sl7, cptr.ldPtr(cptr.add(nomakedefs, 32)));
+            nh_snprintf(__sl4, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl8, c++ ? __sl6 : __sl7, cptr.ldPtr(cptr.add(nomakedefs, 32)));
         if (c)
-            nh_snprintf(__sl4, 71, eos(buf), (bufsz - cptr.strlen(buf)) - 1n, __sl1, __sl9);
+            nh_snprintf(__sl4, 71, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl1, __sl9);
         else
             cptr.st1(p, 0);
         if (dotoff)
-            nh_snprintf(__sl4, 76, eos(buf), (bufsz - cptr.strlen(buf)) - 1n, __sl1, __sl2);
+            nh_snprintf(__sl4, 76, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl1, __sl2);
     }
     return buf;
 }
@@ -170,32 +170,32 @@ export function status_version(buf, bufsz, indent) {
     let showbranch = schar((((vflags & 4) >>> 0) != 0));
     if (showname) {
         name = nh_basename(cptr.ldPtr(gh), (0));
-        if (!name || !cptr.ld1s(name))
+        if (!name || !cptr.ld1s(name) ? 1 : 0)
             showname = (0);
     }
     if (showbranch) {
         altname = cptr.ldPtr(cptr.add(nomakedefs, 24));
-        if (!altname || !cptr.ld1s(altname))
+        if (!altname || !cptr.ld1s(altname) ? 1 : 0)
             showbranch = (0);
     }
-    if (showname && showbranch) {
+    if (showname && showbranch ? 1 : 0) {
         if (!strncmpi(name, altname, Number(BigInt.asIntN(32, cptr.strlen(name)))))
             showname = (0);
-    } else if (!showname && !showbranch) {
+    } else if (!showname && !showbranch ? 1 : 0) {
         shownum = (1);
     }
     cptr.st1(buf, 0);
     indentation = indent ? __sl10 : __sl7;
     if (showname) {
-        nh_snprintf(__sl11, 137, eos(buf), bufsz - cptr.strlen(buf), __sl5, indentation, name);
+        nh_snprintf(__sl11, 137, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, name);
         indentation = __sl10;
     }
     if (showbranch) {
-        nh_snprintf(__sl11, 141, eos(buf), bufsz - cptr.strlen(buf), __sl5, indentation, altname);
+        nh_snprintf(__sl11, 141, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, altname);
         indentation = __sl10;
     }
     if (shownum) {
-        nh_snprintf(__sl11, 149, eos(buf), bufsz - cptr.strlen(buf), __sl5, indentation, (cptr.ldPtr(cptr.add(nomakedefs, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(nomakedefs, 40)), 0))) ? cptr.ldPtr(cptr.add(nomakedefs, 40)) : mdlib_version_string(buf, __sl2));
+        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtr(cptr.add(nomakedefs, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(nomakedefs, 40)), 0)) ? 1 : 0) ? cptr.ldPtr(cptr.add(nomakedefs, 40)) : mdlib_version_string(buf, __sl2));
     }
     return buf;
 }
@@ -225,7 +225,7 @@ export function doextversion() {
     void getversionstring(cptr.decay(buf), 256n);
     if (cptr.strlen(cptr.decay(buf)) >= 80n)
         p = cptr.strrchr(cptr.decay(buf), 40);
-    if (p && cptr.cmp(p, cptr.decay(buf)) > 0 && cptr.ld1s(cptr.add(p, -1)) == 32 && cptr.ld1s(cptr.add(p, 1)) != 120)
+    if (((p && cptr.cmp(p, cptr.decay(buf)) > 0 ? 1 : 0) && cptr.ld1s(cptr.add(p, -1)) == 32 ? 1 : 0) && cptr.ld1s(cptr.add(p, 1)) != 120 ? 1 : 0)
         cptr.st1(cptr.add(p, -1), 0);
     else
         p = null;
@@ -245,7 +245,7 @@ export function doextversion() {
     }
     prolog = (1);
     for (; ; ) {
-        if (use_dlb && !done_dlb) {
+        if (use_dlb && !done_dlb ? 1 : 0) {
             if (!fgets(cptr.decay(buf), 256, f)) {
                 done_dlb = (1);
                 continue;
@@ -263,11 +263,11 @@ export function doextversion() {
         void strip_newline(cptr.decay(buf));
         if (cptr.strchr(cptr.decay(buf), 9) !== null)
             void tabexpand(cptr.decay(buf));
-        if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32) {
+        if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32 ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl7);
             prolog = (0);
         }
-        if (prolog || !cptr.ld1s(cptr.decay(buf)))
+        if (prolog || !cptr.ld1s(cptr.decay(buf)) ? 1 : 0)
             continue;
         if (cptr.strchr(cptr.decay(buf), 58))
             insert_rtoption(cptr.decay(buf));
@@ -320,7 +320,7 @@ function insert_rtoption(buf) {
     if (!cptr.ld1s(cptr.add(cptr.add(gl, 552), 0, 1)))
         get_lua_version();
     for (i = 0; i < 3; ++i) {
-        if (strstri(buf, cptr.ldPtr(cptr.add(rt_opts, i, 16))) && cptr.ld1s(cptr.ldPtr(cptr.add(cptr.add(rt_opts, i, 16), 8)))) {
+        if (strstri(buf, cptr.ldPtr(cptr.add(rt_opts, i, 16))) && cptr.ld1s(cptr.ldPtr(cptr.add(cptr.add(rt_opts, i, 16), 8))) ? 1 : 0) {
             void strsubst(buf, cptr.ldPtr(cptr.add(rt_opts, i, 16)), cptr.ldPtr(cptr.add(cptr.add(rt_opts, i, 16), 8)));
         }
     }
@@ -333,19 +333,19 @@ export function check_version(version_data, filename, complain, utdflags) {
     }
     if ((cptr.ldU64(cptr.add(version_data, 8)) & (1n << 30n)) != 0n) {
         cptr.st1(cptr.add(gc, 578), (1));
-        cptr.st1(cptr.add(version_data, 8), cptr.ld1u(cptr.add(version_data, 8)) & ~((1n << 30n)));
+        cptr.stU64(cptr.add(version_data, 8), cptr.ldU64(cptr.add(version_data, 8)) & BigInt.asUintN(64, ~((1n << 30n))));
     }
     if (cptr.ldU64(version_data) != cptr.ldU64(cptr.add(nomakedefs, 56))) {
         if (complain) {
             pline(__sl21, filename);
-            if (WIN_MESSAGE != (-1))
-                (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            if (WIN_MESSAGE.v != (-1))
+                (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
         }
         return (0);
-    } else if ((cptr.ldU64(cptr.add(version_data, 8)) & ~cptr.ldU64(cptr.add(nomakedefs, 72))) != (cptr.ldU64(cptr.add(nomakedefs, 64)) & ~cptr.ldU64(cptr.add(nomakedefs, 72))) || ((utdflags & 4n) == 0n && cptr.ldU64(cptr.add(version_data, 16)) != cptr.ldU64(cptr.add(nomakedefs, 80)))) {
+    } else if ((cptr.ldU64(cptr.add(version_data, 8)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(nomakedefs, 72)))) != (cptr.ldU64(cptr.add(nomakedefs, 64)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(nomakedefs, 72)))) || ((utdflags & 4n) == 0n && cptr.ldU64(cptr.add(version_data, 16)) != cptr.ldU64(cptr.add(nomakedefs, 80)) ? 1 : 0) ? 1 : 0) {
         if (complain) {
             pline(__sl22, filename);
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
         }
         return (0);
     }
@@ -409,7 +409,7 @@ export function dump_version_info() {
     if (cptr.strlen(hname) > 33n)
         hname = cptr.add(eos((hname)), -(33));
     runtime_info_init();
-    nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64(cptr.add(nomakedefs, 56)), (cptr.ldU64(cptr.add(nomakedefs, 64)) & ~cptr.ldU64(cptr.add(nomakedefs, 72))), cptr.ldU64(cptr.add(nomakedefs, 80)));
+    nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64(cptr.add(nomakedefs, 56)), (cptr.ldU64(cptr.add(nomakedefs, 64)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(nomakedefs, 72)))), cptr.ldU64(cptr.add(nomakedefs, 80)));
     (cptr.ldPtr(cptr.add(windowprocs, 240)))(cptr.decay(buf));
     release_runtime_info();
     return;
@@ -630,7 +630,7 @@ export function uptodate(nhfp, name, utdflags) {
     let verbose = schar((name ? 1 : 0));
     sfi_char(nhfp, indicator, __sl101, 1);
     if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != 0) {
-        if (sfstatus > 0 && idx_1st_mismatch.v) {
+        if (sfstatus > 0 && idx_1st_mismatch.v ? 1 : 0) {
             if (!quietly)
                 raw_printf(__sl104, cptr.ld1u(cptr.add(critical_sizes, idx_1st_mismatch.v, 16)), cptr.ldPtr(cptr.add(cptr.add(critical_sizes, idx_1st_mismatch.v, 16), 8)));
         }
@@ -669,17 +669,17 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
             let dm = datamodel(0);
             let dmfile;
             dmfile = what_datamodel_is_this(0, cptr.ld1u(cptr.add(cptr.decay(cscbuf), 1, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 2, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 3, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 4, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 5, 1)));
-            if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107)) {
+            if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107) ? 1 : 0) {
                 dmmismatch = 3;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107)) {
+            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107) ? 1 : 0) {
                 dmmismatch = 4;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108)) {
+            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108) ? 1 : 0) {
                 dmmismatch = 5;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106)) {
+            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106) ? 1 : 0) {
                 dmmismatch = 6;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106)) {
+            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106) ? 1 : 0) {
                 dmmismatch = 7;
-            } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108)) {
+            } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108) ? 1 : 0) {
                 dmmismatch = 8;
             }
             if (idx_1st_mismatch)

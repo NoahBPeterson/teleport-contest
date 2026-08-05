@@ -95,6 +95,38 @@ export function collectFile(target) {
     }
     for (const c of n.inner || []) wAddrs(c);
   })(root);
+  // globals WRITTEN in this file (assignment/compound/inc-dec). A global
+  // written from a TU other than its defining TU must be boxed: ES module
+  // bindings are immutable to importers, so `import { x } ... x = v` throws.
+  const writtenNames = new Set();
+  (function wWrites(n, locals) {
+    if (!n || typeof n !== 'object') return;
+    if (n.kind === 'FunctionDecl') {
+      const body = (n.inner || []).find((c) => c && c.kind === 'CompoundStmt');
+      if (!body) return;
+      const ls = new Set();
+      for (const c of n.inner || []) if (c.kind === 'ParmVarDecl' && c.name) ls.add(c.name);
+      (function wl(x) {
+        if (!x || typeof x !== 'object') return;
+        if (x.kind === 'VarDecl' && x.name) ls.add(x.name);
+        for (const c of x.inner || []) wl(c);
+      })(body);
+      wWrites(body, ls);
+      return;
+    }
+    const isWrite = (n.kind === 'BinaryOperator' && /=$/.test(n.opcode) && !['==', '!=', '<=', '>='].includes(n.opcode))
+      || (n.kind === 'UnaryOperator' && (n.opcode === '++' || n.opcode === '--'));
+    if (isWrite) {
+      let sub = n.inner?.[0];
+      while (sub && sub.kind === 'ParenExpr') sub = sub.inner?.[0];
+      if (sub && sub.kind === 'DeclRefExpr') {
+        const q = (sub.type?.desugaredQualType || sub.type?.qualType || '').replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').trim();
+        const nm = sub.name || sub.referencedDecl?.name;
+        if (nm && (!locals || !locals.has(nm)) && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q)) writtenNames.add(nm);
+      }
+    }
+    for (const c of n.inner || []) wWrites(c, locals);
+  })(root, null);
   const anonById = new Map(); // anonymous RecordDecl id -> { tag, fields }
   const anonByLoc = new Map(); // "line:col" -> anon record (unnamed-at recovery)
   const typedefOwned = new Map(); // typedef name -> anonymous RecordDecl id
@@ -215,7 +247,7 @@ export function collectFile(target) {
     }
     for (const c of n.inner || []) wEnums2(c);
   })(root);
-  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc, addressTaken, enumValues, recordGlobals, recordArrays };
+  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc, addressTaken, writtenNames, enumValues, recordGlobals, recordArrays };
 }
 
 /**
@@ -289,7 +321,7 @@ export function loadSlimIr(target) {
   const src = fs.readFileSync(target.file, 'utf8');
   const lineStarts = [0];
   for (let i = 0; i < src.length; i++) if (src.charCodeAt(i) === 10) lineStarts.push(i + 1);
-  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], addressTaken: [...pf.addressTaken], enumValues: [...pf.enumValues], recordGlobals: [...pf.recordGlobals], recordArrays: [...pf.recordArrays], lineStarts };
+  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], addressTaken: [...pf.addressTaken], writtenNames: [...pf.writtenNames], enumValues: [...pf.enumValues], recordGlobals: [...pf.recordGlobals], recordArrays: [...pf.recordArrays], lineStarts };
   const tmp = irPath + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(ir));
   fs.renameSync(tmp, irPath);

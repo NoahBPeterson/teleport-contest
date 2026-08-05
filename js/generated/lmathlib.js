@@ -48,7 +48,7 @@ function math_abs(L) {
     if (lua_isinteger(L, 1)) {
         let n = lua_tointegerx(L, (1), null);
         if (n < 0n)
-            n = BigInt.asIntN(64, (0n - BigInt.asUintN(64, n)));
+            n = BigInt.asIntN(64, (BigInt.asUintN(64, 0n - BigInt.asUintN(64, n))));
         lua_pushinteger(L, n);
     } else
         lua_pushnumber(L, fabs(luaL_checknumber(L, 1)));
@@ -108,8 +108,8 @@ function math_toint(L) {
 
 /** C ref: lmathlib.c:86 — @param {CPtr} L @param {CDouble} d */
 function pushnumint(L, d) {
-    let n = cptr.box(0);
-    if (((d) >= Number(((-9223372036854775807n - 1n))) && (d) < -Number(((-9223372036854775807n - 1n))) && (cptr.stU64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1)))
+    let n = cptr.box(0n);
+    if ((((d) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (d) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stU64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1) ? 1 : 0))
         lua_pushinteger(L, n.v);
     else
         lua_pushnumber(L, d);
@@ -139,10 +139,10 @@ function math_ceil(L) {
 
 /** C ref: lmathlib.c:117 — @param {CPtr} L @returns {CInt} */
 function math_fmod(L) {
-    if (lua_isinteger(L, 1) && lua_isinteger(L, 2)) {
+    if (lua_isinteger(L, 1) && lua_isinteger(L, 2) ? 1 : 0) {
         let d = lua_tointegerx(L, (2), null);
-        if (BigInt.asUintN(64, d) + 1n <= 1n) {
-            (void ((__builtin_expect(BigInt(((d != 0n) != 0)), 1n)) || luaL_argerror(L, (2), (__sl0))));
+        if (BigInt.asUintN(64, BigInt.asUintN(64, d) + 1n) <= 1n) {
+            (void ((__builtin_expect(BigInt(((d != 0n) != 0)), 1n)) || luaL_argerror(L, (2), (__sl0)) ? 1 : 0));
             lua_pushinteger(L, 0n);
         } else
             lua_pushinteger(L, lua_tointegerx(L, (1), null) % d);
@@ -221,7 +221,7 @@ function math_min(L) {
     let n = lua_gettop(L);
     let imin = 1;
     let i;
-    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, (1), (__sl1))));
+    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, (1), (__sl1)) ? 1 : 0));
     for (i = 2; i <= n; i++) {
         if (lua_compare(L, i, imin, 1))
             imin = i;
@@ -235,7 +235,7 @@ function math_max(L) {
     let n = lua_gettop(L);
     let imax = 1;
     let i;
-    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, (1), (__sl1))));
+    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, (1), (__sl1)) ? 1 : 0));
     for (i = 2; i <= n; i++) {
         if (lua_compare(L, imax, i, 1))
             imax = i;
@@ -262,15 +262,15 @@ function rotl(x, n) {
 
 /** C ref: lmathlib.c:320 — @param {CPtr} state @returns {CLongLong} */
 function nextrand(state) {
-    let state0 = cptr.ldU64(cptr.add(state, 0));
-    let state1 = cptr.ldU64(cptr.add(state, 1));
-    let state2 = cptr.ldU64(cptr.add(state, 2)) ^ state0;
-    let state3 = cptr.ldU64(cptr.add(state, 3)) ^ state1;
-    let res = rotl(state1 * 5n, 7) * 9n;
-    cptr.stU64(cptr.add(state, 0), state0 ^ state3);
-    cptr.stU64(cptr.add(state, 1), state1 ^ state2);
-    cptr.stU64(cptr.add(state, 2), state2 ^ (state1 << 17n));
-    cptr.stU64(cptr.add(state, 3), rotl(state3, 45));
+    let state0 = cptr.ldU64(cptr.add(state, 0, 8));
+    let state1 = cptr.ldU64(cptr.add(state, 1, 8));
+    let state2 = cptr.ldU64(cptr.add(state, 2, 8)) ^ state0;
+    let state3 = cptr.ldU64(cptr.add(state, 3, 8)) ^ state1;
+    let res = BigInt.asUintN(64, rotl(BigInt.asUintN(64, state1 * 5n), 7) * 9n);
+    cptr.stU64(cptr.add(state, 0, 8), state0 ^ state3);
+    cptr.stU64(cptr.add(state, 1, 8), state1 ^ state2);
+    cptr.stU64(cptr.add(state, 2, 8), state2 ^ (state1 << 17n));
+    cptr.stU64(cptr.add(state, 3, 8), rotl(state3, 45));
     return res;
 }
 
@@ -290,7 +290,7 @@ function I2d(x) {
 
 /** C ref: lmathlib.c:549 — @param {CLongLong} ran @param {CLongLong} n @param {CPtr} state @returns {*} */
 function project(ran, n, state) {
-    if ((n & (n + 1n)) == 0n)
+    if ((n & (BigInt.asUintN(64, n + 1n))) == 0n)
         return ran & n;
     else {
         let lim = n;
@@ -339,19 +339,19 @@ function math_random(L) {
         default:
         return luaL_error(L, __sl4);
     }
-    (void ((__builtin_expect(BigInt(((low <= up) != 0)), 1n)) || luaL_argerror(L, (1), (__sl5))));
-    p = project((((rv) & 18446744073709551615n)), BigInt.asUintN(64, up) - BigInt.asUintN(64, low), state);
-    lua_pushinteger(L, BigInt.asIntN(64, (p + BigInt.asUintN(64, low))));
+    (void ((__builtin_expect(BigInt(((low <= up) != 0)), 1n)) || luaL_argerror(L, (1), (__sl5)) ? 1 : 0));
+    p = project((((rv) & 18446744073709551615n)), BigInt.asUintN(64, BigInt.asUintN(64, up) - BigInt.asUintN(64, low)), state);
+    lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, p + BigInt.asUintN(64, low))));
     return 1;
 }
 
 /** C ref: lmathlib.c:609 — @param {CPtr} L @param {CPtr} state @param {CLongLong} n1 @param {CLongLong} n2 */
 function setseed(L, state, n1, n2) {
     let i;
-    cptr.stU64(cptr.add(state, 0), ((n1)));
-    cptr.stU64(cptr.add(state, 1), (255n));
-    cptr.stU64(cptr.add(state, 2), ((n2)));
-    cptr.stU64(cptr.add(state, 3), (0n));
+    cptr.stU64(cptr.add(state, 0, 8), ((n1)));
+    cptr.stU64(cptr.add(state, 1, 8), (255n));
+    cptr.stU64(cptr.add(state, 2, 8), ((n2)));
+    cptr.stU64(cptr.add(state, 3, 8), (0n));
     for (i = 0; i < 16; i++)
         nextrand(state);
     lua_pushinteger(L, BigInt.asIntN(64, n1));
@@ -361,7 +361,7 @@ function setseed(L, state, n1, n2) {
 /** C ref: lmathlib.c:628 — @param {CPtr} L @param {CPtr} state */
 function randseed(L, state) {
     let seed1 = BigInt.asUintN(64, time(null));
-    let seed2 = L;
+    let seed2 = cptr.addr(L);
     setseed(L, state, seed1, seed2);
 }
 
@@ -456,14 +456,14 @@ cptr.stPtr(cptr.add(cptr.add(mathlib, 432), 8), null);
 
 /** C ref: lmathlib.c:768 — @param {CPtr} L @returns {CInt} */
 export function luaopen_math(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (448n / 16n - 1n)))), luaL_setfuncs(L, mathlib, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 448n / 16n - 1n)))), luaL_setfuncs(L, mathlib, 0));
     lua_pushnumber(L, (3.1415926535897931));
     lua_setfield(L, -2, __sl29);
     lua_pushnumber(L, __builtin_huge_val());
     lua_setfield(L, -2, __sl30);
     lua_pushinteger(L, 9223372036854775807n);
     lua_setfield(L, -2, __sl31);
-    lua_pushinteger(L, (-9223372036854775807n - 1n));
+    lua_pushinteger(L, (BigInt.asIntN(64, -9223372036854775807n - 1n)));
     lua_setfield(L, -2, __sl32);
     setrandfunc(L);
     return 1;

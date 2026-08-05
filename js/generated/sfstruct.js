@@ -1090,12 +1090,12 @@ export function historical_sfi_version_info(nhfp, d_version_info, myname) {
 
 /** C ref: sfstruct.c:106 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function historical_sfo_char(nhfp, d_char, myname, cnt) {
-    bwrite(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt(cnt)) * 1n))));
+    bwrite(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cnt)) * 1n))));
 }
 
 /** C ref: sfstruct.c:113 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function historical_sfi_char(nhfp, d_char, myname, cnt) {
-    mread(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt(cnt)) * 1n))));
+    mread(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cnt)) * 1n))));
     if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
         cptr.st1(cptr.add(nhfp, 35), (1));
 }
@@ -1393,7 +1393,7 @@ export function bwrite(fd, loc, num) {
         if (num == 0) {
             return;
         }
-        if (cptr.ldI32(cptr.add(bw_buffered, idx, 4)) && cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) {
+        if (cptr.ldI32(cptr.add(bw_buffered, idx, 4)) && cptr.ldPtr(cptr.add(bw_FILE, idx, 8)) ? 1 : 0) {
             failed = schar((fwrite(loc, BigInt.asUintN(64, BigInt((num | 0))), 1n, cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) != 1n));
         } else {
             failed = schar((cptr.write(fd, loc, BigInt(num >>> 0)) != BigInt(num >>> 0)));
@@ -1413,12 +1413,12 @@ export function mread(fd, buf, len) {
     let rlen;
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
-        if ((cptr.ldI32(cptr.add(restoreinfo, 8)) == 1) || (cptr.ldI32(cptr.add(program_state, 92)) == 1)) {
+        if ((cptr.ldI32(cptr.add(restoreinfo, 8)) == 1) || (cptr.ldI32(cptr.add(program_state, 92)) == 1) ? 1 : 0) {
             cptr.stI32(cptr.add(restoreinfo, 8), -1);
             return;
         } else {
             pline(__sl8, rlen | 0, len);
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
             if (cptr.ldI32(cptr.add(program_state, 32))) {
                 void nhclose(fd);
                 void delete_savefile();

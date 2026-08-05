@@ -72,7 +72,7 @@ let HOOKKEY = __sl0;
 
 /** C ref: ldblib.c:35 — @param {CPtr} L @param {CPtr} L1 @param {CInt} n */
 function checkstack(L, L1, n) {
-    if ((__builtin_expect(BigInt(((!cptr.eq(L, L1) && !lua_checkstack(L1, n)) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((!cptr.eq(L, L1) && !lua_checkstack(L1, n) ? 1 : 0) != 0)), 0n)))
         luaL_error(L, __sl1);
 }
 
@@ -94,7 +94,7 @@ function db_getmetatable(L) {
 /** C ref: ldblib.c:56 — @param {CPtr} L @returns {CInt} */
 function db_setmetatable(L) {
     let t = lua_type(L, 2);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5) != 0)), 1n)) || luaL_typeerror(L, (2), (__sl2))));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, (2), (__sl2)) ? 1 : 0));
     lua_settop(L, 2);
     lua_setmetatable(L, 1);
     return 1;
@@ -168,7 +168,7 @@ function db_getinfo(L) {
     let L1 = getthread(L, arg);
     let options = (luaL_optlstring(L, ((arg.v + 2) | 0), (__sl3), null));
     checkstack(L, L1, 3);
-    (void ((__builtin_expect(BigInt(((cptr.ld1s(cptr.add(options, 0)) != 62) != 0)), 1n)) || luaL_argerror(L, ((arg.v + 2) | 0), (__sl4))));
+    (void ((__builtin_expect(BigInt(((cptr.ld1s(cptr.add(options, 0)) != 62) != 0)), 1n)) || luaL_argerror(L, ((arg.v + 2) | 0), (__sl4)) ? 1 : 0));
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
         options = lua_pushfstring(L, __sl5, options);
         lua_pushvalue(L, (arg.v + 1) | 0);
@@ -295,7 +295,7 @@ function checkupval(L, argf, argnup, pnup) {
     luaL_checktype(L, argf, 6);
     id = lua_upvalueid(L, argf, nup);
     if (pnup) {
-        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || luaL_argerror(L, (argnup), (__sl24))));
+        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || luaL_argerror(L, (argnup), (__sl24)) ? 1 : 0));
         cptr.stI32(pnup, nup);
     }
     return id;
@@ -317,8 +317,8 @@ function db_upvaluejoin(L) {
     let n2 = cptr.box(0);
     checkupval(L, 1, 2, n1);
     checkupval(L, 3, 4, n2);
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) || luaL_argerror(L, (1), (__sl25))));
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) || luaL_argerror(L, (3), (__sl25))));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) || luaL_argerror(L, (1), (__sl25)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) || luaL_argerror(L, (3), (__sl25)) ? 1 : 0));
     lua_upvaluejoin(L, 1, n1.v, 3, n2.v);
     return 0;
 }
@@ -436,9 +436,9 @@ function db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
         (fprintf(__stderrp, (__sl34), (__sl35)), fflush(__stderrp));
-        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __sl36) == 0)
+        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __sl36) == 0 ? 1 : 0)
             return 0;
-        if (luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __sl37, null) || lua_pcallk(L, (0), (0), (0), 0n, null))
+        if (luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __sl37, null) || lua_pcallk(L, (0), (0), (0), 0n, null) ? 1 : 0)
             (fprintf(__stderrp, (__sl38), (luaL_tolstring(L, -1, null))), fflush(__stderrp));
         lua_settop(L, 0);
     }
@@ -449,7 +449,7 @@ function db_traceback(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
     let msg = lua_tolstring(L, ((arg.v + 1) | 0), null);
-    if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
+    if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0) ? 1 : 0)
         lua_pushvalue(L, (arg.v + 1) | 0);
     else {
         let level = Number(BigInt.asIntN(32, luaL_optinteger(L, (arg.v + 2) | 0, BigInt(((cptr.eq(L, L1)) ? 1 : 0)))));
@@ -507,6 +507,6 @@ cptr.stPtr(cptr.add(cptr.add(dblib, 272), 8), null);
 
 /** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
 export function luaopen_debug(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (288n / 16n - 1n)))), luaL_setfuncs(L, dblib, 0));
+    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 288n / 16n - 1n)))), luaL_setfuncs(L, dblib, 0));
     return 1;
 }

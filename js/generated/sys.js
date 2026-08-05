@@ -44,7 +44,7 @@ export function sys_early_init() {
     cptr.stI32(cptr.add(sysopt, 116), ((1) > (1) ? (1) : (1)));
     cptr.stI32(cptr.add(sysopt, 108), 1);
     cptr.stI32(cptr.add(sysopt, 120), 10);
-    if (cptr.ldI32(cptr.add(sysopt, 108)) != 0 && cptr.ldI32(cptr.add(sysopt, 108)) != 1)
+    if (cptr.ldI32(cptr.add(sysopt, 108)) != 0 && cptr.ldI32(cptr.add(sysopt, 108)) != 1 ? 1 : 0)
         panic(__sl1);
     if (cptr.ldPtr(cptr.add(sysopt, 128)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 128)));

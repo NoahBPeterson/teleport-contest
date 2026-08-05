@@ -134,6 +134,24 @@ function buildAll() {
   // their definition (cross-file &uarm etc.)
   const externBoxed = new Set();
   for (const pf of perFile) for (const nm of pf.addressTaken || []) externBoxed.add(nm);
+  // globals written from a TU that does not define them must also be boxed
+  // (ES module bindings are immutable to importers)
+  const varDefTUs = new Map(); // name -> Set of TU names defining a variable
+  for (const pf of perFile) {
+    if (pf.parseError) continue;
+    for (const d of pf.defs) {
+      if (d.kind !== 'variable') continue;
+      if (!varDefTUs.has(d.name)) varDefTUs.set(d.name, new Set());
+      varDefTUs.get(d.name).add(pf.name);
+    }
+  }
+  for (const pf of perFile) {
+    if (pf.parseError) continue;
+    for (const nm of pf.writtenNames || []) {
+      const defTUs = varDefTUs.get(nm);
+      if (!defTUs || !defTUs.has(pf.name)) externBoxed.add(nm);
+    }
+  }
   // record-typed globals/arrays are byte-packed cptr.alloc storage in their
   // defining TU; every referencing TU must use byte-offset access as well
   const recordGlobals = new Set(), recordArrays = new Set();

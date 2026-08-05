@@ -311,10 +311,10 @@ function opt_out_words(str, length_p) {
             (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
             void cptr.sprintf(cptr.decay(optbuf), __sl75, cptr.decay(opt_indent)), cptr.stI32(length_p, Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent)))));
         } else {
-            void cptr.sprintf(eos(cptr.decay(optbuf)), __sl76), (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - 1;
+            void cptr.sprintf(eos(cptr.decay(optbuf)), __sl76), (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - (1);
         }
-        void cptr.sprintf(eos(cptr.decay(optbuf)), __sl75, str), cptr.st1(length_p, cptr.ld1s(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str))));
-        str = cptr.add(str, cptr.strlen(str) + BigInt.asUintN(64, BigInt((word ? 1 : 0))));
+        void cptr.sprintf(eos(cptr.decay(optbuf)), __sl75, str), cptr.stI32(length_p, (cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0);
+        str = cptr.add(str, BigInt.asUintN(64, cptr.strlen(str) + BigInt.asUintN(64, BigInt((word ? 1 : 0)))));
     }
 }
 
@@ -372,7 +372,7 @@ function build_options() {
         void cptr.sprintf(cptr.decay(buf), __sl83, cptr.ldPtr(cptr.add(window_opts, i, 24)));
         if (strcmp(cptr.ldPtr(cptr.add(cptr.add(window_opts, i, 24), 8)), cptr.ldPtr(cptr.add(window_opts, i, 24))))
             void cptr.sprintf(eos(cptr.decay(buf)), __sl84, cptr.ldPtr(cptr.add(cptr.add(window_opts, i, 24), 8)));
-        void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __sl41 : ((winsyscnt == 2 && cnt == 0) ? __sl85 : ((cnt == ((winsyscnt - 2) | 0)) ? __sl86 : __sl80)));
+        void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __sl41 : ((winsyscnt == 2 && cnt == 0 ? 1 : 0) ? __sl85 : ((cnt == ((winsyscnt - 2) | 0)) ? __sl86 : __sl80)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;
     }
@@ -397,7 +397,7 @@ function build_options() {
         if (!cptr.strncmp(soundlib, __sl89, 9n))
             soundlib = cptr.add(soundlib, 9);
         void cptr.sprintf(cptr.decay(buf), __sl83, soundlib);
-        void cptr.strcat(cptr.decay(buf), (soundlibcnt == 1 || cnt == ((soundlibcnt - 1) | 0)) ? __sl41 : ((soundlibcnt == 2 && cnt == 0) ? __sl85 : ((cnt == ((soundlibcnt - 2) | 0)) ? __sl86 : __sl80)));
+        void cptr.strcat(cptr.decay(buf), (soundlibcnt == 1 || cnt == ((soundlibcnt - 1) | 0) ? 1 : 0) ? __sl41 : ((soundlibcnt == 2 && cnt == 0 ? 1 : 0) ? __sl85 : ((cnt == ((soundlibcnt - 2) | 0)) ? __sl86 : __sl80)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;
     }
@@ -429,10 +429,10 @@ export function do_runtime_info(rtcontext) {
     let retval = null;
     if (!done_runtime_opt_init_once)
         runtime_info_init();
-    if (idxopttext && rtcontext)
-        if (cptr.ldI32(rtcontext) >= 0 && cptr.ldI32(rtcontext) < 60) {
+    if (idxopttext && rtcontext ? 1 : 0)
+        if (cptr.ldI32(rtcontext) >= 0 && cptr.ldI32(rtcontext) < 60 ? 1 : 0) {
             retval = cptr.ldPtr(cptr.add(opttext, cptr.ldI32(rtcontext), 8));
-            cptr.st1(rtcontext, cptr.ld1s(rtcontext) + 1);
+            cptr.stI32(rtcontext, (cptr.ldI32(rtcontext) + 1) | 0);
         }
     return retval;
 }

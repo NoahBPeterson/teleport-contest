@@ -105,12 +105,12 @@ export function nhmd4_update(ctx, data, size) {
     let used;
     let free;
     saved_lo = cptr.ldI32(ctx);
-    if ((cptr.stI32(ctx, Number(BigInt.asUintN(32, ((BigInt(saved_lo >>> 0) + size) & 536870911n))))) < saved_lo)
-        (cptr.stI32(cptr.add(ctx, 4), cptr.ldI32(cptr.add(ctx, 4)) + 1)) - 1;
-    cptr.st1(cptr.add(ctx, 4), cptr.ld1u(cptr.add(ctx, 4)) + Number(BigInt.asUintN(32, (size >> 29n))));
+    if ((cptr.stI32(ctx, Number(BigInt.asUintN(32, ((BigInt.asUintN(64, BigInt(saved_lo >>> 0) + size)) & 536870911n))))) < saved_lo)
+        (cptr.stI32(cptr.add(ctx, 4), cptr.ldI32(cptr.add(ctx, 4)) + 1)) - (1);
+    cptr.stI32(cptr.add(ctx, 4), (cptr.ldI32(cptr.add(ctx, 4)) + Number(BigInt.asUintN(32, (size >> 29n)))) | 0);
     used = BigInt(((saved_lo & 63) >>> 0) >>> 0);
     if (used) {
-        free = 64n - used;
+        free = BigInt.asUintN(64, 64n - used);
         if (size < free) {
             cptr.memcpy(cptr.add(cptr.add(ctx, 24), used, 1), data, size);
             return;
@@ -121,7 +121,7 @@ export function nhmd4_update(ctx, data, size) {
         nhmd4_body(ctx, cptr.add(ctx, 24), 64n);
     }
     if (size >= 64n) {
-        data = nhmd4_body(ctx, data, size & ~63n);
+        data = nhmd4_body(ctx, data, size & BigInt.asUintN(64, ~63n));
         size &= 63n;
     }
     cptr.memcpy(cptr.add(ctx, 24), data, size);
@@ -133,15 +133,15 @@ export function nhmd4_final(ctx, result) {
     let free;
     used = BigInt(cptr.ldI32(ctx) >>> 0) & 63n;
     cptr.st1(cptr.add(cptr.add(ctx, 24), used++, 1), 128);
-    free = 64n - used;
+    free = BigInt.asUintN(64, 64n - used);
     if (free < 8n) {
         __builtin___memset_chk(cptr.add(cptr.add(ctx, 24), used, 1), 0, free, __builtin_object_size(cptr.add(cptr.add(ctx, 24), used, 1), 0));
         nhmd4_body(ctx, cptr.add(ctx, 24), 64n);
         used = 0n;
         free = 64n;
     }
-    __builtin___memset_chk(cptr.add(cptr.add(ctx, 24), used, 1), 0, free - 8n, __builtin_object_size(cptr.add(cptr.add(ctx, 24), used, 1), 0));
-    cptr.st1(ctx, cptr.ld1u(ctx) << 3);
+    __builtin___memset_chk(cptr.add(cptr.add(ctx, 24), used, 1), 0, BigInt.asUintN(64, free - 8n), __builtin_object_size(cptr.add(cptr.add(ctx, 24), used, 1), 0));
+    cptr.stI32(ctx, cptr.ldI32(ctx) << 3);
     cptr.st1(cptr.add(cptr.add(ctx, 24), 56, 1), uchar(cptr.ldI32(ctx)));
     cptr.st1(cptr.add(cptr.add(ctx, 24), 57, 1), uchar((cptr.ldI32(ctx) >>> 8)));
     cptr.st1(cptr.add(cptr.add(ctx, 24), 58, 1), uchar((cptr.ldI32(ctx) >>> 16)));

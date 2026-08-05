@@ -1349,7 +1349,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let argc = cptr.ldI32(argc_p);
     let argv = cptr.ldPtr(argv_p);
     let p;
-    let nextarg = (argc > 1 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1)), 0)) != 45) ? cptr.ldPtr(cptr.add(argv, 1)) : null;
+    let nextarg = (argc > 1 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1, 8)), 0)) != 45 ? 1 : 0) ? cptr.ldPtr(cptr.add(argv, 1, 8)) : null;
     let l;
     let opttype = (lflags & 3);
     let oneletterok = schar(((lflags & 4) == 4));
@@ -1367,7 +1367,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     }
     if ((p = cptr.strchr(arg, 61)) === null)
         p = cptr.strchr(arg, 58);
-    if (p && opttype == 2)
+    if (p && opttype == 2 ? 1 : 0)
         {
             if (complain)
                 config_error_add(__sl9, origarg);
@@ -1377,7 +1377,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
             return null;
         }
     l = Number(BigInt.asIntN(32, (p ? (cptr.diff(p, arg)) : BigInt.asIntN(64, cptr.strlen(arg)))));
-    if ((l > 2 || oneletterok) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l)))) {
+    if ((l > 2 || oneletterok ? 1 : 0) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l))) ? 1 : 0) {
         if (p)
             p = cptr.add(p, 1);
         else if (opttype == 0)
@@ -1413,8 +1413,8 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
             return null;
         }
     }
-    if (!p || !cptr.ld1s(p)) {
-        if (nextarg && (opttype == 0 || opttype == 1))
+    if (!p || !cptr.ld1s(p) ? 1 : 0) {
+        if (nextarg && (opttype == 0 || opttype == 1 ? 1 : 0) ? 1 : 0)
             p = nextarg, cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
         else if (opttype == 0)
             {
@@ -1435,10 +1435,10 @@ function consume_arg(ndx, ac_p, av_p) {
     let i;
     let ac = cptr.ldI32(ac_p);
     if (ac > 2) {
-        gone = cptr.ldPtr(cptr.add(av, ndx));
+        gone = cptr.ldPtr(cptr.add(av, ndx, 8));
         for (i = (ndx + 1) | 0; i < ac; ++i)
-            cptr.stPtr(cptr.add(av, (i - 1) | 0), cptr.ldPtr(cptr.add(av, i)));
-        cptr.stPtr(cptr.add(av, (ac - 1) | 0), gone);
+            cptr.stPtr(cptr.add(av, (i - 1) | 0, 8), cptr.ldPtr(cptr.add(av, i, 8)));
+        cptr.stPtr(cptr.add(av, (ac - 1) | 0, 8), gone);
     }
     cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
@@ -1463,16 +1463,16 @@ export function early_options(argc_p, argv_p, hackdir_p) {
     if (argcheck(cptr.ldI32(argc_p), cptr.ldPtr(argv_p), 4) == 2)
         opt_terminate();
     config_error_init((0), __sl11, (0));
-    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtr(cptr.add((cptr.ldPtr(argv_p)), 1)), __sl12))
+    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtr(cptr.add((cptr.ldPtr(argv_p)), 1, 8)), __sl12) ? 1 : 0)
         opt_usage(cptr.ldPtr(hackdir_p));
     for (ndx = 1; ndx < cptr.ldI32(argc_p); ndx = (ndx + (consumed ? 0 : 1)) | 0) {
         consumed = 0;
         argc.v = (cptr.ldI32(argc_p) - ndx) | 0;
         argv.v = cptr.add(cptr.ldPtr(argv_p), ndx, 8);
-        arg = (origarg = cptr.ldPtr(cptr.add(argv.v, 0)));
+        arg = (origarg = cptr.ldPtr(cptr.add(argv.v, 0, 8)));
         if (cptr.ld1s(arg) != 45)
             continue;
-        if (cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 45 && cptr.ld1s(cptr.add(arg, 2)) != 0 && (cptr.ld1s(cptr.add(arg, 3)) != 0 && cptr.ld1s(cptr.add(arg, 3)) != 61 && cptr.ld1s(cptr.add(arg, 3)) != 58))
+        if (((cptr.ld1s(cptr.add(arg, 0)) == 45 && cptr.ld1s(cptr.add(arg, 1)) == 45 ? 1 : 0) && cptr.ld1s(cptr.add(arg, 2)) != 0 ? 1 : 0) && ((cptr.ld1s(cptr.add(arg, 3)) != 0 && cptr.ld1s(cptr.add(arg, 3)) != 61 ? 1 : 0) && cptr.ld1s(cptr.add(arg, 3)) != 58 ? 1 : 0) ? 1 : 0)
             arg = cptr.add(arg, 1);
         switch (cptr.ld1s(cptr.add(arg, 1))) {
             case 98:
@@ -1505,7 +1505,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             break;
             case 104:
             case 63:
-            if (lopt(arg, 2, __sl15, origarg, argc, argv) || lopt(arg, 2 | 4, __sl16, origarg, argc, argv))
+            if (lopt(arg, 2, __sl15, origarg, argc, argv) || lopt(arg, 2 | 4, __sl16, origarg, argc, argv) ? 1 : 0)
                 opt_usage(cptr.ldPtr(hackdir_p));
             break;
             case 110:
@@ -1584,7 +1584,7 @@ function scores_only(argc, argv, dir) {
     cptr.st1(cptr.add(iflags, 93), (1));
     initoptions();
     cptr.st1(cptr.add(iflags, 93), (0));
-    ARGV0 = cptr.ldPtr(gh);
+    ARGV0.v = cptr.ldPtr(gh);
     panictrace_setsignals((1));
     void whoami();
     prscore(argc, argv);
@@ -1599,20 +1599,20 @@ export function argcheck(argc, argv, e_arg) {
     let userea = null;
     let dashdash = __sl24;
     for (idx = 0; idx < 8; idx++) {
-        if (cptr.add(earlyopts, idx, 24) == e_arg) {
+        if (cptr.ldI32(cptr.add(earlyopts, idx, 24)) == e_arg) {
             break;
         }
     }
-    if (idx >= 8 || argc < 1)
+    if (idx >= 8 || argc < 1 ? 1 : 0)
         return 0;
     for (i = 0; i < argc; ++i) {
-        if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i)), 0)) != 45)
+        if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i, 8)), 0)) != 45)
             continue;
-        if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i)), 1)) == 45) {
-            userea = cptr.add(cptr.ldPtr(cptr.add(argv, i)), 2);
+        if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i, 8)), 1)) == 45) {
+            userea = cptr.add(cptr.ldPtr(cptr.add(argv, i, 8)), 2);
             dashdash = __sl25;
         } else {
-            userea = cptr.add(cptr.ldPtr(cptr.add(argv, i)), 1);
+            userea = cptr.add(cptr.ldPtr(cptr.add(argv, i, 8)), 1);
         }
         match = match_optname(userea, cptr.ldPtr(cptr.add(cptr.add(earlyopts, idx, 24), 8)), cptr.ldI32(cptr.add(cptr.add(earlyopts, idx, 24), 16)), cptr.ld1s(cptr.add(cptr.add(earlyopts, idx, 24), 20)));
         if (match)
@@ -1689,12 +1689,12 @@ function debug_fields(opts) {
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
-    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
+    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))) ? 1 : 0)
         cptr.st1(op, 0);
     if (!cptr.ld1s(opts)) {
         return;
     }
-    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl31, 2)) {
+    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl31, 2) ? 1 : 0) {
         if (cptr.ld1s(opts) == 33)
             opts = cptr.add(opts, 1);
         else
@@ -4283,7 +4283,7 @@ function dump_enums() {
             nmprefix = (j >= ((cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 24)) - cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 16))) | 0)) ? __sl24 : cptr.ldPtr(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 8));
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
             if (cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 20)) > 0) {
-                nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) >= 32 && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) <= 126) ? cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) : 32);
+                nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) >= 32 && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) <= 126 ? 1 : 0) ? cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) : 32);
             } else {
                 cptr.st1(cptr.add(cptr.decay(comment), 0, 1), 0);
             }

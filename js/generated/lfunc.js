@@ -43,7 +43,7 @@ export function luaF_initupvals(L, cl) {
         cptr.stPtr(cptr.add(uv, 16), cptr.add(uv, 24));
         (cptr.st1(cptr.add((cptr.ldPtr(cptr.add(uv, 16))), 8), uchar((((0) | ((0) << 4))))));
         cptr.stPtr(cptr.add(cptr.add(cl, 32), i, 8), uv);
-        ((((cptr.ld1u(cptr.add((cl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(L, ((((cl)))), ((((uv))))) : (void ((0))));
+        ((((cptr.ld1u(cptr.add((cl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((uv))))) : (void ((0))));
     }
 }
 
@@ -70,7 +70,7 @@ export function luaF_findupval(L, level) {
     let pp = cptr.add(L, 56);
     let p;
     (void 0);
-    while (!cptr.eq((p = cptr.ldPtr(pp)), (null)) && cptr.cmp((((cptr.ldPtr(cptr.add((p), 16))))), level) >= 0) {
+    while (!cptr.eq((p = cptr.ldPtr(pp)), (null)) && cptr.cmp((((cptr.ldPtr(cptr.add((p), 16))))), level) >= 0 ? 1 : 0) {
         (void 0);
         if (cptr.eq((((cptr.ldPtr(cptr.add((p), 16))))), level))
             return p;
@@ -121,7 +121,7 @@ function callclosemethod(L, obj, err, yy) {
 function checkclosemth(L, level) {
     let tm = luaT_gettmbyobj(L, ((level)), 24);
     if ((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) {
-        let idx = (Number(BigInt.asIntN(32, ((cptr.diff(level, cptr.ldPtr(cptr.ldPtr(cptr.add(L, 32)))))))));
+        let idx = (Number(BigInt.asIntN(32, ((cptr.diff(level, cptr.ldPtr(cptr.ldPtr(cptr.add(L, 32)))) / 16n)))));
         let vname = luaG_findlocal(L, cptr.ldPtr(cptr.add(L, 32)), idx, null);
         if (cptr.eq(vname, (null)))
             vname = __sl0;
@@ -145,14 +145,14 @@ function prepcallclosemth(L, level, status, yy) {
 /** C ref: lfunc.c:168 — @param {CPtr} L @param {CPtr} level */
 export function luaF_newtbcupval(L, level) {
     (void 0);
-    if ((((cptr.ld1u(cptr.add(((((level)))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((level)))), 8)))) & 15)) == (0))))
+    if ((((cptr.ld1u(cptr.add(((((level)))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((level)))), 8)))) & 15)) == (0)) ? 1 : 0))
         return;
     checkclosemth(L, level);
-    while (BigInt((Number(BigInt.asUintN(32, ((cptr.diff(level, cptr.ldPtr(cptr.add(L, 64)))))))) >>> 0) > ((256n << ((2n - 1n) * 8n)) - 1n)) {
-        cptr.st1(cptr.add(L, 64), cptr.ld1s(cptr.add(L, 64)) + ((256n << ((2n - 1n) * 8n)) - 1n));
+    while (BigInt((Number(BigInt.asUintN(32, ((cptr.diff(level, cptr.ldPtr(cptr.add(L, 64))) / 16n))))) >>> 0) > (BigInt.asUintN(64, (256n << (BigInt.asUintN(64, (BigInt.asUintN(64, 2n - 1n)) * 8n))) - 1n))) {
+        cptr.stPtr(cptr.add(L, 64), cptr.add(cptr.ldPtr(cptr.add(L, 64)), (BigInt.asUintN(64, (256n << (BigInt.asUintN(64, (BigInt.asUintN(64, 2n - 1n)) * 8n))) - 1n)), 16));
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(L, 64)), 10), 0);
     }
-    cptr.stI16(cptr.add(level, 10), (Number(BigInt.asUintN(16, (cptr.diff(level, cptr.ldPtr(cptr.add(L, 64))))))));
+    cptr.stI16(cptr.add(level, 10), (Number(BigInt.asUintN(16, (cptr.diff(level, cptr.ldPtr(cptr.add(L, 64))) / 16n)))));
     cptr.stPtr(cptr.add(L, 64), level);
 }
 
@@ -168,7 +168,7 @@ export function luaF_unlinkupval(uv) {
 export function luaF_closeupval(L, level) {
     let uv;
     let upl;
-    while (!cptr.eq((uv = cptr.ldPtr(cptr.add(L, 56))), (null)) && cptr.cmp((upl = (((cptr.ldPtr(cptr.add((uv), 16)))))), level) >= 0) {
+    while (!cptr.eq((uv = cptr.ldPtr(cptr.add(L, 56))), (null)) && cptr.cmp((upl = (((cptr.ldPtr(cptr.add((uv), 16)))))), level) >= 0 ? 1 : 0) {
         let slot = cptr.add(uv, 24);
         (void 0);
         luaF_unlinkupval(uv);
@@ -184,7 +184,7 @@ export function luaF_closeupval(L, level) {
         cptr.stPtr(cptr.add(uv, 16), slot);
         if (!((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4)))))) {
             ((cptr.st1(cptr.add((uv), 9), cptr.ld1u(cptr.add((uv), 9)) | ((1 << (5))))));
-            (((cptr.ld1u(cptr.add((slot), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((uv), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((slot))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((slot))))))))) : (void ((0)))) : (void ((0))));
+            (((cptr.ld1u(cptr.add((slot), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((uv), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((slot))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((slot))))))))) : (void ((0)))) : (void ((0))));
         }
     }
 }
@@ -193,9 +193,9 @@ export function luaF_closeupval(L, level) {
 function poptbclist(L) {
     let tbc = cptr.ldPtr(cptr.add(L, 64));
     (void 0);
-    tbc = cptr.sub(tbc, cptr.ldU16(cptr.add(tbc, 10)));
-    while (cptr.cmp(tbc, cptr.ldPtr(cptr.add(L, 48))) > 0 && cptr.ldU16(cptr.add(tbc, 10)) == 0)
-        tbc = cptr.sub(tbc, ((256n << ((2n - 1n) * 8n)) - 1n));
+    tbc = cptr.sub(tbc, cptr.ldU16(cptr.add(tbc, 10)), 16);
+    while (cptr.cmp(tbc, cptr.ldPtr(cptr.add(L, 48))) > 0 && cptr.ldU16(cptr.add(tbc, 10)) == 0 ? 1 : 0)
+        tbc = cptr.sub(tbc, (BigInt.asUintN(64, (256n << (BigInt.asUintN(64, (BigInt.asUintN(64, 2n - 1n)) * 8n))) - 1n)), 16);
     cptr.stPtr(cptr.add(L, 64), tbc);
 }
 
@@ -241,20 +241,20 @@ export function luaF_newproto(L) {
 
 /** C ref: lfunc.c:267 — @param {CPtr} L @param {CPtr} f */
 export function luaF_freeproto(L, f) {
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 64))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 24))))) * 4n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 72))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 32))))) * 8n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 56))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 20))))) * 16n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 88))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 28))))) * 1n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 96))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 40))))) * 8n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 104))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 36))))) * 16n);
-    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 80))), BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 16))))) * 16n);
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 64))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 24))))) * 4n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 72))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 32))))) * 8n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 56))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 20))))) * 16n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 88))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 28))))) * 1n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 96))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 40))))) * 8n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 104))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 36))))) * 16n));
+    luaM_free_(L, (cptr.ldPtr(cptr.add(f, 80))), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 16))))) * 16n));
     luaM_free_(L, (f), 128n);
 }
 
 /** C ref: lfunc.c:283 — @param {CPtr} f @param {CInt} local_number @param {CInt} pc @returns {CPtr} */
 export function luaF_getlocalname(f, local_number, pc) {
     let i;
-    for (i = 0; i < cptr.ldI32(cptr.add(f, 36)) && cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 8)) <= pc; i++) {
+    for (i = 0; i < cptr.ldI32(cptr.add(f, 36)) && cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 8)) <= pc ? 1 : 0; i++) {
         if (pc < cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 12))) {
             local_number--;
             if (local_number == 0)

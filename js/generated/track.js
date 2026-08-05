@@ -32,7 +32,7 @@ export function initrack() {
 
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == 181) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == 181))
+    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == 181 ? 1 : 0) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == 181 ? 1 : 0) ? 1 : 0)
         return;
     if (utcnt.v < 100)
         utcnt.v++;
@@ -65,7 +65,7 @@ export function gettrack(x, y) {
 export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16(cptr.add(utrack, i, 4)) == x && cptr.ldI16(cptr.add(cptr.add(utrack, i, 4), 2)) == y)
+        if (cptr.ldI16(cptr.add(utrack, i, 4)) == x && cptr.ldI16(cptr.add(cptr.add(utrack, i, 4), 2)) == y ? 1 : 0)
             return (1);
     return (0);
 }
@@ -91,7 +91,7 @@ export function rest_track(nhfp) {
     ;
     sfi_int(nhfp, utpnt, __sl1);
     ;
-    if (utcnt.v > 100 || utpnt.v > 100)
+    if (utcnt.v > 100 || utpnt.v > 100 ? 1 : 0)
         panic(__sl3);
     for (i = 0; i < utcnt.v; i++) {
         sfi_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2);

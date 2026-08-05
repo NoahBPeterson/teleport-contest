@@ -107,9 +107,9 @@ let CapMons = null;
 /** C ref: rumors.c:67 — @param {CPtr} line */
 function unpadline(line) {
     let p = eos(line);
-    if (cptr.cmp(p, line) > 0 && cptr.ld1s(cptr.add(p, -1)) == 10)
+    if (cptr.cmp(p, line) > 0 && cptr.ld1s(cptr.add(p, -1)) == 10 ? 1 : 0)
         p = cptr.add(p, -1);
-    while (cptr.cmp(p, line) > 0 && cptr.ld1s(cptr.add(p, -1)) == 95)
+    while (cptr.cmp(p, line) > 0 && cptr.ld1s(cptr.add(p, -1)) == 95 ? 1 : 0)
         p = cptr.add(p, -1);
     cptr.st1(p, 0);
 }
@@ -120,13 +120,13 @@ const __static_init_rumors_rumors_header = cptr.bytes("%d,%ld,%lx;%d,%ld,%lx;0,0
 function init_rumors(fp) {
     let true_count = cptr.box(0);
     let false_count = cptr.box(0);
-    let eof_offset = cptr.box(0);
+    let eof_offset = cptr.box(0n);
     let line = new Uint8Array(256);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64(cptr.add(gt, 400)) > 0n && cptr.ldI64(cptr.add(gf, 104)) > 0n) {
-        cptr.stU64(cptr.add(gt, 416), BigInt.asIntN(64, cptr.ldU64(cptr.add(gt, 408))) + cptr.ldI64(cptr.add(gt, 400)));
-        cptr.stU64(cptr.add(gf, 120), BigInt.asIntN(64, cptr.ldU64(cptr.add(gf, 112))) + cptr.ldI64(cptr.add(gf, 104)));
+    if ((sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64(cptr.add(gt, 400)) > 0n ? 1 : 0) && cptr.ldI64(cptr.add(gf, 104)) > 0n ? 1 : 0) {
+        cptr.stU64(cptr.add(gt, 416), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gt, 408))) + cptr.ldI64(cptr.add(gt, 400))));
+        cptr.stU64(cptr.add(gf, 120), BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64(cptr.add(gf, 112))) + cptr.ldI64(cptr.add(gf, 104))));
     } else {
         cptr.stU64(cptr.add(gt, 400), -1n);
         void fclose(fp);
@@ -174,7 +174,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
                 return cptr.strcpy(rumor_buf, __sl6);
             }
             void cptr.strcpy(rumor_buf, get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, 60));
-        } while (count++ < 50 && exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))));
+        } while ((count++ < 50 && exclude_cookie ? 1 : 0) && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0);
         void fclose(rumors);
         if (count >= 50)
             impossible(__sl7);
@@ -184,7 +184,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
         couldnt_open_file(__sl0);
         cptr.stU64(cptr.add(gt, 400), BigInt((-1)));
     }
-    if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
+    if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0) {
         let src = cptr.add(rumor_buf, marklen);
         let dst = rumor_buf;
         for (; cptr.ld1s(src) != 0; src = cptr.add(src, 1), dst = cptr.add(dst, 1)) {
@@ -229,7 +229,7 @@ export function rumor_check() {
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin.v, 0, cptr.decay(rumor_buf));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64(cptr.add(gt, 416)))
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64(cptr.add(gt, 416)) ? 1 : 0)
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
@@ -243,7 +243,7 @@ export function rumor_check() {
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin.v, 0, cptr.decay(rumor_buf));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64(cptr.add(gf, 120)))
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64(cptr.add(gf, 120)) ? 1 : 0)
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
@@ -259,7 +259,7 @@ export function rumor_check() {
     }
     if (__go_no_rumors) {
         pline(__sl15);
-        (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
     }
     others_check(__sl16, __sl17, tmpwin);
     others_check(__sl18, __sl19, tmpwin);
@@ -310,7 +310,7 @@ function others_check(ftype, fname, winptr) {
                 break __lbl_closeit;
             }
             cptr.st1(cptr.decay(line), 0);
-            if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
+            if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10 ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __sl27 : __sl28);
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(xbuf));
                 break __lbl_closeit;
@@ -360,24 +360,24 @@ function get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
         void fseek(fh, 0n, 2);
         endpos = ftell(fh);
     }
-    filechunksize = endpos - startpos;
+    filechunksize = BigInt.asIntN(64, endpos - startpos);
     if (filechunksize < 1n)
         return buf;
-    void ((!!(filechunksize <= 2147483647n)) || (nhassert_failed(__sl32, __sl3, 449), 0));
+    void ((!!(filechunksize <= 2147483647n)) || (nhassert_failed(__sl32, __sl3, 449), 0) ? 1 : 0);
     for (trylimit = 10; trylimit > 0; --trylimit) {
         chunkoffset = BigInt((rng)(Number(BigInt.asIntN(32, filechunksize))));
-        void fseek(fh, startpos + chunkoffset, 0);
+        void fseek(fh, BigInt.asIntN(64, startpos + chunkoffset), 0);
         void fgets(buf, bufsiz | 0, fh);
-        if (!padlength || Number(BigInt.asUintN(32, cptr.strlen(buf))) <= (padlength + 1) >>> 0)
+        if (!padlength || Number(BigInt.asUintN(32, cptr.strlen(buf))) <= (padlength + 1) >>> 0 ? 1 : 0)
             break;
     }
-    if (ftell(fh) >= endpos || !fgets(buf, bufsiz | 0, fh)) {
+    if (ftell(fh) >= endpos || !fgets(buf, bufsiz | 0, fh) ? 1 : 0) {
         void fseek(fh, startpos, 0);
         void fgets(buf, bufsiz | 0, fh);
     }
     if ((newl = cptr.strchr(buf, 10)) !== null)
         cptr.st1(newl, 0);
-    xbufp = (cptr.strlen(buf) <= 256n - 1n) ? cptr.add(cptr.decay(xbuf), 0, 1) : alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0);
+    xbufp = (cptr.strlen(buf) <= BigInt.asUintN(64, 256n - 1n)) ? cptr.add(cptr.decay(xbuf), 0, 1) : alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0);
     void cptr.strcpy(buf, xcrypt(buf, xbufp));
     if (!cptr.eq(xbufp, cptr.add(cptr.decay(xbuf), 0, 1)))
         cptr.free(xbufp);
@@ -410,11 +410,11 @@ const __static_outrumor_fortune_msg = cptr.bytes("This cookie has a scrap of pap
 export function outrumor(truth, mechanism) {
     let line;
     let buf = new Uint8Array(256);
-    let reading = schar((mechanism == 1 || mechanism == 2));
+    let reading = schar((mechanism == 1 || mechanism == 2 ? 1 : 0));
     if (reading) {
-        if (is_fainted() && mechanism == 1) {
+        if (is_fainted() && mechanism == 1 ? 1 : 0) {
             return;
-        } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
+        } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
             if (mechanism == 1)
                 pline(cptr.decay(__static_outrumor_fortune_msg));
             pline(__sl33);
@@ -448,12 +448,12 @@ function init_oracles(fp) {
     let cnt = cptr.box(0);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0) {
+    if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0 ? 1 : 0) {
         cptr.stI32(svo, cnt.v >>> 0);
-        cptr.stPtr(cptr.add(svo, 8), alloc(Number(BigInt.asUintN(32, (BigInt((cnt.v >>> 0) >>> 0) * 8n)))));
+        cptr.stPtr(cptr.add(svo, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)))));
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
-            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i));
+            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i, 8));
         }
     }
     return;
@@ -466,7 +466,7 @@ export function save_oracles(nhfp) {
         sfo_unsigned(nhfp, svo, __sl44);
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-                sfo_ulong(nhfp, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i), __sl45);
+                sfo_ulong(nhfp, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i, 8), __sl45);
                 ;
             }
         }
@@ -488,9 +488,9 @@ export function restore_oracles(nhfp) {
     sfi_unsigned(nhfp, svo, __sl44);
     ;
     if (cptr.ldI32(svo)) {
-        cptr.stPtr(cptr.add(svo, 8), alloc(Number(BigInt.asUintN(32, (BigInt(cptr.ldI32(svo) >>> 0) * 8n)))));
+        cptr.stPtr(cptr.add(svo, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)))));
         for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-            sfi_ulong(nhfp, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i), __sl45);
+            sfi_ulong(nhfp, cptr.add(cptr.ldPtr(cptr.add(svo, 8)), i, 8), __sl45);
             ;
         }
         cptr.stI32(cptr.add(go, 552), 1);
@@ -505,7 +505,7 @@ export function outoracle(special, delphi) {
     let endp;
     let line = new Uint8Array(80);
     let xbuf = new Uint8Array(256);
-    if (cptr.ldI32(cptr.add(go, 552)) < 0 || (cptr.ldI32(cptr.add(go, 552)) > 0 && cptr.ldI32(svo) == 0))
+    if (cptr.ldI32(cptr.add(go, 552)) < 0 || (cptr.ldI32(cptr.add(go, 552)) > 0 && cptr.ldI32(svo) == 0 ? 1 : 0) ? 1 : 0)
         return;
     oracles = fopen(__sl46, __sl1);
     if (oracles) {
@@ -516,19 +516,19 @@ export function outoracle(special, delphi) {
                 if (cptr.ldI32(svo) == 0)
                     break __lbl_close_oracles;
             }
-            if (cptr.ldI32(svo) <= 1 && !special)
+            if (cptr.ldI32(svo) <= 1 && !special ? 1 : 0)
                 break __lbl_close_oracles;
             oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl3, 665, __sl47), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
-            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx))), 0);
+            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx, 8))), 0);
             if (!special)
-                cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx), cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), cptr.stI32(svo, cptr.ldI32(svo) + -1))));
+                cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx, 8), cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8)));
             tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
             if (delphi)
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, special ? __sl48 : __sl49);
             else
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl50);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
-            while (fgets(cptr.decay(line), 80, oracles) && strcmp(cptr.decay(line), __sl51)) {
+            while (fgets(cptr.decay(line), 80, oracles) && strcmp(cptr.decay(line), __sl51) ? 1 : 0) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
@@ -576,7 +576,7 @@ export function doconsult(oracl) {
         u_pay = minor_cost;
         break;
         case 110:
-        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32(cptr.add(go, 552)) < 0))
+        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32(cptr.add(go, 552)) < 0 ? 1 : 0) ? 1 : 0)
             return 0;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, currency(BigInt(major_cost)));
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, (1)) != 121)
@@ -586,7 +586,7 @@ export function doconsult(oracl) {
     }
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, (1));
-    if (!cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) && !cptr.ldI32(cptr.add(u, 1884)))
+    if (!cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) && !cptr.ldI32(cptr.add(u, 1884)) ? 1 : 0)
         record_achievement(19);
     add_xpts = 0;
     if (u_pay == minor_cost) {
@@ -597,7 +597,7 @@ export function doconsult(oracl) {
     } else {
         let cheapskate = schar((u_pay < major_cost));
         outoracle(cheapskate, (1));
-        if (!cheapskate && !cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)))
+        if (!cheapskate && !cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) ? 1 : 0)
             add_xpts = (u_pay / (cptr.ldI32(cptr.add(u, 1884)) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(cptr.add(u, 1884), 4), 1);
         exercise(2, schar((!cheapskate)));
@@ -624,18 +624,18 @@ export function CapitalMon(word) {
     let i;
     let wln;
     let nln;
-    if (!word || !cptr.ld1s(word) || cptr.ld1s(word) == lowc(cptr.ld1s(word)))
+    if ((!word || !cptr.ld1s(word) ? 1 : 0) || cptr.ld1s(word) == lowc(cptr.ld1s(word)) ? 1 : 0)
         return (0);
     if (!CapMons)
         init_CapMons();
     (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__sl59, __sl60, 803, __sl61) : void 0);
     wln = Number(BigInt.asUintN(32, cptr.strlen(word)));
     for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
-        nam = cptr.ldPtr(cptr.add(CapMons, i));
+        nam = cptr.ldPtr(cptr.add(CapMons, i, 8));
         nln = Number(BigInt.asUintN(32, cptr.strlen(nam)));
         if (wln < nln)
             continue;
-        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && (!cptr.ld1s(cptr.add(word, nln)) || cptr.ld1s(cptr.add(word, nln)) == 32 || cptr.ld1s(cptr.add(word, nln)) == 39))
+        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && ((!cptr.ld1s(cptr.add(word, nln)) || cptr.ld1s(cptr.add(word, nln)) == 32 ? 1 : 0) || cptr.ld1s(cptr.add(word, nln)) == 39 ? 1 : 0) ? 1 : 0)
             return (1);
     }
     return (0);
@@ -655,13 +655,13 @@ function init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = 0; mndx < 383; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
-            if ((cptr.ldU16(cptr.add(mptr, 34)) & 4096) != 0 && !the_unique_pm(mptr))
+            if ((cptr.ldU16(cptr.add(mptr, 34)) & 4096) != 0 && !the_unique_pm(mptr) ? 1 : 0)
                 continue;
             for (mgend = 0; mgend < 3; ++mgend) {
                 nam = cptr.ldPtr(cptr.add(mptr, mgend, 8));
-                if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam))) {
+                if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam)) ? 1 : 0) {
                     if (pass == 2)
-                        cptr.stPtr(cptr.add(CapMons, CapMonstCnt), nam);
+                        cptr.stPtr(cptr.add(CapMons, CapMonstCnt, 8), nam);
                     ++CapMonstCnt;
                 }
             }
@@ -679,33 +679,33 @@ function init_CapMons() {
                     cptr.st1(endp, 0);
                 void xcrypt(cptr.decay(hline), cptr.decay(xbuf));
                 unpadline(cptr.decay(xbuf));
-                if (!cptr.ld1s(cptr.add(cptr.decay(xbuf), 0, 1)) || !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1s(cptr.add(cptr.decay(xbuf), 0, 1))))
+                if (!cptr.ld1s(cptr.add(cptr.decay(xbuf), 0, 1)) || !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1s(cptr.add(cptr.decay(xbuf), 0, 1))) ? 1 : 0)
                     code = 0, startp = cptr.add(cptr.decay(xbuf), 0, 1);
                 else
                     code = cptr.ld1s(cptr.add(cptr.decay(xbuf), 0, 1)), startp = cptr.add(cptr.decay(xbuf), 1, 1);
-                if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code)) {
+                if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code) ? 1 : 0) {
                     if (pass == 2)
-                        cptr.stPtr(cptr.add(CapMons, (CapMonstCnt + CapBogonCnt) >>> 0), dupstr(startp));
+                        cptr.stPtr(cptr.add(CapMons, (CapMonstCnt + CapBogonCnt) >>> 0, 8), dupstr(startp));
                     ++CapBogonCnt;
                 }
             }
         }
         if (pass == 1) {
             CapMonSiz = (((CapMonstCnt + CapBogonCnt) >>> 0) + 1) >>> 0;
-            CapMons = alloc(Number(BigInt.asUintN(32, (BigInt(CapMonSiz >>> 0) * 8n))));
+            CapMons = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(CapMonSiz >>> 0) * 8n))));
         } else {
-            cptr.stPtr(cptr.add(CapMons, (CapMonSiz - 1) >>> 0), null);
+            cptr.stPtr(cptr.add(CapMons, (CapMonSiz - 1) >>> 0, 8), null);
             if (bogonfile)
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl62, (0))) {
+    if (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl62, (0)) ? 1 : 0) {
         let buf = new Uint8Array(256);
         let i;
         let tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl63);
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
-            void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtr(cptr.add(CapMons, i)));
+            void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtr(cptr.add(CapMons, i, 8)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
         }
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, (1));
@@ -719,7 +719,7 @@ export function free_CapMons() {
     if (CapMons) {
         let idx;
         for (idx = CapMonstCnt; idx < (CapMonSiz - 1) >>> 0; ++idx)
-            cptr.free(cptr.ldPtr(cptr.add(CapMons, idx)));
+            cptr.free(cptr.ldPtr(cptr.add(CapMons, idx, 8)));
         cptr.free(CapMons), CapMons = null;
     }
     CapMonSiz = 0;

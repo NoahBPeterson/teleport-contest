@@ -387,9 +387,9 @@ export function switch_symbols(nondefault) {
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
             cptr.st1(cptr.add(cptr.add(gs, 680), i, 1), uchar((cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) : cptr.ld1u(cptr.add(cptr.add(gp, 29), i, 1)))));
-        if ((cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28) == 2) && decgraphics_mode_callback)
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2) && decgraphics_mode_callback ? 1 : 0)
             (decgraphics_mode_callback)();
-        if ((cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28) == 5) && utf8graphics_mode_callback)
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5) && utf8graphics_mode_callback ? 1 : 0)
             (utf8graphics_mode_callback)();
     } else {
         init_primary_symbols();
@@ -420,7 +420,7 @@ export function update_rogue_symset(symp, val) {
 /** C ref: symbols.c:319 — @param {CInt} which_set @param {CInt} name_too */
 export function clear_symsetentry(which_set, name_too) {
     let other_set = (which_set == 0) ? 1 : 0;
-    let old_handling = cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28);
+    let old_handling = cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28));
     if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16)))
         cptr.free(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16)));
     cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16), null);
@@ -433,7 +433,7 @@ export function clear_symsetentry(which_set, name_too) {
             cptr.free(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8)));
         cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), null);
     }
-    if (old_handling == 5 && cptr.add(cptr.add(cptr.add(gs, 200), other_set, 48), 28) != 5)
+    if (old_handling == 5 && cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), other_set, 48), 28)) != 5 ? 1 : 0)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
@@ -441,7 +441,7 @@ export function clear_symsetentry(which_set, name_too) {
 
 /** C ref: symbols.c:353 — @param {*} handling @param {CLongLong} wincap2 @returns {CInt} */
 export function symset_is_compatible(handling, wincap2) {
-    if (handling == 5 && ((wincap2 & 131072n) != 131072n))
+    if (handling == 5 && ((wincap2 & 131072n) != 131072n) ? 1 : 0)
         return (0);
     return (1);
 }
@@ -1075,11 +1075,11 @@ export function parse_sym_line(buf, which_set) {
     if (cptr.strlen(buf) >= 256n)
         cptr.st1(cptr.add(buf, (256 - 1) | 0), 0);
     mungspaces(buf);
-    if ((commentp = cptr.strrchr(buf, 35)) !== null && cptr.ld1s(cptr.add(commentp, -1)) == 32)
+    if ((commentp = cptr.strrchr(buf, 35)) !== null && cptr.ld1s(cptr.add(commentp, -1)) == 32 ? 1 : 0)
         cptr.st1(cptr.add(commentp, -1), 0);
     bufp = cptr.strchr(buf, 61);
     altp = cptr.strchr(buf, 58);
-    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0))
+    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0 ? 1 : 0) ? 1 : 0)
         bufp = altp;
     if (!bufp) {
         if (strncmpi(buf, __sl10, 6) == 0) {
@@ -1095,7 +1095,7 @@ export function parse_sym_line(buf, which_set) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     symp = match_sym(buf);
-    if (!symp && cptr.ld1s(cptr.add(buf, 0)) == 71 && cptr.ld1s(cptr.add(buf, 1)) == 95) {
+    if ((!symp && cptr.ld1s(cptr.add(buf, 0)) == 71 ? 1 : 0) && cptr.ld1s(cptr.add(buf, 1)) == 95 ? 1 : 0) {
         if (cptr.ld1s(cptr.add(gc, 456))) {
             is_glyph = schar(match_glyph(buf));
         } else {
@@ -1103,13 +1103,13 @@ export function parse_sym_line(buf, which_set) {
         }
         enhanced_unavailable = (0);
     }
-    if (!symp && !is_glyph && !enhanced_unavailable) {
+    if ((!symp && !is_glyph ? 1 : 0) && !enhanced_unavailable ? 1 : 0) {
         config_error_add(__sl204);
         return 0;
     }
     if (symp) {
         if (!cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8))) {
-            if (symp == 1) {
+            if (cptr.ldI32(symp) == 1) {
                 let tmpsp;
                 let lastsp;
                 for (lastsp = cptr.ldPtr(cptr.add(gs, 952)); lastsp; lastsp = cptr.ldPtr(lastsp))
@@ -1123,7 +1123,7 @@ export function parse_sym_line(buf, which_set) {
                         cptr.stPtr(cptr.add(gs, 952), tmpsp);
                     else
                         cptr.stPtr(lastsp, tmpsp);
-                    cptr.stI32(cptr.add(tmpsp, 24), (cptr.stI32(cptr.add(gs, 876), cptr.ldI32(cptr.add(gs, 876)) + 1)) - 1);
+                    cptr.stI32(cptr.add(tmpsp, 24), (cptr.stI32(cptr.add(gs, 876), cptr.ldI32(cptr.add(gs, 876)) + 1)) - (1));
                     cptr.stPtr(cptr.add(tmpsp, 8), dupstr(bufp));
                     cptr.stPtr(cptr.add(tmpsp, 16), null);
                     cptr.stI32(cptr.add(tmpsp, 28), 0);
@@ -1142,7 +1142,7 @@ export function parse_sym_line(buf, which_set) {
                     break;
                     case 3:
                     tmpsp = lastsp;
-                    if (tmpsp && !cptr.ldPtr(cptr.add(tmpsp, 16)))
+                    if (tmpsp && !cptr.ldPtr(cptr.add(tmpsp, 16)) ? 1 : 0)
                         cptr.stPtr(cptr.add(tmpsp, 16), dupstr(bufp));
                     break;
                     case 5:
@@ -1167,7 +1167,7 @@ export function parse_sym_line(buf, which_set) {
             }
             return 1;
         }
-        if (symp && symp == 1) {
+        if (cptr.ldI32(symp) && cptr.ldI32(symp) == 1 ? 1 : 0) {
             switch (cptr.ldI32(cptr.add(symp, 4))) {
                 case 0:
                 if (!strncmpi((bufp), (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8))), -1)) {
@@ -1190,9 +1190,9 @@ export function parse_sym_line(buf, which_set) {
                 case 4:
                 if (cptr.ld1s(cptr.add(gc, 456))) {
                     if (bufp) {
-                        if (!strncmpi((bufp), (__sl205), -1) || !strncmpi((bufp), (__sl206), -1) || !strncmpi((bufp), (__sl207), -1))
+                        if ((!strncmpi((bufp), (__sl205), -1) || !strncmpi((bufp), (__sl206), -1) ? 1 : 0) || !strncmpi((bufp), (__sl207), -1) ? 1 : 0)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 32), 0);
-                        else if (!strncmpi((bufp), (__sl208), -1) || !strncmpi((bufp), (__sl209), -1) || !strncmpi((bufp), (__sl210), -1))
+                        else if ((!strncmpi((bufp), (__sl208), -1) || !strncmpi((bufp), (__sl209), -1) ? 1 : 0) || !strncmpi((bufp), (__sl210), -1) ? 1 : 0)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 32), 1);
                     }
                 }
@@ -1218,7 +1218,7 @@ export function parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
-            if (cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28) != 5) {
+            if (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28)) != 5) {
                 if (cptr.ld1s(cptr.add(gc, 456))) {
                     val = sym_val(bufp);
                     if (which_set == 0) {
@@ -1296,7 +1296,7 @@ export function savedsym_free() {
 function savedsym_find(name, which_set) {
     let tmp = saved_symbols;
     while (tmp) {
-        if (which_set == cptr.ldI32(cptr.add(tmp, 16)) && !strcmp(name, cptr.ldPtr(tmp)))
+        if (which_set == cptr.ldI32(cptr.add(tmp, 16)) && !strcmp(name, cptr.ldPtr(tmp)) ? 1 : 0)
             return tmp;
         tmp = cptr.ldPtr(cptr.add(tmp, 24));
     }
@@ -1348,18 +1348,18 @@ export function parsesymbols(opts, which_set) {
         if (!cptr.ld1s(postch))
             break;
         if (cptr.ld1s(ch) == 44) {
-            if (cptr.ld1s(prech) == 39 && cptr.ld1s(postch) == 39)
+            if (cptr.ld1s(prech) == 39 && cptr.ld1s(postch) == 39 ? 1 : 0)
                 continue;
             if (cptr.ld1s(prech) == 92)
                 continue;
         }
         if (cptr.ld1s(ch) == 58) {
-            if (cptr.ld1s(prech) == 39 && cptr.ld1s(postch) == 39)
+            if (cptr.ld1s(prech) == 39 && cptr.ld1s(postch) == 39 ? 1 : 0)
                 continue;
         }
-        if (cptr.ld1s(ch) == 44 && !first_unquoted_comma)
+        if (cptr.ld1s(ch) == 44 && !first_unquoted_comma ? 1 : 0)
             first_unquoted_comma = ch;
-        if (cptr.ld1s(ch) == 58 && !first_unquoted_colon)
+        if (cptr.ld1s(ch) == 58 && !first_unquoted_colon ? 1 : 0)
             first_unquoted_colon = ch;
     }
     if (first_unquoted_comma !== null) {
@@ -1377,14 +1377,14 @@ export function parsesymbols(opts, which_set) {
     mungspaces(symname);
     mungspaces(strval);
     symp = match_sym(symname);
-    if (!symp && cptr.ld1s(cptr.add(symname, 0)) == 71 && cptr.ld1s(cptr.add(symname, 1)) == 95) {
+    if ((!symp && cptr.ld1s(cptr.add(symname, 0)) == 71 ? 1 : 0) && cptr.ld1s(cptr.add(symname, 1)) == 95 ? 1 : 0) {
         is_glyph = schar(match_glyph(symname));
     }
-    if (!symp && !is_glyph)
+    if (!symp && !is_glyph ? 1 : 0)
         return (0);
     if (symp) {
-        if (symp && symp != 1) {
-            if (cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28) == 5 || (lowc(cptr.ld1s(cptr.add(strval, 0))) == 117 && cptr.ld1s(cptr.add(strval, 1)) == 43)) {
+        if (cptr.ldI32(symp) && cptr.ldI32(symp) != 1 ? 1 : 0) {
+            if (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28)) == 5 || (lowc(cptr.ld1s(cptr.add(strval, 0))) == 117 && cptr.ld1s(cptr.add(strval, 1)) == 43 ? 1 : 0) ? 1 : 0) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
                 nh_snprintf(__sl214, 836, cptr.decay(buf), 256n, __sl215, opts, strval);
@@ -1431,24 +1431,24 @@ export function match_sym(buf) {
     let p = cptr.strchr(buf, 58);
     let q = cptr.strchr(buf, 61);
     let sp = loadsyms;
-    if ((cptr.ld1s(cptr.add(buf, 0)) == 71 || cptr.ld1s(cptr.add(buf, 0)) == 103) && cptr.ld1s(cptr.add(buf, 1)) == 95)
+    if ((cptr.ld1s(cptr.add(buf, 0)) == 71 || cptr.ld1s(cptr.add(buf, 0)) == 103 ? 1 : 0) && cptr.ld1s(cptr.add(buf, 1)) == 95 ? 1 : 0)
         return null;
-    if (!p || (q && cptr.cmp(q, p) < 0))
+    if (!p || (q && cptr.cmp(q, p) < 0 ? 1 : 0) ? 1 : 0)
         p = q;
     if (p) {
-        if (cptr.cmp(p, buf) > 0 && cptr.ld1s(cptr.add(p, -1)) == 32)
+        if (cptr.cmp(p, buf) > 0 && cptr.ld1s(cptr.add(p, -1)) == 32 ? 1 : 0)
             p = cptr.add(p, -1);
         len = BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, (cptr.diff(p, buf))))));
     }
-    while (sp) {
-        if ((len >= cptr.strlen(cptr.ldPtr(cptr.add(sp, 8)))) && !strncmpi(buf, cptr.ldPtr(cptr.add(sp, 8)), Number(BigInt.asIntN(32, len))))
+    while (cptr.ldI32(sp)) {
+        if ((len >= cptr.strlen(cptr.ldPtr(cptr.add(sp, 8)))) && !strncmpi(buf, cptr.ldPtr(cptr.add(sp, 8)), Number(BigInt.asIntN(32, len))) ? 1 : 0)
             return sp;
         sp = cptr.add(sp, 1, 16);
     }
     for (i = 0; i < 10; ++i) {
-        if ((len >= cptr.strlen(cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)))) && !strncmpi(buf, cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)), Number(BigInt.asIntN(32, len)))) {
+        if ((len >= cptr.strlen(cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)))) && !strncmpi(buf, cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)), Number(BigInt.asIntN(32, len))) ? 1 : 0) {
             sp = loadsyms;
-            while (sp) {
+            while (cptr.ldI32(sp)) {
                 if (!strcmp(cptr.ldPtr(cptr.add(cptr.add(__static_match_sym_alternates, i, 16), 8)), cptr.ldPtr(cptr.add(sp, 8))))
                     return sp;
                 sp = cptr.add(sp, 1, 16);
@@ -1482,14 +1482,14 @@ export function do_symset(rogueflag) {
     cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), null);
     res = read_sym_file(which_set);
     cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), symset_name);
-    if (res && cptr.ldPtr(cptr.add(gs, 952))) {
+    if (res && cptr.ldPtr(cptr.add(gs, 952)) ? 1 : 0) {
         let thissize;
-        let biggest = Number(BigInt.asIntN(32, (16n - 1n)));
+        let biggest = Number(BigInt.asIntN(32, (BigInt.asUintN(64, 16n - 1n))));
         let big_desc = 0;
         for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
             if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
                 continue;
-            if (cptr.add(sl, 28) == 4)
+            if (cptr.ldI32(cptr.add(sl, 28)) == 4)
                 continue;
             setcount++;
             thissize = cptr.ldPtr(cptr.add(sl, 8)) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(sl, 8))))) : 0;
@@ -1510,18 +1510,18 @@ export function do_symset(rogueflag) {
         cptr.stI32(any, 1);
         if (!symset_name)
             defindx = cptr.ldI32(any);
-        add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, clr, __sl229, (cptr.ldI32(any) == defindx) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, __sl229, (cptr.ldI32(any) == defindx) ? 1 : 0);
         for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
             if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
                 continue;
-            if (cptr.add(sl, 28) == 4)
+            if (cptr.ldI32(cptr.add(sl, 28)) == 4)
                 continue;
             if (cptr.ldPtr(cptr.add(sl, 8))) {
                 cptr.stI32(any, (cptr.ldI32(cptr.add(sl, 24)) + 2) | 0);
-                if (symset_name && !strncmpi((cptr.ldPtr(cptr.add(sl, 8))), (symset_name), -1))
+                if (symset_name && !strncmpi((cptr.ldPtr(cptr.add(sl, 8))), (symset_name), -1) ? 1 : 0)
                     defindx = cptr.ldI32(any);
                 void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.ldPtr(cptr.add(sl, 8)), cptr.ldPtr(cptr.add(sl, 16)) ? cptr.ldPtr(cptr.add(sl, 16)) : __sl213);
-                add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, clr, cptr.decay(buf), (cptr.ldI32(any) == defindx) ? 1 : 0);
+                add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), (cptr.ldI32(any) == defindx) ? 1 : 0);
             }
         }
         void cptr.sprintf(cptr.decay(buf), __sl230, rogueflag ? __sl231 : __sl213);
@@ -1529,11 +1529,11 @@ export function do_symset(rogueflag) {
         n = select_menu(tmpwin, 1, symset_pick);
         if (n > 0) {
             chosen = cptr.ldI32(cptr.add(symset_pick.v, 0, 24));
-            if (n == 2 && chosen == defindx)
+            if (n == 2 && chosen == defindx ? 1 : 0)
                 chosen = cptr.ldI32(cptr.add(symset_pick.v, 1, 24));
             chosen = (chosen - 2) | 0;
             cptr.free(symset_pick.v);
-        } else if (n == 0 && defindx > 0) {
+        } else if (n == 0 && defindx > 0 ? 1 : 0) {
             chosen = (defindx - 2) | 0;
         }
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
@@ -1589,7 +1589,7 @@ export function do_symset(rogueflag) {
     }
     if (ready_to_switch)
         switch_symbols(1);
-    if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8))))) {
+    if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8)) ? 1 : 0))) {
         if (rogueflag)
             assign_graphics(1);
     } else if (!rogueflag)

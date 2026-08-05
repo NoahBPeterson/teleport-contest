@@ -68,7 +68,7 @@ function luaB_print(L) {
     let n = lua_gettop(L);
     let i;
     for (i = 1; i <= n; i++) {
-        let l = cptr.box(0);
+        let l = cptr.box(0n);
         let s = luaL_tolstring(L, i, l);
         if (i > 1)
             fwrite((__sl0), 1n, 1n, __stdoutp);
@@ -108,11 +108,11 @@ function b_str2int(s, base, pn) {
         let digit = (isdigit(uchar(cptr.ld1s(s)))) ? (cptr.ld1s(s) - 48) | 0 : (((toupper(uchar(cptr.ld1s(s))) - 65) | 0) + 10) | 0;
         if (digit >= base)
             return null;
-        n = n * BigInt.asUintN(64, BigInt(base)) + BigInt.asUintN(64, BigInt(digit));
+        n = BigInt.asUintN(64, BigInt.asUintN(64, n * BigInt.asUintN(64, BigInt(base))) + BigInt.asUintN(64, BigInt(digit)));
         s = cptr.add(s, 1);
     } while (isalnum(uchar(cptr.ld1s(s))));
     s = cptr.add(s, strspn(s, __sl2));
-    cptr.stU64(pn, BigInt.asIntN(64, ((neg) ? (0n - n) : n)));
+    cptr.stU64(pn, BigInt.asIntN(64, ((neg) ? (BigInt.asUintN(64, 0n - n)) : n)));
     return s;
 }
 
@@ -123,20 +123,20 @@ function luaB_tonumber(L) {
             lua_settop(L, 1);
             return 1;
         } else {
-            let l = cptr.box(0);
+            let l = cptr.box(0n);
             let s = lua_tolstring(L, 1, l);
-            if (!cptr.eq(s, (null)) && lua_stringtonumber(L, s) == l.v + 1n)
+            if (!cptr.eq(s, (null)) && lua_stringtonumber(L, s) == BigInt.asUintN(64, l.v + 1n) ? 1 : 0)
                 return 1;
             luaL_checkany(L, 1);
         }
     } else {
-        let l = cptr.box(0);
+        let l = cptr.box(0n);
         let s;
         let n = cptr.box(0n);
         let base = luaL_checkinteger(L, 2);
         luaL_checktype(L, 1, 4);
         s = lua_tolstring(L, 1, l);
-        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3))));
+        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3)) ? 1 : 0));
         if (cptr.eq(b_str2int(s, Number(BigInt.asIntN(32, base)), n), cptr.add(s, l.v))) {
             lua_pushinteger(L, n.v);
             return 1;
@@ -150,7 +150,7 @@ function luaB_tonumber(L) {
 function luaB_error(L) {
     let level = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 1n)));
     lua_settop(L, 1);
-    if (lua_type(L, 1) == 4 && level > 0) {
+    if (lua_type(L, 1) == 4 && level > 0 ? 1 : 0) {
         luaL_where(L, level);
         lua_pushvalue(L, 1);
         lua_concat(L, 2);
@@ -173,7 +173,7 @@ function luaB_getmetatable(L) {
 function luaB_setmetatable(L) {
     let t = lua_type(L, 2);
     luaL_checktype(L, 1, 5);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5) != 0)), 1n)) || luaL_typeerror(L, (2), (__sl5))));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, (2), (__sl5)) ? 1 : 0));
     if ((__builtin_expect(BigInt(((luaL_getmetafield(L, 1, __sl4) != 0) != 0)), 0n)))
         return luaL_error(L, __sl6);
     lua_settop(L, 2);
@@ -192,7 +192,7 @@ function luaB_rawequal(L) {
 /** C ref: lbaselib.c:157 — @param {CPtr} L @returns {CInt} */
 function luaB_rawlen(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t == 5 || t == 4) != 0)), 1n)) || luaL_typeerror(L, (1), (__sl7))));
+    (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, (1), (__sl7)) ? 1 : 0));
     lua_pushinteger(L, BigInt.asIntN(64, lua_rawlen(L, 1)));
     return 1;
 }
@@ -333,7 +333,7 @@ function luaB_collectgarbage(L) {
 /** C ref: lbaselib.c:259 — @param {CPtr} L @returns {CInt} */
 function luaB_type(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t != (-1)) != 0)), 1n)) || luaL_argerror(L, (1), (__sl18))));
+    (void ((__builtin_expect(BigInt(((t != (-1)) != 0)), 1n)) || luaL_argerror(L, (1), (__sl18)) ? 1 : 0));
     lua_pushstring(L, lua_typename(L, t));
     return 1;
 }
@@ -375,7 +375,7 @@ function luaB_pairs(L) {
 /** C ref: lbaselib.c:302 — @param {CPtr} L @returns {CInt} */
 function ipairsaux(L) {
     let i = luaL_checkinteger(L, 2);
-    i = (BigInt.asIntN(64, (BigInt.asUintN(64, (i)) + 1n)));
+    i = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (i)) + 1n))));
     lua_pushinteger(L, i);
     return (lua_geti(L, 1, i) == 0) ? 1 : 2;
 }
@@ -433,7 +433,7 @@ function generic_reader(L, ud, size) {
 /** C ref: lbaselib.c:387 — @param {CPtr} L @returns {CInt} */
 function luaB_load(L) {
     let status;
-    let l = cptr.box(0);
+    let l = cptr.box(0n);
     let s = lua_tolstring(L, 1, l);
     let mode = (luaL_optlstring(L, (3), (__sl22), null));
     let env = (!(lua_type(L, (4)) == (-1)) ? 4 : 0);
@@ -482,23 +482,23 @@ function luaB_assert(L) {
 /** C ref: lbaselib.c:438 — @param {CPtr} L @returns {CInt} */
 function luaB_select(L) {
     let n = lua_gettop(L);
-    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, (1), null)) == 35) {
+    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, (1), null)) == 35 ? 1 : 0) {
         lua_pushinteger(L, BigInt(((n - 1) | 0)));
         return 1;
     } else {
         let i = luaL_checkinteger(L, 1);
         if (i < 0n)
-            i = BigInt(n) + i;
+            i = BigInt.asIntN(64, BigInt(n) + i);
         else if (i > BigInt(n))
             i = BigInt(n);
-        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) || luaL_argerror(L, (1), (__sl25))));
+        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) || luaL_argerror(L, (1), (__sl25)) ? 1 : 0));
         return (n - Number(BigInt.asIntN(32, i))) | 0;
     }
 }
 
 /** C ref: lbaselib.c:461 — @param {CPtr} L @param {CInt} status @param {CLongLong} extra @returns {CInt} */
 function finishpcall(L, status, extra) {
-    if ((__builtin_expect(BigInt(((status != 0 && status != 1) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((status != 0 && status != 1 ? 1 : 0) != 0)), 0n))) {
         lua_pushboolean(L, 0);
         lua_pushvalue(L, -2);
         return 2;

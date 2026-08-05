@@ -8,15 +8,15 @@ import * as cptr from '../cptr.js';
 
 /** C ref: lzio.c:23 — @param {CPtr} z @returns {CInt} */
 export function luaZ_fill(z) {
-    let size = cptr.box(0);
+    let size = cptr.box(0n);
     let L = cptr.ldPtr(cptr.add(z, 32));
     let buff;
     (void 0);
     buff = cptr.ldPtr(cptr.add(z, 16))(L, cptr.ldPtr(cptr.add(z, 24)), size);
     (void 0);
-    if (cptr.eq(buff, (null)) || size.v == 0n)
+    if (cptr.eq(buff, (null)) || size.v == 0n ? 1 : 0)
         return (-1);
-    cptr.stU64(z, size.v - 1n);
+    cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));
     cptr.stPtr(cptr.add(z, 8), buff);
     return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); })))))));
 }
@@ -38,14 +38,14 @@ export function luaZ_read(z, b, n) {
             if (luaZ_fill(z) == (-1))
                 return n;
             else {
-                (cptr.stU64(z, cptr.ldU64(z) + 1n)) - 1n;
+                (cptr.stU64(z, cptr.ldU64(z) + 1n)) - (1n);
                 cptr.postdec(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); });
             }
         }
         m = (n <= cptr.ldU64(z)) ? n : cptr.ldU64(z);
         cptr.memcpy(b, cptr.ldPtr(cptr.add(z, 8)), m);
-        cptr.st1(z, cptr.ld1u(z) - m);
-        cptr.st1(cptr.add(z, 8), cptr.ld1s(cptr.add(z, 8)) + m);
+        cptr.stU64(z, cptr.ldU64(z) - m);
+        cptr.stPtr(cptr.add(z, 8), cptr.add(cptr.ldPtr(cptr.add(z, 8)), m));
         b = cptr.add(b, m);
         n -= m;
     }
