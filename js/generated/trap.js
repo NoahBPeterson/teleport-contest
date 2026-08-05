@@ -1949,8 +1949,15 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
         }
         case 9: {
         pline(__sl149, A_gush_of_water_hits, body_part(0));
-        if (water_damage(uarms.v, __sl150, (1)) != 0)
-            break;
+        if (water_damage(uarms.v, __sl150, (1)) != 0) { __pc = 13; continue; }
+        __pc = 12; continue;
+        }
+        case 13: {
+        { __pc = 6; continue; }
+        __pc = 12;
+        continue;
+        }
+        case 12: {
         if (cptr.ld1s(cptr.add(u, 2816)) || (uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
             void water_damage(cptr.ld1s(cptr.add(u, 2816)) ? uswapwep.v : uwep.v, null, (1));
         __pc = 1;
@@ -2003,27 +2010,34 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
         mptr = cptr.ldPtr(cptr.add(mtmp, 8));
         if (in_sight)
             seetrap(trap);
-        let __sw13 = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 1663, __sl147), rn2(5)) : rn2(5));
-        if (__sw13 === 0) { __pc = 14; continue; }
-        if (__sw13 === 1) { __pc = 15; continue; }
-        if (__sw13 === 2) { __pc = 16; continue; }
-        __pc = 17; continue;
+        let __sw15 = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 1663, __sl147), rn2(5)) : rn2(5));
+        if (__sw15 === 0) { __pc = 16; continue; }
+        if (__sw15 === 1) { __pc = 17; continue; }
+        if (__sw15 === 2) { __pc = 18; continue; }
+        __pc = 19; continue;
         }
-        case 14: {
+        case 16: {
         if (in_sight)
             pline_mon(mtmp, __sl155, A_gush_of_water_hits, mon_nam(mtmp), mbodypart(mtmp, 8));
         target = which_armor(mtmp, 4n);
         void water_damage(target, helm_simple_name(target), (1));
-        { __pc = 12; continue; }
-        __pc = 15;
+        { __pc = 14; continue; }
+        __pc = 17;
         continue;
         }
-        case 15: {
+        case 17: {
         if (in_sight)
             pline_mon(mtmp, __sl156, A_gush_of_water_hits, mon_nam(mtmp), mbodypart(mtmp, 0));
         target = which_armor(mtmp, 8n);
-        if (water_damage(target, __sl150, (1)) != 0)
-            break;
+        if (water_damage(target, __sl150, (1)) != 0) { __pc = 21; continue; }
+        __pc = 20; continue;
+        }
+        case 21: {
+        { __pc = 14; continue; }
+        __pc = 20;
+        continue;
+        }
+        case 20: {
         target = (cptr.ldPtr(cptr.add((mtmp), 288)));
         if (target && ((cptr.ld1s(cptr.add(target, 49)) == 2 || cptr.ld1s(cptr.add(target, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(target, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0)
             void water_damage(target, null, (1));
@@ -2033,19 +2047,19 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
         case 2 /* mglovecheck: */: {
         target = which_armor(mtmp, 16n);
         void water_damage(target, gloves_simple_name(target), (1));
-        { __pc = 12; continue; }
-        __pc = 16;
+        { __pc = 14; continue; }
+        __pc = 18;
         continue;
         }
-        case 16: {
+        case 18: {
         if (in_sight)
             pline_mon(mtmp, __sl157, A_gush_of_water_hits, mon_nam(mtmp), mbodypart(mtmp, 0));
         void water_damage((cptr.ldPtr(cptr.add((mtmp), 288))), null, (1));
         { __pc = 2; continue; }
-        __pc = 17;
+        __pc = 19;
         continue;
         }
-        case 17: {
+        case 19: {
         if (in_sight)
             pline(__sl85, A_gush_of_water_hits, mon_nam(mtmp));
         for (otmp = cptr.ldPtr(cptr.add(mtmp, 280)); otmp; otmp = cptr.ldPtr(otmp))
@@ -2057,10 +2071,10 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
             void water_damage(target, suit_simple_name(target), (1));
         else if ((target = which_armor(mtmp, 64n)) !== null)
             void water_damage(target, __sl15, (1));
-        __pc = 12;
+        __pc = 14;
         continue;
         }
-        case 12: {
+        case 14: {
         if ((cptr.eq((mptr), cptr.add(mons, 259, 96)))) {
             if (in_sight)
                 pline_mon(mtmp, __sl158, Monnam(mtmp), !mlifesaver(mtmp) ? __sl159 : __sl160);

@@ -57,7 +57,7 @@ export function lit(s) {
 export function bytes(s) { return lit(s).buf; }
 
 /** Decode a C string to a JS string. Accepts CPtr | Uint8Array | string | null. @returns {string} */
-export function cstr(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+export function cstr(p) { 
   if (p === null || p === undefined) return '(null)';
   if (typeof p === 'string') return p;
   const buf = p.buf !== undefined ? p.buf : p;
@@ -71,11 +71,13 @@ export function cstr(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new E
  * flat backing in .buf (rows are subarrays of it) — unwrap so pointer-to-array
  * arithmetic (and memset over the whole array) sees contiguous storage.
  * @param {Uint8Array|Array} buf @returns {CPtr} */
-export function decay(buf) { return { buf: Array.isArray(buf) && buf.buf !== undefined ? buf.buf : buf, off: 0 }; }
+export function decay(buf) {
+  if (buf && buf.buf !== undefined && typeof buf.off === 'number') return buf; // already a CPtr (byte-packed array storage)
+  return { buf: Array.isArray(buf) && buf.buf !== undefined ? buf.buf : buf, off: 0 };
+}
 
 /** Pointer arithmetic: p + n elements of size sz (default 1 = byte). @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
-let __wdTicks = 0;
-export function add(p, n, sz = 1) { if (++__wdTicks > 3e8) { __wdTicks = -1e9; throw new Error('WATCHDOG cptr.add'); } const off = p.off + Number(n) * sz; if (Number.isNaN(off)) throw new Error(`cptr.add NaN (n=${String(n)} sz=${sz})`); return { buf: p.buf, off }; } // TEMP NaN tripwire
+export function add(p, n, sz = 1) { const off = p.off + Number(n) * sz; if (Number.isNaN(off)) throw new Error(`cptr.add NaN (n=${String(n)} sz=${sz})`); return { buf: p.buf, off }; } // TEMP NaN tripwire
 
 /** Pointer subtraction: p - n elements of size sz. @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
 export function sub(p, n, sz = 1) { return { buf: p.buf, off: p.off - Number(n) * sz }; }
@@ -110,17 +112,17 @@ export function addr(p) {
 // ------------------------------------------------------- scalar load/store ----
 
 /** *p where p is char* (signed on this target). @param {CPtr} p @returns {number} */
-export function ld1s(p) { if (++__wdTicks > 3e8) { __wdTicks = -1e9; throw new Error('WATCHDOG ld1s'); } if (p.isBox) return (p.v << 24) >> 24; return (p.buf[p.off] << 24) >> 24; }
+export function ld1s(p) { if (p.isBox) return (p.v << 24) >> 24; return (p.buf[p.off] << 24) >> 24; }
 
 /** *p where p is unsigned char*. @param {CPtr} p @returns {number} */
-export function ld1u(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } if (p.isBox) return p.v & 0xFF; return p.buf[p.off]; }
+export function ld1u(p) { if (p.isBox) return p.v & 0xFF; return p.buf[p.off]; }
 
 /** *p = v for 1-byte pointees; store truncates mod 256 like C. @param {CPtr} p @param {number|bigint} v */
-export function st1(p, v) { if (++__wdTicks > 3e8) { __wdTicks = -1e9; throw new Error('WATCHDOG st1'); } if (p.isBox) { p.v = Number(v) & 0xFF; return v; } p.buf[p.off] = Number(v) & 0xFF; return v; }
+export function st1(p, v) { if (p.isBox) { p.v = Number(v) & 0xFF; return v; } p.buf[p.off] = Number(v) & 0xFF; return v; }
 
 /** 32-bit int load, little-endian. @param {CPtr} p @returns {number} */
 export function ldI32(p) {
-  if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } if (p.isBox) return p.v | 0;
+  if (p.isBox) return p.v | 0;
   const b = p.buf, o = p.off;
   return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
 }
@@ -156,7 +158,7 @@ export function stI16(p, v) {
 }
 
 /** 64-bit load, little-endian, as BigInt (C int64/uint64/size_t). @param {CPtr} p @returns {bigint} */
-export function ldU64(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+export function ldU64(p) { 
   if (p.isBox) return BigInt.asUintN(64, BigInt(p.v));
   const b = p.buf, o = p.off;
   if (o + 8 > b.length) throw new Error(`ldU64 OOB: buflen=${b.length} off=${o}`); // TEMP debug aid
@@ -241,7 +243,7 @@ export function stPtr(p, v) {
 }
 
 /** load a CPtr previously stored via stPtr. @param {CPtr} p @returns {CPtr|null} */
-export function ldPtr(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+export function ldPtr(p) { 
   if (p.isBox) return p.v === undefined ? null : p.v;
   const id = ldU64(p);
   if (id === 0n) return null;
@@ -251,14 +253,14 @@ export function ldPtr(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new 
 // ------------------------------------------------------------ libc string ----
 
 /** @param {CPtr} p @returns {bigint} size_t */
-export function strlen(p) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+export function strlen(p) { 
   let n = 0;
   while (p.buf[p.off + n] !== 0) { if (++n > 1e6) throw new Error(`strlen runaway at off=${p.off} buflen=${p.buf.length}`); }
   return BigInt(n);
 }
 
 /** @param {CPtr} dst @param {CPtr} src @returns {CPtr} dst */
-export function strcpy(dst, src) { if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+export function strcpy(dst, src) { 
   let i = 0, c;
   do { c = src.buf[src.off + i]; dst.buf[dst.off + i] = c; i++; } while (c !== 0);
   return dst;
@@ -354,7 +356,7 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
  * @returns {string}
  */
 export function sprintfCore(fmt, args) {
-  if (++__wdTicks > 5e8) { __wdTicks = -1e9; throw new Error('WATCHDOG'); } 
+  
   const f = cstr(fmt);
   let ai = 0;
   return f.replace(/%([+0-]*)(\d*)(?:\.(\d*))?(ll|l|z)?([diuxXscf%])/g, (m, flags, width, prec, len, spec) => {

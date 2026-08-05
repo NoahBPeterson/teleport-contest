@@ -259,10 +259,10 @@ const __sl234 = cptr.lit("were no symbol sets found in \"%s\".");
 const __sl235 = cptr.lit("symset");
 
 /** C ref: symbols.c:14 — void (*)(void) */
-export let decgraphics_mode_callback = null;
+export let decgraphics_mode_callback = cptr.box(null);
 
 /** C ref: symbols.c:28 — void (*)(void) */
-export let utf8graphics_mode_callback = null;
+export let utf8graphics_mode_callback = cptr.box(null);
 
 /** C ref: symbols.c:85 */
 export function init_symbols() {
@@ -387,10 +387,10 @@ export function switch_symbols(nondefault) {
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
             cptr.st1(cptr.add(cptr.add(gs, 680), i, 1), uchar((cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) : cptr.ld1u(cptr.add(cptr.add(gp, 29), i, 1)))));
-        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2) && decgraphics_mode_callback ? 1 : 0)
-            (decgraphics_mode_callback)();
-        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5) && utf8graphics_mode_callback ? 1 : 0)
-            (utf8graphics_mode_callback)();
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2) && decgraphics_mode_callback.v ? 1 : 0)
+            (decgraphics_mode_callback.v)();
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5) && utf8graphics_mode_callback.v ? 1 : 0)
+            (utf8graphics_mode_callback.v)();
     } else {
         init_primary_symbols();
         init_showsyms();

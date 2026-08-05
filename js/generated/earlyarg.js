@@ -7,6 +7,7 @@ import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { config_error_add, config_error_done, config_error_init } from './cfgfiles.js';
 import { eos, nh_snprintf, strncmpi } from './hacklib.js';
+import { error } from './unixtty.js';
 import { ARGV0, gc, gd, gh, iflags, program_state } from './decl.js';
 import { dupstr } from './alloc.js';
 import { nh_terminate } from './end.js';

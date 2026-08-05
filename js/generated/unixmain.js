@@ -25,6 +25,7 @@ import { config_error_add, config_error_done, config_error_init } from './cfgfil
 import { eos, strncmpi } from './hacklib.js';
 import { load_symset, switch_symbols } from './symbols.js';
 import { sysopt } from './sys.js';
+import { error } from './unixtty.js';
 import { getnow } from './calendar.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)

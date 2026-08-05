@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
+import { error } from './unixtty.js';
 import { yn_function } from './cmd.js';
 import { Norep, pline, raw_printf } from './pline.js';
 import { lowc } from './hacklib.js';

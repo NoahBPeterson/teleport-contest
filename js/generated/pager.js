@@ -37,6 +37,7 @@ import { add_menu, add_menu_str, decode_mixed, encglyph, getlin, select_menu, wi
 import { ok_to_quest } from './quest.js';
 import { engr_at } from './engrave.js';
 import { coord_desc, getpos } from './getpos.js';
+import { introff, intron } from './unixtty.js';
 import { sysopt } from './sys.js';
 import { doextversion } from './version.js';
 import { doset, doset_simple, option_help, show_menu_controls } from './options.js';

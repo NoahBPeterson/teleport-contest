@@ -364,12 +364,8 @@ export async function runBootGame(opts) {
     throw { __bootExit: 1 };
   };
   g.sethanguphandler = (fn) => {};
-  // sys/share/unixtty.c globals (file not in the transpiled corpus). Patch 006
-  // seeds these under NOMUX_MARKERS: DEL erase, ^U kill, ^C intr — matching a
-  // tmux pty capture. No corpus code writes them (gettty isn't transpiled).
-  g.erase_char = 127;
-  g.kill_char = 21;
-  g.intr_char = 3;
+  // unixtty.c: nonesuch = fpathconf(0, _PC_VDISABLE) — 255 on Darwin
+  g.fpathconf = (fd, name) => 255n;
   g.chdir = (p) => { currentDir = resolveP(cptr.cstr(p)); __trace('chdir', currentDir); return 0; };
   g.open = (p, flags, mode) => { __trace('open', cptr.cstr(p), flags);
     const acc = Number(flags) & 3;
@@ -388,6 +384,11 @@ export async function runBootGame(opts) {
         else { let v = 0n; for (let i = Math.min(Number(n), 8) - 1; i >= 0; i--) v = (v << 8n) | BigInt(cptr.ld1u(cptr.add(tmp, i))); buf.v = v; }
       }
       return r;
+    }
+    if (Number(fd) === 0) { // stdin: same queue + end-of-run semantics as getchar
+      const c = g.getchar();
+      cptr.st1(buf, c);
+      return 1;
     }
     const f = fds.get(fd);
     if (!f || !f.data) return -1;
@@ -440,7 +441,30 @@ export async function runBootGame(opts) {
   g.lstat = g.stat;
   g.fstat = (fd, sb) => { const f = fds.get(fd); if (!f) return -1; cptr.stU64(cptr.add(sb, 40), BigInt((f.data || f.written).length)); cptr.stI32(cptr.add(sb, 4), 0o100644); return 0; };
   g.chmod = (p, mode) => 0;
-  g.unlink = (p) => { overlay.delete(cptr.cstr(p)); return 0; };
+  // fork/exec save-file compression (files.c docompress_file): the recorder's
+  // C forks /usr/bin/compress with stdio redirected onto the files; success is
+  // silent and the parent unlinks the source. We emulate the parent path only:
+  // fork "succeeds", wait() reports child exit 0, and the success-path unlink
+  // becomes the rename the compressor pair would have produced — identity
+  // "compression" (.Z bytes == original), read back only by the same
+  // uncompress emulation. No screen output, matching a successful C compress.
+  let __compressPending = false;
+  g.fork = () => 42;
+  g.wait = (statusp) => { if (statusp) cptr.stI32(statusp, 0); __compressPending = true; return 42n; };
+  g.unlink = (p) => {
+    const path = resolveP(cptr.cstr(p));
+    if (__compressPending) {
+      __compressPending = false;
+      const data = overlay.get(path) ?? realRead(cptr.cstr(p));
+      if (data) {
+        const dst = path.endsWith('.Z') ? path.slice(0, -2) : path + '.Z';
+        overlay.set(dst, data);
+      }
+    }
+    overlay.delete(path);
+    overlay.delete(cptr.cstr(p)); // legacy unresolved-key writes
+    return 0;
+  };
   g.mkdir = (p, mode) => 0;
   g.link = (a, b) => 0;
   g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (d) { realWrite(cptr.cstr(b), d); overlay.delete(cptr.cstr(a)); } return 0; };
@@ -579,22 +603,19 @@ export async function runBootGame(opts) {
   g.fflush = (f) => { if (f && f.__fd !== undefined) fdFlush(f.__fd); return 0; };
   g.setbuf = (f, buf) => {};
   g.setvbuf = (f, buf, mode, size) => 0;
-  g.gettty = () => {};
-  g.settty = (s) => {};
-  g.setftty = () => {};
-  g.insettty = () => 0;
-  g.ttyon = () => 0;
-  g.ttyoff = () => 0;
+  // gettty/settty/setftty now come transpiled from sys/share/unixtty.c
+  // (patched: seeds erase_char/kill_char/intr_char and computes
+  // iflags.cbreak/echo from the zeroed no-tty termios, like the recorder)
   g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; return fd.data[fd.pos++]; };
   g.getc = g.fgetc;
   g.ungetc = (c, f) => { const fd = fds.get(f.__fd); if (fd && fd.pos > 0) { fd.pos--; fd.data[fd.pos] = c & 0xFF; } return c; };
   Error.stackTraceLimit = 50;
-  let __eofReads = 0;
   g.getchar = () => {
-    if (!inputQueue.length) {
-      if (++__eofReads > 200) throw new Error('input exhausted (EOF spin)');
-      return -1;
-    }
+    // The recorder kills the C process right after the final input marker
+    // (it is blocked in this read). An empty queue means that point: end the
+    // run now — returning EOF here would play ESC keypresses the recording
+    // never saw, emitting spurious markers and RNG draws.
+    if (!inputQueue.length) throw new Error('input exhausted');
     return inputQueue.shift();
   };
   g.vfprintf = (f, fmt, ap) => { const s = cptr.sprintfCore(fmt, ap && ap.args ? ap.args.slice(ap.i) : []); g.fputs(cptr.lit(s), f); return s.length; };
@@ -604,6 +625,7 @@ export async function runBootGame(opts) {
   g.__stdoutp = g.__stdout;
   g.__stderrp = { __stderr: true };
   g.__stdinp = { __stdin: true };
+  g.fileno = (f) => f && f.__stdin ? 0 : f === g.stdout || f === g.__stdout ? 1 : f === g.stderr || f === g.__stderrp ? 2 : f && f.__fd !== undefined ? f.__fd : -1;
   g.stdout = g.__stdout;
   g.stderr = g.__stderrp;
 
@@ -613,6 +635,9 @@ export async function runBootGame(opts) {
   g.tigetflag = (cap) => 0;
   g.tputs = (str, affcnt, putc) => { const s = cptr.cstr(str); for (const ch of s) putc(ch.charCodeAt(0)); return 0; };
   g.tgoto = (cm, col, line) => cptr.lit('');
+  // ospeed: extern short defined by libtermcap/ncurses in the recorder link;
+  // gettty writes speednum(cfgetospeed(zeroed termios)) = 0 with no tty
+  g.ospeed = cptr.box(0);
   const TERMCAP_STR = {
     le: '\x08', ho: '\x1b[H', nd: '\x1b[C', up: '\x1b[A', xd: '\x1b[B', do: '\x1b[B',
     ce: '\x1b[K', cd: '\x1b[J', cl: '\x1b[H\x1b[J', cm: '\x1b[%i%d;%dH',

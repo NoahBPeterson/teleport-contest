@@ -11,6 +11,7 @@ import { WIN_MESSAGE, program_state } from './decl.js';
 import { impossible, pline } from './pline.js';
 import { windowprocs } from './windows.js';
 import { delete_savefile, nhclose } from './files.js';
+import { error } from './unixtty.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");

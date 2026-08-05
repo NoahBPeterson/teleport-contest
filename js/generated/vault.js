@@ -1034,18 +1034,25 @@ export function gd_move(grd) {
         continue;
         }
         case 19: {
-        if (cptr.ld1s(in_rooms(nx, ny, 4)))
-            continue;
-        cptr.stI32(cptr.add(egrd, 32), 1);
-        if (((typ) >= 23)) { __pc = 22; continue; }
+        if (cptr.ld1s(in_rooms(nx, ny, 4))) { __pc = 22; continue; }
         __pc = 21; continue;
         }
         case 22: {
-        { __pc = 4; continue; }
+        { __pc = 14; continue; }
         __pc = 21;
         continue;
         }
         case 21: {
+        cptr.stI32(cptr.add(egrd, 32), 1);
+        if (((typ) >= 23)) { __pc = 24; continue; }
+        __pc = 23; continue;
+        }
+        case 24: {
+        { __pc = 4; continue; }
+        __pc = 23;
+        continue;
+        }
+        case 23: {
         cptr.st1(cptr.add(crm, 4), schar(((typ == 15) ? 24 : 23)));
         if (cptr.ld1s(cptr.add(crm, 4)) == 23)
             cptr.stI32(cptr.add(crm, 8), 0);
@@ -1098,39 +1105,16 @@ export function gd_move(grd) {
             nx = i16(nx + dx);
         else
             ny = i16(ny + dy);
-        __pc = 24; continue;
-        }
-        case 24: {
-        if (!((typ = uchar(cptr.ld1s(cptr.add((crm = cptr.add(cptr.add(cptr.add(svl, 1680), nx, 756), ny, 36)), 4)))) != 0)) { __pc = 23; continue; }
-        __pc = 25; continue;
-        }
-        case 25: {
-        ex = i16(((((nx + nx) | 0) - x) | 0));
-        ey = i16(((((ny + ny) | 0) - y) | 0));
-        if (isok(ex, ey) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ex, 756), ey, 36), 4))) >= 25) ? 1 : 0) { __pc = 27; continue; }
         __pc = 26; continue;
         }
-        case 27: {
-        cptr.st1(cptr.add(crm, 4), 23);
-        cptr.stI32(cptr.add(crm, 8), 0);
-        del_engr_at(ex, ey);
-        { __pc = 3; continue; }
-        __pc = 26;
-        continue;
-        }
         case 26: {
-        if (dy && nx != x ? 1 : 0) {
-            nx = x;
-            ny = i16(((y + dy) | 0));
-            continue;
+        if (!((typ = uchar(cptr.ld1s(cptr.add((crm = cptr.add(cptr.add(cptr.add(svl, 1680), nx, 756), ny, 36)), 4)))) != 0)) { __pc = 25; continue; }
+        __pc = 27; continue;
         }
-        if (dx && ny != y ? 1 : 0) {
-            ny = y;
-            nx = i16(((x + dx) | 0));
-            dy = 0;
-            continue;
-        }
-        if (((typ) >= 25)) { __pc = 29; continue; }
+        case 27: {
+        ex = i16(((((nx + nx) | 0) - x) | 0));
+        ey = i16(((((ny + ny) | 0) - y) | 0));
+        if (isok(ex, ey) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ex, 756), ey, 36), 4))) >= 25) ? 1 : 0) { __pc = 29; continue; }
         __pc = 28; continue;
         }
         case 29: {
@@ -1142,11 +1126,46 @@ export function gd_move(grd) {
         continue;
         }
         case 28: {
-        { __pc = 23; continue; }
-        __pc = 24;
+        if (dy && nx != x ? 1 : 0) { __pc = 31; continue; }
+        __pc = 30; continue;
+        }
+        case 31: {
+        nx = x;
+        ny = i16(((y + dy) | 0));
+        { __pc = 26; continue; }
+        __pc = 30;
         continue;
         }
-        case 23: {
+        case 30: {
+        if (dx && ny != y ? 1 : 0) { __pc = 33; continue; }
+        __pc = 32; continue;
+        }
+        case 33: {
+        ny = y;
+        nx = i16(((x + dx) | 0));
+        dy = 0;
+        { __pc = 26; continue; }
+        __pc = 32;
+        continue;
+        }
+        case 32: {
+        if (((typ) >= 25)) { __pc = 35; continue; }
+        __pc = 34; continue;
+        }
+        case 35: {
+        cptr.st1(cptr.add(crm, 4), 23);
+        cptr.stI32(cptr.add(crm, 8), 0);
+        del_engr_at(ex, ey);
+        { __pc = 3; continue; }
+        __pc = 34;
+        continue;
+        }
+        case 34: {
+        { __pc = 25; continue; }
+        __pc = 26;
+        continue;
+        }
+        case 25: {
         cptr.st1(cptr.add(crm, 4), 24);
         cptr.stI32(cptr.add(crm, 8), 0);
         __pc = 3;
@@ -1157,10 +1176,10 @@ export function gd_move(grd) {
         unblock_point(nx, ny);
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), ny, 8)), nx)) & 2) != 0))
             newsym(nx, ny);
-        if ((nx != ggx || ny != ggy ? 1 : 0) || (cptr.ldI16(cptr.add(grd, 28)) != ggx || cptr.ldI16(cptr.add(grd, 30)) != ggy ? 1 : 0) ? 1 : 0) { __pc = 31; continue; }
-        __pc = 32; continue;
+        if ((nx != ggx || ny != ggy ? 1 : 0) || (cptr.ldI16(cptr.add(grd, 28)) != ggx || cptr.ldI16(cptr.add(grd, 30)) != ggy ? 1 : 0) ? 1 : 0) { __pc = 37; continue; }
+        __pc = 38; continue;
         }
-        case 31: {
+        case 37: {
         fcp = cptr.add(cptr.add(egrd, 44), cptr.ldI32(cptr.add(egrd, 8)), 6);
         if ((cptr.stI32(cptr.add(egrd, 8), cptr.ldI32(cptr.add(egrd, 8)) + 1)) - (1) == ((21 + 80) | 0))
             panic(__sl78);
@@ -1168,37 +1187,37 @@ export function gd_move(grd) {
         cptr.stI16(cptr.add(fcp, 2), ny);
         cptr.st1(cptr.add(fcp, 4), schar(typ));
         cptr.st1(cptr.add(fcp, 5), uchar(cptr.ldI32(cptr.add(crm, 8))));
-        __pc = 30;
+        __pc = 36;
         continue;
         }
-        case 32: {
-        if (!cptr.ldI32(cptr.add(egrd, 32))) { __pc = 34; continue; }
-        __pc = 33; continue;
+        case 38: {
+        if (!cptr.ldI32(cptr.add(egrd, 32))) { __pc = 40; continue; }
+        __pc = 39; continue;
         }
-        case 34: {
-        if (!find_guard_dest(grd, cptr.add(egrd, 16), cptr.add(egrd, 18)) || (cptr.ldI16(cptr.add(egrd, 16)) == ggx && cptr.ldI16(cptr.add(egrd, 18)) == ggy ? 1 : 0) ? 1 : 0) { __pc = 36; continue; }
-        __pc = 37; continue;
+        case 40: {
+        if (!find_guard_dest(grd, cptr.add(egrd, 16), cptr.add(egrd, 18)) || (cptr.ldI16(cptr.add(egrd, 16)) == ggx && cptr.ldI16(cptr.add(egrd, 18)) == ggy ? 1 : 0) ? 1 : 0) { __pc = 42; continue; }
+        __pc = 43; continue;
         }
-        case 36: {
+        case 42: {
         pline(__sl71, Monnam(grd));
         return gd_move_cleanup(grd, semi_dead, (1));
-        __pc = 35;
+        __pc = 41;
         continue;
         }
-        case 37: {
+        case 43: {
         { __pc = 2; continue; }
-        __pc = 35;
+        __pc = 41;
         continue;
         }
-        case 35: {
-        __pc = 33;
+        case 41: {
+        __pc = 39;
         continue;
         }
-        case 33: {
-        __pc = 30;
+        case 39: {
+        __pc = 36;
         continue;
         }
-        case 30: {
+        case 36: {
         __pc = 4;
         continue;
         }

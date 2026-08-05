@@ -902,16 +902,22 @@ export function polyself(psflags) {
             }
             void cptr.strcpy(cptr.decay(buf), __sl23);
         }
-        if (!strcmp(cptr.decay(buf), __sl23) || !strcmp(cptr.decay(buf), __sl24) ? 1 : 0) {
-            tryct = 0;
-            continue;
-        }
-        class$ = 0;
-        mntmp.v = name_to_mon(cptr.decay(buf), gvariant);
-        if (mntmp.v < 0) { __pc = 15; continue; }
-        __pc = 16; continue;
+        if (!strcmp(cptr.decay(buf), __sl23) || !strcmp(cptr.decay(buf), __sl24) ? 1 : 0) { __pc = 15; continue; }
+        __pc = 14; continue;
         }
         case 15: {
+        tryct = 0;
+        { __pc = 12; continue; }
+        __pc = 14;
+        continue;
+        }
+        case 14: {
+        class$ = 0;
+        mntmp.v = name_to_mon(cptr.decay(buf), gvariant);
+        if (mntmp.v < 0) { __pc = 17; continue; }
+        __pc = 18; continue;
+        }
+        case 17: {
         __pc = 1;
         continue;
         }
@@ -919,10 +925,10 @@ export function polyself(psflags) {
         class$ = name_to_monclass(cptr.decay(buf), mntmp);
         if (class$ && mntmp.v == -1 ? 1 : 0)
             mntmp.v = (draconian && class$ == 30 ? 1 : 0) ? armor_to_dragon(cptr.ldI16(cptr.add(uarm.v, 32))) : mkclass_poly(class$);
-        __pc = 14;
+        __pc = 16;
         continue;
         }
-        case 16: {
+        case 18: {
         if (((((cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 72, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 169, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 264, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 260, 96)) ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(cptr.add(gu, 320), 56))))) != 0n) ? 1 : 0) && mntmp.v != 260 ? 1 : 0) {
             if (mntmp.v == 72)
                 mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 554, __sl19), rn2(3)) : rn2(3)) ? 73 : 74;
@@ -931,91 +937,91 @@ export function polyself(psflags) {
             else if (mntmp.v == 169)
                 mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 558, __sl19), rn2(3)) : rn2(3)) ? 170 : 171;
         }
-        __pc = 14;
+        __pc = 16;
         continue;
         }
-        case 14: {
-        if (mntmp.v < 0) { __pc = 18; continue; }
-        __pc = 19; continue;
+        case 16: {
+        if (mntmp.v < 0) { __pc = 20; continue; }
+        __pc = 21; continue;
         }
-        case 18: {
+        case 20: {
         if (!class$)
             pline(__sl25);
         else
             You_cant(__sl26);
-        __pc = 17;
+        __pc = 19;
         continue;
         }
-        case 19: {
-        if ((cptr.ld1s(cptr.add(flags, 10)) && (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && (mntmp.v == cptr.ldI32(cptr.add(u, 1804)) || ((cptr.ldI32(cptr.add(u, 1804)) == 337 && mntmp.v == 275 ? 1 : 0) && !strstri(cptr.decay(buf), __sl27) ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 21; continue; }
-        __pc = 22; continue;
-        }
         case 21: {
+        if ((cptr.ld1s(cptr.add(flags, 10)) && (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && (mntmp.v == cptr.ldI32(cptr.add(u, 1804)) || ((cptr.ldI32(cptr.add(u, 1804)) == 337 && mntmp.v == 275 ? 1 : 0) && !strstri(cptr.decay(buf), __sl27) ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 23; continue; }
+        __pc = 24; continue;
+        }
+        case 23: {
         rehumanize();
         old_light = 0;
         { __pc = 5; continue; }
-        __pc = 20;
+        __pc = 22;
         continue;
-        }
-        case 22: {
-        if (iswere && ((were_beastie(mntmp.v) == cptr.ldI32(cptr.add(u, 1836)) || mntmp.v == counter_were(cptr.ldI32(cptr.add(u, 1836))) ? 1 : 0) || ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && mntmp.v == 260 ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 24; continue; }
-        __pc = 25; continue;
         }
         case 24: {
+        if (iswere && ((were_beastie(mntmp.v) == cptr.ldI32(cptr.add(u, 1836)) || mntmp.v == counter_were(cptr.ldI32(cptr.add(u, 1836))) ? 1 : 0) || ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && mntmp.v == 260 ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 26; continue; }
+        __pc = 27; continue;
+        }
+        case 26: {
         { __pc = 3; continue; }
-        __pc = 23;
+        __pc = 25;
         continue;
         }
-        case 25: {
-        if (!((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & 1n) == 0n) && !((mntmp.v == 260 || (((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(cptr.add(gu, 320), 56))))) != 0n) && (cptr.ldU16(cptr.add(cptr.add(mons, mntmp.v, 96), 34)) & 4096) == 0 ? 1 : 0) ? 1 : 0) || mntmp.v == cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) ? 1 : 0) ? 1 : 0) { __pc = 27; continue; }
-        __pc = 28; continue;
-        }
         case 27: {
-        if (class$) { __pc = 30; continue; }
-        __pc = 29; continue;
+        if (!((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & 1n) == 0n) && !((mntmp.v == 260 || (((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(cptr.add(gu, 320), 56))))) != 0n) && (cptr.ldU16(cptr.add(cptr.add(mons, mntmp.v, 96), 34)) & 4096) == 0 ? 1 : 0) ? 1 : 0) || mntmp.v == cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) ? 1 : 0) ? 1 : 0) { __pc = 29; continue; }
+        __pc = 30; continue;
         }
-        case 30: {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 601, __sl19), rn2(3)) : rn2(3)) || --tryct > 0 ? 1 : 0) { __pc = 32; continue; }
+        case 29: {
+        if (class$) { __pc = 32; continue; }
         __pc = 31; continue;
         }
         case 32: {
+        if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 601, __sl19), rn2(3)) : rn2(3)) || --tryct > 0 ? 1 : 0) { __pc = 34; continue; }
+        __pc = 33; continue;
+        }
+        case 34: {
         { __pc = 1; continue; }
+        __pc = 33;
+        continue;
+        }
+        case 33: {
+        ++tryct;
         __pc = 31;
         continue;
         }
         case 31: {
-        ++tryct;
-        __pc = 29;
-        continue;
-        }
-        case 29: {
         pm_name = pmname(cptr.add(mons, mntmp.v, 96), cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0);
         if (the_unique_pm(cptr.add(mons, mntmp.v, 96)))
             pm_name = the(pm_name);
         else if (!((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & 524288n) != 0n))
             pm_name = an(pm_name);
         You_cant(__sl28, pm_name);
-        __pc = 26;
+        __pc = 28;
+        continue;
+        }
+        case 30: {
+        { __pc = 11; continue; }
+        __pc = 28;
         continue;
         }
         case 28: {
-        { __pc = 11; continue; }
-        __pc = 26;
+        __pc = 25;
         continue;
         }
-        case 26: {
-        __pc = 23;
+        case 25: {
+        __pc = 22;
         continue;
         }
-        case 23: {
-        __pc = 20;
+        case 22: {
+        __pc = 19;
         continue;
         }
-        case 20: {
-        __pc = 17;
-        continue;
-        }
-        case 17: {
+        case 19: {
         if (--tryct > 0) { __pc = 13; continue; }
         __pc = 11;
         continue;
@@ -1023,36 +1029,36 @@ export function polyself(psflags) {
         case 11: {
         if (!tryct)
             pline(__sl20, cptr.ldPtr(cptr.add(c_common_strings, 16)));
-        if (draconian && (tryct <= 0 || mntmp.v == armor_to_dragon(cptr.ldI16(cptr.add(uarm.v, 32))) ? 1 : 0) ? 1 : 0) { __pc = 34; continue; }
-        __pc = 33; continue;
-        }
-        case 34: {
-        { __pc = 2; continue; }
-        __pc = 33;
-        continue;
-        }
-        case 33: {
-        if (isvamp && (((tryct <= 0 || mntmp.v == 20 ? 1 : 0) || mntmp.v == 106 ? 1 : 0) || ((cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 126, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 127, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 129, 96)) ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 36; continue; }
+        if (draconian && (tryct <= 0 || mntmp.v == armor_to_dragon(cptr.ldI16(cptr.add(uarm.v, 32))) ? 1 : 0) ? 1 : 0) { __pc = 36; continue; }
         __pc = 35; continue;
         }
         case 36: {
-        { __pc = 4; continue; }
+        { __pc = 2; continue; }
         __pc = 35;
         continue;
         }
         case 35: {
+        if (isvamp && (((tryct <= 0 || mntmp.v == 20 ? 1 : 0) || mntmp.v == 106 ? 1 : 0) || ((cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 126, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 127, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, 129, 96)) ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 38; continue; }
+        __pc = 37; continue;
+        }
+        case 38: {
+        { __pc = 4; continue; }
+        __pc = 37;
+        continue;
+        }
+        case 37: {
         __pc = 8;
         continue;
         }
         case 10: {
-        if ((draconian || iswere ? 1 : 0) || isvamp ? 1 : 0) { __pc = 38; continue; }
-        __pc = 37; continue;
-        }
-        case 38: {
-        if (draconian) { __pc = 40; continue; }
-        __pc = 41; continue;
+        if ((draconian || iswere ? 1 : 0) || isvamp ? 1 : 0) { __pc = 40; continue; }
+        __pc = 39; continue;
         }
         case 40: {
+        if (draconian) { __pc = 42; continue; }
+        __pc = 43; continue;
+        }
+        case 42: {
         __pc = 2;
         continue;
         }
@@ -1078,14 +1084,14 @@ export function polyself(psflags) {
                 maybe_adjust_light(uskin.v, arm_light);
             update_inventory();
         }
-        __pc = 39;
+        __pc = 41;
         continue;
         }
-        case 41: {
-        if (iswere) { __pc = 43; continue; }
-        __pc = 44; continue;
-        }
         case 43: {
+        if (iswere) { __pc = 45; continue; }
+        __pc = 46; continue;
+        }
+        case 45: {
         __pc = 3;
         continue;
         }
@@ -1094,14 +1100,14 @@ export function polyself(psflags) {
             mntmp.v = 260;
         else
             mntmp.v = cptr.ldI32(cptr.add(u, 1836));
-        __pc = 42;
+        __pc = 44;
         continue;
         }
-        case 44: {
-        if (isvamp) { __pc = 46; continue; }
-        __pc = 45; continue;
-        }
         case 46: {
+        if (isvamp) { __pc = 48; continue; }
+        __pc = 47; continue;
+        }
+        case 48: {
         __pc = 4;
         continue;
         }
@@ -1116,27 +1122,27 @@ export function polyself(psflags) {
             if (yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, (1)) != 121)
                 return;
         }
-        __pc = 45;
+        __pc = 47;
         continue;
         }
-        case 45: {
-        __pc = 42;
+        case 47: {
+        __pc = 44;
         continue;
         }
-        case 42: {
-        __pc = 39;
+        case 44: {
+        __pc = 41;
         continue;
         }
-        case 39: {
+        case 41: {
         if (mntmp.v == 260)
             newman();
         else
             void polymon(mntmp.v);
         { __pc = 5; continue; }
-        __pc = 37;
+        __pc = 39;
         continue;
         }
-        case 37: {
+        case 39: {
         __pc = 8;
         continue;
         }

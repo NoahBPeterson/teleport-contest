@@ -65,6 +65,7 @@ import { free_luathemes, mklev } from './mklev.js';
 import { assign_graphics } from './symbols.js';
 import { check_gold_symbol, describe_level } from './botl.js';
 import { bones_include_name } from './bones.js';
+import { error } from './unixtty.js';
 import { getlev } from './restore.js';
 import { oinit } from './o_init.js';
 import { com_pager, deliver_splev_message } from './questpgr.js';

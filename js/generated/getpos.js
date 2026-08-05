@@ -792,58 +792,77 @@ export function getpos(ccp, force, goal) {
         case 9: {
         if (cptr.ld1s(cptr.add(iflags, 126)))
             msg_given = (0);
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) {
-            cx.v = (cy.v = i16((-10)));
-            msg_given = (1);
-            result = -1;
-            break;
-        }
-        if (c == cmd_from_func(do_run) || c == cmd_from_func(do_rush) ? 1 : 0) {
-            c = readchar_poskey(tx, ty, sidx);
-            rushrun = (1);
-        }
-        if (c == 0) {
-            if (!isok(tx.v, ty.v))
-                continue;
-            cx.v = tx.v;
-            cy.v = ty.v;
-            break;
-        }
-        if ((cp = cptr.strchr(cptr.decay(pick_chars), c)) !== null) { __pc = 16; continue; }
-        __pc = 17; continue;
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) { __pc = 16; continue; }
+        __pc = 15; continue;
         }
         case 16: {
-        result = cptr.ldI32(cptr.add(cptr.add(__static_getpos_pick_chars_def, Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))), 8), 4));
+        cx.v = (cy.v = i16((-10)));
+        msg_given = (1);
+        result = -1;
         { __pc = 5; continue; }
         __pc = 15;
         continue;
         }
-        case 17: {
-        if (movecmd(schar(c), 0)) { __pc = 19; continue; }
-        __pc = 20; continue;
+        case 15: {
+        if (c == cmd_from_func(do_run) || c == cmd_from_func(do_rush) ? 1 : 0) {
+            c = readchar_poskey(tx, ty, sidx);
+            rushrun = (1);
+        }
+        if (c == 0) { __pc = 18; continue; }
+        __pc = 17; continue;
+        }
+        case 18: {
+        if (!isok(tx.v, ty.v)) { __pc = 20; continue; }
+        __pc = 19; continue;
+        }
+        case 20: {
+        { __pc = 8; continue; }
+        __pc = 19;
+        continue;
         }
         case 19: {
-        if (rushrun) { __pc = 22; continue; }
-        __pc = 21; continue;
+        cx.v = tx.v;
+        cy.v = ty.v;
+        { __pc = 5; continue; }
+        __pc = 17;
+        continue;
+        }
+        case 17: {
+        if ((cp = cptr.strchr(cptr.decay(pick_chars), c)) !== null) { __pc = 22; continue; }
+        __pc = 23; continue;
         }
         case 22: {
-        { __pc = 1; continue; }
+        result = cptr.ldI32(cptr.add(cptr.add(__static_getpos_pick_chars_def, Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))), 8), 4));
+        { __pc = 5; continue; }
         __pc = 21;
         continue;
         }
-        case 21: {
+        case 23: {
+        if (movecmd(schar(c), 0)) { __pc = 25; continue; }
+        __pc = 26; continue;
+        }
+        case 25: {
+        if (rushrun) { __pc = 28; continue; }
+        __pc = 27; continue;
+        }
+        case 28: {
+        { __pc = 1; continue; }
+        __pc = 27;
+        continue;
+        }
+        case 27: {
         dx = cptr.ldI32(cptr.add(u, 4));
         dy = cptr.ldI32(cptr.add(u, 8));
         truncate_to_map(cx, cy, schar(dx), schar(dy));
         { __pc = 3; continue; }
-        __pc = 18;
+        __pc = 24;
         continue;
         }
-        case 20: {
-        if (movecmd(schar(c), 2) || movecmd(schar(c), 1) ? 1 : 0) { __pc = 24; continue; }
-        __pc = 23; continue;
+        case 26: {
+        if (movecmd(schar(c), 2) || movecmd(schar(c), 1) ? 1 : 0) { __pc = 30; continue; }
+        __pc = 29; continue;
         }
-        case 24: {
+        case 30: {
         __pc = 1;
         continue;
         }
@@ -862,63 +881,63 @@ export function getpos(ccp, force, goal) {
         }
         truncate_to_map(cx, cy, schar(dx), schar(dy));
         { __pc = 3; continue; }
-        __pc = 23;
+        __pc = 29;
         continue;
         }
-        case 23: {
-        __pc = 18;
+        case 29: {
+        __pc = 24;
         continue;
         }
-        case 18: {
-        __pc = 15;
+        case 24: {
+        __pc = 21;
         continue;
         }
-        case 15: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 25, 1)) || redraw_cmd(schar(c)) ? 1 : 0) { __pc = 26; continue; }
-        __pc = 27; continue;
+        case 21: {
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 25, 1)) || redraw_cmd(schar(c)) ? 1 : 0) { __pc = 32; continue; }
+        __pc = 33; continue;
         }
-        case 26: {
+        case 32: {
         if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 25, 1)))
             getpos_help(force, goal);
         getpos_refresh();
         (cptr.ldPtr(cptr.add(windowprocs, 136)))(WIN_MAP.v, cx.v, cy.v);
         show_goal_msg = (1);
-        __pc = 25;
+        __pc = 31;
         continue;
         }
-        case 27: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 11, 1))) { __pc = 29; continue; }
-        __pc = 30; continue;
+        case 33: {
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 11, 1))) { __pc = 35; continue; }
+        __pc = 36; continue;
         }
-        case 29: {
+        case 35: {
         if (getpos_hilitefunc) {
             getpos_toggle_hilite_state();
             (cptr.ldPtr(cptr.add(windowprocs, 136)))(WIN_MAP.v, cx.v, cy.v);
         }
         show_goal_msg = (1);
         { __pc = 3; continue; }
-        __pc = 28;
+        __pc = 34;
         continue;
         }
-        case 30: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))) { __pc = 32; continue; }
-        __pc = 33; continue;
+        case 36: {
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))) { __pc = 38; continue; }
+        __pc = 39; continue;
         }
-        case 32: {
+        case 38: {
         cptr.st1(cptr.add(iflags, 126), schar((!cptr.ld1s(cptr.add(iflags, 126)))));
         pline(__sl89, cptr.ld1s(cptr.add(flags, 48)) ? __sl90 : __sl21, cptr.ld1s(cptr.add(iflags, 126)) ? __sl91 : __sl92);
         if (!cptr.ld1s(cptr.add(iflags, 126)))
             show_goal_msg = (1);
         msg_given = (1);
         { __pc = 3; continue; }
-        __pc = 31;
+        __pc = 37;
         continue;
         }
-        case 33: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 27, 1))) { __pc = 35; continue; }
-        __pc = 36; continue;
+        case 39: {
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 27, 1))) { __pc = 41; continue; }
+        __pc = 42; continue;
         }
-        case 35: {
+        case 41: {
         cptr.stI32(cptr.add(iflags, 32), ((cptr.ldI32(cptr.add(iflags, 32)) + 1) | 0) % 3);
         for (i = 0; i < 6; i++) {
             if (cptr.ldPtr(cptr.add(garr, i, 8))) {
@@ -930,67 +949,67 @@ export function getpos(ccp, force, goal) {
         pline(__sl93, cptr.ldPtr(cptr.add(__static_getpos_view_filters, cptr.ldI32(cptr.add(iflags, 32)), 8)));
         msg_given = (1);
         { __pc = 3; continue; }
-        __pc = 34;
-        continue;
-        }
-        case 36: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 26, 1))) { __pc = 38; continue; }
-        __pc = 39; continue;
-        }
-        case 38: {
-        cptr.st1(cptr.add(iflags, 75), schar((!cptr.ld1s(cptr.add(iflags, 75)))));
-        pline(__sl94, cptr.ld1s(cptr.add(iflags, 75)) ? __sl95 : __sl96, cptr.ld1s(cptr.add(iflags, 75)) ? __sl97 : __sl21);
-        msg_given = (1);
-        { __pc = 3; continue; }
-        __pc = 37;
-        continue;
-        }
-        case 39: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 6, 1))) { __pc = 41; continue; }
-        __pc = 42; continue;
-        }
-        case 41: {
-        for (i = 0; i < 6; i++)
-            cptr.stI32(cptr.add(gidx, i, 4), 0);
-        cx.v = cptr.ldI16(u);
-        cy.v = cptr.ldI16(cptr.add(u, 2));
-        { __pc = 3; continue; }
         __pc = 40;
         continue;
         }
         case 42: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 28, 1))) { __pc = 44; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 26, 1))) { __pc = 44; continue; }
         __pc = 45; continue;
         }
         case 44: {
-        cptr.st1(cptr.add(iflags, 73), schar((!cptr.ld1s(cptr.add(iflags, 73)))));
-        pline(__sl98, cptr.ld1s(cptr.add(iflags, 73)) ? __sl99 : __sl100);
+        cptr.st1(cptr.add(iflags, 75), schar((!cptr.ld1s(cptr.add(iflags, 75)))));
+        pline(__sl94, cptr.ld1s(cptr.add(iflags, 75)) ? __sl95 : __sl96, cptr.ld1s(cptr.add(iflags, 75)) ? __sl97 : __sl21);
         msg_given = (1);
         { __pc = 3; continue; }
         __pc = 43;
         continue;
         }
         case 45: {
-        if ((cp = cptr.strchr(cptr.decay(mMoOdDxX), c)) !== null) { __pc = 47; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 6, 1))) { __pc = 47; continue; }
         __pc = 48; continue;
         }
         case 47: {
-        gtmp = Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(mMoOdDxX)))));
-        gloc = gtmp >> 1;
-        if (cptr.ld1s(cptr.add(iflags, 75))) { __pc = 50; continue; }
-        __pc = 49; continue;
+        for (i = 0; i < 6; i++)
+            cptr.stI32(cptr.add(gidx, i, 4), 0);
+        cx.v = cptr.ldI16(u);
+        cy.v = cptr.ldI16(cptr.add(u, 2));
+        { __pc = 3; continue; }
+        __pc = 46;
+        continue;
+        }
+        case 48: {
+        if (c == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 28, 1))) { __pc = 50; continue; }
+        __pc = 51; continue;
         }
         case 50: {
+        cptr.st1(cptr.add(iflags, 73), schar((!cptr.ld1s(cptr.add(iflags, 73)))));
+        pline(__sl98, cptr.ld1s(cptr.add(iflags, 73)) ? __sl99 : __sl100);
+        msg_given = (1);
+        { __pc = 3; continue; }
+        __pc = 49;
+        continue;
+        }
+        case 51: {
+        if ((cp = cptr.strchr(cptr.decay(mMoOdDxX), c)) !== null) { __pc = 53; continue; }
+        __pc = 54; continue;
+        }
+        case 53: {
+        gtmp = Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(mMoOdDxX)))));
+        gloc = gtmp >> 1;
+        if (cptr.ld1s(cptr.add(iflags, 75))) { __pc = 56; continue; }
+        __pc = 55; continue;
+        }
+        case 56: {
         tmpcrd = cptr.alloc(4);
         if (getpos_menu(tmpcrd, gloc)) {
             cx.v = cptr.ldI16(tmpcrd);
             cy.v = cptr.ldI16(cptr.add(tmpcrd, 2));
         }
         { __pc = 3; continue; }
-        __pc = 49;
+        __pc = 55;
         continue;
         }
-        case 49: {
+        case 55: {
         if (!cptr.ldPtr(cptr.add(garr, gloc, 8))) {
             gather_locs(cptr.add(garr, gloc, 8), cptr.add(gcount, gloc, 4), gloc);
             cptr.stI32(cptr.add(gidx, gloc, 4), 0);
@@ -1004,14 +1023,14 @@ export function getpos(ccp, force, goal) {
         cx.v = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(garr, gloc, 8)), cptr.ldI32(cptr.add(gidx, gloc, 4)), 4));
         cy.v = cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(garr, gloc, 8)), cptr.ldI32(cptr.add(gidx, gloc, 4)), 4), 2));
         { __pc = 3; continue; }
-        __pc = 46;
+        __pc = 52;
         continue;
         }
-        case 48: {
-        if (!cptr.strchr(cptr.decay(quitchars), c)) { __pc = 52; continue; }
-        __pc = 51; continue;
+        case 54: {
+        if (!cptr.strchr(cptr.decay(quitchars), c)) { __pc = 58; continue; }
+        __pc = 57; continue;
         }
-        case 52: {
+        case 58: {
         matching = new Uint8Array(105);
         k = 0;
         void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
@@ -1021,67 +1040,40 @@ export function getpos(ccp, force, goal) {
             if (((c == cptr.ld1u(cptr.add(defsyms, sidx.v, 24)) || c == cptr.ld1u(cptr.add(cptr.add(gs, 680), sidx.v, 1)) ? 1 : 0) || (c == 94 && ((sidx.v) >= 49 && (sidx.v) < ((49 + ((26 - 1) | 0)) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (c == cptr.ld1u(cptr.add(cptr.add(gs, 680), 21, 1)) && ((sidx.v) == 21 || (sidx.v) == 24 ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 cptr.st1(cptr.add(cptr.decay(matching), sidx.v, 1), schar((++k)));
         }
-        if (k) { __pc = 54; continue; }
-        __pc = 55; continue;
+        if (k) { __pc = 60; continue; }
+        __pc = 61; continue;
         }
-        case 54: {
+        case 60: {
         pass = 0;
-        __pc = 57; continue;
+        __pc = 63; continue;
         }
-        case 57: {
-        if (!(pass <= 1)) { __pc = 56; continue; }
-        __pc = 58; continue;
+        case 63: {
+        if (!(pass <= 1)) { __pc = 62; continue; }
+        __pc = 64; continue;
         }
-        case 58: {
+        case 64: {
         lo_y = i16(((pass == 0) ? cy.v : 0));
         hi_y = i16(((pass == 0) ? (21 - 1) | 0 : cy.v));
         ty.v = lo_y;
-        __pc = 61; continue;
+        __pc = 67; continue;
         }
-        case 61: {
-        if (!(ty.v <= hi_y)) { __pc = 60; continue; }
-        __pc = 62; continue;
+        case 67: {
+        if (!(ty.v <= hi_y)) { __pc = 66; continue; }
+        __pc = 68; continue;
         }
-        case 62: {
+        case 68: {
         lo_x = i16(((pass == 0 && ty.v == lo_y ? 1 : 0) ? (cx.v + 1) | 0 : 1));
         hi_x = i16(((pass == 1 && ty.v == hi_y ? 1 : 0) ? cx.v : (80 - 1) | 0));
         tx.v = lo_x;
-        __pc = 65; continue;
-        }
-        case 65: {
-        if (!(tx.v <= hi_x)) { __pc = 64; continue; }
-        __pc = 66; continue;
-        }
-        case 66: {
-        k = glyph_at(tx.v, ty.v);
-        if (((k) >= 3929 && (k) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 69; continue; }
-        __pc = 68; continue;
-        }
-        case 69: {
-        { __pc = 2; continue; }
-        __pc = 68;
-        continue;
-        }
-        case 68: {
-        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) | 0 && !cptr.ldI32(cptr.add(iflags, 68)) ? 1 : 0) { __pc = 71; continue; }
-        __pc = 70; continue;
+        __pc = 71; continue;
         }
         case 71: {
-        k = cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), tx.v, 756), ty.v, 36));
-        if (((k) >= 3929 && (k) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 73; continue; }
+        if (!(tx.v <= hi_x)) { __pc = 70; continue; }
         __pc = 72; continue;
         }
-        case 73: {
-        { __pc = 2; continue; }
-        __pc = 72;
-        continue;
-        }
         case 72: {
-        __pc = 70;
-        continue;
-        }
-        case 70: {
-        if (c == 126 && known_vibrating_square_at(tx.v, ty.v) ? 1 : 0) { __pc = 75; continue; }
+        k = glyph_at(tx.v, ty.v);
+        if (((k) >= 3929 && (k) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 75; continue; }
         __pc = 74; continue;
         }
         case 75: {
@@ -1090,11 +1082,11 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 74: {
-        if (cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx.v, 756), ty.v, 36), 5))) { __pc = 77; continue; }
+        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) | 0 && !cptr.ldI32(cptr.add(iflags, 68)) ? 1 : 0) { __pc = 77; continue; }
         __pc = 76; continue;
         }
         case 77: {
-        k = back_to_glyph(tx.v, ty.v);
+        k = cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), tx.v, 756), ty.v, 36));
         if (((k) >= 3929 && (k) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 79; continue; }
         __pc = 78; continue;
         }
@@ -1108,7 +1100,34 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 76: {
-        { __pc = 67; continue; }
+        if (c == 126 && known_vibrating_square_at(tx.v, ty.v) ? 1 : 0) { __pc = 81; continue; }
+        __pc = 80; continue;
+        }
+        case 81: {
+        { __pc = 2; continue; }
+        __pc = 80;
+        continue;
+        }
+        case 80: {
+        if (cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx.v, 756), ty.v, 36), 5))) { __pc = 83; continue; }
+        __pc = 82; continue;
+        }
+        case 83: {
+        k = back_to_glyph(tx.v, ty.v);
+        if (((k) >= 3929 && (k) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 85; continue; }
+        __pc = 84; continue;
+        }
+        case 85: {
+        { __pc = 2; continue; }
+        __pc = 84;
+        continue;
+        }
+        case 84: {
+        __pc = 82;
+        continue;
+        }
+        case 82: {
+        { __pc = 73; continue; }
         __pc = 2;
         continue;
         }
@@ -1119,40 +1138,40 @@ export function getpos(ccp, force, goal) {
             msg_given = (0);
         }
         { __pc = 3; continue; }
+        __pc = 73;
+        continue;
+        }
+        case 73: {
+        tx.v++;
+        __pc = 71;
+        continue;
+        }
+        case 70: {
+        __pc = 69;
+        continue;
+        }
+        case 69: {
+        ty.v++;
         __pc = 67;
         continue;
         }
-        case 67: {
-        tx.v++;
+        case 66: {
         __pc = 65;
         continue;
         }
-        case 64: {
+        case 65: {
+        pass++;
         __pc = 63;
         continue;
         }
-        case 63: {
-        ty.v++;
-        __pc = 61;
-        continue;
-        }
-        case 60: {
-        __pc = 59;
-        continue;
-        }
-        case 59: {
-        pass++;
-        __pc = 57;
-        continue;
-        }
-        case 56: {
+        case 62: {
         pline(__sl101, c);
         msg_given = (1);
         { __pc = 3; continue; }
-        __pc = 53;
+        __pc = 59;
         continue;
         }
-        case 55: {
+        case 61: {
         note = new Uint8Array(128);
         if (!force)
             void cptr.strcpy(cptr.decay(note), __sl102);
@@ -1160,29 +1179,37 @@ export function getpos(ccp, force, goal) {
             void cptr.sprintf(cptr.decay(note), __sl103, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 7, 1))));
         pline(__sl104, visctrl(schar(c)), cptr.decay(note));
         msg_given = (1);
-        __pc = 53;
+        __pc = 59;
         continue;
         }
-        case 53: {
-        __pc = 51;
+        case 59: {
+        __pc = 57;
         continue;
         }
-        case 51: {
-        if (force) { __pc = 81; continue; }
-        __pc = 80; continue;
+        case 57: {
+        if (force) { __pc = 87; continue; }
+        __pc = 86; continue;
         }
-        case 81: {
+        case 87: {
         { __pc = 3; continue; }
-        __pc = 80;
+        __pc = 86;
         continue;
         }
-        case 80: {
+        case 86: {
         pline(__sl105);
         msg_given = (0);
         cx.v = i16((-1));
         cy.v = 0;
         result = 0;
         { __pc = 5; continue; }
+        __pc = 52;
+        continue;
+        }
+        case 52: {
+        __pc = 49;
+        continue;
+        }
+        case 49: {
         __pc = 46;
         continue;
         }
@@ -1207,14 +1234,6 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 31: {
-        __pc = 28;
-        continue;
-        }
-        case 28: {
-        __pc = 25;
-        continue;
-        }
-        case 25: {
         __pc = 3;
         continue;
         }

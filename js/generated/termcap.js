@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import { error, tty_utf8graphics_fixup } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { flags, gc, gs, gt, iflags } from './decl.js';
 import { BASE_WINDOW, HE_resets_AS, erase_tty_screen, setclipped, ttyDisplay, tty_curs, tty_raw_print, tty_wait_synch } from './wintty.js';
@@ -361,8 +362,8 @@ export function term_start_screen() {
     xputs(VS);
     if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2))
         tty_decgraphics_termcap_fixup();
-    decgraphics_mode_callback = tty_decgraphics_termcap_fixup;
-    utf8graphics_mode_callback = tty_utf8graphics_fixup;
+    decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
+    utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
     if (cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)))
         tty_number_pad(1);
 }
@@ -836,12 +837,12 @@ export function tty_delay_output() {
     }
     if (cptr.ld1s(cptr.add(flags, 29))) {
         tputs(__sl62, 1, xputc);
-    } else if ((ospeed > 0 && ospeed < 15 ? 1 : 0) && cptr.ldPtr(tc_lcl_data) ? 1 : 0) {
+    } else if ((ospeed.v > 0 && ospeed.v < 15 ? 1 : 0) && cptr.ldPtr(tc_lcl_data) ? 1 : 0) {
         let cmlen = Number(BigInt.asIntN(32, cptr.strlen(tgoto(cptr.ldPtr(tc_lcl_data), cptr.ldI16(cptr.add(ttyDisplay, 4)), cptr.ldI16(cptr.add(ttyDisplay, 6))))));
-        let i = (500 + ((cptr.ldI16(cptr.add(tmspc10, ospeed, 2)) / 2) | 0)) | 0;
+        let i = (500 + ((cptr.ldI16(cptr.add(tmspc10, ospeed.v, 2)) / 2) | 0)) | 0;
         while (i > 0) {
             cmov(cptr.ldI16(cptr.add(ttyDisplay, 4)), cptr.ldI16(cptr.add(ttyDisplay, 6)));
-            i = (i - Math.imul(cmlen, cptr.ldI16(cptr.add(tmspc10, ospeed, 2)))) | 0;
+            i = (i - Math.imul(cmlen, cptr.ldI16(cptr.add(tmspc10, ospeed.v, 2)))) | 0;
         }
     }
 }

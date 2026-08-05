@@ -82,6 +82,7 @@ import { which_armor } from './worn.js';
 import { linedup } from './mthrowu.js';
 import { getnow } from './calendar.js';
 import { timet_delta } from './allmain.js';
+import { dosuspend } from './ioctl.js';
 import { dosh } from './unixunix.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)

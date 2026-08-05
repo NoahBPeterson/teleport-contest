@@ -1743,66 +1743,95 @@ function doname_base(obj, doname_flags) {
         continue;
         }
         case 8: {
-        if (cptr.ldI64(cptr.add(obj, 192)) & (524288n | 1048576n)) {
-            do {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 2 > 1 ? 1 : 0));
-                bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
-            break;
-        }
-        if (cptr.ldI16(cptr.add(obj, 32)) == 236 && cptr.ldI32(cptr.add(obj, 168)) != 0 ? 1 : 0) {
-            mlsh = find_mid(cptr.ldI32(cptr.add(obj, 168)) >>> 0, 1);
-            if (mlsh && !(cptr.ldI32(cptr.add((mlsh), 52)) < 1) ? 1 : 0) {
-                do {
-                    nh_snprintf(__sl106, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl129, noit_mon_nam(mlsh));
-                    bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
-            } else {
-                if (mlsh)
-                    impossible(__sl130, mon_pmname(mlsh), cptr.ldI32(cptr.add(obj, 168)) >>> 0);
-                else
-                    impossible(__sl131, cptr.ldI32(cptr.add(obj, 168)) >>> 0);
-                cptr.stI32(cptr.add(obj, 168), 0);
-            }
-            break;
-        }
-        if (cptr.ldI16(cptr.add(obj, 32)) == 262) {
-            suffix = new Uint8Array(20);
-            void cptr.sprintf(cptr.decay(suffix), __sl35, (((cptr.ld1s(cptr.add(obj, 48))) == 1) ? __sl13 : __sl121), !cptr.ldI32(cptr.add(obj, 76)) ? __sl132 : __sl133);
-            do {
-                nh_snprintf(__sl106, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl134, cptr.ld1s(cptr.add(obj, 48)), cptr.decay(suffix));
-                bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
-            break;
-        } else if (((cptr.ldI16(cptr.add(obj, 32)) == 227 || cptr.ldI16(cptr.add(obj, 32)) == 228 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 226 ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32)) == 224 || cptr.ldI16(cptr.add(obj, 32)) == 225 ? 1 : 0) ? 1 : 0) {
-            if ((cptr.ldI16(cptr.add(obj, 32)) == 224 || cptr.ldI16(cptr.add(obj, 32)) == 225 ? 1 : 0)) {
-                timer = cptr.alloc(8);
-                full_burn_time = BigInt.asIntN(64, 20n * BigInt(cptr.ldI16(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 80))));
-                turns_left = cptr.ldI64(cptr.add(obj, 184));
-                if (cptr.ldI32(cptr.add(obj, 76))) {
-                    cptr.memcpy(timer, cptr.add(cg, 536), 8);
-                    cptr.stPtr(timer, obj);
-                    turns_left += BigInt.asIntN(64, peek_timer(4, timer) - cptr.ldI64(cptr.add(svm, 8)));
-                }
-                if (turns_left < full_burn_time)
-                    void cptr.strcat(cptr.decay(prefix), __sl135);
-            }
-            if (cptr.ldI32(cptr.add(obj, 76)))
-                do {
-                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 2 > 1 ? 1 : 0));
-                    bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
-            break;
-        }
-        if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36))) { __pc = 16; continue; }
+        if (cptr.ldI64(cptr.add(obj, 192)) & (524288n | 1048576n)) { __pc = 16; continue; }
         __pc = 15; continue;
         }
         case 16: {
-        { __pc = 1; continue; }
+        do {
+            void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 2 > 1 ? 1 : 0));
+            bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
+        } while (0);
+        { __pc = 3; continue; }
         __pc = 15;
         continue;
         }
         case 15: {
+        if (cptr.ldI16(cptr.add(obj, 32)) == 236 && cptr.ldI32(cptr.add(obj, 168)) != 0 ? 1 : 0) { __pc = 18; continue; }
+        __pc = 17; continue;
+        }
+        case 18: {
+        mlsh = find_mid(cptr.ldI32(cptr.add(obj, 168)) >>> 0, 1);
+        if (mlsh && !(cptr.ldI32(cptr.add((mlsh), 52)) < 1) ? 1 : 0) {
+            do {
+                nh_snprintf(__sl106, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl129, noit_mon_nam(mlsh));
+                bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
+            } while (0);
+        } else {
+            if (mlsh)
+                impossible(__sl130, mon_pmname(mlsh), cptr.ldI32(cptr.add(obj, 168)) >>> 0);
+            else
+                impossible(__sl131, cptr.ldI32(cptr.add(obj, 168)) >>> 0);
+            cptr.stI32(cptr.add(obj, 168), 0);
+        }
+        { __pc = 3; continue; }
+        __pc = 17;
+        continue;
+        }
+        case 17: {
+        if (cptr.ldI16(cptr.add(obj, 32)) == 262) { __pc = 20; continue; }
+        __pc = 21; continue;
+        }
+        case 20: {
+        suffix = new Uint8Array(20);
+        void cptr.sprintf(cptr.decay(suffix), __sl35, (((cptr.ld1s(cptr.add(obj, 48))) == 1) ? __sl13 : __sl121), !cptr.ldI32(cptr.add(obj, 76)) ? __sl132 : __sl133);
+        do {
+            nh_snprintf(__sl106, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl134, cptr.ld1s(cptr.add(obj, 48)), cptr.decay(suffix));
+            bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
+        } while (0);
+        { __pc = 3; continue; }
+        __pc = 19;
+        continue;
+        }
+        case 21: {
+        if (((cptr.ldI16(cptr.add(obj, 32)) == 227 || cptr.ldI16(cptr.add(obj, 32)) == 228 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 226 ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32)) == 224 || cptr.ldI16(cptr.add(obj, 32)) == 225 ? 1 : 0) ? 1 : 0) { __pc = 23; continue; }
+        __pc = 22; continue;
+        }
+        case 23: {
+        if ((cptr.ldI16(cptr.add(obj, 32)) == 224 || cptr.ldI16(cptr.add(obj, 32)) == 225 ? 1 : 0)) {
+            timer = cptr.alloc(8);
+            full_burn_time = BigInt.asIntN(64, 20n * BigInt(cptr.ldI16(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 80))));
+            turns_left = cptr.ldI64(cptr.add(obj, 184));
+            if (cptr.ldI32(cptr.add(obj, 76))) {
+                cptr.memcpy(timer, cptr.add(cg, 536), 8);
+                cptr.stPtr(timer, obj);
+                turns_left += BigInt.asIntN(64, peek_timer(4, timer) - cptr.ldI64(cptr.add(svm, 8)));
+            }
+            if (turns_left < full_burn_time)
+                void cptr.strcat(cptr.decay(prefix), __sl135);
+        }
+        if (cptr.ldI32(cptr.add(obj, 76)))
+            do {
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 2 > 1 ? 1 : 0));
+                bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
+            } while (0);
+        { __pc = 3; continue; }
+        __pc = 22;
+        continue;
+        }
+        case 22: {
+        __pc = 19;
+        continue;
+        }
+        case 19: {
+        if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36))) { __pc = 25; continue; }
+        __pc = 24; continue;
+        }
+        case 25: {
+        { __pc = 1; continue; }
+        __pc = 24;
+        continue;
+        }
+        case 24: {
         { __pc = 3; continue; }
         __pc = 9;
         continue;
@@ -1861,24 +1890,24 @@ function doname_base(obj, doname_flags) {
         case 12: {
         if (cptr.ldI32(cptr.add(obj, 176)))
             void cptr.strcat(cptr.decay(prefix), __sl54);
-        if (cptr.ldI16(cptr.add(obj, 32)) == 265) { __pc = 18; continue; }
-        __pc = 19; continue;
+        if (cptr.ldI16(cptr.add(obj, 32)) == 265) { __pc = 27; continue; }
+        __pc = 28; continue;
         }
-        case 18: {
+        case 27: {
         cxarg = (((cptr.ldI64(cptr.add(obj, 40)) != 1n) ? 0 : 8) | 16) >>> 0;
         save_xnamep = cptr.ldPtr(cptr.add(gx, 40));
         cxstr = corpse_xname(obj, cptr.decay(prefix), cxarg);
         void cptr.sprintf(cptr.decay(prefix), __sl141, cxstr);
         releaseobuf(cxstr);
         cptr.stPtr(cptr.add(gx, 40), save_xnamep);
-        __pc = 17;
+        __pc = 26;
         continue;
         }
-        case 19: {
-        if (cptr.ldI16(cptr.add(obj, 32)) == 266) { __pc = 21; continue; }
-        __pc = 22; continue;
+        case 28: {
+        if (cptr.ldI16(cptr.add(obj, 32)) == 266) { __pc = 30; continue; }
+        __pc = 31; continue;
         }
-        case 21: {
+        case 30: {
         if (((omndx) >= 0 && (omndx) < 383 ? 1 : 0) && (known || (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), omndx, 12), 2)) & 8) ? 1 : 0) ? 1 : 0) {
             void cptr.strcat(cptr.decay(prefix), cptr.ldPtr(cptr.add(cptr.add(mons, omndx, 96), 2, 8)));
             void cptr.strcat(cptr.decay(prefix), __sl142);
@@ -1888,27 +1917,27 @@ function doname_base(obj, doname_flags) {
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 } while (0);
         }
-        __pc = 20;
+        __pc = 29;
         continue;
         }
-        case 22: {
-        if (cptr.ldI16(cptr.add(obj, 32)) == 270) { __pc = 24; continue; }
-        __pc = 23; continue;
+        case 31: {
+        if (cptr.ldI16(cptr.add(obj, 32)) == 270) { __pc = 33; continue; }
+        __pc = 32; continue;
         }
-        case 24: {
+        case 33: {
         { __pc = 2; continue; }
-        __pc = 23;
+        __pc = 32;
         continue;
         }
-        case 23: {
-        __pc = 20;
+        case 32: {
+        __pc = 29;
         continue;
         }
-        case 20: {
-        __pc = 17;
+        case 29: {
+        __pc = 26;
         continue;
         }
-        case 17: {
+        case 26: {
         { __pc = 3; continue; }
         __pc = 13;
         continue;

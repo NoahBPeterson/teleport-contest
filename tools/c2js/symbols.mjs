@@ -35,7 +35,11 @@ export function listTargets() {
   // tty window port + unix glue (boot path)
   for (const [dir, group] of [[WINTTY_SRC, 'wintty'], [SYSUNIX_SRC, 'sysunix'], [path.join(repoRoot, 'nethack-c/recorder/sys/share'), 'sysshare']]) {
     for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.c')).sort()) {
-      if (group === 'sysshare' && f !== 'posixregex.c') continue;
+      // unixtty/ioctl: tty mode globals + gettty/settty — the patched gettty
+      // seeds erase_char/cbreak semantics the wait loops depend on
+      // unixtty.o/ioctl.o are linked into the recorder binary; tclib.o is NOT
+      // (tgetent comes from system ncurses — emulated by the harness shims)
+      if (group === 'sysshare' && !['posixregex.c', 'unixtty.c', 'ioctl.c'].includes(f)) continue;
       files.push({ name: f.replace(/\.c$/, ''), file: path.join(dir, f), group });
     }
   }
@@ -122,7 +126,9 @@ export function collectFile(target) {
       if (sub && sub.kind === 'DeclRefExpr') {
         const q = (sub.type?.desugaredQualType || sub.type?.qualType || '').replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').trim();
         const nm = sub.name || sub.referencedDecl?.name;
-        if (nm && (!locals || !locals.has(nm)) && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q)) writtenNames.add(nm);
+        // fn-POINTER globals (q contains "(*") are writable scalars and need
+        // the box; plain function types stay excluded
+        if (nm && (!locals || !locals.has(nm)) && !/\[/.test(q) && (!/\(/.test(q) || q.includes('(*')) && !/^(struct|union)\b[^*]*$/.test(q)) writtenNames.add(nm);
       }
     }
     for (const c of n.inner || []) wWrites(c, locals);

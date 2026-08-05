@@ -11,6 +11,7 @@ import { addtopl, more, putsyms, tty_doprev_message } from './topl.js';
 import { custompline, dumplogmsg, pline } from './pline.js';
 import { term_curs_set, tty_nhbell } from './termcap.js';
 import { extcmd_initiator, extcmd_via_menu, extcmds_getentry, extcmds_match, pgetchar } from './cmd.js';
+import { erase_char, kill_char } from './unixtty.js';
 import { eos, mungspaces, visctrl } from './hacklib.js';
 import { windowprocs } from './windows.js';
 

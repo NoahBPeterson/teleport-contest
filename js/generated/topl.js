@@ -15,6 +15,7 @@ import { panic } from './end.js';
 import { custompline, dumplogmsg, nhassert_failed } from './pline.js';
 import { digit, eos, lowc } from './hacklib.js';
 import { key2txt, readchar } from './cmd.js';
+import { erase_char } from './unixtty.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Message History");

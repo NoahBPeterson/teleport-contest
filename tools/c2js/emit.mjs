@@ -50,12 +50,14 @@ const TYPEDEFS = {
   dev_t: 'int', mode_t: 'unsigned short', nlink_t: 'unsigned short', uid_t: 'unsigned int', gid_t: 'unsigned int',
   pid_t: 'int', blkcnt_t: 'long long', blksize_t: 'int', useconds_t: 'unsigned int', suseconds_t: 'int',
   va_list: 'char *', genericptr_t: 'void *', nhsym: 'unsigned char', cmdcount_nht: 'long',
+  // darwin termios (unixtty.c/ioctl.c)
+  cc_t: 'unsigned char', speed_t: 'unsigned long', tcflag_t: 'unsigned long',
 };
 
 export function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
-    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|aligntyp|quint32|winid|CC_LONG|utfint|lu_byte|ls_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|StkId|lua_CFunction|lua_KFunction|lua_Alloc|lua_Writer|lua_Reader|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list|genericptr_t|nhsym|cmdcount_nht)\b/g,
+    .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|aligntyp|quint32|winid|CC_LONG|utfint|lu_byte|ls_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|StkId|lua_CFunction|lua_KFunction|lua_Alloc|lua_Writer|lua_Reader|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list|genericptr_t|nhsym|cmdcount_nht|cc_t|speed_t|tcflag_t)\b/g,
       (m) => TYPEDEFS[m])
     .replace(/\s+/g, ' ')
     .trim();
@@ -1667,6 +1669,34 @@ export class Emitter {
     return (n.inner || []).some((c) => this.hasLabelOrGoto(c));
   }
 
+  /** subtree contains a break NOT captured by a nested loop/switch — such a
+   * break targets the construct the state machine decomposed away, so its
+   * carrier must be decomposed too (else it binds to the dispatch switch). */
+  hasUnboundBreak(n) {
+    if (!n || typeof n !== 'object') return false;
+    if (n.kind === 'BreakStmt') return true;
+    if (n.kind === 'ForStmt' || n.kind === 'WhileStmt' || n.kind === 'DoStmt' || n.kind === 'SwitchStmt') return false;
+    return (n.inner || []).some((c) => this.hasUnboundBreak(c));
+  }
+
+  /** subtree contains a continue NOT captured by a nested loop (switches do
+   * NOT capture continue — it still binds to the decomposed outer loop). */
+  hasUnboundContinue(n) {
+    if (!n || typeof n !== 'object') return false;
+    if (n.kind === 'ContinueStmt') return true;
+    if (n.kind === 'ForStmt' || n.kind === 'WhileStmt' || n.kind === 'DoStmt') return false;
+    return (n.inner || []).some((c) => this.hasUnboundContinue(c));
+  }
+
+  /** must this statement be sm-decomposed? labels/gotos always; otherwise
+   * break/continue that would bind to the wrong construct after decomposition */
+  smMustDecompose(n, ctx) {
+    if (this.hasLabelOrGoto(n)) return true;
+    if (ctx.breakTo !== undefined && this.hasUnboundBreak(n)) return true;
+    if (ctx.continueTo !== undefined && this.hasUnboundContinue(n)) return true;
+    return false;
+  }
+
   smOpen(num) {
     this.sm.cases.push(this.sm.cur = { num, lines: [] });
   }
@@ -1719,8 +1749,10 @@ export class Emitter {
         this.smLine(ctx.continueTo !== undefined ? `{ __pc = ${ctx.continueTo}; continue; }` : 'continue;');
         continue;
       }
-      if (it.kind === 'IfStmt' && this.hasLabelOrGoto(it)) { this.emitSMIf(it, ctx); continue; }
-      if (it.kind === 'SwitchStmt' && this.hasLabelOrGoto((it.inner || []).filter((c) => c && c.kind)[1])) { this.emitSMSwitch(it, ctx); continue; }
+      if (it.kind === 'IfStmt' && this.smMustDecompose(it, ctx)) { this.emitSMIf(it, ctx); continue; }
+      // a switch captures its own breaks, but NOT continues aimed at the
+      // decomposed outer loop
+      if (it.kind === 'SwitchStmt' && (this.hasLabelOrGoto((it.inner || []).filter((c) => c && c.kind)[1]) || (ctx.continueTo !== undefined && this.hasUnboundContinue((it.inner || []).filter((c) => c && c.kind)[1])))) { this.emitSMSwitch(it, ctx); continue; }
       if ((it.kind === 'ForStmt' || it.kind === 'WhileStmt' || it.kind === 'DoStmt') && this.hasLabelOrGoto(it)) { this.emitSMLoop(it, ctx); continue; }
       const lines = this.emitStmt(it, ind);
       for (const l of lines) this.sm.cur.lines.push(l);

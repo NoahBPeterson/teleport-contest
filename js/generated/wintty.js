@@ -13,8 +13,10 @@ import { decode_mixed, genl_can_suspend_yes, genl_preference_update, genl_status
 import { clearlocks, debugcore, paniclog } from './files.js';
 import { nh_terminate, panic } from './end.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, cg, disp, flags, gc, gg, gm, gs, gt, iflags, program_state, quitchars, svp, svx, u } from './decl.js';
+import { getwindowsz } from './ioctl.js';
 import { docrt, docrt_flags, flush_screen, nul_glyphinfo, redraw_map, row_refresh } from './display.js';
 import { bot, cond_idx, conditions, repad_with_dashes, stat_cap_indx, status_initialize } from './botl.js';
+import { gettty, setftty, settty } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { copyright_banner_line } from './version.js';
 import { map_menu_cmd, set_wc2_option_mod_status } from './options.js';

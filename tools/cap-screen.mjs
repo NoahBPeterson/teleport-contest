@@ -13,7 +13,7 @@ const seg = sess.segments[0];
 
 let out;
 try {
-  out = execFileSync('node', [path.join(repoRoot, 'js/boot/boot.mjs'), String(seg.seed), seg.datetime, seg.moves], {
+  out = execFileSync('node', [path.join(repoRoot, 'js/boot/boot.mjs'), String(seg.seed), seg.datetime, seg.moves, sessFile], {
     cwd: repoRoot, maxBuffer: 64 * 1024 * 1024, timeout: 240000, stdio: ['ignore', 'pipe', 'ignore'],
   });
 } catch (e) {

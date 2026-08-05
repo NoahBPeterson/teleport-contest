@@ -1756,11 +1756,17 @@ export function potionhit(mon, obj, how) {
         continue;
         }
         case 30: {
-        if ((dmgtype(cptr.ldPtr(cptr.add(mon, 8)), 33) || dmgtype(cptr.ldPtr(cptr.add(mon, 8)), 38) ? 1 : 0) || Resists_Elem(mon, 6) ? 1 : 0) {
-            if (canseemon(mon))
-                pline(__sl213, Monnam(mon));
-            break;
+        if ((dmgtype(cptr.ldPtr(cptr.add(mon, 8)), 33) || dmgtype(cptr.ldPtr(cptr.add(mon, 8)), 38) ? 1 : 0) || Resists_Elem(mon, 6) ? 1 : 0) { __pc = 33; continue; }
+        __pc = 32; continue;
         }
+        case 33: {
+        if (canseemon(mon))
+            pline(__sl213, Monnam(mon));
+        { __pc = 9; continue; }
+        __pc = 32;
+        continue;
+        }
+        case 32: {
         __pc = 2;
         continue;
         }
