@@ -3188,18 +3188,18 @@ function render_status() {
             } else {
                 x = (x + tlth) | 0;
             }
-            finalx[row][1] = (x - 1) | 0;
+            cptr.stI32(cptr.add(cptr.decay(finalx[row]), 1, 4), (x - 1) | 0);
             cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 33), 0);
             cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34), 0);
             cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 35), 0);
             cptr.memcpy(cptr.add(cptr.decay(tty_status[0]), idx, 40), cptr.add(cptr.decay(tty_status[1]), idx, 40), 40);
         }
-        x = finalx[row][1];
-        if ((x < finalx[row][0] || !finalx[row][0] ? 1 : 0) && BigInt(((x + 1) | 0)) < cptr.ldI64(cptr.add(cw, 24)) ? 1 : 0) {
+        x = cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 1, 4));
+        if ((x < cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 0, 4)) || !cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 0, 4)) ? 1 : 0) && BigInt(((x + 1) | 0)) < cptr.ldI64(cptr.add(cw, 24)) ? 1 : 0) {
             tty_curs(WIN_STATUS.v, (x + 1) | 0, y);
             cl_end();
         }
-        finalx[row][0] = finalx[row][1];
+        cptr.stI32(cptr.add(cptr.decay(finalx[row]), 0, 4), cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 1, 4)));
     }
     return;
 }

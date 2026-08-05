@@ -254,14 +254,14 @@ export function fix_wall_spines(x1, y1, x2, y2) {
             if (!(((type) && (type) <= 12 ? 1 : 0) && type != 12 ? 1 : 0))
                 continue;
             loc_f = ((((x) >= (cptr.ldI16(cptr.add(gb, 4816))) && (x) <= (cptr.ldI16(cptr.add(cptr.add(gb, 4816), 4))) ? 1 : 0) && (y) >= (cptr.ldI16(cptr.add(cptr.add(gb, 4816), 2))) ? 1 : 0) && (y) <= (cptr.ldI16(cptr.add(cptr.add(gb, 4816), 6))) ? 1 : 0) ? iswall : iswall_or_stone;
-            locale[0][0] = (loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0)));
-            locale[1][0] = (loc_f)(x, i16(((y - 1) | 0)));
-            locale[2][0] = (loc_f)(i16(((x + 1) | 0)), i16(((y - 1) | 0)));
-            locale[0][1] = (loc_f)(i16(((x - 1) | 0)), y);
-            locale[2][1] = (loc_f)(i16(((x + 1) | 0)), y);
-            locale[0][2] = (loc_f)(i16(((x - 1) | 0)), i16(((y + 1) | 0)));
-            locale[1][2] = (loc_f)(x, i16(((y + 1) | 0)));
-            locale[2][2] = (loc_f)(i16(((x + 1) | 0)), i16(((y + 1) | 0)));
+            cptr.stI32(cptr.add(cptr.decay(locale[0]), 0, 4), (loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0))));
+            cptr.stI32(cptr.add(cptr.decay(locale[1]), 0, 4), (loc_f)(x, i16(((y - 1) | 0))));
+            cptr.stI32(cptr.add(cptr.decay(locale[2]), 0, 4), (loc_f)(i16(((x + 1) | 0)), i16(((y - 1) | 0))));
+            cptr.stI32(cptr.add(cptr.decay(locale[0]), 1, 4), (loc_f)(i16(((x - 1) | 0)), y));
+            cptr.stI32(cptr.add(cptr.decay(locale[2]), 1, 4), (loc_f)(i16(((x + 1) | 0)), y));
+            cptr.stI32(cptr.add(cptr.decay(locale[0]), 2, 4), (loc_f)(i16(((x - 1) | 0)), i16(((y + 1) | 0))));
+            cptr.stI32(cptr.add(cptr.decay(locale[1]), 2, 4), (loc_f)(x, i16(((y + 1) | 0))));
+            cptr.stI32(cptr.add(cptr.decay(locale[2]), 2, 4), (loc_f)(i16(((x + 1) | 0)), i16(((y + 1) | 0))));
             bits = (extend_spine(cptr.decay(locale), iswall(x, i16(((y - 1) | 0))), 0, -1) << 3) | (extend_spine(cptr.decay(locale), iswall(x, i16(((y + 1) | 0))), 0, 1) << 2) | (extend_spine(cptr.decay(locale), iswall(i16(((x + 1) | 0)), y), 1, 0) << 1) | extend_spine(cptr.decay(locale), iswall(i16(((x - 1) | 0)), y), -1, 0);
             if (bits)
                 cptr.st1(cptr.add(lev, 4), schar(cptr.ldI16(cptr.add(__static_fix_wall_spines_spine_array, bits, 2))));

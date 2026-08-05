@@ -513,7 +513,16 @@ export class Emitter {
         }
         return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'obj' }; // fn-ptr typedef etc: plain JS array
       }
-      if (arr.elem === 'int' || arr.elem === 'unsigned int') {
+      // `int a[N]` kept as a plain JS number array indexes by element, so
+      // a[i] is the value. A ROW of a multi-dim array (rep 'buf') is a
+      // Uint8Array view over byte-packed storage — `row[j]` there would read
+      // byte j, not int j. `int locale[3][3]` in fix_wall_spines() was
+      // written that way (locale[0][1] -> flat[1]) and read back by
+      // extend_spine() through a decayed `int (*)[3]` at flat[4], so every
+      // locale[*][1] and locale[*][2] probe came back 0: wall spines were
+      // extended unconditionally, turning plain HWALLs into T-walls all over
+      // premapped Sokoban and mines maps. Byte rows must use scaled access.
+      if ((arr.elem === 'int' || arr.elem === 'unsigned int') && base.rep !== 'buf') {
         return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'val', plain: true };
       }
       // 1-byte element buffer: location through cptr (scale by element size)
