@@ -526,7 +526,7 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
         if (dy) {
             if (Math.abs(dy) > 9999)
                 dy = i16(Math.imul(sgn(dy), 9999));
-            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __sl58, Math.abs(dy), cptr.ldPtr(cptr.add(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0)]), fulldir, 8)), dx ? __sl59 : __sl21);
+            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __sl58, Math.abs(dy), cptr.ldPtr(cptr.add(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]), fulldir, 8)), dx ? __sl59 : __sl21);
         }
         if (dx) {
             if (Math.abs(dx) > 9999)
