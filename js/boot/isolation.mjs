@@ -74,13 +74,29 @@ export async function enableSegmentIsolation() {
         // registerHooks (Node >= 22.15 / >= 23.5) runs hooks synchronously on
         // this thread. module.register() would work too but starts a worker,
         // which --permission blocks without --allow-worker.
-        if (typeof mod.registerHooks !== 'function') return state;
+        if (typeof mod.registerHooks !== 'function') {
+            warnDegraded(`node ${process.versions.node} has no module.registerHooks (needs >= 22.15)`);
+            return state;
+        }
         mod.registerHooks({ resolve });
         state = true;
-    } catch {
+    } catch (e) {
+        warnDegraded(String((e && e.message) || e));
         state = false;
     }
     return state;
+}
+
+// Silent degradation would look like a scoring bug, not a platform gap: only
+// multi-segment sessions are affected, and only from their second segment on.
+function warnDegraded(why) {
+    try {
+        process.stderr.write(
+            `[c2js] per-segment module isolation unavailable (${why}); `
+            + 'segments after the first in a session will replay into the previous '
+            + "segment's C globals.\n",
+        );
+    } catch {}
 }
 
 /** Module specifier for segment `n` of `baseUrl`, isolated when possible. */
