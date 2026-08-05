@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "score": "bash frozen/score.sh",
+    "strict": "node tools/strict-score.mjs",
+    "vendor-data": "node tools/vendor-data.mjs",
     "play": "echo 'Open index.html in a browser to play'"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.15.0"
   }
 }

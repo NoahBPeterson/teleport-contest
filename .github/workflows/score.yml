@@ -9,15 +9,29 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # Bare clone, no submodules: nethack-c/recorder/ is gitignored build
+      # output and is NOT available here. The game's data files come from
+      # data/nethackdir/, vendored as JS modules by tools/vendor-data.mjs, and
+      # js/boot/harness.mjs serves them through an in-memory VFS.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
+          # >= 22.15 for module.registerHooks(), which js/boot/isolation.mjs
+          # uses to give each segment a fresh transpiled module graph without
+          # spawning a process. '22' resolves to the newest 22.x.
           node-version: '22'
 
       - name: Overlay frozen fixture (ISAAC64 + Terminal)
         run: |
           cp frozen/isaac64.js js/isaac64.js
           cp frozen/terminal.js js/terminal.js
+
+      # Proves runSegment still works inside the judge's sandbox
+      # (node --permission, reads confined to the fork) and that no forbidden
+      # runtime import is reachable from js/jsmain.js. Runs before scoring so a
+      # sandbox regression is not hidden by a green score.
+      - name: Sandbox parity gate
+        run: node tools/strict-score.mjs
 
       - name: Score public sessions
         run: |
