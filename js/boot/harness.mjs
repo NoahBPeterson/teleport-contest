@@ -742,7 +742,16 @@ export async function runBootGame(opts) {
     ti: '', te: '', ks: '', ke: '', eA: '', Ic: '', vi: '', ve: '', vs: '',
     as: '\x0e', ae: '\x0f', AF: '\x1b[3%dm', Sf: '\x1b[3%dm', AB: '\x1b[4%dm',
   };
-  const TERMCAP_NUM = { co: 80, li: 24, sg: -1, ug: -1, Co: 8, pa: 64, NC: 0 };
+  // "Co" (max colors) has to report a 256-color terminal, the way the
+  // recorder's terminal did. termcap.c stores it in iflags.colorcount, and
+  // wintty.c only honors a glyph's symset custom color when
+  //     (wincap2 & WC2_EXTRACOLORS) && gm.customcolor && colorcount >= 256
+  // With Co=8 that branch never ran, so the per-branch wall colors the
+  // DECgraphics symset defines — "G_vwall_sokoban: /blue",
+  // "G_vwall_mines: /brown", the red Gehennom walls — silently fell back to
+  // wallcolors[], which is CLR_GRAY for every branch. Every Sokoban/Mines/
+  // Gehennom map cell then rendered uncolored against the recording.
+  const TERMCAP_NUM = { co: 80, li: 24, sg: -1, ug: -1, Co: 256, pa: 64, NC: 0 };
   const TERMCAP_FLG = { am: 1, bs: 0, os: 0, ul: 0 };
   g.tgetent = (bp, name) => 1;
   g.tgetstr = (cap, area) => {

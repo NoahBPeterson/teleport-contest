@@ -1,8 +1,8 @@
 // summarize.mjs — parse __RESULTS_JSON__ from a ps_test_runner log.
 import fs from 'node:fs';
 const txt = fs.readFileSync(process.argv[2], 'utf8');
-const idx = txt.indexOf('__RESULTS_JSON__');
-const j = JSON.parse(txt.slice(idx + 16).trim());
+const idx = txt.lastIndexOf('__RESULTS_JSON__');
+const j = JSON.parse(txt.slice(txt.indexOf('{', idx)).trim());
 let pass = 0, sm = 0, st = 0;
 for (const r of j.results) {
   const s = r.metrics.screens, rn = r.metrics.rngCalls;
