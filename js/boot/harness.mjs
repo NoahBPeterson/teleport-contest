@@ -2,38 +2,73 @@
 //
 // Runs the generated sys/unix/unixmain.c main() under a libc/tty shim layer,
 // driven by a replay descriptor ({seed, datetime, nethackrc, moves, storage}):
-//   - FS overlay: reads fall through to the real install dir, writes land in
-//     an in-memory overlay; the overlay persists across segments via
-//     input.storage (Web-Storage-shaped handle from the judge).
+//   - VFS: a pure in-memory filesystem. The read-only base layer is the
+//     NetHack playground vendored as JS modules (../../data/nethackdir),
+//     writes land in an overlay that persists across segments via
+//     input.storage (Web-Storage-shaped handle from the judge). Nothing here
+//     touches the real filesystem — the judge runs us under `node
+//     --permission` (no fs writes, reads confined to the fork tree) and the
+//     same code has to work in a browser.
 //   - env table: getenv → TERM, NETHACK_FIXED_DATETIME, NETHACK_SEED, ...
 //   - unix/libc syscalls not in the corpus: users, signals, tty ioctls.
 //   - keyboard input queue: generated tty_nhgetch reads from here.
 //   - screen capture: nomux markers (\x1b]7777;...) parsed from stdout.
 //
-// Each segment boots a FRESH module graph (query-string cache busting), so
-// per-segment C state never leaks across segments of a session.
+// Each segment boots a FRESH copy of the transpiled module graph, so
+// per-segment C state never leaks across segments of a session — see
+// js/boot/isolation.mjs for how that fork is arranged.
 //
 // Used by js/jsmain.js (contest runSegment) and js/boot/boot.mjs (CLI).
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+// The vendored playground. Relative specifier so this resolves the same way
+// from Node and from a browser module graph; it lives outside js/ on purpose
+// (baked game data is not hand-written port code — see tools/vendor-data.mjs).
+import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../../data/nethackdir/index.mjs';
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-// nh_getenv() rejects values longer than 128 chars — the real install path is
-// longer than that, so present a short symlink as NETHACKDIR.
-const HACKDIR_REAL = path.join(repoRoot, 'nethack-c/recorder/install/games/lib/nethackdir');
+// Mount point of the playground inside the VFS. nh_getenv() rejects values
+// longer than 128 chars, and the C code copies this into fixed-size buffers,
+// so keep it short. This is a purely virtual path — it never reaches a real
+// filesystem — but it is kept byte-identical to the path the pre-VFS harness
+// symlinked into /tmp so that any C string built from it is unchanged.
 const HACKDIR = '/tmp/c2js-nethackdir';
-try { if (fs.readlinkSync(HACKDIR) !== HACKDIR_REAL) { fs.unlinkSync(HACKDIR); fs.symlinkSync(HACKDIR_REAL, HACKDIR); } }
-catch { fs.symlinkSync(HACKDIR_REAL, HACKDIR); }
+// Likewise virtual $HOME. The old harness used mkdtemp('/tmp/c2js-boot-'),
+// i.e. a 21-char path with a random 6-char suffix; same length, now fixed.
+const VHOME = '/tmp/c2js-boot-vfs000';
 
 let __segCounter = 0;
 
+// Byte<->string helpers. atob/btoa rather than node:Buffer: the whole point of
+// the VFS rework is that this file has no Node-only dependencies left.
+// Node/browser-neutral accessors for the two host bits this file still wants.
+const ENV_C2JS_NOMUX = (typeof process !== 'undefined' && process.env) ? process.env.C2JS_NOMUX : '';
+const traceOut = (typeof process !== 'undefined' && process.stderr)
+  ? (s) => process.stderr.write(s)
+  : (s) => console.error(s);
+
+function bytesOfString(s) {
+  const u = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i) & 0xFF;
+  return u;
+}
+function b64ToBytes(s) {
+  const bin = atob(s);
+  const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i) & 0xFF;
+  return u;
+}
+function bytesToB64(u) {
+  let s = '';
+  // Chunked: String.fromCharCode(...spread) blows the stack on big saves.
+  for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
 /**
- * Boot one segment of the transpiled game. NOTE: generated modules are plain
- * imports — C module state persists across calls within one process. For
- * per-segment isolation use js/boot/worker.mjs (one child process per
- * segment), which is what js/jsmain.js's runSegment does.
+ * Boot one segment of the transpiled game. NOTE: the generated modules this
+ * pulls in are per-module-graph state — calling runBootGame twice on the same
+ * copy of this module replays into the previous segment's C globals. Callers
+ * that need per-segment isolation must import this module through
+ * js/boot/isolation.mjs's `?c2jsseg=N` tag (js/jsmain.js does).
  * @param {{seed: number|string, datetime: string, nethackrc: string,
  *          moves: string, storage?: object, trace?: boolean,
  *          stdoutSink?: (s: string) => void}} opts
@@ -49,8 +84,7 @@ export async function runBootGame(opts) {
   const stdoutSink = opts.stdoutSink || null;
   const segId = ++__segCounter;
 
-  const tmpHome = fs.mkdtempSync('/tmp/c2js-boot-');
-  if (opts.nethackrc) fs.writeFileSync(path.join(tmpHome, '.nethackrc'), opts.nethackrc);
+  const tmpHome = VHOME;
   const ENV = {
     TERM: 'ansi',
     HOME: tmpHome,
@@ -58,40 +92,70 @@ export async function runBootGame(opts) {
     NETHACK_FIXED_DATETIME: datetime,
     NETHACK_RNGLOG: 'memory',
     NETHACK_SEED: seed,
-    NOMUX_MARKERS: process.env.C2JS_NOMUX || '1',
+    NOMUX_MARKERS: ENV_C2JS_NOMUX || '1',
   };
 
-  // ---------------- FS overlay (persisted across segments via storage) ------
+  // ---------------- VFS: vendored base + write overlay ----------------------
+  //
+  // Three layers, highest first:
+  //   overlay   writes made by the game (save/level/bones files, record,
+  //             logfile, ...). Persisted across segments via `storage`.
+  //   bootFiles per-boot injected files ($HOME/.nethackrc). Not persisted —
+  //             the judge hands us the rc text on every segment anyway, and
+  //             keeping it out of the overlay keeps `storage` to game state.
+  //   vendored  the read-only playground baked into data/nethackdir.
+  //
+  // unlink() removes only from the overlay, exactly as the pre-VFS harness did
+  // (it could never delete the real install dir either), so a vendored file
+  // stays visible after the game unlinks it. getlock()/eraseoldlocks() depend
+  // on that: the stale alock.* left behind by the C recorder must stay readable.
 
   let currentDir = '/';
   const resolveP = (p) => (p.startsWith('/') ? p : (currentDir === '/' ? '/' + p : currentDir + '/' + p));
+
+  const HACKDIR_PREFIX = HACKDIR + '/';
+  const vendoredName = (p) => (p.startsWith(HACKDIR_PREFIX) ? p.slice(HACKDIR_PREFIX.length) : null);
+  const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, VHOME, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
+
+  const bootFiles = new Map();
+  if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', bytesOfString(opts.nethackrc));
+
   const overlay = new Map();
   if (storage) {
     try {
       const raw = storage.getItem('c2js-overlay');
-      if (raw) for (const [k, b64] of Object.entries(JSON.parse(raw))) overlay.set(k, new Uint8Array(Buffer.from(b64, 'base64')));
+      if (raw) for (const [k, b64] of Object.entries(JSON.parse(raw))) overlay.set(k, b64ToBytes(b64));
     } catch {}
   }
   const persistOverlay = () => {
     if (!storage) return;
     try {
       const o = {};
-      for (const [k, v] of overlay) o[k] = Buffer.from(v).toString('base64');
+      for (const [k, v] of overlay) o[k] = bytesToB64(v);
       storage.setItem('c2js-overlay', JSON.stringify(o));
     } catch {}
   };
   const realRead = (p) => {
     p = resolveP(p);
     if (overlay.has(p)) return overlay.get(p);
-    try { return new Uint8Array(fs.readFileSync(p)); } catch { return null; }
+    if (bootFiles.has(p)) return bootFiles.get(p).slice();
+    const v = vendoredName(p);
+    // .slice(): callers may mutate what they get back (ungetc pushes a byte
+    // into fd.data), and the vendored decode cache is shared.
+    if (v !== null) { const b = readVendored(v); if (b) return b.slice(); }
+    return null;
   };
   const realStat = (p) => {
     p = resolveP(p);
     if (overlay.has(p)) return { exists: true, size: overlay.get(p).length, isDir: false, isFile: true, mtime: 0 };
-    try {
-      const st = fs.statSync(p);
-      return { exists: true, size: st.size, isDir: st.isDirectory(), isFile: st.isFile(), mtime: Math.floor(st.mtimeMs / 1000) };
-    } catch { return { exists: false, size: 0, isDir: false, isFile: false, mtime: 0 }; }
+    if (bootFiles.has(p)) return { exists: true, size: bootFiles.get(p).length, isDir: false, isFile: true, mtime: 0 };
+    const v = vendoredName(p);
+    if (v !== null) {
+      const st = statVendored(v);
+      if (st) return { exists: true, size: st.size, isDir: false, isFile: true, mtime: st.mtime };
+    }
+    if (VFS_DIRS.has(p)) return { exists: true, size: 0, isDir: true, isFile: false, mtime: 0 };
+    return { exists: false, size: 0, isDir: false, isFile: false, mtime: 0 };
   };
   const realWrite = (p, bytes) => { overlay.set(resolveP(p), bytes); };
 
@@ -124,7 +188,7 @@ export async function runBootGame(opts) {
 
   const stdoutChunks = [];
   const out = (s) => { stdoutChunks.push(s); if (stdoutSink) stdoutSink(s); };
-  const err = (s) => { if (trace) process.stderr.write(s); };
+  const err = (s) => { if (trace) traceOut(s); };
 
   const inputQueue = [];
   // The canonical sessions were captured under tmux, whose pty line discipline
@@ -135,7 +199,7 @@ export async function runBootGame(opts) {
   const g = globalThis;
   const cptr = await import('../cptr.js');
   let __traceN = 0;
-  function __trace(...a) { if (trace && ++__traceN <= 400) process.stderr.write('[trace] ' + a.map(String).join(' ') + '\n'); }
+  function __trace(...a) { if (trace && ++__traceN <= 400) traceOut('[trace] ' + a.map(String).join(' ') + '\n'); }
 
   g.getenv = (name) => { __trace('getenv', name && name.buf ? cptr.cstr(name) : name);
     name = typeof name === 'string' ? name : cptr.cstr(name);
