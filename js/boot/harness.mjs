@@ -556,19 +556,47 @@ export async function runBootGame(opts) {
   g.cfgetispeed = () => 13;
   g.cfgetospeed = () => 13;
 
+  // Timezone the recording was made in, as a fixed offset from UTC.
+  //
+  // NETHACK_FIXED_DATETIME is a *wall-clock* string; calendar.c turns it
+  // into a time_t with mktime(), i.e. through the recording machine's
+  // timezone, and it copies tm_isdst from the real clock at record time,
+  // so one constant offset applies to every session regardless of the
+  // simulated date. Interpreting the string in the *host's* local zone
+  // instead (what this used to do) makes the port's output depend on
+  // where it runs: the absolute value of ubirthday feeds shknam.c's
+  //     nseed = (int)((long) ubirthday / 257L);
+  //     name_wanted += ledger_no() + (nseed % 13) - (nseed % 5);
+  // which picks the shopkeeper's name out of shkarmors[] &c. Recorded
+  // seed0002 names the armor shopkeeper "Ermenak" (index 9); a host in
+  // US Central produced "Kadirli" (index 11), and -04:00 is the offset
+  // that reproduces the recording. Wall-clock-only consumers (night(),
+  // yyyymmddhhmmss(), phase_of_the_moon()) round-trip unchanged because
+  // localtime()/mktime() below use the same constant.
+  const REC_UTC_OFFSET_SEC = -4 * 3600;
+
   g.time = (tloc) => { __trace('time');
-    const t = BigInt(Math.floor(new Date(
+    const t = BigInt(Math.floor(Date.UTC(
       Number(datetime.slice(0, 4)), Number(datetime.slice(4, 6)) - 1, Number(datetime.slice(6, 8)),
       Number(datetime.slice(8, 10)), Number(datetime.slice(10, 12)), Number(datetime.slice(12, 14))
-    ).getTime() / 1000));
+    ) / 1000) - REC_UTC_OFFSET_SEC);
     if (tloc && tloc.isBox) tloc.v = t;
     else if (tloc && tloc.buf !== undefined) cptr.stU64(tloc, t);
     return t;
   };
   g.localtime = (tp) => {
     const t = Number(cptr.ldU64(tp));
-    const d = new Date(t * 1000);
-    const tm = { sec: d.getSeconds(), min: d.getMinutes(), hour: d.getHours(), mday: d.getDate(), mon: d.getMonth(), year: d.getFullYear() - 1900, wday: d.getDay(), yday: 0, isdst: 0 };
+    const d = new Date((t + REC_UTC_OFFSET_SEC) * 1000);
+    // tm_yday must be real: hacklib.c's phase_of_the_moon() is
+    //   ((((tm_yday + epact) * 6) + 11) % 177) / 22) & 7
+    // so a hardcoded 0 silently shifts the moon phase, which decides
+    // whether the game opens with "Be careful!  New moon tonight." /
+    // "You are lucky!  Full moon tonight." — a pline whose --More--
+    // also shifts every following keystroke. Compute it from UTC
+    // midnights so a DST boundary inside the year can't skew the count.
+    const yday = Math.round((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+      - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000);
+    const tm = { sec: d.getUTCSeconds(), min: d.getUTCMinutes(), hour: d.getUTCHours(), mday: d.getUTCDate(), mon: d.getUTCMonth(), year: d.getUTCFullYear() - 1900, wday: d.getUTCDay(), yday, isdst: 0 };
     return makeTm(tm);
   };
   function makeTm(t) {
@@ -580,8 +608,8 @@ export async function runBootGame(opts) {
   }
   g.mktime = (tm) => {
     const rd = (o) => cptr.ldI32(cptr.add(tm, o));
-    const d = new Date(rd(20) + 1900, rd(16), rd(12), rd(8), rd(4), rd(0));
-    return BigInt(Math.floor(d.getTime() / 1000));
+    const ms = Date.UTC(rd(20) + 1900, rd(16), rd(12), rd(8), rd(4), rd(0));
+    return BigInt(Math.floor(ms / 1000) - REC_UTC_OFFSET_SEC);
   };
   g.difftime = (a, b) => Number(a) - Number(b);
   g.strftime = (buf, max, fmt, tm) => { cptr.writeStr(buf, cptr.cstr(fmt)); return 0; };
