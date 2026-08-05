@@ -15,3 +15,4 @@ See `docs/LANDMINE-uninit-cmdstr.md`.
 | `seed4242-landmine-route-drop.session.json` | same, via `Strcat(cmdstr, ec->ef_txt)` at 2379 |
 
 All four currently fail the port at 20/22 screens with RNG 2469/2469.
+- seed4242-landmine-human-live.session.json — Noah's live interactive repro (89 steps, Ctrl-] at the divergence frame): FAIL 88/89, the one miss being the uninit-cmdstr frame.
