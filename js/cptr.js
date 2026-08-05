@@ -413,10 +413,20 @@ export function sprintfCore(fmt, args) {
   
   const f = cstr(fmt);
   let ai = 0;
-  return f.replace(/%([+0-]*)(\d*)(?:\.(\d*))?(ll|l|z)?([diuxXscf%])/g, (m, flags, width, prec, len, spec) => {
+  return f.replace(/%([+0-]*)(\*|\d*)(?:\.(\*|\d*))?(ll|l|z)?([diuxXscf%])/g, (m, flags, width, prec, len, spec) => {
     if (spec === '%') return '%';
+    // '*' width/precision take their value from an int argument, consumed
+    // ahead of the value argument (C99 7.19.6.1).
+    let w;
+    if (width === '*') {
+      w = Number(args[ai++]) | 0;
+      if (w < 0) { flags += '-'; w = -w; } // negative width == '-' flag, positive width
+    } else w = Number(width || 0);
+    if (prec === '*') {
+      const p = Number(args[ai++]) | 0;
+      prec = p < 0 ? undefined : String(p); // negative precision == omitted
+    }
     const a = args[ai++];
-    const w = Number(width || 0);
     let s;
     if (spec === 's') { s = cstr(a); if (prec !== undefined && prec !== '') s = s.slice(0, Number(prec)); }
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);

@@ -775,6 +775,20 @@ export async function runBootGame(opts) {
   persistOverlay();
 
   // ---- parse nomux markers from stdout ----
+  // Screen-string canonicalization: the recorded C screens are stored in a
+  // canonical wire form where any run of 5 or more spaces on a line is a
+  // cursor-forward escape (ESC[<n>C) rather than literal spaces — verified
+  // over the whole corpus: 271521 recorded lines, zero contain a run of 5
+  // literal spaces, while 4-space runs are common. Cursor-forward leaves
+  // those cells untouched, so they decode as blank with DEFAULT attributes.
+  // Our screen string comes straight out of the transpiled shadow-buffer
+  // serializer (nomux_capture_screen), which writes literal spaces carrying
+  // whatever SGR span was active. Whenever an attribute span covers padding
+  // — an inverse menu heading ("Name<17 spaces>Level Category"), a bold
+  // topten line — those padding cells decode as inverse/bold spaces and
+  // mismatch the recording. Applying the recorder's own collapse rule puts
+  // both sides in the same canonical form.
+  const canonicalizeScreen = (s) => s.replace(/ {5,}/g, (m) => `\x1b[${m.length}C`);
   const stdout = stdoutChunks.join('');
   const frames = [];
   {
@@ -789,7 +803,7 @@ export async function runBootGame(opts) {
       frames.push({
         kind: kv.KIND, seq: Number(kv.SEQ), anim: Number(kv.ANIM),
         cx: Number(kv.CX), cy: Number(kv.CY),
-        screen: stdout.slice(end + 1, end + 1 + len),
+        screen: canonicalizeScreen(stdout.slice(end + 1, end + 1 + len)),
       });
       i = end + 1 + len;
     }

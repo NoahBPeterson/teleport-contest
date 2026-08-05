@@ -43,7 +43,9 @@ function parseSpec(fmt, pos) {
     conv: '',
     isLong: false,
     isUnsigned: false,
-    isUpper: false
+    isUpper: false,
+    widthStar: false,
+    precStar: false
   };
   // flags
   while (i < fmt.length) {
@@ -56,21 +58,31 @@ function parseSpec(fmt, pos) {
     else break;
     i++;
   }
-  // width
-  let widthStr = '';
-  while (i < fmt.length && fmt[i] >= '0' && fmt[i] <= '9') {
-    widthStr += fmt[i++];
+  // width ('*' takes the width from the next argument)
+  if (i < fmt.length && fmt[i] === '*') {
+    spec.widthStar = true;
+    i++;
+  } else {
+    let widthStr = '';
+    while (i < fmt.length && fmt[i] >= '0' && fmt[i] <= '9') {
+      widthStr += fmt[i++];
+    }
+    if (widthStr) spec.width = parseInt(widthStr, 10);
   }
-  if (widthStr) spec.width = parseInt(widthStr, 10);
-  // precision
+  // precision ('.*' takes the precision from the next argument)
   if (i < fmt.length && fmt[i] === '.') {
     i++;
-    let precStr = '';
-    while (i < fmt.length && fmt[i] >= '0' && fmt[i] <= '9') {
-      precStr += fmt[i++];
+    if (i < fmt.length && fmt[i] === '*') {
+      spec.precStar = true;
+      i++;
+    } else {
+      let precStr = '';
+      while (i < fmt.length && fmt[i] >= '0' && fmt[i] <= '9') {
+        precStr += fmt[i++];
+      }
+      // if no digits, precision is 0
+      spec.precision = precStr ? parseInt(precStr, 10) : 0;
     }
-    // if no digits, precision is 0
-    spec.precision = precStr ? parseInt(precStr, 10) : 0;
   }
   // length modifier
   if (i < fmt.length && (fmt[i] === 'l' || fmt[i] === 'L')) {
@@ -254,6 +266,17 @@ function sprintf(fmt, ...args) {
       }
       const [spec, next] = parseSpec(fmt, i);
       i = next;
+      // '*' width/precision consume int arguments ahead of the value argument.
+      if (spec.widthStar) {
+        const w = Number(args[argIdx++]) | 0;
+        // C: a negative field width means '-' flag with positive width.
+        if (w < 0) { spec.left = true; spec.width = -w; } else spec.width = w;
+      }
+      if (spec.precStar) {
+        const p = Number(args[argIdx++]) | 0;
+        // C: a negative precision behaves as if it were omitted.
+        spec.precision = p < 0 ? undefined : p;
+      }
       const arg = args[argIdx++];
       let part = '';
       switch (spec.conv) {
