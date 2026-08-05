@@ -296,6 +296,21 @@ export async function runBootGame(opts) {
   // pressing ^Z mid-game with the live mirror attached.
   g.kill = (pid, sig) => 0;
   g.raise = (sig) => 0;
+  // POSIX regex for nhregex (posixregex.c): msgtype/autopickup user patterns.
+  // POSIX ERE and JS RegExp agree on NetHack's pattern vocabulary
+  // (alternation, classes, anchors, quantifiers); REG_EXTENDED|REG_NOSUB ->
+  // no captures needed. Store the compiled RegExp on the preg's box map.
+  const __regexps = new Map();
+  g.regcomp = (preg, pat, flags) => {
+    try { __regexps.set(preg.buf, new RegExp(cptr.cstr(pat))); return 0; }
+    catch { return 1; } // any nonzero: nhregex reports the error string
+  };
+  g.regexec = (preg, str, nmatch, pmatch, eflags) => {
+    const re = __regexps.get(preg.buf);
+    return re && re.test(cptr.cstr(str)) ? 0 : 1; // 1 = REG_NOMATCH
+  };
+  g.regerror = (code, preg, errbuf, size) => { cptr.writeStr(errbuf, 'regex error'); return 11n; };
+  g.regfree = (preg) => { __regexps.delete(preg.buf); };
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
   g.strerror = (e) => cptr.lit(`error ${Number(e)}`);
