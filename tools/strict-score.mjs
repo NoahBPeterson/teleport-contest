@@ -109,33 +109,35 @@ async function main() {
         process.exit(1);
     }
 
-    const { runSessionCollect } = await import(join(TOOLS_DIR, 'sandbox-child.mjs'));
+    // One child per session per mode. The judge gives runSegment a fresh
+    // process per session too, and it matters here: segment isolation forks a
+    // copy of the 172-module transpiled graph, so replaying the whole corpus in
+    // one process piles up graphs until GC dominates the runtime.
+    const runChild = (sessionPath, sandboxed) => spawnSync(process.execPath, [
+        ...(sandboxed ? ['--permission', `--allow-fs-read=${ROOT}`] : []),
+        join(TOOLS_DIR, 'sandbox-child.mjs'),
+        sessionPath,
+    ], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+
     let failed = 0;
     for (const sessionPath of sessions) {
         const name = sessionPath.split('/').pop();
         // Sandboxed run (judge-style): the ONLY allowance is reading the fork.
-        const child = spawnSync(process.execPath, [
-            '--permission',
-            `--allow-fs-read=${ROOT}`,
-            join(TOOLS_DIR, 'sandbox-child.mjs'),
-            sessionPath,
-        ], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+        const child = runChild(sessionPath, true);
         if (child.status !== 0) {
             console.error(`FAIL ${name}: sandboxed run exited ${child.status}: ${child.stderr.trim().split('\n')[0]}`);
             failed++;
             continue;
         }
-        // Unsandboxed reference run, in-process.
-        let ref;
-        try {
-            ref = await runSessionCollect(sessionPath);
-        } catch (e) {
-            console.error(`FAIL ${name}: reference run threw: ${e.message}`);
+        // Unsandboxed reference run.
+        const plain = runChild(sessionPath, false);
+        if (plain.status !== 0) {
+            console.error(`FAIL ${name}: reference run exited ${plain.status}: ${plain.stderr.trim().split('\n')[0]}`);
             failed++;
             continue;
         }
-        const sandboxed = JSON.parse(child.stdout);
-        const same = JSON.stringify(sandboxed) === JSON.stringify(ref);
+        const ref = JSON.parse(plain.stdout);
+        const same = child.stdout === plain.stdout;
         if (!same) {
             console.error(`FAIL ${name}: sandboxed output differs from unsandboxed`);
             failed++;
