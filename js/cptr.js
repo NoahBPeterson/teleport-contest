@@ -240,6 +240,17 @@ export function ldI64(p) { return BigInt.asIntN(64, ldU64(p)); }
 // bits are registry ids, NOT addresses — do not print them expecting
 // C address values (differential tests must not depend on them).
 const __ptrRegistry = [];
+// Registry ids live above every bit pattern an *integer* union member can
+// produce (any int32/uint32, and negative int32 sign-extended to 64 bits ->
+// 0x00000000_FFFFFFFF at most). Starting ids at 2^40 keeps the two disjoint:
+// a slot holding an integer can never be mistaken for a stored pointer.
+const __PTR_ID_BASE = 1n << 40n;
+// Non-null bit patterns that aren't registry ids (a union's integer member
+// read back through its pointer member -- NetHack's `anything`: a_int is
+// written, a_void is tested). C sees a non-null pointer there, so hand back
+// a stable opaque non-dereferenceable pointer rather than `undefined`, which
+// was falsy and silently flipped control flow (unselectable menu entries).
+const __intPtrs = new Map();
 
 /** store a CPtr into 8 bytes of a byte buffer. @param {CPtr} p @param {CPtr|null} v @returns {*} v */
 export function stPtr(p, v) {
@@ -247,7 +258,7 @@ export function stPtr(p, v) {
   let id;
   if (v === null || v === undefined) id = 0n;
   else {
-    id = BigInt(__ptrRegistry.length + 1);
+    id = __PTR_ID_BASE + BigInt(__ptrRegistry.length);
     __ptrRegistry.push(v);
   }
   stU64(p, id);
@@ -255,11 +266,17 @@ export function stPtr(p, v) {
 }
 
 /** load a CPtr previously stored via stPtr. @param {CPtr} p @returns {CPtr|null} */
-export function ldPtr(p) { 
+export function ldPtr(p) {
   if (p.isBox) return p.v === undefined ? null : p.v;
   const id = ldU64(p);
   if (id === 0n) return null;
-  return __ptrRegistry[Number(id) - 1];
+  if (id >= __PTR_ID_BASE) {
+    const v = __ptrRegistry[Number(id - __PTR_ID_BASE)];
+    if (v !== undefined) return v;
+  }
+  let ip = __intPtrs.get(id);
+  if (ip === undefined) { ip = { intBits: id, buf: undefined, off: 0 }; __intPtrs.set(id, ip); }
+  return ip;
 }
 
 // ------------------------------------------------------------ libc string ----
