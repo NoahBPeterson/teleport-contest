@@ -287,6 +287,9 @@ export async function runBootGame(opts) {
   g.memchr = (p, c, n) => { c = Number(c) & 0xFF; for (let i = 0; i < Number(n); i++) { if (p.buf[p.off + i] === c) return cptr.add(p, i); } return null; };
   g.memcmp = (a, b, n) => { n = Number(n); for (let i = 0; i < n; i++) { const d = (a.buf[a.off + i] ?? 0) - (b.buf[b.off + i] ?? 0); if (d) return d; } return 0; };
   g.memmove = (dst, src, n) => cptr.memcpy(dst, src, n);
+  g.strspn = (s, accept) => { const a = cptr.cstr(accept); const t = cptr.cstr(s); let i = 0; while (i < t.length && a.includes(t[i])) i++; return BigInt(i); };
+  g.strcspn = (s, reject) => { const r = cptr.cstr(reject); const t = cptr.cstr(s); let i = 0; while (i < t.length && !r.includes(t[i])) i++; return BigInt(i); };
+  g.strpbrk = (s, accept) => { const a = cptr.cstr(accept); const t = cptr.cstr(s); for (let i = 0; i < t.length; i++) if (a.includes(t[i])) return cptr.add(s, i); return null; };
   g.memset = (dst, val, n) => memsetAny(dst, val, Number(n));
   g.atol = (p) => BigInt(g.atoi(p));
   g.strtoul = (p, endptr, base) => {

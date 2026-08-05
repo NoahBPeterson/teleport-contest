@@ -87,15 +87,28 @@ export function loadAst(astPath) {
  *   mainFileAbs,
  * }.
  */
+// The cached clang ASTs record the main file by the real (symlink-resolved)
+// path they were dumped from. When the source tree is reached through a
+// symlink — e.g. a git worktree that symlinks nethack-c/recorder back at the
+// primary checkout — path.resolve() alone leaves a different string, isMain()
+// never matches, and every module silently emits with zero decls. Canonicalize
+// on both sides of the comparison.
+function canonical(p) {
+  try { return fs.realpathSync(path.resolve(p)); } catch { return path.resolve(p); }
+}
+
 export function mainFileDecls(root, mainFileAbs, compileCwd, extraMainFiles) {
-  mainFileAbs = path.resolve(mainFileAbs);
-  const tracker = makeLocationTracker(compileCwd, mainFileAbs);
+  mainFileAbs = canonical(mainFileAbs);
+  // compileCwd resolves the AST's relative file entries (e.g.
+  // "../include/sfmacros.h"); it must be canonical too so those land on the
+  // same strings as the canonicalized extraMainFiles below.
+  const tracker = makeLocationTracker(canonical(compileCwd), mainFileAbs);
   const source = fs.readFileSync(mainFileAbs, 'utf8');
   const starts = lineIndexFor(source);
   const decls = [];
   // headers that generate code via macro includes (sfmacros.h) can be
   // treated as main-file-equivalent for this TU
-  const alsoMain = new Set((extraMainFiles || []).map((f) => path.resolve(f)));
+  const alsoMain = new Set((extraMainFiles || []).map((f) => canonical(f)));
 
   (function walk(n, parent) {
     if (!n || typeof n !== 'object') return;
