@@ -24,6 +24,7 @@
 // from Node and from a browser module graph; it lives outside js/ on purpose
 // (baked game data is not hand-written port code — see tools/vendor-data.mjs).
 import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../data-nethackdir/index.mjs';
+import { ereCompile, regErrorText, REG_BADPAT, REG_NOMATCH } from './posix-ere.mjs';
 
 // Mount point of the playground inside the VFS. nh_getenv() rejects values
 // longer than 128 chars, and the C code copies this into fixed-size buffers,
@@ -296,20 +297,33 @@ export async function runBootGame(opts) {
   // pressing ^Z mid-game with the live mirror attached.
   g.kill = (pid, sig) => 0;
   g.raise = (sig) => 0;
-  // POSIX regex for nhregex (posixregex.c): msgtype/autopickup user patterns.
-  // POSIX ERE and JS RegExp agree on NetHack's pattern vocabulary
-  // (alternation, classes, anchors, quantifiers); REG_EXTENDED|REG_NOSUB ->
-  // no captures needed. Store the compiled RegExp on the preg's box map.
+  // POSIX regex for nhregex (sys/share/posixregex.c): the user patterns
+  // behind msgtype, autopickup exceptions and menucolors.  See
+  // js/boot/posix-ere.mjs for why `new RegExp(pattern)` is not a stand-in
+  // for regcomp(3) here — the game shows the player regerror()'s wording
+  // verbatim when a pattern is bad, and the two languages disagree about
+  // which patterns *are* bad.
   const __regexps = new Map();
   g.regcomp = (preg, pat, flags) => {
-    try { __regexps.set(preg.buf, new RegExp(cptr.cstr(pat))); return 0; }
-    catch { return 1; } // any nonzero: nhregex reports the error string
+    __regexps.delete(preg.buf);
+    const r = ereCompile(cptr.cstr(pat));
+    if (r.err) return r.err;
+    // 's' (dotAll): POSIX '.' matches newline unless REG_NEWLINE is given,
+    // and nhregex never gives it.
+    try { __regexps.set(preg.buf, new RegExp(r.src, 's')); }
+    catch { return REG_BADPAT; }   // unreachable: ereCompile builds the src
+    return 0;
   };
   g.regexec = (preg, str, nmatch, pmatch, eflags) => {
     const re = __regexps.get(preg.buf);
-    return re && re.test(cptr.cstr(str)) ? 0 : 1; // 1 = REG_NOMATCH
+    return re && re.test(cptr.cstr(str)) ? 0 : REG_NOMATCH;
   };
-  g.regerror = (code, preg, errbuf, size) => { cptr.writeStr(errbuf, 'regex error'); return 11n; };
+  g.regerror = (code, preg, errbuf, size) => {
+    const s = regErrorText(Number(code));
+    const room = Number(size);
+    if (errbuf && room > 0) cptr.writeStr(errbuf, s.slice(0, room - 1));
+    return BigInt(s.length + 1);   // size_t: bytes needed, including the NUL
+  };
   g.regfree = (preg) => { __regexps.delete(preg.buf); };
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
