@@ -38,9 +38,11 @@ export async function runSessionCollect(sessionPath) {
             nethackrc: seg.nethackrc, moves: seg.moves,
             storage: storageHandle,
         });
-        out.screens.push(...(game.getScreens?.() || []));
-        out.rng.push(...(game.getRngLog?.() || []));
-        out.cursors.push(...(game.getCursors?.() || []));
+        // Element-wise, not push(...arr): a long session's RNG log runs to
+        // six figures and blows the argument limit (seed0360 draws 120k).
+        for (const s of game.getScreens?.() || []) out.screens.push(s);
+        for (const r of game.getRngLog?.() || []) out.rng.push(r);
+        for (const c of game.getCursors?.() || []) out.cursors.push(c);
     }
     return out;
 }

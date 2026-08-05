@@ -3,27 +3,33 @@
 //
 // The judge runs contestant code in a Node child process with
 // --permission (no fs writes, no network, no child processes, no
-// native addons). Local frozen/score.sh does NOT sandbox — a port
-// that accidentally depends on those APIs passes locally and scores
-// zero on the judge. This tool proves parity: it runs the same
-// session twice, once sandboxed exactly like the judge and once
-// unsandboxed, and requires byte-identical outputs.
+// native addons, reads confined to the fork tree). Local frozen/score.sh
+// does NOT sandbox — a port that accidentally depends on those APIs
+// passes locally and scores zero on the judge. This tool proves parity:
+// it runs the same session twice, once sandboxed exactly like the judge
+// and once unsandboxed, and requires byte-identical outputs.
 //
-// Also greps js/ for forbidden runtime imports as a fast static check.
+// It also walks the *reachable* module graph from js/jsmain.js (the only
+// entry point the judge imports) and rejects forbidden runtime imports in
+// it. Reachability matters: js/boot/boot.mjs and js/boot/worker.mjs are
+// developer entry points that legitimately use node:fs, and tools/ is not
+// shipped code — none of them may be reachable from runSegment.
 //
 // Technique credit: Alex Serrano's strict-score.mjs / check-submission.mjs
 // (serteal's transpiled entry).
 //
 // Usage:
 //   node tools/strict-score.mjs [session.json ...]   (default: a smoke pair)
+//   node tools/strict-score.mjs --all                (every sessions/*.json)
 
 import { spawnSync } from 'node:child_process';
-import { readFileSync, readdirSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { join, dirname, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const TOOLS_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(TOOLS_DIR, '..');
+const ENTRY = join(ROOT, 'js/jsmain.js');
 
 // What contestant code may never touch under the judge sandbox.
 const FORBIDDEN = [
@@ -34,65 +40,104 @@ const FORBIDDEN = [
     /\bWebAssembly\b/,
 ];
 
+// Static + literal-dynamic import specifiers.
+const SPEC_RE = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
+
+/** Every file reachable from `entry` by a resolvable relative specifier. */
+function reachableFiles(entry) {
+    const seen = new Set();
+    const queue = [entry];
+    while (queue.length) {
+        const file = queue.pop();
+        if (seen.has(file) || !existsSync(file) || !statSync(file).isFile()) continue;
+        seen.add(file);
+        const src = readFileSync(file, 'utf8');
+        for (const m of src.matchAll(SPEC_RE)) {
+            const spec = m[1];
+            if (!spec.startsWith('.') && !spec.startsWith('/')) continue; // bare / node: builtin
+            const target = resolve(dirname(file), spec.split('?')[0]);
+            queue.push(target);
+        }
+    }
+    return [...seen].sort();
+}
+
 function staticCheck() {
+    const files = reachableFiles(ENTRY);
     let bad = 0;
-    for (const name of readdirSync(join(ROOT, 'js'))) {
-        if (!name.endsWith('.js')) continue;
-        if (['isaac64.js', 'terminal.js', 'storage.js'].includes(name)) continue; // frozen
-        const src = readFileSync(join(ROOT, 'js', name), 'utf8');
+    for (const file of files) {
+        const rel = relative(ROOT, file);
+        // frozen fixtures are the judge's own code, overlaid at scoring time
+        if (['js/isaac64.js', 'js/terminal.js', 'js/storage.js'].includes(rel)) continue;
+        const src = readFileSync(file, 'utf8');
         for (const re of FORBIDDEN) {
             const m = src.match(re);
             if (m) {
-                console.error(`FORBIDDEN in js/${name}: ${m[0].slice(0, 70)}`);
+                console.error(`FORBIDDEN in ${rel}: ${m[0].slice(0, 70)}`);
                 bad++;
             }
         }
     }
+    console.log(`static: ${files.length} file(s) reachable from js/jsmain.js, ${bad} violation(s)`);
     return bad;
 }
 
+function listSessions() {
+    const dir = join(ROOT, 'sessions');
+    return readdirSync(dir)
+        .filter((n) => n.endsWith('.session.json'))
+        .sort()
+        .map((n) => join(dir, n));
+}
+
 async function main() {
-    let sessions = process.argv.slice(2);
+    let sessions = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+    if (process.argv.includes('--all')) sessions = listSessions();
     if (!sessions.length) {
         sessions = [
             join(ROOT, 'sessions', 'seed8000-tourist-starter.session.json'),
             join(ROOT, 'sessions', 'seed0900-tourist-explore-actions.session.json'),
+            // multi-segment: exercises in-process segment isolation + the VFS
+            // overlay round-trip through storage.
+            join(ROOT, 'sessions', 'seed0013-friday13-save-then-fullmoon-restore.session.json'),
         ];
     }
 
     const badImports = staticCheck();
     if (badImports) {
-        console.error(`\n${badImports} forbidden import(s) in js/ — fix before push.`);
+        console.error(`\n${badImports} forbidden import(s) reachable from js/jsmain.js — fix before push.`);
         process.exit(1);
     }
 
-    const { runSessionCollect } = await import(join(TOOLS_DIR, 'sandbox-child.mjs'));
+    // One child per session per mode. The judge gives runSegment a fresh
+    // process per session too, and it matters here: segment isolation forks a
+    // copy of the 172-module transpiled graph, so replaying the whole corpus in
+    // one process piles up graphs until GC dominates the runtime.
+    const runChild = (sessionPath, sandboxed) => spawnSync(process.execPath, [
+        ...(sandboxed ? ['--permission', `--allow-fs-read=${ROOT}`] : []),
+        join(TOOLS_DIR, 'sandbox-child.mjs'),
+        sessionPath,
+    ], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+
     let failed = 0;
     for (const sessionPath of sessions) {
         const name = sessionPath.split('/').pop();
-        // Sandboxed run (judge-style).
-        const child = spawnSync(process.execPath, [
-            '--permission',
-            `--allow-fs-read=${ROOT}`,
-            join(TOOLS_DIR, 'sandbox-child.mjs'),
-            sessionPath,
-        ], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+        // Sandboxed run (judge-style): the ONLY allowance is reading the fork.
+        const child = runChild(sessionPath, true);
         if (child.status !== 0) {
             console.error(`FAIL ${name}: sandboxed run exited ${child.status}: ${child.stderr.trim().split('\n')[0]}`);
             failed++;
             continue;
         }
-        // Unsandboxed reference run, in-process.
-        let ref;
-        try {
-            ref = await runSessionCollect(sessionPath);
-        } catch (e) {
-            console.error(`FAIL ${name}: reference run threw: ${e.message}`);
+        // Unsandboxed reference run.
+        const plain = runChild(sessionPath, false);
+        if (plain.status !== 0) {
+            console.error(`FAIL ${name}: reference run exited ${plain.status}: ${plain.stderr.trim().split('\n')[0]}`);
             failed++;
             continue;
         }
-        const sandboxed = JSON.parse(child.stdout);
-        const same = JSON.stringify(sandboxed) === JSON.stringify(ref);
+        const ref = JSON.parse(plain.stdout);
+        const same = child.stdout === plain.stdout;
         if (!same) {
             console.error(`FAIL ${name}: sandboxed output differs from unsandboxed`);
             failed++;

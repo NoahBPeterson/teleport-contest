@@ -93,6 +93,57 @@ worktree's paths mismatch the shared AST dumps, writing 0-decl IRs into the
 shared cache (79 files corrupted + rebuilt this session; recover by
 deleting .cache/c2js/ir/*.ir.json and rebuilding from the main tree).
 
+**Update (2026-08-05, Milestone 2): sandbox-legal architecture done.** The
+runSegment path no longer touches a real filesystem, a child process or a
+worker thread. Score is unchanged by the rework — RNG 131,451/792,838,
+screens 1,306/11,405, 8 sessions RNG-perfect, 0 crashes, byte-identical to
+the pre-change corpus run. Three pieces:
+
+1. **Vendored game data** — `tools/vendor-data.mjs` bakes the 162 non-binary
+   files of `nethack-c/recorder/install/games/lib/nethackdir` (1,671,390
+   bytes) into base64 ES modules at `data/nethackdir/` (5 chunks + an index,
+   2.24 MB rendered). Deliberately outside `js/`: the Phase-2 penalty is
+   measured on `git diff phase1-tag..HEAD -- 'js/**'`, and baked data is not
+   hand-written port code. Decoding uses `atob`, not `node:Buffer`. The
+   `nethack` and `recover` executables are skipped. A bare clone now has the
+   playground, so **CI finally scores for real** — before this it scored a
+   harness with no data files at all.
+2. **In-memory VFS** — `js/boot/harness.mjs` reads through three layers:
+   write overlay (persisted across segments via the judge's `storage`), boot
+   files (`$HOME/.nethackrc`), vendored playground. No `mkdtemp`, no `/tmp`
+   symlink, no `node:fs`/`node:path`/`node:url` import at all. `NETHACKDIR`
+   is still the *string* `/tmp/c2js-nethackdir` and `$HOME` is still a
+   21-char `/tmp/c2js-boot-…` path so every C string built from them is
+   byte-identical to before; both are now purely virtual. `unlink` still only
+   removes from the overlay (it could never delete the install dir either),
+   which is what keeps `getlock`/`eraseoldlocks` behaviour identical.
+3. **In-process segment isolation** — `js/boot/isolation.mjs`. The naive
+   `import('./harness.mjs?seg=N')` does *not* work: ESM drops the query one
+   level down, so the other 171 generated modules stay shared (measured:
+   seed0030 went 70,591 → 196,151 RNG draws). Node also realpaths `file:`
+   URLs, so `//`, `/./` and percent-encoding tricks all collapse; and
+   data:/blob: re-bundling is impossible because the generated graph is
+   cyclic. The fix is a synchronous `module.registerHooks()` resolve hook
+   that propagates a `?c2jsseg=N` tag to every relative specifier below a
+   tagged parent — one fresh 172-module graph per segment, cycles included,
+   legal under `--permission` (registerHooks is in-thread; `module.register`
+   would need a worker). `data/nethackdir/` is excluded from the fork so the
+   2.2 MB payload stays shared. Verified byte-identical to the old
+   child-process path on all four multi-segment sessions, including the
+   10-segment seed0030. In a browser the same effect is an import map or a
+   per-segment iframe realm; until that exists `enableSegmentIsolation()`
+   reports false and segments share a graph (correct for the 40 of 44 public
+   sessions that are single-segment). Requires Node ≥ 22.15.
+   `C2JS_SPAWN=1` still selects the old child-process path via
+   `tools/segment-spawn.mjs` (kept outside `js/` so `node:child_process` is
+   unreachable from the judge's entry point).
+
+`tools/strict-score.mjs` is the gate: it walks the module graph actually
+reachable from `js/jsmain.js` (178 files) rejecting forbidden imports, then
+runs each session twice — once under `node --permission
+--allow-fs-read=<repo>`, once unsandboxed — and requires identical output.
+It runs in CI before scoring.
+
 Scope: `tools/c2js/` clang-AST→JS transpiler is done and proven (rnd/hacklib
 differential parity, setjmp/union gates, varargs, goto lowerings, 167/170
 corpus files transpile clean). Current goal: boot `js/generated/*` under

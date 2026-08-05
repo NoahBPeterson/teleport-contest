@@ -6,19 +6,33 @@
 // getAnimationFramesByStep() to compare with C-recorded session data.
 //
 // The game is the clang-AST→JS transpiled NetHack 5.0 corpus
-// (js/generated/*). Each segment runs in a fresh child process
-// (js/boot/worker.mjs) so C module state never leaks across segments;
-// cross-segment persistence flows through input.storage (the judge's
-// Web-Storage-shaped handle) via the FS overlay. The original
-// hand-written skeleton engine lives on under js/legacy/.
+// (js/generated/*). Everything runs in *this* process: the judge sandboxes
+// us with `node --permission` (no child processes, no worker threads, no
+// filesystem writes, reads confined to the fork tree), and the same code has
+// to be able to run in a browser. So:
+//
+//   - per-segment isolation comes from js/boot/isolation.mjs, which forks a
+//     fresh copy of the whole transpiled module graph per segment instead of
+//     a fresh process (see that file for why the naive `?seg=` trick isn't
+//     enough);
+//   - the game's data files are vendored as JS modules under data/ and served
+//     by an in-memory VFS in js/boot/harness.mjs — no real filesystem at all;
+//   - cross-segment persistence flows through input.storage (the judge's
+//     Web-Storage-shaped handle) via that VFS overlay.
+//
+// C2JS_SPAWN=1 restores the old one-child-process-per-segment path
+// (tools/segment-spawn.mjs + js/boot/worker.mjs) for local debugging. It is
+// deliberately not reachable from this file's module graph — the judge must
+// never be able to take it.
+//
+// The original hand-written skeleton engine lives on under js/legacy/.
 
-import { spawnSync } from 'node:child_process';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { enableSegmentIsolation, segmentSpecifier } from './boot/isolation.mjs';
 
-const WORKER = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'boot/worker.mjs');
+const HARNESS_URL = new URL('./boot/harness.mjs', import.meta.url).href;
+
+let segmentCount = 0;
+let spawnFallback;
 
 class TranspiledGame {
     constructor(result) {
@@ -30,41 +44,34 @@ class TranspiledGame {
     getAnimationFramesByStep() { return this._result.animFramesByStep || []; }
 }
 
+function wantSpawn() {
+    return typeof process !== 'undefined' && process.env && process.env.C2JS_SPAWN === '1';
+}
+
 export async function runSegment(input) {
+    const n = ++segmentCount;
     const job = {
         seed: input.seed,
         datetime: input.datetime,
         nethackrc: input.nethackrc || '',
         moves: input.moves || '',
-        storage: null,
+        storage: input.storage || null,
     };
-    if (input.storage) {
-        const o = {};
-        for (let i = 0; i < (input.storage.length || 0); i++) {
-            const k = input.storage.key(i);
-            if (k != null) o[k] = input.storage.getItem(k);
+
+    if (wantSpawn()) {
+        // Debug escape hatch; lives outside js/ so the sandboxed path stays
+        // free of node:child_process.
+        if (!spawnFallback) {
+            spawnFallback = await import(new URL('../tools/segment-spawn.mjs', import.meta.url).href);
         }
-        job.storage = o;
+        return new TranspiledGame(await spawnFallback.runSegmentInChild(job));
     }
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'c2js-seg-'));
-    const jobFile = path.join(tmp, 'job.json');
-    const outFile = path.join(tmp, 'result.json');
-    fs.writeFileSync(jobFile, JSON.stringify(job));
-    const r = spawnSync('node', [WORKER, jobFile, outFile], {
-        maxBuffer: 64 * 1024 * 1024,
-        timeout: 600000,
-    });
-    if (r.error) throw r.error;
-    if (!fs.existsSync(outFile)) {
-        throw new Error(`segment worker failed: ${(r.stderr || '').toString().slice(-800)}`);
-    }
-    const res = JSON.parse(fs.readFileSync(outFile, 'utf8'));
-    if (input.storage && res.storage) {
-        for (const [k, v] of Object.entries(res.storage)) input.storage.setItem(k, v);
-    }
-    if (res.error) throw new Error(res.error);
-    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {}
-    return new TranspiledGame(res);
+
+    const isolated = await enableSegmentIsolation();
+    const { runBootGame } = await import(segmentSpecifier(HARNESS_URL, n, isolated));
+    const result = await runBootGame(job);
+    if (result.error) throw result.error;
+    return new TranspiledGame(result);
 }
 
 export { TranspiledGame as NethackGame };
