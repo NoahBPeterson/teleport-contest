@@ -288,6 +288,14 @@ export async function runBootGame(opts) {
   g.backtrace_symbols = (buf, size) => null;
   g.backtrace_symbols_fd = (buf, size, fd) => {};
   g.getpid = () => 4242;
+  // dosuspend (^Z) calls kill(getpid(), SIGTSTP) then redraws on resume. A
+  // recorded live session CAN contain ^Z (the recorder survives job control
+  // under the player's shell); the replay must take the same path: no-op the
+  // signal, so suspend falls straight through to the resume/redraw code —
+  // observably identical to what the recording captured. Found by Noah
+  // pressing ^Z mid-game with the live mirror attached.
+  g.kill = (pid, sig) => 0;
+  g.raise = (sig) => 0;
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
   g.strerror = (e) => cptr.lit(`error ${Number(e)}`);
