@@ -31,9 +31,19 @@ import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../../data/ne
 // filesystem — but it is kept byte-identical to the path the pre-VFS harness
 // symlinked into /tmp so that any C string built from it is unchanged.
 const HACKDIR = '/tmp/c2js-nethackdir';
-// Likewise virtual $HOME. The old harness used mkdtemp('/tmp/c2js-boot-'),
-// i.e. a 21-char path with a random 6-char suffix; same length, now fixed.
-const VHOME = '/tmp/c2js-boot-vfs000';
+// Likewise virtual $HOME. Purely virtual — it never reaches a real
+// filesystem — but its TEXT is observable: option_help() ('O' then '?')
+// prints "Set options as OPTIONS=<options> in %s" with get_configfile(),
+// i.e. $HOME/.nethackrc, and the tty text window puts an over-long path on
+// its own line truncated to 79 columns. seed2200 step 158 records
+//   /Users/davidbau/git/mazesofmenace/teleport/maud/test/comparison/c-harness/resul
+// so $HOME in the recorder was that directory (visible prefix only; the
+// recording cuts it at 79 chars). Reproducing the recorder's $HOME is the
+// same kind of environment pinning as the fixed datetime/timezone: nothing
+// here touches the host. Keep it >= 79 chars so the truncation still lands
+// in the same place, and keep the basename ".nethackrc" so
+// nh_basename(get_configfile()) — shown in the 'O' menu — is unchanged.
+const VHOME = '/Users/davidbau/git/mazesofmenace/teleport/maud/test/comparison/c-harness/results';
 
 let __segCounter = 0;
 
