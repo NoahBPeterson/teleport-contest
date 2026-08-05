@@ -493,6 +493,20 @@ export class Emitter {
     throw new Error(`storeTo: unsupported access type "${typeQ}"`);
   }
 
+  /**
+   * Index expression for a *plain JS array* subscript (`a[i]`, not a cptr
+   * offset).  C relational/logical operators have type int, but we emit them
+   * as raw JS booleans and rely on JS arithmetic coercion — which does not
+   * apply to property lookup: `a[true]` is the property "true", i.e.
+   * undefined, not `a[1]`.  getpos.c's dxdy_to_dist_descr() indexes
+   * `dirnames[(dy > 0)][fulldir]` exactly that way, and #lookaround / the
+   * whatis_coord "comfull" formatting crashed on it.  Numeric contexts
+   * (cptr.add) coerce fine, so only the JS-array forms need this.
+   */
+  jsIndex(idx) {
+    return idx.bool ? `${this.group(idx, PREC.cond)} ? 1 : 0` : idx.code;
+  }
+
   /** element access location for base[{idx}] — returns {code, elemQ, rep} */
   subscriptLoc(base, idx, baseQ) {
     const arr = arrayParts(baseQ);
@@ -503,7 +517,7 @@ export class Emitter {
         return { code: this.cptrCall('add', base.code, idx.code, String(this.sizeofType(arr.elem))), elemQ: arr.elem, rep: 'cptr' };
       }
       if (arrayParts(arr.elem)) {
-        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'buf' };
+        return { code: `${this.group(base, PREC.atom)}[${this.jsIndex(idx)}]`, elemQ: arr.elem, rep: 'buf' };
       }
       if (elemT.cls === 'record') {
         const rn = this.recordNameForType(arr.elem);
@@ -511,7 +525,7 @@ export class Emitter {
           const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, String(this.layoutOf(rn).size));
           return { code: loc, elemQ: arr.elem, rep: 'cptr' };
         }
-        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'obj' }; // fn-ptr typedef etc: plain JS array
+        return { code: `${this.group(base, PREC.atom)}[${this.jsIndex(idx)}]`, elemQ: arr.elem, rep: 'obj' }; // fn-ptr typedef etc: plain JS array
       }
       // `int a[N]` kept as a plain JS number array indexes by element, so
       // a[i] is the value. A ROW of a multi-dim array (rep 'buf') is a
@@ -523,7 +537,7 @@ export class Emitter {
       // extended unconditionally, turning plain HWALLs into T-walls all over
       // premapped Sokoban and mines maps. Byte rows must use scaled access.
       if ((arr.elem === 'int' || arr.elem === 'unsigned int') && base.rep !== 'buf') {
-        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'val', plain: true };
+        return { code: `${this.group(base, PREC.atom)}[${this.jsIndex(idx)}]`, elemQ: arr.elem, rep: 'val', plain: true };
       }
       // 1-byte element buffer: location through cptr (scale by element size)
       let esz = '1';
@@ -941,7 +955,8 @@ export class Emitter {
         if (n.opcode === '~' && subT.cls === 'int' && subT.bits === 64) {
           return { code: `BigInt.as${subT.signed === false ? 'Uint' : 'Int'}N(64, ~${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
         }
-        return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, rep: 'val' };
+        // `!x` evaluates to a JS boolean (see jsIndex()); - and ~ stay numeric
+        return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, rep: 'val', ...(n.opcode === '!' ? { bool: true } : {}) };
       }
       case '&': { // address-of
         // register cross-file refs (the branches below can emit the name
@@ -1099,23 +1114,27 @@ export class Emitter {
       const p = op === '==' || op === '!=' ? PREC.eq : PREC.rel;
       const fnPtr = lQ.includes('(*') || rQ.includes('(*'); // function pointers compare by identity
       const ptrCmp = !fnPtr && (lT.cls === 'ptr' || rT.cls === 'ptr');
+      // `bool: true` marks a descriptor whose JS code evaluates to a real
+      // boolean.  C says these are int 0/1; JS arithmetic coerces the same
+      // way, so the flag only matters where the value is used as a plain
+      // JS array index (see jsIndex()).
       if (fnPtr && (op === '==' || op === '!=')) {
         const jsop = op === '==' ? '===' : '!==';
-        return { code: `${operand(l0, p, 'left').code} ${jsop} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val' };
+        return { code: `${operand(l0, p, 'left').code} ${jsop} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val', bool: true };
       }
       if (ptrCmp) {
         if (l0.code === 'null' || r0.code === 'null') {
           const other = l0.code === 'null' ? r0 : l0;
           const nullOp = op === '==' ? '===' : op === '!=' ? '!==' : null;
-          if (nullOp) return { code: `${operand(other, p, 'left').code} ${nullOp} null`, prec: p, rep: 'val' };
+          if (nullOp) return { code: `${operand(other, p, 'left').code} ${nullOp} null`, prec: p, rep: 'val', bool: true };
         }
         if (op === '==' || op === '!=') {
           const call = this.cptrCall('eq', l0.code, r0.code);
-          return { code: op === '==' ? call : `!${call}`, prec: op === '==' ? PREC.atom : PREC.unary, rep: 'val' };
+          return { code: op === '==' ? call : `!${call}`, prec: op === '==' ? PREC.atom : PREC.unary, rep: 'val', bool: true };
         }
-        return { code: `${this.cptrCall('cmp', l0.code, r0.code)} ${op} 0`, prec: p, rep: 'val' };
+        return { code: `${this.cptrCall('cmp', l0.code, r0.code)} ${op} 0`, prec: p, rep: 'val', bool: true };
       }
-      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val' };
+      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code}`, prec: p, rep: 'val', bool: true };
     }
     const p = BIN_PREC[op];
     if (!p) throw new Error(`unsupported binary op ${op} (${this.cref(n)})`);
@@ -1621,6 +1640,21 @@ export class Emitter {
               inlineOk = false;
               break;
             }
+            // A break/return ends the outward continuation: control leaves
+            // the construct there and never reaches the levels above it, so
+            // scanning further out is not just wasted, it is wrong. doclose()
+            // is the case that exposed it — `goto nodoor` lands in the else
+            // of an if/else whose enclosing block is exactly
+            //     { if (...) ... else { nodoor: You("%s no door there."); }
+            //       return res; }
+            // The walk found that `return res`, then kept going, hit the
+            // *next* statement of the function body, and gave up on the
+            // inline splice. The label fell through to the xblock lowering,
+            // whose region is only the label's own block tail — the `return
+            // res` was dropped, so #close on a non-door printed "You see no
+            // door there." and then went on to close it anyway, corrupting
+            // the level ("wall_angle: unknown hwall mode 4").
+            if (outward.length) break;
             if (par.kind === 'SwitchStmt' || par.kind === 'ForStmt' || par.kind === 'WhileStmt' || par.kind === 'DoStmt' || par === body) break;
             node = par;
             par = parent.get(par);

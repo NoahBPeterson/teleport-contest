@@ -1949,7 +1949,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         attack_indx = 3;
         cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1298, __sl86), rnd(4)) : rnd(4))) | 0);
     }
-    verb = cptr.ldPtr(cptr.add(cptr.decay(mb_verb[!!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0)]), attack_indx, 8));
+    verb = cptr.ldPtr(cptr.add(cptr.decay(mb_verb[!!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0]), attack_indx, 8));
     if ((youattack || youdefend ? 1 : 0) || vis ? 1 : 0) {
         result = (1);
         pline_The(__sl87, vtense(null, verb), hittee);

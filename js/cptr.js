@@ -402,9 +402,14 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 // ------------------------------------------------------ printf-family --------
 
 /**
- * Minimal C printf formatter. Supports %d %i %u %x %s %c %f %%, optional
+ * Minimal C printf formatter. Supports %d %i %u %o %x %s %c %f %%, optional
  * +/0 flags and numeric width, and the ll length modifier (for i64/u64
  * BigInts). String args may be CPtr; integers may be BigInt.
+ *
+ * %o is unsigned octal (C11 7.21.6.1p8). NetHack reaches it from
+ * dowhatdoes() — "No such command '%s', char code %d (0%03o or 0x%02x)" —
+ * and from the invalid-artifact-origin impossible(). Without it the
+ * conversion fell through the regex and the literal "%03o" was printed.
  * @param {CPtr|string} fmt
  * @param {Array} args
  * @returns {string}
@@ -413,7 +418,7 @@ export function sprintfCore(fmt, args) {
   
   const f = cstr(fmt);
   let ai = 0;
-  return f.replace(/%([+0-]*)(\*|\d*)(?:\.(\*|\d*))?(ll|l|z)?([diuxXscf%])/g, (m, flags, width, prec, len, spec) => {
+  return f.replace(/%([+0-]*)(\*|\d*)(?:\.(\*|\d*))?(ll|l|z)?([diouxXscf%])/g, (m, flags, width, prec, len, spec) => {
     if (spec === '%') return '%';
     // '*' width/precision take their value from an int argument, consumed
     // ahead of the value argument (C99 7.19.6.1).
@@ -432,10 +437,11 @@ export function sprintfCore(fmt, args) {
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
     else if (spec === 'f') s = prec !== undefined && prec !== '' ? Number(a).toFixed(Number(prec)) : Number(a).toFixed(6);
     else if (spec === 'x' || spec === 'X') { s = (len === 'll' || len === 'l' || len === 'z') ? BigInt.asUintN(64, BigInt(a)).toString(16) : (Number(a) >>> 0).toString(16); if (spec === 'X') s = s.toUpperCase(); }
+    else if (spec === 'o') s = (len === 'll' || len === 'l' || len === 'z') ? BigInt.asUintN(64, BigInt(a)).toString(8) : (Number(a) >>> 0).toString(8);
     else if (spec === 'u') s = (len === 'll' || len === 'l' || len === 'z') ? String(BigInt.asUintN(64, BigInt(a))) : String(Number(a) >>> 0);
     else if (len === 'll' || len === 'l' || len === 'z') s = String(BigInt.asIntN(64, BigInt(a))); // %lld/%ld/%zd
     else s = String(Number(a)); // %d %i
-    if (prec !== undefined && prec !== '' && 'diuxX'.includes(spec) && !s.startsWith('-')) s = s.padStart(Number(prec), '0');
+    if (prec !== undefined && prec !== '' && 'diouxX'.includes(spec) && !s.startsWith('-')) s = s.padStart(Number(prec), '0');
     if (flags.includes('+') && !s.startsWith('-') && 'di'.includes(spec)) s = '+' + s;
     if (s.length < w) {
       if (flags.includes('-')) s = s + ' '.repeat(w - s.length); // left-justify

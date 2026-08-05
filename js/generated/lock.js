@@ -913,55 +913,54 @@ function obstructed(x, y, quietly) {
 
 /** C ref: lock.c:957 @returns {CInt} */
 export function doclose() {
-    let x, y, door, res;
-    let __go_nodoor = false;
-    __skip_nodoor: {
-        let portcullis;
-        res = 0;
-        if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
-            You_cant(__sl112);
-            return 0;
-        }
-        if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2 ? 1 : 0) {
-            You_cant(__sl62);
-            return 0;
-        }
-        if (!getdir(null))
-            return 2;
-        x = i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0));
-        y = i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0));
-        if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 53, 24)) ? 1 : 0) ? 1 : 0) {
-            You(__sl113);
-            return 1;
-        }
-        if (!isok(x, y))
-            { __go_nodoor = true; break __skip_nodoor; }
-        if (stumble_on_door_mimic(x, y))
-            return 1;
-        if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) ? 1 : 0)
-            res = 1;
-        door = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
-        portcullis = schar((is_drawbridge_wall(x, y) >= 0));
-        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
-            let oldglyph = cptr.ldI32(door);
-            let oldlastseentyp = schar(update_mapseen_for(x, y));
-            feel_location(x, y);
-            if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.add(svl, x, 21), y, 1)) != oldlastseentyp ? 1 : 0)
-                res = 1;
-        }
-        if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == 23) ? 1 : 0) {
-            if (is_db_wall(x, y) || cptr.ld1s(cptr.add(door, 4)) == 19 ? 1 : 0)
-                pline_The(__sl114);
-            else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == 34 ? 1 : 0)
-                There(__sl115);
-            else {
-                __go_nodoor = true; break __skip_nodoor;
-            }
+    let x;
+    let y;
+    let door;
+    let portcullis;
+    let res = 0;
+    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
+        You_cant(__sl112);
+        return 0;
+    }
+    if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2 ? 1 : 0) {
+        You_cant(__sl62);
+        return 0;
+    }
+    if (!getdir(null))
+        return 2;
+    x = i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0));
+    y = i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0));
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 53, 24)) ? 1 : 0) ? 1 : 0) {
+        You(__sl113);
+        return 1;
+    }
+    if (!isok(x, y))
+        {
+            You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl66 : __sl67);
             return res;
         }
+    if (stumble_on_door_mimic(x, y))
+        return 1;
+    if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) ? 1 : 0)
+        res = 1;
+    door = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
+    portcullis = schar((is_drawbridge_wall(x, y) >= 0));
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
+        let oldglyph = cptr.ldI32(door);
+        let oldlastseentyp = schar(update_mapseen_for(x, y));
+        feel_location(x, y);
+        if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.add(svl, x, 21), y, 1)) != oldlastseentyp ? 1 : 0)
+            res = 1;
     }
-    if (__go_nodoor) {
-        You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl66 : __sl67);
+    if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == 23) ? 1 : 0) {
+        if (is_db_wall(x, y) || cptr.ld1s(cptr.add(door, 4)) == 19 ? 1 : 0)
+            pline_The(__sl114);
+        else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == 34 ? 1 : 0)
+            There(__sl115);
+        else {
+            You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl66 : __sl67);
+        }
+        return res;
     }
     if (((cptr.ldI32(cptr.add(door, 8)) & 31) | 0) == 0) {
         pline(__sl4);
