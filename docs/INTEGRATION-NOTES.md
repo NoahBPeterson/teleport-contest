@@ -1,5 +1,45 @@
 # c2js integration notes — booting the transpiled game (handoff)
 
+## 0. STATE CORRECTION — 2026-08-05 (supersedes §1, §4, §5 below)
+
+The sections below describe the state at the previous agent's handoff and are
+**stale**: the follow-up run (committed in `1cad6c2`) completed most of the
+boot checklist without updating this file. Verified state as of 2026-08-05:
+
+- Boot **works end to end**: `node js/boot/boot.mjs 8000 20260401090000 '  '`
+  runs main() → initoptions → chargen → newgame → moveloop, captures 203
+  screens, exits clean. The §5 blockers 1, 2, 4, 6, 7 are all done (enum-field
+  member load, backtrace shim, input wiring, screen capture, jsmain rewiring).
+- `js/jsmain.js` implements runSegment by spawning `js/boot/worker.mjs` per
+  segment; `js/boot/harness.mjs` (FS overlay + ~150 shims + nomux marker
+  parsing) hosts the engine. Old skeleton relocated to `js/legacy/` (dead code).
+- **Score baseline** (`node frozen/ps_test_runner.mjs sessions/`, ~5 min):
+  0/44 pass; RNG 25,002/792,838 (3.2%); screens 22/11,405. On sessions that
+  run, the RNG prefix is exact for thousands of calls, then *truncates* (run
+  ends early) — no value mismatches observed.
+- 34/44 sessions abort on six causes: `perror` (13, getlock), `getlogin`
+  (9, whoami) — missing shims; `w is not defined` (8, makelevel),
+  `.ter` on undefined (2, lspo_map), `erase_char` (1, hooked_tty_getlin),
+  `buf` (1, xname_flags) — emitter-class bugs.
+- **Judge-sandbox legality is the architectural blocker** (docs/API.md):
+  no child processes, no FS writes, reads only from the fork tree, must run
+  in Chrome. Current design violates all of it: jsmain spawnSync, harness
+  /tmp mkdtemp+symlink, and the 7.6 MB nethackdir data files are untracked
+  (gitignored under nethack-c/recorder/install/). Local scoring passes only
+  because the local runner doesn't sandbox — `tools/strict-score.mjs` is the
+  parity gate to run before trusting any score.
+- `tools/probe-disco.mjs` was a mid-investigation scratch probe into object
+  discovery/identification state (hardcoded byte offsets; will rot).
+- Decision 2026-08-05: the Emscripten "insurance floor" track from the
+  original two-track plan is **formally cancelled** (feasibility risk it
+  hedged is retired). Lua stays scripts-as-data through the parity push; a
+  Lua→JS script port is staged post-parity, pre-Phase-1-freeze.
+
+Current plan of record: see the continuation plan (Milestones 0–4) in the
+session notes; short form — shims → four emitter fixes → truncation diagnosis
+→ sandbox-legal architecture (embed nethackdir outside `js/`, in-memory VFS,
+in-process segment isolation) → CI green → parity grind.
+
 Scope: `tools/c2js/` clang-AST→JS transpiler is done and proven (rnd/hacklib
 differential parity, setjmp/union gates, varargs, goto lowerings, 167/170
 corpus files transpile clean). Current goal: boot `js/generated/*` under
