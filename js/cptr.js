@@ -319,6 +319,25 @@ export function strstr(haystack, needle) {
 }
 
 /** @param {CPtr} dst @param {CPtr} src @param {number|bigint} n @returns {CPtr} dst */
+/**
+ * Widen a CPtr whose buf is a subarray view when [off, off+n) would cross
+ * the view's end: rebind to the view's underlying ArrayBuffer (same memory,
+ * coherent with every other view over it). C legitimately spans 2D-array row
+ * boundaries through a row pointer — vision.c get_unused_cs does
+ * memset(**rows, 0, ROWNO*COLNO*...) via the row-0 pointer — and typed-array
+ * writes past a view's length are SILENTLY dropped otherwise (this froze
+ * viz_array rows 1..20, leaving stale monsters on captured screens).
+ * @param {CPtr} p @param {number} n @returns {CPtr}
+ */
+export function span(p, n) {
+  const b = p && p.buf;
+  if (b instanceof Uint8Array && p.off + n > b.length
+      && b.byteOffset + p.off + n <= b.buffer.byteLength) {
+    return { buf: new Uint8Array(b.buffer), off: b.byteOffset + p.off };
+  }
+  return p;
+}
+
 export function memcpy(dst, src, n) {
   n = Number(n);
   // boxed scalars (tier-2 &x): stage through a little-endian byte buffer
@@ -337,6 +356,8 @@ export function memcpy(dst, src, n) {
     else { let x = 0n; for (let i = Math.min(n, 8) - 1; i >= 0; i--) x = (x << 8n) | BigInt(tmp.buf[i]); dst.v = x; }
     return r;
   }
+  src = span(src, n); // subarray views: widen when the span crosses the view end
+  dst = span(dst, n);
   const tmp = src.buf.slice(src.off, src.off + n); // slice: safe even if overlapping
   dst.buf.set(tmp, dst.off);
   return dst;

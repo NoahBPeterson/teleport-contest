@@ -54,6 +54,45 @@ screens (systematic, not per-session); (2) rogue chargen RNG diverges from
 call 0 (seed0077); (3) mid-session RNG truncations. Then Milestone 2
 (sandbox-legal architecture) for a real leaderboard score.
 
+**Update (2026-08-05, evening): FIRST FULLY-PASSING SESSIONS — 7/44** (commit
+`4c3af1e`, pushed), each byte-exact on every RNG call, screen cell, and
+cursor: seed0103, 0105, 0700, 0900, 1500, 1800, 8000. Corpus after that
+commit: RNG 161,917/792,838 (20.4%), screens 2,890/11,405 (25.3%). Four more
+root causes felled, all central:
+1. **Backward-goto lowering was semantically wrong** (emit.mjs): backward
+   label regions were `L: do{...}while(false)` with `goto L` → `continue L`
+   — JS `continue` on a do-while jumps to the (false) condition and EXITS.
+   Every pattern-lowered backward goto skipped the region tail (lost
+   inventory menus via display_pickinv nextclass). Now
+   `L: while(true){... break L;}` + guards throwing regions with unbound
+   break/continue into the sm fallback (they'd bind to the synthetic loop).
+2. **cptr.strcat returned dst+strlen(dst)** (the advanced strcpy target)
+   instead of dst — every strcat-as-expression lost its prefix: pline
+   YouMessage "You cannot eat that!" → "cannot eat that!" (the topl
+   off-by-4 class). cptr.strncmp also now returns the byte difference.
+   Coverage gap closed: test/libc-string.test.mjs replays the 1867-case
+   battery through BOTH js/libc/string.js and the cptr.js twins.
+3. **Goto-site inline splices lost block-prefix decls** (`int bchance;
+   make_bounce:` in dobuzz): C allows jumping past declarations, the JS
+   splice had no `let` in scope. Prefix decls referenced by spliced
+   regions are now regionHoisted; aggregates throw to sm fallback.
+4. **Vision accumulated instead of recomputing** (stale monsters on
+   screens, e.g. seed0104 17/43→43/43): could_see rows are Uint8Array
+   subarray views; get_unused_cs's `memset(**rows,0,ROWNO*COLNO)` through
+   the row-0 pointer silently dropped writes past the 80-byte view — only
+   row 0 ever cleared. Fixed centrally: cptr.span() widens a CPtr to the
+   view's underlying ArrayBuffer when an operation spans past the view end
+   (applied in cptr.memcpy and harness memsetAny).
+Known remaining: seed5006 restshk null deref (bones restore, newly
+reachable); rogue-family early RNG divergence (seed0007/0009/0013, agent
+investigating); mid-session RNG truncations (quest-tour family); Milestone 2
+sandbox architecture (agent building in worktree).
+CAUTION (infra): worktree agents must NOT symlink `.cache` and run
+build.mjs — slim-IR regeneration filters AST decls by source path, and a
+worktree's paths mismatch the shared AST dumps, writing 0-decl IRs into the
+shared cache (79 files corrupted + rebuilt this session; recover by
+deleting .cache/c2js/ir/*.ir.json and rebuilding from the main tree).
+
 Scope: `tools/c2js/` clang-AST→JS transpiler is done and proven (rnd/hacklib
 differential parity, setjmp/union gates, varargs, goto lowerings, 167/170
 corpus files transpile clean). Current goal: boot `js/generated/*` under

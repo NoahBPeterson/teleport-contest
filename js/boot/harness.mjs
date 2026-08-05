@@ -167,6 +167,7 @@ export async function runBootGame(opts) {
       }
       return dst;
     }
+    dst = cptr.span(dst, n); // subarray views: widen when span crosses the view end
     for (let i = 0; i < n; i++) cptr.st1(cptr.add(dst, i), val);
     return dst;
   }
