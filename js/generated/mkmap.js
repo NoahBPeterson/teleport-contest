@@ -155,7 +155,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     let i;
     let nx;
     let fg_typ = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4));
-    while ((sx > 0 && (anyroom ? ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= 25) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == fg_typ) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) | 0) != rmno ? 1 : 0)
+    while ((sx > 0 && (anyroom ? ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= 25) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == fg_typ) ? 1 : 0) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) != rmno ? 1 : 0)
         sx--;
     sx++;
     if (sx < cptr.ldI16(cptr.add(gm, 222)))
@@ -174,9 +174,9 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
                         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 28), 1);
                         if (lit)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 16), lit);
-                        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) | 0) == 0)
+                        if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) & 63) | 0) == 0)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24), rmno >>> 0);
-                        else if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) | 0) != rmno)
+                        else if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) & 63) | 0) != rmno)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24), 1);
                     }
         }
@@ -186,15 +186,15 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     if (isok(sx, i16(((sy - 1) | 0)))) {
         for (i = sx; i < nx; i++)
             if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy - 1) | 0, 36), 4)) == fg_typ) {
-                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy - 1) | 0, 36), 24)) | 0) != rmno)
+                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy - 1) | 0, 36), 24)) & 63) | 0) != rmno)
                     flood_fill_rm(i, i16(((sy - 1) | 0)), rmno, lit, anyroom);
             } else {
                 if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy - 1) | 0))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy - 1) | 0, 36), 4)) == fg_typ ? 1 : 0) {
-                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy - 1) | 0, 36), 24)) | 0) != rmno)
+                    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy - 1) | 0, 36), 24)) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i - 1) | 0)), i16(((sy - 1) | 0)), rmno, lit, anyroom);
                 }
                 if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy - 1) | 0))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy - 1) | 0, 36), 4)) == fg_typ ? 1 : 0) {
-                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy - 1) | 0, 36), 24)) | 0) != rmno)
+                    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy - 1) | 0, 36), 24)) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i + 1) | 0)), i16(((sy - 1) | 0)), rmno, lit, anyroom);
                 }
             }
@@ -202,15 +202,15 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     if (isok(sx, i16(((sy + 1) | 0)))) {
         for (i = sx; i < nx; i++)
             if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy + 1) | 0, 36), 4)) == fg_typ) {
-                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy + 1) | 0, 36), 24)) | 0) != rmno)
+                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), (sy + 1) | 0, 36), 24)) & 63) | 0) != rmno)
                     flood_fill_rm(i, i16(((sy + 1) | 0)), rmno, lit, anyroom);
             } else {
                 if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy + 1) | 0))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy + 1) | 0, 36), 4)) == fg_typ ? 1 : 0) {
-                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy + 1) | 0, 36), 24)) | 0) != rmno)
+                    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i - 1) | 0, 756), (sy + 1) | 0, 36), 24)) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i - 1) | 0)), i16(((sy + 1) | 0)), rmno, lit, anyroom);
                 }
                 if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy + 1) | 0))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy + 1) | 0, 36), 4)) == fg_typ ? 1 : 0) {
-                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy + 1) | 0, 36), 24)) | 0) != rmno)
+                    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (i + 1) | 0, 756), (sy + 1) | 0, 36), 24)) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i + 1) | 0)), i16(((sy + 1) | 0)), rmno, lit, anyroom);
                 }
             }
@@ -245,7 +245,7 @@ function join_map(bg_typ, fg_typ) {
     __lbl_joinm: {
         for (x = 2; x <= ((80 - 2) | 0); x++)
             for (y = 1; y < ((21 - 1) | 0); y++) {
-                if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) | 0) == 0 ? 1 : 0) {
+                if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) | 0) == 0 ? 1 : 0) {
                     cptr.stI16(cptr.add(gm, 222), cptr.stI16(cptr.add(gm, 224), x));
                     cptr.stI16(cptr.add(gm, 226), cptr.stI16(cptr.add(gm, 228), y));
                     cptr.stI32(cptr.add(gn, 80), 0);
@@ -258,7 +258,7 @@ function join_map(bg_typ, fg_typ) {
                     } else {
                         for (sx = cptr.ldI16(cptr.add(gm, 222)); sx <= cptr.ldI16(cptr.add(gm, 224)); sx++)
                             for (sy = cptr.ldI16(cptr.add(gm, 226)); sy <= cptr.ldI16(cptr.add(gm, 228)); sy++)
-                                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) | 0) == ((cptr.ldI32(cptr.add(svn, 44)) + 3) | 0)) {
+                                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) == ((cptr.ldI32(cptr.add(svn, 44)) + 3) | 0)) {
                                     cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4), bg_typ);
                                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24), 0);
                                 }
@@ -336,7 +336,7 @@ function remove_room(roomno) {
         roomno = (roomno + 3) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16(cptr.add(croom, 2)); ++x)
             for (y = cptr.ldI16(cptr.add(croom, 4)); y <= cptr.ldI16(cptr.add(croom, 6)); ++y) {
-                if (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) == oroomno)
+                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) == oroomno)
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), roomno);
             }
     }

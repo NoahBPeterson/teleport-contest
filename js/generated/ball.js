@@ -145,7 +145,7 @@ function placebc_core() {
 
 /** C ref: ball.c:147 */
 function unplacebc_core() {
-    if (cptr.ldI32(cptr.add(u, 1848))) {
+    if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
         if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0))) {
             if (!(cptr.ld1s(cptr.add((uball.v), 52)) == 3))
                 obj_extract_self(uball.v);
@@ -226,7 +226,7 @@ export function lift_covet_and_placebc(pin) {
 /** C ref: ball.c:354 @returns {CInt} */
 function bc_order() {
     let obj;
-    if (((cptr.ldI16(cptr.add(uchain.v, 28)) != cptr.ldI16(cptr.add(uball.v, 28)) || cptr.ldI16(cptr.add(uchain.v, 30)) != cptr.ldI16(cptr.add(uball.v, 30)) ? 1 : 0) || (cptr.ld1s(cptr.add((uball.v), 52)) == 3) ? 1 : 0) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0)
+    if (((cptr.ldI16(cptr.add(uchain.v, 28)) != cptr.ldI16(cptr.add(uball.v, 28)) || cptr.ldI16(cptr.add(uchain.v, 30)) != cptr.ldI16(cptr.add(uball.v, 30)) ? 1 : 0) || (cptr.ld1s(cptr.add((uball.v), 52)) == 3) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0)
         return 0;
     for (obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cptr.add(uball.v, 28)), 168), cptr.ldI16(cptr.add(uball.v, 30)), 8)); obj; obj = cptr.ldPtr(cptr.add(obj, 8))) {
         if (cptr.eq(obj, uchain.v))
@@ -243,7 +243,7 @@ export function set_bc(already_blind) {
     let ball_on_floor = !(cptr.ld1s(cptr.add((uball.v), 52)) == 3);
     cptr.stI32(cptr.add(u, 1796), bc_order());
     cptr.stI32(cptr.add(u, 1800), ball_on_floor ? 1 | 2 : 2);
-    if (already_blind || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) {
+    if (already_blind || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) {
         cptr.stI32(cptr.add(u, 1792), cptr.stI32(cptr.add(u, 1788), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36))));
         return;
     }
@@ -379,7 +379,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 }
                 return (1);
             }
-            if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 already_in_rock = (1);
             else
                 already_in_rock = (0);
@@ -387,7 +387,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 case 8:
                 cptr.stI16(chainx, i16(((((cptr.ldI16(cptr.add(uball.v, 28)) + x) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((cptr.ldI16(cptr.add(uball.v, 30)) + y) | 0) / 2) | 0)));
-                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
+                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
                     do {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
@@ -410,7 +410,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         tempy = y;
                         tempy2 = cptr.ldI16(cptr.add(uball.v, 30));
                     }
-                    if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
+                    if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
                         if (allow_drag) {
                             if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx, tempy) == 1 ? 1 : 0)
                                 do {
@@ -429,7 +429,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         }
                         cptr.stI16(chainx, tempx2);
                         cptr.stI16(chainy, tempy2);
-                    } else if ((!(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
+                    } else if ((!(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
                         if (allow_drag) {
                             if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx2, tempy2) == 1 ? 1 : 0)
                                 do {
@@ -448,7 +448,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         }
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
-                    } else if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
+                    } else if (((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0) {
                         do {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
@@ -469,7 +469,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                     break;
                 cptr.stI16(chainx, i16(((((x + cptr.ldI16(cptr.add(uball.v, 28))) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((y + cptr.ldI16(cptr.add(uball.v, 30))) | 0) / 2) | 0)));
-                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
+                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
                     do {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
@@ -483,7 +483,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         cptr.stI16(chainx, cptr.ldI16(cptr.add(uball.v, 28)));
                     else
                         cptr.stI16(chainy, cptr.ldI16(cptr.add(uball.v, 30)));
-                    if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
+                    if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) && !already_in_rock ? 1 : 0)
                         do {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
@@ -518,7 +518,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
         nomul(0);
         return (0);
     }
-    if ((is_pool(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), 4)) == 16 || !is_pool(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4)) == 16 ? 1 : 0) ? 1 : 0) || ((t = t_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)))) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == 11 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 12 ? 1 : 0) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == 13 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 14 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if ((is_pool(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), 4)) == 16 || !is_pool(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4)) == 16 ? 1 : 0) ? 1 : 0) || ((t = t_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)))) && (((((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 11 || (((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 12 ? 1 : 0) || ((((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 13 || (((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 14 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0)) {
             You_feel(__sl18);
             if (t)
@@ -559,10 +559,10 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
     } else {
         let newchainx = cptr.ldI16(u);
         let newchainy = cptr.ldI16(cptr.add(u, 2));
-        if (dist2(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) == 4 && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+        if (dist2(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) == 4 && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
             newchainx = i16(((((x + cptr.ldI16(cptr.add(uchain.v, 28))) | 0) / 2) | 0));
             newchainy = i16(((((y + cptr.ldI16(cptr.add(uchain.v, 30))) | 0) / 2) | 0));
-            if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0)) {
+            if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) & 31) | 0) & (4 | 8)) ? 1 : 0) ? 1 : 0)) {
                 newchainx = cptr.ldI16(u);
                 newchainy = cptr.ldI16(cptr.add(u, 2));
             }
@@ -616,7 +616,7 @@ export function drop_ball(x, y) {
         }
         cptr.stI16(cptr.add(u, 20), cptr.ldI16(u));
         cptr.stI16(cptr.add(u, 22), cptr.ldI16(cptr.add(u, 2)));
-        if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)) !== null) ? 1 : 0) && !cptr.ldI32(cptr.add(u, 60)) ? 1 : 0) && (is_pool(x, y) || ((t = t_at(x, y)) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == 11 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 12 ? 1 : 0) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == 13 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 14 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+        if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)) !== null) ? 1 : 0) && !cptr.ldI32(cptr.add(u, 60)) ? 1 : 0) && (is_pool(x, y) || ((t = t_at(x, y)) && (((((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 11 || (((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 12 ? 1 : 0) || ((((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 13 || (((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == 14 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
             cptr.stI16(u, x);
             cptr.stI16(cptr.add(u, 2), y);
         } else {

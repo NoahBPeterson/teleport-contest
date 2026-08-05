@@ -181,7 +181,7 @@ export function stairs_description(sway, outbuf, stcase) {
             void cptr.sprintf(eos(outbuf), __sl6, to_dlev);
         }
     } else if ((cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) == 1 ? 1 : 0) && cptr.ld1s(cptr.add(sway, 8)) ? 1 : 0) {
-        void cptr.sprintf(outbuf, __sl7, !cptr.ldI32(cptr.add(u, 1944)) ? __sl8 : __sl9, stairs, updown, !cptr.ldI32(cptr.add(u, 1944)) ? __sl10 : ((((on_level(tolev, cptr.add(cptr.add(svd, 1792), 60)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 68)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0) ? __sl11 : __sl12));
+        void cptr.sprintf(outbuf, __sl7, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl8 : __sl9, stairs, updown, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl10 : ((((on_level(tolev, cptr.add(cptr.add(svd, 1792), 60)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 68)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0) ? __sl11 : __sl12));
     } else {
         void cptr.sprintf(outbuf, __sl13, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), 112));
         void strsubst(outbuf, __sl14, __sl15);

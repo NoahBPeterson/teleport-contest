@@ -1628,7 +1628,7 @@ function knows_class(sym) {
             if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)) && (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) != 1) ? 1 : 0)
                 continue;
         }
-        if (cptr.ld1s(cptr.add(cptr.add(objects, ct, 120), 70)) == sym && !cptr.ldI32(cptr.add(cptr.add(objects, ct, 120), 32)) ? 1 : 0)
+        if (cptr.ld1s(cptr.add(cptr.add(objects, ct, 120), 70)) == sym && !(cptr.ldI32(cptr.add(cptr.add(objects, ct, 120), 32)) & 1) ? 1 : 0)
             knows_object(ct, (0));
     }
 }
@@ -1720,7 +1720,7 @@ function u_init_role() {
         knows_class(2);
         knows_class(3);
         for (i = 18; i < 481; ++i) {
-            if (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 32)))
+            if ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 32)) & 1))
                 continue;
             if (Japanese_item_name(i, null))
                 knows_object(i, (0));
@@ -2034,7 +2034,7 @@ function ini_inv_adjust_obj(trop, obj) {
     if (cptr.ld1s(cptr.add(trop, 3)) == 12) {
         cptr.stI64(cptr.add(obj, 40), cptr.ldI64(cptr.add(u, 2360)));
     } else {
-        if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 24)))
+        if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 24)) & 1))
             cptr.stI32(cptr.add(obj, 80), 1);
         cptr.stI32(cptr.add(obj, 84), cptr.stI32(cptr.add(obj, 88), cptr.stI32(cptr.add(obj, 92), 1)));
         if ((cptr.ldI16(cptr.add((obj), 32)) >= 214 && cptr.ldI16(cptr.add((obj), 32)) <= 220 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) {
@@ -2042,7 +2042,7 @@ function ini_inv_adjust_obj(trop, obj) {
             cptr.stI32(cptr.add(obj, 132), 0);
         }
         cptr.stI32(cptr.add(obj, 56), 0);
-        if (cptr.ldI32(cptr.add(obj, 132)) | 0 && cptr.ld1s(cptr.add(u, 2172)) != (-1) ? 1 : 0)
+        if ((cptr.ldI32(cptr.add(obj, 132)) & 1) | 0 && cptr.ld1s(cptr.add(u, 2172)) != (-1) ? 1 : 0)
             cptr.stI32(cptr.add(obj, 132), 0);
         if (cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) {
             cptr.stI64(cptr.add(obj, 40), trquan(trop));
@@ -2055,7 +2055,7 @@ function ini_inv_adjust_obj(trop, obj) {
             if (cptr.ldI16(trop) == 242 && cptr.ld1s(cptr.add(obj, 48)) < 96 ? 1 : 0)
                 cptr.st1(cptr.add(obj, 48), cptr.ld1s(cptr.add(obj, 48)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1233, __sl9), rn2(4)) : rn2(4)));
         } else {
-            if ((cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 70)) == 4 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) | 0 ? 1 : 0) && cptr.ld1s(cptr.add(obj, 48)) <= 0 ? 1 : 0)
+            if ((cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 70)) == 4 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) & 1) | 0 ? 1 : 0) && cptr.ld1s(cptr.add(obj, 48)) <= 0 ? 1 : 0)
                 cptr.st1(cptr.add(obj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1238, __sl9), rne(3)) : rne(3))));
         }
         if (cptr.ld1s(cptr.add(trop, 6)) != 2)
@@ -2067,12 +2067,12 @@ function ini_inv_adjust_obj(trop, obj) {
 
 /** C ref: u_init.c:1251 — @param {CPtr} obj */
 function ini_inv_use_obj(obj) {
-    if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))) && cptr.ldI32(cptr.add(obj, 80)) | 0 ? 1 : 0)
+    if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))) && (cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 ? 1 : 0)
         discover_object(cptr.ldI16(cptr.add(obj, 32)), (1), (1), (0));
     if (cptr.ldI16(cptr.add(obj, 32)) == 227)
         discover_object(321, (1), (1), (0));
     if (cptr.ld1s(cptr.add(obj, 49)) == 3) {
-        if (((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 1 ? 1 : 0) && !uarms.v ? 1 : 0) && !(uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+        if (((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 1 ? 1 : 0) && !uarms.v ? 1 : 0) && !(uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
             set_twoweap((0));
             setworn(obj, 8n);
         } else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 2 ? 1 : 0) && !uarmh.v ? 1 : 0)
@@ -2092,7 +2092,7 @@ function ini_inv_use_obj(obj) {
         if ((((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) {
             if (!uquiver.v)
                 setuqwep(obj);
-        } else if (!uwep.v && (!uarms.v || !((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+        } else if (!uwep.v && (!uarms.v || !((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
             setuwep(obj);
         } else if (!uswapwep.v) {
             setuswapwep(obj);

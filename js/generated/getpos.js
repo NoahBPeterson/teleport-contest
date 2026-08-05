@@ -438,7 +438,7 @@ function gloc_filter_done() {
 function known_vibrating_square_at(x, y) {
     if (invocation_pos(x, y)) {
         let ttmp = t_at(x, y);
-        return schar(((ttmp && (cptr.ldI32(cptr.add(ttmp, 20)) | 0) == 23 ? 1 : 0) && cptr.ldI32(cptr.add(ttmp, 24)) | 0 ? 1 : 0));
+        return schar(((ttmp && ((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) == 23 ? 1 : 0) && (cptr.ldI32(cptr.add(ttmp, 24)) & 1) | 0 ? 1 : 0));
     }
     return (0);
 }
@@ -1082,7 +1082,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 74: {
-        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) | 0 && !cptr.ldI32(cptr.add(iflags, 68)) ? 1 : 0) { __pc = 77; continue; }
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) & 1) | 0 && !cptr.ldI32(cptr.add(iflags, 68)) ? 1 : 0) { __pc = 77; continue; }
         __pc = 76; continue;
         }
         case 77: {

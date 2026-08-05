@@ -141,7 +141,7 @@ export function experience(mtmp, nk) {
         tmp = (tmp + 50) | 0;
     if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 314, 96)))
         tmp = 1;
-    if (cptr.ldI32(cptr.add(mtmp, 124)) | 0 || cptr.ldI32(cptr.add(mtmp, 128)) | 0 ? 1 : 0) {
+    if ((cptr.ldI32(cptr.add(mtmp, 124)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 128)) & 1) | 0 ? 1 : 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1 ? 1 : 0; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;

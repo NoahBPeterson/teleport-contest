@@ -557,7 +557,7 @@ export function doconsult(oracl) {
     if (!oracl) {
         There(__sl52);
         return 0;
-    } else if (!cptr.ldI32(cptr.add(oracl, 168))) {
+    } else if (!(cptr.ldI32(cptr.add(oracl, 168)) & 1)) {
         pline(__sl53, Monnam(oracl));
         return 0;
     } else if (!umoney) {
@@ -587,19 +587,19 @@ export function doconsult(oracl) {
     }
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, (1));
-    if (!cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) && !cptr.ldI32(cptr.add(u, 1884)) ? 1 : 0)
+    if (!(cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) && !(cptr.ldI32(cptr.add(u, 1884)) & 1) ? 1 : 0)
         record_achievement(19);
     add_xpts = 0;
     if (u_pay == minor_cost) {
         outrumor(1, 0);
-        if (!cptr.ldI32(cptr.add(u, 1884)))
-            add_xpts = (u_pay / (cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) | 0 ? 25 : 10)) | 0;
+        if (!(cptr.ldI32(cptr.add(u, 1884)) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(u, 1884), 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
         outoracle(cheapskate, (1));
-        if (!cheapskate && !cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) ? 1 : 0)
-            add_xpts = (u_pay / (cptr.ldI32(cptr.add(u, 1884)) | 0 ? 25 : 10)) | 0;
+        if (!cheapskate && !(cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) ? 1 : 0)
+            add_xpts = (u_pay / ((cptr.ldI32(cptr.add(u, 1884)) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(cptr.add(u, 1884), 4), 1);
         exercise(2, schar((!cheapskate)));
     }

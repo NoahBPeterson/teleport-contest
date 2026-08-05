@@ -199,8 +199,8 @@ function charm_snakes(distance) {
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
             continue;
-        if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 45 && cptr.ldI32(cptr.add(mtmp, 160)) | 0 ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < distance ? 1 : 0) {
-            was_peaceful = cptr.ldI32(cptr.add(mtmp, 168)) | 0;
+        if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 45 && (cptr.ldI32(cptr.add(mtmp, 160)) & 1) | 0 ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < distance ? 1 : 0) {
+            was_peaceful = (cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0;
             cptr.stI32(cptr.add(mtmp, 168), 1);
             cptr.stI32(cptr.add(mtmp, 132), 0);
             cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
@@ -223,7 +223,7 @@ function calm_nymphs(distance) {
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
             continue;
-        if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 14 && cptr.ldI32(cptr.add(mtmp, 160)) | 0 ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < distance ? 1 : 0) {
+        if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 14 && (cptr.ldI32(cptr.add(mtmp, 160)) & 1) | 0 ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < distance ? 1 : 0) {
             cptr.stI32(cptr.add(mtmp, 144), 0);
             cptr.stI32(cptr.add(mtmp, 168), 1);
             cptr.stI32(cptr.add(mtmp, 132), 0);
@@ -263,14 +263,14 @@ export function awaken_soldiers(bugler) {
 function charm_monsters(distance) {
     let mtmp;
     let mtmp2;
-    if (cptr.ldI32(cptr.add(u, 1848)))
+    if ((cptr.ldI32(cptr.add(u, 1848)) & 1))
         distance = 0;
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = mtmp2) {
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
             continue;
         if (dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= distance) {
-            if (!resist(mtmp, 6, 0, 0) || cptr.ldI32(cptr.add(mtmp, 180)) | 0 ? 1 : 0)
+            if (!resist(mtmp, 6, 0, 0) || (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0)
                 void tamedog(mtmp, null, (1));
         }
     }
@@ -305,7 +305,7 @@ function do_pit(x, y, tu_pit) {
     }
     if (mtmp) {
         if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 16n) != 0n) ? 1 : 0) {
-            let m_already_trapped = schar(cptr.ldI32(cptr.add(mtmp, 172)));
+            let m_already_trapped = schar((cptr.ldI32(cptr.add(mtmp, 172)) & 1));
             cptr.stI32(cptr.add(mtmp, 172), 1);
             if (!m_already_trapped) {
                 if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0)) {
@@ -374,7 +374,7 @@ function do_earthquake(force) {
     let algn;
     let tu_pit = 0;
     if (trap_at_u)
-        tu_pit = (((cptr.ldI32(cptr.add(trap_at_u, 20))) | 0) == 11 || ((cptr.ldI32(cptr.add(trap_at_u, 20))) | 0) == 12 ? 1 : 0) >>> 0;
+        tu_pit = ((((cptr.ldI32(cptr.add(trap_at_u, 20)) & 31)) | 0) == 11 || (((cptr.ldI32(cptr.add(trap_at_u, 20)) & 31)) | 0) == 12 ? 1 : 0) >>> 0;
     if (force > 13)
         force = 13;
     start_x = (cptr.ldI16(u) - (Math.imul(force, 2))) | 0;
@@ -389,7 +389,7 @@ function do_earthquake(force) {
         for (y = i16(start_y); y <= end_y; y++) {
             if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)))) !== null) {
                 wakeup(mtmp, (1));
-                if (cptr.ldI32(cptr.add(mtmp, 108))) {
+                if ((cptr.ldI32(cptr.add(mtmp, 108)) & 1)) {
                     cptr.stI32(cptr.add(mtmp, 108), 0);
                     newsym(x, y);
                     if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 256n) != 0n) && ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 16n) != 0n) && cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) != 13 ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0)) {
@@ -455,7 +455,7 @@ function do_earthquake(force) {
                 // @FallThrough
                 ;
                 case 23:
-                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | 0) == 0) {
+                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) == 0) {
                     do_pit(x, y, tu_pit);
                     break;
                 }
@@ -512,7 +512,7 @@ function do_improvisation(instr) {
     cptr.memcpy(itmp, instr, 216);
     cptr.stPtr(cptr.add(itmp, 208), null);
     if (!do_spec || cptr.ld1s(cptr.add(instr, 48)) <= 0 ? 1 : 0)
-        while (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(itmp, 32)), 120), 32))) {
+        while ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(itmp, 32)), 120), 32)) & 1)) {
             cptr.stI16(cptr.add(itmp, 32), cptr.ldI16(cptr.add(itmp, 32)) - 1);
             mundane = (1);
         }
@@ -700,7 +700,7 @@ export function do_play_instrument(instr) {
     let y = cptr.box(0);
     let ok;
     __lbl_nevermind: {
-        if ((cptr.ldI32(cptr.add(u, 1852)))) {
+        if (((cptr.ldI32(cptr.add(u, 1852)) & 1))) {
             You_cant(__sl100);
             return 0;
         } else if ((((((cptr.ldI16(cptr.add(instr, 32)) == 247 || cptr.ldI16(cptr.add(instr, 32)) == 248 ? 1 : 0) || cptr.ldI16(cptr.add(instr, 32)) == 249 ? 1 : 0) || cptr.ldI16(cptr.add(instr, 32)) == 250 ? 1 : 0) || cptr.ldI16(cptr.add(instr, 32)) == 251 ? 1 : 0) || cptr.ldI16(cptr.add(instr, 32)) == 256 ? 1 : 0) && !can_blow(cptr.add(gy, 8)) ? 1 : 0) {
@@ -714,7 +714,7 @@ export function do_play_instrument(instr) {
         }
         if (c != 110)
             return do_improvisation(instr) ? 1 : 0;
-        if ((cptr.ldI32(cptr.add(cptr.add(u, 1884), 24)) | 0) == 2)
+        if (((cptr.ldI32(cptr.add(cptr.add(u, 1884), 24)) & 3) | 0) == 2)
             c = yn_function(__sl103, cptr.decay(ynqchars), 113, (1));
         if (c == 113) {
             break __lbl_nevermind;
@@ -751,7 +751,7 @@ export function do_play_instrument(instr) {
                         }
                     }
             } else if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) {
-                if ((cptr.ldI32(cptr.add(cptr.add(u, 1884), 24)) | 0) < 1)
+                if (((cptr.ldI32(cptr.add(cptr.add(u, 1884), 24)) & 3) | 0) < 1)
                     cptr.stI32(cptr.add(cptr.add(u, 1884), 24), 1);
                 ok = (0);
                 for (y.v = i16(((cptr.ldI16(cptr.add(u, 2)) - 1) | 0)); y.v <= ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0) && !ok ? 1 : 0; y.v++)

@@ -324,7 +324,7 @@ cptr.stPtr(cptr.add(__static_ckmailstatus_deliver, 24), null);
 /** C ref: mail.c:550 */
 export function ckmailstatus() {
     ck_server_admin_msg();
-    if (((!mailbox || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) || !cptr.ld1s(cptr.add(flags, 6)) ? 1 : 0) || cptr.ldI64(cptr.add(svm, 8)) < BigInt.asIntN(64, laststattime + 50n) ? 1 : 0)
+    if (((!mailbox || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) || !cptr.ld1s(cptr.add(flags, 6)) ? 1 : 0) || cptr.ldI64(cptr.add(svm, 8)) < BigInt.asIntN(64, laststattime + 50n) ? 1 : 0)
         return;
     laststattime = cptr.ldI64(cptr.add(svm, 8));
     if (stat(mailbox, nmstat)) {

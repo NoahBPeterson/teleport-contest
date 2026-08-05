@@ -220,7 +220,7 @@ export function show_transient_light(obj, x, y) {
     let mon;
     let radius_squared;
     if (!obj) {
-        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16)))
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16)) & 1))
             return;
         cptr.memcpy(cameraflash, cptr.add(cg, 536), 8);
         ls = new_light_core(x, y, 0, 1, cameraflash);
@@ -234,7 +234,7 @@ export function show_transient_light(obj, x, y) {
         }
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 285, __sl9) : void 0);
         if (!ls || cptr.ld1s(cptr.add(obj, 52)) != 0 ? 1 : 0) {
-            impossible(__sl10, cptr.ldI32(cptr.add(obj, 76)) | 0 ? __sl11 : __sl12, simpleonames(obj), otense(obj, __sl13), !ls ? __sl14 : __sl15);
+            impossible(__sl10, (cptr.ldI32(cptr.add(obj, 76)) & 1) | 0 ? __sl11 : __sl12, simpleonames(obj), otense(obj, __sl13), !ls ? __sl14 : __sl15);
             return;
         }
     }
@@ -246,7 +246,7 @@ export function show_transient_light(obj, x, y) {
     flush_screen(0);
     radius_squared = Math.imul(cptr.ldI16(cptr.add(ls, 12)), cptr.ldI16(cptr.add(ls, 12)));
     for (mon = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32(cptr.add((mon), 52)) < 1) || (cptr.ldI32(cptr.add(mon, 188)) | 0 && !cptr.ldI16(cptr.add(mon, 28)) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ldI32(cptr.add((mon), 52)) < 1) || ((cptr.ldI32(cptr.add(mon, 188)) & 1) | 0 && !cptr.ldI16(cptr.add(mon, 28)) ? 1 : 0) ? 1 : 0)
             continue;
         if (dist2(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), x, y) <= radius_squared) {
             if (canseemon(mon))
@@ -270,7 +270,7 @@ export function transient_light_cleanup() {
     for (mon = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32(cptr.add((mon), 52)) < 1))
             continue;
-        if (cptr.ldI32(cptr.add(mon, 204))) {
+        if ((cptr.ldI32(cptr.add(mon, 204)) & 1)) {
             cptr.stI32(cptr.add(mon, 204), 0);
             ++mtempcount;
             if (!(canseemon(mon) || sensemon(mon) ? 1 : 0))
@@ -571,7 +571,7 @@ export function obj_sheds_light(obj) {
 
 /** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar((cptr.ldI32(cptr.add(obj, 76)) | 0 && (((((((cptr.ldI16(cptr.add((obj), 32)) == 226 || cptr.ldI16(cptr.add((obj), 32)) == 227 ? 1 : 0) || (cptr.ldI16(cptr.add((obj), 32)) == 228 && cptr.ld1s(cptr.add((obj), 48)) > 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 262 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 224 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 225 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 321 ? 1 : 0) || artifact_light(obj) ? 1 : 0) ? 1 : 0));
+    return schar(((cptr.ldI32(cptr.add(obj, 76)) & 1) | 0 && (((((((cptr.ldI16(cptr.add((obj), 32)) == 226 || cptr.ldI16(cptr.add((obj), 32)) == 227 ? 1 : 0) || (cptr.ldI16(cptr.add((obj), 32)) == 228 && cptr.ld1s(cptr.add((obj), 48)) > 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 262 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 224 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 225 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 321 ? 1 : 0) || artifact_light(obj) ? 1 : 0) ? 1 : 0));
 }
 
 /** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
@@ -640,9 +640,9 @@ export function candle_light_range(obj) {
 /** C ref: light.c:881 — @param {CPtr} obj @returns {CInt} */
 export function arti_light_radius(obj) {
     let res;
-    if (!cptr.ldI32(cptr.add(obj, 76)) || !artifact_light(obj) ? 1 : 0)
+    if (!(cptr.ldI32(cptr.add(obj, 76)) & 1) || !artifact_light(obj) ? 1 : 0)
         return 0;
-    res = (cptr.ldI32(cptr.add(obj, 60)) | 0 ? 3 : (!cptr.ldI32(cptr.add(obj, 56)) ? 2 : 1));
+    res = ((cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 ? 3 : (!(cptr.ldI32(cptr.add(obj, 56)) & 1) ? 2 : 1));
     if (cptr.eq(obj, uskin.v))
         res = 1;
     else if (cptr.ldI16(cptr.add(obj, 32)) == 102)

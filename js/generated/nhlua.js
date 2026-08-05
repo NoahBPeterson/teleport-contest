@@ -671,12 +671,12 @@ function nhl_gettrap(L) {
             lua_createtable(L, 0, 0);
             nhl_add_table_entry_int(L, __sl31, BigInt(cptr.ldI16(cptr.add(ttmp, 8))));
             nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI16(cptr.add(ttmp, 10))));
-            nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI32(cptr.add(ttmp, 20)) >>> 0));
-            nhl_add_table_entry_str(L, __sl34, get_trapname_bytype(cptr.ldI32(cptr.add(ttmp, 20)) | 0));
-            nhl_add_table_entry_bool(L, __sl35, schar(cptr.ldI32(cptr.add(ttmp, 24))));
-            nhl_add_table_entry_bool(L, __sl36, schar(cptr.ldI32(cptr.add(ttmp, 32))));
-            nhl_add_table_entry_bool(L, __sl37, schar(cptr.ldI32(cptr.add(ttmp, 28))));
-            switch (cptr.ldI32(cptr.add(ttmp, 20)) | 0) {
+            nhl_add_table_entry_int(L, __sl33, BigInt((cptr.ldI32(cptr.add(ttmp, 20)) & 31) >>> 0));
+            nhl_add_table_entry_str(L, __sl34, get_trapname_bytype((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0));
+            nhl_add_table_entry_bool(L, __sl35, schar((cptr.ldI32(cptr.add(ttmp, 24)) & 1)));
+            nhl_add_table_entry_bool(L, __sl36, schar((cptr.ldI32(cptr.add(ttmp, 32)) & 1)));
+            nhl_add_table_entry_bool(L, __sl37, schar((cptr.ldI32(cptr.add(ttmp, 28)) & 1)));
+            switch ((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) {
                 case 4:
                 nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI16(cptr.add(ttmp, 36))));
                 break;
@@ -762,36 +762,36 @@ function nhl_getmap(L) {
         void cptr.sprintf(cptr.decay(buf), __sl25, splev_typ2chr(cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))));
         nhl_add_table_entry_str(L, __sl49, cptr.decay(buf));
         nhl_add_table_entry_int(L, __sl50, BigInt(cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 5)) >>> 0));
-        nhl_add_table_entry_bool(L, __sl51, schar(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 12))));
-        nhl_add_table_entry_bool(L, __sl52, schar(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 16))));
-        nhl_add_table_entry_bool(L, __sl53, schar(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 20))));
-        nhl_add_table_entry_int(L, __sl54, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 24)) >>> 0));
-        nhl_add_table_entry_bool(L, __sl55, schar(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 28))));
-        nhl_add_table_entry_bool(L, __sl56, schar(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 32))));
+        nhl_add_table_entry_bool(L, __sl51, schar((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 12)) & 1)));
+        nhl_add_table_entry_bool(L, __sl52, schar((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 16)) & 1)));
+        nhl_add_table_entry_bool(L, __sl53, schar((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 20)) & 1)));
+        nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 24)) & 63) >>> 0));
+        nhl_add_table_entry_bool(L, __sl55, schar((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 28)) & 1)));
+        nhl_add_table_entry_bool(L, __sl56, schar((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 32)) & 1)));
         nhl_add_table_entry_bool(L, __sl57, schar((t_at(x.v, y.v) ? 1 : 0)));
         lua_pushstring(L, __sl58);
         lua_createtable(L, 0, 0);
         if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 23)) {
-            nhl_add_table_entry_bool(L, __sl59, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) == 0)));
-            nhl_add_table_entry_bool(L, __sl60, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 1)));
-            nhl_add_table_entry_bool(L, __sl61, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 2)));
-            nhl_add_table_entry_bool(L, __sl62, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 4)));
-            nhl_add_table_entry_bool(L, __sl63, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 8)));
-            nhl_add_table_entry_bool(L, __sl64, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 16)));
+            nhl_add_table_entry_bool(L, __sl59, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) == 0)));
+            nhl_add_table_entry_bool(L, __sl60, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
+            nhl_add_table_entry_bool(L, __sl61, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
+            nhl_add_table_entry_bool(L, __sl62, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 4)));
+            nhl_add_table_entry_bool(L, __sl63, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 8)));
+            nhl_add_table_entry_bool(L, __sl64, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 16)));
         } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 32)) {
-            nhl_add_table_entry_bool(L, __sl65, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 8)));
+            nhl_add_table_entry_bool(L, __sl65, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 8)));
         } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 29)) {
-            nhl_add_table_entry_bool(L, __sl66, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 1)));
+            nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
         } else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4)) == 13) {
-            nhl_add_table_entry_bool(L, __sl66, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 1)));
-            nhl_add_table_entry_bool(L, __sl67, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 2)));
+            nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
+            nhl_add_table_entry_bool(L, __sl67, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
         } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 28)) {
-            nhl_add_table_entry_bool(L, __sl66, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 1)));
-            nhl_add_table_entry_bool(L, __sl68, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 2)));
+            nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
+            nhl_add_table_entry_bool(L, __sl68, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
         } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 30)) {
-            nhl_add_table_entry_bool(L, __sl69, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 1)));
-            nhl_add_table_entry_bool(L, __sl70, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 2)));
-            nhl_add_table_entry_bool(L, __sl71, schar(((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) | 0) & 4)));
+            nhl_add_table_entry_bool(L, __sl69, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
+            nhl_add_table_entry_bool(L, __sl70, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
+            nhl_add_table_entry_bool(L, __sl71, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 4)));
         }
         lua_settable(L, -3);
         return 1;
@@ -2047,7 +2047,7 @@ function nhl_meta_u_index(L) {
         lua_pushinteger(L, cptr.ldI64(cptr.add(svm, 8)));
         return 1;
     } else if (!strcmp(tkey, __sl205)) {
-        lua_pushinteger(L, BigInt(cptr.ldI32(cptr.add(u, 1944)) >>> 0));
+        lua_pushinteger(L, BigInt((cptr.ldI32(cptr.add(u, 1944)) & 1) >>> 0));
         return 1;
     } else if (!strcmp(tkey, __sl206)) {
         lua_pushinteger(L, BigInt(depth(cptr.add(u, 24))));

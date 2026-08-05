@@ -74,11 +74,11 @@ const __sl44 = cptr.lit("quest_chat: Unknown quest character %s.");
 
 /** C ref: quest.c:26 */
 function on_start() {
-    if (!(cptr.ldI32(svq))) {
+    if (!((cptr.ldI32(svq) & 1))) {
         qt_pager(__sl0);
         cptr.stI32(svq, 1);
     } else if ((cptr.ldI16(cptr.add(u, 28)) != cptr.ldI16(cptr.add(u, 24))) || (cptr.ldI16(cptr.add(cptr.add(u, 28), 2)) < cptr.ldI16(cptr.add(cptr.add(u, 24), 2))) ? 1 : 0) {
-        if (((cptr.ldI32(cptr.add(svq, 8))) | 0) <= 2)
+        if ((((cptr.ldI32(cptr.add(svq, 8)) & 7)) | 0) <= 2)
             qt_pager(__sl1);
         else
             qt_pager(__sl2);
@@ -88,9 +88,9 @@ function on_start() {
 /** C ref: quest.c:40 */
 function on_locate() {
     let from_above = schar((cptr.ldI16(cptr.add(cptr.add(u, 28), 2)) < cptr.ldI16(cptr.add(cptr.add(u, 24), 2))));
-    if ((cptr.ldI32(cptr.add(svq, 44)))) {
+    if (((cptr.ldI32(cptr.add(svq, 44)) & 1))) {
         return;
-    } else if (!(cptr.ldI32(cptr.add(svq, 24)))) {
+    } else if (!((cptr.ldI32(cptr.add(svq, 24)) & 1))) {
         if (from_above)
             qt_pager(__sl3);
         cptr.stI32(cptr.add(svq, 24), 1);
@@ -102,23 +102,23 @@ function on_locate() {
 
 /** C ref: quest.c:62 */
 function on_goal() {
-    if ((cptr.ldI32(cptr.add(svq, 44)))) {
+    if (((cptr.ldI32(cptr.add(svq, 44)) & 1))) {
         return;
-    } else if (!(cptr.ldI32(cptr.add(svq, 36)))) {
+    } else if (!((cptr.ldI32(cptr.add(svq, 36)) & 7))) {
         qt_pager(__sl5);
         cptr.stI32(cptr.add(svq, 36), 1);
     } else {
         let whichobjchains = ((1 << 1) | (1 << 4) | (1 << 6)) >>> 0;
         let qarti = find_quest_artifact(whichobjchains);
         qt_pager(qarti ? __sl6 : __sl7);
-        if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
+        if ((((cptr.ldI32(cptr.add(svq, 36)) & 7)) | 0) < 7)
             (cptr.stI32(cptr.add(svq, 36), cptr.ldI32(cptr.add(svq, 36)) + 1)) - (1);
     }
 }
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if (cptr.ldI32(cptr.add(cptr.add(u, 1884), 20)) | 0 || (on_level(cptr.add(u, 28), cptr.add(u, 24))) ? 1 : 0)
+    if ((cptr.ldI32(cptr.add(cptr.add(u, 1884), 20)) & 1) | 0 || (on_level(cptr.add(u, 28), cptr.add(u, 24))) ? 1 : 0)
         return;
     if (!Is_special(cptr.add(u, 24)))
         return;
@@ -133,7 +133,7 @@ export function onquest() {
 
 /** C ref: quest.c:107 */
 export function nemdead() {
-    if (!(cptr.ldI32(cptr.add(svq, 44)))) {
+    if (!((cptr.ldI32(cptr.add(svq, 44)) & 1))) {
         cptr.stI32(cptr.add(svq, 44), 1);
         qt_pager(__sl8);
     }
@@ -141,14 +141,14 @@ export function nemdead() {
 
 /** C ref: quest.c:116 */
 export function leaddead() {
-    if (!(cptr.ldI32(cptr.add(svq, 20)))) {
+    if (!((cptr.ldI32(cptr.add(svq, 20)) & 1))) {
         cptr.stI32(cptr.add(svq, 20), 1);
     }
 }
 
 /** C ref: quest.c:125 — @param {CPtr} obj */
 export function artitouch(obj) {
-    if (!(cptr.ldI32(cptr.add(svq, 56)))) {
+    if (!((cptr.ldI32(cptr.add(svq, 56)) & 1))) {
         observe_object(obj);
         cptr.stI32(cptr.add(svq, 56), 1);
         qt_pager(__sl9);
@@ -158,7 +158,7 @@ export function artitouch(obj) {
 
 /** C ref: quest.c:140 @returns {CInt} */
 export function ok_to_quest() {
-    return schar(((((cptr.ldI32(cptr.add(svq, 16))) | 0 || (cptr.ldI32(cptr.add(svq, 64))) | 0 ? 1 : 0) && is_pure((0)) > 0 ? 1 : 0) || (cptr.ldI32(cptr.add(svq, 20))) | 0 ? 1 : 0));
+    return schar((((((cptr.ldI32(cptr.add(svq, 16)) & 1)) | 0 || ((cptr.ldI32(cptr.add(svq, 64)) & 1)) | 0 ? 1 : 0) && is_pure((0)) > 0 ? 1 : 0) || ((cptr.ldI32(cptr.add(svq, 20)) & 1)) | 0 ? 1 : 0));
 }
 
 /** C ref: quest.c:147 @returns {CInt} */
@@ -190,7 +190,7 @@ function expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) | 0 ? 0 : 4;
+    let portal_flag = (cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) & 1) | 0 ? 0 : 4;
     br = dungeon_branch(__sl14);
     dest = (cptr.ldI16(cptr.add(br, 16)) == cptr.ldI16(cptr.add(u, 24))) ? cptr.add(br, 20) : cptr.add(br, 16);
     if (seal)
@@ -198,11 +198,11 @@ function expulsion(seal) {
     nomul(0);
     schedule_goto(dest, portal_flag, null, null);
     if (seal) {
-        let reexpelled = cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) | 0;
+        let reexpelled = (cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) & 1) | 0;
         cptr.stI32(cptr.add(cptr.add(u, 1884), 16), 1);
         remdun_mapseen((cptr.ldI16(cptr.add(cptr.add(svd, 1792), 86))));
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-            if ((cptr.ldI32(cptr.add(t, 20)) | 0) == 17)
+            if (((cptr.ldI32(cptr.add(t, 20)) & 31) | 0) == 17)
                 break;
         if (t)
             deltrap(t);
@@ -227,14 +227,14 @@ export function finish_quest(obj) {
         }
         return;
     }
-    if (cptr.ldI32(cptr.add(u, 1944))) {
+    if ((cptr.ldI32(cptr.add(u, 1944)) & 1)) {
         qt_pager(__sl16);
         if ((otmp = carrying(213)) !== null) {
             fully_identify_obj(otmp);
             update_inventory();
         }
     } else {
-        qt_pager(!(cptr.ldI32(cptr.add(svq, 64))) ? __sl19 : __sl20);
+        qt_pager(!((cptr.ldI32(cptr.add(svq, 64)) & 1)) ? __sl19 : __sl20);
         if ((otmp = carrying(263)) === null)
             com_pager(__sl21);
     }
@@ -248,26 +248,26 @@ export function finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr} mtmp */
 function chat_with_leader(mtmp) {
-    if (!cptr.ldI32(cptr.add(mtmp, 168)) || (cptr.ldI32(cptr.add(svq, 12))) | 0 ? 1 : 0)
+    if (!(cptr.ldI32(cptr.add(mtmp, 168)) & 1) || ((cptr.ldI32(cptr.add(svq, 12)) & 1)) | 0 ? 1 : 0)
         return;
-    if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) | 0 && !(cptr.ldI32(cptr.add(svq, 40))) ? 1 : 0)
+    if ((cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) & 1) | 0 && !((cptr.ldI32(cptr.add(svq, 40)) & 1)) ? 1 : 0)
         cptr.stI32(cptr.add(svq, 52), 1);
-    if ((cptr.ldI32(cptr.add(svq, 64)))) {
-        if (cptr.ldI32(cptr.add(u, 1944)))
+    if (((cptr.ldI32(cptr.add(svq, 64)) & 1))) {
+        if ((cptr.ldI32(cptr.add(u, 1944)) & 1))
             finish_quest(null);
         else
             qt_pager(__sl22);
-    } else if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16))) {
+    } else if ((cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) & 1)) {
         let otmp;
         for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
             if (is_quest_artifact(otmp))
                 break;
         finish_quest(otmp);
-    } else if ((cptr.ldI32(cptr.add(svq, 16)))) {
+    } else if (((cptr.ldI32(cptr.add(svq, 16)) & 1))) {
         qt_pager(__sl23);
     } else {
         let purity = 0;
-        if (!(cptr.ldI32(cptr.add(svq, 4)))) {
+        if (!((cptr.ldI32(cptr.add(svq, 4)) & 1))) {
             qt_pager(__sl24);
             cptr.stI32(cptr.add(svq, 4), 1);
             cptr.stI32(cptr.add(svq, 8), 0);
@@ -280,7 +280,7 @@ function chat_with_leader(mtmp) {
             exercise(2, (1));
             expulsion((0));
         } else if ((purity = is_pure((1))) < 0) {
-            if (!(cptr.ldI32(cptr.add(svq, 12)))) {
+            if (!((cptr.ldI32(cptr.add(svq, 12)) & 1))) {
                 com_pager(__sl27);
                 cptr.stI32(cptr.add(svq, 12), 1);
                 expulsion((0));
@@ -302,8 +302,8 @@ function chat_with_leader(mtmp) {
 
 /** C ref: quest.c:371 — @param {CPtr} mtmp */
 export function leader_speaks(mtmp) {
-    if (!cptr.ldI32(cptr.add(mtmp, 168))) {
-        if (!(cptr.ldI32(cptr.add(svq, 12)))) {
+    if (!(cptr.ldI32(cptr.add(mtmp, 168)) & 1)) {
+        if (!((cptr.ldI32(cptr.add(svq, 12)) & 1))) {
             qt_pager(__sl32);
         }
         cptr.stI32(cptr.add(svq, 12), 1);
@@ -311,31 +311,31 @@ export function leader_speaks(mtmp) {
     }
     if (!on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)))
         return;
-    if (!(cptr.ldI32(cptr.add(svq, 12))))
+    if (!((cptr.ldI32(cptr.add(svq, 12)) & 1)))
         chat_with_leader(mtmp);
 }
 
 /** C ref: quest.c:394 */
 function chat_with_nemesis() {
     qt_pager(__sl33);
-    if (!(cptr.ldI32(cptr.add(svq, 40))))
+    if (!((cptr.ldI32(cptr.add(svq, 40)) & 1)))
         ((cptr.stI32(cptr.add(svq, 40), cptr.ldI32(cptr.add(svq, 40)) + 1)) - (1));
 }
 
 /** C ref: quest.c:403 */
 export function nemesis_speaks() {
-    if (!(cptr.ldI32(cptr.add(svq, 48)))) {
-        if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)))
+    if (!((cptr.ldI32(cptr.add(svq, 48)) & 1))) {
+        if ((cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) & 1))
             qt_pager(__sl34);
-        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) == 1 || !(cptr.ldI32(cptr.add(svq, 40))) ? 1 : 0)
+        else if ((((cptr.ldI32(cptr.add(svq, 36)) & 7)) | 0) == 1 || !((cptr.ldI32(cptr.add(svq, 40)) & 1)) ? 1 : 0)
             qt_pager(__sl35);
-        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 4)
+        else if ((((cptr.ldI32(cptr.add(svq, 36)) & 7)) | 0) < 4)
             qt_pager(__sl36);
-        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
+        else if ((((cptr.ldI32(cptr.add(svq, 36)) & 7)) | 0) < 7)
             qt_pager(__sl37);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 414, __sl39), rn2(5)) : rn2(5)))
             qt_pager(__sl33);
-        if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
+        if ((((cptr.ldI32(cptr.add(svq, 36)) & 7)) | 0) < 7)
             (cptr.stI32(cptr.add(svq, 36), cptr.ldI32(cptr.add(svq, 36)) + 1)) - (1);
         cptr.stI32(cptr.add(svq, 40), 1);
     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 420, __sl39), rn2(5)) : rn2(5)))
@@ -352,7 +352,7 @@ export function nemesis_stinks(mx, my) {
 
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
-    if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) | 0 && (cptr.ldI32(cptr.add(svq, 44))) | 0 ? 1 : 0)
+    if ((cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) & 1) | 0 && ((cptr.ldI32(cptr.add(svq, 44)) & 1)) | 0 ? 1 : 0)
         qt_pager(__sl40);
     else
         qt_pager(__sl41);
@@ -377,7 +377,7 @@ function prisoner_speaks(mtmp) {
 export function quest_chat(mtmp) {
     if (cptr.ldI32(cptr.add(mtmp, 16)) == (cptr.ldI32(cptr.add(svq, 84)))) {
         chat_with_leader(mtmp);
-        if ((cptr.ldI32(cptr.add(svq, 12))))
+        if (((cptr.ldI32(cptr.add(svq, 12)) & 1)))
             setmangry(mtmp, (0));
         return;
     }
@@ -414,5 +414,5 @@ export function quest_talk(mtmp) {
 /** C ref: quest.c:514 — @param {CPtr} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) == 37)
-        cptr.stI32(cptr.add(svq, 48), (!(cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160)) ? 1 : 0) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) >>> 0);
+        cptr.stI32(cptr.add(svq, 48), (!((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) >>> 0);
 }

@@ -198,7 +198,7 @@ function qtext_pronoun(who, which) {
     if (who == 111 && (strstri(cptr.add(gc, 497), __sl12) || strncmpi((cptr.add(gc, 497)), (makesingular(cptr.add(gc, 497))), -1) ? 1 : 0) ? 1 : 0) {
         pnoun = (lwhich == 104) ? __sl13 : ((lwhich == 105) ? __sl14 : ((lwhich == 106) ? __sl15 : __sl16));
     } else {
-        godgend = (who == 100) ? cptr.ldI32(cptr.add(svq, 76)) | 0 : ((who == 108) ? cptr.ldI32(cptr.add(svq, 68)) | 0 : ((who == 110) ? cptr.ldI32(cptr.add(svq, 72)) | 0 : 2));
+        godgend = (who == 100) ? (cptr.ldI32(cptr.add(svq, 76)) & 3) | 0 : ((who == 108) ? (cptr.ldI32(cptr.add(svq, 68)) & 3) | 0 : ((who == 110) ? (cptr.ldI32(cptr.add(svq, 72)) & 3) | 0 : 2));
         pnoun = (lwhich == 104) ? cptr.ldPtr(cptr.add(cptr.add(genders, godgend, 48), 8)) : ((lwhich == 105) ? cptr.ldPtr(cptr.add(cptr.add(genders, godgend, 48), 16)) : ((lwhich == 106) ? cptr.ldPtr(cptr.add(cptr.add(genders, godgend, 48), 24)) : __sl16));
     }
     void cptr.strcpy(cptr.add(gc, 497), pnoun);

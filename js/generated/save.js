@@ -189,11 +189,11 @@ export function dosave0() {
             (cptr.stI32(cptr.add(a11y, 8), cptr.ldI32(cptr.add(a11y, 8)) + 1)) - (1);
         } while (0);
         cptr.stI32(cptr.add(u, 1864), 0);
-        if (cptr.ldI32(cptr.add(iflags, 400)))
+        if ((cptr.ldI32(cptr.add(iflags, 400)) & 1))
             cptr.stI32(cptr.add(u, 1848), 1), cptr.stI32(cptr.add(iflags, 400), 0);
-        if (cptr.ldI32(cptr.add(iflags, 404)))
+        if ((cptr.ldI32(cptr.add(iflags, 404)) & 1))
             cptr.stI32(cptr.add(u, 1852), 1), cptr.stI32(cptr.add(iflags, 404), 0);
-        if (cptr.ldI32(cptr.add(iflags, 408)))
+        if ((cptr.ldI32(cptr.add(iflags, 408)) & 1))
             cptr.stI32(cptr.add(u, 1868), 1), cptr.stI32(cptr.add(iflags, 408), 0);
         done_object_cleanup();
         if (!cptr.ldI32(cptr.add(program_state, 16)) || !cptr.ld1s(cptr.add(cptr.add(gs, 884), 0, 1)) ? 1 : 0)
@@ -239,8 +239,8 @@ export function dosave0() {
         cptr.stI32(cptr.add(nhfp, 4), 2 | 4);
         store_version(nhfp);
         store_plname_in_file(nhfp);
-        cptr.stPtr(cptr.add(gl, 496), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
-        cptr.stPtr(cptr.add(gl, 504), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
+        cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
+        cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
         savelev(nhfp, schar(ledger_no(cptr.add(u, 24))));
         savegamestate(nhfp);
         cptr.memcpy(cptr.add(gu, 432), cptr.add(u, 24), 4);
@@ -431,8 +431,8 @@ export function savestateinlock() {
             save_savefile_name(nhfp);
             store_version(nhfp);
             store_plname_in_file(nhfp);
-            cptr.stPtr(cptr.add(gl, 496), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
-            cptr.stPtr(cptr.add(gl, 504), ((cptr.ldI32(cptr.add(u, 1848)) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
+            cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
+            cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
             savegamestate(nhfp);
         }
         close_nhfile(nhfp);
@@ -794,7 +794,7 @@ function savemonchn(nhfp, mtmp) {
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
             cptr.stI16(cptr.add(mtmp, 20), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))));
-            if (cptr.ldI32(cptr.add(mtmp, 192)))
+            if ((cptr.ldI32(cptr.add(mtmp, 192)) & 1))
                 forget_temple_entry(mtmp);
             savemon(nhfp, mtmp);
         }

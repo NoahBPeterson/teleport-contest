@@ -26,6 +26,61 @@ import { EMIT_VERSION } from './emit.mjs';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
 
+/**
+ * Corpus-wide bitfield widths: recordName -> { field: bits }.
+ *
+ * The slim IR only carries each TU's *main-file* record definitions, so a
+ * struct declared in a header (rm, obj, monst, d_flags, ...) reaches the
+ * emitter through symbols.mjs's record table, which has no notion of a
+ * declared bit width. The emitter needs the widths to truncate bitfield
+ * loads to C's semantics, so scan a couple of representative full ASTs —
+ * every NetHack TU pulls in hack.h, which transitively declares all 26
+ * bitfield-bearing named structs — and key the widths by record name.
+ * One 27 MB AST parses in ~100 ms, so this is cheap next to the build.
+ */
+function collectBitfieldWidths(targets) {
+  const byRecord = new Map();
+  const seenGroups = new Set();
+  for (const t of targets) {
+    if (seenGroups.has(t.group)) continue;
+    const astPath = astPathFor(t.file);
+    if (!fs.existsSync(astPath)) continue;
+    seenGroups.add(t.group);
+    let ast;
+    try { ast = loadAst(astPath); } catch { continue; }
+    (function walk(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'RecordDecl' && n.completeDefinition && n.name) {
+        for (const c of n.inner || []) {
+          if (c.kind !== 'FieldDecl' || !c.isBitfield || !c.name) continue;
+          const w = bitWidthOfField(c);
+          if (!w) continue;
+          if (!byRecord.has(n.name)) byRecord.set(n.name, {});
+          const slot = byRecord.get(n.name);
+          if (slot[c.name] === undefined) slot[c.name] = w;
+        }
+      }
+      for (const c of n.inner || []) walk(c);
+    })(ast);
+  }
+  return byRecord;
+}
+
+/** declared width of a bitfield FieldDecl (clang puts it in a ConstantExpr child) */
+function bitWidthOfField(fieldNode) {
+  let w;
+  (function deep(x) {
+    if (!x || typeof x !== 'object' || w !== undefined) return;
+    if ((x.kind === 'ConstantExpr' || x.kind === 'IntegerLiteral') && x.value !== undefined) {
+      const n = Number(x.value);
+      if (Number.isFinite(n) && n > 0) w = n;
+      return;
+    }
+    for (const c of x.inner || []) deep(c);
+  })(fieldNode);
+  return w;
+}
+
 /** assemble a generated module from emitter output (+ optional prelude/imports) */
 function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports }) {
   const header = [
@@ -129,6 +184,7 @@ function buildAll() {
       perFile.push({ ...t, parseError: String(err.message || err) });
     }
   }
+  const bitfieldWidths = collectBitfieldWidths(targets);
   const { symbols, conflicts } = buildSymbolMap(perFile.filter((p) => !p.parseError));
   // globals whose address is taken anywhere in the program must be boxed at
   // their definition (cross-file &uarm etc.)
@@ -184,7 +240,7 @@ function buildAll() {
       // current emitter (prelude included, no cross imports) — the batch
       // import graph reads them from disk, so a stale emission breaks parity
       try {
-        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays });
+        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays, bitfieldWidths });
         const chunks = emitter.emitModule();
         const sha = crypto.createHash('sha256').update(fs.readFileSync(pf.file)).digest('hex');
         const out = assemble({ name: pf.name, srcRel: path.relative(repoRoot, pf.file), sha, emitter, chunks, prelude: loadPrelude(pf.name), crossImports: null });
@@ -198,7 +254,7 @@ function buildAll() {
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays, bitfieldWidths });
       const chunks = emitter.emitModule();
       // cross-file imports: referenced but not declared here. decl.js must
       // stay a leaf (it is the globals hub in a giant import cycle); its one

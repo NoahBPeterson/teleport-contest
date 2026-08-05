@@ -237,7 +237,7 @@ export function selection_filter_mapchar(ov, typ, lit) {
                     break;
                     case 0:
                     case 1:
-                    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16)) == lit >>> 0)
+                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16)) & 1) == lit >>> 0)
                         selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                 }
@@ -733,7 +733,7 @@ export function selection_from_mkroom(croom) {
     rmno = Number(BigInt.asUintN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
     for (y = cptr.ldI16(cptr.add(croom, 4)); y <= cptr.ldI16(cptr.add(croom, 6)); y++)
         for (x = cptr.ldI16(croom); x <= cptr.ldI16(cptr.add(croom, 2)); x++)
-            if ((isok(x, y) && !cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 28)) ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) == rmno ? 1 : 0)
+            if ((isok(x, y) && !(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 28)) & 1) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) == rmno ? 1 : 0)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }

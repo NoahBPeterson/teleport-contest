@@ -514,7 +514,7 @@ const __sl443 = cptr.lit(" [type name or symbol]");
 
 /** C ref: read.c:58 — @param {CInt} scrolltyp @returns {CInt} */
 function learnscrolltyp(scrolltyp) {
-    if (!cptr.ldI32(cptr.add(cptr.add(objects, scrolltyp, 120), 16))) {
+    if (!(cptr.ldI32(cptr.add(cptr.add(objects, scrolltyp, 120), 16)) & 1)) {
         discover_object((scrolltyp), (1), (1), (1));
         more_experienced(0, 10);
         return (1);
@@ -538,7 +538,7 @@ function cap_spe(obj) {
 
 /** C ref: read.c:89 — @param {CPtr} otmp @param {CPtr} buf @returns {CPtr} */
 function erode_obj_text(otmp, buf) {
-    let erosion = ((cptr.ldI32(cptr.add((otmp), 112)) | 0) > (cptr.ldI32(cptr.add((otmp), 116)) | 0) ? cptr.ldI32(cptr.add((otmp), 112)) | 0 : cptr.ldI32(cptr.add((otmp), 116)) | 0);
+    let erosion = (((cptr.ldI32(cptr.add((otmp), 112)) & 3) | 0) > ((cptr.ldI32(cptr.add((otmp), 116)) & 3) | 0) ? (cptr.ldI32(cptr.add((otmp), 112)) & 3) | 0 : (cptr.ldI32(cptr.add((otmp), 116)) & 3) | 0);
     if (erosion)
         wipeout_text(buf, Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(buf) * BigInt.asUintN(64, BigInt(erosion))) / BigInt.asUintN(64, BigInt((Math.imul(2, 3))))))), (cptr.ldI32(cptr.add(otmp, 24)) ^ Number(BigInt.asUintN(32, ubirthday.v))) >>> 0);
     return buf;
@@ -787,7 +787,7 @@ export function doread() {
             return 0;
         }
         if (((otyp == 137 || otyp == 136 ? 1 : 0) && uarm.v ? 1 : 0) && cptr.eq(scroll, uarmu.v) ? 1 : 0) {
-            pline(__sl126, cptr.ldI32(cptr.add(scroll, 64)) | 0 ? __sl127 : __sl128, shk_your(cptr.decay(buf), uarm.v), suit_simple_name(uarm.v));
+            pline(__sl126, (cptr.ldI32(cptr.add(scroll, 64)) & 1) | 0 ? __sl127 : __sl128, shk_your(cptr.decay(buf), uarm.v), suit_simple_name(uarm.v));
             return 0;
         }
         if (otyp == 136) {
@@ -887,7 +887,7 @@ export function doread() {
             what = __sl166;
         else if (cptr.ld1s(cptr.add(scroll, 49)) == 10)
             what = __sl167;
-        else if (!cptr.ldI32(cptr.add(scroll, 84)))
+        else if (!(cptr.ldI32(cptr.add(scroll, 84)) & 1))
             what = __sl168;
         if (what) {
             pline(__sl169, what);
@@ -911,7 +911,7 @@ export function doread() {
     cptr.stI32(cptr.add(scroll, 144), 1);
     if (otyp != 365) {
         let silently = schar((!can_chant(cptr.add(gy, 8))));
-        nodisappear = schar((otyp == 339 || (otyp == 327 && cptr.ldI32(cptr.add(scroll, 56)) | 0 ? 1 : 0) ? 1 : 0));
+        nodisappear = schar((otyp == 339 || (otyp == 327 && (cptr.ldI32(cptr.add(scroll, 56)) & 1) | 0 ? 1 : 0) ? 1 : 0));
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
             pline(nodisappear ? __sl173 : __sl174, silently ? __sl175 : __sl176);
         else
@@ -924,7 +924,7 @@ export function doread() {
         }
     }
     if (!seffects(scroll)) {
-        if (!cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16))) {
+        if (!(cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1)) {
             if (cptr.ld1s(cptr.add(gk, 16)))
                 learnscroll(scroll);
             else
@@ -939,7 +939,7 @@ export function doread() {
 
 /** C ref: read.c:652 — @param {CPtr} obj */
 function stripspe(obj) {
-    if (cptr.ldI32(cptr.add(obj, 60)) | 0 || cptr.ld1s(cptr.add(obj, 48)) <= 0 ? 1 : 0) {
+    if ((cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 || cptr.ld1s(cptr.add(obj, 48)) <= 0 ? 1 : 0) {
         pline(__sl152, cptr.ldPtr(c_common_strings));
     } else {
         pline(__sl197, Yobjnam2(obj, __sl198));
@@ -971,16 +971,16 @@ export function charge_ok(obj) {
         return -3;
     if (cptr.ld1s(cptr.add(obj, 49)) == 11)
         return 2;
-    if (((cptr.ld1s(cptr.add(obj, 49)) == 4 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) | 0 ? 1 : 0) && cptr.ldI32(cptr.add(obj, 84)) | 0 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 16)) | 0 ? 1 : 0)
+    if (((cptr.ld1s(cptr.add(obj, 49)) == 4 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) & 1) | 0 ? 1 : 0) && (cptr.ldI32(cptr.add(obj, 84)) & 1) | 0 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 16)) & 1) | 0 ? 1 : 0)
         return 2;
     if ((cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0))
         return -3;
     if (cptr.ld1s(cptr.add(obj, 49)) == 6) {
-        if ((cptr.ldI16(cptr.add(obj, 32)) == 226 || (cptr.ldI16(cptr.add(obj, 32)) == 227) ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32)) == 228 && !cptr.ldI32(cptr.add(cptr.add(objects, 228, 120), 16)) ? 1 : 0) ? 1 : 0) {
+        if ((cptr.ldI16(cptr.add(obj, 32)) == 226 || (cptr.ldI16(cptr.add(obj, 32)) == 227) ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32)) == 228 && !(cptr.ldI32(cptr.add(cptr.add(objects, 228, 120), 16)) & 1) ? 1 : 0) ? 1 : 0) {
             return 2;
         }
-        if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36))) {
-            return (cptr.ldI32(cptr.add(obj, 84)) | 0 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 16)) | 0 ? 1 : 0) ? 2 : 1;
+        if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) & 1)) {
+            return ((cptr.ldI32(cptr.add(obj, 84)) & 1) | 0 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 16)) & 1) | 0 ? 1 : 0) ? 2 : 1;
         }
         return -3;
     }
@@ -997,10 +997,10 @@ export function recharge(obj, curse_bless) {
         is_cursed = schar((curse_bless < 0));
         is_blessed = schar((curse_bless > 0));
         if (cptr.ld1s(cptr.add(obj, 49)) == 11) {
-            let lim = (cptr.ldI16(cptr.add(obj, 32)) == 414) ? 1 : (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 60)) | 0) != 1) ? 8 : 15);
+            let lim = (cptr.ldI16(cptr.add(obj, 32)) == 414) ? 1 : ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 60)) & 7) | 0) != 1) ? 8 : 15);
             if (cptr.ld1s(cptr.add(obj, 48)) == -1)
                 cptr.st1(cptr.add(obj, 48), 0);
-            n = cptr.ldI32(cptr.add(obj, 72)) | 0;
+            n = (cptr.ldI32(cptr.add(obj, 72)) & 7) | 0;
             if (n > 0 && (cptr.ldI16(cptr.add(obj, 32)) == 414 || (Math.imul(Math.imul(n, n), n) > (rng_log_enabled() ? (rng_log_set_caller(__sl121, 762, __sl203), rn2(Math.imul(Math.imul(7, 7), 7))) : rn2(Math.imul(Math.imul(7, 7), 7)))) ? 1 : 0) ? 1 : 0) {
                 wand_explode(obj, (rng_log_enabled() ? (rng_log_set_caller(__sl121, 763, __sl203), rnd(lim)) : rnd(lim)));
                 return;
@@ -1027,7 +1027,7 @@ export function recharge(obj, curse_bless) {
                 else
                     p_glow1(obj);
             }
-        } else if (cptr.ld1s(cptr.add(obj, 49)) == 4 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) | 0 ? 1 : 0) {
+        } else if (cptr.ld1s(cptr.add(obj, 49)) == 4 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) & 1) | 0 ? 1 : 0) {
             let s = is_blessed ? (rng_log_enabled() ? (rng_log_set_caller(__sl121, 803, __sl203), rnd(3)) : rnd(3)) : (is_cursed ? -(rng_log_enabled() ? (rng_log_set_caller(__sl121, 803, __sl203), rnd(2)) : rnd(2)) : 1);
             let is_on = schar((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v) ? 1 : 0));
             if (cptr.ld1s(cptr.add(obj, 48)) > (rng_log_enabled() ? (rng_log_set_caller(__sl121, 807, __sl203), rn2(7)) : rn2(7)) || cptr.ld1s(cptr.add(obj, 48)) <= -5 ? 1 : 0) {
@@ -1047,12 +1047,12 @@ export function recharge(obj, curse_bless) {
                 cptr.st1(cptr.add(obj, 48), cptr.ld1s(cptr.add(obj, 48)) + s);
                 if (is_on)
                     setworn(obj, mask), Ring_on(obj);
-                if (s > 0 && cptr.ldI32(cptr.add(obj, 64)) | 0 ? 1 : 0)
+                if (s > 0 && (cptr.ldI32(cptr.add(obj, 64)) & 1) | 0 ? 1 : 0)
                     alter_cost(obj, 0n);
             }
         } else if (cptr.ld1s(cptr.add(obj, 49)) == 6) {
-            let rechrg = cptr.ldI32(cptr.add(obj, 72)) | 0;
-            if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36))) {
+            let rechrg = (cptr.ldI32(cptr.add(obj, 72)) & 7) | 0;
+            if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) & 1)) {
                 if (rechrg < 7)
                     (cptr.stI32(cptr.add(obj, 72), cptr.ldI32(cptr.add(obj, 72)) + 1)) - (1);
             }
@@ -1110,7 +1110,7 @@ export function recharge(obj, curse_bless) {
                 case 226:
                 if (is_cursed) {
                     stripspe(obj);
-                    if (cptr.ldI32(cptr.add(obj, 76))) {
+                    if ((cptr.ldI32(cptr.add(obj, 76)) & 1)) {
                         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                             pline(__sl211, Tobjnam(obj, __sl212));
                         end_burn(obj, (1));
@@ -1131,7 +1131,7 @@ export function recharge(obj, curse_bless) {
                 if (cptr.ld1s(cptr.add(obj, 48)) == -1)
                     cptr.st1(cptr.add(obj, 48), 0);
                 if (is_cursed) {
-                    if (!cptr.ldI32(cptr.add(obj, 56))) {
+                    if (!(cptr.ldI32(cptr.add(obj, 56)) & 1)) {
                         p_glow2(obj, cptr.ldPtr(c_color_names));
                         curse(obj);
                     } else {
@@ -1142,14 +1142,14 @@ export function recharge(obj, curse_bless) {
                     cptr.st1(cptr.add(obj, 48), 0);
                 } else if (is_blessed) {
                     cptr.st1(cptr.add(obj, 48), 7);
-                    p_glow2(obj, !cptr.ldI32(cptr.add(obj, 60)) ? cptr.ldPtr(cptr.add(c_color_names, 24)) : cptr.ldPtr(cptr.add(c_color_names, 56)));
-                    if (!cptr.ldI32(cptr.add(obj, 60)))
+                    p_glow2(obj, !(cptr.ldI32(cptr.add(obj, 60)) & 1) ? cptr.ldPtr(cptr.add(c_color_names, 24)) : cptr.ldPtr(cptr.add(c_color_names, 56)));
+                    if (!(cptr.ldI32(cptr.add(obj, 60)) & 1))
                         bless(obj);
                 } else {
-                    if (cptr.ld1s(cptr.add(obj, 48)) < 7 || cptr.ldI32(cptr.add(obj, 56)) | 0 ? 1 : 0) {
+                    if (cptr.ld1s(cptr.add(obj, 48)) < 7 || (cptr.ldI32(cptr.add(obj, 56)) & 1) | 0 ? 1 : 0) {
                         n = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 942, __sl203), rnd(2)) : rnd(2));
                         cptr.st1(cptr.add(obj, 48), schar((((cptr.ld1s(cptr.add(obj, 48)) + n) | 0) < (7) ? ((cptr.ld1s(cptr.add(obj, 48)) + n) | 0) : (7))));
-                        if (!cptr.ldI32(cptr.add(obj, 56))) {
+                        if (!(cptr.ldI32(cptr.add(obj, 56)) & 1)) {
                             p_glow1(obj);
                         } else {
                             p_glow2(obj, cptr.ldPtr(cptr.add(c_color_names, 8)));
@@ -1231,15 +1231,15 @@ function forget(howmuch) {
 /** C ref: read.c:1044 — @param {CPtr} mtmp @param {CPtr} sobj @returns {CInt} */
 function maybe_tame(mtmp, sobj) {
     let was_tame = cptr.ld1s(cptr.add(mtmp, 65));
-    let was_peaceful = cptr.ldI32(cptr.add(mtmp, 168));
-    if (cptr.ldI32(cptr.add(sobj, 56))) {
+    let was_peaceful = (cptr.ldI32(cptr.add(mtmp, 168)) & 1);
+    if ((cptr.ldI32(cptr.add(sobj, 56)) & 1)) {
         setmangry(mtmp, (0));
-        if (was_peaceful && !cptr.ldI32(cptr.add(mtmp, 168)) ? 1 : 0)
+        if (was_peaceful && !(cptr.ldI32(cptr.add(mtmp, 168)) & 1) ? 1 : 0)
             return -1;
     } else {
-        if (!resist(mtmp, cptr.ld1s(cptr.add(sobj, 49)), 0, 0) || cptr.ldI32(cptr.add(mtmp, 180)) | 0 ? 1 : 0)
+        if (!resist(mtmp, cptr.ld1s(cptr.add(sobj, 49)), 0, 0) || (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0)
             void tamedog(mtmp, sobj, (0));
-        if ((!was_peaceful && cptr.ldI32(cptr.add(mtmp, 168)) | 0 ? 1 : 0) || was_tame != cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0)
+        if ((!was_peaceful && (cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0 ? 1 : 0) || was_tame != cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0)
             return 1;
     }
     return 0;
@@ -1289,8 +1289,8 @@ function seffect_enchant_armor(sobjp) {
     let special_armor;
     let same_color;
     let otmp = some_armor(cptr.add(gy, 8));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let old_erodeproof;
     let new_erodeproof;
@@ -1302,7 +1302,7 @@ function seffect_enchant_armor(sobjp) {
         return;
     }
     if (confused) {
-        old_erodeproof = schar(((cptr.ldI32(cptr.add(otmp, 120)) | 0) != 0));
+        old_erodeproof = schar((((cptr.ldI32(cptr.add(otmp, 120)) & 1) | 0) != 0));
         new_erodeproof = schar((!scursed));
         cptr.stI32(cptr.add(otmp, 120), 0);
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
@@ -1312,7 +1312,7 @@ function seffect_enchant_armor(sobjp) {
             cptr.stI32(cptr.add(otmp, 92), 1);
             pline(__sl219, Yobjnam2(otmp, __sl220), scursed ? __sl221 : __sl222, hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtr(cptr.add(c_color_names, 16))), scursed ? __sl199 : ((cptr.ld1s(cptr.add(otmp, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 1 ? 1 : 0) ? __sl223 : __sl224));
         }
-        if (new_erodeproof && (cptr.ldI32(cptr.add(otmp, 112)) | 0 || cptr.ldI32(cptr.add(otmp, 116)) | 0 ? 1 : 0) ? 1 : 0) {
+        if (new_erodeproof && ((cptr.ldI32(cptr.add(otmp, 112)) & 3) | 0 || (cptr.ldI32(cptr.add(otmp, 116)) & 3) | 0 ? 1 : 0) ? 1 : 0) {
             cptr.stI32(cptr.add(otmp, 112), cptr.stI32(cptr.add(otmp, 116), 0));
             pline(__sl225, Yobjnam2(otmp, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl218 : __sl226));
         }
@@ -1343,7 +1343,7 @@ function seffect_enchant_armor(sobjp) {
     s = schar(((((4 - s) | 0) / 2) | 0));
     if (special_armor)
         ++s;
-    if (!cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 32)))
+    if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 32)) & 1))
         ++s;
     if (sblessed)
         ++s;
@@ -1359,7 +1359,7 @@ function seffect_enchant_armor(sobjp) {
     if (scursed)
         s = schar((-s));
     if (s >= 0 && (cptr.ldI16(cptr.add((otmp), 32)) >= 111 && cptr.ldI16(cptr.add((otmp), 32)) <= 120 ? 1 : 0) ? 1 : 0) {
-        let was_lit = cptr.ldI32(cptr.add(otmp, 76));
+        let was_lit = (cptr.ldI32(cptr.add(otmp, 76)) & 1);
         let old_light = artifact_light(otmp) ? arti_light_radius(otmp) : 0;
         pline(__sl230, Yname2(otmp));
         setworn(null, 1n);
@@ -1368,13 +1368,13 @@ function seffect_enchant_armor(sobjp) {
         if (sblessed) {
             cptr.postinc1(cptr.add(otmp, 48));
             cap_spe(otmp);
-            if (!cptr.ldI32(cptr.add(otmp, 60)))
+            if (!(cptr.ldI32(cptr.add(otmp, 60)) & 1))
                 bless(otmp);
-        } else if (cptr.ldI32(cptr.add(otmp, 56)))
+        } else if ((cptr.ldI32(cptr.add(otmp, 56)) & 1))
             uncurse(otmp);
         cptr.stI32(cptr.add(otmp, 80), 1);
         setworn(otmp, 1n);
-        if (cptr.ldI32(cptr.add(otmp, 64)))
+        if ((cptr.ldI32(cptr.add(otmp, 64)) & 1))
             alter_cost(otmp, 0n);
         cptr.stI32(cptr.add(otmp, 76), was_lit);
         if (old_light)
@@ -1384,11 +1384,11 @@ function seffect_enchant_armor(sobjp) {
     pline(__sl231, Yname2(otmp), (s == 0) ? __sl232 : __sl108, otense(otmp, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl198 : __sl199), (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !same_color ? 1 : 0) ? __sl201 : __sl108, (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || same_color ? 1 : 0) ? __sl108 : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtr(cptr.add(c_color_names, 48))), (Math.imul(s, s) > 1) ? __sl233 : __sl234);
     if (s < 0)
         costly_alteration(otmp, 5);
-    if (scursed && !cptr.ldI32(cptr.add(otmp, 56)) ? 1 : 0)
+    if (scursed && !(cptr.ldI32(cptr.add(otmp, 56)) & 1) ? 1 : 0)
         curse(otmp);
-    else if (sblessed && !cptr.ldI32(cptr.add(otmp, 60)) ? 1 : 0)
+    else if (sblessed && !(cptr.ldI32(cptr.add(otmp, 60)) & 1) ? 1 : 0)
         bless(otmp);
-    else if (!scursed && cptr.ldI32(cptr.add(otmp, 56)) | 0 ? 1 : 0)
+    else if (!scursed && (cptr.ldI32(cptr.add(otmp, 56)) & 1) | 0 ? 1 : 0)
         uncurse(otmp);
     if (s) {
         let oldspe = cptr.ld1s(cptr.add(otmp, 48));
@@ -1397,8 +1397,8 @@ function seffect_enchant_armor(sobjp) {
         s = schar(((cptr.ld1s(cptr.add(otmp, 48)) - oldspe) | 0));
         if (s)
             adj_abon(otmp, s);
-        cptr.st1(cptr.add(gk, 16), schar(cptr.ldI32(cptr.add(otmp, 80))));
-        if (s > 0 && cptr.ldI32(cptr.add(otmp, 64)) | 0 ? 1 : 0)
+        cptr.st1(cptr.add(gk, 16), schar((cptr.ldI32(cptr.add(otmp, 80)) & 1)));
+        if (s > 0 && (cptr.ldI32(cptr.add(otmp, 64)) & 1) | 0 ? 1 : 0)
             alter_cost(otmp, 0n);
     }
     if ((cptr.ld1s(cptr.add(otmp, 48)) > (special_armor ? 5 : 3)) && (special_armor || !(rng_log_enabled() ? (rng_log_set_caller(__sl121, 1287, __sl227), rn2(7)) : rn2(7)) ? 1 : 0) ? 1 : 0)
@@ -1410,19 +1410,19 @@ function disintegrate_cursed_armor() {
     let armors = cptr.alloc(10 * 8);
     let idx = 0;
     cptr.stPtr(cptr.add(armors, 0, 8), null);
-    if (uarm.v && cptr.ldI32(cptr.add(uarm.v, 56)) | 0 ? 1 : 0)
+    if (uarm.v && (cptr.ldI32(cptr.add(uarm.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarm.v);
-    if (uarmc.v && cptr.ldI32(cptr.add(uarmc.v, 56)) | 0 ? 1 : 0)
+    if (uarmc.v && (cptr.ldI32(cptr.add(uarmc.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarmc.v);
-    if (uarmh.v && cptr.ldI32(cptr.add(uarmh.v, 56)) | 0 ? 1 : 0)
+    if (uarmh.v && (cptr.ldI32(cptr.add(uarmh.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarmh.v);
-    if (uarms.v && cptr.ldI32(cptr.add(uarms.v, 56)) | 0 ? 1 : 0)
+    if (uarms.v && (cptr.ldI32(cptr.add(uarms.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarms.v);
-    if (uarmg.v && cptr.ldI32(cptr.add(uarmg.v, 56)) | 0 ? 1 : 0)
+    if (uarmg.v && (cptr.ldI32(cptr.add(uarmg.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarmg.v);
-    if (uarmf.v && cptr.ldI32(cptr.add(uarmf.v, 56)) | 0 ? 1 : 0)
+    if (uarmf.v && (cptr.ldI32(cptr.add(uarmf.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarmf.v);
-    if (uarmu.v && cptr.ldI32(cptr.add(uarmu.v, 56)) | 0 ? 1 : 0)
+    if (uarmu.v && (cptr.ldI32(cptr.add(uarmu.v, 56)) & 1) | 0 ? 1 : 0)
         cptr.stPtr(cptr.add(armors, idx++, 8), uarmu.v);
     if (!idx)
         return (0);
@@ -1435,7 +1435,7 @@ function disintegrate_cursed_armor() {
 function seffect_destroy_armor(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otmp = some_armor(cptr.add(gy, 8));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let old_erodeproof;
     let new_erodeproof;
@@ -1447,7 +1447,7 @@ function seffect_destroy_armor(sobjp) {
             exercise(4, (0));
             return;
         }
-        old_erodeproof = schar(((cptr.ldI32(cptr.add(otmp, 120)) | 0) != 0));
+        old_erodeproof = schar((((cptr.ldI32(cptr.add(otmp, 120)) & 1) | 0) != 0));
         new_erodeproof = scursed;
         cptr.stI32(cptr.add(otmp, 120), 0);
         p_glow2(otmp, cptr.ldPtr(cptr.add(c_color_names, 64)));
@@ -1459,7 +1459,7 @@ function seffect_destroy_armor(sobjp) {
         return;
     }
     if (scursed) {
-        if (otmp && cptr.ldI32(cptr.add(otmp, 56)) | 0 ? 1 : 0) {
+        if (otmp && (cptr.ldI32(cptr.add(otmp, 56)) & 1) | 0 ? 1 : 0) {
             pline(__sl241, Yobjnam2(otmp, __sl198));
             if (cptr.ld1s(cptr.add(otmp, 48)) >= -6) {
                 cptr.st1(cptr.add(otmp, 48), cptr.ld1s(cptr.add(otmp, 48)) + -1);
@@ -1471,10 +1471,10 @@ function seffect_destroy_armor(sobjp) {
             return;
         }
     } else {
-        let gets_choice = schar((((otmp && sobj ? 1 : 0) && cptr.ldI32(cptr.add(sobj, 60)) | 0 ? 1 : 0) && count_worn_armor() > 1 ? 1 : 0));
+        let gets_choice = schar((((otmp && sobj ? 1 : 0) && (cptr.ldI32(cptr.add(sobj, 60)) & 1) | 0 ? 1 : 0) && count_worn_armor() > 1 ? 1 : 0));
         if (gets_choice) {
             let atmp;
-            if (!cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(sobj, 32)), 120), 16)))
+            if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(sobj, 32)), 120), 16)) & 1))
                 pline(__sl243, an(actualoname(sobj)));
             cptr.st1(cptr.add(gk, 16), (1));
             atmp = getobj(__sl244, any_worn_armor_ok, 2);
@@ -1484,7 +1484,7 @@ function seffect_destroy_armor(sobjp) {
                 cptr.st1(cptr.add(gk, 16), (1));
                 return;
             }
-        } else if (cptr.ldI32(cptr.add(sobj, 60)) | 0 && disintegrate_cursed_armor() ? 1 : 0) {
+        } else if ((cptr.ldI32(cptr.add(sobj, 60)) & 1) | 0 && disintegrate_cursed_armor() ? 1 : 0) {
             cptr.st1(cptr.add(gk, 16), (1));
             return;
         } else if (!destroy_arm()) {
@@ -1501,8 +1501,8 @@ function seffect_destroy_armor(sobjp) {
 /** C ref: read.c:1399 — @param {CPtr} sobjp */
 function seffect_confuse_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let altfeedback = schar((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0));
     let hands = makeplural(body_part(6));
@@ -1545,7 +1545,7 @@ function seffect_confuse_monster(sobjp) {
 function seffect_scare_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let ct = 0;
     let mtmp;
@@ -1576,8 +1576,8 @@ function seffect_scare_monster(sobjp) {
 function seffect_remove_curse(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let obj;
     let nxto;
@@ -1599,7 +1599,7 @@ function seffect_remove_curse(sobjp) {
                         wornmask = 0n;
                 } else if (cptr.eq(obj, uquiver.v)) {
                     if (cptr.ld1s(cptr.add(obj, 49)) == 2) {
-                        if (!cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 20)))
+                        if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 20)) & 1))
                             wornmask = 0n;
                     } else if (cptr.ld1s(cptr.add(obj, 49)) == 13) {
                         if (!(uwep.v && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 21 ? 1 : 0))
@@ -1610,17 +1610,17 @@ function seffect_remove_curse(sobjp) {
                 }
             }
             if (((sblessed || wornmask ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 471 ? 1 : 0) || (cptr.ldI16(cptr.add(obj, 32)) == 236 && cptr.ldI32(cptr.add(obj, 168)) ? 1 : 0) ? 1 : 0) {
-                let shop_h2o = schar((cptr.ldI32(cptr.add(obj, 64)) | 0 && cptr.ldI16(cptr.add(obj, 32)) == 322 ? 1 : 0));
+                let shop_h2o = schar(((cptr.ldI32(cptr.add(obj, 64)) & 1) | 0 && cptr.ldI16(cptr.add(obj, 32)) == 322 ? 1 : 0));
                 if (confused) {
                     blessorcurse(obj, 2);
                     cptr.stI32(cptr.add(obj, 88), 0);
-                    if (shop_h2o && (cptr.ldI32(cptr.add(obj, 56)) | 0 || cptr.ldI32(cptr.add(obj, 60)) | 0 ? 1 : 0) ? 1 : 0)
+                    if (shop_h2o && ((cptr.ldI32(cptr.add(obj, 56)) & 1) | 0 || (cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 ? 1 : 0) ? 1 : 0)
                         alter_cost(obj, 0n);
-                } else if (cptr.ldI32(cptr.add(obj, 56))) {
+                } else if ((cptr.ldI32(cptr.add(obj, 56)) & 1)) {
                     if (shop_h2o)
                         costly_alteration(obj, 4);
                     uncurse(obj);
-                    if (cptr.ldI32(cptr.add(obj, 88)) | 0 && otyp == 327 ? 1 : 0)
+                    if ((cptr.ldI32(cptr.add(obj, 88)) & 1) | 0 && otyp == 327 ? 1 : 0)
                         learnscrolltyp(327);
                 }
             }
@@ -1629,7 +1629,7 @@ function seffect_remove_curse(sobjp) {
             if (confused) {
                 blessorcurse(obj, 2);
                 cptr.stI32(cptr.add(obj, 88), 0);
-            } else if (cptr.ldI32(cptr.add(obj, 56))) {
+            } else if ((cptr.ldI32(cptr.add(obj, 56)) & 1)) {
                 uncurse(obj);
                 if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
                     pline(__sl235, Yobjnam2(obj, __sl199), hcolor(__sl273));
@@ -1652,8 +1652,8 @@ function seffect_remove_curse(sobjp) {
 /** C ref: read.c:1608 — @param {CPtr} sobjp */
 function seffect_create_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     if (create_critters((((1 + ((confused || scursed ? 1 : 0) ? 12 : 0)) | 0) + ((sblessed || (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1616, __sl275), rn2(73)) : rn2(73)) ? 1 : 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1616, __sl275), rnd(4)) : rnd(4)))) | 0, confused ? cptr.add(mons, 6, 96) : null, (0)))
         cptr.st1(cptr.add(gk, 16), (1));
@@ -1662,14 +1662,14 @@ function seffect_create_monster(sobjp) {
 /** C ref: read.c:1627 — @param {CPtr} sobjp */
 function seffect_enchant_weapon(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let old_erodeproof;
     let new_erodeproof;
     let s;
     if (((confused && uwep.v ? 1 : 0) && erosion_matters(uwep.v) ? 1 : 0) && cptr.ld1s(cptr.add(uwep.v, 49)) != 3 ? 1 : 0) {
-        old_erodeproof = schar(((cptr.ldI32(cptr.add(uwep.v, 120)) | 0) != 0));
+        old_erodeproof = schar((((cptr.ldI32(cptr.add(uwep.v, 120)) & 1) | 0) != 0));
         new_erodeproof = schar((!scursed));
         cptr.stI32(cptr.add(uwep.v, 120), 0);
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
@@ -1679,7 +1679,7 @@ function seffect_enchant_weapon(sobjp) {
             cptr.stI32(cptr.add(uwep.v, 92), 1);
             pline(__sl219, Yobjnam2(uwep.v, __sl220), scursed ? __sl221 : __sl222, hcolor(scursed ? cptr.ldPtr(cptr.add(c_color_names, 64)) : cptr.ldPtr(cptr.add(c_color_names, 16))), scursed ? __sl199 : __sl224);
         }
-        if (new_erodeproof && (cptr.ldI32(cptr.add(uwep.v, 112)) | 0 || cptr.ldI32(cptr.add(uwep.v, 116)) | 0 ? 1 : 0) ? 1 : 0) {
+        if (new_erodeproof && ((cptr.ldI32(cptr.add(uwep.v, 112)) & 3) | 0 || (cptr.ldI32(cptr.add(uwep.v, 116)) & 3) | 0 ? 1 : 0) ? 1 : 0) {
             cptr.stI32(cptr.add(uwep.v, 112), cptr.stI32(cptr.add(uwep.v, 116), 0));
             pline(__sl225, Yobjnam2(uwep.v, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl218 : __sl226));
         }
@@ -1705,7 +1705,7 @@ function seffect_taming(sobjp) {
     let res;
     let results;
     let vis_results;
-    if (cptr.ldI32(cptr.add(u, 1848))) {
+    if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
         candidates = 1;
         results = (vis_results = maybe_tame(cptr.ldPtr(cptr.add(u, 2416)), sobj));
     } else {
@@ -1740,9 +1740,9 @@ function seffect_taming(sobjp) {
 function seffect_genocide(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
-    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
+    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) | 0 ? 1 : 0));
     if (!already_known)
         You(__sl285);
     cptr.st1(cptr.add(gk, 16), (1));
@@ -1755,8 +1755,8 @@ function seffect_genocide(sobjp) {
 /** C ref: read.c:1741 — @param {CPtr} sobjp */
 function seffect_light(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     if (!confused) {
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
@@ -1798,10 +1798,10 @@ function seffect_light(sobjp) {
 function seffect_charging(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
-    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0));
+    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) | 0 ? 1 : 0));
     let otmp;
     if (confused) {
         if (scursed) {
@@ -1832,7 +1832,7 @@ function seffect_charging(sobjp) {
 /** C ref: read.c:1830 — @param {CPtr} sobjp */
 function seffect_amnesia(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
     cptr.st1(cptr.add(gk, 16), (1));
     forget((!sblessed ? 2 : 0));
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0))
@@ -1850,9 +1850,9 @@ function seffect_amnesia(sobjp) {
 function seffect_fire(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
-    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0));
+    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) | 0 ? 1 : 0));
     let cc = cptr.alloc(4);
     let dam;
     let cval;
@@ -1865,7 +1865,7 @@ function seffect_fire(sobjp) {
     if (!already_known)
         void learnscrolltyp(339);
     if (confused) {
-        if ((cptr.ldI32(cptr.add(u, 1852)))) {
+        if (((cptr.ldI32(cptr.add(u, 1852)) & 1))) {
             pline(__sl301, hliquid(__sl302));
         } else if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 1, 24)) ? 1 : 0)) {
             shieldeff(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -1881,7 +1881,7 @@ function seffect_fire(sobjp) {
         }
         return;
     }
-    if ((cptr.ldI32(cptr.add(u, 1852)))) {
+    if (((cptr.ldI32(cptr.add(u, 1852)) & 1))) {
         pline_The(__sl307, hliquid(__sl302));
     } else {
         if (sblessed) {
@@ -1908,14 +1908,14 @@ function seffect_fire(sobjp) {
 /** C ref: read.c:1919 — @param {CPtr} sobjp */
 function seffect_earth(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     if ((!(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8)) ? 1 : 0)) && has_ceiling(cptr.add(u, 24)) ? 1 : 0) && (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 60)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 60))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 60)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) {
         let x;
         let y;
         let nboulders = 0;
-        if (cptr.ldI32(cptr.add(u, 1848))) {
+        if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
             You_hear(__sl312);
         } else {
             if (!avoid_ceiling(cptr.add(u, 24))) {
@@ -1947,7 +1947,7 @@ function seffect_earth(sobjp) {
 /** C ref: read.c:1976 — @param {CPtr} sobjp */
 function seffect_punishment(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     cptr.st1(cptr.add(gk, 16), (1));
     if (confused || sblessed ? 1 : 0) {
@@ -1961,7 +1961,7 @@ function seffect_punishment(sobjp) {
 function seffect_stinking_cloud(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
-    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0));
+    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) | 0 ? 1 : 0));
     if (!already_known)
         You(__sl321);
     cptr.st1(cptr.add(gk, 16), (1));
@@ -1980,7 +1980,7 @@ function seffect_blank_paper(sobjp) {
 /** C ref: read.c:2015 — @param {CPtr} sobjp */
 function seffect_teleportation(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     if (confused || scursed ? 1 : 0) {
         level_tele();
@@ -1993,7 +1993,7 @@ function seffect_teleportation(sobjp) {
 /** C ref: read.c:2035 — @param {CPtr} sobjp */
 function seffect_gold_detection(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     if ((confused || scursed ? 1 : 0) ? trap_detect(sobj) : gold_detect(sobj))
         cptr.stPtr(sobjp, null);
@@ -2011,10 +2011,10 @@ function seffect_identify(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16(cptr.add(sobj, 32));
     let is_scroll = schar((cptr.ld1s(cptr.add(sobj, 49)) == 9));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
-    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0 ? 1 : 0));
+    let already_known = schar((cptr.ld1s(cptr.add(sobj, 49)) == 10 || (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) | 0 ? 1 : 0));
     if (is_scroll) {
         useup(sobj);
         cptr.stPtr(sobjp, null);
@@ -2044,12 +2044,12 @@ function seffect_identify(sobjp) {
 function seffect_magic_mapping(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let is_scroll = schar((cptr.ld1s(cptr.add(sobj, 49)) == 9));
-    let sblessed = schar(cptr.ldI32(cptr.add(sobj, 60)));
-    let scursed = schar(cptr.ldI32(cptr.add(sobj, 56)));
+    let sblessed = schar((cptr.ldI32(cptr.add(sobj, 60)) & 1));
+    let scursed = schar((cptr.ldI32(cptr.add(sobj, 56)) & 1));
     let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let cval;
     if (is_scroll) {
-        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 48))) {
+        if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 48)) & 1)) {
             Your(__sl329);
             if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0))
                 pline(__sl330);
@@ -2071,7 +2071,7 @@ function seffect_magic_mapping(sobjp) {
         }
         cptr.st1(cptr.add(gk, 16), (1));
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 48))) {
+    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 48)) & 1)) {
         Your(__sl333, body_part(8), cptr.ldPtr(cptr.add(c_common_strings, 40)));
         make_confused(BigInt.asIntN(64, cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl121, 2139, __sl332), rnd(30)) : rnd(30)))), (0));
         return;
@@ -2118,7 +2118,7 @@ function seffect_mail(sobjp) {
 export function seffects(sobj) {
     sobj = cptr.box(sobj);
     let otyp = cptr.ldI16(cptr.add(sobj.v, 32));
-    if (cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 32)))
+    if ((cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 32)) & 1))
         exercise(2, (1));
     switch (otyp) {
         case 364:
@@ -2210,7 +2210,7 @@ export function seffects(sobj) {
 export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswallow) {
     let dmg;
     let otmp2;
-    if (cptr.ldI32(cptr.add(u, 1848)) | 0 && !skip_uswallow ? 1 : 0) {
+    if ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && !skip_uswallow ? 1 : 0) {
         drop_boulder_on_monster(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), confused, byu);
         return;
     }
@@ -2258,9 +2258,9 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
         let mdmg;
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)), 8)), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0)) {
             pline(__sl351, Monnam(mtmp), doname(otmp2));
-            if (cptr.ldI32(cptr.add(mtmp, 88)) | 0 && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
+            if ((cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
                 map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
-        } else if ((cptr.ldI32(cptr.add(u, 1848)) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0))
+        } else if (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0))
             You_hear(__sl352, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, 18), body_part(8));
         mdmg = BigInt.asIntN(64, BigInt(dmgval(otmp2, mtmp)) * cptr.ldI64(cptr.add(otmp2, 40)));
         if (helmet) {
@@ -2288,7 +2288,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             wakeup(mtmp, byu);
         }
         wake_nearto(x, y, Math.imul(4, 4));
-    } else if ((cptr.ldI32(cptr.add(u, 1848)) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0)) {
+    } else if (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0)) {
         obfree(otmp2, null);
         drop_boulder_on_player(confused, (1), (0), (1));
         return 1;
@@ -2370,26 +2370,26 @@ function set_lit(x, y, val) {
 export function litroom(on, obj) {
     let otmp;
     let nextobj;
-    let blessed_effect = schar(((obj && cptr.ld1s(cptr.add(obj, 49)) == 9 ? 1 : 0) && cptr.ldI32(cptr.add(obj, 60)) | 0 ? 1 : 0));
-    let no_op = schar(((cptr.ldI32(cptr.add(u, 1848)) | 0 || (cptr.ldI32(cptr.add(u, 1852))) | 0 ? 1 : 0) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0));
+    let blessed_effect = schar(((obj && cptr.ld1s(cptr.add(obj, 49)) == 9 ? 1 : 0) && (cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 ? 1 : 0));
+    let no_op = schar((((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 || ((cptr.ldI32(cptr.add(u, 1852)) & 1)) | 0 ? 1 : 0) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0));
     let is_lit = cptr.box(0);
     if (!on) {
         let still_lit = 0;
         for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
-            if (cptr.ldI32(cptr.add(otmp, 76))) {
+            if ((cptr.ldI32(cptr.add(otmp, 76)) & 1)) {
                 if (!artifact_light(otmp))
                     void snuff_lit(otmp);
                 else
                     impact_arti_light(otmp, (1), schar((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))));
-                if (cptr.ldI32(cptr.add(otmp, 76)))
+                if ((cptr.ldI32(cptr.add(otmp, 76)) & 1))
                     ++still_lit;
             }
         }
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
             if (still_lit)
                 pline_The(__sl362);
-            else if (cptr.ldI32(cptr.add(u, 1848)))
+            else if ((cptr.ldI32(cptr.add(u, 1848)) & 1))
                 pline(__sl363);
             else
                 You(__sl364);
@@ -2398,11 +2398,11 @@ export function litroom(on, obj) {
         if (blessed_effect) {
             for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = nextobj) {
                 nextobj = cptr.ldPtr(otmp);
-                if (cptr.ldI32(cptr.add(otmp, 76)) | 0 && artifact_light(otmp) ? 1 : 0)
+                if ((cptr.ldI32(cptr.add(otmp, 76)) & 1) | 0 && artifact_light(otmp) ? 1 : 0)
                     impact_arti_light(otmp, (0), schar((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))));
             }
         }
-        if (cptr.ldI32(cptr.add(u, 1848))) {
+        if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
             if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 ;
             else if ((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 26, 11) !== null))
@@ -2420,7 +2420,7 @@ export function litroom(on, obj) {
     if (((uball.v !== null) && !on ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0)
         move_bc(1, 0, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)), cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
     if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8)) ? 1 : 0))) {
-        let rnum = ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 24)) | 0) - 3) | 0;
+        let rnum = (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 24)) & 63) | 0) - 3) | 0;
         let rx;
         let ry;
         if (rnum >= 0) {
@@ -2602,7 +2602,7 @@ export function do_genocide(how) {
     if (how & 2) {
         mndx = cptr.ldI32(cptr.add(u, 1804));
         ptr = cptr.add(mons, mndx, 96);
-        void cptr.strcpy(cptr.decay(buf), pmname(ptr, (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1860)) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0)));
+        void cptr.strcpy(cptr.decay(buf), pmname(ptr, (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0)));
         killplayer++;
     } else {
         cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
@@ -2730,7 +2730,7 @@ export function do_genocide(how) {
 /** C ref: read.c:3019 — @param {CPtr} sobj */
 export function punish(sobj) {
     let reuse_ball = (sobj && cptr.ldI16(cptr.add(sobj, 32)) == 477 ? 1 : 0) ? sobj : null;
-    let cursed_levy = (sobj && cptr.ldI32(cptr.add(sobj, 56)) | 0 ? 1 : 0) ? 1 : 0;
+    let cursed_levy = (sobj && (cptr.ldI32(cptr.add(sobj, 56)) & 1) | 0 ? 1 : 0) ? 1 : 0;
     if (!reuse_ball)
         You(__sl419);
     if ((uball.v !== null)) {
@@ -2752,7 +2752,7 @@ export function punish(sobj) {
         setworn(mkobj(15, (1)), 2097152n);
     else
         setworn(reuse_ball, 2097152n);
-    if (!cptr.ldI32(cptr.add(u, 1848))) {
+    if (!(cptr.ldI32(cptr.add(u, 1848)) & 1)) {
         placebc();
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
             set_bc(1);

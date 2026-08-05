@@ -291,7 +291,7 @@ export function remove_region(reg) {
     cptr.stI64(cptr.add(reg, 40), -2n);
     if (cptr.ld1s(cptr.add(reg, 76))) {
         let pass;
-        let tmp_uinwater = schar(cptr.ldI32(cptr.add(u, 1852)));
+        let tmp_uinwater = schar((cptr.ldI32(cptr.add(u, 1852)) & 1));
         for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
             cptr.stI32(cptr.add(u, 1852), ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
             for (x = cptr.ldI16(reg); x <= cptr.ldI16(cptr.add(reg, 4)); x++)
@@ -731,7 +731,7 @@ export function expire_gas_cloud(p1, p2) {
                         if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)))
                             unblock_point(x, y);
                     } else {
-                        if (!cptr.ldI32(cptr.add(u, 1848))) {
+                        if (!(cptr.ldI32(cptr.add(u, 1848)) & 1)) {
                             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
                                 cptr.st1(cptr.add(gg, 94976), (1));
                             else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0))
@@ -788,7 +788,7 @@ export function inside_gas_cloud(p1, p2) {
             }
             if ((!((cptr.ldI32(cptr.add((reg), 60)) & 2) >>> 0)))
                 setmangry(mtmp, (1));
-            if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) && cptr.ldI32(cptr.add(mtmp, 112)) | 0 ? 1 : 0) {
+            if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) && (cptr.ldI32(cptr.add(mtmp, 112)) & 1) | 0 ? 1 : 0) {
                 cptr.stI32(cptr.add(mtmp, 148), 1);
                 cptr.stI32(cptr.add(mtmp, 112), 0);
             }

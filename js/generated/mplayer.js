@@ -186,7 +186,7 @@ function get_mplname(mtmp, nam) {
     else
         cptr.stI32(cptr.add(mtmp, 84), 0);
     void cptr.strcat(nam, __sl46);
-    void cptr.strcat(nam, rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))), schar(cptr.ldI32(cptr.add(mtmp, 84)))));
+    void cptr.strcat(nam, rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))), schar((cptr.ldI32(cptr.add(mtmp, 84)) & 1))));
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
@@ -342,7 +342,7 @@ export function mk_mplayer(ptr, x, y, special) {
                 cptr.stI32(cptr.add(otmp, 140), 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
                 otmp = mk_artifact(otmp, schar((-128)), 99, (0));
-            if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
+            if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) & 1) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
                 cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
             if (is_art(otmp, 8))
@@ -417,7 +417,7 @@ cptr.stPtr(cptr.add(__static_mplayer_talk_other_class_msg, 16), __sl58); /** C r
 
 /** C ref: mplayer.c:356 — @param {CPtr} mtmp */
 export function mplayer_talk(mtmp) {
-    if (cptr.ldI32(cptr.add(mtmp, 168)))
+    if ((cptr.ldI32(cptr.add(mtmp, 168)) & 1))
         return;
     ;
     verbalize(__sl51, cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)), 96)) ? cptr.ldPtr(cptr.add(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8)) : cptr.ldPtr(cptr.add(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));

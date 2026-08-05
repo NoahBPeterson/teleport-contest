@@ -319,7 +319,7 @@ export function resists_magm(mon) {
 export function resists_blnd(mon) {
     let ptr = cptr.ldPtr(cptr.add(mon, 8));
     let is_you = schar((cptr.eq(mon, cptr.add(gy, 8))));
-    if (is_you ? (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || (cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) : (((cptr.ldI32(cptr.add(mon, 148)) | 0 || !cptr.ldI32(cptr.add(mon, 112)) ? 1 : 0) || !((cptr.ldU64(cptr.add((ptr), 72)) & 4096n) == 0n) ? 1 : 0) || cptr.ldI32(cptr.add(mon, 144)) | 0 ? 1 : 0))
+    if (is_you ? (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || (cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) : ((((cptr.ldI32(cptr.add(mon, 148)) & 127) | 0 || !(cptr.ldI32(cptr.add(mon, 112)) & 1) ? 1 : 0) || !((cptr.ldU64(cptr.add((ptr), 72)) & 4096n) == 0n) ? 1 : 0) || (cptr.ldI32(cptr.add(mon, 144)) & 1) | 0 ? 1 : 0))
         return (1);
     if (dmgtype_fromattack(ptr, 11, 13) || dmgtype_fromattack(ptr, 11, 15) ? 1 : 0)
         return (1);
@@ -353,7 +353,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
     let o;
     if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mdef, 8))), 72)) & 4096n) == 0n))
         return (0);
-    if (!is_you && (!cptr.ldI32(cptr.add(mdef, 112)) && !cptr.ldI32(cptr.add(mdef, 148)) ? 1 : 0) ? 1 : 0)
+    if (!is_you && (!(cptr.ldI32(cptr.add(mdef, 112)) & 1) && !(cptr.ldI32(cptr.add(mdef, 148)) & 127) ? 1 : 0) ? 1 : 0)
         return (0);
     if ((magr && cptr.eq(cptr.ldPtr(cptr.add(magr, 8)), cptr.add(mons, 128, 96)) ? 1 : 0) && cptr.eq(cptr.ldPtr(cptr.add(mdef, 8)), cptr.add(mons, 128, 96)) ? 1 : 0)
         return (0);
@@ -363,7 +363,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
         case 15:
         case 255:
         case 12:
-        if (magr && cptr.ldI32(cptr.add(magr, 100)) | 0 ? 1 : 0)
+        if (magr && (cptr.ldI32(cptr.add(magr, 100)) & 1) | 0 ? 1 : 0)
             return (0);
         return schar((!resists_blnd(mdef)));
         case 254:
@@ -380,25 +380,25 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             return (1);
         } else
             return (0);
-        if ((cptr.eq(magr, cptr.add(gy, 8))) && cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0)
+        if ((cptr.eq(magr, cptr.add(gy, 8))) && (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0)
             return (0);
         break;
         case 11:
         if (is_you && ((cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) || (cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || cptr.ldI32(cptr.add(u, 1840)) ? 1 : 0) ? 1 : 0)
             return (0);
-        if (!is_you && cptr.ldI32(cptr.add(mdef, 144)) | 0 ? 1 : 0)
+        if (!is_you && (cptr.ldI32(cptr.add(mdef, 144)) & 1) | 0 ? 1 : 0)
             return (0);
         break;
         case 1:
         if (is_you && ublindf.v ? 1 : 0)
             return (0);
-        if ((cptr.eq(magr, cptr.add(gy, 8))) && cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0)
+        if ((cptr.eq(magr, cptr.add(gy, 8))) && (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0)
             return (0);
         check_visor = (1);
         break;
         case 5:
         case 6:
-        if (magr && cptr.ldI32(cptr.add(magr, 100)) | 0 ? 1 : 0)
+        if (magr && (cptr.ldI32(cptr.add(magr, 100)) & 1) | 0 ? 1 : 0)
             return (0);
         break;
         default:
@@ -1073,7 +1073,7 @@ export function name_to_monclass(in_str, mndx_p) {
 export function gender(mtmp) {
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 262144n) != 0n))
         return 2;
-    return cptr.ldI32(cptr.add(mtmp, 84)) | 0;
+    return (cptr.ldI32(cptr.add(mtmp, 84)) & 1) | 0;
 }
 
 /** C ref: mondata.c:1191 — @param {CPtr} mtmp @param {CUInt} pg_flags @returns {CInt} */
@@ -1086,18 +1086,18 @@ export function pronoun_gender(mtmp, pg_flags) {
         return 2;
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 262144n) != 0n))
         return 2;
-    return ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n) || (cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & 4096) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 524288n) != 0n) ? 1 : 0) ? cptr.ldI32(cptr.add(mtmp, 84)) | 0 : 2;
+    return ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 131072n) != 0n) || (cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & 4096) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 524288n) != 0n) ? 1 : 0) ? (cptr.ldI32(cptr.add(mtmp, 84)) & 1) | 0 : 2;
 }
 
 /** C ref: mondata.c:1211 — @param {CPtr} mtmp @returns {CInt} */
 export function levl_follower(mtmp) {
     if (cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2424))))
         return (1);
-    if (cptr.ldI32(cptr.add(mtmp, 196)) | 0 && mon_has_amulet(mtmp) ? 1 : 0)
+    if ((cptr.ldI32(cptr.add(mtmp, 196)) & 1) | 0 && mon_has_amulet(mtmp) ? 1 : 0)
         return (0);
-    if ((cptr.ld1s(cptr.add(mtmp, 65)) || cptr.ldI32(cptr.add(mtmp, 196)) | 0 ? 1 : 0) || is_fshk(mtmp) ? 1 : 0)
+    if ((cptr.ld1s(cptr.add(mtmp, 65)) || (cptr.ldI32(cptr.add(mtmp, 196)) & 1) | 0 ? 1 : 0) || is_fshk(mtmp) ? 1 : 0)
         return (1);
-    return schar(((cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 80)) & 16777216n) && (!cptr.ldI32(cptr.add(mtmp, 136)) || cptr.ldI32(cptr.add(u, 1944)) | 0 ? 1 : 0) ? 1 : 0));
+    return schar(((cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 80)) & 16777216n) && (!(cptr.ldI32(cptr.add(mtmp, 136)) & 1) || (cptr.ldI32(cptr.add(u, 1944)) & 1) | 0 ? 1 : 0) ? 1 : 0));
 }
 
 /** C ref: mondata.c:1228 — short[68][2] */
@@ -1487,20 +1487,20 @@ export function cvt_prop_to_mseenres(prop) {
 /** C ref: mondata.c:1558 — @param {CLongLong} seenres */
 export function monstseesu(seenres) {
     let mtmp;
-    if (seenres == 0n || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0)
+    if (seenres == 0n || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0)
         return;
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp))
-        if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 72)) & 16777216n) != 0n) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1852))) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add((mtmp), 30)), 8)), cptr.ldI16(cptr.add((mtmp), 28)))) & 1) != 0) ? 1 : 0) ? 1 : 0)
+        if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 72)) & 16777216n) != 0n) ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1852)) & 1)) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add((mtmp), 30)), 8)), cptr.ldI16(cptr.add((mtmp), 28)))) & 1) != 0) ? 1 : 0) ? 1 : 0)
             (cptr.stU64(cptr.add((mtmp), 72), cptr.ldU64(cptr.add((mtmp), 72)) | (seenres)));
 }
 
 /** C ref: mondata.c:1572 — @param {CLongLong} seenres */
 export function monstunseesu(seenres) {
     let mtmp;
-    if (seenres == 0n || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0)
+    if (seenres == 0n || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0)
         return;
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp))
-        if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 72)) & 16777216n) != 0n) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1852))) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add((mtmp), 30)), 8)), cptr.ldI16(cptr.add((mtmp), 28)))) & 1) != 0) ? 1 : 0) ? 1 : 0)
+        if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mtmp), 8))), 72)) & 16777216n) != 0n) ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1852)) & 1)) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add((mtmp), 30)), 8)), cptr.ldI16(cptr.add((mtmp), 28)))) & 1) != 0) ? 1 : 0) ? 1 : 0)
             (cptr.stU64(cptr.add((mtmp), 72), cptr.ldU64(cptr.add((mtmp), 72)) & BigInt.asUintN(64, ~(seenres))));
 }
 
@@ -1545,15 +1545,15 @@ export function mons_see_trap(ttmp) {
     let mtmp;
     let tx = cptr.ldI16(cptr.add(ttmp, 8));
     let ty = cptr.ldI16(cptr.add(ttmp, 10));
-    let maxdist = cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 16)) | 0 ? Math.imul(7, 7) : 2;
+    let maxdist = (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 16)) & 1) | 0 ? Math.imul(7, 7) : 2;
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) ? 1 : 0) || !cptr.ldI32(cptr.add(mtmp, 112)) ? 1 : 0)
+        if (((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) ? 1 : 0) || !(cptr.ldI32(cptr.add(mtmp, 112)) & 1) ? 1 : 0)
             continue;
         if (dist2(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)), tx, ty) > maxdist)
             continue;
         if (!clear_path(cptr.ldI16(cptr.add((mtmp), 28)), cptr.ldI16(cptr.add((mtmp), 30)), (tx), (ty)))
             continue;
-        mon_learns_traps(mtmp, cptr.ldI32(cptr.add(ttmp, 20)) | 0);
+        mon_learns_traps(mtmp, (cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0);
     }
 }
 

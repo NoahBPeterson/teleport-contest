@@ -1487,7 +1487,7 @@ export function do_symset(rogueflag) {
         let biggest = Number(BigInt.asIntN(32, (BigInt.asUintN(64, 16n - 1n))));
         let big_desc = 0;
         for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
-            if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
+            if (rogueflag ? (cptr.ldI32(cptr.add(sl, 36)) & 1) | 0 : (cptr.ldI32(cptr.add(sl, 40)) & 1) | 0)
                 continue;
             if (cptr.ldI32(cptr.add(sl, 28)) == 4)
                 continue;
@@ -1512,7 +1512,7 @@ export function do_symset(rogueflag) {
             defindx = cptr.ldI32(any);
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, __sl229, (cptr.ldI32(any) == defindx) ? 1 : 0);
         for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
-            if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
+            if (rogueflag ? (cptr.ldI32(cptr.add(sl, 36)) & 1) | 0 : (cptr.ldI32(cptr.add(sl, 40)) & 1) | 0)
                 continue;
             if (cptr.ldI32(cptr.add(sl, 28)) == 4)
                 continue;

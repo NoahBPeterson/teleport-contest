@@ -198,7 +198,7 @@ export function inven_inuse(quietly) {
     let otmp2;
     for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = otmp2) {
         otmp2 = cptr.ldPtr(otmp);
-        if (cptr.ldI32(cptr.add(otmp, 144))) {
+        if ((cptr.ldI32(cptr.add(otmp, 144)) & 1)) {
             if (!quietly)
                 pline(__sl0, xname(otmp));
             useup(otmp);
@@ -319,7 +319,7 @@ function restobjchn(nhfp, frozen) {
             for (otmp3 = cptr.ldPtr(cptr.add(otmp, 16)); otmp3; otmp3 = cptr.ldPtr(otmp3))
                 cptr.stPtr(cptr.add(otmp3, 8), otmp);
         }
-        if (cptr.ldI32(cptr.add(otmp, 148)))
+        if ((cptr.ldI32(cptr.add(otmp, 148)) & 1))
             cptr.stI32(cptr.add(otmp, 148), 0);
         if (!ghostly) {
             if (cptr.ldI32(cptr.add(otmp, 24)) == cptr.ldI32(cptr.add(cptr.add(svc, 128), 8)))
@@ -450,9 +450,9 @@ function restmonchn(nhfp) {
                 impossible(__sl36);
             }
         }
-        if (cptr.ldI32(cptr.add(mtmp, 180)))
+        if ((cptr.ldI32(cptr.add(mtmp, 180)) & 1))
             restshk(mtmp, ghostly);
-        if (cptr.ldI32(cptr.add(mtmp, 192)))
+        if ((cptr.ldI32(cptr.add(mtmp, 192)) & 1))
             restpriest(mtmp, ghostly);
         if (!ghostly) {
             if (cptr.ldI32(cptr.add(mtmp, 16)) == cptr.ldI32(cptr.add(cptr.add(svc, 584), 8)))
@@ -899,7 +899,7 @@ export function getlev(nhfp, pid, lev) {
         for (y = 0; y < 21; y++)
             cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8), null);
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (cptr.ldI32(cptr.add(mtmp, 180)))
+        if ((cptr.ldI32(cptr.add(mtmp, 180)) & 1))
             set_residency(mtmp, (0));
         if (cptr.ldI32(cptr.add(mtmp, 16)) == cptr.ldI32(cptr.add(u, 2436))) {
             cptr.stPtr(cptr.add(u, 2424), mtmp);
@@ -910,15 +910,15 @@ export function getlev(nhfp, pid, lev) {
                 cptr.stI32(cptr.add(u, 2432), 0);
             }
             place_monster(mtmp, cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
-            if (cptr.ldI32(cptr.add(mtmp, 200)))
+            if ((cptr.ldI32(cptr.add(mtmp, 200)) & 31))
                 place_wsegs(mtmp, null);
-            if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) && cptr.ldI32(cptr.add(mtmp, 108)) | 0 ? 1 : 0)
+            if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) && (cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 ? 1 : 0)
                 void hideunder(mtmp);
         }
         if (!cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) || cptr.ldI32(cptr.add(program_state, 32)) == 2 ? 1 : 0)
             continue;
         if (ghostly) {
-            if (!cptr.ldI32(cptr.add(mtmp, 180)))
+            if (!(cptr.ldI32(cptr.add(mtmp, 180)) & 1))
                 cptr.stI32(cptr.add(mtmp, 168), (((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 21 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 536870912n) != 0n) ? 1 : 0) && (sgn(cptr.ld1s(cptr.add(u, 2172))) == sgn(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 33)))) ? 1 : 0) ? 1 : peace_minded(cptr.ldPtr(cptr.add(mtmp, 8)))) >>> 0);
             set_malign(mtmp);
         } else if (elapsed > 0n) {
@@ -972,7 +972,7 @@ export function getlev(nhfp, pid, lev) {
                 break;
                 case 3:
                 for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
-                    if ((cptr.ldI32(cptr.add(trap, 20)) | 0) == 17)
+                    if (((cptr.ldI32(cptr.add(trap, 20)) & 31) | 0) == 17)
                         break;
                 if (!trap)
                     panic(__sl85);
@@ -983,7 +983,7 @@ export function getlev(nhfp, pid, lev) {
             let ttmp = null;
             for (trap = cptr.ldPtr(gf); trap; trap = ttmp) {
                 ttmp = cptr.ldPtr(trap);
-                if ((cptr.ldI32(cptr.add(trap, 20)) | 0) == 17)
+                if (((cptr.ldI32(cptr.add(trap, 20)) & 31) | 0) == 17)
                     deltrap(trap);
             }
         }

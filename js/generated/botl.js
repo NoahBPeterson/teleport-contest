@@ -542,7 +542,7 @@ export function do_statusline1() {
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         let mbot = new Uint8Array(256);
         let k = 0;
-        void cptr.strcpy(cptr.decay(mbot), pmname(cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96), (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1860)) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0)));
+        void cptr.strcpy(cptr.decay(mbot), pmname(cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96), (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0)));
         while (cptr.ld1s(cptr.add(cptr.decay(mbot), k, 1)) != 0) {
             if (((k == 0 || (k > 0 && cptr.ld1s(cptr.add(cptr.decay(mbot), (k - 1) | 0, 1)) == 32 ? 1 : 0) ? 1 : 0) && 97 <= cptr.ld1s(cptr.add(cptr.decay(mbot), k, 1)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(mbot), k, 1)) <= 122 ? 1 : 0)
                 cptr.st1(cptr.add(cptr.decay(mbot), k, 1), cptr.ld1s(cptr.add(cptr.decay(mbot), k, 1)) + ((65 - 97) | 0));
@@ -619,9 +619,9 @@ export function do_statusline2() {
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16)))
         void cptr.strcpy(nb = eos(nb), __sl29);
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16))) {
-        if ((cptr.ldI32(cptr.add(u, 1772)) | 0) & 1)
+        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 1)
             void cptr.strcpy(nb = eos(nb), __sl30);
-        if ((cptr.ldI32(cptr.add(u, 1772)) | 0) & 2)
+        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 2)
             void cptr.strcpy(nb = eos(nb), __sl31);
     }
     if (cptr.ldI32(cptr.add(u, 108)) != 1)
@@ -848,7 +848,7 @@ export function weapon_status(outbuf) {
                 break;
             }
         }
-        if ((((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) && cptr.ld1s(res) != 50 ? 1 : 0) && strncmpi(res, __sl69, 3) ? 1 : 0)
+        if ((((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) && cptr.ld1s(res) != 50 ? 1 : 0) && strncmpi(res, __sl69, 3) ? 1 : 0)
             void cptr.strcat(outbuf, __sl70);
         void cptr.strcpy(p = eos(outbuf), res), res = outbuf;
         cptr.st1(p, highc(cptr.ld1s(p)));
@@ -1761,7 +1761,7 @@ function bot_via_windowport() {
     void __builtin___memset_chk(gv, 0, BigInt.asUintN(64, 27n * 1n), __builtin_object_size(gv, 0));
     void cptr.strcpy(nb = cptr.decay(buf), svp);
     cptr.st1(cptr.add(nb, 0), highc(cptr.ld1s(cptr.add(nb, 0))));
-    titl = !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? rank() : pmname(cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96), (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1860)) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0));
+    titl = !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? rank() : pmname(cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96), (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0));
     i = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 6n) + cptr.strlen(titl)) - 1n))));
     if (i > 30) {
         i = (30 - Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 6n + cptr.strlen(titl)) - 1n))))) | 0;
@@ -1830,9 +1830,9 @@ function bot_via_windowport() {
     cptr.st1(cptr.add(cptr.add(condtests, 7, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, 24, 24), 22), (0)));
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16))) {
         if (cptr.ld1s(cptr.add(cptr.add(condtests, (7), 24), 20)))
-            cptr.st1(cptr.add(cptr.add(condtests, (7), 24), 22), schar((((cptr.ldI32(cptr.add(u, 1772)) | 0) & 1) != 0)));
+            cptr.st1(cptr.add(cptr.add(condtests, (7), 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 1) != 0)));
         if (cptr.ld1s(cptr.add(cptr.add(condtests, (24), 24), 20)))
-            cptr.st1(cptr.add(cptr.add(condtests, (24), 24), 22), schar((((cptr.ldI32(cptr.add(u, 1772)) | 0) & 2) != 0)));
+            cptr.st1(cptr.add(cptr.add(condtests, (24), 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 2) != 0)));
     }
     cptr.st1(cptr.add(cptr.add(condtests, 13, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, 25, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, 26, 24), 22), (0))));
     if (cptr.ldI32(cptr.add(u, 60))) {
@@ -1845,7 +1845,7 @@ function bot_via_windowport() {
     }
     cptr.st1(cptr.add(cptr.add(condtests, 9, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, 11, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, 29, 24), 22), (0))));
     if (cptr.ldPtr(cptr.add(u, 2416))) {
-        if (cptr.ldI32(cptr.add(u, 1848))) {
+        if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
             if (cptr.ld1s(cptr.add(cptr.add(condtests, (11), 24), 20)))
                 cptr.st1(cptr.add(cptr.add(condtests, (11), 24), 22), (1));
         } else if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) {
@@ -1870,7 +1870,7 @@ function bot_via_windowport() {
     cptr.st1(cptr.add(cptr.add(condtests, 20, 24), 22), schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 18, 24), 16))) ? 1 : 0)));
     cptr.st1(cptr.add(cptr.add(condtests, 21, 24), 22), schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 19, 24), 16))) ? 1 : 0)));
     cptr.st1(cptr.add(cptr.add(condtests, 22, 24), 22), schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16))) ? 1 : 0)));
-    cptr.st1(cptr.add(cptr.add(condtests, 23, 24), 22), schar((((cptr.ldI32(cptr.add(u, 1852)))) | 0 ? 1 : 0)));
+    cptr.st1(cptr.add(cptr.add(condtests, 23, 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1852)) & 1))) | 0 ? 1 : 0)));
     if (cptr.ld1s(cptr.add(cptr.add(condtests, (5), 24), 20)))
         cptr.st1(cptr.add(cptr.add(condtests, (5), 24), 22), ((0)));
     if (cptr.ld1s(cptr.add(cptr.add(condtests, (0), 24), 20)))

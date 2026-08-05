@@ -164,7 +164,7 @@ export function dowrite(pen) {
             return 2;
         typeword = (cptr.ldI16(cptr.add(paper, 32)) == 408) ? __sl5 : ((cptr.ld1s(cptr.add(paper, 49)) == 10) ? __sl6 : __sl7);
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
-            if (!cptr.ldI32(cptr.add(paper, 84))) {
+            if (!(cptr.ldI32(cptr.add(paper, 84)) & 1)) {
                 You(__sl8, typeword);
                 return 0;
             } else if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
@@ -203,7 +203,7 @@ export function dowrite(pen) {
             if (!(cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))))
                 continue;
             if (!strncmpi(((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))), (nm), -1)) {
-                if (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) | 0 || cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) {
+                if ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) | 0 || cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) {
                     break __lbl_found;
                 } else {
                     real = (deferred = i);
@@ -216,7 +216,7 @@ export function dowrite(pen) {
             }
         }
         for (i = first; i <= last; i++) {
-            if (((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)) && !strncmpi((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8))), (nm), -1) ? 1 : 0) && !(real && cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) | 0 ? 1 : 0) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl17, 193, __sl18), rn2(++deferralchance)) : rn2(++deferralchance)) ? 1 : 0) {
+            if (((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)) && !strncmpi((cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8))), (nm), -1) ? 1 : 0) && !(real && (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) | 0 ? 1 : 0) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl17, 193, __sl18), rn2(++deferralchance)) : rn2(++deferralchance)) ? 1 : 0) {
                 deferred = i;
                 by_descr = (1);
             }
@@ -250,14 +250,14 @@ export function dowrite(pen) {
     } else if (i == 409) {
         pline(__sl34);
         return 1;
-    } else if ((by_descr && cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) && !cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) ? 1 : 0) {
+    } else if ((by_descr && cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) && !(cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) ? 1 : 0) {
         pline(__sl35);
         return 1;
     }
     if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
         livelog_printf(32n, __sl36, an(typeword));
     new_obj = mksobj(i, (0), (0));
-    cptr.stI32(cptr.add(new_obj, 88), (cptr.ldI32(cptr.add(paper, 88)) | 0 && cptr.ldI32(cptr.add(pen, 88)) | 0 ? 1 : 0) >>> 0);
+    cptr.stI32(cptr.add(new_obj, 88), ((cptr.ldI32(cptr.add(paper, 88)) & 1) | 0 && (cptr.ldI32(cptr.add(pen, 88)) & 1) | 0 ? 1 : 0) >>> 0);
     check_unpaid(pen);
     basecost = cost(new_obj);
     if (cptr.ld1s(cptr.add(pen, 48)) < ((basecost / 2) | 0)) {
@@ -287,7 +287,7 @@ export function dowrite(pen) {
     } else {
         spell_knowledge = 0;
     }
-    if (((!cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) && !(by_descr && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 28)) | 0 ? 1 : 0) ? 1 : 0) && spell_knowledge != 1 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) : rnl((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) ? 1 : 0) {
+    if (((!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) & 1) && !(by_descr && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 28)) & 1) | 0 ? 1 : 0) ? 1 : 0) && spell_knowledge != 1 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) : rnl((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) ? 1 : 0) {
         You(__sl41, by_descr ? __sl42 : __sl43);
         if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
             You(__sl44);
@@ -319,7 +319,7 @@ export function dowrite(pen) {
     if (cptr.ldI16(cptr.add(new_obj, 32)) == 364)
         cptr.st1(cptr.add(new_obj, 48), 2);
     cptr.stI32(cptr.add(new_obj, 84), 0);
-    if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) | 0 || by_descr ? 1 : 0)
+    if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) & 1) | 0 || by_descr ? 1 : 0)
         observe_object(new_obj);
     new_obj = hold_another_object(new_obj, __sl49, The(aobjnam(new_obj, __sl3)), null);
     (void (new_obj));

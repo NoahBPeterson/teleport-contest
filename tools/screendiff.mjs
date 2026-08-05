@@ -35,7 +35,7 @@ const inputFrames = frames.filter((f) => f.kind === 'input');
 const steps = seg.steps || [];
 console.log(`[diff] inputFrames=${inputFrames.length} steps=${steps.length}`);
 
-const cellStr = (c) => c ? `${JSON.stringify(c.ch)}${c.fg !== 7 ? ' fg' + c.fg : ''}${c.attr ? ' at' + c.attr : ''}${c.dec ? ' dec' : ''}` : 'null';
+const cellStr = (c) => c ? `${JSON.stringify(c.ch)} color=${c.color} attr=${c.attr}${c.decgfx ? ' DEC' : ''}` : 'null';
 let pass = 0; const mismatched = [];
 for (let s = 0; s < steps.length; s++) {
   const wantRaw = steps[s].screen;

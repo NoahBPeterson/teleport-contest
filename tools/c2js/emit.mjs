@@ -115,6 +115,26 @@ function arrayParts(qualType, desugared) {
   return { elem: (m[1] + m[3]).trim(), count: m[2] ? Number(m[2]) : null };
 }
 
+/**
+ * Declared width of a bitfield FieldDecl, or undefined for a plain field.
+ * clang marks the FieldDecl `isBitfield` and carries the width as the
+ * first ConstantExpr/IntegerLiteral child.
+ */
+function bitWidthOf(fieldNode) {
+  if (!fieldNode?.isBitfield) return undefined;
+  let w;
+  (function deep(x) {
+    if (!x || typeof x !== 'object' || w !== undefined) return;
+    if ((x.kind === 'ConstantExpr' || x.kind === 'IntegerLiteral') && x.value !== undefined) {
+      const n = Number(x.value);
+      if (Number.isFinite(n) && n > 0) w = n;
+      return;
+    }
+    for (const c of x.inner || []) deep(c);
+  })(fieldNode);
+  return w;
+}
+
 // JS operator precedence (for minimal parenthesization)
 const PREC = { comma: 1, assign: 2, cond: 3, '||': 4, '&&': 5, '|': 6, '^': 7, '&': 8, eq: 9, rel: 10, shift: 11, add: 12, mul: 13, unary: 15, postfix: 16, atom: 18 };
 const BIN_PREC = { '||': 4, '&&': 5, '|': 6, '^': 7, '&': 8, '==': 9, '!=': 9, '<': 10, '>': 10, '<=': 10, '>=': 10, '<<': 11, '>>': 11, '>>>': 11, '+': 12, '-': 12, '*': 13, '/': 13, '%': 13 };
@@ -139,7 +159,7 @@ const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrch
 export const EMIT_VERSION = 3;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, recordGlobals, recordArrays }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -179,6 +199,18 @@ export class Emitter {
         }
       }
     }
+    // header-declared bitfield widths (corpus-wide table from the full ASTs):
+    // symbols.mjs's record table carries no bit widths, so fill them in by
+    // record + field name. Main-file records already have theirs from the AST.
+    if (bitfieldWidths) {
+      for (const [recName, widths] of bitfieldWidths) {
+        const rec = this.records.get(recName);
+        if (!rec) continue;
+        for (const f of rec.fields) {
+          if (f.bits === undefined && widths[f.name] !== undefined) f.bits = widths[f.name];
+        }
+      }
+    }
   }
 
   collectRecords() {
@@ -186,7 +218,7 @@ export class Emitter {
       if (!n || typeof n !== 'object') return;
       if (n.kind === 'RecordDecl' && n.completeDefinition) {
         const fields = (n.inner || []).filter((c) => c.kind === 'FieldDecl')
-          .map((c) => ({ name: c.name, q: desugar(c.type), recId: self.fieldRecordId(c) }));
+          .map((c) => ({ name: c.name, q: desugar(c.type), recId: self.fieldRecordId(c), bits: bitWidthOf(c) }));
         if (fields.length && !self.records.has(n.name || `anon#${n.id}`)) {
           self.records.set(n.name || `anon#${n.id}`, { tag: n.tagUsed || 'struct', fields });
           if (!n.name) {
@@ -585,9 +617,40 @@ export class Emitter {
       if (arrayParts(fieldQ) || (parseType(fieldQ).cls === 'record' && !this.isEnumType(fieldQ))) {
         return { code: loc, prec: PREC.atom, rep: 'cptr', elemQ: fieldQ, elemRec: this.fieldRecordName(fi) };
       }
-      return { ...this.loadFrom(loc, fieldQ), locCode: loc, elemQ: fieldQ };
+      return { ...this.narrowBitfield(this.loadFrom(loc, fieldQ), fi, fieldQ), locCode: loc, elemQ: fieldQ };
     }
     throw new Error(`MemberExpr .${n.name} on rep ${base.rep} unsupported (${this.cref(n)})`);
+  }
+
+  /**
+   * Truncate a bitfield member load to its declared width.
+   *
+   * Bitfields get a *natural-width* slot in our byte-packed layout — an
+   * `unsigned x : 3` occupies a whole 4-byte int — because the layout only
+   * has to be self-consistent inside the port. What is NOT optional is C's
+   * truncation: `dungeons[i].flags.align = D_ALIGN_NEUTRAL` assigns 32 to a
+   * 3-bit field, and C keeps 32 & 7 == 0, so induced_align() falls through
+   * to `rn2(3)` while an untruncated 32 sent us down the `rn2(100)` branch
+   * and desynced the PRNG stream. Masking on *load* rather than on store is
+   * both simpler and more complete: it covers every mutation path at once
+   * (plain assignment, compound assignment, ++/--, memcpy of the whole
+   * struct) because each of those re-reads through this same accessor, and
+   * `((v & m) + 1) & m` reproduces C's wraparound exactly.
+   *
+   * Signed bitfields sign-extend instead of masking. NetHack's Bitfield()
+   * macro expands to `unsigned x : n`, so that path is for raw declarations.
+   */
+  narrowBitfield(loaded, fieldInfo, fieldQ) {
+    const bits = fieldInfo?.bits;
+    if (!bits || loaded.rep !== 'val') return loaded;
+    const t = parseType(fieldQ);
+    if (t.cls !== 'int' || t.bits === 64 || bits >= t.bits) return loaded;
+    const inner = loaded.prec < PREC.unary ? `(${loaded.code})` : loaded.code;
+    if (t.signed) {
+      const sh = 32 - bits;
+      return { ...loaded, code: `((${inner} << ${sh}) >> ${sh})`, prec: PREC.atom };
+    }
+    return { ...loaded, code: `(${inner} & ${(2 ** bits) - 1})`, prec: PREC.atom };
   }
 
   fieldTypeOf(baseNode, fieldName) {

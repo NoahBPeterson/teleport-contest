@@ -119,7 +119,7 @@ export function monster_census(spotted) {
     for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
             continue;
-        if (cptr.ldI32(cptr.add(mtmp, 188)) | 0 && cptr.ldI16(cptr.add(mtmp, 28)) == 0 ? 1 : 0)
+        if ((cptr.ldI32(cptr.add(mtmp, 188)) & 1) | 0 && cptr.ldI16(cptr.add(mtmp, 28)) == 0 ? 1 : 0)
             continue;
         if (spotted && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
             continue;
@@ -145,7 +145,7 @@ export function msummon(mon) {
                 pline(__sl0, Monnam(mon));
             return 0;
         }
-        atyp = schar((cptr.ldI32(cptr.add(mon, 192)) | 0 ? cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 16))), 4)) : (cptr.ldI32(cptr.add(mon, 184)) | 0 ? cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 4)) : ((cptr.ld1s(cptr.add(ptr, 33)) == (-128)) ? (-128) : sgn(cptr.ld1s(cptr.add(ptr, 33)))))));
+        atyp = schar(((cptr.ldI32(cptr.add(mon, 192)) & 1) | 0 ? cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 16))), 4)) : ((cptr.ldI32(cptr.add(mon, 184)) & 1) | 0 ? cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 4)) : ((cptr.ld1s(cptr.add(ptr, 33)) == (-128)) ? (-128) : sgn(cptr.ld1s(cptr.add(ptr, 33)))))));
     } else {
         ptr = cptr.add(mons, 285, 96);
         atyp = schar(((cptr.ld1s(cptr.add(ptr, 33)) == (-128)) ? (-128) : sgn(cptr.ld1s(cptr.add(ptr, 33)))));
@@ -199,7 +199,7 @@ export function msummon(mon) {
             if (dtype == 123) {
                 cptr.stI32(cptr.add(mtmp, 184), 1);
                 cptr.st1(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 32))), 4), atyp);
-                cptr.st1(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 32))), 5), schar(((atyp != cptr.ld1s(cptr.add(u, 2172))) ^ !cptr.ldI32(cptr.add(mtmp, 168)))));
+                cptr.st1(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 32))), 5), schar(((atyp != cptr.ld1s(cptr.add(u, 2172))) ^ !(cptr.ldI32(cptr.add(mtmp, 168)) & 1))));
             }
             if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 27 && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0) {
                 show_transient_light(null, cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
@@ -300,7 +300,7 @@ export function demon_talk(mtmp) {
             unmul(null);
         }
     }
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 256n) != 0n) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2048n) != 0n) ? 1 : 0) && cptr.ldI32(cptr.add(mtmp, 88)) | 0 ? 1 : 0) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 256n) != 0n) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2048n) != 0n) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 ? 1 : 0) {
         let wasunseen = schar((!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0)));
         cptr.stI32(cptr.add(mtmp, 88), cptr.stI32(cptr.add(mtmp, 96), 0));
         if (wasunseen && (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0) {
