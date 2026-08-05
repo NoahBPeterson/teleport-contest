@@ -28,11 +28,11 @@ import { discover_object, objdescr_is, observe_object } from './o_init.js';
 import { On_stairs } from './stairs.js';
 import { mkinvokearea } from './mklev.js';
 import { record_achievement } from './insight.js';
-import { iter_mons, wakeup, xkilled } from './mon.js';
 import { makemon, set_malign } from './makemon.js';
 import { mons } from './monst.js';
 import { exclam, spell_damage_bonus, unturn_dead, weffects, zapyourself, zhitm } from './zap.js';
 import { mkundead } from './mkroom.js';
+import { iter_mons, wakeup, xkilled } from './mon.js';
 import { Tobjnam, an, makeplural } from './objnam.js';
 import { mksobj, set_bknown, weight } from './mkobj.js';
 import { stop_occupation } from './allmain.js';
@@ -86,10 +86,10 @@ const __sl24 = cptr.lit("invocation fails!");
 const __sl25 = cptr.lit("At least one of your relics is cursed...");
 const __sl26 = cptr.lit("deadbook");
 const __sl27 = cptr.lit("have a feeling that %s is amiss...");
-const __sl28 = cptr.lit("ancestors are annoyed with you!");
-const __sl29 = cptr.lit("headstones in the cemetery begin to move!");
-const __sl30 = cptr.lit("Oh my!  Your name appears in the book!");
-const __sl31 = cptr.lit("raised the dead!");
+const __sl28 = cptr.lit("raised the dead!");
+const __sl29 = cptr.lit("ancestors are annoyed with you!");
+const __sl30 = cptr.lit("headstones in the cemetery begin to move!");
+const __sl31 = cptr.lit("Oh my!  Your name appears in the book!");
 const __sl32 = cptr.lit("%s shut!");
 const __sl33 = cptr.lit("slam");
 const __sl34 = cptr.lit("learn");
@@ -328,93 +328,137 @@ function deadbook_pacify_undead(mtmp) {
 
 /** C ref: spell.c:231 — @param {CPtr} book2 */
 function deadbook(book2) {
-    let __go_raise_dead = false;
-    __skip_raise_dead: {
-        let mtmp;
-        let mm = cptr.alloc(4);
+    let mtmp, mm, otmp, arti1_primed, arti2_primed, arti_cursed, soon;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        mm = cptr.alloc(4);
         You(__sl17);
         discover_object((409), (1), (1), (1));
         observe_object(book2);
         cptr.stI32(cptr.add(book2, 80), 1);
-        if (invocation_pos(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) && !On_stairs(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) {
-            let otmp;
-            let arti1_primed = (0);
-            let arti2_primed = (0);
-            let arti_cursed = (0);
-            if (cptr.ldI32(cptr.add(book2, 56))) {
-                pline_The(__sl18, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl19 : __sl20);
-                return;
-            }
-            if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4)) || !cptr.ldI32(cptr.add(cptr.add(u, 1944), 12)) ? 1 : 0) {
-                pline(__sl21, body_part(12));
-                if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4))) {
-                    ;
-                    You_hear(__sl22);
-                }
-                if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 12)))
-                    pline(__sl23);
-                return;
-            }
-            for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp)) {
-                if ((cptr.ldI16(cptr.add(otmp, 32)) == 262 && cptr.ld1s(cptr.add(otmp, 48)) == 7 ? 1 : 0) && cptr.ldI32(cptr.add(otmp, 76)) | 0 ? 1 : 0) {
-                    if (!cptr.ldI32(cptr.add(otmp, 56)))
-                        arti1_primed = (1);
-                    else
-                        arti_cursed = (1);
-                }
-                if (cptr.ldI16(cptr.add(otmp, 32)) == 263 && (BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184)))) < 5n ? 1 : 0) {
-                    if (!cptr.ldI32(cptr.add(otmp, 56)))
-                        arti2_primed = (1);
-                    else
-                        arti_cursed = (1);
-                }
-            }
-            if (arti_cursed) {
-                pline_The(__sl24);
-                pline(__sl25);
-            } else if (arti1_primed && arti2_primed ? 1 : 0) {
-                let soon = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 287, __sl26), d((2), (6))) : d((2), (6))) >>> 0;
-                mkinvokearea();
-                cptr.stI32(cptr.add(cptr.add(u, 1884), 32), 1);
-                record_achievement(5);
-                cptr.stI32(cptr.add(cptr.add(u, 1884), 44), 1);
-                if (!cptr.ldI32(cptr.add(u, 1880)) || cptr.ldI32(cptr.add(u, 1880)) > soon ? 1 : 0)
-                    cptr.stI32(cptr.add(u, 1880), soon);
-            } else {
-                You(__sl27, cptr.ldPtr(cptr.add(c_common_strings, 40)));
-                { __go_raise_dead = true; break __skip_raise_dead; }
-            }
+        if (invocation_pos(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) && !On_stairs(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) { __pc = 3; continue; }
+        __pc = 2; continue;
+        }
+        case 3: {
+        arti1_primed = (0);
+        arti2_primed = (0);
+        arti_cursed = (0);
+        if (cptr.ldI32(cptr.add(book2, 56))) {
+            pline_The(__sl18, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl19 : __sl20);
             return;
         }
-        if (cptr.ldI32(cptr.add(book2, 56))) {
-            __go_raise_dead = true; break __skip_raise_dead;
-        } else if (cptr.ldI32(cptr.add(book2, 60))) {
-            iter_mons(deadbook_pacify_undead);
-        } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 327, __sl26), rn2(3)) : rn2(3))) {
-                case 0:
-                Your(__sl28);
-                break;
-                case 1:
-                pline_The(__sl29);
-                break;
-                default:
-                pline(__sl30);
+        if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4)) || !cptr.ldI32(cptr.add(cptr.add(u, 1944), 12)) ? 1 : 0) {
+            pline(__sl21, body_part(12));
+            if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4))) {
+                ;
+                You_hear(__sl22);
+            }
+            if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 12)))
+                pline(__sl23);
+            return;
+        }
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp)) {
+            if ((cptr.ldI16(cptr.add(otmp, 32)) == 262 && cptr.ld1s(cptr.add(otmp, 48)) == 7 ? 1 : 0) && cptr.ldI32(cptr.add(otmp, 76)) | 0 ? 1 : 0) {
+                if (!cptr.ldI32(cptr.add(otmp, 56)))
+                    arti1_primed = (1);
+                else
+                    arti_cursed = (1);
+            }
+            if (cptr.ldI16(cptr.add(otmp, 32)) == 263 && (BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184)))) < 5n ? 1 : 0) {
+                if (!cptr.ldI32(cptr.add(otmp, 56)))
+                    arti2_primed = (1);
+                else
+                    arti_cursed = (1);
             }
         }
-    }
-    if (__go_raise_dead) {
-        You(__sl31);
+        if (arti_cursed) { __pc = 5; continue; }
+        __pc = 6; continue;
+        }
+        case 5: {
+        pline_The(__sl24);
+        pline(__sl25);
+        __pc = 4;
+        continue;
+        }
+        case 6: {
+        if (arti1_primed && arti2_primed ? 1 : 0) { __pc = 8; continue; }
+        __pc = 9; continue;
+        }
+        case 8: {
+        soon = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 287, __sl26), d((2), (6))) : d((2), (6))) >>> 0;
+        mkinvokearea();
+        cptr.stI32(cptr.add(cptr.add(u, 1884), 32), 1);
+        record_achievement(5);
+        cptr.stI32(cptr.add(cptr.add(u, 1884), 44), 1);
+        if (!cptr.ldI32(cptr.add(u, 1880)) || cptr.ldI32(cptr.add(u, 1880)) > soon ? 1 : 0)
+            cptr.stI32(cptr.add(u, 1880), soon);
+        __pc = 7;
+        continue;
+        }
+        case 9: {
+        You(__sl27, cptr.ldPtr(cptr.add(c_common_strings, 40)));
+        { __pc = 1; continue; }
+        __pc = 7;
+        continue;
+        }
+        case 7: {
+        __pc = 4;
+        continue;
+        }
+        case 4: {
+        return;
+        __pc = 2;
+        continue;
+        }
+        case 2: {
+        if (cptr.ldI32(cptr.add(book2, 56))) { __pc = 11; continue; }
+        __pc = 12; continue;
+        }
+        case 11: {
+        __pc = 1;
+        continue;
+        }
+        case 1 /* raise_dead: */: {
+        You(__sl28);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl26), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(mons, 185, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1)) !== null || (mtmp = makemon(cptr.add(mons, 299, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1)) !== null ? 1 : 0) ? 1 : 0) {
             cptr.stI32(cptr.add(mtmp, 168), 0);
             set_malign(mtmp);
         }
         void unturn_dead(cptr.add(gy, 8));
-        cptr.stI16(mm, cptr.ldI16(u));
-        cptr.stI16(cptr.add(mm, 2), cptr.ldI16(cptr.add(u, 2)));
+        mm.x = cptr.ldI16(u);
+        mm.y = cptr.ldI16(cptr.add(u, 2));
         mkundead(mm, (1), 1);
+        __pc = 10;
+        continue;
+        }
+        case 12: {
+        if (cptr.ldI32(cptr.add(book2, 60))) {
+            iter_mons(deadbook_pacify_undead);
+        } else {
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 327, __sl26), rn2(3)) : rn2(3))) {
+                case 0:
+                Your(__sl29);
+                break;
+                case 1:
+                pline_The(__sl30);
+                break;
+                default:
+                pline(__sl31);
+            }
+        }
+        __pc = 10;
+        continue;
+        }
+        case 10: {
+        return;
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    return;
 }
 
 /** C ref: spell.c:343 — @param {CPtr} book */

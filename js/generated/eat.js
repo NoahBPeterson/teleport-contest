@@ -1981,10 +1981,10 @@ function opentin() {
 
 /** C ref: eat.c:1723 — @param {CPtr} otmp */
 function start_tin(otmp) {
+    let tmp;
     let __go_no_opener = false;
     __skip_no_opener: {
         let mesg = null;
-        let tmp;
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 2147483648n) != 0n)) {
             mesg = __sl186;
             tmp = 0;

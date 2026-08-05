@@ -251,11 +251,12 @@ cptr.stPtr(cptr.add(__static_getpos_help_fastmovemode, 8), __sl55); /** C ref: g
 
 /** C ref: getpos.c:167 — @param {CInt} force @param {CPtr} goal */
 function getpos_help(force, goal) {
-    let __go_skip_non_mons = false;
-    __skip_skip_non_mons: {
-        let sbuf = new Uint8Array(256);
-        let doing_what_is;
-        let tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let sbuf, doing_what_is, tmpwin, kbuf;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         void cptr.sprintf(cptr.decay(sbuf), __sl30, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         void cptr.sprintf(cptr.decay(sbuf), __sl31, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtr(cptr.add(__static_getpos_help_fastmovemode, cptr.ld1s(cptr.add(iflags, 73)), 8)));
@@ -268,8 +269,15 @@ function getpos_help(force, goal) {
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 8) >>> 0) != 0 ? 1 : 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 13, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 14, 1))), 0);
         }
-        if (goal && !strcmp(goal, __sl35) ? 1 : 0)
-            { __go_skip_non_mons = true; break __skip_skip_non_mons; }
+        if (goal && !strcmp(goal, __sl35) ? 1 : 0) { __pc = 3; continue; }
+        __pc = 2; continue;
+        }
+        case 3: {
+        { __pc = 1; continue; }
+        __pc = 2;
+        continue;
+        }
+        case 2: {
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 4) >>> 0) != 0 ? 1 : 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 15, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 16, 1))), 1);
         }
@@ -286,25 +294,27 @@ function getpos_help(force, goal) {
             void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 27, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
-        if (!cptr.ldI32(cptr.add(iflags, 68))) {
-            let kbuf = new Uint8Array(256);
-            if (getpos_getvalid) {
-                void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 23, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 24, 1))));
-                (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            }
-            if (getpos_hilitefunc) {
-                void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 11, 1))));
-                (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            }
-            void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))));
-            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            if (cptr.ld1s(cptr.add(iflags, 178))) {
-                void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32(cptr.add(iflags, 100)) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))));
-            }
-            __go_skip_non_mons = true; break __skip_skip_non_mons;
+        if (!cptr.ldI32(cptr.add(iflags, 68))) { __pc = 5; continue; }
+        __pc = 4; continue;
         }
-    }
-    if (__go_skip_non_mons) {
+        case 5: {
+        if (getpos_getvalid) {
+            void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 23, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 24, 1))));
+            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
+        }
+        if (getpos_hilitefunc) {
+            void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 11, 1))));
+            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
+        }
+        void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))));
+        (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
+        if (cptr.ld1s(cptr.add(iflags, 178))) {
+            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32(cptr.add(iflags, 100)) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 12, 1))));
+        }
+        __pc = 1;
+        continue;
+        }
+        case 1 /* skip_non_mons: */: {
         doing_what_is = schar((cptr.eq(goal, cptr.decay(what_is_a_location))));
         if (doing_what_is) {
             void cptr.sprintf(cptr.decay(kbuf), __sl44, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 7, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 9, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 10, 1))));
@@ -323,12 +333,21 @@ function getpos_help(force, goal) {
             void cptr.sprintf(cptr.decay(sbuf), __sl52, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 9, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
+        __pc = 4;
+        continue;
+        }
+        case 4: {
+        if (!force)
+            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl53);
+        (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl21);
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, (1));
+        (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    if (!force)
-        (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl53);
-    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl21);
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, (1));
-    (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
 }
 
 /** C ref: getpos.c:312 — @param {CPtr} a @param {CPtr} b @returns {CInt} */

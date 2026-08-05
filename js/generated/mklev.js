@@ -1068,6 +1068,7 @@ function mklev_sanity_check() {
 
 /** C ref: mklev.c:1251 */
 function makelevel() {
+    let w = cptr.box(0), h = cptr.box(0);
     let croom;
     let branchp;
     let prevstairs;
@@ -1119,8 +1120,6 @@ function makelevel() {
             if ((cptr.ldI16(cptr.add(gv, 82)) != -1)) {
                 let __go_fill_vault = false;
                 __skip_fill_vault: {
-                    let w = cptr.box(0);
-                    let h = cptr.box(0);
                     do {
                         if (debugcore(__sl1, (1))) {
                             let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));

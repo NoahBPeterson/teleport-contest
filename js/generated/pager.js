@@ -420,21 +420,19 @@ function trap_description(outbuf, tnum, x, y) {
 
 /** C ref: pager.c:186 — @param {CPtr} mon @param {CUInt} mhid_flags @param {CPtr} outbuf */
 export function mhidden_description(mon, mhid_flags, outbuf) {
+    let otmp = cptr.box(0), what, incl_article, fakeobj, x, y, glyph;
     let __go_objfrommap = false;
     __skip_objfrommap: {
-        let otmp = cptr.box(0);
-        let what;
         let reg;
         let buflen;
         let incl_prefix = schar((((mhid_flags & 1) >>> 0) != 0));
-        let incl_article = schar((((mhid_flags & 2) >>> 0) != 0));
+        incl_article = schar((((mhid_flags & 2) >>> 0) != 0));
         let show_altmon = schar((((mhid_flags & 4) >>> 0) != 0));
         let force_region = schar((((mhid_flags & 8) >>> 0) != 0));
-        let fakeobj;
         let isyou = schar((cptr.eq(mon, cptr.add(gy, 8))));
-        let x = i16((isyou ? cptr.ldI16(u) : cptr.ldI16(cptr.add(mon, 28))));
-        let y = i16((isyou ? cptr.ldI16(cptr.add(u, 2)) : cptr.ldI16(cptr.add(mon, 30))));
-        let glyph = (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) | 0 && !isyou ? 1 : 0) ? cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)) : glyph_at(x, y);
+        x = i16((isyou ? cptr.ldI16(u) : cptr.ldI16(cptr.add(mon, 28))));
+        y = i16((isyou ? cptr.ldI16(cptr.add(u, 2)) : cptr.ldI16(cptr.add(mon, 30))));
+        glyph = (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 52)) | 0 && !isyou ? 1 : 0) ? cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)) : glyph_at(x, y);
         cptr.st1(outbuf, 0);
         if ((cptr.ld1u(cptr.add((mon), 64)) & 7) == 1 || (cptr.ld1u(cptr.add((mon), 64)) & 7) == 2 ? 1 : 0) {
             if (incl_prefix)
@@ -1417,87 +1415,88 @@ export const what_is_a_location = cptr.bytes("a monster, object or location");
 
 /** C ref: pager.c:1673 — @param {CInt} mode @param {CPtr} click_cc @returns {CInt} */
 export function do_look(mode, click_cc) {
-    let __go_dowhatiscmd = false;
-    __skip_dowhatiscmd: {
-        let quick = schar((mode == 1));
-        let clicklook = schar((mode == 2));
-        let out_str = [];
-        let cq = cptr.alloc(32);
-        let cmdq;
-        let firstmatch = cptr.box(null);
-        let pm = null;
-        let supplemental_pm = cptr.box(null);
-        let i = 0;
-        let ans = 0;
-        let sym;
-        let found;
-        let cc = cptr.alloc(4);
-        let save_verbose;
-        let from_screen;
-        let clr = 8;
-        cptr.stI16(cc, 0);
-        cptr.stI16(cptr.add(cc, 2), 0);
-        if ((cmdq = cmdq_pop()) !== null) {
-            cptr.memcpy(cq, cmdq, 32);
-            cptr.free(cmdq);
-            if (cptr.ldI32(cq) == 0)
-                i = cptr.ld1s(cptr.add(cq, 4));
-            else
-                cmdq_clear(0);
-            { __go_dowhatiscmd = true; break __skip_dowhatiscmd; }
+    let quick, clicklook, out_str, cq, cmdq, firstmatch = cptr.box(0), pm, supplemental_pm = cptr.box(0), i, ans, sym, found, cc, save_verbose, from_screen, clr, pick_list = cptr.box(0), win, any, invlet, invobj, dmpbuf, temp_buf, supplemental_name;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        quick = schar((mode == 1));
+        clicklook = schar((mode == 2));
+        out_str = [];
+        cq = cptr.alloc(32);
+        firstmatch.v = null;
+        pm = null;
+        supplemental_pm.v = null;
+        i = 0;
+        ans = 0;
+        cc = cptr.alloc(4);
+        clr = 8;
+        cc.x = 0;
+        cc.y = 0;
+        if ((cmdq = cmdq_pop()) !== null) { __pc = 3; continue; }
+        __pc = 2; continue;
         }
-        if (!clicklook) {
-            if (quick) {
-                i = 121;
-            } else {
-                let pick_list = cptr.box(null);
-                let win;
-                let any = cptr.alloc(8);
-                cptr.memcpy(any, cptr.add(cg, 536), 8);
-                win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
-                (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
-                cptr.st1(any, 47);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 47 : 121)), 0, clr, __sl175, 0);
-                cptr.st1(any, 105);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), 0, 0, clr, __sl176, 0);
-                cptr.st1(any, 63);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 63 : 110)), 0, clr, __sl177, 0);
-                if (!cptr.ldI32(cptr.add(u, 1848)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                    cptr.memcpy(any, cptr.add(cg, 536), 8);
-                    add_menu_str(win, __sl4);
-                    cptr.st1(any, 109);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl178, 0);
-                    cptr.st1(any, 77);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl179, 0);
-                    cptr.st1(any, 111);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl180, 0);
-                    cptr.st1(any, 79);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl181, 0);
-                    cptr.st1(any, 116);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 94)), 0, clr, __sl182, 0);
-                    cptr.st1(any, 84);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 34)), 0, clr, __sl183, 0);
-                    cptr.st1(any, 101);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : 96)), 0, clr, __sl184, 0);
-                    cptr.st1(any, 69);
-                    add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 124)), 0, clr, __sl185, 0);
-                }
-                (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl186);
-                if (select_menu(win, 1, pick_list) > 0) {
-                    i = cptr.ld1s(pick_list.v);
-                    cptr.free(pick_list.v);
-                }
-                (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-            }
-            __go_dowhatiscmd = true; break __skip_dowhatiscmd;
+        case 3: {
+        cq = cmdq;
+        cptr.free(cmdq);
+        if (cq.typ == 0)
+            i = cq.key;
+        else
+            cmdq_clear(0);
+        { __pc = 1; continue; }
+        __pc = 2;
+        continue;
+        }
+        case 2: {
+        if (!clicklook) { __pc = 5; continue; }
+        __pc = 6; continue;
+        }
+        case 5: {
+        if (quick) {
+            i = 121;
         } else {
-            cptr.stI16(cc, cptr.ldI16(click_cc));
-            cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(click_cc, 2)));
-            sym = 0;
-            from_screen = (0);
+            pick_list.v = null;
+            any = cptr.alloc(8);
+            any = cptr.add(cg, 536);
+            win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+            (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
+            any.a_char = 47;
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 47 : 121)), 0, clr, __sl175, 0);
+            any.a_char = 105;
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), 0, 0, clr, __sl176, 0);
+            any.a_char = 63;
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 63 : 110)), 0, clr, __sl177, 0);
+            if (!cptr.ldI32(cptr.add(u, 1848)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+                any = cptr.add(cg, 536);
+                add_menu_str(win, __sl4);
+                any.a_char = 109;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl178, 0);
+                any.a_char = 77;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl179, 0);
+                any.a_char = 111;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl180, 0);
+                any.a_char = 79;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl181, 0);
+                any.a_char = 116;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 94)), 0, clr, __sl182, 0);
+                any.a_char = 84;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 34)), 0, clr, __sl183, 0);
+                any.a_char = 101;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : 96)), 0, clr, __sl184, 0);
+                any.a_char = 69;
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 124)), 0, clr, __sl185, 0);
+            }
+            (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl186);
+            if (select_menu(win, 1, pick_list) > 0) {
+                i = cptr.ld1s(pick_list.v);
+                cptr.free(pick_list.v);
+            }
+            (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
         }
-    }
-    if (__go_dowhatiscmd) {
+        __pc = 1;
+        continue;
+        }
+        case 1 /* dowhatiscmd: */: {
         switch (i) {
             default:
             case 113:
@@ -1506,13 +1505,11 @@ export function do_look(mode, click_cc) {
             case 47:
             from_screen = (1);
             sym = 0;
-            cptr.stI16(cc, cptr.ldI16(u));
-            cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
+            cc.x = cptr.ldI16(u);
+            cc.y = cptr.ldI16(cptr.add(u, 2));
             break;
             case 105:
             {
-                let invlet;
-                let invobj;
                 invlet = display_inventory(null, (1));
                 if (!invlet || invlet == 27 ? 1 : 0)
                     return 0;
@@ -1564,49 +1561,63 @@ export function do_look(mode, click_cc) {
             look_engrs((0));
             return 0;
         }
+        __pc = 4;
+        continue;
+        }
+        case 6: {
+        cc.x = cptr.ldI16(click_cc);
+        cc.y = cptr.ldI16(cptr.add(click_cc, 2));
+        sym = 0;
+        from_screen = (0);
+        __pc = 4;
+        continue;
+        }
+        case 4: {
+        save_verbose = cptr.ld1s(cptr.add(flags, 48));
+        cptr.st1(cptr.add(flags, 48), schar((cptr.ld1s(cptr.add(flags, 48)) && !quick ? 1 : 0)));
+        do {
+            pm = null;
+            cptr.st1(cptr.add(cptr.decay(out_str), 0, 1), 0);
+            if (from_screen || clicklook ? 1 : 0) {
+                if (from_screen) {
+                    if (cptr.ld1s(cptr.add(flags, 48)))
+                        pline(__sl189, cptr.decay(what_is_a_location));
+                    else
+                        pline(__sl190, cptr.decay(what_is_a_location));
+                    ans = getpos(cc, quick, cptr.decay(what_is_a_location));
+                    if (ans < 0 || cc.x < 0 ? 1 : 0)
+                        break;
+                    cptr.st1(cptr.add(flags, 48), (0));
+                }
+            }
+            found = do_screen_description(cc, schar((from_screen || clicklook ? 1 : 0)), sym, cptr.decay(out_str), firstmatch, supplemental_pm);
+            if (found) {
+                (cptr.ldPtr(cptr.add(windowprocs, 152)))(WIN_MESSAGE.v, 0, cptr.decay(out_str));
+                {
+                    void decode_mixed(cptr.decay(dmpbuf), cptr.decay(out_str));
+                    if (cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) < 32 || cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) >= 127 ? 1 : 0)
+                        cptr.st1(cptr.add(cptr.decay(dmpbuf), 0, 1), 32);
+                    dumplogmsg(cptr.decay(dmpbuf));
+                }
+                if ((((found == 1 && ans != 1 ? 1 : 0) && ans != 2 ? 1 : 0) && (ans == 3 || (cptr.ld1s(cptr.add(flags, 16)) && !quick ? 1 : 0) ? 1 : 0) ? 1 : 0) && !clicklook ? 1 : 0) {
+                    cptr.st1(cptr.add(cptr.decay(supplemental_name), 0, 1), 0);
+                    void cptr.strcpy(cptr.decay(temp_buf), firstmatch.v);
+                    void checkfile(cptr.decay(temp_buf), pm, ((ans == 3) ? 2 : 0) >>> 0, cptr.decay(supplemental_name));
+                    if (supplemental_pm.v)
+                        do_supplemental_info(cptr.decay(supplemental_name), supplemental_pm.v, schar((ans == 3)));
+                }
+            } else {
+                pline(__sl191);
+            }
+        } while (((from_screen && !quick ? 1 : 0) && ans != 2 ? 1 : 0) && !clicklook ? 1 : 0);
+        cptr.st1(cptr.add(flags, 48), save_verbose);
+        return 0;
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    save_verbose = cptr.ld1s(cptr.add(flags, 48));
-    cptr.st1(cptr.add(flags, 48), schar((cptr.ld1s(cptr.add(flags, 48)) && !quick ? 1 : 0)));
-    do {
-        pm = null;
-        cptr.st1(cptr.add(cptr.decay(out_str), 0, 1), 0);
-        if (from_screen || clicklook ? 1 : 0) {
-            if (from_screen) {
-                if (cptr.ld1s(cptr.add(flags, 48)))
-                    pline(__sl189, cptr.decay(what_is_a_location));
-                else
-                    pline(__sl190, cptr.decay(what_is_a_location));
-                ans = getpos(cc, quick, cptr.decay(what_is_a_location));
-                if (ans < 0 || cptr.ldI16(cc) < 0 ? 1 : 0)
-                    break;
-                cptr.st1(cptr.add(flags, 48), (0));
-            }
-        }
-        found = do_screen_description(cc, schar((from_screen || clicklook ? 1 : 0)), sym, cptr.decay(out_str), firstmatch, supplemental_pm);
-        if (found) {
-            (cptr.ldPtr(cptr.add(windowprocs, 152)))(WIN_MESSAGE.v, 0, cptr.decay(out_str));
-            {
-                let dmpbuf = new Uint8Array(256);
-                void decode_mixed(cptr.decay(dmpbuf), cptr.decay(out_str));
-                if (cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) < 32 || cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) >= 127 ? 1 : 0)
-                    cptr.st1(cptr.add(cptr.decay(dmpbuf), 0, 1), 32);
-                dumplogmsg(cptr.decay(dmpbuf));
-            }
-            if ((((found == 1 && ans != 1 ? 1 : 0) && ans != 2 ? 1 : 0) && (ans == 3 || (cptr.ld1s(cptr.add(flags, 16)) && !quick ? 1 : 0) ? 1 : 0) ? 1 : 0) && !clicklook ? 1 : 0) {
-                let temp_buf = new Uint8Array(256);
-                let supplemental_name = new Uint8Array(256);
-                cptr.st1(cptr.add(cptr.decay(supplemental_name), 0, 1), 0);
-                void cptr.strcpy(cptr.decay(temp_buf), firstmatch.v);
-                void checkfile(cptr.decay(temp_buf), pm, ((ans == 3) ? 2 : 0) >>> 0, cptr.decay(supplemental_name));
-                if (supplemental_pm.v)
-                    do_supplemental_info(cptr.decay(supplemental_name), supplemental_pm.v, schar((ans == 3)));
-            }
-        } else {
-            pline(__sl191);
-        }
-    } while (((from_screen && !quick ? 1 : 0) && ans != 2 ? 1 : 0) && !clicklook ? 1 : 0);
-    cptr.st1(cptr.add(flags, 48), save_verbose);
-    return 0;
 }
 
 /** C ref: pager.c:1966 — @param {CPtr} lo_x @param {CPtr} lo_y @param {CPtr} hi_x @param {CPtr} hi_y @param {CInt} nearby */

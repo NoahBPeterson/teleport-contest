@@ -2827,17 +2827,13 @@ function set_trap() {
 
 /** C ref: apply.c:2955 — @param {CPtr} obj @returns {CInt} */
 export function use_whip(obj) {
+    let mtmp, otmp, rx, ry, proficient, msg_slipsfree, msg_snap;
     let __go_whipattack = false;
     __skip_whipattack: {
         let buf = new Uint8Array(256);
-        let mtmp;
-        let otmp;
-        let rx;
-        let ry;
-        let proficient;
         let res = 0;
-        let msg_slipsfree = __sl423;
-        let msg_snap = __sl424;
+        msg_slipsfree = __sl423;
+        msg_snap = __sl424;
         if (!cptr.eq(obj, uwep.v)) {
             if (wield_tool(obj, __sl425)) {
                 cmdq_add_ec(0, doapply);

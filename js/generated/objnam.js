@@ -1130,13 +1130,9 @@ let __static_xname_flags_xname_full = 0; /** C ref: objnam.c:1016 — int (funct
 
 /** C ref: objnam.c:581 — @param {CPtr} obj @param {CUInt} cxn_flags @returns {CPtr} */
 function xname_flags(obj, cxn_flags) {
+    let buf, obufp, buf_end, buf_eos, bufspaceleft;
     let __go_nameit = false;
     __skip_nameit: {
-        let buf;
-        let obufp;
-        let buf_end;
-        let buf_eos;
-        let bufspaceleft;
         let typ = cptr.ldI16(cptr.add(obj, 32));
         let ocl = cptr.add(objects, typ, 120);
         let nn = cptr.ldI32(cptr.add(ocl, 16)) | 0;

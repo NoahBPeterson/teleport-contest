@@ -97,6 +97,12 @@ export async function runBootGame(opts) {
 
   let nextFd = 100;
   const fds = new Map();
+  // errno: C code branches on it after failed syscalls (getlock's open()
+  // takes goto gotlock only when errno == ENOENT). Darwin ENOENT = 2.
+  const setErrno = (n) => {
+    g.__errnoBuf[0] = n & 255; g.__errnoBuf[1] = (n >> 8) & 255;
+    g.__errnoBuf[2] = (n >> 16) & 255; g.__errnoBuf[3] = (n >> 24) & 255;
+  };
   function openFd(p, mode) {
     const fd = nextFd++;
     if (mode === 'w' || mode === 'w+') {
@@ -104,7 +110,7 @@ export async function runBootGame(opts) {
       realWrite(p, new Uint8Array(0));
     } else {
       const data = realRead(p);
-      if (!data) return -1;
+      if (!data) { setErrno(2); return -1; }
       fds.set(fd, { path: p, pos: 0, data, written: [], write: mode !== 'r' });
     }
     return fd;
@@ -186,6 +192,10 @@ export async function runBootGame(opts) {
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
   g.strerror = (e) => cptr.lit(`error ${Number(e)}`);
+  g.perror = (s) => {
+    const e = g.__errnoBuf[0] | (g.__errnoBuf[1] << 8) | (g.__errnoBuf[2] << 16) | (g.__errnoBuf[3] << 24);
+    err(`${s ? cptr.cstr(s) : ''}: error ${e}\n`);
+  };
   g.atoi = (p) => { const v = parseInt(cptr.cstr(p), 10); return Number.isNaN(v) ? 0 : v | 0; };
   g.realloc = (p, n) => {
     n = Number(n);
@@ -299,6 +309,11 @@ export async function runBootGame(opts) {
   }
   g.getpwuid = (uid) => makePasswd({ pw_name: '', pw_passwd: 'x', pw_uid: 501, pw_gid: 20, pw_gecos: '', pw_dir: tmpHome, pw_shell: '/bin/sh' });
   g.getpwnam = (name) => null;
+  // NULL like the recorder's environment: the official sessions were recorded
+  // under a GENERICUSERS account, so plname is cleared and askname() reads the
+  // player name from the session's own keystrokes. With USER/LOGNAME unset and
+  // getlogin() NULL, whoami() leaves plname empty and the same path runs.
+  g.getlogin = () => null;
 
   g.signal = (sig, handler) => { __trace('signal', sig); return null; };
   g.sigaction = (sig, act, oact) => 0;

@@ -1558,6 +1558,44 @@ export class Emitter {
         lab.dir = allFwd ? 'xforward' : 'xterminal';
         lab.hasLoop = (lab.sites || []).some((i) => i > lab.index);
         lab.region = region;
+        // The region is re-emitted after the __skip block, OUTSIDE the label's
+        // original enclosing blocks. C scopes names declared in those blocks
+        // across the label; relocated JS `let` does not — hoist region-referenced
+        // scalar decls (chain lab.block up to B, exclusive) to function top.
+        // Aggregates can't hoist through this path: throw into the state-machine
+        // fallback, which hoists everything.
+        {
+          const refd = new Set();
+          (function names(x) {
+            if (!x || typeof x !== 'object') return;
+            if (x.kind === 'DeclRefExpr') { const nm = x.name || x.referencedDecl?.name; if (nm) refd.add(nm); }
+            for (const c of x.inner || []) names(c);
+          })({ inner: region });
+          const hoistFromBlock = (blk2, limitIdx) => {
+            const its = (blk2.inner || []).filter((c) => c && c.kind);
+            for (const it of its.slice(0, limitIdx == null ? its.length : limitIdx)) {
+              if (it.kind !== 'DeclStmt') continue;
+              for (const dv of (it.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
+                if (!refd.has(dv.name) || dv.storageClass === 'static' || dv.storageClass === 'extern') continue;
+                const q = desugar(dv.type);
+                if (arrayParts(q) || (parseType(q).cls === 'record' && !this.isEnumType(q) && !q.includes('*'))) {
+                  throw new Error(`goto ${name}: relocated region references block-scoped aggregate ${dv.name} in ${fnName} (unsupported)`);
+                }
+                (this.regionHoisted || (this.regionHoisted = new Set())).add(dv.name);
+              }
+            }
+          };
+          let blk = lab.block;
+          while (blk && blk !== lab.xblock.B) {
+            hoistFromBlock(blk, null);
+            let cur = parent.get(blk);
+            while (cur && cur.kind !== 'CompoundStmt' && cur !== body) cur = parent.get(cur);
+            blk = cur;
+          }
+          // B's own leading items are wrapped in the __skip block, which also
+          // cuts their scope off from the dispatch region that follows it
+          hoistFromBlock(lab.xblock.B, allFwd ? lab.xblock.itemIdx : null);
+        }
         if (!blockLabels.has(lab.xblock.B)) blockLabels.set(lab.xblock.B, []);
         blockLabels.get(lab.xblock.B).push(lab);
         continue;
@@ -2676,6 +2714,7 @@ export class Emitter {
     }
     const lines = [];
     let smFallback = false;
+    this.regionHoisted = null; // per-function: stale names from a previous fn would suppress real decls
     try {
       this.gotoPlan = this.analyzeGotos(d.name, body);
     } catch (e) {
@@ -2725,8 +2764,11 @@ export class Emitter {
         lines.push(`    ${jsName(p.name)} = cptr.box(${jsName(p.name)});`);
       }
     }
+    // regionHoisted decls belong to the pattern lowerings only — the state
+    // machine hoists every local itself, so emitting both duplicates `let`s
+    const rhLines = [];
     if (this.regionHoisted?.size) {
-      lines.push(`    let ${[...this.regionHoisted].map((nm) => this.boxedVars?.has(nm) ? `${jsName(nm)} = ${this.cptrCall('box', '0')}` : jsName(nm)).join(', ')};`);
+      rhLines.push(`    let ${[...this.regionHoisted].map((nm) => this.boxedVars?.has(nm) ? `${jsName(nm)} = ${this.cptrCall('box', '0')}` : jsName(nm)).join(', ')};`);
       if ([...this.regionHoisted].some((nm) => this.boxedVars?.has(nm))) this.usesCptr = true;
     }
     if (smFallback) {
@@ -2738,7 +2780,8 @@ export class Emitter {
       }
     } else {
       try {
-        lines.push(...this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    ', body));
+        const bodyLines = this.emitBlockItems((body.inner || []).filter((x) => x && x.kind), '    ', body);
+        lines.push(...rhLines, ...bodyLines);
       } catch (e) {
         if (!/goto|label/i.test(String((e && e.message) || e))) throw e;
         // pattern lowerings rejected this function's control flow: fall back
