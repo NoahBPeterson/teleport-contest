@@ -420,15 +420,13 @@ function trap_description(outbuf, tnum, x, y) {
 
 /** C ref: pager.c:186 — @param {CPtr} mon @param {CUInt} mhid_flags @param {CPtr} outbuf */
 export function mhidden_description(mon, mhid_flags, outbuf) {
-    let otmp = cptr.box(0), what, incl_article, fakeobj, x, y, glyph;
+    let otmp = cptr.box(0), what, reg, buflen, incl_article, force_region, fakeobj, x, y, glyph;
     let __go_objfrommap = false;
     __skip_objfrommap: {
-        let reg;
-        let buflen;
         let incl_prefix = schar((((mhid_flags & 1) >>> 0) != 0));
         incl_article = schar((((mhid_flags & 2) >>> 0) != 0));
         let show_altmon = schar((((mhid_flags & 4) >>> 0) != 0));
-        let force_region = schar((((mhid_flags & 8) >>> 0) != 0));
+        force_region = schar((((mhid_flags & 8) >>> 0) != 0));
         let isyou = schar((cptr.eq(mon, cptr.add(gy, 8))));
         x = i16((isyou ? cptr.ldI16(u) : cptr.ldI16(cptr.add(mon, 28))));
         y = i16((isyou ? cptr.ldI16(cptr.add(u, 2)) : cptr.ldI16(cptr.add(mon, 30))));

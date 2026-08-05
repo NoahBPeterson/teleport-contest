@@ -312,6 +312,13 @@ export async function runBootGame(opts) {
     return assigned;
   };
   g.atof = (p) => { const v = parseFloat(cptr.cstr(p)); return Number.isNaN(v) ? 0 : v; };
+  // libm (Lua VM float paths): IEEE-double ops map 1:1 onto JS Math
+  g.floor = Math.floor;
+  g.ceil = Math.ceil;
+  g.fabs = Math.abs;
+  g.sqrt = Math.sqrt;
+  g.pow = Math.pow;
+  g.fmod = (a, b) => a % b;
   g.abs = (x) => Math.abs(Number(x)) | 0;
   g.labs = (x) => BigInt(Math.abs(Number(x)));
   g.getuid = () => 501;

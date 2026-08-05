@@ -197,10 +197,11 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
 
 /** C ref: rumors.c:196 */
 export function rumor_check() {
+    let tmpwin = cptr.box(0);
     let __go_no_rumors = false;
     __skip_no_rumors: {
         let rumors;
-        let tmpwin = cptr.box((-1));
+        tmpwin.v = (-1);
         let endp;
         let line = new Uint8Array(256);
         let xbuf = new Uint8Array(256);

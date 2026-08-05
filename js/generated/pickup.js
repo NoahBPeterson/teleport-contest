@@ -716,14 +716,14 @@ export function find_justpicked(olist) {
 
 /** C ref: pickup.c:672 — @param {CInt} what @returns {CInt} */
 export function pickup(what) {
-    let i, n, res, n_tried, n_picked, pick_list = cptr.box(0);
+    let i, n, res, n_tried, n_picked, pick_list = cptr.box(0), autopickup;
     let __go_menu_pickup = false;
     __skip_menu_pickup: {
         let count;
         n_tried = 0;
         n_picked = 0;
         pick_list.v = null;
-        let autopickup = schar((what > 0));
+        autopickup = schar((what > 0));
         let objchain_p;
         let traverse_how;
         if ((autopickup && cptr.ldI64(cptr.add(gm, 8)) < 0n ? 1 : 0) && unconscious() ? 1 : 0) {

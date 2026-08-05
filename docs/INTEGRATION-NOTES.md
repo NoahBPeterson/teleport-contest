@@ -40,6 +40,20 @@ session notes; short form — shims → four emitter fixes → truncation diagno
 → sandbox-legal architecture (embed nethackdir outside `js/`, in-memory VFS,
 in-process segment isolation) → CI green → parity grind.
 
+**Update (2026-08-05, later):** Milestone 1 complete — ALL 44 sessions run
+crash-free end to end. Corpus: RNG 101,798+/792,838 (12.8%+), screens 264+.
+Fixed this round (all central): errno/perror/getlogin/tty-chars/ICRNL/fscanf
+/libm shims (harness), goto-relocation decl hoisting (region + B-prefix +
+B-trailing refs), boxedVars typedef desugaring (record locals misboxed),
+smMode record-local registration + hoisted local array storage, by-value
+struct params (cptr.dup entry clone), clang array_filler init encoding
+(silent corpus-wide static-data loss — shtypes etc.), stI16 box signedness
+(coordxy -1 read back as 65535). Frontier is now DIVERGENCE, not crashes:
+(1) screen capture/alignment — several sessions have ~99% RNG but 1/N
+screens (systematic, not per-session); (2) rogue chargen RNG diverges from
+call 0 (seed0077); (3) mid-session RNG truncations. Then Milestone 2
+(sandbox-legal architecture) for a real leaderboard score.
+
 Scope: `tools/c2js/` clang-AST→JS transpiler is done and proven (rnd/hacklib
 differential parity, setjmp/union gates, varargs, goto lowerings, 167/170
 corpus files transpile clean). Current goal: boot `js/generated/*` under

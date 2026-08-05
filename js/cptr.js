@@ -149,7 +149,7 @@ export function ldU16(p) {
 
 /** 16-bit store, little-endian (truncate mod 2^16 like C). @param {CPtr} p @param {number} v @returns {number} v */
 export function stI16(p, v) {
-  if (p.isBox) { p.v = v & 0xFFFF; return v; }
+  if (p.isBox) { p.v = (v << 16) >> 16; return v; } // signed canonical, like stI32's v|0 — raw .v reads must see C's int16 value
   const b = p.buf, o = p.off, x = v & 0xFFFF;
   b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF;
   return v;

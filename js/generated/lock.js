@@ -913,13 +913,11 @@ function obstructed(x, y, quietly) {
 
 /** C ref: lock.c:957 @returns {CInt} */
 export function doclose() {
+    let x, y, door, res;
     let __go_nodoor = false;
     __skip_nodoor: {
-        let x;
-        let y;
-        let door;
         let portcullis;
-        let res = 0;
+        res = 0;
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
             You_cant(__sl112);
             return 0;

@@ -1888,14 +1888,12 @@ cptr.stI32(cptr.add(__static_set_mimic_sym_furnsyms, 28), 36); /** C ref: makemo
 
 /** C ref: makemon.c:2393 — @param {CPtr} mtmp */
 export function set_mimic_sym(mtmp) {
-    let appear, ap_type, s_sym, otmp;
+    let appear, ap_type, s_sym, otmp, mx, my;
     let __go_assign_sym = false;
     __skip_assign_sym: {
         let typ;
         let roomno;
         let rt;
-        let mx;
-        let my;
         if (!mtmp || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0)
             return;
         mx = cptr.ldI16(cptr.add(mtmp, 28));

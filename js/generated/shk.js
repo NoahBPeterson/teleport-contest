@@ -2238,13 +2238,14 @@ export function paybill(croaked, silently) {
 
 /** C ref: shk.c:2577 — @param {CPtr} shkp @param {CInt} numsk @param {CInt} croaked @param {CInt} silently @returns {CInt} */
 function inherits(shkp, numsk, croaked, silently) {
+    let taken;
     let __go_skip = false;
     __skip_skip: {
         let loss = 0n;
         let umoney;
         let eshkp = (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((shkp), 312)), 24)));
         let take = (0);
-        let taken = (0);
+        taken = (0);
         let uinshop = schar((cptr.strchr(cptr.add(u, 83), cptr.ld1s(cptr.add(eshkp, 44))) !== null));
         let takes = new Uint8Array(256);
         cptr.stI32(cptr.add(shkp, 88), cptr.stI32(cptr.add(shkp, 96), 0));

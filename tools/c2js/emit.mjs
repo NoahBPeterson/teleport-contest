@@ -1580,11 +1580,15 @@ export class Emitter {
         // fallback, which hoists everything.
         {
           const refd = new Set();
+          // names used by the relocated region AND by B's items after the
+          // label item — both are emitted after the __skip block, outside
+          // the scope of decls the skip block swallowed
+          const bItems = (lab.xblock.B.inner || []).filter((c) => c && c.kind);
           (function names(x) {
             if (!x || typeof x !== 'object') return;
             if (x.kind === 'DeclRefExpr') { const nm = x.name || x.referencedDecl?.name; if (nm) refd.add(nm); }
             for (const c of x.inner || []) names(c);
-          })({ inner: region });
+          })({ inner: [...region, ...bItems.slice(lab.xblock.itemIdx + 1)] });
           const hoistFromBlock = (blk2, limitIdx) => {
             const its = (blk2.inner || []).filter((c) => c && c.kind);
             for (const it of its.slice(0, limitIdx == null ? its.length : limitIdx)) {
