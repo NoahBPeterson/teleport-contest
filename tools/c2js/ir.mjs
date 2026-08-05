@@ -23,9 +23,23 @@ import path from 'node:path';
 
 export function makeLocationTracker(compileCwd, mainFileAbs) {
   let lastFile; // mirrors LastLocFilename (initially empty string in clang)
+  // Per-node file strings come from whatever checkout dumped the AST — a
+  // worktree's dump records the worktree's absolute path, so comparing raw
+  // strings against this checkout's mainFileAbs filters out every decl and
+  // build.mjs silently writes empty modules. Canonicalize (realpath) each
+  // distinct file string once; symlinked trees then land on the same string.
+  const canonCache = new Map();
+  const canonFile = (p) => {
+    let c = canonCache.get(p);
+    if (c === undefined) {
+      try { c = fs.realpathSync(p); } catch { c = p; }
+      canonCache.set(p, c);
+    }
+    return c;
+  };
   function trackBare(l) {
     if (!l || l.offset === undefined) return null;
-    if (l.file) lastFile = path.isAbsolute(l.file) ? l.file : path.resolve(compileCwd, l.file);
+    if (l.file) lastFile = canonFile(path.isAbsolute(l.file) ? l.file : path.resolve(compileCwd, l.file));
     return { file: lastFile, offset: l.offset, included: !!l.includedFrom };
   }
   function track(l) {
