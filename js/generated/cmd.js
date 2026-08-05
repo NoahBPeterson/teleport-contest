@@ -3315,7 +3315,8 @@ export function handler_change_autocompletions() {
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
 }
 
-const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4); /** C ref: cmd.c:2525 — int[171] (function-static) */
+const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
+cptr.stI32(cptr.add(__static_extcmds_match_retmatchlist, 0), 0); /** C ref: cmd.c:2525 — int[171] (function-static) */
 
 /** C ref: cmd.c:2523 — @param {CPtr} findstr @param {CInt} ecmflags @param {CPtr} matchlist @returns {CInt} */
 export function extcmds_match(findstr, ecmflags, matchlist) {
@@ -3974,7 +3975,8 @@ export function count_autocompletions() {
     return n;
 }
 
-const __static_lock_mouse_buttons_mousebtn = cptr.alloc(2 * 8); /** C ref: cmd.c:3328 — struct ext_func_tab *[2] (function-static) */
+const __static_lock_mouse_buttons_mousebtn = cptr.alloc(2 * 8);
+cptr.stPtr(cptr.add(__static_lock_mouse_buttons_mousebtn, 0), null); /** C ref: cmd.c:3328 — struct ext_func_tab *[2] (function-static) */
 
 /** C ref: cmd.c:3326 — @param {CInt} savebtns */
 export function lock_mouse_buttons(savebtns) {
@@ -4252,9 +4254,9 @@ export function rhack(key) {
         __pc = 5; continue;
         }
         case 4: {
-        cq = cmdq;
+        cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
-        if (cq.typ == 1 && (cmdq_ec = cq.ec_entry) !== null ? 1 : 0) { __pc = 7; continue; }
+        if (cptr.ldI32(cq) == 1 && (cmdq_ec = cptr.ldPtr(cptr.add(cq, 16))) !== null ? 1 : 0) { __pc = 7; continue; }
         __pc = 6; continue;
         }
         case 7: {
@@ -4263,7 +4265,7 @@ export function rhack(key) {
         continue;
         }
         case 6: {
-        key = (cq.typ == 0) ? cq.key : 0;
+        key = (cptr.ldI32(cq) == 0) ? cptr.ld1s(cptr.add(cq, 4)) : 0;
         __pc = 3;
         continue;
         }
@@ -4616,14 +4618,14 @@ export function getdir(s) {
         qbuf = new Uint8Array(128);
         cc = cptr.alloc(4);
         void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 7, 1))));
-        cc.x = cptr.ldI16(u), cc.y = cptr.ldI16(cptr.add(u, 2));
+        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
         pos = getpos(cc, (1), cptr.decay(qbuf));
         if (pos < 0) {
             cptr.stI32(cptr.add(u, 4), cptr.stI32(cptr.add(u, 8), cptr.stI32(cptr.add(u, 12), 0)));
             mod = 0;
         } else {
-            cptr.stI32(cptr.add(u, 4), (cc.x - cptr.ldI16(u)) | 0);
-            cptr.stI32(cptr.add(u, 8), (cc.y - cptr.ldI16(cptr.add(u, 2))) | 0);
+            cptr.stI32(cptr.add(u, 4), (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
+            cptr.stI32(cptr.add(u, 8), (cptr.ldI16(cptr.add(cc, 2)) - cptr.ldI16(cptr.add(u, 2))) | 0);
             if (!cptr.ldI32(cptr.add(iflags, 28))) {
                 cptr.stI32(cptr.add(u, 4), sgn(cptr.ldI32(cptr.add(u, 4))));
                 cptr.stI32(cptr.add(u, 8), sgn(cptr.ldI32(cptr.add(u, 8))));

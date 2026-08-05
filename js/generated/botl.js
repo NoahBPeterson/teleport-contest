@@ -1678,6 +1678,7 @@ cptr.st1(cptr.add(cptr.add(condtests, 696), 22), (0));
 
 /** C ref: botl.c:852 — int[30] */
 export const cond_idx = cptr.alloc(30 * 4);
+cptr.stI32(cptr.add(cond_idx, 0), 0);
 
 /** C ref: botl.c:854 — char[5] */
 const c_Wall = cptr.bytes("Wall");

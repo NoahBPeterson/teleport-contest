@@ -5899,7 +5899,7 @@ cptr.stPtr(cptr.add(OptS_type, 24), __sl431);
 cptr.stPtr(cptr.add(OptS_type, 32), __sl432);
 
 /** C ref: options.c:118 — char[18] */
-const def_inv_order = [];
+const def_inv_order = [12, 5, 2, 3, 7, 9, 10, 8, 4, 11, 6, 13, 14, 15, 16, 0];
 
 /** C ref: options.c:124 — char[7] */
 const none = cptr.bytes("(none)");

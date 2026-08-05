@@ -114,6 +114,7 @@ cptr.stPtr(cptr.add(nhcb_name, 24), __sl3);
 
 /** C ref: decl.c:15 — int[4] */
 export const nhcb_counts = cptr.alloc(4 * 4);
+cptr.stI32(cptr.add(nhcb_counts, 0), 0);
 
 /** C ref: decl.c:16 — struct c_color_names */
 export let c_color_names = cptr.alloc(88);
@@ -475,6 +476,7 @@ cptr.stPtr(g_init_a, null);
 cptr.stI32(cptr.add(g_init_a, 8), 0);
 cptr.st1(cptr.add(g_init_a, 12), (0));
 cptr.stPtr(cptr.add(g_init_a, 16), null);
+cptr.stU64(cptr.add(cptr.add(g_init_a, 24), 0), 0n);
 cptr.stPtr(cptr.add(g_init_a, 232), null);
 cptr.stI32(cptr.add(g_init_a, 240), 0);
 cptr.stI32(cptr.add(g_init_a, 244), 0);
@@ -489,6 +491,9 @@ cptr.st1(cptr.add(g_init_a, 272), (1));
 
 /** C ref: decl.c:206 — struct instance_globals_b */
 let g_init_b = cptr.alloc(4872);
+cptr.stPtr(cptr.add(g_init_b, 0), [
+    { fldname: null, fldfmt: null, time: 0n, chg: (0), percent_matters: (0), percent_value: 0, anytype: 18, a: { a_void: null }, rawval: { a_void: null }, val: null, valwidth: 0, idxmax: 0, fld: 0, hilite_rule: null, thresholds: null }
+]);
 cptr.st1(cptr.add(g_init_b, 4752), (0));
 cptr.stU64(cptr.add(g_init_b, 4760), 0n);
 cptr.stI16(cptr.add(g_init_b, 4768), 0);
@@ -517,14 +522,38 @@ cptr.st1(cptr.add(g_init_b, 4865), (1));
 
 /** C ref: decl.c:238 — struct instance_globals_c */
 let g_init_c = cptr.alloc(584);
+cptr.stPtr(cptr.add(g_init_c, 0), null);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 0), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 8), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 16), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 40), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 48), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 56), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 64), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 72), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 80), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 88), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 96), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 104), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 112), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 120), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 128), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 136), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 144), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 152), 0n);
+cptr.stU64(cptr.add(cptr.add(g_init_c, 16), 160), 0n);
 cptr.stI32(cptr.add(g_init_c, 208), 0);
 cptr.stI32(cptr.add(g_init_c, 216), 0);
 cptr.stI16(cptr.add(g_init_c, 296), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_c, 296), 2), 0);
+cptr.st1(cptr.add(cptr.add(g_init_c, 300), 0), 0);
 cptr.stI32(cptr.add(g_init_c, 316), 0);
 cptr.stPtr(cptr.add(g_init_c, 320), null);
 cptr.stU64(cptr.add(g_init_c, 328), 0n);
 cptr.stPtr(cptr.add(g_init_c, 336), null);
+cptr.st1(cptr.add(cptr.add(g_init_c, 344), 0), 0);
 cptr.stPtr(cptr.add(g_init_c, 408), null);
 cptr.stPtr(cptr.add(g_init_c, 416), null);
 cptr.stI32(cptr.add(g_init_c, 424), -1);
@@ -540,6 +569,7 @@ cptr.stPtr(cptr.add(g_init_c, 472), null);
 cptr.stPtr(cptr.add(g_init_c, 480), null);
 cptr.stPtr(cptr.add(g_init_c, 488), null);
 cptr.st1(cptr.add(g_init_c, 496), (0));
+cptr.st1(cptr.add(cptr.add(g_init_c, 497), 0), 0);
 cptr.stI32(cptr.add(g_init_c, 564), 0);
 cptr.stPtr(cptr.add(g_init_c, 568), null);
 cptr.stI16(cptr.add(g_init_c, 576), -1);
@@ -557,6 +587,7 @@ cptr.st1(cptr.add(g_init_d, 33), 0);
 cptr.stPtr(cptr.add(g_init_d, 40), null);
 cptr.stPtr(cptr.add(g_init_d, 48), null);
 cptr.stI32(cptr.add(g_init_d, 56), 0);
+cptr.st1(cptr.add(cptr.add(g_init_d, 60), 0), 0);
 cptr.stU64(cptr.add(g_init_d, 128), 0n);
 cptr.st1(cptr.add(g_init_d, 136), (0));
 cptr.stI32(cptr.add(g_init_d, 140), 0);
@@ -579,6 +610,7 @@ cptr.st1(cptr.add(g_init_e, 36), (1));
 /** C ref: decl.c:333 — struct instance_globals_f */
 let g_init_f = cptr.alloc(144);
 cptr.stPtr(g_init_f, null);
+cptr.stPtr(cptr.add(cptr.add(g_init_f, 8), 0), null);
 cptr.stPtr(cptr.add(g_init_f, 88), null);
 cptr.st1(cptr.add(g_init_f, 96), (0));
 cptr.st1(cptr.add(g_init_f, 97), (0));
@@ -590,6 +622,11 @@ cptr.st1(cptr.add(g_init_f, 136), (1));
 
 /** C ref: decl.c:351 — struct instance_globals_g */
 let g_init_g = cptr.alloc(95000);
+cptr.stPtr(cptr.add(g_init_g, 0), [
+    { gnew: 0 }
+]);
+cptr.stI16(cptr.add(cptr.add(g_init_g, 94080), 0), 0);
+cptr.stI16(cptr.add(cptr.add(g_init_g, 94122), 0), 0);
 cptr.stI16(cptr.add(g_init_g, 94164), 0);
 cptr.stI16(cptr.add(g_init_g, 94166), 0);
 cptr.stPtr(cptr.add(g_init_g, 94168), null);
@@ -598,6 +635,7 @@ cptr.stI16(cptr.add(g_init_g, 94180), 0);
 cptr.stI16(cptr.add(g_init_g, 94182), 0);
 cptr.stI16(cptr.add(g_init_g, 94184), 0);
 cptr.stPtr(cptr.add(g_init_g, 94192), null);
+cptr.stU64(cptr.add(cptr.add(g_init_g, 94200), 0), 0n);
 cptr.stU64(cptr.add(g_init_g, 94568), 0n);
 cptr.st1(cptr.add(g_init_g, 94576), (0));
 cptr.stU64(cptr.add(g_init_g, 94584), 0n);
@@ -605,6 +643,7 @@ cptr.stPtr(cptr.add(g_init_g, 94592), null);
 cptr.stPtr(cptr.add(g_init_g, 94600), null);
 cptr.stPtr(cptr.add(g_init_g, 94608), null);
 cptr.stPtr(cptr.add(g_init_g, 94616), null);
+cptr.stI16(cptr.add(cptr.add(g_init_g, 94624), 0), 0);
 cptr.stPtr(cptr.add(g_init_g, 94968), null);
 cptr.st1(cptr.add(g_init_g, 94976), (0));
 cptr.stI32(cptr.add(g_init_g, 94980), 0);
@@ -615,6 +654,7 @@ cptr.st1(cptr.add(g_init_g, 94992), (1));
 let g_init_h = cptr.alloc(104);
 cptr.stPtr(g_init_h, null);
 cptr.stU64(cptr.add(g_init_h, 8), 1n << 3n);
+cptr.st1(cptr.add(cptr.add(g_init_h, 16), 0), 0);
 cptr.stI32(cptr.add(g_init_h, 80), 0);
 cptr.stPtr(cptr.add(g_init_h, 88), null);
 cptr.st1(cptr.add(g_init_h, 96), (1));
@@ -656,8 +696,10 @@ cptr.stI32(cptr.add(g_init_l, 12), 0);
 cptr.strcpy(cptr.add(g_init_l, 16), __sl69);
 cptr.stI32(cptr.add(g_init_l, 64), 51);
 cptr.stPtr(cptr.add(g_init_l, 72), null);
+cptr.stPtr(cptr.add(cptr.add(g_init_l, 80), 0), (null));
 cptr.stI32(cptr.add(g_init_l, 208), 0);
 cptr.stPtr(cptr.add(g_init_l, 216), null);
+cptr.st1(cptr.add(cptr.add(g_init_l, 224), 0), 0);
 cptr.stI32(cptr.add(g_init_l, 480), 0);
 cptr.stI32(cptr.add(g_init_l, 484), 0);
 cptr.st1(cptr.add(g_init_l, 488), (0));
@@ -669,6 +711,8 @@ cptr.stPtr(cptr.add(g_init_l, 528), null);
 cptr.stI16(cptr.add(cptr.add(g_init_l, 528), 8), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_l, 528), 10), 0);
 cptr.stPtr(cptr.add(g_init_l, 544), null);
+cptr.st1(cptr.add(cptr.add(g_init_l, 552), 0), 0);
+cptr.st1(cptr.add(cptr.add(g_init_l, 572), 0), 0);
 cptr.st1(cptr.add(g_init_l, 692), (1));
 
 /** C ref: decl.c:493 — struct instance_globals_m */
@@ -677,6 +721,7 @@ cptr.stI32(g_init_m, 0);
 cptr.stI32(cptr.add(g_init_m, 4), 0);
 cptr.stU64(cptr.add(g_init_m, 8), 0n);
 cptr.stPtr(cptr.add(g_init_m, 16), null);
+cptr.st1(cptr.add(cptr.add(g_init_m, 24), 0), 0);
 cptr.stI32(cptr.add(g_init_m, 152), 0);
 cptr.stI32(cptr.add(cptr.add(g_init_m, 152), 4), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_m, 152), 8), 0);
@@ -700,6 +745,8 @@ cptr.stPtr(cptr.add(g_init_m, 240), null);
 cptr.stPtr(cptr.add(g_init_m, 248), null);
 cptr.st1(cptr.add(g_init_m, 256), (0));
 cptr.stPtr(cptr.add(g_init_m, 264), null);
+cptr.st1(cptr.add(cptr.add(g_init_m, 304), 0), 0);
+cptr.st1(cptr.add(cptr.add(g_init_m, 337), 0), 0);
 cptr.stI32(cptr.add(g_init_m, 372), 0);
 cptr.st1(cptr.add(g_init_m, 376), (0));
 cptr.st1(cptr.add(g_init_m, 377), (1));
@@ -717,6 +764,7 @@ cptr.stPtr(cptr.add(g_init_n, 72), null);
 cptr.stI32(cptr.add(g_init_n, 80), 0);
 cptr.stI16(cptr.add(g_init_n, 84), 0);
 cptr.st1(cptr.add(g_init_n, 86), (0));
+cptr.st1(cptr.add(cptr.add(g_init_n, 87), 0), 0);
 cptr.stI32(cptr.add(g_init_n, 152), 0);
 cptr.stI32(cptr.add(g_init_n, 156), 0);
 cptr.stI16(cptr.add(g_init_n, 160), 0);
@@ -728,12 +776,16 @@ cptr.st1(cptr.add(g_init_n, 168), (1));
 /** C ref: decl.c:577 — struct instance_globals_o */
 let g_init_o = cptr.alloc(560);
 cptr.stPtr(g_init_o, null);
+cptr.stPtr(cptr.add(cptr.add(g_init_o, 8), 0), null);
 cptr.stPtr(cptr.add(g_init_o, 56), null);
 cptr.stI32(cptr.add(g_init_o, 64), 0);
 cptr.stI32(cptr.add(g_init_o, 68), 0);
 cptr.stPtr(cptr.add(g_init_o, 72), null);
 cptr.stPtr(cptr.add(g_init_o, 80), null);
+cptr.st1(cptr.add(cptr.add(g_init_o, 88), 0), 0);
+cptr.st1(cptr.add(cptr.add(g_init_o, 284), 0), 0);
 cptr.stI16(cptr.add(g_init_o, 480), 0);
+cptr.stI16(cptr.add(cptr.add(g_init_o, 484), 0), 0);
 cptr.stI32(cptr.add(g_init_o, 520), 0);
 cptr.st1(cptr.add(g_init_o, 524), (0));
 cptr.st1(cptr.add(g_init_o, 525), (0));
@@ -760,10 +812,12 @@ cptr.st1(cptr.add(g_init_p, 12), 0);
 cptr.stPtr(cptr.add(g_init_p, 16), null);
 cptr.stI32(cptr.add(g_init_p, 24), 0);
 cptr.st1(cptr.add(g_init_p, 28), 0);
+cptr.st1(cptr.add(cptr.add(g_init_p, 29), 0), 0);
 cptr.stI32(cptr.add(g_init_p, 228), 0);
 cptr.st1(cptr.add(g_init_p, 232), (0));
 cptr.stI32(cptr.add(g_init_p, 236), 0);
 cptr.stI32(cptr.add(g_init_p, 240), 0);
+cptr.st1(cptr.add(cptr.add(g_init_p, 244), 0), 0);
 cptr.stI32(cptr.add(g_init_p, 500), 0);
 cptr.stI32(cptr.add(g_init_p, 504), 0);
 cptr.st1(cptr.add(g_init_p, 508), 0);
@@ -779,10 +833,16 @@ cptr.st1(g_init_q, (1));
 
 /** C ref: decl.c:657 — struct instance_globals_r */
 let g_init_r = cptr.alloc(408);
+cptr.st1(cptr.add(g_init_r, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(g_init_r, 196), 0), [
+    { rlx: 0 }
+]);
 cptr.st1(cptr.add(g_init_r, 340), (0));
 cptr.stPtr(cptr.add(g_init_r, 344), null);
 cptr.stPtr(cptr.add(g_init_r, 352), null);
+cptr.st1(cptr.add(cptr.add(g_init_r, 360), 0), 0);
 cptr.st1(cptr.add(g_init_r, 364), 0);
+cptr.st1(cptr.add(cptr.add(g_init_r, 366), 0), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_r, 366), 14), 0);
 cptr.stPtr(cptr.add(g_init_r, 384), null);
 cptr.st1(cptr.add(g_init_r, 400), (1));
@@ -791,12 +851,22 @@ cptr.st1(cptr.add(g_init_r, 400), (1));
 let g_init_s = cptr.alloc(1424);
 cptr.stI32(g_init_s, 0);
 cptr.stPtr(cptr.add(g_init_s, 8), null);
+cptr.stI32(cptr.add(cptr.add(g_init_s, 16), 0), 0);
 cptr.st1(cptr.add(g_init_s, 180), (0));
 cptr.stPtr(cptr.add(g_init_s, 184), null);
 cptr.stI16(cptr.add(g_init_s, 192), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_s, 192), 2), 0);
+cptr.stPtr(cptr.add(cptr.add(g_init_s, 200), 0), null);
+cptr.stPtr(cptr.add(cptr.add(g_init_s, 296), 0), [
+    { customization_name: null }
+]);
+cptr.stPtr(cptr.add(cptr.add(g_init_s, 296), 128), [
+    { customization_name: null }
+]);
+cptr.st1(cptr.add(cptr.add(g_init_s, 680), 0), 0);
 cptr.stI32(cptr.add(g_init_s, 876), 0);
 cptr.stI32(cptr.add(g_init_s, 880), 0);
+cptr.st1(cptr.add(cptr.add(g_init_s, 884), 0), 0);
 cptr.stI32(cptr.add(g_init_s, 940), 0);
 cptr.st1(cptr.add(g_init_s, 944), (0));
 cptr.st1(cptr.add(g_init_s, 945), (0));
@@ -807,6 +877,7 @@ cptr.st1(cptr.add(g_init_s, 976), (0));
 cptr.st1(cptr.add(g_init_s, 977), (0));
 cptr.st1(cptr.add(g_init_s, 978), (0));
 cptr.stI32(cptr.add(g_init_s, 980), 0);
+cptr.stPtr(cptr.add(cptr.add(g_init_s, 984), 0), null);
 cptr.stI32(cptr.add(g_init_s, 1384), 0);
 cptr.st1(cptr.add(g_init_s, 1388), 97);
 cptr.stI32(cptr.add(g_init_s, 1392), (0));
@@ -822,6 +893,7 @@ let g_init_t = cptr.alloc(456);
 cptr.stPtr(g_init_t, null);
 cptr.st1(cptr.add(g_init_t, 24), 0);
 cptr.st1(cptr.add(g_init_t, 25), 0);
+cptr.st1(cptr.add(cptr.add(g_init_t, 26), 0), 0);
 cptr.stPtr(cptr.add(g_init_t, 328), null);
 cptr.stPtr(cptr.add(g_init_t, 336), null);
 cptr.stPtr(cptr.add(g_init_t, 360), null);
@@ -845,6 +917,8 @@ cptr.st1(g_init_u, (0));
 cptr.st1(cptr.add(g_init_u, 1), (0));
 cptr.stPtr(cptr.add(g_init_u, 8), null);
 cptr.stPtr(cptr.add(cptr.add(g_init_u, 8), 8), null);
+cptr.stPtr(cptr.add(cptr.add(cptr.add(g_init_u, 8), 16), 0), null);
+cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(g_init_u, 8), 16), 0), 8), null);
 cptr.stPtr(cptr.add(cptr.add(g_init_u, 8), 160), null);
 cptr.stPtr(cptr.add(cptr.add(g_init_u, 8), 168), null);
 cptr.stPtr(cptr.add(cptr.add(g_init_u, 8), 176), null);
@@ -862,6 +936,8 @@ cptr.st1(cptr.add(cptr.add(g_init_u, 8), 222), 0);
 cptr.st1(cptr.add(cptr.add(g_init_u, 8), 223), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 8), 224), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 8), 226), 0);
+cptr.stI16(cptr.add(cptr.add(cptr.add(g_init_u, 8), 228), 0), 0);
+cptr.stI16(cptr.add(cptr.add(cptr.add(g_init_u, 8), 240), 0), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 8), 252), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 8), 264), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 8), 276), 0);
@@ -886,6 +962,8 @@ cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 54), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 56), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 58), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 60), 0);
+cptr.stI16(cptr.add(cptr.add(cptr.add(g_init_u, 320), 62), 0), 0);
+cptr.stI16(cptr.add(cptr.add(cptr.add(g_init_u, 320), 74), 0), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 86), 0);
 cptr.stI16(cptr.add(cptr.add(g_init_u, 320), 98), 0);
 cptr.stI16(cptr.add(g_init_u, 432), 0);
@@ -894,11 +972,35 @@ cptr.st1(cptr.add(g_init_u, 436), (1));
 
 /** C ref: decl.c:780 — struct instance_globals_v */
 let g_init_v = cptr.alloc(200);
+cptr.st1(cptr.add(g_init_v, 0), 0);
+cptr.st1(cptr.add(g_init_v, 1), 0);
+cptr.st1(cptr.add(g_init_v, 2), 0);
+cptr.st1(cptr.add(g_init_v, 3), 0);
+cptr.st1(cptr.add(g_init_v, 4), 0);
+cptr.st1(cptr.add(g_init_v, 5), 0);
+cptr.st1(cptr.add(g_init_v, 6), 0);
+cptr.st1(cptr.add(g_init_v, 7), 0);
+cptr.st1(cptr.add(g_init_v, 8), 0);
+cptr.st1(cptr.add(g_init_v, 9), 0);
+cptr.st1(cptr.add(g_init_v, 10), 0);
+cptr.st1(cptr.add(g_init_v, 11), 0);
+cptr.st1(cptr.add(g_init_v, 12), 0);
+cptr.st1(cptr.add(g_init_v, 13), 0);
+cptr.st1(cptr.add(g_init_v, 14), 0);
+cptr.st1(cptr.add(g_init_v, 15), 0);
+cptr.st1(cptr.add(g_init_v, 16), 0);
+cptr.st1(cptr.add(g_init_v, 17), 0);
+cptr.st1(cptr.add(g_init_v, 18), 0);
+cptr.st1(cptr.add(g_init_v, 19), 0);
+cptr.st1(cptr.add(g_init_v, 20), 0);
+cptr.st1(cptr.add(g_init_v, 21), 0);
+cptr.stPtr(cptr.add(cptr.add(g_init_v, 32), 0), null);
 cptr.st1(cptr.add(g_init_v, 80), (0));
 cptr.stI16(cptr.add(g_init_v, 82), 0);
 cptr.stI16(cptr.add(g_init_v, 84), 0);
 cptr.st1(cptr.add(g_init_v, 86), (0));
 cptr.stU64(cptr.add(g_init_v, 88), 0n);
+cptr.st1(cptr.add(cptr.add(g_init_v, 96), 0), 0);
 cptr.stPtr(cptr.add(g_init_v, 120), null);
 cptr.stPtr(cptr.add(g_init_v, 128), null);
 cptr.stPtr(cptr.add(g_init_v, 136), null);
@@ -911,6 +1013,8 @@ let g_init_w = cptr.alloc(192);
 cptr.stI32(g_init_w, 0);
 cptr.stU64(cptr.add(g_init_w, 8), 0n);
 cptr.st1(cptr.add(g_init_w, 16), 0);
+cptr.st1(cptr.add(cptr.add(g_init_w, 17), 0), 0);
+cptr.st1(cptr.add(cptr.add(g_init_w, 23), 0), 0);
 cptr.stI32(cptr.add(g_init_w, 152), 0);
 cptr.stPtr(cptr.add(g_init_w, 160), null);
 cptr.stI32(cptr.add(g_init_w, 168), 0);
@@ -947,6 +1051,7 @@ cptr.st1(cptr.add(g_init_z, 2), (1));
 let init_svb = cptr.alloc(96);
 cptr.stPtr(init_svb, null);
 cptr.stPtr(cptr.add(init_svb, 8), null);
+cptr.stI32(cptr.add(cptr.add(init_svb, 16), 0), 0);
 
 /** C ref: decl.c:867 — struct instance_globals_saved_c */
 let init_svc = cptr.alloc(720);
@@ -954,6 +1059,17 @@ cptr.stI32(init_svc, 0);
 
 /** C ref: decl.c:872 — struct instance_globals_saved_d */
 let init_svd = cptr.alloc(2904);
+cptr.st1(cptr.add(cptr.add(init_svd, 0), 0), 0);
+cptr.st1(cptr.add(cptr.add(cptr.add(init_svd, 0), 24), 0), 0);
+cptr.st1(cptr.add(cptr.add(cptr.add(init_svd, 0), 39), 0), 0);
+cptr.st1(cptr.add(cptr.add(cptr.add(init_svd, 0), 54), 0), 0);
+cptr.st1(cptr.add(cptr.add(init_svd, 0), 69), 0);
+cptr.stI32(cptr.add(cptr.add(init_svd, 0), 72), 0);
+cptr.stI16(cptr.add(cptr.add(init_svd, 0), 96), 0);
+cptr.stI16(cptr.add(cptr.add(init_svd, 0), 98), 0);
+cptr.stI16(cptr.add(cptr.add(init_svd, 0), 100), 0);
+cptr.stI32(cptr.add(cptr.add(init_svd, 0), 104), 0);
+cptr.stI32(cptr.add(cptr.add(init_svd, 0), 108), 0);
 cptr.stI16(cptr.add(init_svd, 1792), 0);
 cptr.stI16(cptr.add(cptr.add(init_svd, 1792), 4), 0);
 cptr.stI16(cptr.add(cptr.add(init_svd, 1792), 8), 0);
@@ -995,6 +1111,7 @@ cptr.stI16(cptr.add(cptr.add(init_svd, 1906), 12), 0);
 cptr.stI16(cptr.add(cptr.add(init_svd, 1906), 14), 0);
 cptr.stPtr(cptr.add(init_svd, 1928), null);
 cptr.stI32(cptr.add(init_svd, 1936), 0);
+cptr.stI16(cptr.add(cptr.add(init_svd, 1940), 0), 0);
 
 /** C ref: decl.c:888 — struct instance_globals_saved_e */
 let init_sve = cptr.alloc(8);
@@ -1015,17 +1132,29 @@ cptr.stPtr(init_svk, null);
 
 /** C ref: decl.c:908 — struct instance_globals_saved_l */
 let init_svl = cptr.alloc(89720);
+cptr.stPtr(cptr.add(init_svl, 0), [0]);
+cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 0), [
+    { glyph: 0 }
+]);
+cptr.stPtr(cptr.add(cptr.add(cptr.add(init_svl, 1680), 60480), 0), [
+    null
+]);
+cptr.stPtr(cptr.add(cptr.add(cptr.add(init_svl, 1680), 73920), 0), [
+    null
+]);
 cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 87360), null);
 cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 87368), null);
 cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 87376), null);
 cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 87384), null);
 cptr.stPtr(cptr.add(cptr.add(init_svl, 1680), 87392), null);
 cptr.st1(cptr.add(cptr.add(init_svl, 1680), 87400), 0);
+cptr.st1(cptr.add(cptr.add(init_svl, 89208), 0), 0);
 
 /** C ref: decl.c:918 — struct instance_globals_saved_m */
 let init_svm = cptr.alloc(4616);
 cptr.stPtr(init_svm, null);
 cptr.stU64(cptr.add(init_svm, 8), 0n);
+cptr.st1(cptr.add(cptr.add(init_svm, 16), 0), 0);
 
 /** C ref: decl.c:926 — struct instance_globals_saved_n */
 let init_svn = cptr.alloc(52);
@@ -1078,6 +1207,9 @@ cptr.stU64(cptr.add(init_svo, 16), 0n);
 
 /** C ref: decl.c:949 — struct instance_globals_saved_p */
 let init_svp = cptr.alloc(96);
+cptr.st1(cptr.add(init_svp, 0), 0);
+cptr.st1(cptr.add(cptr.add(init_svp, 32), 0), 0);
+cptr.st1(cptr.add(cptr.add(init_svp, 64), 0), 0);
 
 /** C ref: decl.c:956 — struct instance_globals_saved_q */
 let init_svq = cptr.alloc(88);
@@ -1085,13 +1217,16 @@ cptr.stI32(init_svq, 0);
 
 /** C ref: decl.c:961 — struct instance_globals_saved_r */
 let init_svr = cptr.alloc(18368);
+cptr.stI16(cptr.add(init_svr, 0), 0);
 
 /** C ref: decl.c:966 — struct instance_globals_saved_s */
 let init_svs = cptr.alloc(352);
+cptr.stI16(cptr.add(init_svs, 0), 0);
 cptr.stPtr(cptr.add(init_svs, 344), null);
 
 /** C ref: decl.c:972 — struct instance_globals_saved_t */
 let init_svt = cptr.alloc(16);
+cptr.st1(cptr.add(init_svt, 0), 0);
 cptr.stU64(cptr.add(init_svt, 8), 1n);
 
 /** C ref: decl.c:979 — struct instance_globals_saved_u */

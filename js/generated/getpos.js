@@ -702,9 +702,9 @@ export function getpos(ccp, force, goal) {
         ty.v = cptr.ldI16(cptr.add(u, 2));
         msg_given = (1);
         show_goal_msg = (0);
-        garr = cptr.alloc(6 * 8);
-        gcount = cptr.alloc(6 * 4);
-        gidx = cptr.alloc(6 * 4);
+        garr = cptr.alloc(6 * 8); cptr.stPtr(cptr.add(garr, 0), null);
+        gcount = cptr.alloc(6 * 4); cptr.stI32(cptr.add(gcount, 0), 0);
+        gidx = cptr.alloc(6 * 4); cptr.stI32(cptr.add(gidx, 0), 0);
         udx = schar(cptr.ldI32(cptr.add(u, 4)));
         udy = schar(cptr.ldI32(cptr.add(u, 8)));
         udz = schar(cptr.ldI32(cptr.add(u, 12)));
@@ -983,8 +983,8 @@ export function getpos(ccp, force, goal) {
         case 50: {
         tmpcrd = cptr.alloc(4);
         if (getpos_menu(tmpcrd, gloc)) {
-            cx.v = tmpcrd.x;
-            cy.v = tmpcrd.y;
+            cx.v = cptr.ldI16(tmpcrd);
+            cy.v = cptr.ldI16(cptr.add(tmpcrd, 2));
         }
         { __pc = 3; continue; }
         __pc = 49;

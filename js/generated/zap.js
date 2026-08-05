@@ -5013,6 +5013,7 @@ function wishcmdassist(triesleft) {
 
 /** C ref: zap.c:6222 — char *[20] */
 const wish_history = cptr.alloc(20 * 8);
+cptr.stPtr(cptr.add(wish_history, 0), null);
 
 /** C ref: zap.c:6223 — int */
 let wish_history_idx = 0;
@@ -5081,7 +5082,7 @@ function wish_history_menu(buf) {
 
 /** C ref: zap.c:6314 */
 export function makewish() {
-    let buf = [];
+    let buf = [0];
     let bufcpy = new Uint8Array(256);
     let wish = new Uint8Array(256);
     let promptbuf = new Uint8Array(128);

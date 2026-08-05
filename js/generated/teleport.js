@@ -881,9 +881,9 @@ export function level_tele() {
         force_dest = (0);
         if (cptr.ld1s(cptr.add(iflags, 15))) {
             do {
-                newlevel.dnum = i16((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1176, __sl48), rn2(cptr.ldI32(svn))) : rn2(cptr.ldI32(svn))));
-            } while ((newlevel.dnum == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))) || cptr.ldI32(cptr.add(cptr.add(cptr.add(svd, newlevel.dnum, 112), 72), 20)) | 0 ? 1 : 0) || !cptr.ldI16(cptr.add(cptr.add(svd, newlevel.dnum, 112), 98)) ? 1 : 0);
-            newlevel.dlevel = i16(((1 + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1180, __sl48), rn2(dunlevs_in_dungeon(newlevel))) : rn2(dunlevs_in_dungeon(newlevel)))) | 0));
+                cptr.stI16(newlevel, i16((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1176, __sl48), rn2(cptr.ldI32(svn))) : rn2(cptr.ldI32(svn)))));
+            } while ((cptr.ldI16(newlevel) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))) || cptr.ldI32(cptr.add(cptr.add(cptr.add(svd, cptr.ldI16(newlevel), 112), 72), 20)) | 0 ? 1 : 0) || !cptr.ldI16(cptr.add(cptr.add(svd, cptr.ldI16(newlevel), 112), 98)) ? 1 : 0);
+            cptr.stI16(cptr.add(newlevel, 2), i16(((1 + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1180, __sl48), rn2(dunlevs_in_dungeon(newlevel))) : rn2(dunlevs_in_dungeon(newlevel)))) | 0)));
             assign_level(cptr.add(u, 38), cptr.add(u, 24));
             schedule_goto(newlevel, 0, null, null);
             return;
@@ -974,8 +974,8 @@ export function level_tele() {
         newlev = print_dungeon((1), destlev, destdnum);
         if (!newlev)
             return;
-        newlevel.dnum = destdnum.v;
-        newlevel.dlevel = i16(destlev.v);
+        cptr.stI16(newlevel, destdnum.v);
+        cptr.stI16(cptr.add(newlevel, 2), i16(destlev.v));
         if ((cptr.ldI16((newlevel)) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) && !(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) ? 1 : 0) {
             if (!cptr.ldI32(cptr.add(u, 1944)) && (amu = mksobj(213, (1), (0))) !== null ? 1 : 0) {
                 amu = addinv(amu);
@@ -1063,8 +1063,8 @@ export function level_tele() {
                 You_cant(cptr.decay(__static_level_tele_get_there_from), __sl69);
                 return;
             }
-            newlevel.dnum = cptr.ldI16(cptr.add(u, 24));
-            newlevel.dlevel = i16(((llimit + newlev) | 0));
+            cptr.stI16(newlevel, cptr.ldI16(cptr.add(u, 24)));
+            cptr.stI16(cptr.add(newlevel, 2), i16(((llimit + newlev) | 0)));
             schedule_goto(newlevel, 0, null, null);
             return;
         }
@@ -1112,7 +1112,7 @@ export function level_tele() {
         }
         if (cptr.ld1s(cptr.add(cptr.add(svk, 16), 0, 1))) {
             lsav = cptr.alloc(4);
-            lsav = cptr.add(u, 24);
+            cptr.memcpy(lsav, cptr.add(u, 24), 4);
             cptr.stI16(cptr.add(u, 24), 0);
             cptr.stI16(cptr.add(cptr.add(u, 24), 2), i16(((newlev <= -10) ? -10 : 0)));
             done(0);
@@ -1121,8 +1121,8 @@ export function level_tele() {
         }
         if (escape_by_flying) {
             You(__sl37, escape_by_flying);
-            newlevel.dnum = 0;
-            newlevel.dlevel = 0;
+            cptr.stI16(newlevel, 0);
+            cptr.stI16(cptr.add(newlevel, 2), 0);
         } else if (force_dest) {
             ;
         } else if (cptr.ldI16(cptr.add(u, 24)) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 12))) && newlev >= ((cptr.ldI32(cptr.add(cptr.add(svd, cptr.ldI16(cptr.add(u, 24)), 112), 108)) + dunlevs_in_dungeon(cptr.add(u, 24))) | 0) ? 1 : 0) {

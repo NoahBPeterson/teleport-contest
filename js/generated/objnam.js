@@ -1780,8 +1780,8 @@ function doname_base(obj, doname_flags) {
                 full_burn_time = BigInt.asIntN(64, 20n * BigInt(cptr.ldI16(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 80))));
                 turns_left = cptr.ldI64(cptr.add(obj, 184));
                 if (cptr.ldI32(cptr.add(obj, 76))) {
-                    timer = cptr.add(cg, 536);
-                    timer.a_obj = obj;
+                    cptr.memcpy(timer, cptr.add(cg, 536), 8);
+                    cptr.stPtr(timer, obj);
                     turns_left += BigInt.asIntN(64, peek_timer(4, timer) - cptr.ldI64(cptr.add(svm, 8)));
                 }
                 if (turns_left < full_burn_time)
@@ -4420,7 +4420,7 @@ export function readobjnam(bp, no_wish) {
         void mungspaces(bp);
         if ((!strncmpi((bp), (__sl715), -1) || !strncmpi((bp), (__sl716), -1) ? 1 : 0) || !strncmpi((bp), (__sl717), -1) ? 1 : 0)
             return no_wish;
-        void cptr.strcpy(cptr.decay(d.fruitbuf), bp);
+        void cptr.strcpy(cptr.add(d, 481), bp);
         if (readobjnam_preparse(d)) { __pc = 9; continue; }
         __pc = 8; continue;
         }
@@ -4430,8 +4430,8 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 8: {
-        if (!d.cnt)
-            d.cnt = 1;
+        if (!cptr.ldI32(cptr.add(d, 72)))
+            cptr.stI32(cptr.add(d, 72), 1);
         readobjnam_parse_charges(d);
         let __sw11 = readobjnam_postparse1(d);
         if (__sw11 === 0) { __pc = 13; continue; }
@@ -4462,7 +4462,7 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 16: {
-        return d.otmp;
+        return cptr.ldPtr(d);
         __pc = 17;
         continue;
         }
@@ -4510,7 +4510,7 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 25: {
-        return d.otmp;
+        return cptr.ldPtr(d);
         __pc = 26;
         continue;
         }
@@ -4559,7 +4559,7 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 34: {
-        return d.otmp;
+        return cptr.ldPtr(d);
         __pc = 35;
         continue;
         }
@@ -4583,29 +4583,29 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 3 /* wiztrap: */: {
-        if ((cptr.ld1s(cptr.add(flags, 10)) && !cptr.ldI32(cptr.add(program_state, 100)) ? 1 : 0) && !d.oclass ? 1 : 0) {
-            if ((d.otmp = wizterrainwish(d)) !== null)
-                return d.otmp;
+        if ((cptr.ld1s(cptr.add(flags, 10)) && !cptr.ldI32(cptr.add(program_state, 100)) ? 1 : 0) && !cptr.ld1s(cptr.add(d, 24)) ? 1 : 0) {
+            if ((cptr.stPtr(d, wizterrainwish(d))) !== null)
+                return cptr.ldPtr(d);
         }
-        if (!d.oclass && !d.typ ? 1 : 0) { __pc = 39; continue; }
+        if (!cptr.ld1s(cptr.add(d, 24)) && !cptr.ldI32(cptr.add(d, 84)) ? 1 : 0) { __pc = 39; continue; }
         __pc = 38; continue;
         }
         case 39: {
-        if (!strncmpi(d.bp, __sl718, 7)) { __pc = 41; continue; }
+        if (!strncmpi(cptr.ldPtr(cptr.add(d, 8)), __sl718, 7)) { __pc = 41; continue; }
         __pc = 42; continue;
         }
         case 41: {
-        d.typ = rnd_otyp_by_wpnskill(16);
+        cptr.stI32(cptr.add(d, 84), rnd_otyp_by_wpnskill(16));
         { __pc = 5; continue; }
         __pc = 40;
         continue;
         }
         case 42: {
-        if (!strncmpi(d.bp, __sl719, 6)) { __pc = 44; continue; }
+        if (!strncmpi(cptr.ldPtr(cptr.add(d, 8)), __sl719, 6)) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
-        d.typ = rnd_otyp_by_wpnskill(14);
+        cptr.stI32(cptr.add(d, 84), rnd_otyp_by_wpnskill(14));
         { __pc = 5; continue; }
         __pc = 43;
         continue;
@@ -4619,110 +4619,110 @@ export function readobjnam(bp, no_wish) {
         continue;
         }
         case 38: {
-        if (!d.oclass)
+        if (!cptr.ld1s(cptr.add(d, 24)))
             return (null);
         __pc = 4;
         continue;
         }
         case 4 /* any: */: {
-        if (!d.oclass)
-            d.oclass = cptr.ld1s(cptr.add(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4996, __sl720), rn2(13)) : rn2(13)), 1));
+        if (!cptr.ld1s(cptr.add(d, 24)))
+            cptr.st1(cptr.add(d, 24), cptr.ld1s(cptr.add(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4996, __sl720), rn2(13)) : rn2(13)), 1)));
         __pc = 5;
         continue;
         }
         case 5 /* typfnd: */: {
-        if (d.typ)
-            d.oclass = cptr.ld1s(cptr.add(cptr.add(objects, d.typ, 120), 70));
-        if (d.typ && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) {
-            switch (d.typ) {
+        if (cptr.ldI32(cptr.add(d, 84)))
+            cptr.st1(cptr.add(d, 24), cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI32(cptr.add(d, 84)), 120), 70)));
+        if (cptr.ldI32(cptr.add(d, 84)) && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) {
+            switch (cptr.ldI32(cptr.add(d, 84))) {
                 case 213:
-                d.typ = 212;
+                cptr.stI32(cptr.add(d, 84), 212);
                 break;
                 case 262:
-                d.typ = rnd_class(224, 225);
+                cptr.stI32(cptr.add(d, 84), rnd_class(224, 225));
                 break;
                 case 263:
-                d.typ = 255;
+                cptr.stI32(cptr.add(d, 84), 255);
                 break;
                 case 409:
-                d.typ = 407;
+                cptr.stI32(cptr.add(d, 84), 407);
                 break;
                 case 228:
-                d.typ = 227;
+                cptr.stI32(cptr.add(d, 84), 227);
                 break;
                 default:
-                if (cptr.ldI32(cptr.add(cptr.add(objects, d.typ, 120), 44)))
+                if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI32(cptr.add(d, 84)), 120), 44)))
                     return null;
                 break;
             }
         }
-        if ((d.typ == 265 && d.mntmp >= 0 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(mons, d.mntmp, 96), 28)) == 42 ? 1 : 0) {
-            d.typ = (271 + ((d.mntmp - 206) | 0)) | 0;
-            d.mntmp = -1;
+        if ((cptr.ldI32(cptr.add(d, 84)) == 265 && cptr.ldI32(cptr.add(d, 152)) >= 0 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 28)) == 42 ? 1 : 0) {
+            cptr.stI32(cptr.add(d, 84), (271 + ((cptr.ldI32(cptr.add(d, 152)) - 206) | 0)) | 0);
+            cptr.stI32(cptr.add(d, 152), -1);
         }
-        d.otmp = d.typ ? mksobj(d.typ, (1), (0)) : mkobj(d.oclass, (0));
-        d.typ = cptr.ldI16(cptr.add(d.otmp, 32)), d.oclass = cptr.ld1s(cptr.add(d.otmp, 49));
-        if (cptr.ldI32(cptr.add(d.otmp, 136))) {
-            cptr.stU64(cptr.add(d.otmp, 40), 1n);
-            cptr.stI32(cptr.add(d.otmp, 36), weight(d.otmp) >>> 0);
-            if (d.gsize > 1)
-                cptr.stI32(cptr.add(d.otmp, 36), (cptr.ldI32(cptr.add(d.otmp, 36)) + (Math.imul(((5 + Math.imul(((d.gsize - 2) | 0), 10)) | 0) >>> 0, cptr.ldI32(cptr.add(d.otmp, 36))) >>> 0)) | 0);
-            if (d.cnt > 1) {
+        cptr.stPtr(d, cptr.ldI32(cptr.add(d, 84)) ? mksobj(cptr.ldI32(cptr.add(d, 84)), (1), (0)) : mkobj(cptr.ld1s(cptr.add(d, 24)), (0)));
+        cptr.stI32(cptr.add(d, 84), cptr.ldI16(cptr.add(cptr.ldPtr(d), 32))), cptr.st1(cptr.add(d, 24), cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)));
+        if (cptr.ldI32(cptr.add(cptr.ldPtr(d), 136))) {
+            cptr.stU64(cptr.add(cptr.ldPtr(d), 40), 1n);
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 36), weight(cptr.ldPtr(d)) >>> 0);
+            if (cptr.ldI32(cptr.add(d, 216)) > 1)
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 36), (cptr.ldI32(cptr.add(cptr.ldPtr(d), 36)) + (Math.imul(((5 + Math.imul(((cptr.ldI32(cptr.add(d, 216)) - 2) | 0), 10)) | 0) >>> 0, cptr.ldI32(cptr.add(cptr.ldPtr(d), 36))) >>> 0)) | 0);
+            if (cptr.ldI32(cptr.add(d, 72)) > 1) {
                 rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5059, __sl720), rn2(5)) : rn2(5)) + (2)) | 0);
-                if (rn1cnt > ((6 - d.gsize) | 0))
-                    rn1cnt = (6 - d.gsize) | 0;
-                if (d.cnt > rn1cnt && ((!cptr.ld1s(cptr.add(flags, 10)) || cptr.ldI32(cptr.add(program_state, 100)) ? 1 : 0) || yn_function(__sl721, cptr.decay(ynchars), 110, (1)) != 121 ? 1 : 0) ? 1 : 0)
-                    d.cnt = rn1cnt;
-                cptr.stI32(cptr.add(d.otmp, 36), Math.imul(cptr.ldI32(cptr.add(d.otmp, 36)), d.cnt >>> 0));
+                if (rn1cnt > ((6 - cptr.ldI32(cptr.add(d, 216))) | 0))
+                    rn1cnt = (6 - cptr.ldI32(cptr.add(d, 216))) | 0;
+                if (cptr.ldI32(cptr.add(d, 72)) > rn1cnt && ((!cptr.ld1s(cptr.add(flags, 10)) || cptr.ldI32(cptr.add(program_state, 100)) ? 1 : 0) || yn_function(__sl721, cptr.decay(ynchars), 110, (1)) != 121 ? 1 : 0) ? 1 : 0)
+                    cptr.stI32(cptr.add(d, 72), rn1cnt);
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 36), Math.imul(cptr.ldI32(cptr.add(cptr.ldPtr(d), 36)), cptr.ldI32(cptr.add(d, 72)) >>> 0));
             }
-            d.cnt = 0;
-        } else if (d.cnt > 0) {
-            if (cptr.ldI32(cptr.add(cptr.add(objects, d.typ, 120), 20)) | 0 && (((cptr.ld1s(cptr.add(flags, 10)) || d.cnt < (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5077, __sl720), rnd(6)) : rnd(6)) ? 1 : 0) || (d.cnt <= 7 && (cptr.ldI16(cptr.add(d.otmp, 32)) == 224 || cptr.ldI16(cptr.add(d.otmp, 32)) == 225 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (d.cnt <= 20 && (((d.typ == 474 || d.typ == 473 ? 1 : 0) || (((cptr.ld1s(cptr.add(d.otmp, 49)) == 2 || cptr.ld1s(cptr.add(d.otmp, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) || (d.oclass == 2 && (((cptr.ld1s(cptr.add(d.otmp, 49)) == 2 || cptr.ld1s(cptr.add(d.otmp, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-                cptr.stU64(cptr.add(d.otmp, 40), BigInt(d.cnt));
+            cptr.stI32(cptr.add(d, 72), 0);
+        } else if (cptr.ldI32(cptr.add(d, 72)) > 0) {
+            if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI32(cptr.add(d, 84)), 120), 20)) | 0 && (((cptr.ld1s(cptr.add(flags, 10)) || cptr.ldI32(cptr.add(d, 72)) < (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5077, __sl720), rnd(6)) : rnd(6)) ? 1 : 0) || (cptr.ldI32(cptr.add(d, 72)) <= 7 && (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 224 || cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 225 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (cptr.ldI32(cptr.add(d, 72)) <= 20 && (((cptr.ldI32(cptr.add(d, 84)) == 474 || cptr.ldI32(cptr.add(d, 84)) == 473 ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 2 || cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(d, 24)) == 2 && (((cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 2 || cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+                cptr.stU64(cptr.add(cptr.ldPtr(d), 40), BigInt(cptr.ldI32(cptr.add(d, 72))));
         }
-        if (d.islit && ((((d.typ == 227 || d.typ == 228 ? 1 : 0) || d.typ == 226 ? 1 : 0) || (cptr.ldI16(cptr.add(d.otmp, 32)) == 224 || cptr.ldI16(cptr.add(d.otmp, 32)) == 225 ? 1 : 0) ? 1 : 0) || d.typ == 321 ? 1 : 0) ? 1 : 0) {
-            place_object(d.otmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
-            begin_burn(d.otmp, (0));
-            obj_extract_self(d.otmp);
+        if (cptr.ldI32(cptr.add(d, 160)) && ((((cptr.ldI32(cptr.add(d, 84)) == 227 || cptr.ldI32(cptr.add(d, 84)) == 228 ? 1 : 0) || cptr.ldI32(cptr.add(d, 84)) == 226 ? 1 : 0) || (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 224 || cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 225 ? 1 : 0) ? 1 : 0) || cptr.ldI32(cptr.add(d, 84)) == 321 ? 1 : 0) ? 1 : 0) {
+            place_object(cptr.ldPtr(d), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+            begin_burn(cptr.ldPtr(d), (0));
+            obj_extract_self(cptr.ldPtr(d));
         }
-        if (d.spesgn == 0) {
-            d.spe = cptr.ld1s(cptr.add(d.otmp, 48));
+        if (cptr.ldI32(cptr.add(d, 80)) == 0) {
+            cptr.stI32(cptr.add(d, 76), cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)));
         } else if (cptr.ld1s(cptr.add(flags, 10))) {
             ;
-        } else if (((d.oclass == 3 || d.oclass == 2 ? 1 : 0) || (cptr.ld1s(cptr.add((d.otmp), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((d.otmp), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) || (d.oclass == 4 && cptr.ldI32(cptr.add(cptr.add(objects, d.typ, 120), 36)) | 0 ? 1 : 0) ? 1 : 0) {
-            if (d.spe > (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5102, __sl720), rnd(5)) : rnd(5)) && d.spe > cptr.ld1s(cptr.add(d.otmp, 48)) ? 1 : 0)
-                d.spe = 0;
-            if (d.spe > 2 && ((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 ? 1 : 0)
-                d.spesgn = -1;
+        } else if (((cptr.ld1s(cptr.add(d, 24)) == 3 || cptr.ld1s(cptr.add(d, 24)) == 2 ? 1 : 0) || (cptr.ld1s(cptr.add((cptr.ldPtr(d)), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(d, 24)) == 4 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI32(cptr.add(d, 84)), 120), 36)) | 0 ? 1 : 0) ? 1 : 0) {
+            if (cptr.ldI32(cptr.add(d, 76)) > (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5102, __sl720), rnd(5)) : rnd(5)) && cptr.ldI32(cptr.add(d, 76)) > cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)) ? 1 : 0)
+                cptr.stI32(cptr.add(d, 76), 0);
+            if (cptr.ldI32(cptr.add(d, 76)) > 2 && ((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 ? 1 : 0)
+                cptr.stI32(cptr.add(d, 80), -1);
         } else {
-            if (d.oclass == 11 || d.typ == 231 ? 1 : 0) {
-                if (d.spe > 1 && d.spesgn == -1 ? 1 : 0)
-                    d.spe = 1;
+            if (cptr.ld1s(cptr.add(d, 24)) == 11 || cptr.ldI32(cptr.add(d, 84)) == 231 ? 1 : 0) {
+                if (cptr.ldI32(cptr.add(d, 76)) > 1 && cptr.ldI32(cptr.add(d, 80)) == -1 ? 1 : 0)
+                    cptr.stI32(cptr.add(d, 76), 1);
             } else {
-                if (d.spe > 0 && d.spesgn == -1 ? 1 : 0)
-                    d.spe = 0;
+                if (cptr.ldI32(cptr.add(d, 76)) > 0 && cptr.ldI32(cptr.add(d, 80)) == -1 ? 1 : 0)
+                    cptr.stI32(cptr.add(d, 76), 0);
             }
-            if (d.spe > cptr.ld1s(cptr.add(d.otmp, 48)))
-                d.spe = cptr.ld1s(cptr.add(d.otmp, 48));
+            if (cptr.ldI32(cptr.add(d, 76)) > cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)))
+                cptr.stI32(cptr.add(d, 76), cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)));
         }
-        if (d.spesgn == -1)
-            d.spe = -d.spe;
-        switch (d.typ) {
+        if (cptr.ldI32(cptr.add(d, 80)) == -1)
+            cptr.stI32(cptr.add(d, 76), -cptr.ldI32(cptr.add(d, 76)));
+        switch (cptr.ldI32(cptr.add(d, 84))) {
             case 296:
-            cptr.st1(cptr.add(d.otmp, 48), 0);
-            if (d.contents == 1) {
-                cptr.stI32(cptr.add(d.otmp, 168), -1);
-            } else if (d.contents == 2) {
-                cptr.stI32(cptr.add(d.otmp, 168), -1);
-                cptr.st1(cptr.add(d.otmp, 48), 1);
+            cptr.st1(cptr.add(cptr.ldPtr(d), 48), 0);
+            if (cptr.ldI32(cptr.add(d, 156)) == 1) {
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 168), -1);
+            } else if (cptr.ldI32(cptr.add(d, 156)) == 2) {
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 168), -1);
+                cptr.st1(cptr.add(cptr.ldPtr(d), 48), 1);
             }
             break;
             case 234:
-            if (d.wetness)
-                cptr.st1(cptr.add(d.otmp, 48), schar(d.wetness));
+            if (cptr.ldI32(cptr.add(d, 212)))
+                cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar(cptr.ldI32(cptr.add(d, 212))));
             break;
             case 285:
-            cptr.st1(cptr.add(d.otmp, 48), schar(d.ftype));
+            cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar(cptr.ldI32(cptr.add(d, 220))));
             // @FallThrough
             ;
             case 221:
@@ -4735,167 +4735,167 @@ export function readobjnam(bp, no_wish) {
             case 241:
             case 265:
             {
-                P = (((d.mntmp) >= 0 && (d.mntmp) < 383 ? 1 : 0)) ? cptr.add(mons, d.mntmp, 96) : null;
-                cptr.st1(cptr.add(d.otmp, 48), schar((!P ? 0 : (((cptr.ldU64(cptr.add((P), 80)) & 262144n) != 0n) ? 3 : ((d.mgend == 1 && !((cptr.ldU64(cptr.add((P), 80)) & 65536n) != 0n) ? 1 : 0) ? 1 : ((d.mgend == 0 && !((cptr.ldU64(cptr.add((P), 80)) & 131072n) != 0n) ? 1 : 0) ? 2 : 0))))));
-                if (P && cptr.ld1s(cptr.add(d.otmp, 48)) == 0 ? 1 : 0)
-                    cptr.st1(cptr.add(d.otmp, 48), schar((((cptr.ldU64(cptr.add((P), 80)) & 65536n) != 0n) ? 2 : (((cptr.ldU64(cptr.add((P), 80)) & 131072n) != 0n) ? 1 : ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5163, __sl720), rn2(2)) : rn2(2)) ? 2 : 1)))));
-                if (d.ishistoric && d.typ == 476 ? 1 : 0)
-                    cptr.st1(cptr.add(d.otmp, 48), cptr.ld1s(cptr.add(d.otmp, 48)) | 4);
+                P = (((cptr.ldI32(cptr.add(d, 152))) >= 0 && (cptr.ldI32(cptr.add(d, 152))) < 383 ? 1 : 0)) ? cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96) : null;
+                cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar((!P ? 0 : (((cptr.ldU64(cptr.add((P), 80)) & 262144n) != 0n) ? 3 : ((cptr.ldI32(cptr.add(d, 208)) == 1 && !((cptr.ldU64(cptr.add((P), 80)) & 65536n) != 0n) ? 1 : 0) ? 1 : ((cptr.ldI32(cptr.add(d, 208)) == 0 && !((cptr.ldU64(cptr.add((P), 80)) & 131072n) != 0n) ? 1 : 0) ? 2 : 0))))));
+                if (P && cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)) == 0 ? 1 : 0)
+                    cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar((((cptr.ldU64(cptr.add((P), 80)) & 65536n) != 0n) ? 2 : (((cptr.ldU64(cptr.add((P), 80)) & 131072n) != 0n) ? 1 : ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5163, __sl720), rn2(2)) : rn2(2)) ? 2 : 1)))));
+                if (cptr.ldI32(cptr.add(d, 168)) && cptr.ldI32(cptr.add(d, 84)) == 476 ? 1 : 0)
+                    cptr.st1(cptr.add(cptr.ldPtr(d), 48), cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)) | 4);
                 break;
             }
             ;
             case 364:
-            cptr.st1(cptr.add(d.otmp, 48), 1);
+            cptr.st1(cptr.add(cptr.ldPtr(d), 48), 1);
             break;
             case 480:
             case 479:
-            cptr.st1(cptr.add(d.otmp, 48), 1);
+            cptr.st1(cptr.add(cptr.ldPtr(d), 48), 1);
             break;
             case 414:
             if (!cptr.ld1s(cptr.add(flags, 10))) {
-                cptr.st1(cptr.add(d.otmp, 48), schar(((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5182, __sl720), rn2(10)) : rn2(10)) ? -1 : 0)));
+                cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar(((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5182, __sl720), rn2(10)) : rn2(10)) ? -1 : 0)));
                 break;
             }
             // @FallThrough
             ;
             default:
-            cptr.st1(cptr.add(d.otmp, 48), schar(d.spe));
+            cptr.st1(cptr.add(cptr.ldPtr(d), 48), schar(cptr.ldI32(cptr.add(d, 76))));
         }
-        if (((d.mntmp) >= 0 && (d.mntmp) < 383 ? 1 : 0)) {
-            if (d.mntmp == 330)
-                d.mntmp = 114;
-            if (((d.typ != 241 && ((cptr.ldU64(cptr.add((cptr.add(mons, d.mntmp, 96)), 80)) & 4n) != 0n) ? 1 : 0) && (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), d.mntmp, 12), 2)) & 16) != 0 ? 1 : 0) && (humanwere = counter_were(d.mntmp)) != -1 ? 1 : 0)
-                d.mntmp = humanwere;
-            switch (d.typ) {
+        if (((cptr.ldI32(cptr.add(d, 152))) >= 0 && (cptr.ldI32(cptr.add(d, 152))) < 383 ? 1 : 0)) {
+            if (cptr.ldI32(cptr.add(d, 152)) == 330)
+                cptr.stI32(cptr.add(d, 152), 114);
+            if (((cptr.ldI32(cptr.add(d, 84)) != 241 && ((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96)), 80)) & 4n) != 0n) ? 1 : 0) && (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(d, 152)), 12), 2)) & 16) != 0 ? 1 : 0) && (humanwere = counter_were(cptr.ldI32(cptr.add(d, 152)))) != -1 ? 1 : 0)
+                cptr.stI32(cptr.add(d, 152), humanwere);
+            switch (cptr.ldI32(cptr.add(d, 84))) {
                 case 296:
-                if (dead_species(d.mntmp, (0))) {
-                    cptr.stI32(cptr.add(d.otmp, 168), -1);
-                } else if (((!(cptr.ldU16(cptr.add(cptr.add(mons, d.mntmp, 96), 34)) & 4096) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), d.mntmp, 12), 2)) & 16) ? 1 : 0) && cptr.ldU16(cptr.add(cptr.add(mons, d.mntmp, 96), 64)) != 0 ? 1 : 0) {
-                    cptr.stI32(cptr.add(d.otmp, 168), d.mntmp);
+                if (dead_species(cptr.ldI32(cptr.add(d, 152)), (0))) {
+                    cptr.stI32(cptr.add(cptr.ldPtr(d), 168), -1);
+                } else if (((!(cptr.ldU16(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 34)) & 4096) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(d, 152)), 12), 2)) & 16) ? 1 : 0) && cptr.ldU16(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 64)) != 0 ? 1 : 0) {
+                    cptr.stI32(cptr.add(cptr.ldPtr(d), 168), cptr.ldI32(cptr.add(d, 152)));
                 }
                 break;
                 case 265:
-                if ((!(cptr.ldU16(cptr.add(cptr.add(mons, d.mntmp, 96), 34)) & 4096) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), d.mntmp, 12), 2)) & 16) ? 1 : 0) {
-                    if (cptr.ld1u(cptr.add(cptr.add(mons, d.mntmp, 96), 66)) == 38)
-                        d.mntmp = genus(d.mntmp, 1);
-                    set_corpsenm(d.otmp, d.mntmp);
+                if ((!(cptr.ldU16(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 34)) & 4096) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(d, 152)), 12), 2)) & 16) ? 1 : 0) {
+                    if (cptr.ld1u(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 66)) == 38)
+                        cptr.stI32(cptr.add(d, 152), genus(cptr.ldI32(cptr.add(d, 152)), 1));
+                    set_corpsenm(cptr.ldPtr(d), cptr.ldI32(cptr.add(d, 152)));
                 }
-                if (d.zombify && zombie_form(cptr.add(mons, d.mntmp, 96)) ? 1 : 0) {
-                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5223, __sl720), rn2(5)) : rn2(5)) + (10)) | 0)), 3, 3, obj_to_any(d.otmp));
+                if (cptr.ld1s(cptr.add(d, 224)) && zombie_form(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96)) ? 1 : 0) {
+                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5223, __sl720), rn2(5)) : rn2(5)) + (10)) | 0)), 3, 3, obj_to_any(cptr.ldPtr(d)));
                 }
                 break;
                 case 266:
-                d.mntmp = can_be_hatched(d.mntmp);
-                set_corpsenm(d.otmp, d.mntmp);
+                cptr.stI32(cptr.add(d, 152), can_be_hatched(cptr.ldI32(cptr.add(d, 152))));
+                set_corpsenm(cptr.ldPtr(d), cptr.ldI32(cptr.add(d, 152)));
                 break;
                 case 241:
-                if ((!(cptr.ldU16(cptr.add(cptr.add(mons, d.mntmp, 96), 34)) & 4096) && (!((cptr.ldU64(cptr.add((cptr.add(mons, d.mntmp, 96)), 80)) & 8n) != 0n) || ((cptr.ldU64(cptr.add((cptr.add(mons, d.mntmp, 96)), 80)) & 4n) != 0n) ? 1 : 0) ? 1 : 0) && d.mntmp != 314 ? 1 : 0)
-                    cptr.stI32(cptr.add(d.otmp, 168), d.mntmp);
+                if ((!(cptr.ldU16(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), 34)) & 4096) && (!((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96)), 80)) & 8n) != 0n) || ((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96)), 80)) & 4n) != 0n) ? 1 : 0) ? 1 : 0) && cptr.ldI32(cptr.add(d, 152)) != 314 ? 1 : 0)
+                    cptr.stI32(cptr.add(cptr.ldPtr(d), 168), cptr.ldI32(cptr.add(d, 152)));
                 break;
                 case 476:
-                cptr.stI32(cptr.add(d.otmp, 168), d.mntmp);
-                if ((cptr.ldPtr(cptr.add((d.otmp), 16)) !== null) && (cptr.ld1u(cptr.add((cptr.add(mons, d.mntmp, 96)), 67)) < 1) ? 1 : 0)
-                    delete_contents(d.otmp);
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 168), cptr.ldI32(cptr.add(d, 152)));
+                if ((cptr.ldPtr(cptr.add((cptr.ldPtr(d)), 16)) !== null) && (cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96)), 67)) < 1) ? 1 : 0)
+                    delete_contents(cptr.ldPtr(d));
                 break;
                 case 130:
-                if (d.mntmp >= 143 && d.mntmp <= 152 ? 1 : 0)
-                    cptr.stI16(cptr.add(d.otmp, 32), i16(((((101 + d.mntmp) | 0) - 143) | 0)));
+                if (cptr.ldI32(cptr.add(d, 152)) >= 143 && cptr.ldI32(cptr.add(d, 152)) <= 152 ? 1 : 0)
+                    cptr.stI16(cptr.add(cptr.ldPtr(d), 32), i16(((((101 + cptr.ldI32(cptr.add(d, 152))) | 0) - 143) | 0)));
                 break;
             }
         }
-        if (d.iscursed) {
-            curse(d.otmp);
-        } else if (d.uncursed) {
-            cptr.stI32(cptr.add(d.otmp, 60), 0);
-            cptr.stI32(cptr.add(d.otmp, 56), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
-        } else if (d.blessed) {
-            cptr.stI32(cptr.add(d.otmp, 60), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0 || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
-            cptr.stI32(cptr.add(d.otmp, 56), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
-        } else if (d.spesgn < 0) {
-            curse(d.otmp);
+        if (cptr.ldI32(cptr.add(d, 104))) {
+            curse(cptr.ldPtr(d));
+        } else if (cptr.ldI32(cptr.add(d, 100))) {
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 60), 0);
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 56), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
+        } else if (cptr.ldI32(cptr.add(d, 96))) {
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 60), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0 || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 56), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) < 0 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
+        } else if (cptr.ldI32(cptr.add(d, 80)) < 0) {
+            curse(cptr.ldPtr(d));
         }
-        if (erosion_matters(d.otmp)) {
-            cptr.stI32(cptr.add(d.otmp, 112), cptr.stI32(cptr.add(d.otmp, 116), 0));
-            if (d.eroded && ((is_flammable(d.otmp) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 11) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((d.otmp), 32)), 120), 64)) | 0) == 19 && cptr.ld1s(cptr.add((d.otmp), 49)) == 3 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-                cptr.stI32(cptr.add(d.otmp, 112), d.eroded >>> 0);
-            if (d.eroded2 && (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 13 || (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 11 ? 1 : 0) || is_rottable(d.otmp) ? 1 : 0) ? 1 : 0)
-                cptr.stI32(cptr.add(d.otmp, 116), d.eroded2 >>> 0);
-            if (d.erodeproof && (((((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 11) || is_flammable(d.otmp) ? 1 : 0) || is_rottable(d.otmp) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 13 || (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 64)) | 0) == 11 ? 1 : 0) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((d.otmp), 32)), 120), 64)) | 0) == 19 && cptr.ld1s(cptr.add((d.otmp), 49)) == 3 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add(d.otmp, 32)) == 43 ? 1 : 0) ? 1 : 0)
-                cptr.stI32(cptr.add(d.otmp, 120), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0 || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
+        if (erosion_matters(cptr.ldPtr(d))) {
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 112), cptr.stI32(cptr.add(cptr.ldPtr(d), 116), 0));
+            if (cptr.ldI32(cptr.add(d, 116)) && ((is_flammable(cptr.ldPtr(d)) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 11) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)), 120), 64)) | 0) == 19 && cptr.ld1s(cptr.add((cptr.ldPtr(d)), 49)) == 3 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 112), cptr.ldI32(cptr.add(d, 116)) >>> 0);
+            if (cptr.ldI32(cptr.add(d, 120)) && (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 13 || (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 11 ? 1 : 0) || is_rottable(cptr.ldPtr(d)) ? 1 : 0) ? 1 : 0)
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 116), cptr.ldI32(cptr.add(d, 120)) >>> 0);
+            if (cptr.ldI32(cptr.add(d, 124)) && (((((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 11) || is_flammable(cptr.ldPtr(d)) ? 1 : 0) || is_rottable(cptr.ldPtr(d)) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 13 || (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 64)) | 0) == 11 ? 1 : 0) ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)), 120), 64)) | 0) == 19 && cptr.ld1s(cptr.add((cptr.ldPtr(d)), 49)) == 3 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 43 ? 1 : 0) ? 1 : 0)
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 120), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0 || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) >>> 0);
         }
-        if (d.oclass == 11) {
-            if (cptr.ldI16(cptr.add(d.otmp, 32)) == 414 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0)
-                d.rechrg = 1;
-            cptr.stI32(cptr.add(d.otmp, 72), d.rechrg >>> 0);
+        if (cptr.ld1s(cptr.add(d, 24)) == 11) {
+            if (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 414 && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0)
+                cptr.stI32(cptr.add(d, 92), 1);
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 72), cptr.ldI32(cptr.add(d, 92)) >>> 0);
         }
-        if (d.ispoisoned) {
-            if ((((cptr.ld1s(cptr.add(d.otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(d.otmp, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(d.otmp) ? 1 : 0))
-                cptr.stI32(cptr.add(d.otmp, 132), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0) >>> 0);
-            else if (d.oclass == 7)
-                cptr.stU64(cptr.add(d.otmp, 184), 1n);
+        if (cptr.ldI32(cptr.add(d, 108))) {
+            if ((((cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(cptr.ldPtr(d)) ? 1 : 0))
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 132), (((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0) >= 0) >>> 0);
+            else if (cptr.ld1s(cptr.add(d, 24)) == 7)
+                cptr.stU64(cptr.add(cptr.ldPtr(d), 184), 1n);
         }
-        if (d.trapped) {
-            if ((cptr.ldI16(cptr.add((d.otmp), 32)) == 214 || cptr.ldI16(cptr.add((d.otmp), 32)) == 215 ? 1 : 0) || d.typ == 296 ? 1 : 0)
-                cptr.stI32(cptr.add(d.otmp, 132), (d.trapped == 1) >>> 0);
+        if (cptr.ldI32(cptr.add(d, 176))) {
+            if ((cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)) == 214 || cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)) == 215 ? 1 : 0) || cptr.ldI32(cptr.add(d, 84)) == 296 ? 1 : 0)
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 132), (cptr.ldI32(cptr.add(d, 176)) == 1) >>> 0);
         }
-        if (d.contents == 1) {
-            if (cptr.ldI16(cptr.add(d.otmp, 32)) == 220 || cptr.ldI16(cptr.add(d.otmp, 32)) == 252 ? 1 : 0) {
-                if (cptr.ld1s(cptr.add(d.otmp, 48)) > 0)
-                    cptr.st1(cptr.add(d.otmp, 48), 0);
-            } else if ((cptr.ldPtr(cptr.add((d.otmp), 16)) !== null)) {
-                delete_contents(d.otmp);
-                cptr.stI32(cptr.add(d.otmp, 36), weight(d.otmp) >>> 0);
+        if (cptr.ldI32(cptr.add(d, 156)) == 1) {
+            if (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 220 || cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 252 ? 1 : 0) {
+                if (cptr.ld1s(cptr.add(cptr.ldPtr(d), 48)) > 0)
+                    cptr.st1(cptr.add(cptr.ldPtr(d), 48), 0);
+            } else if ((cptr.ldPtr(cptr.add((cptr.ldPtr(d)), 16)) !== null)) {
+                delete_contents(cptr.ldPtr(d));
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 36), weight(cptr.ldPtr(d)) >>> 0);
             }
         }
-        if ((cptr.ldI16(cptr.add((d.otmp), 32)) == 214 || cptr.ldI16(cptr.add((d.otmp), 32)) == 215 ? 1 : 0)) {
-            if (d.locked) {
-                cptr.stI32(cptr.add(d.otmp, 124), 1), cptr.stI32(cptr.add(d.otmp, 128), 0);
-            } else if (d.unlocked) {
-                cptr.stI32(cptr.add(d.otmp, 124), 0), cptr.stI32(cptr.add(d.otmp, 128), 0);
-            } else if (d.broken) {
-                cptr.stI32(cptr.add(d.otmp, 124), 0), cptr.stI32(cptr.add(d.otmp, 128), 1);
+        if ((cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)) == 214 || cptr.ldI16(cptr.add((cptr.ldPtr(d)), 32)) == 215 ? 1 : 0)) {
+            if (cptr.ldI32(cptr.add(d, 128))) {
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 124), 1), cptr.stI32(cptr.add(cptr.ldPtr(d), 128), 0);
+            } else if (cptr.ldI32(cptr.add(d, 132))) {
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 124), 0), cptr.stI32(cptr.add(cptr.ldPtr(d), 128), 0);
+            } else if (cptr.ldI32(cptr.add(d, 136))) {
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 124), 0), cptr.stI32(cptr.add(cptr.ldPtr(d), 128), 1);
             }
-            if (cptr.ldI32(cptr.add(d.otmp, 128)))
-                cptr.stI32(cptr.add(d.otmp, 132), 0);
+            if (cptr.ldI32(cptr.add(cptr.ldPtr(d), 128)))
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 132), 0);
         }
-        if (d.isgreased)
-            cptr.stI32(cptr.add(d.otmp, 140), 1);
-        if (d.isdiluted && cptr.ld1s(cptr.add(d.otmp, 49)) == 8 ? 1 : 0)
-            cptr.stI32(cptr.add(d.otmp, 112), (cptr.ldI16(cptr.add(d.otmp, 32)) != 322) >>> 0);
-        if ((cptr.ldI16(cptr.add(d.otmp, 32)) == 296 && d.tvariety >= 0 ? 1 : 0) && ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5343, __sl720), rn2(4)) : rn2(4)) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) ? 1 : 0)
-            set_tin_variety(d.otmp, d.tvariety);
-        if (d.name) {
-            aname = artifact_name(d.name, objtyp, (1));
-            if (aname && objtyp.v == cptr.ldI16(cptr.add(d.otmp, 32)) ? 1 : 0)
-                d.name = aname;
-            if (cptr.ldI16(cptr.add(d.otmp, 32)) == 408 && (novelname = lookup_novel(d.name, cptr.add(d.otmp, 168))) !== null ? 1 : 0)
-                d.name = novelname;
-            d.otmp = oname(d.otmp, d.name, 4);
-            if (cptr.ld1s(cptr.add(d.otmp, 51)) || cptr.eq(d.name, aname) ? 1 : 0) {
-                cptr.stU64(cptr.add(d.otmp, 40), 1n);
+        if (cptr.ldI32(cptr.add(d, 112)))
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 140), 1);
+        if (cptr.ldI32(cptr.add(d, 172)) && cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 8 ? 1 : 0)
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 112), (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) != 322) >>> 0);
+        if ((cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 296 && cptr.ldI32(cptr.add(d, 204)) >= 0 ? 1 : 0) && ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5343, __sl720), rn2(4)) : rn2(4)) || cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) ? 1 : 0)
+            set_tin_variety(cptr.ldPtr(d), cptr.ldI32(cptr.add(d, 204)));
+        if (cptr.ldPtr(cptr.add(d, 56))) {
+            aname = artifact_name(cptr.ldPtr(cptr.add(d, 56)), objtyp, (1));
+            if (aname && objtyp.v == cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) ? 1 : 0)
+                cptr.stPtr(cptr.add(d, 56), aname);
+            if (cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 408 && (novelname = lookup_novel(cptr.ldPtr(cptr.add(d, 56)), cptr.add(cptr.ldPtr(d), 168))) !== null ? 1 : 0)
+                cptr.stPtr(cptr.add(d, 56), novelname);
+            cptr.stPtr(d, oname(cptr.ldPtr(d), cptr.ldPtr(cptr.add(d, 56)), 4));
+            if (cptr.ld1s(cptr.add(cptr.ldPtr(d), 51)) || cptr.eq(cptr.ldPtr(cptr.add(d, 56)), aname) ? 1 : 0) {
+                cptr.stU64(cptr.add(cptr.ldPtr(d), 40), 1n);
                 (cptr.stU64(cptr.add(cptr.add(u, 1968), 80), cptr.ldU64(cptr.add(cptr.add(u, 1968), 80)) + 1n)) - (1n);
             }
         }
-        if (permapoisoned(d.otmp))
-            cptr.stI32(cptr.add(d.otmp, 132), 1);
-        if ((is_quest_artifact(d.otmp) || (cptr.ld1s(cptr.add(d.otmp, 51)) && (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5374, __sl720), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1 ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) {
-            artifact_exists(d.otmp, safe_oname(d.otmp), (0), 0);
-            obfree(d.otmp, null);
-            d.otmp = hands_obj;
+        if (permapoisoned(cptr.ldPtr(d)))
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 132), 1);
+        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1s(cptr.add(cptr.ldPtr(d), 51)) && (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5374, __sl720), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1 ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) {
+            artifact_exists(cptr.ldPtr(d), safe_oname(cptr.ldPtr(d)), (0), 0);
+            obfree(cptr.ldPtr(d), null);
+            cptr.stPtr(d, hands_obj);
             pline(__sl722, cptr.ldPtr(cptr.add(c_common_strings, 40)), makeplural(body_part(6)));
-            return d.otmp;
+            return cptr.ldPtr(d);
         }
-        if (d.halfeaten && cptr.ld1s(cptr.add(d.otmp, 49)) == 7 ? 1 : 0) {
-            nut = obj_nutrition(d.otmp);
+        if (cptr.ldI32(cptr.add(d, 148)) && cptr.ld1s(cptr.add(cptr.ldPtr(d), 49)) == 7 ? 1 : 0) {
+            nut = obj_nutrition(cptr.ldPtr(d));
             if (nut > 1) {
-                cptr.stI32(cptr.add(d.otmp, 176), nut);
-                consume_oeaten(d.otmp, 1);
+                cptr.stI32(cptr.add(cptr.ldPtr(d), 176), nut);
+                consume_oeaten(cptr.ldPtr(d), 1);
             }
         }
-        cptr.stI32(cptr.add(d.otmp, 36), weight(d.otmp) >>> 0);
-        if (d.very && cptr.ldI16(cptr.add(d.otmp, 32)) == 477 ? 1 : 0)
-            cptr.stI32(cptr.add(d.otmp, 36), (cptr.ldI32(cptr.add(d.otmp, 36)) + 160) | 0);
-        return d.otmp;
+        cptr.stI32(cptr.add(cptr.ldPtr(d), 36), weight(cptr.ldPtr(d)) >>> 0);
+        if (cptr.ldI32(cptr.add(d, 88)) && cptr.ldI16(cptr.add(cptr.ldPtr(d), 32)) == 477 ? 1 : 0)
+            cptr.stI32(cptr.add(cptr.ldPtr(d), 36), (cptr.ldI32(cptr.add(cptr.ldPtr(d), 36)) + 160) | 0);
+        return cptr.ldPtr(d);
         __pc = -1;
         continue;
         }

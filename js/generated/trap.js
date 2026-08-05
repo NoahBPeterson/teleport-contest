@@ -3379,8 +3379,8 @@ export function launch_obj(otyp, x1, y1, x2, y2, style) {
                         } else {
                             add_to_migration(singleobj.v);
                             get_level(dest, newlev);
-                            cptr.stI16(cptr.add(singleobj.v, 28), dest.dnum);
-                            cptr.stI16(cptr.add(singleobj.v, 30), dest.dlevel);
+                            cptr.stI16(cptr.add(singleobj.v, 28), cptr.ldI16(dest));
+                            cptr.stI16(cptr.add(singleobj.v, 30), cptr.ldI16(cptr.add(dest, 2)));
                             cptr.stU64(cptr.add(singleobj.v, 192), 0n);
                         }
                         seetrap(t);

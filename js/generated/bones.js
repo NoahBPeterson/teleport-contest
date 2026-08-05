@@ -474,7 +474,7 @@ export function getbones() {
     let nhfp = null;
     let c = cptr.box(0);
     let bonesid = cptr.box(0);
-    let oldbonesid = [];
+    let oldbonesid = [0];
     let ancestor_nhuuid = new Uint8Array(37);
     if (cptr.ld1s(cptr.add(flags, 12)))
         return 0;

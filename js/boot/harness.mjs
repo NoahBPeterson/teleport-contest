@@ -234,33 +234,40 @@ export async function runBootGame(opts) {
     return BigInt.asUintN(64, v);
   };
   g.strtol = (p, endptr, base) => BigInt.asIntN(64, g.strtoul(p, endptr, base));
-  g.sscanf = (str, fmt, ...args) => {
-    const s = cptr.cstr(str), f = cptr.cstr(fmt);
-    let si = 0, fi = 0, assigned = 0;
+  // Shared scanf engine (sscanf/fscanf). Returns {assigned, consumed} so
+  // fscanf can advance the stream position by the characters it ate.
+  const scanfCore = (s, f, args) => {
+    let si = 0, fi = 0, assigned = 0, argi = 0;
+    const done = () => ({ assigned, consumed: si });
     const skipWs = () => { while (si < s.length && /\s/.test(s[si])) si++; };
     while (fi < f.length) {
       const c = f[fi];
       if (/\s/.test(c)) { skipWs(); fi++; continue; }
-      if (c !== '%') { if (s[si] !== c) return assigned; si++; fi++; continue; }
+      if (c !== '%') { if (s[si] !== c) return done(); si++; fi++; continue; }
       fi++;
-      if (f[fi] === '%') { if (s[si] !== '%') return assigned; si++; fi++; continue; }
+      if (f[fi] === '%') { if (s[si] !== '%') return done(); si++; fi++; continue; }
+      let suppress = false;
+      if (f[fi] === '*') { suppress = true; fi++; }
       let width = 0;
       while (fi < f.length && f[fi] >= '0' && f[fi] <= '9') width = width * 10 + (f[fi++] | 0);
       let lng = 0;
       while (f[fi] === 'l') { lng++; fi++; }
       const spec = f[fi++];
-      const arg = args[assigned];
+      const arg = suppress ? null : args[argi];
       if (spec === 'c') {
         const n = width || 1;
-        for (let i = 0; i < n; i++) { if (si >= s.length) return assigned; cptr.st1(cptr.add(arg, i), s.charCodeAt(si++)); }
-        assigned++; continue;
+        if (si + n > s.length) return done();
+        for (let i = 0; i < n; i++) { if (!suppress) cptr.st1(cptr.add(arg, i), s.charCodeAt(si)); si++; }
+        if (!suppress) { assigned++; argi++; }
+        continue;
       }
       if (spec === 's') {
         skipWs();
         let out = '';
         while (si < s.length && !/\s/.test(s[si]) && (!width || out.length < width)) out += s[si++];
-        if (!out) return assigned;
-        cptr.writeStr(arg, out); assigned++; continue;
+        if (!out) return done();
+        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
+        continue;
       }
       if (spec === '[') {
         let negate = false;
@@ -271,23 +278,37 @@ export async function runBootGame(opts) {
         fi++;
         let out = '';
         while (si < s.length && (set.includes(s[si]) !== negate) && (!width || out.length < width)) out += s[si++];
-        if (!out) return assigned;
-        cptr.writeStr(arg, out); assigned++; continue;
+        if (!out) return done();
+        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
+        continue;
       }
-      if (!'diux'.includes(spec)) return assigned;
+      if (!'diux'.includes(spec)) return done();
       skipWs();
       const m = s.slice(si).match(spec === 'x' ? /^[+-]?(?:0[xX])?[0-9a-fA-F]+/ : /^[+-]?\d+/);
-      if (!m) return assigned;
+      if (!m) return done();
       si += m[0].length;
       let t = m[0], neg = false;
       if (t.startsWith('-')) { neg = true; t = t.slice(1); } else if (t.startsWith('+')) t = t.slice(1);
       let v;
-      try { v = spec === 'x' ? BigInt('0x' + t.replace(/^0[xX]/, '')) : BigInt(t); } catch { return assigned; }
+      try { v = spec === 'x' ? BigInt('0x' + t.replace(/^0[xX]/, '')) : BigInt(t); } catch { return done(); }
       if (neg) v = -v;
-      if (lng >= 1) cptr.stU64(arg, BigInt.asUintN(64, v));
-      else cptr.stI32(arg, Number(BigInt.asIntN(32, v)));
-      assigned++;
+      if (!suppress) {
+        if (lng >= 1) cptr.stU64(arg, BigInt.asUintN(64, v));
+        else cptr.stI32(arg, Number(BigInt.asIntN(32, v)));
+        assigned++; argi++;
+      }
+      continue;
     }
+    return done();
+  };
+  g.sscanf = (str, fmt, ...args) => scanfCore(cptr.cstr(str), cptr.cstr(fmt), args).assigned;
+  g.fscanf = (f, fmt, ...args) => {
+    const fd = fds.get(f.__fd);
+    if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; // EOF before any conversion
+    let s = '';
+    for (let i = fd.pos; i < fd.data.length; i++) s += String.fromCharCode(fd.data[i]);
+    const { assigned, consumed } = scanfCore(s, cptr.cstr(fmt), args);
+    fd.pos += consumed;
     return assigned;
   };
   g.atof = (p) => { const v = parseFloat(cptr.cstr(p)); return Number.isNaN(v) ? 0 : v; };

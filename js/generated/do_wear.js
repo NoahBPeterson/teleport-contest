@@ -2776,7 +2776,7 @@ function obj_erode_type(otmp) {
 
 /** C ref: do_wear.c:3278 @returns {CInt} */
 export function destroy_arm() {
-    let armors = cptr.alloc(7 * 8);
+    let armors = cptr.alloc(7 * 8); cptr.stPtr(cptr.add(armors, 0), null);
     let otmp;
     let i;
     let idx = 0;

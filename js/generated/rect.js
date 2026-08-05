@@ -103,10 +103,12 @@ function intersect(r1, r2, r3) {
 
 /** C ref: rect.c:134 — @param {*} r1 @param {*} r2 @param {CPtr} r3 */
 export function rect_bounds(r1, r2, r3) {
-    cptr.stI16(r3, i16(((r1.lx) < (r2.lx) ? (r1.lx) : (r2.lx))));
-    cptr.stI16(cptr.add(r3, 2), i16(((r1.ly) < (r2.ly) ? (r1.ly) : (r2.ly))));
-    cptr.stI16(cptr.add(r3, 4), i16(((r1.hx) > (r2.hx) ? (r1.hx) : (r2.hx))));
-    cptr.stI16(cptr.add(r3, 6), i16(((r1.hy) > (r2.hy) ? (r1.hy) : (r2.hy))));
+    r1 = cptr.dup(r1, 8); // by-value struct param
+    r2 = cptr.dup(r2, 8); // by-value struct param
+    cptr.stI16(r3, i16(((cptr.ldI16(r1)) < (cptr.ldI16(r2)) ? (cptr.ldI16(r1)) : (cptr.ldI16(r2)))));
+    cptr.stI16(cptr.add(r3, 2), i16(((cptr.ldI16(cptr.add(r1, 2))) < (cptr.ldI16(cptr.add(r2, 2))) ? (cptr.ldI16(cptr.add(r1, 2))) : (cptr.ldI16(cptr.add(r2, 2))))));
+    cptr.stI16(cptr.add(r3, 4), i16(((cptr.ldI16(cptr.add(r1, 4))) > (cptr.ldI16(cptr.add(r2, 4))) ? (cptr.ldI16(cptr.add(r1, 4))) : (cptr.ldI16(cptr.add(r2, 4))))));
+    cptr.stI16(cptr.add(r3, 6), i16(((cptr.ldI16(cptr.add(r1, 6))) > (cptr.ldI16(cptr.add(r2, 6))) ? (cptr.ldI16(cptr.add(r1, 6))) : (cptr.ldI16(cptr.add(r2, 6))))));
 }
 
 /** C ref: rect.c:147 — @param {CPtr} r */

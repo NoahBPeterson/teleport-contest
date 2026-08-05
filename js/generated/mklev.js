@@ -250,7 +250,7 @@ export function sort_rooms() {
     let x;
     let y;
     let i;
-    let ri = cptr.alloc(41 * 4);
+    let ri = cptr.alloc(41 * 4); cptr.stI32(cptr.add(ri, 0), 0);
     let n = cptr.ldI32(cptr.add(svn, 44)) >>> 0;
     nh_deterministic_qsort((svr), BigInt((n) >>> 0), (224n), (mkroom_cmp));
     for (i = 0; i < n; i++)

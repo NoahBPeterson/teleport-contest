@@ -1186,9 +1186,23 @@ export class Emitter {
     return { code: `${operand(c, PREC.cond, 'right').code} ? ${a.code} : ${operand(b, PREC.cond, 'right').code}`, prec: PREC.cond, rep: a.rep };
   }
 
+  /**
+   * Effective element list of an InitListExpr. Clang's JSON has two shapes:
+   * elements in `inner` (ImplicitValueInitExpr placeholders for gaps), or —
+   * when trailing elements are zero-filled — an `array_filler` array whose
+   * [0] is the filler expr and [1..] are the explicit element inits, with
+   * `inner` empty. Storage is zero-initialized, so the filler itself needs
+   * no stores.
+   */
+  initListElems(n) {
+    const inner = (n.inner || []).filter((c) => c && c.kind);
+    if (inner.length || !Array.isArray(n.array_filler)) return inner;
+    return n.array_filler.slice(1).filter((c) => c && c.kind);
+  }
+
   expr_InitListExpr(n) {
     const q = desugar(n.type);
-    const inits = (n.inner || []).filter((c) => c.kind);
+    const inits = this.initListElems(n);
     // compound literals of pointer/array-of-fn-ptr type: (T[]){...}
     if (q.includes('(*') || q.trim().endsWith('*')) {
       const items = inits.map((c) => this.emitExpr(c).code);
@@ -2328,6 +2342,7 @@ export class Emitter {
         if (this.emitHoistedArrayAssign(d, q, init, indent, lines)) continue;
         if (parseType(q).cls === 'record' && !this.isEnumType(q)) {
           const recName = this.recordNameForType(q);
+          this.recordLocals.add(jsName(d.name)); // member exprs must take the byte-model path
           lines.push(`${indent}${jsName(d.name)} = ${this.cptrCall('alloc', String(this.layoutOf(recName).size))};`);
           if (init) lines.push(...this.recordInitStores(jsName(d.name), recName, init));
         } else if (init) {
@@ -2652,7 +2667,7 @@ export class Emitter {
       // whole-record copy initializer: struct x a = b;
       return [`${this.cptrCall('memcpy', name, this.emitExpr(initNode).code, String(this.layoutOf(recName).size))};`];
     }
-    const inits = (initNode.inner || []).filter((c) => c.kind);
+    const inits = this.initListElems(initNode);
     const lines = [];
     for (let i = 0; i < rec.fields.length; i++) {
       const init = inits[i];
@@ -2672,7 +2687,7 @@ export class Emitter {
         const esz = this.sizeofType(a.elem);
         if (init.kind === 'StringLiteral') lines.push(`${this.cptrCall('strcpy', loc, this.emitExpr(init).code)};`);
         else if (init.kind === 'InitListExpr') {
-          const els = (init.inner || []).filter((c) => c.kind);
+          const els = this.initListElems(init);
           for (let j = 0; j < els.length; j++) {
             if (els[j].kind === 'ImplicitValueInitExpr') continue;
             const eloc = this.cptrCall('add', loc, String(j * esz));
@@ -2789,6 +2804,19 @@ export class Emitter {
         lines.push(`    ${jsName(p.name)} = cptr.box(${jsName(p.name)});`);
       }
     }
+    // by-value struct params: callers pass a CPtr location; C semantics give
+    // the callee its own copy. Register as record locals (byte-model member
+    // access) and clone on entry.
+    for (const p of params) {
+      const q = desugar(p.type);
+      if (q.includes('*') || arrayParts(q) || parseType(q).cls !== 'record' || this.isEnumType(q)) continue;
+      const recName = this.recordNameForType(q);
+      const size = recName && this.layoutOf(recName)?.size;
+      if (size == null) continue;
+      this.recordLocals.add(p.name);
+      this.recordLocals.add(jsName(p.name));
+      lines.push(`    ${jsName(p.name)} = ${this.cptrCall('dup', jsName(p.name), String(size))}; // by-value struct param`);
+    }
     // regionHoisted decls belong to the pattern lowerings only — the state
     // machine hoists every local itself, so emitting both duplicates `let`s
     const rhLines = [];
@@ -2846,7 +2874,7 @@ export class Emitter {
       } else if ((rec2 = this.recordNameForType(el2)) && !this.isEnumType(el2)) {
         sz2 = this.layoutOf(rec2).size;
       } else return null;
-      const inits = init && init.kind === 'InitListExpr' ? (init.inner || []).filter((c) => c.kind) : null;
+      const inits = init && init.kind === 'InitListExpr' ? this.initListElems(init) : null;
       // first-bracket peeling: arr.count = rows, inner.count = cols
       const rows = arr.count ?? (inits ? inits.length : 0);
       const cols = inner.count ?? 0;
@@ -2856,7 +2884,7 @@ export class Emitter {
       if (inits) {
         for (let i = 0; i < inits.length; i++) {
           if (inits[i].kind !== 'InitListExpr') continue;
-          const els = (inits[i].inner || []).filter((c) => c.kind);
+          const els = this.initListElems(inits[i]);
           for (let j = 0; j < els.length; j++) {
             if (els[j].kind === 'ImplicitValueInitExpr') continue;
             const eloc = this.cptrCall('add', this.cptrCall('decay', `${name}[${i}]`), String(j * sz2));
@@ -2880,7 +2908,7 @@ export class Emitter {
       if (sz === 1) return null; // char/boolean elems keep Uint8Array storage
     }
     this.cptrArrays.add(name);
-    const inits = init && init.kind === 'InitListExpr' ? (init.inner || []).filter((c) => c.kind) : null;
+    const inits = init && init.kind === 'InitListExpr' ? this.initListElems(init) : null;
     const count = arr.count ?? (inits ? inits.length : 0);
     const lines = [`${prefix}${this.cptrCall('alloc', `${count} * ${sz}`)};`];
     if (inits) {

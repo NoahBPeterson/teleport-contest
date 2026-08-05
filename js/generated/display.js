@@ -1021,6 +1021,13 @@ cptr.stPtr(cptr.add(cptr.add(nul_glyphinfo.v, 16), 24), null);
 
 /** C ref: display.c:1672 — glyph_map[9624] */
 export const glyphmap = cptr.alloc(9624 * 32);
+cptr.stI32(cptr.add(glyphmap, 0), 0);
+cptr.stI32(cptr.add(cptr.add(glyphmap, 0), 4), 8);
+cptr.stI32(cptr.add(cptr.add(cptr.add(glyphmap, 0), 4), 4), 0);
+cptr.stI32(cptr.add(cptr.add(glyphmap, 0), 12), 0);
+cptr.stI16(cptr.add(cptr.add(glyphmap, 0), 16), 0);
+cptr.stI16(cptr.add(cptr.add(glyphmap, 0), 18), 0);
+cptr.stPtr(cptr.add(cptr.add(glyphmap, 0), 24), null);
 
 /** C ref: display.c:1687 */
 export function curs_on_u() {

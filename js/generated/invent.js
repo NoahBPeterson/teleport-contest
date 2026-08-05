@@ -504,7 +504,7 @@ function inuse_classify(sort_item, obj) {
     cptr.st1(cptr.add(sort_item, 22), 0);
 }
 
-const __static_loot_classify_def_srt_order = []; /** C ref: invent.c:155 — char[18] (function-static) */
+const __static_loot_classify_def_srt_order = [12, 5, 4, 11, 8, 9, 10, 13, 7, 6, 2, 3, 14, 15, 16, 0]; /** C ref: invent.c:155 — char[18] (function-static) */
 const __static_loot_classify_armcat = new Uint8Array(8); /** C ref: invent.c:160 — char[8] (function-static) */
 
 /** C ref: invent.c:149 — @param {CPtr} sort_item @param {CPtr} obj */
@@ -1867,7 +1867,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
     let olets = new Uint8Array(24);
     let ilets = new Uint8Array(29);
     let extra_removeables = new Uint8Array(4);
-    let buf = [];
+    let buf = [0];
     let qbuf = new Uint8Array(128);
     if (!cptr.ldPtr(cptr.add(gi, 8))) {
         You(__sl94, word);

@@ -693,7 +693,7 @@ function improvised_notes(same_as_last_time) {
 
 /** C ref: music.c:759 — @param {CPtr} instr @returns {CInt} */
 export function do_play_instrument(instr) {
-    let buf = [];
+    let buf = [0];
     let c = 121;
     let s;
     let x = cptr.box(0);

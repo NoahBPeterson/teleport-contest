@@ -371,7 +371,7 @@ export function collect_obj_classes(ilets, otmp, here, filter, itemcount) {
 /** C ref: pickup.c:141 — @param {CPtr} oclasses @param {CPtr} one_at_a_time @param {CPtr} everything @param {CPtr} action @param {CPtr} objs @param {CInt} here @param {CPtr} menu_on_demand @returns {CInt} */
 function query_classes(oclasses, one_at_a_time, everything, action, objs, here, menu_on_demand) {
     let ilets = new Uint8Array(36);
-    let inbuf = [];
+    let inbuf = [0];
     let iletct;
     let oclassct;
     let not_everything;
@@ -1822,8 +1822,8 @@ function doloot_core() {
                 return 1;
             }
         }
-        cc.x = cptr.ldI16(u);
-        cc.y = cptr.ldI16(cptr.add(u, 2));
+        cptr.stI16(cc, cptr.ldI16(u));
+        cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
         if (cptr.ld1s(cptr.add(iflags, 135))) { __pc = 4; continue; }
         __pc = 3; continue;
         }
@@ -1837,12 +1837,12 @@ function doloot_core() {
         continue;
         }
         case 1 /* lootcont: */: {
-        if ((num_conts = container_at(cc.x, cc.y, (1))) > 0) {
+        if ((num_conts = container_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), (1))) > 0) {
             anyfound = (0);
-            if (!able_to_loot(cc.x, cc.y, (1)))
+            if (!able_to_loot(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), (1)))
                 return 0;
             if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !uarmg.v ? 1 : 0) {
-                for (nobj = sobj_at(265, cc.x, cc.y); nobj; nobj = nxtobj(nobj, 265, (1)))
+                for (nobj = sobj_at(265, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))); nobj; nobj = nxtobj(nobj, 265, (1)))
                     if (will_feel_cockatrice(nobj, (0))) {
                         feel_cockatrice(nobj, (0));
                         return 1;
@@ -1851,12 +1851,12 @@ function doloot_core() {
             if (num_conts > 1) {
                 any = cptr.alloc(8);
                 pick_list.v = null;
-                any.a_void = null;
+                cptr.stPtr(any, null);
                 win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
                 (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
-                for (cobj.v = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cc.x, 168), cc.y, 8)); cobj.v; cobj.v = cptr.ldPtr(cptr.add(cobj.v, 8)))
+                for (cobj.v = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)); cobj.v; cobj.v = cptr.ldPtr(cptr.add(cobj.v, 8)))
                     if ((cptr.ldI16(cptr.add((cobj.v), 32)) >= 214 && cptr.ldI16(cptr.add((cobj.v), 32)) <= 220 ? 1 : 0)) {
-                        any.a_obj = cobj.v;
+                        cptr.stPtr(any, cobj.v);
                         add_menu(win, nul_glyphinfo.v, any, 0, 0, 0, clr, doname(cobj.v), 0);
                     }
                 (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl119);
@@ -1876,7 +1876,7 @@ function doloot_core() {
                 if (n != 0)
                     c = 121;
             } else {
-                for (cobj.v = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cc.x, 168), cc.y, 8)); cobj.v; cobj.v = nobj) {
+                for (cobj.v = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)); cobj.v; cobj.v = nobj) {
                     nobj = cptr.ldPtr(cptr.add(cobj.v, 8));
                     if ((cptr.ldI16(cptr.add((cobj.v), 32)) >= 214 && cptr.ldI16(cptr.add((cobj.v), 32)) <= 220 ? 1 : 0)) {
                         anyfound = (1);
@@ -1888,7 +1888,7 @@ function doloot_core() {
                 if (anyfound)
                     c = 121;
             }
-        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cc.x, 756), cc.y, 36), 4))) == 31)) {
+        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4))) == 31)) {
             You(__sl120);
         }
         __pc = 2;
@@ -1902,8 +1902,8 @@ function doloot_core() {
         looted_mon = (0);
         if (!get_adjacent_loc(__sl121, __sl122, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cc))
             return 0;
-        underfoot = schar(((cc.x) == cptr.ldI16(u) && (cc.y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0));
-        if (underfoot && container_at(cc.x, cc.y, (0)) ? 1 : 0) { __pc = 9; continue; }
+        underfoot = schar(((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0));
+        if (underfoot && container_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), (0)) ? 1 : 0) { __pc = 9; continue; }
         __pc = 8; continue;
         }
         case 9: {
@@ -1913,10 +1913,10 @@ function doloot_core() {
         }
         case 8: {
         if (cptr.ldI32(cptr.add(u, 12)) < 0) {
-            You(__sl123, dont_find_anything, ceiling(cc.x, cc.y));
+            You(__sl123, dont_find_anything, ceiling(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))));
             return 1;
         }
-        mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cc.x, 168), cc.y, 8)));
+        mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)));
         if (mtmp) {
             timepassed = loot_mon(mtmp, prev_inquiry, prev_loot);
             if (timepassed)
@@ -1925,7 +1925,7 @@ function doloot_core() {
         if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) ? 1 : 0)
             timepassed = 1;
         if (!looted_mon) {
-            if (!underfoot && container_at(cc.x, cc.y, (0)) ? 1 : 0) {
+            if (!underfoot && container_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), (0)) ? 1 : 0) {
                 if (mtmp) {
                     You_cant(__sl124, prev_inquiry.v ? __sl125 : __sl2, mon_nam(mtmp));
                     return (timepassed ? 1 : 0);

@@ -1193,7 +1193,7 @@ function process_menu_window(window, cw) {
                 break;
             } else {
                 let searchbuf = new Uint8Array(258);
-                let tmpbuf = [];
+                let tmpbuf = [0];
                 let on_curr_page = 0;
                 let lineno = 0;
                 tty_getlin(__sl20, cptr.decay(tmpbuf));
@@ -2437,6 +2437,22 @@ cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 60), 24);
 cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 64), 25);
 cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 68), 26);
 cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 72), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 0), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 4), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 8), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 12), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 16), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 20), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 24), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 28), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 32), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 36), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 40), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 44), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 48), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 52), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 56), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 60), -1);
 
 /** C ref: wintty.c:4363 — enum statusfields[3][19] */
 const threelineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();

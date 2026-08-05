@@ -50,12 +50,15 @@ const __sl23 = cptr.lit("worm_cross checking for non-adjacent location?");
 
 /** C ref: worm.c:77 — struct wseg *[32] */
 const wheads = cptr.alloc(32 * 8);
+cptr.stPtr(cptr.add(wheads, 0), null);
 
 /** C ref: worm.c:78 — struct wseg *[32] */
 const wtails = cptr.alloc(32 * 8);
+cptr.stPtr(cptr.add(wtails, 0), null);
 
 /** C ref: worm.c:79 — long[32] */
 const wgrowtime = cptr.alloc(32 * 8);
+cptr.stU64(cptr.add(wgrowtime, 0), 0n);
 
 /** C ref: worm.c:96 @returns {CInt} */
 export function get_wormno() {

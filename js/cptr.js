@@ -200,6 +200,9 @@ export function free(p) { /* GC */ }
 /** zeroed byte storage for a struct/union value local; returns its location. @param {number|bigint} size @returns {CPtr} */
 export function alloc(size) { return { buf: new Uint8Array(Number(size)), off: 0 }; }
 
+/** fresh copy of a struct value (C pass-by-value semantics for record params). @param {CPtr} p @param {number} n @returns {CPtr} */
+export function dup(p, n) { const b = alloc(n); memcpy(b, p, n); return b; }
+
 // ------------------------------------------------- f64 / i64 / ptr access ----
 
 /** 64-bit double load, little-endian IEEE-754. @param {CPtr} p @returns {number} */

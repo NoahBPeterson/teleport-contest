@@ -133,7 +133,7 @@ function write_ok(obj) {
 /** C ref: write.c:74 — @param {CPtr} pen @returns {CInt} */
 export function dowrite(pen) {
     let paper;
-    let namebuf = [];
+    let namebuf = [0];
     let nm;
     let bp;
     let new_obj;

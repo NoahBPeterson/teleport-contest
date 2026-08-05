@@ -350,7 +350,7 @@ export function demon_talk(mtmp) {
 
 /** C ref: minion.c:361 — @param {CPtr} mtmp @param {CPtr} prompt @returns {CLongLong} */
 export function bribe(mtmp, prompt) {
-    let buf = [];
+    let buf = [0];
     let offer = cptr.box(0n);
     let umoney = money_cnt(cptr.ldPtr(cptr.add(gi, 8)));
     getlin(prompt, cptr.decay(buf));

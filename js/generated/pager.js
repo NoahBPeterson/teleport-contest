@@ -1083,6 +1083,7 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
 
 /** C ref: pager.c:1133 — @param {CInt} found @param {CInt} idx @param {CInt} glyph @param {CInt} article @param {*} cc @param {CPtr} x_str @param {CPtr} prefix @param {CPtr} hit_trap @param {CPtr} firstmatch @param {CPtr} out_str @returns {CInt} */
 function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap, firstmatch, out_str) {
+    cc = cptr.dup(cc, 4); // by-value struct param
     let mbuf = null;
     let p;
     let absidx = Math.abs(idx);
@@ -1096,19 +1097,19 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
         if (absidx == 38)
             idx = 38;
     } else if ((((absidx == 38 || idx == 48 ? 1 : 0) || idx == 40 ? 1 : 0) || idx == 41 ? 1 : 0) || idx == 39 ? 1 : 0) {
-        let save_ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cc.x, 756), cc.y, 36), 4));
+        let save_ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4));
         let save_prop = cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24));
         mbuf = mon_nam(cptr.add(gy, 8));
         if (absidx == 38) {
-            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cc.x, 756), cc.y, 36), 4), schar(((idx == 38) ? 16 : 17)));
+            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4), schar(((idx == 38) ? 16 : 17)));
             idx = 38;
         } else {
-            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cc.x, 756), cc.y, 36), 4), schar(((idx == 48) ? 18 : ((idx == 40) ? 20 : ((idx == 41) ? 21 : 33)))));
+            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4), schar(((idx == 48) ? 18 : ((idx == 40) ? 20 : ((idx == 41) ? 21 : 33)))));
         }
         cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
-        void cptr.strcpy(mbuf, waterbody_name(cc.x, cc.y));
+        void cptr.strcpy(mbuf, waterbody_name(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))));
         cptr.stU64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cc.x, 756), cc.y, 36), 4), save_ltyp);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4), save_ltyp);
         if (!strcmp(mbuf, __sl137))
             cptr.st1(cptr.add(mbuf, 4), 0);
         else if (!strcmp(mbuf, __sl139))
@@ -1139,6 +1140,7 @@ const __static_do_screen_description_look_buf = new Uint8Array(256); /** C ref: 
 
 /** C ref: pager.c:1247 — @param {*} cc @param {CInt} looked @param {CInt} sym @param {CPtr} out_str @param {CPtr} firstmatch @param {CPtr} for_supplement @returns {CInt} */
 export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_supplement) {
+    cc = cptr.dup(cc, 4); // by-value struct param
     let prefix = new Uint8Array(256);
     let i;
     let j;
@@ -1154,8 +1156,8 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     let tmpsym;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
     if (looked) {
-        glyph = glyph_at(cc.x, cc.y);
-        map_glyphinfo(cc.x, cc.y, glyph, 0, glyphinfo);
+        glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
+        map_glyphinfo(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), glyph, 0, glyphinfo);
         sym = cptr.ldI32(cptr.add(glyphinfo, 4));
         void cptr.sprintf(cptr.decay(prefix), __sl149, encglyph(cptr.ldI32(glyphinfo)));
     } else
@@ -1163,7 +1165,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     x_str = null;
     if (!looked) {
         ;
-    } else if (((cptr.ldI32(cptr.add(u, 1848)) | 0 || submerged ? 1 : 0) && !(dist2(((cc.x)), ((cc.y)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0) || (((cptr.ldI32(cptr.add(iflags, 68)) & ((32 | 1) >>> 0)) >>> 0) == 32 && glyph == (((0) == 0) ? 3929 : (((0) <= 11) ? (((((0) - 1) | 0) + (In_mines(cptr.add(u, 24)) ? 3941 : (In_hell(cptr.add(u, 24)) ? 3952 : ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 102)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 102))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 102)) ? 1 : 0)) ? 3963 : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 82)))) ? 3974 : 3930))))) | 0) : (((0) < 33) ? (((((0) - 12) | 0) + 3985) | 0) : (((0) == 33) ? ((((2) & 16) == 16) ? ((4006 + 4) | 0) : ((((2) & 7) == 4) ? ((4006 + 3) | 0) : ((((2) & 7) == 2) ? ((4006 + 2) | 0) : ((((2) & 7) == 1) ? ((4006 + 1) | 0) : ((4006 + 0) | 0))))) : (((0) < ((49 + ((26 - 1) | 0)) | 0)) ? (((((0) - 34) | 0) + 4011) | 0) : (((0) <= 87) ? (((((0) - 78) | 0) + 4083) | 0) : 9624)))))) ? 1 : 0) ? 1 : 0) {
+    } else if (((cptr.ldI32(cptr.add(u, 1848)) | 0 || submerged ? 1 : 0) && !(dist2(((cptr.ldI16(cc))), ((cptr.ldI16(cptr.add(cc, 2)))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0) || (((cptr.ldI32(cptr.add(iflags, 68)) & ((32 | 1) >>> 0)) >>> 0) == 32 && glyph == (((0) == 0) ? 3929 : (((0) <= 11) ? (((((0) - 1) | 0) + (In_mines(cptr.add(u, 24)) ? 3941 : (In_hell(cptr.add(u, 24)) ? 3952 : ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 102)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 102))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 102)) ? 1 : 0)) ? 3963 : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 82)))) ? 3974 : 3930))))) | 0) : (((0) < 33) ? (((((0) - 12) | 0) + 3985) | 0) : (((0) == 33) ? ((((2) & 16) == 16) ? ((4006 + 4) | 0) : ((((2) & 7) == 4) ? ((4006 + 3) | 0) : ((((2) & 7) == 2) ? ((4006 + 2) | 0) : ((((2) & 7) == 1) ? ((4006 + 1) | 0) : ((4006 + 0) | 0))))) : (((0) < ((49 + ((26 - 1) | 0)) | 0)) ? (((((0) - 34) | 0) + 4011) | 0) : (((0) <= 87) ? (((((0) - 78) | 0) + 4083) | 0) : 9624)))))) ? 1 : 0) ? 1 : 0) {
         x_str = cptr.decay(__static_do_screen_description_unreconnoitered);
         need_to_look = (0);
     } else if (is_swallow_sym(sym)) {
@@ -1185,18 +1187,18 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                     if (found > 1 || need_to_look ? 1 : 0) {
                         let monbuf = new Uint8Array(256);
                         let temp_buf = new Uint8Array(256);
-                        pm = lookat(cc.x, cc.y, cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
+                        pm = lookat(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
                         if (pm && for_supplement ? 1 : 0)
                             cptr.stPtr(for_supplement, pm);
                         if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __sl65))
-                            void ice_descr(cc.x, cc.y, cptr.decay(__static_do_screen_description_look_buf));
+                            void ice_descr(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(__static_do_screen_description_look_buf));
                         if ((!strcmp(cptr.decay(__static_do_screen_description_look_buf), __sl151) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)) ? 1 : 0) && !ok_to_quest() ? 1 : 0)
                             void cptr.strcpy(cptr.decay(__static_do_screen_description_look_buf), __sl152);
                         if (cptr.ld1s(cptr.add(cptr.decay(__static_do_screen_description_look_buf), 0, 1)) != 0)
                             cptr.stPtr(firstmatch, cptr.decay(__static_do_screen_description_look_buf));
                         if (cptr.ld1s((cptr.ldPtr(firstmatch)))) {
                             void cptr.sprintf(cptr.decay(temp_buf), __sl153, cptr.ldPtr(firstmatch));
-                            void add_quoted_engraving(cc.x, cc.y, cptr.decay(temp_buf), (0));
+                            void add_quoted_engraving(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(temp_buf), (0));
                             void cptr.strcat(cptr.decay(temp_buf), __sl154);
                             void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 2 > 1 ? 1 : 0));
                             found = 1;
@@ -1226,7 +1228,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                     }
                 }
             }
-            if (((looked ? (sym == cptr.ld1u(cptr.add(cptr.add(gs, 680), (53 + (((((0) + 105) | 0) + 18) | 0)) | 0, 1)) && ((cc.x) == cptr.ldI16(u) && (cc.y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) : (sym == cptr.ld1s(cptr.add(def_monsyms, 53, 24)) && !cptr.ld1s(cptr.add(flags, 169)) ? 1 : 0)) && !((cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (260)) || (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (264)) ? 1 : 0) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0)
+            if (((looked ? (sym == cptr.ld1u(cptr.add(cptr.add(gs, 680), (53 + (((((0) + 105) | 0) + 18) | 0)) | 0, 1)) && ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) : (sym == cptr.ld1s(cptr.add(def_monsyms, 53, 24)) && !cptr.ld1s(cptr.add(flags, 169)) ? 1 : 0)) && !((cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (260)) || (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (264)) ? 1 : 0) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0)
                 found = (found + append_str(out_str, __sl157)) | 0;
         }
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 4) >>> 0) != 0 ? 1 : 0) {
@@ -1325,7 +1327,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 } else {
                     found = (found + append_str(out_str, x_str)) | 0;
                 }
-                if (looked && sobj_at(475, cc.x, cc.y) ? 1 : 0)
+                if (looked && sobj_at(475, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) ? 1 : 0)
                     void cptr.strcat(out_str, __sl164);
                 break;
             }
@@ -1348,7 +1350,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 switch (j) {
                     case (4 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0:
                     if (looked) {
-                        map_glyphinfo(cc.x, cc.y, glyph, 1, glyphinfo);
+                        map_glyphinfo(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), glyph, 1, glyphinfo);
                         sym = cptr.ldI32(cptr.add(glyphinfo, 4));
                         continue __lbl_check_monsters;
                     }
@@ -1366,18 +1368,18 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
             if (found > 1 || need_to_look ? 1 : 0) {
                 let monbuf = new Uint8Array(256);
                 let temp_buf = new Uint8Array(256);
-                pm = lookat(cc.x, cc.y, cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
+                pm = lookat(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
                 if (pm && for_supplement ? 1 : 0)
                     cptr.stPtr(for_supplement, pm);
                 if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __sl65))
-                    void ice_descr(cc.x, cc.y, cptr.decay(__static_do_screen_description_look_buf));
+                    void ice_descr(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(__static_do_screen_description_look_buf));
                 if ((!strcmp(cptr.decay(__static_do_screen_description_look_buf), __sl151) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)) ? 1 : 0) && !ok_to_quest() ? 1 : 0)
                     void cptr.strcpy(cptr.decay(__static_do_screen_description_look_buf), __sl152);
                 if (cptr.ld1s(cptr.add(cptr.decay(__static_do_screen_description_look_buf), 0, 1)) != 0)
                     cptr.stPtr(firstmatch, cptr.decay(__static_do_screen_description_look_buf));
                 if (cptr.ld1s((cptr.ldPtr(firstmatch)))) {
                     void cptr.sprintf(cptr.decay(temp_buf), __sl153, cptr.ldPtr(firstmatch));
-                    void add_quoted_engraving(cc.x, cc.y, cptr.decay(temp_buf), (0));
+                    void add_quoted_engraving(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), cptr.decay(temp_buf), (0));
                     void cptr.strcat(cptr.decay(temp_buf), __sl154);
                     void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 2 > 1 ? 1 : 0));
                     found = 1;
@@ -1422,7 +1424,7 @@ export function do_look(mode, click_cc) {
         case 0: {
         quick = schar((mode == 1));
         clicklook = schar((mode == 2));
-        out_str = [];
+        out_str = [0];
         cq = cptr.alloc(32);
         firstmatch.v = null;
         pm = null;
@@ -1431,16 +1433,16 @@ export function do_look(mode, click_cc) {
         ans = 0;
         cc = cptr.alloc(4);
         clr = 8;
-        cc.x = 0;
-        cc.y = 0;
+        cptr.stI16(cc, 0);
+        cptr.stI16(cptr.add(cc, 2), 0);
         if ((cmdq = cmdq_pop()) !== null) { __pc = 3; continue; }
         __pc = 2; continue;
         }
         case 3: {
-        cq = cmdq;
+        cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
-        if (cq.typ == 0)
-            i = cq.key;
+        if (cptr.ldI32(cq) == 0)
+            i = cptr.ld1s(cptr.add(cq, 4));
         else
             cmdq_clear(0);
         { __pc = 1; continue; }
@@ -1457,34 +1459,34 @@ export function do_look(mode, click_cc) {
         } else {
             pick_list.v = null;
             any = cptr.alloc(8);
-            any = cptr.add(cg, 536);
+            cptr.memcpy(any, cptr.add(cg, 536), 8);
             win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
             (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
-            any.a_char = 47;
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 47 : 121)), 0, clr, __sl175, 0);
-            any.a_char = 105;
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), 0, 0, clr, __sl176, 0);
-            any.a_char = 63;
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 63 : 110)), 0, clr, __sl177, 0);
+            cptr.st1(any, 47);
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 47 : 121)), 0, clr, __sl175, 0);
+            cptr.st1(any, 105);
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), 0, 0, clr, __sl176, 0);
+            cptr.st1(any, 63);
+            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 63 : 110)), 0, clr, __sl177, 0);
             if (!cptr.ldI32(cptr.add(u, 1848)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                any = cptr.add(cg, 536);
+                cptr.memcpy(any, cptr.add(cg, 536), 8);
                 add_menu_str(win, __sl4);
-                any.a_char = 109;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl178, 0);
-                any.a_char = 77;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl179, 0);
-                any.a_char = 111;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl180, 0);
-                any.a_char = 79;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 0)), 0, clr, __sl181, 0);
-                any.a_char = 116;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 94)), 0, clr, __sl182, 0);
-                any.a_char = 84;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 34)), 0, clr, __sl183, 0);
-                any.a_char = 101;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : 96)), 0, clr, __sl184, 0);
-                any.a_char = 69;
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : any.a_char)), schar((cptr.ld1s(cptr.add(flags, 168)) ? any.a_char : 124)), 0, clr, __sl185, 0);
+                cptr.st1(any, 109);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl178, 0);
+                cptr.st1(any, 77);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl179, 0);
+                cptr.st1(any, 111);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl180, 0);
+                cptr.st1(any, 79);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 0)), 0, clr, __sl181, 0);
+                cptr.st1(any, 116);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 94)), 0, clr, __sl182, 0);
+                cptr.st1(any, 84);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 34)), 0, clr, __sl183, 0);
+                cptr.st1(any, 101);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : 96)), 0, clr, __sl184, 0);
+                cptr.st1(any, 69);
+                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1s(cptr.add(flags, 168)) ? 0 : cptr.ld1s(any))), schar((cptr.ld1s(cptr.add(flags, 168)) ? cptr.ld1s(any) : 124)), 0, clr, __sl185, 0);
             }
             (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl186);
             if (select_menu(win, 1, pick_list) > 0) {
@@ -1505,8 +1507,8 @@ export function do_look(mode, click_cc) {
             case 47:
             from_screen = (1);
             sym = 0;
-            cc.x = cptr.ldI16(u);
-            cc.y = cptr.ldI16(cptr.add(u, 2));
+            cptr.stI16(cc, cptr.ldI16(u));
+            cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
             break;
             case 105:
             {
@@ -1565,8 +1567,8 @@ export function do_look(mode, click_cc) {
         continue;
         }
         case 6: {
-        cc.x = cptr.ldI16(click_cc);
-        cc.y = cptr.ldI16(cptr.add(click_cc, 2));
+        cptr.stI16(cc, cptr.ldI16(click_cc));
+        cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(click_cc, 2)));
         sym = 0;
         from_screen = (0);
         __pc = 4;
@@ -1585,7 +1587,7 @@ export function do_look(mode, click_cc) {
                     else
                         pline(__sl190, cptr.decay(what_is_a_location));
                     ans = getpos(cc, quick, cptr.decay(what_is_a_location));
-                    if (ans < 0 || cc.x < 0 ? 1 : 0)
+                    if (ans < 0 || cptr.ldI16(cc) < 0 ? 1 : 0)
                         break;
                     cptr.st1(cptr.add(flags, 48), (0));
                 }

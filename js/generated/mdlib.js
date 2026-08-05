@@ -160,6 +160,7 @@ let done_runtime_opt_init_once = 0;
 
 /** C ref: mdlib.c:97 — char *[60] */
 const opttext = cptr.alloc(60 * 8);
+cptr.stPtr(cptr.add(opttext, 0), null);
 
 /** C ref: mdlib.c:102 — char[256] */
 const optbuf = new Uint8Array(256);
