@@ -43,6 +43,11 @@ const HACKDIR = '/tmp/c2js-nethackdir';
 // here touches the host. Keep it >= 79 chars so the truncation still lands
 // in the same place, and keep the basename ".nethackrc" so
 // nh_basename(get_configfile()) — shown in the 'O' menu — is unchanged.
+// Tail beyond the recording's 79-column truncation corroborated against
+// Alex Serrano (serteal)'s fork, which pins the identical string:
+// github.com/serteal/teleport-contest tools/c2js/host/nhjs_tty_api.c:21
+// (NHJS_RC_PATH, commit 1d90456) — derived independently here, cited per
+// project attribution policy.
 const VHOME = '/Users/davidbau/git/mazesofmenace/teleport/maud/test/comparison/c-harness/results';
 
 let __segCounter = 0;
