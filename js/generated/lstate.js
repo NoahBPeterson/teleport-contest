@@ -38,19 +38,19 @@ function luai_makeseed(L) {
     {
         let t = cptr.box((((L))));
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = (p + 8n) | 0;
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     {
         let t = cptr.box((((h))));
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = (p + 8n) | 0;
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     {
         let t = cptr.box((((lua_newstate))));
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = (p + 8n) | 0;
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     (void 0);
@@ -84,7 +84,7 @@ export function luaE_extendCI(L) {
     cptr.stPtr(cptr.add(ci, 16), cptr.ldPtr(cptr.add(L, 32)));
     cptr.stPtr(cptr.add(ci, 24), null);
     cptr.stI32(cptr.add(cptr.add(ci, 32), 8), 0);
-    cptr.ldU16(cptr.add(L, 12))++;
+    (cptr.stI16(cptr.add(L, 12), cptr.ldI16(cptr.add(L, 12)) + 1)) - 1;
     return ci;
 }
 
@@ -96,7 +96,7 @@ function freeCI(L) {
     while (!cptr.eq((ci = next), (null))) {
         next = cptr.ldPtr(cptr.add(ci, 24));
         luaM_free_(L, (ci), 64n);
-        cptr.ldU16(cptr.add(L, 12))--;
+        (cptr.stI16(cptr.add(L, 12), cptr.ldI16(cptr.add(L, 12)) + -1)) - 1;
     }
 }
 
@@ -109,7 +109,7 @@ export function luaE_shrinkCI(L) {
     while (!cptr.eq((next = cptr.ldPtr(cptr.add(ci, 24))), (null))) {
         let next2 = cptr.ldPtr(cptr.add(next, 24));
         cptr.stPtr(cptr.add(ci, 24), next2);
-        cptr.ldU16(cptr.add(L, 12))--;
+        (cptr.stI16(cptr.add(L, 12), cptr.ldI16(cptr.add(L, 12)) + -1)) - 1;
         luaM_free_(L, (next), 64n);
         if (cptr.eq(next2, (null)))
             break;
@@ -130,7 +130,7 @@ export function luaE_checkcstack(L) {
 
 /** C ref: lstate.c:173 — @param {CPtr} L */
 export function luaE_incCstack(L) {
-    cptr.ldI32(cptr.add(L, 176))++;
+    (cptr.stI32(cptr.add(L, 176), cptr.ldI32(cptr.add(L, 176)) + 1)) - 1;
     if ((__builtin_expect(BigInt(((((cptr.ldI32(cptr.add((L), 176)) & 65535) >>> 0) >= 200) != 0)), 0n)))
         luaE_checkcstack(L);
 }

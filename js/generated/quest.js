@@ -74,11 +74,11 @@ const __sl44 = cptr.lit("quest_chat: Unknown quest character %s.");
 
 /** C ref: quest.c:26 */
 function on_start() {
-    if (!(svq.quest_status.first_start)) {
+    if (!(cptr.ldI32(svq))) {
         qt_pager(__sl0);
-        svq.quest_status.first_start = 1;
-    } else if ((u.uz0.dnum != u.uz.dnum) || (u.uz0.dlevel < u.uz.dlevel)) {
-        if (((svq.quest_status.not_ready) | 0) <= 2)
+        cptr.stI32(svq, 1);
+    } else if ((cptr.ldI16(cptr.add(u, 28)) != cptr.ldI16(cptr.add(u, 24))) || (cptr.ldI16(cptr.add(cptr.add(u, 28), 2)) < cptr.ldI16(cptr.add(cptr.add(u, 24), 2)))) {
+        if (((cptr.ldI32(cptr.add(svq, 8))) | 0) <= 2)
             qt_pager(__sl1);
         else
             qt_pager(__sl2);
@@ -87,13 +87,13 @@ function on_start() {
 
 /** C ref: quest.c:40 */
 function on_locate() {
-    let from_above = schar((u.uz0.dlevel < u.uz.dlevel));
-    if ((svq.quest_status.killed_nemesis)) {
+    let from_above = schar((cptr.ldI16(cptr.add(cptr.add(u, 28), 2)) < cptr.ldI16(cptr.add(cptr.add(u, 24), 2))));
+    if ((cptr.ldI32(cptr.add(svq, 44)))) {
         return;
-    } else if (!(svq.quest_status.first_locate)) {
+    } else if (!(cptr.ldI32(cptr.add(svq, 24)))) {
         if (from_above)
             qt_pager(__sl3);
-        svq.quest_status.first_locate = 1;
+        cptr.stI32(cptr.add(svq, 24), 1);
     } else {
         if (from_above)
             qt_pager(__sl4);
@@ -102,86 +102,86 @@ function on_locate() {
 
 /** C ref: quest.c:62 */
 function on_goal() {
-    if ((svq.quest_status.killed_nemesis)) {
+    if ((cptr.ldI32(cptr.add(svq, 44)))) {
         return;
-    } else if (!(svq.quest_status.made_goal)) {
+    } else if (!(cptr.ldI32(cptr.add(svq, 36)))) {
         qt_pager(__sl5);
-        svq.quest_status.made_goal = 1;
+        cptr.stI32(cptr.add(svq, 36), 1);
     } else {
         let whichobjchains = ((1 << 1) | (1 << 4) | (1 << 6)) >>> 0;
         let qarti = find_quest_artifact(whichobjchains);
         qt_pager(qarti ? __sl6 : __sl7);
-        if (((svq.quest_status.made_goal) | 0) < 7)
-            (svq.quest_status.made_goal)++;
+        if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
+            (cptr.stI32(cptr.add(svq, 36), cptr.ldI32(cptr.add(svq, 36)) + 1)) - 1;
     }
 }
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if (u.uevent.qcompleted | 0 || (on_level(cptr.boxProp(u, 'uz0'), cptr.boxProp(u, 'uz'))))
+    if (cptr.ldI32(cptr.add(cptr.add(u, 1884), 20)) | 0 || (on_level(cptr.add(u, 28), cptr.add(u, 24))))
         return;
-    if (!Is_special(cptr.boxProp(u, 'uz')))
+    if (!Is_special(cptr.add(u, 24)))
         return;
-    if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')))))
+    if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 90)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 90)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)))))
         on_start();
-    else if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_qlocate_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_qlocate_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_qlocate_level')))))
+    else if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 94)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 94)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 94)))))
         on_locate();
-    else if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_nemesis_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_nemesis_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_nemesis_level')))))
+    else if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 98)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 98)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 98)))))
         on_goal();
     return;
 }
 
 /** C ref: quest.c:107 */
 export function nemdead() {
-    if (!(svq.quest_status.killed_nemesis)) {
-        svq.quest_status.killed_nemesis = 1;
+    if (!(cptr.ldI32(cptr.add(svq, 44)))) {
+        cptr.stI32(cptr.add(svq, 44), 1);
         qt_pager(__sl8);
     }
 }
 
 /** C ref: quest.c:116 */
 export function leaddead() {
-    if (!(svq.quest_status.killed_leader)) {
-        svq.quest_status.killed_leader = 1;
+    if (!(cptr.ldI32(cptr.add(svq, 20)))) {
+        cptr.stI32(cptr.add(svq, 20), 1);
     }
 }
 
 /** C ref: quest.c:125 — @param {CPtr} obj */
 export function artitouch(obj) {
-    if (!(svq.quest_status.touched_artifact)) {
+    if (!(cptr.ldI32(cptr.add(svq, 56)))) {
         observe_object(obj);
-        svq.quest_status.touched_artifact = 1;
+        cptr.stI32(cptr.add(svq, 56), 1);
         qt_pager(__sl9);
-        exercise(A_WIS, (1));
+        exercise(2, (1));
     }
 }
 
 /** C ref: quest.c:140 @returns {CInt} */
 export function ok_to_quest() {
-    return schar(((((svq.quest_status.got_quest) | 0 || (svq.quest_status.got_thanks) | 0) && is_pure((0)) > 0) || (svq.quest_status.killed_leader) | 0));
+    return schar(((((cptr.ldI32(cptr.add(svq, 16))) | 0 || (cptr.ldI32(cptr.add(svq, 64))) | 0) && is_pure((0)) > 0) || (cptr.ldI32(cptr.add(svq, 20))) | 0));
 }
 
 /** C ref: quest.c:147 @returns {CInt} */
 function not_capable() {
-    return schar((u.ulevel < 14));
+    return schar((cptr.ldI32(cptr.add(u, 48)) < 14));
 }
 
 /** C ref: quest.c:153 — @param {CInt} talk @returns {CInt} */
 function is_pure(talk) {
     let purity;
-    let original_alignment = cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 1));
-    if (flags.debug && talk) {
-        if (u.ualign.type != original_alignment) {
-            You(__sl10, align_str(u.ualign.type), align_str(original_alignment));
-        } else if (cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) != original_alignment) {
+    let original_alignment = cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1));
+    if (cptr.ld1s(cptr.add(flags, 10)) && talk) {
+        if (cptr.ld1s(cptr.add(u, 2172)) != original_alignment) {
+            You(__sl10, align_str(cptr.ld1s(cptr.add(u, 2172))), align_str(original_alignment));
+        } else if (cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) != original_alignment) {
             You(__sl11);
-        } else if (u.ualign.record < 20) {
-            You(__sl12, u.ualign.record, 20);
+        } else if (cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) < 20) {
+            You(__sl12, cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)), 20);
             if (yn_function(__sl13, null, 121, (1)) == 121)
-                u.ualign.record = 20;
+                cptr.stI32(cptr.add(cptr.add(u, 2172), 4), 20);
         }
     }
-    purity = (u.ualign.record >= 20 && u.ualign.type == original_alignment && cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) == original_alignment) ? 1 : ((cptr.ld1s(cptr.add(cptr.decay(u.ualignbase), 0)) != original_alignment) ? -1 : 0);
+    purity = (cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) >= 20 && cptr.ld1s(cptr.add(u, 2172)) == original_alignment && cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) == original_alignment) ? 1 : ((cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -190,19 +190,19 @@ function expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = u.uevent.qexpelled | 0 ? UTOTYPE_NONE : UTOTYPE_PORTAL;
+    let portal_flag = cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) | 0 ? 0 : 4;
     br = dungeon_branch(__sl14);
-    dest = (cptr.ldI16(cptr.add(br, 16)) == u.uz.dnum) ? cptr.add(br, 20) : cptr.add(br, 16);
+    dest = (cptr.ldI16(cptr.add(br, 16)) == cptr.ldI16(cptr.add(u, 24))) ? cptr.add(br, 20) : cptr.add(br, 16);
     if (seal)
-        portal_flag |= UTOTYPE_RMPORTAL;
+        portal_flag |= 16;
     nomul(0);
     schedule_goto(dest, portal_flag, null, null);
     if (seal) {
-        let reexpelled = u.uevent.qexpelled | 0;
-        u.uevent.qexpelled = 1;
-        remdun_mapseen((svd.dungeon_topology.d_quest_dnum));
-        for (t = gf.ftrap; t; t = cptr.ldPtr(t))
-            if ((cptr.ldI32(cptr.add(t, 20)) | 0) == MAGIC_PORTAL)
+        let reexpelled = cptr.ldI32(cptr.add(cptr.add(u, 1884), 16)) | 0;
+        cptr.stI32(cptr.add(cptr.add(u, 1884), 16), 1);
+        remdun_mapseen((cptr.ldI16(cptr.add(cptr.add(svd, 1792), 86))));
+        for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
+            if ((cptr.ldI32(cptr.add(t, 20)) | 0) == 17)
                 break;
         if (t)
             deltrap(t);
@@ -215,32 +215,32 @@ function expulsion(seal) {
 export function finish_quest(obj) {
     let otmp;
     if (obj && !is_quest_artifact(obj)) {
-        if ((u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf))
+        if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))))
             return;
         fully_identify_obj(obj);
-        if (cptr.ldI16(cptr.add(obj, 32)) == AMULET_OF_YENDOR) {
+        if (cptr.ldI16(cptr.add(obj, 32)) == 213) {
             qt_pager(__sl16);
-        } else if (cptr.ldI16(cptr.add(obj, 32)) == FAKE_AMULET_OF_YENDOR) {
+        } else if (cptr.ldI16(cptr.add(obj, 32)) == 212) {
             verbalize(__sl17);
         } else {
             verbalize(__sl18, the(xname(obj)));
         }
         return;
     }
-    if (u.uhave.amulet) {
+    if (cptr.ldI32(cptr.add(u, 1944))) {
         qt_pager(__sl16);
-        if ((otmp = carrying(AMULET_OF_YENDOR)) !== null) {
+        if ((otmp = carrying(213)) !== null) {
             fully_identify_obj(otmp);
             update_inventory();
         }
     } else {
-        qt_pager(!(svq.quest_status.got_thanks) ? __sl19 : __sl20);
-        if ((otmp = carrying(BELL_OF_OPENING)) === null)
+        qt_pager(!(cptr.ldI32(cptr.add(svq, 64))) ? __sl19 : __sl20);
+        if ((otmp = carrying(263)) === null)
             com_pager(__sl21);
     }
-    svq.quest_status.got_thanks = 1;
+    cptr.stI32(cptr.add(svq, 64), 1);
     if (obj) {
-        u.uevent.qcompleted = 1;
+        cptr.stI32(cptr.add(cptr.add(u, 1884), 20), 1);
         fully_identify_obj(obj);
         update_inventory();
     }
@@ -248,53 +248,53 @@ export function finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr} mtmp */
 function chat_with_leader(mtmp) {
-    if (!cptr.ldI32(cptr.add(mtmp, 168)) || (svq.quest_status.pissed_off) | 0)
+    if (!cptr.ldI32(cptr.add(mtmp, 168)) || (cptr.ldI32(cptr.add(svq, 12))) | 0)
         return;
-    if (u.uhave.questart | 0 && !(svq.quest_status.met_nemesis))
-        svq.quest_status.cheater = 1;
-    if ((svq.quest_status.got_thanks)) {
-        if (u.uhave.amulet)
+    if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) | 0 && !(cptr.ldI32(cptr.add(svq, 40))))
+        cptr.stI32(cptr.add(svq, 52), 1);
+    if ((cptr.ldI32(cptr.add(svq, 64)))) {
+        if (cptr.ldI32(cptr.add(u, 1944)))
             finish_quest(null);
         else
             qt_pager(__sl22);
-    } else if (u.uhave.questart) {
+    } else if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16))) {
         let otmp;
-        for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
             if (is_quest_artifact(otmp))
                 break;
         finish_quest(otmp);
-    } else if ((svq.quest_status.got_quest)) {
+    } else if ((cptr.ldI32(cptr.add(svq, 16)))) {
         qt_pager(__sl23);
     } else {
         let purity = 0;
-        if (!(svq.quest_status.met_leader)) {
+        if (!(cptr.ldI32(cptr.add(svq, 4)))) {
             qt_pager(__sl24);
-            svq.quest_status.met_leader = 1;
-            svq.quest_status.not_ready = 0;
+            cptr.stI32(cptr.add(svq, 4), 1);
+            cptr.stI32(cptr.add(svq, 8), 0);
         } else
             qt_pager(__sl25);
-        if (!on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')))
+        if (!on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)))
             return;
         if (not_capable()) {
             qt_pager(__sl26);
-            exercise(A_WIS, (1));
+            exercise(2, (1));
             expulsion((0));
         } else if ((purity = is_pure((1))) < 0) {
-            if (!(svq.quest_status.pissed_off)) {
+            if (!(cptr.ldI32(cptr.add(svq, 12)))) {
                 com_pager(__sl27);
-                svq.quest_status.pissed_off = 1;
+                cptr.stI32(cptr.add(svq, 12), 1);
                 expulsion((0));
                 livelog_printf(2n, __sl28, noit_mon_nam(mtmp));
             }
         } else if (purity == 0) {
             qt_pager(__sl29);
-            svq.quest_status.not_ready = 1;
-            exercise(A_WIS, (1));
+            cptr.stI32(cptr.add(svq, 8), 1);
+            exercise(2, (1));
             expulsion((0));
         } else {
             qt_pager(__sl30);
-            exercise(A_WIS, (1));
-            svq.quest_status.got_quest = 1;
+            exercise(2, (1));
+            cptr.stI32(cptr.add(svq, 16), 1);
             livelog_printf(2n, __sl31, noit_mon_nam(mtmp));
         }
     }
@@ -303,56 +303,56 @@ function chat_with_leader(mtmp) {
 /** C ref: quest.c:371 — @param {CPtr} mtmp */
 export function leader_speaks(mtmp) {
     if (!cptr.ldI32(cptr.add(mtmp, 168))) {
-        if (!(svq.quest_status.pissed_off)) {
+        if (!(cptr.ldI32(cptr.add(svq, 12)))) {
             qt_pager(__sl32);
         }
-        svq.quest_status.pissed_off = 1;
+        cptr.stI32(cptr.add(svq, 12), 1);
         cptr.st1(cptr.add(mtmp, 224), cptr.ld1u(cptr.add(mtmp, 224)) & BigInt.asUintN(64, (~(268435456n | 536870912n))));
     }
-    if (!on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_qstart_level')))
+    if (!on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 90)))
         return;
-    if (!(svq.quest_status.pissed_off))
+    if (!(cptr.ldI32(cptr.add(svq, 12))))
         chat_with_leader(mtmp);
 }
 
 /** C ref: quest.c:394 */
 function chat_with_nemesis() {
     qt_pager(__sl33);
-    if (!(svq.quest_status.met_nemesis))
-        (svq.quest_status.met_nemesis++);
+    if (!(cptr.ldI32(cptr.add(svq, 40))))
+        ((cptr.stI32(cptr.add(svq, 40), cptr.ldI32(cptr.add(svq, 40)) + 1)) - 1);
 }
 
 /** C ref: quest.c:403 */
 export function nemesis_speaks() {
-    if (!(svq.quest_status.in_battle)) {
-        if (u.uhave.questart)
+    if (!(cptr.ldI32(cptr.add(svq, 48)))) {
+        if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)))
             qt_pager(__sl34);
-        else if (((svq.quest_status.made_goal) | 0) == 1 || !(svq.quest_status.met_nemesis))
+        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) == 1 || !(cptr.ldI32(cptr.add(svq, 40))))
             qt_pager(__sl35);
-        else if (((svq.quest_status.made_goal) | 0) < 4)
+        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 4)
             qt_pager(__sl36);
-        else if (((svq.quest_status.made_goal) | 0) < 7)
+        else if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
             qt_pager(__sl37);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 414, __sl39), rn2(5)) : rn2(5)))
             qt_pager(__sl33);
-        if (((svq.quest_status.made_goal) | 0) < 7)
-            (svq.quest_status.made_goal)++;
-        svq.quest_status.met_nemesis = 1;
+        if (((cptr.ldI32(cptr.add(svq, 36))) | 0) < 7)
+            (cptr.stI32(cptr.add(svq, 36), cptr.ldI32(cptr.add(svq, 36)) + 1)) - 1;
+        cptr.stI32(cptr.add(svq, 40), 1);
     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 420, __sl39), rn2(5)) : rn2(5)))
         qt_pager(__sl33);
 }
 
 /** C ref: quest.c:426 — @param {CInt} mx @param {CInt} my */
 export function nemesis_stinks(mx, my) {
-    let save_mon_moving = svc.context.mon_moving;
-    svc.context.mon_moving = (1);
+    let save_mon_moving = cptr.ld1s(cptr.add(svc, 77));
+    cptr.st1(cptr.add(svc, 77), (1));
     create_gas_cloud(mx, my, 5, 8);
-    svc.context.mon_moving = save_mon_moving;
+    cptr.st1(cptr.add(svc, 77), save_mon_moving);
 }
 
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
-    if (u.uhave.questart | 0 && (svq.quest_status.killed_nemesis) | 0)
+    if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 16)) | 0 && (cptr.ldI32(cptr.add(svq, 44))) | 0)
         qt_pager(__sl40);
     else
         qt_pager(__sl41);
@@ -360,7 +360,7 @@ function chat_with_guardian() {
 
 /** C ref: quest.c:451 — @param {CPtr} mtmp */
 function prisoner_speaks(mtmp) {
-    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), PM_PRISONER)) && (cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, (268435456n | 536870912n)))) {
+    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 273, 96)) && (cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, (268435456n | 536870912n)))) {
         if (canseemon(mtmp))
             pline(__sl42, Monnam(mtmp));
         ;
@@ -375,17 +375,17 @@ function prisoner_speaks(mtmp) {
 
 /** C ref: quest.c:473 — @param {CPtr} mtmp */
 export function quest_chat(mtmp) {
-    if (cptr.ldI32(cptr.add(mtmp, 16)) == (svq.quest_status.leader_m_id)) {
+    if (cptr.ldI32(cptr.add(mtmp, 16)) == (cptr.ldI32(cptr.add(svq, 84)))) {
         chat_with_leader(mtmp);
-        if ((svq.quest_status.pissed_off))
+        if ((cptr.ldI32(cptr.add(svq, 12))))
             setmangry(mtmp, (0));
         return;
     }
     switch (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66))) {
-        case MS_NEMESIS:
+        case 37:
         chat_with_nemesis();
         break;
-        case MS_GUARDIAN:
+        case 38:
         chat_with_guardian();
         break;
         default:
@@ -395,15 +395,15 @@ export function quest_chat(mtmp) {
 
 /** C ref: quest.c:495 — @param {CPtr} mtmp */
 export function quest_talk(mtmp) {
-    if (cptr.ldI32(cptr.add(mtmp, 16)) == (svq.quest_status.leader_m_id)) {
+    if (cptr.ldI32(cptr.add(mtmp, 16)) == (cptr.ldI32(cptr.add(svq, 84)))) {
         leader_speaks(mtmp);
         return;
     }
     switch (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66))) {
-        case MS_NEMESIS:
+        case 37:
         nemesis_speaks();
         break;
-        case MS_DJINNI:
+        case 29:
         prisoner_speaks(mtmp);
         break;
         default:
@@ -413,6 +413,6 @@ export function quest_talk(mtmp) {
 
 /** C ref: quest.c:514 — @param {CPtr} mtmp */
 export function quest_stat_check(mtmp) {
-    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) == MS_NEMESIS)
-        svq.quest_status.in_battle = (!(cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) && monnear(mtmp, u.ux, u.uy)) >>> 0;
+    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) == 37)
+        cptr.stI32(cptr.add(svq, 48), (!(cptr.ldI32(cptr.add((mtmp), 144)) | 0 || !cptr.ldI32(cptr.add((mtmp), 160))) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) >>> 0);
 }

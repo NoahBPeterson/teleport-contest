@@ -15,7 +15,7 @@ import { WIN_MESSAGE, c_color_names, c_common_strings, cg, disp, flags, gb, gi, 
 import { rndcurse, take_gold } from './sit.js';
 import { erode_obj } from './trap.js';
 import { acurr, exercise, poison_strdmg } from './attrib.js';
-import { canseemon, map_invisible, sensemon, shieldeff, tmp_at, zapdir_to_glyph } from './display.js';
+import { canseemon, map_invisible, nul_glyphinfo, sensemon, shieldeff, tmp_at, zapdir_to_glyph } from './display.js';
 import { body_part } from './polyself.js';
 import { check_capacity, invocation_pos, losehp, nomul } from './hack.js';
 import { add_menu, add_menu_heading, add_menu_str, select_menu, windowprocs } from './windows.js';
@@ -58,178 +58,177 @@ import { walk_path } from './dothrow.js';
 import { alloc } from './alloc.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("radiates explosive energy");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/spell.c");
-const __sl2 = cptr.lit("cursed_book");
-const __sl3 = cptr.lit("a wrenching sensation.");
-const __sl4 = cptr.lit("threatened.");
-const __sl5 = cptr.lit("These runes were just too much to comprehend.");
-const __sl6 = cptr.lit("book was coated with contact poison!");
-const __sl7 = cptr.lit("gloves");
-const __sl8 = cptr.lit("contact-poisoned spellbook");
-const __sl9 = cptr.lit("book %s, but you are unharmed!");
-const __sl10 = cptr.lit("As you read the book, it %s in your %s!");
-const __sl11 = cptr.lit("exploding rune");
-const __sl12 = cptr.lit("confused_book");
-const __sl13 = cptr.lit("Being confused you have difficulties in controlling your actions.");
-const __sl14 = cptr.lit("accidentally tear the spellbook to pieces.");
-const __sl15 = cptr.lit("find yourself reading the %s line over and over again.");
-const __sl16 = cptr.lit("next");
-const __sl17 = cptr.lit("first");
-const __sl18 = cptr.lit("turn the pages of the Book of the Dead...");
-const __sl19 = cptr.lit("%s!");
-const __sl20 = cptr.lit("Book seems to be ignoring you");
-const __sl21 = cptr.lit("runes appear scrambled.  You can't read them");
-const __sl22 = cptr.lit("A chill runs down your %s.");
-const __sl23 = cptr.lit("a faint chime...");
-const __sl24 = cptr.lit("Vlad's doppelganger is amused.");
-const __sl25 = cptr.lit("invocation fails!");
-const __sl26 = cptr.lit("At least one of your relics is cursed...");
-const __sl27 = cptr.lit("deadbook");
-const __sl28 = cptr.lit("have a feeling that %s is amiss...");
-const __sl29 = cptr.lit("ancestors are annoyed with you!");
-const __sl30 = cptr.lit("headstones in the cemetery begin to move!");
-const __sl31 = cptr.lit("Oh my!  Your name appears in the book!");
-const __sl32 = cptr.lit("raised the dead!");
-const __sl33 = cptr.lit("%s shut!");
-const __sl34 = cptr.lit("slam");
-const __sl35 = cptr.lit("learn");
-const __sl36 = cptr.lit("reading a book");
-const __sl37 = cptr.lit("\"%s\"");
-const __sl38 = cptr.lit("the \"%s\" spell");
-const __sl39 = cptr.lit("Too many spells memorized!");
-const __sl40 = cptr.lit("This spellbook is too faint to be read any more.");
-const __sl41 = cptr.lit("knowledge of %s is %s.");
-const __sl42 = cptr.lit("keener");
-const __sl43 = cptr.lit("restored");
-const __sl44 = cptr.lit("This spellbook is too faint to read even once.");
-const __sl45 = cptr.lit("learn %s.");
-const __sl46 = cptr.lit("add %s to your repertoire, as '%c'.");
-const __sl47 = cptr.lit("dull");
-const __sl48 = cptr.lit("study_book");
-const __sl49 = cptr.lit("This book is so dull that you can't keep your %s open.");
-const __sl50 = cptr.lit("continue your efforts to %s.");
-const __sl51 = cptr.lit("read the novel");
-const __sl52 = cptr.lit("memorize the spell");
-const __sl53 = cptr.lit("This spellbook is all blank.");
-const __sl54 = cptr.lit("books");
-const __sl55 = cptr.lit("became literate by reading %s");
-const __sl56 = cptr.lit("Unknown spellbook level %d, book %d;");
-const __sl57 = cptr.lit("know \"%s\" quite well already.");
-const __sl58 = cptr.lit("Refresh your memory anyway?");
-const __sl59 = cptr.lit("This spellbook is %sdifficult to comprehend.  Continue?");
-const __sl60 = cptr.lit("very ");
-const __sl61 = cptr.lit("");
-const __sl62 = cptr.lit("spellbook crumbles to dust!");
-const __sl63 = cptr.lit("begin to %s the runes.");
-const __sl64 = cptr.lit("recite");
-const __sl65 = cptr.lit("memorize");
-const __sl66 = cptr.lit("studying");
-const __sl67 = cptr.lit("are too impaired to cast a spell.");
-const __sl68 = cptr.lit("are unable to chant the incantation.");
-const __sl69 = cptr.lit("arms are not free to cast!");
-const __sl70 = cptr.lit("don't know any spells right now.");
-const __sl71 = cptr.lit("a");
-const __sl72 = cptr.lit("a-%c");
-const __sl73 = cptr.lit("a-zA");
-const __sl74 = cptr.lit("a-zA-%c");
-const __sl75 = cptr.lit("getspell");
-const __sl76 = cptr.lit("Cast which spell? [%s *?]");
-const __sl77 = cptr.lit("That's enough tries.");
-const __sl78 = cptr.lit("%s");
-const __sl79 = cptr.lit("don't know that spell.");
-const __sl80 = cptr.lit("Choose which spell to cast");
-const __sl81 = cptr.lit("Cast which spell?");
-const __sl82 = cptr.lit("attack");
-const __sl83 = cptr.lit("healing");
-const __sl84 = cptr.lit("divination");
-const __sl85 = cptr.lit("enchantment");
-const __sl86 = cptr.lit("clerical");
-const __sl87 = cptr.lit("escape");
-const __sl88 = cptr.lit("matter");
-const __sl89 = cptr.lit("Unknown spell skill, %d;");
-const __sl90 = cptr.lit("You shock %s%s");
-const __sl91 = cptr.lit("%s resists.");
-const __sl92 = cptr.lit("%s haze around you becomes more dense.");
-const __sl93 = cptr.lit("mist");
-const __sl94 = cptr.lit("maelstrom");
-const __sl95 = cptr.lit("folds");
-const __sl96 = cptr.lit("maw");
-const __sl97 = cptr.lit("ooze");
-const __sl98 = cptr.lit("water");
-const __sl99 = cptr.lit("cloud");
-const __sl100 = cptr.lit("vegetation");
-const __sl101 = cptr.lit("stone");
-const __sl102 = cptr.lit("air");
-const __sl103 = cptr.lit("%s around you begins to shimmer with %s haze.");
-const __sl104 = cptr.lit("skin feels warm for a moment.");
-const __sl105 = cptr.lit("spell_backfire");
-const __sl106 = cptr.lit("knowledge of this spell is twisted.");
-const __sl107 = cptr.lit("It invokes nightmarish images in your mind...");
-const __sl108 = cptr.lit("spelleffects_check");
-const __sl109 = cptr.lit("strain to recall the spell.");
-const __sl110 = cptr.lit("have difficulty remembering the spell.");
-const __sl111 = cptr.lit("knowledge of this spell is growing faint.");
-const __sl112 = cptr.lit("recall of this spell is gradually fading.");
-const __sl113 = cptr.lit("are too hungry to cast that spell.");
-const __sl114 = cptr.lit("lack the strength to cast spells.");
-const __sl115 = cptr.lit("Your concentration falters while carrying so much stuff.");
-const __sl116 = cptr.lit("the amulet draining your energy away.");
-const __sl117 = cptr.lit("don't have enough energy to cast that spell%s.");
-const __sl118 = cptr.lit(" yet");
-const __sl119 = cptr.lit(" anymore");
-const __sl120 = cptr.lit("fail to cast the spell correctly.");
-const __sl121 = cptr.lit("spelleffects");
-const __sl122 = cptr.lit("zapped %sself with a spell");
-const __sl123 = cptr.lit("magical energy is released!");
-const __sl124 = cptr.lit("are %s ill.");
-const __sl125 = cptr.lit("no longer");
-const __sl126 = cptr.lit("not");
-const __sl127 = cptr.lit("The slime disappears!");
-const __sl128 = cptr.lit("sense a pointy hat on top of your %s.");
-const __sl129 = cptr.lit("Unknown spell %d attempted.");
-const __sl130 = cptr.lit("You're joking!  In this weather?");
-const __sl131 = cptr.lit("had better wait for the sun to come out.");
-const __sl132 = cptr.lit("Where do you want to cast the spell?");
-const __sl133 = cptr.lit("the desired position");
-const __sl134 = cptr.lit("spell dissipates over the distance!");
-const __sl135 = cptr.lit("spell is cut short!");
-const __sl136 = cptr.lit("mind fails to lock onto that location!");
-const __sl137 = cptr.lit("tport_spell: spellbook full");
-const __sl138 = cptr.lit("losespells");
-const __sl139 = cptr.lit("by casting letter");
-const __sl140 = cptr.lit("alphabetically");
-const __sl141 = cptr.lit("by level, low to high");
-const __sl142 = cptr.lit("by level, high to low");
-const __sl143 = cptr.lit("by skill group, alphabetized within each group");
-const __sl144 = cptr.lit("by skill group, low to high level within group");
-const __sl145 = cptr.lit("by skill group, high to low level within group");
-const __sl146 = cptr.lit("maintain current ordering");
-const __sl147 = cptr.lit("reassign casting letters to retain current order");
-const __sl148 = cptr.lit("View known spells list sorted");
-const __sl149 = cptr.lit("Currently known spells");
-const __sl150 = cptr.lit("Reordering spells; swap '%c' with");
-const __sl151 = cptr.lit("You didn't know any spells.");
-const __sl152 = cptr.lit("Spells:");
-const __sl153 = cptr.lit("%s%-20s Level %-12s Fail Retention");
-const __sl154 = cptr.lit("    ");
-const __sl155 = cptr.lit("Name");
-const __sl156 = cptr.lit("Category");
-const __sl157 = cptr.lit("%-20s  %2d   %-12s %3d%% %9s");
-const __sl158 = cptr.lit("Name\tLevel\tCategory\tFail\tRetention");
-const __sl159 = cptr.lit("%s\t%-d\t%s\t%-d%%\t%s");
-const __sl160 = cptr.lit("%c%6s");
-const __sl161 = cptr.lit("turns");
-const __sl162 = cptr.lit("%c%6d");
-const __sl163 = cptr.lit("[sort spells]");
-const __sl164 = cptr.lit("(gone)");
-const __sl165 = cptr.lit("100%");
-const __sl166 = cptr.lit("%ld%%-%ld%%");
-const __sl167 = cptr.lit("Spell %s already known.");
-const __sl168 = cptr.lit("Too many spells memorized");
+const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/spell.c");
+const __sl1 = cptr.lit("cursed_book");
+const __sl2 = cptr.lit("a wrenching sensation.");
+const __sl3 = cptr.lit("threatened.");
+const __sl4 = cptr.lit("These runes were just too much to comprehend.");
+const __sl5 = cptr.lit("book was coated with contact poison!");
+const __sl6 = cptr.lit("gloves");
+const __sl7 = cptr.lit("contact-poisoned spellbook");
+const __sl8 = cptr.lit("book %s, but you are unharmed!");
+const __sl9 = cptr.lit("As you read the book, it %s in your %s!");
+const __sl10 = cptr.lit("exploding rune");
+const __sl11 = cptr.lit("confused_book");
+const __sl12 = cptr.lit("Being confused you have difficulties in controlling your actions.");
+const __sl13 = cptr.lit("accidentally tear the spellbook to pieces.");
+const __sl14 = cptr.lit("find yourself reading the %s line over and over again.");
+const __sl15 = cptr.lit("next");
+const __sl16 = cptr.lit("first");
+const __sl17 = cptr.lit("turn the pages of the Book of the Dead...");
+const __sl18 = cptr.lit("%s!");
+const __sl19 = cptr.lit("Book seems to be ignoring you");
+const __sl20 = cptr.lit("runes appear scrambled.  You can't read them");
+const __sl21 = cptr.lit("A chill runs down your %s.");
+const __sl22 = cptr.lit("a faint chime...");
+const __sl23 = cptr.lit("Vlad's doppelganger is amused.");
+const __sl24 = cptr.lit("invocation fails!");
+const __sl25 = cptr.lit("At least one of your relics is cursed...");
+const __sl26 = cptr.lit("deadbook");
+const __sl27 = cptr.lit("have a feeling that %s is amiss...");
+const __sl28 = cptr.lit("ancestors are annoyed with you!");
+const __sl29 = cptr.lit("headstones in the cemetery begin to move!");
+const __sl30 = cptr.lit("Oh my!  Your name appears in the book!");
+const __sl31 = cptr.lit("raised the dead!");
+const __sl32 = cptr.lit("%s shut!");
+const __sl33 = cptr.lit("slam");
+const __sl34 = cptr.lit("learn");
+const __sl35 = cptr.lit("reading a book");
+const __sl36 = cptr.lit("\"%s\"");
+const __sl37 = cptr.lit("the \"%s\" spell");
+const __sl38 = cptr.lit("Too many spells memorized!");
+const __sl39 = cptr.lit("This spellbook is too faint to be read any more.");
+const __sl40 = cptr.lit("knowledge of %s is %s.");
+const __sl41 = cptr.lit("keener");
+const __sl42 = cptr.lit("restored");
+const __sl43 = cptr.lit("This spellbook is too faint to read even once.");
+const __sl44 = cptr.lit("learn %s.");
+const __sl45 = cptr.lit("add %s to your repertoire, as '%c'.");
+const __sl46 = cptr.lit("dull");
+const __sl47 = cptr.lit("study_book");
+const __sl48 = cptr.lit("This book is so dull that you can't keep your %s open.");
+const __sl49 = cptr.lit("continue your efforts to %s.");
+const __sl50 = cptr.lit("read the novel");
+const __sl51 = cptr.lit("memorize the spell");
+const __sl52 = cptr.lit("This spellbook is all blank.");
+const __sl53 = cptr.lit("books");
+const __sl54 = cptr.lit("became literate by reading %s");
+const __sl55 = cptr.lit("Unknown spellbook level %d, book %d;");
+const __sl56 = cptr.lit("know \"%s\" quite well already.");
+const __sl57 = cptr.lit("Refresh your memory anyway?");
+const __sl58 = cptr.lit("This spellbook is %sdifficult to comprehend.  Continue?");
+const __sl59 = cptr.lit("very ");
+const __sl60 = cptr.lit("");
+const __sl61 = cptr.lit("spellbook crumbles to dust!");
+const __sl62 = cptr.lit("begin to %s the runes.");
+const __sl63 = cptr.lit("recite");
+const __sl64 = cptr.lit("memorize");
+const __sl65 = cptr.lit("studying");
+const __sl66 = cptr.lit("are too impaired to cast a spell.");
+const __sl67 = cptr.lit("are unable to chant the incantation.");
+const __sl68 = cptr.lit("arms are not free to cast!");
+const __sl69 = cptr.lit("don't know any spells right now.");
+const __sl70 = cptr.lit("a");
+const __sl71 = cptr.lit("a-%c");
+const __sl72 = cptr.lit("a-zA");
+const __sl73 = cptr.lit("a-zA-%c");
+const __sl74 = cptr.lit("getspell");
+const __sl75 = cptr.lit("Cast which spell? [%s *?]");
+const __sl76 = cptr.lit("That's enough tries.");
+const __sl77 = cptr.lit("%s");
+const __sl78 = cptr.lit("don't know that spell.");
+const __sl79 = cptr.lit("Choose which spell to cast");
+const __sl80 = cptr.lit("Cast which spell?");
+const __sl81 = cptr.lit("attack");
+const __sl82 = cptr.lit("healing");
+const __sl83 = cptr.lit("divination");
+const __sl84 = cptr.lit("enchantment");
+const __sl85 = cptr.lit("clerical");
+const __sl86 = cptr.lit("escape");
+const __sl87 = cptr.lit("matter");
+const __sl88 = cptr.lit("Unknown spell skill, %d;");
+const __sl89 = cptr.lit("You shock %s%s");
+const __sl90 = cptr.lit("%s resists.");
+const __sl91 = cptr.lit("%s haze around you becomes more dense.");
+const __sl92 = cptr.lit("mist");
+const __sl93 = cptr.lit("maelstrom");
+const __sl94 = cptr.lit("folds");
+const __sl95 = cptr.lit("maw");
+const __sl96 = cptr.lit("ooze");
+const __sl97 = cptr.lit("water");
+const __sl98 = cptr.lit("cloud");
+const __sl99 = cptr.lit("vegetation");
+const __sl100 = cptr.lit("stone");
+const __sl101 = cptr.lit("air");
+const __sl102 = cptr.lit("%s around you begins to shimmer with %s haze.");
+const __sl103 = cptr.lit("skin feels warm for a moment.");
+const __sl104 = cptr.lit("spell_backfire");
+const __sl105 = cptr.lit("knowledge of this spell is twisted.");
+const __sl106 = cptr.lit("It invokes nightmarish images in your mind...");
+const __sl107 = cptr.lit("spelleffects_check");
+const __sl108 = cptr.lit("strain to recall the spell.");
+const __sl109 = cptr.lit("have difficulty remembering the spell.");
+const __sl110 = cptr.lit("knowledge of this spell is growing faint.");
+const __sl111 = cptr.lit("recall of this spell is gradually fading.");
+const __sl112 = cptr.lit("are too hungry to cast that spell.");
+const __sl113 = cptr.lit("lack the strength to cast spells.");
+const __sl114 = cptr.lit("Your concentration falters while carrying so much stuff.");
+const __sl115 = cptr.lit("the amulet draining your energy away.");
+const __sl116 = cptr.lit("don't have enough energy to cast that spell%s.");
+const __sl117 = cptr.lit(" yet");
+const __sl118 = cptr.lit(" anymore");
+const __sl119 = cptr.lit("fail to cast the spell correctly.");
+const __sl120 = cptr.lit("spelleffects");
+const __sl121 = cptr.lit("zapped %sself with a spell");
+const __sl122 = cptr.lit("magical energy is released!");
+const __sl123 = cptr.lit("are %s ill.");
+const __sl124 = cptr.lit("no longer");
+const __sl125 = cptr.lit("not");
+const __sl126 = cptr.lit("The slime disappears!");
+const __sl127 = cptr.lit("sense a pointy hat on top of your %s.");
+const __sl128 = cptr.lit("Unknown spell %d attempted.");
+const __sl129 = cptr.lit("You're joking!  In this weather?");
+const __sl130 = cptr.lit("had better wait for the sun to come out.");
+const __sl131 = cptr.lit("Where do you want to cast the spell?");
+const __sl132 = cptr.lit("the desired position");
+const __sl133 = cptr.lit("spell dissipates over the distance!");
+const __sl134 = cptr.lit("spell is cut short!");
+const __sl135 = cptr.lit("mind fails to lock onto that location!");
+const __sl136 = cptr.lit("tport_spell: spellbook full");
+const __sl137 = cptr.lit("losespells");
+const __sl138 = cptr.lit("by casting letter");
+const __sl139 = cptr.lit("alphabetically");
+const __sl140 = cptr.lit("by level, low to high");
+const __sl141 = cptr.lit("by level, high to low");
+const __sl142 = cptr.lit("by skill group, alphabetized within each group");
+const __sl143 = cptr.lit("by skill group, low to high level within group");
+const __sl144 = cptr.lit("by skill group, high to low level within group");
+const __sl145 = cptr.lit("maintain current ordering");
+const __sl146 = cptr.lit("reassign casting letters to retain current order");
+const __sl147 = cptr.lit("View known spells list sorted");
+const __sl148 = cptr.lit("Currently known spells");
+const __sl149 = cptr.lit("Reordering spells; swap '%c' with");
+const __sl150 = cptr.lit("You didn't know any spells.");
+const __sl151 = cptr.lit("Spells:");
+const __sl152 = cptr.lit("%s%-20s Level %-12s Fail Retention");
+const __sl153 = cptr.lit("    ");
+const __sl154 = cptr.lit("Name");
+const __sl155 = cptr.lit("Category");
+const __sl156 = cptr.lit("%-20s  %2d   %-12s %3d%% %9s");
+const __sl157 = cptr.lit("Name\tLevel\tCategory\tFail\tRetention");
+const __sl158 = cptr.lit("%s\t%-d\t%s\t%-d%%\t%s");
+const __sl159 = cptr.lit("%c%6s");
+const __sl160 = cptr.lit("turns");
+const __sl161 = cptr.lit("%c%6d");
+const __sl162 = cptr.lit("[sort spells]");
+const __sl163 = cptr.lit("(gone)");
+const __sl164 = cptr.lit("100%");
+const __sl165 = cptr.lit("%ld%%-%ld%%");
+const __sl166 = cptr.lit("Spell %s already known.");
+const __sl167 = cptr.lit("Too many spells memorized");
 
 /** C ref: spell.c:111 — char[26] */
-const explodes = __sl0;
+const explodes = cptr.bytes("radiates explosive energy");
 
 /** C ref: spell.c:115 — @param {CInt} ilet @returns {CInt} */
 function spell_let_to_idx(ilet) {
@@ -246,46 +245,46 @@ function spell_let_to_idx(ilet) {
 /** C ref: spell.c:130 — @param {CPtr} bp @returns {CInt} */
 function cursed_book(bp) {
     let was_in_use;
-    let lev = objects[cptr.ldI16(cptr.add(bp, 32))].oc_oc2;
+    let lev = cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(bp, 32)), 120), 85));
     let dmg = 0;
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 136, __sl2), rn2(lev)) : rn2(lev))) {
+    switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 136, __sl1), rn2(lev)) : rn2(lev))) {
         case 0:
-        You_feel(__sl3);
+        You_feel(__sl2);
         tele();
         break;
         case 1:
-        You_feel(__sl4);
+        You_feel(__sl3);
         aggravate();
         break;
         case 2:
-        make_blinded((u.uprops[BLINDED].intrinsic & 16777215n) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 146, __sl2), rn2(100)) : rn2(100)) + (250)) | 0)), (1));
+        make_blinded((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 146, __sl1), rn2(100)) : rn2(100)) + (250)) | 0)), (1));
         break;
         case 3:
         take_gold();
         break;
         case 4:
-        pline(__sl5);
-        make_confused(u.uprops[CONFUSION].intrinsic + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 153, __sl2), rn2(7)) : rn2(7)) + (16)) | 0)), (0));
+        pline(__sl4);
+        make_confused(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 153, __sl1), rn2(7)) : rn2(7)) + (16)) | 0)), (0));
         break;
         case 5:
-        pline_The(__sl6);
+        pline_The(__sl5);
         if (uarmg.v) {
-            erode_obj(uarmg.v, __sl7, 3, 1 | 4);
+            erode_obj(uarmg.v, __sl6, 3, 1 | 4);
             break;
         }
         was_in_use = schar(cptr.ldI32(cptr.add(bp, 144)));
         cptr.stI32(cptr.add(bp, 144), 0);
-        poison_strdmg((u.uprops[POISON_RES].intrinsic || u.uprops[POISON_RES].extrinsic) ? (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 164, __sl2), rn2(2)) : rn2(2)) + (1)) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 164, __sl2), rn2(4)) : rn2(4)) + (3)) | 0), (rng_log_enabled() ? (rng_log_set_caller(__sl1, 165, __sl2), rnd((u.uprops[POISON_RES].intrinsic || u.uprops[POISON_RES].extrinsic) ? 6 : 10)) : rnd((u.uprops[POISON_RES].intrinsic || u.uprops[POISON_RES].extrinsic) ? 6 : 10)), __sl8, 0);
+        poison_strdmg((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24))) ? (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 164, __sl1), rn2(2)) : rn2(2)) + (1)) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 164, __sl1), rn2(4)) : rn2(4)) + (3)) | 0), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 165, __sl1), rnd((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24))) ? 6 : 10)) : rnd((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24))) ? 6 : 10)), __sl7, 0);
         cptr.stI32(cptr.add(bp, 144), was_in_use);
         break;
         case 6:
-        if ((u.uprops[ANTIMAGIC].intrinsic || u.uprops[ANTIMAGIC].extrinsic)) {
-            shieldeff(u.ux, u.uy);
-            pline_The(__sl9, cptr.decay(explodes));
+        if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)))) {
+            shieldeff(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+            pline_The(__sl8, cptr.decay(explodes));
         } else {
-            pline(__sl10, cptr.decay(explodes), body_part(FACE));
-            dmg = (Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 176, __sl2), rnd(10)) : rnd(10))) + 5) | 0;
-            losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl11, 0);
+            pline(__sl9, cptr.decay(explodes), body_part(2));
+            dmg = (Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 176, __sl1), rnd(10)) : rnd(10))) + 5) | 0;
+            losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl10, 0);
         }
         return (1);
         default:
@@ -298,28 +297,28 @@ function cursed_book(bp) {
 /** C ref: spell.c:189 — @param {CPtr} spellbook @returns {CInt} */
 function confused_book(spellbook) {
     let gone = (0);
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 193, __sl12), rn2(3)) : rn2(3)) && cptr.ldI16(cptr.add(spellbook, 32)) != SPE_BOOK_OF_THE_DEAD) {
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 193, __sl11), rn2(3)) : rn2(3)) && cptr.ldI16(cptr.add(spellbook, 32)) != 409) {
         cptr.stI32(cptr.add(spellbook, 144), 1);
-        pline(__sl13);
-        (windowprocs.win_display_nhwindow)(WIN_MESSAGE, (0));
-        You(__sl14);
+        pline(__sl12);
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (0));
+        You(__sl13);
         trycall(spellbook);
         useup(spellbook);
         gone = (1);
     } else {
-        You(__sl15, cptr.eq(spellbook, svc.context.spbook.book) ? __sl16 : __sl17);
+        You(__sl14, cptr.eq(spellbook, cptr.ldPtr(cptr.add(svc, 480))) ? __sl15 : __sl16);
     }
     return gone;
 }
 
 /** C ref: spell.c:211 — @param {CPtr} mtmp */
 function deadbook_pacify_undead(mtmp) {
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || (cptr.ldI16(cptr.add((mtmp), 22)) == PM_VAMPIRE || cptr.ldI16(cptr.add((mtmp), 22)) == PM_VAMPIRE_LEADER || cptr.ldI16(cptr.add((mtmp), 22)) == PM_VLAD_THE_IMPALER)) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, cptr.ldI16(cptr.add(mtmp, 30)))), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || (cptr.ldI16(cptr.add((mtmp), 22)) == 226 || cptr.ldI16(cptr.add((mtmp), 22)) == 227 || cptr.ldI16(cptr.add((mtmp), 22)) == 228)) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)))), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0)) {
         cptr.stI32(cptr.add(mtmp, 168), 1);
-        if (sgn(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 33))) == sgn(u.ualign.type) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), u.ux, u.uy) < 4)
+        if (sgn(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 33))) == sgn(cptr.ld1s(cptr.add(u, 2172))) && dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < 4)
             if (cptr.ld1s(cptr.add(mtmp, 65))) {
                 if (cptr.ld1s(cptr.add(mtmp, 65)) < 20)
-                    cptr.ld1s(cptr.add(mtmp, 65))++;
+                    cptr.postinc1(cptr.add(mtmp, 65));
             } else
                 void tamedog(mtmp, null, (1));
         else
@@ -333,37 +332,37 @@ function deadbook(book2) {
     __skip_raise_dead: {
         let mtmp;
         let mm = cptr.alloc(4);
-        You(__sl18);
-        discover_object((SPE_BOOK_OF_THE_DEAD), (1), (1), (1));
+        You(__sl17);
+        discover_object((409), (1), (1), (1));
         observe_object(book2);
         cptr.stI32(cptr.add(book2, 80), 1);
-        if (invocation_pos(u.ux, u.uy) && !On_stairs(u.ux, u.uy)) {
+        if (invocation_pos(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) && !On_stairs(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
             let otmp;
             let arti1_primed = (0);
             let arti2_primed = (0);
             let arti_cursed = (0);
             if (cptr.ldI32(cptr.add(book2, 56))) {
-                pline_The(__sl19, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl20 : __sl21);
+                pline_The(__sl18, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl19 : __sl20);
                 return;
             }
-            if (!u.uhave.bell || !u.uhave.menorah) {
-                pline(__sl22, body_part(SPINE));
-                if (!u.uhave.bell) {
+            if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4)) || !cptr.ldI32(cptr.add(cptr.add(u, 1944), 12))) {
+                pline(__sl21, body_part(12));
+                if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 4))) {
                     ;
-                    You_hear(__sl23);
+                    You_hear(__sl22);
                 }
-                if (!u.uhave.menorah)
-                    pline(__sl24);
+                if (!cptr.ldI32(cptr.add(cptr.add(u, 1944), 12)))
+                    pline(__sl23);
                 return;
             }
-            for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp)) {
-                if (cptr.ldI16(cptr.add(otmp, 32)) == CANDELABRUM_OF_INVOCATION && cptr.ld1s(cptr.add(otmp, 48)) == 7 && cptr.ldI32(cptr.add(otmp, 76)) | 0) {
+            for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp)) {
+                if (cptr.ldI16(cptr.add(otmp, 32)) == 262 && cptr.ld1s(cptr.add(otmp, 48)) == 7 && cptr.ldI32(cptr.add(otmp, 76)) | 0) {
                     if (!cptr.ldI32(cptr.add(otmp, 56)))
                         arti1_primed = (1);
                     else
                         arti_cursed = (1);
                 }
-                if (cptr.ldI16(cptr.add(otmp, 32)) == BELL_OF_OPENING && (svm.moves - cptr.ldI64(cptr.add(otmp, 184))) < 5n) {
+                if (cptr.ldI16(cptr.add(otmp, 32)) == 263 && (cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184))) < 5n) {
                     if (!cptr.ldI32(cptr.add(otmp, 56)))
                         arti2_primed = (1);
                     else
@@ -371,18 +370,18 @@ function deadbook(book2) {
                 }
             }
             if (arti_cursed) {
-                pline_The(__sl25);
-                pline(__sl26);
+                pline_The(__sl24);
+                pline(__sl25);
             } else if (arti1_primed && arti2_primed) {
-                let soon = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 287, __sl27), d((2), (6))) : d((2), (6))) >>> 0;
+                let soon = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 287, __sl26), d((2), (6))) : d((2), (6))) >>> 0;
                 mkinvokearea();
-                u.uevent.invoked = 1;
-                record_achievement(schar(ACH_INVK));
-                u.uevent.udemigod = 1;
-                if (!u.udg_cnt || u.udg_cnt > soon)
-                    u.udg_cnt = soon;
+                cptr.stI32(cptr.add(cptr.add(u, 1884), 32), 1);
+                record_achievement(5);
+                cptr.stI32(cptr.add(cptr.add(u, 1884), 44), 1);
+                if (!cptr.ldI32(cptr.add(u, 1880)) || cptr.ldI32(cptr.add(u, 1880)) > soon)
+                    cptr.stI32(cptr.add(u, 1880), soon);
             } else {
-                You(__sl28, c_common_strings.c_something);
+                You(__sl27, cptr.ldPtr(cptr.add(c_common_strings, 40)));
                 { __go_raise_dead = true; break __skip_raise_dead; }
             }
             return;
@@ -392,27 +391,27 @@ function deadbook(book2) {
         } else if (cptr.ldI32(cptr.add(book2, 60))) {
             iter_mons(deadbook_pacify_undead);
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 327, __sl27), rn2(3)) : rn2(3))) {
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 327, __sl26), rn2(3)) : rn2(3))) {
                 case 0:
-                Your(__sl29);
+                Your(__sl28);
                 break;
                 case 1:
-                pline_The(__sl30);
+                pline_The(__sl29);
                 break;
                 default:
-                pline(__sl31);
+                pline(__sl30);
             }
         }
     }
     if (__go_raise_dead) {
-        You(__sl32);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 311, __sl27), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(cptr.decay(mons), PM_MASTER_LICH), u.ux, u.uy, 1)) !== null || (mtmp = makemon(cptr.add(cptr.decay(mons), PM_NALFESHNEE), u.ux, u.uy, 1)) !== null)) {
+        You(__sl31);
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl26), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(mons, 185, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1)) !== null || (mtmp = makemon(cptr.add(mons, 299, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1)) !== null)) {
             cptr.stI32(cptr.add(mtmp, 168), 0);
             set_malign(mtmp);
         }
-        void unturn_dead(cptr.boxProp(gy, 'youmonst'));
-        cptr.stI16(mm, u.ux);
-        cptr.stI16(cptr.add(mm, 2), u.uy);
+        void unturn_dead(cptr.add(gy, 8));
+        cptr.stI16(mm, cptr.ldI16(u));
+        cptr.stI16(cptr.add(mm, 2), cptr.ldI16(cptr.add(u, 2)));
         mkundead(mm, (1), 1);
     }
     return;
@@ -420,8 +419,8 @@ function deadbook(book2) {
 
 /** C ref: spell.c:343 — @param {CPtr} book */
 export function book_cursed(book) {
-    if (cptr.ldI32(cptr.add(book, 56)) | 0 && gm.multi >= 0n && go.occupation === learn && cptr.eq(svc.context.spbook.book, book)) {
-        pline(__sl33, Tobjnam(book, __sl34));
+    if (cptr.ldI32(cptr.add(book, 56)) | 0 && cptr.ldI64(cptr.add(gm, 8)) >= 0n && cptr.ldPtr(cptr.add(go, 56)) === learn && cptr.eq(cptr.ldPtr(cptr.add(svc, 480)), book)) {
+        pline(__sl32, Tobjnam(book, __sl33));
         set_bknown(book, 1);
         stop_occupation();
     }
@@ -434,65 +433,65 @@ function learn() {
     let splname = new Uint8Array(256);
     let costly = (1);
     let faded_to_blank = (0);
-    let book = svc.context.spbook.book;
-    if (svc.context.spbook.delay && ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == LENSES && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 366, __sl35), rn2(2)) : rn2(2)))
-        svc.context.spbook.delay++;
-    if (u.uprops[CONFUSION].intrinsic) {
+    let book = cptr.ldPtr(cptr.add(svc, 480));
+    if (cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)) && ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == 232 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 366, __sl34), rn2(2)) : rn2(2)))
+        cptr.postinc1(cptr.add(cptr.add(svc, 480), 12));
+    if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16))) {
         void confused_book(book);
-        svc.context.spbook.book = null;
-        svc.context.spbook.o_id = 0;
-        nomul(svc.context.spbook.delay);
-        gm.multi_reason = __sl36;
-        gn.nomovemsg = null;
-        svc.context.spbook.delay = 0;
+        cptr.stPtr(cptr.add(svc, 480), null);
+        cptr.stI32(cptr.add(cptr.add(svc, 480), 8), 0);
+        nomul(cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)));
+        cptr.stPtr(cptr.add(gm, 16), __sl35);
+        cptr.stPtr(cptr.add(gn, 8), null);
+        cptr.st1(cptr.add(cptr.add(svc, 480), 12), 0);
         return 0;
     }
-    if (svc.context.spbook.delay) {
-        svc.context.spbook.delay++;
+    if (cptr.ld1s(cptr.add(cptr.add(svc, 480), 12))) {
+        cptr.postinc1(cptr.add(cptr.add(svc, 480), 12));
         return 1;
     }
-    exercise(A_WIS, (1));
+    exercise(2, (1));
     booktype = cptr.ldI16(cptr.add(book, 32));
-    if (booktype == SPE_BOOK_OF_THE_DEAD) {
+    if (booktype == 409) {
         deadbook(book);
         return 0;
     }
-    void cptr.sprintf(cptr.decay(splname), objects[booktype].oc_name_known | 0 ? __sl37 : __sl38, (obj_descr[(objects[booktype]).oc_name_idx].oc_name));
-    for (i = 0; i < MAXSPELL; i++)
-        if (svs.spl_book[i].sp_id == booktype || svs.spl_book[i].sp_id == 0)
+    void cptr.sprintf(cptr.decay(splname), cptr.ldI32(cptr.add(cptr.add(objects, booktype, 120), 16)) | 0 ? __sl36 : __sl37, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, booktype, 120))), 16))));
+    for (i = 0; i < 42; i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == booktype || cptr.ldI16(cptr.add(svs, i, 8)) == 0)
             break;
-    if (i == MAXSPELL) {
-        impossible(__sl39);
-    } else if (svs.spl_book[i].sp_id == booktype) {
+    if (i == 42) {
+        impossible(__sl38);
+    } else if (cptr.ldI16(cptr.add(svs, i, 8)) == booktype) {
         if (cptr.ldI32(cptr.add(book, 172)) > 3) {
-            pline(__sl40);
-            cptr.stI16(cptr.add(book, 32), booktype = i16(SPE_BLANK_PAPER));
+            pline(__sl39);
+            cptr.stI16(cptr.add(book, 32), booktype = 407);
             faded_to_blank = (1);
-            cptr.stI32(cptr.add(book, 172), (rng_log_enabled() ? (rng_log_set_caller(__sl1, 406, __sl35), rn2(cptr.ldI32(cptr.add(book, 172)))) : rn2(cptr.ldI32(cptr.add(book, 172)))));
+            cptr.stI32(cptr.add(book, 172), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 406, __sl34), rn2(cptr.ldI32(cptr.add(book, 172)))) : rn2(cptr.ldI32(cptr.add(book, 172)))));
         } else {
-            Your(__sl41, cptr.decay(splname), svs.spl_book[i].sp_know ? __sl42 : __sl43);
-            (svs.spl_book[i].sp_know = (20000 + (1)) | 0);
-            cptr.ldI32(cptr.add(book, 172))++;
-            exercise(A_WIS, (1));
+            Your(__sl40, cptr.decay(splname), cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4)) ? __sl41 : __sl42);
+            (cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), (20000 + (1)) | 0));
+            (cptr.stI32(cptr.add(book, 172), cptr.ldI32(cptr.add(book, 172)) + 1)) - 1;
+            exercise(2, (1));
         }
     } else {
         if (cptr.ldI32(cptr.add(book, 172)) >= 3) {
-            pline(__sl44);
-            cptr.stI16(cptr.add(book, 32), booktype = i16(SPE_BLANK_PAPER));
+            pline(__sl43);
+            cptr.stI16(cptr.add(book, 32), booktype = 407);
             faded_to_blank = (1);
-            cptr.stI32(cptr.add(book, 172), (rng_log_enabled() ? (rng_log_set_caller(__sl1, 424, __sl35), rn2(cptr.ldI32(cptr.add(book, 172)))) : rn2(cptr.ldI32(cptr.add(book, 172)))));
+            cptr.stI32(cptr.add(book, 172), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 424, __sl34), rn2(cptr.ldI32(cptr.add(book, 172)))) : rn2(cptr.ldI32(cptr.add(book, 172)))));
         } else {
-            svs.spl_book[i].sp_id = booktype;
-            svs.spl_book[i].sp_lev = i16(objects[booktype].oc_oc2);
-            (svs.spl_book[i].sp_know = (20000 + (1)) | 0);
-            cptr.ldI32(cptr.add(book, 172))++;
+            cptr.stI16(cptr.add(svs, i, 8), booktype);
+            cptr.stI16(cptr.add(cptr.add(svs, i, 8), 2), i16(cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85))));
+            (cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), (20000 + (1)) | 0));
+            (cptr.stI32(cptr.add(book, 172), cptr.ldI32(cptr.add(book, 172)) + 1)) - 1;
             if (!i)
-                You(__sl45, cptr.decay(splname));
+                You(__sl44, cptr.decay(splname));
             else
-                You(__sl46, cptr.decay(splname), (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0)))));
+                You(__sl45, cptr.decay(splname), (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0)))));
         }
     }
-    if (i < MAXSPELL) {
+    if (i < 42) {
         discover_object((booktype), (1), (1), (1));
         if (faded_to_blank)
             update_inventory();
@@ -500,15 +499,15 @@ function learn() {
     if (cptr.ldI32(cptr.add(book, 56))) {
         if (cursed_book(book)) {
             useup(book);
-            svc.context.spbook.book = null;
-            svc.context.spbook.o_id = 0;
+            cptr.stPtr(cptr.add(svc, 480), null);
+            cptr.stI32(cptr.add(cptr.add(svc, 480), 8), 0);
             return 0;
         }
     }
     if (costly)
         check_unpaid(book);
-    svc.context.spbook.book = null;
-    svc.context.spbook.o_id = 0;
+    cptr.stPtr(cptr.add(svc, 480), null);
+    cptr.stI32(cptr.add(cptr.add(svc, 480), 8), 0);
     return 0;
 }
 
@@ -516,104 +515,104 @@ function learn() {
 export function study_book(spellbook) {
     let booktype = cptr.ldI16(cptr.add(spellbook, 32));
     let i;
-    let confused = schar((u.uprops[CONFUSION].intrinsic != 0n));
+    let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     let too_hard = (0);
-    if (!confused && !(u.uprops[SLEEP_RES].intrinsic || u.uprops[SLEEP_RES].extrinsic) && objdescr_is(spellbook, __sl47)) {
+    if (!confused && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 3, 24))) && objdescr_is(spellbook, __sl46)) {
         let eyes;
-        let dullbook = ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 478, __sl48), rnd(25)) : rnd(25)) - (acurr(A_WIS))) | 0;
-        if (svc.context.spbook.delay && cptr.eq(spellbook, svc.context.spbook.book))
-            dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__sl1, 482, __sl48), rnd(objects[booktype].oc_oc2)) : rnd(objects[booktype].oc_oc2))) | 0;
+        let dullbook = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 478, __sl47), rnd(25)) : rnd(25)) - (acurr(2))) | 0;
+        if (cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)) && cptr.eq(spellbook, cptr.ldPtr(cptr.add(svc, 480))))
+            dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 482, __sl47), rnd(cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)))) : rnd(cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85))))) | 0;
         if (dullbook > 0) {
-            eyes = body_part(EYE);
-            if ((!((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 4096n) == 0n) ? 0 : ((cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_CYCLOPS)) || cptr.eq((gy.youmonst.data), cptr.add(cptr.decay(mons), PM_FLOATING_EYE))) ? 1 : 2)) > 1)
+            eyes = body_part(1);
+            if ((!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 360, 96)) || cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 28, 96))) ? 1 : 2)) > 1)
                 eyes = makeplural(eyes);
-            pline(__sl49, eyes);
-            dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 490, __sl48), rnd(Math.imul(2, objects[booktype].oc_oc2))) : rnd(Math.imul(2, objects[booktype].oc_oc2)))) | 0;
+            pline(__sl48, eyes);
+            dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 490, __sl47), rnd(Math.imul(2, cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85))))) : rnd(Math.imul(2, cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)))))) | 0;
             fall_asleep(-dullbook, (1));
             return 1;
         }
     }
-    if (svc.context.spbook.delay && !confused && cptr.eq(spellbook, svc.context.spbook.book) && booktype != SPE_BLANK_PAPER) {
-        You(__sl50, (booktype == SPE_NOVEL) ? __sl51 : __sl52);
+    if (cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)) && !confused && cptr.eq(spellbook, cptr.ldPtr(cptr.add(svc, 480))) && booktype != 407) {
+        You(__sl49, (booktype == 408) ? __sl50 : __sl51);
     } else {
-        if (booktype == SPE_BLANK_PAPER) {
-            pline(__sl53);
+        if (booktype == 407) {
+            pline(__sl52);
             discover_object((booktype), (1), (1), (1));
             return 1;
         }
-        if (booktype == SPE_NOVEL) {
+        if (booktype == 408) {
             let tribtitle = noveltitle(cptr.add(spellbook, 168));
-            if (read_tribute(__sl54, tribtitle, 0, null, 0, cptr.ldI32(cptr.add(spellbook, 24)))) {
-                if (!u.uconduct.literate++)
-                    livelog_printf(32n, __sl55, tribtitle);
+            if (read_tribute(__sl53, tribtitle, 0, null, 0, cptr.ldI32(cptr.add(spellbook, 24)))) {
+                if (!((cptr.stU64(cptr.add(cptr.add(u, 1968), 48), cptr.ldU64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - 1n))
+                    livelog_printf(32n, __sl54, tribtitle);
                 check_unpaid(spellbook);
                 discover_object((booktype), (1), (1), (1));
-                if (!u.uevent.read_tribute) {
-                    record_achievement(schar(ACH_NOVL));
+                if (!cptr.ldI32(cptr.add(cptr.add(u, 1884), 8))) {
+                    record_achievement(20);
                     more_experienced(20, 0);
                     newexplevel();
-                    u.uevent.read_tribute = 1;
+                    cptr.stI32(cptr.add(cptr.add(u, 1884), 8), 1);
                 }
             }
             return 1;
         }
-        switch (objects[booktype].oc_oc2) {
+        switch (cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85))) {
             case 1:
             case 2:
-            svc.context.spbook.delay = schar((-objects[booktype].oc_delay));
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), schar((-cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 71)))));
             break;
             case 3:
             case 4:
-            svc.context.spbook.delay = schar(Math.imul(-((objects[booktype].oc_oc2 - 1) | 0), objects[booktype].oc_delay));
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), schar(Math.imul(-((cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)) - 1) | 0), cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 71)))));
             break;
             case 5:
             case 6:
-            svc.context.spbook.delay = schar(Math.imul(-objects[booktype].oc_oc2, objects[booktype].oc_delay));
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), schar(Math.imul(-cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)), cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 71)))));
             break;
             case 7:
-            svc.context.spbook.delay = schar(Math.imul(-8, objects[booktype].oc_delay));
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), schar(Math.imul(-8, cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 71)))));
             break;
             default:
-            impossible(__sl56, objects[booktype].oc_oc2, booktype);
+            impossible(__sl55, cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)), booktype);
             return 0;
         }
-        for (i = 0; i < MAXSPELL; i++)
-            if (svs.spl_book[i].sp_id == booktype || svs.spl_book[i].sp_id == 0)
+        for (i = 0; i < 42; i++)
+            if (cptr.ldI16(cptr.add(svs, i, 8)) == booktype || cptr.ldI16(cptr.add(svs, i, 8)) == 0)
                 break;
-        if (svs.spl_book[i].sp_id == booktype && svs.spl_book[i].sp_know > ((20000 / 10) | 0)) {
-            You(__sl57, (obj_descr[(objects[booktype]).oc_name_idx].oc_name));
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == booktype && cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4)) > ((20000 / 10) | 0)) {
+            You(__sl56, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, booktype, 120))), 16))));
             discover_object((booktype), (1), (1), (1));
-            if (yn_function(__sl58, cptr.decay(ynchars), 110, (1)) == 110)
+            if (yn_function(__sl57, cptr.decay(ynchars), 110, (1)) == 110)
                 return 0;
         }
         cptr.stI32(cptr.add(spellbook, 144), 1);
-        if (!cptr.ldI32(cptr.add(spellbook, 60)) && cptr.ldI16(cptr.add(spellbook, 32)) != SPE_BOOK_OF_THE_DEAD) {
+        if (!cptr.ldI32(cptr.add(spellbook, 60)) && cptr.ldI16(cptr.add(spellbook, 32)) != 409) {
             if (cptr.ldI32(cptr.add(spellbook, 56))) {
                 too_hard = (1);
             } else {
-                let read_ability = ((((((((acurr(A_INT)) + 4) | 0) + ((u.ulevel / 2) | 0)) | 0) - Math.imul(2, objects[booktype].oc_oc2)) | 0) + ((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == LENSES) ? 2 : 0)) | 0;
-                if ((gu.urole.mnum == (PM_WIZARD)) && read_ability < 20 && !confused) {
+                let read_ability = ((((((((acurr(1)) + 4) | 0) + ((cptr.ldI32(cptr.add(u, 48)) / 2) | 0)) | 0) - Math.imul(2, cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)))) | 0) + ((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == 232) ? 2 : 0)) | 0;
+                if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) && read_ability < 20 && !confused) {
                     let qbuf = new Uint8Array(128);
-                    void cptr.sprintf(cptr.decay(qbuf), __sl59, (read_ability < 12 ? __sl60 : __sl61));
+                    void cptr.sprintf(cptr.decay(qbuf), __sl58, (read_ability < 12 ? __sl59 : __sl60));
                     if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, (1)) != 121) {
                         cptr.stI32(cptr.add(spellbook, 144), 0);
                         return 1;
                     }
                 }
-                if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 599, __sl48), rnd(20)) : rnd(20)) > read_ability) {
+                if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 599, __sl47), rnd(20)) : rnd(20)) > read_ability) {
                     too_hard = (1);
                 }
             }
         }
         if (too_hard) {
             let gone = cursed_book(spellbook);
-            nomul(svc.context.spbook.delay);
-            gm.multi_reason = __sl36;
-            gn.nomovemsg = null;
-            svc.context.spbook.delay = 0;
-            if (gone || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 612, __sl48), rn2(3)) : rn2(3))) {
+            nomul(cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)));
+            cptr.stPtr(cptr.add(gm, 16), __sl35);
+            cptr.stPtr(cptr.add(gn, 8), null);
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), 0);
+            if (gone || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 612, __sl47), rn2(3)) : rn2(3))) {
                 if (!gone)
-                    pline_The(__sl62);
+                    pline_The(__sl61);
                 trycall(spellbook);
                 useup(spellbook);
             } else
@@ -623,58 +622,58 @@ export function study_book(spellbook) {
             if (!confused_book(spellbook)) {
                 cptr.stI32(cptr.add(spellbook, 144), 0);
             }
-            nomul(svc.context.spbook.delay);
-            gm.multi_reason = __sl36;
-            gn.nomovemsg = null;
-            svc.context.spbook.delay = 0;
+            nomul(cptr.ld1s(cptr.add(cptr.add(svc, 480), 12)));
+            cptr.stPtr(cptr.add(gm, 16), __sl35);
+            cptr.stPtr(cptr.add(gn, 8), null);
+            cptr.st1(cptr.add(cptr.add(svc, 480), 12), 0);
             return 1;
         }
         cptr.stI32(cptr.add(spellbook, 144), 0);
-        You(__sl63, cptr.ldI16(cptr.add(spellbook, 32)) == SPE_BOOK_OF_THE_DEAD ? __sl64 : __sl65);
+        You(__sl62, cptr.ldI16(cptr.add(spellbook, 32)) == 409 ? __sl63 : __sl64);
     }
-    svc.context.spbook.book = spellbook;
-    if (svc.context.spbook.book)
-        svc.context.spbook.o_id = cptr.ldI32(cptr.add(svc.context.spbook.book, 24));
-    set_occupation(learn, __sl66, 0n);
+    cptr.stPtr(cptr.add(svc, 480), spellbook);
+    if (cptr.ldPtr(cptr.add(svc, 480)))
+        cptr.stI32(cptr.add(cptr.add(svc, 480), 8), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(svc, 480)), 24)));
+    set_occupation(learn, __sl65, 0n);
     return 1;
 }
 
 /** C ref: spell.c:646 — @param {CPtr} obj */
 export function book_disappears(obj) {
-    if (cptr.eq(obj, svc.context.spbook.book)) {
-        svc.context.spbook.book = null;
-        svc.context.spbook.o_id = 0;
+    if (cptr.eq(obj, cptr.ldPtr(cptr.add(svc, 480)))) {
+        cptr.stPtr(cptr.add(svc, 480), null);
+        cptr.stI32(cptr.add(cptr.add(svc, 480), 8), 0);
     }
 }
 
 /** C ref: spell.c:658 — @param {CPtr} old_obj @param {CPtr} new_obj */
 export function book_substitution(old_obj, new_obj) {
-    if (cptr.eq(old_obj, svc.context.spbook.book)) {
-        svc.context.spbook.book = new_obj;
-        if (svc.context.spbook.book)
-            svc.context.spbook.o_id = cptr.ldI32(cptr.add(svc.context.spbook.book, 24));
+    if (cptr.eq(old_obj, cptr.ldPtr(cptr.add(svc, 480)))) {
+        cptr.stPtr(cptr.add(svc, 480), new_obj);
+        if (cptr.ldPtr(cptr.add(svc, 480)))
+            cptr.stI32(cptr.add(cptr.add(svc, 480), 8), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(svc, 480)), 24)));
     }
 }
 
 /** C ref: spell.c:669 */
 export function age_spells() {
     let i;
-    for (i = 0; i < MAXSPELL && svs.spl_book[i].sp_id != 0; i++)
-        if (svs.spl_book[i].sp_know)
-            svs.spl_book[i].sp_know--;
+    for (i = 0; i < 42 && cptr.ldI16(cptr.add(svs, i, 8)) != 0; i++)
+        if (cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4)))
+            (cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4)) + -1)) - 1;
     return;
 }
 
 /** C ref: spell.c:687 @returns {CInt} */
 function rejectcasting() {
-    if (u.uprops[STUNNED].intrinsic) {
+    if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16))) {
+        You(__sl66);
+        return (1);
+    } else if (!can_chant(cptr.add(gy, 8))) {
         You(__sl67);
         return (1);
-    } else if (!can_chant(cptr.boxProp(gy, 'youmonst'))) {
-        You(__sl68);
-        return (1);
-    } else if (!freehand() && !(uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == QUARTERSTAFF)) {
-        Your(__sl69);
+    } else if (!freehand() && !(uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == 79)) {
+        Your(__sl68);
         return (1);
     }
     return (0);
@@ -692,7 +691,7 @@ function getspell(spell_no) {
     let cmdq;
     nspells = num_spells();
     if (!nspells) {
-        You(__sl70);
+        You(__sl69);
         return (0);
     }
     if (rejectcasting())
@@ -700,7 +699,7 @@ function getspell(spell_no) {
     if ((cmdq = cmdq_pop()) !== null) {
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
-        if (cptr.ldI32(cq) == CMDQ_KEY) {
+        if (cptr.ldI32(cq) == 0) {
             idx = spell_let_to_idx(cptr.ld1s(cptr.add(cq, 4)));
             if (idx < 0 || idx >= nspells)
                 return (0);
@@ -710,38 +709,38 @@ function getspell(spell_no) {
             return (0);
         }
     }
-    if (flags.menu_style == 0) {
+    if (cptr.ld1s(cptr.add(flags, 142)) == 0) {
         if (nspells == 1)
-            void cptr.strcpy(cptr.decay(lets), __sl71);
+            void cptr.strcpy(cptr.decay(lets), __sl70);
         else if (nspells < 27)
-            void cptr.sprintf(cptr.decay(lets), __sl72, (((97 + nspells) | 0) - 1) | 0);
+            void cptr.sprintf(cptr.decay(lets), __sl71, (((97 + nspells) | 0) - 1) | 0);
         else if (nspells == 27)
-            void cptr.strcpy(cptr.decay(lets), __sl73);
+            void cptr.strcpy(cptr.decay(lets), __sl72);
         else
-            void cptr.sprintf(cptr.decay(lets), __sl74, (((65 + nspells) | 0) - 27) | 0);
-        nh_snprintf(__sl75, 755, cptr.decay(qbuf), 128n, __sl76, cptr.decay(lets));
+            void cptr.sprintf(cptr.decay(lets), __sl73, (((65 + nspells) | 0) - 27) | 0);
+        nh_snprintf(__sl74, 755, cptr.decay(qbuf), 128n, __sl75, cptr.decay(lets));
         for (retry_limit = 0; ; ++retry_limit) {
             if (retry_limit == 10) {
-                pline(__sl77);
+                pline(__sl76);
                 return (0);
             }
             ilet = yn_function(cptr.decay(qbuf), null, 0, (1));
             if (ilet == 42 || ilet == 63)
                 break;
             if (cptr.strchr(cptr.decay(quitchars), ilet)) {
-                pline(__sl78, c_common_strings.c_Never_mind);
+                pline(__sl77, cptr.ldPtr(cptr.add(c_common_strings, 64)));
                 return (0);
             }
             idx = spell_let_to_idx(ilet);
             if (idx < 0 || idx >= nspells) {
-                You(__sl79);
+                You(__sl78);
                 continue;
             }
             cptr.stI32(spell_no, idx);
             return (1);
         }
     }
-    return dospellmenu(__sl80, (-2), spell_no);
+    return dospellmenu(__sl79, (-2), spell_no);
 }
 
 /** C ref: spell.c:787 @returns {CInt} */
@@ -751,19 +750,19 @@ export function dowizcast() {
     let any = cptr.alloc(8);
     let i;
     let n;
-    win = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(win, 0n);
-    cptr.memcpy(any, cg.zeroany, 8);
-    for (i = 0; i < MAXSPELL; i++) {
-        n = ((SPE_DIG + i) | 0);
-        if (n >= SPE_BLANK_PAPER)
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    for (i = 0; i < 42; i++) {
+        n = ((366 + i) | 0);
+        if (n >= 407)
             break;
         cptr.stI32(any, n);
-        add_menu(win, nul_glyphinfo, any, 0, 0, 0, 8, (obj_descr[(objects[n]).oc_name_idx].oc_name), 0);
+        add_menu(win, nul_glyphinfo, any, 0, 0, 0, 8, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, n, 120))), 16))), 0);
     }
-    (windowprocs.win_end_menu)(win, __sl81);
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl80);
     n = select_menu(win, 1, selected);
-    (windowprocs.win_destroy_nhwindow)(win);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     if (n > 0) {
         i = cptr.ldI32(cptr.add(selected.v, 0, 24));
         cptr.free(selected.v);
@@ -776,8 +775,8 @@ export function dowizcast() {
 export function docast() {
     let spell_no = cptr.box(0);
     if (getspell(spell_no)) {
-        cmdq_add_key(CQ_REPEAT, (schar(((spell_no.v < 26) ? ((97 + spell_no.v) | 0) : ((((65 + spell_no.v) | 0) - 26) | 0)))));
-        return spelleffects(svs.spl_book[spell_no.v].sp_id, (0), (0));
+        cmdq_add_key(1, (schar(((spell_no.v < 26) ? ((97 + spell_no.v) | 0) : ((((65 + spell_no.v) | 0) - 26) | 0)))));
+        return spelleffects(cptr.ldI16(cptr.add(svs, spell_no.v, 8)), (0), (0));
     }
     return 4;
 }
@@ -785,60 +784,60 @@ export function docast() {
 /** C ref: spell.c:832 — @param {CInt} skill @returns {CPtr} */
 function spelltypemnemonic(skill) {
     switch (skill) {
-        case P_ATTACK_SPELL:
+        case 28:
+        return __sl81;
+        case 29:
         return __sl82;
-        case P_HEALING_SPELL:
+        case 30:
         return __sl83;
-        case P_DIVINATION_SPELL:
+        case 31:
         return __sl84;
-        case P_ENCHANTMENT_SPELL:
+        case 32:
         return __sl85;
-        case P_CLERIC_SPELL:
+        case 33:
         return __sl86;
-        case P_ESCAPE_SPELL:
+        case 34:
         return __sl87;
-        case P_MATTER_SPELL:
-        return __sl88;
         default:
-        impossible(__sl89, skill);
-        return __sl61;
+        impossible(__sl88, skill);
+        return __sl60;
     }
 }
 
 /** C ref: spell.c:856 — @param {CInt} booktype @returns {CInt} */
 export function spell_skilltype(booktype) {
-    return objects[booktype].oc_subtyp;
+    return cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 68));
 }
 
 /** C ref: spell.c:864 */
 export function skill_based_spellbook_id() {
-    if (!(gu.urole.mnum == (PM_WIZARD)))
+    if (!(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)))
         return;
     let booktype;
-    let spbook_class = uchar(SPBOOK_CLASS);
-    for (booktype = svb.bases[spbook_class]; booktype < svb.bases[(spbook_class + 1) | 0]; booktype++) {
+    let spbook_class = 10;
+    for (booktype = cptr.ldI32(cptr.add(cptr.add(svb, 16), spbook_class, 4)); booktype < cptr.ldI32(cptr.add(cptr.add(svb, 16), (spbook_class + 1) | 0, 4)); booktype++) {
         let known_up_to_level;
         let skill = spell_skilltype(booktype);
-        if (skill == P_NONE)
+        if (skill == 0)
             continue;
-        switch ((u.weapon_skills[skill].skill)) {
-            case P_BASIC:
+        switch ((cptr.ldI16(cptr.add(cptr.add(u, 2588), skill, 6)))) {
+            case 2:
             known_up_to_level = 3;
             break;
-            case P_SKILLED:
+            case 3:
             known_up_to_level = 5;
             break;
-            case P_EXPERT:
-            case P_MASTER:
-            case P_GRAND_MASTER:
+            case 4:
+            case 5:
+            case 6:
             known_up_to_level = 7;
             break;
-            case P_UNSKILLED:
+            case 1:
             default:
-            known_up_to_level = u.uroleplay.pauper ? 0 : 1;
+            known_up_to_level = cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)) ? 0 : 1;
             break;
         }
-        if (objects[booktype].oc_oc2 <= known_up_to_level)
+        if (cptr.ld1s(cptr.add(cptr.add(objects, booktype, 120), 85)) <= known_up_to_level)
             discover_object(booktype, (1), (0), (0));
     }
 }
@@ -850,16 +849,16 @@ export function skill_based_spellbook_id() {
 /** C ref: spell.c:952 — @param {CPtr} clq @param {*} zap */
 function propagate_chain_lightning(clq, zap) {
     let mon;
-    zap.x = i16(zap.x + cptr.ld1s(cptr.add(cptr.decay(xdir), zap.dir)));
-    zap.y = i16(zap.y + cptr.ld1s(cptr.add(cptr.decay(ydir), zap.dir)));
+    zap.x = i16(zap.x + cptr.ld1s(cptr.add(cptr.decay(xdir), zap.dir, 1)));
+    zap.y = i16(zap.y + cptr.ld1s(cptr.add(cptr.decay(ydir), zap.dir, 1)));
     if (cptr.ldI32(cptr.add(clq, 804)) >= 100)
         return;
-    if (!(isok(zap.x, zap.y) && ((((svl.level.locations[zap.x][zap.y].typ) > DOOR) || (svl.level.locations[zap.x][zap.y].typ) == POOL || (svl.level.locations[zap.x][zap.y].typ) == MOAT || (svl.level.locations[zap.x][zap.y].typ) == DRAWBRIDGE_UP || (svl.level.locations[zap.x][zap.y].typ) == LAVAPOOL) || (((svl.level.locations[zap.x][zap.y].typ) == DOOR) && !((svl.level.locations[zap.x][zap.y].flags | 0) & (4 | 8))))))
+    if (!(isok(zap.x, zap.y) && ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) > 23) || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) == 16 || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) == 17 || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) == 19 || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) == 20) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 4))) == 23) && !((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zap.x, 756), zap.y, 36), 8)) | 0) & (4 | 8))))))
         return;
-    mon = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[zap.x]), zap.y)));
+    mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), zap.x, 168), zap.y, 8)));
     if (mon && cptr.ldI32(cptr.add(mon, 168)) | 0)
         return;
-    if (mon && !Resists_Elem(mon, SHOCK_RES) && !defended(mon, 6))
+    if (mon && !Resists_Elem(mon, 5) && !defended(mon, 6))
         zap.strength = 3;
     else if (mon)
         zap.strength = 0;
@@ -869,114 +868,112 @@ function propagate_chain_lightning(clq, zap) {
         if (cptr.ldI16(cptr.add(cptr.add(clq, i, 8), 2)) == zap.x && cptr.ldI16(cptr.add(cptr.add(clq, i, 8), 4)) == zap.y)
             return;
     }
-    cptr.memcpy(cptr.add(clq, cptr.ldI32(cptr.add(clq, 804))++, 8), zap, 8);
-    tmp_at(i16((-6)), i16(zapdir_to_glyph(cptr.ld1s(cptr.add(cptr.decay(xdir), zap.dir)), cptr.ld1s(cptr.add(cptr.decay(ydir), zap.dir)), cptr.ldI32(cptr.add(clq, 808)))));
+    cptr.memcpy(cptr.add(clq, (cptr.stI32(cptr.add(clq, 804), cptr.ldI32(cptr.add(clq, 804)) + 1)) - 1, 8), zap, 8);
+    tmp_at(i16((-6)), i16(zapdir_to_glyph(cptr.ld1s(cptr.add(cptr.decay(xdir), zap.dir, 1)), cptr.ld1s(cptr.add(cptr.decay(ydir), zap.dir, 1)), cptr.ldI32(cptr.add(clq, 808)))));
     tmp_at(zap.x, zap.y);
 }
 
 /** C ref: spell.c:1003 */
 function cast_chain_lightning() {
-    let clq = cptr.alloc(812); cptr.stPtr(clq, [
-
-]); cptr.stI32(cptr.add(clq, 800), 0); cptr.stI32(cptr.add(clq, 804), 0); cptr.stI32(cptr.add(clq, 808), (u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic)) ? rn2_on_display_rng(6) : ((6 - 1) | 0));
-    if (u.uswallow) {
+    let clq = cptr.alloc(812); cptr.stI32(cptr.add(clq, 800), 0); cptr.stI32(cptr.add(clq, 804), 0); cptr.stI32(cptr.add(clq, 808), (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) ? rn2_on_display_rng(6) : ((6 - 1) | 0));
+    if (cptr.ldI32(cptr.add(u, 1848))) {
         return;
     }
     tmp_at(i16((-1)), i16(zapdir_to_glyph(0, 1, cptr.ldI32(cptr.add(clq, 808)))));
-    for (let dir = 0; dir < ((N_DIRS_Z - 2) | 0); dir++) {
-        let zap = cptr.alloc(8); cptr.st1(zap, uchar(dir)); cptr.stI16(cptr.add(zap, 2), u.ux); cptr.stI16(cptr.add(zap, 4), u.uy); cptr.st1(cptr.add(zap, 6), 2);
+    for (let dir = 0; dir < ((10 - 2) | 0); dir++) {
+        let zap = cptr.alloc(8); cptr.st1(zap, uchar(dir)); cptr.stI16(cptr.add(zap, 2), cptr.ldI16(u)); cptr.stI16(cptr.add(zap, 4), cptr.ldI16(cptr.add(u, 2))); cptr.st1(cptr.add(zap, 6), 2);
         propagate_chain_lightning(clq, zap);
     }
-    (windowprocs.win_delay_output)();
+    (cptr.ldPtr(cptr.add(windowprocs, 320)))();
     while (cptr.ldI32(cptr.add(clq, 800)) < cptr.ldI32(cptr.add(clq, 804))) {
         let delay_tail = cptr.ldI32(cptr.add(clq, 804));
         while (cptr.ldI32(cptr.add(clq, 800)) < delay_tail) {
-            let zap = cptr.alloc(8); cptr.memcpy(zap, cptr.add(clq, cptr.ldI32(cptr.add(clq, 800))++, 8), 8);
-            let mon = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cptr.add(zap, 2))]), cptr.ldI16(cptr.add(zap, 4)))));
+            let zap = cptr.alloc(8); cptr.memcpy(zap, cptr.add(clq, (cptr.stI32(cptr.add(clq, 800), cptr.ldI32(cptr.add(clq, 800)) + 1)) - 1, 8), 8);
+            let mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(zap, 2)), 168), cptr.ldI16(cptr.add(zap, 4)), 8)));
             if (mon) {
                 let unused = cptr.box(null);
                 let dmg;
-                gn.notonhead = schar((cptr.ldI16(cptr.add(mon, 28)) != gb.bhitpos.x || cptr.ldI16(cptr.add(mon, 30)) != gb.bhitpos.y));
+                cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(mon, 28)) != cptr.ldI16(cptr.add(gb, 4768)) || cptr.ldI16(cptr.add(mon, 30)) != cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)))));
                 dmg = zhitm(mon, ((10 + ((6 - 1) | 0)) | 0), 2, unused);
                 if (dmg) {
                     if ((cptr.ldI32(cptr.add((mon), 52)) < 1)) {
                         xkilled(mon, 0);
                     } else {
-                        pline(__sl90, mon_nam(mon), exclam(dmg));
-                        if (!canseemon(mon) && !gn.notonhead)
+                        pline(__sl89, mon_nam(mon), exclam(dmg));
+                        if (!canseemon(mon) && !cptr.ld1s(cptr.add(gn, 86)))
                             map_invisible(cptr.ldI16(cptr.add(zap, 2)), cptr.ldI16(cptr.add(zap, 4)));
                     }
                 } else if (canseemon(mon)) {
-                    pline(__sl91, Monnam(mon));
+                    pline(__sl90, Monnam(mon));
                 }
                 if (!(cptr.ldI32(cptr.add((mon), 52)) < 1)) {
-                    svc.context.forcefight++;
+                    cptr.postinc1(cptr.add(svc, 74));
                     wakeup(mon, (0));
-                    svc.context.forcefight--;
+                    (cptr.st1(cptr.add(svc, 74), cptr.ld1s(cptr.add(svc, 74)) + -1)) - 1;
                 }
             }
             if (!cptr.ld1s(cptr.add(zap, 6)))
                 continue;
-            cptr.ld1s(cptr.add(zap, 6))--;
+            (cptr.st1(cptr.add(zap, 6), cptr.ld1s(cptr.add(zap, 6)) + -1)) - 1;
             propagate_chain_lightning(clq, zap);
             if (cptr.ld1s(cptr.add(zap, 6)) < 2)
                 cptr.st1(cptr.add(zap, 6), 0);
-            else if (u.uen > 0)
-                u.uen--;
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % ((N_DIRS_Z - 2) | 0))));
+            else if (cptr.ldI32(cptr.add(u, 2208)) > 0)
+                (cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2208)) + -1)) - 1;
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % ((10 - 2) | 0))));
             propagate_chain_lightning(clq, zap);
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % ((N_DIRS_Z - 2) | 0))));
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % ((10 - 2) | 0))));
             propagate_chain_lightning(clq, zap);
         }
-        (windowprocs.win_delay_output)();
+        (cptr.ldPtr(cptr.add(windowprocs, 320)))();
     }
-    (windowprocs.win_delay_output)();
-    (windowprocs.win_delay_output)();
+    (cptr.ldPtr(cptr.add(windowprocs, 320)))();
+    (cptr.ldPtr(cptr.add(windowprocs, 320)))();
     tmp_at(i16((-7)), 0);
 }
 
 /** C ref: spell.c:1104 */
 function cast_protection() {
-    let l = u.ulevel;
+    let l = cptr.ldI32(cptr.add(u, 48));
     let loglev = 0;
     let gain;
-    let natac = (u.uac + u.uspellprot) | 0;
+    let natac = (cptr.ld1s(cptr.add(u, 2190)) + cptr.ld1u(cptr.add(u, 2191))) | 0;
     while (l) {
         loglev++;
         l = (l / 2) | 0;
     }
     natac = (((10 - natac) | 0) / 10) | 0;
-    gain = (loglev - ((u.uspellprot / ((4 - ((3) < (natac) ? (3) : (natac))) | 0)) | 0)) | 0;
+    gain = (loglev - ((cptr.ld1u(cptr.add(u, 2191)) / ((4 - ((3) < (natac) ? (3) : (natac))) | 0)) | 0)) | 0;
     if (gain > 0) {
-        if (!((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
+        if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
             let rmtyp;
-            let hgolden = hcolor(c_color_names.c_golden);
+            let hgolden = hcolor(cptr.ldPtr(cptr.add(c_color_names, 16)));
             let atmosphere;
-            if (u.uspellprot) {
-                pline_The(__sl92, hgolden);
+            if (cptr.ld1u(cptr.add(u, 2191))) {
+                pline_The(__sl91, hgolden);
             } else {
-                let pm = u.ustuck ? cptr.ldPtr(cptr.add(u.ustuck, 8)) : null;
-                rmtyp = svl.level.locations[u.ux][u.uy].typ;
-                atmosphere = (pm && u.uswallow | 0) ? ((cptr.eq(pm, cptr.add(cptr.decay(mons), PM_FOG_CLOUD))) ? __sl93 : ((cptr.ld1s(cptr.add((pm), 28)) == S_VORTEX || cptr.eq((pm), cptr.add(cptr.decay(mons), PM_AIR_ELEMENTAL))) ? __sl94 : ((dmgtype_fromattack((pm), 28, 11) !== null) ? __sl95 : (((cptr.ldU64(cptr.add((pm), 72)) & 262144n) != 0n) ? __sl96 : __sl97)))) : (u.uinwater | 0 ? hliquid(__sl98) : ((rmtyp == CLOUD) ? __sl99 : (((rmtyp) == TREE || (svl.level.flags.arboreal | 0 && (rmtyp) == STONE)) ? __sl100 : (((rmtyp) <= DBWALL) ? __sl101 : __sl102))));
-                pline_The(__sl103, atmosphere, an(hgolden));
+                let pm = cptr.ldPtr(cptr.add(u, 2416)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8)) : null;
+                rmtyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4));
+                atmosphere = (pm && cptr.ldI32(cptr.add(u, 1848)) | 0) ? ((cptr.eq(pm, cptr.add(mons, 106, 96))) ? __sl92 : ((cptr.ld1s(cptr.add((pm), 28)) == 22 || cptr.eq((pm), cptr.add(mons, 154, 96))) ? __sl93 : ((dmgtype_fromattack((pm), 28, 11) !== null) ? __sl94 : (((cptr.ldU64(cptr.add((pm), 72)) & 262144n) != 0n) ? __sl95 : __sl96)))) : (cptr.ldI32(cptr.add(u, 1852)) | 0 ? hliquid(__sl97) : ((rmtyp == 36) ? __sl98 : (((rmtyp) == 13 || (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 76)) | 0 && (rmtyp) == 0)) ? __sl99 : (((rmtyp) <= 12) ? __sl100 : __sl101))));
+                pline_The(__sl102, atmosphere, an(hgolden));
             }
         }
-        u.uspellprot = uchar(u.uspellprot + gain);
-        u.uspmtime = uchar((((u.weapon_skills[spell_skilltype(SPE_PROTECTION)].skill) == P_EXPERT) ? 20 : 10));
-        if (!u.usptime)
-            u.usptime = u.uspmtime;
+        cptr.st1(cptr.add(u, 2191), cptr.ld1u(cptr.add(u, 2191)) + gain);
+        cptr.st1(cptr.add(u, 2193), uchar((((cptr.ldI16(cptr.add(cptr.add(u, 2588), spell_skilltype(403), 6))) == 4) ? 20 : 10)));
+        if (!cptr.ld1u(cptr.add(u, 2192)))
+            cptr.st1(cptr.add(u, 2192), cptr.ld1u(cptr.add(u, 2193)));
         find_ac();
     } else {
-        Your(__sl104);
+        Your(__sl103);
     }
 }
 
 /** C ref: spell.c:1181 — @param {CInt} spell */
 function spell_backfire(spell) {
-    let duration = BigInt((Math.imul(((svs.spl_book[spell].sp_lev + 1) | 0), 3)));
-    let old_stun = (u.uprops[STUNNED].intrinsic & 16777215n);
-    let old_conf = (u.uprops[CONFUSION].intrinsic & 16777215n);
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1194, __sl105), rn2(10)) : rn2(10))) {
+    let duration = BigInt((Math.imul(((cptr.ldI16(cptr.add(cptr.add(svs, spell, 8), 2)) + 1) | 0), 3)));
+    let old_stun = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & 16777215n);
+    let old_conf = (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) & 16777215n);
+    switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1194, __sl104), rn2(10)) : rn2(10))) {
         case 0:
         case 1:
         case 2:
@@ -1004,60 +1001,60 @@ function spell_backfire(spell) {
 /** C ref: spell.c:1220 — @param {CInt} spell @param {CPtr} res @param {CPtr} energy @returns {CInt} */
 function spelleffects_check(spell, res, energy) {
     let chance;
-    let confused = schar((u.uprops[CONFUSION].intrinsic != 0n));
+    let confused = schar((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) != 0n));
     cptr.stI32(energy, 0);
     if ((spell == (-1)) || rejectcasting()) {
         cptr.stI32(res, 0);
         return (1);
     }
-    cptr.stI32(energy, (Math.imul((svs.spl_book[spell].sp_lev), 5)));
-    if (svs.spl_book[spell].sp_know <= 0) {
-        Your(__sl106);
-        pline(__sl107);
+    cptr.stI32(energy, (Math.imul((cptr.ldI16(cptr.add(cptr.add(svs, spell, 8), 2))), 5)));
+    if (cptr.ldI32(cptr.add(cptr.add(svs, spell, 8), 4)) <= 0) {
+        Your(__sl105);
+        pline(__sl106);
         spell_backfire(spell);
-        u.uen = (u.uen - (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1255, __sl108), rnd(cptr.ldI32(energy))) : rnd(cptr.ldI32(energy)))) | 0;
-        if (u.uen < 0)
-            u.uen = 0;
-        disp.botl = (1);
+        cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1255, __sl107), rnd(cptr.ldI32(energy))) : rnd(cptr.ldI32(energy))));
+        if (cptr.ldI32(cptr.add(u, 2208)) < 0)
+            cptr.stI32(cptr.add(u, 2208), 0);
+        cptr.st1(disp, (1));
         cptr.stI32(res, 1);
         return (1);
-    } else if (svs.spl_book[spell].sp_know <= ((20000 / 200) | 0)) {
+    } else if (cptr.ldI32(cptr.add(cptr.add(svs, spell, 8), 4)) <= ((20000 / 200) | 0)) {
+        You(__sl108);
+    } else if (cptr.ldI32(cptr.add(cptr.add(svs, spell, 8), 4)) <= ((20000 / 40) | 0)) {
         You(__sl109);
-    } else if (svs.spl_book[spell].sp_know <= ((20000 / 40) | 0)) {
-        You(__sl110);
-    } else if (svs.spl_book[spell].sp_know <= ((20000 / 20) | 0)) {
+    } else if (cptr.ldI32(cptr.add(cptr.add(svs, spell, 8), 4)) <= ((20000 / 20) | 0)) {
+        Your(__sl110);
+    } else if (cptr.ldI32(cptr.add(cptr.add(svs, spell, 8), 4)) <= ((20000 / 10) | 0)) {
         Your(__sl111);
-    } else if (svs.spl_book[spell].sp_know <= ((20000 / 10) | 0)) {
-        Your(__sl112);
     }
-    if (u.uhunger <= 10 && svs.spl_book[spell].sp_id != SPE_DETECT_FOOD) {
+    if (cptr.ldI32(cptr.add(u, 104)) <= 10 && cptr.ldI16(cptr.add(svs, spell, 8)) != 383) {
+        You(__sl112);
+        cptr.stI32(res, 0);
+        return (1);
+    } else if ((acurr(0)) < 4 && cptr.ldI16(cptr.add(svs, spell, 8)) != 392) {
         You(__sl113);
         cptr.stI32(res, 0);
         return (1);
-    } else if ((acurr(A_STR)) < 4 && svs.spl_book[spell].sp_id != SPE_RESTORE_ABILITY) {
-        You(__sl114);
-        cptr.stI32(res, 0);
-        return (1);
-    } else if (check_capacity(__sl115)) {
+    } else if (check_capacity(__sl114)) {
         cptr.stI32(res, 1);
         return (1);
     }
-    if (u.uhave.amulet | 0 && u.uen >= cptr.ldI32(energy)) {
-        You_feel(__sl116);
-        u.uen = (u.uen - (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1298, __sl108), rnd(Math.imul(2, cptr.ldI32(energy)))) : rnd(Math.imul(2, cptr.ldI32(energy))))) | 0;
-        if (u.uen < 0)
-            u.uen = 0;
-        disp.botl = (1);
+    if (cptr.ldI32(cptr.add(u, 1944)) | 0 && cptr.ldI32(cptr.add(u, 2208)) >= cptr.ldI32(energy)) {
+        You_feel(__sl115);
+        cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1298, __sl107), rnd(Math.imul(2, cptr.ldI32(energy)))) : rnd(Math.imul(2, cptr.ldI32(energy)))));
+        if (cptr.ldI32(cptr.add(u, 2208)) < 0)
+            cptr.stI32(cptr.add(u, 2208), 0);
+        cptr.st1(disp, (1));
         cptr.stI32(res, 1);
     }
-    if (cptr.ldI32(energy) > u.uen) {
-        You(__sl117, (u.uen < u.uenmax) ? __sl61 : ((cptr.ldI32(energy) > u.uenpeak) ? __sl118 : __sl119));
+    if (cptr.ldI32(energy) > cptr.ldI32(cptr.add(u, 2208))) {
+        You(__sl116, (cptr.ldI32(cptr.add(u, 2208)) < cptr.ldI32(cptr.add(u, 2212))) ? __sl60 : ((cptr.ldI32(energy) > cptr.ldI32(cptr.add(u, 2216))) ? __sl117 : __sl118));
         return (1);
     } else {
-        if (svs.spl_book[spell].sp_id != SPE_DETECT_FOOD) {
+        if (cptr.ldI16(cptr.add(svs, spell, 8)) != 383) {
             let hungr = Math.imul(cptr.ldI32(energy), 2);
-            let intell = acurr(A_INT);
-            if (!(gu.urole.mnum == (PM_WIZARD)))
+            let intell = acurr(1);
+            if (!(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)))
                 intell = 10;
             switch (intell) {
                 case 25:
@@ -1078,16 +1075,16 @@ function spelleffects_check(spell, res, energy) {
                 hungr = (hungr / 2) | 0;
                 break;
             }
-            if (hungr > ((u.uhunger - 3) | 0))
-                hungr = (u.uhunger - 3) | 0;
+            if (hungr > ((cptr.ldI32(cptr.add(u, 104)) - 3) | 0))
+                hungr = (cptr.ldI32(cptr.add(u, 104)) - 3) | 0;
             morehungry(hungr);
         }
     }
     chance = percent_success(spell);
-    if (confused || ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1372, __sl108), rnd(100)) : rnd(100)) > chance)) {
-        You(__sl120);
-        u.uen = (u.uen - ((cptr.ldI32(energy) / 2) | 0)) | 0;
-        disp.botl = (1);
+    if (confused || ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1372, __sl107), rnd(100)) : rnd(100)) > chance)) {
+        You(__sl119);
+        cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - (cptr.ldI32(energy) / 2) | 0);
+        cptr.st1(disp, (1));
         cptr.stI32(res, 1);
         return (1);
     }
@@ -1109,38 +1106,38 @@ export function spelleffects(spell_otyp, atme, force) {
     let cc = cptr.alloc(4);
     if (!force && spelleffects_check(spell, res, energy))
         return res.v;
-    u.uen = (u.uen - energy.v) | 0;
-    disp.botl = (1);
-    exercise(A_WIS, (1));
-    pseudo = mksobj(force ? spell : svs.spl_book[spell].sp_id, (0), (0));
+    cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - energy.v);
+    cptr.st1(disp, (1));
+    exercise(2, (1));
+    pseudo = mksobj(force ? spell : cptr.ldI16(cptr.add(svs, spell, 8)), (0), (0));
     cptr.stI32(cptr.add(pseudo, 60), cptr.stI32(cptr.add(pseudo, 56), 0));
     cptr.stU64(cptr.add(pseudo, 40), 20n);
     otyp = cptr.ldI16(cptr.add(pseudo, 32));
     skill = spell_skilltype(otyp);
-    role_skill = (u.weapon_skills[skill].skill);
+    role_skill = (cptr.ldI16(cptr.add(cptr.add(u, 2588), skill, 6)));
     switch (otyp) {
-        case SPE_FIREBALL:
-        case SPE_CONE_OF_COLD:
-        if (role_skill >= P_SKILLED) {
+        case 368:
+        case 369:
+        if (role_skill >= 3) {
             if (throwspell()) {
-                cptr.stI16(cc, i16(u.dx));
-                cptr.stI16(cptr.add(cc, 2), i16(u.dy));
-                n = ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1425, __sl121), rnd(8)) : rnd(8)) + 1) | 0;
+                cptr.stI16(cc, i16(cptr.ldI32(cptr.add(u, 4))));
+                cptr.stI16(cptr.add(cc, 2), i16(cptr.ldI32(cptr.add(u, 8))));
+                n = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1425, __sl120), rnd(8)) : rnd(8)) + 1) | 0;
                 while (n--) {
-                    if (!u.dx && !u.dy && !u.dz) {
+                    if (!cptr.ldI32(cptr.add(u, 4)) && !cptr.ldI32(cptr.add(u, 8)) && !cptr.ldI32(cptr.add(u, 12))) {
                         if ((damage = zapyourself(pseudo, (1))) != 0) {
                             let buf = new Uint8Array(256);
-                            void cptr.sprintf(cptr.decay(buf), __sl122, (genders[flags.female ? 1 : 0].him));
+                            void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 16))));
                             losehp(damage, cptr.decay(buf), 2);
                         }
                     } else {
-                        explode(i16(u.dx), i16(u.dy), (((otyp - SPE_MAGIC_MISSILE) | 0) + 10) | 0, spell_damage_bonus((((u.ulevel / 2) | 0) + 1) | 0), 0, (otyp == SPE_CONE_OF_COLD) ? EXPL_FROSTY : EXPL_FIERY);
+                        explode(i16(cptr.ldI32(cptr.add(u, 4))), i16(cptr.ldI32(cptr.add(u, 8))), (((otyp - 367) | 0) + 10) | 0, spell_damage_bonus((((cptr.ldI32(cptr.add(u, 48)) / 2) | 0) + 1) | 0), 0, (otyp == 369) ? 6 : 5);
                     }
-                    u.dx = (((cptr.ldI16(cc) + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1442, __sl121), rnd(3)) : rnd(3))) | 0) - 2) | 0;
-                    u.dy = (((cptr.ldI16(cptr.add(cc, 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1443, __sl121), rnd(3)) : rnd(3))) | 0) - 2) | 0;
-                    if (!isok(i16(u.dx), i16(u.dy)) || !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, u.dy)), u.dx)) & 2) != 0) || ((svl.level.locations[u.dx][u.dy].typ) <= DBWALL) || u.uswallow | 0) {
-                        u.dx = cptr.ldI16(cc);
-                        u.dy = cptr.ldI16(cptr.add(cc, 2));
+                    cptr.stI32(cptr.add(u, 4), (((cptr.ldI16(cc) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1442, __sl120), rnd(3)) : rnd(3))) | 0) - 2) | 0);
+                    cptr.stI32(cptr.add(u, 8), (((cptr.ldI16(cptr.add(cc, 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1443, __sl120), rnd(3)) : rnd(3))) | 0) - 2) | 0);
+                    if (!isok(i16(cptr.ldI32(cptr.add(u, 4))), i16(cptr.ldI32(cptr.add(u, 8)))) || !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI32(cptr.add(u, 8)))), cptr.ldI32(cptr.add(u, 4)))) & 2) != 0) || ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI32(cptr.add(u, 4)), 756), cptr.ldI32(cptr.add(u, 8)), 36), 4))) <= 12) || cptr.ldI32(cptr.add(u, 1848)) | 0) {
+                        cptr.stI32(cptr.add(u, 4), cptr.ldI16(cc));
+                        cptr.stI32(cptr.add(u, 8), cptr.ldI16(cptr.add(cc, 2)));
                     }
                 }
             }
@@ -1148,43 +1145,43 @@ export function spelleffects(spell_otyp, atme, force) {
         }
         // @FallThrough
         ;
-        case SPE_FORCE_BOLT:
+        case 376:
         physical_damage = (1);
         // @FallThrough
         ;
-        case SPE_SLEEP:
-        case SPE_MAGIC_MISSILE:
-        case SPE_KNOCK:
-        case SPE_SLOW_MONSTER:
-        case SPE_WIZARD_LOCK:
-        case SPE_DIG:
-        case SPE_TURN_UNDEAD:
-        case SPE_POLYMORPH:
-        case SPE_TELEPORT_AWAY:
-        case SPE_CANCELLATION:
-        case SPE_FINGER_OF_DEATH:
-        case SPE_LIGHT:
-        case SPE_DETECT_UNSEEN:
-        case SPE_HEALING:
-        case SPE_EXTRA_HEALING:
-        case SPE_DRAIN_LIFE:
-        case SPE_STONE_TO_FLESH:
-        if ((objects[otyp].oc_dir | 0) != 1) {
-            if (otyp == SPE_HEALING || otyp == SPE_EXTRA_HEALING) {
-                if (role_skill >= P_SKILLED)
+        case 370:
+        case 367:
+        case 375:
+        case 380:
+        case 381:
+        case 366:
+        case 398:
+        case 399:
+        case 400:
+        case 402:
+        case 371:
+        case 372:
+        case 389:
+        case 374:
+        case 391:
+        case 379:
+        case 405:
+        if ((cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 60)) | 0) != 1) {
+            if (otyp == 374 || otyp == 391) {
+                if (role_skill >= 3)
                     cptr.stI32(cptr.add(pseudo, 60), 1);
             }
             if (atme) {
-                u.dx = (u.dy = (u.dz = 0));
+                cptr.stI32(cptr.add(u, 4), cptr.stI32(cptr.add(u, 8), cptr.stI32(cptr.add(u, 12), 0)));
             } else if (!getdir(null)) {
-                pline_The(__sl123);
+                pline_The(__sl122);
             }
-            if (!u.dx && !u.dy && !u.dz) {
+            if (!cptr.ldI32(cptr.add(u, 4)) && !cptr.ldI32(cptr.add(u, 8)) && !cptr.ldI32(cptr.add(u, 12))) {
                 if ((damage = zapyourself(pseudo, (1))) != 0) {
                     let buf = new Uint8Array(256);
-                    void cptr.sprintf(cptr.decay(buf), __sl122, (genders[flags.female ? 1 : 0].him));
+                    void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 16))));
                     if (physical_damage)
-                        damage = (((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((damage) + 1) | 0) / 2) | 0) : (damage));
+                        damage = (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((damage) + 1) | 0) / 2) | 0) : (damage));
                     losehp(damage, cptr.decay(buf), 2);
                 }
             } else
@@ -1193,74 +1190,74 @@ export function spelleffects(spell_otyp, atme, force) {
             weffects(pseudo);
         update_inventory();
         break;
-        case SPE_REMOVE_CURSE:
-        case SPE_CONFUSE_MONSTER:
-        case SPE_DETECT_FOOD:
-        case SPE_CAUSE_FEAR:
-        case SPE_IDENTIFY:
-        case SPE_CHARM_MONSTER:
-        if (role_skill >= P_SKILLED)
+        case 395:
+        case 377:
+        case 383:
+        case 384:
+        case 397:
+        case 387:
+        if (role_skill >= 3)
             cptr.stI32(cptr.add(pseudo, 60), 1);
         // @FallThrough
         ;
-        case SPE_MAGIC_MAPPING:
-        case SPE_CREATE_MONSTER:
+        case 396:
+        case 382:
         void seffects(pseudo);
         break;
-        case SPE_HASTE_SELF:
-        case SPE_DETECT_TREASURE:
-        case SPE_DETECT_MONSTERS:
-        case SPE_LEVITATION:
-        case SPE_RESTORE_ABILITY:
-        if (role_skill >= P_SKILLED)
+        case 388:
+        case 394:
+        case 373:
+        case 390:
+        case 392:
+        if (role_skill >= 3)
             cptr.stI32(cptr.add(pseudo, 60), 1);
         // @FallThrough
         ;
-        case SPE_INVISIBILITY:
+        case 393:
         void peffects(pseudo);
         break;
-        case SPE_CURE_BLINDNESS:
+        case 378:
         healup(0, 0, (0), (1));
         break;
-        case SPE_CURE_SICKNESS:
+        case 386:
         {
-            let was_sick = schar((!!u.uprops[SICK].intrinsic));
-            let was_slimed = schar((!!u.uprops[SLIMED].intrinsic));
+            let was_sick = schar((!!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16))));
+            let was_slimed = schar((!!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16))));
             healup(0, 0, (1), (0));
             if (was_sick || !was_slimed)
-                You(__sl124, was_sick ? __sl125 : __sl126);
+                You(__sl123, was_sick ? __sl124 : __sl125);
             if (was_slimed)
-                make_slimed(0n, __sl127);
+                make_slimed(0n, __sl126);
             break;
         }
-        case SPE_CREATE_FAMILIAR:
-        void make_familiar(null, u.ux, u.uy, (0));
+        case 401:
+        void make_familiar(null, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0));
         break;
-        case SPE_CLAIRVOYANCE:
-        if (!u.uprops[CLAIRVOYANT].blocked) {
-            if (role_skill >= P_SKILLED)
+        case 385:
+        if (!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 35, 24), 8))) {
+            if (role_skill >= 3)
                 cptr.stI32(cptr.add(pseudo, 60), 1);
             do_vicinity_map(pseudo);
-        } else if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == CORNUTHAUM)
-            You(__sl128, body_part(HEAD));
+        } else if (uarmh.v && cptr.ldI16(cptr.add(uarmh.v, 32)) == 93)
+            You(__sl127, body_part(8));
         break;
-        case SPE_PROTECTION:
+        case 403:
         cast_protection();
         break;
-        case SPE_JUMPING:
+        case 404:
         if (!(jump(((role_skill) > (1) ? (role_skill) : (1))) & 1))
-            pline(__sl78, c_common_strings.c_nothing_happens);
+            pline(__sl77, cptr.ldPtr(c_common_strings));
         break;
-        case SPE_CHAIN_LIGHTNING:
+        case 406:
         cast_chain_lightning();
         break;
         default:
-        impossible(__sl129, spell);
+        impossible(__sl128, spell);
         obfree(pseudo, null);
         return 0;
     }
     if (!force)
-        use_skill(skill, svs.spl_book[spell].sp_lev);
+        use_skill(skill, cptr.ldI16(cptr.add(cptr.add(svs, spell, 8), 2)));
     obfree(pseudo, null);
     return 1;
 }
@@ -1269,16 +1266,16 @@ export function spelleffects(spell_otyp, atme, force) {
 function spell_aim_step(arg, x, y) {
     if (!isok(x, y))
         return (0);
-    if (!((svl.level.locations[x][y].typ) >= POOL) && !(((svl.level.locations[x][y].typ) == DOOR) && ((svl.level.locations[x][y].flags | 0) & 2)))
+    if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) >= 16) && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | 0) & 2)))
         return (0);
     return (1);
 }
 
 /** C ref: spell.c:1619 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function can_center_spell_location(x, y) {
-    if (distmin(u.ux, u.uy, x, y) > 10)
+    if (distmin(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y) > 10)
         return (0);
-    return schar((isok(x, y) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0) && !(((svl.level.locations[x][y].typ) <= DBWALL))));
+    return schar((isok(x, y) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0) && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) <= 12))));
 }
 
 /** C ref: spell.c:1627 — @param {CInt} on_off */
@@ -1289,12 +1286,12 @@ function display_spell_target_positions(on_off) {
     let dy;
     let dist = 10;
     if (on_off) {
-        tmp_at(i16((-1)), i16((((S_goodpos) == S_stone) ? GLYPH_CMAP_STONE_OFF : (((S_goodpos) <= S_trwall) ? (((((S_goodpos) - S_vwall) | 0) + (In_mines(cptr.boxProp(u, 'uz')) ? GLYPH_CMAP_MINES_OFF : (In_hell(cptr.boxProp(u, 'uz')) ? GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_knox_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_knox_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_knox_level')))) ? GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.boxProp(u, 'uz'))) == (svd.dungeon_topology.d_sokoban_dnum)) ? GLYPH_CMAP_SOKO_OFF : GLYPH_CMAP_MAIN_OFF))))) | 0) : (((S_goodpos) < S_altar) ? (((((S_goodpos) - S_ndoor) | 0) + GLYPH_CMAP_A_OFF) | 0) : (((S_goodpos) == S_altar) ? ((((2) & 16) == 16) ? ((GLYPH_ALTAR_OFF + altar_other) | 0) : ((((2) & 7) == 4) ? ((GLYPH_ALTAR_OFF + altar_lawful) | 0) : ((((2) & 7) == 2) ? ((GLYPH_ALTAR_OFF + altar_neutral) | 0) : ((((2) & 7) == 1) ? ((GLYPH_ALTAR_OFF + altar_chaotic) | 0) : ((GLYPH_ALTAR_OFF + altar_unaligned) | 0))))) : (((S_goodpos) < ((S_arrow_trap + ((TRAPNUM - 1) | 0)) | 0)) ? (((((S_goodpos) - S_grave) | 0) + GLYPH_CMAP_B_OFF) | 0) : (((S_goodpos) <= S_goodpos) ? (((((S_goodpos) - S_digbeam) | 0) + GLYPH_CMAP_C_OFF) | 0) : MAX_GLYPH))))))));
+        tmp_at(i16((-1)), i16((((87) == 0) ? 3929 : (((87) <= 11) ? (((((87) - 1) | 0) + (In_mines(cptr.add(u, 24)) ? 3941 : (In_hell(cptr.add(u, 24)) ? 3952 : ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 102)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 102)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 102)))) ? 3963 : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 82)))) ? 3974 : 3930))))) | 0) : (((87) < 33) ? (((((87) - 12) | 0) + 3985) | 0) : (((87) == 33) ? ((((2) & 16) == 16) ? ((4006 + 4) | 0) : ((((2) & 7) == 4) ? ((4006 + 3) | 0) : ((((2) & 7) == 2) ? ((4006 + 2) | 0) : ((((2) & 7) == 1) ? ((4006 + 1) | 0) : ((4006 + 0) | 0))))) : (((87) < ((49 + ((26 - 1) | 0)) | 0)) ? (((((87) - 34) | 0) + 4011) | 0) : (((87) <= 87) ? (((((87) - 78) | 0) + 4083) | 0) : 9624))))))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
-                x = i16(((u.ux + dx) | 0));
-                y = i16(((u.uy + dy) | 0));
-                if (((x) == u.ux && (y) == u.uy))
+                x = i16(((cptr.ldI16(u) + dx) | 0));
+                y = i16(((cptr.ldI16(cptr.add(u, 2)) + dy) | 0));
+                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2))))
                     continue;
                 if (can_center_spell_location(x, y))
                     tmp_at(x, y);
@@ -1309,38 +1306,38 @@ function throwspell() {
     let cc = cptr.alloc(4);
     let uc = cptr.alloc(4);
     let mtmp;
-    if (u.uinwater) {
-        pline(__sl130);
+    if (cptr.ldI32(cptr.add(u, 1852))) {
+        pline(__sl129);
         return 0;
-    } else if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_water_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_water_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_water_level'))))) {
-        You(__sl131);
+    } else if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64))))) {
+        You(__sl130);
         return 0;
     }
-    pline(__sl132);
-    cptr.stI16(cc, u.ux);
-    cptr.stI16(cptr.add(cc, 2), u.uy);
+    pline(__sl131);
+    cptr.stI16(cc, cptr.ldI16(u));
+    cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
     getpos_sethilite(display_spell_target_positions, can_center_spell_location);
-    if (getpos(cc, (1), __sl133) < 0)
+    if (getpos(cc, (1), __sl132) < 0)
         return 0;
-    (windowprocs.win_clear_nhwindow)(WIN_MESSAGE);
-    if (distmin(u.ux, u.uy, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) > 10) {
+    (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE);
+    if (distmin(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) > 10) {
+        pline_The(__sl133);
+        return 0;
+    } else if (cptr.ldI32(cptr.add(u, 1848))) {
         pline_The(__sl134);
-        return 0;
-    } else if (u.uswallow) {
-        pline_The(__sl135);
-        exercise(A_WIS, (0));
-        u.dx = 0;
-        u.dy = 0;
+        exercise(2, (0));
+        cptr.stI32(cptr.add(u, 4), 0);
+        cptr.stI32(cptr.add(u, 8), 0);
         return 1;
-    } else if (((cptr.ldI16(cc) != u.ux || cptr.ldI16(cptr.add(cc, 2)) != u.uy) && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, cptr.ldI16(cptr.add(cc, 2)))), cptr.ldI16(cc))) & 2) != 0) && (!(mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)))))) || !(canseemon(mtmp) || sensemon(mtmp)))) || ((svl.level.locations[cptr.ldI16(cc)][cptr.ldI16(cptr.add(cc, 2))].typ) <= DBWALL)) {
-        Your(__sl136);
+    } else if (((cptr.ldI16(cc) != cptr.ldI16(u) || cptr.ldI16(cptr.add(cc, 2)) != cptr.ldI16(cptr.add(u, 2))) && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(cc, 2)))), cptr.ldI16(cc))) & 2) != 0) && (!(mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)))) || !(canseemon(mtmp) || sensemon(mtmp)))) || ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36), 4))) <= 12)) {
+        Your(__sl135);
         return 0;
     }
-    cptr.stI16(uc, u.ux);
-    cptr.stI16(cptr.add(uc, 2), u.uy);
+    cptr.stI16(uc, cptr.ldI16(u));
+    cptr.stI16(cptr.add(uc, 2), cptr.ldI16(cptr.add(u, 2)));
     walk_path(uc, cc, spell_aim_step, null);
-    u.dx = cptr.ldI16(cc);
-    u.dy = cptr.ldI16(cptr.add(cc, 2));
+    cptr.stI32(cptr.add(u, 4), cptr.ldI16(cc));
+    cptr.stI32(cptr.add(u, 8), cptr.ldI16(cptr.add(cc, 2)));
     return 1;
 }
 
@@ -1349,35 +1346,35 @@ let __static_tport_spell_save_tport = cptr.alloc(12); /** C ref: spell.c:1712 �
 /** C ref: spell.c:1707 — @param {CInt} what @returns {CInt} */
 export function tport_spell(what) {
     let i;
-    for (i = 0; i < MAXSPELL; i++)
-        if (svs.spl_book[i].sp_id == SPE_TELEPORT_AWAY || svs.spl_book[i].sp_id == 0)
+    for (i = 0; i < 42; i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == 400 || cptr.ldI16(cptr.add(svs, i, 8)) == 0)
             break;
-    if (i == MAXSPELL) {
-        impossible(__sl137);
-    } else if (svs.spl_book[i].sp_id == 0) {
+    if (i == 42) {
+        impossible(__sl136);
+    } else if (cptr.ldI16(cptr.add(svs, i, 8)) == 0) {
         if (what == 1 || what == 4) {
-            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), MAXSPELL);
+            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), 42);
         } else if (what == 3) {
-            svs.spl_book[cptr.ldI32(cptr.add(__static_tport_spell_save_tport, 8))] = __static_tport_spell_save_tport;
-            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), MAXSPELL);
+            cptr.memcpy(cptr.add(svs, cptr.ldI32(cptr.add(__static_tport_spell_save_tport, 8)), 8), __static_tport_spell_save_tport, 8);
+            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), 42);
         } else if (what == 2) {
-            cptr.memcpy(__static_tport_spell_save_tport, svs.spl_book[i], 8);
+            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, 8), 8);
             cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), i);
-            svs.spl_book[i].sp_id = i16(SPE_TELEPORT_AWAY);
-            svs.spl_book[i].sp_lev = i16(objects[SPE_TELEPORT_AWAY].oc_oc2);
-            svs.spl_book[i].sp_know = 20000;
+            cptr.stI16(cptr.add(svs, i, 8), 400);
+            cptr.stI16(cptr.add(cptr.add(svs, i, 8), 2), i16(cptr.ld1s(cptr.add(cptr.add(objects, 400, 120), 85))));
+            cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), 20000);
             return 4;
         }
     } else {
         if (what == 2 || what == 3) {
-            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), MAXSPELL);
+            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), 42);
         } else if (what == 4) {
-            svs.spl_book[i] = __static_tport_spell_save_tport;
-            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), MAXSPELL);
+            cptr.memcpy(cptr.add(svs, i, 8), __static_tport_spell_save_tport, 8);
+            cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), 42);
         } else if (what == 1) {
-            cptr.memcpy(__static_tport_spell_save_tport, svs.spl_book[i], 8);
+            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, 8), 8);
             cptr.stI32(cptr.add(__static_tport_spell_save_tport, 8), i);
-            svs.spl_book[i].sp_id = 0;
+            cptr.stI16(cptr.add(svs, i, 8), 0);
             return 3;
         }
     }
@@ -1389,116 +1386,125 @@ export function losespells() {
     let n;
     let nzap;
     let i;
-    svc.context.spbook.book = null;
-    svc.context.spbook.o_id = 0;
-    for (n = 0; n < MAXSPELL; ++n)
-        if (svs.spl_book[n].sp_id == 0)
+    cptr.stPtr(cptr.add(svc, 480), null);
+    cptr.stI32(cptr.add(cptr.add(svc, 480), 8), 0);
+    for (n = 0; n < 42; ++n)
+        if (cptr.ldI16(cptr.add(svs, n, 8)) == 0)
             break;
-    nzap = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1777, __sl138), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
-    if (u.uprops[CONFUSION].intrinsic) {
-        i = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1779, __sl138), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
+    nzap = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1777, __sl137), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
+    if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16))) {
+        i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1779, __sl137), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
         if (i > nzap)
             nzap = i;
     }
-    if (nzap > 1 && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1784, __sl138), rnl(7)) : rnl(7)))
-        nzap = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1785, __sl138), rnd(nzap)) : rnd(nzap));
+    if (nzap > 1 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1784, __sl137), rnl(7)) : rnl(7)))
+        nzap = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1785, __sl137), rnd(nzap)) : rnd(nzap));
     for (i = 0; nzap > 0; ++i) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1814, __sl138), rn2((n - i) | 0)) : rn2((n - i) | 0)) < nzap) {
-            svs.spl_book[i].sp_know = 0;
-            exercise(A_WIS, (0));
+        if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1814, __sl137), rn2((n - i) | 0)) : rn2((n - i) | 0)) < nzap) {
+            cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), 0);
+            exercise(2, (0));
             --nzap;
         }
     }
 }
 
 /** C ref: spell.c:1841 — enum */
-const SORTBY_LETTER = 0;
-const SORTBY_ALPHA = 1;
-const SORTBY_LVL_LO = 2;
-const SORTBY_LVL_HI = 3;
-const SORTBY_SKL_AL = 4;
-const SORTBY_SKL_LO = 5;
-const SORTBY_SKL_HI = 6;
-const SORTBY_CURRENT = 7;
-const SORTRETAINORDER = 8;
-const NUM_SPELL_SORTBY = 9;
+export const SORTBY_LETTER = 0;
+export const SORTBY_ALPHA = 1;
+export const SORTBY_LVL_LO = 2;
+export const SORTBY_LVL_HI = 3;
+export const SORTBY_SKL_AL = 4;
+export const SORTBY_SKL_LO = 5;
+export const SORTBY_SKL_HI = 6;
+export const SORTBY_CURRENT = 7;
+export const SORTRETAINORDER = 8;
+export const NUM_SPELL_SORTBY = 9;
 
 /** C ref: spell.c:1855 — char *[9] */
-const spl_sortchoices = [__sl139, __sl140, __sl141, __sl142, __sl143, __sl144, __sl145, __sl146, __sl147];
+const spl_sortchoices = cptr.alloc(9 * 8);
+cptr.stPtr(cptr.add(spl_sortchoices, 0), __sl138);
+cptr.stPtr(cptr.add(spl_sortchoices, 8), __sl139);
+cptr.stPtr(cptr.add(spl_sortchoices, 16), __sl140);
+cptr.stPtr(cptr.add(spl_sortchoices, 24), __sl141);
+cptr.stPtr(cptr.add(spl_sortchoices, 32), __sl142);
+cptr.stPtr(cptr.add(spl_sortchoices, 40), __sl143);
+cptr.stPtr(cptr.add(spl_sortchoices, 48), __sl144);
+cptr.stPtr(cptr.add(spl_sortchoices, 56), __sl145);
+cptr.stPtr(cptr.add(spl_sortchoices, 64), __sl146);
 
 /** C ref: spell.c:1870 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
 function spell_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
-    let otyp1 = svs.spl_book[indx1].sp_id;
-    let otyp2 = svs.spl_book[indx2].sp_id;
-    let levl1 = objects[otyp1].oc_oc2;
-    let levl2 = objects[otyp2].oc_oc2;
-    let skil1 = objects[otyp1].oc_subtyp;
-    let skil2 = objects[otyp2].oc_subtyp;
-    switch (gs.spl_sortmode) {
-        case SORTBY_LETTER:
+    let otyp1 = cptr.ldI16(cptr.add(svs, indx1, 8));
+    let otyp2 = cptr.ldI16(cptr.add(svs, indx2, 8));
+    let levl1 = cptr.ld1s(cptr.add(cptr.add(objects, otyp1, 120), 85));
+    let levl2 = cptr.ld1s(cptr.add(cptr.add(objects, otyp2, 120), 85));
+    let skil1 = cptr.ld1s(cptr.add(cptr.add(objects, otyp1, 120), 68));
+    let skil2 = cptr.ld1s(cptr.add(cptr.add(objects, otyp2, 120), 68));
+    switch (cptr.ldI32(cptr.add(gs, 1396))) {
+        case 0:
         return (indx1 - indx2) | 0;
-        case SORTBY_ALPHA:
+        case 1:
         break;
-        case SORTBY_LVL_LO:
+        case 2:
         if (levl1 != levl2)
             return (levl1 - levl2) | 0;
         break;
-        case SORTBY_LVL_HI:
+        case 3:
         if (levl1 != levl2)
             return (levl2 - levl1) | 0;
         break;
-        case SORTBY_SKL_AL:
+        case 4:
         if (skil1 != skil2)
             return (skil1 - skil2) | 0;
         break;
-        case SORTBY_SKL_LO:
+        case 5:
         if (skil1 != skil2)
             return (skil1 - skil2) | 0;
         if (levl1 != levl2)
             return (levl1 - levl2) | 0;
         break;
-        case SORTBY_SKL_HI:
+        case 6:
         if (skil1 != skil2)
             return (skil1 - skil2) | 0;
         if (levl1 != levl2)
             return (levl2 - levl1) | 0;
         break;
-        case SORTBY_CURRENT:
+        case 7:
         default:
         return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);
     }
-    return strncmpi(((obj_descr[(objects[otyp1]).oc_name_idx].oc_name)), ((obj_descr[(objects[otyp2]).oc_name_idx].oc_name)), -1);
+    return strncmpi(((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp1, 120))), 16)))), ((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp2, 120))), 16)))), -1);
 }
 
 /** C ref: spell.c:1927 */
 function sortspells() {
     let i;
     let n;
-    if (gs.spl_sortmode == SORTBY_CURRENT)
+    if (cptr.ldI32(cptr.add(gs, 1396)) == 7)
         return;
-    for (n = 0; n < MAXSPELL >>> 0 && svs.spl_book[n].sp_id != 0; ++n)
+    for (n = 0; n < 42 && cptr.ldI16(cptr.add(svs, n, 8)) != 0; ++n)
         continue;
     if (n < 2)
         return;
-    if (!gs.spl_orderindx) {
-        if (gs.spl_sortmode == SORTBY_LETTER || gs.spl_sortmode == SORTRETAINORDER)
+    if (!cptr.ldPtr(cptr.add(gs, 1400))) {
+        if (cptr.ldI32(cptr.add(gs, 1396)) == 0 || cptr.ldI32(cptr.add(gs, 1396)) == 8)
             return;
-        gs.spl_orderindx = alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt(MAXSPELL)) * 4n))));
-        for (i = 0; i < MAXSPELL; i++)
-            cptr.stI32(cptr.add(gs.spl_orderindx, i), i);
+        cptr.stPtr(cptr.add(gs, 1400), alloc(Number(BigInt.asUintN(32, (42n * 4n)))));
+        for (i = 0; i < 42; i++)
+            cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(gs, 1400)), i), i);
     }
-    if (gs.spl_sortmode == SORTRETAINORDER) {
+    if (cptr.ldI32(cptr.add(gs, 1396)) == 8) {
         let tmp_book = cptr.alloc(42 * 8);
-        for (i = 0; i < MAXSPELL; i++)
-            cptr.memcpy(cptr.add(tmp_book, i, 8), svs.spl_book[cptr.ldI32(cptr.add(gs.spl_orderindx, i))], 8);
-        for (i = 0; i < MAXSPELL; i++)
-            svs.spl_book[i] = cptr.add(tmp_book, i, 8), cptr.stI32(cptr.add(gs.spl_orderindx, i), i);
-        gs.spl_sortmode = SORTBY_LETTER;
+        for (i = 0; i < 42; i++)
+            cptr.memcpy(cptr.add(tmp_book, i, 8), cptr.add(svs, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gs, 1400)), i)), 8), 8);
+        for (i = 0; i < 42; i++)
+            cptr.memcpy(cptr.add(svs, i, 8), cptr.add(tmp_book, i, 8), 8), cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(gs, 1400)), i), i);
+        cptr.stI32(cptr.add(gs, 1396), 0);
         return;
     }
-    nh_deterministic_qsort((gs.spl_orderindx), BigInt((n) >>> 0), (4n), (spell_cmp));
+    nh_deterministic_qsort((cptr.ldPtr(cptr.add(gs, 1400))), BigInt((n) >>> 0), (4n), (spell_cmp));
     return;
 }
 
@@ -1512,28 +1518,28 @@ function spellsortmenu() {
     let n;
     let choice;
     let clr = 8;
-    tmpwin = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(tmpwin, 0n);
-    cptr.memcpy(any, cg.zeroany, 8);
-    for (i = 0; i < spl_sortchoices.length; i++) {
-        if (i == SORTRETAINORDER) {
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    for (i = 0; i < 9; i++) {
+        if (i == 8) {
             let$ = 122;
-            add_menu_str(tmpwin, __sl61);
+            add_menu_str(tmpwin, __sl60);
         } else {
             let$ = schar(((97 + i) | 0));
         }
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo, any, let$, 0, 0, clr, cptr.ldPtr(cptr.add(cptr.decay(spl_sortchoices), i)), (i == gs.spl_sortmode) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo, any, let$, 0, 0, clr, cptr.ldPtr(cptr.add(spl_sortchoices, i, 8)), (i == cptr.ldI32(cptr.add(gs, 1396))) ? 1 : 0);
     }
-    (windowprocs.win_end_menu)(tmpwin, __sl148);
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl147);
     n = select_menu(tmpwin, 1, selected);
-    (windowprocs.win_destroy_nhwindow)(tmpwin);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (n > 0) {
         choice = (cptr.ldI32(cptr.add(selected.v, 0, 24)) - 1) | 0;
-        if (n > 1 && choice == gs.spl_sortmode)
+        if (n > 1 && choice == cptr.ldI32(cptr.add(gs, 1396)))
             choice = (cptr.ldI32(cptr.add(selected.v, 1, 24)) - 1) | 0;
         cptr.free(selected.v);
-        gs.spl_sortmode = choice;
+        cptr.stI32(cptr.add(gs, 1396), choice);
         return (1);
     }
     return (0);
@@ -1545,40 +1551,40 @@ export function dovspell() {
     let splnum = cptr.box(0);
     let othnum = cptr.box(0);
     let spl_tmp = cptr.alloc(8);
-    if (svs.spl_book[0].sp_id == 0) {
-        You(__sl70);
+    if (cptr.ldI16(cptr.add(svs, 0, 8)) == 0) {
+        You(__sl69);
     } else {
-        while (dospellmenu(__sl149, (-1), splnum)) {
-            if (splnum.v == (MAXSPELL)) {
+        while (dospellmenu(__sl148, (-1), splnum)) {
+            if (splnum.v == (42)) {
                 if (spellsortmenu())
                     sortspells();
             } else {
-                void cptr.sprintf(cptr.decay(qbuf), __sl150, (schar(((splnum.v < 26) ? ((97 + splnum.v) | 0) : ((((65 + splnum.v) | 0) - 26) | 0)))));
+                void cptr.sprintf(cptr.decay(qbuf), __sl149, (schar(((splnum.v < 26) ? ((97 + splnum.v) | 0) : ((((65 + splnum.v) | 0) - 26) | 0)))));
                 if (!dospellmenu(cptr.decay(qbuf), splnum.v, othnum))
                     break;
-                cptr.memcpy(spl_tmp, svs.spl_book[splnum.v], 8);
-                svs.spl_book[splnum.v] = svs.spl_book[othnum.v];
-                svs.spl_book[othnum.v] = spl_tmp;
+                cptr.memcpy(spl_tmp, cptr.add(svs, splnum.v, 8), 8);
+                cptr.memcpy(cptr.add(svs, splnum.v, 8), cptr.add(svs, othnum.v, 8), 8);
+                cptr.memcpy(cptr.add(svs, othnum.v, 8), spl_tmp, 8);
             }
         }
     }
-    if (gs.spl_orderindx) {
-        cptr.free(gs.spl_orderindx);
-        gs.spl_orderindx = null;
+    if (cptr.ldPtr(cptr.add(gs, 1400))) {
+        cptr.free(cptr.ldPtr(cptr.add(gs, 1400)));
+        cptr.stPtr(cptr.add(gs, 1400), null);
     }
-    gs.spl_sortmode = SORTBY_LETTER;
+    cptr.stI32(cptr.add(gs, 1396), 0);
     return 0;
 }
 
 /** C ref: spell.c:2059 */
 export function show_spells() {
     let unused = cptr.box((-3));
-    if (svs.spl_book[0].sp_id == 0) {
-        pline(__sl151);
-        pline(__sl78, __sl61);
+    if (cptr.ldI16(cptr.add(svs, 0, 8)) == 0) {
+        pline(__sl150);
+        pline(__sl77, __sl60);
     } else {
-        pline(__sl152);
-        (void (dospellmenu(__sl61, (-3), unused)));
+        pline(__sl151);
+        (void (dospellmenu(__sl60, (-3), unused)));
     }
 }
 
@@ -1596,41 +1602,41 @@ function dospellmenu(prompt, splaction, spell_no) {
     let selected = cptr.box(0);
     let any = cptr.alloc(8);
     let clr = 8;
-    tmpwin = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(tmpwin, 0n);
-    cptr.memcpy(any, cg.zeroany, 8);
-    if (!iflags.menu_tab_sep) {
-        void cptr.sprintf(cptr.decay(buf), __sl153, splaction == (-3) ? __sl61 : __sl154, __sl155, __sl156);
-        fmt = __sl157;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    if (!cptr.ld1s(cptr.add(iflags, 136))) {
+        void cptr.sprintf(cptr.decay(buf), __sl152, splaction == (-3) ? __sl60 : __sl153, __sl154, __sl155);
+        fmt = __sl156;
         sep = 32;
     } else {
-        void cptr.sprintf(cptr.decay(buf), __sl158);
-        fmt = __sl159;
+        void cptr.sprintf(cptr.decay(buf), __sl157);
+        fmt = __sl158;
         sep = 9;
     }
-    if (flags.debug)
-        void cptr.sprintf(eos.v(cptr.decay(buf)), __sl160, sep, __sl161);
+    if (cptr.ld1s(cptr.add(flags, 10)))
+        void cptr.sprintf(eos(cptr.decay(buf)), __sl159, sep, __sl160);
     add_menu_heading(tmpwin, cptr.decay(buf));
-    for (i = 0; i < MAXSPELL && svs.spl_book[i].sp_id != 0; i++) {
-        splnum = !gs.spl_orderindx ? i : cptr.ldI32(cptr.add(gs.spl_orderindx, i));
-        void cptr.sprintf(cptr.decay(buf), fmt, (obj_descr[(objects[svs.spl_book[splnum].sp_id]).oc_name_idx].oc_name), svs.spl_book[splnum].sp_lev, spelltypemnemonic(spell_skilltype(svs.spl_book[splnum].sp_id)), (100 - percent_success(splnum)) | 0, spellretention(splnum, cptr.decay(retentionbuf)));
-        if (flags.debug)
-            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl162, sep, svs.spl_book[i].sp_know);
+    for (i = 0; i < 42 && cptr.ldI16(cptr.add(svs, i, 8)) != 0; i++) {
+        splnum = !cptr.ldPtr(cptr.add(gs, 1400)) ? i : cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gs, 1400)), i));
+        void cptr.sprintf(cptr.decay(buf), fmt, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16(cptr.add(svs, splnum, 8)), 120))), 16))), cptr.ldI16(cptr.add(cptr.add(svs, splnum, 8), 2)), spelltypemnemonic(spell_skilltype(cptr.ldI16(cptr.add(svs, splnum, 8)))), (100 - percent_success(splnum)) | 0, spellretention(splnum, cptr.decay(retentionbuf)));
+        if (cptr.ld1s(cptr.add(flags, 10)))
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl161, sep, cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4)));
         cptr.stI32(any, (splnum + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo, any, (schar(((splnum < 26) ? ((97 + splnum) | 0) : ((((65 + splnum) | 0) - 26) | 0)))), 0, 0, clr, cptr.decay(buf), (splnum == splaction) ? 1 : 0);
     }
     how = 1;
     if (splaction == (-1)) {
-        if (svs.spl_book[1].sp_id == 0) {
+        if (cptr.ldI16(cptr.add(svs, 1, 8)) == 0) {
             how = 0;
         } else {
-            cptr.stI32(any, ((MAXSPELL) + 1) | 0);
-            add_menu(tmpwin, nul_glyphinfo, any, 43, 0, 0, clr, __sl163, 0);
+            cptr.stI32(any, ((42) + 1) | 0);
+            add_menu(tmpwin, nul_glyphinfo, any, 43, 0, 0, clr, __sl162, 0);
         }
     }
-    (windowprocs.win_end_menu)(tmpwin, prompt);
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, prompt);
     n = select_menu(tmpwin, how, selected);
-    (windowprocs.win_destroy_nhwindow)(tmpwin);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (n > 0) {
         cptr.stI32(spell_no, (cptr.ldI32(cptr.add(selected.v, 0, 24)) - 1) | 0);
         if (n > 1 && cptr.ldI32(spell_no) == splaction)
@@ -1654,49 +1660,49 @@ function percent_success(spell) {
     let statused;
     let difficulty;
     let skill;
-    let skilltype = spell_skilltype(svs.spl_book[spell].sp_id);
-    let paladin_bonus = schar(((gu.urole.mnum == (PM_KNIGHT)) && skilltype == P_CLERIC_SPELL));
-    splcaster = gu.urole.spelbase;
-    special = gu.urole.spelheal;
-    statused = (acurr(gu.urole.spelstat));
-    if (uarm.v && ((objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarm.v, 32))].oc_material | 0) <= MITHRIL) && !paladin_bonus)
-        splcaster = (splcaster + ((uarmc.v && cptr.ldI16(cptr.add(uarmc.v, 32)) == ROBE) ? (gu.urole.spelarmr / 2) | 0 : gu.urole.spelarmr)) | 0;
-    else if (uarmc.v && cptr.ldI16(cptr.add(uarmc.v, 32)) == ROBE)
-        splcaster = (splcaster - gu.urole.spelarmr) | 0;
+    let skilltype = spell_skilltype(cptr.ldI16(cptr.add(svs, spell, 8)));
+    let paladin_bonus = schar(((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (335)) && skilltype == 32));
+    splcaster = cptr.ldI32(cptr.add(cptr.add(gu, 8), 280));
+    special = cptr.ldI32(cptr.add(cptr.add(gu, 8), 284));
+    statused = (acurr(cptr.ldI32(cptr.add(cptr.add(gu, 8), 296))));
+    if (uarm.v && ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarm.v, 32)), 120), 64)) | 0) >= 11 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarm.v, 32)), 120), 64)) | 0) <= 17) && !paladin_bonus)
+        splcaster = (splcaster + ((uarmc.v && cptr.ldI16(cptr.add(uarmc.v, 32)) == 143) ? (cptr.ldI32(cptr.add(cptr.add(gu, 8), 292)) / 2) | 0 : cptr.ldI32(cptr.add(cptr.add(gu, 8), 292)))) | 0;
+    else if (uarmc.v && cptr.ldI16(cptr.add(uarmc.v, 32)) == 143)
+        splcaster = (splcaster - cptr.ldI32(cptr.add(cptr.add(gu, 8), 292))) | 0;
     if (uarms.v)
-        splcaster = (splcaster + gu.urole.spelshld) | 0;
-    if (uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == QUARTERSTAFF)
+        splcaster = (splcaster + cptr.ldI32(cptr.add(cptr.add(gu, 8), 288))) | 0;
+    if (uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == 79)
         splcaster = (splcaster - 3) | 0;
     if (!paladin_bonus) {
-        if (uarmh.v && ((objects[cptr.ldI16(cptr.add(uarmh.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarmh.v, 32))].oc_material | 0) <= MITHRIL))
+        if (uarmh.v && ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmh.v, 32)), 120), 64)) | 0) >= 11 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmh.v, 32)), 120), 64)) | 0) <= 17))
             splcaster = (splcaster + 4) | 0;
-        if (uarmg.v && ((objects[cptr.ldI16(cptr.add(uarmg.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarmg.v, 32))].oc_material | 0) <= MITHRIL))
+        if (uarmg.v && ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmg.v, 32)), 120), 64)) | 0) >= 11 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmg.v, 32)), 120), 64)) | 0) <= 17))
             splcaster = (splcaster + 6) | 0;
-        if (uarmf.v && ((objects[cptr.ldI16(cptr.add(uarmf.v, 32))].oc_material | 0) >= IRON && (objects[cptr.ldI16(cptr.add(uarmf.v, 32))].oc_material | 0) <= MITHRIL))
+        if (uarmf.v && ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmf.v, 32)), 120), 64)) | 0) >= 11 && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uarmf.v, 32)), 120), 64)) | 0) <= 17))
             splcaster = (splcaster + 2) | 0;
     }
-    if (svs.spl_book[spell].sp_id == gu.urole.spelspec)
-        splcaster = (splcaster + gu.urole.spelsbon) | 0;
-    if (svs.spl_book[spell].sp_id == SPE_HEALING || svs.spl_book[spell].sp_id == SPE_EXTRA_HEALING || svs.spl_book[spell].sp_id == SPE_CURE_BLINDNESS || svs.spl_book[spell].sp_id == SPE_CURE_SICKNESS || svs.spl_book[spell].sp_id == SPE_RESTORE_ABILITY || svs.spl_book[spell].sp_id == SPE_REMOVE_CURSE)
+    if (cptr.ldI16(cptr.add(svs, spell, 8)) == cptr.ldI32(cptr.add(cptr.add(gu, 8), 300)))
+        splcaster = (splcaster + cptr.ldI32(cptr.add(cptr.add(gu, 8), 304))) | 0;
+    if (cptr.ldI16(cptr.add(svs, spell, 8)) == 374 || cptr.ldI16(cptr.add(svs, spell, 8)) == 391 || cptr.ldI16(cptr.add(svs, spell, 8)) == 378 || cptr.ldI16(cptr.add(svs, spell, 8)) == 386 || cptr.ldI16(cptr.add(svs, spell, 8)) == 392 || cptr.ldI16(cptr.add(svs, spell, 8)) == 395)
         splcaster = (splcaster + special) | 0;
     if (splcaster > 20)
         splcaster = 20;
     chance = (Math.imul(11, statused) / 2) | 0;
-    skill = (u.weapon_skills[skilltype].skill);
-    skill = (((skill) > (P_UNSKILLED) ? (skill) : (P_UNSKILLED)) - 1) | 0;
-    difficulty = (Math.imul(((svs.spl_book[spell].sp_lev - 1) | 0), 4) - (((((Math.imul(skill, 6)) + ((u.ulevel / 3) | 0)) | 0) + 1) | 0)) | 0;
+    skill = (cptr.ldI16(cptr.add(cptr.add(u, 2588), skilltype, 6)));
+    skill = (((skill) > (1) ? (skill) : (1)) - 1) | 0;
+    difficulty = (Math.imul(((cptr.ldI16(cptr.add(cptr.add(svs, spell, 8), 2)) - 1) | 0), 4) - (((((Math.imul(skill, 6)) + ((cptr.ldI32(cptr.add(u, 48)) / 3) | 0)) | 0) + 1) | 0)) | 0;
     if (difficulty > 0) {
         chance = (chance - isqrt((Math.imul(900, difficulty) + 2000) | 0)) | 0;
     } else {
-        let learning = (Math.imul(15, -difficulty) / svs.spl_book[spell].sp_lev) | 0;
+        let learning = (Math.imul(15, -difficulty) / cptr.ldI16(cptr.add(cptr.add(svs, spell, 8), 2))) | 0;
         chance = (chance + (learning > 20 ? 20 : learning)) | 0;
     }
     if (chance < 0)
         chance = 0;
     if (chance > 120)
         chance = 120;
-    if (uarms.v && weight(uarms.v) > (objects[SMALL_SHIELD].oc_weight | 0)) {
-        if (svs.spl_book[spell].sp_id == gu.urole.spelspec) {
+    if (uarms.v && weight(uarms.v) > (cptr.ldI32(cptr.add(cptr.add(objects, 150, 120), 76)) | 0)) {
+        if (cptr.ldI16(cptr.add(svs, spell, 8)) == cptr.ldI32(cptr.add(cptr.add(gu, 8), 300))) {
             chance = (chance / 2) | 0;
         } else {
             chance = (chance / 4) | 0;
@@ -1716,19 +1722,19 @@ function spellretention(idx, outbuf) {
     let percent;
     let accuracy;
     let skill;
-    skill = (u.weapon_skills[spell_skilltype(svs.spl_book[idx].sp_id)].skill);
-    skill = ((skill) > (P_UNSKILLED) ? (skill) : (P_UNSKILLED));
-    turnsleft = BigInt(svs.spl_book[idx].sp_know);
+    skill = (cptr.ldI16(cptr.add(cptr.add(u, 2588), spell_skilltype(cptr.ldI16(cptr.add(svs, idx, 8))), 6)));
+    skill = ((skill) > (1) ? (skill) : (1));
+    turnsleft = BigInt(cptr.ldI32(cptr.add(cptr.add(svs, idx, 8), 4)));
     cptr.st1(outbuf, 0);
     if (turnsleft < 1n) {
-        void cptr.strcpy(outbuf, __sl164);
+        void cptr.strcpy(outbuf, __sl163);
     } else if (turnsleft >= 20000n) {
-        void cptr.strcpy(outbuf, __sl165);
+        void cptr.strcpy(outbuf, __sl164);
     } else {
         percent = (turnsleft - 1n) / (20000n / 100n) + 1n;
-        accuracy = (skill == P_EXPERT) ? 2n : ((skill == P_SKILLED) ? 5n : ((skill == P_BASIC) ? 10n : 25n));
+        accuracy = (skill == 4) ? 2n : ((skill == 3) ? 5n : ((skill == 2) ? 10n : 25n));
         percent = accuracy * ((percent - 1n) / accuracy + 1n);
-        void cptr.sprintf(outbuf, __sl166, percent - accuracy + 1n, percent);
+        void cptr.sprintf(outbuf, __sl165, percent - accuracy + 1n, percent);
     }
     return outbuf;
 }
@@ -1737,17 +1743,17 @@ function spellretention(idx, outbuf) {
 export function initialspell(obj) {
     let i;
     let otyp = cptr.ldI16(cptr.add(obj, 32));
-    for (i = 0; i < MAXSPELL; i++)
-        if (svs.spl_book[i].sp_id == 0 || svs.spl_book[i].sp_id == otyp)
+    for (i = 0; i < 42; i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == 0 || cptr.ldI16(cptr.add(svs, i, 8)) == otyp)
             break;
-    if (i == MAXSPELL) {
-        impossible(__sl39);
-    } else if (svs.spl_book[i].sp_id != 0) {
-        impossible(__sl167, (obj_descr[(objects[otyp]).oc_name_idx].oc_name));
+    if (i == 42) {
+        impossible(__sl38);
+    } else if (cptr.ldI16(cptr.add(svs, i, 8)) != 0) {
+        impossible(__sl166, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))));
     } else {
-        svs.spl_book[i].sp_id = i16(otyp);
-        svs.spl_book[i].sp_lev = i16(objects[otyp].oc_oc2);
-        (svs.spl_book[i].sp_know = (20000 + (0)) | 0);
+        cptr.stI16(cptr.add(svs, i, 8), i16(otyp));
+        cptr.stI16(cptr.add(cptr.add(svs, i, 8), 2), i16(cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 85))));
+        (cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), (20000 + (0)) | 0));
     }
     return;
 }
@@ -1756,19 +1762,19 @@ export function initialspell(obj) {
 export function known_spell(otyp) {
     let i;
     let k;
-    for (i = 0; (i < MAXSPELL) && (svs.spl_book[i].sp_id != 0); i++)
-        if (svs.spl_book[i].sp_id == otyp) {
-            k = svs.spl_book[i].sp_know;
-            return (k > ((20000 / 10) | 0)) ? spe_Fresh : ((k > 0) ? spe_GoingStale : spe_Forgotten);
+    for (i = 0; (i < 42) && (cptr.ldI16(cptr.add(svs, i, 8)) != 0); i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == otyp) {
+            k = cptr.ldI32(cptr.add(cptr.add(svs, i, 8), 4));
+            return (k > ((20000 / 10) | 0)) ? 1 : ((k > 0) ? 2 : -1);
         }
-    return spe_Unknown;
+    return 0;
 }
 
 /** C ref: spell.c:2379 — @param {CInt} otyp @returns {CInt} */
 export function spell_idx(otyp) {
     let i;
-    for (i = 0; (i < MAXSPELL) && (svs.spl_book[i].sp_id != 0); i++)
-        if (svs.spl_book[i].sp_id == otyp)
+    for (i = 0; (i < 42) && (cptr.ldI16(cptr.add(svs, i, 8)) != 0); i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == otyp)
             return i;
     return (-1);
 }
@@ -1776,26 +1782,26 @@ export function spell_idx(otyp) {
 /** C ref: spell.c:2391 — @param {CInt} otyp @returns {CInt} */
 export function force_learn_spell(otyp) {
     let i;
-    if (otyp == SPE_BLANK_PAPER || otyp == SPE_BOOK_OF_THE_DEAD || known_spell(otyp) == spe_Fresh)
+    if (otyp == 407 || otyp == 409 || known_spell(otyp) == 1)
         return 0;
-    for (i = 0; i < MAXSPELL; i++)
-        if (svs.spl_book[i].sp_id == 0 || svs.spl_book[i].sp_id == otyp)
+    for (i = 0; i < 42; i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == 0 || cptr.ldI16(cptr.add(svs, i, 8)) == otyp)
             break;
-    if (i == MAXSPELL) {
-        impossible(__sl168);
+    if (i == 42) {
+        impossible(__sl167);
         return 0;
     }
-    svs.spl_book[i].sp_id = otyp;
-    svs.spl_book[i].sp_lev = i16(objects[otyp].oc_oc2);
-    (svs.spl_book[i].sp_know = (20000 + (0)) | 0);
+    cptr.stI16(cptr.add(svs, i, 8), otyp);
+    cptr.stI16(cptr.add(cptr.add(svs, i, 8), 2), i16(cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 85))));
+    (cptr.stI32(cptr.add(cptr.add(svs, i, 8), 4), (20000 + (0)) | 0));
     return (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))));
 }
 
 /** C ref: spell.c:2417 @returns {CInt} */
 export function num_spells() {
     let i;
-    for (i = 0; i < MAXSPELL; i++)
-        if (svs.spl_book[i].sp_id == 0)
+    for (i = 0; i < 42; i++)
+        if (cptr.ldI16(cptr.add(svs, i, 8)) == 0)
             break;
     return i;
 }

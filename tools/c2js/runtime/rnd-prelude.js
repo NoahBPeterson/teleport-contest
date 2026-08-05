@@ -62,19 +62,27 @@ function impossible(...args) { return 0; }
 function sgn(n) { return n < 0 ? -1 : (n !== 0 ? 1 : 0); }
 
 // sys_random_seed is port-specific (provided by the recorder build's unix
-// glue); init_random is not exercised by the parity driver, which seeds via
-// init_isaac64 directly. Throw if ever reached rather than silently using a
-// made-up seed.
+// glue): NETHACK_SEED env var wins, like the recorder's unixmain.c. The
+// parity driver seeds via init_isaac64 directly and never reaches this;
+// throw when no seed is available rather than silently using a made-up one.
 function sys_random_seed() {
-  throw new Error('sys_random_seed: not available in the parity runtime');
+  const envSeed = (typeof globalThis.getenv === 'function') && globalThis.getenv('NETHACK_SEED');
+  if (envSeed) return BigInt(cptr.cstr(envSeed));
+  throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
 // -- extern state stubs (decl.c / struct you) --------------------------------
-// struct you u — only the fields rnd.c reads (u.ulevel in rne, Luck ==
-// u.uluck + u.moreluck in rnl). ulevel defaults to 1 (game start); the
+// struct you u — only the fields rnd.c reads (u.ulevel at offset 48 in rne,
+// Luck == u.uluck(2186) + u.moreluck(2187) in rnl; byte-packed cptr storage
+// like every other record global). ulevel defaults to 1 (game start); the
 // driver can override via __setU.
-const u = { ulevel: 1, uluck: 0, moreluck: 0 };
-export function __setU(props) { Object.assign(u, props); }
+const u = cptr.alloc(2864);
+cptr.stI32(cptr.add(u, 48), 1); // u.ulevel
+export function __setU(props) {
+  if (props.ulevel !== undefined) cptr.stI32(cptr.add(u, 48), props.ulevel);
+  if (props.uluck !== undefined) cptr.st1(cptr.add(u, 2186), props.uluck);
+  if (props.moreluck !== undefined) cptr.st1(cptr.add(u, 2187), props.moreluck);
+}
 
 let has_strong_rngseed = 1; /* TRUE in the recorder build */
 // ---- end runtime prelude ----

@@ -323,14 +323,19 @@ function db_upvaluejoin(L) {
     return 0;
 }
 
-const __static_hookf_hooknames = [__sl26, __sl27, __sl28, __sl29, __sl30]; /** C ref: ldblib.c:324 — char *[5] (function-static) */
+const __static_hookf_hooknames = cptr.alloc(5 * 8);
+cptr.stPtr(cptr.add(__static_hookf_hooknames, 0), __sl26);
+cptr.stPtr(cptr.add(__static_hookf_hooknames, 8), __sl27);
+cptr.stPtr(cptr.add(__static_hookf_hooknames, 16), __sl28);
+cptr.stPtr(cptr.add(__static_hookf_hooknames, 24), __sl29);
+cptr.stPtr(cptr.add(__static_hookf_hooknames, 32), __sl30); /** C ref: ldblib.c:324 — char *[5] (function-static) */
 
 /** C ref: ldblib.c:323 — @param {CPtr} L @param {CPtr} ar */
 function hookf(L, ar) {
     lua_getfield(L, ((-1000000 - 1000) | 0), HOOKKEY);
     lua_pushthread(L);
     if (lua_rawget(L, -2) == 6) {
-        lua_pushstring(L, cptr.ldPtr(cptr.add(cptr.decay(__static_hookf_hooknames), cptr.ldI32(ar))));
+        lua_pushstring(L, cptr.ldPtr(cptr.add(__static_hookf_hooknames, cptr.ldI32(ar), 8)));
         if (cptr.ldI32(cptr.add(ar, 48)) >= 0)
             lua_pushinteger(L, BigInt(cptr.ldI32(cptr.add(ar, 48))));
         else
@@ -462,29 +467,46 @@ function db_setcstacklimit(L) {
 }
 
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
-const dblib = [
-    { name: __sl39, func: db_debug },
-    { name: __sl40, func: db_getuservalue },
-    { name: __sl41, func: db_gethook },
-    { name: __sl42, func: db_getinfo },
-    { name: __sl43, func: db_getlocal },
-    { name: __sl44, func: db_getregistry },
-    { name: __sl45, func: db_getmetatable },
-    { name: __sl46, func: db_getupvalue },
-    { name: __sl47, func: db_upvaluejoin },
-    { name: __sl48, func: db_upvalueid },
-    { name: __sl49, func: db_setuservalue },
-    { name: __sl50, func: db_sethook },
-    { name: __sl51, func: db_setlocal },
-    { name: __sl52, func: db_setmetatable },
-    { name: __sl53, func: db_setupvalue },
-    { name: __sl54, func: db_traceback },
-    { name: __sl55, func: db_setcstacklimit },
-    { name: null, func: null }
-];
+const dblib = cptr.alloc(18 * 16);
+cptr.stPtr(cptr.add(dblib, 0), __sl39);
+cptr.stPtr(cptr.add(cptr.add(dblib, 0), 8), db_debug);
+cptr.stPtr(cptr.add(dblib, 16), __sl40);
+cptr.stPtr(cptr.add(cptr.add(dblib, 16), 8), db_getuservalue);
+cptr.stPtr(cptr.add(dblib, 32), __sl41);
+cptr.stPtr(cptr.add(cptr.add(dblib, 32), 8), db_gethook);
+cptr.stPtr(cptr.add(dblib, 48), __sl42);
+cptr.stPtr(cptr.add(cptr.add(dblib, 48), 8), db_getinfo);
+cptr.stPtr(cptr.add(dblib, 64), __sl43);
+cptr.stPtr(cptr.add(cptr.add(dblib, 64), 8), db_getlocal);
+cptr.stPtr(cptr.add(dblib, 80), __sl44);
+cptr.stPtr(cptr.add(cptr.add(dblib, 80), 8), db_getregistry);
+cptr.stPtr(cptr.add(dblib, 96), __sl45);
+cptr.stPtr(cptr.add(cptr.add(dblib, 96), 8), db_getmetatable);
+cptr.stPtr(cptr.add(dblib, 112), __sl46);
+cptr.stPtr(cptr.add(cptr.add(dblib, 112), 8), db_getupvalue);
+cptr.stPtr(cptr.add(dblib, 128), __sl47);
+cptr.stPtr(cptr.add(cptr.add(dblib, 128), 8), db_upvaluejoin);
+cptr.stPtr(cptr.add(dblib, 144), __sl48);
+cptr.stPtr(cptr.add(cptr.add(dblib, 144), 8), db_upvalueid);
+cptr.stPtr(cptr.add(dblib, 160), __sl49);
+cptr.stPtr(cptr.add(cptr.add(dblib, 160), 8), db_setuservalue);
+cptr.stPtr(cptr.add(dblib, 176), __sl50);
+cptr.stPtr(cptr.add(cptr.add(dblib, 176), 8), db_sethook);
+cptr.stPtr(cptr.add(dblib, 192), __sl51);
+cptr.stPtr(cptr.add(cptr.add(dblib, 192), 8), db_setlocal);
+cptr.stPtr(cptr.add(dblib, 208), __sl52);
+cptr.stPtr(cptr.add(cptr.add(dblib, 208), 8), db_setmetatable);
+cptr.stPtr(cptr.add(dblib, 224), __sl53);
+cptr.stPtr(cptr.add(cptr.add(dblib, 224), 8), db_setupvalue);
+cptr.stPtr(cptr.add(dblib, 240), __sl54);
+cptr.stPtr(cptr.add(cptr.add(dblib, 240), 8), db_traceback);
+cptr.stPtr(cptr.add(dblib, 256), __sl55);
+cptr.stPtr(cptr.add(cptr.add(dblib, 256), 8), db_setcstacklimit);
+cptr.stPtr(cptr.add(dblib, 272), null);
+cptr.stPtr(cptr.add(cptr.add(dblib, 272), 8), null);
 
 /** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
 export function luaopen_debug(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (288n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(dblib), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (288n / 16n - 1n)))), luaL_setfuncs(L, dblib, 0));
     return 1;
 }

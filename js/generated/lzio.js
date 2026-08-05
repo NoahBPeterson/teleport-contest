@@ -38,7 +38,7 @@ export function luaZ_read(z, b, n) {
             if (luaZ_fill(z) == (-1))
                 return n;
             else {
-                cptr.ldU64(z)++;
+                (cptr.stU64(z, cptr.ldU64(z) + 1n)) - 1n;
                 cptr.postdec(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); });
             }
         }

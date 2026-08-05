@@ -27,14 +27,30 @@ const __sl12 = cptr.lit("%4d");
 const __sl13 = cptr.lit("");
 
 /** C ref: rip.c:27 — char *[16] */
-const rip_txt = [__sl0, __sl1, __sl2, __sl3, __sl4, __sl5, __sl6, __sl6, __sl6, __sl6, __sl6, __sl6, __sl7, __sl8, __sl9, null];
+const rip_txt = cptr.alloc(16 * 8);
+cptr.stPtr(cptr.add(rip_txt, 0), __sl0);
+cptr.stPtr(cptr.add(rip_txt, 8), __sl1);
+cptr.stPtr(cptr.add(rip_txt, 16), __sl2);
+cptr.stPtr(cptr.add(rip_txt, 24), __sl3);
+cptr.stPtr(cptr.add(rip_txt, 32), __sl4);
+cptr.stPtr(cptr.add(rip_txt, 40), __sl5);
+cptr.stPtr(cptr.add(rip_txt, 48), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 56), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 64), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 72), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 80), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 88), __sl6);
+cptr.stPtr(cptr.add(rip_txt, 96), __sl7);
+cptr.stPtr(cptr.add(rip_txt, 104), __sl8);
+cptr.stPtr(cptr.add(rip_txt, 112), __sl9);
+cptr.stPtr(cptr.add(rip_txt, 120), null);
 
 /** C ref: rip.c:76 — @param {CInt} line @param {CPtr} text */
 function center(line, text) {
     let ip;
     let op;
     ip = text;
-    op = cptr.add(cptr.ldPtr(cptr.add(gr.rip, line)), 28n - ((cptr.strlen(text) + 1n) >> 1n));
+    op = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), line)), 28n - ((cptr.strlen(text) + 1n) >> 1n));
     while (cptr.ld1s(ip))
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => ip, (v) => { ip = v; })));
 }
@@ -48,13 +64,13 @@ export function genl_outrip(tmpwin, how, when) {
     let line;
     let year;
     let cash;
-    gr.rip = (dp = alloc(128));
-    for (x = 0; cptr.ldPtr(cptr.add(cptr.decay(rip_txt), x)); ++x)
-        cptr.stPtr(cptr.add(dp, x), dupstr(cptr.ldPtr(cptr.add(cptr.decay(rip_txt), x))));
+    cptr.stPtr(cptr.add(gr, 352), dp = alloc(128));
+    for (x = 0; cptr.ldPtr(cptr.add(rip_txt, x, 8)); ++x)
+        cptr.stPtr(cptr.add(dp, x), dupstr(cptr.ldPtr(cptr.add(rip_txt, x, 8))));
     cptr.stPtr(cptr.add(dp, x), null);
-    void cptr.sprintf(cptr.decay(buf), __sl10, 16, cptr.decay(svp.plname));
+    void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
     center(6, cptr.decay(buf));
-    cash = ((gd.done_money) > (0n) ? (gd.done_money) : (0n));
+    cash = ((cptr.ldI64(cptr.add(gd, 8))) > (0n) ? (cptr.ldI64(cptr.add(gd, 8))) : (0n));
     if (cash > 999999999n)
         cash = 999999999n;
     void cptr.sprintf(cptr.decay(buf), __sl11, cash);
@@ -83,14 +99,14 @@ export function genl_outrip(tmpwin, how, when) {
     year = Number(BigInt.asIntN(32, ((yyyymmdd(when) / 10000n) % 10000n)));
     void cptr.sprintf(cptr.decay(buf), __sl12, year);
     center(12, cptr.decay(buf));
-    (windowprocs.win_putstr)(tmpwin, 0, __sl13);
+    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
     for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
-        (windowprocs.win_putstr)(tmpwin, 0, cptr.ldPtr(dp));
-    (windowprocs.win_putstr)(tmpwin, 0, __sl13);
-    (windowprocs.win_putstr)(tmpwin, 0, __sl13);
-    for (x = 0; cptr.ldPtr(cptr.add(cptr.decay(rip_txt), x)); x++) {
-        cptr.free(cptr.ldPtr(cptr.add(gr.rip, x)));
+        (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.ldPtr(dp));
+    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
+    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
+    for (x = 0; cptr.ldPtr(cptr.add(rip_txt, x, 8)); x++) {
+        cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 352)), x)));
     }
-    cptr.free(gr.rip);
-    gr.rip = null;
+    cptr.free(cptr.ldPtr(cptr.add(gr, 352)));
+    cptr.stPtr(cptr.add(gr, 352), null);
 }

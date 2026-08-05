@@ -189,7 +189,7 @@ export function selection_setpoint(x, y, sel, c) {
 export function selection_not(s) {
     let x;
     let y;
-    let tmprect = cptr.alloc(8); cptr.memcpy(tmprect, cg.zeroNhRect, 8);
+    let tmprect = cptr.alloc(8); cptr.memcpy(tmprect, cptr.add(cg, 544), 8);
     for (x = 0; x < cptr.ldI32(s); x++)
         for (y = 0; y < cptr.ldI32(cptr.add(s, 4)); y++)
             selection_setpoint(i16(x), i16(y), s, selection_getpoint(i16(x), i16(y), s) ? 0 : 1);
@@ -202,7 +202,7 @@ export function selection_filter_percent(ov, percent) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     if (!ov)
         return null;
     ret = selection_new();
@@ -219,14 +219,14 @@ export function selection_filter_mapchar(ov, typ, lit) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     if (!ov)
         return null;
     ret = selection_new();
     selection_getbounds(ov, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
         for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(svl.level.locations[x][y].typ))) {
+            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))))) {
                 switch (lit) {
                     default:
                     case -2:
@@ -237,7 +237,7 @@ export function selection_filter_mapchar(ov, typ, lit) {
                     break;
                     case 0:
                     case 1:
-                    if (svl.level.locations[x][y].lit == lit >>> 0)
+                    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16)) == lit >>> 0)
                         selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                 }
@@ -251,7 +251,7 @@ export function selection_rndcoord(ov, x, y, removeit) {
     let c;
     let dx;
     let dy;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     selection_getbounds(ov, rect);
     for (dx = cptr.ldI16(rect); dx <= cptr.ldI16(cptr.add(rect, 4)); dx++)
         for (dy = cptr.ldI16(cptr.add(rect, 2)); dy <= cptr.ldI16(cptr.add(rect, 6)); dy++)
@@ -281,7 +281,7 @@ export function selection_do_grow(ov, dir) {
     let x;
     let y;
     let tmp;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     if (!ov)
         return;
     tmp = selection_new();
@@ -328,67 +328,67 @@ const __static_selection_floodfill_floodfill_stack_overrun = cptr.bytes("floodfi
 export function selection_floodfill(ov, x, y, diagonals) {
     let tmp = selection_new();
     let idx = 0;
-    let dx = new Array(1680).fill(0);
-    let dy = new Array(1680).fill(0);
+    let dx = cptr.alloc(1680 * 2);
+    let dy = cptr.alloc(1680 * 2);
     if (selection_flood_check_func === null) {
         selection_free(tmp, (1));
         return;
     }
     do {
         if (idx < (Math.imul(80, 21))) {
-            cptr.stI16(cptr.add(cptr.decay(dx), idx), (x));
-            cptr.stI16(cptr.add(cptr.decay(dy), idx), (y));
+            cptr.stI16(cptr.add(dx, idx, 2), (x));
+            cptr.stI16(cptr.add(dy, idx, 2), (y));
             idx++;
         } else
             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
     } while (0);
     do {
         idx--;
-        x = cptr.ldI16(cptr.add(cptr.decay(dx), idx));
-        y = cptr.ldI16(cptr.add(cptr.decay(dy), idx));
+        x = cptr.ldI16(cptr.add(dx, idx, 2));
+        y = cptr.ldI16(cptr.add(dy, idx, 2));
         if (isok(x, y)) {
             selection_setpoint(x, y, ov, 1);
             selection_setpoint(x, y, tmp, 1);
         }
         do {
-            if (isok(i16((((x + 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x + 1) | 0))), (y)) && !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), (y), cptr.decay(dx), cptr.decay(dy), idx))
+            if (isok(i16((((x + 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x + 1) | 0))), (y)) && !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), (y), dx, dy, idx))
                 do {
                     if (idx < (Math.imul(80, 21))) {
-                        cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
-                        cptr.stI16(cptr.add(cptr.decay(dy), idx), ((y)));
+                        cptr.stI16(cptr.add(dx, idx, 2), i16(((((x + 1) | 0)))));
+                        cptr.stI16(cptr.add(dy, idx, 2), ((y)));
                         idx++;
                     } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
         do {
-            if (isok(i16((((x - 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x - 1) | 0))), (y)) && !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), (y), cptr.decay(dx), cptr.decay(dy), idx))
+            if (isok(i16((((x - 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x - 1) | 0))), (y)) && !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), (y), dx, dy, idx))
                 do {
                     if (idx < (Math.imul(80, 21))) {
-                        cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
-                        cptr.stI16(cptr.add(cptr.decay(dy), idx), ((y)));
+                        cptr.stI16(cptr.add(dx, idx, 2), i16(((((x - 1) | 0)))));
+                        cptr.stI16(cptr.add(dy, idx, 2), ((y)));
                         idx++;
                     } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
         do {
-            if (isok((x), i16((((y + 1) | 0)))) && (selection_flood_check_func)((x), i16((((y + 1) | 0)))) && !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y + 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+            if (isok((x), i16((((y + 1) | 0)))) && (selection_flood_check_func)((x), i16((((y + 1) | 0)))) && !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y + 1) | 0))), dx, dy, idx))
                 do {
                     if (idx < (Math.imul(80, 21))) {
-                        cptr.stI16(cptr.add(cptr.decay(dx), idx), ((x)));
-                        cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
+                        cptr.stI16(cptr.add(dx, idx, 2), ((x)));
+                        cptr.stI16(cptr.add(dy, idx, 2), i16(((((y + 1) | 0)))));
                         idx++;
                     } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                 } while (0);
         } while (0);
         do {
-            if (isok((x), i16((((y - 1) | 0)))) && (selection_flood_check_func)((x), i16((((y - 1) | 0)))) && !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y - 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+            if (isok((x), i16((((y - 1) | 0)))) && (selection_flood_check_func)((x), i16((((y - 1) | 0)))) && !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y - 1) | 0))), dx, dy, idx))
                 do {
                     if (idx < (Math.imul(80, 21))) {
-                        cptr.stI16(cptr.add(cptr.decay(dx), idx), ((x)));
-                        cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
+                        cptr.stI16(cptr.add(dx, idx, 2), ((x)));
+                        cptr.stI16(cptr.add(dy, idx, 2), i16(((((y - 1) | 0)))));
                         idx++;
                     } else
                         panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
@@ -396,44 +396,44 @@ export function selection_floodfill(ov, x, y, diagonals) {
         } while (0);
         if (diagonals) {
             do {
-                if (isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+                if (isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < (Math.imul(80, 21))) {
-                            cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
-                            cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
+                            cptr.stI16(cptr.add(dx, idx, 2), i16(((((x + 1) | 0)))));
+                            cptr.stI16(cptr.add(dy, idx, 2), i16(((((y + 1) | 0)))));
                             idx++;
                         } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
             do {
-                if (isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+                if (isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < (Math.imul(80, 21))) {
-                            cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
-                            cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
+                            cptr.stI16(cptr.add(dx, idx, 2), i16(((((x - 1) | 0)))));
+                            cptr.stI16(cptr.add(dy, idx, 2), i16(((((y - 1) | 0)))));
                             idx++;
                         } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
             do {
-                if (isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+                if (isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < (Math.imul(80, 21))) {
-                            cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x - 1) | 0)))));
-                            cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y + 1) | 0)))));
+                            cptr.stI16(cptr.add(dx, idx, 2), i16(((((x - 1) | 0)))));
+                            cptr.stI16(cptr.add(dy, idx, 2), i16(((((y + 1) | 0)))));
                             idx++;
                         } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
                     } while (0);
             } while (0);
             do {
-                if (isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), cptr.decay(dx), cptr.decay(dy), idx))
+                if (isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < (Math.imul(80, 21))) {
-                            cptr.stI16(cptr.add(cptr.decay(dx), idx), i16(((((x + 1) | 0)))));
-                            cptr.stI16(cptr.add(cptr.decay(dy), idx), i16(((((y - 1) | 0)))));
+                            cptr.stI16(cptr.add(dx, idx, 2), i16(((((x + 1) | 0)))));
+                            cptr.stI16(cptr.add(dy, idx, 2), i16(((((y - 1) | 0)))));
                             idx++;
                         } else
                             panic(cptr.decay(__static_selection_floodfill_floodfill_stack_overrun));
@@ -685,7 +685,7 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
 export function selection_iterate(ov, func, arg) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     if (!ov)
         return;
     selection_getbounds(ov, rect);
@@ -699,7 +699,7 @@ export function selection_iterate(ov, func, arg) {
 export function selection_is_irregular(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
         for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++)
@@ -710,7 +710,7 @@ export function selection_is_irregular(sel) {
 
 /** C ref: selvar.c:764 — @param {CPtr} sel @param {CPtr} buf @returns {CPtr} */
 export function selection_size_description(sel, buf) {
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cg.zeroNhRect, 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
     let dx;
     let dy;
     selection_getbounds(sel, rect);
@@ -726,14 +726,14 @@ export function selection_from_mkroom(croom) {
     let x;
     let y;
     let rmno;
-    if (!croom && gc.coder && cptr.ldPtr(cptr.add(gc.coder, 8)))
-        croom = cptr.ldPtr(cptr.add(gc.coder, 8));
+    if (!croom && cptr.ldPtr(cptr.add(gc, 568)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)))
+        croom = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8));
     if (!croom)
         return sel;
-    rmno = Number(BigInt.asUintN(32, ((cptr.diff(croom, cptr.decay(svr.rooms))) + 3n)));
+    rmno = Number(BigInt.asUintN(32, ((cptr.diff(croom, svr)) + 3n)));
     for (y = cptr.ldI16(cptr.add(croom, 4)); y <= cptr.ldI16(cptr.add(croom, 6)); y++)
         for (x = cptr.ldI16(croom); x <= cptr.ldI16(cptr.add(croom, 2)); x++)
-            if (isok(x, y) && !svl.level.locations[x][y].edge && svl.level.locations[x][y].roomno == rmno)
+            if (isok(x, y) && !cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 28)) && cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }

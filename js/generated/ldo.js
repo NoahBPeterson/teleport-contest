@@ -366,7 +366,7 @@ function tryfuncTM(L, func) {
         (void 0);
     }
     ;
-    tm = luaT_gettmbyobj(L, ((func)), TM_CALL);
+    tm = luaT_gettmbyobj(L, ((func)), 23);
     if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) != 0)), 0n)))
         luaG_callerror(L, ((func)));
     for (p = cptr.ldPtr(cptr.add(L, 16)); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {
@@ -791,7 +791,7 @@ export function lua_resume(L, from, nargs, nresults) {
     cptr.stI32(cptr.add(L, 176), (from) ? ((cptr.ldI32(cptr.add((from), 176)) & 65535) >>> 0) : 0);
     if (((cptr.ldI32(cptr.add((L), 176)) & 65535) >>> 0) >= 200)
         return resume_error(L, __sl4, nargs.v);
-    cptr.ldI32(cptr.add(L, 176))++;
+    (cptr.stI32(cptr.add(L, 176), cptr.ldI32(cptr.add(L, 176)) + 1)) - 1;
     (void L);
     (void L, (void 0));
     status = luaD_rawrunprotected(L, resume, nargs);
@@ -901,7 +901,7 @@ function checkmode(L, mode, x) {
 function f_parser(L, ud) {
     let cl;
     let p = ((ud));
-    let c = ((cptr.ldU64((cptr.ldPtr(p)))--) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(p)), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(p)), 8), v); })))))) : luaZ_fill(cptr.ldPtr(p)));
+    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - 1n) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(p)), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(p)), 8), v); })))))) : luaZ_fill(cptr.ldPtr(p)));
     if (c == cptr.ld1s(cptr.add(__sl8, 0, 1))) {
         checkmode(L, cptr.ldPtr(cptr.add(p, 80)), __sl9);
         cl = luaU_undump(L, cptr.ldPtr(p), cptr.ldPtr(cptr.add(p, 88)));

@@ -46,615 +46,1562 @@ const __sl9 = cptr.lit("ini_inv_adjust_obj");
 /** C ref: u_init.c:8 — struct trobj { trotyp, trspe, trclass, trquan_min, trquan_max, trbless } (memory model v0.5) */
 
 /** C ref: u_init.c:42 — struct trobj[9] */
-const Archeologist = [
-    { trotyp: i16(BULLWHIP), trspe: 2, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(LEATHER_JACKET), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FEDORA), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FOOD_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 3, trquan_max: 3, trbless: 0 },
-    { trotyp: i16(PICK_AXE), trspe: 127, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(TINNING_KIT), trspe: 127, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(TOUCHSTONE), trspe: 0, trclass: schar(GEM_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(SACK), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Archeologist = cptr.alloc(9 * 8);
+cptr.stI16(cptr.add(Archeologist, 0), 82);
+cptr.st1(cptr.add(cptr.add(Archeologist, 0), 2), 2);
+cptr.st1(cptr.add(cptr.add(Archeologist, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Archeologist, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 0), 6), 2);
+cptr.stI16(cptr.add(Archeologist, 8), 135);
+cptr.st1(cptr.add(cptr.add(Archeologist, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 8), 3), 3);
+cptr.st1(cptr.add(cptr.add(Archeologist, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 8), 6), 2);
+cptr.stI16(cptr.add(Archeologist, 16), 92);
+cptr.st1(cptr.add(cptr.add(Archeologist, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Archeologist, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 16), 6), 2);
+cptr.stI16(cptr.add(Archeologist, 24), 293);
+cptr.st1(cptr.add(cptr.add(Archeologist, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 24), 3), 7);
+cptr.st1(cptr.add(cptr.add(Archeologist, 24), 4), 3);
+cptr.st1(cptr.add(cptr.add(Archeologist, 24), 5), 3);
+cptr.st1(cptr.add(cptr.add(Archeologist, 24), 6), 0);
+cptr.stI16(cptr.add(Archeologist, 32), 259);
+cptr.st1(cptr.add(cptr.add(Archeologist, 32), 2), 127);
+cptr.st1(cptr.add(cptr.add(Archeologist, 32), 3), 6);
+cptr.st1(cptr.add(cptr.add(Archeologist, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 32), 6), 2);
+cptr.stI16(cptr.add(Archeologist, 40), 238);
+cptr.st1(cptr.add(cptr.add(Archeologist, 40), 2), 127);
+cptr.st1(cptr.add(cptr.add(Archeologist, 40), 3), 6);
+cptr.st1(cptr.add(cptr.add(Archeologist, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 40), 6), 2);
+cptr.stI16(cptr.add(Archeologist, 48), 472);
+cptr.st1(cptr.add(cptr.add(Archeologist, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 48), 3), 13);
+cptr.st1(cptr.add(cptr.add(Archeologist, 48), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 48), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 48), 6), 0);
+cptr.stI16(cptr.add(Archeologist, 56), 217);
+cptr.st1(cptr.add(cptr.add(Archeologist, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 56), 3), 6);
+cptr.st1(cptr.add(cptr.add(Archeologist, 56), 4), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 56), 5), 1);
+cptr.st1(cptr.add(cptr.add(Archeologist, 56), 6), 0);
+cptr.stI16(cptr.add(Archeologist, 64), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 64), 2), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 64), 3), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 64), 4), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 64), 5), 0);
+cptr.st1(cptr.add(cptr.add(Archeologist, 64), 6), 0);
 
 /** C ref: u_init.c:54 — struct trobj[5] */
-const Barbarian_0 = [
-    { trotyp: i16(TWO_HANDED_SWORD), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(AXE), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(RING_MAIL), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FOOD_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Barbarian_0 = cptr.alloc(5 * 8);
+cptr.stI16(cptr.add(Barbarian_0, 0), 55);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 0), 6), 2);
+cptr.stI16(cptr.add(Barbarian_0, 8), 44);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 8), 6), 2);
+cptr.stI16(cptr.add(Barbarian_0, 16), 132);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 16), 6), 2);
+cptr.stI16(cptr.add(Barbarian_0, 24), 293);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 24), 3), 7);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 24), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 24), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 24), 6), 0);
+cptr.stI16(cptr.add(Barbarian_0, 32), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 32), 3), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 32), 4), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 32), 5), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_0, 32), 6), 0);
 
 /** C ref: u_init.c:61 — struct trobj[5] */
-const Barbarian_1 = [
-    { trotyp: i16(BATTLE_AXE), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SHORT_SWORD), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(RING_MAIL), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FOOD_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Barbarian_1 = cptr.alloc(5 * 8);
+cptr.stI16(cptr.add(Barbarian_1, 0), 45);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 0), 6), 2);
+cptr.stI16(cptr.add(Barbarian_1, 8), 46);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 8), 6), 2);
+cptr.stI16(cptr.add(Barbarian_1, 16), 132);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 16), 6), 2);
+cptr.stI16(cptr.add(Barbarian_1, 24), 293);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 24), 3), 7);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 24), 4), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 24), 5), 1);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 24), 6), 0);
+cptr.stI16(cptr.add(Barbarian_1, 32), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 32), 3), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 32), 4), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 32), 5), 0);
+cptr.st1(cptr.add(cptr.add(Barbarian_1, 32), 6), 0);
 
 /** C ref: u_init.c:68 — struct trobj[6] */
-const Cave_man = [
-    { trotyp: i16(CLUB), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SLING), trspe: 2, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FLINT), trspe: 0, trclass: schar(GEM_CLASS), trquan_min: 10, trquan_max: 20, trbless: 2 },
-    { trotyp: i16(ROCK), trspe: 0, trclass: schar(GEM_CLASS), trquan_min: 3, trquan_max: 3, trbless: 0 },
-    { trotyp: i16(LEATHER_ARMOR), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Cave_man = cptr.alloc(6 * 8);
+cptr.stI16(cptr.add(Cave_man, 0), 77);
+cptr.st1(cptr.add(cptr.add(Cave_man, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Cave_man, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 0), 6), 2);
+cptr.stI16(cptr.add(Cave_man, 8), 87);
+cptr.st1(cptr.add(cptr.add(Cave_man, 8), 2), 2);
+cptr.st1(cptr.add(cptr.add(Cave_man, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Cave_man, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 8), 6), 2);
+cptr.stI16(cptr.add(Cave_man, 16), 473);
+cptr.st1(cptr.add(cptr.add(Cave_man, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 16), 3), 13);
+cptr.st1(cptr.add(cptr.add(Cave_man, 16), 4), 10);
+cptr.st1(cptr.add(cptr.add(Cave_man, 16), 5), 20);
+cptr.st1(cptr.add(cptr.add(Cave_man, 16), 6), 2);
+cptr.stI16(cptr.add(Cave_man, 24), 474);
+cptr.st1(cptr.add(cptr.add(Cave_man, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 24), 3), 13);
+cptr.st1(cptr.add(cptr.add(Cave_man, 24), 4), 3);
+cptr.st1(cptr.add(cptr.add(Cave_man, 24), 5), 3);
+cptr.st1(cptr.add(cptr.add(Cave_man, 24), 6), 0);
+cptr.stI16(cptr.add(Cave_man, 32), 134);
+cptr.st1(cptr.add(cptr.add(Cave_man, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 32), 3), 3);
+cptr.st1(cptr.add(cptr.add(Cave_man, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Cave_man, 32), 6), 2);
+cptr.stI16(cptr.add(Cave_man, 40), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 40), 3), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 40), 4), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 40), 5), 0);
+cptr.st1(cptr.add(cptr.add(Cave_man, 40), 6), 0);
 
 /** C ref: u_init.c:76 — struct trobj[11] */
-const Healer = [
-    { trotyp: i16(SCALPEL), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(LEATHER_GLOVES), trspe: 1, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(STETHOSCOPE), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(POT_HEALING), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 4, trquan_max: 4, trbless: 2 },
-    { trotyp: i16(POT_EXTRA_HEALING), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 4, trquan_max: 4, trbless: 2 },
-    { trotyp: i16(WAN_SLEEP), trspe: 127, trclass: schar(WAND_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SPE_HEALING), trspe: 0, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: i16(SPE_EXTRA_HEALING), trspe: 0, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: i16(SPE_STONE_TO_FLESH), trspe: 0, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: i16(APPLE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 5, trquan_max: 5, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Healer = cptr.alloc(11 * 8);
+cptr.stI16(cptr.add(Healer, 0), 39);
+cptr.st1(cptr.add(cptr.add(Healer, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Healer, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 0), 6), 2);
+cptr.stI16(cptr.add(Healer, 8), 159);
+cptr.st1(cptr.add(cptr.add(Healer, 8), 2), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 8), 3), 3);
+cptr.st1(cptr.add(cptr.add(Healer, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 8), 6), 2);
+cptr.stI16(cptr.add(Healer, 16), 237);
+cptr.st1(cptr.add(cptr.add(Healer, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 16), 3), 6);
+cptr.st1(cptr.add(cptr.add(Healer, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 16), 6), 0);
+cptr.stI16(cptr.add(Healer, 24), 307);
+cptr.st1(cptr.add(cptr.add(Healer, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 24), 3), 8);
+cptr.st1(cptr.add(cptr.add(Healer, 24), 4), 4);
+cptr.st1(cptr.add(cptr.add(Healer, 24), 5), 4);
+cptr.st1(cptr.add(cptr.add(Healer, 24), 6), 2);
+cptr.stI16(cptr.add(Healer, 32), 308);
+cptr.st1(cptr.add(cptr.add(Healer, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 32), 3), 8);
+cptr.st1(cptr.add(cptr.add(Healer, 32), 4), 4);
+cptr.st1(cptr.add(cptr.add(Healer, 32), 5), 4);
+cptr.st1(cptr.add(cptr.add(Healer, 32), 6), 2);
+cptr.stI16(cptr.add(Healer, 40), 432);
+cptr.st1(cptr.add(cptr.add(Healer, 40), 2), 127);
+cptr.st1(cptr.add(cptr.add(Healer, 40), 3), 11);
+cptr.st1(cptr.add(cptr.add(Healer, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 40), 6), 2);
+cptr.stI16(cptr.add(Healer, 48), 374);
+cptr.st1(cptr.add(cptr.add(Healer, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 48), 3), 10);
+cptr.st1(cptr.add(cptr.add(Healer, 48), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 48), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 48), 6), 1);
+cptr.stI16(cptr.add(Healer, 56), 391);
+cptr.st1(cptr.add(cptr.add(Healer, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 56), 3), 10);
+cptr.st1(cptr.add(cptr.add(Healer, 56), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 56), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 56), 6), 1);
+cptr.stI16(cptr.add(Healer, 64), 405);
+cptr.st1(cptr.add(cptr.add(Healer, 64), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 64), 3), 10);
+cptr.st1(cptr.add(cptr.add(Healer, 64), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 64), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healer, 64), 6), 1);
+cptr.stI16(cptr.add(Healer, 72), 277);
+cptr.st1(cptr.add(cptr.add(Healer, 72), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 72), 3), 7);
+cptr.st1(cptr.add(cptr.add(Healer, 72), 4), 5);
+cptr.st1(cptr.add(cptr.add(Healer, 72), 5), 5);
+cptr.st1(cptr.add(cptr.add(Healer, 72), 6), 0);
+cptr.stI16(cptr.add(Healer, 80), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 80), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 80), 3), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 80), 4), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 80), 5), 0);
+cptr.st1(cptr.add(cptr.add(Healer, 80), 6), 0);
 
 /** C ref: u_init.c:90 — struct trobj[9] */
-const Knight = [
-    { trotyp: i16(LONG_SWORD), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(LANCE), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(RING_MAIL), trspe: 1, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(HELMET), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SMALL_SHIELD), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(LEATHER_GLOVES), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(APPLE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 10, trquan_max: 10, trbless: 0 },
-    { trotyp: i16(CARROT), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 10, trquan_max: 10, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Knight = cptr.alloc(9 * 8);
+cptr.stI16(cptr.add(Knight, 0), 54);
+cptr.st1(cptr.add(cptr.add(Knight, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Knight, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 0), 6), 2);
+cptr.stI16(cptr.add(Knight, 8), 72);
+cptr.st1(cptr.add(cptr.add(Knight, 8), 2), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Knight, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 8), 6), 2);
+cptr.stI16(cptr.add(Knight, 16), 132);
+cptr.st1(cptr.add(cptr.add(Knight, 16), 2), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Knight, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 16), 6), 2);
+cptr.stI16(cptr.add(Knight, 24), 97);
+cptr.st1(cptr.add(cptr.add(Knight, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 24), 3), 3);
+cptr.st1(cptr.add(cptr.add(Knight, 24), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 24), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 24), 6), 2);
+cptr.stI16(cptr.add(Knight, 32), 150);
+cptr.st1(cptr.add(cptr.add(Knight, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 32), 3), 3);
+cptr.st1(cptr.add(cptr.add(Knight, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 32), 6), 2);
+cptr.stI16(cptr.add(Knight, 40), 159);
+cptr.st1(cptr.add(cptr.add(Knight, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 40), 3), 3);
+cptr.st1(cptr.add(cptr.add(Knight, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Knight, 40), 6), 2);
+cptr.stI16(cptr.add(Knight, 48), 277);
+cptr.st1(cptr.add(cptr.add(Knight, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 48), 3), 7);
+cptr.st1(cptr.add(cptr.add(Knight, 48), 4), 10);
+cptr.st1(cptr.add(cptr.add(Knight, 48), 5), 10);
+cptr.st1(cptr.add(cptr.add(Knight, 48), 6), 0);
+cptr.stI16(cptr.add(Knight, 56), 282);
+cptr.st1(cptr.add(cptr.add(Knight, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 56), 3), 7);
+cptr.st1(cptr.add(cptr.add(Knight, 56), 4), 10);
+cptr.st1(cptr.add(cptr.add(Knight, 56), 5), 10);
+cptr.st1(cptr.add(cptr.add(Knight, 56), 6), 0);
+cptr.stI16(cptr.add(Knight, 64), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 64), 2), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 64), 3), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 64), 4), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 64), 5), 0);
+cptr.st1(cptr.add(cptr.add(Knight, 64), 6), 0);
 
 /** C ref: u_init.c:101 — struct trobj[9] */
-const Monk = [
-    { trotyp: i16(LEATHER_GLOVES), trspe: 2, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(ROBE), trspe: 1, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(SCROLL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(POT_HEALING), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 3, trquan_max: 3, trbless: 2 },
-    { trotyp: i16(FOOD_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 3, trquan_max: 3, trbless: 0 },
-    { trotyp: i16(APPLE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 5, trquan_max: 5, trbless: 2 },
-    { trotyp: i16(ORANGE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 5, trquan_max: 5, trbless: 2 },
-    { trotyp: i16(FORTUNE_COOKIE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 3, trquan_max: 3, trbless: 2 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Monk = cptr.alloc(9 * 8);
+cptr.stI16(cptr.add(Monk, 0), 159);
+cptr.st1(cptr.add(cptr.add(Monk, 0), 2), 2);
+cptr.st1(cptr.add(cptr.add(Monk, 0), 3), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 0), 6), 2);
+cptr.stI16(cptr.add(Monk, 8), 143);
+cptr.st1(cptr.add(cptr.add(Monk, 8), 2), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 8), 3), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 8), 6), 2);
+cptr.stI16(cptr.add(Monk, 16), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 16), 2), 127);
+cptr.st1(cptr.add(cptr.add(Monk, 16), 3), 9);
+cptr.st1(cptr.add(cptr.add(Monk, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Monk, 16), 6), 2);
+cptr.stI16(cptr.add(Monk, 24), 307);
+cptr.st1(cptr.add(cptr.add(Monk, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 24), 3), 8);
+cptr.st1(cptr.add(cptr.add(Monk, 24), 4), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 24), 5), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 24), 6), 2);
+cptr.stI16(cptr.add(Monk, 32), 293);
+cptr.st1(cptr.add(cptr.add(Monk, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 32), 3), 7);
+cptr.st1(cptr.add(cptr.add(Monk, 32), 4), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 32), 5), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 32), 6), 0);
+cptr.stI16(cptr.add(Monk, 40), 277);
+cptr.st1(cptr.add(cptr.add(Monk, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 40), 3), 7);
+cptr.st1(cptr.add(cptr.add(Monk, 40), 4), 5);
+cptr.st1(cptr.add(cptr.add(Monk, 40), 5), 5);
+cptr.st1(cptr.add(cptr.add(Monk, 40), 6), 2);
+cptr.stI16(cptr.add(Monk, 48), 278);
+cptr.st1(cptr.add(cptr.add(Monk, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 48), 3), 7);
+cptr.st1(cptr.add(cptr.add(Monk, 48), 4), 5);
+cptr.st1(cptr.add(cptr.add(Monk, 48), 5), 5);
+cptr.st1(cptr.add(cptr.add(Monk, 48), 6), 2);
+cptr.stI16(cptr.add(Monk, 56), 289);
+cptr.st1(cptr.add(cptr.add(Monk, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 56), 3), 7);
+cptr.st1(cptr.add(cptr.add(Monk, 56), 4), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 56), 5), 3);
+cptr.st1(cptr.add(cptr.add(Monk, 56), 6), 2);
+cptr.stI16(cptr.add(Monk, 64), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 64), 2), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 64), 3), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 64), 4), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 64), 5), 0);
+cptr.st1(cptr.add(cptr.add(Monk, 64), 6), 0);
 
 /** C ref: u_init.c:114 — struct trobj[8] */
-const Priest = [
-    { trotyp: i16(MACE), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: i16(ROBE), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SMALL_SHIELD), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(POT_WATER), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 4, trquan_max: 4, trbless: 1 },
-    { trotyp: i16(CLOVE_OF_GARLIC), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(SPRIG_OF_WOLFSBANE), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 127, trclass: schar(SPBOOK_CLASS), trquan_min: 2, trquan_max: 2, trbless: 2 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Priest = cptr.alloc(8 * 8);
+cptr.stI16(cptr.add(Priest, 0), 73);
+cptr.st1(cptr.add(cptr.add(Priest, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Priest, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 0), 6), 1);
+cptr.stI16(cptr.add(Priest, 8), 143);
+cptr.st1(cptr.add(cptr.add(Priest, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 8), 3), 3);
+cptr.st1(cptr.add(cptr.add(Priest, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 8), 6), 2);
+cptr.stI16(cptr.add(Priest, 16), 150);
+cptr.st1(cptr.add(cptr.add(Priest, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Priest, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 16), 6), 2);
+cptr.stI16(cptr.add(Priest, 24), 322);
+cptr.st1(cptr.add(cptr.add(Priest, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 24), 3), 8);
+cptr.st1(cptr.add(cptr.add(Priest, 24), 4), 4);
+cptr.st1(cptr.add(cptr.add(Priest, 24), 5), 4);
+cptr.st1(cptr.add(cptr.add(Priest, 24), 6), 1);
+cptr.stI16(cptr.add(Priest, 32), 284);
+cptr.st1(cptr.add(cptr.add(Priest, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 32), 3), 7);
+cptr.st1(cptr.add(cptr.add(Priest, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 32), 6), 0);
+cptr.stI16(cptr.add(Priest, 40), 283);
+cptr.st1(cptr.add(cptr.add(Priest, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 40), 3), 7);
+cptr.st1(cptr.add(cptr.add(Priest, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Priest, 40), 6), 0);
+cptr.stI16(cptr.add(Priest, 48), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 48), 2), 127);
+cptr.st1(cptr.add(cptr.add(Priest, 48), 3), 10);
+cptr.st1(cptr.add(cptr.add(Priest, 48), 4), 2);
+cptr.st1(cptr.add(cptr.add(Priest, 48), 5), 2);
+cptr.st1(cptr.add(cptr.add(Priest, 48), 6), 2);
+cptr.stI16(cptr.add(Priest, 56), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 56), 3), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 56), 4), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 56), 5), 0);
+cptr.st1(cptr.add(cptr.add(Priest, 56), 6), 0);
 
 /** C ref: u_init.c:124 — struct trobj[7] */
-const Ranger = [
-    { trotyp: i16(DAGGER), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(BOW), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(ARROW), trspe: 2, trclass: schar(WEAPON_CLASS), trquan_min: 50, trquan_max: 59, trbless: 2 },
-    { trotyp: i16(ARROW), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 30, trquan_max: 39, trbless: 2 },
-    { trotyp: i16(CLOAK_OF_DISPLACEMENT), trspe: 2, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(CRAM_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 4, trquan_max: 4, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Ranger = cptr.alloc(7 * 8);
+cptr.stI16(cptr.add(Ranger, 0), 34);
+cptr.st1(cptr.add(cptr.add(Ranger, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 0), 6), 2);
+cptr.stI16(cptr.add(Ranger, 8), 83);
+cptr.st1(cptr.add(cptr.add(Ranger, 8), 2), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 8), 6), 2);
+cptr.stI16(cptr.add(Ranger, 16), 18);
+cptr.st1(cptr.add(cptr.add(Ranger, 16), 2), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 16), 3), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 16), 4), 50);
+cptr.st1(cptr.add(cptr.add(Ranger, 16), 5), 59);
+cptr.st1(cptr.add(cptr.add(Ranger, 16), 6), 2);
+cptr.stI16(cptr.add(Ranger, 24), 18);
+cptr.st1(cptr.add(cptr.add(Ranger, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 24), 3), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 24), 4), 30);
+cptr.st1(cptr.add(cptr.add(Ranger, 24), 5), 39);
+cptr.st1(cptr.add(cptr.add(Ranger, 24), 6), 2);
+cptr.stI16(cptr.add(Ranger, 32), 149);
+cptr.st1(cptr.add(cptr.add(Ranger, 32), 2), 2);
+cptr.st1(cptr.add(cptr.add(Ranger, 32), 3), 3);
+cptr.st1(cptr.add(cptr.add(Ranger, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Ranger, 32), 6), 2);
+cptr.stI16(cptr.add(Ranger, 40), 292);
+cptr.st1(cptr.add(cptr.add(Ranger, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 40), 3), 7);
+cptr.st1(cptr.add(cptr.add(Ranger, 40), 4), 4);
+cptr.st1(cptr.add(cptr.add(Ranger, 40), 5), 4);
+cptr.st1(cptr.add(cptr.add(Ranger, 40), 6), 0);
+cptr.stI16(cptr.add(Ranger, 48), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 48), 3), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 48), 4), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 48), 5), 0);
+cptr.st1(cptr.add(cptr.add(Ranger, 48), 6), 0);
 
 /** C ref: u_init.c:133 — struct trobj[7] */
-const Rogue = [
-    { trotyp: i16(SHORT_SWORD), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(DAGGER), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 6, trquan_max: 15, trbless: 0 },
-    { trotyp: i16(LEATHER_ARMOR), trspe: 1, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(POT_SICKNESS), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(LOCK_PICK), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(SACK), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Rogue = cptr.alloc(7 * 8);
+cptr.stI16(cptr.add(Rogue, 0), 46);
+cptr.st1(cptr.add(cptr.add(Rogue, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Rogue, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 0), 6), 2);
+cptr.stI16(cptr.add(Rogue, 8), 34);
+cptr.st1(cptr.add(cptr.add(Rogue, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Rogue, 8), 4), 6);
+cptr.st1(cptr.add(cptr.add(Rogue, 8), 5), 15);
+cptr.st1(cptr.add(cptr.add(Rogue, 8), 6), 0);
+cptr.stI16(cptr.add(Rogue, 16), 134);
+cptr.st1(cptr.add(cptr.add(Rogue, 16), 2), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Rogue, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 16), 6), 2);
+cptr.stI16(cptr.add(Rogue, 24), 318);
+cptr.st1(cptr.add(cptr.add(Rogue, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 24), 3), 8);
+cptr.st1(cptr.add(cptr.add(Rogue, 24), 4), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 24), 5), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 24), 6), 0);
+cptr.stI16(cptr.add(Rogue, 32), 222);
+cptr.st1(cptr.add(cptr.add(Rogue, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 32), 3), 6);
+cptr.st1(cptr.add(cptr.add(Rogue, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 32), 6), 0);
+cptr.stI16(cptr.add(Rogue, 40), 217);
+cptr.st1(cptr.add(cptr.add(Rogue, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 40), 3), 6);
+cptr.st1(cptr.add(cptr.add(Rogue, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Rogue, 40), 6), 0);
+cptr.stI16(cptr.add(Rogue, 48), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 48), 3), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 48), 4), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 48), 5), 0);
+cptr.st1(cptr.add(cptr.add(Rogue, 48), 6), 0);
 
 /** C ref: u_init.c:142 — struct trobj[6] */
-const Samurai = [
-    { trotyp: i16(KATANA), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SHORT_SWORD), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(YUMI), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(YA), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 26, trquan_max: 45, trbless: 2 },
-    { trotyp: i16(SPLINT_MAIL), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Samurai = cptr.alloc(6 * 8);
+cptr.stI16(cptr.add(Samurai, 0), 56);
+cptr.st1(cptr.add(cptr.add(Samurai, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Samurai, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 0), 6), 2);
+cptr.stI16(cptr.add(Samurai, 8), 46);
+cptr.st1(cptr.add(cptr.add(Samurai, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Samurai, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 8), 6), 2);
+cptr.stI16(cptr.add(Samurai, 16), 86);
+cptr.st1(cptr.add(cptr.add(Samurai, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 16), 3), 2);
+cptr.st1(cptr.add(cptr.add(Samurai, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 16), 6), 2);
+cptr.stI16(cptr.add(Samurai, 24), 22);
+cptr.st1(cptr.add(cptr.add(Samurai, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 24), 3), 2);
+cptr.st1(cptr.add(cptr.add(Samurai, 24), 4), 26);
+cptr.st1(cptr.add(cptr.add(Samurai, 24), 5), 45);
+cptr.st1(cptr.add(cptr.add(Samurai, 24), 6), 2);
+cptr.stI16(cptr.add(Samurai, 32), 124);
+cptr.st1(cptr.add(cptr.add(Samurai, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 32), 3), 3);
+cptr.st1(cptr.add(cptr.add(Samurai, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Samurai, 32), 6), 2);
+cptr.stI16(cptr.add(Samurai, 40), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 40), 2), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 40), 3), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 40), 4), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 40), 5), 0);
+cptr.st1(cptr.add(cptr.add(Samurai, 40), 6), 0);
 
 /** C ref: u_init.c:150 — struct trobj[8] */
-const Tourist = [
-    { trotyp: i16(DART), trspe: 2, trclass: schar(WEAPON_CLASS), trquan_min: 21, trquan_max: 40, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(FOOD_CLASS), trquan_min: 10, trquan_max: 10, trbless: 0 },
-    { trotyp: i16(POT_EXTRA_HEALING), trspe: 0, trclass: schar(POTION_CLASS), trquan_min: 2, trquan_max: 2, trbless: 2 },
-    { trotyp: i16(SCR_MAGIC_MAPPING), trspe: 0, trclass: schar(SCROLL_CLASS), trquan_min: 4, trquan_max: 4, trbless: 2 },
-    { trotyp: i16(HAWAIIAN_SHIRT), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(EXPENSIVE_CAMERA), trspe: 127, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: i16(CREDIT_CARD), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Tourist = cptr.alloc(8 * 8);
+cptr.stI16(cptr.add(Tourist, 0), 24);
+cptr.st1(cptr.add(cptr.add(Tourist, 0), 2), 2);
+cptr.st1(cptr.add(cptr.add(Tourist, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Tourist, 0), 4), 21);
+cptr.st1(cptr.add(cptr.add(Tourist, 0), 5), 40);
+cptr.st1(cptr.add(cptr.add(Tourist, 0), 6), 2);
+cptr.stI16(cptr.add(Tourist, 8), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 8), 2), 127);
+cptr.st1(cptr.add(cptr.add(Tourist, 8), 3), 7);
+cptr.st1(cptr.add(cptr.add(Tourist, 8), 4), 10);
+cptr.st1(cptr.add(cptr.add(Tourist, 8), 5), 10);
+cptr.st1(cptr.add(cptr.add(Tourist, 8), 6), 0);
+cptr.stI16(cptr.add(Tourist, 16), 308);
+cptr.st1(cptr.add(cptr.add(Tourist, 16), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 16), 3), 8);
+cptr.st1(cptr.add(cptr.add(Tourist, 16), 4), 2);
+cptr.st1(cptr.add(cptr.add(Tourist, 16), 5), 2);
+cptr.st1(cptr.add(cptr.add(Tourist, 16), 6), 2);
+cptr.stI16(cptr.add(Tourist, 24), 337);
+cptr.st1(cptr.add(cptr.add(Tourist, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 24), 3), 9);
+cptr.st1(cptr.add(cptr.add(Tourist, 24), 4), 4);
+cptr.st1(cptr.add(cptr.add(Tourist, 24), 5), 4);
+cptr.st1(cptr.add(cptr.add(Tourist, 24), 6), 2);
+cptr.stI16(cptr.add(Tourist, 32), 136);
+cptr.st1(cptr.add(cptr.add(Tourist, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 32), 3), 3);
+cptr.st1(cptr.add(cptr.add(Tourist, 32), 4), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 32), 5), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 32), 6), 2);
+cptr.stI16(cptr.add(Tourist, 40), 229);
+cptr.st1(cptr.add(cptr.add(Tourist, 40), 2), 127);
+cptr.st1(cptr.add(cptr.add(Tourist, 40), 3), 6);
+cptr.st1(cptr.add(cptr.add(Tourist, 40), 4), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 40), 5), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 40), 6), 0);
+cptr.stI16(cptr.add(Tourist, 48), 223);
+cptr.st1(cptr.add(cptr.add(Tourist, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 48), 3), 6);
+cptr.st1(cptr.add(cptr.add(Tourist, 48), 4), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 48), 5), 1);
+cptr.st1(cptr.add(cptr.add(Tourist, 48), 6), 0);
+cptr.stI16(cptr.add(Tourist, 56), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 56), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 56), 3), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 56), 4), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 56), 5), 0);
+cptr.st1(cptr.add(cptr.add(Tourist, 56), 6), 0);
 
 /** C ref: u_init.c:160 — struct trobj[5] */
-const Valkyrie = [
-    { trotyp: i16(SPEAR), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(DAGGER), trspe: 0, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(SMALL_SHIELD), trspe: 3, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(FOOD_RATION), trspe: 0, trclass: schar(FOOD_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Valkyrie = cptr.alloc(5 * 8);
+cptr.stI16(cptr.add(Valkyrie, 0), 27);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 0), 6), 2);
+cptr.stI16(cptr.add(Valkyrie, 8), 34);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 8), 3), 2);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 8), 6), 2);
+cptr.stI16(cptr.add(Valkyrie, 16), 150);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 16), 2), 3);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 16), 3), 3);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 16), 6), 2);
+cptr.stI16(cptr.add(Valkyrie, 24), 293);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 24), 2), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 24), 3), 7);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 24), 4), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 24), 5), 1);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 24), 6), 0);
+cptr.stI16(cptr.add(Valkyrie, 32), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 32), 2), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 32), 3), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 32), 4), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 32), 5), 0);
+cptr.st1(cptr.add(cptr.add(Valkyrie, 32), 6), 0);
 
 /** C ref: u_init.c:167 — struct trobj[10] */
-const Wizard = [
-    { trotyp: i16(QUARTERSTAFF), trspe: 1, trclass: schar(WEAPON_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: i16(CLOAK_OF_MAGIC_RESISTANCE), trspe: 0, trclass: schar(ARMOR_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(WAND_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(RING_CLASS), trquan_min: 2, trquan_max: 2, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(POTION_CLASS), trquan_min: 3, trquan_max: 3, trbless: 2 },
-    { trotyp: 0, trspe: 127, trclass: schar(SCROLL_CLASS), trquan_min: 3, trquan_max: 3, trbless: 2 },
-    { trotyp: i16(SPE_FORCE_BOLT), trspe: 0, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: 0, trspe: 127, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 2 },
-    { trotyp: i16(MAGIC_MARKER), trspe: 19, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Wizard = cptr.alloc(10 * 8);
+cptr.stI16(cptr.add(Wizard, 0), 79);
+cptr.st1(cptr.add(cptr.add(Wizard, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 0), 3), 2);
+cptr.st1(cptr.add(cptr.add(Wizard, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 0), 6), 1);
+cptr.stI16(cptr.add(Wizard, 8), 148);
+cptr.st1(cptr.add(cptr.add(Wizard, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 8), 3), 3);
+cptr.st1(cptr.add(cptr.add(Wizard, 8), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 8), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 8), 6), 2);
+cptr.stI16(cptr.add(Wizard, 16), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 16), 2), 127);
+cptr.st1(cptr.add(cptr.add(Wizard, 16), 3), 11);
+cptr.st1(cptr.add(cptr.add(Wizard, 16), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 16), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 16), 6), 2);
+cptr.stI16(cptr.add(Wizard, 24), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 24), 2), 127);
+cptr.st1(cptr.add(cptr.add(Wizard, 24), 3), 4);
+cptr.st1(cptr.add(cptr.add(Wizard, 24), 4), 2);
+cptr.st1(cptr.add(cptr.add(Wizard, 24), 5), 2);
+cptr.st1(cptr.add(cptr.add(Wizard, 24), 6), 2);
+cptr.stI16(cptr.add(Wizard, 32), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 32), 2), 127);
+cptr.st1(cptr.add(cptr.add(Wizard, 32), 3), 8);
+cptr.st1(cptr.add(cptr.add(Wizard, 32), 4), 3);
+cptr.st1(cptr.add(cptr.add(Wizard, 32), 5), 3);
+cptr.st1(cptr.add(cptr.add(Wizard, 32), 6), 2);
+cptr.stI16(cptr.add(Wizard, 40), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 40), 2), 127);
+cptr.st1(cptr.add(cptr.add(Wizard, 40), 3), 9);
+cptr.st1(cptr.add(cptr.add(Wizard, 40), 4), 3);
+cptr.st1(cptr.add(cptr.add(Wizard, 40), 5), 3);
+cptr.st1(cptr.add(cptr.add(Wizard, 40), 6), 2);
+cptr.stI16(cptr.add(Wizard, 48), 376);
+cptr.st1(cptr.add(cptr.add(Wizard, 48), 2), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 48), 3), 10);
+cptr.st1(cptr.add(cptr.add(Wizard, 48), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 48), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 48), 6), 1);
+cptr.stI16(cptr.add(Wizard, 56), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 56), 2), 127);
+cptr.st1(cptr.add(cptr.add(Wizard, 56), 3), 10);
+cptr.st1(cptr.add(cptr.add(Wizard, 56), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 56), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 56), 6), 2);
+cptr.stI16(cptr.add(Wizard, 64), 242);
+cptr.st1(cptr.add(cptr.add(Wizard, 64), 2), 19);
+cptr.st1(cptr.add(cptr.add(Wizard, 64), 3), 6);
+cptr.st1(cptr.add(cptr.add(Wizard, 64), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 64), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wizard, 64), 6), 0);
+cptr.stI16(cptr.add(Wizard, 72), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 72), 2), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 72), 3), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 72), 4), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 72), 5), 0);
+cptr.st1(cptr.add(cptr.add(Wizard, 72), 6), 0);
 
 /** C ref: u_init.c:184 — struct trobj[2] */
-const Healing_book = [
-    { trotyp: i16(SPE_HEALING), trspe: 127, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Healing_book = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Healing_book, 0), 374);
+cptr.st1(cptr.add(cptr.add(Healing_book, 0), 2), 127);
+cptr.st1(cptr.add(cptr.add(Healing_book, 0), 3), 10);
+cptr.st1(cptr.add(cptr.add(Healing_book, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Healing_book, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Healing_book, 0), 6), 1);
+cptr.stI16(cptr.add(Healing_book, 8), 0);
+cptr.st1(cptr.add(cptr.add(Healing_book, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Healing_book, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Healing_book, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Healing_book, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Healing_book, 8), 6), 0);
 
 /** C ref: u_init.c:187 — struct trobj[2] */
-const Protection_book = [
-    { trotyp: i16(SPE_PROTECTION), trspe: 127, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Protection_book = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Protection_book, 0), 403);
+cptr.st1(cptr.add(cptr.add(Protection_book, 0), 2), 127);
+cptr.st1(cptr.add(cptr.add(Protection_book, 0), 3), 10);
+cptr.st1(cptr.add(cptr.add(Protection_book, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Protection_book, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Protection_book, 0), 6), 1);
+cptr.stI16(cptr.add(Protection_book, 8), 0);
+cptr.st1(cptr.add(cptr.add(Protection_book, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Protection_book, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Protection_book, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Protection_book, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Protection_book, 8), 6), 0);
 
 /** C ref: u_init.c:190 — struct trobj[2] */
-const Confuse_monster_book = [
-    { trotyp: i16(SPE_CONFUSE_MONSTER), trspe: 127, trclass: schar(SPBOOK_CLASS), trquan_min: 1, trquan_max: 1, trbless: 1 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Confuse_monster_book = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Confuse_monster_book, 0), 377);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 0), 2), 127);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 0), 3), 10);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 0), 6), 1);
+cptr.stI16(cptr.add(Confuse_monster_book, 8), 0);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Confuse_monster_book, 8), 6), 0);
 
 /** C ref: u_init.c:193 — struct trobj[2] */
-const Tinopener = [
-    { trotyp: i16(TIN_OPENER), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Tinopener = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Tinopener, 0), 239);
+cptr.st1(cptr.add(cptr.add(Tinopener, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Tinopener, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Tinopener, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Tinopener, 0), 6), 0);
+cptr.stI16(cptr.add(Tinopener, 8), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Tinopener, 8), 6), 0);
 
 /** C ref: u_init.c:196 — struct trobj[2] */
-const Magicmarker = [
-    { trotyp: i16(MAGIC_MARKER), trspe: 19, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Magicmarker = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Magicmarker, 0), 242);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 0), 2), 19);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 0), 6), 0);
+cptr.stI16(cptr.add(Magicmarker, 8), 0);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Magicmarker, 8), 6), 0);
 
 /** C ref: u_init.c:199 — struct trobj[2] */
-const Lamp = [
-    { trotyp: i16(OIL_LAMP), trspe: 1, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Lamp = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Lamp, 0), 227);
+cptr.st1(cptr.add(cptr.add(Lamp, 0), 2), 1);
+cptr.st1(cptr.add(cptr.add(Lamp, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Lamp, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Lamp, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Lamp, 0), 6), 0);
+cptr.stI16(cptr.add(Lamp, 8), 0);
+cptr.st1(cptr.add(cptr.add(Lamp, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Lamp, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Lamp, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Lamp, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Lamp, 8), 6), 0);
 
 /** C ref: u_init.c:202 — struct trobj[2] */
-const Blindfold = [
-    { trotyp: i16(BLINDFOLD), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Blindfold = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Blindfold, 0), 233);
+cptr.st1(cptr.add(cptr.add(Blindfold, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Blindfold, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Blindfold, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Blindfold, 0), 6), 0);
+cptr.stI16(cptr.add(Blindfold, 8), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Blindfold, 8), 6), 0);
 
 /** C ref: u_init.c:205 — struct trobj[2] */
-const Xtra_food = [
-    { trotyp: 0, trspe: 127, trclass: schar(FOOD_CLASS), trquan_min: 2, trquan_max: 2, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Xtra_food = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Xtra_food, 0), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 0), 2), 127);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 0), 3), 7);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 0), 4), 2);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 0), 5), 2);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 0), 6), 0);
+cptr.stI16(cptr.add(Xtra_food, 8), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Xtra_food, 8), 6), 0);
 
 /** C ref: u_init.c:208 — struct trobj[2] */
-const Leash = [
-    { trotyp: i16(LEASH), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Leash = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Leash, 0), 236);
+cptr.st1(cptr.add(cptr.add(Leash, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Leash, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Leash, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Leash, 0), 6), 0);
+cptr.stI16(cptr.add(Leash, 8), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Leash, 8), 6), 0);
 
 /** C ref: u_init.c:211 — struct trobj[2] */
-const Towel = [
-    { trotyp: i16(TOWEL), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Towel = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Towel, 0), 234);
+cptr.st1(cptr.add(cptr.add(Towel, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 0), 3), 6);
+cptr.st1(cptr.add(cptr.add(Towel, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Towel, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Towel, 0), 6), 0);
+cptr.stI16(cptr.add(Towel, 8), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Towel, 8), 6), 0);
 
 /** C ref: u_init.c:214 — struct trobj[2] */
-const Wishing = [
-    { trotyp: i16(WAN_WISHING), trspe: 3, trclass: schar(WAND_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Wishing = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Wishing, 0), 414);
+cptr.st1(cptr.add(cptr.add(Wishing, 0), 2), 3);
+cptr.st1(cptr.add(cptr.add(Wishing, 0), 3), 11);
+cptr.st1(cptr.add(cptr.add(Wishing, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Wishing, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Wishing, 0), 6), 0);
+cptr.stI16(cptr.add(Wishing, 8), 0);
+cptr.st1(cptr.add(cptr.add(Wishing, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Wishing, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Wishing, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Wishing, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Wishing, 8), 6), 0);
 
 /** C ref: u_init.c:217 — struct trobj[2] */
-const Money = [
-    { trotyp: i16(GOLD_PIECE), trspe: 0, trclass: schar(COIN_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
+const Money = cptr.alloc(2 * 8);
+cptr.stI16(cptr.add(Money, 0), 438);
+cptr.st1(cptr.add(cptr.add(Money, 0), 2), 0);
+cptr.st1(cptr.add(cptr.add(Money, 0), 3), 12);
+cptr.st1(cptr.add(cptr.add(Money, 0), 4), 1);
+cptr.st1(cptr.add(cptr.add(Money, 0), 5), 1);
+cptr.st1(cptr.add(cptr.add(Money, 0), 6), 0);
+cptr.stI16(cptr.add(Money, 8), 0);
+cptr.st1(cptr.add(cptr.add(Money, 8), 2), 0);
+cptr.st1(cptr.add(cptr.add(Money, 8), 3), 0);
+cptr.st1(cptr.add(cptr.add(Money, 8), 4), 0);
+cptr.st1(cptr.add(cptr.add(Money, 8), 5), 0);
+cptr.st1(cptr.add(cptr.add(Money, 8), 6), 0);
 
 /** C ref: u_init.c:223 — struct inv_sub { race_pm, item_otyp, subs_otyp } (memory model v0.5) */
 
 /** C ref: u_init.c:225 — struct inv_sub[26] */
-const inv_subs = [
-    { race_pm: i16(PM_ELF), item_otyp: i16(DAGGER), subs_otyp: i16(ELVEN_DAGGER) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(SPEAR), subs_otyp: i16(ELVEN_SPEAR) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(SHORT_SWORD), subs_otyp: i16(ELVEN_SHORT_SWORD) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(BOW), subs_otyp: i16(ELVEN_BOW) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(ARROW), subs_otyp: i16(ELVEN_ARROW) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(HELMET), subs_otyp: i16(ELVEN_LEATHER_HELM) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(CLOAK_OF_DISPLACEMENT), subs_otyp: i16(ELVEN_CLOAK) },
-    { race_pm: i16(PM_ELF), item_otyp: i16(CRAM_RATION), subs_otyp: i16(LEMBAS_WAFER) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(DAGGER), subs_otyp: i16(ORCISH_DAGGER) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(SPEAR), subs_otyp: i16(ORCISH_SPEAR) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(SHORT_SWORD), subs_otyp: i16(ORCISH_SHORT_SWORD) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(BOW), subs_otyp: i16(ORCISH_BOW) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(ARROW), subs_otyp: i16(ORCISH_ARROW) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(HELMET), subs_otyp: i16(ORCISH_HELM) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(SMALL_SHIELD), subs_otyp: i16(ORCISH_SHIELD) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(RING_MAIL), subs_otyp: i16(ORCISH_RING_MAIL) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(CHAIN_MAIL), subs_otyp: i16(ORCISH_CHAIN_MAIL) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(CRAM_RATION), subs_otyp: i16(TRIPE_RATION) },
-    { race_pm: i16(PM_ORC), item_otyp: i16(LEMBAS_WAFER), subs_otyp: i16(TRIPE_RATION) },
-    { race_pm: i16(PM_DWARF), item_otyp: i16(SPEAR), subs_otyp: i16(DWARVISH_SPEAR) },
-    { race_pm: i16(PM_DWARF), item_otyp: i16(SHORT_SWORD), subs_otyp: i16(DWARVISH_SHORT_SWORD) },
-    { race_pm: i16(PM_DWARF), item_otyp: i16(HELMET), subs_otyp: i16(DWARVISH_IRON_HELM) },
-    { race_pm: i16(PM_DWARF), item_otyp: i16(LEMBAS_WAFER), subs_otyp: i16(CRAM_RATION) },
-    { race_pm: i16(PM_GNOME), item_otyp: i16(BOW), subs_otyp: i16(CROSSBOW) },
-    { race_pm: i16(PM_GNOME), item_otyp: i16(ARROW), subs_otyp: i16(CROSSBOW_BOLT) },
-    { race_pm: i16(NON_PM), item_otyp: i16(STRANGE_OBJECT), subs_otyp: i16(STRANGE_OBJECT) }
-];
+const inv_subs = cptr.alloc(26 * 6);
+cptr.stI16(cptr.add(inv_subs, 0), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 0), 2), 34);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 0), 4), 35);
+cptr.stI16(cptr.add(inv_subs, 6), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 6), 2), 27);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 6), 4), 28);
+cptr.stI16(cptr.add(inv_subs, 12), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 12), 2), 46);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 12), 4), 47);
+cptr.stI16(cptr.add(inv_subs, 18), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 18), 2), 83);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 18), 4), 84);
+cptr.stI16(cptr.add(inv_subs, 24), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 24), 2), 18);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 24), 4), 19);
+cptr.stI16(cptr.add(inv_subs, 30), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 30), 2), 97);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 30), 4), 89);
+cptr.stI16(cptr.add(inv_subs, 36), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 36), 2), 149);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 36), 4), 139);
+cptr.stI16(cptr.add(inv_subs, 42), 264);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 42), 2), 292);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 42), 4), 291);
+cptr.stI16(cptr.add(inv_subs, 48), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 48), 2), 34);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 48), 4), 36);
+cptr.stI16(cptr.add(inv_subs, 54), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 54), 2), 27);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 54), 4), 29);
+cptr.stI16(cptr.add(inv_subs, 60), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 60), 2), 46);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 60), 4), 48);
+cptr.stI16(cptr.add(inv_subs, 66), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 66), 2), 83);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 66), 4), 85);
+cptr.stI16(cptr.add(inv_subs, 72), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 72), 2), 18);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 72), 4), 20);
+cptr.stI16(cptr.add(inv_subs, 78), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 78), 2), 97);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 78), 4), 90);
+cptr.stI16(cptr.add(inv_subs, 84), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 84), 2), 150);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 84), 4), 155);
+cptr.stI16(cptr.add(inv_subs, 90), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 90), 2), 132);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 90), 4), 133);
+cptr.stI16(cptr.add(inv_subs, 96), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 96), 2), 128);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 96), 4), 129);
+cptr.stI16(cptr.add(inv_subs, 102), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 102), 2), 292);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 102), 4), 264);
+cptr.stI16(cptr.add(inv_subs, 108), 72);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 108), 2), 291);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 108), 4), 264);
+cptr.stI16(cptr.add(inv_subs, 114), 44);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 114), 2), 27);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 114), 4), 30);
+cptr.stI16(cptr.add(inv_subs, 120), 44);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 120), 2), 46);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 120), 4), 49);
+cptr.stI16(cptr.add(inv_subs, 126), 44);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 126), 2), 97);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 126), 4), 91);
+cptr.stI16(cptr.add(inv_subs, 132), 44);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 132), 2), 291);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 132), 4), 292);
+cptr.stI16(cptr.add(inv_subs, 138), 165);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 138), 2), 83);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 138), 4), 88);
+cptr.stI16(cptr.add(inv_subs, 144), 165);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 144), 2), 18);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 144), 4), 23);
+cptr.stI16(cptr.add(inv_subs, 150), -1);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 150), 2), 0);
+cptr.stI16(cptr.add(cptr.add(inv_subs, 150), 4), 0);
 
 /** C ref: u_init.c:257 — struct def_skill[20] */
-const Skill_A = [
-    { skill: i16(P_DAGGER), skmax: i16(P_BASIC) },
-    { skill: i16(P_KNIFE), skmax: i16(P_BASIC) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_SABER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_CLUB), skmax: i16(P_SKILLED) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SLING), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DART), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOOMERANG), skmax: i16(P_EXPERT) },
-    { skill: i16(P_WHIP), skmax: i16(P_EXPERT) },
-    { skill: i16(P_UNICORN_HORN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MATTER_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_A = cptr.alloc(20 * 4);
+cptr.stI16(cptr.add(Skill_A, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 4), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 8), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 8), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 12), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 16), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 16), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 20), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 20), 2), 3);
+cptr.stI16(cptr.add(Skill_A, 24), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 24), 2), 3);
+cptr.stI16(cptr.add(Skill_A, 28), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_A, 32), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 32), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 36), 25);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 36), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 40), 26);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 40), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 44), 27);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 44), 2), 3);
+cptr.stI16(cptr.add(Skill_A, 48), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 52), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 56), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 56), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 60), 34);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 64), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 64), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 68), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 68), 2), 2);
+cptr.stI16(cptr.add(Skill_A, 72), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 72), 2), 4);
+cptr.stI16(cptr.add(Skill_A, 76), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_A, 76), 2), 0);
 
 /** C ref: u_init.c:279 — struct def_skill[23] */
-const Skill_B = [
-    { skill: i16(P_DAGGER), skmax: i16(P_BASIC) },
-    { skill: i16(P_AXE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SABER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_CLUB), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MACE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_FLAIL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HAMMER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_SPEAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_MASTER) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_B = cptr.alloc(23 * 4);
+cptr.stI16(cptr.add(Skill_B, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 4), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 4), 2), 4);
+cptr.stI16(cptr.add(Skill_B, 8), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 12), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 12), 2), 4);
+cptr.stI16(cptr.add(Skill_B, 16), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 20), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 20), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 24), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 24), 2), 4);
+cptr.stI16(cptr.add(Skill_B, 28), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 32), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 36), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 36), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 40), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 44), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 44), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 48), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 48), 2), 4);
+cptr.stI16(cptr.add(Skill_B, 52), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 56), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 56), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 60), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 60), 2), 3);
+cptr.stI16(cptr.add(Skill_B, 64), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 64), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 68), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 68), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 72), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 72), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 76), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 76), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 80), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 80), 2), 2);
+cptr.stI16(cptr.add(Skill_B, 84), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 84), 2), 5);
+cptr.stI16(cptr.add(Skill_B, 88), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_B, 88), 2), 0);
 
 /** C ref: u_init.c:304 — struct def_skill[21] */
-const Skill_C = [
-    { skill: i16(P_DAGGER), skmax: i16(P_BASIC) },
-    { skill: i16(P_KNIFE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_BASIC) },
-    { skill: i16(P_CLUB), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MACE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_FLAIL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_HAMMER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_EXPERT) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BOW), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SLING), skmax: i16(P_EXPERT) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_MATTER_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BOOMERANG), skmax: i16(P_EXPERT) },
-    { skill: i16(P_UNICORN_HORN), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_MASTER) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_C = cptr.alloc(21 * 4);
+cptr.stI16(cptr.add(Skill_C, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_C, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 4), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 8), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 12), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_C, 16), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 16), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 20), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 20), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 24), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 24), 2), 2);
+cptr.stI16(cptr.add(Skill_C, 28), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 32), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 36), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 36), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 40), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 44), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 44), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 48), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 48), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 52), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 52), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 56), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 56), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 60), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_C, 64), 34);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_C, 68), 25);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 68), 2), 4);
+cptr.stI16(cptr.add(Skill_C, 72), 27);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 72), 2), 2);
+cptr.stI16(cptr.add(Skill_C, 76), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 76), 2), 5);
+cptr.stI16(cptr.add(Skill_C, 80), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_C, 80), 2), 0);
 
 /** C ref: u_init.c:327 — struct def_skill[17] */
-const Skill_H = [
-    { skill: i16(P_DAGGER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_KNIFE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SABER), skmax: i16(P_BASIC) },
-    { skill: i16(P_CLUB), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MACE), skmax: i16(P_BASIC) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_EXPERT) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_BASIC) },
-    { skill: i16(P_SPEAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_SLING), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DART), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_UNICORN_HORN), skmax: i16(P_EXPERT) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_H = cptr.alloc(17 * 4);
+cptr.stI16(cptr.add(Skill_H, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 0), 2), 3);
+cptr.stI16(cptr.add(Skill_H, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 4), 2), 4);
+cptr.stI16(cptr.add(Skill_H, 8), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_H, 12), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 16), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_H, 20), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 20), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 24), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 24), 2), 4);
+cptr.stI16(cptr.add(Skill_H, 28), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 28), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 32), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 32), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 36), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 40), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_H, 44), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 44), 2), 4);
+cptr.stI16(cptr.add(Skill_H, 48), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 48), 2), 3);
+cptr.stI16(cptr.add(Skill_H, 52), 27);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 52), 2), 4);
+cptr.stI16(cptr.add(Skill_H, 56), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 56), 2), 4);
+cptr.stI16(cptr.add(Skill_H, 60), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_H, 64), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_H, 64), 2), 0);
 
 /** C ref: u_init.c:346 — struct def_skill[27] */
-const Skill_K = [
-    { skill: i16(P_DAGGER), skmax: i16(P_BASIC) },
-    { skill: i16(P_KNIFE), skmax: i16(P_BASIC) },
-    { skill: i16(P_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_BASIC) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SABER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_CLUB), skmax: i16(P_BASIC) },
-    { skill: i16(P_MACE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_FLAIL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HAMMER), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_LANCE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_SKILLED) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_CLERIC_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_RIDING), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_K = cptr.alloc(27 * 4);
+cptr.stI16(cptr.add(Skill_K, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 4), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 8), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 12), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 16), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 20), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 20), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 24), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 24), 2), 4);
+cptr.stI16(cptr.add(Skill_K, 28), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 32), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 36), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 40), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 44), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 44), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 48), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 52), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 56), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 56), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 60), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 60), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 64), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 64), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 68), 19);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 68), 2), 4);
+cptr.stI16(cptr.add(Skill_K, 72), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 72), 2), 2);
+cptr.stI16(cptr.add(Skill_K, 76), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 76), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 80), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 80), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 84), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 84), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 88), 32);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 88), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 92), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 92), 2), 4);
+cptr.stI16(cptr.add(Skill_K, 96), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 96), 2), 3);
+cptr.stI16(cptr.add(Skill_K, 100), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 100), 2), 4);
+cptr.stI16(cptr.add(Skill_K, 104), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_K, 104), 2), 0);
 
 /** C ref: u_init.c:375 — struct def_skill[13] */
-const Skill_Mon = [
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_SPEAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_BASIC) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_ENCHANTMENT_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_CLERIC_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MATTER_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_GRAND_MASTER) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_Mon = cptr.alloc(13 * 4);
+cptr.stI16(cptr.add(Skill_Mon, 0), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 4), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 4), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 8), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 8), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 12), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 16), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 16), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 20), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 20), 2), 4);
+cptr.stI16(cptr.add(Skill_Mon, 24), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 24), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 28), 31);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 28), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 32), 32);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_Mon, 36), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 36), 2), 3);
+cptr.stI16(cptr.add(Skill_Mon, 40), 34);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 40), 2), 2);
+cptr.stI16(cptr.add(Skill_Mon, 44), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 44), 2), 6);
+cptr.stI16(cptr.add(Skill_Mon, 48), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_Mon, 48), 2), 0);
 
 /** C ref: u_init.c:390 — struct def_skill[22] */
-const Skill_P = [
-    { skill: i16(P_CLUB), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MACE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_EXPERT) },
-    { skill: i16(P_FLAIL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_HAMMER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_EXPERT) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LANCE), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_SLING), skmax: i16(P_BASIC) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_DART), skmax: i16(P_BASIC) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOOMERANG), skmax: i16(P_BASIC) },
-    { skill: i16(P_UNICORN_HORN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_CLERIC_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_P = cptr.alloc(22 * 4);
+cptr.stI16(cptr.add(Skill_P, 0), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 4), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 4), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 8), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 8), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 12), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 12), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 16), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 16), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 20), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 20), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 24), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 24), 2), 3);
+cptr.stI16(cptr.add(Skill_P, 28), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_P, 32), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_P, 36), 19);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 40), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 40), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 44), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 44), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 48), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 52), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 56), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 56), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 60), 25);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 64), 27);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_P, 68), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 68), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 72), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 72), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 76), 32);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 76), 2), 4);
+cptr.stI16(cptr.add(Skill_P, 80), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 80), 2), 2);
+cptr.stI16(cptr.add(Skill_P, 84), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_P, 84), 2), 0);
 
 /** C ref: u_init.c:414 — struct def_skill[24] */
-const Skill_R = [
-    { skill: i16(P_DAGGER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_KNIFE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_SABER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_CLUB), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MACE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_FLAIL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HAMMER), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_BASIC) },
-    { skill: i16(P_SPEAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_EXPERT) },
-    { skill: i16(P_DART), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MATTER_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_R = cptr.alloc(24 * 4);
+cptr.stI16(cptr.add(Skill_R, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 4), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 8), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 8), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 12), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 12), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 16), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 20), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 20), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 24), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 24), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 28), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 32), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 36), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 40), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 40), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 44), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 44), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 48), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 52), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 56), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 56), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 60), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 60), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 64), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 68), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 68), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 72), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 72), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 76), 34);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 76), 2), 3);
+cptr.stI16(cptr.add(Skill_R, 80), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 80), 2), 2);
+cptr.stI16(cptr.add(Skill_R, 84), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 84), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 88), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 88), 2), 4);
+cptr.stI16(cptr.add(Skill_R, 92), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_R, 92), 2), 0);
 
 /** C ref: u_init.c:440 — struct def_skill[25] */
-const Skill_Ran = [
-    { skill: i16(P_DAGGER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_KNIFE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_BASIC) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_FLAIL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_HAMMER), skmax: i16(P_BASIC) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOW), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SLING), skmax: i16(P_EXPERT) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_EXPERT) },
-    { skill: i16(P_DART), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BOOMERANG), skmax: i16(P_EXPERT) },
-    { skill: i16(P_WHIP), skmax: i16(P_BASIC) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_Ran = cptr.alloc(25 * 4);
+cptr.stI16(cptr.add(Skill_Ran, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 4), 2), 3);
+cptr.stI16(cptr.add(Skill_Ran, 8), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_Ran, 12), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 16), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 16), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 20), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 20), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 24), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 24), 2), 3);
+cptr.stI16(cptr.add(Skill_Ran, 28), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 28), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 32), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 32), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 36), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 36), 2), 3);
+cptr.stI16(cptr.add(Skill_Ran, 40), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 40), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 44), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 44), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 48), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 48), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 52), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 52), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 56), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 56), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 60), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 60), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 64), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_Ran, 68), 25);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 68), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 72), 26);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 72), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 76), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 76), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 80), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 80), 2), 4);
+cptr.stI16(cptr.add(Skill_Ran, 84), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 84), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 88), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 88), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 92), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 92), 2), 2);
+cptr.stI16(cptr.add(Skill_Ran, 96), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_Ran, 96), 2), 0);
 
 /** C ref: u_init.c:467 — struct def_skill[21] */
-const Skill_S = [
-    { skill: i16(P_DAGGER), skmax: i16(P_BASIC) },
-    { skill: i16(P_KNIFE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SABER), skmax: i16(P_BASIC) },
-    { skill: i16(P_FLAIL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LANCE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BOW), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_EXPERT) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_CLERIC_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_RIDING), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_MASTER) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_S = cptr.alloc(21 * 4);
+cptr.stI16(cptr.add(Skill_S, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 0), 2), 2);
+cptr.stI16(cptr.add(Skill_S, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 4), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 8), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 8), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 12), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 12), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 16), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 16), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 20), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 20), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 24), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 24), 2), 2);
+cptr.stI16(cptr.add(Skill_S, 28), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 32), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 32), 2), 2);
+cptr.stI16(cptr.add(Skill_S, 36), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 36), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 40), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 44), 19);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 44), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 48), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 48), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 52), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 52), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 56), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 56), 2), 2);
+cptr.stI16(cptr.add(Skill_S, 60), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_S, 64), 32);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 68), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 68), 2), 3);
+cptr.stI16(cptr.add(Skill_S, 72), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 72), 2), 4);
+cptr.stI16(cptr.add(Skill_S, 76), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 76), 2), 5);
+cptr.stI16(cptr.add(Skill_S, 80), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_S, 80), 2), 0);
 
 /** C ref: u_init.c:490 — struct def_skill[33] */
-const Skill_T = [
-    { skill: i16(P_DAGGER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_KNIFE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_AXE), skmax: i16(P_BASIC) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_BASIC) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_SABER), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MACE), skmax: i16(P_BASIC) },
-    { skill: i16(P_MORNING_STAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_FLAIL), skmax: i16(P_BASIC) },
-    { skill: i16(P_HAMMER), skmax: i16(P_BASIC) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_BASIC) },
-    { skill: i16(P_SPEAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_LANCE), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_SLING), skmax: i16(P_BASIC) },
-    { skill: i16(P_CROSSBOW), skmax: i16(P_BASIC) },
-    { skill: i16(P_DART), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_BASIC) },
-    { skill: i16(P_BOOMERANG), skmax: i16(P_BASIC) },
-    { skill: i16(P_WHIP), skmax: i16(P_BASIC) },
-    { skill: i16(P_UNICORN_HORN), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_ENCHANTMENT_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_T = cptr.alloc(33 * 4);
+cptr.stI16(cptr.add(Skill_T, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_T, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 4), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 8), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 8), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 12), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 16), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 16), 2), 4);
+cptr.stI16(cptr.add(Skill_T, 20), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 20), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 24), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 24), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 28), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 28), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 32), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 32), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 36), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 40), 12);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 40), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 44), 13);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 44), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 48), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 52), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 52), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 56), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 56), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 60), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 64), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 64), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 68), 19);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 68), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 72), 20);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 72), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 76), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 76), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 80), 22);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 80), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 84), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 84), 2), 4);
+cptr.stI16(cptr.add(Skill_T, 88), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 88), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 92), 25);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 92), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 96), 26);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 96), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 100), 27);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 100), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 104), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 104), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 108), 31);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 108), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 112), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 112), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 116), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 116), 2), 2);
+cptr.stI16(cptr.add(Skill_T, 120), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 120), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 124), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 124), 2), 3);
+cptr.stI16(cptr.add(Skill_T, 128), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_T, 128), 2), 0);
 
 /** C ref: u_init.c:525 — struct def_skill[21] */
-const Skill_V = [
-    { skill: i16(P_DAGGER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_AXE), skmax: i16(P_EXPERT) },
-    { skill: i16(P_PICK_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BROAD_SWORD), skmax: i16(P_SKILLED) },
-    { skill: i16(P_LONG_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TWO_HANDED_SWORD), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SABER), skmax: i16(P_BASIC) },
-    { skill: i16(P_HAMMER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_BASIC) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_EXPERT) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_LANCE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SLING), skmax: i16(P_BASIC) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_BASIC) },
-    { skill: i16(P_RIDING), skmax: i16(P_SKILLED) },
-    { skill: i16(P_TWO_WEAPON_COMBAT), skmax: i16(P_SKILLED) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_EXPERT) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_V = cptr.alloc(21 * 4);
+cptr.stI16(cptr.add(Skill_V, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 4), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 4), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 8), 4);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 12), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 12), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 16), 6);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 20), 7);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 20), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 24), 8);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 24), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 28), 9);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 28), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 32), 14);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 32), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 36), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 40), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 44), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 44), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 48), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 52), 19);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 52), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 56), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 56), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 60), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 60), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 64), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 64), 2), 2);
+cptr.stI16(cptr.add(Skill_V, 68), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 68), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 72), 36);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 72), 2), 3);
+cptr.stI16(cptr.add(Skill_V, 76), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 76), 2), 4);
+cptr.stI16(cptr.add(Skill_V, 80), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_V, 80), 2), 0);
 
 /** C ref: u_init.c:548 — struct def_skill[23] */
-const Skill_W = [
-    { skill: i16(P_DAGGER), skmax: i16(P_EXPERT) },
-    { skill: i16(P_KNIFE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_AXE), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SHORT_SWORD), skmax: i16(P_BASIC) },
-    { skill: i16(P_CLUB), skmax: i16(P_SKILLED) },
-    { skill: i16(P_MACE), skmax: i16(P_BASIC) },
-    { skill: i16(P_QUARTERSTAFF), skmax: i16(P_EXPERT) },
-    { skill: i16(P_POLEARMS), skmax: i16(P_SKILLED) },
-    { skill: i16(P_SPEAR), skmax: i16(P_BASIC) },
-    { skill: i16(P_TRIDENT), skmax: i16(P_BASIC) },
-    { skill: i16(P_SLING), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DART), skmax: i16(P_EXPERT) },
-    { skill: i16(P_SHURIKEN), skmax: i16(P_BASIC) },
-    { skill: i16(P_ATTACK_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_HEALING_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_DIVINATION_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_ENCHANTMENT_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_CLERIC_SPELL), skmax: i16(P_SKILLED) },
-    { skill: i16(P_ESCAPE_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_MATTER_SPELL), skmax: i16(P_EXPERT) },
-    { skill: i16(P_RIDING), skmax: i16(P_BASIC) },
-    { skill: i16(P_BARE_HANDED_COMBAT), skmax: i16(P_BASIC) },
-    { skill: i16(P_NONE), skmax: 0 }
-];
+const Skill_W = cptr.alloc(23 * 4);
+cptr.stI16(cptr.add(Skill_W, 0), 1);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 0), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 4), 2);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 4), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 8), 3);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 8), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 12), 5);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 12), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 16), 10);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 16), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 20), 11);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 20), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 24), 15);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 24), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 28), 16);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 28), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 32), 17);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 32), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 36), 18);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 36), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 40), 21);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 40), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 44), 23);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 44), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 48), 24);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 48), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 52), 28);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 52), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 56), 29);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 56), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 60), 30);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 60), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 64), 31);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 64), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 68), 32);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 68), 2), 3);
+cptr.stI16(cptr.add(Skill_W, 72), 33);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 72), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 76), 34);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 76), 2), 4);
+cptr.stI16(cptr.add(Skill_W, 80), 37);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 80), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 84), 35);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 84), 2), 2);
+cptr.stI16(cptr.add(Skill_W, 88), 0);
+cptr.stI16(cptr.add(cptr.add(Skill_W, 88), 2), 0);
 
 /** C ref: u_init.c:575 — @param {CInt} obj @param {CInt} override_pauper */
 function knows_object(obj, override_pauper) {
-    if (u.uroleplay.pauper && !override_pauper)
+    if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)) && !override_pauper)
         return;
     discover_object(obj, (1), (0), (0));
 }
@@ -664,207 +1611,209 @@ function knows_class(sym) {
     let odummy = cptr.alloc(216);
     let o;
     let ct;
-    if (u.uroleplay.pauper)
+    if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)))
         return;
-    cptr.memcpy(odummy, cg.zeroobj, 216);
+    cptr.memcpy(odummy, cg, 216);
     cptr.st1(cptr.add(odummy, 49), sym);
     o = odummy;
-    for (ct = svb.bases[uchar(sym)]; ct < svb.bases[(uchar(sym) + 1) | 0]; ct++) {
-        if (ct == CORNUTHAUM || ct == DUNCE_CAP || ct == SMALL_SHIELD)
+    for (ct = cptr.ldI32(cptr.add(cptr.add(svb, 16), uchar(sym), 4)); ct < cptr.ldI32(cptr.add(cptr.add(svb, 16), (uchar(sym) + 1) | 0, 4)); ct++) {
+        if (ct == 93 || ct == 94 || ct == 150)
             continue;
-        if (sym == WEAPON_CLASS) {
+        if (sym == 2) {
             cptr.stI16(cptr.add(odummy, 32), i16(ct));
-            if ((!(gu.urole.mnum == (PM_KNIGHT)) && !(gu.urole.mnum == (PM_SAMURAI))) && ((cptr.ld1s(cptr.add(o, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(o, 49)) == TOOL_CLASS) && (objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp == P_POLEARMS || objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp == P_LANCE || is_art(o, ART_SNICKERSNEE))))
+            if ((!(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (335)) && !(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340))) && ((cptr.ld1s(cptr.add(o, 49)) == 2 || cptr.ld1s(cptr.add(o, 49)) == 6) && (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) == 16 || cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) == 19 || is_art(o, 19))))
                 continue;
-            if ((gu.urole.mnum == (PM_RANGER)) && (!(cptr.ld1s(cptr.add(o, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp <= P_CROSSBOW) && !((cptr.ld1s(cptr.add(o, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(o, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp <= -P_BOW) && !(cptr.ld1s(cptr.add(o, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp == P_SPEAR)))
+            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (338)) && (!(cptr.ld1s(cptr.add(o, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) >= 20 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) <= 22) && !((cptr.ld1s(cptr.add(o, 49)) == 2 || cptr.ld1s(cptr.add(o, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) <= -20) && !(cptr.ld1s(cptr.add(o, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) == 17)))
                 continue;
-            if ((gu.urole.mnum == (PM_ROGUE)) && (objects[cptr.ldI16(cptr.add(o, 32))].oc_subtyp != P_DAGGER))
+            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)) && (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(o, 32)), 120), 68)) != 1))
                 continue;
         }
-        if (objects[ct].oc_class == sym && !objects[ct].oc_magic)
+        if (cptr.ld1s(cptr.add(cptr.add(objects, ct, 120), 70)) == sym && !cptr.ldI32(cptr.add(cptr.add(objects, ct, 120), 32)))
             knows_object(ct, (0));
     }
 }
 
-const __static_u_init_role_M_spell = [
-    cptr.decay(Healing_book),
-    cptr.decay(Protection_book),
-    cptr.decay(Confuse_monster_book)
-]; /** C ref: u_init.c:694 — struct trobj *[3] (function-static) */
+const __static_u_init_role_M_spell = cptr.alloc(3 * 8);
+cptr.stPtr(cptr.add(__static_u_init_role_M_spell, 0), Healing_book);
+cptr.stPtr(cptr.add(__static_u_init_role_M_spell, 8), Protection_book);
+cptr.stPtr(cptr.add(__static_u_init_role_M_spell, 16), Confuse_monster_book); /** C ref: u_init.c:694 — struct trobj *[3] (function-static) */
 
 /** C ref: u_init.c:637 */
 function u_init_role() {
     let i;
-    svm.moves = 1n;
-    switch ((gu.urole.mnum)) {
-        case PM_ARCHEOLOGIST:
-        ini_inv(cptr.decay(Archeologist));
+    cptr.stU64(cptr.add(svm, 8), 1n);
+    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+        case 331:
+        ini_inv(Archeologist);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 654, __sl1), rn2(10)) : rn2(10)))
-            ini_inv(cptr.decay(Tinopener));
+            ini_inv(Tinopener);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 656, __sl1), rn2(4)) : rn2(4)))
-            ini_inv(cptr.decay(Lamp));
+            ini_inv(Lamp);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 658, __sl1), rn2(5)) : rn2(5)))
-            ini_inv(cptr.decay(Magicmarker));
-        knows_object(SACK, (0));
-        knows_object(TOUCHSTONE, (0));
+            ini_inv(Magicmarker);
+        knows_object(217, (0));
+        knows_object(472, (0));
         break;
-        case PM_BARBARIAN:
+        case 332:
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 666, __sl1), rn2(100)) : rn2(100)) >= 50) {
-            ini_inv(cptr.decay(Barbarian_0));
+            ini_inv(Barbarian_0);
         } else {
-            ini_inv(cptr.decay(Barbarian_1));
+            ini_inv(Barbarian_1);
         }
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 671, __sl1), rn2(6)) : rn2(6)))
-            ini_inv(cptr.decay(Lamp));
-        knows_class(schar(WEAPON_CLASS));
-        knows_class(schar(ARMOR_CLASS));
+            ini_inv(Lamp);
+        knows_class(2);
+        knows_class(3);
         break;
-        case PM_CAVE_DWELLER:
-        ini_inv(cptr.decay(Cave_man));
+        case 333:
+        ini_inv(Cave_man);
         break;
-        case PM_HEALER:
-        u.umoney0 = BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl1), rn2(1000)) : rn2(1000)) + (1001)) | 0));
-        ini_inv(cptr.decay(Healer));
+        case 334:
+        cptr.stU64(cptr.add(u, 2360), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl1), rn2(1000)) : rn2(1000)) + (1001)) | 0)));
+        ini_inv(Healer);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 682, __sl1), rn2(25)) : rn2(25)))
-            ini_inv(cptr.decay(Lamp));
-        knows_object(POT_FULL_HEALING, (0));
+            ini_inv(Lamp);
+        knows_object(315, (0));
         break;
-        case PM_KNIGHT:
-        ini_inv(cptr.decay(Knight));
-        knows_class(schar(WEAPON_CLASS));
-        knows_class(schar(ARMOR_CLASS));
-        u.uprops[JUMPING].intrinsic |= 67108864n;
+        case 335:
+        ini_inv(Knight);
+        knows_class(2);
+        knows_class(3);
+        cptr.st1(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16), cptr.ld1s(cptr.add(cptr.add(cptr.add(u, 112), 45, 24), 16)) | 67108864n);
         break;
-        case PM_MONK:
+        case 336:
         {
-            ini_inv(cptr.decay(Monk));
-            ini_inv(cptr.ldPtr(cptr.add(cptr.decay(__static_u_init_role_M_spell), ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 699, __sl1), rn2(90)) : rn2(90)) / 30) | 0)));
+            ini_inv(Monk);
+            ini_inv(cptr.ldPtr(cptr.add(__static_u_init_role_M_spell, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 699, __sl1), rn2(90)) : rn2(90)) / 30) | 0, 8)));
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 700, __sl1), rn2(4)) : rn2(4)))
-                ini_inv(cptr.decay(Magicmarker));
+                ini_inv(Magicmarker);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 702, __sl1), rn2(10)) : rn2(10)))
-                ini_inv(cptr.decay(Lamp));
-            knows_class(schar(ARMOR_CLASS));
-            knows_object(SHURIKEN, (0));
+                ini_inv(Lamp);
+            knows_class(3);
+            knows_object(25, (0));
             break;
         }
-        case PM_CLERIC:
-        ini_inv(cptr.decay(Priest));
+        case 337:
+        ini_inv(Priest);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 711, __sl1), rn2(5)) : rn2(5)))
-            ini_inv(cptr.decay(Magicmarker));
+            ini_inv(Magicmarker);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 713, __sl1), rn2(10)) : rn2(10)))
-            ini_inv(cptr.decay(Lamp));
-        knows_object(POT_WATER, (1));
+            ini_inv(Lamp);
+        knows_object(322, (1));
         break;
-        case PM_RANGER:
-        ini_inv(cptr.decay(Ranger));
-        knows_class(schar(WEAPON_CLASS));
+        case 338:
+        ini_inv(Ranger);
+        knows_class(2);
         break;
-        case PM_ROGUE:
-        u.umoney0 = 0n;
-        ini_inv(cptr.decay(Rogue));
+        case 339:
+        cptr.stU64(cptr.add(u, 2360), 0n);
+        ini_inv(Rogue);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 731, __sl1), rn2(5)) : rn2(5)))
-            ini_inv(cptr.decay(Blindfold));
-        knows_object(SACK, (0));
-        knows_class(schar(WEAPON_CLASS));
+            ini_inv(Blindfold);
+        knows_object(217, (0));
+        knows_class(2);
         break;
-        case PM_SAMURAI:
-        ini_inv(cptr.decay(Samurai));
+        case 340:
+        ini_inv(Samurai);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 740, __sl1), rn2(5)) : rn2(5)))
-            ini_inv(cptr.decay(Blindfold));
-        knows_class(schar(WEAPON_CLASS));
-        knows_class(schar(ARMOR_CLASS));
-        for (i = MAXOCLASSES; i < NUM_OBJECTS; ++i) {
-            if (objects[i].oc_magic)
+            ini_inv(Blindfold);
+        knows_class(2);
+        knows_class(3);
+        for (i = 18; i < 481; ++i) {
+            if (cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 32)))
                 continue;
             if (Japanese_item_name(i, null))
                 knows_object(i, (0));
         }
         break;
-        case PM_TOURIST:
-        u.umoney0 = BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 756, __sl1), rnd(1000)) : rnd(1000)));
-        ini_inv(cptr.decay(Tourist));
+        case 341:
+        cptr.stU64(cptr.add(u, 2360), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 756, __sl1), rnd(1000)) : rnd(1000))));
+        ini_inv(Tourist);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 758, __sl1), rn2(25)) : rn2(25)))
-            ini_inv(cptr.decay(Tinopener));
+            ini_inv(Tinopener);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 760, __sl1), rn2(25)) : rn2(25)))
-            ini_inv(cptr.decay(Leash));
+            ini_inv(Leash);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 762, __sl1), rn2(25)) : rn2(25)))
-            ini_inv(cptr.decay(Towel));
+            ini_inv(Towel);
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 764, __sl1), rn2(20)) : rn2(20)))
-            ini_inv(cptr.decay(Magicmarker));
+            ini_inv(Magicmarker);
         break;
-        case PM_VALKYRIE:
-        ini_inv(cptr.decay(Valkyrie));
+        case 342:
+        ini_inv(Valkyrie);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 769, __sl1), rn2(6)) : rn2(6)))
-            ini_inv(cptr.decay(Lamp));
-        knows_class(schar(WEAPON_CLASS));
-        knows_class(schar(ARMOR_CLASS));
+            ini_inv(Lamp);
+        knows_class(2);
+        knows_class(3);
         break;
-        case PM_WIZARD:
-        ini_inv(cptr.decay(Wizard));
+        case 343:
+        ini_inv(Wizard);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 776, __sl1), rn2(5)) : rn2(5)))
-            ini_inv(cptr.decay(Blindfold));
+            ini_inv(Blindfold);
         break;
         default:
         break;
     }
-    gn.nocreate = i16(STRANGE_OBJECT);
-    gn.nocreate2 = i16(STRANGE_OBJECT);
-    gn.nocreate3 = i16(STRANGE_OBJECT);
-    gn.nocreate4 = i16(STRANGE_OBJECT);
+    cptr.stI16(cptr.add(gn, 160), 0);
+    cptr.stI16(cptr.add(gn, 162), 0);
+    cptr.stI16(cptr.add(gn, 164), 0);
+    cptr.stI16(cptr.add(gn, 166), 0);
 }
 
-const __static_u_init_race_trotyp = [WOODEN_FLUTE, TOOLED_HORN, WOODEN_HARP, BELL, BUGLE, LEATHER_DRUM]; /** C ref: u_init.c:806 — int[6] (function-static) */
+const __static_u_init_race_trotyp = cptr.alloc(6 * 4);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 0), 247);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 4), 249);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 8), 253);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 12), 255);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 16), 256);
+cptr.stI32(cptr.add(__static_u_init_race_trotyp, 20), 257); /** C ref: u_init.c:806 — int[6] (function-static) */
 
 /** C ref: u_init.c:792 */
 function u_init_race() {
-    switch ((gu.urace.mnum)) {
-        case PM_HUMAN:
+    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)))) {
+        case 260:
         break;
-        case PM_ELF:
-        if ((gu.urole.mnum == (PM_CLERIC)) || (gu.urole.mnum == (PM_WIZARD))) {
-            let Instrument = [
-    { trotyp: i16(__static_u_init_race_trotyp[(rng_log_enabled() ? (rng_log_set_caller(__sl0, 810, __sl2), rn2(trotyp.length)) : rn2(trotyp.length))]), trspe: 0, trclass: schar(TOOL_CLASS), trquan_min: 1, trquan_max: 1, trbless: 0 },
-    { trotyp: 0, trspe: 0, trclass: 0, trquan_min: 0, trquan_max: 0, trbless: 0 }
-];
-            ini_inv(cptr.decay(Instrument));
+        case 264:
+        if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (337)) || (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343))) {
+            let Instrument = cptr.alloc(2 * 8); cptr.stI16(cptr.add(Instrument, 0), i16(cptr.ldI32(cptr.add(__static_u_init_race_trotyp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 810, __sl2), rn2(6)) : rn2(6)), 4)))); cptr.st1(cptr.add(cptr.add(Instrument, 0), 2), 0); cptr.st1(cptr.add(cptr.add(Instrument, 0), 3), 6); cptr.st1(cptr.add(cptr.add(Instrument, 0), 4), 1); cptr.st1(cptr.add(cptr.add(Instrument, 0), 5), 1); cptr.st1(cptr.add(cptr.add(Instrument, 0), 6), 0); cptr.stI16(cptr.add(Instrument, 8), 0); cptr.st1(cptr.add(cptr.add(Instrument, 8), 2), 0); cptr.st1(cptr.add(cptr.add(Instrument, 8), 3), 0); cptr.st1(cptr.add(cptr.add(Instrument, 8), 4), 0); cptr.st1(cptr.add(cptr.add(Instrument, 8), 5), 0); cptr.st1(cptr.add(cptr.add(Instrument, 8), 6), 0);
+            ini_inv(Instrument);
         }
-        knows_object(ELVEN_SHORT_SWORD, (0));
-        knows_object(ELVEN_ARROW, (0));
-        knows_object(ELVEN_BOW, (0));
-        knows_object(ELVEN_SPEAR, (0));
-        knows_object(ELVEN_DAGGER, (0));
-        knows_object(ELVEN_BROADSWORD, (0));
-        knows_object(ELVEN_MITHRIL_COAT, (0));
-        knows_object(ELVEN_LEATHER_HELM, (0));
-        knows_object(ELVEN_SHIELD, (0));
-        knows_object(ELVEN_BOOTS, (0));
-        knows_object(ELVEN_CLOAK, (0));
+        knows_object(47, (0));
+        knows_object(19, (0));
+        knows_object(84, (0));
+        knows_object(28, (0));
+        knows_object(35, (0));
+        knows_object(53, (0));
+        knows_object(127, (0));
+        knows_object(89, (0));
+        knows_object(153, (0));
+        knows_object(169, (0));
+        knows_object(139, (0));
         break;
-        case PM_DWARF:
-        knows_object(DWARVISH_SPEAR, (0));
-        knows_object(DWARVISH_SHORT_SWORD, (0));
-        knows_object(DWARVISH_MATTOCK, (0));
-        knows_object(DWARVISH_IRON_HELM, (0));
-        knows_object(DWARVISH_MITHRIL_COAT, (0));
-        knows_object(DWARVISH_CLOAK, (0));
-        knows_object(DWARVISH_ROUNDSHIELD, (0));
+        case 44:
+        knows_object(30, (0));
+        knows_object(49, (0));
+        knows_object(71, (0));
+        knows_object(91, (0));
+        knows_object(126, (0));
+        knows_object(141, (0));
+        knows_object(157, (0));
         break;
-        case PM_GNOME:
+        case 165:
         break;
-        case PM_ORC:
-        if (!(gu.urole.mnum == (PM_WIZARD)))
-            ini_inv(cptr.decay(Xtra_food));
-        knows_object(ORCISH_SHORT_SWORD, (0));
-        knows_object(ORCISH_ARROW, (0));
-        knows_object(ORCISH_BOW, (0));
-        knows_object(ORCISH_SPEAR, (0));
-        knows_object(ORCISH_DAGGER, (0));
-        knows_object(ORCISH_CHAIN_MAIL, (0));
-        knows_object(ORCISH_RING_MAIL, (0));
-        knows_object(ORCISH_HELM, (0));
-        knows_object(ORCISH_SHIELD, (0));
-        knows_object(URUK_HAI_SHIELD, (0));
-        knows_object(ORCISH_CLOAK, (0));
+        case 72:
+        if (!(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)))
+            ini_inv(Xtra_food);
+        knows_object(48, (0));
+        knows_object(20, (0));
+        knows_object(85, (0));
+        knows_object(29, (0));
+        knows_object(36, (0));
+        knows_object(129, (0));
+        knows_object(133, (0));
+        knows_object(90, (0));
+        knows_object(155, (0));
+        knows_object(154, (0));
+        knows_object(140, (0));
         break;
         default:
         break;
@@ -874,56 +1823,56 @@ function u_init_race() {
 /** C ref: u_init.c:870 */
 function pauper_reinit() {
     let skill;
-    let preknown = STRANGE_OBJECT;
-    if (!u.uroleplay.pauper)
+    let preknown = 0;
+    if (!cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)))
         return;
-    for (skill = 0; skill < P_NUM_SKILLS; skill++)
-        if ((u.weapon_skills[skill].skill) > P_UNSKILLED) {
-            u.weapon_skills[skill].skill = i16(P_UNSKILLED);
-            u.weapon_skills[skill].advance = 0;
+    for (skill = 0; skill < 38; skill++)
+        if ((cptr.ldI16(cptr.add(cptr.add(u, 2588), skill, 6))) > 1) {
+            cptr.stI16(cptr.add(cptr.add(u, 2588), skill, 6), 1);
+            cptr.stI16(cptr.add(cptr.add(cptr.add(u, 2588), skill, 6), 4), 0);
         }
-    u.weapon_slots = 2;
-    switch ((gu.urole.mnum)) {
-        case PM_HEALER:
-        preknown = SPE_HEALING;
+    cptr.stI32(cptr.add(u, 2460), 2);
+    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+        case 334:
+        preknown = 374;
         break;
-        case PM_CLERIC:
-        case PM_KNIGHT:
-        case PM_MONK:
-        preknown = SPE_PROTECTION;
+        case 337:
+        case 335:
+        case 336:
+        preknown = 403;
         break;
-        case PM_WIZARD:
-        preknown = SPE_FORCE_BOLT;
+        case 343:
+        preknown = 376;
         break;
-        case PM_ARCHEOLOGIST:
-        preknown = TOUCHSTONE;
+        case 331:
+        preknown = 472;
         break;
-        case PM_CAVE_DWELLER:
-        preknown = FLINT;
+        case 333:
+        preknown = 473;
         break;
-        case PM_ROGUE:
-        case PM_TOURIST:
-        preknown = SACK;
+        case 339:
+        case 341:
+        preknown = 217;
         break;
-        case PM_SAMURAI:
-        preknown = FOOD_RATION;
+        case 340:
+        preknown = 293;
         break;
         default:
-        case PM_BARBARIAN:
-        case PM_RANGER:
-        case PM_VALKYRIE:
+        case 332:
+        case 338:
+        case 342:
         break;
     }
-    if (preknown != STRANGE_OBJECT)
+    if (preknown != 0)
         knows_object(preknown, (1));
 }
 
 /** C ref: u_init.c:929 */
 function u_init_carry_attr_boost() {
     while (inv_weight() > 0) {
-        if (adjattrib(A_STR, 1, 1))
+        if (adjattrib(0, 1, 1))
             continue;
-        if (adjattrib(A_CON, 1, 1))
+        if (adjattrib(4, 1, 1))
             continue;
         break;
     }
@@ -932,41 +1881,41 @@ function u_init_carry_attr_boost() {
 /** C ref: u_init.c:944 */
 export function u_init_misc() {
     let i;
-    let tmpuroleplay = cptr.alloc(24); cptr.memcpy(tmpuroleplay, u.uroleplay, 24);
-    flags.female = schar(flags.initgend);
-    flags.beginner = (1);
+    let tmpuroleplay = cptr.alloc(24); cptr.memcpy(tmpuroleplay, cptr.add(u, 2112), 24);
+    cptr.st1(cptr.add(flags, 13), schar(cptr.ldI32(cptr.add(flags, 152))));
+    cptr.st1(cptr.add(flags, 5), (1));
     void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
-    u.ustuck = null;
+    cptr.stPtr(cptr.add(u, 2416), null);
     void __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     void __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
-    u.uroleplay = tmpuroleplay;
-    u.uz.dlevel = 1;
-    u.uz0.dlevel = 0;
-    u.utolev = u.uz;
-    u.umoved = (0);
-    u.umortality = 0;
-    u.ugrave_arise = NON_PM;
-    u.umonnum = (u.umonster = gu.urole.mnum);
-    u.ulycn = NON_PM;
+    cptr.memcpy(cptr.add(u, 2112), tmpuroleplay, 24);
+    cptr.stI16(cptr.add(cptr.add(u, 24), 2), 1);
+    cptr.stI16(cptr.add(cptr.add(u, 28), 2), 0);
+    cptr.memcpy(cptr.add(u, 32), cptr.add(u, 24), 4);
+    cptr.st1(cptr.add(u, 42), (0));
+    cptr.stI32(cptr.add(u, 2452), 0);
+    cptr.stI32(cptr.add(u, 2456), -1);
+    cptr.stI32(cptr.add(u, 1808), cptr.stI32(cptr.add(u, 1804), cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))));
+    cptr.stI32(cptr.add(u, 1836), -1);
     set_uasmon();
-    u.ulevel = 0;
-    u.uhp = (u.uhpmax = (u.uhppeak = newhp()));
-    u.uen = (u.uenmax = (u.uenpeak = newpw()));
-    u.uspellprot = 0;
+    cptr.stI32(cptr.add(u, 48), 0);
+    cptr.stI32(cptr.add(u, 2196), cptr.stI32(cptr.add(u, 2200), cptr.stI32(cptr.add(u, 2204), newhp())));
+    cptr.stI32(cptr.add(u, 2208), cptr.stI32(cptr.add(u, 2212), cptr.stI32(cptr.add(u, 2216), newpw())));
+    cptr.st1(cptr.add(u, 2191), 0);
     adjabil(0, 1);
-    u.ulevel = (u.ulevelmax = 1);
+    cptr.stI32(cptr.add(u, 48), cptr.stI32(cptr.add(u, 52), 1));
     init_uhunger();
-    for (i = 0; i <= MAXSPELL; i++)
-        svs.spl_book[i].sp_id = 0;
-    u.ublesscnt = 300;
-    cptr.st1(cptr.add(cptr.decay(u.ualignbase), 0), cptr.st1(cptr.add(cptr.decay(u.ualignbase), 1), u.ualign.type = aligns[flags.initalign].value));
+    for (i = 0; i <= 42; i++)
+        cptr.stI16(cptr.add(svs, i, 8), 0);
+    cptr.stI32(cptr.add(u, 2352), 300);
+    cptr.st1(cptr.add(cptr.add(u, 2184), 0, 1), cptr.st1(cptr.add(cptr.add(u, 2184), 1, 1), cptr.st1(cptr.add(u, 2172), cptr.ld1s(cptr.add(cptr.add(aligns, cptr.ldI32(cptr.add(flags, 156)), 32), 26)))));
     ubirthday.v = getnow();
-    u.nv_range = 1;
-    u.xray_range = -1;
-    u.unblind_telepat_range = -1;
-    if (u.uroleplay.blind)
-        u.uprops[BLINDED].intrinsic |= 67108864n;
-    u.uhandedness = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1028, __sl3), rn2(10)) : rn2(10)) ? 0 : 1) >>> 0;
+    cptr.stI32(cptr.add(u, 1776), 1);
+    cptr.stI32(cptr.add(u, 1780), -1);
+    cptr.stI32(cptr.add(u, 1784), -1);
+    if (cptr.ld1s(cptr.add(u, 2112)))
+        cptr.st1(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), cptr.ld1s(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) | 67108864n);
+    cptr.stI32(cptr.add(u, 1876), ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1028, __sl3), rn2(10)) : rn2(10)) ? 0 : 1) >>> 0);
     max_rank_sz();
     return;
 }
@@ -974,45 +1923,45 @@ export function u_init_misc() {
 /** C ref: u_init.c:1037 @returns {CPtr} */
 function skills_for_role() {
     let skills;
-    switch ((gu.urole.mnum)) {
-        case PM_ARCHEOLOGIST:
-        skills = cptr.decay(Skill_A);
+    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+        case 331:
+        skills = Skill_A;
         break;
-        case PM_BARBARIAN:
-        skills = cptr.decay(Skill_B);
+        case 332:
+        skills = Skill_B;
         break;
-        case PM_CAVE_DWELLER:
-        skills = cptr.decay(Skill_C);
+        case 333:
+        skills = Skill_C;
         break;
-        case PM_HEALER:
-        skills = cptr.decay(Skill_H);
+        case 334:
+        skills = Skill_H;
         break;
-        case PM_KNIGHT:
-        skills = cptr.decay(Skill_K);
+        case 335:
+        skills = Skill_K;
         break;
-        case PM_MONK:
-        skills = cptr.decay(Skill_Mon);
+        case 336:
+        skills = Skill_Mon;
         break;
-        case PM_CLERIC:
-        skills = cptr.decay(Skill_P);
+        case 337:
+        skills = Skill_P;
         break;
-        case PM_RANGER:
-        skills = cptr.decay(Skill_Ran);
+        case 338:
+        skills = Skill_Ran;
         break;
-        case PM_ROGUE:
-        skills = cptr.decay(Skill_R);
+        case 339:
+        skills = Skill_R;
         break;
-        case PM_SAMURAI:
-        skills = cptr.decay(Skill_S);
+        case 340:
+        skills = Skill_S;
         break;
-        case PM_TOURIST:
-        skills = cptr.decay(Skill_T);
+        case 341:
+        skills = Skill_T;
         break;
-        case PM_VALKYRIE:
-        skills = cptr.decay(Skill_V);
+        case 342:
+        skills = Skill_V;
         break;
-        case PM_WIZARD:
-        skills = cptr.decay(Skill_W);
+        case 343:
+        skills = Skill_W;
         break;
         default:
         panic(__sl4);
@@ -1025,7 +1974,7 @@ function skills_for_role() {
 function restricted_spell_discipline(otyp) {
     let skills = skills_for_role();
     let this_skill = spell_skilltype(otyp);
-    while (skills && cptr.ldI16(skills) != P_NONE) {
+    while (skills && cptr.ldI16(skills) != 0) {
         if (cptr.ldI16(skills) == this_skill)
             return (0);
         skills = cptr.add(skills, 1, 4);
@@ -1047,10 +1996,10 @@ function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     let trycnt = 0;
     obj = mkobj(oclass, (0));
     otyp = cptr.ldI16(cptr.add(obj, 32));
-    while (otyp == WAN_WISHING || otyp == gn.nocreate || otyp == gn.nocreate2 || otyp == gn.nocreate3 || otyp == gn.nocreate4 || otyp == RIN_LEVITATION || otyp == POT_HALLUCINATION || otyp == POT_ACID || otyp == SCR_AMNESIA || otyp == SCR_FIRE || otyp == SCR_BLANK_PAPER || otyp == SPE_BLANK_PAPER || otyp == RIN_AGGRAVATE_MONSTER || otyp == RIN_HUNGER || otyp == WAN_NOTHING || (otyp == RIN_POISON_RESISTANCE && (gu.urace.mnum == (PM_ORC))) || (otyp == SCR_ENCHANT_WEAPON && (gu.urole.mnum == (PM_MONK))) || (otyp == SPE_FORCE_BOLT && (gu.urole.mnum == (PM_WIZARD))) || (cptr.ld1s(cptr.add(obj, 49)) == SPBOOK_CLASS && (objects[otyp].oc_oc2 > (got_level1_spellbook ? 3 : 1) || restricted_spell_discipline(otyp))) || otyp == SPE_NOVEL) {
+    while (otyp == 414 || otyp == cptr.ldI16(cptr.add(gn, 160)) || otyp == cptr.ldI16(cptr.add(gn, 162)) || otyp == cptr.ldI16(cptr.add(gn, 164)) || otyp == cptr.ldI16(cptr.add(gn, 166)) || otyp == 183 || otyp == 304 || otyp == 320 || otyp == 338 || otyp == 339 || otyp == 365 || otyp == 407 || otyp == 185 || otyp == 184 || otyp == 416 || (otyp == 188 && (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (72))) || (otyp == 328 && (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336))) || (otyp == 376 && (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343))) || (cptr.ld1s(cptr.add(obj, 49)) == 10 && (cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 85)) > (got_level1_spellbook ? 3 : 1) || restricted_spell_discipline(otyp))) || otyp == 408) {
         dealloc_obj(obj);
         if (++trycnt > 1000) {
-            obj = mksobj(PANCAKE, (1), (0));
+            obj = mksobj(290, (1), (0));
             break;
         }
         obj = mkobj(oclass, (0));
@@ -1061,18 +2010,18 @@ function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
 
 /** C ref: u_init.c:1179 — @param {CPtr} trop @param {CPtr} obj @returns {CInt} */
 function ini_inv_obj_substitution(trop, obj) {
-    if (gu.urace.mnum != PM_HUMAN) {
+    if (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) != 260) {
         let i;
-        for (i = 0; inv_subs[i].race_pm != NON_PM; ++i)
-            if (inv_subs[i].race_pm == gu.urace.mnum && cptr.ldI16(cptr.add(obj, 32)) == inv_subs[i].item_otyp) {
+        for (i = 0; cptr.ldI16(cptr.add(inv_subs, i, 6)) != -1; ++i)
+            if (cptr.ldI16(cptr.add(inv_subs, i, 6)) == cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) && cptr.ldI16(cptr.add(obj, 32)) == cptr.ldI16(cptr.add(cptr.add(inv_subs, i, 6), 2))) {
                 do {
                     if (debugcore(__sl0, (1))) {
-                        let save_plnmsg = iflags.last_msg;
-                        pline(__sl6, (obj_descr[(objects[inv_subs[i].subs_otyp]).oc_name_idx].oc_name), (cptr.ldI16(trop) == 0) ? __sl7 : __sl8, (obj_descr[(objects[cptr.ldI16(cptr.add(obj, 32))]).oc_name_idx].oc_name));
-                        iflags.last_msg = save_plnmsg;
+                        let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
+                        pline(__sl6, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16(cptr.add(cptr.add(inv_subs, i, 6), 4)), 120))), 16))), (cptr.ldI16(trop) == 0) ? __sl7 : __sl8, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120))), 16))));
+                        cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
                     }
                 } while (0);
-                cptr.stI16(cptr.add(obj, 32), inv_subs[i].subs_otyp);
+                cptr.stI16(cptr.add(obj, 32), cptr.ldI16(cptr.add(cptr.add(inv_subs, i, 6), 4)));
                 break;
             }
     }
@@ -1082,31 +2031,31 @@ function ini_inv_obj_substitution(trop, obj) {
 /** C ref: u_init.c:1205 — @param {CPtr} trop @param {CPtr} obj @returns {CInt} */
 function ini_inv_adjust_obj(trop, obj) {
     let stop = (0);
-    if (cptr.ld1s(cptr.add(trop, 3)) == COIN_CLASS) {
-        cptr.stU64(cptr.add(obj, 40), u.umoney0);
+    if (cptr.ld1s(cptr.add(trop, 3)) == 12) {
+        cptr.stU64(cptr.add(obj, 40), cptr.ldI64(cptr.add(u, 2360)));
     } else {
-        if (objects[cptr.ldI16(cptr.add(obj, 32))].oc_uses_known)
+        if (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 24)))
             cptr.stI32(cptr.add(obj, 80), 1);
         cptr.stI32(cptr.add(obj, 84), cptr.stI32(cptr.add(obj, 88), cptr.stI32(cptr.add(obj, 92), 1)));
-        if ((cptr.ldI16(cptr.add((obj), 32)) >= LARGE_BOX && cptr.ldI16(cptr.add((obj), 32)) <= BAG_OF_TRICKS) || cptr.ldI16(cptr.add(obj, 32)) == STATUE) {
+        if ((cptr.ldI16(cptr.add((obj), 32)) >= 214 && cptr.ldI16(cptr.add((obj), 32)) <= 220) || cptr.ldI16(cptr.add(obj, 32)) == 476) {
             cptr.stI32(cptr.add(obj, 96), cptr.stI32(cptr.add(obj, 100), 1));
             cptr.stI32(cptr.add(obj, 132), 0);
         }
         cptr.stI32(cptr.add(obj, 56), 0);
-        if (cptr.ldI32(cptr.add(obj, 132)) | 0 && u.ualign.type != (-1))
+        if (cptr.ldI32(cptr.add(obj, 132)) | 0 && cptr.ld1s(cptr.add(u, 2172)) != (-1))
             cptr.stI32(cptr.add(obj, 132), 0);
-        if (cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(obj, 49)) == TOOL_CLASS) {
+        if (cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6) {
             cptr.stU64(cptr.add(obj, 40), trquan(trop));
             stop = (1);
-        } else if (cptr.ld1s(cptr.add(obj, 49)) == GEM_CLASS && (cptr.ldI16(cptr.add((obj), 32)) == LUCKSTONE || cptr.ldI16(cptr.add((obj), 32)) == LOADSTONE || cptr.ldI16(cptr.add((obj), 32)) == FLINT || cptr.ldI16(cptr.add((obj), 32)) == TOUCHSTONE) && cptr.ldI16(cptr.add(obj, 32)) != FLINT) {
+        } else if (cptr.ld1s(cptr.add(obj, 49)) == 13 && (cptr.ldI16(cptr.add((obj), 32)) == 470 || cptr.ldI16(cptr.add((obj), 32)) == 471 || cptr.ldI16(cptr.add((obj), 32)) == 473 || cptr.ldI16(cptr.add((obj), 32)) == 472) && cptr.ldI16(cptr.add(obj, 32)) != 473) {
             cptr.stU64(cptr.add(obj, 40), 1n);
         }
         if (cptr.ld1s(cptr.add(trop, 2)) != 127) {
             cptr.st1(cptr.add(obj, 48), cptr.ld1s(cptr.add(trop, 2)));
-            if (cptr.ldI16(trop) == MAGIC_MARKER && cptr.ld1s(cptr.add(obj, 48)) < 96)
+            if (cptr.ldI16(trop) == 242 && cptr.ld1s(cptr.add(obj, 48)) < 96)
                 cptr.st1(cptr.add(obj, 48), cptr.ld1s(cptr.add(obj, 48)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1233, __sl9), rn2(4)) : rn2(4)));
         } else {
-            if (objects[cptr.ldI16(cptr.add(obj, 32))].oc_class == RING_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_charged | 0 && cptr.ld1s(cptr.add(obj, 48)) <= 0)
+            if (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 70)) == 4 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 36)) | 0 && cptr.ld1s(cptr.add(obj, 48)) <= 0)
                 cptr.st1(cptr.add(obj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1238, __sl9), rne(3)) : rne(3))));
         }
         if (cptr.ld1s(cptr.add(trop, 6)) != 2)
@@ -1118,38 +2067,38 @@ function ini_inv_adjust_obj(trop, obj) {
 
 /** C ref: u_init.c:1251 — @param {CPtr} obj */
 function ini_inv_use_obj(obj) {
-    if ((obj_descr[(objects[cptr.ldI16(cptr.add(obj, 32))]).oc_descr_idx].oc_descr) && cptr.ldI32(cptr.add(obj, 80)) | 0)
+    if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))) && cptr.ldI32(cptr.add(obj, 80)) | 0)
         discover_object(cptr.ldI16(cptr.add(obj, 32)), (1), (1), (0));
-    if (cptr.ldI16(cptr.add(obj, 32)) == OIL_LAMP)
-        discover_object(POT_OIL, (1), (1), (0));
-    if (cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS) {
-        if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_SHIELD) && !uarms.v && !(uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))) {
+    if (cptr.ldI16(cptr.add(obj, 32)) == 227)
+        discover_object(321, (1), (1), (0));
+    if (cptr.ld1s(cptr.add(obj, 49)) == 3) {
+        if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 1) && !uarms.v && !(uwep.v && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0))) {
             set_twoweap((0));
             setworn(obj, 8n);
-        } else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_HELM) && !uarmh.v)
+        } else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 2) && !uarmh.v)
             setworn(obj, 4n);
-        else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_GLOVES) && !uarmg.v)
+        else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 3) && !uarmg.v)
             setworn(obj, 16n);
-        else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_SHIRT) && !uarmu.v)
+        else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 6) && !uarmu.v)
             setworn(obj, 64n);
-        else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_CLOAK) && !uarmc.v)
+        else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 5) && !uarmc.v)
             setworn(obj, 2n);
-        else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_BOOTS) && !uarmf.v)
+        else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 4) && !uarmf.v)
             setworn(obj, 32n);
-        else if ((cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp == ARM_SUIT) && !uarm.v)
+        else if ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 0) && !uarm.v)
             setworn(obj, 1n);
     }
-    if (cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((obj), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((obj), 32))].oc_subtyp != P_NONE) || cptr.ldI16(cptr.add(obj, 32)) == TIN_OPENER || cptr.ldI16(cptr.add(obj, 32)) == FLINT || cptr.ldI16(cptr.add(obj, 32)) == ROCK) {
-        if (((cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(obj, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(obj, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(obj, 32))].oc_subtyp <= -P_DART)) {
+    if (cptr.ld1s(cptr.add(obj, 49)) == 2 || (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0) || cptr.ldI16(cptr.add(obj, 32)) == 239 || cptr.ldI16(cptr.add(obj, 32)) == 473 || cptr.ldI16(cptr.add(obj, 32)) == 474) {
+        if (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20) || ((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -25 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -23)) {
             if (!uquiver.v)
                 setuqwep(obj);
-        } else if (!uwep.v && (!uarms.v || !((cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(obj, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(obj, 32))].oc_big | 0))) {
+        } else if (!uwep.v && (!uarms.v || !((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0))) {
             setuwep(obj);
         } else if (!uswapwep.v) {
             setuswapwep(obj);
         }
     }
-    if (cptr.ld1s(cptr.add(obj, 49)) == SPBOOK_CLASS && cptr.ldI16(cptr.add(obj, 32)) != SPE_BLANK_PAPER)
+    if (cptr.ld1s(cptr.add(obj, 49)) == 10 && cptr.ldI16(cptr.add(obj, 32)) != 407)
         initialspell(obj);
 }
 
@@ -1159,7 +2108,7 @@ function ini_inv(trop) {
     let otyp;
     let got_sp1 = (0);
     let quan;
-    if (u.uroleplay.pauper)
+    if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)))
         return;
     quan = trquan(trop);
     while (cptr.ld1s(cptr.add(trop, 3))) {
@@ -1170,22 +2119,22 @@ function ini_inv(trop) {
             obj = ini_inv_mkobj_filter(cptr.ld1s(cptr.add(trop, 3)), got_sp1);
             otyp = cptr.ldI16(cptr.add(obj, 32));
             switch (otyp) {
-                case WAN_POLYMORPH:
-                case RIN_POLYMORPH:
-                case POT_POLYMORPH:
-                gn.nocreate = i16(RIN_POLYMORPH_CONTROL);
+                case 422:
+                case 196:
+                case 316:
+                cptr.stI16(cptr.add(gn, 160), 197);
                 break;
-                case RIN_POLYMORPH_CONTROL:
-                gn.nocreate = i16(RIN_POLYMORPH);
-                gn.nocreate2 = i16(SPE_POLYMORPH);
-                gn.nocreate3 = i16(POT_POLYMORPH);
+                case 197:
+                cptr.stI16(cptr.add(gn, 160), 196);
+                cptr.stI16(cptr.add(gn, 162), 399);
+                cptr.stI16(cptr.add(gn, 164), 316);
             }
-            if (cptr.ld1s(cptr.add(obj, 49)) == RING_CLASS || cptr.ld1s(cptr.add(obj, 49)) == SPBOOK_CLASS)
-                gn.nocreate4 = i16(otyp);
+            if (cptr.ld1s(cptr.add(obj, 49)) == 4 || cptr.ld1s(cptr.add(obj, 49)) == 10)
+                cptr.stI16(cptr.add(gn, 166), i16(otyp));
         }
         otyp = ini_inv_obj_substitution(trop, obj);
         (void (otyp));
-        if (u.uroleplay.nudist && cptr.ld1s(cptr.add(obj, 49)) == ARMOR_CLASS) {
+        if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 1)) && cptr.ld1s(cptr.add(obj, 49)) == 3) {
             dealloc_obj(obj);
             trop = cptr.add(trop, 1, 8);
             continue;
@@ -1193,7 +2142,7 @@ function ini_inv(trop) {
         if (ini_inv_adjust_obj(trop, obj))
             quan = 1n;
         obj = addinv(obj);
-        if (cptr.ld1s(cptr.add(obj, 49)) == SPBOOK_CLASS && objects[cptr.ldI16(cptr.add(obj, 32))].oc_oc2 == 1)
+        if (cptr.ld1s(cptr.add(obj, 49)) == 10 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 85)) == 1)
             got_sp1 = (1);
         if (--quan)
             continue;
@@ -1204,17 +2153,17 @@ function ini_inv(trop) {
 
 /** C ref: u_init.c:1370 */
 export function u_init_inventory_attrs() {
-    gl.lastinvnr = 51;
-    while (gi.invent)
-        useupall(gi.invent);
-    u.umoney0 = 0n;
+    cptr.stI32(cptr.add(gl, 64), 51);
+    while (cptr.ldPtr(cptr.add(gi, 8)))
+        useupall(cptr.ldPtr(cptr.add(gi, 8)));
+    cptr.stU64(cptr.add(u, 2360), 0n);
     u_init_role();
     u_init_race();
-    if (flags.explore)
-        ini_inv(cptr.decay(Wishing));
-    if (u.umoney0)
-        ini_inv(cptr.decay(Money));
-    u.umoney0 += hidden_gold((1));
+    if (cptr.ld1s(cptr.add(flags, 12)))
+        ini_inv(Wishing);
+    if (cptr.ldI64(cptr.add(u, 2360)))
+        ini_inv(Money);
+    cptr.st1(cptr.add(u, 2360), cptr.ld1s(cptr.add(u, 2360)) + hidden_gold((1)));
     init_attr(75);
     vary_init_attr();
     u_init_carry_attr_boost();
@@ -1223,12 +2172,12 @@ export function u_init_inventory_attrs() {
 /** C ref: u_init.c:1395 */
 export function u_init_skills_discoveries() {
     let otmp;
-    for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
+    for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
         ini_inv_use_obj(otmp);
     skill_init(skills_for_role());
-    if (u.uroleplay.pauper)
+    if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 3)))
         pauper_reinit();
-    if (num_spells() && (u.uenmax < (Math.imul((1), 5))))
-        u.uen = (u.uenmax = (u.uenpeak = cptr.stI16(cptr.add(cptr.decay(u.ueninc), u.ulevel), i16((Math.imul((1), 5))))));
+    if (num_spells() && (cptr.ldI32(cptr.add(u, 2212)) < (Math.imul((1), 5))))
+        cptr.stI32(cptr.add(u, 2208), cptr.stI32(cptr.add(u, 2212), cptr.stI32(cptr.add(u, 2216), cptr.stI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2), i16((Math.imul((1), 5)))))));
     find_ac();
 }

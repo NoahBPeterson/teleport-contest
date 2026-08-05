@@ -87,17 +87,21 @@ export function loadAst(astPath) {
  *   mainFileAbs,
  * }.
  */
-export function mainFileDecls(root, mainFileAbs, compileCwd) {
+export function mainFileDecls(root, mainFileAbs, compileCwd, extraMainFiles) {
   mainFileAbs = path.resolve(mainFileAbs);
   const tracker = makeLocationTracker(compileCwd, mainFileAbs);
   const source = fs.readFileSync(mainFileAbs, 'utf8');
   const starts = lineIndexFor(source);
   const decls = [];
+  // headers that generate code via macro includes (sfmacros.h) can be
+  // treated as main-file-equivalent for this TU
+  const alsoMain = new Set((extraMainFiles || []).map((f) => path.resolve(f)));
 
   (function walk(n, parent) {
     if (!n || typeof n !== 'object') return;
     const eff = tracker.processNode(n);
-    if (parent && parent.kind === 'TranslationUnitDecl' && n.kind && tracker.isMain(eff)) {
+    if (parent && parent.kind === 'TranslationUnitDecl' && n.kind
+        && (tracker.isMain(eff) || (eff && alsoMain.has(eff.file)))) {
       decls.push(n);
     }
     for (const c of n.inner || []) walk(c, n);

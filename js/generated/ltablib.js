@@ -188,13 +188,13 @@ function tunpack(L) {
 function l_randomizePivot() {
     let c = cptr.box(clock());
     let t = cptr.box(time(null));
-    let buff = new Array(4).fill(0);
+    let buff = cptr.alloc(4 * 4);
     let i;
     let rnd = 0;
-    cptr.memcpy(cptr.decay(buff), c, (8n / 4n) * 4n);
-    cptr.memcpy(cptr.add(cptr.decay(buff), (8n / 4n), 4), t, (8n / 4n) * 4n);
+    cptr.memcpy(buff, c, (8n / 4n) * 4n);
+    cptr.memcpy(cptr.add(buff, (8n / 4n), 4), t, (8n / 4n) * 4n);
     for (i = 0; BigInt(i >>> 0) < (16n / 4n); i++)
-        rnd = (rnd + buff[i]) | 0;
+        rnd = (rnd + cptr.ldI32(cptr.add(buff, i, 4))) | 0;
     return rnd;
 }
 
@@ -316,19 +316,26 @@ function sort(L) {
 }
 
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
-const tab_funcs = [
-    { name: __sl13, func: tconcat },
-    { name: __sl14, func: tinsert },
-    { name: __sl15, func: tpack },
-    { name: __sl16, func: tunpack },
-    { name: __sl17, func: tremove },
-    { name: __sl18, func: tmove },
-    { name: __sl19, func: sort },
-    { name: null, func: null }
-];
+const tab_funcs = cptr.alloc(8 * 16);
+cptr.stPtr(cptr.add(tab_funcs, 0), __sl13);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 0), 8), tconcat);
+cptr.stPtr(cptr.add(tab_funcs, 16), __sl14);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 16), 8), tinsert);
+cptr.stPtr(cptr.add(tab_funcs, 32), __sl15);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 32), 8), tpack);
+cptr.stPtr(cptr.add(tab_funcs, 48), __sl16);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 48), 8), tunpack);
+cptr.stPtr(cptr.add(tab_funcs, 64), __sl17);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 64), 8), tremove);
+cptr.stPtr(cptr.add(tab_funcs, 80), __sl18);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 80), 8), tmove);
+cptr.stPtr(cptr.add(tab_funcs, 96), __sl19);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 96), 8), sort);
+cptr.stPtr(cptr.add(tab_funcs, 112), null);
+cptr.stPtr(cptr.add(cptr.add(tab_funcs, 112), 8), null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (128n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(tab_funcs), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (128n / 16n - 1n)))), luaL_setfuncs(L, tab_funcs, 0));
     return 1;
 }

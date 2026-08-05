@@ -206,11 +206,11 @@ function os_date(L) {
     } else {
         let cc = new Uint8Array(4);
         let b = cptr.alloc(1056);
-        cptr.st1(cptr.add(cptr.decay(cc), 0), 37);
+        cptr.st1(cptr.add(cptr.decay(cc), 0, 1), 37);
         luaL_buffinit(L, b);
         while (cptr.cmp(s, se) < 0) {
             if (cptr.ld1s(s) != 37)
-                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
+                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
             else {
                 let reslen;
                 let buff = luaL_prepbuffsize(b, 250n);
@@ -258,14 +258,27 @@ function os_difftime(L) {
     return 1;
 }
 
-const __static_os_setlocale_cat = [0, 1, 2, 3, 4, 5]; /** C ref: loslib.c:383 — int[6] (function-static) */
-const __static_os_setlocale_catnames = [__sl21, __sl22, __sl23, __sl24, __sl25, __sl26, null]; /** C ref: loslib.c:385 — char *[7] (function-static) */
+const __static_os_setlocale_cat = cptr.alloc(6 * 4);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 0), 0);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 4), 1);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 8), 2);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 12), 3);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 16), 4);
+cptr.stI32(cptr.add(__static_os_setlocale_cat, 20), 5); /** C ref: loslib.c:383 — int[6] (function-static) */
+const __static_os_setlocale_catnames = cptr.alloc(7 * 8);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 0), __sl21);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 8), __sl22);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 16), __sl23);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 24), __sl24);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 32), __sl25);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 40), __sl26);
+cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 48), null); /** C ref: loslib.c:385 — char *[7] (function-static) */
 
 /** C ref: loslib.c:382 — @param {CPtr} L @returns {CInt} */
 function os_setlocale(L) {
     let l = (luaL_optlstring(L, (1), null, null));
-    let op = luaL_checkoption(L, 2, __sl21, cptr.decay(__static_os_setlocale_catnames));
-    lua_pushstring(L, setlocale(__static_os_setlocale_cat[op], l));
+    let op = luaL_checkoption(L, 2, __sl21, __static_os_setlocale_catnames);
+    lua_pushstring(L, setlocale(cptr.ldI32(cptr.add(__static_os_setlocale_cat, op, 4)), l));
     return 1;
 }
 
@@ -284,23 +297,34 @@ function os_exit(L) {
 }
 
 /** C ref: loslib.c:407 — luaL_Reg[12] */
-const syslib = [
-    { name: __sl27, func: os_clock },
-    { name: __sl28, func: os_date },
-    { name: __sl29, func: os_difftime },
-    { name: __sl30, func: os_execute },
-    { name: __sl31, func: os_exit },
-    { name: __sl32, func: os_getenv },
-    { name: __sl33, func: os_remove },
-    { name: __sl34, func: os_rename },
-    { name: __sl35, func: os_setlocale },
-    { name: __sl26, func: os_time },
-    { name: __sl36, func: os_tmpname },
-    { name: null, func: null }
-];
+const syslib = cptr.alloc(12 * 16);
+cptr.stPtr(cptr.add(syslib, 0), __sl27);
+cptr.stPtr(cptr.add(cptr.add(syslib, 0), 8), os_clock);
+cptr.stPtr(cptr.add(syslib, 16), __sl28);
+cptr.stPtr(cptr.add(cptr.add(syslib, 16), 8), os_date);
+cptr.stPtr(cptr.add(syslib, 32), __sl29);
+cptr.stPtr(cptr.add(cptr.add(syslib, 32), 8), os_difftime);
+cptr.stPtr(cptr.add(syslib, 48), __sl30);
+cptr.stPtr(cptr.add(cptr.add(syslib, 48), 8), os_execute);
+cptr.stPtr(cptr.add(syslib, 64), __sl31);
+cptr.stPtr(cptr.add(cptr.add(syslib, 64), 8), os_exit);
+cptr.stPtr(cptr.add(syslib, 80), __sl32);
+cptr.stPtr(cptr.add(cptr.add(syslib, 80), 8), os_getenv);
+cptr.stPtr(cptr.add(syslib, 96), __sl33);
+cptr.stPtr(cptr.add(cptr.add(syslib, 96), 8), os_remove);
+cptr.stPtr(cptr.add(syslib, 112), __sl34);
+cptr.stPtr(cptr.add(cptr.add(syslib, 112), 8), os_rename);
+cptr.stPtr(cptr.add(syslib, 128), __sl35);
+cptr.stPtr(cptr.add(cptr.add(syslib, 128), 8), os_setlocale);
+cptr.stPtr(cptr.add(syslib, 144), __sl26);
+cptr.stPtr(cptr.add(cptr.add(syslib, 144), 8), os_time);
+cptr.stPtr(cptr.add(syslib, 160), __sl36);
+cptr.stPtr(cptr.add(cptr.add(syslib, 160), 8), os_tmpname);
+cptr.stPtr(cptr.add(syslib, 176), null);
+cptr.stPtr(cptr.add(cptr.add(syslib, 176), 8), null);
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_os(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (192n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(syslib), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
     return 1;
 }

@@ -17,8 +17,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor, NETHACK_SRC, LUA_SRC } from './ast-dump.mjs';
+import { desugar } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const WINTTY_SRC = path.join(repoRoot, 'nethack-c/recorder/win/tty');
+const SYSUNIX_SRC = path.join(repoRoot, 'nethack-c/recorder/sys/unix');
 const SKIP_LUA = new Set(['lua.c', 'luac.c', 'onelua.c']);
 
 export function listTargets() {
@@ -29,6 +32,13 @@ export function listTargets() {
   for (const f of fs.readdirSync(LUA_SRC).filter((f) => f.endsWith('.c') && !SKIP_LUA.has(f)).sort()) {
     files.push({ name: f.replace(/\.c$/, ''), file: path.join(LUA_SRC, f), group: 'lua' });
   }
+  // tty window port + unix glue (boot path)
+  for (const [dir, group] of [[WINTTY_SRC, 'wintty'], [SYSUNIX_SRC, 'sysunix'], [path.join(repoRoot, 'nethack-c/recorder/sys/share'), 'sysshare']]) {
+    for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.c')).sort()) {
+      if (group === 'sysshare' && f !== 'posixregex.c') continue;
+      files.push({ name: f.replace(/\.c$/, ''), file: path.join(dir, f), group });
+    }
+  }
   return files;
 }
 
@@ -38,9 +48,18 @@ export function listTargets() {
  * Also collects EVERY complete RecordDecl in the translation unit (headers
  * included): struct layout needs header-defined types like struct obj.
  */
+// headers treated as main-file-equivalent per target (macro code generation)
+const EXTRA_MAIN = {
+  sfstruct: [path.join(repoRoot, 'nethack-c/recorder/include/sfmacros.h')],
+  sfbase: [path.join(repoRoot, 'nethack-c/recorder/include/sfmacros.h')],
+  // artilist.h defines static artilist[]/artifact_names[] per includer
+  artifact: [path.join(repoRoot, 'nethack-c/recorder/include/artilist.h')],
+  mdlib: [path.join(repoRoot, 'nethack-c/recorder/include/artilist.h')],
+};
+
 export function collectFile(target) {
   const root = loadAst(astPathFor(target.file));
-  const { decls, lineOf } = mainFileDecls(root, target.file, compileCwdFor(target.file));
+  const { decls, lineOf } = mainFileDecls(root, target.file, compileCwdFor(target.file), EXTRA_MAIN[target.name]);
   const defs = [];
   for (const d of decls) {
     if (d.kind === 'FunctionDecl') {
@@ -55,13 +74,24 @@ export function collectFile(target) {
     }
   }
   const recordDefs = new Map(); // name -> { tag, fields } (first complete definition wins)
+  const enumValues = new Map(); // enum constant name -> integer value
+  (function wEnums(n) {
+    if (!n || typeof n !== 'object') return;
+    if (n.kind === 'EnumConstantDecl') {
+      const init = (n.inner || []).find((c) => c && c.kind === 'ConstantExpr');
+      if (init && init.value !== undefined) enumValues.set(n.name, Number(init.value));
+    }
+    for (const c of n.inner || []) wEnums(c);
+  })(root);
   const addressTaken = new Set(); // globals whose address is taken somewhere in the program
   (function wAddrs(n) {
     if (!n || typeof n !== 'object') return;
     if (n.kind === 'UnaryOperator' && n.opcode === '&' && n.inner?.[0]?.kind === 'DeclRefExpr') {
+      if (n.inner[0].referencedDecl?.kind === 'FunctionDecl') { /* &fn is just the fn pointer */ } else {
       const q = (n.inner[0].type?.desugaredQualType || n.inner[0].type?.qualType || '');
       const nm = n.inner[0].name || n.inner[0].referencedDecl?.name;
       if (nm && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q.trim())) addressTaken.add(nm);
+      }
     }
     for (const c of n.inner || []) wAddrs(c);
   })(root);
@@ -141,7 +171,51 @@ export function collectFile(target) {
   }
   // anonymous nested records are addressable by id (field recId linkage)
   for (const [id, rec] of anonById) recordDefs.set(`anon#${id}`, rec);
-  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc, addressTaken };
+  // record-typed file-scope variables: byte-packed cptr.alloc storage in the
+  // defining TU, so every referencing TU must use byte-offset access too.
+  // Conditions mirror emit.mjs emitTopVar (recordGlobals / cptrArrays).
+  const recordGlobals = new Set(); // scalar struct/union globals (not enums)
+  const recordArrays = new Set();  // 1-D arrays with record/enum element type
+  for (const d of decls) {
+    if (d.kind !== 'VarDecl' || !d.name || d.storageClass === 'extern') continue;
+    const q = desugar(d.type);
+    if (!q) continue;
+    const am = q.match(/^(.*)\[(\d*)\]$/);
+    if (am) {
+      const elem = am[1].trim();
+      if (elem.includes('[')) continue; // multi-dim arrays stay plain JS (emitter rule)
+      // mirrors emit.mjs emitBytePackedArray: pointer/enum/record/int-ish elems
+      // get byte-packed cptr storage; 1-byte char/boolean elems stay Uint8Array
+      if (elem.includes('*')) { recordArrays.add(d.name); continue; }
+      if (elem.includes('(')) continue;
+      const isEnumElem = /^enum\s+\w+$/.test(elem) || recordDefs.get(elem)?.tag === 'enum';
+      if (isEnumElem || /^(?:struct|union)\s+\w+$/.test(elem) || recordDefs.has(elem) || /\b(?:int|short|long|double|float)\b/.test(elem)) recordArrays.add(d.name);
+      continue;
+    }
+    if (q.includes('*') || q.includes('(')) continue;
+    if (/^(?:struct|union)\s+\w+$/.test(q)) {
+      recordGlobals.add(d.name);
+    } else if (/^\w+$/.test(q) && recordDefs.has(q) && recordDefs.get(q).tag !== 'enum') {
+      recordGlobals.add(d.name);
+    }
+  }
+  // enum constants without explicit values increment from the previous one
+  (function wEnums2(n) {
+    if (!n || typeof n !== 'object') return;
+    if (n.kind === 'EnumDecl') {
+      // implicit enum values increment within ONE enum, not across the TU
+      let counter = 0;
+      for (const c of n.inner || []) {
+        if (c.kind === 'EnumConstantDecl') {
+          if (!enumValues.has(c.name)) enumValues.set(c.name, counter);
+          counter = enumValues.get(c.name) + 1;
+        } else wEnums2(c);
+      }
+      return;
+    }
+    for (const c of n.inner || []) wEnums2(c);
+  })(root);
+  return { ...target, decls, lineOf, defs, recordDefs, anonByLoc, addressTaken, enumValues, recordGlobals, recordArrays };
 }
 
 /**
@@ -215,7 +289,7 @@ export function loadSlimIr(target) {
   const src = fs.readFileSync(target.file, 'utf8');
   const lineStarts = [0];
   for (let i = 0; i < src.length; i++) if (src.charCodeAt(i) === 10) lineStarts.push(i + 1);
-  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], addressTaken: [...pf.addressTaken], lineStarts };
+  const ir = { decls: pf.decls, defs: pf.defs, recordDefs: [...pf.recordDefs], anonByLoc: [...pf.anonByLoc], addressTaken: [...pf.addressTaken], enumValues: [...pf.enumValues], recordGlobals: [...pf.recordGlobals], recordArrays: [...pf.recordArrays], lineStarts };
   const tmp = irPath + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(ir));
   fs.renameSync(tmp, irPath);

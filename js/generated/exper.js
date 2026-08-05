@@ -50,15 +50,15 @@ export function newuexp(lev) {
 
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
 function enermod(en) {
-    switch ((gu.urole.mnum)) {
-        case PM_CLERIC:
-        case PM_WIZARD:
+    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+        case 337:
+        case 343:
         return (Math.imul(2, en));
-        case PM_HEALER:
-        case PM_KNIGHT:
+        case 334:
+        case 335:
         return (((Math.imul(3, en)) / 2) | 0);
-        case PM_BARBARIAN:
-        case PM_VALKYRIE:
+        case 332:
+        case 342:
         return (((Math.imul(3, en)) / 4) | 0);
         default:
         return en;
@@ -70,29 +70,29 @@ export function newpw() {
     let en = 0;
     let enrnd;
     let enfix;
-    if (u.ulevel == 0) {
-        en = (gu.urole.enadv.infix + gu.urace.enadv.infix) | 0;
-        if (gu.urole.enadv.inrnd > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(gu.urole.enadv.inrnd)) : rnd(gu.urole.enadv.inrnd))) | 0;
-        if (gu.urace.enadv.inrnd > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(gu.urace.enadv.inrnd)) : rnd(gu.urace.enadv.inrnd))) | 0;
+    if (cptr.ldI32(cptr.add(u, 48)) == 0) {
+        en = (cptr.ldI16(cptr.add(cptr.add(gu, 8), 264)) + cptr.ldI16(cptr.add(cptr.add(gu, 320), 98))) | 0;
+        if (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2)) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2)))) : rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2))))) | 0;
+        if (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2)) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2)))) : rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2))))) | 0;
     } else {
-        enrnd = ((acurr(A_WIS)) / 2) | 0;
-        if (u.ulevel < gu.urole.xlev) {
-            enrnd = (enrnd + ((gu.urole.enadv.lornd + gu.urace.enadv.lornd) | 0)) | 0;
-            enfix = (gu.urole.enadv.lofix + gu.urace.enadv.lofix) | 0;
+        enrnd = ((acurr(2)) / 2) | 0;
+        if (cptr.ldI32(cptr.add(u, 48)) < cptr.ldI16(cptr.add(cptr.add(gu, 8), 276))) {
+            enrnd = (enrnd + ((cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 6)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 6))) | 0)) | 0;
+            enfix = (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 4)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 4))) | 0;
         } else {
-            enrnd = (enrnd + ((gu.urole.enadv.hirnd + gu.urace.enadv.hirnd) | 0)) | 0;
-            enfix = (gu.urole.enadv.hifix + gu.urace.enadv.hifix) | 0;
+            enrnd = (enrnd + ((cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 10)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 10))) | 0)) | 0;
+            enfix = (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 8)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 8))) | 0;
         }
         en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 64, __sl1), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
-    if (u.ulevel < 30) {
-        cptr.stI16(cptr.add(cptr.decay(u.ueninc), u.ulevel), i16(en));
+    if (cptr.ldI32(cptr.add(u, 48)) < 30) {
+        cptr.stI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2), i16(en));
     } else {
-        let lim = schar(((4 - ((u.uenmax / 200) | 0)) | 0));
+        let lim = schar(((4 - ((cptr.ldI32(cptr.add(u, 2212)) / 200) | 0)) | 0));
         lim = schar(((lim) > (1) ? (lim) : (1)));
         if (en > lim)
             en = lim;
@@ -132,14 +132,14 @@ export function experience(mtmp, nk) {
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
         if ((Math.imul(cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 3)), cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 2)))) > 23)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
-        if (tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == S_EEL && !(u.uprops[MAGICAL_BREATHING].intrinsic || u.uprops[MAGICAL_BREATHING].extrinsic || ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 512n) != 0n)))
+        if (tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 512n) != 0n)))
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64(cptr.add((ptr), 80)) & 33554432n) != 0n))
         tmp = (tmp + (Math.imul(7, cptr.ld1u(cptr.add(mtmp, 26))))) | 0;
     if (cptr.ld1u(cptr.add(mtmp, 26)) > 8)
         tmp = (tmp + 50) | 0;
-    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), PM_MAIL_DAEMON)))
+    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 314, 96)))
         tmp = 1;
     if (cptr.ldI32(cptr.add(mtmp, 124)) | 0 || cptr.ldI32(cptr.add(mtmp, 128)) | 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
@@ -154,8 +154,8 @@ export function experience(mtmp, nk) {
 
 /** C ref: exper.c:169 — @param {CInt} exper @param {CInt} rexp */
 export function more_experienced(exper, rexp) {
-    let oldexp = u.uexp;
-    let oldrexp = u.urexp;
+    let oldexp = cptr.ldI64(cptr.add(u, 2376));
+    let oldrexp = cptr.ldI64(cptr.add(u, 2384));
     let newexp = oldexp + BigInt(exper);
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
     let newrexp = oldrexp + rexpincr;
@@ -164,17 +164,17 @@ export function more_experienced(exper, rexp) {
     if (newrexp < 0n && rexpincr > 0n)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
-        u.uexp = newexp;
-        if (flags.showexp)
-            disp.botl = (1);
-        if (!disp.botl && exp_percent_changing())
-            disp.botl = (1);
+        cptr.stU64(cptr.add(u, 2376), newexp);
+        if (cptr.ld1s(cptr.add(flags, 38)))
+            cptr.st1(disp, (1));
+        if (!cptr.ld1s(disp) && exp_percent_changing())
+            cptr.st1(disp, (1));
     }
     if (newrexp != oldrexp) {
-        u.urexp = newrexp;
+        cptr.stU64(cptr.add(u, 2384), newrexp);
     }
-    if (u.urexp >= BigInt(((gu.urole.mnum == (PM_WIZARD)) ? 1000 : 2000)))
-        flags.beginner = (0);
+    if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) ? 1000 : 2000)))
+        cptr.st1(cptr.add(flags, 5), (0));
 }
 
 /** C ref: exper.c:207 — @param {CPtr} drainer */
@@ -184,65 +184,65 @@ export function losexp(drainer) {
     let olduhpmax;
     if (drainer && !strcmp(drainer, __sl2))
         drainer = null;
-    else if (resists_drli(cptr.boxProp(gy, 'youmonst')))
+    else if (resists_drli(cptr.add(gy, 8)))
         return;
-    if (u.ulevel > 1 || drainer)
-        pline(__sl3, Goodbye(), u.ulevel);
-    if (u.ulevel > 1) {
-        u.ulevel = (u.ulevel - 1) | 0;
-        adjabil((u.ulevel + 1) | 0, u.ulevel);
-        livelog_printf(4096n, __sl4, (u.ulevel + 1) | 0);
+    if (cptr.ldI32(cptr.add(u, 48)) > 1 || drainer)
+        pline(__sl3, Goodbye(), cptr.ldI32(cptr.add(u, 48)));
+    if (cptr.ldI32(cptr.add(u, 48)) > 1) {
+        cptr.st1(cptr.add(u, 48), cptr.ld1s(cptr.add(u, 48)) - 1);
+        adjabil((cptr.ldI32(cptr.add(u, 48)) + 1) | 0, cptr.ldI32(cptr.add(u, 48)));
+        livelog_printf(4096n, __sl4, (cptr.ldI32(cptr.add(u, 48)) + 1) | 0);
         ;
     } else {
         if (drainer) {
-            svk.killer.format = 1;
-            if (!cptr.eq(cptr.decay(svk.killer.name), drainer))
-                void cptr.strcpy(cptr.decay(svk.killer.name), drainer);
-            done(DIED);
+            cptr.stI32(cptr.add(svk, 12), 1);
+            if (!cptr.eq(cptr.add(svk, 16), drainer))
+                void cptr.strcpy(cptr.add(svk, 16), drainer);
+            done(0);
         }
-        if (u.ulevel > 1)
+        if (cptr.ldI32(cptr.add(u, 48)) > 1)
             return;
-        u.uexp = 0n;
+        cptr.stU64(cptr.add(u, 2376), 0n);
         livelog_printf(4096n, __sl5);
     }
-    (__builtin_expect(BigInt((!(u.ulevel >= 0 && u.ulevel < 30))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
-    olduhpmax = u.uhpmax;
+    (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < 30))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    olduhpmax = cptr.ldI32(cptr.add(u, 2200));
     uhpmin = minuhpmax(10);
-    num = cptr.ldI16(cptr.add(cptr.decay(u.uhpinc), u.ulevel));
-    u.uhpmax = (u.uhpmax - num) | 0;
-    if (u.uhpmax < uhpmin)
+    num = cptr.ldI16(cptr.add(cptr.add(u, 2220), cptr.ldI32(cptr.add(u, 48)), 2));
+    cptr.st1(cptr.add(u, 2200), cptr.ld1s(cptr.add(u, 2200)) - num);
+    if (cptr.ldI32(cptr.add(u, 2200)) < uhpmin)
         setuhpmax(uhpmin, (1));
-    if (u.uhpmax > olduhpmax)
+    if (cptr.ldI32(cptr.add(u, 2200)) > olduhpmax)
         setuhpmax(olduhpmax, (1));
-    u.uhp = (u.uhp - num) | 0;
-    if (u.uhp < 1)
-        u.uhp = 1;
-    else if (u.uhp > u.uhpmax)
-        u.uhp = u.uhpmax;
-    num = cptr.ldI16(cptr.add(cptr.decay(u.ueninc), u.ulevel));
-    u.uenmax = (u.uenmax - num) | 0;
-    if (u.uenmax < 0)
-        u.uenmax = 0;
-    u.uen = (u.uen - num) | 0;
-    if (u.uen < 0)
-        u.uen = 0;
-    else if (u.uen > u.uenmax)
-        u.uen = u.uenmax;
-    if (u.uexp > 0n)
-        u.uexp = newuexp(u.ulevel) - 1n;
-    if ((u.umonnum != u.umonster)) {
-        num = monhp_per_lvl(cptr.boxProp(gy, 'youmonst'));
-        u.mhmax = (u.mhmax - num) | 0;
-        u.mh = (u.mh - num) | 0;
-        if (u.mh <= 0)
+    cptr.st1(cptr.add(u, 2196), cptr.ld1s(cptr.add(u, 2196)) - num);
+    if (cptr.ldI32(cptr.add(u, 2196)) < 1)
+        cptr.stI32(cptr.add(u, 2196), 1);
+    else if (cptr.ldI32(cptr.add(u, 2196)) > cptr.ldI32(cptr.add(u, 2200)))
+        cptr.stI32(cptr.add(u, 2196), cptr.ldI32(cptr.add(u, 2200)));
+    num = cptr.ldI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2));
+    cptr.st1(cptr.add(u, 2212), cptr.ld1s(cptr.add(u, 2212)) - num);
+    if (cptr.ldI32(cptr.add(u, 2212)) < 0)
+        cptr.stI32(cptr.add(u, 2212), 0);
+    cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) - num);
+    if (cptr.ldI32(cptr.add(u, 2208)) < 0)
+        cptr.stI32(cptr.add(u, 2208), 0);
+    else if (cptr.ldI32(cptr.add(u, 2208)) > cptr.ldI32(cptr.add(u, 2212)))
+        cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2212)));
+    if (cptr.ldI64(cptr.add(u, 2376)) > 0n)
+        cptr.stU64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))) - 1n);
+    if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
+        num = monhp_per_lvl(cptr.add(gy, 8));
+        cptr.st1(cptr.add(u, 1816), cptr.ld1s(cptr.add(u, 1816)) - num);
+        cptr.st1(cptr.add(u, 1812), cptr.ld1s(cptr.add(u, 1812)) - num);
+        if (cptr.ldI32(cptr.add(u, 1812)) <= 0)
             rehumanize();
     }
-    disp.botl = (1);
+    cptr.st1(disp, (1));
 }
 
 /** C ref: exper.c:300 */
 export function newexplevel() {
-    if (u.ulevel < 30 && u.uexp >= newuexp(u.ulevel))
+    if (cptr.ldI32(cptr.add(u, 48)) < 30 && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))))
         pluslvl((1));
 }
 
@@ -252,46 +252,46 @@ export function pluslvl(incr) {
     let eninc;
     if (!incr)
         You_feel(__sl9);
-    if ((u.umonnum != u.umonster)) {
-        hpinc = monhp_per_lvl(cptr.boxProp(gy, 'youmonst'));
-        u.mh = (u.mh + hpinc) | 0;
-        setuhpmax(u.mhmax, (0));
+    if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
+        hpinc = monhp_per_lvl(cptr.add(gy, 8));
+        cptr.st1(cptr.add(u, 1812), cptr.ld1s(cptr.add(u, 1812)) + hpinc);
+        setuhpmax(cptr.ldI32(cptr.add(u, 1816)), (0));
     }
     hpinc = newhp();
-    u.uhp = (u.uhp + hpinc) | 0;
-    setuhpmax((u.uhpmax + hpinc) | 0, (1));
+    cptr.st1(cptr.add(u, 2196), cptr.ld1s(cptr.add(u, 2196)) + hpinc);
+    setuhpmax((cptr.ldI32(cptr.add(u, 2200)) + hpinc) | 0, (1));
     eninc = newpw();
-    u.uenmax = (u.uenmax + eninc) | 0;
-    if (u.uenmax > u.uenpeak)
-        u.uenpeak = u.uenmax;
-    u.uen = (u.uen + eninc) | 0;
-    if (u.ulevel < 30) {
+    cptr.st1(cptr.add(u, 2212), cptr.ld1s(cptr.add(u, 2212)) + eninc);
+    if (cptr.ldI32(cptr.add(u, 2212)) > cptr.ldI32(cptr.add(u, 2216)))
+        cptr.stI32(cptr.add(u, 2216), cptr.ldI32(cptr.add(u, 2212)));
+    cptr.st1(cptr.add(u, 2208), cptr.ld1s(cptr.add(u, 2208)) + eninc);
+    if (cptr.ldI32(cptr.add(u, 48)) < 30) {
         let old_ach_cnt;
         let newrank;
-        let oldrank = xlev_to_rank(u.ulevel);
+        let oldrank = xlev_to_rank(cptr.ldI32(cptr.add(u, 48)));
         if (incr) {
-            let tmp = newuexp((u.ulevel + 1) | 0);
-            if (u.uexp >= tmp)
-                u.uexp = tmp - 1n;
+            let tmp = newuexp((cptr.ldI32(cptr.add(u, 48)) + 1) | 0);
+            if (cptr.ldI64(cptr.add(u, 2376)) >= tmp)
+                cptr.stU64(cptr.add(u, 2376), tmp - 1n);
         } else {
-            u.uexp = newuexp(u.ulevel);
+            cptr.stU64(cptr.add(u, 2376), newuexp(cptr.ldI32(cptr.add(u, 48))));
         }
-        ++u.ulevel;
-        pline(__sl10, (u.ulevelmax < u.ulevel) ? __sl11 : __sl12, u.ulevel);
-        if (u.ulevelmax < u.ulevel)
-            u.ulevelmax = u.ulevel;
-        adjabil((u.ulevel - 1) | 0, u.ulevel);
+        cptr.stI32(cptr.add(u, 48), cptr.ldI32(cptr.add(u, 48)) + 1);
+        pline(__sl10, (cptr.ldI32(cptr.add(u, 52)) < cptr.ldI32(cptr.add(u, 48))) ? __sl11 : __sl12, cptr.ldI32(cptr.add(u, 48)));
+        if (cptr.ldI32(cptr.add(u, 52)) < cptr.ldI32(cptr.add(u, 48)))
+            cptr.stI32(cptr.add(u, 52), cptr.ldI32(cptr.add(u, 48)));
+        adjabil((cptr.ldI32(cptr.add(u, 48)) - 1) | 0, cptr.ldI32(cptr.add(u, 48)));
         ;
         old_ach_cnt = count_achievements();
-        newrank = xlev_to_rank(u.ulevel);
+        newrank = xlev_to_rank(cptr.ldI32(cptr.add(u, 48)));
         if (newrank > oldrank)
             record_achievement(achieve_rank(newrank));
         if (count_achievements() == old_ach_cnt)
-            livelog_printf(4096n, __sl13, (u.ulevel <= u.ulevelpeak) ? __sl14 : __sl11, u.ulevel);
-        if (u.ulevel > u.ulevelpeak)
-            u.ulevelpeak = u.ulevel;
+            livelog_printf(4096n, __sl13, (cptr.ldI32(cptr.add(u, 48)) <= cptr.ldI32(cptr.add(u, 56))) ? __sl14 : __sl11, cptr.ldI32(cptr.add(u, 48)));
+        if (cptr.ldI32(cptr.add(u, 48)) > cptr.ldI32(cptr.add(u, 56)))
+            cptr.stI32(cptr.add(u, 56), cptr.ldI32(cptr.add(u, 48)));
     }
-    disp.botl = (1);
+    cptr.st1(disp, (1));
 }
 
 /** C ref: exper.c:378 — @param {CInt} gaining @returns {CLongLong} */
@@ -301,16 +301,16 @@ export function rndexp(gaining) {
     let diff;
     let factor;
     let result;
-    minexp = (u.ulevel == 1) ? 0n : newuexp((u.ulevel - 1) | 0);
-    maxexp = newuexp(u.ulevel);
+    minexp = (cptr.ldI32(cptr.add(u, 48)) == 1) ? 0n : newuexp((cptr.ldI32(cptr.add(u, 48)) - 1) | 0);
+    maxexp = newuexp(cptr.ldI32(cptr.add(u, 48)));
     diff = maxexp - minexp, factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = minexp + factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))));
-    if (u.ulevel == 30 && gaining) {
-        result += (u.uexp - minexp);
-        if (result < u.uexp)
-            result = u.uexp;
+    if (cptr.ldI32(cptr.add(u, 48)) == 30 && gaining) {
+        result += (cptr.ldI64(cptr.add(u, 2376)) - minexp);
+        if (result < cptr.ldI64(cptr.add(u, 2376)))
+            result = cptr.ldI64(cptr.add(u, 2376));
     }
     return result;
 }

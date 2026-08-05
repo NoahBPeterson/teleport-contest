@@ -118,7 +118,11 @@ function luaB_yield(L) {
 }
 
 /** C ref: lcorolib.c:123 — char *[4] */
-const statname = [__sl3, __sl4, __sl5, __sl6];
+const statname = cptr.alloc(4 * 8);
+cptr.stPtr(cptr.add(statname, 0), __sl3);
+cptr.stPtr(cptr.add(statname, 8), __sl4);
+cptr.stPtr(cptr.add(statname, 16), __sl5);
+cptr.stPtr(cptr.add(statname, 24), __sl6);
 
 /** C ref: lcorolib.c:127 — @param {CPtr} L @param {CPtr} co @returns {CInt} */
 function auxstatus(L, co) {
@@ -147,7 +151,7 @@ function auxstatus(L, co) {
 /** C ref: lcorolib.c:149 — @param {CPtr} L @returns {CInt} */
 function luaB_costatus(L) {
     let co = getco(L);
-    lua_pushstring(L, cptr.ldPtr(cptr.add(cptr.decay(statname), auxstatus(L, co))));
+    lua_pushstring(L, cptr.ldPtr(cptr.add(statname, auxstatus(L, co), 8)));
     return 1;
 }
 
@@ -184,25 +188,33 @@ function luaB_close(L) {
             }
         }
         default:
-        return luaL_error(L, __sl7, cptr.ldPtr(cptr.add(cptr.decay(statname), status)));
+        return luaL_error(L, __sl7, cptr.ldPtr(cptr.add(statname, status, 8)));
     }
 }
 
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
-const co_funcs = [
-    { name: __sl8, func: luaB_cocreate },
-    { name: __sl9, func: luaB_coresume },
-    { name: __sl3, func: luaB_corunning },
-    { name: __sl10, func: luaB_costatus },
-    { name: __sl11, func: luaB_cowrap },
-    { name: __sl12, func: luaB_yield },
-    { name: __sl13, func: luaB_yieldable },
-    { name: __sl14, func: luaB_close },
-    { name: null, func: null }
-];
+const co_funcs = cptr.alloc(9 * 16);
+cptr.stPtr(cptr.add(co_funcs, 0), __sl8);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 0), 8), luaB_cocreate);
+cptr.stPtr(cptr.add(co_funcs, 16), __sl9);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 16), 8), luaB_coresume);
+cptr.stPtr(cptr.add(co_funcs, 32), __sl3);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 32), 8), luaB_corunning);
+cptr.stPtr(cptr.add(co_funcs, 48), __sl10);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 48), 8), luaB_costatus);
+cptr.stPtr(cptr.add(co_funcs, 64), __sl11);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 64), 8), luaB_cowrap);
+cptr.stPtr(cptr.add(co_funcs, 80), __sl12);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 80), 8), luaB_yield);
+cptr.stPtr(cptr.add(co_funcs, 96), __sl13);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 96), 8), luaB_yieldable);
+cptr.stPtr(cptr.add(co_funcs, 112), __sl14);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 112), 8), luaB_close);
+cptr.stPtr(cptr.add(co_funcs, 128), null);
+cptr.stPtr(cptr.add(cptr.add(co_funcs, 128), 8), null);
 
 /** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
 export function luaopen_coroutine(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (144n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(co_funcs), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
     return 1;
 }

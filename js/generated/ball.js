@@ -107,19 +107,19 @@ export function ballfall() {
     let gets_hit;
     if (!uball.v || (uball.v && (cptr.ld1s(cptr.add((uball.v), 52)) == 3) && welded(uball.v)))
         return;
-    gets_hit = schar((((cptr.ldI16(cptr.add(uball.v, 28)) != u.ux) || (cptr.ldI16(cptr.add(uball.v, 30)) != u.uy)) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar((rng_log_enabled() ? (rng_log_set_caller(__sl1, 51, __sl2), rn2(5)) : rn2(5))))));
+    gets_hit = schar((((cptr.ldI16(cptr.add(uball.v, 28)) != cptr.ldI16(u)) || (cptr.ldI16(cptr.add(uball.v, 30)) != cptr.ldI16(cptr.add(u, 2)))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar((rng_log_enabled() ? (rng_log_set_caller(__sl1, 51, __sl2), rn2(5)) : rn2(5))))));
     ballrelease((1));
     if (gets_hit) {
         let dmg = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 54, __sl2), rn2(7)) : rn2(7)) + (25)) | 0);
-        pline_The(__sl3, body_part(HEAD));
+        pline_The(__sl3, body_part(8));
         if (uarmh.v) {
             if (hard_helmet(uarmh.v)) {
                 pline(__sl4);
                 dmg = 3;
-            } else if (flags.verbose)
+            } else if (cptr.ld1s(cptr.add(flags, 48)))
                 pline(__sl5, Yname2(uarmh.v));
         }
-        losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl6, 2);
+        losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl6, 2);
     }
 }
 
@@ -129,24 +129,24 @@ function placebc_core() {
         impossible(__sl7);
         return;
     }
-    void flooreffects(uchain.v, u.ux, u.uy, __sl8);
+    void flooreffects(uchain.v, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), __sl8);
     if ((cptr.ld1s(cptr.add((uball.v), 52)) == 3)) {
-        u.bc_order = 0;
+        cptr.stI32(cptr.add(u, 1796), 0);
     } else {
-        void flooreffects(uball.v, u.ux, u.uy, __sl8);
-        place_object(uball.v, u.ux, u.uy);
-        u.bc_order = 1;
+        void flooreffects(uball.v, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), __sl8);
+        place_object(uball.v, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+        cptr.stI32(cptr.add(u, 1796), 1);
     }
-    place_object(uchain.v, u.ux, u.uy);
-    u.bglyph = (u.cglyph = svl.level.locations[u.ux][u.uy].glyph);
-    newsym(u.ux, u.uy);
+    place_object(uchain.v, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+    cptr.stI32(cptr.add(u, 1788), cptr.stI32(cptr.add(u, 1792), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36))));
+    newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     bcrestriction = 0;
 }
 
 /** C ref: ball.c:147 */
 function unplacebc_core() {
-    if (u.uswallow) {
-        if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_water_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_water_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_water_level'))))) {
+    if (cptr.ldI32(cptr.add(u, 1848))) {
+        if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64))))) {
             if (!(cptr.ld1s(cptr.add((uball.v), 52)) == 3))
                 obj_extract_self(uball.v);
             obj_extract_self(uchain.v);
@@ -155,23 +155,23 @@ function unplacebc_core() {
     }
     if (!(cptr.ld1s(cptr.add((uball.v), 52)) == 3)) {
         obj_extract_self(uball.v);
-        if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) && (u.bc_felt & 1))
-            svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].glyph = u.bglyph;
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) && (cptr.ldI32(cptr.add(u, 1800)) & 1))
+            cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), cptr.ldI32(cptr.add(u, 1788)));
         maybe_unhide_at(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
         newsym(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
     }
     obj_extract_self(uchain.v);
-    if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) && (u.bc_felt & 2))
-        svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph = u.cglyph;
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) && (cptr.ldI32(cptr.add(u, 1800)) & 2))
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), cptr.ldI32(cptr.add(u, 1792)));
     maybe_unhide_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
     newsym(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
-    u.bc_felt = 0;
+    cptr.stI32(cptr.add(u, 1800), 0);
 }
 
 /** C ref: ball.c:180 — @param {CInt} restriction @returns {CInt} */
 function check_restriction(restriction) {
     let ret = (0);
-    if (!bcrestriction || (restriction == override_restriction))
+    if (!bcrestriction || (restriction == -1))
         ret = (1);
     else
         ret = schar(((bcrestriction == restriction) ? 1 : 0));
@@ -226,9 +226,9 @@ export function lift_covet_and_placebc(pin) {
 /** C ref: ball.c:354 @returns {CInt} */
 function bc_order() {
     let obj;
-    if (cptr.ldI16(cptr.add(uchain.v, 28)) != cptr.ldI16(cptr.add(uball.v, 28)) || cptr.ldI16(cptr.add(uchain.v, 30)) != cptr.ldI16(cptr.add(uball.v, 30)) || (cptr.ld1s(cptr.add((uball.v), 52)) == 3) || u.uswallow | 0)
+    if (cptr.ldI16(cptr.add(uchain.v, 28)) != cptr.ldI16(cptr.add(uball.v, 28)) || cptr.ldI16(cptr.add(uchain.v, 30)) != cptr.ldI16(cptr.add(uball.v, 30)) || (cptr.ld1s(cptr.add((uball.v), 52)) == 3) || cptr.ldI32(cptr.add(u, 1848)) | 0)
         return 0;
-    for (obj = cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[cptr.ldI16(cptr.add(uball.v, 28))]), cptr.ldI16(cptr.add(uball.v, 30)))); obj; obj = cptr.ldPtr(cptr.add(obj, 8))) {
+    for (obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cptr.add(uball.v, 28)), 168), cptr.ldI16(cptr.add(uball.v, 30)), 8)); obj; obj = cptr.ldPtr(cptr.add(obj, 8))) {
         if (cptr.eq(obj, uchain.v))
             return 1;
         if (cptr.eq(obj, uball.v))
@@ -241,29 +241,29 @@ function bc_order() {
 /** C ref: ball.c:380 — @param {CInt} already_blind */
 export function set_bc(already_blind) {
     let ball_on_floor = !(cptr.ld1s(cptr.add((uball.v), 52)) == 3);
-    u.bc_order = bc_order();
-    u.bc_felt = ball_on_floor ? 1 | 2 : 2;
-    if (already_blind || u.uswallow | 0) {
-        u.cglyph = (u.bglyph = svl.level.locations[u.ux][u.uy].glyph);
+    cptr.stI32(cptr.add(u, 1796), bc_order());
+    cptr.stI32(cptr.add(u, 1800), ball_on_floor ? 1 | 2 : 2);
+    if (already_blind || cptr.ldI32(cptr.add(u, 1848)) | 0) {
+        cptr.stI32(cptr.add(u, 1792), cptr.stI32(cptr.add(u, 1788), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36))));
         return;
     }
     remove_object(uchain.v);
     if (ball_on_floor)
         remove_object(uball.v);
     newsym(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
-    u.cglyph = svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph;
-    if (u.bc_order == 0) {
+    cptr.stI32(cptr.add(u, 1792), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36)));
+    if (cptr.ldI32(cptr.add(u, 1796)) == 0) {
         place_object(uchain.v, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
         newsym(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
         if (ball_on_floor) {
             newsym(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
-            u.bglyph = svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].glyph;
+            cptr.stI32(cptr.add(u, 1788), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36)));
             place_object(uball.v, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
             newsym(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
         }
     } else {
-        u.bglyph = u.cglyph;
-        if (u.bc_order == 1) {
+        cptr.stI32(cptr.add(u, 1788), cptr.ldI32(cptr.add(u, 1792)));
+        if (cptr.ldI32(cptr.add(u, 1796)) == 1) {
             place_object(uball.v, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30)));
             place_object(uchain.v, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
         } else {
@@ -276,55 +276,55 @@ export function set_bc(already_blind) {
 
 /** C ref: ball.c:437 — @param {CInt} before @param {CInt} control @param {CInt} ballx @param {CInt} bally @param {CInt} chainx @param {CInt} chainy */
 export function move_bc(before, control, ballx, bally, chainx, chainy) {
-    if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
         if (!before) {
             if ((control & 2) && (control & 1)) {
-                if (u.bc_felt & 1)
-                    svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].glyph = u.bglyph;
-                if (u.bc_felt & 2)
-                    svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph = u.cglyph;
-                u.bc_felt = 0;
-                u.bglyph = svl.level.locations[ballx][bally].glyph;
-                u.cglyph = svl.level.locations[chainx][chainy].glyph;
+                if (cptr.ldI32(cptr.add(u, 1800)) & 1)
+                    cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), cptr.ldI32(cptr.add(u, 1788)));
+                if (cptr.ldI32(cptr.add(u, 1800)) & 2)
+                    cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), cptr.ldI32(cptr.add(u, 1792)));
+                cptr.stI32(cptr.add(u, 1800), 0);
+                cptr.stI32(cptr.add(u, 1788), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ballx, 756), bally, 36)));
+                cptr.stI32(cptr.add(u, 1792), cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), chainx, 756), chainy, 36)));
                 movobj(uball.v, ballx, bally);
                 movobj(uchain.v, chainx, chainy);
             } else if (control & 1) {
-                if (u.bc_felt & 1) {
-                    if (u.bc_order == 0) {
-                        svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].glyph = u.bglyph;
-                    } else if (u.bc_order == 2) {
-                        if (u.bc_felt & 2) {
+                if (cptr.ldI32(cptr.add(u, 1800)) & 1) {
+                    if (cptr.ldI32(cptr.add(u, 1796)) == 0) {
+                        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), cptr.ldI32(cptr.add(u, 1788)));
+                    } else if (cptr.ldI32(cptr.add(u, 1796)) == 2) {
+                        if (cptr.ldI32(cptr.add(u, 1800)) & 2) {
                             map_object(uchain.v, 0);
                         } else {
-                            svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].glyph = u.bglyph;
+                            cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), cptr.ldI32(cptr.add(u, 1788)));
                         }
                     }
-                    u.bc_felt &= ~1;
+                    cptr.st1(cptr.add(u, 1800), cptr.ld1s(cptr.add(u, 1800)) & ~1);
                 }
-                u.bglyph = (ballx != chainx || bally != chainy) ? svl.level.locations[ballx][bally].glyph : u.cglyph;
+                cptr.stI32(cptr.add(u, 1788), (ballx != chainx || bally != chainy) ? cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ballx, 756), bally, 36)) : cptr.ldI32(cptr.add(u, 1792)));
                 movobj(uball.v, ballx, bally);
             } else if (control & 2) {
-                if (u.bc_felt & 2) {
-                    if (u.bc_order == 0) {
-                        svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph = u.cglyph;
-                    } else if (u.bc_order == 1) {
-                        if (u.bc_felt & 1) {
+                if (cptr.ldI32(cptr.add(u, 1800)) & 2) {
+                    if (cptr.ldI32(cptr.add(u, 1796)) == 0) {
+                        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), cptr.ldI32(cptr.add(u, 1792)));
+                    } else if (cptr.ldI32(cptr.add(u, 1796)) == 1) {
+                        if (cptr.ldI32(cptr.add(u, 1800)) & 1) {
                             map_object(uball.v, 0);
                         } else {
-                            svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph = u.cglyph;
+                            cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), cptr.ldI32(cptr.add(u, 1792)));
                         }
                     }
-                    u.bc_felt &= ~2;
+                    cptr.st1(cptr.add(u, 1800), cptr.ld1s(cptr.add(u, 1800)) & ~2);
                 }
-                u.cglyph = (ballx != chainx || bally != chainy) ? svl.level.locations[chainx][chainy].glyph : u.bglyph;
+                cptr.stI32(cptr.add(u, 1792), (ballx != chainx || bally != chainy) ? cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), chainx, 756), chainy, 36)) : cptr.ldI32(cptr.add(u, 1788)));
                 movobj(uchain.v, chainx, chainy);
             }
-            u.bc_order = bc_order();
+            cptr.stI32(cptr.add(u, 1796), bc_order());
         }
     } else {
         if (before) {
             if (!control) {
-                u.bc_order = bc_order();
+                cptr.stI32(cptr.add(u, 1796), bc_order());
             }
             remove_object(uchain.v);
             maybe_unhide_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)));
@@ -336,7 +336,7 @@ export function move_bc(before, control, ballx, bally, chainx, chainy) {
             }
         } else {
             let on_floor = !(cptr.ld1s(cptr.add((uball.v), 52)) == 3);
-            if ((control & 2) || (!control && u.bc_order == 1)) {
+            if ((control & 2) || (!control && cptr.ldI32(cptr.add(u, 1796)) == 1)) {
                 if (on_floor)
                     place_object(uball.v, ballx, bally);
                 place_object(uchain.v, chainx, chainy);
@@ -374,12 +374,12 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
             move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
             if ((cptr.ld1s(cptr.add((uball.v), 52)) == 3)) {
                 if (distmin(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) > 1) {
-                    cptr.stI16(chainx, u.ux);
-                    cptr.stI16(chainy, u.uy);
+                    cptr.stI16(chainx, cptr.ldI16(u));
+                    cptr.stI16(chainy, cptr.ldI16(cptr.add(u, 2)));
                 }
                 return (1);
             }
-            if ((((svl.level.locations[u.ux][u.uy].typ) < POOL) || (((svl.level.locations[u.ux][u.uy].typ) == DOOR) && ((svl.level.locations[u.ux][u.uy].flags | 0) & (4 | 8)))) || (((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) < POOL) || (((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) == DOOR) && ((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].flags | 0) & (4 | 8)))) || (((svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].typ) < POOL) || (((svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].typ) == DOOR) && ((svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].flags | 0) & (4 | 8)))))
+            if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 8)) | 0) & (4 | 8)))) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)))) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 8)) | 0) & (4 | 8)))))
                 already_in_rock = (1);
             else
                 already_in_rock = (0);
@@ -387,7 +387,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 case 8:
                 cptr.stI16(chainx, i16(((((cptr.ldI16(cptr.add(uball.v, 28)) + x) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((cptr.ldI16(cptr.add(uball.v, 30)) + y) | 0) / 2) | 0)));
-                if ((((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) < POOL) || (((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) == DOOR) && ((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].flags | 0) & (4 | 8)))) && !already_in_rock)
+                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)))) && !already_in_rock)
                     do {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
@@ -410,16 +410,16 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         tempy = y;
                         tempy2 = cptr.ldI16(cptr.add(uball.v, 30));
                     }
-                    if ((((svl.level.locations[tempx][tempy].typ) < POOL) || (((svl.level.locations[tempx][tempy].typ) == DOOR) && ((svl.level.locations[tempx][tempy].flags | 0) & (4 | 8)))) && !(((svl.level.locations[tempx2][tempy2].typ) < POOL) || (((svl.level.locations[tempx2][tempy2].typ) == DOOR) && ((svl.level.locations[tempx2][tempy2].flags | 0) & (4 | 8)))) && !already_in_rock) {
+                    if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)))) && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)))) && !already_in_rock) {
                         if (allow_drag) {
-                            if (dist2(u.ux, u.uy, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx, tempy) == 1)
+                            if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx, tempy) == 1)
                                 do {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
                                     move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
                                     break __lbl_drag;
                                 } while (0);
-                            if (dist2(u.ux, u.uy, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 4 && dist2(x, y, tempx, tempy) == 2)
+                            if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 4 && dist2(x, y, tempx, tempy) == 2)
                                 do {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
@@ -429,16 +429,16 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         }
                         cptr.stI16(chainx, tempx2);
                         cptr.stI16(chainy, tempy2);
-                    } else if (!(((svl.level.locations[tempx][tempy].typ) < POOL) || (((svl.level.locations[tempx][tempy].typ) == DOOR) && ((svl.level.locations[tempx][tempy].flags | 0) & (4 | 8)))) && (((svl.level.locations[tempx2][tempy2].typ) < POOL) || (((svl.level.locations[tempx2][tempy2].typ) == DOOR) && ((svl.level.locations[tempx2][tempy2].flags | 0) & (4 | 8)))) && !already_in_rock) {
+                    } else if (!(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)))) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)))) && !already_in_rock) {
                         if (allow_drag) {
-                            if (dist2(u.ux, u.uy, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx2, tempy2) == 1)
+                            if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 5 && dist2(x, y, tempx2, tempy2) == 1)
                                 do {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
                                     move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
                                     break __lbl_drag;
                                 } while (0);
-                            if (dist2(u.ux, u.uy, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 4 && dist2(x, y, tempx2, tempy2) == 2)
+                            if (dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) == 4 && dist2(x, y, tempx2, tempy2) == 2)
                                 do {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
@@ -448,7 +448,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         }
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
-                    } else if ((((svl.level.locations[tempx][tempy].typ) < POOL) || (((svl.level.locations[tempx][tempy].typ) == DOOR) && ((svl.level.locations[tempx][tempy].flags | 0) & (4 | 8)))) && (((svl.level.locations[tempx2][tempy2].typ) < POOL) || (((svl.level.locations[tempx2][tempy2].typ) == DOOR) && ((svl.level.locations[tempx2][tempy2].flags | 0) & (4 | 8)))) && !already_in_rock) {
+                    } else if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx, 756), tempy, 36), 8)) | 0) & (4 | 8)))) && (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tempx2, 756), tempy2, 36), 8)) | 0) & (4 | 8)))) && !already_in_rock) {
                         do {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
@@ -469,7 +469,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                     break;
                 cptr.stI16(chainx, i16(((((x + cptr.ldI16(cptr.add(uball.v, 28))) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((y + cptr.ldI16(cptr.add(uball.v, 30))) | 0) / 2) | 0)));
-                if ((((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) < POOL) || (((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) == DOOR) && ((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].flags | 0) & (4 | 8)))) && !already_in_rock)
+                if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)))) && !already_in_rock)
                     do {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
@@ -483,7 +483,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         cptr.stI16(chainx, cptr.ldI16(cptr.add(uball.v, 28)));
                     else
                         cptr.stI16(chainy, cptr.ldI16(cptr.add(uball.v, 30)));
-                    if ((((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) < POOL) || (((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].typ) == DOOR) && ((svl.level.locations[cptr.ldI16(chainx)][cptr.ldI16(chainy)].flags | 0) & (4 | 8)))) && !already_in_rock)
+                    if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(chainx), 756), cptr.ldI16(chainy), 36), 8)) | 0) & (4 | 8)))) && !already_in_rock)
                         do {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
@@ -498,9 +498,9 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 case 0:
                 if ((distmin(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) <= 1 && distmin(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) <= 1))
                     break;
-                if ((distmin(x, y, u.ux, u.uy) <= 1 && distmin(u.ux, u.uy, cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) <= 1)) {
-                    cptr.stI16(chainx, u.ux);
-                    cptr.stI16(chainy, u.uy);
+                if ((distmin(x, y, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 1 && distmin(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) <= 1)) {
+                    cptr.stI16(chainx, cptr.ldI16(u));
+                    cptr.stI16(chainy, cptr.ldI16(cptr.add(u, 2)));
                     break;
                 }
                 cptr.stI16(chainx, x);
@@ -513,33 +513,33 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
             return (1);
         }
     }
-    if (near_capacity() > SLT_ENCUMBER && dist2(x, y, u.ux, u.uy) <= 2) {
-        You(__sl16, gi.invent ? __sl17 : __sl8);
+    if (near_capacity() > 1 && dist2(x, y, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) {
+        You(__sl16, cptr.ldPtr(cptr.add(gi, 8)) ? __sl17 : __sl8);
         nomul(0);
         return (0);
     }
-    if ((is_pool(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) && (svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].typ == POOL || !is_pool(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) || svl.level.locations[cptr.ldI16(cptr.add(uball.v, 28))][cptr.ldI16(cptr.add(uball.v, 30))].typ == POOL)) || ((t = t_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)))) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == PIT || ((cptr.ldI32(cptr.add(t, 20))) | 0) == SPIKED_PIT) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == HOLE || ((cptr.ldI32(cptr.add(t, 20))) | 0) == TRAPDOOR)))) {
-        if (((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked)) {
+    if ((is_pool(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), 4)) == 16 || !is_pool(cptr.ldI16(cptr.add(uball.v, 28)), cptr.ldI16(cptr.add(uball.v, 30))) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uball.v, 28)), 756), cptr.ldI16(cptr.add(uball.v, 30)), 36), 4)) == 16)) || ((t = t_at(cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30)))) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == 11 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 12) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == 13 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 14)))) {
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)))) {
             You_feel(__sl18);
             if (t)
                 cptr.stI32(cptr.add(t, 24), 1);
         } else {
             let victim;
             You(__sl19);
-            if ((victim = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cptr.add(uchain.v, 28))]), cptr.ldI16(cptr.add(uchain.v, 30)))))) !== null) {
+            if ((victim = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(uchain.v, 28)), 168), cptr.ldI16(cptr.add(uchain.v, 30)), 8)))) !== null) {
                 let tmp;
                 let dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 800, __sl14), rnd(20)) : rnd(20));
-                tmp = (((-2 + ((u.uluck + u.moreluck) | 0)) | 0) + find_mac(victim)) | 0;
+                tmp = (((-2 + ((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0)) | 0) + find_mac(victim)) | 0;
                 tmp = (tmp + omon_adj(victim, uball.v, (1))) | 0;
                 if (tmp >= dieroll)
-                    void hmon(victim, uball.v, HMON_DRAGGED, dieroll);
+                    void hmon(victim, uball.v, 4, dieroll);
                 else
                     miss(xname(uball.v), victim);
             }
-            if (!(cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cptr.add(uchain.v, 28))]), cptr.ldI16(cptr.add(uchain.v, 30)))))) {
-                u.ux = cptr.ldI16(cptr.add(uchain.v, 28));
-                u.uy = cptr.ldI16(cptr.add(uchain.v, 30));
-                newsym(u.ux0, u.uy0);
+            if (!(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(uchain.v, 28)), 168), cptr.ldI16(cptr.add(uchain.v, 30)), 8)))) {
+                cptr.stI16(u, cptr.ldI16(cptr.add(uchain.v, 28)));
+                cptr.stI16(cptr.add(u, 2), cptr.ldI16(cptr.add(uchain.v, 30)));
+                newsym(cptr.ldI16(cptr.add(u, 20)), cptr.ldI16(cptr.add(u, 22)));
             }
             nomul(0);
             cptr.stI32(bc_control, 1);
@@ -553,18 +553,18 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
     }
     cptr.stI32(bc_control, 1 | 2);
     move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
-    if (dist2(x, y, u.ux, u.uy) > 2) {
+    if (dist2(x, y, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) > 2) {
         cptr.stI16(ballx, cptr.stI16(chainx, x));
         cptr.stI16(bally, cptr.stI16(chainy, y));
     } else {
-        let newchainx = u.ux;
-        let newchainy = u.uy;
-        if (dist2(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) == 4 && !(((svl.level.locations[newchainx][newchainy].typ) < POOL) || (((svl.level.locations[newchainx][newchainy].typ) == DOOR) && ((svl.level.locations[newchainx][newchainy].flags | 0) & (4 | 8))))) {
+        let newchainx = cptr.ldI16(u);
+        let newchainy = cptr.ldI16(cptr.add(u, 2));
+        if (dist2(x, y, cptr.ldI16(cptr.add(uchain.v, 28)), cptr.ldI16(cptr.add(uchain.v, 30))) == 4 && !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) | 0) & (4 | 8))))) {
             newchainx = i16(((((x + cptr.ldI16(cptr.add(uchain.v, 28))) | 0) / 2) | 0));
             newchainy = i16(((((y + cptr.ldI16(cptr.add(uchain.v, 30))) | 0) / 2) | 0));
-            if ((((svl.level.locations[newchainx][newchainy].typ) < POOL) || (((svl.level.locations[newchainx][newchainy].typ) == DOOR) && ((svl.level.locations[newchainx][newchainy].flags | 0) & (4 | 8))))) {
-                newchainx = u.ux;
-                newchainy = u.uy;
+            if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) < 16) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 4))) == 23) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), newchainx, 756), newchainy, 36), 8)) | 0) & (4 | 8))))) {
+                newchainx = cptr.ldI16(u);
+                newchainy = cptr.ldI16(cptr.add(u, 2));
             }
         }
         cptr.stI16(ballx, cptr.ldI16(cptr.add(uchain.v, 28)));
@@ -580,62 +580,62 @@ const __static_drop_ball_pullmsg = cptr.bytes("The ball pulls you out of the ");
 
 /** C ref: ball.c:882 — @param {CInt} x @param {CInt} y */
 export function drop_ball(x, y) {
-    if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
-        u.bc_order = bc_order();
-        u.bglyph = (u.bc_order) ? u.cglyph : svl.level.locations[x][y].glyph;
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
+        cptr.stI32(cptr.add(u, 1796), bc_order());
+        cptr.stI32(cptr.add(u, 1788), (cptr.ldI32(cptr.add(u, 1796))) ? cptr.ldI32(cptr.add(u, 1792)) : cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)));
     }
-    if (x != u.ux || y != u.uy) {
+    if (x != cptr.ldI16(u) || y != cptr.ldI16(cptr.add(u, 2))) {
         let t;
         let side;
-        if (u.utrap && u.utraptype != TT_INFLOOR >>> 0 && u.utraptype != TT_BURIEDBALL >>> 0) {
-            switch (u.utraptype) {
-                case TT_PIT >>> 0:
+        if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) != 5 && cptr.ldI32(cptr.add(u, 64)) != 6) {
+            switch (cptr.ldI32(cptr.add(u, 64))) {
+                case 2:
                 pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl21);
                 break;
-                case TT_WEB >>> 0:
+                case 3:
                 pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl22);
                 ;
                 pline_The(__sl23);
-                deltrap(t_at(u.ux, u.uy));
+                deltrap(t_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
                 break;
-                case TT_LAVA >>> 0:
+                case 4:
                 pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), hliquid(__sl24));
                 break;
-                case TT_BEARTRAP >>> 0:
+                case 1:
                 side = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 912, __sl25), rn2(3)) : rn2(3)) ? 131072n : 262144n;
                 pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl26);
                 set_wounded_legs(side, (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 914, __sl25), rn2(1000)) : rn2(1000)) + (500)) | 0));
-                if (!u.usteed) {
-                    Your(__sl27, (side == 131072n) ? __sl28 : __sl29, body_part(LEG));
-                    losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((2) + 1) | 0) / 2) | 0) : (2)), __sl30, 1);
+                if (!cptr.ldPtr(cptr.add(u, 2424))) {
+                    Your(__sl27, (side == 131072n) ? __sl28 : __sl29, body_part(9));
+                    losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((2) + 1) | 0) / 2) | 0) : (2)), __sl30, 1);
                 }
                 break;
             }
             reset_utrap((1));
-            fill_pit(u.ux, u.uy);
+            fill_pit(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
         }
-        u.ux0 = u.ux;
-        u.uy0 = u.uy;
-        if (!((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked) && !(cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[x]), y)) !== null) && !u.utrap && (is_pool(x, y) || ((t = t_at(x, y)) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == PIT || ((cptr.ldI32(cptr.add(t, 20))) | 0) == SPIKED_PIT) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == HOLE || ((cptr.ldI32(cptr.add(t, 20))) | 0) == TRAPDOOR))))) {
-            u.ux = x;
-            u.uy = y;
+        cptr.stI16(cptr.add(u, 20), cptr.ldI16(u));
+        cptr.stI16(cptr.add(u, 22), cptr.ldI16(cptr.add(u, 2)));
+        if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8))) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)) !== null) && !cptr.ldI32(cptr.add(u, 60)) && (is_pool(x, y) || ((t = t_at(x, y)) && ((((cptr.ldI32(cptr.add(t, 20))) | 0) == 11 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 12) || (((cptr.ldI32(cptr.add(t, 20))) | 0) == 13 || ((cptr.ldI32(cptr.add(t, 20))) | 0) == 14))))) {
+            cptr.stI16(u, x);
+            cptr.stI16(cptr.add(u, 2), y);
         } else {
-            u.ux = i16(((x - u.dx) | 0));
-            u.uy = i16(((y - u.dy) | 0));
+            cptr.stI16(u, i16(((x - cptr.ldI32(cptr.add(u, 4))) | 0)));
+            cptr.stI16(cptr.add(u, 2), i16(((y - cptr.ldI32(cptr.add(u, 8))) | 0)));
         }
-        gv.vision_full_recalc = 1;
-        if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
-            if (u.bc_felt & 2)
-                svl.level.locations[cptr.ldI16(cptr.add(uchain.v, 28))][cptr.ldI16(cptr.add(uchain.v, 30))].glyph = u.cglyph;
-            u.bc_felt = 0;
-            u.cglyph = (u.bc_order) ? u.bglyph : svl.level.locations[u.ux][u.uy].glyph;
+        cptr.st1(cptr.add(gv, 144), 1);
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
+            if (cptr.ldI32(cptr.add(u, 1800)) & 2)
+                cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(uchain.v, 28)), 756), cptr.ldI16(cptr.add(uchain.v, 30)), 36), cptr.ldI32(cptr.add(u, 1792)));
+            cptr.stI32(cptr.add(u, 1800), 0);
+            cptr.stI32(cptr.add(u, 1792), (cptr.ldI32(cptr.add(u, 1796))) ? cptr.ldI32(cptr.add(u, 1788)) : cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36)));
         }
-        movobj(uchain.v, u.ux, u.uy);
-        if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
-            u.bc_order = bc_order();
+        movobj(uchain.v, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
+            cptr.stI32(cptr.add(u, 1796), bc_order());
         }
-        newsym(u.ux0, u.uy0);
-        if (u.ux0 != u.ux || u.uy0 != u.uy) {
+        newsym(cptr.ldI16(cptr.add(u, 20)), cptr.ldI16(cptr.add(u, 22)));
+        if (cptr.ldI16(cptr.add(u, 20)) != cptr.ldI16(u) || cptr.ldI16(cptr.add(u, 22)) != cptr.ldI16(cptr.add(u, 2))) {
             spoteffects((1));
         }
     }
@@ -646,7 +646,7 @@ function litter() {
     let otmp;
     let nextobj = null;
     let capacity = weight_cap();
-    for (otmp = gi.invent; otmp; otmp = nextobj) {
+    for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
         if (!cptr.eq(otmp, uball.v) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 972, __sl31), rnd(capacity)) : rnd(capacity)) <= (cptr.ldI32(cptr.add(otmp, 36)) | 0)) {
             if (canletgo(otmp, __sl8)) {
@@ -670,21 +670,21 @@ export function drag_down() {
     if (forward) {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1008, __sl36), rn2(6)) : rn2(6))) {
             pline_The(__sl38);
-            losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6)))), __sl39, 2);
+            losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6)))), __sl39, 2);
             litter();
         }
     } else {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1015, __sl36), rn2(2)) : rn2(2))) {
             ;
             pline_The(__sl40);
-            losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20)))), __sl41, 0);
-            exercise(A_STR, (0));
+            losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20)))), __sl41, 0);
+            exercise(0, (0));
             dragchance = uchar(dragchance - 2);
         }
         if (dragchance >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1023, __sl36), rnd(6)) : rnd(6))) {
             pline_The(__sl38);
-            losehp((((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3)))), __sl39, 2);
-            exercise(A_STR, (0));
+            losehp((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3)))), __sl39, 2);
+            exercise(0, (0));
             litter();
         }
     }
@@ -703,12 +703,12 @@ export function bc_sanity_check() {
     }
     freechain = (!uchain.v || cptr.ld1s(cptr.add(uchain.v, 52)) == 0);
     freeball = (!uball.v || cptr.ld1s(cptr.add(uball.v, 52)) == 0 || (freechain && cptr.ld1s(cptr.add(uball.v, 52)) == 3));
-    if (uball.v && (cptr.ldI16(cptr.add(uball.v, 32)) != HEAVY_IRON_BALL || (cptr.ld1s(cptr.add(uball.v, 52)) != 1 && cptr.ld1s(cptr.add(uball.v, 52)) != 3 && cptr.ld1s(cptr.add(uball.v, 52)) != 0) || (freeball ^ freechain) || (cptr.ldI64(cptr.add(uball.v, 192)) & 2097152n) == 0n || (cptr.ldI64(cptr.add(uball.v, 192)) & ~(2097152n | (256n | 1024n | 512n))) != 0n)) {
+    if (uball.v && (cptr.ldI16(cptr.add(uball.v, 32)) != 477 || (cptr.ld1s(cptr.add(uball.v, 52)) != 1 && cptr.ld1s(cptr.add(uball.v, 52)) != 3 && cptr.ld1s(cptr.add(uball.v, 52)) != 0) || (freeball ^ freechain) || (cptr.ldI64(cptr.add(uball.v, 192)) & 2097152n) == 0n || (cptr.ldI64(cptr.add(uball.v, 192)) & ~(2097152n | (256n | 1024n | 512n))) != 0n)) {
         otyp = cptr.ldI16(cptr.add(uball.v, 32));
         onam = safe_typename(otyp);
         impossible(__sl48, otyp, onam, cptr.ld1s(cptr.add(uball.v, 52)), cptr.ldI64(cptr.add(uball.v, 192)));
     }
-    if (uchain.v && (cptr.ldI16(cptr.add(uchain.v, 32)) != IRON_CHAIN || (cptr.ld1s(cptr.add(uchain.v, 52)) != 1 && cptr.ld1s(cptr.add(uchain.v, 52)) != 0) || (freechain ^ freeball) || (cptr.ldI64(cptr.add(uchain.v, 192)) & 4194304n) == 0n || (cptr.ldI64(cptr.add(uchain.v, 192)) & ~4194304n) != 0n)) {
+    if (uchain.v && (cptr.ldI16(cptr.add(uchain.v, 32)) != 478 || (cptr.ld1s(cptr.add(uchain.v, 52)) != 1 && cptr.ld1s(cptr.add(uchain.v, 52)) != 0) || (freechain ^ freeball) || (cptr.ldI64(cptr.add(uchain.v, 192)) & 4194304n) == 0n || (cptr.ldI64(cptr.add(uchain.v, 192)) & ~4194304n) != 0n)) {
         otyp = cptr.ldI16(cptr.add(uchain.v, 32));
         onam = safe_typename(otyp);
         impossible(__sl49, otyp, onam, cptr.ld1s(cptr.add(uchain.v, 52)), cptr.ldI64(cptr.add(uchain.v, 192)));
@@ -723,15 +723,15 @@ export function bc_sanity_check() {
         let cdx;
         let cdy;
         cx = cptr.ldI16(cptr.add(uchain.v, 28)), cy = cptr.ldI16(cptr.add(uchain.v, 30));
-        cdx = (cx - u.ux) | 0, cdy = (cy - u.uy) | 0;
+        cdx = (cx - cptr.ldI16(u)) | 0, cdy = (cy - cptr.ldI16(cptr.add(u, 2))) | 0;
         cdx = Math.abs(cdx), cdy = Math.abs(cdy);
         if (cptr.ld1s(cptr.add(uball.v, 52)) == 3)
-            bx = u.ux, by = u.uy;
+            bx = cptr.ldI16(u), by = cptr.ldI16(cptr.add(u, 2));
         else
             bx = cptr.ldI16(cptr.add(uball.v, 28)), by = cptr.ldI16(cptr.add(uball.v, 30));
         bdx = (bx - cx) | 0, bdy = (by - cy) | 0;
         bdx = Math.abs(bdx), bdy = Math.abs(bdy);
         if (cdx > 1 || cdy > 1 || bdx > 1 || bdy > 1)
-            impossible(__sl50, u.ux, u.uy, cx, cy, bx, by);
+            impossible(__sl50, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cx, cy, bx, by);
     }
 }

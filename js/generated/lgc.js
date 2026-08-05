@@ -378,7 +378,7 @@ function traversestrongtable(g, h) {
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
-    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (TM_MODE)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), TM_MODE, cptr.ldPtr(cptr.add(cptr.add((g), 280), TM_MODE, 8)))));
+    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (3)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), 3, cptr.ldPtr(cptr.add(cptr.add((g), 280), 3, 8)))));
     let smode;
     {
         if (cptr.ldPtr(cptr.add(h, 40))) {
@@ -760,7 +760,7 @@ function GCTM(L) {
         (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(i_g, 8))) | (1 << 6))))));
     }
     ;
-    tm = luaT_gettmbyobj(L, v, TM_GC);
+    tm = luaT_gettmbyobj(L, v, 2);
     if (!(((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) {
         let status;
         let oldah = cptr.ld1u(cptr.add(L, 11));
@@ -857,7 +857,7 @@ function correctpointers(g, o) {
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    if (((cptr.ld1u(cptr.add((o), 9))) & ((1 << (6)))) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & ((1 << (TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, TM_GC, cptr.ldPtr(cptr.add(cptr.add((g), 280), TM_GC, 8))))), (null)) || (cptr.ld1u(cptr.add(g, 106)) & 4))
+    if (((cptr.ld1u(cptr.add((o), 9))) & ((1 << (6)))) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & ((1 << (2)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, 2, cptr.ldPtr(cptr.add(cptr.add((g), 280), 2, 8))))), (null)) || (cptr.ld1u(cptr.add(g, 106)) & 4))
         return;
     else {
         let p;
@@ -929,7 +929,7 @@ function sweepgen(L, g, p, limit, pfirstold1) {
                 let marked = cptr.ld1u(cptr.add(curr, 9)) & ~(((1 << (5)) | ((1 << (3)) | (1 << (4)))) | 7);
                 cptr.st1(cptr.add(curr, 9), (uchar(((marked | 1 | white)))));
             } else {
-                (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & (~7)) | cptr.ld1u(cptr.add(cptr.decay(__static_sweepgen_nextage), (cptr.ld1u(cptr.add((curr), 9)) & 7)))))))));
+                (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & (~7)) | cptr.ld1u(cptr.add(cptr.decay(__static_sweepgen_nextage), (cptr.ld1u(cptr.add((curr), 9)) & 7), 1))))))));
                 if ((cptr.ld1u(cptr.add((curr), 9)) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)))
                     cptr.stPtr(pfirstold1, curr);
             }

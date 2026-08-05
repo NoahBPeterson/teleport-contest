@@ -6,8 +6,8 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { cg, gc, go, gp, gr, gs, svd, u } from './decl.js';
-import { def_monsyms, def_oc_syms, def_warnsyms, defsyms } from './drawing.js';
-import { reset_glyphmap } from './display.js';
+import { def_monsyms, def_oc_syms, def_r_oc_syms, def_warnsyms, defsyms } from './drawing.js';
+import { nul_glyphinfo, reset_glyphmap } from './display.js';
 import { free_all_glyphmap_u } from './utf8map.js';
 import { apply_customizations, clear_all_glyphmap_colors, fill_glyphid_cache, free_glyphid_cache, glyphid_cache_status, glyphrep_to_custom_map_entries, match_glyph, purge_custom_entries } from './glyphs.js';
 import { lowc, mungspaces, nh_snprintf, strncmpi } from './hacklib.js';
@@ -259,10 +259,10 @@ const __sl234 = cptr.lit("were no symbol sets found in \"%s\".");
 const __sl235 = cptr.lit("symset");
 
 /** C ref: symbols.c:14 — void (*)(void) */
-let decgraphics_mode_callback = null;
+export let decgraphics_mode_callback = null;
 
 /** C ref: symbols.c:28 — void (*)(void) */
-let utf8graphics_mode_callback = null;
+export let utf8graphics_mode_callback = null;
 
 /** C ref: symbols.c:85 */
 export function init_symbols() {
@@ -276,51 +276,51 @@ export function init_symbols() {
 /** C ref: symbols.c:95 */
 export function init_showsyms() {
     let i;
-    for (i = 0; i < MAXPCHARS; i++)
-        cptr.st1(cptr.add(cptr.decay(gs.showsyms), (i + (0)) | 0), defsyms[i].sym);
-    for (i = 0; i < MAXOCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gs.showsyms), (i + (((0) + MAXPCHARS) | 0)) | 0), uchar(def_oc_syms[i].sym));
-    for (i = 0; i < MAXMCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gs.showsyms), (i + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0), uchar(def_monsyms[i].sym));
+    for (i = 0; i < 105; i++)
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (0)) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+    for (i = 0; i < 18; i++)
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((0) + 105) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
+    for (i = 0; i < 61; i++)
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((0) + 105) | 0) + 18) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(cptr.decay(gs.showsyms), (i + (((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0)) | 0), def_warnsyms[i].sym);
-    for (i = 0; i < MAXOTHER; i++)
-        cptr.st1(cptr.add(cptr.decay(gs.showsyms), (i + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0), get_othersym(i, PRIMARYSET));
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((((0) + 105) | 0) + 18) | 0) + 61) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+    for (i = 0; i < 6; i++)
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0, 1), get_othersym(i, 0));
 }
 
 /** C ref: symbols.c:113 */
 export function init_ov_rogue_symbols() {
     let i;
-    for (i = 0; i < (((((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0) + MAXOTHER) | 0); i++)
-        cptr.st1(cptr.add(cptr.decay(go.ov_rogue_syms), i), 0);
+    for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
+        cptr.st1(cptr.add(cptr.add(go, 284), i, 1), 0);
 }
 
 /** C ref: symbols.c:122 */
 export function init_ov_primary_symbols() {
     let i;
-    for (i = 0; i < (((((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0) + MAXOTHER) | 0); i++)
-        cptr.st1(cptr.add(cptr.decay(go.ov_primary_syms), i), 0);
+    for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
+        cptr.st1(cptr.add(cptr.add(go, 88), i, 1), 0);
 }
 
 /** C ref: symbols.c:131 — @param {CInt} idx @param {CInt} which_set @returns {*} */
 export function get_othersym(idx, which_set) {
     let sym = 0;
-    let oidx = (idx + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0;
-    if (which_set == ROGUESET)
-        sym = uchar((cptr.ld1u(cptr.add(cptr.decay(go.ov_rogue_syms), oidx)) ? cptr.ld1u(cptr.add(cptr.decay(go.ov_rogue_syms), oidx)) : cptr.ld1u(cptr.add(cptr.decay(gr.rogue_syms), oidx))));
+    let oidx = (idx + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0;
+    if (which_set == 1)
+        sym = uchar((cptr.ld1u(cptr.add(cptr.add(go, 284), oidx, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 284), oidx, 1)) : cptr.ld1u(cptr.add(gr, oidx, 1))));
     else
-        sym = uchar((cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), oidx)) ? cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), oidx)) : cptr.ld1u(cptr.add(cptr.decay(gp.primary_syms), oidx))));
+        sym = uchar((cptr.ld1u(cptr.add(cptr.add(go, 88), oidx, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), oidx, 1)) : cptr.ld1u(cptr.add(cptr.add(gp, 29), oidx, 1))));
     if (!sym) {
         switch (idx) {
-            case SYM_NOTHING:
-            case SYM_UNEXPLORED:
+            case 0:
+            case 1:
             sym = 32;
             break;
-            case SYM_BOULDER:
-            sym = uchar(def_oc_syms[ROCK_CLASS].sym);
+            case 2:
+            sym = uchar(cptr.ld1s(cptr.add(def_oc_syms, 14, 24)));
             break;
-            case SYM_INVISIBLE:
-            sym = uchar(DEF_INVISIBLE);
+            case 3:
+            sym = 73;
             break;
         }
     }
@@ -330,66 +330,66 @@ export function get_othersym(idx, which_set) {
 /** C ref: symbols.c:167 */
 export function init_primary_symbols() {
     let i;
-    for (i = 0; i < MAXPCHARS; i++)
-        cptr.st1(cptr.add(cptr.decay(gp.primary_syms), (i + (0)) | 0), defsyms[i].sym);
-    for (i = 0; i < MAXOCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gp.primary_syms), (i + (((0) + MAXPCHARS) | 0)) | 0), uchar(def_oc_syms[i].sym));
-    for (i = 0; i < MAXMCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gp.primary_syms), (i + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0), uchar(def_monsyms[i].sym));
+    for (i = 0; i < 105; i++)
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (0)) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+    for (i = 0; i < 18; i++)
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((0) + 105) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
+    for (i = 0; i < 61; i++)
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((0) + 105) | 0) + 18) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(cptr.decay(gp.primary_syms), (i + (((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0)) | 0), def_warnsyms[i].sym);
-    for (i = 0; i < MAXOTHER; i++)
-        cptr.st1(cptr.add(cptr.decay(gp.primary_syms), (i + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0), get_othersym(i, PRIMARYSET));
-    clear_symsetentry(PRIMARYSET, (0));
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((((0) + 105) | 0) + 18) | 0) + 61) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+    for (i = 0; i < 6; i++)
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0, 1), get_othersym(i, 0));
+    clear_symsetentry(0, (0));
 }
 
 /** C ref: symbols.c:187 */
 export function init_rogue_symbols() {
     let i;
-    for (i = 0; i < MAXPCHARS; i++)
-        cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), (i + (0)) | 0), defsyms[i].sym);
-    cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), S_vodoor), cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), S_hodoor), cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), S_ndoor), 43)));
-    cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), S_upstair), cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), S_dnstair), 37));
-    for (i = 0; i < MAXOCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), (i + (((0) + MAXPCHARS) | 0)) | 0), cptr.ld1u(cptr.add(cptr.decay(def_r_oc_syms), i)));
-    for (i = 0; i < MAXMCLASSES; i++)
-        cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), (i + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0), uchar(def_monsyms[i].sym));
+    for (i = 0; i < 105; i++)
+        cptr.st1(cptr.add(gr, (i + (0)) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+    cptr.st1(cptr.add(gr, 13, 1), cptr.st1(cptr.add(gr, 14, 1), cptr.st1(cptr.add(gr, 12, 1), 43)));
+    cptr.st1(cptr.add(gr, 25, 1), cptr.st1(cptr.add(gr, 26, 1), 37));
+    for (i = 0; i < 18; i++)
+        cptr.st1(cptr.add(gr, (i + (((0) + 105) | 0)) | 0, 1), cptr.ld1u(cptr.add(cptr.decay(def_r_oc_syms), i, 1)));
+    for (i = 0; i < 61; i++)
+        cptr.st1(cptr.add(gr, (i + (((((0) + 105) | 0) + 18) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), (i + (((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0)) | 0), def_warnsyms[i].sym);
-    for (i = 0; i < MAXOTHER; i++)
-        cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), (i + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0), get_othersym(i, ROGUESET));
-    clear_symsetentry(ROGUESET, (0));
-    gs.symset[ROGUESET].nocolor = 1;
+        cptr.st1(cptr.add(gr, (i + (((((((0) + 105) | 0) + 18) | 0) + 61) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+    for (i = 0; i < 6; i++)
+        cptr.st1(cptr.add(gr, (i + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0, 1), get_othersym(i, 1));
+    clear_symsetentry(1, (0));
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), 1, 48), 32), 1);
 }
 
 /** C ref: symbols.c:217 — @param {CInt} whichset */
 export function assign_graphics(whichset) {
     let i;
     switch (whichset) {
-        case ROGUESET:
-        for (i = 0; i < (((((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0) + MAXOTHER) | 0); i++)
-            cptr.st1(cptr.add(cptr.decay(gs.showsyms), i), uchar((cptr.ld1u(cptr.add(cptr.decay(go.ov_rogue_syms), i)) ? cptr.ld1u(cptr.add(cptr.decay(go.ov_rogue_syms), i)) : cptr.ld1u(cptr.add(cptr.decay(gr.rogue_syms), i)))));
-        gc.currentgraphics = ROGUESET;
+        case 1:
+        for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
+            cptr.st1(cptr.add(cptr.add(gs, 680), i, 1), uchar((cptr.ld1u(cptr.add(cptr.add(go, 284), i, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 284), i, 1)) : cptr.ld1u(cptr.add(gr, i, 1)))));
+        cptr.stI32(cptr.add(gc, 428), 1);
         break;
-        case PRIMARYSET:
+        case 0:
         default:
-        for (i = 0; i < (((((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0) + MAXOTHER) | 0); i++)
-            cptr.st1(cptr.add(cptr.decay(gs.showsyms), i), uchar((cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), i)) ? cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), i)) : cptr.ld1u(cptr.add(cptr.decay(gp.primary_syms), i)))));
-        gc.currentgraphics = PRIMARYSET;
+        for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
+            cptr.st1(cptr.add(cptr.add(gs, 680), i, 1), uchar((cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) : cptr.ld1u(cptr.add(cptr.add(gp, 29), i, 1)))));
+        cptr.stI32(cptr.add(gc, 428), 0);
         break;
     }
-    reset_glyphmap(gm_symchange);
+    reset_glyphmap(4);
 }
 
 /** C ref: symbols.c:253 — @param {CInt} nondefault */
 export function switch_symbols(nondefault) {
     let i;
     if (nondefault) {
-        for (i = 0; i < (((((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0) + MAXOTHER) | 0); i++)
-            cptr.st1(cptr.add(cptr.decay(gs.showsyms), i), uchar((cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), i)) ? cptr.ld1u(cptr.add(cptr.decay(go.ov_primary_syms), i)) : cptr.ld1u(cptr.add(cptr.decay(gp.primary_syms), i)))));
-        if ((gs.symset[gc.currentgraphics].handling == (H_DEC) >>> 0) && decgraphics_mode_callback)
+        for (i = 0; i < (((((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0) + 6) | 0); i++)
+            cptr.st1(cptr.add(cptr.add(gs, 680), i, 1), uchar((cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), i, 1)) : cptr.ld1u(cptr.add(cptr.add(gp, 29), i, 1)))));
+        if ((cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28) == 2) && decgraphics_mode_callback)
             (decgraphics_mode_callback)();
-        if ((gs.symset[gc.currentgraphics].handling == (H_UTF8) >>> 0) && utf8graphics_mode_callback)
+        if ((cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28) == 5) && utf8graphics_mode_callback)
             (utf8graphics_mode_callback)();
     } else {
         init_primary_symbols();
@@ -399,41 +399,41 @@ export function switch_symbols(nondefault) {
 
 /** C ref: symbols.c:295 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_primary_symset(symp, val) {
-    cptr.st1(cptr.add(cptr.decay(go.ov_primary_syms), cptr.ldI32(cptr.add(symp, 4))), uchar(val));
+    cptr.st1(cptr.add(cptr.add(go, 88), cptr.ldI32(cptr.add(symp, 4)), 1), uchar(val));
 }
 
 /** C ref: symbols.c:301 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_rogue_symset(symp, val) {
-    cptr.st1(cptr.add(cptr.decay(go.ov_rogue_syms), cptr.ldI32(cptr.add(symp, 4))), uchar(val));
+    cptr.st1(cptr.add(cptr.add(go, 284), cptr.ldI32(cptr.add(symp, 4)), 1), uchar(val));
 }
 
 /** C ref: symbols.c:307 — @param {CPtr} symp @param {CInt} val */
 export function update_primary_symset(symp, val) {
-    cptr.st1(cptr.add(cptr.decay(gp.primary_syms), cptr.ldI32(cptr.add(symp, 4))), uchar(val));
+    cptr.st1(cptr.add(cptr.add(gp, 29), cptr.ldI32(cptr.add(symp, 4)), 1), uchar(val));
 }
 
 /** C ref: symbols.c:313 — @param {CPtr} symp @param {CInt} val */
 export function update_rogue_symset(symp, val) {
-    cptr.st1(cptr.add(cptr.decay(gr.rogue_syms), cptr.ldI32(cptr.add(symp, 4))), uchar(val));
+    cptr.st1(cptr.add(gr, cptr.ldI32(cptr.add(symp, 4)), 1), uchar(val));
 }
 
 /** C ref: symbols.c:319 — @param {CInt} which_set @param {CInt} name_too */
 export function clear_symsetentry(which_set, name_too) {
-    let other_set = (which_set == PRIMARYSET) ? ROGUESET : PRIMARYSET;
-    let old_handling = gs.symset[which_set].handling;
-    if (gs.symset[which_set].desc)
-        cptr.free(gs.symset[which_set].desc);
-    gs.symset[which_set].desc = null;
-    gs.symset[which_set].handling = H_UNK;
-    gs.symset[which_set].nocolor = 0;
-    gs.symset[which_set].primary = 0;
-    gs.symset[which_set].rogue = 0;
+    let other_set = (which_set == 0) ? 1 : 0;
+    let old_handling = cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28);
+    if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16)))
+        cptr.free(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16)));
+    cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 16), null);
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28), 0);
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 32), 0);
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 36), 0);
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 40), 0);
     if (name_too) {
-        if (gs.symset[which_set].name)
-            cptr.free(gs.symset[which_set].name);
-        gs.symset[which_set].name = null;
+        if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8)))
+            cptr.free(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8)));
+        cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), null);
     }
-    if (old_handling == H_UTF8 >>> 0 && gs.symset[other_set].handling != H_UTF8 >>> 0)
+    if (old_handling == 5 && cptr.add(cptr.add(cptr.add(gs, 200), other_set, 48), 28) != 5)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
@@ -441,221 +441,624 @@ export function clear_symsetentry(which_set, name_too) {
 
 /** C ref: symbols.c:353 — @param {*} handling @param {CLongLong} wincap2 @returns {CInt} */
 export function symset_is_compatible(handling, wincap2) {
-    if (handling == H_UTF8 >>> 0 && ((wincap2 & 131072n) != 131072n))
+    if (handling == 5 && ((wincap2 & 131072n) != 131072n))
         return (0);
     return (1);
 }
 
 /** C ref: symbols.c:376 — char *[7] */
-const known_handling = [__sl0, __sl1, __sl2, __sl3, __sl4, __sl5, null];
+export const known_handling = cptr.alloc(7 * 8);
+cptr.stPtr(cptr.add(known_handling, 0), __sl0);
+cptr.stPtr(cptr.add(known_handling, 8), __sl1);
+cptr.stPtr(cptr.add(known_handling, 16), __sl2);
+cptr.stPtr(cptr.add(known_handling, 24), __sl3);
+cptr.stPtr(cptr.add(known_handling, 32), __sl4);
+cptr.stPtr(cptr.add(known_handling, 40), __sl5);
+cptr.stPtr(cptr.add(known_handling, 48), null);
 
 /** C ref: symbols.c:399 — char *[3] */
-const known_restrictions = [__sl6, __sl7, null];
+export const known_restrictions = cptr.alloc(3 * 8);
+cptr.stPtr(cptr.add(known_restrictions, 0), __sl6);
+cptr.stPtr(cptr.add(known_restrictions, 8), __sl7);
+cptr.stPtr(cptr.add(known_restrictions, 16), null);
 
 /** C ref: symbols.c:403 — struct symparse[197] */
-const loadsyms = [
-    { range: SYM_CONTROL, idx: 0, name: __sl8 },
-    { range: SYM_CONTROL, idx: 0, name: __sl9 },
-    { range: SYM_CONTROL, idx: 1, name: __sl10 },
-    { range: SYM_CONTROL, idx: 2, name: __sl11 },
-    { range: SYM_CONTROL, idx: 3, name: __sl12 },
-    { range: SYM_CONTROL, idx: 4, name: __sl13 },
-    { range: SYM_CONTROL, idx: 4, name: __sl14 },
-    { range: SYM_CONTROL, idx: 5, name: __sl15 },
-    { range: SYM_PCHAR, idx: S_stone, name: __sl16 },
-    { range: SYM_PCHAR, idx: S_vwall, name: __sl17 },
-    { range: SYM_PCHAR, idx: S_hwall, name: __sl18 },
-    { range: SYM_PCHAR, idx: S_tlcorn, name: __sl19 },
-    { range: SYM_PCHAR, idx: S_trcorn, name: __sl20 },
-    { range: SYM_PCHAR, idx: S_blcorn, name: __sl21 },
-    { range: SYM_PCHAR, idx: S_brcorn, name: __sl22 },
-    { range: SYM_PCHAR, idx: S_crwall, name: __sl23 },
-    { range: SYM_PCHAR, idx: S_tuwall, name: __sl24 },
-    { range: SYM_PCHAR, idx: S_tdwall, name: __sl25 },
-    { range: SYM_PCHAR, idx: S_tlwall, name: __sl26 },
-    { range: SYM_PCHAR, idx: S_trwall, name: __sl27 },
-    { range: SYM_PCHAR, idx: S_ndoor, name: __sl28 },
-    { range: SYM_PCHAR, idx: S_vodoor, name: __sl29 },
-    { range: SYM_PCHAR, idx: S_hodoor, name: __sl30 },
-    { range: SYM_PCHAR, idx: S_vcdoor, name: __sl31 },
-    { range: SYM_PCHAR, idx: S_hcdoor, name: __sl32 },
-    { range: SYM_PCHAR, idx: S_bars, name: __sl33 },
-    { range: SYM_PCHAR, idx: S_tree, name: __sl34 },
-    { range: SYM_PCHAR, idx: S_room, name: __sl35 },
-    { range: SYM_PCHAR, idx: S_darkroom, name: __sl36 },
-    { range: SYM_PCHAR, idx: S_engroom, name: __sl37 },
-    { range: SYM_PCHAR, idx: S_corr, name: __sl38 },
-    { range: SYM_PCHAR, idx: S_litcorr, name: __sl39 },
-    { range: SYM_PCHAR, idx: S_engrcorr, name: __sl40 },
-    { range: SYM_PCHAR, idx: S_upstair, name: __sl41 },
-    { range: SYM_PCHAR, idx: S_dnstair, name: __sl42 },
-    { range: SYM_PCHAR, idx: S_upladder, name: __sl43 },
-    { range: SYM_PCHAR, idx: S_dnladder, name: __sl44 },
-    { range: SYM_PCHAR, idx: S_brupstair, name: __sl45 },
-    { range: SYM_PCHAR, idx: S_brdnstair, name: __sl46 },
-    { range: SYM_PCHAR, idx: S_brupladder, name: __sl47 },
-    { range: SYM_PCHAR, idx: S_brdnladder, name: __sl48 },
-    { range: SYM_PCHAR, idx: S_altar, name: __sl49 },
-    { range: SYM_PCHAR, idx: S_grave, name: __sl50 },
-    { range: SYM_PCHAR, idx: S_throne, name: __sl51 },
-    { range: SYM_PCHAR, idx: S_sink, name: __sl52 },
-    { range: SYM_PCHAR, idx: S_fountain, name: __sl53 },
-    { range: SYM_PCHAR, idx: S_pool, name: __sl54 },
-    { range: SYM_PCHAR, idx: S_ice, name: __sl55 },
-    { range: SYM_PCHAR, idx: S_lava, name: __sl56 },
-    { range: SYM_PCHAR, idx: S_lavawall, name: __sl57 },
-    { range: SYM_PCHAR, idx: S_vodbridge, name: __sl58 },
-    { range: SYM_PCHAR, idx: S_hodbridge, name: __sl59 },
-    { range: SYM_PCHAR, idx: S_vcdbridge, name: __sl60 },
-    { range: SYM_PCHAR, idx: S_hcdbridge, name: __sl61 },
-    { range: SYM_PCHAR, idx: S_air, name: __sl62 },
-    { range: SYM_PCHAR, idx: S_cloud, name: __sl63 },
-    { range: SYM_PCHAR, idx: S_water, name: __sl64 },
-    { range: SYM_PCHAR, idx: S_arrow_trap, name: __sl65 },
-    { range: SYM_PCHAR, idx: S_dart_trap, name: __sl66 },
-    { range: SYM_PCHAR, idx: S_falling_rock_trap, name: __sl67 },
-    { range: SYM_PCHAR, idx: S_squeaky_board, name: __sl68 },
-    { range: SYM_PCHAR, idx: S_bear_trap, name: __sl69 },
-    { range: SYM_PCHAR, idx: S_land_mine, name: __sl70 },
-    { range: SYM_PCHAR, idx: S_rolling_boulder_trap, name: __sl71 },
-    { range: SYM_PCHAR, idx: S_sleeping_gas_trap, name: __sl72 },
-    { range: SYM_PCHAR, idx: S_rust_trap, name: __sl73 },
-    { range: SYM_PCHAR, idx: S_fire_trap, name: __sl74 },
-    { range: SYM_PCHAR, idx: S_pit, name: __sl75 },
-    { range: SYM_PCHAR, idx: S_spiked_pit, name: __sl76 },
-    { range: SYM_PCHAR, idx: S_hole, name: __sl77 },
-    { range: SYM_PCHAR, idx: S_trap_door, name: __sl78 },
-    { range: SYM_PCHAR, idx: S_teleportation_trap, name: __sl79 },
-    { range: SYM_PCHAR, idx: S_level_teleporter, name: __sl80 },
-    { range: SYM_PCHAR, idx: S_magic_portal, name: __sl81 },
-    { range: SYM_PCHAR, idx: S_web, name: __sl82 },
-    { range: SYM_PCHAR, idx: S_statue_trap, name: __sl83 },
-    { range: SYM_PCHAR, idx: S_magic_trap, name: __sl84 },
-    { range: SYM_PCHAR, idx: S_anti_magic_trap, name: __sl85 },
-    { range: SYM_PCHAR, idx: S_polymorph_trap, name: __sl86 },
-    { range: SYM_PCHAR, idx: S_vibrating_square, name: __sl87 },
-    { range: SYM_PCHAR, idx: S_trapped_door, name: __sl88 },
-    { range: SYM_PCHAR, idx: S_trapped_chest, name: __sl89 },
-    { range: SYM_PCHAR, idx: S_vbeam, name: __sl90 },
-    { range: SYM_PCHAR, idx: S_hbeam, name: __sl91 },
-    { range: SYM_PCHAR, idx: S_lslant, name: __sl92 },
-    { range: SYM_PCHAR, idx: S_rslant, name: __sl93 },
-    { range: SYM_PCHAR, idx: S_digbeam, name: __sl94 },
-    { range: SYM_PCHAR, idx: S_flashbeam, name: __sl95 },
-    { range: SYM_PCHAR, idx: S_boomleft, name: __sl96 },
-    { range: SYM_PCHAR, idx: S_boomright, name: __sl97 },
-    { range: SYM_PCHAR, idx: S_ss1, name: __sl98 },
-    { range: SYM_PCHAR, idx: S_ss2, name: __sl99 },
-    { range: SYM_PCHAR, idx: S_ss3, name: __sl100 },
-    { range: SYM_PCHAR, idx: S_ss4, name: __sl101 },
-    { range: SYM_PCHAR, idx: S_poisoncloud, name: __sl102 },
-    { range: SYM_PCHAR, idx: S_goodpos, name: __sl103 },
-    { range: SYM_PCHAR, idx: S_sw_tl, name: __sl104 },
-    { range: SYM_PCHAR, idx: S_sw_tc, name: __sl105 },
-    { range: SYM_PCHAR, idx: S_sw_tr, name: __sl106 },
-    { range: SYM_PCHAR, idx: S_sw_ml, name: __sl107 },
-    { range: SYM_PCHAR, idx: S_sw_mr, name: __sl108 },
-    { range: SYM_PCHAR, idx: S_sw_bl, name: __sl109 },
-    { range: SYM_PCHAR, idx: S_sw_bc, name: __sl110 },
-    { range: SYM_PCHAR, idx: S_sw_br, name: __sl111 },
-    { range: SYM_PCHAR, idx: S_expl_tl, name: __sl112 },
-    { range: SYM_PCHAR, idx: S_expl_tc, name: __sl113 },
-    { range: SYM_PCHAR, idx: S_expl_tr, name: __sl114 },
-    { range: SYM_PCHAR, idx: S_expl_ml, name: __sl115 },
-    { range: SYM_PCHAR, idx: S_expl_mc, name: __sl116 },
-    { range: SYM_PCHAR, idx: S_expl_mr, name: __sl117 },
-    { range: SYM_PCHAR, idx: S_expl_bl, name: __sl118 },
-    { range: SYM_PCHAR, idx: S_expl_bc, name: __sl119 },
-    { range: SYM_PCHAR, idx: S_expl_br, name: __sl120 },
-    { range: SYM_OC, idx: (S_strange_obj + (((0) + MAXPCHARS) | 0)) | 0, name: __sl121 },
-    { range: SYM_OC, idx: (S_weapon + (((0) + MAXPCHARS) | 0)) | 0, name: __sl122 },
-    { range: SYM_OC, idx: (S_armor + (((0) + MAXPCHARS) | 0)) | 0, name: __sl123 },
-    { range: SYM_OC, idx: (S_ring + (((0) + MAXPCHARS) | 0)) | 0, name: __sl124 },
-    { range: SYM_OC, idx: (S_amulet + (((0) + MAXPCHARS) | 0)) | 0, name: __sl125 },
-    { range: SYM_OC, idx: (S_tool + (((0) + MAXPCHARS) | 0)) | 0, name: __sl126 },
-    { range: SYM_OC, idx: (S_food + (((0) + MAXPCHARS) | 0)) | 0, name: __sl127 },
-    { range: SYM_OC, idx: (S_potion + (((0) + MAXPCHARS) | 0)) | 0, name: __sl128 },
-    { range: SYM_OC, idx: (S_scroll + (((0) + MAXPCHARS) | 0)) | 0, name: __sl129 },
-    { range: SYM_OC, idx: (S_book + (((0) + MAXPCHARS) | 0)) | 0, name: __sl130 },
-    { range: SYM_OC, idx: (S_wand + (((0) + MAXPCHARS) | 0)) | 0, name: __sl131 },
-    { range: SYM_OC, idx: (S_coin + (((0) + MAXPCHARS) | 0)) | 0, name: __sl132 },
-    { range: SYM_OC, idx: (S_gem + (((0) + MAXPCHARS) | 0)) | 0, name: __sl133 },
-    { range: SYM_OC, idx: (S_rock + (((0) + MAXPCHARS) | 0)) | 0, name: __sl134 },
-    { range: SYM_OC, idx: (S_ball + (((0) + MAXPCHARS) | 0)) | 0, name: __sl135 },
-    { range: SYM_OC, idx: (S_chain + (((0) + MAXPCHARS) | 0)) | 0, name: __sl136 },
-    { range: SYM_OC, idx: (S_venom + (((0) + MAXPCHARS) | 0)) | 0, name: __sl137 },
-    { range: SYM_MON, idx: (S_ANT + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl138 },
-    { range: SYM_MON, idx: (S_BLOB + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl139 },
-    { range: SYM_MON, idx: (S_COCKATRICE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl140 },
-    { range: SYM_MON, idx: (S_DOG + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl141 },
-    { range: SYM_MON, idx: (S_EYE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl142 },
-    { range: SYM_MON, idx: (S_FELINE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl143 },
-    { range: SYM_MON, idx: (S_GREMLIN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl144 },
-    { range: SYM_MON, idx: (S_HUMANOID + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl145 },
-    { range: SYM_MON, idx: (S_IMP + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl146 },
-    { range: SYM_MON, idx: (S_JELLY + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl147 },
-    { range: SYM_MON, idx: (S_KOBOLD + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl148 },
-    { range: SYM_MON, idx: (S_LEPRECHAUN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl149 },
-    { range: SYM_MON, idx: (S_MIMIC + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl150 },
-    { range: SYM_MON, idx: (S_NYMPH + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl151 },
-    { range: SYM_MON, idx: (S_ORC + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl152 },
-    { range: SYM_MON, idx: (S_PIERCER + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl153 },
-    { range: SYM_MON, idx: (S_QUADRUPED + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl154 },
-    { range: SYM_MON, idx: (S_RODENT + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl155 },
-    { range: SYM_MON, idx: (S_SPIDER + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl156 },
-    { range: SYM_MON, idx: (S_TRAPPER + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl157 },
-    { range: SYM_MON, idx: (S_UNICORN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl158 },
-    { range: SYM_MON, idx: (S_VORTEX + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl159 },
-    { range: SYM_MON, idx: (S_WORM + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl160 },
-    { range: SYM_MON, idx: (S_XAN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl161 },
-    { range: SYM_MON, idx: (S_LIGHT + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl162 },
-    { range: SYM_MON, idx: (S_ZRUTY + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl163 },
-    { range: SYM_MON, idx: (S_ANGEL + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl164 },
-    { range: SYM_MON, idx: (S_BAT + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl165 },
-    { range: SYM_MON, idx: (S_CENTAUR + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl166 },
-    { range: SYM_MON, idx: (S_DRAGON + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl167 },
-    { range: SYM_MON, idx: (S_ELEMENTAL + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl168 },
-    { range: SYM_MON, idx: (S_FUNGUS + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl169 },
-    { range: SYM_MON, idx: (S_GNOME + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl170 },
-    { range: SYM_MON, idx: (S_GIANT + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl171 },
-    { range: SYM_MON, idx: (S_invisible + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl172 },
-    { range: SYM_MON, idx: (S_JABBERWOCK + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl173 },
-    { range: SYM_MON, idx: (S_KOP + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl174 },
-    { range: SYM_MON, idx: (S_LICH + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl175 },
-    { range: SYM_MON, idx: (S_MUMMY + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl176 },
-    { range: SYM_MON, idx: (S_NAGA + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl177 },
-    { range: SYM_MON, idx: (S_OGRE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl178 },
-    { range: SYM_MON, idx: (S_PUDDING + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl179 },
-    { range: SYM_MON, idx: (S_QUANTMECH + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl180 },
-    { range: SYM_MON, idx: (S_RUSTMONST + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl181 },
-    { range: SYM_MON, idx: (S_SNAKE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl182 },
-    { range: SYM_MON, idx: (S_TROLL + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl183 },
-    { range: SYM_MON, idx: (S_UMBER + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl184 },
-    { range: SYM_MON, idx: (S_VAMPIRE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl185 },
-    { range: SYM_MON, idx: (S_WRAITH + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl186 },
-    { range: SYM_MON, idx: (S_XORN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl187 },
-    { range: SYM_MON, idx: (S_YETI + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl188 },
-    { range: SYM_MON, idx: (S_ZOMBIE + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl189 },
-    { range: SYM_MON, idx: (S_HUMAN + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl190 },
-    { range: SYM_MON, idx: (S_GHOST + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl191 },
-    { range: SYM_MON, idx: (S_GOLEM + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl192 },
-    { range: SYM_MON, idx: (S_DEMON + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl193 },
-    { range: SYM_MON, idx: (S_EEL + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl194 },
-    { range: SYM_MON, idx: (S_LIZARD + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl195 },
-    { range: SYM_MON, idx: (S_WORM_TAIL + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl196 },
-    { range: SYM_MON, idx: (S_MIMIC_DEF + (((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0)) | 0, name: __sl197 },
-    { range: SYM_OTH, idx: (SYM_NOTHING + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl198 },
-    { range: SYM_OTH, idx: (SYM_UNEXPLORED + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl199 },
-    { range: SYM_OTH, idx: (SYM_BOULDER + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl200 },
-    { range: SYM_OTH, idx: (SYM_INVISIBLE + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl172 },
-    { range: SYM_OTH, idx: (SYM_PET_OVERRIDE + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl201 },
-    { range: SYM_OTH, idx: (SYM_HERO_OVERRIDE + (((((((((0) + MAXPCHARS) | 0) + MAXOCLASSES) | 0) + MAXMCLASSES) | 0) + 6) | 0)) | 0, name: __sl202 },
-    { range: SYM_INVALID, idx: 0, name: null }
-];
+export const loadsyms = cptr.alloc(197 * 16);
+cptr.stI32(cptr.add(loadsyms, 0), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 0), 4), 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 0), 8), __sl8);
+cptr.stI32(cptr.add(loadsyms, 16), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 16), 4), 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 16), 8), __sl9);
+cptr.stI32(cptr.add(loadsyms, 32), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 32), 4), 1);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 32), 8), __sl10);
+cptr.stI32(cptr.add(loadsyms, 48), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 48), 4), 2);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 48), 8), __sl11);
+cptr.stI32(cptr.add(loadsyms, 64), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 64), 4), 3);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 64), 8), __sl12);
+cptr.stI32(cptr.add(loadsyms, 80), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 80), 4), 4);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 80), 8), __sl13);
+cptr.stI32(cptr.add(loadsyms, 96), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 96), 4), 4);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 96), 8), __sl14);
+cptr.stI32(cptr.add(loadsyms, 112), 1);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 112), 4), 5);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 112), 8), __sl15);
+cptr.stI32(cptr.add(loadsyms, 128), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 128), 4), 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 128), 8), __sl16);
+cptr.stI32(cptr.add(loadsyms, 144), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 144), 4), 1);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 144), 8), __sl17);
+cptr.stI32(cptr.add(loadsyms, 160), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 160), 4), 2);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 160), 8), __sl18);
+cptr.stI32(cptr.add(loadsyms, 176), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 176), 4), 3);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 176), 8), __sl19);
+cptr.stI32(cptr.add(loadsyms, 192), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 192), 4), 4);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 192), 8), __sl20);
+cptr.stI32(cptr.add(loadsyms, 208), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 208), 4), 5);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 208), 8), __sl21);
+cptr.stI32(cptr.add(loadsyms, 224), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 224), 4), 6);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 224), 8), __sl22);
+cptr.stI32(cptr.add(loadsyms, 240), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 240), 4), 7);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 240), 8), __sl23);
+cptr.stI32(cptr.add(loadsyms, 256), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 256), 4), 8);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 256), 8), __sl24);
+cptr.stI32(cptr.add(loadsyms, 272), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 272), 4), 9);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 272), 8), __sl25);
+cptr.stI32(cptr.add(loadsyms, 288), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 288), 4), 10);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 288), 8), __sl26);
+cptr.stI32(cptr.add(loadsyms, 304), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 304), 4), 11);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 304), 8), __sl27);
+cptr.stI32(cptr.add(loadsyms, 320), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 320), 4), 12);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 320), 8), __sl28);
+cptr.stI32(cptr.add(loadsyms, 336), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 336), 4), 13);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 336), 8), __sl29);
+cptr.stI32(cptr.add(loadsyms, 352), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 352), 4), 14);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 352), 8), __sl30);
+cptr.stI32(cptr.add(loadsyms, 368), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 368), 4), 15);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 368), 8), __sl31);
+cptr.stI32(cptr.add(loadsyms, 384), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 384), 4), 16);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 384), 8), __sl32);
+cptr.stI32(cptr.add(loadsyms, 400), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 400), 4), 17);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 400), 8), __sl33);
+cptr.stI32(cptr.add(loadsyms, 416), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 416), 4), 18);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 416), 8), __sl34);
+cptr.stI32(cptr.add(loadsyms, 432), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 432), 4), 19);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 432), 8), __sl35);
+cptr.stI32(cptr.add(loadsyms, 448), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 448), 4), 20);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 448), 8), __sl36);
+cptr.stI32(cptr.add(loadsyms, 464), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 464), 4), 21);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 464), 8), __sl37);
+cptr.stI32(cptr.add(loadsyms, 480), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 480), 4), 22);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 480), 8), __sl38);
+cptr.stI32(cptr.add(loadsyms, 496), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 496), 4), 23);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 496), 8), __sl39);
+cptr.stI32(cptr.add(loadsyms, 512), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 512), 4), 24);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 512), 8), __sl40);
+cptr.stI32(cptr.add(loadsyms, 528), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 528), 4), 25);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 528), 8), __sl41);
+cptr.stI32(cptr.add(loadsyms, 544), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 544), 4), 26);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 544), 8), __sl42);
+cptr.stI32(cptr.add(loadsyms, 560), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 560), 4), 27);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 560), 8), __sl43);
+cptr.stI32(cptr.add(loadsyms, 576), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 576), 4), 28);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 576), 8), __sl44);
+cptr.stI32(cptr.add(loadsyms, 592), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 592), 4), 29);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 592), 8), __sl45);
+cptr.stI32(cptr.add(loadsyms, 608), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 608), 4), 30);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 608), 8), __sl46);
+cptr.stI32(cptr.add(loadsyms, 624), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 624), 4), 31);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 624), 8), __sl47);
+cptr.stI32(cptr.add(loadsyms, 640), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 640), 4), 32);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 640), 8), __sl48);
+cptr.stI32(cptr.add(loadsyms, 656), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 656), 4), 33);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 656), 8), __sl49);
+cptr.stI32(cptr.add(loadsyms, 672), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 672), 4), 34);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 672), 8), __sl50);
+cptr.stI32(cptr.add(loadsyms, 688), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 688), 4), 35);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 688), 8), __sl51);
+cptr.stI32(cptr.add(loadsyms, 704), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 704), 4), 36);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 704), 8), __sl52);
+cptr.stI32(cptr.add(loadsyms, 720), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 720), 4), 37);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 720), 8), __sl53);
+cptr.stI32(cptr.add(loadsyms, 736), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 736), 4), 38);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 736), 8), __sl54);
+cptr.stI32(cptr.add(loadsyms, 752), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 752), 4), 39);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 752), 8), __sl55);
+cptr.stI32(cptr.add(loadsyms, 768), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 768), 4), 40);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 768), 8), __sl56);
+cptr.stI32(cptr.add(loadsyms, 784), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 784), 4), 41);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 784), 8), __sl57);
+cptr.stI32(cptr.add(loadsyms, 800), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 800), 4), 42);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 800), 8), __sl58);
+cptr.stI32(cptr.add(loadsyms, 816), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 816), 4), 43);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 816), 8), __sl59);
+cptr.stI32(cptr.add(loadsyms, 832), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 832), 4), 44);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 832), 8), __sl60);
+cptr.stI32(cptr.add(loadsyms, 848), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 848), 4), 45);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 848), 8), __sl61);
+cptr.stI32(cptr.add(loadsyms, 864), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 864), 4), 46);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 864), 8), __sl62);
+cptr.stI32(cptr.add(loadsyms, 880), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 880), 4), 47);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 880), 8), __sl63);
+cptr.stI32(cptr.add(loadsyms, 896), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 896), 4), 48);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 896), 8), __sl64);
+cptr.stI32(cptr.add(loadsyms, 912), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 912), 4), 49);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 912), 8), __sl65);
+cptr.stI32(cptr.add(loadsyms, 928), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 928), 4), 50);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 928), 8), __sl66);
+cptr.stI32(cptr.add(loadsyms, 944), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 944), 4), 51);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 944), 8), __sl67);
+cptr.stI32(cptr.add(loadsyms, 960), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 960), 4), 52);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 960), 8), __sl68);
+cptr.stI32(cptr.add(loadsyms, 976), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 976), 4), 53);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 976), 8), __sl69);
+cptr.stI32(cptr.add(loadsyms, 992), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 992), 4), 54);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 992), 8), __sl70);
+cptr.stI32(cptr.add(loadsyms, 1008), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1008), 4), 55);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1008), 8), __sl71);
+cptr.stI32(cptr.add(loadsyms, 1024), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1024), 4), 56);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1024), 8), __sl72);
+cptr.stI32(cptr.add(loadsyms, 1040), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1040), 4), 57);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1040), 8), __sl73);
+cptr.stI32(cptr.add(loadsyms, 1056), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1056), 4), 58);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1056), 8), __sl74);
+cptr.stI32(cptr.add(loadsyms, 1072), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1072), 4), 59);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1072), 8), __sl75);
+cptr.stI32(cptr.add(loadsyms, 1088), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1088), 4), 60);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1088), 8), __sl76);
+cptr.stI32(cptr.add(loadsyms, 1104), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1104), 4), 61);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1104), 8), __sl77);
+cptr.stI32(cptr.add(loadsyms, 1120), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1120), 4), 62);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1120), 8), __sl78);
+cptr.stI32(cptr.add(loadsyms, 1136), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1136), 4), 63);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1136), 8), __sl79);
+cptr.stI32(cptr.add(loadsyms, 1152), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1152), 4), 64);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1152), 8), __sl80);
+cptr.stI32(cptr.add(loadsyms, 1168), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1168), 4), 65);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1168), 8), __sl81);
+cptr.stI32(cptr.add(loadsyms, 1184), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1184), 4), 66);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1184), 8), __sl82);
+cptr.stI32(cptr.add(loadsyms, 1200), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1200), 4), 67);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1200), 8), __sl83);
+cptr.stI32(cptr.add(loadsyms, 1216), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1216), 4), 68);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1216), 8), __sl84);
+cptr.stI32(cptr.add(loadsyms, 1232), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1232), 4), 69);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1232), 8), __sl85);
+cptr.stI32(cptr.add(loadsyms, 1248), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1248), 4), 70);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1248), 8), __sl86);
+cptr.stI32(cptr.add(loadsyms, 1264), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1264), 4), 71);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1264), 8), __sl87);
+cptr.stI32(cptr.add(loadsyms, 1280), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1280), 4), 72);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1280), 8), __sl88);
+cptr.stI32(cptr.add(loadsyms, 1296), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1296), 4), 73);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1296), 8), __sl89);
+cptr.stI32(cptr.add(loadsyms, 1312), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1312), 4), 74);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1312), 8), __sl90);
+cptr.stI32(cptr.add(loadsyms, 1328), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1328), 4), 75);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1328), 8), __sl91);
+cptr.stI32(cptr.add(loadsyms, 1344), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1344), 4), 76);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1344), 8), __sl92);
+cptr.stI32(cptr.add(loadsyms, 1360), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1360), 4), 77);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1360), 8), __sl93);
+cptr.stI32(cptr.add(loadsyms, 1376), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1376), 4), 78);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1376), 8), __sl94);
+cptr.stI32(cptr.add(loadsyms, 1392), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1392), 4), 79);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1392), 8), __sl95);
+cptr.stI32(cptr.add(loadsyms, 1408), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1408), 4), 80);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1408), 8), __sl96);
+cptr.stI32(cptr.add(loadsyms, 1424), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1424), 4), 81);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1424), 8), __sl97);
+cptr.stI32(cptr.add(loadsyms, 1440), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1440), 4), 82);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1440), 8), __sl98);
+cptr.stI32(cptr.add(loadsyms, 1456), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1456), 4), 83);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1456), 8), __sl99);
+cptr.stI32(cptr.add(loadsyms, 1472), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1472), 4), 84);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1472), 8), __sl100);
+cptr.stI32(cptr.add(loadsyms, 1488), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1488), 4), 85);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1488), 8), __sl101);
+cptr.stI32(cptr.add(loadsyms, 1504), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1504), 4), 86);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1504), 8), __sl102);
+cptr.stI32(cptr.add(loadsyms, 1520), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1520), 4), 87);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1520), 8), __sl103);
+cptr.stI32(cptr.add(loadsyms, 1536), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1536), 4), 88);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1536), 8), __sl104);
+cptr.stI32(cptr.add(loadsyms, 1552), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1552), 4), 89);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1552), 8), __sl105);
+cptr.stI32(cptr.add(loadsyms, 1568), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1568), 4), 90);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1568), 8), __sl106);
+cptr.stI32(cptr.add(loadsyms, 1584), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1584), 4), 91);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1584), 8), __sl107);
+cptr.stI32(cptr.add(loadsyms, 1600), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1600), 4), 92);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1600), 8), __sl108);
+cptr.stI32(cptr.add(loadsyms, 1616), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1616), 4), 93);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1616), 8), __sl109);
+cptr.stI32(cptr.add(loadsyms, 1632), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1632), 4), 94);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1632), 8), __sl110);
+cptr.stI32(cptr.add(loadsyms, 1648), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1648), 4), 95);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1648), 8), __sl111);
+cptr.stI32(cptr.add(loadsyms, 1664), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1664), 4), 96);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1664), 8), __sl112);
+cptr.stI32(cptr.add(loadsyms, 1680), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1680), 4), 97);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1680), 8), __sl113);
+cptr.stI32(cptr.add(loadsyms, 1696), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1696), 4), 98);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1696), 8), __sl114);
+cptr.stI32(cptr.add(loadsyms, 1712), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1712), 4), 99);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1712), 8), __sl115);
+cptr.stI32(cptr.add(loadsyms, 1728), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1728), 4), 100);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1728), 8), __sl116);
+cptr.stI32(cptr.add(loadsyms, 1744), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1744), 4), 101);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1744), 8), __sl117);
+cptr.stI32(cptr.add(loadsyms, 1760), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1760), 4), 102);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1760), 8), __sl118);
+cptr.stI32(cptr.add(loadsyms, 1776), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1776), 4), 103);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1776), 8), __sl119);
+cptr.stI32(cptr.add(loadsyms, 1792), 2);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1792), 4), 104);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1792), 8), __sl120);
+cptr.stI32(cptr.add(loadsyms, 1808), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1808), 4), (1 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1808), 8), __sl121);
+cptr.stI32(cptr.add(loadsyms, 1824), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1824), 4), (2 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1824), 8), __sl122);
+cptr.stI32(cptr.add(loadsyms, 1840), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1840), 4), (3 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1840), 8), __sl123);
+cptr.stI32(cptr.add(loadsyms, 1856), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1856), 4), (4 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1856), 8), __sl124);
+cptr.stI32(cptr.add(loadsyms, 1872), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1872), 4), (5 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1872), 8), __sl125);
+cptr.stI32(cptr.add(loadsyms, 1888), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1888), 4), (6 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1888), 8), __sl126);
+cptr.stI32(cptr.add(loadsyms, 1904), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1904), 4), (7 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1904), 8), __sl127);
+cptr.stI32(cptr.add(loadsyms, 1920), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1920), 4), (8 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1920), 8), __sl128);
+cptr.stI32(cptr.add(loadsyms, 1936), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1936), 4), (9 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1936), 8), __sl129);
+cptr.stI32(cptr.add(loadsyms, 1952), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1952), 4), (10 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1952), 8), __sl130);
+cptr.stI32(cptr.add(loadsyms, 1968), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1968), 4), (11 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1968), 8), __sl131);
+cptr.stI32(cptr.add(loadsyms, 1984), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 1984), 4), (12 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 1984), 8), __sl132);
+cptr.stI32(cptr.add(loadsyms, 2000), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2000), 4), (13 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2000), 8), __sl133);
+cptr.stI32(cptr.add(loadsyms, 2016), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2016), 4), (14 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2016), 8), __sl134);
+cptr.stI32(cptr.add(loadsyms, 2032), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2032), 4), (15 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2032), 8), __sl135);
+cptr.stI32(cptr.add(loadsyms, 2048), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2048), 4), (16 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2048), 8), __sl136);
+cptr.stI32(cptr.add(loadsyms, 2064), 3);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2064), 4), (17 + (((0) + 105) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2064), 8), __sl137);
+cptr.stI32(cptr.add(loadsyms, 2080), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2080), 4), (1 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2080), 8), __sl138);
+cptr.stI32(cptr.add(loadsyms, 2096), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2096), 4), (2 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2096), 8), __sl139);
+cptr.stI32(cptr.add(loadsyms, 2112), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2112), 4), (3 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2112), 8), __sl140);
+cptr.stI32(cptr.add(loadsyms, 2128), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2128), 4), (4 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2128), 8), __sl141);
+cptr.stI32(cptr.add(loadsyms, 2144), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2144), 4), (5 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2144), 8), __sl142);
+cptr.stI32(cptr.add(loadsyms, 2160), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2160), 4), (6 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2160), 8), __sl143);
+cptr.stI32(cptr.add(loadsyms, 2176), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2176), 4), (7 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2176), 8), __sl144);
+cptr.stI32(cptr.add(loadsyms, 2192), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2192), 4), (8 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2192), 8), __sl145);
+cptr.stI32(cptr.add(loadsyms, 2208), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2208), 4), (9 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2208), 8), __sl146);
+cptr.stI32(cptr.add(loadsyms, 2224), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2224), 4), (10 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2224), 8), __sl147);
+cptr.stI32(cptr.add(loadsyms, 2240), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2240), 4), (11 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2240), 8), __sl148);
+cptr.stI32(cptr.add(loadsyms, 2256), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2256), 4), (12 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2256), 8), __sl149);
+cptr.stI32(cptr.add(loadsyms, 2272), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2272), 4), (13 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2272), 8), __sl150);
+cptr.stI32(cptr.add(loadsyms, 2288), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2288), 4), (14 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2288), 8), __sl151);
+cptr.stI32(cptr.add(loadsyms, 2304), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2304), 4), (15 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2304), 8), __sl152);
+cptr.stI32(cptr.add(loadsyms, 2320), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2320), 4), (16 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2320), 8), __sl153);
+cptr.stI32(cptr.add(loadsyms, 2336), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2336), 4), (17 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2336), 8), __sl154);
+cptr.stI32(cptr.add(loadsyms, 2352), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2352), 4), (18 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2352), 8), __sl155);
+cptr.stI32(cptr.add(loadsyms, 2368), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2368), 4), (19 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2368), 8), __sl156);
+cptr.stI32(cptr.add(loadsyms, 2384), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2384), 4), (20 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2384), 8), __sl157);
+cptr.stI32(cptr.add(loadsyms, 2400), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2400), 4), (21 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2400), 8), __sl158);
+cptr.stI32(cptr.add(loadsyms, 2416), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2416), 4), (22 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2416), 8), __sl159);
+cptr.stI32(cptr.add(loadsyms, 2432), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2432), 4), (23 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2432), 8), __sl160);
+cptr.stI32(cptr.add(loadsyms, 2448), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2448), 4), (24 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2448), 8), __sl161);
+cptr.stI32(cptr.add(loadsyms, 2464), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2464), 4), (25 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2464), 8), __sl162);
+cptr.stI32(cptr.add(loadsyms, 2480), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2480), 4), (26 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2480), 8), __sl163);
+cptr.stI32(cptr.add(loadsyms, 2496), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2496), 4), (27 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2496), 8), __sl164);
+cptr.stI32(cptr.add(loadsyms, 2512), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2512), 4), (28 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2512), 8), __sl165);
+cptr.stI32(cptr.add(loadsyms, 2528), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2528), 4), (29 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2528), 8), __sl166);
+cptr.stI32(cptr.add(loadsyms, 2544), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2544), 4), (30 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2544), 8), __sl167);
+cptr.stI32(cptr.add(loadsyms, 2560), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2560), 4), (31 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2560), 8), __sl168);
+cptr.stI32(cptr.add(loadsyms, 2576), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2576), 4), (32 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2576), 8), __sl169);
+cptr.stI32(cptr.add(loadsyms, 2592), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2592), 4), (33 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2592), 8), __sl170);
+cptr.stI32(cptr.add(loadsyms, 2608), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2608), 4), (34 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2608), 8), __sl171);
+cptr.stI32(cptr.add(loadsyms, 2624), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2624), 4), (35 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2624), 8), __sl172);
+cptr.stI32(cptr.add(loadsyms, 2640), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2640), 4), (36 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2640), 8), __sl173);
+cptr.stI32(cptr.add(loadsyms, 2656), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2656), 4), (37 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2656), 8), __sl174);
+cptr.stI32(cptr.add(loadsyms, 2672), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2672), 4), (38 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2672), 8), __sl175);
+cptr.stI32(cptr.add(loadsyms, 2688), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2688), 4), (39 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2688), 8), __sl176);
+cptr.stI32(cptr.add(loadsyms, 2704), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2704), 4), (40 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2704), 8), __sl177);
+cptr.stI32(cptr.add(loadsyms, 2720), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2720), 4), (41 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2720), 8), __sl178);
+cptr.stI32(cptr.add(loadsyms, 2736), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2736), 4), (42 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2736), 8), __sl179);
+cptr.stI32(cptr.add(loadsyms, 2752), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2752), 4), (43 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2752), 8), __sl180);
+cptr.stI32(cptr.add(loadsyms, 2768), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2768), 4), (44 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2768), 8), __sl181);
+cptr.stI32(cptr.add(loadsyms, 2784), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2784), 4), (45 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2784), 8), __sl182);
+cptr.stI32(cptr.add(loadsyms, 2800), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2800), 4), (46 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2800), 8), __sl183);
+cptr.stI32(cptr.add(loadsyms, 2816), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2816), 4), (47 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2816), 8), __sl184);
+cptr.stI32(cptr.add(loadsyms, 2832), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2832), 4), (48 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2832), 8), __sl185);
+cptr.stI32(cptr.add(loadsyms, 2848), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2848), 4), (49 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2848), 8), __sl186);
+cptr.stI32(cptr.add(loadsyms, 2864), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2864), 4), (50 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2864), 8), __sl187);
+cptr.stI32(cptr.add(loadsyms, 2880), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2880), 4), (51 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2880), 8), __sl188);
+cptr.stI32(cptr.add(loadsyms, 2896), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2896), 4), (52 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2896), 8), __sl189);
+cptr.stI32(cptr.add(loadsyms, 2912), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2912), 4), (53 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2912), 8), __sl190);
+cptr.stI32(cptr.add(loadsyms, 2928), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2928), 4), (54 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2928), 8), __sl191);
+cptr.stI32(cptr.add(loadsyms, 2944), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2944), 4), (55 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2944), 8), __sl192);
+cptr.stI32(cptr.add(loadsyms, 2960), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2960), 4), (56 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2960), 8), __sl193);
+cptr.stI32(cptr.add(loadsyms, 2976), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2976), 4), (57 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2976), 8), __sl194);
+cptr.stI32(cptr.add(loadsyms, 2992), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 2992), 4), (58 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 2992), 8), __sl195);
+cptr.stI32(cptr.add(loadsyms, 3008), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3008), 4), (59 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3008), 8), __sl196);
+cptr.stI32(cptr.add(loadsyms, 3024), 4);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3024), 4), (60 + (((((0) + 105) | 0) + 18) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3024), 8), __sl197);
+cptr.stI32(cptr.add(loadsyms, 3040), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3040), 4), (0 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3040), 8), __sl198);
+cptr.stI32(cptr.add(loadsyms, 3056), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3056), 4), (1 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3056), 8), __sl199);
+cptr.stI32(cptr.add(loadsyms, 3072), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3072), 4), (2 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3072), 8), __sl200);
+cptr.stI32(cptr.add(loadsyms, 3088), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3088), 4), (3 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3088), 8), __sl172);
+cptr.stI32(cptr.add(loadsyms, 3104), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3104), 4), (4 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3104), 8), __sl201);
+cptr.stI32(cptr.add(loadsyms, 3120), 5);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3120), 4), (5 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3120), 8), __sl202);
+cptr.stI32(cptr.add(loadsyms, 3136), 0);
+cptr.stI32(cptr.add(cptr.add(loadsyms, 3136), 4), 0);
+cptr.stPtr(cptr.add(cptr.add(loadsyms, 3136), 8), null);
 
 /** C ref: symbols.c:431 — @param {CPtr} buf @returns {CInt} */
 export function proc_symset_line(buf) {
-    return schar((!(schar(parse_sym_line(buf, gs.symset_which_set)))));
+    return schar((!(schar(parse_sym_line(buf, cptr.ldI32(cptr.add(gs, 880)))))));
 }
 
 /** C ref: symbols.c:438 — @param {CPtr} buf @param {CInt} which_set @returns {CInt} */
@@ -666,7 +1069,7 @@ export function parse_sym_line(buf, which_set) {
     let bufp;
     let commentp;
     let altp;
-    let glyph = cptr.box(MAX_GLYPH);
+    let glyph = cptr.box(9624);
     let enhanced_unavailable = (0);
     let is_glyph = (0);
     if (cptr.strlen(buf) >= 256n)
@@ -680,9 +1083,9 @@ export function parse_sym_line(buf, which_set) {
         bufp = altp;
     if (!bufp) {
         if (strncmpi(buf, __sl10, 6) == 0) {
-            if (gc.chosen_symset_start)
-                gc.chosen_symset_end = (1);
-            gc.chosen_symset_start = (0);
+            if (cptr.ld1s(cptr.add(gc, 456)))
+                cptr.st1(cptr.add(gc, 457), (1));
+            cptr.st1(cptr.add(gc, 456), (0));
             return 1;
         }
         config_error_add(__sl203);
@@ -693,7 +1096,7 @@ export function parse_sym_line(buf, which_set) {
         bufp = cptr.add(bufp, 1);
     symp = match_sym(buf);
     if (!symp && cptr.ld1s(cptr.add(buf, 0)) == 71 && cptr.ld1s(cptr.add(buf, 1)) == 95) {
-        if (gc.chosen_symset_start) {
+        if (cptr.ld1s(cptr.add(gc, 456))) {
             is_glyph = schar(match_glyph(buf));
         } else {
             is_glyph = (1);
@@ -705,11 +1108,11 @@ export function parse_sym_line(buf, which_set) {
         return 0;
     }
     if (symp) {
-        if (!gs.symset[which_set].name) {
-            if (symp == SYM_CONTROL >>> 0) {
+        if (!cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8))) {
+            if (symp == 1) {
                 let tmpsp;
                 let lastsp;
-                for (lastsp = gs.symset_list; lastsp; lastsp = cptr.ldPtr(lastsp))
+                for (lastsp = cptr.ldPtr(cptr.add(gs, 952)); lastsp; lastsp = cptr.ldPtr(lastsp))
                     if (!cptr.ldPtr(lastsp))
                         break;
                 switch (cptr.ldI32(cptr.add(symp, 4))) {
@@ -717,21 +1120,21 @@ export function parse_sym_line(buf, which_set) {
                     tmpsp = alloc(48);
                     cptr.stPtr(tmpsp, null);
                     if (!lastsp)
-                        gs.symset_list = tmpsp;
+                        cptr.stPtr(cptr.add(gs, 952), tmpsp);
                     else
                         cptr.stPtr(lastsp, tmpsp);
-                    cptr.stI32(cptr.add(tmpsp, 24), gs.symset_count++);
+                    cptr.stI32(cptr.add(tmpsp, 24), (cptr.stI32(cptr.add(gs, 876), cptr.ldI32(cptr.add(gs, 876)) + 1)) - 1);
                     cptr.stPtr(cptr.add(tmpsp, 8), dupstr(bufp));
                     cptr.stPtr(cptr.add(tmpsp, 16), null);
-                    cptr.stI32(cptr.add(tmpsp, 28), H_UNK);
+                    cptr.stI32(cptr.add(tmpsp, 28), 0);
                     cptr.stI32(cptr.add(tmpsp, 32), 0);
                     cptr.stI32(cptr.add(tmpsp, 36), 0);
                     cptr.stI32(cptr.add(tmpsp, 40), 0);
                     break;
                     case 2:
                     tmpsp = lastsp;
-                    for (i = 0; cptr.ldPtr(cptr.add(cptr.decay(known_handling), i)); ++i)
-                        if (!strncmpi((cptr.ldPtr(cptr.add(cptr.decay(known_handling), i))), (bufp), -1)) {
+                    for (i = 0; cptr.ldPtr(cptr.add(known_handling, i, 8)); ++i)
+                        if (!strncmpi((cptr.ldPtr(cptr.add(known_handling, i, 8))), (bufp), -1)) {
                             if (tmpsp)
                                 cptr.stI32(cptr.add(tmpsp, 28), i);
                             break;
@@ -744,8 +1147,8 @@ export function parse_sym_line(buf, which_set) {
                     break;
                     case 5:
                     tmpsp = lastsp;
-                    for (i = 0; cptr.ldPtr(cptr.add(cptr.decay(known_restrictions), i)); ++i) {
-                        if (!strncmpi((cptr.ldPtr(cptr.add(cptr.decay(known_restrictions), i))), (bufp), -1)) {
+                    for (i = 0; cptr.ldPtr(cptr.add(known_restrictions, i, 8)); ++i) {
+                        if (!strncmpi((cptr.ldPtr(cptr.add(known_restrictions, i, 8))), (bufp), -1)) {
                             if (tmpsp) {
                                 switch (i) {
                                     case 0:
@@ -764,47 +1167,47 @@ export function parse_sym_line(buf, which_set) {
             }
             return 1;
         }
-        if (symp && symp == SYM_CONTROL >>> 0) {
+        if (symp && symp == 1) {
             switch (cptr.ldI32(cptr.add(symp, 4))) {
                 case 0:
-                if (!strncmpi((bufp), (gs.symset[which_set].name), -1)) {
-                    gc.chosen_symset_start = (1);
-                    if (which_set == ROGUESET)
+                if (!strncmpi((bufp), (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8))), -1)) {
+                    cptr.st1(cptr.add(gc, 456), (1));
+                    if (which_set == 1)
                         init_rogue_symbols();
-                    else if (which_set == PRIMARYSET)
+                    else if (which_set == 0)
                         init_primary_symbols();
                 }
                 break;
                 case 1:
-                if (gc.chosen_symset_start)
-                    gc.chosen_symset_end = (1);
-                gc.chosen_symset_start = (0);
+                if (cptr.ld1s(cptr.add(gc, 456)))
+                    cptr.st1(cptr.add(gc, 457), (1));
+                cptr.st1(cptr.add(gc, 456), (0));
                 break;
                 case 2:
-                if (gc.chosen_symset_start)
+                if (cptr.ld1s(cptr.add(gc, 456)))
                     set_symhandling(bufp, which_set);
                 break;
                 case 4:
-                if (gc.chosen_symset_start) {
+                if (cptr.ld1s(cptr.add(gc, 456))) {
                     if (bufp) {
                         if (!strncmpi((bufp), (__sl205), -1) || !strncmpi((bufp), (__sl206), -1) || !strncmpi((bufp), (__sl207), -1))
-                            gs.symset[which_set].nocolor = 0;
+                            cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 32), 0);
                         else if (!strncmpi((bufp), (__sl208), -1) || !strncmpi((bufp), (__sl209), -1) || !strncmpi((bufp), (__sl210), -1))
-                            gs.symset[which_set].nocolor = 1;
+                            cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 32), 1);
                     }
                 }
                 break;
                 case 5:
-                if (gc.chosen_symset_start) {
+                if (cptr.ld1s(cptr.add(gc, 456))) {
                     let n = 0;
-                    while (cptr.ldPtr(cptr.add(cptr.decay(known_restrictions), n))) {
-                        if (!strncmpi((cptr.ldPtr(cptr.add(cptr.decay(known_restrictions), n))), (bufp), -1)) {
+                    while (cptr.ldPtr(cptr.add(known_restrictions, n, 8))) {
+                        if (!strncmpi((cptr.ldPtr(cptr.add(known_restrictions, n, 8))), (bufp), -1)) {
                             switch (n) {
                                 case 0:
-                                gs.symset[which_set].primary = 1;
+                                cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 36), 1);
                                 break;
                                 case 1:
-                                gs.symset[which_set].rogue = 1;
+                                cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 40), 1);
                                 break;
                             }
                             break;
@@ -815,22 +1218,22 @@ export function parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
-            if (gs.symset[which_set].handling != H_UTF8 >>> 0) {
-                if (gc.chosen_symset_start) {
+            if (cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28) != 5) {
+                if (cptr.ld1s(cptr.add(gc, 456))) {
                     val = sym_val(bufp);
-                    if (which_set == PRIMARYSET) {
+                    if (which_set == 0) {
                         update_primary_symset(symp, val);
-                    } else if (which_set == ROGUESET) {
+                    } else if (which_set == 1) {
                         update_rogue_symset(symp, val);
                     }
                 }
             } else {
-                if (gc.chosen_symset_start) {
+                if (cptr.ld1s(cptr.add(gc, 456))) {
                     void glyphrep_to_custom_map_entries(buf, glyph);
                 }
             }
         }
-    } else if (gc.chosen_symset_start) {
+    } else if (cptr.ld1s(cptr.add(gc, 456))) {
         void glyphrep_to_custom_map_entries(buf, glyph);
     }
     return 1;
@@ -839,10 +1242,10 @@ export function parse_sym_line(buf, which_set) {
 /** C ref: symbols.c:657 — @param {CPtr} handling @param {CInt} which_set */
 export function set_symhandling(handling, which_set) {
     let i = 0;
-    gs.symset[which_set].handling = H_UNK;
-    while (cptr.ldPtr(cptr.add(cptr.decay(known_handling), i))) {
-        if (!strncmpi((cptr.ldPtr(cptr.add(cptr.decay(known_handling), i))), (handling), -1)) {
-            gs.symset[which_set].handling = i;
+    cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28), 0);
+    while (cptr.ldPtr(cptr.add(known_handling, i, 8))) {
+        if (!strncmpi((cptr.ldPtr(cptr.add(known_handling, i, 8))), (handling), -1)) {
+            cptr.stI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28), i);
             return;
         }
         i++;
@@ -852,12 +1255,12 @@ export function set_symhandling(handling, which_set) {
 /** C ref: symbols.c:673 — @param {CPtr} s @param {CInt} which_set @returns {CInt} */
 export function load_symset(s, which_set) {
     clear_symsetentry(which_set, (1));
-    if (gs.symset[which_set].name)
-        cptr.free(gs.symset[which_set].name);
-    gs.symset[which_set].name = dupstr(s);
+    if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8)))
+        cptr.free(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8)));
+    cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), dupstr(s));
     if (read_sym_file(which_set)) {
         switch_symbols(1);
-        apply_customizations(gc.currentgraphics, do_custom_symbols | do_custom_colors);
+        apply_customizations(cptr.ldI32(cptr.add(gc, 428)), 2 | 1);
     } else {
         clear_symsetentry(which_set, (1));
         return 0;
@@ -867,14 +1270,14 @@ export function load_symset(s, which_set) {
 
 /** C ref: symbols.c:693 */
 export function free_symsets() {
-    clear_symsetentry(PRIMARYSET, (1));
-    clear_symsetentry(ROGUESET, (1));
+    clear_symsetentry(0, (1));
+    clear_symsetentry(1, (1));
 }
 
 /** C ref: symbols.c:703 — struct _savedsym { name, val, which_set, next } (memory model v0.5) */
 
 /** C ref: symbols.c:709 — struct _savedsym * */
-let saved_symbols = null;
+export let saved_symbols = null;
 
 /** C ref: symbols.c:712 */
 export function savedsym_free() {
@@ -921,7 +1324,7 @@ export function savedsym_strbuf(sbuf) {
     let tmp = saved_symbols;
     let buf = new Uint8Array(256);
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __sl211, (cptr.ldI32(cptr.add(tmp, 16)) == ROGUESET) ? __sl212 : __sl213, cptr.ldPtr(tmp), cptr.ldPtr(cptr.add(tmp, 8)));
+        void cptr.sprintf(cptr.decay(buf), __sl211, (cptr.ldI32(cptr.add(tmp, 16)) == 1) ? __sl212 : __sl213, cptr.ldPtr(tmp), cptr.ldPtr(cptr.add(tmp, 8)));
         strbuf_append(sbuf, cptr.decay(buf));
         tmp = cptr.ldPtr(cptr.add(tmp, 24));
     }
@@ -980,15 +1383,15 @@ export function parsesymbols(opts, which_set) {
     if (!symp && !is_glyph)
         return (0);
     if (symp) {
-        if (symp && symp != SYM_CONTROL >>> 0) {
-            if (gs.symset[which_set].handling == H_UTF8 >>> 0 || (lowc(cptr.ld1s(cptr.add(strval, 0))) == 117 && cptr.ld1s(cptr.add(strval, 1)) == 43)) {
+        if (symp && symp != 1) {
+            if (cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28) == 5 || (lowc(cptr.ld1s(cptr.add(strval, 0))) == 117 && cptr.ld1s(cptr.add(strval, 1)) == 43)) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
                 nh_snprintf(__sl214, 836, cptr.decay(buf), 256n, __sl215, opts, strval);
                 glyphrep_to_custom_map_entries(cptr.decay(buf), glyph);
             } else {
                 val = sym_val(strval);
-                if (which_set == ROGUESET)
+                if (which_set == 1)
                     update_ov_rogue_symset(symp, val);
                 else
                     update_ov_primary_symset(symp, val);
@@ -999,18 +1402,27 @@ export function parsesymbols(opts, which_set) {
     return (1);
 }
 
-const __static_match_sym_alternates = [
-    { altnm: __sl216, nm: __sl123 },
-    { altnm: __sl217, nm: __sl112 },
-    { altnm: __sl218, nm: __sl113 },
-    { altnm: __sl219, nm: __sl114 },
-    { altnm: __sl220, nm: __sl115 },
-    { altnm: __sl221, nm: __sl116 },
-    { altnm: __sl222, nm: __sl117 },
-    { altnm: __sl223, nm: __sl118 },
-    { altnm: __sl224, nm: __sl119 },
-    { altnm: __sl225, nm: __sl120 }
-]; /** C ref: symbols.c:857 — struct alternate_parse[10] (function-static) */
+const __static_match_sym_alternates = cptr.alloc(10 * 16);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 0), __sl216);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 0), 8), __sl123);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 16), __sl217);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 16), 8), __sl112);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 32), __sl218);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 32), 8), __sl113);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 48), __sl219);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 48), 8), __sl114);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 64), __sl220);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 64), 8), __sl115);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 80), __sl221);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 80), 8), __sl116);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 96), __sl222);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 96), 8), __sl117);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 112), __sl223);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 112), 8), __sl118);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 128), __sl224);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 128), 8), __sl119);
+cptr.stPtr(cptr.add(__static_match_sym_alternates, 144), __sl225);
+cptr.stPtr(cptr.add(cptr.add(__static_match_sym_alternates, 144), 8), __sl120); /** C ref: symbols.c:857 — struct alternate_parse[10] (function-static) */
 
 /** C ref: symbols.c:852 — @param {CPtr} buf @returns {CPtr} */
 export function match_sym(buf) {
@@ -1018,7 +1430,7 @@ export function match_sym(buf) {
     let len = cptr.strlen(buf);
     let p = cptr.strchr(buf, 58);
     let q = cptr.strchr(buf, 61);
-    let sp = cptr.decay(loadsyms);
+    let sp = loadsyms;
     if ((cptr.ld1s(cptr.add(buf, 0)) == 71 || cptr.ld1s(cptr.add(buf, 0)) == 103) && cptr.ld1s(cptr.add(buf, 1)) == 95)
         return null;
     if (!p || (q && cptr.cmp(q, p) < 0))
@@ -1033,11 +1445,11 @@ export function match_sym(buf) {
             return sp;
         sp = cptr.add(sp, 1, 16);
     }
-    for (i = 0; i < alternates.length; ++i) {
-        if ((len >= cptr.strlen(__static_match_sym_alternates[i].altnm)) && !strncmpi(buf, __static_match_sym_alternates[i].altnm, Number(BigInt.asIntN(32, len)))) {
-            sp = cptr.decay(loadsyms);
+    for (i = 0; i < 10; ++i) {
+        if ((len >= cptr.strlen(cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)))) && !strncmpi(buf, cptr.ldPtr(cptr.add(__static_match_sym_alternates, i, 16)), Number(BigInt.asIntN(32, len)))) {
+            sp = loadsyms;
             while (sp) {
-                if (!strcmp(__static_match_sym_alternates[i].nm, cptr.ldPtr(cptr.add(sp, 8))))
+                if (!strcmp(cptr.ldPtr(cptr.add(cptr.add(__static_match_sym_alternates, i, 16), 8)), cptr.ldPtr(cptr.add(sp, 8))))
                     return sp;
                 sp = cptr.add(sp, 1, 16);
             }
@@ -1064,20 +1476,20 @@ export function do_symset(rogueflag) {
     let chosen = -2;
     let defindx = 0;
     let clr = 8;
-    which_set = rogueflag ? ROGUESET : PRIMARYSET;
-    gs.symset_list = null;
-    symset_name = gs.symset[which_set].name;
-    gs.symset[which_set].name = null;
+    which_set = rogueflag ? 1 : 0;
+    cptr.stPtr(cptr.add(gs, 952), null);
+    symset_name = cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8));
+    cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), null);
     res = read_sym_file(which_set);
-    gs.symset[which_set].name = symset_name;
-    if (res && gs.symset_list) {
+    cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), symset_name);
+    if (res && cptr.ldPtr(cptr.add(gs, 952))) {
         let thissize;
         let biggest = Number(BigInt.asIntN(32, (16n - 1n)));
         let big_desc = 0;
-        for (sl = gs.symset_list; sl; sl = cptr.ldPtr(sl)) {
+        for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
             if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
                 continue;
-            if (cptr.add(sl, 28) == H_MAC >>> 0)
+            if (cptr.add(sl, 28) == 4)
                 continue;
             setcount++;
             thissize = cptr.ldPtr(cptr.add(sl, 8)) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(sl, 8))))) : 0;
@@ -1092,17 +1504,17 @@ export function do_symset(rogueflag) {
             return 1;
         }
         void cptr.sprintf(cptr.decay(fmtstr), __sl228, (biggest + 2) | 0);
-        tmpwin = (windowprocs.win_create_nhwindow)(4);
-        (windowprocs.win_start_menu)(tmpwin, 0n);
-        cptr.memcpy(any, cg.zeroany, 8);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
+        cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, 1);
         if (!symset_name)
             defindx = cptr.ldI32(any);
         add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, clr, __sl229, (cptr.ldI32(any) == defindx) ? 1 : 0);
-        for (sl = gs.symset_list; sl; sl = cptr.ldPtr(sl)) {
+        for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
             if (rogueflag ? cptr.ldI32(cptr.add(sl, 36)) | 0 : cptr.ldI32(cptr.add(sl, 40)) | 0)
                 continue;
-            if (cptr.add(sl, 28) == H_MAC >>> 0)
+            if (cptr.add(sl, 28) == 4)
                 continue;
             if (cptr.ldPtr(cptr.add(sl, 8))) {
                 cptr.stI32(any, (cptr.ldI32(cptr.add(sl, 24)) + 2) | 0);
@@ -1113,7 +1525,7 @@ export function do_symset(rogueflag) {
             }
         }
         void cptr.sprintf(cptr.decay(buf), __sl230, rogueflag ? __sl231 : __sl213);
-        (windowprocs.win_end_menu)(tmpwin, cptr.decay(buf));
+        (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(buf));
         n = select_menu(tmpwin, 1, symset_pick);
         if (n > 0) {
             chosen = cptr.ldI32(cptr.add(symset_pick.v, 0, 24));
@@ -1124,14 +1536,14 @@ export function do_symset(rogueflag) {
         } else if (n == 0 && defindx > 0) {
             chosen = (defindx - 2) | 0;
         }
-        (windowprocs.win_destroy_nhwindow)(tmpwin);
+        (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
         if (chosen > -1) {
-            for (sl = gs.symset_list; sl; sl = cptr.ldPtr(sl))
+            for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl))
                 if (cptr.ldI32(cptr.add(sl, 24)) == chosen)
                     break;
             if (sl) {
                 clear_symsetentry(which_set, (1));
-                gs.symset[which_set].name = dupstr(cptr.ldPtr(cptr.add(sl, 8)));
+                cptr.stPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8), dupstr(cptr.ldPtr(cptr.add(sl, 8))));
                 ready_to_switch = (1);
             }
         } else if (chosen == -1) {
@@ -1141,12 +1553,12 @@ export function do_symset(rogueflag) {
     } else if (!res) {
         pline(__sl232, __sl233);
         return 1;
-    } else if (!gs.symset_list) {
+    } else if (!cptr.ldPtr(cptr.add(gs, 952))) {
         There(__sl234, __sl233);
         return 1;
     }
-    while ((sl = gs.symset_list) !== null) {
-        gs.symset_list = cptr.ldPtr(sl);
+    while ((sl = cptr.ldPtr(cptr.add(gs, 952))) !== null) {
+        cptr.stPtr(cptr.add(gs, 952), cptr.ldPtr(sl));
         if (cptr.ldPtr(cptr.add(sl, 8)))
             cptr.free(cptr.ldPtr(cptr.add(sl, 8))), cptr.stPtr(cptr.add(sl, 8), null);
         if (cptr.ldPtr(cptr.add(sl, 16)))
@@ -1159,7 +1571,7 @@ export function do_symset(rogueflag) {
         init_rogue_symbols();
     else
         init_primary_symbols();
-    if (gs.symset[which_set].name) {
+    if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8))) {
         let ok;
         if (!glyphid_cache_status()) {
             fill_glyphid_cache();
@@ -1177,12 +1589,12 @@ export function do_symset(rogueflag) {
     }
     if (ready_to_switch)
         switch_symbols(1);
-    if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_rogue_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_rogue_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_rogue_level'))))) {
+    if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8))))) {
         if (rogueflag)
-            assign_graphics(ROGUESET);
+            assign_graphics(1);
     } else if (!rogueflag)
-        assign_graphics(PRIMARYSET);
-    apply_customizations(rogueflag ? ROGUESET : PRIMARYSET, (do_custom_symbols | do_custom_colors));
-    (windowprocs.win_preference_update)(__sl235);
+        assign_graphics(0);
+    apply_customizations(rogueflag ? 1 : 0, (2 | 1));
+    (cptr.ldPtr(cptr.add(windowprocs, 336)))(__sl235);
     return 1;
 }

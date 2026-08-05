@@ -7,7 +7,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { gc, gg, gs, hexdd } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
-import { map_glyphinfo, nul_glyphinfo } from './display.js';
+import { glyphmap, map_glyphinfo, nul_glyphinfo } from './display.js';
 import { decode_glyph } from './windows.js';
 import { apply_customizations, find_matching_customization } from './glyphs.js';
 
@@ -54,19 +54,19 @@ export function free_all_glyphmap_u() {
     let glyph;
     let x;
     let y;
-    for (glyph = 0; glyph < MAX_GLYPH; ++glyph) {
-        if (glyphmap[glyph].u) {
-            if (cptr.ldPtr(cptr.add(glyphmap[glyph].u, 8))) {
-                cptr.free(cptr.ldPtr(cptr.add(glyphmap[glyph].u, 8)));
-                cptr.stPtr(cptr.add(glyphmap[glyph].u, 8), null);
+    for (glyph = 0; glyph < 9624; ++glyph) {
+        if (cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24))) {
+            if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8))) {
+                cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8)));
+                cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8), null);
             }
-            cptr.free(glyphmap[glyph].u);
-            glyphmap[glyph].u = null;
+            cptr.free(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)));
+            cptr.stPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24), null);
         }
     }
     for (y = 0; y < 21; ++y) {
         for (x = 0; x < 80; ++x) {
-            gg.gbuf[y][x].glyphinfo.gm.u = null;
+            cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(cptr.add(gg, y, 4480), x, 56), 8), 16), 24), null);
         }
     }
 }
@@ -97,7 +97,7 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                             cptr.stI32(retflags, 1);
                     } else {
                         so = cptr.ldI32(cptr.add(cptr.add(cptr.add(glyphinfo, 16), 4), 4));
-                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.decay(gs.showsyms), so))));
+                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.add(gs, 680), so, 1))));
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }
@@ -122,16 +122,16 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
 
 /** C ref: utf8map.c:148 — @param {CPtr} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr} utf8str @param {*} which_set @returns {CInt} */
 export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
-    let gdc = cptr.add(cptr.decay(gs.sym_customizations[which_set]), custom_ureps);
+    let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), 2, 32);
     let details;
     let newdetails = null;
     if (!cptr.ldPtr(cptr.add(gdc, 16))) {
         cptr.stPtr(gdc, dupstr(customization_name));
-        cptr.stI32(cptr.add(gdc, 12), custom_ureps);
+        cptr.stI32(cptr.add(gdc, 12), 2);
         cptr.stPtr(cptr.add(gdc, 16), null);
         cptr.stPtr(cptr.add(gdc, 24), null);
     }
-    details = find_matching_customization(customization_name, custom_ureps, which_set);
+    details = find_matching_customization(customization_name, 2, which_set);
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
@@ -164,12 +164,12 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gdc, 24)), 24), newdetails);
     }
     cptr.stPtr(cptr.add(gdc, 24), newdetails);
-    cptr.ldI32(cptr.add(gdc, 8))++;
+    (cptr.stI32(cptr.add(gdc, 8), cptr.ldI32(cptr.add(gdc, 8)) + 1)) - 1;
     return 1;
 }
 
 /** C ref: utf8map.c:211 */
 export function reset_customsymbols() {
     free_all_glyphmap_u();
-    apply_customizations(gc.currentgraphics, do_custom_symbols);
+    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), 2);
 }

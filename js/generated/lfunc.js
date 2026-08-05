@@ -82,7 +82,7 @@ export function luaF_findupval(L, level) {
 /** C ref: lfunc.c:107 — @param {CPtr} L @param {CPtr} obj @param {CPtr} err @param {CInt} yy */
 function callclosemethod(L, obj, err, yy) {
     let top = cptr.ldPtr(cptr.add(L, 16));
-    let tm = luaT_gettmbyobj(L, obj, TM_CLOSE);
+    let tm = luaT_gettmbyobj(L, obj, 24);
     {
         let io1 = (((top)));
         let io2 = (tm);
@@ -119,7 +119,7 @@ function callclosemethod(L, obj, err, yy) {
 
 /** C ref: lfunc.c:125 — @param {CPtr} L @param {CPtr} level */
 function checkclosemth(L, level) {
-    let tm = luaT_gettmbyobj(L, ((level)), TM_CLOSE);
+    let tm = luaT_gettmbyobj(L, ((level)), 24);
     if ((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) {
         let idx = (Number(BigInt.asIntN(32, ((cptr.diff(level, cptr.ldPtr(cptr.ldPtr(cptr.add(L, 32)))))))));
         let vname = luaG_findlocal(L, cptr.ldPtr(cptr.add(L, 32)), idx, null);

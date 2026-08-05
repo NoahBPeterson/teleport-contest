@@ -287,7 +287,7 @@ function computesizes(nums, pna) {
 function countint(key, nums) {
     let k = arrayindex(key);
     if (k != 0) {
-        cptr.postinc1(cptr.add(nums, luaO_ceillog2(k)));
+        (cptr.stI32(cptr.add(nums, luaO_ceillog2(k)), cptr.ldI32(cptr.add(nums, luaO_ceillog2(k))) + 1)) - 1;
         return 1;
     } else
         return 0;
@@ -434,19 +434,19 @@ export function luaH_resizearray(L, t, nasize) {
 function rehash(L, t, ek) {
     let asize;
     let na = cptr.box(0);
-    let nums = new Array(32).fill(0);
+    let nums = cptr.alloc(32 * 4);
     let i;
     let totaluse;
     for (i = 0; i <= (Number(BigInt.asIntN(32, ((4n * 8n - 1n))))); i++)
-        nums[i] = 0;
+        cptr.stI32(cptr.add(nums, i, 4), 0);
     setlimittosize(t);
-    na.v = numusearray(t, cptr.decay(nums));
+    na.v = numusearray(t, nums);
     totaluse = na.v | 0;
-    totaluse = (totaluse + numusehash(t, cptr.decay(nums), na)) | 0;
+    totaluse = (totaluse + numusehash(t, nums, na)) | 0;
     if (((cptr.ld1u(cptr.add(((ek)), 8))) == (((3) | ((0) << 4)))))
-        na.v = (na.v + (countint((cptr.ldI64(((ek)))), cptr.decay(nums)) >>> 0)) | 0;
+        na.v = (na.v + (countint((cptr.ldI64(((ek)))), nums) >>> 0)) | 0;
     totaluse++;
-    asize = computesizes(cptr.decay(nums), na);
+    asize = computesizes(nums, na);
     luaH_resize(L, t, asize, ((totaluse >>> 0) - na.v) >>> 0);
 }
 
@@ -455,7 +455,7 @@ export function luaH_new(L) {
     let o = luaC_newobj(L, ((5) | ((0) << 4)), 56n);
     let t = (((((o)))));
     cptr.stPtr(cptr.add(t, 40), null);
-    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << ((TM_EQ + 1) | 0)) >>> 0)))))));
+    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << ((5 + 1) | 0)) >>> 0)))))));
     cptr.stPtr(cptr.add(t, 16), null);
     cptr.stI32(cptr.add(t, 12), 0);
     setnodevector(L, t, 0);
@@ -490,7 +490,7 @@ function luaH_newkey(L, t, key, value) {
     else if (((cptr.ld1u(cptr.add(((key)), 8))) == (((3) | ((1) << 4))))) {
         let f = (cptr.ldF64(((key))));
         let k = cptr.box(0);
-        if (luaV_flttointeger(f, k, F2Ieq)) {
+        if (luaV_flttointeger(f, k, 0)) {
             {
                 let io = (aux);
                 cptr.stU64(((io)), (k.v));
@@ -624,7 +624,7 @@ export function luaH_get(t, key) {
         case ((3) | ((1) << 4)):
         {
             let k = cptr.box(0);
-            if (luaV_flttointeger((cptr.ldF64(((key)))), k, F2Ieq))
+            if (luaV_flttointeger((cptr.ldF64(((key)))), k, 0))
                 return luaH_getint(t, k.v);
         }
         default:

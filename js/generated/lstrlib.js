@@ -342,18 +342,27 @@ function arith_unm(L) {
 }
 
 /** C ref: lstrlib.c:330 — luaL_Reg[10] */
-const stringmetamethods = [
-    { name: __sl6, func: arith_add },
-    { name: __sl7, func: arith_sub },
-    { name: __sl8, func: arith_mul },
-    { name: __sl9, func: arith_mod },
-    { name: __sl10, func: arith_pow },
-    { name: __sl11, func: arith_div },
-    { name: __sl12, func: arith_idiv },
-    { name: __sl13, func: arith_unm },
-    { name: __sl14, func: null },
-    { name: null, func: null }
-];
+const stringmetamethods = cptr.alloc(10 * 16);
+cptr.stPtr(cptr.add(stringmetamethods, 0), __sl6);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 0), 8), arith_add);
+cptr.stPtr(cptr.add(stringmetamethods, 16), __sl7);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 16), 8), arith_sub);
+cptr.stPtr(cptr.add(stringmetamethods, 32), __sl8);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 32), 8), arith_mul);
+cptr.stPtr(cptr.add(stringmetamethods, 48), __sl9);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 48), 8), arith_mod);
+cptr.stPtr(cptr.add(stringmetamethods, 64), __sl10);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 64), 8), arith_pow);
+cptr.stPtr(cptr.add(stringmetamethods, 80), __sl11);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 80), 8), arith_div);
+cptr.stPtr(cptr.add(stringmetamethods, 96), __sl12);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 96), 8), arith_idiv);
+cptr.stPtr(cptr.add(stringmetamethods, 112), __sl13);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 112), 8), arith_unm);
+cptr.stPtr(cptr.add(stringmetamethods, 128), __sl14);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 128), 8), null);
+cptr.stPtr(cptr.add(stringmetamethods, 144), null);
+cptr.stPtr(cptr.add(cptr.add(stringmetamethods, 144), 8), null);
 
 /** C ref: lstrlib.c:358 — struct MatchState { src_init, src_end, p_end, L, matchdepth, level, capture } (memory model v0.5) */
 
@@ -546,7 +555,7 @@ function start_capture(ms, s, p, what) {
     cptr.stU64(cptr.add(cptr.add(cptr.add(ms, 40), level, 16), 8), BigInt(what));
     cptr.st1(cptr.add(ms, 36), uchar(((level + 1) | 0)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
-        cptr.ld1u(cptr.add(ms, 36))--;
+        (cptr.st1(cptr.add(ms, 36), cptr.ld1u(cptr.add(ms, 36)) + -1)) - 1;
     return res;
 }
 
@@ -578,7 +587,7 @@ function match(ms, s, p) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        if ((__builtin_expect(BigInt(((cptr.ldI32(cptr.add(ms, 32))-- == 0) != 0)), 0n)))
+        if ((__builtin_expect(BigInt((((cptr.stI32(cptr.add(ms, 32), cptr.ldI32(cptr.add(ms, 32)) + -1)) - 1 == 0) != 0)), 0n)))
             luaL_error(cptr.ldPtr(cptr.add(ms, 24)), __sl21);
         __pc = 1;
         continue;
@@ -834,7 +843,7 @@ function match(ms, s, p) {
         continue;
         }
         case 3: {
-        cptr.ldI32(cptr.add(ms, 32))++;
+        (cptr.stI32(cptr.add(ms, 32), cptr.ldI32(cptr.add(ms, 32)) + 1)) - 1;
         return s;
         __pc = -1;
         continue;
@@ -1033,7 +1042,7 @@ function add_s(ms, b, s, e) {
         luaL_addlstring(b, news, BigInt.asUintN(64, cptr.diff(p, news)));
         p = cptr.add(p, 1);
         if (cptr.ld1s(p) == 37)
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(p)))));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(p)))));
         else if (cptr.ld1s(p) == 48)
             luaL_addlstring(b, s, BigInt.asUintN(64, cptr.diff(e, s)));
         else if (isdigit((uchar((cptr.ld1s(p)))))) {
@@ -1116,7 +1125,7 @@ function str_gsub(L) {
             changed = add_value(ms, b, src, e, tr) | changed;
             src = (lastmatch = e);
         } else if (cptr.cmp(src, cptr.ldPtr(cptr.add(ms, 8))) < 0)
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))))));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))))));
         else
             break;
         if (anchor)
@@ -1134,11 +1143,11 @@ function str_gsub(L) {
 
 /** C ref: lstrlib.c:1122 — @param {CPtr} b @param {CPtr} s @param {CLongLong} len */
 function addquoted(b, s, len) {
-    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 34)));
+    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 34)));
     while (len--) {
         if (cptr.ld1s(s) == 34 || cptr.ld1s(s) == 92 || cptr.ld1s(s) == 10) {
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 92)));
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(s)))));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 92)));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(s)))));
         } else if (iscntrl((uchar((cptr.ld1s(s)))))) {
             let buff = new Uint8Array(10);
             if (!isdigit((uchar((cptr.ld1s((cptr.add(s, 1))))))))
@@ -1147,10 +1156,10 @@ function addquoted(b, s, len) {
                 cptr.snprintf(cptr.decay(buff), 10n, __sl29, (uchar((cptr.ld1s(s)))));
             luaL_addstring(b, cptr.decay(buff));
         } else
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(s)))));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(s)))));
         s = cptr.add(s, 1);
     }
-    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 34)));
+    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 34)));
 }
 
 /** C ref: lstrlib.c:1151 — @param {CPtr} L @param {CPtr} buff @param {CDouble} n @returns {CInt} */
@@ -1284,7 +1293,7 @@ function str_format(L) {
         __pc = 7; continue;
         }
         case 6: {
-        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
+        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
         __pc = 5;
         continue;
         }
@@ -1293,7 +1302,7 @@ function str_format(L) {
         __pc = 10; continue;
         }
         case 9: {
-        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
+        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
         __pc = 8;
         continue;
         }
@@ -1413,7 +1422,7 @@ function str_format(L) {
         checkformat(L, cptr.decay(form), __sl42, 0);
         if (cptr.eq(p, (null))) {
             p = __sl48;
-            cptr.st1(cptr.add(cptr.decay(form), cptr.strlen(cptr.decay(form)) - 1n), 115);
+            cptr.st1(cptr.add(cptr.decay(form), cptr.strlen(cptr.decay(form)) - 1n, 1), 115);
         }
         nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), p);
         { __pc = 11; continue; }
@@ -1421,7 +1430,7 @@ function str_format(L) {
         continue;
         }
         case 28: {
-        if (cptr.ld1s(cptr.add(cptr.decay(form), 2)) != 0)
+        if (cptr.ld1s(cptr.add(cptr.decay(form), 2, 1)) != 0)
             return luaL_error(L, __sl49);
         addliteral(L, b, arg);
         { __pc = 11; continue; }
@@ -1430,7 +1439,7 @@ function str_format(L) {
         }
         case 29: {
         s = luaL_tolstring(L, arg, l);
-        if (cptr.ld1s(cptr.add(cptr.decay(form), 2)) == 0)
+        if (cptr.ld1s(cptr.add(cptr.decay(form), 2, 1)) == 0)
             luaL_addvalue(b);
         else {
             (void ((__builtin_expect(BigInt(((l.v == cptr.strlen(s)) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl50))));
@@ -1487,17 +1496,17 @@ cptr.stI32(nativeendian, 1);
 /** C ref: lstrlib.c:1422 — typedef Header (type alias only, no runtime output) */
 
 /** C ref: lstrlib.c:1428 — enum */
-const Kint = 0;
-const Kuint = 1;
-const Kfloat = 2;
-const Knumber = 3;
-const Kdouble = 4;
-const Kchar = 5;
-const Kstring = 6;
-const Kzstr = 7;
-const Kpadding = 8;
-const Kpaddalign = 9;
-const Knop = 10;
+export const Kint = 0;
+export const Kuint = 1;
+export const Kfloat = 2;
+export const Knumber = 3;
+export const Kdouble = 4;
+export const Kchar = 5;
+export const Kstring = 6;
+export const Kzstr = 7;
+export const Kpadding = 8;
+export const Kpaddalign = 9;
+export const Knop = 10;
 
 /** C ref: lstrlib.c:1440 — typedef KOption (type alias only, no runtime output) */
 
@@ -1541,61 +1550,61 @@ function getoption(h, fmt, size) {
     switch (opt) {
         case 98:
         cptr.stI32(size, 1);
-        return Kint;
+        return 0;
         case 66:
         cptr.stI32(size, 1);
-        return Kuint;
+        return 1;
         case 104:
         cptr.stI32(size, 2);
-        return Kint;
+        return 0;
         case 72:
         cptr.stI32(size, 2);
-        return Kuint;
+        return 1;
         case 108:
         cptr.stI32(size, 8);
-        return Kint;
+        return 0;
         case 76:
         cptr.stI32(size, 8);
-        return Kuint;
+        return 1;
         case 106:
         cptr.stI32(size, 8);
-        return Kint;
+        return 0;
         case 74:
         cptr.stI32(size, 8);
-        return Kuint;
+        return 1;
         case 84:
         cptr.stI32(size, 8);
-        return Kuint;
+        return 1;
         case 102:
         cptr.stI32(size, 4);
-        return Kfloat;
+        return 2;
         case 110:
         cptr.stI32(size, 8);
-        return Knumber;
+        return 3;
         case 100:
         cptr.stI32(size, 8);
-        return Kdouble;
+        return 4;
         case 105:
         cptr.stI32(size, getnumlimit(h, fmt, 4));
-        return Kint;
+        return 0;
         case 73:
         cptr.stI32(size, getnumlimit(h, fmt, 4));
-        return Kuint;
+        return 1;
         case 115:
         cptr.stI32(size, getnumlimit(h, fmt, 8));
-        return Kstring;
+        return 6;
         case 99:
         cptr.stI32(size, getnum(fmt, -1));
         if ((__builtin_expect(BigInt(((cptr.ldI32(size) == -1) != 0)), 0n)))
             luaL_error(cptr.ldPtr(h), __sl53);
-        return Kchar;
+        return 5;
         case 122:
-        return Kzstr;
+        return 7;
         case 120:
         cptr.stI32(size, 1);
-        return Kpadding;
+        return 8;
         case 88:
-        return Kpaddalign;
+        return 9;
         case 32:
         break;
         case 60:
@@ -1616,18 +1625,18 @@ function getoption(h, fmt, size) {
         default:
         luaL_error(cptr.ldPtr(h), __sl54, opt);
     }
-    return Knop;
+    return 10;
 }
 
 /** C ref: lstrlib.c:1541 — @param {CPtr} h @param {CLongLong} totalsize @param {CPtr} fmt @param {CPtr} psize @param {CPtr} ntoalign @returns {*} */
 function getdetails(h, totalsize, fmt, psize, ntoalign) {
     let opt = getoption(h, fmt, psize);
     let align = cptr.box(cptr.ldI32(psize));
-    if (opt == Kpaddalign >>> 0) {
-        if (cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == Kchar >>> 0 || align.v == 0)
+    if (opt == 9) {
+        if (cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == 5 || align.v == 0)
             luaL_argerror(cptr.ldPtr(h), 1, __sl55);
     }
-    if (align.v <= 1 || opt == Kchar >>> 0)
+    if (align.v <= 1 || opt == 5)
         cptr.stI32(ntoalign, 0);
     else {
         if (align.v > cptr.ldI32(cptr.add(h, 12)))
@@ -1682,10 +1691,10 @@ function str_pack(L) {
         let opt = getdetails(h, totalsize, fmt, size, ntoalign);
         totalsize += BigInt.asUintN(64, BigInt(((ntoalign.v + size.v) | 0)));
         while (ntoalign.v-- > 0)
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 0)));
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 0)));
         arg++;
         switch (opt) {
-            case Kint >>> 0:
+            case 0:
             {
                 let n = luaL_checkinteger(L, arg);
                 if (size.v < (8)) {
@@ -1695,7 +1704,7 @@ function str_pack(L) {
                 packint(b, BigInt.asUintN(64, n), cptr.ldI32(cptr.add(h, 8)), size.v, (n < 0n));
                 break;
             }
-            case Kuint >>> 0:
+            case 1:
             {
                 let n = luaL_checkinteger(L, arg);
                 if (size.v < (8))
@@ -1703,7 +1712,7 @@ function str_pack(L) {
                 packint(b, BigInt.asUintN(64, n), cptr.ldI32(cptr.add(h, 8)), size.v, 0);
                 break;
             }
-            case Kfloat >>> 0:
+            case 2:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 4n);
@@ -1711,7 +1720,7 @@ function str_pack(L) {
                 (cptr.st1(cptr.add((b), 16), cptr.ld1u(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case Knumber >>> 0:
+            case 3:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
@@ -1719,7 +1728,7 @@ function str_pack(L) {
                 (cptr.st1(cptr.add((b), 16), cptr.ld1u(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case Kdouble >>> 0:
+            case 4:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
@@ -1727,17 +1736,17 @@ function str_pack(L) {
                 (cptr.st1(cptr.add((b), 16), cptr.ld1u(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case Kchar >>> 0:
+            case 5:
             {
                 let len = cptr.box(0);
                 let s = luaL_checklstring(L, arg, len);
                 (void ((__builtin_expect(BigInt(((len.v <= BigInt.asUintN(64, BigInt(size.v))) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl59))));
                 luaL_addlstring(b, s, len.v);
                 while (len.v++ < BigInt.asUintN(64, BigInt(size.v)))
-                    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 0)));
+                    (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 0)));
                 break;
             }
-            case Kstring >>> 0:
+            case 6:
             {
                 let len = cptr.box(0);
                 let s = luaL_checklstring(L, arg, len);
@@ -1747,20 +1756,20 @@ function str_pack(L) {
                 totalsize += len.v;
                 break;
             }
-            case Kzstr >>> 0:
+            case 7:
             {
                 let len = cptr.box(0);
                 let s = luaL_checklstring(L, arg, len);
                 (void ((__builtin_expect(BigInt(((cptr.strlen(s) == len.v) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl50))));
                 luaL_addlstring(b, s, len.v);
-                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 0)));
+                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 0)));
                 totalsize += len.v + 1n;
                 break;
             }
-            case Kpadding >>> 0:
-            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 0)));
-            case Kpaddalign >>> 0:
-            case Knop >>> 0:
+            case 8:
+            (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 0)));
+            case 9:
+            case 10:
             arg--;
             break;
         }
@@ -1779,7 +1788,7 @@ function str_packsize(L) {
         let size = cptr.box(0);
         let ntoalign = cptr.box(0);
         let opt = getdetails(h, totalsize, fmt, size, ntoalign);
-        (void ((__builtin_expect(BigInt(((opt != Kstring >>> 0 && opt != Kzstr >>> 0) != 0)), 1n)) || luaL_argerror(L, (1), (__sl61))));
+        (void ((__builtin_expect(BigInt(((opt != 6 && opt != 7) != 0)), 1n)) || luaL_argerror(L, (1), (__sl61))));
         size.v = (size.v + ntoalign.v) | 0;
         (void ((__builtin_expect(BigInt(((totalsize <= (8n < 4n ? ((~0n)) : 2147483647n) - BigInt.asUintN(64, BigInt(size.v))) != 0)), 1n)) || luaL_argerror(L, (1), (__sl62))));
         totalsize += BigInt.asUintN(64, BigInt(size.v));
@@ -1831,40 +1840,40 @@ function str_unpack(L) {
         luaL_checkstack(L, 2, __sl66);
         n++;
         switch (opt) {
-            case Kint >>> 0:
-            case Kuint >>> 0:
+            case 0:
+            case 1:
             {
-                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, (opt == Kint >>> 0));
+                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, (opt == 0));
                 lua_pushinteger(L, res);
                 break;
             }
-            case Kfloat >>> 0:
+            case 2:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 4, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case Knumber >>> 0:
+            case 3:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case Kdouble >>> 0:
+            case 4:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case Kchar >>> 0:
+            case 5:
             {
                 lua_pushlstring(L, cptr.add(data, pos), BigInt.asUintN(64, BigInt(size.v)));
                 break;
             }
-            case Kstring >>> 0:
+            case 6:
             {
                 let len = BigInt.asUintN(64, unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, 0));
                 (void ((__builtin_expect(BigInt(((len <= ld.v - pos - BigInt.asUintN(64, BigInt(size.v))) != 0)), 1n)) || luaL_argerror(L, (2), (__sl65))));
@@ -1872,7 +1881,7 @@ function str_unpack(L) {
                 pos += len;
                 break;
             }
-            case Kzstr >>> 0:
+            case 7:
             {
                 let len = cptr.strlen(cptr.add(data, pos));
                 (void ((__builtin_expect(BigInt(((pos + len < ld.v) != 0)), 1n)) || luaL_argerror(L, (2), (__sl67))));
@@ -1880,9 +1889,9 @@ function str_unpack(L) {
                 pos += len + 1n;
                 break;
             }
-            case Kpaddalign >>> 0:
-            case Kpadding >>> 0:
-            case Knop >>> 0:
+            case 9:
+            case 8:
+            case 10:
             n--;
             break;
         }
@@ -1893,31 +1902,48 @@ function str_unpack(L) {
 }
 
 /** C ref: lstrlib.c:1830 — luaL_Reg[18] */
-const strlib = [
-    { name: __sl68, func: str_byte },
-    { name: __sl69, func: str_char },
-    { name: __sl70, func: str_dump },
-    { name: __sl71, func: str_find },
-    { name: __sl72, func: str_format },
-    { name: __sl73, func: gmatch },
-    { name: __sl74, func: str_gsub },
-    { name: __sl75, func: str_len },
-    { name: __sl76, func: str_lower },
-    { name: __sl77, func: str_match },
-    { name: __sl78, func: str_rep },
-    { name: __sl79, func: str_reverse },
-    { name: __sl80, func: str_sub },
-    { name: __sl81, func: str_upper },
-    { name: __sl82, func: str_pack },
-    { name: __sl83, func: str_packsize },
-    { name: __sl84, func: str_unpack },
-    { name: null, func: null }
-];
+const strlib = cptr.alloc(18 * 16);
+cptr.stPtr(cptr.add(strlib, 0), __sl68);
+cptr.stPtr(cptr.add(cptr.add(strlib, 0), 8), str_byte);
+cptr.stPtr(cptr.add(strlib, 16), __sl69);
+cptr.stPtr(cptr.add(cptr.add(strlib, 16), 8), str_char);
+cptr.stPtr(cptr.add(strlib, 32), __sl70);
+cptr.stPtr(cptr.add(cptr.add(strlib, 32), 8), str_dump);
+cptr.stPtr(cptr.add(strlib, 48), __sl71);
+cptr.stPtr(cptr.add(cptr.add(strlib, 48), 8), str_find);
+cptr.stPtr(cptr.add(strlib, 64), __sl72);
+cptr.stPtr(cptr.add(cptr.add(strlib, 64), 8), str_format);
+cptr.stPtr(cptr.add(strlib, 80), __sl73);
+cptr.stPtr(cptr.add(cptr.add(strlib, 80), 8), gmatch);
+cptr.stPtr(cptr.add(strlib, 96), __sl74);
+cptr.stPtr(cptr.add(cptr.add(strlib, 96), 8), str_gsub);
+cptr.stPtr(cptr.add(strlib, 112), __sl75);
+cptr.stPtr(cptr.add(cptr.add(strlib, 112), 8), str_len);
+cptr.stPtr(cptr.add(strlib, 128), __sl76);
+cptr.stPtr(cptr.add(cptr.add(strlib, 128), 8), str_lower);
+cptr.stPtr(cptr.add(strlib, 144), __sl77);
+cptr.stPtr(cptr.add(cptr.add(strlib, 144), 8), str_match);
+cptr.stPtr(cptr.add(strlib, 160), __sl78);
+cptr.stPtr(cptr.add(cptr.add(strlib, 160), 8), str_rep);
+cptr.stPtr(cptr.add(strlib, 176), __sl79);
+cptr.stPtr(cptr.add(cptr.add(strlib, 176), 8), str_reverse);
+cptr.stPtr(cptr.add(strlib, 192), __sl80);
+cptr.stPtr(cptr.add(cptr.add(strlib, 192), 8), str_sub);
+cptr.stPtr(cptr.add(strlib, 208), __sl81);
+cptr.stPtr(cptr.add(cptr.add(strlib, 208), 8), str_upper);
+cptr.stPtr(cptr.add(strlib, 224), __sl82);
+cptr.stPtr(cptr.add(cptr.add(strlib, 224), 8), str_pack);
+cptr.stPtr(cptr.add(strlib, 240), __sl83);
+cptr.stPtr(cptr.add(cptr.add(strlib, 240), 8), str_packsize);
+cptr.stPtr(cptr.add(strlib, 256), __sl84);
+cptr.stPtr(cptr.add(cptr.add(strlib, 256), 8), str_unpack);
+cptr.stPtr(cptr.add(strlib, 272), null);
+cptr.stPtr(cptr.add(cptr.add(strlib, 272), 8), null);
 
 /** C ref: lstrlib.c:1852 — @param {CPtr} L */
 function createmetatable(L) {
     lua_createtable(L, 0, Number(BigInt.asIntN(32, (160n / 16n - 1n))));
-    luaL_setfuncs(L, cptr.decay(stringmetamethods), 0);
+    luaL_setfuncs(L, stringmetamethods, 0);
     lua_pushstring(L, __sl0);
     lua_pushvalue(L, -2);
     lua_setmetatable(L, -2);
@@ -1929,7 +1955,7 @@ function createmetatable(L) {
 
 /** C ref: lstrlib.c:1869 — @param {CPtr} L @returns {CInt} */
 export function luaopen_string(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (288n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(strlib), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (288n / 16n - 1n)))), luaL_setfuncs(L, strlib, 0));
     createmetatable(L);
     return 1;
 }

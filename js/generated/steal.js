@@ -143,48 +143,48 @@ export function somegold(lmoney) {
 /** C ref: steal.c:45 — @param {CPtr} argchain @returns {CPtr} */
 export function findgold(argchain) {
     let chain = argchain;
-    while (chain && cptr.ldI16(cptr.add(chain, 32)) != GOLD_PIECE)
+    while (chain && cptr.ldI16(cptr.add(chain, 32)) != 438)
         chain = cptr.ldPtr(chain);
     return chain;
 }
 
 /** C ref: steal.c:58 — @param {CPtr} mtmp */
 export function stealgold(mtmp) {
-    let fgold = g_at(u.ux, u.uy);
+    let fgold = g_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     let ygold;
     let tmp;
     let who;
     let whose;
     let what;
-    while (fgold && cptr.ldI16(cptr.add(fgold, 32)) != GOLD_PIECE)
+    while (fgold && cptr.ldI16(cptr.add(fgold, 32)) != 438)
         fgold = cptr.ldPtr(cptr.add(fgold, 8));
-    ygold = findgold(gi.invent);
+    ygold = findgold(cptr.ldPtr(cptr.add(gi, 8)));
     if (fgold && (!ygold || cptr.ldI64(cptr.add(fgold, 40)) > cptr.ldI64(cptr.add(ygold, 40)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl2), rn2(5)) : rn2(5)))) {
         obj_extract_self(fgold);
         add_to_minv(mtmp, fgold);
-        newsym(u.ux, u.uy);
-        if (u.usteed) {
-            who = u.usteed;
+        newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
+        if (cptr.ldPtr(cptr.add(u, 2424))) {
+            who = cptr.ldPtr(cptr.add(u, 2424));
             whose = s_suffix(y_monnam(who));
-            what = makeplural(mbodypart(who, FOOT));
+            what = makeplural(mbodypart(who, 5));
         } else {
-            who = cptr.boxProp(gy, 'youmonst');
+            who = cptr.add(gy, 8);
             whose = __sl3;
-            what = makeplural(body_part(FOOT));
+            what = makeplural(body_part(5));
         }
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(who, 8))), 72)) & 524288n) != 0n))
             what = __sl4;
         if (!cptr.strncmp(what, __sl5, 5n))
             what = cptr.add(what, 5);
-        pline(__sl6, Monnam(mtmp), (((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked) || ((u.uprops[FLYING].intrinsic || u.uprops[FLYING].extrinsic || (u.usteed && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(u.usteed, 8))), 72)) & 1n) != 0n))) && !u.uprops[FLYING].blocked)) ? __sl7 : __sl8, whose, what);
+        pline(__sl6, Monnam(mtmp), (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8))) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)))) ? __sl7 : __sl8, whose, what);
         if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 94, __sl2), rn2(5)) : rn2(5))) {
             if (!tele_restrict(mtmp))
                 void rloc(mtmp, 2);
             monflee(mtmp, 0, (0), (0));
         }
     } else if (ygold) {
-        let gold_price = objects[GOLD_PIECE].oc_cost;
-        tmp = (somegold(money_cnt(gi.invent)) + BigInt(gold_price) - 1n) / BigInt(gold_price);
+        let gold_price = cptr.ldI16(cptr.add(cptr.add(objects, 438, 120), 80));
+        tmp = (somegold(money_cnt(cptr.ldPtr(cptr.add(gi, 8)))) + BigInt(gold_price) - 1n) / BigInt(gold_price);
         tmp = ((tmp) < (cptr.ldI64(cptr.add(ygold, 40))) ? (tmp) : (cptr.ldI64(cptr.add(ygold, 40))));
         if (tmp < cptr.ldI64(cptr.add(ygold, 40)))
             ygold = splitobj(ygold, tmp);
@@ -196,33 +196,33 @@ export function stealgold(mtmp) {
         if (!tele_restrict(mtmp))
             void rloc(mtmp, 2);
         monflee(mtmp, 0, (0), (0));
-        disp.botl = (1);
+        cptr.st1(disp, (1));
     }
 }
 
 /** C ref: steal.c:120 */
 export function thiefdead() {
-    gs.stealmid = 0;
-    if (ga.afternmv === stealarm) {
-        ga.afternmv = unstolenarm;
-        gn.nomovemsg = null;
+    cptr.stI32(cptr.add(gs, 1412), 0);
+    if (cptr.ldPtr(ga) === stealarm) {
+        cptr.stPtr(ga, unstolenarm);
+        cptr.stPtr(cptr.add(gn, 8), null);
     }
 }
 
 /** C ref: steal.c:133 @returns {CInt} */
 export function unresponsive() {
-    if (gm.multi >= 0n)
+    if (cptr.ldI64(cptr.add(gm, 8)) >= 0n)
         return (0);
-    return schar((unconscious() || is_fainted() || (gm.multi_reason && (!cptr.strncmp(gm.multi_reason, __sl10, 6n) || !cptr.strncmp(gm.multi_reason, __sl11, 9n)))));
+    return schar((unconscious() || is_fainted() || (cptr.ldPtr(cptr.add(gm, 16)) && (!cptr.strncmp(cptr.ldPtr(cptr.add(gm, 16)), __sl10, 6n) || !cptr.strncmp(cptr.ldPtr(cptr.add(gm, 16)), __sl11, 9n)))));
 }
 
 /** C ref: steal.c:147 @returns {CInt} */
 function unstolenarm() {
     let obj;
-    for (obj = gi.invent; obj; obj = cptr.ldPtr(obj))
-        if (cptr.ldI32(cptr.add(obj, 24)) == gs.stealoid)
+    for (obj = cptr.ldPtr(cptr.add(gi, 8)); obj; obj = cptr.ldPtr(obj))
+        if (cptr.ldI32(cptr.add(obj, 24)) == cptr.ldI32(cptr.add(gs, 1408)))
             break;
-    gs.stealoid = 0;
+    cptr.stI32(cptr.add(gs, 1408), 0);
     if (obj) {
         You(__sl12, armor_simple_name(obj));
     }
@@ -235,21 +235,21 @@ function stealarm() {
         let mtmp;
         let otmp;
         let nextobj;
-        if (!gs.stealoid || !gs.stealmid)
+        if (!cptr.ldI32(cptr.add(gs, 1408)) || !cptr.ldI32(cptr.add(gs, 1412)))
             break __lbl_botm;
-        for (otmp = gi.invent; otmp; otmp = nextobj) {
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
-            if (cptr.ldI32(cptr.add(otmp, 24)) == gs.stealoid) {
-                for (mtmp = svl.level.monlist; mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                    if (cptr.ldI32(cptr.add(mtmp, 16)) == gs.stealmid) {
+            if (cptr.ldI32(cptr.add(otmp, 24)) == cptr.ldI32(cptr.add(gs, 1408))) {
+                for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+                    if (cptr.ldI32(cptr.add(mtmp, 16)) == cptr.ldI32(cptr.add(gs, 1412))) {
                         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
                             impossible(__sl13);
                             break __lbl_botm;
                         }
-                        if (!dmgtype(cptr.ldPtr(cptr.add(mtmp, 8)), 21) || dist2((cptr.ldI16(cptr.add(mtmp, 28))), (cptr.ldI16(cptr.add(mtmp, 30))), u.ux, u.uy) > 2)
+                        if (!dmgtype(cptr.ldPtr(cptr.add(mtmp, 8)), 21) || dist2((cptr.ldI16(cptr.add(mtmp, 28))), (cptr.ldI16(cptr.add(mtmp, 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) > 2)
                             break __lbl_botm;
                         if (cptr.ldI32(cptr.add(otmp, 64)))
-                            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.decay(u.ushops))));
+                            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.add(u, 83))));
                         freeinv(otmp);
                         pline(__sl14, Monnam(mtmp), doname(otmp));
                         void mpickobj(mtmp, otmp);
@@ -263,7 +263,7 @@ function stealarm() {
             }
         }
     }
-    gs.stealoid = (gs.stealmid = 0);
+    cptr.stI32(cptr.add(gs, 1408), cptr.stI32(cptr.add(gs, 1412), 0));
     return 0;
 }
 
@@ -320,9 +320,9 @@ export function remove_worn_item(obj, unchain_ball) {
     if (cptr.ld1s(cptr.add(obj, 52)) == 9)
         do {
             if (debugcore(__sl0, (1))) {
-                let save_plnmsg = iflags.last_msg;
+                let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                 pline(__sl16, simpleonames(obj));
-                iflags.last_msg = save_plnmsg;
+                cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
             }
         } while (0);
     cptr.stI32(cptr.add(obj, 144), oldinuse);
@@ -347,11 +347,15 @@ function worn_item_removal(mon, obj) {
         void strsubst(cptr.add(p, 2), __sl27, __sl28);
     verb = ((cptr.ldI64(cptr.add(obj, 192)) & (256n | 1024n | 512n)) != 0n) ? __sl29 : (((cptr.ldI64(cptr.add(obj, 192)) & ((131072n | 262144n) | 65536n | 524288n)) != 0n) ? __sl30 : __sl31);
     pline(__sl32, Some_Monnam(mon), verb, cptr.decay(objbuf));
-    iflags.last_msg = PLNMSG_MON_TAKES_OFF_ITEM;
+    cptr.stI32(cptr.add(iflags, 40), 11);
     remove_worn_item(obj, (1));
 }
 
-const __static_steal_how = [__sl33, __sl57, __sl58, __sl59]; /** C ref: steal.c:476 — char *[4] (function-static) */
+const __static_steal_how = cptr.alloc(4 * 8);
+cptr.stPtr(cptr.add(__static_steal_how, 0), __sl33);
+cptr.stPtr(cptr.add(__static_steal_how, 8), __sl57);
+cptr.stPtr(cptr.add(__static_steal_how, 16), __sl58);
+cptr.stPtr(cptr.add(__static_steal_how, 24), __sl59); /** C ref: steal.c:476 — char *[4] (function-static) */
 
 /** C ref: steal.c:343 — @param {CPtr} mtmp @param {CPtr} objnambuf @returns {CInt} */
 export function steal(mtmp, objnambuf) {
@@ -367,10 +371,10 @@ export function steal(mtmp, objnambuf) {
         was_punished = schar((uball.v !== null));
         if (objnambuf)
             cptr.st1(objnambuf, 0);
-        if (!monnear(mtmp, u.ux, u.uy))
+        if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))))
             return 0;
         void cptr.strcpy(cptr.decay(Monnambuf), Some_Monnam(mtmp));
-        if (go.occupation)
+        if (cptr.ldPtr(cptr.add(go, 56)))
             void maybe_finished_meal((0));
         icnt = inv_cnt((0));
         if (!icnt || (icnt == 1 && uskin)) { __pc = 6; continue; }
@@ -384,10 +388,10 @@ export function steal(mtmp, objnambuf) {
         if ((uball.v !== null) && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 379, __sl33), rn2(4)) : rn2(4))) {
             (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1s(cptr.add(uball.v, 52)) == 1))), 0n) ? __assert_rtn(__sl33, __sl34, 381, __sl35) : void 0);
             worn_item_removal(mtmp, uchain.v);
-        } else if (u.utrap && u.utraptype == TT_BURIEDBALL >>> 0 && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
+        } else if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 6 && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
             pline(__sl36, cptr.decay(Monnambuf));
-            void openholdingtrap(cptr.boxProp(gy, 'youmonst'), dummy);
-        } else if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
+            void openholdingtrap(cptr.add(gy, 8), dummy);
+        } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
             pline(__sl37);
         } else if (inv_cnt((1)) > inv_cnt((0))) {
             pline(__sl38, cptr.decay(Monnambuf));
@@ -408,7 +412,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 9: {
-        if (u.uprops[ADORNED].extrinsic & 131072n) { __pc = 11; continue; }
+        if (cptr.ldI64(cptr.add(cptr.add(u, 112), 39, 24)) & 131072n) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
@@ -418,7 +422,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 12: {
-        if (u.uprops[ADORNED].extrinsic & 262144n) { __pc = 14; continue; }
+        if (cptr.ldI64(cptr.add(cptr.add(u, 112), 39, 24)) & 262144n) { __pc = 14; continue; }
         __pc = 13; continue;
         }
         case 14: {
@@ -441,8 +445,8 @@ export function steal(mtmp, objnambuf) {
         }
         case 2 /* retry: */: {
         tmp = 0;
-        for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin) && cptr.ld1s(cptr.add(otmp, 49)) != COIN_CLASS)
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
+            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin) && cptr.ld1s(cptr.add(otmp, 49)) != 12)
                 tmp = (tmp + ((cptr.ldI64(cptr.add(otmp, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n))) ? 5 : 1)) | 0;
         if (!tmp) { __pc = 16; continue; }
         __pc = 15; continue;
@@ -454,8 +458,8 @@ export function steal(mtmp, objnambuf) {
         }
         case 15: {
         tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 421, __sl33), rn2(tmp)) : rn2(tmp));
-        for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin) && cptr.ld1s(cptr.add(otmp, 49)) != COIN_CLASS) {
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
+            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin) && cptr.ld1s(cptr.add(otmp, 49)) != 12) {
                 tmp = (tmp - ((cptr.ldI64(cptr.add(otmp, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n))) ? 5 : 1)) | 0;
                 if (tmp < 0)
                     break;
@@ -478,9 +482,9 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 3 /* gotobj: */: {
-        if (cptr.ldI32(cptr.add(otmp, 24)) == gs.stealoid)
+        if (cptr.ldI32(cptr.add(otmp, 24)) == cptr.ldI32(cptr.add(gs, 1408)))
             return 0;
-        if (cptr.ldI16(cptr.add(otmp, 32)) == BOULDER && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 134217728n) != 0n)) { __pc = 18; continue; }
+        if (cptr.ldI16(cptr.add(otmp, 32)) == 475 && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 134217728n) != 0n)) { __pc = 18; continue; }
         __pc = 17; continue;
         }
         case 18: {
@@ -504,10 +508,10 @@ export function steal(mtmp, objnambuf) {
         case 22: {
         if (cptr.eq(otmp, uball.v))
             ostuck = (1);
-        else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !u.twoweap))
+        else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1s(cptr.add(u, 2816))))
             ostuck = (0);
         else
-            ostuck = schar(((cptr.ldI32(cptr.add(otmp, 56)) | 0 && cptr.ldI64(cptr.add(otmp, 192))) || (cptr.eq(otmp, (((u.uhandedness | 0) == 1) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, (((u.uhandedness | 0) == 1) ? uright.v : uleft.v)) && welded(uwep.v) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0))));
+            ostuck = schar(((cptr.ldI32(cptr.add(otmp, 56)) | 0 && cptr.ldI64(cptr.add(otmp, 192))) || (cptr.eq(otmp, (((cptr.ldI32(cptr.add(u, 1876)) | 0) == 1) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, (((cptr.ldI32(cptr.add(u, 1876)) | 0) == 1) ? uright.v : uleft.v)) && welded(uwep.v) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0))));
         if (ostuck || can_carry(mtmp, otmp) == 0) { __pc = 24; continue; }
         __pc = 23; continue;
         }
@@ -516,7 +520,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 4 /* cant_take: */: {
-        pline(__sl41, cptr.decay(Monnambuf), cptr.ldPtr(cptr.add(cptr.decay(__static_steal_how), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(how.length)) : rn2(how.length)))), (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n)) ? __sl20 : __sl22, (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n)) ? armor_simple_name(otmp) : yname(otmp));
+        pline(__sl41, cptr.decay(Monnambuf), cptr.ldPtr(cptr.add(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(4)) : rn2(4)), 8)), (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n)) ? __sl20 : __sl22, (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n)) ? armor_simple_name(otmp) : yname(otmp));
         return !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl33), rn2((((inv_cnt((0)) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt((0)) / 5) | 0) + 2) | 0));
         __pc = 23;
         continue;
@@ -526,7 +530,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 21: {
-        if (cptr.ldI16(cptr.add(otmp, 32)) == LEASH && cptr.ldI32(cptr.add(otmp, 168))) { __pc = 26; continue; }
+        if (cptr.ldI16(cptr.add(otmp, 32)) == 236 && cptr.ldI32(cptr.add(otmp, 168))) { __pc = 26; continue; }
         __pc = 25; continue;
         }
         case 26: {
@@ -552,11 +556,11 @@ export function steal(mtmp, objnambuf) {
         }
         case 30: {
         let __sw33 = cptr.ld1s(cptr.add(otmp, 49));
-        if (__sw33 === TOOL_CLASS) { __pc = 34; continue; }
-        if (__sw33 === AMULET_CLASS) { __pc = 35; continue; }
-        if (__sw33 === RING_CLASS) { __pc = 36; continue; }
-        if (__sw33 === FOOD_CLASS) { __pc = 37; continue; }
-        if (__sw33 === ARMOR_CLASS) { __pc = 38; continue; }
+        if (__sw33 === 6) { __pc = 34; continue; }
+        if (__sw33 === 5) { __pc = 35; continue; }
+        if (__sw33 === 4) { __pc = 36; continue; }
+        if (__sw33 === 7) { __pc = 37; continue; }
+        if (__sw33 === 3) { __pc = 38; continue; }
         __pc = 39; continue;
         }
         case 34: {
@@ -578,7 +582,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 38: {
-        armordelay = objects[cptr.ldI16(cptr.add(otmp, 32))].oc_delay;
+        armordelay = cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 71));
         if (olddelay > 0 && olddelay < armordelay)
             armordelay = olddelay;
         if (monkey_business || unresponsive()) { __pc = 41; continue; }
@@ -602,21 +606,21 @@ export function steal(mtmp, objnambuf) {
         case 42: {
         curssv = cptr.ldI32(cptr.add(otmp, 56)) | 0;
         cptr.stI32(cptr.add(otmp, 56), 0);
-        slowly = (armordelay >= 1 || gm.multi < 0n);
-        if (flags.female)
+        slowly = (armordelay >= 1 || cptr.ldI64(cptr.add(gm, 8)) < 0n);
+        if (cptr.ld1s(cptr.add(flags, 13)))
             urgent_pline(__sl42, !seen ? __sl43 : cptr.decay(Monnambuf), curssv ? __sl44 : (!slowly ? __sl45 : (was_doffing ? __sl46 : __sl47)), armor_simple_name(otmp));
         else
             urgent_pline(__sl48, !seen ? __sl43 : Adjmonnam(mtmp, __sl49), curssv ? __sl50 : (!slowly ? __sl51 : (was_doffing ? __sl52 : __sl53)), armor_simple_name(otmp));
         named++;
         nomul(-armordelay);
-        gm.multi_reason = __sl54;
-        gn.nomovemsg = null;
+        cptr.stPtr(cptr.add(gm, 16), __sl54);
+        cptr.stPtr(cptr.add(gn, 8), null);
         remove_worn_item(otmp, (1));
         cptr.stI32(cptr.add(otmp, 56), curssv >>> 0);
-        if (gm.multi < 0n) {
-            gs.stealoid = cptr.ldI32(cptr.add(otmp, 24));
-            gs.stealmid = cptr.ldI32(cptr.add(mtmp, 16));
-            ga.afternmv = stealarm;
+        if (cptr.ldI64(cptr.add(gm, 8)) < 0n) {
+            cptr.stI32(cptr.add(gs, 1408), cptr.ldI32(cptr.add(otmp, 24)));
+            cptr.stI32(cptr.add(gs, 1412), cptr.ldI32(cptr.add(mtmp, 16)));
+            cptr.stPtr(ga, stealarm);
             return 0;
         }
         __pc = 40;
@@ -653,23 +657,23 @@ export function steal(mtmp, objnambuf) {
         case 29: {
         if (objnambuf)
             void cptr.strcpy(objnambuf, yname(otmp));
-        if (!(u.uprops[CONFLICT].intrinsic || u.uprops[CONFLICT].extrinsic) && !(was_punished && !(uball.v !== null)))
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 44, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 44, 24))) && !(was_punished && !(uball.v !== null)))
             cptr.stI32(cptr.add(mtmp, 132), 1);
         if (cptr.ldI32(cptr.add(otmp, 64)))
-            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.decay(u.ushops))));
+            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.add(u, 83))));
         freeinv(otmp);
-        if (iflags.last_msg == PLNMSG_MON_TAKES_OFF_ITEM && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == S_NYMPH)
+        if (cptr.ldI32(cptr.add(iflags, 40)) == 11 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 14)
             ++named;
         urgent_pline(__sl56, named ? __sl43 : cptr.decay(Monnambuf), doname(otmp));
         encumber_msg();
-        could_petrify = (cptr.ldI16(cptr.add(otmp, 32)) == CORPSE && (cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(otmp, 168)))), cptr.add(cptr.decay(mons), PM_COCKATRICE)) || cptr.eq((cptr.add(cptr.decay(mons), cptr.ldI32(cptr.add(otmp, 168)))), cptr.add(cptr.decay(mons), PM_CHICKATRICE))));
+        could_petrify = (cptr.ldI16(cptr.add(otmp, 32)) == 265 && (cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), cptr.add(mons, 10, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), cptr.add(mons, 9, 96))));
         cptr.stI32(cptr.add(otmp, 160), 3);
         void mpickobj(mtmp, otmp);
         if (could_petrify && !(cptr.ldI64(cptr.add(mtmp, 296)) & 16n)) {
             minstapetrify(mtmp, (1));
             return -1;
         }
-        return (gm.multi < 0n) ? 0 : 1;
+        return (cptr.ldI64(cptr.add(gm, 8)) < 0n) ? 0 : 1;
         __pc = -1;
         continue;
         }
@@ -689,21 +693,21 @@ export function mpickobj(mtmp, otmp) {
         impossible(__sl61, pmname(cptr.ldPtr(cptr.add(mtmp, 8)), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __sl62 : __sl63, simpleonames(otmp));
         return 0;
     }
-    if (cptr.eq(otmp, gt.thrownobj))
-        gt.thrownobj = null;
-    else if (cptr.eq(otmp, gk.kickedobj))
-        gk.kickedobj = null;
+    if (cptr.eq(otmp, cptr.ldPtr(cptr.add(gt, 328))))
+        cptr.stPtr(cptr.add(gt, 328), null);
+    else if (cptr.eq(otmp, cptr.ldPtr(cptr.add(gk, 8))))
+        cptr.stPtr(cptr.add(gk, 8), null);
     if (cptr.ldI32(cptr.add(otmp, 64)) | 0 || ((cptr.ldPtr(cptr.add((otmp), 16)) !== null) && count_unpaid(cptr.ldPtr(cptr.add(otmp, 16))))) {
         subfrombill(otmp, find_objowner(otmp, cptr.ldI16(cptr.add(otmp, 28)), cptr.ldI16(cptr.add(otmp, 30))));
     }
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtr(cptr.add(mtmp, 8)), 11)) {
-        if ((u.uswallow | 0 && (cptr.eq(u.ustuck, (mtmp)))) && !((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked))
+        if ((cptr.ldI32(cptr.add(u, 1848)) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp)))) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))))
             pline(__sl64, Tobjnam(otmp, __sl65));
         snuff_otmp = (1);
     }
     cptr.stI32(cptr.add(otmp, 68), 0);
     if (!cptr.ld1s(cptr.add(mtmp, 65))) {
-        if (!canseemon(mtmp) && !cptr.eq(mtmp, u.ustuck))
+        if (!canseemon(mtmp) && !cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2416))))
             unknow_object(otmp);
         if ((cptr.ldI32(cptr.add(otmp, 160)) | 0) == 1)
             cptr.stI32(cptr.add(otmp, 160), 3);
@@ -725,34 +729,34 @@ export function stealamulet(mtmp) {
     let real = 0;
     let fake = 0;
     let n;
-    for (n = 0, obj = gi.invent; obj; obj = cptr.ldPtr(obj))
-        if ((cptr.ld1s(cptr.add((obj), 51)) >= ART_ORB_OF_DETECTION))
+    for (n = 0, obj = cptr.ldPtr(cptr.add(gi, 8)); obj; obj = cptr.ldPtr(obj))
+        if ((cptr.ld1s(cptr.add((obj), 51)) >= 21))
             ++n, otmp = obj;
     if (n > 1) {
         n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 702, __sl66), rnd(n)) : rnd(n));
-        for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
-            if ((cptr.ld1s(cptr.add((otmp), 51)) >= ART_ORB_OF_DETECTION) && !--n)
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
+            if ((cptr.ld1s(cptr.add((otmp), 51)) >= 21) && !--n)
                 break;
     }
     if (!otmp) {
-        if (u.uhave.amulet) {
-            real = AMULET_OF_YENDOR;
-            fake = FAKE_AMULET_OF_YENDOR;
-        } else if (u.uhave.bell) {
-            real = BELL_OF_OPENING;
-            fake = BELL;
-        } else if (u.uhave.book) {
-            real = SPE_BOOK_OF_THE_DEAD;
-        } else if (u.uhave.menorah) {
-            real = CANDELABRUM_OF_INVOCATION;
+        if (cptr.ldI32(cptr.add(u, 1944))) {
+            real = 213;
+            fake = 212;
+        } else if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 4))) {
+            real = 263;
+            fake = 255;
+        } else if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 8))) {
+            real = 409;
+        } else if (cptr.ldI32(cptr.add(cptr.add(u, 1944), 12))) {
+            real = 262;
         } else
             return;
-        for (n = 0, obj = gi.invent; obj; obj = cptr.ldPtr(obj))
+        for (n = 0, obj = cptr.ldPtr(cptr.add(gi, 8)); obj; obj = cptr.ldPtr(obj))
             if (cptr.ldI16(cptr.add(obj, 32)) == real || (cptr.ldI16(cptr.add(obj, 32)) == fake && !cptr.ldI32(cptr.add(mtmp, 196))))
                 ++n, otmp = obj;
         if (n > 1) {
             n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 728, __sl66), rnd(n)) : rnd(n));
-            for (otmp = gi.invent; otmp; otmp = cptr.ldPtr(otmp))
+            for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
                 if ((cptr.ldI16(cptr.add(otmp, 32)) == real || (cptr.ldI16(cptr.add(otmp, 32)) == fake && !cptr.ldI32(cptr.add(mtmp, 196)))) && !--n)
                     break;
         }
@@ -763,7 +767,7 @@ export function stealamulet(mtmp) {
         if (cptr.eq(otmp, uarmu.v) && uarm.v)
             worn_item_removal(mtmp, uarm.v);
         if ((cptr.eq(otmp, uarmg.v) || ((cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) && uarmg.v)) && uwep.v) {
-            if (u.twoweap)
+            if (cptr.ld1s(cptr.add(u, 2816)))
                 worn_item_removal(mtmp, uswapwep.v);
             worn_item_removal(mtmp, uwep.v);
         }
@@ -772,7 +776,7 @@ export function stealamulet(mtmp) {
         if (cptr.ldI64(cptr.add(otmp, 192)))
             worn_item_removal(mtmp, otmp);
         if (cptr.ldI32(cptr.add(otmp, 64)))
-            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.decay(u.ushops))));
+            subfrombill(otmp, shop_keeper(cptr.ld1s(cptr.add(u, 83))));
         freeinv(otmp);
         void cptr.strcpy(cptr.decay(buf), doname(otmp));
         void mpickobj(mtmp, otmp);
@@ -785,18 +789,18 @@ export function stealamulet(mtmp) {
 
 /** C ref: steal.c:772 — @param {CPtr} mon @param {CPtr} obj @param {CInt} ochance @param {CInt} achance */
 export function maybe_absorb_item(mon, obj, ochance, achance) {
-    if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1s(cptr.add(obj, 49)) == ROCK_CLASS || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
+    if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1s(cptr.add(obj, 49)) == 14 || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
         return;
     if ((cptr.ld1s(cptr.add((obj), 52)) == 3)) {
         if (cptr.ldI64(cptr.add(obj, 192)))
             remove_worn_item(obj, (1));
         if (cptr.ldI32(cptr.add(obj, 64)))
-            subfrombill(obj, shop_keeper(cptr.ld1s(cptr.decay(u.ushops))));
-        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, cptr.ldI16(cptr.add(mon, 30)))), cptr.ldI16(cptr.add(mon, 28)))) & 2) != 0)) {
+            subfrombill(obj, shop_keeper(cptr.ld1s(cptr.add(u, 83))));
+        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)))), cptr.ldI16(cptr.add(mon, 28)))) & 2) != 0)) {
             pline(__sl67, Some_Monnam(mon), yname(obj), (cptr.ldI64(cptr.add(obj, 40)) > 1n) ? __sl68 : __sl69);
         } else {
-            let hand_s = body_part(HAND);
-            if (((cptr.ld1s(cptr.add(obj, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(obj, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(obj, 32))].oc_big | 0))
+            let hand_s = body_part(6);
+            if (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0))
                 hand_s = makeplural(hand_s);
             pline(__sl70, upstart(yname(obj)), otense(obj, __sl71), hand_s);
         }
@@ -816,10 +820,10 @@ export function mdrop_obj(mon, obj, verbosely) {
     let unwornmask = cptr.ldI64(cptr.add(obj, 192));
     let obj_name = distant_name(obj, doname);
     extract_from_minvent(mon, obj, (0), (1));
-    if (unwornmask && cptr.ld1s(cptr.add(mon, 65)) && (unwornmask & 1048576n) != 0n && !cptr.ldI32(cptr.add(obj, 64)) && costly_spot(omx, omy) && cptr.strchr(in_rooms(u.ux, u.uy, SHOPBASE), svl.level.locations[omx][omy].roomno | 0)) {
+    if (unwornmask && cptr.ld1s(cptr.add(mon, 65)) && (unwornmask & 1048576n) != 0n && !cptr.ldI32(cptr.add(obj, 64)) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 14), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), omx, 756), omy, 36), 24)) | 0)) {
         cptr.stI32(cptr.add(obj, 68), 1);
     }
-    if (verbosely && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, omy)), omx)) & 2) != 0))
+    if (verbosely && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), omy)), omx)) & 2) != 0))
         pline_mon(mon, __sl73, Monnam(mon), obj_name);
     if (!flooreffects(obj, omx, omy, __sl74)) {
         place_object(obj, omx, omy);
@@ -858,8 +862,8 @@ export function relobj(mtmp, show, is_pet) {
         obfree(otmp, null);
     }
     while ((otmp = (is_pet ? droppables(mtmp) : cptr.ldPtr(cptr.add(mtmp, 280)))) !== null) {
-        mdrop_obj(mtmp, otmp, schar((is_pet && flags.verbose)));
+        mdrop_obj(mtmp, otmp, schar((is_pet && cptr.ld1s(cptr.add(flags, 48)))));
     }
-    if (show && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, omy)), omx)) & 2) != 0))
+    if (show && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), omy)), omx)) & 2) != 0))
         newsym(i16(omx), i16(omy));
 }

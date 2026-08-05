@@ -6,6 +6,7 @@
 import * as cptr from '../cptr.js';
 import { u, uleft, uright } from './decl.js';
 import { distmin } from './hacklib.js';
+import { sfi_int, sfi_nhcoord, sfo_int, sfo_nhcoord } from './sfbase.js';
 import { panic } from './end.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -31,14 +32,14 @@ export function initrack() {
 
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == RIN_STEALTH) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == RIN_STEALTH))
+    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == 181) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == 181))
         return;
     if (utcnt.v < 100)
         utcnt.v++;
     if (utpnt.v == 100)
         utpnt.v = 0;
-    cptr.stI16(cptr.add(utrack, utpnt.v, 4), u.ux);
-    cptr.stI16(cptr.add(cptr.add(utrack, utpnt.v, 4), 2), u.uy);
+    cptr.stI16(cptr.add(utrack, utpnt.v, 4), cptr.ldI16(u));
+    cptr.stI16(cptr.add(cptr.add(utrack, utpnt.v, 4), 2), cptr.ldI16(cptr.add(u, 2)));
     utpnt.v++;
 }
 

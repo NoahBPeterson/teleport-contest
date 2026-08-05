@@ -30,24 +30,34 @@ const __sl8 = cptr.lit("utf8");
 const __sl9 = cptr.lit("debug");
 
 /** C ref: linit.c:42 — luaL_Reg[11] */
-const loadedlibs = [
-    { name: __sl0, func: luaopen_base },
-    { name: __sl1, func: luaopen_package },
-    { name: __sl2, func: luaopen_coroutine },
-    { name: __sl3, func: luaopen_table },
-    { name: __sl4, func: luaopen_io },
-    { name: __sl5, func: luaopen_os },
-    { name: __sl6, func: luaopen_string },
-    { name: __sl7, func: luaopen_math },
-    { name: __sl8, func: luaopen_utf8 },
-    { name: __sl9, func: luaopen_debug },
-    { name: null, func: null }
-];
+const loadedlibs = cptr.alloc(11 * 16);
+cptr.stPtr(cptr.add(loadedlibs, 0), __sl0);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 0), 8), luaopen_base);
+cptr.stPtr(cptr.add(loadedlibs, 16), __sl1);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 16), 8), luaopen_package);
+cptr.stPtr(cptr.add(loadedlibs, 32), __sl2);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 32), 8), luaopen_coroutine);
+cptr.stPtr(cptr.add(loadedlibs, 48), __sl3);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 48), 8), luaopen_table);
+cptr.stPtr(cptr.add(loadedlibs, 64), __sl4);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 64), 8), luaopen_io);
+cptr.stPtr(cptr.add(loadedlibs, 80), __sl5);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 80), 8), luaopen_os);
+cptr.stPtr(cptr.add(loadedlibs, 96), __sl6);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 96), 8), luaopen_string);
+cptr.stPtr(cptr.add(loadedlibs, 112), __sl7);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 112), 8), luaopen_math);
+cptr.stPtr(cptr.add(loadedlibs, 128), __sl8);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 128), 8), luaopen_utf8);
+cptr.stPtr(cptr.add(loadedlibs, 144), __sl9);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 144), 8), luaopen_debug);
+cptr.stPtr(cptr.add(loadedlibs, 160), null);
+cptr.stPtr(cptr.add(cptr.add(loadedlibs, 160), 8), null);
 
 /** C ref: linit.c:57 — @param {CPtr} L */
 export function luaL_openlibs(L) {
     let lib;
-    for (lib = cptr.decay(loadedlibs); cptr.ldPtr(cptr.add(lib, 8)); lib = cptr.add(lib, 1, 16)) {
+    for (lib = loadedlibs; cptr.ldPtr(cptr.add(lib, 8)); lib = cptr.add(lib, 1, 16)) {
         luaL_requiref(L, cptr.ldPtr(lib), cptr.ldPtr(cptr.add(lib, 8)), 1);
         lua_settop(L, (-(1) - 1) | 0);
     }

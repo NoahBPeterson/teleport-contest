@@ -15,7 +15,7 @@ const __sl2 = cptr.lit("/usr/bin/gdb");
 const __sl3 = cptr.lit("/bin/grep");
 
 /** C ref: sys.c:18 — struct sysopt_s */
-let sysopt = cptr.alloc(184);
+export let sysopt = cptr.alloc(184);
 
 /** C ref: sys.c:21 */
 export function sys_early_init() {
@@ -59,7 +59,7 @@ export function sys_early_init() {
     cptr.stI32(cptr.add(sysopt, 88), 0);
     cptr.stI32(cptr.add(sysopt, 80), 1);
     sysopt_seduce_set(cptr.ldI32(cptr.add(sysopt, 80)));
-    cptr.stI32(cptr.add(cptr.add(sysopt, 160), 0, 4), cptr.stI32(cptr.add(cptr.add(sysopt, 168), 0, 4), historical));
+    cptr.stI32(cptr.add(cptr.add(sysopt, 160), 0, 4), cptr.stI32(cptr.add(cptr.add(sysopt, 168), 0, 4), 1));
     cptr.stI32(cptr.add(sysopt, 176), 0);
     cptr.stI32(cptr.add(sysopt, 180), 0);
     return;
@@ -88,10 +88,10 @@ export function sysopt_release() {
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 128))), cptr.stPtr(cptr.add(sysopt, 128), null);
     if (cptr.ldPtr(cptr.add(sysopt, 136)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 136))), cptr.stPtr(cptr.add(sysopt, 136), null);
-    if (gc.crash_email)
-        cptr.free(gc.crash_email), gc.crash_email = (null);
-    if (gc.crash_name)
-        cptr.free(gc.crash_name), gc.crash_name = (null);
+    if (cptr.ldPtr(cptr.add(gc, 408)))
+        cptr.free(cptr.ldPtr(cptr.add(gc, 408))), cptr.stPtr(cptr.add(gc, 408), (null));
+    if (cptr.ldPtr(cptr.add(gc, 416)))
+        cptr.free(cptr.ldPtr(cptr.add(gc, 416))), cptr.stPtr(cptr.add(gc, 416), (null));
     if (cptr.ldPtr(cptr.add(sysopt, 24)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 24))), cptr.stPtr(cptr.add(sysopt, 24), null);
     return;

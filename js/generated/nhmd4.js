@@ -106,7 +106,7 @@ export function nhmd4_update(ctx, data, size) {
     let free;
     saved_lo = cptr.ldI32(ctx);
     if ((cptr.stI32(ctx, Number(BigInt.asUintN(32, ((BigInt(saved_lo >>> 0) + size) & 536870911n))))) < saved_lo)
-        cptr.ldI32(cptr.add(ctx, 4))++;
+        (cptr.stI32(cptr.add(ctx, 4), cptr.ldI32(cptr.add(ctx, 4)) + 1)) - 1;
     cptr.st1(cptr.add(ctx, 4), cptr.ld1u(cptr.add(ctx, 4)) + Number(BigInt.asUintN(32, (size >> 29n))));
     used = BigInt(((saved_lo & 63) >>> 0) >>> 0);
     if (used) {

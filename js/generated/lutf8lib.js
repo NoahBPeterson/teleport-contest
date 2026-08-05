@@ -38,7 +38,13 @@ function u_posrelat(pos, len) {
         return BigInt.asIntN(64, len) + pos + 1n;
 }
 
-const __static_utf8_decode_limits = [~0, 128, 2048, 65536, 2097152, 67108864]; /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
+const __static_utf8_decode_limits = cptr.alloc(6 * 8);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 0), ~0);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 8), 128);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 16), 2048);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 24), 65536);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 32), 2097152);
+cptr.stU64(cptr.add(__static_utf8_decode_limits, 40), 67108864); /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
 
 /** C ref: lutf8lib.c:61 — @param {CPtr} s @param {CPtr} val @param {CInt} strict @returns {CPtr} */
 function utf8_decode(s, val, strict) {
@@ -55,7 +61,7 @@ function utf8_decode(s, val, strict) {
             res = (((res << 6) >>> 0) | ((cc & 63) >>> 0)) >>> 0;
         }
         res |= ((((c & 127) >>> 0) << (Math.imul(count, 5))) >>> 0);
-        if (count > 5 || res > 2147483647 || res < cptr.ldU64(cptr.add(cptr.decay(__static_utf8_decode_limits), count)))
+        if (count > 5 || res > 2147483647 || res < cptr.ldU64(cptr.add(__static_utf8_decode_limits, count, 8)))
             return null;
         s = cptr.add(s, count);
     }
@@ -229,19 +235,25 @@ function iter_codes(L) {
 }
 
 /** C ref: lutf8lib.c:273 — luaL_Reg[7] */
-const funcs = [
-    { name: __sl9, func: byteoffset },
-    { name: __sl10, func: codepoint },
-    { name: __sl11, func: utfchar },
-    { name: __sl12, func: utflen },
-    { name: __sl13, func: iter_codes },
-    { name: __sl14, func: null },
-    { name: null, func: null }
-];
+const funcs = cptr.alloc(7 * 16);
+cptr.stPtr(cptr.add(funcs, 0), __sl9);
+cptr.stPtr(cptr.add(cptr.add(funcs, 0), 8), byteoffset);
+cptr.stPtr(cptr.add(funcs, 16), __sl10);
+cptr.stPtr(cptr.add(cptr.add(funcs, 16), 8), codepoint);
+cptr.stPtr(cptr.add(funcs, 32), __sl11);
+cptr.stPtr(cptr.add(cptr.add(funcs, 32), 8), utfchar);
+cptr.stPtr(cptr.add(funcs, 48), __sl12);
+cptr.stPtr(cptr.add(cptr.add(funcs, 48), 8), utflen);
+cptr.stPtr(cptr.add(funcs, 64), __sl13);
+cptr.stPtr(cptr.add(cptr.add(funcs, 64), 8), iter_codes);
+cptr.stPtr(cptr.add(funcs, 80), __sl14);
+cptr.stPtr(cptr.add(cptr.add(funcs, 80), 8), null);
+cptr.stPtr(cptr.add(funcs, 96), null);
+cptr.stPtr(cptr.add(cptr.add(funcs, 96), 8), null);
 
 /** C ref: lutf8lib.c:285 — @param {CPtr} L @returns {CInt} */
 export function luaopen_utf8(L) {
-    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (112n / 16n - 1n)))), luaL_setfuncs(L, cptr.decay(funcs), 0));
+    (luaL_checkversion_(L, 504, (8n * 16n + 8n)), lua_createtable(L, 0, Number(BigInt.asIntN(32, (112n / 16n - 1n)))), luaL_setfuncs(L, funcs, 0));
     lua_pushlstring(L, __sl15, 15n / 1n - 1n);
     lua_setfield(L, -2, __sl14);
     return 1;

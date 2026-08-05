@@ -134,6 +134,13 @@ function buildAll() {
   // their definition (cross-file &uarm etc.)
   const externBoxed = new Set();
   for (const pf of perFile) for (const nm of pf.addressTaken || []) externBoxed.add(nm);
+  // record-typed globals/arrays are byte-packed cptr.alloc storage in their
+  // defining TU; every referencing TU must use byte-offset access as well
+  const recordGlobals = new Set(), recordArrays = new Set();
+  for (const pf of perFile) {
+    for (const nm of pf.recordGlobals || []) recordGlobals.add(nm);
+    for (const nm of pf.recordArrays || []) recordArrays.add(nm);
+  }
   console.log(`pass 1: ${perFile.length} slim IRs (${rebuilt} rebuilt) in ${((Date.now() - t0) / 1000).toFixed(1)}s; ` +
     `${symbols.size} importable symbols, ${conflicts.size} conflicts`);
 
@@ -155,16 +162,35 @@ function buildAll() {
       continue;
     }
     if (withPrelude.has(pf.name)) {
-      results.push({ name: pf.name, ok: 'skipped', cause: 'has dedicated prelude (proven separately)' });
+      // prelude-proven files: still refresh their generated module with the
+      // current emitter (prelude included, no cross imports) — the batch
+      // import graph reads them from disk, so a stale emission breaks parity
+      try {
+        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays });
+        const chunks = emitter.emitModule();
+        const sha = crypto.createHash('sha256').update(fs.readFileSync(pf.file)).digest('hex');
+        const out = assemble({ name: pf.name, srcRel: path.relative(repoRoot, pf.file), sha, emitter, chunks, prelude: loadPrelude(pf.name), crossImports: null });
+        const outFile = writeOut(pf.name, out);
+        let parses = true;
+        try { execFileSync('node', ['--check', outFile]); } catch { parses = false; }
+        results.push({ name: pf.name, ok: 'skipped', cause: `has dedicated prelude (refreshed${parses ? '' : ', PARSE FAIL'})` });
+      } catch (err) {
+        results.push({ name: pf.name, ok: false, cause: causeOf(err), detail: String(err.message || err).split('\n')[0] });
+      }
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, recordGlobals, recordArrays });
       const chunks = emitter.emitModule();
-      // cross-file imports: referenced but not declared here
+      // cross-file imports: referenced but not declared here. decl.js must
+      // stay a leaf (it is the globals hub in a giant import cycle); its one
+      // import is resolved via globalThis at call time instead.
+      const IMPORT_SKIP = { decl: new Set(['raw_printf']) };
+      const skip = IMPORT_SKIP[pf.name];
       const byFile = new Map();
       for (const [refName] of emitter.refs) {
         if (emitter.declared.has(refName)) continue;
+        if (skip && skip.has(refName)) continue;
         const sym = symbols.get(refName);
         if (!sym || sym.file === pf.name) continue;
         if (!byFile.has(sym.file)) byFile.set(sym.file, []);

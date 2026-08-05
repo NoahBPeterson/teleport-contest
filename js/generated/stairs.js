@@ -38,24 +38,24 @@ export function stairway_add(x, y, up, isladder, dest) {
     cptr.st1(cptr.add(tmp, 9), isladder);
     cptr.st1(cptr.add(tmp, 10), (0));
     assign_level(cptr.add(tmp, 4), dest);
-    cptr.stPtr(cptr.add(tmp, 16), gs.stairs);
-    gs.stairs = tmp;
+    cptr.stPtr(cptr.add(tmp, 16), cptr.ldPtr(cptr.add(gs, 8)));
+    cptr.stPtr(cptr.add(gs, 8), tmp);
 }
 
 /** C ref: stairs.c:27 */
 export function stairway_free_all() {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
         let tmp2 = cptr.ldPtr(cptr.add(tmp, 16));
         cptr.free(tmp);
         tmp = tmp2;
     }
-    gs.stairs = null;
+    cptr.stPtr(cptr.add(gs, 8), null);
 }
 
 /** C ref: stairs.c:40 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function stairway_at(x, y) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp && !(cptr.ldI16(tmp) == x && cptr.ldI16(cptr.add(tmp, 2)) == y))
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     return tmp;
@@ -63,7 +63,7 @@ export function stairway_at(x, y) {
 
 /** C ref: stairs.c:50 — @param {CPtr} fromdlev @returns {CPtr} */
 export function stairway_find(fromdlev) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
         if (cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(cptr.add(tmp, 4), 2)) == cptr.ldI16(cptr.add(fromdlev, 2)))
             break;
@@ -74,7 +74,7 @@ export function stairway_find(fromdlev) {
 
 /** C ref: stairs.c:64 — @param {CPtr} fromdlev @param {CInt} isladder @returns {CPtr} */
 export function stairway_find_from(fromdlev, isladder) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
         if (cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(cptr.add(tmp, 4), 2)) == cptr.ldI16(cptr.add(fromdlev, 2)) && cptr.ld1s(cptr.add(tmp, 9)) == isladder)
             break;
@@ -85,7 +85,7 @@ export function stairway_find_from(fromdlev, isladder) {
 
 /** C ref: stairs.c:79 — @param {CInt} up @returns {CPtr} */
 export function stairway_find_dir(up) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp && !(cptr.ld1s(cptr.add(tmp, 8)) == up))
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     return tmp;
@@ -93,7 +93,7 @@ export function stairway_find_dir(up) {
 
 /** C ref: stairs.c:89 — @param {CInt} isladder @param {CInt} up @returns {CPtr} */
 export function stairway_find_type_dir(isladder, up) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp && !(cptr.ld1s(cptr.add(tmp, 9)) == isladder && cptr.ld1s(cptr.add(tmp, 8)) == up))
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     return tmp;
@@ -101,9 +101,9 @@ export function stairway_find_type_dir(isladder, up) {
 
 /** C ref: stairs.c:99 — @param {CInt} up @returns {CPtr} */
 export function stairway_find_special_dir(up) {
-    let tmp = gs.stairs;
+    let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
-        if (cptr.ldI16(cptr.add(tmp, 4)) != u.uz.dnum && cptr.ld1s(cptr.add(tmp, 8)) != up)
+        if (cptr.ldI16(cptr.add(tmp, 4)) != cptr.ldI16(cptr.add(u, 24)) && cptr.ld1s(cptr.add(tmp, 8)) != up)
             return tmp;
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     }
@@ -162,7 +162,7 @@ export function On_stairs_dn(x, y) {
 
 /** C ref: stairs.c:180 — @param {CPtr} sway @returns {CInt} */
 export function known_branch_stairs(sway) {
-    return schar((sway && cptr.ldI16(cptr.add(sway, 4)) != u.uz.dnum && cptr.ld1s(cptr.add(sway, 10))));
+    return schar((sway && cptr.ldI16(cptr.add(sway, 4)) != cptr.ldI16(cptr.add(u, 24)) && cptr.ld1s(cptr.add(sway, 10))));
 }
 
 /** C ref: stairs.c:187 — @param {CPtr} sway @param {CPtr} outbuf @param {CInt} stcase @returns {CPtr} */
@@ -176,14 +176,14 @@ export function stairs_description(sway, outbuf, stcase) {
     if (!known_branch_stairs(sway)) {
         void cptr.sprintf(outbuf, __sl5, stairs, updown);
         if (cptr.ld1s(cptr.add(sway, 10))) {
-            let specialdepth = schar((cptr.ldI16(tolev) == (svd.dungeon_topology.d_quest_dnum) || single_level_branch(tolev)));
+            let specialdepth = schar((cptr.ldI16(tolev) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 86))) || single_level_branch(tolev)));
             let to_dlev = specialdepth ? dunlev(tolev) : depth(tolev);
-            void cptr.sprintf(eos.v(outbuf), __sl6, to_dlev);
+            void cptr.sprintf(eos(outbuf), __sl6, to_dlev);
         }
-    } else if (u.uz.dnum == 0 && u.uz.dlevel == 1 && cptr.ld1s(cptr.add(sway, 8))) {
-        void cptr.sprintf(outbuf, __sl7, !u.uhave.amulet ? __sl8 : __sl9, stairs, updown, !u.uhave.amulet ? __sl10 : ((on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_earth_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_air_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_fire_level')) || on_level(tolev, cptr.boxProp(svd.dungeon_topology, 'd_water_level'))) ? __sl11 : __sl12));
+    } else if (cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) == 1 && cptr.ld1s(cptr.add(sway, 8))) {
+        void cptr.sprintf(outbuf, __sl7, !cptr.ldI32(cptr.add(u, 1944)) ? __sl8 : __sl9, stairs, updown, !cptr.ldI32(cptr.add(u, 1944)) ? __sl10 : ((on_level(tolev, cptr.add(cptr.add(svd, 1792), 60)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 72)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 68)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 64))) ? __sl11 : __sl12));
     } else {
-        void cptr.sprintf(outbuf, __sl13, stairs, updown, cptr.decay(svd.dungeons[cptr.ldI16(tolev)].dname));
+        void cptr.sprintf(outbuf, __sl13, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), 112));
         void strsubst(outbuf, __sl14, __sl15);
     }
     return outbuf;

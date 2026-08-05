@@ -82,8 +82,8 @@ export function luaS_clearcache(g) {
     let j;
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(g, 552), i, 424)), j, 8))), 9))) & (((1 << (3)) | (1 << (4))))))
-                cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(g, 552), i, 424)), j, 8), cptr.ldPtr(cptr.add(g, 272)));
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8))), 9))) & (((1 << (3)) | (1 << (4))))))
+                cptr.stPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8), cptr.ldPtr(cptr.add(g, 272)));
         }
 }
 
@@ -100,7 +100,7 @@ export function luaS_init(L) {
     luaC_fix(L, ((((cptr.ldPtr(cptr.add(g, 272)))))));
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)
-            cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(g, 552), i, 424)), j, 8), cptr.ldPtr(cptr.add(g, 272)));
+            cptr.stPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8), cptr.ldPtr(cptr.add(g, 272)));
 }
 
 /** C ref: lstring.c:143 — @param {CPtr} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr} */
@@ -132,7 +132,7 @@ export function luaS_remove(L, ts) {
     while (!cptr.eq(cptr.ldPtr(p), ts))
         p = cptr.add((cptr.ldPtr(p)), 16);
     cptr.stPtr(p, cptr.ldPtr(cptr.add((cptr.ldPtr(p)), 16)));
-    cptr.ldI32(cptr.add(tb, 8))--;
+    (cptr.stI32(cptr.add(tb, 8), cptr.ldI32(cptr.add(tb, 8)) + -1)) - 1;
 }
 
 /** C ref: lstring.c:175 — @param {CPtr} L @param {CPtr} tb */
@@ -170,7 +170,7 @@ function internshrstr(L, str, l) {
     cptr.memcpy((cptr.add((ts), 24)), str, l * 1n);
     cptr.stPtr(cptr.add(ts, 16), cptr.ldPtr(list));
     cptr.stPtr(list, ts);
-    cptr.ldI32(cptr.add(tb, 8))++;
+    (cptr.stI32(cptr.add(tb, 8), cptr.ldI32(cptr.add(tb, 8)) + 1)) - 1;
     return ts;
 }
 
@@ -192,7 +192,7 @@ export function luaS_newlstr(L, str, l) {
 export function luaS_new(L, str) {
     let i = u32mod((Number(BigInt.asUintN(32, ((str) & BigInt((((Math.imul(2147483647, 2) >>> 0) + 1) >>> 0) >>> 0))))), 53);
     let j;
-    let p = cptr.ldPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 552), i, 424));
+    let p = cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 552), i, 16);
     for (j = 0; j < 2; j++) {
         if (strcmp(str, (cptr.add((cptr.ldPtr(cptr.add(p, j))), 24))) == 0)
             return cptr.ldPtr(cptr.add(p, j));

@@ -18,15 +18,15 @@ import { gt, u } from './decl.js';
 import { luaU_dump } from './ldump.js';
 import { luaE_setdebt, luaE_warning } from './lstate.js';
 import { luaG_errormsg } from './ldebug.js';
+import { more } from './topl.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("$LuaVersion: Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. H. de Figueiredo, W. Celes $");
-const __sl1 = cptr.lit("");
-const __sl2 = cptr.lit("?");
-const __sl3 = cptr.lit("(no name)");
+const __sl0 = cptr.lit("");
+const __sl1 = cptr.lit("?");
+const __sl2 = cptr.lit("(no name)");
 
 /** C ref: lapi.c:35 — char[129] */
-const lua_ident = __sl0;
+export const lua_ident = cptr.bytes("$LuaVersion: Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. H. de Figueiredo, W. Celes $");
 
 /** C ref: lapi.c:60 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
 function index2value(L, idx) {
@@ -279,7 +279,7 @@ export function lua_type(L, idx) {
 export function lua_typename(L, t) {
     (void (L));
     (void L, (void 0));
-    return cptr.ldPtr(cptr.add(cptr.decay(luaT_typenames_), ((t) + 1) | 0));
+    return cptr.ldPtr(cptr.add(luaT_typenames_, ((t) + 1) | 0, 8));
 }
 
 /** C ref: lapi.c:297 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
@@ -399,7 +399,7 @@ export function lua_tonumberx(L, idx, pisnum) {
 export function lua_tointegerx(L, idx, pisnum) {
     let res = cptr.box(0n);
     let o = index2value(L, idx);
-    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, F2Ieq));
+    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, 0));
     if (pisnum)
         cptr.stI32(pisnum, isnum);
     return res.v;
@@ -563,7 +563,7 @@ export function lua_pushinteger(L, n) {
 export function lua_pushlstring(L, s, len) {
     let ts;
     (void 0);
-    ts = (len == 0n) ? luaS_new(L, __sl1) : luaS_newlstr(L, s, len);
+    ts = (len == 0n) ? luaS_new(L, __sl0) : luaS_newlstr(L, s, len);
     {
         let io = (((cptr.ldPtr(cptr.add(L, 16)))));
         let x_ = (ts);
@@ -1181,7 +1181,7 @@ function aux_rawset(L, idx, key, n) {
     (void L, (void 0));
     t = gettable(L, idx);
     luaH_set(L, t, key, ((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
-    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & ~(~((~0 << ((TM_EQ + 1) | 0)) >>> 0))));
+    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & ~(~((~0 << ((5 + 1) | 0)) >>> 0))));
     (((cptr.ld1u(cptr.add((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)))), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((t))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)))))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, ((((t))))) : (void ((0)))) : (void ((0))));
     cptr.st1(cptr.add(L, 16), cptr.ld1s(cptr.add(L, 16)) - n);
     (void 0);
@@ -1368,7 +1368,7 @@ export function lua_load(L, reader, data, chunkname, mode) {
     let status;
     (void 0);
     if (!chunkname)
-        chunkname = __sl2;
+        chunkname = __sl1;
     luaZ_init(L, z, reader, data);
     status = luaD_protectedparser(L, z, chunkname, mode);
     if (status == 0) {
@@ -1586,7 +1586,7 @@ export function lua_concat(L, n) {
     else {
         {
             let io = (((cptr.ldPtr(cptr.add(L, 16)))));
-            let x_ = (luaS_newlstr(L, __sl1, 0n));
+            let x_ = (luaS_newlstr(L, __sl0, 0n));
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | (1 << 6))))));
             (void L, (void 0));
@@ -1703,7 +1703,7 @@ function aux_upvalue(fi, n, val, owner) {
             cptr.stPtr(val, cptr.add(cptr.add(f, 32), (n - 1) | 0, 16));
             if (owner)
                 cptr.stPtr(owner, ((((f)))));
-            return __sl1;
+            return __sl0;
         }
         case ((6) | ((0) << 4)):
         {
@@ -1716,7 +1716,7 @@ function aux_upvalue(fi, n, val, owner) {
             if (owner)
                 cptr.stPtr(owner, ((((cptr.ldPtr(cptr.add(cptr.add(f, 32), (n - 1) | 0, 8)))))));
             name = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(p, 80)), (n - 1) | 0, 16));
-            return (cptr.eq(name, (null))) ? __sl3 : (cptr.add((name), 24));
+            return (cptr.eq(name, (null))) ? __sl2 : (cptr.add((name), 24));
         }
         default:
         return null;

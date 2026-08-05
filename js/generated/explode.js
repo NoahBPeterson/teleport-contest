@@ -109,48 +109,57 @@ const __sl65 = cptr.lit("mon_explodes");
 const __sl66 = cptr.lit("unknown type for mon_explode %d");
 
 /** C ref: explode.c:11 — int[3][3] */
-const explosion = [[S_expl_tl, S_expl_ml, S_expl_bl], [S_expl_tc, S_expl_mc, S_expl_bc], [S_expl_tr, S_expl_mr, S_expl_br]];
+const explosion = Array.from({ length: 3 }, () => new Uint8Array(3 * 4));
+cptr.stI32(cptr.add(cptr.decay(explosion[0]), 0), 96);
+cptr.stI32(cptr.add(cptr.decay(explosion[0]), 4), 99);
+cptr.stI32(cptr.add(cptr.decay(explosion[0]), 8), 102);
+cptr.stI32(cptr.add(cptr.decay(explosion[1]), 0), 97);
+cptr.stI32(cptr.add(cptr.decay(explosion[1]), 4), 100);
+cptr.stI32(cptr.add(cptr.decay(explosion[1]), 8), 103);
+cptr.stI32(cptr.add(cptr.decay(explosion[2]), 0), 98);
+cptr.stI32(cptr.add(cptr.decay(explosion[2]), 4), 101);
+cptr.stI32(cptr.add(cptr.decay(explosion[2]), 8), 104);
 
 /** C ref: explode.c:17 — enum */
-const EXPL_NONE = 0;
-const EXPL_MON = 1;
-const EXPL_HERO = 2;
-const EXPL_SKIP = 4;
+export const EXPL_NONE = 0;
+export const EXPL_MON = 1;
+export const EXPL_HERO = 2;
+export const EXPL_SKIP = 4;
 
 /** C ref: explode.c:26 — @param {CPtr} m @param {CUInt} adtyp @param {CInt} olet @returns {CInt} */
 function explosionmask(m, adtyp, olet) {
-    let res = EXPL_NONE;
-    if (cptr.eq(m, cptr.boxProp(gy, 'youmonst'))) {
+    let res = 0;
+    if (cptr.eq(m, cptr.add(gy, 8))) {
         switch (adtyp) {
             case 0:
             break;
             case 1:
-            if ((u.uprops[ANTIMAGIC].intrinsic || u.uprops[ANTIMAGIC].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24))))
+                res = 2;
             break;
             case 2:
-            if ((u.uprops[FIRE_RES].intrinsic || u.uprops[FIRE_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 1, 24))))
+                res = 2;
             break;
             case 3:
-            if ((u.uprops[COLD_RES].intrinsic || u.uprops[COLD_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 2, 24))))
+                res = 2;
             break;
             case 5:
-            if ((olet == WAND_CLASS) ? ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(m, 8))), cptr.add(cptr.decay(mons), PM_MANES)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == S_VORTEX)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 256n) != 0n)) : (u.uprops[DISINT_RES].intrinsic || u.uprops[DISINT_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((olet == 11) ? ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(m, 8))), cptr.add(mons, 50, 96)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == 55) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == 22)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 256n) != 0n)) : (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 4, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 4, 24))))
+                res = 2;
             break;
             case 6:
-            if ((u.uprops[SHOCK_RES].intrinsic || u.uprops[SHOCK_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 5, 24))))
+                res = 2;
             break;
             case 7:
-            if ((u.uprops[POISON_RES].intrinsic || u.uprops[POISON_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24))))
+                res = 2;
             break;
             case 8:
-            if ((u.uprops[ACID_RES].intrinsic || u.uprops[ACID_RES].extrinsic))
-                res = EXPL_HERO;
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 7, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 7, 24))))
+                res = 2;
             break;
             default:
             impossible(__sl0, adtyp);
@@ -162,31 +171,31 @@ function explosionmask(m, adtyp, olet) {
             break;
             case 1:
             if (resists_magm(m))
-                res = EXPL_MON;
+                res = 1;
             break;
             case 2:
-            if (Resists_Elem(m, FIRE_RES))
-                res = EXPL_MON;
+            if (Resists_Elem(m, 1))
+                res = 1;
             break;
             case 3:
-            if (Resists_Elem(m, COLD_RES))
-                res = EXPL_MON;
+            if (Resists_Elem(m, 2))
+                res = 1;
             break;
             case 5:
-            if ((olet == WAND_CLASS) ? ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(m, 8))), cptr.add(cptr.decay(mons), PM_MANES)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == S_VORTEX)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 256n) != 0n) || (cptr.ldI16(cptr.add((m), 22)) == PM_VAMPIRE || cptr.ldI16(cptr.add((m), 22)) == PM_VAMPIRE_LEADER || cptr.ldI16(cptr.add((m), 22)) == PM_VLAD_THE_IMPALER)) : !!Resists_Elem(m, DISINT_RES))
-                res = EXPL_MON;
+            if ((olet == 11) ? ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(m, 8))), cptr.add(mons, 50, 96)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == 55) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 28)) == 22)) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(m, 8))), 80)) & 256n) != 0n) || (cptr.ldI16(cptr.add((m), 22)) == 226 || cptr.ldI16(cptr.add((m), 22)) == 227 || cptr.ldI16(cptr.add((m), 22)) == 228)) : !!Resists_Elem(m, 4))
+                res = 1;
             break;
             case 6:
-            if (Resists_Elem(m, SHOCK_RES))
-                res = EXPL_MON;
+            if (Resists_Elem(m, 5))
+                res = 1;
             break;
             case 7:
-            if (Resists_Elem(m, POISON_RES))
-                res = EXPL_MON;
+            if (Resists_Elem(m, 6))
+                res = 1;
             break;
             case 8:
-            if (Resists_Elem(m, ACID_RES))
-                res = EXPL_MON;
+            if (Resists_Elem(m, 7))
+                res = 1;
             break;
             default:
             impossible(__sl0, adtyp);
@@ -199,7 +208,7 @@ function explosionmask(m, adtyp, olet) {
 /** C ref: explode.c:118 — @param {CUInt} adtyp @param {CInt} olet */
 function engulfer_explosion_msg(adtyp, olet) {
     let adj = null;
-    if ((dmgtype_fromattack((cptr.ldPtr(cptr.add(u.ustuck, 8))), 26, 11) !== null)) {
+    if ((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 26, 11) !== null)) {
         switch (adtyp) {
             case 2:
             adj = __sl1;
@@ -208,7 +217,7 @@ function engulfer_explosion_msg(adtyp, olet) {
             adj = __sl2;
             break;
             case 5:
-            if (olet == WAND_CLASS)
+            if (olet == 11)
                 adj = __sl3;
             else
                 adj = __sl4;
@@ -226,7 +235,7 @@ function engulfer_explosion_msg(adtyp, olet) {
             adj = __sl8;
             break;
         }
-        pline(__sl9, Monnam(u.ustuck), adj);
+        pline(__sl9, Monnam(cptr.ldPtr(cptr.add(u, 2416))), adj);
     } else {
         switch (adtyp) {
             case 2:
@@ -236,7 +245,7 @@ function engulfer_explosion_msg(adtyp, olet) {
             adj = __sl2;
             break;
             case 5:
-            if (olet == WAND_CLASS)
+            if (olet == 11)
                 adj = __sl11;
             else
                 adj = __sl4;
@@ -254,7 +263,7 @@ function engulfer_explosion_msg(adtyp, olet) {
             adj = __sl8;
             break;
         }
-        pline(__sl14, Monnam(u.ustuck), adj);
+        pline(__sl14, Monnam(cptr.ldPtr(cptr.add(u, 2416))), adj);
     }
 }
 
@@ -272,7 +281,7 @@ export function explode(x, y, type, dam, olet, expltype) {
     let mtmp;
     let mdef = null;
     let adtyp;
-    let explmask = Array.from({ length: 3 }, () => new Uint8Array(3));
+    let explmask = Array.from({ length: 3 }, () => new Uint8Array(3 * 4));
     let xx;
     let yy;
     let shopdamage = cptr.box((0));
@@ -285,14 +294,14 @@ export function explode(x, y, type, dam, olet, expltype) {
     let hallu_buf = new Uint8Array(256);
     let killr_buf = new Uint8Array(256);
     let exploding_wand_typ = 0;
-    let you_exploding = schar((olet == ((MAXOCLASSES + 2) | 0) && type >= 0));
+    let you_exploding = schar((olet == ((18 + 2) | 0) && type >= 0));
     let didmsg = (0);
-    if (olet == WAND_CLASS) {
+    if (olet == 11) {
         if (type < 0) {
             type = -type;
             exploding_wand_typ = i16(type);
-            if ((objects[type].oc_dir | 0) == 3 && type != WAN_DIGGING && type != WAN_SLEEP) {
-                type = (type - WAN_MAGIC_MISSILE) | 0;
+            if ((cptr.ldI32(cptr.add(cptr.add(objects, type, 120), 60)) | 0) == 3 && type != 428 && type != 432) {
+                type = (type - 429) | 0;
                 if (type < 0 || type > 9) {
                     impossible(__sl15, type);
                     type = 0;
@@ -300,44 +309,44 @@ export function explode(x, y, type, dam, olet, expltype) {
             } else
                 type = 0;
         }
-        switch ((gu.urole.mnum)) {
-            case PM_CLERIC:
-            case PM_MONK:
-            case PM_WIZARD:
+        switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+            case 337:
+            case 336:
+            case 343:
             damu = (damu / 5) | 0;
             break;
-            case PM_HEALER:
-            case PM_KNIGHT:
+            case 334:
+            case 335:
             damu = (damu / 2) | 0;
             break;
             default:
             break;
         }
-    } else if (olet == ((MAXOCLASSES + 1) | 0)) {
-        exploding_wand_typ = i16(POT_OIL);
-    } else if (olet == SCROLL_CLASS) {
-        exploding_wand_typ = i16(SCR_FIRE);
-    } else if (olet == ((MAXOCLASSES + 3) | 0)) {
+    } else if (olet == ((18 + 1) | 0)) {
+        exploding_wand_typ = 321;
+    } else if (olet == 9) {
+        exploding_wand_typ = 339;
+    } else if (olet == ((18 + 3) | 0)) {
         type = 0;
     }
     if (expltype < 0) {
-        mdef = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[x]), y)));
+        mdef = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)));
         expltype = -expltype;
     }
-    inside_engulfer = schar((u.uswallow | 0 && type >= 0));
+    inside_engulfer = schar((cptr.ldI32(cptr.add(u, 1848)) | 0 && type >= 0));
     grabbed = (grabbing = (0));
-    if (u.ustuck && !u.uswallow) {
-        if ((u.umonnum != u.umonster) && sticks(gy.youmonst.data))
+    if (cptr.ldPtr(cptr.add(u, 2416)) && !cptr.ldI32(cptr.add(u, 1848))) {
+        if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))))
             grabbing = (1);
         else
             grabbed = (1);
-        cptr.stI16(grabxy, cptr.ldI16(cptr.add(u.ustuck, 28)));
-        cptr.stI16(cptr.add(grabxy, 2), cptr.ldI16(cptr.add(u.ustuck, 30)));
+        cptr.stI16(grabxy, cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 28)));
+        cptr.stI16(cptr.add(grabxy, 2), cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 30)));
     } else
         cptr.stI16(grabxy, cptr.stI16(cptr.add(grabxy, 2), 0));
-    if (olet == ((MAXOCLASSES + 2) | 0) && !you_exploding) {
-        str = cptr.strcpy(cptr.decay(killr_buf), cptr.decay(svk.killer.name));
-        do_hallu = schar(((u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic)) && (strstri(str, __sl16) || strstri(str, __sl17))));
+    if (olet == ((18 + 2) | 0) && !you_exploding) {
+        str = cptr.strcpy(cptr.decay(killr_buf), cptr.add(svk, 16));
+        do_hallu = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))) && (strstri(str, __sl16) || strstri(str, __sl17))));
     }
     if (type == -1) {
         adtyp = 0;
@@ -349,7 +358,7 @@ export function explode(x, y, type, dam, olet, expltype) {
             adtyp = 1;
             break;
             case 1:
-            adstr = (olet == ((MAXOCLASSES + 1) | 0)) ? __sl19 : ((olet == SCROLL_CLASS) ? __sl20 : __sl21);
+            adstr = (olet == ((18 + 1) | 0)) ? __sl19 : ((olet == 9) ? __sl20 : __sl21);
             adtyp = 2;
             break;
             case 2:
@@ -357,7 +366,7 @@ export function explode(x, y, type, dam, olet, expltype) {
             adtyp = 3;
             break;
             case 4:
-            adstr = (olet == WAND_CLASS) ? __sl23 : __sl24;
+            adstr = (olet == 11) ? __sl23 : __sl24;
             adtyp = 5;
             break;
             case 5:
@@ -385,99 +394,99 @@ export function explode(x, y, type, dam, olet, expltype) {
             xx = i16(((((x + i) | 0) - 1) | 0));
             yy = i16(((((y + j) | 0) - 1) | 0));
             if (!isok(xx, yy)) {
-                explmask[i][j] = EXPL_SKIP;
+                explmask[i][j] = 4;
                 continue;
             }
-            explmask[i][j] = EXPL_NONE;
-            if (((xx) == u.ux && (yy) == u.uy)) {
-                explmask[i][j] = explosionmask(cptr.boxProp(gy, 'youmonst'), adtyp, olet);
+            explmask[i][j] = 0;
+            if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16(cptr.add(u, 2)))) {
+                explmask[i][j] = explosionmask(cptr.add(gy, 8), adtyp, olet);
             }
-            mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[xx]), yy)));
-            if (!mtmp && ((xx) == u.ux && (yy) == u.uy))
-                mtmp = u.usteed;
+            mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), xx, 168), yy, 8)));
+            if (!mtmp && ((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16(cptr.add(u, 2))))
+                mtmp = cptr.ldPtr(cptr.add(u, 2424));
             if (mtmp && (cptr.ldI32(cptr.add((mtmp), 52)) < 1))
                 mtmp = null;
             if (mtmp) {
                 explmask[i][j] |= explosionmask(mtmp, adtyp, olet);
             }
-            if (mtmp && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, yy)), xx)) & 2) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
+            if (mtmp && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), yy)), xx)) & 2) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
                 map_invisible(xx, yy);
             else if (!mtmp)
                 void unmap_invisible(xx, yy);
-            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, yy)), xx)) & 2) != 0))
+            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), yy)), xx)) & 2) != 0))
                 visible = (1);
-            if ((explmask[i][j] & (EXPL_MON | EXPL_HERO)) != 0)
+            if ((explmask[i][j] & (1 | 2)) != 0)
                 any_shield = (1);
         }
     if (visible) {
         for (i = 0; i < 3; i++)
             for (j = 0; j < 3; j++) {
-                if (explmask[i][j] == EXPL_SKIP)
+                if (explmask[i][j] == 4)
                     continue;
                 xx = i16(((((x + i) | 0) - 1) | 0));
                 yy = i16(((((y + j) | 0) - 1) | 0));
-                tmp_at(i16((starting ? (-1) : (-6))), i16((((((explosion[i][j]) - S_expl_tl) | 0) + (((expltype) == EXPL_FROSTY) ? GLYPH_EXPLODE_FROSTY_OFF : (((expltype) == EXPL_MAGICAL) ? GLYPH_EXPLODE_MAGICAL_OFF : (((expltype) == EXPL_WET) ? GLYPH_EXPLODE_WET_OFF : (((expltype) == EXPL_MUDDY) ? GLYPH_EXPLODE_MUDDY_OFF : (((expltype) == EXPL_NOXIOUS) ? GLYPH_EXPLODE_NOXIOUS_OFF : GLYPH_EXPLODE_FIERY_OFF)))))) | 0)));
+                tmp_at(i16((starting ? (-1) : (-6))), i16((((((explosion[i][j]) - 96) | 0) + (((expltype) == 6) ? 7211 : (((expltype) == 4) ? 7193 : (((expltype) == 3) ? 7184 : (((expltype) == 2) ? 7175 : (((expltype) == 1) ? 7166 : 7202)))))) | 0)));
                 tmp_at(xx, yy);
                 starting = 0;
             }
         curs_on_u();
-        if (any_shield && flags.sparkle) {
+        if (any_shield && cptr.ld1s(cptr.add(flags, 43))) {
             for (k = 0; k < 21; k++) {
                 for (i = 0; i < 3; i++)
                     for (j = 0; j < 3; j++) {
                         xx = i16(((((x + i) | 0) - 1) | 0));
                         yy = i16(((((y + j) | 0) - 1) | 0));
-                        if ((explmask[i][j] & (EXPL_MON | EXPL_HERO)) != 0)
-                            show_glyph(xx, yy, (((shield_static[k]) == S_stone) ? GLYPH_CMAP_STONE_OFF : (((shield_static[k]) <= S_trwall) ? (((((shield_static[k]) - S_vwall) | 0) + (In_mines(cptr.boxProp(u, 'uz')) ? GLYPH_CMAP_MINES_OFF : (In_hell(cptr.boxProp(u, 'uz')) ? GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_knox_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_knox_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_knox_level')))) ? GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.boxProp(u, 'uz'))) == (svd.dungeon_topology.d_sokoban_dnum)) ? GLYPH_CMAP_SOKO_OFF : GLYPH_CMAP_MAIN_OFF))))) | 0) : (((shield_static[k]) < S_altar) ? (((((shield_static[k]) - S_ndoor) | 0) + GLYPH_CMAP_A_OFF) | 0) : (((shield_static[k]) == S_altar) ? ((((2) & 16) == 16) ? ((GLYPH_ALTAR_OFF + altar_other) | 0) : ((((2) & 7) == 4) ? ((GLYPH_ALTAR_OFF + altar_lawful) | 0) : ((((2) & 7) == 2) ? ((GLYPH_ALTAR_OFF + altar_neutral) | 0) : ((((2) & 7) == 1) ? ((GLYPH_ALTAR_OFF + altar_chaotic) | 0) : ((GLYPH_ALTAR_OFF + altar_unaligned) | 0))))) : (((shield_static[k]) < ((S_arrow_trap + ((TRAPNUM - 1) | 0)) | 0)) ? (((((shield_static[k]) - S_grave) | 0) + GLYPH_CMAP_B_OFF) | 0) : (((shield_static[k]) <= S_goodpos) ? (((((shield_static[k]) - S_digbeam) | 0) + GLYPH_CMAP_C_OFF) | 0) : MAX_GLYPH)))))));
+                        if ((explmask[i][j] & (1 | 2)) != 0)
+                            show_glyph(xx, yy, (((cptr.ldI32(cptr.add(shield_static, k, 4))) == 0) ? 3929 : (((cptr.ldI32(cptr.add(shield_static, k, 4))) <= 11) ? (((((cptr.ldI32(cptr.add(shield_static, k, 4))) - 1) | 0) + (In_mines(cptr.add(u, 24)) ? 3941 : (In_hell(cptr.add(u, 24)) ? 3952 : ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 102)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 102)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 102)))) ? 3963 : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 82)))) ? 3974 : 3930))))) | 0) : (((cptr.ldI32(cptr.add(shield_static, k, 4))) < 33) ? (((((cptr.ldI32(cptr.add(shield_static, k, 4))) - 12) | 0) + 3985) | 0) : (((cptr.ldI32(cptr.add(shield_static, k, 4))) == 33) ? ((((2) & 16) == 16) ? ((4006 + 4) | 0) : ((((2) & 7) == 4) ? ((4006 + 3) | 0) : ((((2) & 7) == 2) ? ((4006 + 2) | 0) : ((((2) & 7) == 1) ? ((4006 + 1) | 0) : ((4006 + 0) | 0))))) : (((cptr.ldI32(cptr.add(shield_static, k, 4))) < ((49 + ((26 - 1) | 0)) | 0)) ? (((((cptr.ldI32(cptr.add(shield_static, k, 4))) - 34) | 0) + 4011) | 0) : (((cptr.ldI32(cptr.add(shield_static, k, 4))) <= 87) ? (((((cptr.ldI32(cptr.add(shield_static, k, 4))) - 78) | 0) + 4083) | 0) : 9624)))))));
                     }
                 curs_on_u();
-                (windowprocs.win_delay_output)();
+                (cptr.ldPtr(cptr.add(windowprocs, 320)))();
             }
             for (i = 0; i < 3; i++)
                 for (j = 0; j < 3; j++) {
                     xx = i16(((((x + i) | 0) - 1) | 0));
                     yy = i16(((((y + j) | 0) - 1) | 0));
-                    if ((explmask[i][j] & (EXPL_MON | EXPL_HERO)) != 0)
-                        show_glyph(xx, yy, (((((explosion[i][j]) - S_expl_tl) | 0) + (((expltype) == EXPL_FROSTY) ? GLYPH_EXPLODE_FROSTY_OFF : (((expltype) == EXPL_MAGICAL) ? GLYPH_EXPLODE_MAGICAL_OFF : (((expltype) == EXPL_WET) ? GLYPH_EXPLODE_WET_OFF : (((expltype) == EXPL_MUDDY) ? GLYPH_EXPLODE_MUDDY_OFF : (((expltype) == EXPL_NOXIOUS) ? GLYPH_EXPLODE_NOXIOUS_OFF : GLYPH_EXPLODE_FIERY_OFF)))))) | 0));
+                    if ((explmask[i][j] & (1 | 2)) != 0)
+                        show_glyph(xx, yy, (((((explosion[i][j]) - 96) | 0) + (((expltype) == 6) ? 7211 : (((expltype) == 4) ? 7193 : (((expltype) == 3) ? 7184 : (((expltype) == 2) ? 7175 : (((expltype) == 1) ? 7166 : 7202)))))) | 0));
                 }
         } else {
-            (windowprocs.win_delay_output)();
-            (windowprocs.win_delay_output)();
+            (cptr.ldPtr(cptr.add(windowprocs, 320)))();
+            (cptr.ldPtr(cptr.add(windowprocs, 320)))();
         }
         tmp_at(i16((-7)), 0);
     } else {
-        if (olet == ((MAXOCLASSES + 2) | 0) || olet == ((MAXOCLASSES + 3) | 0)) {
+        if (olet == ((18 + 2) | 0) || olet == ((18 + 3) | 0)) {
             str = __sl29;
             generic = (1);
         }
-        if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) && olet != SCROLL_CLASS) {
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && olet != 9) {
             ;
             You_hear(__sl30);
             didmsg = (1);
         }
     }
-    if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) && !didmsg)
+    if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && !didmsg)
         pline(__sl31);
     if (dam) {
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
                 let itemdmg = 0;
-                if (explmask[i][j] == EXPL_SKIP)
+                if (explmask[i][j] == 4)
                     continue;
                 xx = i16(((((x + i) | 0) - 1) | 0));
                 yy = i16(((((y + j) | 0) - 1) | 0));
-                if (((xx) == u.ux && (yy) == u.uy)) {
-                    uhurt = ((explmask[i][j] & EXPL_HERO) != 0) ? 1 : 2;
-                    if (!svc.context.mon_moving && you_exploding)
+                if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16(cptr.add(u, 2)))) {
+                    uhurt = ((explmask[i][j] & 2) != 0) ? 1 : 2;
+                    if (!cptr.ld1s(cptr.add(svc, 77)) && you_exploding)
                         uhurt = 0;
                 } else if (inside_engulfer) {
                     continue;
                 }
-                if (!(u.uswallow | 0 && !svc.context.mon_moving))
+                if (!(cptr.ldI32(cptr.add(u, 1848)) | 0 && !cptr.ld1s(cptr.add(svc, 77))))
                     void zap_over_floor(xx, yy, type, shopdamage, (0), exploding_wand_typ);
-                mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[xx]), yy)));
-                if (!mtmp && ((xx) == u.ux && (yy) == u.uy))
-                    mtmp = u.usteed;
+                mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), xx, 168), yy, 8)));
+                if (!mtmp && ((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16(cptr.add(u, 2))))
+                    mtmp = cptr.ldPtr(cptr.add(u, 2424));
                 if (!mtmp)
                     continue;
                 if (do_hallu) {
@@ -487,9 +496,9 @@ export function explode(x, y, type, dam, olet, expltype) {
                     } while (cptr.ld1s(cptr.decay(hallu_buf)) != lowc(cptr.ld1s(cptr.decay(hallu_buf))) && ++tryct < 20);
                     str = cptr.decay(hallu_buf);
                 }
-                if ((u.uswallow | 0 && (cptr.eq(u.ustuck, (mtmp))))) {
+                if ((cptr.ldI32(cptr.add(u, 1848)) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))))) {
                     engulfer_explosion_msg(adtyp, olet);
-                } else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, yy)), xx)) & 2) != 0)) {
+                } else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), yy)), xx)) & 2) != 0)) {
                     if (cptr.ld1u(cptr.add(mtmp, 64)))
                         seemimic(mtmp);
                     pline(__sl33, Monnam(mtmp), str);
@@ -499,45 +508,45 @@ export function explode(x, y, type, dam, olet, expltype) {
                     void burnarmor(mtmp);
                     ignite_items(cptr.ldPtr(cptr.add(mtmp, 280)));
                 }
-                if ((explmask[i][j] & EXPL_MON) != 0) {
+                if ((explmask[i][j] & 1) != 0) {
                     golemeffects(mtmp, adtyp, dam);
                     cptr.st1(cptr.add(mtmp, 52), cptr.ld1s(cptr.add(mtmp, 52)) - itemdmg);
                 } else {
                     let mdam = dam;
                     if (resist(mtmp, olet, 0, 0)) {
-                        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, yy)), xx)) & 2) != 0) || inside_engulfer)
+                        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), yy)), xx)) & 2) != 0) || inside_engulfer)
                             pline(__sl34, Monnam(mtmp), str);
                         mdam = (((dam + 1) | 0) / 2) | 0;
                     }
-                    if (grabbed && cptr.eq(mtmp, u.ustuck) && (dist2(((x)), ((y)), u.ux, u.uy) <= 2))
+                    if (grabbed && cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2416))) && (dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2))
                         mdam = Math.imul(mdam, 2);
-                    if (Resists_Elem(mtmp, COLD_RES) && adtyp == 2)
+                    if (Resists_Elem(mtmp, 2) && adtyp == 2)
                         mdam = Math.imul(mdam, 2);
-                    else if (Resists_Elem(mtmp, FIRE_RES) && adtyp == 3)
+                    else if (Resists_Elem(mtmp, 1) && adtyp == 3)
                         mdam = Math.imul(mdam, 2);
                     cptr.st1(cptr.add(mtmp, 52), cptr.ld1s(cptr.add(mtmp, 52)) - (mdam + itemdmg) | 0);
                 }
                 if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
-                    let xkflg = ((adtyp == 2 && (cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(cptr.decay(mons), PM_PAPER_GOLEM)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(cptr.decay(mons), PM_STRAW_GOLEM)))) ? 2 : 0);
-                    if (!svc.context.mon_moving) {
+                    let xkflg = ((adtyp == 2 && (cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 250, 96)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 249, 96)))) ? 2 : 0);
+                    if (!cptr.ld1s(cptr.add(svc, 77))) {
                         xkilled(mtmp, 0 | xkflg);
                     } else if (mdef && cptr.eq(mtmp, mdef)) {
-                        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, cptr.ldI16(cptr.add(mtmp, 30)))), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0) || (canseemon(mtmp) || sensemon(mtmp)))
-                            pline(__sl35, Monnam(mtmp), xkflg ? __sl36 : ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(cptr.decay(mons), PM_MANES)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == S_VORTEX)) ? __sl37 : __sl38));
+                        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)))), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0) || (canseemon(mtmp) || sensemon(mtmp)))
+                            pline(__sl35, Monnam(mtmp), xkflg ? __sl36 : ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 50, 96)) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 55) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 22)) ? __sl37 : __sl38));
                         xkilled(mtmp, 1 | 4 | xkflg);
                     } else {
                         if (xkflg)
                             adtyp = 242;
                         monkilled(mtmp, __sl39, adtyp);
                     }
-                } else if (!svc.context.mon_moving) {
+                } else if (!cptr.ld1s(cptr.add(svc, 77))) {
                     setmangry(mtmp, (1));
                 }
             }
         }
     }
     if (uhurt) {
-        if (flags.verbose && (type < 0 || olet != SCROLL_CLASS)) {
+        if (cptr.ld1s(cptr.add(flags, 48)) && (type < 0 || olet != 9)) {
             if (do_hallu) {
                 do {
                     void cptr.sprintf(cptr.decay(hallu_buf), __sl32, s_suffix(rndmonnam(null)));
@@ -545,62 +554,62 @@ export function explode(x, y, type, dam, olet, expltype) {
                 str = cptr.decay(hallu_buf);
             }
             You(__sl40, str);
-            iflags.last_msg = PLNMSG_CAUGHT_IN_EXPLOSION;
+            cptr.stI32(cptr.add(iflags, 40), 3);
         }
         if (adtyp == 2)
             burn_away_slime();
-        if (u.uprops[INVULNERABLE].intrinsic) {
+        if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 11, 24), 16))) {
             damu = 0;
             You(__sl41);
         } else if (adtyp == 0 || adtyp == 8)
-            damu = (((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((damu) + 1) | 0) / 2) | 0) : (damu));
+            damu = (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((damu) + 1) | 0) / 2) | 0) : (damu));
         if (adtyp == 2) {
-            void burnarmor(cptr.boxProp(gy, 'youmonst'));
-            ignite_items(gi.invent);
+            void burnarmor(cptr.add(gy, 8));
+            ignite_items(cptr.ldPtr(cptr.add(gi, 8)));
         }
-        void destroy_items(cptr.boxProp(gy, 'youmonst'), adtyp, dam);
+        void destroy_items(cptr.add(gy, 8), adtyp, dam);
         ugolemeffects(adtyp, damu);
         if (uhurt == 2) {
             if (grabbing && dist2(i16(cptr.ldI16(grabxy)), i16(cptr.ldI16(cptr.add(grabxy, 2))), x, y) <= 2)
                 damu = Math.imul(damu, 2);
-            if ((u.umonnum != u.umonster))
-                u.mh = (u.mh - damu) | 0;
+            if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))))
+                cptr.st1(cptr.add(u, 1812), cptr.ld1s(cptr.add(u, 1812)) - damu);
             else
-                u.uhp = (u.uhp - damu) | 0;
-            disp.botl = (1);
+                cptr.st1(cptr.add(u, 2196), cptr.ld1s(cptr.add(u, 2196)) - damu);
+            cptr.st1(disp, (1));
         }
         if (uhurt == 1)
             monstseesu(cvt_adtyp_to_mseenres(adtyp));
         else
             monstunseesu(cvt_adtyp_to_mseenres(adtyp));
-        if (u.uhp <= 0 || ((u.umonnum != u.umonster) && u.mh <= 0)) {
-            if ((u.umonnum != u.umonster)) {
+        if (cptr.ldI32(cptr.add(u, 2196)) <= 0 || ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && cptr.ldI32(cptr.add(u, 1812)) <= 0)) {
+            if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
                 rehumanize();
             } else {
-                if (olet == ((MAXOCLASSES + 2) | 0)) {
+                if (olet == ((18 + 2) | 0)) {
                     if (generic)
                         ;
-                    else if (!cptr.eq(str, cptr.decay(svk.killer.name)) && !cptr.eq(str, cptr.decay(hallu_buf)))
-                        void cptr.strcpy(cptr.decay(svk.killer.name), str);
-                    svk.killer.format = 0;
-                } else if (olet == ((MAXOCLASSES + 3) | 0)) {
-                    svk.killer.format = 2;
-                    nh_snprintf(__sl42, 655, cptr.decay(svk.killer.name), 256n, __sl43, (genders[flags.female ? 1 : 0].him), str);
-                } else if (type >= 0 && olet != SCROLL_CLASS) {
-                    svk.killer.format = 2;
-                    nh_snprintf(__sl42, 660, cptr.decay(svk.killer.name), 256n, __sl44, (genders[flags.female ? 1 : 0].him), (genders[flags.female ? 1 : 0].his), str);
+                    else if (!cptr.eq(str, cptr.add(svk, 16)) && !cptr.eq(str, cptr.decay(hallu_buf)))
+                        void cptr.strcpy(cptr.add(svk, 16), str);
+                    cptr.stI32(cptr.add(svk, 12), 0);
+                } else if (olet == ((18 + 3) | 0)) {
+                    cptr.stI32(cptr.add(svk, 12), 2);
+                    nh_snprintf(__sl42, 655, cptr.add(svk, 16), 256n, __sl43, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 16))), str);
+                } else if (type >= 0 && olet != 9) {
+                    cptr.stI32(cptr.add(svk, 12), 2);
+                    nh_snprintf(__sl42, 660, cptr.add(svk, 16), 256n, __sl44, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 16))), (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))), str);
                 } else {
-                    svk.killer.format = (!strncmpi((str), (__sl20), -1) || !strncmpi((str), (__sl21), -1)) ? 0 : 1;
-                    void cptr.strcpy(cptr.decay(svk.killer.name), str);
+                    cptr.stI32(cptr.add(svk, 12), (!strncmpi((str), (__sl20), -1) || !strncmpi((str), (__sl21), -1)) ? 0 : 1);
+                    void cptr.strcpy(cptr.add(svk, 16), str);
                 }
-                if (iflags.last_msg == PLNMSG_CAUGHT_IN_EXPLOSION || iflags.last_msg == PLNMSG_TOWER_OF_FLAME)
+                if (cptr.ldI32(cptr.add(iflags, 40)) == 3 || cptr.ldI32(cptr.add(iflags, 40)) == 2)
                     pline(__sl45);
                 else
                     pline_The(__sl46, str);
-                done((adtyp == 2) ? BURNING : DIED);
+                done((adtyp == 2) ? 5 : 0);
             }
         }
-        exercise(A_STR, (0));
+        exercise(0, (0));
     }
     if (shopdamage.v) {
         pay_for_damage((adtyp == 2) ? __sl47 : ((adtyp == 3) ? __sl48 : ((adtyp == 5) ? __sl49 : __sl50)), (0));
@@ -634,10 +643,10 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
     let total = 0n;
     if (individual_object && (cptr.ldI16(cptr.add(obj, 28)) != sx || cptr.ldI16(cptr.add(obj, 30)) != sy))
         impossible(__sl51, cptr.ldI16(cptr.add(obj, 28)), cptr.ldI16(cptr.add(obj, 30)), sx, sy);
-    shop_origin = schar(((shkp = shop_keeper(cptr.ld1s(in_rooms(sx, sy, SHOPBASE)))) !== null && costly_spot(sx, sy)));
+    shop_origin = schar(((shkp = shop_keeper(cptr.ld1s(in_rooms(sx, sy, 14)))) !== null && costly_spot(sx, sy)));
     if (shop_origin)
         credit_report(shkp, 0, (1));
-    while ((otmp = (individual_object ? obj : cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[sx]), sy)))) !== null) {
+    while ((otmp = (individual_object ? obj : cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), sx, 168), sy, 8)))) !== null) {
         if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v)) {
             let waschain = schar((cptr.eq(otmp, uchain.v)));
             ;
@@ -657,9 +666,9 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
         }
         obj_extract_self(otmp);
         used_up = (0);
-        if (((scflags & 16) >>> 0) != 0 && (cptr.ldI16(cptr.add(otmp, 32)) == BOULDER || cptr.ldI16(cptr.add(otmp, 32)) == STATUE) && (rng_log_enabled() ? (rng_log_set_caller(__sl53, 775, __sl54), rn2(10)) : rn2(10))) {
-            if (cptr.ldI16(cptr.add(otmp, 32)) == BOULDER) {
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, sy)), sx)) & 2) != 0)) {
+        if (((scflags & 16) >>> 0) != 0 && (cptr.ldI16(cptr.add(otmp, 32)) == 475 || cptr.ldI16(cptr.add(otmp, 32)) == 476) && (rng_log_enabled() ? (rng_log_set_caller(__sl53, 775, __sl54), rn2(10)) : rn2(10))) {
+            if (cptr.ldI16(cptr.add(otmp, 32)) == 475) {
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), sy)), sx)) & 2) != 0)) {
                     pline(__sl55, Tobjnam(otmp, __sl56));
                 } else {
                     ;
@@ -667,15 +676,15 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                 }
                 fracture_rock(otmp);
                 place_object(otmp, sx, sy);
-                if ((otmp = sobj_at(BOULDER, sx, sy)) !== null) {
+                if ((otmp = sobj_at(475, sx, sy)) !== null) {
                     obj_extract_self(otmp);
                     place_object(otmp, sx, sy);
                 }
             } else {
                 let trap;
-                if ((trap = t_at(sx, sy)) && (cptr.ldI32(cptr.add(trap, 20)) | 0) == STATUE_TRAP)
+                if ((trap = t_at(sx, sy)) && (cptr.ldI32(cptr.add(trap, 20)) | 0) == 19)
                     deltrap(trap);
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, sy)), sx)) & 2) != 0)) {
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), sy)), sx)) & 2) != 0)) {
                     pline(__sl58, Tobjnam(otmp, __sl59));
                 } else {
                     ;
@@ -686,7 +695,7 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
             }
             newsym(sx, sy);
             used_up = (1);
-        } else if (((scflags & 8) >>> 0) != 0 && (!(rng_log_enabled() ? (rng_log_set_caller(__sl53, 809, __sl54), rn2(10)) : rn2(10)) || ((objects[cptr.ldI16(cptr.add(otmp, 32))].oc_material | 0) == GLASS || cptr.ldI16(cptr.add(otmp, 32)) == EGG))) {
+        } else if (((scflags & 8) >>> 0) != 0 && (!(rng_log_enabled() ? (rng_log_set_caller(__sl53, 809, __sl54), rn2(10)) : rn2(10)) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) | 0) == 19 || cptr.ldI16(cptr.add(otmp, 32)) == 266))) {
             if (breaks(otmp, sx, sy))
                 used_up = (1);
         }
@@ -696,9 +705,9 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
             cptr.stPtr(cptr.add(stmp, 8), otmp);
             cptr.stI16(cptr.add(stmp, 16), sx);
             cptr.stI16(cptr.add(stmp, 18), sy);
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl53, 821, __sl54), rn2(((N_DIRS_Z - 2) | 0))) : rn2(((N_DIRS_Z - 2) | 0)));
-            cptr.st1(cptr.add(stmp, 20), cptr.ld1s(cptr.add(cptr.decay(xdir), tmp)));
-            cptr.st1(cptr.add(stmp, 21), cptr.ld1s(cptr.add(cptr.decay(ydir), tmp)));
+            tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl53, 821, __sl54), rn2(((10 - 2) | 0))) : rn2(((10 - 2) | 0)));
+            cptr.st1(cptr.add(stmp, 20), cptr.ld1s(cptr.add(cptr.decay(xdir), tmp, 1)));
+            cptr.st1(cptr.add(stmp, 21), cptr.ld1s(cptr.add(cptr.decay(ydir), tmp, 1)));
             tmp = (((blastforce >>> 0) - (u32div(cptr.ldI32(cptr.add(otmp, 36)), 40))) >>> 0) | 0;
             if (tmp < 1)
                 tmp = 1;
@@ -715,42 +724,42 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
     }
     while (farthest-- > 0) {
         for (stmp = schain; stmp; stmp = cptr.ldPtr(stmp)) {
-            if ((cptr.ldI32(cptr.add(stmp, 24))-- > 0) && (!cptr.ld1s(cptr.add(stmp, 28)))) {
-                gt.thrownobj = cptr.ldPtr(cptr.add(stmp, 8));
-                gb.bhitpos.x = i16(((cptr.ldI16(cptr.add(stmp, 16)) + cptr.ld1s(cptr.add(stmp, 20))) | 0));
-                gb.bhitpos.y = i16(((cptr.ldI16(cptr.add(stmp, 18)) + cptr.ld1s(cptr.add(stmp, 21))) | 0));
-                if (isok(gb.bhitpos.x, gb.bhitpos.y))
-                    typ = uchar(svl.level.locations[gb.bhitpos.x][gb.bhitpos.y].typ);
+            if (((cptr.stI32(cptr.add(stmp, 24), cptr.ldI32(cptr.add(stmp, 24)) + -1)) - 1 > 0) && (!cptr.ld1s(cptr.add(stmp, 28)))) {
+                cptr.stPtr(cptr.add(gt, 328), cptr.ldPtr(cptr.add(stmp, 8)));
+                cptr.stI16(cptr.add(gb, 4768), i16(((cptr.ldI16(cptr.add(stmp, 16)) + cptr.ld1s(cptr.add(stmp, 20))) | 0)));
+                cptr.stI16(cptr.add(cptr.add(gb, 4768), 2), i16(((cptr.ldI16(cptr.add(stmp, 18)) + cptr.ld1s(cptr.add(stmp, 21))) | 0)));
+                if (isok(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2))))
+                    typ = uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(gb, 4768)), 756), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), 36), 4)));
                 else
-                    typ = uchar(STONE);
-                if (!isok(gb.bhitpos.x, gb.bhitpos.y)) {
-                    gb.bhitpos.x = i16(gb.bhitpos.x - cptr.ld1s(cptr.add(stmp, 20)));
-                    gb.bhitpos.y = i16(gb.bhitpos.y - cptr.ld1s(cptr.add(stmp, 21)));
+                    typ = 0;
+                if (!isok(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)))) {
+                    cptr.st1(cptr.add(gb, 4768), cptr.ld1s(cptr.add(gb, 4768)) - cptr.ld1s(cptr.add(stmp, 20)));
+                    cptr.st1(cptr.add(cptr.add(gb, 4768), 2), cptr.ld1s(cptr.add(cptr.add(gb, 4768), 2)) - cptr.ld1s(cptr.add(stmp, 21)));
                     cptr.st1(cptr.add(stmp, 28), (1));
-                } else if (!((typ) >= POOL) || closed_door(gb.bhitpos.x, gb.bhitpos.y)) {
-                    gb.bhitpos.x = i16(gb.bhitpos.x - cptr.ld1s(cptr.add(stmp, 20)));
-                    gb.bhitpos.y = i16(gb.bhitpos.y - cptr.ld1s(cptr.add(stmp, 21)));
+                } else if (!((typ) >= 16) || closed_door(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)))) {
+                    cptr.st1(cptr.add(gb, 4768), cptr.ld1s(cptr.add(gb, 4768)) - cptr.ld1s(cptr.add(stmp, 20)));
+                    cptr.st1(cptr.add(cptr.add(gb, 4768), 2), cptr.ld1s(cptr.add(cptr.add(gb, 4768), 2)) - cptr.ld1s(cptr.add(stmp, 21)));
                     cptr.st1(cptr.add(stmp, 28), (1));
-                } else if ((mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[gb.bhitpos.x]), gb.bhitpos.y)))) !== null) {
+                } else if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(gb, 4768)), 168), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), 8)))) !== null) {
                     if ((scflags & 2) >>> 0) {
-                        cptr.ldI32(cptr.add(stmp, 24))--;
+                        (cptr.stI32(cptr.add(stmp, 24), cptr.ldI32(cptr.add(stmp, 24)) + -1)) - 1;
                         if (ohitmon(mtmp, cptr.ldPtr(cptr.add(stmp, 8)), 1, (0))) {
                             cptr.stPtr(cptr.add(stmp, 8), null);
                             cptr.st1(cptr.add(stmp, 28), (1));
                         }
                     }
-                } else if (((gb.bhitpos.x) == u.ux && (gb.bhitpos.y) == u.uy)) {
+                } else if (((cptr.ldI16(cptr.add(gb, 4768))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2))) == cptr.ldI16(cptr.add(u, 2)))) {
                     if ((scflags & 4) >>> 0) {
                         let dam;
                         let hitvalu;
                         let hitu;
-                        if (gm.multi)
+                        if (cptr.ldI64(cptr.add(gm, 8)))
                             nomul(0);
-                        dam = dmgval(cptr.ldPtr(cptr.add(stmp, 8)), cptr.boxProp(gy, 'youmonst'));
+                        dam = dmgval(cptr.ldPtr(cptr.add(stmp, 8)), cptr.add(gy, 8));
                         hitvalu = (8 + cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(stmp, 8)), 48))) | 0;
-                        if ((cptr.ld1u(cptr.add((gy.youmonst.data), 67)) >= 3))
+                        if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) >= 3))
                             hitvalu++;
-                        hitu = thitu(hitvalu, (((u.uprops[HALF_PHDAM].intrinsic || u.uprops[HALF_PHDAM].extrinsic)) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), cptr.add(stmp, 8), null);
+                        hitu = thitu(hitvalu, (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)))) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), cptr.add(stmp, 8), null);
                         if (!cptr.ldPtr(cptr.add(stmp, 8)))
                             cptr.st1(cptr.add(stmp, 28), (1));
                         if (hitu) {
@@ -762,11 +771,11 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                     if ((scflags & 1) >>> 0) {
                     }
                 }
-                cptr.stI16(cptr.add(stmp, 16), gb.bhitpos.x);
-                cptr.stI16(cptr.add(stmp, 18), gb.bhitpos.y);
-                if (((svl.level.locations[cptr.ldI16(cptr.add(stmp, 16))][cptr.ldI16(cptr.add(stmp, 18))].typ) == SINK))
+                cptr.stI16(cptr.add(stmp, 16), cptr.ldI16(cptr.add(gb, 4768)));
+                cptr.stI16(cptr.add(stmp, 18), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)));
+                if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(stmp, 16)), 756), cptr.ldI16(cptr.add(stmp, 18)), 36), 4))) == 30))
                     cptr.st1(cptr.add(stmp, 28), (1));
-                gt.thrownobj = null;
+                cptr.stPtr(cptr.add(gt, 328), null);
             }
         }
     }
@@ -783,8 +792,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                 obj_left_shop = schar((shop_origin && !costly_spot(x, y)));
             }
             if (!flooreffects(cptr.ldPtr(cptr.add(stmp, 8)), x, y, __sl61)) {
-                if (obj_left_shop && cptr.strchr(cptr.decay(u.urooms), cptr.ld1s(in_rooms(u.ux, u.uy, SHOPBASE)))) {
-                    if (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(stmp, 8)), 32)) == GOLD_PIECE) {
+                if (obj_left_shop && cptr.strchr(cptr.add(u, 68), cptr.ld1s(in_rooms(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 14)))) {
+                    if (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(stmp, 8)), 32)) == 438) {
                         addtobill(cptr.ldPtr(cptr.add(stmp, 8)), (0), (0), (1));
                         lostgoods = (1);
                     }
@@ -797,9 +806,9 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
         newsym(x, y);
     }
     newsym(sx, sy);
-    if (((sx) == u.ux && (sy) == u.uy) && u.uundetected | 0 && ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 128n) != 0n))
-        void hideunder(cptr.boxProp(gy, 'youmonst'));
-    if (((mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[sx]), sy)))) !== null) && cptr.ldI32(cptr.add(mtmp, 172)) | 0)
+    if (((sx) == cptr.ldI16(u) && (sy) == cptr.ldI16(cptr.add(u, 2))) && cptr.ldI32(cptr.add(u, 1856)) | 0 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 128n) != 0n))
+        void hideunder(cptr.add(gy, 8));
+    if (((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), sx, 168), sy, 8)))) !== null) && cptr.ldI32(cptr.add(mtmp, 172)) | 0)
         cptr.stI32(cptr.add(mtmp, 172), 0);
     maybe_unhide_at(sx, sy);
     if (lostgoods)
@@ -810,7 +819,7 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
 /** C ref: explode.c:962 — @param {CInt} x @param {CInt} y @param {CInt} diluted_oil */
 export function splatter_burning_oil(x, y, diluted_oil) {
     let dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl53, 964, __sl62), d((diluted_oil ? 3 : 4), (4))) : d((diluted_oil ? 3 : 4), (4)));
-    explode(x, y, 11, dmg, schar(((MAXOCLASSES + 1) | 0)), EXPL_FIERY);
+    explode(x, y, 11, dmg, schar(((18 + 1) | 0)), 5);
 }
 
 /** C ref: explode.c:974 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
@@ -830,21 +839,21 @@ export function adtyp_to_expltype(adtyp) {
         case 241:
         case 16:
         case 41:
-        return EXPL_MAGICAL;
+        return 4;
         case 2:
-        return EXPL_FIERY;
+        return 5;
         case 3:
-        return EXPL_FROSTY;
+        return 6;
         case 7:
         case 30:
         case 31:
         case 33:
         case 38:
         case 0:
-        return EXPL_NOXIOUS;
+        return 1;
         default:
         impossible(__sl64, adtyp);
-        return EXPL_FIERY;
+        return 5;
     }
 }
 
@@ -870,8 +879,8 @@ export function mon_explodes(mon, mattk) {
     if (!(cptr.ldI32(cptr.add((mon), 52)) < 1)) {
         mondead(mon);
     }
-    void cptr.sprintf(cptr.decay(svk.killer.name), __sl32, s_suffix(pmname(cptr.ldPtr(cptr.add(mon, 8)), Mgender(mon))));
-    svk.killer.format = 0;
-    explode(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), type, dmg, schar(((MAXOCLASSES + 2) | 0)), adtyp_to_expltype(cptr.ld1u(cptr.add(mattk, 1))));
-    cptr.st1(cptr.add(cptr.decay(svk.killer.name), 0), 0);
+    void cptr.sprintf(cptr.add(svk, 16), __sl32, s_suffix(pmname(cptr.ldPtr(cptr.add(mon, 8)), Mgender(mon))));
+    cptr.stI32(cptr.add(svk, 12), 0);
+    explode(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), type, dmg, schar(((18 + 2) | 0)), adtyp_to_expltype(cptr.ld1u(cptr.add(mattk, 1))));
+    cptr.st1(cptr.add(cptr.add(svk, 16), 0, 1), 0);
 }

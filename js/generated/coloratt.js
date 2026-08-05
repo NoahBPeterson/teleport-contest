@@ -9,6 +9,8 @@ import { digit, fuzzymatch, mungspaces, nh_snprintf, strncmpi, strstri } from '.
 import { config_error_add } from './cfgfiles.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
 import { cg, gc, gm, gs, hexdd, iflags } from './decl.js';
+import { nul_glyphinfo } from './display.js';
+import { regex_compile, regex_error_desc, regex_free, regex_id, regex_init } from './posixregex.js';
 import { alloc, dupstr } from './alloc.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -203,218 +205,1183 @@ const __sl186 = cptr.lit("");
 /** C ref: coloratt.c:7 — struct color_names { name, color } (memory model v0.5) */
 
 /** C ref: coloratt.c:12 — struct color_names[27] */
-const colornames = [
-    { name: __sl0, color: 0 },
-    { name: __sl1, color: 1 },
-    { name: __sl2, color: 2 },
-    { name: __sl3, color: 3 },
-    { name: __sl4, color: 4 },
-    { name: __sl5, color: 5 },
-    { name: __sl6, color: 6 },
-    { name: __sl7, color: 7 },
-    { name: __sl8, color: 9 },
-    { name: __sl9, color: 10 },
-    { name: __sl10, color: 11 },
-    { name: __sl11, color: 12 },
-    { name: __sl12, color: 13 },
-    { name: __sl13, color: 14 },
-    { name: __sl14, color: 15 },
-    { name: __sl15, color: 8 },
-    { name: null, color: 0 },
-    { name: __sl16, color: 8 },
-    { name: __sl17, color: 5 },
-    { name: __sl18, color: 13 },
-    { name: __sl19, color: 13 },
-    { name: __sl20, color: 7 },
-    { name: __sl21, color: 9 },
-    { name: __sl22, color: 10 },
-    { name: __sl23, color: 12 },
-    { name: __sl24, color: 13 },
-    { name: __sl25, color: 14 }
-];
+const colornames = cptr.alloc(27 * 16);
+cptr.stPtr(cptr.add(colornames, 0), __sl0);
+cptr.stI32(cptr.add(cptr.add(colornames, 0), 8), 0);
+cptr.stPtr(cptr.add(colornames, 16), __sl1);
+cptr.stI32(cptr.add(cptr.add(colornames, 16), 8), 1);
+cptr.stPtr(cptr.add(colornames, 32), __sl2);
+cptr.stI32(cptr.add(cptr.add(colornames, 32), 8), 2);
+cptr.stPtr(cptr.add(colornames, 48), __sl3);
+cptr.stI32(cptr.add(cptr.add(colornames, 48), 8), 3);
+cptr.stPtr(cptr.add(colornames, 64), __sl4);
+cptr.stI32(cptr.add(cptr.add(colornames, 64), 8), 4);
+cptr.stPtr(cptr.add(colornames, 80), __sl5);
+cptr.stI32(cptr.add(cptr.add(colornames, 80), 8), 5);
+cptr.stPtr(cptr.add(colornames, 96), __sl6);
+cptr.stI32(cptr.add(cptr.add(colornames, 96), 8), 6);
+cptr.stPtr(cptr.add(colornames, 112), __sl7);
+cptr.stI32(cptr.add(cptr.add(colornames, 112), 8), 7);
+cptr.stPtr(cptr.add(colornames, 128), __sl8);
+cptr.stI32(cptr.add(cptr.add(colornames, 128), 8), 9);
+cptr.stPtr(cptr.add(colornames, 144), __sl9);
+cptr.stI32(cptr.add(cptr.add(colornames, 144), 8), 10);
+cptr.stPtr(cptr.add(colornames, 160), __sl10);
+cptr.stI32(cptr.add(cptr.add(colornames, 160), 8), 11);
+cptr.stPtr(cptr.add(colornames, 176), __sl11);
+cptr.stI32(cptr.add(cptr.add(colornames, 176), 8), 12);
+cptr.stPtr(cptr.add(colornames, 192), __sl12);
+cptr.stI32(cptr.add(cptr.add(colornames, 192), 8), 13);
+cptr.stPtr(cptr.add(colornames, 208), __sl13);
+cptr.stI32(cptr.add(cptr.add(colornames, 208), 8), 14);
+cptr.stPtr(cptr.add(colornames, 224), __sl14);
+cptr.stI32(cptr.add(cptr.add(colornames, 224), 8), 15);
+cptr.stPtr(cptr.add(colornames, 240), __sl15);
+cptr.stI32(cptr.add(cptr.add(colornames, 240), 8), 8);
+cptr.stPtr(cptr.add(colornames, 256), null);
+cptr.stI32(cptr.add(cptr.add(colornames, 256), 8), 0);
+cptr.stPtr(cptr.add(colornames, 272), __sl16);
+cptr.stI32(cptr.add(cptr.add(colornames, 272), 8), 8);
+cptr.stPtr(cptr.add(colornames, 288), __sl17);
+cptr.stI32(cptr.add(cptr.add(colornames, 288), 8), 5);
+cptr.stPtr(cptr.add(colornames, 304), __sl18);
+cptr.stI32(cptr.add(cptr.add(colornames, 304), 8), 13);
+cptr.stPtr(cptr.add(colornames, 320), __sl19);
+cptr.stI32(cptr.add(cptr.add(colornames, 320), 8), 13);
+cptr.stPtr(cptr.add(colornames, 336), __sl20);
+cptr.stI32(cptr.add(cptr.add(colornames, 336), 8), 7);
+cptr.stPtr(cptr.add(colornames, 352), __sl21);
+cptr.stI32(cptr.add(cptr.add(colornames, 352), 8), 9);
+cptr.stPtr(cptr.add(colornames, 368), __sl22);
+cptr.stI32(cptr.add(cptr.add(colornames, 368), 8), 10);
+cptr.stPtr(cptr.add(colornames, 384), __sl23);
+cptr.stI32(cptr.add(cptr.add(colornames, 384), 8), 12);
+cptr.stPtr(cptr.add(colornames, 400), __sl24);
+cptr.stI32(cptr.add(cptr.add(colornames, 400), 8), 13);
+cptr.stPtr(cptr.add(colornames, 416), __sl25);
+cptr.stI32(cptr.add(cptr.add(colornames, 416), 8), 14);
 
 /** C ref: coloratt.c:42 — struct attr_names { name, attr } (memory model v0.5) */
 
 /** C ref: coloratt.c:47 — struct attr_names[11] */
-const attrnames = [
-    { name: __sl26, attr: 0 },
-    { name: __sl27, attr: 1 },
-    { name: __sl28, attr: 2 },
-    { name: __sl29, attr: 3 },
-    { name: __sl30, attr: 4 },
-    { name: __sl31, attr: 5 },
-    { name: __sl32, attr: 7 },
-    { name: null, attr: 0 },
-    { name: __sl33, attr: 0 },
-    { name: __sl34, attr: 4 },
-    { name: __sl35, attr: 7 }
-];
+const attrnames = cptr.alloc(11 * 16);
+cptr.stPtr(cptr.add(attrnames, 0), __sl26);
+cptr.stI32(cptr.add(cptr.add(attrnames, 0), 8), 0);
+cptr.stPtr(cptr.add(attrnames, 16), __sl27);
+cptr.stI32(cptr.add(cptr.add(attrnames, 16), 8), 1);
+cptr.stPtr(cptr.add(attrnames, 32), __sl28);
+cptr.stI32(cptr.add(cptr.add(attrnames, 32), 8), 2);
+cptr.stPtr(cptr.add(attrnames, 48), __sl29);
+cptr.stI32(cptr.add(cptr.add(attrnames, 48), 8), 3);
+cptr.stPtr(cptr.add(attrnames, 64), __sl30);
+cptr.stI32(cptr.add(cptr.add(attrnames, 64), 8), 4);
+cptr.stPtr(cptr.add(attrnames, 80), __sl31);
+cptr.stI32(cptr.add(cptr.add(attrnames, 80), 8), 5);
+cptr.stPtr(cptr.add(attrnames, 96), __sl32);
+cptr.stI32(cptr.add(cptr.add(attrnames, 96), 8), 7);
+cptr.stPtr(cptr.add(attrnames, 112), null);
+cptr.stI32(cptr.add(cptr.add(attrnames, 112), 8), 0);
+cptr.stPtr(cptr.add(attrnames, 128), __sl33);
+cptr.stI32(cptr.add(cptr.add(attrnames, 128), 8), 0);
+cptr.stPtr(cptr.add(attrnames, 144), __sl34);
+cptr.stI32(cptr.add(cptr.add(attrnames, 144), 8), 4);
+cptr.stPtr(cptr.add(attrnames, 160), __sl35);
+cptr.stI32(cptr.add(cptr.add(attrnames, 160), 8), 7);
 
 /** C ref: coloratt.c:67 — struct nethack_color[155] */
-const colortable = [
-    { colortyp: nh_color, tableindex: 0, rgbindex: 0, name: __sl0, r: 0n, g: 0n, b: 0n },
-    { colortyp: nh_color, tableindex: 1, rgbindex: 0, name: __sl1, r: 255n, g: 0n, b: 0n },
-    { colortyp: nh_color, tableindex: 2, rgbindex: 0, name: __sl2, r: 34n, g: 139n, b: 34n },
-    { colortyp: nh_color, tableindex: 3, rgbindex: 0, name: __sl3, r: 165n, g: 42n, b: 42n },
-    { colortyp: nh_color, tableindex: 4, rgbindex: 0, name: __sl4, r: 0n, g: 0n, b: 255n },
-    { colortyp: nh_color, tableindex: 5, rgbindex: 0, name: __sl5, r: 255n, g: 0n, b: 255n },
-    { colortyp: nh_color, tableindex: 6, rgbindex: 0, name: __sl6, r: 0n, g: 255n, b: 255n },
-    { colortyp: nh_color, tableindex: 7, rgbindex: 0, name: __sl7, r: 128n, g: 128n, b: 128n },
-    { colortyp: no_color, tableindex: 8, rgbindex: 0, name: __sl36, r: 0n, g: 0n, b: 0n },
-    { colortyp: nh_color, tableindex: 9, rgbindex: 0, name: __sl8, r: 255n, g: 165n, b: 0n },
-    { colortyp: nh_color, tableindex: 10, rgbindex: 0, name: __sl37, r: 0n, g: 128n, b: 0n },
-    { colortyp: nh_color, tableindex: 11, rgbindex: 0, name: __sl10, r: 255n, g: 255n, b: 0n },
-    { colortyp: nh_color, tableindex: 12, rgbindex: 0, name: __sl38, r: 173n, g: 216n, b: 230n },
-    { colortyp: nh_color, tableindex: 13, rgbindex: 0, name: __sl39, r: 147n, g: 112n, b: 219n },
-    { colortyp: nh_color, tableindex: 14, rgbindex: 0, name: __sl40, r: 224n, g: 255n, b: 255n },
-    { colortyp: nh_color, tableindex: 15, rgbindex: 0, name: __sl14, r: 255n, g: 255n, b: 255n },
-    { colortyp: rgb_color, tableindex: 16, rgbindex: 0, name: __sl41, r: 128n, g: 0n, b: 0n },
-    { colortyp: rgb_color, tableindex: 17, rgbindex: 1, name: __sl42, r: 139n, g: 0n, b: 0n },
-    { colortyp: rgb_color, tableindex: 18, rgbindex: 2, name: __sl3, r: 165n, g: 42n, b: 42n },
-    { colortyp: rgb_color, tableindex: 19, rgbindex: 3, name: __sl43, r: 178n, g: 34n, b: 34n },
-    { colortyp: rgb_color, tableindex: 20, rgbindex: 4, name: __sl44, r: 220n, g: 20n, b: 60n },
-    { colortyp: rgb_color, tableindex: 21, rgbindex: 5, name: __sl1, r: 255n, g: 0n, b: 0n },
-    { colortyp: rgb_color, tableindex: 22, rgbindex: 6, name: __sl45, r: 255n, g: 99n, b: 71n },
-    { colortyp: rgb_color, tableindex: 23, rgbindex: 7, name: __sl46, r: 255n, g: 127n, b: 80n },
-    { colortyp: rgb_color, tableindex: 24, rgbindex: 8, name: __sl47, r: 205n, g: 92n, b: 92n },
-    { colortyp: rgb_color, tableindex: 25, rgbindex: 9, name: __sl48, r: 240n, g: 128n, b: 128n },
-    { colortyp: rgb_color, tableindex: 26, rgbindex: 10, name: __sl49, r: 233n, g: 150n, b: 122n },
-    { colortyp: rgb_color, tableindex: 27, rgbindex: 11, name: __sl50, r: 250n, g: 128n, b: 114n },
-    { colortyp: rgb_color, tableindex: 28, rgbindex: 12, name: __sl51, r: 255n, g: 160n, b: 122n },
-    { colortyp: rgb_color, tableindex: 29, rgbindex: 13, name: __sl52, r: 255n, g: 69n, b: 0n },
-    { colortyp: rgb_color, tableindex: 30, rgbindex: 14, name: __sl53, r: 255n, g: 140n, b: 0n },
-    { colortyp: rgb_color, tableindex: 31, rgbindex: 15, name: __sl8, r: 255n, g: 165n, b: 0n },
-    { colortyp: rgb_color, tableindex: 32, rgbindex: 16, name: __sl54, r: 255n, g: 215n, b: 0n },
-    { colortyp: rgb_color, tableindex: 33, rgbindex: 17, name: __sl55, r: 184n, g: 134n, b: 11n },
-    { colortyp: rgb_color, tableindex: 34, rgbindex: 18, name: __sl56, r: 218n, g: 165n, b: 32n },
-    { colortyp: rgb_color, tableindex: 35, rgbindex: 19, name: __sl57, r: 238n, g: 232n, b: 170n },
-    { colortyp: rgb_color, tableindex: 36, rgbindex: 20, name: __sl58, r: 189n, g: 183n, b: 107n },
-    { colortyp: rgb_color, tableindex: 37, rgbindex: 21, name: __sl59, r: 240n, g: 230n, b: 140n },
-    { colortyp: rgb_color, tableindex: 38, rgbindex: 22, name: __sl60, r: 128n, g: 128n, b: 0n },
-    { colortyp: rgb_color, tableindex: 39, rgbindex: 23, name: __sl10, r: 255n, g: 255n, b: 0n },
-    { colortyp: rgb_color, tableindex: 40, rgbindex: 24, name: __sl61, r: 154n, g: 205n, b: 50n },
-    { colortyp: rgb_color, tableindex: 41, rgbindex: 25, name: __sl62, r: 85n, g: 107n, b: 47n },
-    { colortyp: rgb_color, tableindex: 42, rgbindex: 26, name: __sl63, r: 107n, g: 142n, b: 35n },
-    { colortyp: rgb_color, tableindex: 43, rgbindex: 27, name: __sl64, r: 124n, g: 252n, b: 0n },
-    { colortyp: rgb_color, tableindex: 44, rgbindex: 28, name: __sl65, r: 127n, g: 255n, b: 0n },
-    { colortyp: rgb_color, tableindex: 45, rgbindex: 29, name: __sl66, r: 173n, g: 255n, b: 47n },
-    { colortyp: rgb_color, tableindex: 46, rgbindex: 30, name: __sl67, r: 0n, g: 100n, b: 0n },
-    { colortyp: rgb_color, tableindex: 47, rgbindex: 31, name: __sl2, r: 0n, g: 128n, b: 0n },
-    { colortyp: rgb_color, tableindex: 48, rgbindex: 32, name: __sl68, r: 34n, g: 139n, b: 34n },
-    { colortyp: rgb_color, tableindex: 49, rgbindex: 33, name: __sl69, r: 0n, g: 255n, b: 0n },
-    { colortyp: rgb_color, tableindex: 50, rgbindex: 34, name: __sl70, r: 50n, g: 205n, b: 50n },
-    { colortyp: rgb_color, tableindex: 51, rgbindex: 35, name: __sl71, r: 144n, g: 238n, b: 144n },
-    { colortyp: rgb_color, tableindex: 52, rgbindex: 36, name: __sl72, r: 152n, g: 251n, b: 152n },
-    { colortyp: rgb_color, tableindex: 53, rgbindex: 37, name: __sl73, r: 143n, g: 188n, b: 143n },
-    { colortyp: rgb_color, tableindex: 54, rgbindex: 38, name: __sl74, r: 0n, g: 250n, b: 154n },
-    { colortyp: rgb_color, tableindex: 55, rgbindex: 39, name: __sl75, r: 0n, g: 255n, b: 127n },
-    { colortyp: rgb_color, tableindex: 56, rgbindex: 40, name: __sl76, r: 46n, g: 139n, b: 87n },
-    { colortyp: rgb_color, tableindex: 57, rgbindex: 41, name: __sl77, r: 102n, g: 205n, b: 170n },
-    { colortyp: rgb_color, tableindex: 58, rgbindex: 42, name: __sl78, r: 60n, g: 179n, b: 113n },
-    { colortyp: rgb_color, tableindex: 59, rgbindex: 43, name: __sl79, r: 32n, g: 178n, b: 170n },
-    { colortyp: rgb_color, tableindex: 60, rgbindex: 44, name: __sl80, r: 47n, g: 79n, b: 79n },
-    { colortyp: rgb_color, tableindex: 61, rgbindex: 45, name: __sl81, r: 0n, g: 128n, b: 128n },
-    { colortyp: rgb_color, tableindex: 62, rgbindex: 46, name: __sl82, r: 0n, g: 139n, b: 139n },
-    { colortyp: rgb_color, tableindex: 63, rgbindex: 47, name: __sl83, r: 0n, g: 255n, b: 255n },
-    { colortyp: rgb_color, tableindex: 64, rgbindex: 48, name: __sl6, r: 0n, g: 255n, b: 255n },
-    { colortyp: rgb_color, tableindex: 65, rgbindex: 49, name: __sl40, r: 224n, g: 255n, b: 255n },
-    { colortyp: rgb_color, tableindex: 66, rgbindex: 50, name: __sl84, r: 0n, g: 206n, b: 209n },
-    { colortyp: rgb_color, tableindex: 67, rgbindex: 51, name: __sl85, r: 64n, g: 224n, b: 208n },
-    { colortyp: rgb_color, tableindex: 68, rgbindex: 52, name: __sl86, r: 72n, g: 209n, b: 204n },
-    { colortyp: rgb_color, tableindex: 69, rgbindex: 53, name: __sl87, r: 175n, g: 238n, b: 238n },
-    { colortyp: rgb_color, tableindex: 70, rgbindex: 54, name: __sl88, r: 127n, g: 255n, b: 212n },
-    { colortyp: rgb_color, tableindex: 71, rgbindex: 55, name: __sl89, r: 176n, g: 224n, b: 230n },
-    { colortyp: rgb_color, tableindex: 72, rgbindex: 56, name: __sl90, r: 95n, g: 158n, b: 160n },
-    { colortyp: rgb_color, tableindex: 73, rgbindex: 57, name: __sl91, r: 70n, g: 130n, b: 180n },
-    { colortyp: rgb_color, tableindex: 74, rgbindex: 58, name: __sl92, r: 100n, g: 149n, b: 237n },
-    { colortyp: rgb_color, tableindex: 75, rgbindex: 59, name: __sl93, r: 0n, g: 191n, b: 255n },
-    { colortyp: rgb_color, tableindex: 76, rgbindex: 60, name: __sl94, r: 30n, g: 144n, b: 255n },
-    { colortyp: rgb_color, tableindex: 77, rgbindex: 61, name: __sl95, r: 173n, g: 216n, b: 230n },
-    { colortyp: rgb_color, tableindex: 78, rgbindex: 62, name: __sl96, r: 135n, g: 206n, b: 235n },
-    { colortyp: rgb_color, tableindex: 79, rgbindex: 63, name: __sl97, r: 135n, g: 206n, b: 250n },
-    { colortyp: rgb_color, tableindex: 80, rgbindex: 64, name: __sl98, r: 25n, g: 25n, b: 112n },
-    { colortyp: rgb_color, tableindex: 81, rgbindex: 65, name: __sl99, r: 0n, g: 0n, b: 128n },
-    { colortyp: rgb_color, tableindex: 82, rgbindex: 66, name: __sl100, r: 0n, g: 0n, b: 139n },
-    { colortyp: rgb_color, tableindex: 83, rgbindex: 67, name: __sl101, r: 0n, g: 0n, b: 205n },
-    { colortyp: rgb_color, tableindex: 84, rgbindex: 68, name: __sl4, r: 0n, g: 0n, b: 255n },
-    { colortyp: rgb_color, tableindex: 85, rgbindex: 69, name: __sl102, r: 65n, g: 105n, b: 225n },
-    { colortyp: rgb_color, tableindex: 86, rgbindex: 70, name: __sl103, r: 138n, g: 43n, b: 226n },
-    { colortyp: rgb_color, tableindex: 87, rgbindex: 71, name: __sl104, r: 75n, g: 0n, b: 130n },
-    { colortyp: rgb_color, tableindex: 88, rgbindex: 72, name: __sl105, r: 72n, g: 61n, b: 139n },
-    { colortyp: rgb_color, tableindex: 89, rgbindex: 73, name: __sl106, r: 106n, g: 90n, b: 205n },
-    { colortyp: rgb_color, tableindex: 90, rgbindex: 74, name: __sl107, r: 123n, g: 104n, b: 238n },
-    { colortyp: rgb_color, tableindex: 91, rgbindex: 75, name: __sl108, r: 147n, g: 112n, b: 219n },
-    { colortyp: rgb_color, tableindex: 92, rgbindex: 76, name: __sl109, r: 139n, g: 0n, b: 139n },
-    { colortyp: rgb_color, tableindex: 93, rgbindex: 77, name: __sl110, r: 148n, g: 0n, b: 211n },
-    { colortyp: rgb_color, tableindex: 94, rgbindex: 78, name: __sl111, r: 153n, g: 50n, b: 204n },
-    { colortyp: rgb_color, tableindex: 95, rgbindex: 79, name: __sl112, r: 186n, g: 85n, b: 211n },
-    { colortyp: rgb_color, tableindex: 96, rgbindex: 80, name: __sl17, r: 128n, g: 0n, b: 128n },
-    { colortyp: rgb_color, tableindex: 97, rgbindex: 81, name: __sl113, r: 216n, g: 191n, b: 216n },
-    { colortyp: rgb_color, tableindex: 98, rgbindex: 82, name: __sl114, r: 221n, g: 160n, b: 221n },
-    { colortyp: rgb_color, tableindex: 99, rgbindex: 83, name: __sl115, r: 238n, g: 130n, b: 238n },
-    { colortyp: rgb_color, tableindex: 100, rgbindex: 84, name: __sl5, r: 255n, g: 0n, b: 255n },
-    { colortyp: rgb_color, tableindex: 101, rgbindex: 85, name: __sl116, r: 218n, g: 112n, b: 214n },
-    { colortyp: rgb_color, tableindex: 102, rgbindex: 86, name: __sl117, r: 199n, g: 21n, b: 133n },
-    { colortyp: rgb_color, tableindex: 103, rgbindex: 87, name: __sl118, r: 219n, g: 112n, b: 147n },
-    { colortyp: rgb_color, tableindex: 104, rgbindex: 88, name: __sl119, r: 255n, g: 20n, b: 147n },
-    { colortyp: rgb_color, tableindex: 105, rgbindex: 89, name: __sl120, r: 255n, g: 105n, b: 180n },
-    { colortyp: rgb_color, tableindex: 106, rgbindex: 90, name: __sl121, r: 255n, g: 182n, b: 193n },
-    { colortyp: rgb_color, tableindex: 107, rgbindex: 91, name: __sl122, r: 255n, g: 192n, b: 203n },
-    { colortyp: rgb_color, tableindex: 108, rgbindex: 92, name: __sl123, r: 250n, g: 235n, b: 215n },
-    { colortyp: rgb_color, tableindex: 109, rgbindex: 93, name: __sl124, r: 245n, g: 245n, b: 220n },
-    { colortyp: rgb_color, tableindex: 110, rgbindex: 94, name: __sl125, r: 255n, g: 228n, b: 196n },
-    { colortyp: rgb_color, tableindex: 111, rgbindex: 95, name: __sl126, r: 255n, g: 235n, b: 205n },
-    { colortyp: rgb_color, tableindex: 112, rgbindex: 96, name: __sl127, r: 245n, g: 222n, b: 179n },
-    { colortyp: rgb_color, tableindex: 113, rgbindex: 97, name: __sl128, r: 255n, g: 248n, b: 220n },
-    { colortyp: rgb_color, tableindex: 114, rgbindex: 98, name: __sl129, r: 255n, g: 250n, b: 205n },
-    { colortyp: rgb_color, tableindex: 115, rgbindex: 99, name: __sl130, r: 250n, g: 250n, b: 210n },
-    { colortyp: rgb_color, tableindex: 116, rgbindex: 100, name: __sl131, r: 255n, g: 255n, b: 224n },
-    { colortyp: rgb_color, tableindex: 117, rgbindex: 101, name: __sl132, r: 139n, g: 69n, b: 19n },
-    { colortyp: rgb_color, tableindex: 118, rgbindex: 102, name: __sl133, r: 160n, g: 82n, b: 45n },
-    { colortyp: rgb_color, tableindex: 119, rgbindex: 103, name: __sl134, r: 210n, g: 105n, b: 30n },
-    { colortyp: rgb_color, tableindex: 120, rgbindex: 104, name: __sl135, r: 205n, g: 133n, b: 63n },
-    { colortyp: rgb_color, tableindex: 121, rgbindex: 105, name: __sl136, r: 244n, g: 164n, b: 96n },
-    { colortyp: rgb_color, tableindex: 122, rgbindex: 106, name: __sl137, r: 222n, g: 184n, b: 135n },
-    { colortyp: rgb_color, tableindex: 123, rgbindex: 107, name: __sl138, r: 210n, g: 180n, b: 140n },
-    { colortyp: rgb_color, tableindex: 124, rgbindex: 108, name: __sl139, r: 188n, g: 143n, b: 143n },
-    { colortyp: rgb_color, tableindex: 125, rgbindex: 109, name: __sl140, r: 255n, g: 228n, b: 181n },
-    { colortyp: rgb_color, tableindex: 126, rgbindex: 110, name: __sl141, r: 255n, g: 222n, b: 173n },
-    { colortyp: rgb_color, tableindex: 127, rgbindex: 111, name: __sl142, r: 255n, g: 218n, b: 185n },
-    { colortyp: rgb_color, tableindex: 128, rgbindex: 112, name: __sl143, r: 255n, g: 228n, b: 225n },
-    { colortyp: rgb_color, tableindex: 129, rgbindex: 113, name: __sl144, r: 255n, g: 240n, b: 245n },
-    { colortyp: rgb_color, tableindex: 130, rgbindex: 114, name: __sl145, r: 250n, g: 240n, b: 230n },
-    { colortyp: rgb_color, tableindex: 131, rgbindex: 115, name: __sl146, r: 253n, g: 245n, b: 230n },
-    { colortyp: rgb_color, tableindex: 132, rgbindex: 116, name: __sl147, r: 255n, g: 239n, b: 213n },
-    { colortyp: rgb_color, tableindex: 133, rgbindex: 117, name: __sl148, r: 255n, g: 245n, b: 238n },
-    { colortyp: rgb_color, tableindex: 134, rgbindex: 118, name: __sl149, r: 245n, g: 255n, b: 250n },
-    { colortyp: rgb_color, tableindex: 135, rgbindex: 119, name: __sl150, r: 112n, g: 128n, b: 144n },
-    { colortyp: rgb_color, tableindex: 136, rgbindex: 120, name: __sl151, r: 119n, g: 136n, b: 153n },
-    { colortyp: rgb_color, tableindex: 137, rgbindex: 121, name: __sl152, r: 176n, g: 196n, b: 222n },
-    { colortyp: rgb_color, tableindex: 138, rgbindex: 122, name: __sl153, r: 230n, g: 230n, b: 250n },
-    { colortyp: rgb_color, tableindex: 139, rgbindex: 123, name: __sl154, r: 255n, g: 250n, b: 240n },
-    { colortyp: rgb_color, tableindex: 140, rgbindex: 124, name: __sl155, r: 240n, g: 248n, b: 255n },
-    { colortyp: rgb_color, tableindex: 141, rgbindex: 125, name: __sl156, r: 248n, g: 248n, b: 255n },
-    { colortyp: rgb_color, tableindex: 142, rgbindex: 126, name: __sl157, r: 240n, g: 255n, b: 240n },
-    { colortyp: rgb_color, tableindex: 143, rgbindex: 127, name: __sl158, r: 255n, g: 255n, b: 240n },
-    { colortyp: rgb_color, tableindex: 144, rgbindex: 128, name: __sl159, r: 240n, g: 255n, b: 255n },
-    { colortyp: rgb_color, tableindex: 145, rgbindex: 129, name: __sl160, r: 255n, g: 250n, b: 250n },
-    { colortyp: rgb_color, tableindex: 146, rgbindex: 130, name: __sl0, r: 0n, g: 0n, b: 0n },
-    { colortyp: rgb_color, tableindex: 147, rgbindex: 131, name: __sl161, r: 105n, g: 105n, b: 105n },
-    { colortyp: rgb_color, tableindex: 148, rgbindex: 132, name: __sl7, r: 128n, g: 128n, b: 128n },
-    { colortyp: rgb_color, tableindex: 149, rgbindex: 133, name: __sl162, r: 169n, g: 169n, b: 169n },
-    { colortyp: rgb_color, tableindex: 150, rgbindex: 134, name: __sl163, r: 192n, g: 192n, b: 192n },
-    { colortyp: rgb_color, tableindex: 151, rgbindex: 135, name: __sl164, r: 211n, g: 211n, b: 211n },
-    { colortyp: rgb_color, tableindex: 152, rgbindex: 136, name: __sl165, r: 220n, g: 220n, b: 220n },
-    { colortyp: rgb_color, tableindex: 153, rgbindex: 137, name: __sl166, r: 245n, g: 245n, b: 245n },
-    { colortyp: rgb_color, tableindex: 154, rgbindex: 138, name: __sl14, r: 255n, g: 255n, b: 255n }
-];
+export const colortable = cptr.alloc(155 * 48);
+cptr.stI32(cptr.add(colortable, 0), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 0), 4), 0);
+cptr.stI32(cptr.add(cptr.add(colortable, 0), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 0), 16), __sl0);
+cptr.stU64(cptr.add(cptr.add(colortable, 0), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 0), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 0), 40), 0n);
+cptr.stI32(cptr.add(colortable, 48), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 48), 4), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 48), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 48), 16), __sl1);
+cptr.stU64(cptr.add(cptr.add(colortable, 48), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 48), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 48), 40), 0n);
+cptr.stI32(cptr.add(colortable, 96), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 96), 4), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 96), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 96), 16), __sl2);
+cptr.stU64(cptr.add(cptr.add(colortable, 96), 24), 34n);
+cptr.stU64(cptr.add(cptr.add(colortable, 96), 32), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 96), 40), 34n);
+cptr.stI32(cptr.add(colortable, 144), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 144), 4), 3);
+cptr.stI32(cptr.add(cptr.add(colortable, 144), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 144), 16), __sl3);
+cptr.stU64(cptr.add(cptr.add(colortable, 144), 24), 165n);
+cptr.stU64(cptr.add(cptr.add(colortable, 144), 32), 42n);
+cptr.stU64(cptr.add(cptr.add(colortable, 144), 40), 42n);
+cptr.stI32(cptr.add(colortable, 192), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 192), 4), 4);
+cptr.stI32(cptr.add(cptr.add(colortable, 192), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 192), 16), __sl4);
+cptr.stU64(cptr.add(cptr.add(colortable, 192), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 192), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 192), 40), 255n);
+cptr.stI32(cptr.add(colortable, 240), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 240), 4), 5);
+cptr.stI32(cptr.add(cptr.add(colortable, 240), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 240), 16), __sl5);
+cptr.stU64(cptr.add(cptr.add(colortable, 240), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 240), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 240), 40), 255n);
+cptr.stI32(cptr.add(colortable, 288), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 288), 4), 6);
+cptr.stI32(cptr.add(cptr.add(colortable, 288), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 288), 16), __sl6);
+cptr.stU64(cptr.add(cptr.add(colortable, 288), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 288), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 288), 40), 255n);
+cptr.stI32(cptr.add(colortable, 336), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 336), 4), 7);
+cptr.stI32(cptr.add(cptr.add(colortable, 336), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 336), 16), __sl7);
+cptr.stU64(cptr.add(cptr.add(colortable, 336), 24), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 336), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 336), 40), 128n);
+cptr.stI32(cptr.add(colortable, 384), 0);
+cptr.stI32(cptr.add(cptr.add(colortable, 384), 4), 8);
+cptr.stI32(cptr.add(cptr.add(colortable, 384), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 384), 16), __sl36);
+cptr.stU64(cptr.add(cptr.add(colortable, 384), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 384), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 384), 40), 0n);
+cptr.stI32(cptr.add(colortable, 432), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 432), 4), 9);
+cptr.stI32(cptr.add(cptr.add(colortable, 432), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 432), 16), __sl8);
+cptr.stU64(cptr.add(cptr.add(colortable, 432), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 432), 32), 165n);
+cptr.stU64(cptr.add(cptr.add(colortable, 432), 40), 0n);
+cptr.stI32(cptr.add(colortable, 480), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 480), 4), 10);
+cptr.stI32(cptr.add(cptr.add(colortable, 480), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 480), 16), __sl37);
+cptr.stU64(cptr.add(cptr.add(colortable, 480), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 480), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 480), 40), 0n);
+cptr.stI32(cptr.add(colortable, 528), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 528), 4), 11);
+cptr.stI32(cptr.add(cptr.add(colortable, 528), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 528), 16), __sl10);
+cptr.stU64(cptr.add(cptr.add(colortable, 528), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 528), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 528), 40), 0n);
+cptr.stI32(cptr.add(colortable, 576), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 576), 4), 12);
+cptr.stI32(cptr.add(cptr.add(colortable, 576), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 576), 16), __sl38);
+cptr.stU64(cptr.add(cptr.add(colortable, 576), 24), 173n);
+cptr.stU64(cptr.add(cptr.add(colortable, 576), 32), 216n);
+cptr.stU64(cptr.add(cptr.add(colortable, 576), 40), 230n);
+cptr.stI32(cptr.add(colortable, 624), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 624), 4), 13);
+cptr.stI32(cptr.add(cptr.add(colortable, 624), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 624), 16), __sl39);
+cptr.stU64(cptr.add(cptr.add(colortable, 624), 24), 147n);
+cptr.stU64(cptr.add(cptr.add(colortable, 624), 32), 112n);
+cptr.stU64(cptr.add(cptr.add(colortable, 624), 40), 219n);
+cptr.stI32(cptr.add(colortable, 672), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 672), 4), 14);
+cptr.stI32(cptr.add(cptr.add(colortable, 672), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 672), 16), __sl40);
+cptr.stU64(cptr.add(cptr.add(colortable, 672), 24), 224n);
+cptr.stU64(cptr.add(cptr.add(colortable, 672), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 672), 40), 255n);
+cptr.stI32(cptr.add(colortable, 720), 1);
+cptr.stI32(cptr.add(cptr.add(colortable, 720), 4), 15);
+cptr.stI32(cptr.add(cptr.add(colortable, 720), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 720), 16), __sl14);
+cptr.stU64(cptr.add(cptr.add(colortable, 720), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 720), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 720), 40), 255n);
+cptr.stI32(cptr.add(colortable, 768), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 768), 4), 16);
+cptr.stI32(cptr.add(cptr.add(colortable, 768), 8), 0);
+cptr.stPtr(cptr.add(cptr.add(colortable, 768), 16), __sl41);
+cptr.stU64(cptr.add(cptr.add(colortable, 768), 24), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 768), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 768), 40), 0n);
+cptr.stI32(cptr.add(colortable, 816), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 816), 4), 17);
+cptr.stI32(cptr.add(cptr.add(colortable, 816), 8), 1);
+cptr.stPtr(cptr.add(cptr.add(colortable, 816), 16), __sl42);
+cptr.stU64(cptr.add(cptr.add(colortable, 816), 24), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 816), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 816), 40), 0n);
+cptr.stI32(cptr.add(colortable, 864), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 864), 4), 18);
+cptr.stI32(cptr.add(cptr.add(colortable, 864), 8), 2);
+cptr.stPtr(cptr.add(cptr.add(colortable, 864), 16), __sl3);
+cptr.stU64(cptr.add(cptr.add(colortable, 864), 24), 165n);
+cptr.stU64(cptr.add(cptr.add(colortable, 864), 32), 42n);
+cptr.stU64(cptr.add(cptr.add(colortable, 864), 40), 42n);
+cptr.stI32(cptr.add(colortable, 912), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 912), 4), 19);
+cptr.stI32(cptr.add(cptr.add(colortable, 912), 8), 3);
+cptr.stPtr(cptr.add(cptr.add(colortable, 912), 16), __sl43);
+cptr.stU64(cptr.add(cptr.add(colortable, 912), 24), 178n);
+cptr.stU64(cptr.add(cptr.add(colortable, 912), 32), 34n);
+cptr.stU64(cptr.add(cptr.add(colortable, 912), 40), 34n);
+cptr.stI32(cptr.add(colortable, 960), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 960), 4), 20);
+cptr.stI32(cptr.add(cptr.add(colortable, 960), 8), 4);
+cptr.stPtr(cptr.add(cptr.add(colortable, 960), 16), __sl44);
+cptr.stU64(cptr.add(cptr.add(colortable, 960), 24), 220n);
+cptr.stU64(cptr.add(cptr.add(colortable, 960), 32), 20n);
+cptr.stU64(cptr.add(cptr.add(colortable, 960), 40), 60n);
+cptr.stI32(cptr.add(colortable, 1008), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1008), 4), 21);
+cptr.stI32(cptr.add(cptr.add(colortable, 1008), 8), 5);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1008), 16), __sl1);
+cptr.stU64(cptr.add(cptr.add(colortable, 1008), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1008), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1008), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1056), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1056), 4), 22);
+cptr.stI32(cptr.add(cptr.add(colortable, 1056), 8), 6);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1056), 16), __sl45);
+cptr.stU64(cptr.add(cptr.add(colortable, 1056), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1056), 32), 99n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1056), 40), 71n);
+cptr.stI32(cptr.add(colortable, 1104), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1104), 4), 23);
+cptr.stI32(cptr.add(cptr.add(colortable, 1104), 8), 7);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1104), 16), __sl46);
+cptr.stU64(cptr.add(cptr.add(colortable, 1104), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1104), 32), 127n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1104), 40), 80n);
+cptr.stI32(cptr.add(colortable, 1152), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1152), 4), 24);
+cptr.stI32(cptr.add(cptr.add(colortable, 1152), 8), 8);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1152), 16), __sl47);
+cptr.stU64(cptr.add(cptr.add(colortable, 1152), 24), 205n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1152), 32), 92n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1152), 40), 92n);
+cptr.stI32(cptr.add(colortable, 1200), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1200), 4), 25);
+cptr.stI32(cptr.add(cptr.add(colortable, 1200), 8), 9);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1200), 16), __sl48);
+cptr.stU64(cptr.add(cptr.add(colortable, 1200), 24), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1200), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1200), 40), 128n);
+cptr.stI32(cptr.add(colortable, 1248), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1248), 4), 26);
+cptr.stI32(cptr.add(cptr.add(colortable, 1248), 8), 10);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1248), 16), __sl49);
+cptr.stU64(cptr.add(cptr.add(colortable, 1248), 24), 233n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1248), 32), 150n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1248), 40), 122n);
+cptr.stI32(cptr.add(colortable, 1296), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1296), 4), 27);
+cptr.stI32(cptr.add(cptr.add(colortable, 1296), 8), 11);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1296), 16), __sl50);
+cptr.stU64(cptr.add(cptr.add(colortable, 1296), 24), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1296), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1296), 40), 114n);
+cptr.stI32(cptr.add(colortable, 1344), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1344), 4), 28);
+cptr.stI32(cptr.add(cptr.add(colortable, 1344), 8), 12);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1344), 16), __sl51);
+cptr.stU64(cptr.add(cptr.add(colortable, 1344), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1344), 32), 160n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1344), 40), 122n);
+cptr.stI32(cptr.add(colortable, 1392), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1392), 4), 29);
+cptr.stI32(cptr.add(cptr.add(colortable, 1392), 8), 13);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1392), 16), __sl52);
+cptr.stU64(cptr.add(cptr.add(colortable, 1392), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1392), 32), 69n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1392), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1440), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1440), 4), 30);
+cptr.stI32(cptr.add(cptr.add(colortable, 1440), 8), 14);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1440), 16), __sl53);
+cptr.stU64(cptr.add(cptr.add(colortable, 1440), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1440), 32), 140n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1440), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1488), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1488), 4), 31);
+cptr.stI32(cptr.add(cptr.add(colortable, 1488), 8), 15);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1488), 16), __sl8);
+cptr.stU64(cptr.add(cptr.add(colortable, 1488), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1488), 32), 165n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1488), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1536), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1536), 4), 32);
+cptr.stI32(cptr.add(cptr.add(colortable, 1536), 8), 16);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1536), 16), __sl54);
+cptr.stU64(cptr.add(cptr.add(colortable, 1536), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1536), 32), 215n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1536), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1584), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1584), 4), 33);
+cptr.stI32(cptr.add(cptr.add(colortable, 1584), 8), 17);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1584), 16), __sl55);
+cptr.stU64(cptr.add(cptr.add(colortable, 1584), 24), 184n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1584), 32), 134n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1584), 40), 11n);
+cptr.stI32(cptr.add(colortable, 1632), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1632), 4), 34);
+cptr.stI32(cptr.add(cptr.add(colortable, 1632), 8), 18);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1632), 16), __sl56);
+cptr.stU64(cptr.add(cptr.add(colortable, 1632), 24), 218n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1632), 32), 165n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1632), 40), 32n);
+cptr.stI32(cptr.add(colortable, 1680), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1680), 4), 35);
+cptr.stI32(cptr.add(cptr.add(colortable, 1680), 8), 19);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1680), 16), __sl57);
+cptr.stU64(cptr.add(cptr.add(colortable, 1680), 24), 238n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1680), 32), 232n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1680), 40), 170n);
+cptr.stI32(cptr.add(colortable, 1728), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1728), 4), 36);
+cptr.stI32(cptr.add(cptr.add(colortable, 1728), 8), 20);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1728), 16), __sl58);
+cptr.stU64(cptr.add(cptr.add(colortable, 1728), 24), 189n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1728), 32), 183n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1728), 40), 107n);
+cptr.stI32(cptr.add(colortable, 1776), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1776), 4), 37);
+cptr.stI32(cptr.add(cptr.add(colortable, 1776), 8), 21);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1776), 16), __sl59);
+cptr.stU64(cptr.add(cptr.add(colortable, 1776), 24), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1776), 32), 230n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1776), 40), 140n);
+cptr.stI32(cptr.add(colortable, 1824), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1824), 4), 38);
+cptr.stI32(cptr.add(cptr.add(colortable, 1824), 8), 22);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1824), 16), __sl60);
+cptr.stU64(cptr.add(cptr.add(colortable, 1824), 24), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1824), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1824), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1872), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1872), 4), 39);
+cptr.stI32(cptr.add(cptr.add(colortable, 1872), 8), 23);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1872), 16), __sl10);
+cptr.stU64(cptr.add(cptr.add(colortable, 1872), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1872), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1872), 40), 0n);
+cptr.stI32(cptr.add(colortable, 1920), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1920), 4), 40);
+cptr.stI32(cptr.add(cptr.add(colortable, 1920), 8), 24);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1920), 16), __sl61);
+cptr.stU64(cptr.add(cptr.add(colortable, 1920), 24), 154n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1920), 32), 205n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1920), 40), 50n);
+cptr.stI32(cptr.add(colortable, 1968), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 1968), 4), 41);
+cptr.stI32(cptr.add(cptr.add(colortable, 1968), 8), 25);
+cptr.stPtr(cptr.add(cptr.add(colortable, 1968), 16), __sl62);
+cptr.stU64(cptr.add(cptr.add(colortable, 1968), 24), 85n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1968), 32), 107n);
+cptr.stU64(cptr.add(cptr.add(colortable, 1968), 40), 47n);
+cptr.stI32(cptr.add(colortable, 2016), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2016), 4), 42);
+cptr.stI32(cptr.add(cptr.add(colortable, 2016), 8), 26);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2016), 16), __sl63);
+cptr.stU64(cptr.add(cptr.add(colortable, 2016), 24), 107n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2016), 32), 142n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2016), 40), 35n);
+cptr.stI32(cptr.add(colortable, 2064), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2064), 4), 43);
+cptr.stI32(cptr.add(cptr.add(colortable, 2064), 8), 27);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2064), 16), __sl64);
+cptr.stU64(cptr.add(cptr.add(colortable, 2064), 24), 124n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2064), 32), 252n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2064), 40), 0n);
+cptr.stI32(cptr.add(colortable, 2112), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2112), 4), 44);
+cptr.stI32(cptr.add(cptr.add(colortable, 2112), 8), 28);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2112), 16), __sl65);
+cptr.stU64(cptr.add(cptr.add(colortable, 2112), 24), 127n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2112), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2112), 40), 0n);
+cptr.stI32(cptr.add(colortable, 2160), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2160), 4), 45);
+cptr.stI32(cptr.add(cptr.add(colortable, 2160), 8), 29);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2160), 16), __sl66);
+cptr.stU64(cptr.add(cptr.add(colortable, 2160), 24), 173n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2160), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2160), 40), 47n);
+cptr.stI32(cptr.add(colortable, 2208), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2208), 4), 46);
+cptr.stI32(cptr.add(cptr.add(colortable, 2208), 8), 30);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2208), 16), __sl67);
+cptr.stU64(cptr.add(cptr.add(colortable, 2208), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2208), 32), 100n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2208), 40), 0n);
+cptr.stI32(cptr.add(colortable, 2256), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2256), 4), 47);
+cptr.stI32(cptr.add(cptr.add(colortable, 2256), 8), 31);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2256), 16), __sl2);
+cptr.stU64(cptr.add(cptr.add(colortable, 2256), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2256), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2256), 40), 0n);
+cptr.stI32(cptr.add(colortable, 2304), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2304), 4), 48);
+cptr.stI32(cptr.add(cptr.add(colortable, 2304), 8), 32);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2304), 16), __sl68);
+cptr.stU64(cptr.add(cptr.add(colortable, 2304), 24), 34n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2304), 32), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2304), 40), 34n);
+cptr.stI32(cptr.add(colortable, 2352), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2352), 4), 49);
+cptr.stI32(cptr.add(cptr.add(colortable, 2352), 8), 33);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2352), 16), __sl69);
+cptr.stU64(cptr.add(cptr.add(colortable, 2352), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2352), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2352), 40), 0n);
+cptr.stI32(cptr.add(colortable, 2400), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2400), 4), 50);
+cptr.stI32(cptr.add(cptr.add(colortable, 2400), 8), 34);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2400), 16), __sl70);
+cptr.stU64(cptr.add(cptr.add(colortable, 2400), 24), 50n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2400), 32), 205n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2400), 40), 50n);
+cptr.stI32(cptr.add(colortable, 2448), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2448), 4), 51);
+cptr.stI32(cptr.add(cptr.add(colortable, 2448), 8), 35);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2448), 16), __sl71);
+cptr.stU64(cptr.add(cptr.add(colortable, 2448), 24), 144n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2448), 32), 238n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2448), 40), 144n);
+cptr.stI32(cptr.add(colortable, 2496), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2496), 4), 52);
+cptr.stI32(cptr.add(cptr.add(colortable, 2496), 8), 36);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2496), 16), __sl72);
+cptr.stU64(cptr.add(cptr.add(colortable, 2496), 24), 152n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2496), 32), 251n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2496), 40), 152n);
+cptr.stI32(cptr.add(colortable, 2544), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2544), 4), 53);
+cptr.stI32(cptr.add(cptr.add(colortable, 2544), 8), 37);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2544), 16), __sl73);
+cptr.stU64(cptr.add(cptr.add(colortable, 2544), 24), 143n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2544), 32), 188n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2544), 40), 143n);
+cptr.stI32(cptr.add(colortable, 2592), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2592), 4), 54);
+cptr.stI32(cptr.add(cptr.add(colortable, 2592), 8), 38);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2592), 16), __sl74);
+cptr.stU64(cptr.add(cptr.add(colortable, 2592), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2592), 32), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2592), 40), 154n);
+cptr.stI32(cptr.add(colortable, 2640), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2640), 4), 55);
+cptr.stI32(cptr.add(cptr.add(colortable, 2640), 8), 39);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2640), 16), __sl75);
+cptr.stU64(cptr.add(cptr.add(colortable, 2640), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2640), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2640), 40), 127n);
+cptr.stI32(cptr.add(colortable, 2688), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2688), 4), 56);
+cptr.stI32(cptr.add(cptr.add(colortable, 2688), 8), 40);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2688), 16), __sl76);
+cptr.stU64(cptr.add(cptr.add(colortable, 2688), 24), 46n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2688), 32), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2688), 40), 87n);
+cptr.stI32(cptr.add(colortable, 2736), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2736), 4), 57);
+cptr.stI32(cptr.add(cptr.add(colortable, 2736), 8), 41);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2736), 16), __sl77);
+cptr.stU64(cptr.add(cptr.add(colortable, 2736), 24), 102n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2736), 32), 205n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2736), 40), 170n);
+cptr.stI32(cptr.add(colortable, 2784), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2784), 4), 58);
+cptr.stI32(cptr.add(cptr.add(colortable, 2784), 8), 42);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2784), 16), __sl78);
+cptr.stU64(cptr.add(cptr.add(colortable, 2784), 24), 60n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2784), 32), 179n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2784), 40), 113n);
+cptr.stI32(cptr.add(colortable, 2832), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2832), 4), 59);
+cptr.stI32(cptr.add(cptr.add(colortable, 2832), 8), 43);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2832), 16), __sl79);
+cptr.stU64(cptr.add(cptr.add(colortable, 2832), 24), 32n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2832), 32), 178n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2832), 40), 170n);
+cptr.stI32(cptr.add(colortable, 2880), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2880), 4), 60);
+cptr.stI32(cptr.add(cptr.add(colortable, 2880), 8), 44);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2880), 16), __sl80);
+cptr.stU64(cptr.add(cptr.add(colortable, 2880), 24), 47n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2880), 32), 79n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2880), 40), 79n);
+cptr.stI32(cptr.add(colortable, 2928), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2928), 4), 61);
+cptr.stI32(cptr.add(cptr.add(colortable, 2928), 8), 45);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2928), 16), __sl81);
+cptr.stU64(cptr.add(cptr.add(colortable, 2928), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2928), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2928), 40), 128n);
+cptr.stI32(cptr.add(colortable, 2976), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 2976), 4), 62);
+cptr.stI32(cptr.add(cptr.add(colortable, 2976), 8), 46);
+cptr.stPtr(cptr.add(cptr.add(colortable, 2976), 16), __sl82);
+cptr.stU64(cptr.add(cptr.add(colortable, 2976), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2976), 32), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 2976), 40), 139n);
+cptr.stI32(cptr.add(colortable, 3024), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3024), 4), 63);
+cptr.stI32(cptr.add(cptr.add(colortable, 3024), 8), 47);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3024), 16), __sl83);
+cptr.stU64(cptr.add(cptr.add(colortable, 3024), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3024), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3024), 40), 255n);
+cptr.stI32(cptr.add(colortable, 3072), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3072), 4), 64);
+cptr.stI32(cptr.add(cptr.add(colortable, 3072), 8), 48);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3072), 16), __sl6);
+cptr.stU64(cptr.add(cptr.add(colortable, 3072), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3072), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3072), 40), 255n);
+cptr.stI32(cptr.add(colortable, 3120), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3120), 4), 65);
+cptr.stI32(cptr.add(cptr.add(colortable, 3120), 8), 49);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3120), 16), __sl40);
+cptr.stU64(cptr.add(cptr.add(colortable, 3120), 24), 224n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3120), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3120), 40), 255n);
+cptr.stI32(cptr.add(colortable, 3168), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3168), 4), 66);
+cptr.stI32(cptr.add(cptr.add(colortable, 3168), 8), 50);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3168), 16), __sl84);
+cptr.stU64(cptr.add(cptr.add(colortable, 3168), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3168), 32), 206n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3168), 40), 209n);
+cptr.stI32(cptr.add(colortable, 3216), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3216), 4), 67);
+cptr.stI32(cptr.add(cptr.add(colortable, 3216), 8), 51);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3216), 16), __sl85);
+cptr.stU64(cptr.add(cptr.add(colortable, 3216), 24), 64n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3216), 32), 224n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3216), 40), 208n);
+cptr.stI32(cptr.add(colortable, 3264), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3264), 4), 68);
+cptr.stI32(cptr.add(cptr.add(colortable, 3264), 8), 52);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3264), 16), __sl86);
+cptr.stU64(cptr.add(cptr.add(colortable, 3264), 24), 72n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3264), 32), 209n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3264), 40), 204n);
+cptr.stI32(cptr.add(colortable, 3312), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3312), 4), 69);
+cptr.stI32(cptr.add(cptr.add(colortable, 3312), 8), 53);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3312), 16), __sl87);
+cptr.stU64(cptr.add(cptr.add(colortable, 3312), 24), 175n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3312), 32), 238n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3312), 40), 238n);
+cptr.stI32(cptr.add(colortable, 3360), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3360), 4), 70);
+cptr.stI32(cptr.add(cptr.add(colortable, 3360), 8), 54);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3360), 16), __sl88);
+cptr.stU64(cptr.add(cptr.add(colortable, 3360), 24), 127n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3360), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3360), 40), 212n);
+cptr.stI32(cptr.add(colortable, 3408), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3408), 4), 71);
+cptr.stI32(cptr.add(cptr.add(colortable, 3408), 8), 55);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3408), 16), __sl89);
+cptr.stU64(cptr.add(cptr.add(colortable, 3408), 24), 176n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3408), 32), 224n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3408), 40), 230n);
+cptr.stI32(cptr.add(colortable, 3456), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3456), 4), 72);
+cptr.stI32(cptr.add(cptr.add(colortable, 3456), 8), 56);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3456), 16), __sl90);
+cptr.stU64(cptr.add(cptr.add(colortable, 3456), 24), 95n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3456), 32), 158n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3456), 40), 160n);
+cptr.stI32(cptr.add(colortable, 3504), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3504), 4), 73);
+cptr.stI32(cptr.add(cptr.add(colortable, 3504), 8), 57);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3504), 16), __sl91);
+cptr.stU64(cptr.add(cptr.add(colortable, 3504), 24), 70n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3504), 32), 130n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3504), 40), 180n);
+cptr.stI32(cptr.add(colortable, 3552), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3552), 4), 74);
+cptr.stI32(cptr.add(cptr.add(colortable, 3552), 8), 58);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3552), 16), __sl92);
+cptr.stU64(cptr.add(cptr.add(colortable, 3552), 24), 100n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3552), 32), 149n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3552), 40), 237n);
+cptr.stI32(cptr.add(colortable, 3600), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3600), 4), 75);
+cptr.stI32(cptr.add(cptr.add(colortable, 3600), 8), 59);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3600), 16), __sl93);
+cptr.stU64(cptr.add(cptr.add(colortable, 3600), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3600), 32), 191n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3600), 40), 255n);
+cptr.stI32(cptr.add(colortable, 3648), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3648), 4), 76);
+cptr.stI32(cptr.add(cptr.add(colortable, 3648), 8), 60);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3648), 16), __sl94);
+cptr.stU64(cptr.add(cptr.add(colortable, 3648), 24), 30n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3648), 32), 144n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3648), 40), 255n);
+cptr.stI32(cptr.add(colortable, 3696), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3696), 4), 77);
+cptr.stI32(cptr.add(cptr.add(colortable, 3696), 8), 61);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3696), 16), __sl95);
+cptr.stU64(cptr.add(cptr.add(colortable, 3696), 24), 173n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3696), 32), 216n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3696), 40), 230n);
+cptr.stI32(cptr.add(colortable, 3744), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3744), 4), 78);
+cptr.stI32(cptr.add(cptr.add(colortable, 3744), 8), 62);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3744), 16), __sl96);
+cptr.stU64(cptr.add(cptr.add(colortable, 3744), 24), 135n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3744), 32), 206n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3744), 40), 235n);
+cptr.stI32(cptr.add(colortable, 3792), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3792), 4), 79);
+cptr.stI32(cptr.add(cptr.add(colortable, 3792), 8), 63);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3792), 16), __sl97);
+cptr.stU64(cptr.add(cptr.add(colortable, 3792), 24), 135n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3792), 32), 206n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3792), 40), 250n);
+cptr.stI32(cptr.add(colortable, 3840), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3840), 4), 80);
+cptr.stI32(cptr.add(cptr.add(colortable, 3840), 8), 64);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3840), 16), __sl98);
+cptr.stU64(cptr.add(cptr.add(colortable, 3840), 24), 25n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3840), 32), 25n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3840), 40), 112n);
+cptr.stI32(cptr.add(colortable, 3888), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3888), 4), 81);
+cptr.stI32(cptr.add(cptr.add(colortable, 3888), 8), 65);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3888), 16), __sl99);
+cptr.stU64(cptr.add(cptr.add(colortable, 3888), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3888), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3888), 40), 128n);
+cptr.stI32(cptr.add(colortable, 3936), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3936), 4), 82);
+cptr.stI32(cptr.add(cptr.add(colortable, 3936), 8), 66);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3936), 16), __sl100);
+cptr.stU64(cptr.add(cptr.add(colortable, 3936), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3936), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3936), 40), 139n);
+cptr.stI32(cptr.add(colortable, 3984), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 3984), 4), 83);
+cptr.stI32(cptr.add(cptr.add(colortable, 3984), 8), 67);
+cptr.stPtr(cptr.add(cptr.add(colortable, 3984), 16), __sl101);
+cptr.stU64(cptr.add(cptr.add(colortable, 3984), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3984), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 3984), 40), 205n);
+cptr.stI32(cptr.add(colortable, 4032), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4032), 4), 84);
+cptr.stI32(cptr.add(cptr.add(colortable, 4032), 8), 68);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4032), 16), __sl4);
+cptr.stU64(cptr.add(cptr.add(colortable, 4032), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4032), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4032), 40), 255n);
+cptr.stI32(cptr.add(colortable, 4080), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4080), 4), 85);
+cptr.stI32(cptr.add(cptr.add(colortable, 4080), 8), 69);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4080), 16), __sl102);
+cptr.stU64(cptr.add(cptr.add(colortable, 4080), 24), 65n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4080), 32), 105n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4080), 40), 225n);
+cptr.stI32(cptr.add(colortable, 4128), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4128), 4), 86);
+cptr.stI32(cptr.add(cptr.add(colortable, 4128), 8), 70);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4128), 16), __sl103);
+cptr.stU64(cptr.add(cptr.add(colortable, 4128), 24), 138n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4128), 32), 43n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4128), 40), 226n);
+cptr.stI32(cptr.add(colortable, 4176), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4176), 4), 87);
+cptr.stI32(cptr.add(cptr.add(colortable, 4176), 8), 71);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4176), 16), __sl104);
+cptr.stU64(cptr.add(cptr.add(colortable, 4176), 24), 75n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4176), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4176), 40), 130n);
+cptr.stI32(cptr.add(colortable, 4224), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4224), 4), 88);
+cptr.stI32(cptr.add(cptr.add(colortable, 4224), 8), 72);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4224), 16), __sl105);
+cptr.stU64(cptr.add(cptr.add(colortable, 4224), 24), 72n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4224), 32), 61n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4224), 40), 139n);
+cptr.stI32(cptr.add(colortable, 4272), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4272), 4), 89);
+cptr.stI32(cptr.add(cptr.add(colortable, 4272), 8), 73);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4272), 16), __sl106);
+cptr.stU64(cptr.add(cptr.add(colortable, 4272), 24), 106n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4272), 32), 90n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4272), 40), 205n);
+cptr.stI32(cptr.add(colortable, 4320), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4320), 4), 90);
+cptr.stI32(cptr.add(cptr.add(colortable, 4320), 8), 74);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4320), 16), __sl107);
+cptr.stU64(cptr.add(cptr.add(colortable, 4320), 24), 123n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4320), 32), 104n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4320), 40), 238n);
+cptr.stI32(cptr.add(colortable, 4368), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4368), 4), 91);
+cptr.stI32(cptr.add(cptr.add(colortable, 4368), 8), 75);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4368), 16), __sl108);
+cptr.stU64(cptr.add(cptr.add(colortable, 4368), 24), 147n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4368), 32), 112n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4368), 40), 219n);
+cptr.stI32(cptr.add(colortable, 4416), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4416), 4), 92);
+cptr.stI32(cptr.add(cptr.add(colortable, 4416), 8), 76);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4416), 16), __sl109);
+cptr.stU64(cptr.add(cptr.add(colortable, 4416), 24), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4416), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4416), 40), 139n);
+cptr.stI32(cptr.add(colortable, 4464), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4464), 4), 93);
+cptr.stI32(cptr.add(cptr.add(colortable, 4464), 8), 77);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4464), 16), __sl110);
+cptr.stU64(cptr.add(cptr.add(colortable, 4464), 24), 148n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4464), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4464), 40), 211n);
+cptr.stI32(cptr.add(colortable, 4512), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4512), 4), 94);
+cptr.stI32(cptr.add(cptr.add(colortable, 4512), 8), 78);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4512), 16), __sl111);
+cptr.stU64(cptr.add(cptr.add(colortable, 4512), 24), 153n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4512), 32), 50n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4512), 40), 204n);
+cptr.stI32(cptr.add(colortable, 4560), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4560), 4), 95);
+cptr.stI32(cptr.add(cptr.add(colortable, 4560), 8), 79);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4560), 16), __sl112);
+cptr.stU64(cptr.add(cptr.add(colortable, 4560), 24), 186n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4560), 32), 85n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4560), 40), 211n);
+cptr.stI32(cptr.add(colortable, 4608), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4608), 4), 96);
+cptr.stI32(cptr.add(cptr.add(colortable, 4608), 8), 80);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4608), 16), __sl17);
+cptr.stU64(cptr.add(cptr.add(colortable, 4608), 24), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4608), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4608), 40), 128n);
+cptr.stI32(cptr.add(colortable, 4656), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4656), 4), 97);
+cptr.stI32(cptr.add(cptr.add(colortable, 4656), 8), 81);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4656), 16), __sl113);
+cptr.stU64(cptr.add(cptr.add(colortable, 4656), 24), 216n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4656), 32), 191n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4656), 40), 216n);
+cptr.stI32(cptr.add(colortable, 4704), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4704), 4), 98);
+cptr.stI32(cptr.add(cptr.add(colortable, 4704), 8), 82);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4704), 16), __sl114);
+cptr.stU64(cptr.add(cptr.add(colortable, 4704), 24), 221n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4704), 32), 160n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4704), 40), 221n);
+cptr.stI32(cptr.add(colortable, 4752), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4752), 4), 99);
+cptr.stI32(cptr.add(cptr.add(colortable, 4752), 8), 83);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4752), 16), __sl115);
+cptr.stU64(cptr.add(cptr.add(colortable, 4752), 24), 238n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4752), 32), 130n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4752), 40), 238n);
+cptr.stI32(cptr.add(colortable, 4800), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4800), 4), 100);
+cptr.stI32(cptr.add(cptr.add(colortable, 4800), 8), 84);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4800), 16), __sl5);
+cptr.stU64(cptr.add(cptr.add(colortable, 4800), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4800), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4800), 40), 255n);
+cptr.stI32(cptr.add(colortable, 4848), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4848), 4), 101);
+cptr.stI32(cptr.add(cptr.add(colortable, 4848), 8), 85);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4848), 16), __sl116);
+cptr.stU64(cptr.add(cptr.add(colortable, 4848), 24), 218n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4848), 32), 112n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4848), 40), 214n);
+cptr.stI32(cptr.add(colortable, 4896), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4896), 4), 102);
+cptr.stI32(cptr.add(cptr.add(colortable, 4896), 8), 86);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4896), 16), __sl117);
+cptr.stU64(cptr.add(cptr.add(colortable, 4896), 24), 199n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4896), 32), 21n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4896), 40), 133n);
+cptr.stI32(cptr.add(colortable, 4944), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4944), 4), 103);
+cptr.stI32(cptr.add(cptr.add(colortable, 4944), 8), 87);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4944), 16), __sl118);
+cptr.stU64(cptr.add(cptr.add(colortable, 4944), 24), 219n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4944), 32), 112n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4944), 40), 147n);
+cptr.stI32(cptr.add(colortable, 4992), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 4992), 4), 104);
+cptr.stI32(cptr.add(cptr.add(colortable, 4992), 8), 88);
+cptr.stPtr(cptr.add(cptr.add(colortable, 4992), 16), __sl119);
+cptr.stU64(cptr.add(cptr.add(colortable, 4992), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4992), 32), 20n);
+cptr.stU64(cptr.add(cptr.add(colortable, 4992), 40), 147n);
+cptr.stI32(cptr.add(colortable, 5040), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5040), 4), 105);
+cptr.stI32(cptr.add(cptr.add(colortable, 5040), 8), 89);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5040), 16), __sl120);
+cptr.stU64(cptr.add(cptr.add(colortable, 5040), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5040), 32), 105n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5040), 40), 180n);
+cptr.stI32(cptr.add(colortable, 5088), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5088), 4), 106);
+cptr.stI32(cptr.add(cptr.add(colortable, 5088), 8), 90);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5088), 16), __sl121);
+cptr.stU64(cptr.add(cptr.add(colortable, 5088), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5088), 32), 182n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5088), 40), 193n);
+cptr.stI32(cptr.add(colortable, 5136), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5136), 4), 107);
+cptr.stI32(cptr.add(cptr.add(colortable, 5136), 8), 91);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5136), 16), __sl122);
+cptr.stU64(cptr.add(cptr.add(colortable, 5136), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5136), 32), 192n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5136), 40), 203n);
+cptr.stI32(cptr.add(colortable, 5184), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5184), 4), 108);
+cptr.stI32(cptr.add(cptr.add(colortable, 5184), 8), 92);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5184), 16), __sl123);
+cptr.stU64(cptr.add(cptr.add(colortable, 5184), 24), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5184), 32), 235n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5184), 40), 215n);
+cptr.stI32(cptr.add(colortable, 5232), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5232), 4), 109);
+cptr.stI32(cptr.add(cptr.add(colortable, 5232), 8), 93);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5232), 16), __sl124);
+cptr.stU64(cptr.add(cptr.add(colortable, 5232), 24), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5232), 32), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5232), 40), 220n);
+cptr.stI32(cptr.add(colortable, 5280), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5280), 4), 110);
+cptr.stI32(cptr.add(cptr.add(colortable, 5280), 8), 94);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5280), 16), __sl125);
+cptr.stU64(cptr.add(cptr.add(colortable, 5280), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5280), 32), 228n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5280), 40), 196n);
+cptr.stI32(cptr.add(colortable, 5328), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5328), 4), 111);
+cptr.stI32(cptr.add(cptr.add(colortable, 5328), 8), 95);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5328), 16), __sl126);
+cptr.stU64(cptr.add(cptr.add(colortable, 5328), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5328), 32), 235n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5328), 40), 205n);
+cptr.stI32(cptr.add(colortable, 5376), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5376), 4), 112);
+cptr.stI32(cptr.add(cptr.add(colortable, 5376), 8), 96);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5376), 16), __sl127);
+cptr.stU64(cptr.add(cptr.add(colortable, 5376), 24), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5376), 32), 222n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5376), 40), 179n);
+cptr.stI32(cptr.add(colortable, 5424), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5424), 4), 113);
+cptr.stI32(cptr.add(cptr.add(colortable, 5424), 8), 97);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5424), 16), __sl128);
+cptr.stU64(cptr.add(cptr.add(colortable, 5424), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5424), 32), 248n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5424), 40), 220n);
+cptr.stI32(cptr.add(colortable, 5472), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5472), 4), 114);
+cptr.stI32(cptr.add(cptr.add(colortable, 5472), 8), 98);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5472), 16), __sl129);
+cptr.stU64(cptr.add(cptr.add(colortable, 5472), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5472), 32), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5472), 40), 205n);
+cptr.stI32(cptr.add(colortable, 5520), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5520), 4), 115);
+cptr.stI32(cptr.add(cptr.add(colortable, 5520), 8), 99);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5520), 16), __sl130);
+cptr.stU64(cptr.add(cptr.add(colortable, 5520), 24), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5520), 32), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5520), 40), 210n);
+cptr.stI32(cptr.add(colortable, 5568), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5568), 4), 116);
+cptr.stI32(cptr.add(cptr.add(colortable, 5568), 8), 100);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5568), 16), __sl131);
+cptr.stU64(cptr.add(cptr.add(colortable, 5568), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5568), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5568), 40), 224n);
+cptr.stI32(cptr.add(colortable, 5616), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5616), 4), 117);
+cptr.stI32(cptr.add(cptr.add(colortable, 5616), 8), 101);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5616), 16), __sl132);
+cptr.stU64(cptr.add(cptr.add(colortable, 5616), 24), 139n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5616), 32), 69n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5616), 40), 19n);
+cptr.stI32(cptr.add(colortable, 5664), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5664), 4), 118);
+cptr.stI32(cptr.add(cptr.add(colortable, 5664), 8), 102);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5664), 16), __sl133);
+cptr.stU64(cptr.add(cptr.add(colortable, 5664), 24), 160n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5664), 32), 82n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5664), 40), 45n);
+cptr.stI32(cptr.add(colortable, 5712), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5712), 4), 119);
+cptr.stI32(cptr.add(cptr.add(colortable, 5712), 8), 103);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5712), 16), __sl134);
+cptr.stU64(cptr.add(cptr.add(colortable, 5712), 24), 210n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5712), 32), 105n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5712), 40), 30n);
+cptr.stI32(cptr.add(colortable, 5760), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5760), 4), 120);
+cptr.stI32(cptr.add(cptr.add(colortable, 5760), 8), 104);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5760), 16), __sl135);
+cptr.stU64(cptr.add(cptr.add(colortable, 5760), 24), 205n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5760), 32), 133n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5760), 40), 63n);
+cptr.stI32(cptr.add(colortable, 5808), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5808), 4), 121);
+cptr.stI32(cptr.add(cptr.add(colortable, 5808), 8), 105);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5808), 16), __sl136);
+cptr.stU64(cptr.add(cptr.add(colortable, 5808), 24), 244n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5808), 32), 164n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5808), 40), 96n);
+cptr.stI32(cptr.add(colortable, 5856), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5856), 4), 122);
+cptr.stI32(cptr.add(cptr.add(colortable, 5856), 8), 106);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5856), 16), __sl137);
+cptr.stU64(cptr.add(cptr.add(colortable, 5856), 24), 222n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5856), 32), 184n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5856), 40), 135n);
+cptr.stI32(cptr.add(colortable, 5904), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5904), 4), 123);
+cptr.stI32(cptr.add(cptr.add(colortable, 5904), 8), 107);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5904), 16), __sl138);
+cptr.stU64(cptr.add(cptr.add(colortable, 5904), 24), 210n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5904), 32), 180n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5904), 40), 140n);
+cptr.stI32(cptr.add(colortable, 5952), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 5952), 4), 124);
+cptr.stI32(cptr.add(cptr.add(colortable, 5952), 8), 108);
+cptr.stPtr(cptr.add(cptr.add(colortable, 5952), 16), __sl139);
+cptr.stU64(cptr.add(cptr.add(colortable, 5952), 24), 188n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5952), 32), 143n);
+cptr.stU64(cptr.add(cptr.add(colortable, 5952), 40), 143n);
+cptr.stI32(cptr.add(colortable, 6000), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6000), 4), 125);
+cptr.stI32(cptr.add(cptr.add(colortable, 6000), 8), 109);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6000), 16), __sl140);
+cptr.stU64(cptr.add(cptr.add(colortable, 6000), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6000), 32), 228n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6000), 40), 181n);
+cptr.stI32(cptr.add(colortable, 6048), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6048), 4), 126);
+cptr.stI32(cptr.add(cptr.add(colortable, 6048), 8), 110);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6048), 16), __sl141);
+cptr.stU64(cptr.add(cptr.add(colortable, 6048), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6048), 32), 222n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6048), 40), 173n);
+cptr.stI32(cptr.add(colortable, 6096), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6096), 4), 127);
+cptr.stI32(cptr.add(cptr.add(colortable, 6096), 8), 111);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6096), 16), __sl142);
+cptr.stU64(cptr.add(cptr.add(colortable, 6096), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6096), 32), 218n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6096), 40), 185n);
+cptr.stI32(cptr.add(colortable, 6144), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6144), 4), 128);
+cptr.stI32(cptr.add(cptr.add(colortable, 6144), 8), 112);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6144), 16), __sl143);
+cptr.stU64(cptr.add(cptr.add(colortable, 6144), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6144), 32), 228n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6144), 40), 225n);
+cptr.stI32(cptr.add(colortable, 6192), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6192), 4), 129);
+cptr.stI32(cptr.add(cptr.add(colortable, 6192), 8), 113);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6192), 16), __sl144);
+cptr.stU64(cptr.add(cptr.add(colortable, 6192), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6192), 32), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6192), 40), 245n);
+cptr.stI32(cptr.add(colortable, 6240), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6240), 4), 130);
+cptr.stI32(cptr.add(cptr.add(colortable, 6240), 8), 114);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6240), 16), __sl145);
+cptr.stU64(cptr.add(cptr.add(colortable, 6240), 24), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6240), 32), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6240), 40), 230n);
+cptr.stI32(cptr.add(colortable, 6288), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6288), 4), 131);
+cptr.stI32(cptr.add(cptr.add(colortable, 6288), 8), 115);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6288), 16), __sl146);
+cptr.stU64(cptr.add(cptr.add(colortable, 6288), 24), 253n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6288), 32), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6288), 40), 230n);
+cptr.stI32(cptr.add(colortable, 6336), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6336), 4), 132);
+cptr.stI32(cptr.add(cptr.add(colortable, 6336), 8), 116);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6336), 16), __sl147);
+cptr.stU64(cptr.add(cptr.add(colortable, 6336), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6336), 32), 239n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6336), 40), 213n);
+cptr.stI32(cptr.add(colortable, 6384), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6384), 4), 133);
+cptr.stI32(cptr.add(cptr.add(colortable, 6384), 8), 117);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6384), 16), __sl148);
+cptr.stU64(cptr.add(cptr.add(colortable, 6384), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6384), 32), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6384), 40), 238n);
+cptr.stI32(cptr.add(colortable, 6432), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6432), 4), 134);
+cptr.stI32(cptr.add(cptr.add(colortable, 6432), 8), 118);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6432), 16), __sl149);
+cptr.stU64(cptr.add(cptr.add(colortable, 6432), 24), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6432), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6432), 40), 250n);
+cptr.stI32(cptr.add(colortable, 6480), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6480), 4), 135);
+cptr.stI32(cptr.add(cptr.add(colortable, 6480), 8), 119);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6480), 16), __sl150);
+cptr.stU64(cptr.add(cptr.add(colortable, 6480), 24), 112n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6480), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6480), 40), 144n);
+cptr.stI32(cptr.add(colortable, 6528), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6528), 4), 136);
+cptr.stI32(cptr.add(cptr.add(colortable, 6528), 8), 120);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6528), 16), __sl151);
+cptr.stU64(cptr.add(cptr.add(colortable, 6528), 24), 119n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6528), 32), 136n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6528), 40), 153n);
+cptr.stI32(cptr.add(colortable, 6576), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6576), 4), 137);
+cptr.stI32(cptr.add(cptr.add(colortable, 6576), 8), 121);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6576), 16), __sl152);
+cptr.stU64(cptr.add(cptr.add(colortable, 6576), 24), 176n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6576), 32), 196n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6576), 40), 222n);
+cptr.stI32(cptr.add(colortable, 6624), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6624), 4), 138);
+cptr.stI32(cptr.add(cptr.add(colortable, 6624), 8), 122);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6624), 16), __sl153);
+cptr.stU64(cptr.add(cptr.add(colortable, 6624), 24), 230n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6624), 32), 230n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6624), 40), 250n);
+cptr.stI32(cptr.add(colortable, 6672), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6672), 4), 139);
+cptr.stI32(cptr.add(cptr.add(colortable, 6672), 8), 123);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6672), 16), __sl154);
+cptr.stU64(cptr.add(cptr.add(colortable, 6672), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6672), 32), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6672), 40), 240n);
+cptr.stI32(cptr.add(colortable, 6720), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6720), 4), 140);
+cptr.stI32(cptr.add(cptr.add(colortable, 6720), 8), 124);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6720), 16), __sl155);
+cptr.stU64(cptr.add(cptr.add(colortable, 6720), 24), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6720), 32), 248n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6720), 40), 255n);
+cptr.stI32(cptr.add(colortable, 6768), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6768), 4), 141);
+cptr.stI32(cptr.add(cptr.add(colortable, 6768), 8), 125);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6768), 16), __sl156);
+cptr.stU64(cptr.add(cptr.add(colortable, 6768), 24), 248n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6768), 32), 248n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6768), 40), 255n);
+cptr.stI32(cptr.add(colortable, 6816), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6816), 4), 142);
+cptr.stI32(cptr.add(cptr.add(colortable, 6816), 8), 126);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6816), 16), __sl157);
+cptr.stU64(cptr.add(cptr.add(colortable, 6816), 24), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6816), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6816), 40), 240n);
+cptr.stI32(cptr.add(colortable, 6864), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6864), 4), 143);
+cptr.stI32(cptr.add(cptr.add(colortable, 6864), 8), 127);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6864), 16), __sl158);
+cptr.stU64(cptr.add(cptr.add(colortable, 6864), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6864), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6864), 40), 240n);
+cptr.stI32(cptr.add(colortable, 6912), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6912), 4), 144);
+cptr.stI32(cptr.add(cptr.add(colortable, 6912), 8), 128);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6912), 16), __sl159);
+cptr.stU64(cptr.add(cptr.add(colortable, 6912), 24), 240n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6912), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6912), 40), 255n);
+cptr.stI32(cptr.add(colortable, 6960), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 6960), 4), 145);
+cptr.stI32(cptr.add(cptr.add(colortable, 6960), 8), 129);
+cptr.stPtr(cptr.add(cptr.add(colortable, 6960), 16), __sl160);
+cptr.stU64(cptr.add(cptr.add(colortable, 6960), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6960), 32), 250n);
+cptr.stU64(cptr.add(cptr.add(colortable, 6960), 40), 250n);
+cptr.stI32(cptr.add(colortable, 7008), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7008), 4), 146);
+cptr.stI32(cptr.add(cptr.add(colortable, 7008), 8), 130);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7008), 16), __sl0);
+cptr.stU64(cptr.add(cptr.add(colortable, 7008), 24), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7008), 32), 0n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7008), 40), 0n);
+cptr.stI32(cptr.add(colortable, 7056), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7056), 4), 147);
+cptr.stI32(cptr.add(cptr.add(colortable, 7056), 8), 131);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7056), 16), __sl161);
+cptr.stU64(cptr.add(cptr.add(colortable, 7056), 24), 105n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7056), 32), 105n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7056), 40), 105n);
+cptr.stI32(cptr.add(colortable, 7104), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7104), 4), 148);
+cptr.stI32(cptr.add(cptr.add(colortable, 7104), 8), 132);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7104), 16), __sl7);
+cptr.stU64(cptr.add(cptr.add(colortable, 7104), 24), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7104), 32), 128n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7104), 40), 128n);
+cptr.stI32(cptr.add(colortable, 7152), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7152), 4), 149);
+cptr.stI32(cptr.add(cptr.add(colortable, 7152), 8), 133);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7152), 16), __sl162);
+cptr.stU64(cptr.add(cptr.add(colortable, 7152), 24), 169n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7152), 32), 169n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7152), 40), 169n);
+cptr.stI32(cptr.add(colortable, 7200), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7200), 4), 150);
+cptr.stI32(cptr.add(cptr.add(colortable, 7200), 8), 134);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7200), 16), __sl163);
+cptr.stU64(cptr.add(cptr.add(colortable, 7200), 24), 192n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7200), 32), 192n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7200), 40), 192n);
+cptr.stI32(cptr.add(colortable, 7248), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7248), 4), 151);
+cptr.stI32(cptr.add(cptr.add(colortable, 7248), 8), 135);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7248), 16), __sl164);
+cptr.stU64(cptr.add(cptr.add(colortable, 7248), 24), 211n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7248), 32), 211n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7248), 40), 211n);
+cptr.stI32(cptr.add(colortable, 7296), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7296), 4), 152);
+cptr.stI32(cptr.add(cptr.add(colortable, 7296), 8), 136);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7296), 16), __sl165);
+cptr.stU64(cptr.add(cptr.add(colortable, 7296), 24), 220n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7296), 32), 220n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7296), 40), 220n);
+cptr.stI32(cptr.add(colortable, 7344), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7344), 4), 153);
+cptr.stI32(cptr.add(cptr.add(colortable, 7344), 8), 137);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7344), 16), __sl166);
+cptr.stU64(cptr.add(cptr.add(colortable, 7344), 24), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7344), 32), 245n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7344), 40), 245n);
+cptr.stI32(cptr.add(colortable, 7392), 2);
+cptr.stI32(cptr.add(cptr.add(colortable, 7392), 4), 154);
+cptr.stI32(cptr.add(cptr.add(colortable, 7392), 8), 138);
+cptr.stPtr(cptr.add(cptr.add(colortable, 7392), 16), __sl14);
+cptr.stU64(cptr.add(cptr.add(colortable, 7392), 24), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7392), 32), 255n);
+cptr.stU64(cptr.add(cptr.add(colortable, 7392), 40), 255n);
 
 /** C ref: coloratt.c:237 — @param {CPtr} cte @returns {*} */
 export function colortable_to_int32(cte) {
     let clr = 8 | 16777216;
-    if (cte == rgb_color >>> 0)
+    if (cte == 2)
         clr = Number(BigInt.asIntN(32, ((cptr.ldI64(cptr.add(cte, 24)) << 16n) | (cptr.ldI64(cptr.add(cte, 32)) << 8n) | cptr.ldI64(cptr.add(cte, 40)))));
-    else if (cte == nh_color >>> 0)
+    else if (cte == 1)
         clr = cptr.ldI32(cptr.add(cte, 4)) | 16777216;
     return clr;
 }
@@ -435,7 +1402,7 @@ export function color_attr_parse_str(ca, str) {
     let c = 8;
     let a = 0;
     void __builtin___strncpy_chk(cptr.decay(buf), str, 256n - 1n, __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(buf), 256n - 1n), 0);
+    cptr.st1(cptr.add(cptr.decay(buf), 256n - 1n, 1), 0);
     if ((amp = cptr.strchr(cptr.decay(buf), 38)) !== null)
         cptr.st1(amp, 0);
     if (amp) {
@@ -482,18 +1449,18 @@ export function query_color_attr(ca, prompt) {
 /** C ref: coloratt.c:320 — @param {CInt} attr @returns {CPtr} */
 export function attr2attrname(attr) {
     let i;
-    for (i = 0; i < attrnames.length; i++)
-        if (attrnames[i].attr == attr)
-            return attrnames[i].name;
+    for (i = 0; i < 11; i++)
+        if (cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)) == attr)
+            return cptr.ldPtr(cptr.add(attrnames, i, 16));
     return null;
 }
 
 /** C ref: coloratt.c:338 — @param {CInt} clr @returns {CPtr} */
 export function clr2colorname(clr) {
     let i;
-    for (i = 0; i < colornames.length; i++)
-        if (colornames[i].name && colornames[i].color == clr)
-            return colornames[i].name;
+    for (i = 0; i < 27; i++)
+        if (cptr.ldPtr(cptr.add(colornames, i, 16)) && cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8)) == clr)
+            return cptr.ldPtr(cptr.add(colornames, i, 16));
     return null;
 }
 
@@ -501,12 +1468,12 @@ export function clr2colorname(clr) {
 export function match_str2clr(str, suppress_msg) {
     let i;
     let c = 16;
-    for (i = 0; i < colornames.length; i++)
-        if (colornames[i].name && fuzzymatch(str, colornames[i].name, __sl168, (1))) {
-            c = colornames[i].color;
+    for (i = 0; i < 27; i++)
+        if (cptr.ldPtr(cptr.add(colornames, i, 16)) && fuzzymatch(str, cptr.ldPtr(cptr.add(colornames, i, 16)), __sl168, (1))) {
+            c = cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8));
             break;
         }
-    if (i == colornames.length && digit(cptr.ld1s(str)))
+    if (i == 27 && digit(cptr.ld1s(str)))
         c = atoi(str);
     if (c < 0 || c >= 16) {
         if (!suppress_msg)
@@ -520,9 +1487,9 @@ export function match_str2clr(str, suppress_msg) {
 export function match_str2attr(str, complain) {
     let i;
     let a = -1;
-    for (i = 0; i < attrnames.length; i++)
-        if (attrnames[i].name && fuzzymatch(str, attrnames[i].name, __sl168, (1))) {
-            a = attrnames[i].attr;
+    for (i = 0; i < 11; i++)
+        if (cptr.ldPtr(cptr.add(attrnames, i, 16)) && fuzzymatch(str, cptr.ldPtr(cptr.add(attrnames, i, 16)), __sl168, (1))) {
+            a = cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8));
             break;
         }
     if (a == -1 && complain)
@@ -539,55 +1506,55 @@ export function query_attr(prompt, dflt_attr) {
     let picks = cptr.box(null);
     let allow_many = schar((prompt && !strncmpi(prompt, __sl171, 6)));
     let clr = 8;
-    tmpwin = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(tmpwin, 0n);
-    cptr.memcpy(any, cg.zeroany, 8);
-    for (i = 0; i < attrnames.length; i++) {
-        if (!attrnames[i].name)
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    for (i = 0; i < 11; i++) {
+        if (!cptr.ldPtr(cptr.add(attrnames, i, 16)))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo, any, 0, 0, attrnames[i].attr, clr, attrnames[i].name, (attrnames[i].attr == dflt_attr) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo, any, 0, 0, cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)), clr, cptr.ldPtr(cptr.add(attrnames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)) == dflt_attr) ? 1 : 0);
     }
-    (windowprocs.win_end_menu)(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl172);
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl172);
     pick_cnt = select_menu(tmpwin, allow_many ? 2 : 1, picks);
-    (windowprocs.win_destroy_nhwindow)(tmpwin);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (pick_cnt > 0) {
         let j;
         let k = 0;
         if (allow_many) {
             for (i = 0; i < pick_cnt; ++i) {
                 j = (cptr.ldI32(cptr.add(picks.v, i, 24)) - 1) | 0;
-                if (attrnames[j].attr != 0 || pick_cnt == 1) {
-                    switch (attrnames[j].attr) {
+                if (cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8)) != 0 || pick_cnt == 1) {
+                    switch (cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8))) {
                         case 0:
-                        k = HL_NONE;
+                        k = 1;
                         break;
                         case 1:
-                        k |= HL_BOLD;
+                        k |= 2;
                         break;
                         case 2:
-                        k |= HL_DIM;
+                        k |= 4;
                         break;
                         case 3:
-                        k |= HL_ITALIC;
+                        k |= 8;
                         break;
                         case 4:
-                        k |= HL_ULINE;
+                        k |= 16;
                         break;
                         case 5:
-                        k |= HL_BLINK;
+                        k |= 32;
                         break;
                         case 7:
-                        k |= HL_INVERSE;
+                        k |= 64;
                         break;
                     }
                 }
             }
         } else {
             j = (cptr.ldI32(cptr.add(picks.v, 0, 24)) - 1) | 0;
-            if (pick_cnt == 2 && attrnames[j].attr == dflt_attr)
+            if (pick_cnt == 2 && cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8)) == dflt_attr)
                 j = (cptr.ldI32(cptr.add(picks.v, 1, 24)) - 1) | 0;
-            k = attrnames[j].attr;
+            k = cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8));
         }
         cptr.free(picks.v);
         return k;
@@ -605,23 +1572,23 @@ export function query_color(prompt, dflt_color) {
     let pick_cnt;
     let picks = cptr.box(null);
     basic_menu_colors((1));
-    tmpwin = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(tmpwin, 0n);
-    cptr.memcpy(any, cg.zeroany, 8);
-    for (i = 0; i < colornames.length; i++) {
-        if (!colornames[i].name)
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    for (i = 0; i < 27; i++) {
+        if (!cptr.ldPtr(cptr.add(colornames, i, 16)))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, 8, colornames[i].name, (colornames[i].color == dflt_color) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo, any, 0, 0, 0, 8, cptr.ldPtr(cptr.add(colornames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8)) == dflt_color) ? 1 : 0);
     }
-    (windowprocs.win_end_menu)(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl173);
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl173);
     pick_cnt = select_menu(tmpwin, 1, picks);
-    (windowprocs.win_destroy_nhwindow)(tmpwin);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     basic_menu_colors((0));
     if (pick_cnt > 0) {
-        i = colornames[(cptr.ldI32(cptr.add(picks.v, 0, 24)) - 1) | 0].color;
+        i = cptr.ldI32(cptr.add(cptr.add(colornames, (cptr.ldI32(cptr.add(picks.v, 0, 24)) - 1) | 0, 16), 8));
         if (pick_cnt == 2 && i == 8)
-            i = colornames[(cptr.ldI32(cptr.add(picks.v, 1, 24)) - 1) | 0].color;
+            i = cptr.ldI32(cptr.add(cptr.add(colornames, (cptr.ldI32(cptr.add(picks.v, 1, 24)) - 1) | 0, 16), 8));
         cptr.free(picks.v);
         return i;
     } else if (pick_cnt == 0) {
@@ -633,32 +1600,32 @@ export function query_color(prompt, dflt_color) {
 /** C ref: coloratt.c:530 — @param {CInt} load_colors */
 export function basic_menu_colors(load_colors) {
     if (load_colors) {
-        gs.save_menucolors = iflags.use_menu_color;
-        gs.save_colorings = gm.menu_colorings;
-        iflags.use_menu_color = (1);
-        if (gc.color_colorings) {
-            gm.menu_colorings = gc.color_colorings;
+        cptr.st1(cptr.add(gs, 960), cptr.ld1s(cptr.add(iflags, 149)));
+        cptr.stPtr(cptr.add(gs, 968), cptr.ldPtr(cptr.add(gm, 168)));
+        cptr.st1(cptr.add(iflags, 149), (1));
+        if (cptr.ldPtr(cptr.add(gc, 480))) {
+            cptr.stPtr(cptr.add(gm, 168), cptr.ldPtr(cptr.add(gc, 480)));
         } else {
             let cnm = new Uint8Array(128);
             let i;
             let c;
             let pmatchregex = schar((!strncmpi(cptr.decay((regex_id)), (__sl174), -1)));
             let patternfmt = pmatchregex ? __sl175 : __sl176;
-            gm.menu_colorings = null;
-            for (i = 0; i < colornames.length; ++i) {
-                if (!colornames[i].name)
+            cptr.stPtr(cptr.add(gm, 168), null);
+            for (i = 0; i < 27; ++i) {
+                if (!cptr.ldPtr(cptr.add(colornames, i, 16)))
                     break;
-                c = colornames[i].color;
+                c = cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8));
                 if (c == 0 || c == 15 || c == 8)
                     continue;
-                void cptr.sprintf(cptr.decay(cnm), patternfmt, colornames[i].name);
+                void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtr(cptr.add(colornames, i, 16)));
                 add_menu_coloring_parsed(cptr.decay(cnm), c, 0);
             }
-            gc.color_colorings = gm.menu_colorings;
+            cptr.stPtr(cptr.add(gc, 480), cptr.ldPtr(cptr.add(gm, 168)));
         }
     } else {
-        iflags.use_menu_color = gs.save_menucolors;
-        gm.menu_colorings = gs.save_colorings;
+        cptr.st1(cptr.add(iflags, 149), cptr.ld1s(cptr.add(gs, 960)));
+        cptr.stPtr(cptr.add(gm, 168), cptr.ldPtr(cptr.add(gs, 968)));
     }
 }
 
@@ -679,12 +1646,12 @@ export function add_menu_coloring_parsed(str, c, a) {
         config_error_add(__sl177, cptr.decay(__static_add_menu_coloring_parsed_re_error), re_error_desc);
         return (0);
     }
-    cptr.stPtr(cptr.add(tmp, 24), gm.menu_colorings);
+    cptr.stPtr(cptr.add(tmp, 24), cptr.ldPtr(cptr.add(gm, 168)));
     cptr.stPtr(cptr.add(tmp, 8), dupstr(str));
     cptr.stI32(cptr.add(tmp, 16), c);
     cptr.stI32(cptr.add(tmp, 20), a);
-    gm.menu_colorings = tmp;
-    iflags.use_menu_color = (1);
+    cptr.stPtr(cptr.add(gm, 168), tmp);
+    cptr.st1(cptr.add(iflags, 149), (1));
     return (1);
 }
 
@@ -697,7 +1664,7 @@ export function add_menu_coloring(tmpstr) {
     let amp;
     let str = new Uint8Array(256);
     void __builtin___strncpy_chk(cptr.decay(str), tmpstr, 256n - 1n, __builtin_object_size(cptr.decay(str), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(str), 256n - 1n), 0);
+    cptr.st1(cptr.add(cptr.decay(str), 256n - 1n, 1), 0);
     if ((cs = cptr.strchr(cptr.decay(str), 61)) === null) {
         config_error_add(__sl178);
         return (0);
@@ -734,20 +1701,20 @@ export function free_menu_coloring() {
     do {
         let tmp;
         let tmp2;
-        for (tmp = gm.menu_colorings; tmp; tmp = tmp2) {
+        for (tmp = cptr.ldPtr(cptr.add(gm, 168)); tmp; tmp = tmp2) {
             tmp2 = cptr.ldPtr(cptr.add(tmp, 24));
             regex_free(cptr.ldPtr(tmp));
             cptr.free(cptr.ldPtr(cptr.add(tmp, 8)));
             cptr.free(tmp);
         }
-        gm.menu_colorings = gc.color_colorings;
-        gc.color_colorings = null;
-    } while (gm.menu_colorings);
+        cptr.stPtr(cptr.add(gm, 168), cptr.ldPtr(cptr.add(gc, 480)));
+        cptr.stPtr(cptr.add(gc, 480), null);
+    } while (cptr.ldPtr(cptr.add(gm, 168)));
 }
 
 /** C ref: coloratt.c:684 — @param {CInt} idx */
 export function free_one_menu_coloring(idx) {
-    let tmp = gm.menu_colorings;
+    let tmp = cptr.ldPtr(cptr.add(gm, 168));
     let prev = null;
     while (tmp) {
         if (idx == 0) {
@@ -758,7 +1725,7 @@ export function free_one_menu_coloring(idx) {
             if (prev)
                 cptr.stPtr(cptr.add(prev, 24), next);
             else
-                gm.menu_colorings = next;
+                cptr.stPtr(cptr.add(gm, 168), next);
             return;
         }
         idx--;
@@ -771,7 +1738,7 @@ export function free_one_menu_coloring(idx) {
 export function count_menucolors() {
     let tmp;
     let count = 0;
-    for (tmp = gm.menu_colorings; tmp; tmp = cptr.ldPtr(cptr.add(tmp, 24)))
+    for (tmp = cptr.ldPtr(cptr.add(gm, 168)); tmp; tmp = cptr.ldPtr(cptr.add(tmp, 24)))
         count++;
     return count;
 }
@@ -796,9 +1763,9 @@ export function check_enhanced_colors(buf) {
             altbuf = dupstr(buf);
             void cptr.memcpy(cptr.add(altbuf, greyoffset), __sl7, 4n);
         }
-        for (color = 0; color < colortable.length; ++color) {
-            if (fuzzymatch(buf, colortable[color].name, __sl168, (1)) || (altbuf && fuzzymatch(altbuf, colortable[color].name, __sl168, (1)))) {
-                retcolor = colortable_to_int32(cptr.add(cptr.decay(colortable), color));
+        for (color = 0; color < 155; ++color) {
+            if (fuzzymatch(buf, cptr.ldPtr(cptr.add(cptr.add(colortable, color, 48), 16)), __sl168, (1)) || (altbuf && fuzzymatch(altbuf, cptr.ldPtr(cptr.add(cptr.add(colortable, color, 48), 16)), __sl168, (1)))) {
+                retcolor = colortable_to_int32(cptr.add(colortable, color, 48));
                 break;
             }
         }
@@ -817,7 +1784,7 @@ export function wc_color_name(colorindx) {
         let basicindx = colorindx & ~16777216;
         if (basicindx != colorindx) {
             (__builtin_expect(BigInt((!(basicindx < 16))), 0n) ? __assert_rtn(__sl181, __sl182, 775, __sl183) : void 0);
-            result = colortable[basicindx].name;
+            result = cptr.ldPtr(cptr.add(cptr.add(colortable, basicindx, 48), 16));
         } else {
             let indx;
             let r = BigInt(((colorindx >> 16) & 255));
@@ -825,9 +1792,9 @@ export function wc_color_name(colorindx) {
             let b = BigInt((colorindx & 255));
             nh_snprintf(__sl181, 784, cptr.decay(__static_wc_color_name_hexcolor), 8n, __sl184, Number(BigInt.asUintN(8, r)), Number(BigInt.asUintN(8, g)), Number(BigInt.asUintN(8, b)));
             result = cptr.decay(__static_wc_color_name_hexcolor);
-            for (indx = 16; indx < colortable.length; ++indx)
-                if (colortable[indx].r == r && colortable[indx].g == g && colortable[indx].b == b) {
-                    result = colortable[indx].name;
+            for (indx = 16; indx < 155; ++indx)
+                if (cptr.ldI64(cptr.add(cptr.add(colortable, indx, 48), 24)) == r && cptr.ldI64(cptr.add(cptr.add(colortable, indx, 48), 32)) == g && cptr.ldI64(cptr.add(cptr.add(colortable, indx, 48), 40)) == b) {
+                    result = cptr.ldPtr(cptr.add(cptr.add(colortable, indx, 48), 16));
                     break;
                 }
         }
@@ -914,248 +1881,487 @@ export function set_map_customcolor(gmap, nhcolor) {
 /** C ref: coloratt.c:885 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: coloratt.c:888 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/coloratt.c:885:8)[240] */
-const color_256_definitions = [
-    { index: 16, value: 0 },
-    { index: 17, value: 95 },
-    { index: 18, value: 135 },
-    { index: 19, value: 175 },
-    { index: 20, value: 215 },
-    { index: 21, value: 255 },
-    { index: 22, value: 24320 },
-    { index: 23, value: 24415 },
-    { index: 24, value: 24455 },
-    { index: 25, value: 24495 },
-    { index: 26, value: 24535 },
-    { index: 27, value: 24575 },
-    { index: 28, value: 34560 },
-    { index: 29, value: 34655 },
-    { index: 30, value: 34695 },
-    { index: 31, value: 34735 },
-    { index: 32, value: 34775 },
-    { index: 33, value: 34815 },
-    { index: 34, value: 44800 },
-    { index: 35, value: 44895 },
-    { index: 36, value: 44935 },
-    { index: 37, value: 44975 },
-    { index: 38, value: 45015 },
-    { index: 39, value: 45055 },
-    { index: 40, value: 55040 },
-    { index: 41, value: 55135 },
-    { index: 42, value: 55175 },
-    { index: 43, value: 55215 },
-    { index: 44, value: 55255 },
-    { index: 45, value: 55295 },
-    { index: 46, value: 65280 },
-    { index: 47, value: 65375 },
-    { index: 48, value: 65415 },
-    { index: 49, value: 65455 },
-    { index: 50, value: 65495 },
-    { index: 51, value: 65535 },
-    { index: 52, value: 6225920 },
-    { index: 53, value: 6226015 },
-    { index: 54, value: 6226055 },
-    { index: 55, value: 6226095 },
-    { index: 56, value: 6226135 },
-    { index: 57, value: 6226175 },
-    { index: 58, value: 6250240 },
-    { index: 59, value: 6250335 },
-    { index: 60, value: 6250375 },
-    { index: 61, value: 6250415 },
-    { index: 62, value: 6250455 },
-    { index: 63, value: 6250495 },
-    { index: 64, value: 6260480 },
-    { index: 65, value: 6260575 },
-    { index: 66, value: 6260615 },
-    { index: 67, value: 6260655 },
-    { index: 68, value: 6260695 },
-    { index: 69, value: 6260735 },
-    { index: 70, value: 6270720 },
-    { index: 71, value: 6270815 },
-    { index: 72, value: 6270855 },
-    { index: 73, value: 6270895 },
-    { index: 74, value: 6270935 },
-    { index: 75, value: 6270975 },
-    { index: 76, value: 6280960 },
-    { index: 77, value: 6281055 },
-    { index: 78, value: 6281095 },
-    { index: 79, value: 6281135 },
-    { index: 80, value: 6281175 },
-    { index: 81, value: 6281215 },
-    { index: 82, value: 6291200 },
-    { index: 83, value: 6291295 },
-    { index: 84, value: 6291335 },
-    { index: 85, value: 6291375 },
-    { index: 86, value: 6291415 },
-    { index: 87, value: 6291455 },
-    { index: 88, value: 8847360 },
-    { index: 89, value: 8847455 },
-    { index: 90, value: 8847495 },
-    { index: 91, value: 8847535 },
-    { index: 92, value: 8847575 },
-    { index: 93, value: 8847615 },
-    { index: 94, value: 8871680 },
-    { index: 95, value: 8871775 },
-    { index: 96, value: 8871815 },
-    { index: 97, value: 8871855 },
-    { index: 98, value: 8871895 },
-    { index: 99, value: 8871935 },
-    { index: 100, value: 8881920 },
-    { index: 101, value: 8882015 },
-    { index: 102, value: 8882055 },
-    { index: 103, value: 8882095 },
-    { index: 104, value: 8882135 },
-    { index: 105, value: 8882175 },
-    { index: 106, value: 8892160 },
-    { index: 107, value: 8892255 },
-    { index: 108, value: 8892295 },
-    { index: 109, value: 8892335 },
-    { index: 110, value: 8892375 },
-    { index: 111, value: 8892415 },
-    { index: 112, value: 8902400 },
-    { index: 113, value: 8902495 },
-    { index: 114, value: 8902535 },
-    { index: 115, value: 8902575 },
-    { index: 116, value: 8902615 },
-    { index: 117, value: 8902655 },
-    { index: 118, value: 8912640 },
-    { index: 119, value: 8912735 },
-    { index: 120, value: 8912775 },
-    { index: 121, value: 8912815 },
-    { index: 122, value: 8912855 },
-    { index: 123, value: 8912895 },
-    { index: 124, value: 11468800 },
-    { index: 125, value: 11468895 },
-    { index: 126, value: 11468935 },
-    { index: 127, value: 11468975 },
-    { index: 128, value: 11469015 },
-    { index: 129, value: 11469055 },
-    { index: 130, value: 11493120 },
-    { index: 131, value: 11493215 },
-    { index: 132, value: 11493255 },
-    { index: 133, value: 11493295 },
-    { index: 134, value: 11493335 },
-    { index: 135, value: 11493375 },
-    { index: 136, value: 11503360 },
-    { index: 137, value: 11503455 },
-    { index: 138, value: 11503495 },
-    { index: 139, value: 11503535 },
-    { index: 140, value: 11503575 },
-    { index: 141, value: 11503615 },
-    { index: 142, value: 11513600 },
-    { index: 143, value: 11513695 },
-    { index: 144, value: 11513735 },
-    { index: 145, value: 11513775 },
-    { index: 146, value: 11513815 },
-    { index: 147, value: 11513855 },
-    { index: 148, value: 11523840 },
-    { index: 149, value: 11523935 },
-    { index: 150, value: 11523975 },
-    { index: 151, value: 11524015 },
-    { index: 152, value: 11524055 },
-    { index: 153, value: 11524095 },
-    { index: 154, value: 11534080 },
-    { index: 155, value: 11534175 },
-    { index: 156, value: 11534215 },
-    { index: 157, value: 11534255 },
-    { index: 158, value: 11534295 },
-    { index: 159, value: 11534335 },
-    { index: 160, value: 14090240 },
-    { index: 161, value: 14090335 },
-    { index: 162, value: 14090375 },
-    { index: 163, value: 14090415 },
-    { index: 164, value: 14090455 },
-    { index: 165, value: 14090495 },
-    { index: 166, value: 14114560 },
-    { index: 167, value: 14114655 },
-    { index: 168, value: 14114695 },
-    { index: 169, value: 14114735 },
-    { index: 170, value: 14114775 },
-    { index: 171, value: 14114815 },
-    { index: 172, value: 14124800 },
-    { index: 173, value: 14124895 },
-    { index: 174, value: 14124935 },
-    { index: 175, value: 14124975 },
-    { index: 176, value: 14125015 },
-    { index: 177, value: 14125055 },
-    { index: 178, value: 14135040 },
-    { index: 179, value: 14135135 },
-    { index: 180, value: 14135175 },
-    { index: 181, value: 14135215 },
-    { index: 182, value: 14135255 },
-    { index: 183, value: 14135295 },
-    { index: 184, value: 14145280 },
-    { index: 185, value: 14145375 },
-    { index: 186, value: 14145415 },
-    { index: 187, value: 14145455 },
-    { index: 188, value: 14145495 },
-    { index: 189, value: 14145535 },
-    { index: 190, value: 14155520 },
-    { index: 191, value: 14155615 },
-    { index: 192, value: 14155655 },
-    { index: 193, value: 14155695 },
-    { index: 194, value: 14155735 },
-    { index: 195, value: 14155775 },
-    { index: 196, value: 16711680 },
-    { index: 197, value: 16711775 },
-    { index: 198, value: 16711815 },
-    { index: 199, value: 16711855 },
-    { index: 200, value: 16711895 },
-    { index: 201, value: 16711935 },
-    { index: 202, value: 16736000 },
-    { index: 203, value: 16736095 },
-    { index: 204, value: 16736135 },
-    { index: 205, value: 16736175 },
-    { index: 206, value: 16736215 },
-    { index: 207, value: 16736255 },
-    { index: 208, value: 16746240 },
-    { index: 209, value: 16746335 },
-    { index: 210, value: 16746375 },
-    { index: 211, value: 16746415 },
-    { index: 212, value: 16746455 },
-    { index: 213, value: 16746495 },
-    { index: 214, value: 16756480 },
-    { index: 215, value: 16756575 },
-    { index: 216, value: 16756615 },
-    { index: 217, value: 16756655 },
-    { index: 218, value: 16756695 },
-    { index: 219, value: 16756735 },
-    { index: 220, value: 16766720 },
-    { index: 221, value: 16766815 },
-    { index: 222, value: 16766855 },
-    { index: 223, value: 16766895 },
-    { index: 224, value: 16766935 },
-    { index: 225, value: 16766975 },
-    { index: 226, value: 16776960 },
-    { index: 227, value: 16777055 },
-    { index: 228, value: 16777095 },
-    { index: 229, value: 16777135 },
-    { index: 230, value: 16777175 },
-    { index: 231, value: 16777215 },
-    { index: 232, value: 526344 },
-    { index: 233, value: 1184274 },
-    { index: 234, value: 1842204 },
-    { index: 235, value: 2500134 },
-    { index: 236, value: 3158064 },
-    { index: 237, value: 3815994 },
-    { index: 238, value: 4473924 },
-    { index: 239, value: 5131854 },
-    { index: 240, value: 5789784 },
-    { index: 241, value: 6447714 },
-    { index: 242, value: 7105644 },
-    { index: 243, value: 7763574 },
-    { index: 244, value: 8421504 },
-    { index: 245, value: 9079434 },
-    { index: 246, value: 9737364 },
-    { index: 247, value: 10395294 },
-    { index: 248, value: 11053224 },
-    { index: 249, value: 11711154 },
-    { index: 250, value: 12369084 },
-    { index: 251, value: 13027014 },
-    { index: 252, value: 13684944 },
-    { index: 253, value: 14342874 },
-    { index: 254, value: 15000804 },
-    { index: 255, value: 15658734 }
-];
+const color_256_definitions = cptr.alloc(240 * 8);
+cptr.stI32(cptr.add(color_256_definitions, 0), 16);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 0), 4), 0);
+cptr.stI32(cptr.add(color_256_definitions, 8), 17);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 8), 4), 95);
+cptr.stI32(cptr.add(color_256_definitions, 16), 18);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 16), 4), 135);
+cptr.stI32(cptr.add(color_256_definitions, 24), 19);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 24), 4), 175);
+cptr.stI32(cptr.add(color_256_definitions, 32), 20);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 32), 4), 215);
+cptr.stI32(cptr.add(color_256_definitions, 40), 21);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 40), 4), 255);
+cptr.stI32(cptr.add(color_256_definitions, 48), 22);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 48), 4), 24320);
+cptr.stI32(cptr.add(color_256_definitions, 56), 23);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 56), 4), 24415);
+cptr.stI32(cptr.add(color_256_definitions, 64), 24);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 64), 4), 24455);
+cptr.stI32(cptr.add(color_256_definitions, 72), 25);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 72), 4), 24495);
+cptr.stI32(cptr.add(color_256_definitions, 80), 26);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 80), 4), 24535);
+cptr.stI32(cptr.add(color_256_definitions, 88), 27);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 88), 4), 24575);
+cptr.stI32(cptr.add(color_256_definitions, 96), 28);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 96), 4), 34560);
+cptr.stI32(cptr.add(color_256_definitions, 104), 29);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 104), 4), 34655);
+cptr.stI32(cptr.add(color_256_definitions, 112), 30);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 112), 4), 34695);
+cptr.stI32(cptr.add(color_256_definitions, 120), 31);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 120), 4), 34735);
+cptr.stI32(cptr.add(color_256_definitions, 128), 32);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 128), 4), 34775);
+cptr.stI32(cptr.add(color_256_definitions, 136), 33);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 136), 4), 34815);
+cptr.stI32(cptr.add(color_256_definitions, 144), 34);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 144), 4), 44800);
+cptr.stI32(cptr.add(color_256_definitions, 152), 35);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 152), 4), 44895);
+cptr.stI32(cptr.add(color_256_definitions, 160), 36);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 160), 4), 44935);
+cptr.stI32(cptr.add(color_256_definitions, 168), 37);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 168), 4), 44975);
+cptr.stI32(cptr.add(color_256_definitions, 176), 38);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 176), 4), 45015);
+cptr.stI32(cptr.add(color_256_definitions, 184), 39);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 184), 4), 45055);
+cptr.stI32(cptr.add(color_256_definitions, 192), 40);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 192), 4), 55040);
+cptr.stI32(cptr.add(color_256_definitions, 200), 41);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 200), 4), 55135);
+cptr.stI32(cptr.add(color_256_definitions, 208), 42);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 208), 4), 55175);
+cptr.stI32(cptr.add(color_256_definitions, 216), 43);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 216), 4), 55215);
+cptr.stI32(cptr.add(color_256_definitions, 224), 44);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 224), 4), 55255);
+cptr.stI32(cptr.add(color_256_definitions, 232), 45);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 232), 4), 55295);
+cptr.stI32(cptr.add(color_256_definitions, 240), 46);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 240), 4), 65280);
+cptr.stI32(cptr.add(color_256_definitions, 248), 47);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 248), 4), 65375);
+cptr.stI32(cptr.add(color_256_definitions, 256), 48);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 256), 4), 65415);
+cptr.stI32(cptr.add(color_256_definitions, 264), 49);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 264), 4), 65455);
+cptr.stI32(cptr.add(color_256_definitions, 272), 50);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 272), 4), 65495);
+cptr.stI32(cptr.add(color_256_definitions, 280), 51);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 280), 4), 65535);
+cptr.stI32(cptr.add(color_256_definitions, 288), 52);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 288), 4), 6225920);
+cptr.stI32(cptr.add(color_256_definitions, 296), 53);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 296), 4), 6226015);
+cptr.stI32(cptr.add(color_256_definitions, 304), 54);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 304), 4), 6226055);
+cptr.stI32(cptr.add(color_256_definitions, 312), 55);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 312), 4), 6226095);
+cptr.stI32(cptr.add(color_256_definitions, 320), 56);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 320), 4), 6226135);
+cptr.stI32(cptr.add(color_256_definitions, 328), 57);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 328), 4), 6226175);
+cptr.stI32(cptr.add(color_256_definitions, 336), 58);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 336), 4), 6250240);
+cptr.stI32(cptr.add(color_256_definitions, 344), 59);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 344), 4), 6250335);
+cptr.stI32(cptr.add(color_256_definitions, 352), 60);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 352), 4), 6250375);
+cptr.stI32(cptr.add(color_256_definitions, 360), 61);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 360), 4), 6250415);
+cptr.stI32(cptr.add(color_256_definitions, 368), 62);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 368), 4), 6250455);
+cptr.stI32(cptr.add(color_256_definitions, 376), 63);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 376), 4), 6250495);
+cptr.stI32(cptr.add(color_256_definitions, 384), 64);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 384), 4), 6260480);
+cptr.stI32(cptr.add(color_256_definitions, 392), 65);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 392), 4), 6260575);
+cptr.stI32(cptr.add(color_256_definitions, 400), 66);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 400), 4), 6260615);
+cptr.stI32(cptr.add(color_256_definitions, 408), 67);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 408), 4), 6260655);
+cptr.stI32(cptr.add(color_256_definitions, 416), 68);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 416), 4), 6260695);
+cptr.stI32(cptr.add(color_256_definitions, 424), 69);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 424), 4), 6260735);
+cptr.stI32(cptr.add(color_256_definitions, 432), 70);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 432), 4), 6270720);
+cptr.stI32(cptr.add(color_256_definitions, 440), 71);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 440), 4), 6270815);
+cptr.stI32(cptr.add(color_256_definitions, 448), 72);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 448), 4), 6270855);
+cptr.stI32(cptr.add(color_256_definitions, 456), 73);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 456), 4), 6270895);
+cptr.stI32(cptr.add(color_256_definitions, 464), 74);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 464), 4), 6270935);
+cptr.stI32(cptr.add(color_256_definitions, 472), 75);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 472), 4), 6270975);
+cptr.stI32(cptr.add(color_256_definitions, 480), 76);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 480), 4), 6280960);
+cptr.stI32(cptr.add(color_256_definitions, 488), 77);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 488), 4), 6281055);
+cptr.stI32(cptr.add(color_256_definitions, 496), 78);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 496), 4), 6281095);
+cptr.stI32(cptr.add(color_256_definitions, 504), 79);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 504), 4), 6281135);
+cptr.stI32(cptr.add(color_256_definitions, 512), 80);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 512), 4), 6281175);
+cptr.stI32(cptr.add(color_256_definitions, 520), 81);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 520), 4), 6281215);
+cptr.stI32(cptr.add(color_256_definitions, 528), 82);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 528), 4), 6291200);
+cptr.stI32(cptr.add(color_256_definitions, 536), 83);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 536), 4), 6291295);
+cptr.stI32(cptr.add(color_256_definitions, 544), 84);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 544), 4), 6291335);
+cptr.stI32(cptr.add(color_256_definitions, 552), 85);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 552), 4), 6291375);
+cptr.stI32(cptr.add(color_256_definitions, 560), 86);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 560), 4), 6291415);
+cptr.stI32(cptr.add(color_256_definitions, 568), 87);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 568), 4), 6291455);
+cptr.stI32(cptr.add(color_256_definitions, 576), 88);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 576), 4), 8847360);
+cptr.stI32(cptr.add(color_256_definitions, 584), 89);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 584), 4), 8847455);
+cptr.stI32(cptr.add(color_256_definitions, 592), 90);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 592), 4), 8847495);
+cptr.stI32(cptr.add(color_256_definitions, 600), 91);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 600), 4), 8847535);
+cptr.stI32(cptr.add(color_256_definitions, 608), 92);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 608), 4), 8847575);
+cptr.stI32(cptr.add(color_256_definitions, 616), 93);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 616), 4), 8847615);
+cptr.stI32(cptr.add(color_256_definitions, 624), 94);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 624), 4), 8871680);
+cptr.stI32(cptr.add(color_256_definitions, 632), 95);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 632), 4), 8871775);
+cptr.stI32(cptr.add(color_256_definitions, 640), 96);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 640), 4), 8871815);
+cptr.stI32(cptr.add(color_256_definitions, 648), 97);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 648), 4), 8871855);
+cptr.stI32(cptr.add(color_256_definitions, 656), 98);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 656), 4), 8871895);
+cptr.stI32(cptr.add(color_256_definitions, 664), 99);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 664), 4), 8871935);
+cptr.stI32(cptr.add(color_256_definitions, 672), 100);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 672), 4), 8881920);
+cptr.stI32(cptr.add(color_256_definitions, 680), 101);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 680), 4), 8882015);
+cptr.stI32(cptr.add(color_256_definitions, 688), 102);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 688), 4), 8882055);
+cptr.stI32(cptr.add(color_256_definitions, 696), 103);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 696), 4), 8882095);
+cptr.stI32(cptr.add(color_256_definitions, 704), 104);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 704), 4), 8882135);
+cptr.stI32(cptr.add(color_256_definitions, 712), 105);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 712), 4), 8882175);
+cptr.stI32(cptr.add(color_256_definitions, 720), 106);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 720), 4), 8892160);
+cptr.stI32(cptr.add(color_256_definitions, 728), 107);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 728), 4), 8892255);
+cptr.stI32(cptr.add(color_256_definitions, 736), 108);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 736), 4), 8892295);
+cptr.stI32(cptr.add(color_256_definitions, 744), 109);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 744), 4), 8892335);
+cptr.stI32(cptr.add(color_256_definitions, 752), 110);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 752), 4), 8892375);
+cptr.stI32(cptr.add(color_256_definitions, 760), 111);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 760), 4), 8892415);
+cptr.stI32(cptr.add(color_256_definitions, 768), 112);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 768), 4), 8902400);
+cptr.stI32(cptr.add(color_256_definitions, 776), 113);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 776), 4), 8902495);
+cptr.stI32(cptr.add(color_256_definitions, 784), 114);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 784), 4), 8902535);
+cptr.stI32(cptr.add(color_256_definitions, 792), 115);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 792), 4), 8902575);
+cptr.stI32(cptr.add(color_256_definitions, 800), 116);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 800), 4), 8902615);
+cptr.stI32(cptr.add(color_256_definitions, 808), 117);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 808), 4), 8902655);
+cptr.stI32(cptr.add(color_256_definitions, 816), 118);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 816), 4), 8912640);
+cptr.stI32(cptr.add(color_256_definitions, 824), 119);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 824), 4), 8912735);
+cptr.stI32(cptr.add(color_256_definitions, 832), 120);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 832), 4), 8912775);
+cptr.stI32(cptr.add(color_256_definitions, 840), 121);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 840), 4), 8912815);
+cptr.stI32(cptr.add(color_256_definitions, 848), 122);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 848), 4), 8912855);
+cptr.stI32(cptr.add(color_256_definitions, 856), 123);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 856), 4), 8912895);
+cptr.stI32(cptr.add(color_256_definitions, 864), 124);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 864), 4), 11468800);
+cptr.stI32(cptr.add(color_256_definitions, 872), 125);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 872), 4), 11468895);
+cptr.stI32(cptr.add(color_256_definitions, 880), 126);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 880), 4), 11468935);
+cptr.stI32(cptr.add(color_256_definitions, 888), 127);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 888), 4), 11468975);
+cptr.stI32(cptr.add(color_256_definitions, 896), 128);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 896), 4), 11469015);
+cptr.stI32(cptr.add(color_256_definitions, 904), 129);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 904), 4), 11469055);
+cptr.stI32(cptr.add(color_256_definitions, 912), 130);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 912), 4), 11493120);
+cptr.stI32(cptr.add(color_256_definitions, 920), 131);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 920), 4), 11493215);
+cptr.stI32(cptr.add(color_256_definitions, 928), 132);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 928), 4), 11493255);
+cptr.stI32(cptr.add(color_256_definitions, 936), 133);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 936), 4), 11493295);
+cptr.stI32(cptr.add(color_256_definitions, 944), 134);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 944), 4), 11493335);
+cptr.stI32(cptr.add(color_256_definitions, 952), 135);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 952), 4), 11493375);
+cptr.stI32(cptr.add(color_256_definitions, 960), 136);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 960), 4), 11503360);
+cptr.stI32(cptr.add(color_256_definitions, 968), 137);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 968), 4), 11503455);
+cptr.stI32(cptr.add(color_256_definitions, 976), 138);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 976), 4), 11503495);
+cptr.stI32(cptr.add(color_256_definitions, 984), 139);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 984), 4), 11503535);
+cptr.stI32(cptr.add(color_256_definitions, 992), 140);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 992), 4), 11503575);
+cptr.stI32(cptr.add(color_256_definitions, 1000), 141);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1000), 4), 11503615);
+cptr.stI32(cptr.add(color_256_definitions, 1008), 142);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1008), 4), 11513600);
+cptr.stI32(cptr.add(color_256_definitions, 1016), 143);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1016), 4), 11513695);
+cptr.stI32(cptr.add(color_256_definitions, 1024), 144);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1024), 4), 11513735);
+cptr.stI32(cptr.add(color_256_definitions, 1032), 145);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1032), 4), 11513775);
+cptr.stI32(cptr.add(color_256_definitions, 1040), 146);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1040), 4), 11513815);
+cptr.stI32(cptr.add(color_256_definitions, 1048), 147);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1048), 4), 11513855);
+cptr.stI32(cptr.add(color_256_definitions, 1056), 148);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1056), 4), 11523840);
+cptr.stI32(cptr.add(color_256_definitions, 1064), 149);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1064), 4), 11523935);
+cptr.stI32(cptr.add(color_256_definitions, 1072), 150);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1072), 4), 11523975);
+cptr.stI32(cptr.add(color_256_definitions, 1080), 151);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1080), 4), 11524015);
+cptr.stI32(cptr.add(color_256_definitions, 1088), 152);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1088), 4), 11524055);
+cptr.stI32(cptr.add(color_256_definitions, 1096), 153);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1096), 4), 11524095);
+cptr.stI32(cptr.add(color_256_definitions, 1104), 154);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1104), 4), 11534080);
+cptr.stI32(cptr.add(color_256_definitions, 1112), 155);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1112), 4), 11534175);
+cptr.stI32(cptr.add(color_256_definitions, 1120), 156);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1120), 4), 11534215);
+cptr.stI32(cptr.add(color_256_definitions, 1128), 157);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1128), 4), 11534255);
+cptr.stI32(cptr.add(color_256_definitions, 1136), 158);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1136), 4), 11534295);
+cptr.stI32(cptr.add(color_256_definitions, 1144), 159);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1144), 4), 11534335);
+cptr.stI32(cptr.add(color_256_definitions, 1152), 160);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1152), 4), 14090240);
+cptr.stI32(cptr.add(color_256_definitions, 1160), 161);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1160), 4), 14090335);
+cptr.stI32(cptr.add(color_256_definitions, 1168), 162);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1168), 4), 14090375);
+cptr.stI32(cptr.add(color_256_definitions, 1176), 163);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1176), 4), 14090415);
+cptr.stI32(cptr.add(color_256_definitions, 1184), 164);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1184), 4), 14090455);
+cptr.stI32(cptr.add(color_256_definitions, 1192), 165);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1192), 4), 14090495);
+cptr.stI32(cptr.add(color_256_definitions, 1200), 166);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1200), 4), 14114560);
+cptr.stI32(cptr.add(color_256_definitions, 1208), 167);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1208), 4), 14114655);
+cptr.stI32(cptr.add(color_256_definitions, 1216), 168);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1216), 4), 14114695);
+cptr.stI32(cptr.add(color_256_definitions, 1224), 169);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1224), 4), 14114735);
+cptr.stI32(cptr.add(color_256_definitions, 1232), 170);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1232), 4), 14114775);
+cptr.stI32(cptr.add(color_256_definitions, 1240), 171);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1240), 4), 14114815);
+cptr.stI32(cptr.add(color_256_definitions, 1248), 172);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1248), 4), 14124800);
+cptr.stI32(cptr.add(color_256_definitions, 1256), 173);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1256), 4), 14124895);
+cptr.stI32(cptr.add(color_256_definitions, 1264), 174);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1264), 4), 14124935);
+cptr.stI32(cptr.add(color_256_definitions, 1272), 175);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1272), 4), 14124975);
+cptr.stI32(cptr.add(color_256_definitions, 1280), 176);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1280), 4), 14125015);
+cptr.stI32(cptr.add(color_256_definitions, 1288), 177);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1288), 4), 14125055);
+cptr.stI32(cptr.add(color_256_definitions, 1296), 178);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1296), 4), 14135040);
+cptr.stI32(cptr.add(color_256_definitions, 1304), 179);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1304), 4), 14135135);
+cptr.stI32(cptr.add(color_256_definitions, 1312), 180);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1312), 4), 14135175);
+cptr.stI32(cptr.add(color_256_definitions, 1320), 181);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1320), 4), 14135215);
+cptr.stI32(cptr.add(color_256_definitions, 1328), 182);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1328), 4), 14135255);
+cptr.stI32(cptr.add(color_256_definitions, 1336), 183);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1336), 4), 14135295);
+cptr.stI32(cptr.add(color_256_definitions, 1344), 184);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1344), 4), 14145280);
+cptr.stI32(cptr.add(color_256_definitions, 1352), 185);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1352), 4), 14145375);
+cptr.stI32(cptr.add(color_256_definitions, 1360), 186);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1360), 4), 14145415);
+cptr.stI32(cptr.add(color_256_definitions, 1368), 187);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1368), 4), 14145455);
+cptr.stI32(cptr.add(color_256_definitions, 1376), 188);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1376), 4), 14145495);
+cptr.stI32(cptr.add(color_256_definitions, 1384), 189);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1384), 4), 14145535);
+cptr.stI32(cptr.add(color_256_definitions, 1392), 190);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1392), 4), 14155520);
+cptr.stI32(cptr.add(color_256_definitions, 1400), 191);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1400), 4), 14155615);
+cptr.stI32(cptr.add(color_256_definitions, 1408), 192);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1408), 4), 14155655);
+cptr.stI32(cptr.add(color_256_definitions, 1416), 193);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1416), 4), 14155695);
+cptr.stI32(cptr.add(color_256_definitions, 1424), 194);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1424), 4), 14155735);
+cptr.stI32(cptr.add(color_256_definitions, 1432), 195);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1432), 4), 14155775);
+cptr.stI32(cptr.add(color_256_definitions, 1440), 196);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1440), 4), 16711680);
+cptr.stI32(cptr.add(color_256_definitions, 1448), 197);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1448), 4), 16711775);
+cptr.stI32(cptr.add(color_256_definitions, 1456), 198);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1456), 4), 16711815);
+cptr.stI32(cptr.add(color_256_definitions, 1464), 199);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1464), 4), 16711855);
+cptr.stI32(cptr.add(color_256_definitions, 1472), 200);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1472), 4), 16711895);
+cptr.stI32(cptr.add(color_256_definitions, 1480), 201);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1480), 4), 16711935);
+cptr.stI32(cptr.add(color_256_definitions, 1488), 202);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1488), 4), 16736000);
+cptr.stI32(cptr.add(color_256_definitions, 1496), 203);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1496), 4), 16736095);
+cptr.stI32(cptr.add(color_256_definitions, 1504), 204);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1504), 4), 16736135);
+cptr.stI32(cptr.add(color_256_definitions, 1512), 205);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1512), 4), 16736175);
+cptr.stI32(cptr.add(color_256_definitions, 1520), 206);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1520), 4), 16736215);
+cptr.stI32(cptr.add(color_256_definitions, 1528), 207);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1528), 4), 16736255);
+cptr.stI32(cptr.add(color_256_definitions, 1536), 208);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1536), 4), 16746240);
+cptr.stI32(cptr.add(color_256_definitions, 1544), 209);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1544), 4), 16746335);
+cptr.stI32(cptr.add(color_256_definitions, 1552), 210);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1552), 4), 16746375);
+cptr.stI32(cptr.add(color_256_definitions, 1560), 211);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1560), 4), 16746415);
+cptr.stI32(cptr.add(color_256_definitions, 1568), 212);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1568), 4), 16746455);
+cptr.stI32(cptr.add(color_256_definitions, 1576), 213);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1576), 4), 16746495);
+cptr.stI32(cptr.add(color_256_definitions, 1584), 214);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1584), 4), 16756480);
+cptr.stI32(cptr.add(color_256_definitions, 1592), 215);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1592), 4), 16756575);
+cptr.stI32(cptr.add(color_256_definitions, 1600), 216);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1600), 4), 16756615);
+cptr.stI32(cptr.add(color_256_definitions, 1608), 217);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1608), 4), 16756655);
+cptr.stI32(cptr.add(color_256_definitions, 1616), 218);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1616), 4), 16756695);
+cptr.stI32(cptr.add(color_256_definitions, 1624), 219);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1624), 4), 16756735);
+cptr.stI32(cptr.add(color_256_definitions, 1632), 220);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1632), 4), 16766720);
+cptr.stI32(cptr.add(color_256_definitions, 1640), 221);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1640), 4), 16766815);
+cptr.stI32(cptr.add(color_256_definitions, 1648), 222);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1648), 4), 16766855);
+cptr.stI32(cptr.add(color_256_definitions, 1656), 223);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1656), 4), 16766895);
+cptr.stI32(cptr.add(color_256_definitions, 1664), 224);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1664), 4), 16766935);
+cptr.stI32(cptr.add(color_256_definitions, 1672), 225);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1672), 4), 16766975);
+cptr.stI32(cptr.add(color_256_definitions, 1680), 226);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1680), 4), 16776960);
+cptr.stI32(cptr.add(color_256_definitions, 1688), 227);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1688), 4), 16777055);
+cptr.stI32(cptr.add(color_256_definitions, 1696), 228);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1696), 4), 16777095);
+cptr.stI32(cptr.add(color_256_definitions, 1704), 229);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1704), 4), 16777135);
+cptr.stI32(cptr.add(color_256_definitions, 1712), 230);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1712), 4), 16777175);
+cptr.stI32(cptr.add(color_256_definitions, 1720), 231);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1720), 4), 16777215);
+cptr.stI32(cptr.add(color_256_definitions, 1728), 232);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1728), 4), 526344);
+cptr.stI32(cptr.add(color_256_definitions, 1736), 233);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1736), 4), 1184274);
+cptr.stI32(cptr.add(color_256_definitions, 1744), 234);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1744), 4), 1842204);
+cptr.stI32(cptr.add(color_256_definitions, 1752), 235);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1752), 4), 2500134);
+cptr.stI32(cptr.add(color_256_definitions, 1760), 236);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1760), 4), 3158064);
+cptr.stI32(cptr.add(color_256_definitions, 1768), 237);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1768), 4), 3815994);
+cptr.stI32(cptr.add(color_256_definitions, 1776), 238);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1776), 4), 4473924);
+cptr.stI32(cptr.add(color_256_definitions, 1784), 239);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1784), 4), 5131854);
+cptr.stI32(cptr.add(color_256_definitions, 1792), 240);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1792), 4), 5789784);
+cptr.stI32(cptr.add(color_256_definitions, 1800), 241);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1800), 4), 6447714);
+cptr.stI32(cptr.add(color_256_definitions, 1808), 242);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1808), 4), 7105644);
+cptr.stI32(cptr.add(color_256_definitions, 1816), 243);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1816), 4), 7763574);
+cptr.stI32(cptr.add(color_256_definitions, 1824), 244);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1824), 4), 8421504);
+cptr.stI32(cptr.add(color_256_definitions, 1832), 245);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1832), 4), 9079434);
+cptr.stI32(cptr.add(color_256_definitions, 1840), 246);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1840), 4), 9737364);
+cptr.stI32(cptr.add(color_256_definitions, 1848), 247);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1848), 4), 10395294);
+cptr.stI32(cptr.add(color_256_definitions, 1856), 248);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1856), 4), 11053224);
+cptr.stI32(cptr.add(color_256_definitions, 1864), 249);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1864), 4), 11711154);
+cptr.stI32(cptr.add(color_256_definitions, 1872), 250);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1872), 4), 12369084);
+cptr.stI32(cptr.add(color_256_definitions, 1880), 251);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1880), 4), 13027014);
+cptr.stI32(cptr.add(color_256_definitions, 1888), 252);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1888), 4), 13684944);
+cptr.stI32(cptr.add(color_256_definitions, 1896), 253);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1896), 4), 14342874);
+cptr.stI32(cptr.add(color_256_definitions, 1904), 254);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1904), 4), 15000804);
+cptr.stI32(cptr.add(color_256_definitions, 1912), 255);
+cptr.stI32(cptr.add(cptr.add(color_256_definitions, 1912), 4), 15658734);
 
 /** C ref: coloratt.c:979 — @param {CUInt} rgb1 @param {CUInt} rgb2 @returns {CInt} */
 export function color_distance(rgb1, rgb2) {
@@ -1179,20 +2385,20 @@ export function closest_color(lcolor, closecolor, clridx) {
     let similar = 2147483647;
     let current;
     let retbool = (0);
-    for (i = 0; i < color_256_definitions.length; i++) {
-        if (lcolor == color_256_definitions[i].value) {
+    for (i = 0; i < 240; i++) {
+        if (lcolor == cptr.ldI32(cptr.add(cptr.add(color_256_definitions, i, 8), 4))) {
             color_index = i;
             break;
         }
-        current = color_distance(lcolor, color_256_definitions[i].value);
+        current = color_distance(lcolor, cptr.ldI32(cptr.add(cptr.add(color_256_definitions, i, 8), 4)));
         if (current < similar) {
             color_index = i;
             similar = current;
         }
     }
     if (closecolor && clridx && color_index >= 0) {
-        cptr.stI32(closecolor, color_256_definitions[color_index].value);
-        cptr.stI16(clridx, u16(color_256_definitions[color_index].index));
+        cptr.stI32(closecolor, cptr.ldI32(cptr.add(cptr.add(color_256_definitions, color_index, 8), 4)));
+        cptr.stI16(clridx, u16(cptr.ldI32(cptr.add(color_256_definitions, color_index, 8))));
         retbool = (1);
     }
     return retbool;
@@ -1201,7 +2407,7 @@ export function closest_color(lcolor, closecolor, clridx) {
 /** C ref: coloratt.c:1024 — @param {CInt} idx @returns {*} */
 export function get_nhcolor_from_256_index(idx) {
     let retcolor = (8 | 16777216) >>> 0;
-    if (((idx) >= 0 && (idx) < color_256_definitions.length))
-        retcolor = color_256_definitions[idx].value;
+    if (((idx) >= 0 && (idx) < 240))
+        retcolor = cptr.ldI32(cptr.add(cptr.add(color_256_definitions, idx, 8), 4));
     return retcolor;
 }

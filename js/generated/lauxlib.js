@@ -168,7 +168,7 @@ export function luaL_traceback(L, L1, msg, level) {
     luaL_buffinit(L, b);
     if (msg) {
         luaL_addstring(b, msg);
-        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), cptr.ldU64(cptr.add((b), 16))++), 10)));
+        (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n)), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - 1n), 10)));
     }
     luaL_addstring(b, __sl10);
     while (lua_getstack(L1, level++, ar)) {
@@ -448,11 +448,13 @@ function boxgc(L) {
 }
 
 /** C ref: lauxlib.c:497 — luaL_Reg[3] */
-const boxmt = [
-    { name: __sl37, func: boxgc },
-    { name: __sl38, func: boxgc },
-    { name: null, func: null }
-];
+const boxmt = cptr.alloc(3 * 16);
+cptr.stPtr(cptr.add(boxmt, 0), __sl37);
+cptr.stPtr(cptr.add(cptr.add(boxmt, 0), 8), boxgc);
+cptr.stPtr(cptr.add(boxmt, 16), __sl38);
+cptr.stPtr(cptr.add(cptr.add(boxmt, 16), 8), boxgc);
+cptr.stPtr(cptr.add(boxmt, 32), null);
+cptr.stPtr(cptr.add(cptr.add(boxmt, 32), 8), null);
 
 /** C ref: lauxlib.c:504 — @param {CPtr} L */
 function newbox(L) {
@@ -460,7 +462,7 @@ function newbox(L) {
     cptr.stPtr(box, (null));
     cptr.stU64(cptr.add(box, 8), 0n);
     if (luaL_newmetatable(L, __sl39))
-        luaL_setfuncs(L, cptr.decay(boxmt), 0);
+        luaL_setfuncs(L, boxmt, 0);
     lua_setmetatable(L, -2);
 }
 
@@ -670,7 +672,7 @@ export function luaL_loadfilex(L, filename, mode) {
     }
     cptr.stI32(lf, 0);
     if (skipcomment(cptr.ldPtr(cptr.add(lf, 8)), c))
-        cptr.st1(cptr.add(cptr.add(lf, 16), cptr.ldI32(lf)++, 1), 10);
+        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - 1, 1), 10);
     if (c.v == cptr.ld1s(cptr.add(__sl47, 0, 1))) {
         cptr.stI32(lf, 0);
         if (filename) {
@@ -682,7 +684,7 @@ export function luaL_loadfilex(L, filename, mode) {
         }
     }
     if (c.v != (-1))
-        cptr.st1(cptr.add(cptr.add(lf, 16), cptr.ldI32(lf)++, 1), schar(c.v));
+        cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - 1, 1), schar(c.v));
     cptr.stI32(__error(), 0);
     status = lua_load(L, getF, lf, lua_tolstring(L, (-1), null), mode);
     readstatus = ferror(cptr.ldPtr(cptr.add(lf, 8)));

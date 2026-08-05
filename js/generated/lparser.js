@@ -108,7 +108,7 @@ function check_match(ls, what, who, where) {
 /** C ref: lparser.c:143 — @param {CPtr} ls @returns {CPtr} */
 function str_checkname(ls) {
     let ts;
-    check(ls, TK_NAME);
+    check(ls, 291);
     ts = cptr.ldPtr(cptr.add(cptr.add(ls, 16), 8));
     luaX_next(ls);
     return ts;
@@ -124,7 +124,7 @@ function init_exp(e, k, i) {
 /** C ref: lparser.c:159 — @param {CPtr} e @param {CPtr} s */
 function codestring(e, s) {
     cptr.stI32(cptr.add(e, 20), cptr.stI32(cptr.add(e, 16), (-1)));
-    cptr.stI32(e, VKSTR);
+    cptr.stI32(e, 7);
     cptr.stPtr(cptr.add(e, 8), s);
 }
 
@@ -143,7 +143,7 @@ function registerlocalvar(ls, fs, varname) {
     cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), cptr.ldI16(cptr.add(fs, 64)), 16), varname);
     cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), cptr.ldI16(cptr.add(fs, 64)), 16), 8), cptr.ldI32(cptr.add(fs, 32)));
     ((((cptr.ld1u(cptr.add((f), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((varname), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(cptr.ldPtr(cptr.add(ls, 56)), ((((f)))), ((((varname))))) : (void ((0))));
-    return cptr.ldI16(cptr.add(fs, 64))++;
+    return (cptr.stI16(cptr.add(fs, 64), cptr.ldI16(cptr.add(fs, 64)) + 1)) - 1;
 }
 
 /** C ref: lparser.c:193 — @param {CPtr} ls @param {CPtr} name @returns {CInt} */
@@ -154,7 +154,7 @@ function new_localvar(ls, name) {
     let var$;
     checklimit(fs, (((cptr.ldI32(cptr.add(dyd, 8)) + 1) | 0) - cptr.ldI32(cptr.add(fs, 56))) | 0, 200, __sl5);
     (cptr.stPtr(dyd, ((luaM_growaux_(L, cptr.ldPtr(dyd), (cptr.ldI32(cptr.add(dyd, 8)) + 1) | 0, cptr.add(dyd, 12), 24, (((32767n) <= ((~0n)) / 24n) ? 32767 : (Number(BigInt.asUintN(32, (((((~0n)) / 24n))))))) | 0, __sl5)))));
-    var$ = cptr.add(cptr.ldPtr(dyd), cptr.ldI32(cptr.add(dyd, 8))++, 24);
+    var$ = cptr.add(cptr.ldPtr(dyd), (cptr.stI32(cptr.add(dyd, 8), cptr.ldI32(cptr.add(dyd, 8)) + 1)) - 1, 24);
     cptr.st1(cptr.add(var$, 9), 0);
     cptr.stPtr(cptr.add(var$, 16), name);
     return (((cptr.ldI32(cptr.add(dyd, 8)) - 1) | 0) - cptr.ldI32(cptr.add(fs, 56))) | 0;
@@ -195,7 +195,7 @@ function localdebuginfo(fs, vidx) {
 /** C ref: lparser.c:266 — @param {CPtr} fs @param {CPtr} e @param {CInt} vidx */
 function init_var(fs, e, vidx) {
     cptr.stI32(cptr.add(e, 20), cptr.stI32(cptr.add(e, 16), (-1)));
-    cptr.stI32(e, VLOCAL);
+    cptr.stI32(e, 9);
     cptr.stI16(cptr.add(cptr.add(e, 8), 2), u16(vidx));
     cptr.st1(cptr.add(e, 8), cptr.ld1u(cptr.add(getlocalvardesc(fs, vidx), 10)));
 }
@@ -205,19 +205,19 @@ function check_readonly(ls, e) {
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     let varname = null;
     switch (e) {
-        case VCONST >>> 0:
+        case 11:
         {
             varname = cptr.ldPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.ldPtr(cptr.add(ls, 88))), cptr.ldI32(cptr.add(e, 8)), 24), 16));
             break;
         }
-        case VLOCAL >>> 0:
+        case 9:
         {
             let vardesc = getlocalvardesc(fs, cptr.ldU16(cptr.add(cptr.add(e, 8), 2)));
             if (cptr.ld1u(cptr.add(vardesc, 9)) != 0)
                 varname = cptr.ldPtr(cptr.add(vardesc, 16));
             break;
         }
-        case VUPVAL >>> 0:
+        case 10:
         {
             let up = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(fs), 80)), cptr.ldI32(cptr.add(e, 8)), 16);
             if (cptr.ld1u(cptr.add(up, 10)) != 0)
@@ -239,7 +239,7 @@ function adjustlocalvars(ls, nvars) {
     let reglevel = luaY_nvarstack(fs);
     let i;
     for (i = 0; i < nvars; i++) {
-        let vidx = cptr.ld1u(cptr.add(fs, 66))++;
+        let vidx = cptr.postinc1(cptr.add(fs, 66));
         let var$ = getlocalvardesc(fs, vidx);
         cptr.st1(cptr.add(var$, 10), uchar((reglevel++)));
         cptr.stI16(cptr.add(var$, 12), i16(registerlocalvar(ls, fs, cptr.ldPtr(cptr.add(var$, 16)))));
@@ -250,7 +250,7 @@ function adjustlocalvars(ls, nvars) {
 function removevars(fs, tolevel) {
     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(fs, 16)), 88)), 8), cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(fs, 16)), 88)), 8)) - ((cptr.ld1u(cptr.add(fs, 66)) - tolevel) | 0));
     while (cptr.ld1u(cptr.add(fs, 66)) > tolevel) {
-        let var$ = localdebuginfo(fs, --cptr.ld1u(cptr.add(fs, 66)));
+        let var$ = localdebuginfo(fs, cptr.st1(cptr.add(fs, 66), cptr.ld1u(cptr.add(fs, 66)) + -1));
         if (var$)
             cptr.stI32(cptr.add(var$, 12), cptr.ldI32(cptr.add(fs, 32)));
     }
@@ -275,14 +275,14 @@ function allocupvalue(fs) {
     (cptr.stPtr(cptr.add(f, 80), ((luaM_growaux_(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(fs, 16)), 56)), cptr.ldPtr(cptr.add(f, 80)), cptr.ld1u(cptr.add(fs, 67)), cptr.add(f, 16), 16, (((255n) <= ((~0n)) / 16n) ? 255 : (Number(BigInt.asUintN(32, (((((~0n)) / 16n))))))) | 0, __sl7)))));
     while (oldsize < cptr.ldI32(cptr.add(f, 16)))
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), oldsize++, 16), null);
-    return cptr.add(cptr.ldPtr(cptr.add(f, 80)), cptr.ld1u(cptr.add(fs, 67))++, 16);
+    return cptr.add(cptr.ldPtr(cptr.add(f, 80)), cptr.postinc1(cptr.add(fs, 67)), 16);
 }
 
 /** C ref: lparser.c:364 — @param {CPtr} fs @param {CPtr} name @param {CPtr} v @returns {CInt} */
 function newupvalue(fs, name, v) {
     let up = allocupvalue(fs);
     let prev = cptr.ldPtr(cptr.add(fs, 8));
-    if (v == VLOCAL >>> 0) {
+    if (v == 9) {
         cptr.st1(cptr.add(up, 8), 1);
         cptr.st1(cptr.add(up, 9), cptr.ld1u(cptr.add(v, 8)));
         cptr.st1(cptr.add(up, 10), cptr.ld1u(cptr.add(getlocalvardesc(prev, cptr.ldU16(cptr.add(cptr.add(v, 8), 2))), 9)));
@@ -305,7 +305,7 @@ function searchvar(fs, n, var$) {
         let vd = getlocalvardesc(fs, i);
         if ((cptr.eq((n), (cptr.ldPtr(cptr.add(vd, 16)))))) {
             if (cptr.ld1u(cptr.add(vd, 9)) == 3)
-                init_exp(var$, VCONST, (cptr.ldI32(cptr.add(fs, 56)) + i) | 0);
+                init_exp(var$, 11, (cptr.ldI32(cptr.add(fs, 56)) + i) | 0);
             else
                 init_var(fs, var$, i);
             return var$;
@@ -334,22 +334,22 @@ function marktobeclosed(fs) {
 /** C ref: lparser.c:435 — @param {CPtr} fs @param {CPtr} n @param {CPtr} var @param {CInt} base */
 function singlevaraux(fs, n, var$, base) {
     if (cptr.eq(fs, (null)))
-        init_exp(var$, VVOID, 0);
+        init_exp(var$, 0, 0);
     else {
         let v = searchvar(fs, n, var$);
         if (v >= 0) {
-            if (v == VLOCAL && !base)
+            if (v == 9 && !base)
                 markupval(fs, cptr.ldU16(cptr.add(cptr.add(var$, 8), 2)));
         } else {
             let idx = searchupvalue(fs, n);
             if (idx < 0) {
                 singlevaraux(cptr.ldPtr(cptr.add(fs, 8)), n, var$, 0);
-                if (var$ == VLOCAL >>> 0 || var$ == VUPVAL >>> 0)
+                if (var$ == 9 || var$ == 10)
                     idx = newupvalue(fs, n, var$);
                 else
                     return;
             }
-            init_exp(var$, VUPVAL, idx);
+            init_exp(var$, 10, idx);
         }
     }
 }
@@ -359,7 +359,7 @@ function singlevar(ls, var$) {
     let varname = str_checkname(ls);
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     singlevaraux(fs, varname, var$, 1);
-    if (var$ == VVOID >>> 0) {
+    if (var$ == 0) {
         let key = cptr.alloc(24);
         singlevaraux(fs, cptr.ldPtr(cptr.add(ls, 104)), var$, 1);
         (void 0);
@@ -373,13 +373,13 @@ function singlevar(ls, var$) {
 function adjust_assign(ls, nvars, nexps, e) {
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     let needed = (nvars - nexps) | 0;
-    if (((e) == VCALL >>> 0 || (e) == VVARARG >>> 0)) {
+    if (((e) == 18 || (e) == 19)) {
         let extra = (needed + 1) | 0;
         if (extra < 0)
             extra = 0;
         luaK_setreturns(fs, e, extra);
     } else {
-        if (e != VVOID >>> 0)
+        if (e != 0)
             luaK_exp2nextreg(fs, e);
         if (needed > 0)
             luaK_nil(fs, cptr.ld1u(cptr.add(fs, 68)), needed);
@@ -409,7 +409,7 @@ function solvegoto(ls, g, label) {
     luaK_patchlist(cptr.ldPtr(cptr.add(ls, 48)), cptr.ldI32(cptr.add(gt, 8)), cptr.ldI32(cptr.add(label, 8)));
     for (i = g; i < ((cptr.ldI32(cptr.add(gl, 8)) - 1) | 0); i++)
         cptr.memcpy(cptr.add(cptr.ldPtr(gl), i, 24), cptr.add(cptr.ldPtr(gl), (i + 1) | 0, 24), 24);
-    cptr.ldI32(cptr.add(gl, 8))--;
+    (cptr.stI32(cptr.add(gl, 8), cptr.ldI32(cptr.add(gl, 8)) + -1)) - 1;
 }
 
 /** C ref: lparser.c:544 — @param {CPtr} ls @param {CPtr} name @returns {CPtr} */
@@ -466,7 +466,7 @@ function createlabel(ls, name, line, last) {
         cptr.st1(cptr.add(cptr.add(cptr.ldPtr(ll), l, 24), 16), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(fs, 24)), 16)));
     }
     if (solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, 24))) {
-        luaK_codeABCk(fs, OP_CLOSE, luaY_nvarstack(fs), 0, 0, 0);
+        luaK_codeABCk(fs, 54, luaY_nvarstack(fs), 0, 0, 0);
         return 1;
     }
     return 0;
@@ -521,7 +521,7 @@ function leaveblock(fs) {
     if (cptr.ld1u(cptr.add(bl, 18)))
         hasclose = createlabel(ls, (luaS_newlstr(cptr.ldPtr(cptr.add(ls, 56)), __sl10, (6n / 1n) - 1n)), 0, 0);
     if (!hasclose && cptr.ldPtr(bl) && cptr.ld1u(cptr.add(bl, 17)))
-        luaK_codeABCk(fs, OP_CLOSE, stklevel, 0, 0, 0);
+        luaK_codeABCk(fs, 54, stklevel, 0, 0, 0);
     cptr.st1(cptr.add(fs, 68), uchar(stklevel));
     cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(ls, 88)), 32), 8), cptr.ldI32(cptr.add(bl, 8)));
     cptr.stPtr(cptr.add(fs, 24), cptr.ldPtr(bl));
@@ -545,7 +545,7 @@ function addprototype(ls) {
         while (oldsize < cptr.ldI32(cptr.add(f, 32)))
             cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), oldsize++), null);
     }
-    cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), cptr.ldI32(cptr.add(fs, 48))++), clp = luaF_newproto(L));
+    cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), (cptr.stI32(cptr.add(fs, 48), cptr.ldI32(cptr.add(fs, 48)) + 1)) - 1), clp = luaF_newproto(L));
     ((((cptr.ld1u(cptr.add((f), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((clp), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(L, ((((f)))), ((((clp))))) : (void ((0))));
     return clp;
 }
@@ -553,7 +553,7 @@ function addprototype(ls) {
 /** C ref: lparser.c:722 — @param {CPtr} ls @param {CPtr} v */
 function codeclosure(ls, v) {
     let fs = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(ls, 48)), 8));
-    init_exp(v, VRELOC, luaK_codeABx(fs, OP_CLOSURE, 0, ((cptr.ldI32(cptr.add(fs, 48)) - 1) | 0) >>> 0));
+    init_exp(v, 17, luaK_codeABx(fs, 79, 0, ((cptr.ldI32(cptr.add(fs, 48)) - 1) | 0) >>> 0));
     luaK_exp2nextreg(fs, v);
 }
 
@@ -616,12 +616,12 @@ function close_func(ls) {
 /** C ref: lparser.c:788 — @param {CPtr} ls @param {CInt} withuntil @returns {CInt} */
 function block_follow(ls, withuntil) {
     switch (cptr.ldI32(cptr.add(ls, 16))) {
-        case TK_ELSE:
-        case TK_ELSEIF:
-        case TK_END:
-        case TK_EOS:
+        case 259:
+        case 260:
+        case 261:
+        case 288:
         return 1;
-        case TK_UNTIL:
+        case 276:
         return withuntil;
         default:
         return 0;
@@ -631,7 +631,7 @@ function block_follow(ls, withuntil) {
 /** C ref: lparser.c:799 — @param {CPtr} ls */
 function statlist(ls) {
     while (!block_follow(ls, 1)) {
-        if (cptr.ldI32(cptr.add(ls, 16)) == TK_RETURN) {
+        if (cptr.ldI32(cptr.add(ls, 16)) == 273) {
             statement(ls);
             return;
         }
@@ -668,12 +668,12 @@ function recfield(ls, cc) {
     let tab = cptr.alloc(24);
     let key = cptr.alloc(24);
     let val = cptr.alloc(24);
-    if (cptr.ldI32(cptr.add(ls, 16)) == TK_NAME)
+    if (cptr.ldI32(cptr.add(ls, 16)) == 291)
         codename(ls, key);
     else
         yindex(ls, key);
     checklimit(fs, cptr.ldI32(cptr.add(cc, 32)), 2147483647, __sl14);
-    cptr.ldI32(cptr.add(cc, 32))++;
+    (cptr.stI32(cptr.add(cc, 32), cptr.ldI32(cptr.add(cc, 32)) + 1)) - 1;
     checknext(ls, 61);
     cptr.memcpy(tab, cptr.ldPtr(cptr.add(cc, 24)), 24);
     luaK_indexed(fs, tab, key);
@@ -684,10 +684,10 @@ function recfield(ls, cc) {
 
 /** C ref: lparser.c:867 — @param {CPtr} fs @param {CPtr} cc */
 function closelistfield(fs, cc) {
-    if (cc == VVOID >>> 0)
+    if (cc == 0)
         return;
     luaK_exp2nextreg(fs, cc);
-    cptr.stI32(cc, VVOID);
+    cptr.stI32(cc, 0);
     if (cptr.ldI32(cptr.add(cc, 40)) == 50) {
         luaK_setlist(fs, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cc, 24)), 8)), cptr.ldI32(cptr.add(cc, 36)), cptr.ldI32(cptr.add(cc, 40)));
         cptr.st1(cptr.add(cc, 36), cptr.ld1s(cptr.add(cc, 36)) + cptr.ldI32(cptr.add(cc, 40)));
@@ -699,12 +699,12 @@ function closelistfield(fs, cc) {
 function lastlistfield(fs, cc) {
     if (cptr.ldI32(cptr.add(cc, 40)) == 0)
         return;
-    if (((cc) == VCALL >>> 0 || (cc) == VVARARG >>> 0)) {
+    if (((cc) == 18 || (cc) == 19)) {
         luaK_setreturns(fs, cc, (-1));
         luaK_setlist(fs, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cc, 24)), 8)), cptr.ldI32(cptr.add(cc, 36)), (-1));
-        cptr.ldI32(cptr.add(cc, 36))--;
+        (cptr.stI32(cptr.add(cc, 36), cptr.ldI32(cptr.add(cc, 36)) + -1)) - 1;
     } else {
-        if (cc != VVOID >>> 0)
+        if (cc != 0)
             luaK_exp2nextreg(fs, cc);
         luaK_setlist(fs, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cc, 24)), 8)), cptr.ldI32(cptr.add(cc, 36)), cptr.ldI32(cptr.add(cc, 40)));
     }
@@ -714,13 +714,13 @@ function lastlistfield(fs, cc) {
 /** C ref: lparser.c:895 — @param {CPtr} ls @param {CPtr} cc */
 function listfield(ls, cc) {
     expr(ls, cc);
-    cptr.ldI32(cptr.add(cc, 40))++;
+    (cptr.stI32(cptr.add(cc, 40), cptr.ldI32(cptr.add(cc, 40)) + 1)) - 1;
 }
 
 /** C ref: lparser.c:902 — @param {CPtr} ls @param {CPtr} cc */
 function field(ls, cc) {
     switch (cptr.ldI32(cptr.add(ls, 16))) {
-        case TK_NAME:
+        case 291:
         {
             if (luaX_lookahead(ls) != 61)
                 listfield(ls, cc);
@@ -745,14 +745,14 @@ function field(ls, cc) {
 function constructor(ls, t) {
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     let line = cptr.ldI32(cptr.add(ls, 4));
-    let pc = luaK_codeABCk(fs, OP_NEWTABLE, 0, 0, 0, 0);
+    let pc = luaK_codeABCk(fs, 19, 0, 0, 0, 0);
     let cc = cptr.alloc(48);
     luaK_code(fs, 0);
     cptr.stI32(cptr.add(cc, 36), cptr.stI32(cptr.add(cc, 32), cptr.stI32(cptr.add(cc, 40), 0)));
     cptr.stPtr(cptr.add(cc, 24), t);
-    init_exp(t, VNONRELOC, cptr.ld1u(cptr.add(fs, 68)));
+    init_exp(t, 8, cptr.ld1u(cptr.add(fs, 68)));
     luaK_reserveregs(fs, 1);
-    init_exp(cc, VVOID, 0);
+    init_exp(cc, 0, 0);
     checknext(ls, 123);
     do {
         (void 0);
@@ -769,7 +769,7 @@ function constructor(ls, t) {
 /** C ref: lparser.c:952 — @param {CPtr} fs @param {CInt} nparams */
 function setvararg(fs, nparams) {
     cptr.st1(cptr.add(cptr.ldPtr(fs), 11), 1);
-    luaK_codeABCk(fs, OP_VARARGPREP, nparams, 0, 0, 0);
+    luaK_codeABCk(fs, 81, nparams, 0, 0, 0);
 }
 
 /** C ref: lparser.c:958 — @param {CPtr} ls */
@@ -781,13 +781,13 @@ function parlist(ls) {
     if (cptr.ldI32(cptr.add(ls, 16)) != 41) {
         do {
             switch (cptr.ldI32(cptr.add(ls, 16))) {
-                case TK_NAME:
+                case 291:
                 {
                     new_localvar(ls, str_checkname(ls));
                     nparams++;
                     break;
                 }
-                case TK_DOTS:
+                case 280:
                 {
                     luaX_next(ls);
                     isvararg = 1;
@@ -822,7 +822,7 @@ function body(ls, e, ismethod, line) {
     checknext(ls, 41);
     statlist(ls);
     cptr.stI32(cptr.add(cptr.ldPtr(new_fs), 48), cptr.ldI32(cptr.add(ls, 4)));
-    check_match(ls, TK_END, TK_FUNCTION, line);
+    check_match(ls, 261, 264, line);
     codeclosure(ls, e);
     close_func(ls);
 }
@@ -851,10 +851,10 @@ function funcargs(ls, f) {
         {
             luaX_next(ls);
             if (cptr.ldI32(cptr.add(ls, 16)) == 41)
-                cptr.stI32(args, VVOID);
+                cptr.stI32(args, 0);
             else {
                 explist(ls, args);
-                if (((args) == VCALL >>> 0 || (args) == VVARARG >>> 0))
+                if (((args) == 18 || (args) == 19))
                     luaK_setreturns(fs, args, (-1));
             }
             check_match(ls, 41, 40, line);
@@ -865,7 +865,7 @@ function funcargs(ls, f) {
             constructor(ls, args);
             break;
         }
-        case TK_STRING:
+        case 292:
         {
             codestring(args, cptr.ldPtr(cptr.add(cptr.add(ls, 16), 8)));
             luaX_next(ls);
@@ -878,14 +878,14 @@ function funcargs(ls, f) {
     }
     (void 0);
     base = cptr.ldI32(cptr.add(f, 8));
-    if (((args) == VCALL >>> 0 || (args) == VVARARG >>> 0))
+    if (((args) == 18 || (args) == 19))
         nparams = (-1);
     else {
-        if (args != VVOID >>> 0)
+        if (args != 0)
             luaK_exp2nextreg(fs, args);
         nparams = (cptr.ld1u(cptr.add(fs, 68)) - ((base + 1) | 0)) | 0;
     }
-    init_exp(f, VCALL, luaK_codeABCk(fs, OP_CALL, base, (nparams + 1) | 0, 2, 0));
+    init_exp(f, 18, luaK_codeABCk(fs, 68, base, (nparams + 1) | 0, 2, 0));
     luaK_fixline(fs, line);
     cptr.st1(cptr.add(fs, 68), uchar(((base + 1) | 0)));
 }
@@ -902,7 +902,7 @@ function primaryexp(ls, v) {
             luaK_dischargevars(cptr.ldPtr(cptr.add(ls, 48)), v);
             return;
         }
-        case TK_NAME:
+        case 291:
         {
             singlevar(ls, v);
             return;
@@ -943,7 +943,7 @@ function suffixedexp(ls, v) {
                 break;
             }
             case 40:
-            case TK_STRING:
+            case 292:
             case 123:
             {
                 luaK_exp2nextreg(fs, v);
@@ -959,39 +959,39 @@ function suffixedexp(ls, v) {
 /** C ref: lparser.c:1139 — @param {CPtr} ls @param {CPtr} v */
 function simpleexp(ls, v) {
     switch (cptr.ldI32(cptr.add(ls, 16))) {
-        case TK_FLT:
+        case 289:
         {
-            init_exp(v, VKFLT, 0);
+            init_exp(v, 5, 0);
             cptr.stF64(cptr.add(v, 8), cptr.ldF64(cptr.add(cptr.add(ls, 16), 8)));
             break;
         }
-        case TK_INT:
+        case 290:
         {
-            init_exp(v, VKINT, 0);
+            init_exp(v, 6, 0);
             cptr.stU64(cptr.add(v, 8), cptr.ldI64(cptr.add(cptr.add(ls, 16), 8)));
             break;
         }
-        case TK_STRING:
+        case 292:
         {
             codestring(v, cptr.ldPtr(cptr.add(cptr.add(ls, 16), 8)));
             break;
         }
-        case TK_NIL:
+        case 269:
         {
-            init_exp(v, VNIL, 0);
+            init_exp(v, 1, 0);
             break;
         }
-        case TK_TRUE:
+        case 275:
         {
-            init_exp(v, VTRUE, 0);
+            init_exp(v, 2, 0);
             break;
         }
-        case TK_FALSE:
+        case 262:
         {
-            init_exp(v, VFALSE, 0);
+            init_exp(v, 3, 0);
             break;
         }
-        case TK_DOTS:
+        case 280:
         {
             let fs = cptr.ldPtr(cptr.add(ls, 48));
             {
@@ -999,7 +999,7 @@ function simpleexp(ls, v) {
                     luaX_syntaxerror(ls, __sl19);
             }
             ;
-            init_exp(v, VVARARG, luaK_codeABCk(fs, OP_VARARG, 0, 0, 1, 0));
+            init_exp(v, 19, luaK_codeABCk(fs, 80, 0, 0, 1, 0));
             break;
         }
         case 123:
@@ -1007,7 +1007,7 @@ function simpleexp(ls, v) {
             constructor(ls, v);
             return;
         }
-        case TK_FUNCTION:
+        case 264:
         {
             luaX_next(ls);
             body(ls, v, 0, cptr.ldI32(cptr.add(ls, 4)));
@@ -1025,16 +1025,16 @@ function simpleexp(ls, v) {
 /** C ref: lparser.c:1194 — @param {CInt} op @returns {*} */
 function getunopr(op) {
     switch (op) {
-        case TK_NOT:
-        return OPR_NOT;
+        case 270:
+        return 2;
         case 45:
-        return OPR_MINUS;
+        return 0;
         case 126:
-        return OPR_BNOT;
+        return 1;
         case 35:
-        return OPR_LEN;
+        return 3;
         default:
-        return OPR_NOUNOPR;
+        return 4;
     }
 }
 
@@ -1042,78 +1042,98 @@ function getunopr(op) {
 function getbinopr(op) {
     switch (op) {
         case 43:
-        return OPR_ADD;
+        return 0;
         case 45:
-        return OPR_SUB;
+        return 1;
         case 42:
-        return OPR_MUL;
+        return 2;
         case 37:
-        return OPR_MOD;
+        return 3;
         case 94:
-        return OPR_POW;
+        return 4;
         case 47:
-        return OPR_DIV;
-        case TK_IDIV:
-        return OPR_IDIV;
+        return 5;
+        case 278:
+        return 6;
         case 38:
-        return OPR_BAND;
+        return 7;
         case 124:
-        return OPR_BOR;
+        return 8;
         case 126:
-        return OPR_BXOR;
-        case TK_SHL:
-        return OPR_SHL;
-        case TK_SHR:
-        return OPR_SHR;
-        case TK_CONCAT:
-        return OPR_CONCAT;
-        case TK_NE:
-        return OPR_NE;
-        case TK_EQ:
-        return OPR_EQ;
+        return 9;
+        case 285:
+        return 10;
+        case 286:
+        return 11;
+        case 279:
+        return 12;
+        case 284:
+        return 16;
+        case 281:
+        return 13;
         case 60:
-        return OPR_LT;
-        case TK_LE:
-        return OPR_LE;
+        return 14;
+        case 283:
+        return 15;
         case 62:
-        return OPR_GT;
-        case TK_GE:
-        return OPR_GE;
-        case TK_AND:
-        return OPR_AND;
-        case TK_OR:
-        return OPR_OR;
+        return 17;
+        case 282:
+        return 18;
+        case 256:
+        return 19;
+        case 271:
+        return 20;
         default:
-        return OPR_NOBINOPR;
+        return 21;
     }
 }
 
 /** C ref: lparser.c:1236 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: lparser.c:1239 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/lib/lua-5.4.8/src/lparser.c:1236:14)[21] */
-const priority = [
-    { left: 10, right: 10 },
-    { left: 10, right: 10 },
-    { left: 11, right: 11 },
-    { left: 11, right: 11 },
-    { left: 14, right: 13 },
-    { left: 11, right: 11 },
-    { left: 11, right: 11 },
-    { left: 6, right: 6 },
-    { left: 4, right: 4 },
-    { left: 5, right: 5 },
-    { left: 7, right: 7 },
-    { left: 7, right: 7 },
-    { left: 9, right: 8 },
-    { left: 3, right: 3 },
-    { left: 3, right: 3 },
-    { left: 3, right: 3 },
-    { left: 3, right: 3 },
-    { left: 3, right: 3 },
-    { left: 3, right: 3 },
-    { left: 2, right: 2 },
-    { left: 1, right: 1 }
-];
+const priority = cptr.alloc(21 * 2);
+cptr.st1(cptr.add(priority, 0), 10);
+cptr.st1(cptr.add(cptr.add(priority, 0), 1), 10);
+cptr.st1(cptr.add(priority, 2), 10);
+cptr.st1(cptr.add(cptr.add(priority, 2), 1), 10);
+cptr.st1(cptr.add(priority, 4), 11);
+cptr.st1(cptr.add(cptr.add(priority, 4), 1), 11);
+cptr.st1(cptr.add(priority, 6), 11);
+cptr.st1(cptr.add(cptr.add(priority, 6), 1), 11);
+cptr.st1(cptr.add(priority, 8), 14);
+cptr.st1(cptr.add(cptr.add(priority, 8), 1), 13);
+cptr.st1(cptr.add(priority, 10), 11);
+cptr.st1(cptr.add(cptr.add(priority, 10), 1), 11);
+cptr.st1(cptr.add(priority, 12), 11);
+cptr.st1(cptr.add(cptr.add(priority, 12), 1), 11);
+cptr.st1(cptr.add(priority, 14), 6);
+cptr.st1(cptr.add(cptr.add(priority, 14), 1), 6);
+cptr.st1(cptr.add(priority, 16), 4);
+cptr.st1(cptr.add(cptr.add(priority, 16), 1), 4);
+cptr.st1(cptr.add(priority, 18), 5);
+cptr.st1(cptr.add(cptr.add(priority, 18), 1), 5);
+cptr.st1(cptr.add(priority, 20), 7);
+cptr.st1(cptr.add(cptr.add(priority, 20), 1), 7);
+cptr.st1(cptr.add(priority, 22), 7);
+cptr.st1(cptr.add(cptr.add(priority, 22), 1), 7);
+cptr.st1(cptr.add(priority, 24), 9);
+cptr.st1(cptr.add(cptr.add(priority, 24), 1), 8);
+cptr.st1(cptr.add(priority, 26), 3);
+cptr.st1(cptr.add(cptr.add(priority, 26), 1), 3);
+cptr.st1(cptr.add(priority, 28), 3);
+cptr.st1(cptr.add(cptr.add(priority, 28), 1), 3);
+cptr.st1(cptr.add(priority, 30), 3);
+cptr.st1(cptr.add(cptr.add(priority, 30), 1), 3);
+cptr.st1(cptr.add(priority, 32), 3);
+cptr.st1(cptr.add(cptr.add(priority, 32), 1), 3);
+cptr.st1(cptr.add(priority, 34), 3);
+cptr.st1(cptr.add(cptr.add(priority, 34), 1), 3);
+cptr.st1(cptr.add(priority, 36), 3);
+cptr.st1(cptr.add(cptr.add(priority, 36), 1), 3);
+cptr.st1(cptr.add(priority, 38), 2);
+cptr.st1(cptr.add(cptr.add(priority, 38), 1), 2);
+cptr.st1(cptr.add(priority, 40), 1);
+cptr.st1(cptr.add(cptr.add(priority, 40), 1), 1);
 
 /** C ref: lparser.c:1259 — @param {CPtr} ls @param {CPtr} v @param {CInt} limit @returns {*} */
 function subexpr(ls, v, limit) {
@@ -1121,7 +1141,7 @@ function subexpr(ls, v, limit) {
     let uop;
     luaE_incCstack(cptr.ldPtr(cptr.add(ls, 56)));
     uop = getunopr(cptr.ldI32(cptr.add(ls, 16)));
-    if (uop != OPR_NOUNOPR >>> 0) {
+    if (uop != 4) {
         let line = cptr.ldI32(cptr.add(ls, 4));
         luaX_next(ls);
         subexpr(ls, v, 12);
@@ -1129,17 +1149,17 @@ function subexpr(ls, v, limit) {
     } else
         simpleexp(ls, v);
     op = getbinopr(cptr.ldI32(cptr.add(ls, 16)));
-    while (op != OPR_NOBINOPR >>> 0 && priority[op].left > limit) {
+    while (op != 21 && cptr.ld1u(cptr.add(priority, op, 2)) > limit) {
         let v2 = cptr.alloc(24);
         let nextop;
         let line = cptr.ldI32(cptr.add(ls, 4));
         luaX_next(ls);
         luaK_infix(cptr.ldPtr(cptr.add(ls, 48)), op, v);
-        nextop = subexpr(ls, v2, priority[op].right);
+        nextop = subexpr(ls, v2, cptr.ld1u(cptr.add(cptr.add(priority, op, 2), 1)));
         luaK_posfix(cptr.ldPtr(cptr.add(ls, 48)), op, v, v2, line);
         op = nextop;
     }
-    (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176))--);
+    ((cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176)) + -1)) - 1);
     return op;
 }
 
@@ -1165,19 +1185,19 @@ function check_conflict(ls, lh, v) {
     let extra = cptr.ld1u(cptr.add(fs, 68));
     let conflict = 0;
     for (; lh; lh = cptr.ldPtr(lh)) {
-        if ((VINDEXED >>> 0 <= (cptr.add(lh, 8)) && (cptr.add(lh, 8)) <= VINDEXSTR >>> 0)) {
-            if (cptr.add(lh, 8) == VINDEXUP >>> 0) {
-                if (v == VUPVAL >>> 0 && cptr.ld1u(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2)) == cptr.ldI32(cptr.add(v, 8))) {
+        if ((12 <= (cptr.add(lh, 8)) && (cptr.add(lh, 8)) <= 15)) {
+            if (cptr.add(lh, 8) == 13) {
+                if (v == 10 && cptr.ld1u(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2)) == cptr.ldI32(cptr.add(v, 8))) {
                     conflict = 1;
-                    cptr.stI32(cptr.add(lh, 8), VINDEXSTR);
+                    cptr.stI32(cptr.add(lh, 8), 15);
                     cptr.st1(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2), uchar(extra));
                 }
             } else {
-                if (v == VLOCAL >>> 0 && cptr.ld1u(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2)) == cptr.ld1u(cptr.add(v, 8))) {
+                if (v == 9 && cptr.ld1u(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2)) == cptr.ld1u(cptr.add(v, 8))) {
                     conflict = 1;
                     cptr.st1(cptr.add(cptr.add(cptr.add(lh, 8), 8), 2), uchar(extra));
                 }
-                if (cptr.add(lh, 8) == VINDEXED >>> 0 && v == VLOCAL >>> 0 && cptr.ldI16(cptr.add(cptr.add(lh, 8), 8)) == cptr.ld1u(cptr.add(v, 8))) {
+                if (cptr.add(lh, 8) == 12 && v == 9 && cptr.ldI16(cptr.add(cptr.add(lh, 8), 8)) == cptr.ld1u(cptr.add(v, 8))) {
                     conflict = 1;
                     cptr.stI16(cptr.add(cptr.add(lh, 8), 8), i16(extra));
                 }
@@ -1185,10 +1205,10 @@ function check_conflict(ls, lh, v) {
         }
     }
     if (conflict) {
-        if (v == VLOCAL >>> 0)
-            luaK_codeABCk(fs, OP_MOVE, extra, cptr.ld1u(cptr.add(v, 8)), 0, 0);
+        if (v == 9)
+            luaK_codeABCk(fs, 0, extra, cptr.ld1u(cptr.add(v, 8)), 0, 0);
         else
-            luaK_codeABCk(fs, OP_GETUPVAL, extra, cptr.ldI32(cptr.add(v, 8)), 0, 0);
+            luaK_codeABCk(fs, 9, extra, cptr.ldI32(cptr.add(v, 8)), 0, 0);
         luaK_reserveregs(fs, 1);
     }
 }
@@ -1197,7 +1217,7 @@ function check_conflict(ls, lh, v) {
 function restassign(ls, lh, nvars) {
     let e = cptr.alloc(24);
     {
-        if (!((VLOCAL >>> 0 <= (cptr.add(lh, 8)) && (cptr.add(lh, 8)) <= VINDEXSTR >>> 0)))
+        if (!((9 <= (cptr.add(lh, 8)) && (cptr.add(lh, 8)) <= 15)))
             luaX_syntaxerror(ls, __sl20);
     }
     ;
@@ -1206,11 +1226,11 @@ function restassign(ls, lh, nvars) {
         let nv = cptr.alloc(32);
         cptr.stPtr(nv, lh);
         suffixedexp(ls, cptr.add(nv, 8));
-        if (!(VINDEXED >>> 0 <= (cptr.add(nv, 8)) && (cptr.add(nv, 8)) <= VINDEXSTR >>> 0))
+        if (!(12 <= (cptr.add(nv, 8)) && (cptr.add(nv, 8)) <= 15))
             check_conflict(ls, lh, cptr.add(nv, 8));
         luaE_incCstack(cptr.ldPtr(cptr.add(ls, 56)));
         restassign(ls, nv, (nvars + 1) | 0);
-        (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176))--);
+        ((cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176)) + -1)) - 1);
     } else {
         let nexps;
         checknext(ls, 61);
@@ -1223,7 +1243,7 @@ function restassign(ls, lh, nvars) {
             return;
         }
     }
-    init_exp(e, VNONRELOC, (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(ls, 48)), 68)) - 1) | 0);
+    init_exp(e, 8, (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(ls, 48)), 68)) - 1) | 0);
     luaK_storevar(cptr.ldPtr(cptr.add(ls, 48)), cptr.add(lh, 8), e);
 }
 
@@ -1231,8 +1251,8 @@ function restassign(ls, lh, nvars) {
 function cond(ls) {
     let v = cptr.alloc(24);
     expr(ls, v);
-    if (v == VNIL >>> 0)
-        cptr.stI32(v, VFALSE);
+    if (v == 1)
+        cptr.stI32(v, 3);
     luaK_goiftrue(cptr.ldPtr(cptr.add(ls, 48)), v);
     return cptr.ldI32(cptr.add(v, 20));
 }
@@ -1248,7 +1268,7 @@ function gotostat(ls) {
     else {
         let lblevel = reglevel(fs, cptr.ld1u(cptr.add(lb, 16)));
         if (luaY_nvarstack(fs) > lblevel)
-            luaK_codeABCk(fs, OP_CLOSE, lblevel, 0, 0, 0);
+            luaK_codeABCk(fs, 54, lblevel, 0, 0, 0);
         luaK_patchlist(fs, luaK_jump(fs), cptr.ldI32(cptr.add(lb, 8)));
     }
 }
@@ -1272,8 +1292,8 @@ function checkrepeated(ls, name) {
 
 /** C ref: lparser.c:1457 — @param {CPtr} ls @param {CPtr} name @param {CInt} line */
 function labelstat(ls, name, line) {
-    checknext(ls, TK_DBCOLON);
-    while (cptr.ldI32(cptr.add(ls, 16)) == 59 || cptr.ldI32(cptr.add(ls, 16)) == TK_DBCOLON)
+    checknext(ls, 287);
+    while (cptr.ldI32(cptr.add(ls, 16)) == 59 || cptr.ldI32(cptr.add(ls, 16)) == 287)
         statement(ls);
     checkrepeated(ls, name);
     createlabel(ls, name, line, block_follow(ls, 0));
@@ -1289,10 +1309,10 @@ function whilestat(ls, line) {
     whileinit = luaK_getlabel(fs);
     condexit = cond(ls);
     enterblock(fs, bl, 1);
-    checknext(ls, TK_DO);
+    checknext(ls, 258);
     block(ls);
     luaK_patchlist(fs, luaK_jump(fs), whileinit);
-    check_match(ls, TK_END, TK_WHILE, line);
+    check_match(ls, 261, 277, line);
     leaveblock(fs);
     luaK_patchtohere(fs, condexit);
 }
@@ -1308,13 +1328,13 @@ function repeatstat(ls, line) {
     enterblock(fs, bl2, 0);
     luaX_next(ls);
     statlist(ls);
-    check_match(ls, TK_UNTIL, TK_REPEAT, line);
+    check_match(ls, 276, 272, line);
     condexit = cond(ls);
     leaveblock(fs);
     if (cptr.ld1u(cptr.add(bl2, 17))) {
         let exit = luaK_jump(fs);
         luaK_patchtohere(fs, condexit);
-        luaK_codeABCk(fs, OP_CLOSE, reglevel(fs, cptr.ld1u(cptr.add(bl2, 16))), 0, 0, 0);
+        luaK_codeABCk(fs, 54, reglevel(fs, cptr.ld1u(cptr.add(bl2, 16))), 0, 0, 0);
         condexit = luaK_jump(fs);
         luaK_patchtohere(fs, exit);
     }
@@ -1341,14 +1361,12 @@ function fixforjump(fs, pc, dest, back) {
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (((((0 + 7) | 0) + 8) | 0))) >>> 0))) >>> 0) | ((((((offset) >>> 0) << ((((0 + 7) | 0) + 8) | 0)) >>> 0) & (((~(((~0) << (((((8 + 8) | 0) + 1) | 0))) >>> 0)) << (((((0 + 7) | 0) + 8) | 0))) >>> 0)) >>> 0)) >>> 0)));
 }
 
-const __static_forbody_forprep = [
-    OP_FORPREP,
-    OP_TFORPREP
-]; /** C ref: lparser.c:1545 — OpCode[2] (function-static) */
-const __static_forbody_forloop = [
-    OP_FORLOOP,
-    OP_TFORLOOP
-]; /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
+const __static_forbody_forprep = cptr.alloc(2 * 4);
+cptr.stI32(cptr.add(__static_forbody_forprep, 0), 74);
+cptr.stI32(cptr.add(__static_forbody_forprep, 4), 75); /** C ref: lparser.c:1545 — OpCode[2] (function-static) */
+const __static_forbody_forloop = cptr.alloc(2 * 4);
+cptr.stI32(cptr.add(__static_forbody_forloop, 0), 73);
+cptr.stI32(cptr.add(__static_forbody_forloop, 4), 77); /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
 
 /** C ref: lparser.c:1543 — @param {CPtr} ls @param {CInt} base @param {CInt} line @param {CInt} nvars @param {CInt} isgen */
 function forbody(ls, base, line, nvars, isgen) {
@@ -1356,8 +1374,8 @@ function forbody(ls, base, line, nvars, isgen) {
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     let prep;
     let endfor;
-    checknext(ls, TK_DO);
-    prep = luaK_codeABx(fs, __static_forbody_forprep[isgen], base, 0);
+    checknext(ls, 258);
+    prep = luaK_codeABx(fs, cptr.add(__static_forbody_forprep, isgen, 4), base, 0);
     enterblock(fs, bl, 0);
     adjustlocalvars(ls, nvars);
     luaK_reserveregs(fs, nvars);
@@ -1365,10 +1383,10 @@ function forbody(ls, base, line, nvars, isgen) {
     leaveblock(fs);
     fixforjump(fs, prep, luaK_getlabel(fs), 0);
     if (isgen) {
-        luaK_codeABCk(fs, OP_TFORCALL, base, 0, nvars, 0);
+        luaK_codeABCk(fs, 76, base, 0, nvars, 0);
         luaK_fixline(fs, line);
     }
-    endfor = luaK_codeABx(fs, __static_forbody_forloop[isgen], base, 0);
+    endfor = luaK_codeABx(fs, cptr.add(__static_forbody_forloop, isgen, 4), base, 0);
     fixforjump(fs, endfor, (prep + 1) | 0, 1);
     luaK_fixline(fs, line);
 }
@@ -1418,7 +1436,7 @@ function forlist(ls, indexname) {
         new_localvar(ls, str_checkname(ls));
         nvars++;
     }
-    checknext(ls, TK_IN);
+    checknext(ls, 267);
     line = cptr.ldI32(cptr.add(ls, 4));
     adjust_assign(ls, 4, explist(ls, e), e);
     adjustlocalvars(ls, 4);
@@ -1440,13 +1458,13 @@ function forstat(ls, line) {
         fornum(ls, varname, line);
         break;
         case 44:
-        case TK_IN:
+        case 267:
         forlist(ls, varname);
         break;
         default:
         luaX_syntaxerror(ls, __sl24);
     }
-    check_match(ls, TK_END, TK_FOR, line);
+    check_match(ls, 261, 263, line);
     leaveblock(fs);
 }
 
@@ -1458,8 +1476,8 @@ function test_then_block(ls, escapelist) {
     let jf;
     luaX_next(ls);
     expr(ls, v);
-    checknext(ls, TK_THEN);
-    if (cptr.ldI32(cptr.add(ls, 16)) == TK_BREAK) {
+    checknext(ls, 274);
+    if (cptr.ldI32(cptr.add(ls, 16)) == 257) {
         let line = cptr.ldI32(cptr.add(ls, 4));
         luaK_goiffalse(cptr.ldPtr(cptr.add(ls, 48)), v);
         luaX_next(ls);
@@ -1479,7 +1497,7 @@ function test_then_block(ls, escapelist) {
     }
     statlist(ls);
     leaveblock(fs);
-    if (cptr.ldI32(cptr.add(ls, 16)) == TK_ELSE || cptr.ldI32(cptr.add(ls, 16)) == TK_ELSEIF)
+    if (cptr.ldI32(cptr.add(ls, 16)) == 259 || cptr.ldI32(cptr.add(ls, 16)) == 260)
         luaK_concat(fs, escapelist, luaK_jump(fs));
     luaK_patchtohere(fs, jf);
 }
@@ -1489,11 +1507,11 @@ function ifstat(ls, line) {
     let fs = cptr.ldPtr(cptr.add(ls, 48));
     let escapelist = cptr.box((-1));
     test_then_block(ls, escapelist);
-    while (cptr.ldI32(cptr.add(ls, 16)) == TK_ELSEIF)
+    while (cptr.ldI32(cptr.add(ls, 16)) == 260)
         test_then_block(ls, escapelist);
-    if (testnext(ls, TK_ELSE))
+    if (testnext(ls, 259))
         block(ls);
-    check_match(ls, TK_END, TK_IF, line);
+    check_match(ls, 261, 266, line);
     luaK_patchtohere(fs, escapelist.v);
 }
 
@@ -1527,7 +1545,7 @@ function getlocalattribute(ls) {
 function checktoclose(fs, level) {
     if (level != -1) {
         marktobeclosed(fs);
-        luaK_codeABCk(fs, OP_TBC, reglevel(fs, level), 0, 0, 0);
+        luaK_codeABCk(fs, 55, reglevel(fs, level), 0, 0, 0);
     }
 }
 
@@ -1555,14 +1573,14 @@ function localstat(ls) {
     if (testnext(ls, 61))
         nexps = explist(ls, e);
     else {
-        cptr.stI32(e, VVOID);
+        cptr.stI32(e, 0);
         nexps = 0;
     }
     var$ = getlocalvardesc(fs, vidx);
     if (nvars == nexps && cptr.ld1u(cptr.add(var$, 9)) == 1 && luaK_exp2const(fs, e, var$)) {
         cptr.st1(cptr.add(var$, 9), 3);
         adjustlocalvars(ls, (nvars - 1) | 0);
-        cptr.ld1u(cptr.add(fs, 66))++;
+        cptr.postinc1(cptr.add(fs, 66));
     } else {
         adjust_assign(ls, nvars, nexps, e);
         adjustlocalvars(ls, nvars);
@@ -1607,7 +1625,7 @@ function exprstat(ls) {
     } else {
         let inst;
         {
-            if (!(cptr.add(v, 8) == VCALL >>> 0))
+            if (!(cptr.add(v, 8) == 18))
                 luaX_syntaxerror(ls, __sl20);
         }
         ;
@@ -1626,10 +1644,10 @@ function retstat(ls) {
         nret = 0;
     else {
         nret = explist(ls, e);
-        if (((e) == VCALL >>> 0 || (e) == VVARARG >>> 0)) {
+        if (((e) == 18 || (e) == 19)) {
             luaK_setreturns(fs, e, (-1));
-            if (e == VCALL >>> 0 && nret == 1 && !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(fs, 24)), 19))) {
-                (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8))), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)))))) & (~(((~(((~0) << (7)) >>> 0)) << (0)) >>> 0))) >>> 0) | ((((((OP_TAILCALL) >>> 0) << 0) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)) >>> 0)));
+            if (e == 18 && nret == 1 && !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(fs, 24)), 19))) {
+                (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8))), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)))))) & (~(((~(((~0) << (7)) >>> 0)) << (0)) >>> 0))) >>> 0) | (((((69) << 0) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)) >>> 0)));
                 (void 0);
             }
             nret = (-1);
@@ -1656,65 +1674,65 @@ function statement(ls) {
             luaX_next(ls);
             break;
         }
-        case TK_IF:
+        case 266:
         {
             ifstat(ls, line);
             break;
         }
-        case TK_WHILE:
+        case 277:
         {
             whilestat(ls, line);
             break;
         }
-        case TK_DO:
+        case 258:
         {
             luaX_next(ls);
             block(ls);
-            check_match(ls, TK_END, TK_DO, line);
+            check_match(ls, 261, 258, line);
             break;
         }
-        case TK_FOR:
+        case 263:
         {
             forstat(ls, line);
             break;
         }
-        case TK_REPEAT:
+        case 272:
         {
             repeatstat(ls, line);
             break;
         }
-        case TK_FUNCTION:
+        case 264:
         {
             funcstat(ls, line);
             break;
         }
-        case TK_LOCAL:
+        case 268:
         {
             luaX_next(ls);
-            if (testnext(ls, TK_FUNCTION))
+            if (testnext(ls, 264))
                 localfunc(ls);
             else
                 localstat(ls);
             break;
         }
-        case TK_DBCOLON:
+        case 287:
         {
             luaX_next(ls);
             labelstat(ls, str_checkname(ls), line);
             break;
         }
-        case TK_RETURN:
+        case 273:
         {
             luaX_next(ls);
             retstat(ls);
             break;
         }
-        case TK_BREAK:
+        case 257:
         {
             breakstat(ls);
             break;
         }
-        case TK_GOTO:
+        case 265:
         {
             luaX_next(ls);
             gotostat(ls);
@@ -1728,7 +1746,7 @@ function statement(ls) {
     }
     (void 0);
     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(ls, 48)), 68), uchar(luaY_nvarstack(cptr.ldPtr(cptr.add(ls, 48)))));
-    (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176))--);
+    ((cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((ls), 56)), 176)) + -1)) - 1);
 }
 
 /** C ref: lparser.c:1923 — @param {CPtr} ls @param {CPtr} fs */
@@ -1745,7 +1763,7 @@ function mainfunc(ls, fs) {
     ((((cptr.ld1u(cptr.add((cptr.ldPtr(fs)), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(env)), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrier_(cptr.ldPtr(cptr.add(ls, 56)), ((((cptr.ldPtr(fs))))), ((((cptr.ldPtr(env)))))) : (void ((0))));
     luaX_next(ls);
     statlist(ls);
-    check(ls, TK_EOS);
+    check(ls, 288);
     close_func(ls);
 }
 

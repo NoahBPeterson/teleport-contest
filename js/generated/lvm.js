@@ -55,9 +55,9 @@ export function luaV_tonumber_(obj, n) {
 export function luaV_flttointeger(n, p, mode) {
     let f = (floor(n));
     if (n != f) {
-        if (mode == F2Ieq >>> 0)
+        if (mode == 0)
             return 0;
-        else if (mode == F2Iceil >>> 0)
+        else if (mode == 2)
             f += 1;
     }
     return ((f) >= Number(((-9223372036854775807n - 1n))) && (f) < -Number(((-9223372036854775807n - 1n))) && (cptr.stU64((p), BigInt.asIntN(64, BigInt(Math.trunc((f))))), 1));
@@ -84,7 +84,7 @@ export function luaV_tointeger(obj, p, mode) {
 
 /** C ref: lvm.c:178 — @param {CPtr} L @param {CLongLong} init @param {CPtr} lim @param {CPtr} p @param {CLongLong} step @returns {CInt} */
 function forlimit(L, init, lim, p, step) {
-    if (!luaV_tointeger(lim, p, (step < 0n ? F2Iceil : F2Ifloor))) {
+    if (!luaV_tointeger(lim, p, (step < 0n ? 2 : 1))) {
         let flim = cptr.box(0);
         if (!(((cptr.ld1u(cptr.add(((lim)), 8))) == (((3) | ((1) << 4)))) ? (cptr.stF64((flim), (cptr.ldF64(((lim))))), 1) : luaV_tonumber_(lim, flim)))
             luaG_forerror(L, lim, __sl0);
@@ -212,12 +212,12 @@ export function luaV_finishget(L, t, key, val, slot) {
     for (loop = 0; loop < 2000; loop++) {
         if (cptr.eq(slot, (null))) {
             (void 0);
-            tm = luaT_gettmbyobj(L, t, TM_INDEX);
+            tm = luaT_gettmbyobj(L, t, 0);
             if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) != 0)), 0n)))
                 luaG_typeerror(L, t, __sl4);
         } else {
             (void 0);
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), 10)) & ((1 << (TM_INDEX)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40)), TM_INDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_INDEX, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), 10)) & ((1 << (0)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40)), 0, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 0, 8)))));
             if (cptr.eq(tm, (null))) {
                 (cptr.st1(cptr.add((((val))), 8), uchar((((0) | ((0) << 4))))));
                 return;
@@ -252,7 +252,7 @@ export function luaV_finishset(L, t, key, val, slot) {
         if (!cptr.eq(slot, (null))) {
             let h = ((((((cptr.ldPtr(((t)))))))));
             (void 0);
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (TM_NEWINDEX)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), TM_NEWINDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_NEWINDEX, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (1)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), 1, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 1, 8)))));
             if (cptr.eq(tm, (null))) {
                 {
                     let io = (((cptr.ldPtr(cptr.add(L, 16)))));
@@ -265,12 +265,12 @@ export function luaV_finishset(L, t, key, val, slot) {
                 cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
                 luaH_finishset(L, h, key, slot, val);
                 cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
-                (cptr.st1(cptr.add((h), 10), cptr.ld1u(cptr.add((h), 10)) & ~(~((~0 << ((TM_EQ + 1) | 0)) >>> 0))));
+                (cptr.st1(cptr.add((h), 10), cptr.ld1u(cptr.add((h), 10)) & ~(~((~0 << ((5 + 1) | 0)) >>> 0))));
                 (((cptr.ld1u(cptr.add((val), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & (((1 << (3)) | (1 << (4)))))) ? luaC_barrierback_(L, ((((h))))) : (void ((0)))) : (void ((0))));
                 return;
             }
         } else {
-            tm = luaT_gettmbyobj(L, t, TM_NEWINDEX);
+            tm = luaT_gettmbyobj(L, t, 1);
             if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) != 0)), 0n)))
                 luaG_typeerror(L, t, __sl4);
         }
@@ -332,7 +332,7 @@ function LTintfloat(i, f) {
         return (((Number(((i))))) < (f));
     else {
         let fi = cptr.box(0);
-        if (luaV_flttointeger(f, fi, F2Iceil))
+        if (luaV_flttointeger(f, fi, 2))
             return i < fi.v;
         else
             return f > 0;
@@ -345,7 +345,7 @@ function LEintfloat(i, f) {
         return (((Number(((i))))) <= (f));
     else {
         let fi = cptr.box(0);
-        if (luaV_flttointeger(f, fi, F2Ifloor))
+        if (luaV_flttointeger(f, fi, 1))
             return i <= fi.v;
         else
             return f > 0;
@@ -358,7 +358,7 @@ function LTfloatint(f, i) {
         return ((f) < ((Number(((i))))));
     else {
         let fi = cptr.box(0);
-        if (luaV_flttointeger(f, fi, F2Ifloor))
+        if (luaV_flttointeger(f, fi, 1))
             return fi.v < i;
         else
             return f < 0;
@@ -371,7 +371,7 @@ function LEfloatint(f, i) {
         return ((f) <= ((Number(((i))))));
     else {
         let fi = cptr.box(0);
-        if (luaV_flttointeger(f, fi, F2Iceil))
+        if (luaV_flttointeger(f, fi, 2))
             return fi.v <= i;
         else
             return f < 0;
@@ -420,7 +420,7 @@ function lessthanothers(L, l, r) {
     if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)))
         return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0;
     else
-        return luaT_callorderTM(L, l, r, TM_LT);
+        return luaT_callorderTM(L, l, r, 20);
 }
 
 /** C ref: lvm.c:539 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
@@ -437,7 +437,7 @@ function lessequalothers(L, l, r) {
     if ((((((cptr.ld1u(cptr.add(((l)), 8)))) & 15)) == (4)) && (((((cptr.ld1u(cptr.add(((r)), 8)))) & 15)) == (4)))
         return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0;
     else
-        return luaT_callorderTM(L, l, r, TM_LE);
+        return luaT_callorderTM(L, l, r, 21);
 }
 
 /** C ref: lvm.c:561 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
@@ -457,7 +457,7 @@ export function luaV_equalobj(L, t1, t2) {
         else {
             let i1 = cptr.box(0);
             let i2 = cptr.box(0);
-            return (luaV_tointegerns(t1, i1, F2Ieq) && luaV_tointegerns(t2, i2, F2Ieq) && i1.v == i2.v);
+            return (luaV_tointegerns(t1, i1, 0) && luaV_tointegerns(t2, i2, 0) && i1.v == i2.v);
         }
     }
     switch ((((cptr.ld1u(cptr.add((t1), 8)))) & 63)) {
@@ -483,9 +483,9 @@ export function luaV_equalobj(L, t1, t2) {
                 return 1;
             else if (cptr.eq(L, (null)))
                 return 0;
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), 10)) & ((1 << (TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24)), TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_EQ, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), 10)) & ((1 << (5)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24)), 5, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 5, 8)))));
             if (cptr.eq(tm, (null)))
-                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), 10)) & ((1 << (TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24)), TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_EQ, 8)))));
+                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), 10)) & ((1 << (5)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24)), 5, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 5, 8)))));
             break;
         }
         case ((5) | ((0) << 4)):
@@ -494,9 +494,9 @@ export function luaV_equalobj(L, t1, t2) {
                 return 1;
             else if (cptr.eq(L, (null)))
                 return 0;
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), 10)) & ((1 << (TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40)), TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_EQ, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), 10)) & ((1 << (5)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40)), 5, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 5, 8)))));
             if (cptr.eq(tm, (null)))
-                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), 10)) & ((1 << (TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40)), TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_EQ, 8)))));
+                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), 10)) & ((1 << (5)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40)), 5, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 5, 8)))));
             break;
         }
         default:
@@ -582,7 +582,7 @@ export function luaV_objlen(L, ra, rb) {
         case ((5) | ((0) << 4)):
         {
             let h = ((((((cptr.ldPtr(((rb)))))))));
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (TM_LEN)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), TM_LEN, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), TM_LEN, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (4)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), 4, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), 4, 8)))));
             if (tm)
                 break;
             {
@@ -615,7 +615,7 @@ export function luaV_objlen(L, ra, rb) {
         }
         default:
         {
-            tm = luaT_gettmbyobj(L, rb, TM_LEN);
+            tm = luaT_gettmbyobj(L, rb, 4);
             if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) != 0)), 0n)))
                 luaG_typeerror(L, rb, __sl8);
             break;
@@ -711,9 +711,9 @@ export function luaV_finishOp(L) {
     let inst = cptr.ldI32((cptr.add(cptr.ldPtr(cptr.add(ci, 32)), -(1), 4)));
     let op = ((((((inst) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)));
     switch (op) {
-        case OP_MMBIN >>> 0:
-        case OP_MMBINI >>> 0:
-        case OP_MMBINK >>> 0:
+        case 46:
+        case 47:
+        case 48:
         {
             {
                 let io1 = (((cptr.add(base, (((((((cptr.ldI32((cptr.add(cptr.ldPtr(cptr.add(ci, 32)), -(2), 4)))) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16))));
@@ -726,14 +726,14 @@ export function luaV_finishOp(L) {
             ;
             break;
         }
-        case OP_UNM >>> 0:
-        case OP_BNOT >>> 0:
-        case OP_LEN >>> 0:
-        case OP_GETTABUP >>> 0:
-        case OP_GETTABLE >>> 0:
-        case OP_GETI >>> 0:
-        case OP_GETFIELD >>> 0:
-        case OP_SELF >>> 0:
+        case 49:
+        case 50:
+        case 52:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 20:
         {
             {
                 let io1 = (((cptr.add(base, (((((((inst) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16))));
@@ -746,13 +746,13 @@ export function luaV_finishOp(L) {
             ;
             break;
         }
-        case OP_LT >>> 0:
-        case OP_LE >>> 0:
-        case OP_LTI >>> 0:
-        case OP_LEI >>> 0:
-        case OP_GTI >>> 0:
-        case OP_GEI >>> 0:
-        case OP_EQ >>> 0:
+        case 58:
+        case 59:
+        case 62:
+        case 63:
+        case 64:
+        case 65:
+        case 57:
         {
             let res = !(((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8))) == (((1) | ((0) << 4)))) || (((((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8)))) & 15)) == (0)));
             cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
@@ -761,7 +761,7 @@ export function luaV_finishOp(L) {
                 cptr.postinc(() => cptr.ldPtr(cptr.add(ci, 32)), (v) => { cptr.stPtr(cptr.add(ci, 32), v); }, 4);
             break;
         }
-        case OP_CONCAT >>> 0:
+        case 53:
         {
             let top = cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16);
             let a = (((((((inst) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0));
@@ -779,12 +779,12 @@ export function luaV_finishOp(L) {
             luaV_concat(L, total);
             break;
         }
-        case OP_CLOSE >>> 0:
+        case 54:
         {
             cptr.postdec(() => cptr.ldPtr(cptr.add(ci, 32)), (v) => { cptr.stPtr(cptr.add(ci, 32), v); }, 4);
             break;
         }
-        case OP_RETURN >>> 0:
+        case 70:
         {
             let ra = cptr.add(base, (((((((inst) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16);
             cptr.stPtr(cptr.add(L, 16), cptr.add(ra, cptr.ldI32(cptr.add(ci, 56)), 16));
@@ -799,7 +799,90 @@ export function luaV_finishOp(L) {
     }
 }
 
-const __static_luaV_execute_disptab = ["L_OP_MOVE", "L_OP_LOADI", "L_OP_LOADF", "L_OP_LOADK", "L_OP_LOADKX", "L_OP_LOADFALSE", "L_OP_LFALSESKIP", "L_OP_LOADTRUE", "L_OP_LOADNIL", "L_OP_GETUPVAL", "L_OP_SETUPVAL", "L_OP_GETTABUP", "L_OP_GETTABLE", "L_OP_GETI", "L_OP_GETFIELD", "L_OP_SETTABUP", "L_OP_SETTABLE", "L_OP_SETI", "L_OP_SETFIELD", "L_OP_NEWTABLE", "L_OP_SELF", "L_OP_ADDI", "L_OP_ADDK", "L_OP_SUBK", "L_OP_MULK", "L_OP_MODK", "L_OP_POWK", "L_OP_DIVK", "L_OP_IDIVK", "L_OP_BANDK", "L_OP_BORK", "L_OP_BXORK", "L_OP_SHRI", "L_OP_SHLI", "L_OP_ADD", "L_OP_SUB", "L_OP_MUL", "L_OP_MOD", "L_OP_POW", "L_OP_DIV", "L_OP_IDIV", "L_OP_BAND", "L_OP_BOR", "L_OP_BXOR", "L_OP_SHL", "L_OP_SHR", "L_OP_MMBIN", "L_OP_MMBINI", "L_OP_MMBINK", "L_OP_UNM", "L_OP_BNOT", "L_OP_NOT", "L_OP_LEN", "L_OP_CONCAT", "L_OP_CLOSE", "L_OP_TBC", "L_OP_JMP", "L_OP_EQ", "L_OP_LT", "L_OP_LE", "L_OP_EQK", "L_OP_EQI", "L_OP_LTI", "L_OP_LEI", "L_OP_GTI", "L_OP_GEI", "L_OP_TEST", "L_OP_TESTSET", "L_OP_CALL", "L_OP_TAILCALL", "L_OP_RETURN", "L_OP_RETURN0", "L_OP_RETURN1", "L_OP_FORLOOP", "L_OP_FORPREP", "L_OP_TFORPREP", "L_OP_TFORCALL", "L_OP_TFORLOOP", "L_OP_SETLIST", "L_OP_CLOSURE", "L_OP_VARARG", "L_OP_VARARGPREP", "L_OP_EXTRAARG"]; /** C ref: lvm.c:23 — void *[83] (function-static) */
+const __static_luaV_execute_disptab = cptr.alloc(83 * 8);
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 0), "L_OP_MOVE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 8), "L_OP_LOADI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 16), "L_OP_LOADF");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 24), "L_OP_LOADK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 32), "L_OP_LOADKX");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 40), "L_OP_LOADFALSE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 48), "L_OP_LFALSESKIP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 56), "L_OP_LOADTRUE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 64), "L_OP_LOADNIL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 72), "L_OP_GETUPVAL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 80), "L_OP_SETUPVAL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 88), "L_OP_GETTABUP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 96), "L_OP_GETTABLE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 104), "L_OP_GETI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 112), "L_OP_GETFIELD");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 120), "L_OP_SETTABUP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 128), "L_OP_SETTABLE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 136), "L_OP_SETI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 144), "L_OP_SETFIELD");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 152), "L_OP_NEWTABLE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 160), "L_OP_SELF");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 168), "L_OP_ADDI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 176), "L_OP_ADDK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 184), "L_OP_SUBK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 192), "L_OP_MULK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 200), "L_OP_MODK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 208), "L_OP_POWK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 216), "L_OP_DIVK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 224), "L_OP_IDIVK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 232), "L_OP_BANDK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 240), "L_OP_BORK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 248), "L_OP_BXORK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 256), "L_OP_SHRI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 264), "L_OP_SHLI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 272), "L_OP_ADD");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 280), "L_OP_SUB");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 288), "L_OP_MUL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 296), "L_OP_MOD");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 304), "L_OP_POW");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 312), "L_OP_DIV");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 320), "L_OP_IDIV");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 328), "L_OP_BAND");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 336), "L_OP_BOR");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 344), "L_OP_BXOR");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 352), "L_OP_SHL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 360), "L_OP_SHR");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 368), "L_OP_MMBIN");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 376), "L_OP_MMBINI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 384), "L_OP_MMBINK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 392), "L_OP_UNM");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 400), "L_OP_BNOT");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 408), "L_OP_NOT");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 416), "L_OP_LEN");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 424), "L_OP_CONCAT");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 432), "L_OP_CLOSE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 440), "L_OP_TBC");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 448), "L_OP_JMP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 456), "L_OP_EQ");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 464), "L_OP_LT");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 472), "L_OP_LE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 480), "L_OP_EQK");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 488), "L_OP_EQI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 496), "L_OP_LTI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 504), "L_OP_LEI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 512), "L_OP_GTI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 520), "L_OP_GEI");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 528), "L_OP_TEST");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 536), "L_OP_TESTSET");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 544), "L_OP_CALL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 552), "L_OP_TAILCALL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 560), "L_OP_RETURN");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 568), "L_OP_RETURN0");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 576), "L_OP_RETURN1");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 584), "L_OP_FORLOOP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 592), "L_OP_FORPREP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 600), "L_OP_TFORPREP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 608), "L_OP_TFORCALL");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 616), "L_OP_TFORLOOP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 624), "L_OP_SETLIST");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 632), "L_OP_CLOSURE");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 640), "L_OP_VARARG");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 648), "L_OP_VARARGPREP");
+cptr.stPtr(cptr.add(__static_luaV_execute_disptab, 656), "L_OP_EXTRAARG"); /** C ref: lvm.c:23 — void *[83] (function-static) */
 
 /** C ref: lvm.c:1154 — @param {CPtr} L @param {CPtr} ci */
 export function luaV_execute(L, ci) {
@@ -839,7 +922,7 @@ export function luaV_execute(L, ci) {
         (void 0);
         (void 0);
         (void 0);
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         __pc = 3;
         continue;
         }
@@ -858,7 +941,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 4;
@@ -877,7 +960,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 5;
@@ -896,7 +979,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 6;
@@ -918,7 +1001,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 7;
@@ -941,7 +1024,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 8;
@@ -956,7 +1039,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 9;
@@ -972,7 +1055,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 10;
@@ -987,7 +1070,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 11;
@@ -1005,7 +1088,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 12;
@@ -1027,7 +1110,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 13;
@@ -1050,7 +1133,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 14;
@@ -1079,7 +1162,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 15;
@@ -1107,7 +1190,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 16;
@@ -1143,7 +1226,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 17;
@@ -1172,7 +1255,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 18;
@@ -1205,7 +1288,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 19;
@@ -1237,7 +1320,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 20;
@@ -1277,7 +1360,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 21;
@@ -1310,7 +1393,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 22;
@@ -1354,7 +1437,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 23;
@@ -1390,7 +1473,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 24;
@@ -1427,7 +1510,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 25;
@@ -1468,7 +1551,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 26;
@@ -1509,7 +1592,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 27;
@@ -1550,7 +1633,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 28;
@@ -1592,7 +1675,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 29;
@@ -1620,7 +1703,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 30;
@@ -1648,7 +1731,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 31;
@@ -1690,7 +1773,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 32;
@@ -1701,7 +1784,7 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         i2 = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1717,7 +1800,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 33;
@@ -1728,7 +1811,7 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         i2 = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1744,7 +1827,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 34;
@@ -1755,7 +1838,7 @@ export function luaV_execute(L, ci) {
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (cptr.add(k, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16));
         i2 = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1771,7 +1854,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 35;
@@ -1781,7 +1864,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ic = (((((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)))) - ((((1 << 8) - 1) | 0) >> 1)) | 0);
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1796,7 +1879,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 36;
@@ -1806,7 +1889,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         ic = (((((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)))) - ((((1 << 8) - 1) | 0) >> 1)) | 0);
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -1821,7 +1904,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 37;
@@ -1861,7 +1944,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 38;
@@ -1901,7 +1984,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 39;
@@ -1941,7 +2024,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 40;
@@ -1982,7 +2065,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 41;
@@ -2009,7 +2092,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 42;
@@ -2036,7 +2119,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 43;
@@ -2077,7 +2160,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 44;
@@ -2087,7 +2170,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2103,7 +2186,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 45;
@@ -2113,7 +2196,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2129,7 +2212,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 46;
@@ -2139,7 +2222,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2155,7 +2238,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 47;
@@ -2165,7 +2248,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2181,7 +2264,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 48;
@@ -2191,7 +2274,7 @@ export function luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         v1 = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
         v2 = (((cptr.add(base, ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v1)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i1), (cptr.ldI64(((v1))))), 1) : luaV_tointegerns(v1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((v2)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((i2), (cptr.ldI64(((v2))))), 1) : luaV_tointegerns(v2, i2, 0))) {
             pc = cptr.add(pc, 1, 4);
             {
                 io = (((ra)));
@@ -2207,7 +2290,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 49;
@@ -2227,7 +2310,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 50;
@@ -2247,7 +2330,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 51;
@@ -2267,7 +2350,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 52;
@@ -2292,14 +2375,14 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (luaT_trybinTM(L, rb, rb, ra, TM_UNM)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (luaT_trybinTM(L, rb, rb, ra, 18)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
             (base = cptr.add(cptr.ldPtr(ci), 1, 16));
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 53;
@@ -2308,7 +2391,7 @@ export function luaV_execute(L, ci) {
         case 53 /* L_OP_BNOT: */: {
         ra = (cptr.add(base, (((((((i) >>> (((0 + 7) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> (((((((0 + 7) | 0) + 8) | 0) + 1) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, F2Ieq))) {
+        if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((rb)), 8))) == (((3) | ((0) << 4))))) != 0)), 1n)) ? (cptr.stU64((ib), (cptr.ldI64(((rb))))), 1) : luaV_tointegerns(rb, ib, 0))) {
             {
                 io = (((ra)));
                 cptr.stU64(((io)), ((BigInt.asIntN(64, (((~(0n))) ^ (BigInt.asUintN(64, (ib.v))))))));
@@ -2316,14 +2399,14 @@ export function luaV_execute(L, ci) {
             }
             ;
         } else
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (luaT_trybinTM(L, rb, rb, ra, TM_BNOT)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (luaT_trybinTM(L, rb, rb, ra, 19)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
             trap = luaG_traceexec(L, pc);
             (base = cptr.add(cptr.ldPtr(ci), 1, 16));
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 54;
@@ -2342,7 +2425,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 55;
@@ -2357,7 +2440,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 56;
@@ -2386,7 +2469,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 57;
@@ -2401,7 +2484,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 58;
@@ -2416,7 +2499,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 59;
@@ -2432,7 +2515,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 60;
@@ -2460,7 +2543,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 61;
@@ -2496,7 +2579,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 62;
@@ -2532,7 +2615,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 63;
@@ -2560,7 +2643,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 64;
@@ -2593,7 +2676,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 65;
@@ -2610,7 +2693,7 @@ export function luaV_execute(L, ci) {
             cond = ((fa) < (fim));
         } else {
             isf = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 0, isf, TM_LT)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 0, isf, 20)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         }
         if (cond != ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
@@ -2631,7 +2714,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 66;
@@ -2648,7 +2731,7 @@ export function luaV_execute(L, ci) {
             cond = ((fa) <= (fim));
         } else {
             isf = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 0, isf, TM_LE)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 0, isf, 21)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         }
         if (cond != ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
@@ -2669,7 +2752,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 67;
@@ -2686,7 +2769,7 @@ export function luaV_execute(L, ci) {
             cond = ((fa) > (fim));
         } else {
             isf = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 1, isf, TM_LT)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 1, isf, 20)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         }
         if (cond != ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
@@ -2707,7 +2790,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 68;
@@ -2724,7 +2807,7 @@ export function luaV_execute(L, ci) {
             cond = ((fa) >= (fim));
         } else {
             isf = ((((((((i) >>> (((((((((0 + 7) | 0) + 8) | 0) + 1) | 0) + 8) | 0))) & (((~(((~0) << (8)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0)));
-            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 1, isf, TM_LE)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
+            (((cptr.stPtr(cptr.add(ci, 32), pc)), cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)))), (cond = luaT_callorderiTM(L, ((ra)), im, 1, isf, 21)), (trap = cptr.ldI32(cptr.add(cptr.add(ci, 32), 8))));
         }
         if (cond != ((((((((i) >>> (((((0 + 7) | 0) + 8) | 0))) & (((~(((~0) << (1)) >>> 0)) << (0)) >>> 0)) >>> 0)) | 0))))
             pc = cptr.add(pc, 1, 4);
@@ -2745,7 +2828,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 69;
@@ -2772,7 +2855,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 70;
@@ -2809,7 +2892,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 71;
@@ -2843,7 +2926,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 72;
@@ -3018,7 +3101,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 78;
@@ -3035,7 +3118,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 79;
@@ -3095,7 +3178,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 84;
@@ -3137,7 +3220,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 85;
@@ -3165,7 +3248,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 86;
@@ -3181,7 +3264,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 87;
@@ -3200,7 +3283,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 88;
@@ -3214,7 +3297,7 @@ export function luaV_execute(L, ci) {
         }
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         ;
-        { __pc = __smNums[cptr.ldPtr(cptr.add(cptr.decay(__static_luaV_execute_disptab), ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0)))))]; continue; }
+        { __pc = __smNums[cptr.ldPtr(cptr.add(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << (7)) >>> 0)) << (0)) >>> 0)) >>> 0))), 8))]; continue; }
         ;
         ;
         __pc = 92;

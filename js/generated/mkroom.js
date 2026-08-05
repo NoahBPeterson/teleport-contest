@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
 import { nh_getenv } from './options.js';
+import { shtypes } from './shknam.js';
 import { def_oc_syms } from './drawing.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { occupied, topologize } from './mklev.js';
@@ -24,6 +25,7 @@ import { ndemon } from './minion.js';
 import { t_at } from './trap.js';
 import { priestini } from './priest.js';
 import { isok } from './cmd.js';
+import { sfi_int, sfi_mkroom, sfo_int, sfo_mkroom } from './sfbase.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Tried to make a room of type %d.");
@@ -54,39 +56,39 @@ function isbig(sroom) {
 
 /** C ref: mkroom.c:52 — @param {CInt} roomtype */
 export function do_mkroom(roomtype) {
-    if (roomtype >= SHOPBASE) {
+    if (roomtype >= 14) {
         mkshop();
     } else {
         switch (roomtype) {
-            case COURT:
-            mkzoo(COURT);
+            case 2:
+            mkzoo(2);
             break;
-            case ZOO:
-            mkzoo(ZOO);
+            case 8:
+            mkzoo(8);
             break;
-            case BEEHIVE:
-            mkzoo(BEEHIVE);
+            case 5:
+            mkzoo(5);
             break;
-            case MORGUE:
-            mkzoo(MORGUE);
+            case 6:
+            mkzoo(6);
             break;
-            case BARRACKS:
-            mkzoo(BARRACKS);
+            case 7:
+            mkzoo(7);
             break;
-            case SWAMP:
+            case 3:
             mkswamp();
             break;
-            case TEMPLE:
+            case 10:
             mktemple();
             break;
-            case LEPREHALL:
-            mkzoo(LEPREHALL);
+            case 11:
+            mkzoo(11);
             break;
-            case COCKNEST:
-            mkzoo(COCKNEST);
+            case 12:
+            mkzoo(12);
             break;
-            case ANTHOLE:
-            mkzoo(ANTHOLE);
+            case 13:
+            mkzoo(13);
             break;
             default:
             impossible(__sl0, roomtype);
@@ -100,39 +102,39 @@ function mkshop() {
         let sroom;
         let i = -1;
         let ep = null;
-        if (flags.debug) {
+        if (cptr.ld1s(cptr.add(flags, 10))) {
             ep = nh_getenv(__sl1);
             if (ep) {
                 if (cptr.ld1s(ep) == 122 || cptr.ld1s(ep) == 90) {
-                    mkzoo(ZOO);
+                    mkzoo(8);
                     return;
                 }
                 if (cptr.ld1s(ep) == 109 || cptr.ld1s(ep) == 77) {
-                    mkzoo(MORGUE);
+                    mkzoo(6);
                     return;
                 }
                 if (cptr.ld1s(ep) == 98 || cptr.ld1s(ep) == 66) {
-                    mkzoo(BEEHIVE);
+                    mkzoo(5);
                     return;
                 }
                 if (cptr.ld1s(ep) == 116 || cptr.ld1s(ep) == 84 || cptr.ld1s(ep) == 92) {
-                    mkzoo(COURT);
+                    mkzoo(2);
                     return;
                 }
                 if (cptr.ld1s(ep) == 115 || cptr.ld1s(ep) == 83) {
-                    mkzoo(BARRACKS);
+                    mkzoo(7);
                     return;
                 }
                 if (cptr.ld1s(ep) == 97 || cptr.ld1s(ep) == 65) {
-                    mkzoo(ANTHOLE);
+                    mkzoo(13);
                     return;
                 }
                 if (cptr.ld1s(ep) == 99 || cptr.ld1s(ep) == 67) {
-                    mkzoo(COCKNEST);
+                    mkzoo(12);
                     return;
                 }
                 if (cptr.ld1s(ep) == 108 || cptr.ld1s(ep) == 76) {
-                    mkzoo(LEPREHALL);
+                    mkzoo(11);
                     return;
                 }
                 if (cptr.ld1s(ep) == 95) {
@@ -143,30 +145,30 @@ function mkshop() {
                     mkswamp();
                     return;
                 }
-                for (i = 0; shtypes[i].name; i++)
-                    if (cptr.ld1s(ep) == def_oc_syms[shtypes[i].symb].sym)
+                for (i = 0; cptr.ldPtr(cptr.add(shtypes, i, 112)); i++)
+                    if (cptr.ld1s(ep) == cptr.ld1s(cptr.add(def_oc_syms, cptr.ld1s(cptr.add(cptr.add(shtypes, i, 112), 16)), 24)))
                         break __lbl_gottype;
                 if (cptr.ld1s(ep) == 103 || cptr.ld1s(ep) == 71)
                     i = 0;
                 else if (cptr.ld1s(ep) == 118 || cptr.ld1s(ep) == 86)
-                    i = (FODDERSHOP - SHOPBASE) | 0;
+                    i = (24 - 14) | 0;
                 else
                     i = -1;
             }
         }
     }
-    for (sroom = cptr.add(cptr.decay(svr.rooms), 0); ; sroom = cptr.add(sroom, 1, 224)) {
+    for (sroom = cptr.add(svr, 0, 224); ; sroom = cptr.add(sroom, 1, 224)) {
         if (cptr.ldI16(cptr.add(sroom, 2)) < 0)
             return;
-        if (cptr.diff(sroom, cptr.decay(svr.rooms)) >= BigInt(svn.nroom)) {
+        if (cptr.diff(sroom, svr) >= BigInt(cptr.ldI32(cptr.add(svn, 44)))) {
             impossible(__sl2);
             return;
         }
-        if (cptr.ld1s(cptr.add(sroom, 8)) != OROOM)
+        if (cptr.ld1s(cptr.add(sroom, 8)) != 0)
             continue;
         if (has_dnstairs(sroom) || has_upstairs(sroom))
             continue;
-        if (cptr.ld1s(cptr.add(sroom, 13)) == 1 || (flags.debug && ep && cptr.ld1s(cptr.add(sroom, 13)) != 0)) {
+        if (cptr.ld1s(cptr.add(sroom, 13)) == 1 || (cptr.ld1s(cptr.add(flags, 10)) && ep && cptr.ld1s(cptr.add(sroom, 13)) != 0)) {
             if (invalid_shop_shape(sroom))
                 continue;
             else
@@ -178,17 +180,17 @@ function mkshop() {
         let y;
         for (x = i16(((cptr.ldI16(sroom) - 1) | 0)); x <= ((cptr.ldI16(cptr.add(sroom, 2)) + 1) | 0); x++)
             for (y = i16(((cptr.ldI16(cptr.add(sroom, 4)) - 1) | 0)); y <= ((cptr.ldI16(cptr.add(sroom, 6)) + 1) | 0); y++)
-                svl.level.locations[x][y].lit = 1;
+                cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 1);
         cptr.st1(cptr.add(sroom, 10), 1);
     }
     if (i < 0) {
         let j;
-        for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 193, __sl4), rnd(100)) : rnd(100)), i = 0; (j = (j - shtypes[i].prob) | 0) > 0; i++)
+        for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 193, __sl4), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32(cptr.add(cptr.add(shtypes, i, 112), 20))) | 0) > 0; i++)
             continue;
-        if (isbig(sroom) && (shtypes[i].symb == WAND_CLASS || shtypes[i].symb == SPBOOK_CLASS))
+        if (isbig(sroom) && (cptr.ld1s(cptr.add(cptr.add(shtypes, i, 112), 16)) == 11 || cptr.ld1s(cptr.add(cptr.add(shtypes, i, 112), 16)) == 10))
             i = 0;
     }
-    cptr.st1(cptr.add(sroom, 8), schar(((SHOPBASE + i) | 0)));
+    cptr.st1(cptr.add(sroom, 8), schar(((14 + i) | 0)));
     topologize(sroom);
     cptr.st1(cptr.add(sroom, 11), 1);
 }
@@ -196,20 +198,20 @@ function mkshop() {
 /** C ref: mkroom.c:220 — @param {CInt} strict @returns {CPtr} */
 function pick_room(strict) {
     let sroom;
-    let i = svn.nroom;
-    for (sroom = cptr.add(cptr.decay(svr.rooms), (rng_log_enabled() ? (rng_log_set_caller(__sl3, 225, __sl5), rn2(svn.nroom)) : rn2(svn.nroom))); i--; sroom = cptr.add(sroom, 1, 224)) {
-        if (cptr.eq(sroom, cptr.add(cptr.decay(svr.rooms), svn.nroom)))
-            sroom = cptr.add(cptr.decay(svr.rooms), 0);
+    let i = cptr.ldI32(cptr.add(svn, 44));
+    for (sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 225, __sl5), rn2(cptr.ldI32(cptr.add(svn, 44)))) : rn2(cptr.ldI32(cptr.add(svn, 44)))), 224); i--; sroom = cptr.add(sroom, 1, 224)) {
+        if (cptr.eq(sroom, cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224)))
+            sroom = cptr.add(svr, 0, 224);
         if (cptr.ldI16(cptr.add(sroom, 2)) < 0)
             return null;
-        if (cptr.ld1s(cptr.add(sroom, 8)) != OROOM)
+        if (cptr.ld1s(cptr.add(sroom, 8)) != 0)
             continue;
         if (!strict) {
             if (has_upstairs(sroom) || (has_dnstairs(sroom) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 233, __sl5), rn2(3)) : rn2(3))))
                 continue;
         } else if (has_upstairs(sroom) || has_dnstairs(sroom))
             continue;
-        if (cptr.ld1s(cptr.add(sroom, 13)) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 237, __sl5), rn2(5)) : rn2(5)) || flags.debug)
+        if (cptr.ld1s(cptr.add(sroom, 13)) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 237, __sl5), rn2(5)) : rn2(5)) || cptr.ld1s(cptr.add(flags, 10)))
             return sroom;
     }
     return null;
@@ -227,13 +229,13 @@ function mkzoo(type) {
 /** C ref: mkroom.c:257 — @param {CInt} x @param {CInt} y */
 function mk_zoo_thronemon(x, y) {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 259, __sl6), rnd(level_difficulty())) : rnd(level_difficulty()));
-    let pm = (i > 9) ? PM_OGRE_TYRANT : ((i > 5) ? PM_ELVEN_MONARCH : ((i > 2) ? PM_DWARF_RULER : PM_GNOME_RULER));
-    let mon = makemon(cptr.add(cptr.decay(mons), pm), x, y, 0);
+    let pm = (i > 9) ? 205 : ((i > 5) ? 269 : ((i > 2) ? 47 : 168));
+    let mon = makemon(cptr.add(mons, pm, 96), x, y, 0);
     if (mon) {
         cptr.stI32(cptr.add(mon, 144), 1);
         cptr.stI32(cptr.add(mon, 168), 0);
         set_malign(mon);
-        void mongets(mon, MACE);
+        void mongets(mon, 73);
     }
 }
 
@@ -248,15 +250,15 @@ export function fill_zoo(sroom) {
     let type = cptr.ld1s(cptr.add(sroom, 8));
     let tx = 0;
     let ty = 0;
-    let rmno = Number(BigInt.asIntN(32, ((cptr.diff(sroom, cptr.decay(svr.rooms))) + 3n)));
+    let rmno = Number(BigInt.asIntN(32, ((cptr.diff(sroom, svr)) + 3n)));
     let mm = cptr.alloc(4);
     sh = cptr.ldI32(cptr.add(sroom, 16));
     switch (type) {
-        case COURT:
-        if (svl.level.flags.is_maze_lev) {
+        case 2:
+        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 68))) {
             for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16(cptr.add(sroom, 2)); tx++)
                 for (ty = cptr.ldI16(cptr.add(sroom, 4)); ty <= cptr.ldI16(cptr.add(sroom, 6)); ty++)
-                    if (((svl.level.locations[tx][ty].typ) == THRONE))
+                    if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) == 29))
                         {
                             mk_zoo_thronemon(tx, ty);
                             break;
@@ -270,44 +272,44 @@ export function fill_zoo(sroom) {
         } while (occupied(tx, ty) && --i > 0);
         mk_zoo_thronemon(tx, ty);
         break;
-        case BEEHIVE:
+        case 5:
         tx = i16(((cptr.ldI16(sroom) + ((((((cptr.ldI16(cptr.add(sroom, 2)) - cptr.ldI16(sroom)) | 0) + 1) | 0) / 2) | 0)) | 0));
         ty = i16(((cptr.ldI16(cptr.add(sroom, 4)) + ((((((cptr.ldI16(cptr.add(sroom, 6)) - cptr.ldI16(cptr.add(sroom, 4))) | 0) + 1) | 0) / 2) | 0)) | 0));
         if (cptr.ld1s(cptr.add(sroom, 21))) {
-            if ((svl.level.locations[tx][ty].roomno | 0) != rmno || svl.level.locations[tx][ty].edge | 0) {
+            if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 24)) | 0) != rmno || cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 28)) | 0) {
                 void somexyspace(sroom, mm);
                 tx = cptr.ldI16(mm);
                 ty = cptr.ldI16(cptr.add(mm, 2));
             }
         }
         break;
-        case ZOO:
-        case LEPREHALL:
+        case 8:
+        case 11:
         goldlim = Math.imul(500, level_difficulty());
         break;
     }
     for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16(cptr.add(sroom, 2)); sx++)
         for (sy = cptr.ldI16(cptr.add(sroom, 4)); sy <= cptr.ldI16(cptr.add(sroom, 6)); sy++) {
             if (cptr.ld1s(cptr.add(sroom, 21))) {
-                if ((svl.level.locations[sx][sy].roomno | 0) != rmno || svl.level.locations[sx][sy].edge | 0 || (cptr.ld1s(cptr.add(sroom, 13)) && (distmin(i16(sx), i16(sy), cptr.ldI16(cptr.add(svd.doors, sh, 4)), cptr.ldI16(cptr.add(cptr.add(svd.doors, sh, 4), 2))) <= 1)))
+                if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) | 0) != rmno || cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 28)) | 0 || (cptr.ld1s(cptr.add(sroom, 13)) && (distmin(i16(sx), i16(sy), cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4)), cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4), 2))) <= 1)))
                     continue;
-            } else if (!((svl.level.locations[sx][sy].typ) > DOOR) || (cptr.ld1s(cptr.add(sroom, 13)) && ((sx == cptr.ldI16(sroom) && cptr.ldI16(cptr.add(svd.doors, sh, 4)) == ((sx - 1) | 0)) || (sx == cptr.ldI16(cptr.add(sroom, 2)) && cptr.ldI16(cptr.add(svd.doors, sh, 4)) == ((sx + 1) | 0)) || (sy == cptr.ldI16(cptr.add(sroom, 4)) && cptr.ldI16(cptr.add(cptr.add(svd.doors, sh, 4), 2)) == ((sy - 1) | 0)) || (sy == cptr.ldI16(cptr.add(sroom, 6)) && cptr.ldI16(cptr.add(cptr.add(svd.doors, sh, 4), 2)) == ((sy + 1) | 0)))))
+            } else if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) > 23) || (cptr.ld1s(cptr.add(sroom, 13)) && ((sx == cptr.ldI16(sroom) && cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4)) == ((sx - 1) | 0)) || (sx == cptr.ldI16(cptr.add(sroom, 2)) && cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4)) == ((sx + 1) | 0)) || (sy == cptr.ldI16(cptr.add(sroom, 4)) && cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4), 2)) == ((sy - 1) | 0)) || (sy == cptr.ldI16(cptr.add(sroom, 6)) && cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4), 2)) == ((sy + 1) | 0)))))
                 continue;
-            if (type == COURT && ((svl.level.locations[sx][sy].typ) == THRONE))
+            if (type == 2 && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) == 29))
                 continue;
-            mon = makemon((type == COURT) ? courtmon() : ((type == BARRACKS) ? squadmon() : ((type == MORGUE) ? morguemon() : ((type == BEEHIVE) ? (sx == tx && sy == ty ? cptr.add(cptr.decay(mons), PM_QUEEN_BEE) : cptr.add(cptr.decay(mons), PM_KILLER_BEE)) : ((type == LEPREHALL) ? cptr.add(cptr.decay(mons), PM_LEPRECHAUN) : ((type == COCKNEST) ? cptr.add(cptr.decay(mons), PM_COCKATRICE) : ((type == ANTHOLE) ? antholemon() : null)))))), i16(sx), i16(sy), Number(BigInt.asUintN(32, (4096n | 8192n))));
+            mon = makemon((type == 2) ? courtmon() : ((type == 7) ? squadmon() : ((type == 6) ? morguemon() : ((type == 5) ? (sx == tx && sy == ty ? cptr.add(mons, 5, 96) : cptr.add(mons, 1, 96)) : ((type == 11) ? cptr.add(mons, 63, 96) : ((type == 12) ? cptr.add(mons, 10, 96) : ((type == 13) ? antholemon() : null)))))), i16(sx), i16(sy), Number(BigInt.asUintN(32, (4096n | 8192n))));
             if (mon) {
                 cptr.stI32(cptr.add(mon, 144), 1);
-                if (type == COURT && cptr.ldI32(cptr.add(mon, 168)) | 0) {
+                if (type == 2 && cptr.ldI32(cptr.add(mon, 168)) | 0) {
                     cptr.stI32(cptr.add(mon, 168), 0);
                     set_malign(mon);
                 }
             }
             switch (type) {
-                case ZOO:
-                case LEPREHALL:
+                case 8:
+                case 11:
                 if (cptr.ld1s(cptr.add(sroom, 13))) {
-                    let distval = dist2(i16(sx), i16(sy), cptr.ldI16(cptr.add(svd.doors, sh, 4)), cptr.ldI16(cptr.add(cptr.add(svd.doors, sh, 4), 2)));
+                    let distval = dist2(i16(sx), i16(sy), cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4)), cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), sh, 4), 2)));
                     i = (Math.imul((distval), (distval)));
                 } else
                     i = goldlim;
@@ -316,69 +318,69 @@ export function fill_zoo(sroom) {
                 goldlim = (goldlim - i) | 0;
                 void mkgold(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 381, __sl7), rn2(i)) : rn2(i)) + (10)) | 0)), i16(sx), i16(sy));
                 break;
-                case MORGUE:
+                case 6:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 384, __sl7), rn2(5)) : rn2(5)))
-                    void mk_tt_object(CORPSE, i16(sx), i16(sy));
+                    void mk_tt_object(265, i16(sx), i16(sy));
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 386, __sl7), rn2(10)) : rn2(10)))
-                    void mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 387, __sl7), rn2(3)) : rn2(3))) ? LARGE_BOX : CHEST, i16(sx), i16(sy), (1), (0));
+                    void mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 387, __sl7), rn2(3)) : rn2(3))) ? 214 : 215, i16(sx), i16(sy), (1), (0));
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 389, __sl7), rn2(5)) : rn2(5)))
                     make_grave(i16(sx), i16(sy), null);
                 break;
-                case BEEHIVE:
+                case 5:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 393, __sl7), rn2(3)) : rn2(3)))
-                    void mksobj_at(LUMP_OF_ROYAL_JELLY, i16(sx), i16(sy), (1), (0));
+                    void mksobj_at(286, i16(sx), i16(sy), (1), (0));
                 break;
-                case BARRACKS:
+                case 7:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 398, __sl7), rn2(20)) : rn2(20)))
-                    void mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 399, __sl7), rn2(3)) : rn2(3))) ? LARGE_BOX : CHEST, i16(sx), i16(sy), (1), (0));
+                    void mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 399, __sl7), rn2(3)) : rn2(3))) ? 214 : 215, i16(sx), i16(sy), (1), (0));
                 break;
-                case COCKNEST:
+                case 12:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 403, __sl7), rn2(3)) : rn2(3))) {
-                    let sobj = mk_tt_object(STATUE, i16(sx), i16(sy));
+                    let sobj = mk_tt_object(476, i16(sx), i16(sy));
                     if (sobj) {
                         for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 407, __sl7), rn2(5)) : rn2(5)); i; i--)
-                            void add_to_container(sobj, mkobj(RANDOM_CLASS, (0)));
+                            void add_to_container(sobj, mkobj(0, (0)));
                         cptr.stI32(cptr.add(sobj, 36), weight(sobj) >>> 0);
                     }
                 }
                 break;
-                case ANTHOLE:
+                case 13:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 415, __sl7), rn2(3)) : rn2(3)))
-                    void mkobj_at(schar(FOOD_CLASS), i16(sx), i16(sy), (0));
+                    void mkobj_at(7, i16(sx), i16(sy), (0));
                 break;
             }
         }
     switch (type) {
-        case COURT:
+        case 2:
         {
             let chest;
             let gold;
-            svl.level.locations[tx][ty].typ = schar(THRONE);
+            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4), 29);
             void somexyspace(sroom, mm);
-            gold = mksobj(GOLD_PIECE, (1), (0));
+            gold = mksobj(438, (1), (0));
             cptr.stU64(cptr.add(gold, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 426, __sl7), rn2(Math.imul(50, level_difficulty()))) : rn2(Math.imul(50, level_difficulty()))) + (10)) | 0)));
             cptr.stI32(cptr.add(gold, 36), weight(gold) >>> 0);
-            chest = mksobj_at(CHEST, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), (1), (0));
+            chest = mksobj_at(215, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), (1), (0));
             add_to_container(chest, gold);
             cptr.stI32(cptr.add(chest, 36), weight(chest) >>> 0);
             cptr.st1(cptr.add(chest, 48), 2);
-            svl.level.flags.has_court = 1;
+            cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 16), 1);
             break;
         }
-        case BARRACKS:
-        svl.level.flags.has_barracks = 1;
+        case 7:
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 28), 1);
         break;
-        case ZOO:
-        svl.level.flags.has_zoo = 1;
+        case 8:
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 12), 1);
         break;
-        case MORGUE:
-        svl.level.flags.has_morgue = 1;
+        case 6:
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 20), 1);
         break;
-        case SWAMP:
-        svl.level.flags.has_swamp = 1;
+        case 3:
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 36), 1);
         break;
-        case BEEHIVE:
-        svl.level.flags.has_beehive = 1;
+        case 5:
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 24), 1);
         break;
     }
 }
@@ -391,10 +393,10 @@ export function mkundead(mm, revive_corpses, mm_flags) {
     let cc = cptr.alloc(4);
     while (cnt--) {
         mdat = morguemon();
-        if (mdat && enexto(cc, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), mdat) && (!revive_corpses || !(otmp = sobj_at(CORPSE, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)))) || !revive(otmp, (0))))
+        if (mdat && enexto(cc, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), mdat) && (!revive_corpses || !(otmp = sobj_at(265, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)))) || !revive(otmp, (0))))
             void makemon(mdat, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), mm_flags >>> 0);
     }
-    svl.level.flags.graveyard = 1;
+    cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 60), 1);
 }
 
 /** C ref: mkroom.c:478 @returns {CPtr} */
@@ -402,17 +404,17 @@ function morguemon() {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(100)) : rn2(100));
     let hd = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(level_difficulty())) : rn2(level_difficulty()));
     if (hd > 10 && i < 10) {
-        if (In_hell(cptr.boxProp(u, 'uz')) || (cptr.ldI16((cptr.boxProp(u, 'uz'))) == (svd.dungeon_topology.d_astral_level).dnum)) {
-            return mkclass(schar(S_DEMON), 0);
+        if (In_hell(cptr.add(u, 24)) || (cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))))) {
+            return mkclass(56, 0);
         } else {
             let ndemon_res = ndemon(schar((-128)));
-            if (ndemon_res != NON_PM)
-                return cptr.add(cptr.decay(mons), ndemon_res);
+            if (ndemon_res != -1)
+                return cptr.add(mons, ndemon_res, 96);
         }
     }
     if (hd > 8 && i > 85)
-        return mkclass(schar(S_VAMPIRE), 0);
-    return ((i < 20) ? cptr.add(cptr.decay(mons), PM_GHOST) : ((i < 40) ? cptr.add(cptr.decay(mons), PM_WRAITH) : mkclass(schar(S_ZOMBIE), 0)));
+        return mkclass(48, 0);
+    return ((i < 20) ? cptr.add(mons, 287, 96) : ((i < 40) ? cptr.add(mons, 230, 96) : mkclass(52, 0)));
 }
 
 /** C ref: mkroom.c:502 @returns {CPtr} */
@@ -425,17 +427,17 @@ export function antholemon() {
     do {
         switch (((indx + trycnt) | 0) % 3) {
             case 0:
-            mtyp = PM_SOLDIER_ANT;
+            mtyp = 2;
             break;
             case 1:
-            mtyp = PM_FIRE_ANT;
+            mtyp = 3;
             break;
             default:
-            mtyp = PM_GIANT_ANT;
+            mtyp = 0;
             break;
         }
-    } while (++trycnt < 3 && (svm.mvitals[mtyp].mvflags & (2 | 1)));
-    return ((svm.mvitals[mtyp].mvflags & (2 | 1)) ? null : cptr.add(cptr.decay(mons), mtyp));
+    } while (++trycnt < 3 && (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mtyp, 12), 2)) & (2 | 1)));
+    return ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mtyp, 12), 2)) & (2 | 1)) ? null : cptr.add(mons, mtyp, 96));
 }
 
 /** C ref: mkroom.c:530 */
@@ -447,28 +449,28 @@ function mkswamp() {
     let sy;
     let rmno;
     for (i = 0; i < 5; i++) {
-        sroom = cptr.add(cptr.decay(svr.rooms), (rng_log_enabled() ? (rng_log_set_caller(__sl3, 538, __sl10), rn2(svn.nroom)) : rn2(svn.nroom)));
-        if (cptr.ldI16(cptr.add(sroom, 2)) < 0 || cptr.ld1s(cptr.add(sroom, 8)) != OROOM || has_upstairs(sroom) || has_dnstairs(sroom))
+        sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 538, __sl10), rn2(cptr.ldI32(cptr.add(svn, 44)))) : rn2(cptr.ldI32(cptr.add(svn, 44)))), 224);
+        if (cptr.ldI16(cptr.add(sroom, 2)) < 0 || cptr.ld1s(cptr.add(sroom, 8)) != 0 || has_upstairs(sroom) || has_dnstairs(sroom))
             continue;
-        rmno = (Number(BigInt.asIntN(32, (cptr.diff(sroom, cptr.decay(svr.rooms))))) + 3) | 0;
-        cptr.st1(cptr.add(sroom, 8), schar(SWAMP));
+        rmno = (Number(BigInt.asIntN(32, (cptr.diff(sroom, svr)))) + 3) | 0;
+        cptr.st1(cptr.add(sroom, 8), 3);
         for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16(cptr.add(sroom, 2)); sx++)
             for (sy = cptr.ldI16(cptr.add(sroom, 4)); sy <= cptr.ldI16(cptr.add(sroom, 6)); sy++) {
-                if (!((svl.level.locations[sx][sy].typ) >= ROOM) || (svl.level.locations[sx][sy].roomno | 0) != rmno)
+                if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= 25) || (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) | 0) != rmno)
                     continue;
-                if (!(cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[sx]), sy)) !== null) && !(cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[sx]), sy)) !== null) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
+                if (!(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), sx, 168), sy, 8)) !== null) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), sx, 168), sy, 8)) !== null) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
                     if (((sx + sy) | 0) % 2) {
                         del_engr_at(sx, sy);
-                        svl.level.locations[sx][sy].typ = schar(POOL);
+                        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4), 16);
                         if (!eelct || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 557, __sl10), rn2(4)) : rn2(4))) {
-                            void makemon((rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl10), rn2(5)) : rn2(5)) ? cptr.add(cptr.decay(mons), PM_GIANT_EEL) : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 561, __sl10), rn2(2)) : rn2(2)) ? cptr.add(cptr.decay(mons), PM_PIRANHA) : cptr.add(cptr.decay(mons), PM_ELECTRIC_EEL)), sx, sy, 0);
+                            void makemon((rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl10), rn2(5)) : rn2(5)) ? cptr.add(mons, 319, 96) : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 561, __sl10), rn2(2)) : rn2(2)) ? cptr.add(mons, 317, 96) : cptr.add(mons, 320, 96)), sx, sy, 0);
                             eelct++;
                         }
                     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 567, __sl10), rn2(4)) : rn2(4)))
-                        void makemon(mkclass(schar(S_FUNGUS), 0), sx, sy, 0);
+                        void makemon(mkclass(32, 0), sx, sy, 0);
                 }
             }
-        svl.level.flags.has_swamp = 1;
+        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 36), 1);
     }
 }
 
@@ -477,15 +479,15 @@ let __static_shrine_pos_buf = cptr.alloc(4); /** C ref: mkroom.c:579 — struct 
 /** C ref: mkroom.c:577 — @param {CInt} roomno @returns {CPtr} */
 function shrine_pos(roomno) {
     let delta;
-    let troom = cptr.add(cptr.decay(svr.rooms), (roomno - 3) | 0);
+    let troom = cptr.add(svr, (roomno - 3) | 0, 224);
     delta = (cptr.ldI16(cptr.add(troom, 2)) - cptr.ldI16(troom)) | 0;
     cptr.stI16(__static_shrine_pos_buf, i16(((cptr.ldI16(troom) + ((delta / 2) | 0)) | 0)));
     if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 588, __sl11), rn2(2)) : rn2(2)))
-        cptr.ldI16(__static_shrine_pos_buf)++;
+        (cptr.stI16(__static_shrine_pos_buf, cptr.ldI16(__static_shrine_pos_buf) + 1)) - 1;
     delta = (cptr.ldI16(cptr.add(troom, 6)) - cptr.ldI16(cptr.add(troom, 4))) | 0;
     cptr.stI16(cptr.add(__static_shrine_pos_buf, 2), i16(((cptr.ldI16(cptr.add(troom, 4)) + ((delta / 2) | 0)) | 0)));
     if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 592, __sl11), rn2(2)) : rn2(2)))
-        cptr.ldI16(cptr.add(__static_shrine_pos_buf, 2))++;
+        (cptr.stI16(cptr.add(__static_shrine_pos_buf, 2), cptr.ldI16(cptr.add(__static_shrine_pos_buf, 2)) + 1)) - 1;
     return __static_shrine_pos_buf;
 }
 
@@ -496,14 +498,14 @@ function mktemple() {
     let lev;
     if (!(sroom = pick_room((1))))
         return;
-    cptr.st1(cptr.add(sroom, 8), schar(TEMPLE));
-    shrine_spot = shrine_pos(Number(BigInt.asIntN(32, ((cptr.diff(sroom, cptr.decay(svr.rooms))) + 3n))));
-    lev = cptr.add(cptr.decay(svl.level.locations[cptr.ldI16(shrine_spot)]), cptr.ldI16(cptr.add(shrine_spot, 2)));
-    cptr.st1(cptr.add(lev, 4), schar(ALTAR));
+    cptr.st1(cptr.add(sroom, 8), 10);
+    shrine_spot = shrine_pos(Number(BigInt.asIntN(32, ((cptr.diff(sroom, svr)) + 3n))));
+    lev = cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(shrine_spot), 756), cptr.ldI16(cptr.add(shrine_spot, 2)), 36);
+    cptr.st1(cptr.add(lev, 4), 32);
     cptr.stI32(cptr.add(lev, 8), induced_align(80));
-    priestini(cptr.boxProp(u, 'uz'), sroom, cptr.ldI16(shrine_spot), cptr.ldI16(cptr.add(shrine_spot, 2)), (0));
+    priestini(cptr.add(u, 24), sroom, cptr.ldI16(shrine_spot), cptr.ldI16(cptr.add(shrine_spot, 2)), (0));
     cptr.st1(cptr.add(lev, 8), cptr.ld1u(cptr.add(lev, 8)) | 8);
-    svl.level.flags.has_temple = 1;
+    cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 32), 1);
 }
 
 /** C ref: mkroom.c:623 — @param {CInt} sx @param {CInt} sy @returns {CInt} */
@@ -515,8 +517,8 @@ export function nexttodoor(sx, sy) {
         for (dy = -1; dy <= 1; dy++) {
             if (!isok(i16(((sx + dx) | 0)), i16(((sy + dy) | 0))))
                 continue;
-            lev = cptr.add(cptr.decay(svl.level.locations[(sx + dx) | 0]), (sy + dy) | 0);
-            if (((cptr.ld1s(cptr.add(lev, 4))) == DOOR) || cptr.ld1s(cptr.add(lev, 4)) == SDOOR)
+            lev = cptr.add(cptr.add(cptr.add(svl, 1680), (sx + dx) | 0, 756), (sy + dy) | 0, 36);
+            if (((cptr.ld1s(cptr.add(lev, 4))) == 23) || cptr.ld1s(cptr.add(lev, 4)) == 14)
                 return (1);
         }
     return (0);
@@ -524,7 +526,7 @@ export function nexttodoor(sx, sy) {
 
 /** C ref: mkroom.c:640 — @param {CPtr} sroom @returns {CInt} */
 export function has_dnstairs(sroom) {
-    let stway = gs.stairs;
+    let stway = cptr.ldPtr(cptr.add(gs, 8));
     while (stway) {
         if (!cptr.ld1s(cptr.add(stway, 8)) && inside_room(sroom, cptr.ldI16(stway), cptr.ldI16(cptr.add(stway, 2))))
             return (1);
@@ -535,7 +537,7 @@ export function has_dnstairs(sroom) {
 
 /** C ref: mkroom.c:653 — @param {CPtr} sroom @returns {CInt} */
 export function has_upstairs(sroom) {
-    let stway = gs.stairs;
+    let stway = cptr.ldPtr(cptr.add(gs, 8));
     while (stway) {
         if (cptr.ld1s(cptr.add(stway, 8)) && inside_room(sroom, cptr.ldI16(stway), cptr.ldI16(cptr.add(stway, 2))))
             return (1);
@@ -557,8 +559,8 @@ export function somey(croom) {
 /** C ref: mkroom.c:678 — @param {CPtr} croom @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_room(croom, x, y) {
     if (cptr.ld1s(cptr.add(croom, 21))) {
-        let i = Number(BigInt.asIntN(32, ((cptr.diff(croom, cptr.decay(svr.rooms))) + 3n)));
-        return schar((!svl.level.locations[x][y].edge && (svl.level.locations[x][y].roomno | 0) == i));
+        let i = Number(BigInt.asIntN(32, ((cptr.diff(croom, svr)) + 3n)));
+        return schar((!cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 28)) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) | 0) == i));
     }
     return schar((x >= ((cptr.ldI16(croom) - 1) | 0) && x <= ((cptr.ldI16(cptr.add(croom, 2)) + 1) | 0) && y >= ((cptr.ldI16(cptr.add(croom, 4)) - 1) | 0) && y <= ((cptr.ldI16(cptr.add(croom, 6)) + 1) | 0)));
 }
@@ -568,16 +570,16 @@ export function somexy(croom, c) {
     let try_cnt = 0;
     let i;
     if (cptr.ld1s(cptr.add(croom, 21))) {
-        i = Number(BigInt.asIntN(32, ((cptr.diff(croom, cptr.decay(svr.rooms))) + 3n)));
+        i = Number(BigInt.asIntN(32, ((cptr.diff(croom, svr)) + 3n)));
         while (try_cnt++ < 100) {
             cptr.stI16(c, i16(somex(croom)));
             cptr.stI16(cptr.add(c, 2), i16(somey(croom)));
-            if (!svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].edge && (svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].roomno | 0) == i)
+            if (!cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 28)) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 24)) | 0) == i)
                 return (1);
         }
-        for (cptr.stI16(c, cptr.ldI16(croom)); cptr.ldI16(c) <= cptr.ldI16(cptr.add(croom, 2)); cptr.ldI16(c)++)
-            for (cptr.stI16(cptr.add(c, 2), cptr.ldI16(cptr.add(croom, 4))); cptr.ldI16(cptr.add(c, 2)) <= cptr.ldI16(cptr.add(croom, 6)); cptr.ldI16(cptr.add(c, 2))++)
-                if (!svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].edge && (svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].roomno | 0) == i)
+        for (cptr.stI16(c, cptr.ldI16(croom)); cptr.ldI16(c) <= cptr.ldI16(cptr.add(croom, 2)); (cptr.stI16(c, cptr.ldI16(c) + 1)) - 1)
+            for (cptr.stI16(cptr.add(c, 2), cptr.ldI16(cptr.add(croom, 4))); cptr.ldI16(cptr.add(c, 2)) <= cptr.ldI16(cptr.add(croom, 6)); (cptr.stI16(cptr.add(c, 2), cptr.ldI16(cptr.add(c, 2)) + 1)) - 1)
+                if (!cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 28)) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 24)) | 0) == i)
                     return (1);
         return (0);
     }
@@ -590,7 +592,7 @@ export function somexy(croom, c) {
         __lbl_you_lose: {
             cptr.stI16(c, i16(somex(croom)));
             cptr.stI16(cptr.add(c, 2), i16(somey(croom)));
-            if (((svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].typ) && (svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].typ) <= DBWALL))
+            if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 4))) <= 12))
                 continue;
             for (i = 0; i < cptr.ld1s(cptr.add(croom, 20)); i++)
                 if (inside_room(cptr.ldPtr(cptr.add(cptr.add(croom, 24), i, 8)), cptr.ldI16(c), cptr.ldI16(cptr.add(c, 2))))
@@ -609,7 +611,7 @@ export function somexyspace(croom, c) {
     let trycnt = 0;
     let okay;
     do {
-        okay = schar((somexy(croom, c) && isok(cptr.ldI16(c), cptr.ldI16(cptr.add(c, 2))) && !occupied(cptr.ldI16(c), cptr.ldI16(cptr.add(c, 2))) && (svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].typ == ROOM || svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].typ == CORR || svl.level.locations[cptr.ldI16(c)][cptr.ldI16(cptr.add(c, 2))].typ == ICE)));
+        okay = schar((somexy(croom, c) && isok(cptr.ldI16(c), cptr.ldI16(cptr.add(c, 2))) && !occupied(cptr.ldI16(c), cptr.ldI16(cptr.add(c, 2))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 4)) == 25 || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 4)) == 24 || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(c), 756), cptr.ldI16(cptr.add(c, 2)), 36), 4)) == 33)));
     } while (trycnt++ < 100 && !okay);
     return okay;
 }
@@ -617,11 +619,11 @@ export function somexyspace(croom, c) {
 /** C ref: mkroom.c:765 — @param {CInt} type @returns {CPtr} */
 export function search_special(type) {
     let croom;
-    for (croom = cptr.add(cptr.decay(svr.rooms), 0); cptr.ldI16(cptr.add(croom, 2)) >= 0; croom = cptr.add(croom, 1, 224))
-        if ((type == (-1) && cptr.ld1s(cptr.add(croom, 8)) != OROOM) || (type == (-2) && cptr.ld1s(cptr.add(croom, 8)) >= SHOPBASE) || cptr.ld1s(cptr.add(croom, 8)) == type)
+    for (croom = cptr.add(svr, 0, 224); cptr.ldI16(cptr.add(croom, 2)) >= 0; croom = cptr.add(croom, 1, 224))
+        if ((type == (-1) && cptr.ld1s(cptr.add(croom, 8)) != 0) || (type == (-2) && cptr.ld1s(cptr.add(croom, 8)) >= 14) || cptr.ld1s(cptr.add(croom, 8)) == type)
             return croom;
-    for (croom = cptr.add(gs.subrooms, 0, 224); cptr.ldI16(cptr.add(croom, 2)) >= 0; croom = cptr.add(croom, 1, 224))
-        if ((type == (-1) && cptr.ld1s(cptr.add(croom, 8)) != OROOM) || (type == (-2) && cptr.ld1s(cptr.add(croom, 8)) >= SHOPBASE) || cptr.ld1s(cptr.add(croom, 8)) == type)
+    for (croom = cptr.add(cptr.ldPtr(cptr.add(gs, 184)), 0, 224); cptr.ldI16(cptr.add(croom, 2)) >= 0; croom = cptr.add(croom, 1, 224))
+        if ((type == (-1) && cptr.ld1s(cptr.add(croom, 8)) != 0) || (type == (-2) && cptr.ld1s(cptr.add(croom, 8)) >= 14) || cptr.ld1s(cptr.add(croom, 8)) == type)
             return croom;
     return null;
 }
@@ -630,34 +632,37 @@ export function search_special(type) {
 export function courtmon() {
     let i = ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(60)) : rn2(60)) + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(Math.imul(3, level_difficulty()))) : rn2(Math.imul(3, level_difficulty())))) | 0;
     if (i > 100)
-        return mkclass(schar(S_DRAGON), 0);
+        return mkclass(30, 0);
     else if (i > 95)
-        return mkclass(schar(S_GIANT), 0);
+        return mkclass(34, 0);
     else if (i > 85)
-        return mkclass(schar(S_TROLL), 0);
+        return mkclass(46, 0);
     else if (i > 75)
-        return mkclass(schar(S_CENTAUR), 0);
+        return mkclass(29, 0);
     else if (i > 60)
-        return mkclass(schar(S_ORC), 0);
+        return mkclass(15, 0);
     else if (i > 45)
-        return cptr.add(cptr.decay(mons), PM_BUGBEAR);
+        return cptr.add(mons, 45, 96);
     else if (i > 30)
-        return cptr.add(cptr.decay(mons), PM_HOBGOBLIN);
+        return cptr.add(mons, 71, 96);
     else if (i > 15)
-        return mkclass(schar(S_GNOME), 0);
+        return mkclass(33, 0);
     else
-        return mkclass(schar(S_KOBOLD), 0);
+        return mkclass(11, 0);
 }
 
 /** C ref: mkroom.c:807 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: mkroom.c:810 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mkroom.c:807:14)[4] */
-const squadprob = [
-    { pm: PM_SOLDIER >>> 0, prob: 80 },
-    { pm: PM_SERGEANT >>> 0, prob: 15 },
-    { pm: PM_LIEUTENANT >>> 0, prob: 4 },
-    { pm: PM_CAPTAIN >>> 0, prob: 1 }
-];
+const squadprob = cptr.alloc(4 * 8);
+cptr.stI32(cptr.add(squadprob, 0), 277);
+cptr.stI32(cptr.add(cptr.add(squadprob, 0), 4), 80);
+cptr.stI32(cptr.add(squadprob, 8), 278);
+cptr.stI32(cptr.add(cptr.add(squadprob, 8), 4), 15);
+cptr.stI32(cptr.add(squadprob, 16), 280);
+cptr.stI32(cptr.add(cptr.add(squadprob, 16), 4), 4);
+cptr.stI32(cptr.add(squadprob, 24), 281);
+cptr.stI32(cptr.add(cptr.add(squadprob, 24), 4), 1);
 
 /** C ref: mkroom.c:817 @returns {CPtr} */
 function squadmon() {
@@ -668,17 +673,17 @@ function squadmon() {
         let mndx;
         sel_prob = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 821, __sl15), rnd((80 + level_difficulty()) | 0)) : rnd((80 + level_difficulty()) | 0));
         cpro = 0;
-        for (i = 0; i < squadprob.length; i++) {
-            cpro = (cpro + squadprob[i].prob) | 0;
+        for (i = 0; i < 4; i++) {
+            cpro = (cpro + cptr.ldI32(cptr.add(cptr.add(squadprob, i, 8), 4))) | 0;
             if (cpro > sel_prob) {
-                mndx = squadprob[i].pm | 0;
+                mndx = cptr.ldI32(cptr.add(squadprob, i, 8)) | 0;
                 break __lbl_gotone;
             }
         }
-        mndx = squadprob[(rng_log_enabled() ? (rng_log_set_caller(__sl3, 831, __sl15), rn2(squadprob.length)) : rn2(squadprob.length))].pm | 0;
+        mndx = cptr.ldI32(cptr.add(squadprob, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 831, __sl15), rn2(4)) : rn2(4)), 8)) | 0;
     }
-    if (!(svm.mvitals[mndx].mvflags & (2 | 1)))
-        return cptr.add(cptr.decay(mons), mndx);
+    if (!(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mndx, 12), 2)) & (2 | 1)))
+        return cptr.add(mons, mndx, 96);
     else
         return null;
 }
@@ -695,9 +700,9 @@ function save_room(nhfp, r) {
 /** C ref: mkroom.c:863 — @param {CPtr} nhfp */
 export function save_rooms(nhfp) {
     let i;
-    sfo_int(nhfp, cptr.boxProp(svn, 'nroom'), __sl17);
-    for (i = 0; i < svn.nroom; i++)
-        save_room(nhfp, cptr.add(cptr.decay(svr.rooms), i));
+    sfo_int(nhfp, cptr.add(svn, 44), __sl17);
+    for (i = 0; i < cptr.ldI32(cptr.add(svn, 44)); i++)
+        save_room(nhfp, cptr.add(svr, i, 224));
 }
 
 /** C ref: mkroom.c:875 — @param {CPtr} nhfp @param {CPtr} r */
@@ -705,138 +710,138 @@ function rest_room(nhfp, r) {
     let i;
     sfi_mkroom(nhfp, r, __sl16);
     for (i = 0; i < cptr.ld1s(cptr.add(r, 20)); i++) {
-        cptr.stPtr(cptr.add(cptr.add(r, 24), i, 8), cptr.add(gs.subrooms, gn.nsubroom, 224));
-        rest_room(nhfp, cptr.add(gs.subrooms, gn.nsubroom, 224));
-        cptr.stPtr(cptr.add(cptr.add(gs.subrooms, gn.nsubroom++, 224), 216), null);
+        cptr.stPtr(cptr.add(cptr.add(r, 24), i, 8), cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224));
+        rest_room(nhfp, cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224));
+        cptr.stPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.add(gs, 184)), (cptr.stI32(cptr.add(gn, 16), cptr.ldI32(cptr.add(gn, 16)) + 1)) - 1, 224), 216), null);
     }
 }
 
 /** C ref: mkroom.c:893 — @param {CPtr} nhfp */
 export function rest_rooms(nhfp) {
     let i;
-    sfi_int(nhfp, cptr.boxProp(svn, 'nroom'), __sl17);
+    sfi_int(nhfp, cptr.add(svn, 44), __sl17);
     ;
-    gn.nsubroom = 0;
-    for (i = 0; i < svn.nroom; i++) {
-        rest_room(nhfp, cptr.add(cptr.decay(svr.rooms), i));
-        svr.rooms[i].resident = null;
+    cptr.stI32(cptr.add(gn, 16), 0);
+    for (i = 0; i < cptr.ldI32(cptr.add(svn, 44)); i++) {
+        rest_room(nhfp, cptr.add(svr, i, 224));
+        cptr.stPtr(cptr.add(cptr.add(svr, i, 224), 216), null);
     }
-    svr.rooms[svn.nroom].hx = i16((-1));
-    cptr.stI16(cptr.add(cptr.add(gs.subrooms, gn.nsubroom, 224), 2), i16((-1)));
+    cptr.stI16(cptr.add(cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224), 2), i16((-1)));
+    cptr.stI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224), 2), i16((-1)));
 }
 
 /** C ref: mkroom.c:912 — @param {CInt} sym @returns {CInt} */
 export function cmap_to_type(sym) {
-    let typ = STONE;
+    let typ = 0;
     switch (sym) {
-        case S_stone:
-        typ = STONE;
+        case 0:
+        typ = 0;
         break;
-        case S_vwall:
-        typ = VWALL;
+        case 1:
+        typ = 1;
         break;
-        case S_hwall:
-        typ = HWALL;
+        case 2:
+        typ = 2;
         break;
-        case S_tlcorn:
-        typ = TLCORNER;
+        case 3:
+        typ = 3;
         break;
-        case S_trcorn:
-        typ = TRCORNER;
+        case 4:
+        typ = 4;
         break;
-        case S_blcorn:
-        typ = BLCORNER;
+        case 5:
+        typ = 5;
         break;
-        case S_brcorn:
-        typ = BRCORNER;
+        case 6:
+        typ = 6;
         break;
-        case S_crwall:
-        typ = CROSSWALL;
+        case 7:
+        typ = 7;
         break;
-        case S_tuwall:
-        typ = TUWALL;
+        case 8:
+        typ = 8;
         break;
-        case S_tdwall:
-        typ = TDWALL;
+        case 9:
+        typ = 9;
         break;
-        case S_tlwall:
-        typ = TLWALL;
+        case 10:
+        typ = 10;
         break;
-        case S_trwall:
-        typ = TRWALL;
+        case 11:
+        typ = 11;
         break;
-        case S_ndoor:
-        case S_vodoor:
-        case S_hodoor:
-        case S_vcdoor:
-        case S_hcdoor:
-        typ = DOOR;
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        typ = 23;
         break;
-        case S_bars:
-        typ = IRONBARS;
+        case 17:
+        typ = 22;
         break;
-        case S_tree:
-        typ = TREE;
+        case 18:
+        typ = 13;
         break;
-        case S_room:
-        case S_darkroom:
-        typ = ROOM;
+        case 19:
+        case 20:
+        typ = 25;
         break;
-        case S_corr:
-        case S_litcorr:
-        typ = CORR;
+        case 22:
+        case 23:
+        typ = 24;
         break;
-        case S_upstair:
-        case S_dnstair:
-        typ = STAIRS;
+        case 25:
+        case 26:
+        typ = 26;
         break;
-        case S_upladder:
-        case S_dnladder:
-        typ = LADDER;
+        case 27:
+        case 28:
+        typ = 27;
         break;
-        case S_altar:
-        typ = ALTAR;
+        case 33:
+        typ = 32;
         break;
-        case S_grave:
-        typ = GRAVE;
+        case 34:
+        typ = 31;
         break;
-        case S_throne:
-        typ = THRONE;
+        case 35:
+        typ = 29;
         break;
-        case S_sink:
-        typ = SINK;
+        case 36:
+        typ = 30;
         break;
-        case S_fountain:
-        typ = FOUNTAIN;
+        case 37:
+        typ = 28;
         break;
-        case S_pool:
-        typ = POOL;
+        case 38:
+        typ = 16;
         break;
-        case S_ice:
-        typ = ICE;
+        case 39:
+        typ = 33;
         break;
-        case S_lava:
-        typ = LAVAPOOL;
+        case 40:
+        typ = 20;
         break;
-        case S_vodbridge:
-        case S_hodbridge:
-        typ = DRAWBRIDGE_DOWN;
+        case 42:
+        case 43:
+        typ = 34;
         break;
-        case S_vcdbridge:
-        case S_hcdbridge:
-        typ = DBWALL;
+        case 44:
+        case 45:
+        typ = 12;
         break;
-        case S_air:
-        typ = AIR;
+        case 46:
+        typ = 35;
         break;
-        case S_cloud:
-        typ = CLOUD;
+        case 47:
+        typ = 36;
         break;
-        case S_water:
-        typ = WATER;
+        case 48:
+        typ = 18;
         break;
-        case S_lavawall:
-        typ = LAVAWALL;
+        case 41:
+        typ = 21;
         break;
         default:
         break;
@@ -848,14 +853,14 @@ export function cmap_to_type(sym) {
 function invalid_shop_shape(sroom) {
     let x;
     let y;
-    let doorx = cptr.ldI16(cptr.add(svd.doors, cptr.ldI32(cptr.add(sroom, 16)), 4));
-    let doory = cptr.ldI16(cptr.add(cptr.add(svd.doors, cptr.ldI32(cptr.add(sroom, 16)), 4), 2));
+    let doorx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), cptr.ldI32(cptr.add(sroom, 16)), 4));
+    let doory = cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), cptr.ldI32(cptr.add(sroom, 16)), 4), 2));
     let insidex = 0;
     let insidey = 0;
     let insidect = 0;
     for (x = i16((((doorx - 1) | 0) > (cptr.ldI16(sroom)) ? ((doorx - 1) | 0) : (cptr.ldI16(sroom)))); x <= (((doorx + 1) | 0) < (cptr.ldI16(cptr.add(sroom, 2))) ? ((doorx + 1) | 0) : (cptr.ldI16(cptr.add(sroom, 2)))); x++) {
         for (y = i16((((doory - 1) | 0) > (cptr.ldI16(cptr.add(sroom, 4))) ? ((doory - 1) | 0) : (cptr.ldI16(cptr.add(sroom, 4))))); y <= (((doory + 1) | 0) < (cptr.ldI16(cptr.add(sroom, 6))) ? ((doory + 1) | 0) : (cptr.ldI16(cptr.add(sroom, 6)))); y++) {
-            if (svl.level.locations[x][y].typ == ROOM) {
+            if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 25) {
                 insidex = x;
                 insidey = y;
                 insidect++;
@@ -872,7 +877,7 @@ function invalid_shop_shape(sroom) {
             for (y = i16((((insidey - 1) | 0) > (cptr.ldI16(cptr.add(sroom, 4))) ? ((insidey - 1) | 0) : (cptr.ldI16(cptr.add(sroom, 4))))); y <= (((insidey + 1) | 0) < (cptr.ldI16(cptr.add(sroom, 6))) ? ((insidey + 1) | 0) : (cptr.ldI16(cptr.add(sroom, 6)))); y++) {
                 if (x == insidex && y == insidey)
                     continue;
-                if (svl.level.locations[x][y].typ == ROOM)
+                if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 25)
                     insidect++;
             }
         }

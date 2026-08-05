@@ -12,59 +12,95 @@ import { luaD_call, luaD_callnoyield, luaD_growstack } from './ldo.js';
 import { luaG_concaterror, luaG_opinterror, luaG_ordererror, luaG_tointerror } from './ldebug.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("userdata");
-const __sl1 = cptr.lit("no value");
-const __sl2 = cptr.lit("nil");
-const __sl3 = cptr.lit("boolean");
-const __sl4 = cptr.lit("number");
-const __sl5 = cptr.lit("string");
-const __sl6 = cptr.lit("table");
-const __sl7 = cptr.lit("function");
-const __sl8 = cptr.lit("thread");
-const __sl9 = cptr.lit("upvalue");
-const __sl10 = cptr.lit("proto");
-const __sl11 = cptr.lit("__index");
-const __sl12 = cptr.lit("__newindex");
-const __sl13 = cptr.lit("__gc");
-const __sl14 = cptr.lit("__mode");
-const __sl15 = cptr.lit("__len");
-const __sl16 = cptr.lit("__eq");
-const __sl17 = cptr.lit("__add");
-const __sl18 = cptr.lit("__sub");
-const __sl19 = cptr.lit("__mul");
-const __sl20 = cptr.lit("__mod");
-const __sl21 = cptr.lit("__pow");
-const __sl22 = cptr.lit("__div");
-const __sl23 = cptr.lit("__idiv");
-const __sl24 = cptr.lit("__band");
-const __sl25 = cptr.lit("__bor");
-const __sl26 = cptr.lit("__bxor");
-const __sl27 = cptr.lit("__shl");
-const __sl28 = cptr.lit("__shr");
-const __sl29 = cptr.lit("__unm");
-const __sl30 = cptr.lit("__bnot");
-const __sl31 = cptr.lit("__lt");
-const __sl32 = cptr.lit("__le");
-const __sl33 = cptr.lit("__concat");
-const __sl34 = cptr.lit("__call");
-const __sl35 = cptr.lit("__close");
-const __sl36 = cptr.lit("__name");
-const __sl37 = cptr.lit("perform bitwise operation on");
-const __sl38 = cptr.lit("perform arithmetic on");
+const __sl0 = cptr.lit("no value");
+const __sl1 = cptr.lit("nil");
+const __sl2 = cptr.lit("boolean");
+const __sl3 = cptr.lit("number");
+const __sl4 = cptr.lit("string");
+const __sl5 = cptr.lit("table");
+const __sl6 = cptr.lit("function");
+const __sl7 = cptr.lit("thread");
+const __sl8 = cptr.lit("upvalue");
+const __sl9 = cptr.lit("proto");
+const __sl10 = cptr.lit("__index");
+const __sl11 = cptr.lit("__newindex");
+const __sl12 = cptr.lit("__gc");
+const __sl13 = cptr.lit("__mode");
+const __sl14 = cptr.lit("__len");
+const __sl15 = cptr.lit("__eq");
+const __sl16 = cptr.lit("__add");
+const __sl17 = cptr.lit("__sub");
+const __sl18 = cptr.lit("__mul");
+const __sl19 = cptr.lit("__mod");
+const __sl20 = cptr.lit("__pow");
+const __sl21 = cptr.lit("__div");
+const __sl22 = cptr.lit("__idiv");
+const __sl23 = cptr.lit("__band");
+const __sl24 = cptr.lit("__bor");
+const __sl25 = cptr.lit("__bxor");
+const __sl26 = cptr.lit("__shl");
+const __sl27 = cptr.lit("__shr");
+const __sl28 = cptr.lit("__unm");
+const __sl29 = cptr.lit("__bnot");
+const __sl30 = cptr.lit("__lt");
+const __sl31 = cptr.lit("__le");
+const __sl32 = cptr.lit("__concat");
+const __sl33 = cptr.lit("__call");
+const __sl34 = cptr.lit("__close");
+const __sl35 = cptr.lit("__name");
+const __sl36 = cptr.lit("perform bitwise operation on");
+const __sl37 = cptr.lit("perform arithmetic on");
 
 /** C ref: ltm.c:28 — char[9] */
-const udatatypename = __sl0;
+const udatatypename = cptr.bytes("userdata");
 
 /** C ref: ltm.c:30 — char *[12] */
-const luaT_typenames_ = [__sl1, __sl2, __sl3, cptr.decay(udatatypename), __sl4, __sl5, __sl6, __sl7, cptr.decay(udatatypename), __sl8, __sl9, __sl10];
+export const luaT_typenames_ = cptr.alloc(12 * 8);
+cptr.stPtr(cptr.add(luaT_typenames_, 0), __sl0);
+cptr.stPtr(cptr.add(luaT_typenames_, 8), __sl1);
+cptr.stPtr(cptr.add(luaT_typenames_, 16), __sl2);
+cptr.stPtr(cptr.add(luaT_typenames_, 24), cptr.decay(udatatypename));
+cptr.stPtr(cptr.add(luaT_typenames_, 32), __sl3);
+cptr.stPtr(cptr.add(luaT_typenames_, 40), __sl4);
+cptr.stPtr(cptr.add(luaT_typenames_, 48), __sl5);
+cptr.stPtr(cptr.add(luaT_typenames_, 56), __sl6);
+cptr.stPtr(cptr.add(luaT_typenames_, 64), cptr.decay(udatatypename));
+cptr.stPtr(cptr.add(luaT_typenames_, 72), __sl7);
+cptr.stPtr(cptr.add(luaT_typenames_, 80), __sl8);
+cptr.stPtr(cptr.add(luaT_typenames_, 88), __sl9);
 
-const __static_luaT_init_luaT_eventname = [__sl11, __sl12, __sl13, __sl14, __sl15, __sl16, __sl17, __sl18, __sl19, __sl20, __sl21, __sl22, __sl23, __sl24, __sl25, __sl26, __sl27, __sl28, __sl29, __sl30, __sl31, __sl32, __sl33, __sl34, __sl35]; /** C ref: ltm.c:39 — char *[25] (function-static) */
+const __static_luaT_init_luaT_eventname = cptr.alloc(25 * 8);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 0), __sl10);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 8), __sl11);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 16), __sl12);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 24), __sl13);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 32), __sl14);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 40), __sl15);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 48), __sl16);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 56), __sl17);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 64), __sl18);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 72), __sl19);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 80), __sl20);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 88), __sl21);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 96), __sl22);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 104), __sl23);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 112), __sl24);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 120), __sl25);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 128), __sl26);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 136), __sl27);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 144), __sl28);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 152), __sl29);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 160), __sl30);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 168), __sl31);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 176), __sl32);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 184), __sl33);
+cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 192), __sl34); /** C ref: ltm.c:39 — char *[25] (function-static) */
 
 /** C ref: ltm.c:38 — @param {CPtr} L */
 export function luaT_init(L) {
     let i;
-    for (i = 0; i < TM_N; i++) {
-        cptr.stPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), i, 8), luaS_new(L, cptr.ldPtr(cptr.add(cptr.decay(__static_luaT_init_luaT_eventname), i))));
+    for (i = 0; i < 25; i++) {
+        cptr.stPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), i, 8), luaS_new(L, cptr.ldPtr(cptr.add(__static_luaT_init_luaT_eventname, i, 8))));
         luaC_fix(L, ((((cptr.ldPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), i, 8)))))));
     }
 }
@@ -100,11 +136,11 @@ export function luaT_gettmbyobj(L, o, event) {
 export function luaT_objtypename(L, o) {
     let mt;
     if ((((cptr.ld1u(cptr.add(((o)), 8))) == (((((5) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 40))), (null))) || (((cptr.ld1u(cptr.add(((o)), 8))) == (((((7) | ((0) << 4))) | (1 << 6)))) && !cptr.eq((mt = cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((o))))))))), 24))), (null)))) {
-        let name = luaH_getshortstr(mt, luaS_new(L, __sl36));
+        let name = luaH_getshortstr(mt, luaS_new(L, __sl35));
         if ((((((cptr.ld1u(cptr.add(((name)), 8)))) & 15)) == (4)))
             return (cptr.add((((((((cptr.ldPtr(((name)))))))))), 24));
     }
-    return cptr.ldPtr(cptr.add(cptr.decay(luaT_typenames_), ((((((cptr.ld1u(cptr.add((o), 8)))) & 15))) + 1) | 0));
+    return cptr.ldPtr(cptr.add(luaT_typenames_, ((((((cptr.ld1u(cptr.add((o), 8)))) & 15))) + 1) | 0, 8));
 }
 
 /** C ref: ltm.c:103 — @param {CPtr} L @param {CPtr} f @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} p3 */
@@ -216,20 +252,20 @@ function callbinTM(L, p1, p2, res, event) {
 export function luaT_trybinTM(L, p1, p2, res, event) {
     if ((__builtin_expect(BigInt(((!callbinTM(L, p1, p2, res, event)) != 0)), 0n))) {
         switch (event) {
-            case TM_BAND >>> 0:
-            case TM_BOR >>> 0:
-            case TM_BXOR >>> 0:
-            case TM_SHL >>> 0:
-            case TM_SHR >>> 0:
-            case TM_BNOT >>> 0:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 19:
             {
                 if ((((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == (3)) && (((((cptr.ld1u(cptr.add(((p2)), 8)))) & 15)) == (3)))
                     luaG_tointerror(L, p1, p2);
                 else
-                    luaG_opinterror(L, p1, p2, __sl37);
+                    luaG_opinterror(L, p1, p2, __sl36);
             }
             default:
-            luaG_opinterror(L, p1, p2, __sl38);
+            luaG_opinterror(L, p1, p2, __sl37);
         }
     }
 }
@@ -237,7 +273,7 @@ export function luaT_trybinTM(L, p1, p2, res, event) {
 /** C ref: ltm.c:167 — @param {CPtr} L */
 export function luaT_tryconcatTM(L) {
     let top = cptr.ldPtr(cptr.add(L, 16));
-    if ((__builtin_expect(BigInt(((!callbinTM(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))), cptr.add(top, -(2), 16), TM_CONCAT)) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((!callbinTM(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))), cptr.add(top, -(2), 16), 22)) != 0)), 0n)))
         luaG_concaterror(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))));
 }
 

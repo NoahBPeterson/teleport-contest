@@ -50,7 +50,7 @@ function loadBlock(S, b, size) {
 
 /** C ref: lundump.c:61 — @param {CPtr} S @returns {*} */
 function loadByte(S) {
-    let b = ((cptr.ldU64((cptr.ldPtr(cptr.add(S, 8))))--) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(S, 8))));
+    let b = (((cptr.stU64((cptr.ldPtr(cptr.add(S, 8))), cptr.ldU64((cptr.ldPtr(cptr.add(S, 8)))) + -1n)) - 1n) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(S, 8))));
     if (b == (-1))
         error(S, __sl1);
     return (uchar(((b))));

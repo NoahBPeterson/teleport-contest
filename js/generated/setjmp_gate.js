@@ -29,13 +29,13 @@ const __sl18 = cptr.lit("e: setjmp returned %d after longjmp(jb, 0)\n");
 const __sl19 = cptr.lit("done\n");
 
 /** C ref: setjmp_gate.c:20 — int[48] */
-const jb_a = new Array(48).fill(0);
+const jb_a = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:20 — int[48] */
-const jb_outer = new Array(48).fill(0);
+const jb_outer = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:21 — int[48] */
-const jb_inner = new Array(48).fill(0);
+const jb_inner = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:25 — @param {CInt} x @returns {CInt} */
 function worker_a(x) {
@@ -128,7 +128,7 @@ function test_b() {
 }
 
 /** C ref: setjmp_gate.c:73 — int[48] */
-const jb_c = new Array(48).fill(0);
+const jb_c = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:73 — @param {CInt} v */
 function frame3(v) {
@@ -241,7 +241,7 @@ function test_d() {
 }
 
 /** C ref: setjmp_gate.c:168 — int[48] */
-const jb_e = new Array(48).fill(0);
+const jb_e = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:168 */
 function test_e() {

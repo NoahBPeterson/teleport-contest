@@ -34,10 +34,10 @@ function dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
     do {
-        cptr.st1(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - BigInt.asUintN(64, BigInt((++n)))), Number(BigInt.asUintN(8, (x & 127n))));
+        cptr.st1(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - BigInt.asUintN(64, BigInt((++n))), 1), Number(BigInt.asUintN(8, (x & 127n))));
         x >>= 7n;
     } while (x != 0n);
-    cptr.st1(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - 1n), cptr.ld1u(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - 1n)) | 128);
+    cptr.st1(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - 1n, 1), cptr.ld1u(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n) - 1n, 1)) | 128);
     dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), ((8n * 8n + 6n) / 7n)), -(n)), BigInt.asUintN(64, BigInt((n))) * 1n);
 }
 

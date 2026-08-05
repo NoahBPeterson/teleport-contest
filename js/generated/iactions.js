@@ -3,7 +3,7 @@
 // Input sha256: a8b65fd2326977b85a2e93f6c939017fd7ab2ab6848b19f375d8852aa98f29f6
 // Transpiler: tools/c2js c2js emit v1+batch
 
-import { i16, schar } from '../cmachine.js';
+import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
 import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
@@ -11,6 +11,7 @@ import { doinvoke, undiscovered_artifact } from './artifact.js';
 import { objects } from './objects.js';
 import { cg, gy, svl, u, uamul, uarms, ublindf, uleft, uquiver, uright, uswapwep, uwep } from './decl.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
+import { nul_glyphinfo } from './display.js';
 import { impossible } from './pline.js';
 import { cmdq_add_ec, cmdq_add_key, do_reqmenu } from './cmd.js';
 import { doswapweapon, dotwoweapon, dowield, dowieldquiver } from './wield.js';
@@ -172,34 +173,34 @@ const __sl133 = cptr.lit("Look up information about %s");
 const __sl134 = cptr.lit("Do what with %s?");
 
 /** C ref: iactions.c:13 — enum */
-const IA_NONE = 0;
-const IA_UNWIELD = 1;
-const IA_APPLY_OBJ = 2;
-const IA_DIP_OBJ = 3;
-const IA_NAME_OBJ = 4;
-const IA_NAME_OTYP = 5;
-const IA_DROP_OBJ = 6;
-const IA_EAT_OBJ = 7;
-const IA_ENGRAVE_OBJ = 8;
-const IA_FIRE_OBJ = 9;
-const IA_ADJUST_OBJ = 10;
-const IA_ADJUST_STACK = 11;
-const IA_SACRIFICE = 12;
-const IA_BUY_OBJ = 13;
-const IA_QUAFF_OBJ = 14;
-const IA_QUIVER_OBJ = 15;
-const IA_READ_OBJ = 16;
-const IA_RUB_OBJ = 17;
-const IA_THROW_OBJ = 18;
-const IA_TAKEOFF_OBJ = 19;
-const IA_TIP_CONTAINER = 20;
-const IA_INVOKE_OBJ = 21;
-const IA_WIELD_OBJ = 22;
-const IA_WEAR_OBJ = 23;
-const IA_SWAPWEAPON = 24;
-const IA_TWOWEAPON = 25;
-const IA_ZAP_OBJ = 26;
-const IA_WHATIS_OBJ = 27;
+export const IA_NONE = 0;
+export const IA_UNWIELD = 1;
+export const IA_APPLY_OBJ = 2;
+export const IA_DIP_OBJ = 3;
+export const IA_NAME_OBJ = 4;
+export const IA_NAME_OTYP = 5;
+export const IA_DROP_OBJ = 6;
+export const IA_EAT_OBJ = 7;
+export const IA_ENGRAVE_OBJ = 8;
+export const IA_FIRE_OBJ = 9;
+export const IA_ADJUST_OBJ = 10;
+export const IA_ADJUST_STACK = 11;
+export const IA_SACRIFICE = 12;
+export const IA_BUY_OBJ = 13;
+export const IA_QUAFF_OBJ = 14;
+export const IA_QUIVER_OBJ = 15;
+export const IA_READ_OBJ = 16;
+export const IA_RUB_OBJ = 17;
+export const IA_THROW_OBJ = 18;
+export const IA_TAKEOFF_OBJ = 19;
+export const IA_TIP_CONTAINER = 20;
+export const IA_INVOKE_OBJ = 21;
+export const IA_WIELD_OBJ = 22;
+export const IA_WEAR_OBJ = 23;
+export const IA_SWAPWEAPON = 24;
+export const IA_TWOWEAPON = 25;
+export const IA_ZAP_OBJ = 26;
+export const IA_WHATIS_OBJ = 27;
 
 const __static_item_naming_classification_Name = cptr.bytes("Name"); /** C ref: iactions.c:52 — char[5] (function-static) */
 const __static_item_naming_classification_Rename = cptr.bytes("Rename or un-name"); /** C ref: iactions.c:53 — char[18] (function-static) */
@@ -209,16 +210,16 @@ const __static_item_naming_classification_Recall = cptr.bytes("Re-call or un-cal
 /** C ref: iactions.c:46 — @param {CPtr} obj @param {CPtr} onamebuf @param {CPtr} ocallbuf @returns {CInt} */
 function item_naming_classification(obj, onamebuf, ocallbuf) {
     cptr.st1(cptr.add(onamebuf, 0), cptr.st1(cptr.add(ocallbuf, 0), 0));
-    if (name_ok(obj) == GETOBJ_SUGGEST) {
-        void cptr.sprintf(onamebuf, __sl0, (!(cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208))))) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))))) ? cptr.decay(__static_item_naming_classification_Name) : cptr.decay(__static_item_naming_classification_Rename), the_unique_obj(obj) ? __sl1 : (!(cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? __sl2 : __sl3), simpleonames(obj));
+    if (name_ok(obj) == 2) {
+        void cptr.sprintf(onamebuf, __sl0, (!(cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208))))) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))))) ? cptr.decay(__static_item_naming_classification_Name) : cptr.decay(__static_item_naming_classification_Rename), the_unique_obj(obj) ? __sl1 : (!(cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == 26 && !undiscovered_artifact(26))) ? __sl2 : __sl3), simpleonames(obj));
     }
-    if (call_ok(obj) == GETOBJ_SUGGEST) {
+    if (call_ok(obj) == 2) {
         let callname = simpleonames(obj);
         if (the_unique_obj(obj))
             callname = the(callname);
-        else if (!(cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))))
+        else if (!(cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == 26 && !undiscovered_artifact(26))))
             callname = makeplural(callname);
-        void cptr.sprintf(ocallbuf, __sl4, (!objects[cptr.ldI16(cptr.add(obj, 32))].oc_uname || !cptr.ld1s(objects[cptr.ldI16(cptr.add(obj, 32))].oc_uname)) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
+        void cptr.sprintf(ocallbuf, __sl4, (!cptr.ldPtr(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 8)) || !cptr.ld1s(cptr.ldPtr(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 8)))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
     }
     return schar(((cptr.ld1s(onamebuf) || cptr.ld1s(ocallbuf)) ? 1 : 0));
 }
@@ -226,26 +227,26 @@ function item_naming_classification(obj, onamebuf, ocallbuf) {
 /** C ref: iactions.c:86 — @param {CPtr} obj @param {CPtr} outbuf @returns {CInt} */
 function item_reading_classification(obj, outbuf) {
     let otyp = cptr.ldI16(cptr.add(obj, 32));
-    let res = IA_READ_OBJ;
+    let res = 16;
     cptr.st1(outbuf, 0);
-    if (otyp == FORTUNE_COOKIE) {
+    if (otyp == 289) {
         void cptr.strcpy(outbuf, __sl5);
-    } else if (otyp == T_SHIRT) {
+    } else if (otyp == 137) {
         void cptr.strcpy(outbuf, __sl6);
-    } else if (otyp == ALCHEMY_SMOCK) {
+    } else if (otyp == 144) {
         void cptr.strcpy(outbuf, __sl7);
-    } else if (otyp == HAWAIIAN_SHIRT) {
+    } else if (otyp == 136) {
         void cptr.strcpy(outbuf, __sl8);
-    } else if (cptr.ld1s(cptr.add(obj, 49)) == SCROLL_CLASS) {
-        let magic = ((cptr.ldI32(cptr.add(obj, 84)) | 0 && otyp != SCR_MAIL && (otyp != SCR_BLANK_PAPER || !objects[otyp].oc_name_known)) ? __sl9 : __sl10);
+    } else if (cptr.ld1s(cptr.add(obj, 49)) == 9) {
+        let magic = ((cptr.ldI32(cptr.add(obj, 84)) | 0 && otyp != 364 && (otyp != 365 || !cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)))) ? __sl9 : __sl10);
         void cptr.sprintf(outbuf, __sl11, magic);
-    } else if (cptr.ld1s(cptr.add(obj, 49)) == SPBOOK_CLASS) {
-        let novel = schar((otyp == SPE_NOVEL));
-        let blank = schar((otyp == SPE_BLANK_PAPER && objects[otyp].oc_name_known | 0));
-        let tome = schar((otyp == SPE_BOOK_OF_THE_DEAD && objects[otyp].oc_name_known | 0));
+    } else if (cptr.ld1s(cptr.add(obj, 49)) == 10) {
+        let novel = schar((otyp == 408));
+        let blank = schar((otyp == 407 && cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0));
+        let tome = schar((otyp == 409 && cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) | 0));
         void cptr.sprintf(outbuf, __sl12, (novel || blank) ? __sl13 : (tome ? __sl14 : __sl15), novel ? simpleonames(obj) : (tome ? __sl16 : __sl17));
     } else {
-        res = IA_NONE;
+        res = 0;
     }
     return res;
 }
@@ -254,7 +255,7 @@ function item_reading_classification(obj, outbuf) {
 function ia_addmenu(win, act, let$, txt) {
     let any = cptr.alloc(8);
     let clr = 8;
-    cptr.memcpy(any, cg.zeroany, 8);
+    cptr.memcpy(any, cptr.add(cg, 536), 8);
     cptr.stI32(any, act);
     add_menu(win, nul_glyphinfo, any, let$, 0, 0, clr, txt, 0);
 }
@@ -265,114 +266,114 @@ function itemactions_pushkeys(otmp, act) {
         default:
         impossible(__sl18, act);
         break;
-        case IA_NONE:
+        case 0:
         break;
-        case IA_UNWIELD:
-        cmdq_add_ec(CQ_CANNED, (cptr.eq(otmp, uwep.v)) ? dowield : ((cptr.eq(otmp, uswapwep.v)) ? remarm_swapwep : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull)));
-        cmdq_add_key(CQ_CANNED, 45);
+        case 1:
+        cmdq_add_ec(0, (cptr.eq(otmp, uwep.v)) ? dowield : ((cptr.eq(otmp, uswapwep.v)) ? remarm_swapwep : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull)));
+        cmdq_add_key(0, 45);
         break;
-        case IA_APPLY_OBJ:
-        cmdq_add_ec(CQ_CANNED, doapply);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 2:
+        cmdq_add_ec(0, doapply);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_DIP_OBJ:
-        cmdq_add_ec(CQ_CANNED, dip_into);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 3:
+        cmdq_add_ec(0, dip_into);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_NAME_OBJ:
-        case IA_NAME_OTYP:
-        cmdq_add_ec(CQ_CANNED, docallcmd);
-        cmdq_add_key(CQ_CANNED, schar(((act == IA_NAME_OBJ) ? 105 : 111)));
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 4:
+        case 5:
+        cmdq_add_ec(0, docallcmd);
+        cmdq_add_key(0, schar(((act == 4) ? 105 : 111)));
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_DROP_OBJ:
-        cmdq_add_ec(CQ_CANNED, dodrop);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 6:
+        cmdq_add_ec(0, dodrop);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_EAT_OBJ:
-        cmdq_add_ec(CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(CQ_CANNED, doeat);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 7:
+        cmdq_add_ec(0, do_reqmenu);
+        cmdq_add_ec(0, doeat);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_ENGRAVE_OBJ:
-        cmdq_add_ec(CQ_CANNED, doengrave);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 8:
+        cmdq_add_ec(0, doengrave);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_FIRE_OBJ:
-        cmdq_add_ec(CQ_CANNED, dofire);
+        case 9:
+        cmdq_add_ec(0, dofire);
         break;
-        case IA_ADJUST_OBJ:
-        cmdq_add_ec(CQ_CANNED, doorganize);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 10:
+        cmdq_add_ec(0, doorganize);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_ADJUST_STACK:
-        cmdq_add_ec(CQ_CANNED, adjust_split);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 11:
+        cmdq_add_ec(0, adjust_split);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_SACRIFICE:
-        cmdq_add_ec(CQ_CANNED, dosacrifice);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 12:
+        cmdq_add_ec(0, dosacrifice);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_BUY_OBJ:
-        cmdq_add_ec(CQ_CANNED, dopay);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 13:
+        cmdq_add_ec(0, dopay);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_QUAFF_OBJ:
-        cmdq_add_ec(CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(CQ_CANNED, dodrink);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 14:
+        cmdq_add_ec(0, do_reqmenu);
+        cmdq_add_ec(0, dodrink);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_QUIVER_OBJ:
-        cmdq_add_ec(CQ_CANNED, dowieldquiver);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 15:
+        cmdq_add_ec(0, dowieldquiver);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_READ_OBJ:
-        cmdq_add_ec(CQ_CANNED, doread);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 16:
+        cmdq_add_ec(0, doread);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_RUB_OBJ:
-        cmdq_add_ec(CQ_CANNED, dorub);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 17:
+        cmdq_add_ec(0, dorub);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_THROW_OBJ:
-        cmdq_add_ec(CQ_CANNED, dothrow);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 18:
+        cmdq_add_ec(0, dothrow);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_TAKEOFF_OBJ:
-        cmdq_add_ec(CQ_CANNED, ia_dotakeoff);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 19:
+        cmdq_add_ec(0, ia_dotakeoff);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_TIP_CONTAINER:
-        cmdq_add_ec(CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(CQ_CANNED, dotip);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 20:
+        cmdq_add_ec(0, do_reqmenu);
+        cmdq_add_ec(0, dotip);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_INVOKE_OBJ:
-        cmdq_add_ec(CQ_CANNED, doinvoke);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 21:
+        cmdq_add_ec(0, doinvoke);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_WIELD_OBJ:
-        cmdq_add_ec(CQ_CANNED, dowield);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 22:
+        cmdq_add_ec(0, dowield);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_WEAR_OBJ:
-        cmdq_add_ec(CQ_CANNED, dowear);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 23:
+        cmdq_add_ec(0, dowear);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_SWAPWEAPON:
-        cmdq_add_ec(CQ_CANNED, doswapweapon);
+        case 24:
+        cmdq_add_ec(0, doswapweapon);
         break;
-        case IA_TWOWEAPON:
-        cmdq_add_ec(CQ_CANNED, dotwoweapon);
+        case 25:
+        cmdq_add_ec(0, dotwoweapon);
         break;
-        case IA_ZAP_OBJ:
-        cmdq_add_ec(CQ_CANNED, dozap);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 26:
+        cmdq_add_ec(0, dozap);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
-        case IA_WHATIS_OBJ:
-        cmdq_add_ec(CQ_CANNED, dowhatis);
-        cmdq_add_key(CQ_CANNED, 105);
-        cmdq_add_key(CQ_CANNED, cptr.ld1s(cptr.add(otmp, 50)));
+        case 27:
+        cmdq_add_ec(0, dowhatis);
+        cmdq_add_key(0, 105);
+        cmdq_add_key(0, cptr.ld1s(cptr.add(otmp, 50)));
         break;
     }
 }
@@ -380,7 +381,7 @@ function itemactions_pushkeys(otmp, act) {
 /** C ref: iactions.c:278 — @param {CPtr} otmp @returns {CInt} */
 export function itemactions(otmp) {
     let n;
-    let act = IA_NONE;
+    let act = 0;
     let win;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
@@ -388,235 +389,235 @@ export function itemactions(otmp) {
     let mtmp;
     let light = cptr.ldI32(cptr.add(otmp, 76)) | 0 ? __sl19 : __sl20;
     let already_worn = schar(((cptr.ldI64(cptr.add(otmp, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n))) != 0n));
-    win = (windowprocs.win_create_nhwindow)(4);
-    (windowprocs.win_start_menu)(win, 0n);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
     if (cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) || cptr.eq(otmp, uquiver.v)) {
         let verb = (cptr.eq(otmp, uquiver.v)) ? __sl21 : __sl22;
         let action = (cptr.eq(otmp, uquiver.v)) ? __sl23 : __sl24;
-        let which = (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? __sl25 : __sl26;
-        let what = ((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((otmp), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp != P_NONE)) ? __sl27 : __sl28);
-        void cptr.sprintf(cptr.decay(buf), __sl29, verb, 45, action, which, (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? makeplural(what) : what);
-        ia_addmenu(win, IA_UNWIELD, 45, cptr.decay(buf));
+        let which = (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == 26 && !undiscovered_artifact(26))) ? __sl25 : __sl26;
+        let what = ((cptr.ld1s(cptr.add(otmp, 49)) == 2 || (cptr.ld1s(cptr.add((otmp), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) != 0)) ? __sl27 : __sl28);
+        void cptr.sprintf(cptr.decay(buf), __sl29, verb, 45, action, which, (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == 26 && !undiscovered_artifact(26))) ? makeplural(what) : what);
+        ia_addmenu(win, 1, 45, cptr.decay(buf));
     }
-    if (cptr.ld1s(cptr.add(otmp, 49)) == COIN_CLASS)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl30);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == CREAM_PIE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl31);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == BULLWHIP)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl32);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == GRAPPLING_HOOK)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl33);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == BAG_OF_TRICKS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_name_known | 0)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl34);
-    else if ((cptr.ldI16(cptr.add((otmp), 32)) >= LARGE_BOX && cptr.ldI16(cptr.add((otmp), 32)) <= BAG_OF_TRICKS))
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl35);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == CAN_OF_GREASE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl36);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == LOCK_PICK || cptr.ldI16(cptr.add(otmp, 32)) == CREDIT_CARD || cptr.ldI16(cptr.add(otmp, 32)) == SKELETON_KEY)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl37);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == TINNING_KIT)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl38);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == LEASH)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl39);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == SADDLE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl40);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == MAGIC_WHISTLE || cptr.ldI16(cptr.add(otmp, 32)) == TIN_WHISTLE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl41);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == EUCALYPTUS_LEAF)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl42);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == STETHOSCOPE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl43);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == MIRROR)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl44);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == BELL || cptr.ldI16(cptr.add(otmp, 32)) == BELL_OF_OPENING)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl45);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == CANDELABRUM_OF_INVOCATION) {
+    if (cptr.ld1s(cptr.add(otmp, 49)) == 12)
+        ia_addmenu(win, 2, 97, __sl30);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 287)
+        ia_addmenu(win, 2, 97, __sl31);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 82)
+        ia_addmenu(win, 2, 97, __sl32);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 260)
+        ia_addmenu(win, 2, 97, __sl33);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 220 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 16)) | 0)
+        ia_addmenu(win, 2, 97, __sl34);
+    else if ((cptr.ldI16(cptr.add((otmp), 32)) >= 214 && cptr.ldI16(cptr.add((otmp), 32)) <= 220))
+        ia_addmenu(win, 2, 97, __sl35);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 240)
+        ia_addmenu(win, 2, 97, __sl36);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 222 || cptr.ldI16(cptr.add(otmp, 32)) == 223 || cptr.ldI16(cptr.add(otmp, 32)) == 221)
+        ia_addmenu(win, 2, 97, __sl37);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 238)
+        ia_addmenu(win, 2, 97, __sl38);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 236)
+        ia_addmenu(win, 2, 97, __sl39);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 235)
+        ia_addmenu(win, 2, 97, __sl40);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 246 || cptr.ldI16(cptr.add(otmp, 32)) == 245)
+        ia_addmenu(win, 2, 97, __sl41);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 276)
+        ia_addmenu(win, 2, 97, __sl42);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 237)
+        ia_addmenu(win, 2, 97, __sl43);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 230)
+        ia_addmenu(win, 2, 97, __sl44);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 255 || cptr.ldI16(cptr.add(otmp, 32)) == 263)
+        ia_addmenu(win, 2, 97, __sl45);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 262) {
         void cptr.sprintf(cptr.decay(buf), __sl46, light);
-        ia_addmenu(win, IA_APPLY_OBJ, 97, cptr.decay(buf));
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == WAX_CANDLE || cptr.ldI16(cptr.add(otmp, 32)) == TALLOW_CANDLE) {
+        ia_addmenu(win, 2, 97, cptr.decay(buf));
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 225 || cptr.ldI16(cptr.add(otmp, 32)) == 224) {
         let multiple = schar(((cptr.ldI64(cptr.add(otmp, 40)) == 1n) ? 0 : 1));
         let s = multiple ? __sl25 : __sl26;
-        let o = carrying(CANDELABRUM_OF_INVOCATION);
+        let o = carrying(262);
         if (o && cptr.ld1s(cptr.add(o, 48)) < 7)
             void cptr.sprintf(cptr.decay(buf), __sl47, s, !cptr.ldI32(cptr.add(otmp, 76)) ? __sl48 : __sl49, multiple ? __sl50 : __sl51);
         else
             void cptr.sprintf(cptr.decay(buf), __sl0, light, s, simpleonames(otmp));
-        ia_addmenu(win, IA_APPLY_OBJ, 97, cptr.decay(buf));
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == OIL_LAMP || cptr.ldI16(cptr.add(otmp, 32)) == MAGIC_LAMP || cptr.ldI16(cptr.add(otmp, 32)) == BRASS_LANTERN) {
+        ia_addmenu(win, 2, 97, cptr.decay(buf));
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 227 || cptr.ldI16(cptr.add(otmp, 32)) == 228 || cptr.ldI16(cptr.add(otmp, 32)) == 226) {
         void cptr.sprintf(cptr.decay(buf), __sl52, light);
-        ia_addmenu(win, IA_APPLY_OBJ, 97, cptr.decay(buf));
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == POT_OIL && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_name_known | 0) {
+        ia_addmenu(win, 2, 97, cptr.decay(buf));
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 321 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 16)) | 0) {
         void cptr.sprintf(cptr.decay(buf), __sl53, light);
-        ia_addmenu(win, IA_APPLY_OBJ, 97, cptr.decay(buf));
-    } else if (cptr.ld1s(cptr.add(otmp, 49)) == POTION_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __sl54, (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(i16(ART_EYES_OF_THE_OVERWORLD)))) ? __sl55 : __sl26, (((cptr.ldI64(cptr.add(otmp, 40))) == 1n) ? __sl10 : __sl56));
-        ia_addmenu(win, IA_DIP_OBJ, 97, cptr.decay(buf));
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == EXPENSIVE_CAMERA)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl57);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == TOWEL)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl58);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == CRYSTAL_BALL)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl59);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == MAGIC_MARKER)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl60);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == FIGURINE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl61);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == UNICORN_HORN)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl62);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == HORN_OF_PLENTY && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_name_known | 0)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl63);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) >= WOODEN_FLUTE && cptr.ldI16(cptr.add(otmp, 32)) <= DRUM_OF_EARTHQUAKE)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl64);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == LAND_MINE || cptr.ldI16(cptr.add(otmp, 32)) == BEARTRAP)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl65);
-    else if (cptr.ldI16(cptr.add(otmp, 32)) == PICK_AXE || cptr.ldI16(cptr.add(otmp, 32)) == DWARVISH_MATTOCK)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl66);
-    else if (cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS)
-        ia_addmenu(win, IA_APPLY_OBJ, 97, __sl67);
+        ia_addmenu(win, 2, 97, cptr.decay(buf));
+    } else if (cptr.ld1s(cptr.add(otmp, 49)) == 8) {
+        void cptr.sprintf(cptr.decay(buf), __sl54, (cptr.ldI64(cptr.add((otmp), 40)) != 1n || (cptr.ld1s(cptr.add((otmp), 51)) == 26 && !undiscovered_artifact(26))) ? __sl55 : __sl26, (((cptr.ldI64(cptr.add(otmp, 40))) == 1n) ? __sl10 : __sl56));
+        ia_addmenu(win, 3, 97, cptr.decay(buf));
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 229)
+        ia_addmenu(win, 2, 97, __sl57);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 234)
+        ia_addmenu(win, 2, 97, __sl58);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 231)
+        ia_addmenu(win, 2, 97, __sl59);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 242)
+        ia_addmenu(win, 2, 97, __sl60);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 241)
+        ia_addmenu(win, 2, 97, __sl61);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 261)
+        ia_addmenu(win, 2, 97, __sl62);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 252 && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 16)) | 0)
+        ia_addmenu(win, 2, 97, __sl63);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) >= 247 && cptr.ldI16(cptr.add(otmp, 32)) <= 258)
+        ia_addmenu(win, 2, 97, __sl64);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 243 || cptr.ldI16(cptr.add(otmp, 32)) == 244)
+        ia_addmenu(win, 2, 97, __sl65);
+    else if (cptr.ldI16(cptr.add(otmp, 32)) == 259 || cptr.ldI16(cptr.add(otmp, 32)) == 71)
+        ia_addmenu(win, 2, 97, __sl66);
+    else if (cptr.ld1s(cptr.add(otmp, 49)) == 11)
+        ia_addmenu(win, 2, 97, __sl67);
     if (item_naming_classification(otmp, cptr.decay(buf), cptr.decay(buf2))) {
         if (cptr.ld1s(cptr.decay(buf)))
-            ia_addmenu(win, IA_NAME_OBJ, 99, cptr.decay(buf));
+            ia_addmenu(win, 4, 99, cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf2)))
-            ia_addmenu(win, IA_NAME_OTYP, 67, cptr.decay(buf2));
+            ia_addmenu(win, 5, 67, cptr.decay(buf2));
     }
     if (!already_worn) {
         void cptr.sprintf(cptr.decay(buf), __sl68, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28);
-        ia_addmenu(win, IA_DROP_OBJ, 100, cptr.decay(buf));
+        ia_addmenu(win, 6, 100, cptr.decay(buf));
     }
-    if (cptr.ldI16(cptr.add(otmp, 32)) == TIN) {
-        void cptr.sprintf(cptr.decay(buf), __sl70, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl71 : __sl72, (cptr.ldI16(cptr.add(otmp, 32)) == TIN && uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == TIN_OPENER) ? __sl73 : __sl10);
-        ia_addmenu(win, IA_EAT_OBJ, 101, cptr.decay(buf));
+    if (cptr.ldI16(cptr.add(otmp, 32)) == 296) {
+        void cptr.sprintf(cptr.decay(buf), __sl70, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl71 : __sl72, (cptr.ldI16(cptr.add(otmp, 32)) == 296 && uwep.v && cptr.ldI16(cptr.add(uwep.v, 32)) == 239) ? __sl73 : __sl10);
+        ia_addmenu(win, 7, 101, cptr.decay(buf));
     } else if (is_edible(otmp)) {
         void cptr.sprintf(cptr.decay(buf), __sl74, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl55 : __sl26);
-        ia_addmenu(win, IA_EAT_OBJ, 101, cptr.decay(buf));
+        ia_addmenu(win, 7, 101, cptr.decay(buf));
     }
-    if (cptr.ldI16(cptr.add(otmp, 32)) == TOWEL) {
-        ia_addmenu(win, IA_ENGRAVE_OBJ, 69, __sl75);
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == MAGIC_MARKER) {
-        ia_addmenu(win, IA_ENGRAVE_OBJ, 69, __sl76);
-    } else if (cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == RING_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __sl77, ((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= P_DAGGER && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= P_SABER) || cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS || ((cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == RING_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_tough | 0)) ? __sl78 : __sl79, surface(u.ux, u.uy), (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl80 : __sl81);
-        ia_addmenu(win, IA_ENGRAVE_OBJ, 69, cptr.decay(buf));
+    if (cptr.ldI16(cptr.add(otmp, 32)) == 234) {
+        ia_addmenu(win, 8, 69, __sl75);
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 242) {
+        ia_addmenu(win, 8, 69, __sl76);
+    } else if (cptr.ld1s(cptr.add(otmp, 49)) == 2 || cptr.ld1s(cptr.add(otmp, 49)) == 11 || cptr.ld1s(cptr.add(otmp, 49)) == 13 || cptr.ld1s(cptr.add(otmp, 49)) == 4) {
+        void cptr.sprintf(cptr.decay(buf), __sl77, ((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) >= 1 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) <= 9) || cptr.ld1s(cptr.add(otmp, 49)) == 11 || ((cptr.ld1s(cptr.add(otmp, 49)) == 13 || cptr.ld1s(cptr.add(otmp, 49)) == 4) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 52)) | 0)) ? __sl78 : __sl79, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))), (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl80 : __sl81);
+        ia_addmenu(win, 8, 69, cptr.decay(buf));
     }
     if (cptr.eq(otmp, uquiver.v)) {
-        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)));
+        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == 2 || cptr.ld1s(cptr.add(otmp, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) <= -20) && ((uwep.v) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) == -cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)))));
         void cptr.sprintf(cptr.decay(buf), __sl82, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl55 : __sl26);
         if (shoot) {
             (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__sl85, __sl86, 456, __sl87) : void 0);
-            void cptr.sprintf(eos.v(cptr.decay(buf)), __sl88, simpleonames(uwep.v));
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl88, simpleonames(uwep.v));
         }
-        ia_addmenu(win, IA_FIRE_OBJ, 102, cptr.decay(buf));
+        ia_addmenu(win, 9, 102, cptr.decay(buf));
     }
-    if (cptr.ld1s(cptr.add(otmp, 49)) != COIN_CLASS || check_invent_gold(__sl89))
-        ia_addmenu(win, IA_ADJUST_OBJ, 105, __sl90);
-    if (cptr.ldI64(cptr.add(otmp, 40)) > 1n && cptr.ld1s(cptr.add(otmp, 49)) != COIN_CLASS)
-        ia_addmenu(win, IA_ADJUST_STACK, 73, __sl91);
-    if (((svl.level.locations[u.ux][u.uy].typ) == ALTAR) && !u.uswallow) {
-        if (cptr.ldI16(cptr.add(otmp, 32)) == CORPSE)
-            ia_addmenu(win, IA_SACRIFICE, 79, __sl92);
-        else if (cptr.ldI16(cptr.add(otmp, 32)) == AMULET_OF_YENDOR || cptr.ldI16(cptr.add(otmp, 32)) == FAKE_AMULET_OF_YENDOR)
-            ia_addmenu(win, IA_SACRIFICE, 79, __sl93);
+    if (cptr.ld1s(cptr.add(otmp, 49)) != 12 || check_invent_gold(__sl89))
+        ia_addmenu(win, 10, 105, __sl90);
+    if (cptr.ldI64(cptr.add(otmp, 40)) > 1n && cptr.ld1s(cptr.add(otmp, 49)) != 12)
+        ia_addmenu(win, 11, 73, __sl91);
+    if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 32) && !cptr.ldI32(cptr.add(u, 1848))) {
+        if (cptr.ldI16(cptr.add(otmp, 32)) == 265)
+            ia_addmenu(win, 12, 79, __sl92);
+        else if (cptr.ldI16(cptr.add(otmp, 32)) == 213 || cptr.ldI16(cptr.add(otmp, 32)) == 212)
+            ia_addmenu(win, 12, 79, __sl93);
     }
-    if (cptr.ldI32(cptr.add(otmp, 64)) | 0 && (mtmp = shop_keeper(cptr.ld1s(in_rooms(u.ux, u.uy, SHOPBASE)))) !== null && inhishop(mtmp)) {
+    if (cptr.ldI32(cptr.add(otmp, 64)) | 0 && (mtmp = shop_keeper(cptr.ld1s(in_rooms(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 14)))) !== null && inhishop(mtmp)) {
         void cptr.sprintf(cptr.decay(buf), __sl94, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28);
-        ia_addmenu(win, IA_BUY_OBJ, 112, cptr.decay(buf));
+        ia_addmenu(win, 13, 112, cptr.decay(buf));
     }
     if (!already_worn) {
         cptr.st1(cptr.decay(buf), 0);
-        if (cptr.ld1s(cptr.add(otmp, 49)) == AMULET_CLASS) {
+        if (cptr.ld1s(cptr.add(otmp, 49)) == 5) {
             void cptr.strcpy(cptr.decay(buf), !uamul.v ? __sl95 : __sl96);
-        } else if (cptr.ld1s(cptr.add(otmp, 49)) == RING_CLASS || cptr.ldI16(cptr.add(otmp, 32)) == MEAT_RING) {
+        } else if (cptr.ld1s(cptr.add(otmp, 49)) == 4 || cptr.ldI16(cptr.add(otmp, 32)) == 270) {
             if (!uleft.v || !uright.v)
                 void cptr.strcpy(cptr.decay(buf), __sl97);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl98, makeplural(body_part(FINGER)));
-        } else if (cptr.ldI16(cptr.add(otmp, 32)) == BLINDFOLD || cptr.ldI16(cptr.add(otmp, 32)) == TOWEL || cptr.ldI16(cptr.add(otmp, 32)) == LENSES) {
+                void cptr.sprintf(cptr.decay(buf), __sl98, makeplural(body_part(3)));
+        } else if (cptr.ldI16(cptr.add(otmp, 32)) == 233 || cptr.ldI16(cptr.add(otmp, 32)) == 234 || cptr.ldI16(cptr.add(otmp, 32)) == 232) {
             if (ublindf.v)
                 void cptr.strcpy(cptr.decay(buf), __sl99);
-            else if (cptr.ldI16(cptr.add(otmp, 32)) == LENSES)
+            else if (cptr.ldI16(cptr.add(otmp, 32)) == 232)
                 void cptr.strcpy(cptr.decay(buf), __sl100);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl101, (cptr.ldI16(cptr.add(otmp, 32)) == TOWEL) ? __sl102 : __sl10);
+                void cptr.sprintf(cptr.decay(buf), __sl101, (cptr.ldI16(cptr.add(otmp, 32)) == 234) ? __sl102 : __sl10);
         }
         if (cptr.ld1s(cptr.decay(buf)))
-            ia_addmenu(win, IA_WEAR_OBJ, 80, cptr.decay(buf));
+            ia_addmenu(win, 23, 80, cptr.decay(buf));
     }
-    if (cptr.ld1s(cptr.add(otmp, 49)) == POTION_CLASS) {
+    if (cptr.ld1s(cptr.add(otmp, 49)) == 8) {
         void cptr.sprintf(cptr.decay(buf), __sl103, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl104 : __sl105);
-        ia_addmenu(win, IA_QUAFF_OBJ, 113, cptr.decay(buf));
+        ia_addmenu(win, 14, 113, cptr.decay(buf));
     }
-    if ((cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS) && !cptr.eq(otmp, uquiver.v)) {
-        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, (((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)) ? __sl107 : __sl108);
-        ia_addmenu(win, IA_QUIVER_OBJ, 81, cptr.decay(buf));
+    if ((cptr.ld1s(cptr.add(otmp, 49)) == 13 || cptr.ld1s(cptr.add(otmp, 49)) == 2) && !cptr.eq(otmp, uquiver.v)) {
+        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, (((cptr.ld1s(cptr.add(otmp, 49)) == 2 || cptr.ld1s(cptr.add(otmp, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) <= -20) && ((uwep.v) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) == -cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)))) ? __sl107 : __sl108);
+        ia_addmenu(win, 15, 81, cptr.decay(buf));
     }
-    if (item_reading_classification(otmp, cptr.decay(buf)) == IA_READ_OBJ)
-        ia_addmenu(win, IA_READ_OBJ, 114, cptr.decay(buf));
+    if (item_reading_classification(otmp, cptr.decay(buf)) == 16)
+        ia_addmenu(win, 16, 114, cptr.decay(buf));
     if (cptr.ldI64(cptr.add(otmp, 192)) & ((131072n | 262144n) | 65536n | 524288n)) {
         void cptr.sprintf(cptr.decay(buf), __sl109, (cptr.ldI64(cptr.add(otmp, 192)) & 65536n) ? __sl110 : ((cptr.ldI64(cptr.add(otmp, 192)) & (131072n | 262144n)) ? __sl111 : ((cptr.ldI64(cptr.add(otmp, 192)) & 524288n) ? __sl112 : __sl113)));
-        ia_addmenu(win, IA_TAKEOFF_OBJ, 82, cptr.decay(buf));
+        ia_addmenu(win, 19, 82, cptr.decay(buf));
     }
-    if (cptr.ldI16(cptr.add(otmp, 32)) == OIL_LAMP || cptr.ldI16(cptr.add(otmp, 32)) == MAGIC_LAMP || cptr.ldI16(cptr.add(otmp, 32)) == BRASS_LANTERN) {
+    if (cptr.ldI16(cptr.add(otmp, 32)) == 227 || cptr.ldI16(cptr.add(otmp, 32)) == 228 || cptr.ldI16(cptr.add(otmp, 32)) == 226) {
         void cptr.sprintf(cptr.decay(buf), __sl114, simpleonames(otmp));
-        ia_addmenu(win, IA_RUB_OBJ, 82, cptr.decay(buf));
-    } else if (cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS && (cptr.ldI16(cptr.add((otmp), 32)) == LUCKSTONE || cptr.ldI16(cptr.add((otmp), 32)) == LOADSTONE || cptr.ldI16(cptr.add((otmp), 32)) == FLINT || cptr.ldI16(cptr.add((otmp), 32)) == TOUCHSTONE))
-        ia_addmenu(win, IA_RUB_OBJ, 82, __sl115);
+        ia_addmenu(win, 17, 82, cptr.decay(buf));
+    } else if (cptr.ld1s(cptr.add(otmp, 49)) == 13 && (cptr.ldI16(cptr.add((otmp), 32)) == 470 || cptr.ldI16(cptr.add((otmp), 32)) == 471 || cptr.ldI16(cptr.add((otmp), 32)) == 473 || cptr.ldI16(cptr.add((otmp), 32)) == 472))
+        ia_addmenu(win, 17, 82, __sl115);
     if (!already_worn) {
-        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(otmp, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp <= -P_BOW) && ((uwep.v) && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp == -objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp)));
-        void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) == 1n) ? __sl81 : ((cptr.ldI16(cptr.add(otmp, 32)) == GOLD_PIECE) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16(cptr.add(otmp, 32)) != GOLD_PIECE || cptr.ldI64(cptr.add(otmp, 40)) == 1n)) ? __sl117 : __sl10);
-        ia_addmenu(win, IA_THROW_OBJ, 116, cptr.decay(buf));
+        let shoot = schar((((cptr.ld1s(cptr.add(otmp, 49)) == 2 || cptr.ld1s(cptr.add(otmp, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) <= -20) && ((uwep.v) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) == -cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)))));
+        void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64(cptr.add(otmp, 40)) == 1n) ? __sl81 : ((cptr.ldI16(cptr.add(otmp, 32)) == 438) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16(cptr.add(otmp, 32)) != 438 || cptr.ldI64(cptr.add(otmp, 40)) == 1n)) ? __sl117 : __sl10);
+        ia_addmenu(win, 18, 116, cptr.decay(buf));
     }
     if (cptr.ldI64(cptr.add(otmp, 192)) & (1n | 2n | 4n | 8n | 16n | 32n | 64n))
-        ia_addmenu(win, IA_TAKEOFF_OBJ, 84, __sl118);
-    if (((cptr.ldI16(cptr.add((otmp), 32)) >= LARGE_BOX && cptr.ldI16(cptr.add((otmp), 32)) <= BAG_OF_TRICKS) && ((cptr.ldPtr(cptr.add((otmp), 16)) !== null) || !cptr.ldI32(cptr.add(otmp, 96)))) || (cptr.ldI16(cptr.add(otmp, 32)) == HORN_OF_PLENTY && (cptr.ld1s(cptr.add(otmp, 48)) > 0 || !cptr.ldI32(cptr.add(otmp, 80)))))
-        ia_addmenu(win, IA_TIP_CONTAINER, 84, __sl119);
-    if ((cptr.ldI16(cptr.add(otmp, 32)) == FAKE_AMULET_OF_YENDOR && !cptr.ldI32(cptr.add(otmp, 80))) || cptr.ld1s(cptr.add(otmp, 51)) || objects[cptr.ldI16(cptr.add(otmp, 32))].oc_unique | 0 || cptr.ldI16(cptr.add(otmp, 32)) == CRYSTAL_BALL)
-        ia_addmenu(win, IA_INVOKE_OBJ, 86, __sl120);
-    if (cptr.eq(otmp, uwep.v) || (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((gy.youmonst.data), 67)) < 1))) {
+        ia_addmenu(win, 19, 84, __sl118);
+    if (((cptr.ldI16(cptr.add((otmp), 32)) >= 214 && cptr.ldI16(cptr.add((otmp), 32)) <= 220) && ((cptr.ldPtr(cptr.add((otmp), 16)) !== null) || !cptr.ldI32(cptr.add(otmp, 96)))) || (cptr.ldI16(cptr.add(otmp, 32)) == 252 && (cptr.ld1s(cptr.add(otmp, 48)) > 0 || !cptr.ldI32(cptr.add(otmp, 80)))))
+        ia_addmenu(win, 20, 84, __sl119);
+    if ((cptr.ldI16(cptr.add(otmp, 32)) == 212 && !cptr.ldI32(cptr.add(otmp, 80))) || cptr.ld1s(cptr.add(otmp, 51)) || cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 40)) | 0 || cptr.ldI16(cptr.add(otmp, 32)) == 231)
+        ia_addmenu(win, 21, 86, __sl120);
+    if (cptr.eq(otmp, uwep.v) || (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1))) {
         ;
-    } else if (cptr.ld1s(cptr.add(otmp, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((otmp), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((otmp), 32))].oc_subtyp != P_NONE) || (cptr.ldI16(cptr.add((otmp), 32)) == TOWEL && cptr.ld1s(cptr.add((otmp), 48)) > 0) || cptr.ldI16(cptr.add(otmp, 32)) == HEAVY_IRON_BALL) {
+    } else if (cptr.ld1s(cptr.add(otmp, 49)) == 2 || (cptr.ld1s(cptr.add((otmp), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) != 0) || (cptr.ldI16(cptr.add((otmp), 32)) == 234 && cptr.ld1s(cptr.add((otmp), 48)) > 0) || cptr.ldI16(cptr.add(otmp, 32)) == 477) {
         void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28);
-        ia_addmenu(win, IA_WIELD_OBJ, 119, cptr.decay(buf));
-    } else if (cptr.ldI16(cptr.add(otmp, 32)) == TIN_OPENER) {
-        ia_addmenu(win, IA_WIELD_OBJ, 119, __sl122);
+        ia_addmenu(win, 22, 119, cptr.decay(buf));
+    } else if (cptr.ldI16(cptr.add(otmp, 32)) == 239) {
+        ia_addmenu(win, 22, 119, __sl122);
     } else if (!already_worn) {
-        void cptr.sprintf(cptr.decay(buf), __sl123, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, makeplural(body_part(HAND)));
-        ia_addmenu(win, IA_WIELD_OBJ, 119, cptr.decay(buf));
+        void cptr.sprintf(cptr.decay(buf), __sl123, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28, makeplural(body_part(6)));
+        ia_addmenu(win, 22, 119, cptr.decay(buf));
     }
     if (!already_worn) {
-        if (cptr.ld1s(cptr.add(otmp, 49)) == ARMOR_CLASS) {
-            let Wmask = armcat_to_wornmask(objects[cptr.ldI16(cptr.add(otmp, 32))].oc_subtyp);
+        if (cptr.ld1s(cptr.add(otmp, 49)) == 3) {
+            let Wmask = armcat_to_wornmask(cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)));
             let o = wearmask_to_obj(Wmask);
             if (!o)
                 void cptr.strcpy(cptr.decay(buf), __sl124);
             else
                 void cptr.sprintf(cptr.decay(buf), __sl125, an(armor_simple_name(o)));
-            ia_addmenu(win, IA_WEAR_OBJ, 87, cptr.decay(buf));
+            ia_addmenu(win, 23, 87, cptr.decay(buf));
         }
     }
     if (cptr.eq(otmp, uwep.v) && uswapwep.v)
-        ia_addmenu(win, IA_SWAPWEAPON, 120, __sl126);
+        ia_addmenu(win, 24, 120, __sl126);
     else if (cptr.eq(otmp, uwep.v))
-        ia_addmenu(win, IA_SWAPWEAPON, 120, __sl127);
+        ia_addmenu(win, 24, 120, __sl127);
     else if (cptr.eq(otmp, uswapwep.v))
-        ia_addmenu(win, IA_SWAPWEAPON, 120, __sl128);
-    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) && (u.twoweap || (((((((cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((gy.youmonst.data), 36), 2, 4)) == 254)) | 0) > 1) && !uarms.v && uwep.v && (((cptr.ld1s(cptr.add((uwep.v), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_big | 0)) && uswapwep.v && (((cptr.ld1s(cptr.add((uswapwep.v), 49)) == WEAPON_CLASS) ? !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= P_BOW && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= P_CROSSBOW) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == GEM_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= -P_CROSSBOW && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= -P_BOW) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp >= -P_BOOMERANG && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_subtyp <= -P_DART)) : (cptr.ld1s(cptr.add((uswapwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uswapwep.v), 32))].oc_subtyp != P_NONE)) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uswapwep.v, 32))].oc_big | 0))))) {
-        void cptr.sprintf(cptr.decay(buf), __sl129, u.twoweap ? __sl130 : __sl131);
-        ia_addmenu(win, IA_TWOWEAPON, 88, cptr.decay(buf));
+        ia_addmenu(win, 24, 120, __sl128);
+    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) && (cptr.ld1s(cptr.add(u, 2816)) || (((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 2, 4)) == 254)) | 0) > 1) && !uarms.v && uwep.v && (((cptr.ld1s(cptr.add((uwep.v), 49)) == 2) ? !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= 20 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= 22) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -20) || ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -25 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -23)) : (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0)) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0)) && uswapwep.v && (((cptr.ld1s(cptr.add((uswapwep.v), 49)) == 2) ? !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= 20 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= 22) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 13) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20) || ((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23)) : (cptr.ld1s(cptr.add((uswapwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != 0)) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) | 0))))) {
+        void cptr.sprintf(cptr.decay(buf), __sl129, cptr.ld1s(cptr.add(u, 2816)) ? __sl130 : __sl131);
+        ia_addmenu(win, 25, 88, cptr.decay(buf));
     }
-    if (cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS)
-        ia_addmenu(win, IA_ZAP_OBJ, 122, __sl132);
+    if (cptr.ld1s(cptr.add(otmp, 49)) == 11)
+        ia_addmenu(win, 26, 122, __sl132);
     if (ia_checkfile(otmp)) {
         void cptr.sprintf(cptr.decay(buf), __sl133, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl25 : __sl26);
-        ia_addmenu(win, IA_WHATIS_OBJ, 47, cptr.decay(buf));
+        ia_addmenu(win, 27, 47, cptr.decay(buf));
     }
     void cptr.sprintf(cptr.decay(buf), __sl134, the(cxname(otmp)));
-    (windowprocs.win_end_menu)(win, cptr.decay(buf));
+    (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, cptr.decay(buf));
     n = select_menu(win, 1, selected);
     if (n > 0) {
         act = cptr.ldI32(cptr.add(selected.v, 0, 24));
         cptr.free(selected.v);
         itemactions_pushkeys(otmp, act);
     }
-    (windowprocs.win_destroy_nhwindow)(win);
+    (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     return 0;
 }

@@ -52,7 +52,7 @@ const TYPEDEFS = {
   va_list: 'char *', genericptr_t: 'void *', nhsym: 'unsigned char', cmdcount_nht: 'long',
 };
 
-function desugar(t) {
+export function desugar(t) {
   return (t?.desugaredQualType || t?.qualType || '')
     .replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '')
     .replace(/\b(uint8|uint16|uint32|uint64|sint8|sint16|sint32|sint64|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uchar|ushort|uint|ulong|coordxy|size_t|ptrdiff_t|seenV|xint16|xint8|xint32|xuint8|xuint16|xuint32|aligntyp|quint32|winid|CC_LONG|utfint|lu_byte|ls_byte|l_uint32|l_int32|Instruction|lua_Integer|lua_Unsigned|lua_Number|lua_KContext|lu_mem|l_mem|l_uacInt|StkId|lua_CFunction|lua_KFunction|lua_Alloc|lua_Writer|lua_Reader|__int64_t|__uint64_t|__int32_t|__uint32_t|__int16_t|__uint16_t|__int8_t|__uint8_t|off_t|time_t|ssize_t|ino_t|ino64_t|dev_t|mode_t|nlink_t|uid_t|gid_t|pid_t|blkcnt_t|blksize_t|useconds_t|suseconds_t|va_list|genericptr_t|nhsym|cmdcount_nht)\b/g,
@@ -99,9 +99,11 @@ function pointeeOf(qualType, desugared) {
 /** "char[5][5]" -> { elem: 'char[5]', count: 5 }; "int[5]" -> { elem:'int', count:5 } */
 function arrayParts(qualType, desugared) {
   const q = (desugared || qualType || '').trim();
-  const m = q.match(/^(.*)\[(\d*)\]$/);
+  // peel the FIRST (outermost) bracket, wherever it sits — this also covers
+  // function-pointer arrays like "int (*[4])(void)" / "int (*[10][3])(void)"
+  const m = q.match(/^(.*?)\[(\d*)\](.*)$/);
   if (!m) return null;
-  return { elem: m[1].trim(), count: m[2] ? Number(m[2]) : null };
+  return { elem: (m[1] + m[3]).trim(), count: m[2] ? Number(m[2]) : null };
 }
 
 // JS operator precedence (for minimal parenthesization)
@@ -125,12 +127,13 @@ const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrch
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 2;
+export const EMIT_VERSION = 3;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, recordGlobals, recordArrays }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
+    this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
@@ -141,8 +144,8 @@ export class Emitter {
     this.stringList = [];
     this.staticLocals = new Map(); // VarDecl id -> hoisted name (current function)
     this.recordLocals = new Set(); // names of struct/union value locals (current function)
-    this.recordGlobals = new Set(); // names of struct/union file-scope variables
-    this.cptrArrays = new Set(); // names of byte-packed record arrays (cptr.alloc storage)
+    this.recordGlobals = new Set(recordGlobals || []); // struct/union file-scope vars (byte-packed; seeded corpus-wide from symbols.mjs)
+    this.cptrArrays = new Set(recordArrays || []); // byte-packed record arrays (cptr.alloc storage; seeded corpus-wide)
     this.setjmpVar = null; // substitution variable while emitting a setjmp if
     this.uniq = 0;
     this.refs = new Map(); // name -> 'FunctionDecl'|'VarDecl' (cross-file import wiring)
@@ -390,16 +393,23 @@ export class Emitter {
     let name = n.name || n.referencedDecl?.name;
     const refId = n.referencedDecl?.id;
     const refKind = n.referencedDecl?.kind;
+    // header enum constants inline as literals (they are compile-time constants)
+    if (refKind === 'EnumConstantDecl' && this.enumValues?.has(name)) {
+      const v = this.enumValues.get(name);
+      return { code: String(v), prec: PREC.atom, const: String(v), rep: 'val' };
+    }
     if (name && (refKind === 'FunctionDecl' || refKind === 'VarDecl') && !(refId && this.staticLocals.has(refId))) {
       this.refs.set(name, refKind);
     }
     if (refId && this.staticLocals.has(refId)) name = this.staticLocals.get(refId);
-    if (this.boxedVars?.has(name) || this.topBoxed?.has(name) || (this.externBoxed.has(name) && !this.localNames?.has(name))) name = `${jsName(name)}.v`;
+    if (this.boxedVars?.has(name) || this.topBoxed?.has(name) || (refKind !== 'FunctionDecl' && this.externBoxed.has(name) && !this.localNames?.has(name))) name = `${jsName(name)}.v`;
     else name = jsName(name);
     const t = nodeType(n);
     const q = desugar(n.type);
-    const rep = this.cptrArrays.has(name) ? 'cptr'
-      : this.recordGlobals.has(name) ? 'cptr'
+    // cptr-backed arrays/records: a same-named local shadows the global unless
+    // the ref itself is array/record-typed (then it IS the cptr-backed decl)
+    const rep = (this.cptrArrays.has(name) && (arrayParts(q) || !this.localNames?.has(name))) ? 'cptr'
+      : (this.recordGlobals.has(name) && ((t.cls === 'record' && !q.includes('*')) || !this.localNames?.has(name))) ? 'cptr'
       : arrayParts(q) ? 'buf'
       : this.recordLocals.has(name) ? 'cptr'
       : t.cls === 'record' ? 'obj'
@@ -443,14 +453,24 @@ export class Emitter {
         // byte-packed array member of a struct/union: scaled location
         return { code: this.cptrCall('add', base.code, idx.code, String(this.sizeofType(arr.elem))), elemQ: arr.elem, rep: 'cptr' };
       }
-      if (arrayParts(arr.elem) || elemT.cls === 'record') {
-        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: arrayParts(arr.elem) ? 'buf' : 'obj' };
+      if (arrayParts(arr.elem)) {
+        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'buf' };
+      }
+      if (elemT.cls === 'record') {
+        const rn = this.recordNameForType(arr.elem);
+        if (rn) { // real record element: byte-row storage, scaled location
+          const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, String(this.layoutOf(rn).size));
+          return { code: loc, elemQ: arr.elem, rep: 'cptr' };
+        }
+        return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'obj' }; // fn-ptr typedef etc: plain JS array
       }
       if (arr.elem === 'int' || arr.elem === 'unsigned int') {
         return { code: `${this.group(base, PREC.atom)}[${idx.code}]`, elemQ: arr.elem, rep: 'val', plain: true };
       }
-      // 1-byte element buffer: location through cptr
-      const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code);
+      // 1-byte element buffer: location through cptr (scale by element size)
+      let esz = '1';
+      try { const s = this.sizeofType(arr.elem); if (s !== 1) esz = String(s); } catch { /* fn-ptr typedefs etc: stay 1 */ }
+      const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, esz);
       return { code: loc, elemQ: arr.elem, rep: 'cptr' };
     }
     // base is a CPtr
@@ -474,7 +494,9 @@ export class Emitter {
     const loc = this.subscriptLoc(base, idx, baseQ);
     if (loc.rep === 'cptr' && !loc.plain) {
       const elemT = parseType(loc.elemQ);
-      if (elemT.cls === 'record') return { code: loc.code, prec: PREC.atom, rep: 'cptr', elemQ: loc.elemQ };
+      // array-typed elements (a row of a multi-dim array) stay a location,
+      // like records — parseType alone would say 'ptr' (decay context)
+      if (arrayParts(loc.elemQ) || elemT.cls === 'record') return { code: loc.code, prec: PREC.atom, rep: 'cptr', elemQ: loc.elemQ };
       return this.loadFrom(loc.code, loc.elemQ);
     }
     return { code: loc.code, prec: PREC.atom, rep: loc.rep, elemQ: loc.elemQ };
@@ -610,7 +632,14 @@ export class Emitter {
     if (l.kind !== 'UnaryExprOrTypeTraitExpr' || r.kind !== 'UnaryExprOrTypeTraitExpr') return null;
     const arrRef = this.sizeofArrayRef(l);
     const eltRef = this.sizeofArrayRef(r, true);
-    if (arrRef && eltRef && arrRef === eltRef) return `${arrRef}.length`;
+    if (arrRef && eltRef && arrRef === eltRef) {
+      // cptr-backed arrays (record/pointer arrays) have no JS .length — use the count
+      if (this.cptrArrays.has(arrRef)) {
+        const cnt = this.__sizeIdiomCount;
+        return cnt ? String(cnt) : null;
+      }
+      return `${arrRef}.length`;
+    }
     return null;
   }
 
@@ -618,15 +647,20 @@ export class Emitter {
     let arg = uett.inner?.[0];
     while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
     if (!arg) return null;
+    let base;
     if (viaSubscript) {
       if (arg.kind !== 'ArraySubscriptExpr') return null;
-      let base = arg.inner[0];
+      base = arg.inner[0];
       while (base.kind === 'ImplicitCastExpr') base = base.inner[0];
-      if (base.kind !== 'DeclRefExpr') return null;
-      return base.name || base.referencedDecl?.name;
+    } else {
+      base = arg;
     }
-    if (arg.kind !== 'DeclRefExpr' || !/\[\d+\]/.test(arg.type?.qualType || '')) return null;
-    return arg.name || arg.referencedDecl?.name;
+    if (base.kind !== 'DeclRefExpr' || !/\[\d*\]/.test(base.type?.qualType || '')) return null;
+    const cntM = (base.type.qualType || '').match(/\[(\d+)\]/);
+    this.__sizeIdiomCount = cntM ? cntM[1] : null;
+    const refId = base.referencedDecl?.id;
+    if (refId && this.staticLocals.has(refId)) return this.staticLocals.get(refId);
+    return base.name || base.referencedDecl?.name;
   }
 
   expr_OffsetOfExpr(n) {
@@ -781,12 +815,14 @@ export class Emitter {
           }
           throw new Error(`++/-- on pointer lvalue kind ${loc.kind} (${this.cref(n)})`);
         }
-        // scalar location (tstr[i]++, ++*count, ...)
-        if (sub.kind === 'ArraySubscriptExpr' || sub.kind === 'UnaryOperator') {
-          const loc = this.emitLValue(sub);
+        // scalar location (tstr[i]++, ++*count, (*length_p)++, rec->field++, ...)
+        let subU = sub;
+        while (subU.kind === 'ParenExpr') subU = subU.inner[0];
+        if (subU.kind === 'ArraySubscriptExpr' || subU.kind === 'UnaryOperator' || subU.kind === 'MemberExpr') {
+          const loc = this.emitLValue(subU);
           if (loc.kind === 'cptr') {
-            if (n.isPostfix && n.opcode === '++') return { code: this.cptrCall('postinc1', loc.code), prec: PREC.atom, rep: 'val' };
             const t = parseType(loc.elemQ);
+            if (t.bits === 8 && n.isPostfix && n.opcode === '++') return { code: this.cptrCall('postinc1', loc.code), prec: PREC.atom, rep: 'val' };
             const one = t.bits === 64 ? '1n' : '1';
             const ld = t.bits === 64 ? 'ldU64' : t.bits === 32 ? 'ldI32' : t.bits === 16 ? 'ldI16' : t.signed ? 'ld1s' : 'ld1u';
             const st = t.bits === 64 ? 'stU64' : t.bits === 32 ? 'stI32' : t.bits === 16 ? 'stI16' : 'st1';
@@ -804,6 +840,13 @@ export class Emitter {
         return { code: `${n.opcode}${this.group(e, PREC.unary)}`, prec: PREC.unary, rep: 'val' };
       }
       case '&': { // address-of
+        // register cross-file refs (the branches below can emit the name
+        // without going through expr_DeclRefExpr, e.g. boxed globals)
+        if (sub.kind === 'DeclRefExpr') {
+          const nm = sub.name || sub.referencedDecl?.name;
+          const rk = sub.referencedDecl?.kind;
+          if (nm && (rk === 'FunctionDecl' || rk === 'VarDecl') && !(sub.referencedDecl?.id && this.staticLocals.has(sub.referencedDecl?.id))) this.refs.set(nm, rk);
+        }
         // address of an array: decays to a pointer to its storage
         if (sub.kind === 'DeclRefExpr' && arrayParts(desugar(sub.type))) {
           const nm = this.emitExpr(sub).code;
@@ -856,7 +899,7 @@ export class Emitter {
       const rawName = n.name || n.referencedDecl?.name;
       const refId = n.referencedDecl?.id;
       const hoisted = refId && this.staticLocals.get(refId);
-      if (this.recordLocals.has(rawName) || this.recordGlobals.has(rawName) || (hoisted && this.recordLocals.has(hoisted))) {
+      if (this.recordLocals.has(rawName) || (this.recordGlobals.has(rawName) && (parseType(desugar(n.type)).cls === 'record' || !this.localNames?.has(rawName))) || (hoisted && this.recordLocals.has(hoisted))) {
         return { kind: 'cptr', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
       }
       return { kind: 'var', code: this.emitExpr(n).code, elemQ: desugar(n.type) };
@@ -1014,6 +1057,16 @@ export class Emitter {
       const r = this.convert(r0, nodeType(n.inner[1]), t);
       return { code: `${lv.code} ${op} ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
+    // 32-bit-or-narrower lvalue with a 64-bit RHS: clang's compound-assign AST
+    // carries no operand casts, so apply usual arithmetic conversions here —
+    // compute in the 64-bit common type, narrow on store
+    const rT = nodeType(n.inner[1]);
+    if (t.cls === 'int' && t.bits <= 32 && rT.cls === 'int' && rT.bits === 64) {
+      const lE = this.convert({ code: lv.code, prec: PREC.atom, rep: 'val' }, nodeType(n.inner[0]), rT);
+      const wide = { code: `${this.group(lE, PREC.atom)} ${base} ${this.group(operand(r0, PREC.add, 'right'), PREC.atom)}`, prec: PREC.atom, rep: 'val' };
+      const narrowed = this.convert(wide, rT, t);
+      return { code: `${lv.code} = ${narrowed.code}`, prec: PREC.assign, rep: 'val' };
+    }
     if (t.cls === 'int' && t.bits === 32) {
       const r = operand(r0, PREC.add, 'right');
       if (base === '+') return { code: `${lv.code} = (${lv.code} + ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
@@ -1107,12 +1160,16 @@ export class Emitter {
       let bytesNode = args[1];
       while (bytesNode.kind === 'ImplicitCastExpr') bytesNode = bytesNode.inner[0];
       const bytes = this.emitExpr(bytesNode);
-      return { code: `${this.emitExpr(target).code} = isaac64_init(${bytes.code})`, prec: PREC.assign, rep: 'val' };
+      const lv = this.emitLValue(target);
+      if (lv.kind === 'cptr') return { code: this.cptrCall('stPtr', lv.code, `isaac64_init(${bytes.code})`), prec: PREC.atom, rep: 'val' };
+      return { code: `${lv.code} = isaac64_init(${bytes.code})`, prec: PREC.assign, rep: 'val' };
     }
     if (name === 'isaac64_next_uint64') {
       let target = args[0];
       if (target.kind === 'UnaryOperator' && target.opcode === '&') target = target.inner[0];
-      return { code: `isaac64_next_uint64(${this.emitExpr(target).code})`, prec: PREC.atom, rep: 'val' };
+      const lv = this.emitLValue(target);
+      const ctxCode = lv.kind === 'cptr' ? this.cptrCall('ldPtr', lv.code) : lv.code;
+      return { code: `isaac64_next_uint64(${ctxCode})`, prec: PREC.atom, rep: 'val' };
     }
     // fortified libc variants: drop the object-size/chk args
     if (name === '__builtin___snprintf_chk') { // (buf, n, flag, objsize, fmt, ...)
@@ -2144,14 +2201,16 @@ export class Emitter {
   arrayStorage(q) {
     const arr = arrayParts(q);
     if (!arr) return null;
-    if (arrayParts(arr.elem)) { // 2-D char array (visctrl_bufs)
+    if (arrayParts(arr.elem)) { // 2-D array: first-bracket peeling — arr.count = rows, inner.count = cols
       const inner = arrayParts(arr.elem);
-      return `Array.from({ length: ${arr.count} }, () => new Uint8Array(${inner.count}))`;
+      const rows = arr.count, cols = inner.count;
+      if (inner.elem.includes('*')) return `Array.from({ length: ${rows} }, () => new Uint8Array(${cols} * 8))`; // pointer elems: ldPtr/stPtr slots
+      return `Array.from({ length: ${rows} }, () => new Uint8Array(${cols} * ${this.sizeofType(inner.elem)}))`;
     }
     if (/\bchar\b/.test(arr.elem)) return `new Uint8Array(${arr.count})`;
     if (/\bint\b/.test(arr.elem) && !/\blong\b/.test(arr.elem)) return `new Array(${arr.count}).fill(0)`;
     if (/\bshort\b/.test(arr.elem)) return `new Array(${arr.count}).fill(0)`;
-    if (arr.elem.includes('*')) return `new Array(${arr.count}).fill(null)`; // pointer elements
+    if (arr.elem.includes('*')) return this.cptrCall('alloc', `${arr.count} * 8`); // pointer elements: ldPtr/stPtr slots
     if (/\blong long\b/.test(arr.elem) || arr.elem === 'unsigned long long') return `new Array(${arr.count}).fill(0n)`;
     if (/^enum\s/.test(arr.elem) || (this.recordNameOf(arr.elem) && this.records.get(this.recordNameOf(arr.elem))?.tag === 'enum')) {
       return `new Array(${arr.count}).fill(0)`; // enum elements are int-sized
@@ -2174,9 +2233,10 @@ export class Emitter {
     d = { ...d, name: jsName(rawName) };
     d._rawName = rawName;
     if (arr) {
-      if (init && init.kind === 'StringLiteral') return `let ${d.name} = ${this.cptrCall('bytes', init.value)};`;
+      if (init && init.kind === 'StringLiteral') return `let ${d.name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`;
+      const packed = this.emitBytePackedArray(d.name, q, init, `let ${d.name} = `);
+      if (packed) return packed.join(' ');
       if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
-      if (!arrayParts(arr.elem) && (parseType(arr.elem).cls === 'record' || this.recordNameForType(arr.elem))) this.cptrArrays.add(d.name);
       return `let ${d.name} = ${this.arrayStorage(q)};`;
     }
     const t = parseType(q);
@@ -2432,6 +2492,21 @@ export class Emitter {
         const fRecName = this.recordNameForType(f.q);
         if (init.kind === 'InitListExpr') lines.push(...this.recordInitStores(loc, fRecName, init));
         else lines.push(`${this.cptrCall('memcpy', loc, this.emitExpr(init).code, String(this.layoutOf(fRecName).size))};`);
+      } else if (arrayParts(f.q)) {
+        // array field: string literal or per-element stores
+        const a = arrayParts(f.q);
+        const elemRec = !this.isEnumType(a.elem) && (parseType(a.elem).cls === 'record' || this.recordNameForType(a.elem)) ? this.recordNameForType(a.elem) : null;
+        const esz = this.sizeofType(a.elem);
+        if (init.kind === 'StringLiteral') lines.push(`${this.cptrCall('strcpy', loc, this.emitExpr(init).code)};`);
+        else if (init.kind === 'InitListExpr') {
+          const els = (init.inner || []).filter((c) => c.kind);
+          for (let j = 0; j < els.length; j++) {
+            if (els[j].kind === 'ImplicitValueInitExpr') continue;
+            const eloc = this.cptrCall('add', loc, String(j * esz));
+            if (elemRec) lines.push(...this.recordInitStores(eloc, elemRec, els[j]));
+            else lines.push(`${this.storeTo(eloc, a.elem, this.emitExpr(els[j]).code)};`);
+          }
+        }
       } else {
         lines.push(`${this.storeTo(loc, f.q, this.emitExpr(init).code)};`);
       }
@@ -2451,7 +2526,10 @@ export class Emitter {
       return out;
     }
     if (arrayParts(q)) {
-      if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', init.value)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      const arr = arrayParts(q);
+      if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      const packed = this.emitBytePackedArray(name, q, init, `const ${name} = `);
+      if (packed) return packed.join('\n') + ` /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
       if (init) return `const ${name} = ${this.emitExpr(init).code}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
       return `const ${name} = ${this.arrayStorage(q)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
     }
@@ -2471,6 +2549,12 @@ export class Emitter {
     for (const v of statics) {
       const q = desugar(v.type);
       if (parseType(q).cls === 'record' && !q.includes('*')) this.recordLocals.add(this.staticLocals.get(v.id));
+      // hoisted record/pointer/scalar arrays are cptr-backed: register before body emission
+      const sa = arrayParts(q);
+      if (sa && !arrayParts(sa.elem)) {
+        const el = sa.elem;
+        if (el.includes('*') || this.isEnumType(el) || /\b(?:int|short|long|double|float)\b/.test(el) || this.recordNameForType(el)) this.cptrArrays.add(this.staticLocals.get(v.id));
+      }
     }
     const lines = [];
     let smFallback = false;
@@ -2547,36 +2631,112 @@ export class Emitter {
     return lines;
   }
 
+  /**
+   * Byte-packed array declaration for record/pointer/scalar-elem arrays.
+   * Returns emitted lines, or null when the array keeps its legacy storage
+   * (1-byte char/boolean elems, multi-dim, or unhandled init shape).
+   * Registers the name in cptrArrays on success.
+   */
+  emitBytePackedArray(name, q, init, prefix) {
+    const arr = arrayParts(q);
+    if (!arr) return null;
+    if (arrayParts(arr.elem)) {
+      // 2-D array: plain JS array of byte-rows (row selection stays `arr[i]`)
+      const inner = arrayParts(arr.elem);
+      const el2 = inner.elem;
+      let sz2, rec2;
+      if (el2.includes('*')) sz2 = 8;
+      else if (this.isEnumType(el2)) sz2 = 4;
+      else if (/\b(?:int|short|long|double|float)\b/.test(el2)) {
+        try { sz2 = this.sizeofType(el2); } catch { return null; }
+        if (sz2 === 1) return null; // char 2-D rows: arrayStorage's Uint8Array rows
+      } else if ((rec2 = this.recordNameForType(el2)) && !this.isEnumType(el2)) {
+        sz2 = this.layoutOf(rec2).size;
+      } else return null;
+      const inits = init && init.kind === 'InitListExpr' ? (init.inner || []).filter((c) => c.kind) : null;
+      // first-bracket peeling: arr.count = rows, inner.count = cols
+      const rows = arr.count ?? (inits ? inits.length : 0);
+      const cols = inner.count ?? 0;
+      const lines = [`${prefix}Array.from({ length: ${rows} }, () => new Uint8Array(${cols} * ${sz2}));`];
+      if (inits) {
+        for (let i = 0; i < inits.length; i++) {
+          if (inits[i].kind !== 'InitListExpr') continue;
+          const els = (inits[i].inner || []).filter((c) => c.kind);
+          for (let j = 0; j < els.length; j++) {
+            if (els[j].kind === 'ImplicitValueInitExpr') continue;
+            const eloc = this.cptrCall('add', this.cptrCall('decay', `${name}[${i}]`), String(j * sz2));
+            if (rec2) lines.push(...this.recordInitStores(eloc, rec2, els[j]));
+            else lines.push(`${this.storeTo(eloc, el2, this.emitExpr(els[j]).code)};`);
+          }
+        }
+      } else if (init) {
+        return null; // non-InitList initializer: caller's fallback
+      }
+      return lines;
+    }
+    const el = arr.elem;
+    const isRec = !el.includes('*') && !this.isEnumType(el) && (parseType(el).cls === 'record' || this.recordNameForType(el)) && this.recordNameForType(el);
+    let sz;
+    if (isRec) sz = this.layoutOf(this.recordNameForType(el)).size;
+    else if (this.isEnumType(el)) sz = 4;
+    else {
+      if (!el.includes('*') && !/\b(?:int|short|long|double|float)\b/.test(el)) return null;
+      try { sz = this.sizeofType(el); } catch { return null; }
+      if (sz === 1) return null; // char/boolean elems keep Uint8Array storage
+    }
+    this.cptrArrays.add(name);
+    const inits = init && init.kind === 'InitListExpr' ? (init.inner || []).filter((c) => c.kind) : null;
+    const count = arr.count ?? (inits ? inits.length : 0);
+    const lines = [`${prefix}${this.cptrCall('alloc', `${count} * ${sz}`)};`];
+    if (inits) {
+      for (let i = 0; i < inits.length; i++) {
+        if (inits[i].kind === 'ImplicitValueInitExpr') continue;
+        const loc = this.cptrCall('add', name, String(i * sz));
+        if (isRec) lines.push(...this.recordInitStores(loc, this.recordNameForType(el), inits[i]));
+        else lines.push(`${this.storeTo(loc, el, this.emitExpr(inits[i]).code)};`);
+      }
+    } else if (init) {
+      this.cptrArrays.delete(name);
+      return null; // non-InitList initializer: caller's fallback
+    }
+    return lines;
+  }
+
   emitTopVar(d) {
     d = { ...d, name: jsName(d.name) };
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
     const lines = [`/** C ref: ${this.cref(d)} — ${q} */`];
+    const exp = d.storageClass === 'static' ? '' : 'export ';
     if (parseType(q).cls === 'record' && !q.includes('*') && this.recordNameForType(q) && !this.isEnumType(q)) {
       this.recordGlobals.add(d.name);
       const recName = this.recordNameForType(q);
       const size = this.layoutOf(recName).size;
-      lines.push(`let ${d.name} = ${this.cptrCall('alloc', String(size))};`);
+      lines.push(`${exp}let ${d.name} = ${this.cptrCall('alloc', String(size))};`);
       if (init) lines.push(...this.recordInitStores(d.name, recName, init));
       return lines;
     }
     if (arrayParts(q)) {
-      if (init) lines.push(`const ${d.name} = ${this.emitExpr(init).code};`);
-      else {
-        const arr = arrayParts(q);
-        if (!arrayParts(arr.elem) && (parseType(arr.elem).cls === 'record' || this.recordNameForType(arr.elem))) this.cptrArrays.add(d.name);
-        lines.push(`const ${d.name} = ${this.arrayStorage(q)};`);
+      const arr = arrayParts(q);
+      if (init && init.kind === 'StringLiteral') {
+        // char arr[] = "...": modifiable byte storage like any other char array
+        lines.push(`${exp}const ${d.name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`);
+        return lines;
       }
+      const packed = this.emitBytePackedArray(d.name, q, init, `${exp}const ${d.name} = `);
+      if (packed) { lines.push(...packed); return lines; }
+      if (init) lines.push(`${exp}const ${d.name} = ${this.emitExpr(init).code};`);
+      else lines.push(`${exp}const ${d.name} = ${this.arrayStorage(q)};`);
       return lines;
     }
     const kw = 'let';
     if (this.topBoxed?.has(d.name) || this.externBoxed.has(d.name)) {
       this.usesCptr = true;
-      lines.push(`let ${d.name} = cptr.box(${init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0'});`);
+      lines.push(`${exp}let ${d.name} = cptr.box(${init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0'});`);
       return lines;
     }
     const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
-    lines.push(`${kw} ${d.name} = ${initCode};`);
+    lines.push(`${exp}${kw} ${d.name} = ${initCode};`);
     return lines;
   }
 
@@ -2586,7 +2746,7 @@ export class Emitter {
     for (const c of (d.inner || []).filter((x) => x && x.kind === 'EnumConstantDecl')) {
       const init = (c.inner || []).find((x) => x && x.kind);
       const v = init ? Number(this.emitExpr(init).const ?? this.emitExpr(init).code) : next;
-      lines.push(`const ${c.name} = ${v};`);
+      lines.push(`export const ${c.name} = ${v};`);
       next = v + 1;
     }
     return lines;
@@ -2601,7 +2761,7 @@ export class Emitter {
     for (const d of this.decls) {
       if (d.kind === 'FunctionDecl') {
         if ((d.inner || []).some((c) => c && c.kind === 'CompoundStmt')) this.declared.add(d.name);
-      } else if (d.kind === 'VarDecl') this.declared.add(d.name);
+      } else if (d.kind === 'VarDecl' && d.storageClass !== 'extern') this.declared.add(d.name);
       else if (d.kind === 'EnumDecl') {
         for (const c of (d.inner || []).filter((x) => x && x.kind === 'EnumConstantDecl')) this.declared.add(c.name);
       }

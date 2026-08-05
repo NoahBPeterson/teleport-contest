@@ -3,7 +3,7 @@
 // Input sha256: 959357d4c9652eeae51b19d826ec961163679b9961ef8df1df94d674b6ded4a4
 // Transpiler: tools/c2js c2js emit v1+batch
 
-import { schar, uchar } from '../cmachine.js';
+import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -169,220 +169,598 @@ const __sl158 = cptr.lit("poison cloud");
 const __sl159 = cptr.lit("valid position");
 
 /** C ref: drawing.c:24 — struct class_sym[18] */
-const def_oc_syms = [
-    { sym: 0, name: __sl0, explain: __sl0 },
-    { sym: schar(ILLOBJ_SYM), name: __sl1, explain: __sl2 },
-    { sym: schar(WEAPON_SYM), name: __sl3, explain: __sl4 },
-    { sym: schar(ARMOR_SYM), name: __sl5, explain: __sl6 },
-    { sym: schar(RING_SYM), name: __sl7, explain: __sl8 },
-    { sym: schar(AMULET_SYM), name: __sl9, explain: __sl10 },
-    { sym: schar(TOOL_SYM), name: __sl11, explain: __sl12 },
-    { sym: schar(FOOD_SYM), name: __sl13, explain: __sl14 },
-    { sym: schar(POTION_SYM), name: __sl15, explain: __sl16 },
-    { sym: schar(SCROLL_SYM), name: __sl17, explain: __sl18 },
-    { sym: schar(SPBOOK_SYM), name: __sl19, explain: __sl20 },
-    { sym: schar(WAND_SYM), name: __sl21, explain: __sl22 },
-    { sym: schar(GOLD_SYM), name: __sl23, explain: __sl24 },
-    { sym: schar(GEM_SYM), name: __sl25, explain: __sl26 },
-    { sym: schar(ROCK_SYM), name: __sl27, explain: __sl28 },
-    { sym: schar(BALL_SYM), name: __sl29, explain: __sl30 },
-    { sym: schar(CHAIN_SYM), name: __sl31, explain: __sl32 },
-    { sym: schar(VENOM_SYM), name: __sl33, explain: __sl34 }
-];
+export const def_oc_syms = cptr.alloc(18 * 24);
+cptr.st1(cptr.add(def_oc_syms, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 0), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 0), 16), __sl0);
+cptr.st1(cptr.add(def_oc_syms, 24), 93);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 24), 8), __sl1);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 24), 16), __sl2);
+cptr.st1(cptr.add(def_oc_syms, 48), 41);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 48), 8), __sl3);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 48), 16), __sl4);
+cptr.st1(cptr.add(def_oc_syms, 72), 91);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 72), 8), __sl5);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 72), 16), __sl6);
+cptr.st1(cptr.add(def_oc_syms, 96), 61);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 96), 8), __sl7);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 96), 16), __sl8);
+cptr.st1(cptr.add(def_oc_syms, 120), 34);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 120), 8), __sl9);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 120), 16), __sl10);
+cptr.st1(cptr.add(def_oc_syms, 144), 40);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 144), 8), __sl11);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 144), 16), __sl12);
+cptr.st1(cptr.add(def_oc_syms, 168), 37);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 168), 8), __sl13);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 168), 16), __sl14);
+cptr.st1(cptr.add(def_oc_syms, 192), 33);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 192), 8), __sl15);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 192), 16), __sl16);
+cptr.st1(cptr.add(def_oc_syms, 216), 63);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 216), 8), __sl17);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 216), 16), __sl18);
+cptr.st1(cptr.add(def_oc_syms, 240), 43);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 240), 8), __sl19);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 240), 16), __sl20);
+cptr.st1(cptr.add(def_oc_syms, 264), 47);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 264), 8), __sl21);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 264), 16), __sl22);
+cptr.st1(cptr.add(def_oc_syms, 288), 36);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 288), 8), __sl23);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 288), 16), __sl24);
+cptr.st1(cptr.add(def_oc_syms, 312), 42);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 312), 8), __sl25);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 312), 16), __sl26);
+cptr.st1(cptr.add(def_oc_syms, 336), 96);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 336), 8), __sl27);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 336), 16), __sl28);
+cptr.st1(cptr.add(def_oc_syms, 360), 48);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 360), 8), __sl29);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 360), 16), __sl30);
+cptr.st1(cptr.add(def_oc_syms, 384), 95);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 384), 8), __sl31);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 384), 16), __sl32);
+cptr.st1(cptr.add(def_oc_syms, 408), 46);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 408), 8), __sl33);
+cptr.stPtr(cptr.add(cptr.add(def_oc_syms, 408), 16), __sl34);
 
 /** C ref: drawing.c:32 — struct class_sym[61] */
-const def_monsyms = [
-    { sym: 0, name: __sl0, explain: __sl0 },
-    { sym: schar(DEF_ANT), name: __sl0, explain: __sl35 },
-    { sym: schar(DEF_BLOB), name: __sl0, explain: __sl36 },
-    { sym: schar(DEF_COCKATRICE), name: __sl0, explain: __sl37 },
-    { sym: schar(DEF_DOG), name: __sl0, explain: __sl38 },
-    { sym: schar(DEF_EYE), name: __sl0, explain: __sl39 },
-    { sym: schar(DEF_FELINE), name: __sl0, explain: __sl40 },
-    { sym: schar(DEF_GREMLIN), name: __sl0, explain: __sl41 },
-    { sym: schar(DEF_HUMANOID), name: __sl0, explain: __sl42 },
-    { sym: schar(DEF_IMP), name: __sl0, explain: __sl43 },
-    { sym: schar(DEF_JELLY), name: __sl0, explain: __sl44 },
-    { sym: schar(DEF_KOBOLD), name: __sl0, explain: __sl45 },
-    { sym: schar(DEF_LEPRECHAUN), name: __sl0, explain: __sl46 },
-    { sym: schar(DEF_MIMIC), name: __sl0, explain: __sl47 },
-    { sym: schar(DEF_NYMPH), name: __sl0, explain: __sl48 },
-    { sym: schar(DEF_ORC), name: __sl0, explain: __sl49 },
-    { sym: schar(DEF_PIERCER), name: __sl0, explain: __sl50 },
-    { sym: schar(DEF_QUADRUPED), name: __sl0, explain: __sl51 },
-    { sym: schar(DEF_RODENT), name: __sl0, explain: __sl52 },
-    { sym: schar(DEF_SPIDER), name: __sl0, explain: __sl53 },
-    { sym: schar(DEF_TRAPPER), name: __sl0, explain: __sl54 },
-    { sym: schar(DEF_UNICORN), name: __sl0, explain: __sl55 },
-    { sym: schar(DEF_VORTEX), name: __sl0, explain: __sl56 },
-    { sym: schar(DEF_WORM), name: __sl0, explain: __sl57 },
-    { sym: schar(DEF_XAN), name: __sl0, explain: __sl58 },
-    { sym: schar(DEF_LIGHT), name: __sl0, explain: __sl59 },
-    { sym: schar(DEF_ZRUTY), name: __sl0, explain: __sl60 },
-    { sym: schar(DEF_ANGEL), name: __sl0, explain: __sl61 },
-    { sym: schar(DEF_BAT), name: __sl0, explain: __sl62 },
-    { sym: schar(DEF_CENTAUR), name: __sl0, explain: __sl63 },
-    { sym: schar(DEF_DRAGON), name: __sl0, explain: __sl64 },
-    { sym: schar(DEF_ELEMENTAL), name: __sl0, explain: __sl65 },
-    { sym: schar(DEF_FUNGUS), name: __sl0, explain: __sl66 },
-    { sym: schar(DEF_GNOME), name: __sl0, explain: __sl67 },
-    { sym: schar(DEF_GIANT), name: __sl0, explain: __sl68 },
-    { sym: schar(DEF_INVISIBLE), name: __sl0, explain: __sl69 },
-    { sym: schar(DEF_JABBERWOCK), name: __sl0, explain: __sl70 },
-    { sym: schar(DEF_KOP), name: __sl0, explain: __sl71 },
-    { sym: schar(DEF_LICH), name: __sl0, explain: __sl72 },
-    { sym: schar(DEF_MUMMY), name: __sl0, explain: __sl73 },
-    { sym: schar(DEF_NAGA), name: __sl0, explain: __sl74 },
-    { sym: schar(DEF_OGRE), name: __sl0, explain: __sl75 },
-    { sym: schar(DEF_PUDDING), name: __sl0, explain: __sl76 },
-    { sym: schar(DEF_QUANTMECH), name: __sl0, explain: __sl77 },
-    { sym: schar(DEF_RUSTMONST), name: __sl0, explain: __sl78 },
-    { sym: schar(DEF_SNAKE), name: __sl0, explain: __sl79 },
-    { sym: schar(DEF_TROLL), name: __sl0, explain: __sl80 },
-    { sym: schar(DEF_UMBER), name: __sl0, explain: __sl81 },
-    { sym: schar(DEF_VAMPIRE), name: __sl0, explain: __sl82 },
-    { sym: schar(DEF_WRAITH), name: __sl0, explain: __sl83 },
-    { sym: schar(DEF_XORN), name: __sl0, explain: __sl84 },
-    { sym: schar(DEF_YETI), name: __sl0, explain: __sl85 },
-    { sym: schar(DEF_ZOMBIE), name: __sl0, explain: __sl86 },
-    { sym: schar(DEF_HUMAN), name: __sl0, explain: __sl87 },
-    { sym: schar(DEF_GHOST), name: __sl0, explain: __sl88 },
-    { sym: schar(DEF_GOLEM), name: __sl0, explain: __sl89 },
-    { sym: schar(DEF_DEMON), name: __sl0, explain: __sl90 },
-    { sym: schar(DEF_EEL), name: __sl0, explain: __sl91 },
-    { sym: schar(DEF_LIZARD), name: __sl0, explain: __sl92 },
-    { sym: schar(DEF_WORM_TAIL), name: __sl0, explain: __sl93 },
-    { sym: schar(DEF_MIMIC_DEF), name: __sl0, explain: __sl47 }
-];
+export const def_monsyms = cptr.alloc(61 * 24);
+cptr.st1(cptr.add(def_monsyms, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 0), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 0), 16), __sl0);
+cptr.st1(cptr.add(def_monsyms, 24), 97);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 24), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 24), 16), __sl35);
+cptr.st1(cptr.add(def_monsyms, 48), 98);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 48), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 48), 16), __sl36);
+cptr.st1(cptr.add(def_monsyms, 72), 99);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 72), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 72), 16), __sl37);
+cptr.st1(cptr.add(def_monsyms, 96), 100);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 96), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 96), 16), __sl38);
+cptr.st1(cptr.add(def_monsyms, 120), 101);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 120), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 120), 16), __sl39);
+cptr.st1(cptr.add(def_monsyms, 144), 102);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 144), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 144), 16), __sl40);
+cptr.st1(cptr.add(def_monsyms, 168), 103);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 168), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 168), 16), __sl41);
+cptr.st1(cptr.add(def_monsyms, 192), 104);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 192), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 192), 16), __sl42);
+cptr.st1(cptr.add(def_monsyms, 216), 105);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 216), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 216), 16), __sl43);
+cptr.st1(cptr.add(def_monsyms, 240), 106);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 240), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 240), 16), __sl44);
+cptr.st1(cptr.add(def_monsyms, 264), 107);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 264), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 264), 16), __sl45);
+cptr.st1(cptr.add(def_monsyms, 288), 108);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 288), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 288), 16), __sl46);
+cptr.st1(cptr.add(def_monsyms, 312), 109);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 312), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 312), 16), __sl47);
+cptr.st1(cptr.add(def_monsyms, 336), 110);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 336), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 336), 16), __sl48);
+cptr.st1(cptr.add(def_monsyms, 360), 111);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 360), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 360), 16), __sl49);
+cptr.st1(cptr.add(def_monsyms, 384), 112);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 384), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 384), 16), __sl50);
+cptr.st1(cptr.add(def_monsyms, 408), 113);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 408), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 408), 16), __sl51);
+cptr.st1(cptr.add(def_monsyms, 432), 114);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 432), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 432), 16), __sl52);
+cptr.st1(cptr.add(def_monsyms, 456), 115);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 456), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 456), 16), __sl53);
+cptr.st1(cptr.add(def_monsyms, 480), 116);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 480), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 480), 16), __sl54);
+cptr.st1(cptr.add(def_monsyms, 504), 117);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 504), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 504), 16), __sl55);
+cptr.st1(cptr.add(def_monsyms, 528), 118);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 528), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 528), 16), __sl56);
+cptr.st1(cptr.add(def_monsyms, 552), 119);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 552), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 552), 16), __sl57);
+cptr.st1(cptr.add(def_monsyms, 576), 120);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 576), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 576), 16), __sl58);
+cptr.st1(cptr.add(def_monsyms, 600), 121);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 600), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 600), 16), __sl59);
+cptr.st1(cptr.add(def_monsyms, 624), 122);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 624), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 624), 16), __sl60);
+cptr.st1(cptr.add(def_monsyms, 648), 65);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 648), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 648), 16), __sl61);
+cptr.st1(cptr.add(def_monsyms, 672), 66);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 672), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 672), 16), __sl62);
+cptr.st1(cptr.add(def_monsyms, 696), 67);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 696), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 696), 16), __sl63);
+cptr.st1(cptr.add(def_monsyms, 720), 68);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 720), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 720), 16), __sl64);
+cptr.st1(cptr.add(def_monsyms, 744), 69);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 744), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 744), 16), __sl65);
+cptr.st1(cptr.add(def_monsyms, 768), 70);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 768), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 768), 16), __sl66);
+cptr.st1(cptr.add(def_monsyms, 792), 71);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 792), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 792), 16), __sl67);
+cptr.st1(cptr.add(def_monsyms, 816), 72);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 816), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 816), 16), __sl68);
+cptr.st1(cptr.add(def_monsyms, 840), 73);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 840), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 840), 16), __sl69);
+cptr.st1(cptr.add(def_monsyms, 864), 74);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 864), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 864), 16), __sl70);
+cptr.st1(cptr.add(def_monsyms, 888), 75);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 888), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 888), 16), __sl71);
+cptr.st1(cptr.add(def_monsyms, 912), 76);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 912), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 912), 16), __sl72);
+cptr.st1(cptr.add(def_monsyms, 936), 77);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 936), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 936), 16), __sl73);
+cptr.st1(cptr.add(def_monsyms, 960), 78);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 960), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 960), 16), __sl74);
+cptr.st1(cptr.add(def_monsyms, 984), 79);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 984), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 984), 16), __sl75);
+cptr.st1(cptr.add(def_monsyms, 1008), 80);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1008), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1008), 16), __sl76);
+cptr.st1(cptr.add(def_monsyms, 1032), 81);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1032), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1032), 16), __sl77);
+cptr.st1(cptr.add(def_monsyms, 1056), 82);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1056), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1056), 16), __sl78);
+cptr.st1(cptr.add(def_monsyms, 1080), 83);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1080), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1080), 16), __sl79);
+cptr.st1(cptr.add(def_monsyms, 1104), 84);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1104), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1104), 16), __sl80);
+cptr.st1(cptr.add(def_monsyms, 1128), 85);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1128), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1128), 16), __sl81);
+cptr.st1(cptr.add(def_monsyms, 1152), 86);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1152), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1152), 16), __sl82);
+cptr.st1(cptr.add(def_monsyms, 1176), 87);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1176), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1176), 16), __sl83);
+cptr.st1(cptr.add(def_monsyms, 1200), 88);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1200), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1200), 16), __sl84);
+cptr.st1(cptr.add(def_monsyms, 1224), 89);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1224), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1224), 16), __sl85);
+cptr.st1(cptr.add(def_monsyms, 1248), 90);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1248), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1248), 16), __sl86);
+cptr.st1(cptr.add(def_monsyms, 1272), 64);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1272), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1272), 16), __sl87);
+cptr.st1(cptr.add(def_monsyms, 1296), 32);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1296), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1296), 16), __sl88);
+cptr.st1(cptr.add(def_monsyms, 1320), 39);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1320), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1320), 16), __sl89);
+cptr.st1(cptr.add(def_monsyms, 1344), 38);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1344), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1344), 16), __sl90);
+cptr.st1(cptr.add(def_monsyms, 1368), 59);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1368), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1368), 16), __sl91);
+cptr.st1(cptr.add(def_monsyms, 1392), 58);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1392), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1392), 16), __sl92);
+cptr.st1(cptr.add(def_monsyms, 1416), 126);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1416), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1416), 16), __sl93);
+cptr.st1(cptr.add(def_monsyms, 1440), 93);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1440), 8), __sl0);
+cptr.stPtr(cptr.add(cptr.add(def_monsyms, 1440), 16), __sl47);
 
 /** C ref: drawing.c:39 — struct symdef[6] */
-const def_warnsyms = [
-    { sym: 48, explanation: __sl94, color: 15 },
-    { sym: 49, explanation: __sl95, color: 1 },
-    { sym: 50, explanation: __sl96, color: 1 },
-    { sym: 51, explanation: __sl97, color: 1 },
-    { sym: 52, explanation: __sl98, color: 5 },
-    { sym: 53, explanation: __sl99, color: 13 }
-];
+export const def_warnsyms = cptr.alloc(6 * 24);
+cptr.st1(cptr.add(def_warnsyms, 0), 48);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 0), 8), __sl94);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 0), 16), 15);
+cptr.st1(cptr.add(def_warnsyms, 24), 49);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 24), 8), __sl95);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 24), 16), 1);
+cptr.st1(cptr.add(def_warnsyms, 48), 50);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 48), 8), __sl96);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 48), 16), 1);
+cptr.st1(cptr.add(def_warnsyms, 72), 51);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 72), 8), __sl97);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 72), 16), 1);
+cptr.st1(cptr.add(def_warnsyms, 96), 52);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 96), 8), __sl98);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 96), 16), 5);
+cptr.st1(cptr.add(def_warnsyms, 120), 53);
+cptr.stPtr(cptr.add(cptr.add(def_warnsyms, 120), 8), __sl99);
+cptr.st1(cptr.add(cptr.add(def_warnsyms, 120), 16), 13);
 
 /** C ref: drawing.c:64 — struct symdef[106] */
-const defsyms = [
-    { sym: 32, explanation: __sl100, color: 8 },
-    { sym: 124, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 45, explanation: __sl101, color: 7 },
-    { sym: 124, explanation: __sl101, color: 7 },
-    { sym: 124, explanation: __sl101, color: 7 },
-    { sym: 46, explanation: __sl102, color: 7 },
-    { sym: 45, explanation: __sl103, color: 3 },
-    { sym: 124, explanation: __sl103, color: 3 },
-    { sym: 43, explanation: __sl104, color: 3 },
-    { sym: 43, explanation: __sl104, color: 3 },
-    { sym: 35, explanation: __sl105, color: 6 },
-    { sym: 35, explanation: __sl106, color: 2 },
-    { sym: 46, explanation: __sl107, color: 7 },
-    { sym: 46, explanation: __sl108, color: 0 },
-    { sym: 96, explanation: __sl109, color: 12 },
-    { sym: 35, explanation: __sl110, color: 7 },
-    { sym: 35, explanation: __sl111, color: 7 },
-    { sym: 35, explanation: __sl109, color: 12 },
-    { sym: 60, explanation: __sl112, color: 7 },
-    { sym: 62, explanation: __sl113, color: 7 },
-    { sym: 60, explanation: __sl114, color: 3 },
-    { sym: 62, explanation: __sl115, color: 3 },
-    { sym: 60, explanation: __sl116, color: 11 },
-    { sym: 62, explanation: __sl117, color: 11 },
-    { sym: 60, explanation: __sl118, color: 11 },
-    { sym: 62, explanation: __sl119, color: 11 },
-    { sym: 95, explanation: __sl120, color: 7 },
-    { sym: 124, explanation: __sl121, color: 15 },
-    { sym: 92, explanation: __sl122, color: 11 },
-    { sym: 123, explanation: __sl123, color: 15 },
-    { sym: 123, explanation: __sl124, color: 12 },
-    { sym: 125, explanation: __sl125, color: 4 },
-    { sym: 46, explanation: __sl126, color: 6 },
-    { sym: 125, explanation: __sl127, color: 1 },
-    { sym: 125, explanation: __sl128, color: 9 },
-    { sym: 46, explanation: __sl129, color: 3 },
-    { sym: 46, explanation: __sl129, color: 3 },
-    { sym: 35, explanation: __sl130, color: 3 },
-    { sym: 35, explanation: __sl130, color: 3 },
-    { sym: 32, explanation: __sl131, color: 6 },
-    { sym: 35, explanation: __sl132, color: 7 },
-    { sym: 125, explanation: __sl125, color: 12 },
-    { sym: 94, explanation: __sl133, color: 6 },
-    { sym: 94, explanation: __sl134, color: 6 },
-    { sym: 94, explanation: __sl135, color: 7 },
-    { sym: 94, explanation: __sl136, color: 3 },
-    { sym: 94, explanation: __sl137, color: 6 },
-    { sym: 94, explanation: __sl138, color: 1 },
-    { sym: 94, explanation: __sl139, color: 7 },
-    { sym: 94, explanation: __sl140, color: 12 },
-    { sym: 94, explanation: __sl141, color: 4 },
-    { sym: 94, explanation: __sl142, color: 9 },
-    { sym: 94, explanation: __sl143, color: 0 },
-    { sym: 94, explanation: __sl144, color: 0 },
-    { sym: 94, explanation: __sl145, color: 3 },
-    { sym: 94, explanation: __sl146, color: 3 },
-    { sym: 94, explanation: __sl147, color: 5 },
-    { sym: 94, explanation: __sl148, color: 5 },
-    { sym: 94, explanation: __sl149, color: 13 },
-    { sym: 34, explanation: __sl150, color: 7 },
-    { sym: 94, explanation: __sl151, color: 7 },
-    { sym: 94, explanation: __sl152, color: 12 },
-    { sym: 94, explanation: __sl153, color: 12 },
-    { sym: 94, explanation: __sl154, color: 10 },
-    { sym: 126, explanation: __sl155, color: 5 },
-    { sym: 94, explanation: __sl156, color: 9 },
-    { sym: 94, explanation: __sl157, color: 9 },
-    { sym: 124, explanation: __sl0, color: 7 },
-    { sym: 45, explanation: __sl0, color: 7 },
-    { sym: 92, explanation: __sl0, color: 7 },
-    { sym: 47, explanation: __sl0, color: 7 },
-    { sym: 42, explanation: __sl0, color: 15 },
-    { sym: 33, explanation: __sl0, color: 15 },
-    { sym: 41, explanation: __sl0, color: 3 },
-    { sym: 40, explanation: __sl0, color: 3 },
-    { sym: 48, explanation: __sl0, color: 12 },
-    { sym: 35, explanation: __sl0, color: 12 },
-    { sym: 64, explanation: __sl0, color: 12 },
-    { sym: 42, explanation: __sl0, color: 12 },
-    { sym: 35, explanation: __sl158, color: 10 },
-    { sym: 36, explanation: __sl159, color: 12 },
-    { sym: 47, explanation: __sl0, color: 2 },
-    { sym: 45, explanation: __sl0, color: 2 },
-    { sym: 92, explanation: __sl0, color: 2 },
-    { sym: 124, explanation: __sl0, color: 2 },
-    { sym: 124, explanation: __sl0, color: 2 },
-    { sym: 92, explanation: __sl0, color: 2 },
-    { sym: 45, explanation: __sl0, color: 2 },
-    { sym: 47, explanation: __sl0, color: 2 },
-    { sym: 47, explanation: __sl0, color: 9 },
-    { sym: 45, explanation: __sl0, color: 9 },
-    { sym: 92, explanation: __sl0, color: 9 },
-    { sym: 124, explanation: __sl0, color: 9 },
-    { sym: 32, explanation: __sl0, color: 9 },
-    { sym: 124, explanation: __sl0, color: 9 },
-    { sym: 92, explanation: __sl0, color: 9 },
-    { sym: 45, explanation: __sl0, color: 9 },
-    { sym: 47, explanation: __sl0, color: 9 },
-    { sym: 0, explanation: null, color: 8 }
-];
+export const defsyms = cptr.alloc(106 * 24);
+cptr.st1(cptr.add(defsyms, 0), 32);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 0), 8), __sl100);
+cptr.st1(cptr.add(cptr.add(defsyms, 0), 16), 8);
+cptr.st1(cptr.add(defsyms, 24), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 24), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 24), 16), 7);
+cptr.st1(cptr.add(defsyms, 48), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 48), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 48), 16), 7);
+cptr.st1(cptr.add(defsyms, 72), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 72), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 72), 16), 7);
+cptr.st1(cptr.add(defsyms, 96), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 96), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 96), 16), 7);
+cptr.st1(cptr.add(defsyms, 120), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 120), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 120), 16), 7);
+cptr.st1(cptr.add(defsyms, 144), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 144), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 144), 16), 7);
+cptr.st1(cptr.add(defsyms, 168), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 168), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 168), 16), 7);
+cptr.st1(cptr.add(defsyms, 192), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 192), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 192), 16), 7);
+cptr.st1(cptr.add(defsyms, 216), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 216), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 216), 16), 7);
+cptr.st1(cptr.add(defsyms, 240), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 240), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 240), 16), 7);
+cptr.st1(cptr.add(defsyms, 264), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 264), 8), __sl101);
+cptr.st1(cptr.add(cptr.add(defsyms, 264), 16), 7);
+cptr.st1(cptr.add(defsyms, 288), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 288), 8), __sl102);
+cptr.st1(cptr.add(cptr.add(defsyms, 288), 16), 7);
+cptr.st1(cptr.add(defsyms, 312), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 312), 8), __sl103);
+cptr.st1(cptr.add(cptr.add(defsyms, 312), 16), 3);
+cptr.st1(cptr.add(defsyms, 336), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 336), 8), __sl103);
+cptr.st1(cptr.add(cptr.add(defsyms, 336), 16), 3);
+cptr.st1(cptr.add(defsyms, 360), 43);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 360), 8), __sl104);
+cptr.st1(cptr.add(cptr.add(defsyms, 360), 16), 3);
+cptr.st1(cptr.add(defsyms, 384), 43);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 384), 8), __sl104);
+cptr.st1(cptr.add(cptr.add(defsyms, 384), 16), 3);
+cptr.st1(cptr.add(defsyms, 408), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 408), 8), __sl105);
+cptr.st1(cptr.add(cptr.add(defsyms, 408), 16), 6);
+cptr.st1(cptr.add(defsyms, 432), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 432), 8), __sl106);
+cptr.st1(cptr.add(cptr.add(defsyms, 432), 16), 2);
+cptr.st1(cptr.add(defsyms, 456), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 456), 8), __sl107);
+cptr.st1(cptr.add(cptr.add(defsyms, 456), 16), 7);
+cptr.st1(cptr.add(defsyms, 480), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 480), 8), __sl108);
+cptr.st1(cptr.add(cptr.add(defsyms, 480), 16), 0);
+cptr.st1(cptr.add(defsyms, 504), 96);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 504), 8), __sl109);
+cptr.st1(cptr.add(cptr.add(defsyms, 504), 16), 12);
+cptr.st1(cptr.add(defsyms, 528), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 528), 8), __sl110);
+cptr.st1(cptr.add(cptr.add(defsyms, 528), 16), 7);
+cptr.st1(cptr.add(defsyms, 552), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 552), 8), __sl111);
+cptr.st1(cptr.add(cptr.add(defsyms, 552), 16), 7);
+cptr.st1(cptr.add(defsyms, 576), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 576), 8), __sl109);
+cptr.st1(cptr.add(cptr.add(defsyms, 576), 16), 12);
+cptr.st1(cptr.add(defsyms, 600), 60);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 600), 8), __sl112);
+cptr.st1(cptr.add(cptr.add(defsyms, 600), 16), 7);
+cptr.st1(cptr.add(defsyms, 624), 62);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 624), 8), __sl113);
+cptr.st1(cptr.add(cptr.add(defsyms, 624), 16), 7);
+cptr.st1(cptr.add(defsyms, 648), 60);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 648), 8), __sl114);
+cptr.st1(cptr.add(cptr.add(defsyms, 648), 16), 3);
+cptr.st1(cptr.add(defsyms, 672), 62);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 672), 8), __sl115);
+cptr.st1(cptr.add(cptr.add(defsyms, 672), 16), 3);
+cptr.st1(cptr.add(defsyms, 696), 60);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 696), 8), __sl116);
+cptr.st1(cptr.add(cptr.add(defsyms, 696), 16), 11);
+cptr.st1(cptr.add(defsyms, 720), 62);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 720), 8), __sl117);
+cptr.st1(cptr.add(cptr.add(defsyms, 720), 16), 11);
+cptr.st1(cptr.add(defsyms, 744), 60);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 744), 8), __sl118);
+cptr.st1(cptr.add(cptr.add(defsyms, 744), 16), 11);
+cptr.st1(cptr.add(defsyms, 768), 62);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 768), 8), __sl119);
+cptr.st1(cptr.add(cptr.add(defsyms, 768), 16), 11);
+cptr.st1(cptr.add(defsyms, 792), 95);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 792), 8), __sl120);
+cptr.st1(cptr.add(cptr.add(defsyms, 792), 16), 7);
+cptr.st1(cptr.add(defsyms, 816), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 816), 8), __sl121);
+cptr.st1(cptr.add(cptr.add(defsyms, 816), 16), 15);
+cptr.st1(cptr.add(defsyms, 840), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 840), 8), __sl122);
+cptr.st1(cptr.add(cptr.add(defsyms, 840), 16), 11);
+cptr.st1(cptr.add(defsyms, 864), 123);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 864), 8), __sl123);
+cptr.st1(cptr.add(cptr.add(defsyms, 864), 16), 15);
+cptr.st1(cptr.add(defsyms, 888), 123);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 888), 8), __sl124);
+cptr.st1(cptr.add(cptr.add(defsyms, 888), 16), 12);
+cptr.st1(cptr.add(defsyms, 912), 125);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 912), 8), __sl125);
+cptr.st1(cptr.add(cptr.add(defsyms, 912), 16), 4);
+cptr.st1(cptr.add(defsyms, 936), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 936), 8), __sl126);
+cptr.st1(cptr.add(cptr.add(defsyms, 936), 16), 6);
+cptr.st1(cptr.add(defsyms, 960), 125);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 960), 8), __sl127);
+cptr.st1(cptr.add(cptr.add(defsyms, 960), 16), 1);
+cptr.st1(cptr.add(defsyms, 984), 125);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 984), 8), __sl128);
+cptr.st1(cptr.add(cptr.add(defsyms, 984), 16), 9);
+cptr.st1(cptr.add(defsyms, 1008), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1008), 8), __sl129);
+cptr.st1(cptr.add(cptr.add(defsyms, 1008), 16), 3);
+cptr.st1(cptr.add(defsyms, 1032), 46);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1032), 8), __sl129);
+cptr.st1(cptr.add(cptr.add(defsyms, 1032), 16), 3);
+cptr.st1(cptr.add(defsyms, 1056), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1056), 8), __sl130);
+cptr.st1(cptr.add(cptr.add(defsyms, 1056), 16), 3);
+cptr.st1(cptr.add(defsyms, 1080), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1080), 8), __sl130);
+cptr.st1(cptr.add(cptr.add(defsyms, 1080), 16), 3);
+cptr.st1(cptr.add(defsyms, 1104), 32);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1104), 8), __sl131);
+cptr.st1(cptr.add(cptr.add(defsyms, 1104), 16), 6);
+cptr.st1(cptr.add(defsyms, 1128), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1128), 8), __sl132);
+cptr.st1(cptr.add(cptr.add(defsyms, 1128), 16), 7);
+cptr.st1(cptr.add(defsyms, 1152), 125);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1152), 8), __sl125);
+cptr.st1(cptr.add(cptr.add(defsyms, 1152), 16), 12);
+cptr.st1(cptr.add(defsyms, 1176), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1176), 8), __sl133);
+cptr.st1(cptr.add(cptr.add(defsyms, 1176), 16), 6);
+cptr.st1(cptr.add(defsyms, 1200), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1200), 8), __sl134);
+cptr.st1(cptr.add(cptr.add(defsyms, 1200), 16), 6);
+cptr.st1(cptr.add(defsyms, 1224), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1224), 8), __sl135);
+cptr.st1(cptr.add(cptr.add(defsyms, 1224), 16), 7);
+cptr.st1(cptr.add(defsyms, 1248), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1248), 8), __sl136);
+cptr.st1(cptr.add(cptr.add(defsyms, 1248), 16), 3);
+cptr.st1(cptr.add(defsyms, 1272), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1272), 8), __sl137);
+cptr.st1(cptr.add(cptr.add(defsyms, 1272), 16), 6);
+cptr.st1(cptr.add(defsyms, 1296), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1296), 8), __sl138);
+cptr.st1(cptr.add(cptr.add(defsyms, 1296), 16), 1);
+cptr.st1(cptr.add(defsyms, 1320), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1320), 8), __sl139);
+cptr.st1(cptr.add(cptr.add(defsyms, 1320), 16), 7);
+cptr.st1(cptr.add(defsyms, 1344), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1344), 8), __sl140);
+cptr.st1(cptr.add(cptr.add(defsyms, 1344), 16), 12);
+cptr.st1(cptr.add(defsyms, 1368), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1368), 8), __sl141);
+cptr.st1(cptr.add(cptr.add(defsyms, 1368), 16), 4);
+cptr.st1(cptr.add(defsyms, 1392), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1392), 8), __sl142);
+cptr.st1(cptr.add(cptr.add(defsyms, 1392), 16), 9);
+cptr.st1(cptr.add(defsyms, 1416), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1416), 8), __sl143);
+cptr.st1(cptr.add(cptr.add(defsyms, 1416), 16), 0);
+cptr.st1(cptr.add(defsyms, 1440), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1440), 8), __sl144);
+cptr.st1(cptr.add(cptr.add(defsyms, 1440), 16), 0);
+cptr.st1(cptr.add(defsyms, 1464), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1464), 8), __sl145);
+cptr.st1(cptr.add(cptr.add(defsyms, 1464), 16), 3);
+cptr.st1(cptr.add(defsyms, 1488), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1488), 8), __sl146);
+cptr.st1(cptr.add(cptr.add(defsyms, 1488), 16), 3);
+cptr.st1(cptr.add(defsyms, 1512), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1512), 8), __sl147);
+cptr.st1(cptr.add(cptr.add(defsyms, 1512), 16), 5);
+cptr.st1(cptr.add(defsyms, 1536), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1536), 8), __sl148);
+cptr.st1(cptr.add(cptr.add(defsyms, 1536), 16), 5);
+cptr.st1(cptr.add(defsyms, 1560), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1560), 8), __sl149);
+cptr.st1(cptr.add(cptr.add(defsyms, 1560), 16), 13);
+cptr.st1(cptr.add(defsyms, 1584), 34);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1584), 8), __sl150);
+cptr.st1(cptr.add(cptr.add(defsyms, 1584), 16), 7);
+cptr.st1(cptr.add(defsyms, 1608), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1608), 8), __sl151);
+cptr.st1(cptr.add(cptr.add(defsyms, 1608), 16), 7);
+cptr.st1(cptr.add(defsyms, 1632), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1632), 8), __sl152);
+cptr.st1(cptr.add(cptr.add(defsyms, 1632), 16), 12);
+cptr.st1(cptr.add(defsyms, 1656), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1656), 8), __sl153);
+cptr.st1(cptr.add(cptr.add(defsyms, 1656), 16), 12);
+cptr.st1(cptr.add(defsyms, 1680), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1680), 8), __sl154);
+cptr.st1(cptr.add(cptr.add(defsyms, 1680), 16), 10);
+cptr.st1(cptr.add(defsyms, 1704), 126);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1704), 8), __sl155);
+cptr.st1(cptr.add(cptr.add(defsyms, 1704), 16), 5);
+cptr.st1(cptr.add(defsyms, 1728), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1728), 8), __sl156);
+cptr.st1(cptr.add(cptr.add(defsyms, 1728), 16), 9);
+cptr.st1(cptr.add(defsyms, 1752), 94);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1752), 8), __sl157);
+cptr.st1(cptr.add(cptr.add(defsyms, 1752), 16), 9);
+cptr.st1(cptr.add(defsyms, 1776), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1776), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1776), 16), 7);
+cptr.st1(cptr.add(defsyms, 1800), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1800), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1800), 16), 7);
+cptr.st1(cptr.add(defsyms, 1824), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1824), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1824), 16), 7);
+cptr.st1(cptr.add(defsyms, 1848), 47);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1848), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1848), 16), 7);
+cptr.st1(cptr.add(defsyms, 1872), 42);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1872), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1872), 16), 15);
+cptr.st1(cptr.add(defsyms, 1896), 33);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1896), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1896), 16), 15);
+cptr.st1(cptr.add(defsyms, 1920), 41);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1920), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1920), 16), 3);
+cptr.st1(cptr.add(defsyms, 1944), 40);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1944), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1944), 16), 3);
+cptr.st1(cptr.add(defsyms, 1968), 48);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1968), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1968), 16), 12);
+cptr.st1(cptr.add(defsyms, 1992), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 1992), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 1992), 16), 12);
+cptr.st1(cptr.add(defsyms, 2016), 64);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2016), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2016), 16), 12);
+cptr.st1(cptr.add(defsyms, 2040), 42);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2040), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2040), 16), 12);
+cptr.st1(cptr.add(defsyms, 2064), 35);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2064), 8), __sl158);
+cptr.st1(cptr.add(cptr.add(defsyms, 2064), 16), 10);
+cptr.st1(cptr.add(defsyms, 2088), 36);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2088), 8), __sl159);
+cptr.st1(cptr.add(cptr.add(defsyms, 2088), 16), 12);
+cptr.st1(cptr.add(defsyms, 2112), 47);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2112), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2112), 16), 2);
+cptr.st1(cptr.add(defsyms, 2136), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2136), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2136), 16), 2);
+cptr.st1(cptr.add(defsyms, 2160), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2160), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2160), 16), 2);
+cptr.st1(cptr.add(defsyms, 2184), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2184), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2184), 16), 2);
+cptr.st1(cptr.add(defsyms, 2208), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2208), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2208), 16), 2);
+cptr.st1(cptr.add(defsyms, 2232), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2232), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2232), 16), 2);
+cptr.st1(cptr.add(defsyms, 2256), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2256), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2256), 16), 2);
+cptr.st1(cptr.add(defsyms, 2280), 47);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2280), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2280), 16), 2);
+cptr.st1(cptr.add(defsyms, 2304), 47);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2304), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2304), 16), 9);
+cptr.st1(cptr.add(defsyms, 2328), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2328), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2328), 16), 9);
+cptr.st1(cptr.add(defsyms, 2352), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2352), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2352), 16), 9);
+cptr.st1(cptr.add(defsyms, 2376), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2376), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2376), 16), 9);
+cptr.st1(cptr.add(defsyms, 2400), 32);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2400), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2400), 16), 9);
+cptr.st1(cptr.add(defsyms, 2424), 124);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2424), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2424), 16), 9);
+cptr.st1(cptr.add(defsyms, 2448), 92);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2448), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2448), 16), 9);
+cptr.st1(cptr.add(defsyms, 2472), 45);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2472), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2472), 16), 9);
+cptr.st1(cptr.add(defsyms, 2496), 47);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2496), 8), __sl0);
+cptr.st1(cptr.add(cptr.add(defsyms, 2496), 16), 9);
+cptr.st1(cptr.add(defsyms, 2520), 0);
+cptr.stPtr(cptr.add(cptr.add(defsyms, 2520), 8), null);
+cptr.st1(cptr.add(cptr.add(defsyms, 2520), 16), 8);
 
 /** C ref: drawing.c:72 — unsigned char[18] */
-const def_r_oc_syms = [0, uchar(ILLOBJ_SYM), uchar(WEAPON_SYM), 93, uchar(RING_SYM), 44, uchar(TOOL_SYM), 58, uchar(POTION_SYM), uchar(SCROLL_SYM), uchar(SPBOOK_SYM), uchar(WAND_SYM), uchar(GEM_SYM), uchar(GEM_SYM), uchar(ROCK_SYM), uchar(BALL_SYM), uchar(CHAIN_SYM), uchar(VENOM_SYM)];
+export const def_r_oc_syms = [0, 93, 41, 93, 61, 44, 40, 58, 33, 63, 43, 47, 42, 42, 96, 48, 95, 46];
 
 /** C ref: drawing.c:91 — @param {CInt} ch @returns {CInt} */
 export function def_char_to_objclass(ch) {
     let i;
-    for (i = 1; i < MAXOCLASSES; i++)
-        if (ch == def_oc_syms[i].sym)
+    for (i = 1; i < 18; i++)
+        if (ch == cptr.ld1s(cptr.add(def_oc_syms, i, 24)))
             break;
     return i;
 }
@@ -390,8 +768,8 @@ export function def_char_to_objclass(ch) {
 /** C ref: drawing.c:108 — @param {CInt} ch @returns {CInt} */
 export function def_char_to_monclass(ch) {
     let i;
-    for (i = 1; i < MAXMCLASSES; i++)
-        if (ch == def_monsyms[i].sym)
+    for (i = 1; i < 61; i++)
+        if (ch == cptr.ld1s(cptr.add(def_monsyms, i, 24)))
             break;
     return i;
 }
@@ -403,15 +781,15 @@ const __static_def_char_is_furniture_last_furniture = cptr.bytes("fountain"); /*
 export function def_char_is_furniture(ch) {
     let i;
     let furniture = (0);
-    for (i = 0; i < MAXPCHARS; ++i) {
+    for (i = 0; i < 105; ++i) {
         if (!furniture) {
-            if (!cptr.strncmp(defsyms[i].explanation, cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
+            if (!cptr.strncmp(cptr.ldPtr(cptr.add(cptr.add(defsyms, i, 24), 8)), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
                 furniture = (1);
         }
         if (furniture) {
-            if (defsyms[i].sym == uchar(ch))
+            if (cptr.ld1u(cptr.add(defsyms, i, 24)) == uchar(ch))
                 return i;
-            if (!strcmp(defsyms[i].explanation, cptr.decay(__static_def_char_is_furniture_last_furniture)))
+            if (!strcmp(cptr.ldPtr(cptr.add(cptr.add(defsyms, i, 24), 8)), cptr.decay(__static_def_char_is_furniture_last_furniture)))
                 break;
         }
     }

@@ -18,7 +18,7 @@ export function alloc(lth) {
     let ptr;
     do {
         if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n)
-            lth = (lth + (8n - BigInt((lth) >>> 0) % 8n)) | 0;
+            lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + (8n - BigInt((lth) >>> 0) % 8n)));
     } while (0);
     ptr = cptr.malloc(BigInt(lth >>> 0));
     if (!ptr)
@@ -31,7 +31,7 @@ export function re_alloc(oldptr, newlth) {
     let newptr;
     do {
         if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n)
-            newlth = (newlth + (8n - BigInt((newlth) >>> 0) % 8n)) | 0;
+            newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + (8n - BigInt((newlth) >>> 0) % 8n)));
     } while (0);
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
     if (newlth && !newptr)
@@ -40,7 +40,7 @@ export function re_alloc(oldptr, newlth) {
 }
 
 /** C ref: alloc.c:120 — char[4][32] */
-const ptrbuf = Array.from({ length: 32 }, () => new Uint8Array(4));
+const ptrbuf = Array.from({ length: 4 }, () => new Uint8Array(32 * 1));
 
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;

@@ -48,16 +48,16 @@ export function were_change(mon) {
     if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 4n) != 0n))
         return;
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 8n) != 0n)) {
-        if (!(u.uprops[PROT_FROM_SHAPE_CHANGERS].intrinsic || u.uprops[PROT_FROM_SHAPE_CHANGERS].extrinsic) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2(night() ? (flags.moonphase == 4 ? 3 : 30) : (flags.moonphase == 4 ? 10 : 50))) : rn2(night() ? (flags.moonphase == 4 ? 3 : 30) : (flags.moonphase == 4 ? 10 : 50)))) {
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50))) : rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50)))) {
             new_were(mon);
-            gw.were_changes++;
-            if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf) && !canseemon(mon)) {
+            (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - 1n;
+            if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2))) && !canseemon(mon)) {
                 let howler;
                 switch ((cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24))) {
-                    case PM_WEREWOLF:
+                    case 21:
                     howler = __sl2;
                     break;
-                    case PM_WEREJACKAL:
+                    case 15:
                     howler = __sl3;
                     break;
                     default:
@@ -71,70 +71,70 @@ export function were_change(mon) {
                 }
             }
         }
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(30)) : rn2(30)) || (u.uprops[PROT_FROM_SHAPE_CHANGERS].intrinsic || u.uprops[PROT_FROM_SHAPE_CHANGERS].extrinsic)) {
+    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(30)) : rn2(30)) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)))) {
         new_were(mon);
-        gw.were_changes++;
+        (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - 1n;
     }
 }
 
 /** C ref: were.c:48 — @param {CInt} pm @returns {CInt} */
 export function counter_were(pm) {
     switch (pm) {
-        case PM_WEREWOLF:
-        return PM_HUMAN_WEREWOLF;
-        case PM_HUMAN_WEREWOLF:
-        return PM_WEREWOLF;
-        case PM_WEREJACKAL:
-        return PM_HUMAN_WEREJACKAL;
-        case PM_HUMAN_WEREJACKAL:
-        return PM_WEREJACKAL;
-        case PM_WERERAT:
-        return PM_HUMAN_WERERAT;
-        case PM_HUMAN_WERERAT:
-        return PM_WERERAT;
+        case 21:
+        return 263;
+        case 263:
+        return 21;
+        case 15:
+        return 262;
+        case 262:
+        return 15;
+        case 91:
+        return 261;
+        case 261:
+        return 91;
         default:
-        return NON_PM;
+        return -1;
     }
 }
 
 /** C ref: were.c:70 — @param {CInt} pm @returns {CInt} */
 export function were_beastie(pm) {
     switch (pm) {
-        case PM_WERERAT:
-        case PM_SEWER_RAT:
-        case PM_GIANT_RAT:
-        case PM_RABID_RAT:
-        return PM_WERERAT;
-        case PM_WEREJACKAL:
-        case PM_JACKAL:
-        case PM_FOX:
-        case PM_COYOTE:
-        return PM_WEREJACKAL;
-        case PM_WEREWOLF:
-        case PM_WOLF:
-        case PM_WARG:
-        case PM_WINTER_WOLF:
-        case PM_WINTER_WOLF_CUB:
-        return PM_WEREWOLF;
+        case 91:
+        case 88:
+        case 89:
+        case 90:
+        return 91;
+        case 15:
+        case 12:
+        case 13:
+        case 14:
+        return 15;
+        case 21:
+        case 20:
+        case 23:
+        case 24:
+        case 22:
+        return 21;
         default:
         break;
     }
-    return NON_PM;
+    return -1;
 }
 
 /** C ref: were.c:96 — @param {CPtr} mon */
 export function new_were(mon) {
     let pm;
-    if ((u.uprops[PROT_FROM_SHAPE_CHANGERS].intrinsic || u.uprops[PROT_FROM_SHAPE_CHANGERS].extrinsic) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 8n) != 0n))
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24))) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 8n) != 0n))
         return;
     pm = counter_were((cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24)));
-    if (pm < LOW_PM) {
-        impossible(__sl5, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), NEUTRAL, 8)));
+    if (pm < 0) {
+        impossible(__sl5, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 2, 8)));
         return;
     }
-    if (canseemon(mon) && !(u.uprops[HALLUC].intrinsic && !(u.uprops[HALLUC_RES].intrinsic || u.uprops[HALLUC_RES].extrinsic)))
-        pline(__sl6, Monnam(mon), ((cptr.ldU64(cptr.add((cptr.add(cptr.decay(mons), pm)), 80)) & 8n) != 0n) ? __sl7 : cptr.add(pmname(cptr.add(cptr.decay(mons), pm), Mgender(mon)), 4));
-    set_mon_data(mon, cptr.add(cptr.decay(mons), pm));
+    if (canseemon(mon) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)))))
+        pline(__sl6, Monnam(mon), ((cptr.ldU64(cptr.add((cptr.add(mons, pm, 96)), 80)) & 8n) != 0n) ? __sl7 : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4));
+    set_mon_data(mon, cptr.add(mons, pm, 96));
     if ((cptr.ldI32(cptr.add((mon), 144)) | 0 || !cptr.ldI32(cptr.add((mon), 160)))) {
         cptr.stI32(cptr.add(mon, 144), 0);
         cptr.stI32(cptr.add(mon, 156), 0);
@@ -144,7 +144,7 @@ export function new_were(mon) {
     newsym(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
     mon_break_armor(mon, (0));
     possibly_unwield(mon, (0));
-    if (svc.context.mon_moving && !cptr.ldI32(cptr.add(mon, 168)) && onscary(cptr.ldI16(cptr.add(mon, 32)), cptr.ldI16(cptr.add(mon, 34)), mon) && monnear(mon, cptr.ldI16(cptr.add(mon, 32)), cptr.ldI16(cptr.add(mon, 34))))
+    if (cptr.ld1s(cptr.add(svc, 77)) && !cptr.ldI32(cptr.add(mon, 168)) && onscary(cptr.ldI16(cptr.add(mon, 32)), cptr.ldI16(cptr.add(mon, 34)), mon) && monnear(mon, cptr.ldI16(cptr.add(mon, 32)), cptr.ldI16(cptr.add(mon, 34))))
         monflee(mon, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 137, __sl8), rn2(9)) : rn2(9)) + (2)) | 0), (1), (1));
 }
 
@@ -156,32 +156,32 @@ export function were_summon(ptr, yours, visible, genbuf) {
     let mtmp;
     let total = 0;
     cptr.stI32(visible, 0);
-    if ((u.uprops[PROT_FROM_SHAPE_CHANGERS].intrinsic || u.uprops[PROT_FROM_SHAPE_CHANGERS].extrinsic) && !yours)
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24))) && !yours)
         return 0;
     for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 155, __sl9), rnd(5)) : rnd(5)); i > 0; i--) {
         switch (pm) {
-            case PM_WERERAT:
-            case PM_HUMAN_WERERAT:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 159, __sl9), rn2(3)) : rn2(3)) ? PM_SEWER_RAT : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 160, __sl9), rn2(3)) : rn2(3)) ? PM_GIANT_RAT : PM_RABID_RAT);
+            case 91:
+            case 261:
+            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 159, __sl9), rn2(3)) : rn2(3)) ? 88 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 160, __sl9), rn2(3)) : rn2(3)) ? 89 : 90);
             if (genbuf)
                 void cptr.strcpy(genbuf, __sl10);
             break;
-            case PM_WEREJACKAL:
-            case PM_HUMAN_WEREJACKAL:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 166, __sl9), rn2(7)) : rn2(7)) ? PM_JACKAL : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 166, __sl9), rn2(3)) : rn2(3)) ? PM_COYOTE : PM_FOX);
+            case 15:
+            case 262:
+            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 166, __sl9), rn2(7)) : rn2(7)) ? 12 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 166, __sl9), rn2(3)) : rn2(3)) ? 14 : 13);
             if (genbuf)
                 void cptr.strcpy(genbuf, __sl3);
             break;
-            case PM_WEREWOLF:
-            case PM_HUMAN_WEREWOLF:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 172, __sl9), rn2(5)) : rn2(5)) ? PM_WOLF : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 172, __sl9), rn2(2)) : rn2(2)) ? PM_WARG : PM_WINTER_WOLF);
+            case 21:
+            case 263:
+            typ = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 172, __sl9), rn2(5)) : rn2(5)) ? 20 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 172, __sl9), rn2(2)) : rn2(2)) ? 23 : 24);
             if (genbuf)
                 void cptr.strcpy(genbuf, __sl2);
             break;
             default:
             continue;
         }
-        mtmp = makemon(cptr.add(cptr.decay(mons), typ), u.ux, u.uy, 0);
+        mtmp = makemon(cptr.add(mons, typ, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0);
         if (mtmp) {
             total++;
             if (canseemon(mtmp))
@@ -196,35 +196,35 @@ export function were_summon(ptr, yours, visible, genbuf) {
 /** C ref: were.c:192 */
 export function you_were() {
     let qbuf = new Uint8Array(128);
-    let controllable_poly = schar(((u.uprops[POLYMORPH_CONTROL].intrinsic || u.uprops[POLYMORPH_CONTROL].extrinsic) && !(u.uprops[STUNNED].intrinsic || (gm.multi < 0n && (unconscious() || is_fainted())))));
-    if ((u.uprops[UNCHANGING].intrinsic || u.uprops[UNCHANGING].extrinsic) || u.umonnum == u.ulycn)
+    let controllable_poly = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 62, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 62, 24))) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) || (cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted())))));
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 63, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 63, 24))) || cptr.ldI32(cptr.add(u, 1808)) == cptr.ldI32(cptr.add(u, 1836)))
         return;
     if (controllable_poly) {
-        void cptr.sprintf(cptr.decay(qbuf), __sl11, an(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(mons[u.ulycn].pmnames), NEUTRAL)), 4)));
-        if (!paranoid_query(schar((((flags.paranoia_bits & 256) >>> 0) != 0)), cptr.decay(qbuf)))
+        void cptr.sprintf(cptr.decay(qbuf), __sl11, an(cptr.add(cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(u, 1836)), 96), 2, 8)), 4)));
+        if (!paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 256) >>> 0) != 0)), cptr.decay(qbuf)))
             return;
     } else if (monster_nearby()) {
         return;
     }
-    gw.were_changes++;
-    void polymon(u.ulycn);
+    (cptr.stU64(cptr.add(gw, 176), cptr.ldU64(cptr.add(gw, 176)) + 1n)) - 1n;
+    void polymon(cptr.ldI32(cptr.add(u, 1836)));
 }
 
 /** C ref: were.c:213 — @param {CInt} purify */
 export function you_unwere(purify) {
-    let controllable_poly = schar(((u.uprops[POLYMORPH_CONTROL].intrinsic || u.uprops[POLYMORPH_CONTROL].extrinsic) && !(u.uprops[STUNNED].intrinsic || (gm.multi < 0n && (unconscious() || is_fainted())))));
+    let controllable_poly = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 62, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 62, 24))) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) || (cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted())))));
     if (purify) {
         You_feel(__sl12);
-        set_ulycn(NON_PM);
+        set_ulycn(-1);
     }
-    if (!(u.uprops[UNCHANGING].intrinsic || u.uprops[UNCHANGING].extrinsic) && ((cptr.ldU64(cptr.add((gy.youmonst.data), 80)) & 4n) != 0n) && !monster_nearby() && (!controllable_poly || !paranoid_query(schar((((flags.paranoia_bits & 256) >>> 0) != 0)), __sl13)))
+    if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 63, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 63, 24))) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 80)) & 4n) != 0n) && !monster_nearby() && (!controllable_poly || !paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 256) >>> 0) != 0)), __sl13)))
         rehumanize();
-    else if (((cptr.ldU64(cptr.add((gy.youmonst.data), 80)) & 4n) != 0n) && !u.mtimedone)
-        u.mtimedone = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 227, __sl14), rn2(200)) : rn2(200)) + (200)) | 0);
+    else if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 80)) & 4n) != 0n) && !cptr.ldI32(cptr.add(u, 1820)))
+        cptr.stI32(cptr.add(u, 1820), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 227, __sl14), rn2(200)) : rn2(200)) + (200)) | 0));
 }
 
 /** C ref: were.c:232 — @param {CInt} which */
 export function set_ulycn(which) {
-    u.ulycn = which;
+    cptr.stI32(cptr.add(u, 1836), which);
     set_uasmon();
 }

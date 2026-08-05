@@ -71,19 +71,27 @@ function impossible(...args) { return 0; }
 function sgn(n) { return n < 0 ? -1 : (n !== 0 ? 1 : 0); }
 
 // sys_random_seed is port-specific (provided by the recorder build's unix
-// glue); init_random is not exercised by the parity driver, which seeds via
-// init_isaac64 directly. Throw if ever reached rather than silently using a
-// made-up seed.
+// glue): NETHACK_SEED env var wins, like the recorder's unixmain.c. The
+// parity driver seeds via init_isaac64 directly and never reaches this;
+// throw when no seed is available rather than silently using a made-up one.
 function sys_random_seed() {
-  throw new Error('sys_random_seed: not available in the parity runtime');
+  const envSeed = (typeof globalThis.getenv === 'function') && globalThis.getenv('NETHACK_SEED');
+  if (envSeed) return BigInt(cptr.cstr(envSeed));
+  throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
 // -- extern state stubs (decl.c / struct you) --------------------------------
-// struct you u — only the fields rnd.c reads (u.ulevel in rne, Luck ==
-// u.uluck + u.moreluck in rnl). ulevel defaults to 1 (game start); the
+// struct you u — only the fields rnd.c reads (u.ulevel at offset 48 in rne,
+// Luck == u.uluck(2186) + u.moreluck(2187) in rnl; byte-packed cptr storage
+// like every other record global). ulevel defaults to 1 (game start); the
 // driver can override via __setU.
-const u = { ulevel: 1, uluck: 0, moreluck: 0 };
-export function __setU(props) { Object.assign(u, props); }
+const u = cptr.alloc(2864);
+cptr.stI32(cptr.add(u, 48), 1); // u.ulevel
+export function __setU(props) {
+  if (props.ulevel !== undefined) cptr.stI32(cptr.add(u, 48), props.ulevel);
+  if (props.uluck !== undefined) cptr.st1(cptr.add(u, 2186), props.uluck);
+  if (props.moreluck !== undefined) cptr.st1(cptr.add(u, 2187), props.moreluck);
+}
 
 let has_strong_rngseed = 1; /* TRUE in the recorder build */
 // ---- end runtime prelude ----
@@ -174,20 +182,23 @@ function rng_log_write(func, args, result) {
 /** C ref: rnd.c:106 — struct rnglist_t { fn, init, rng_state } (memory model v0.5) */
 
 /** C ref: rnd.c:112 — enum */
-const CORE = 0;
-const DISP = 1;
+export const CORE = 0;
+export const DISP = 1;
 
 /** C ref: rnd.c:114 — struct rnglist_t[2] */
-const rnglist = [
-    { fn: rn2, init: (0), rng_state: null },
-    { fn: rn2_on_display_rng, init: (0), rng_state: null }
-];
+const rnglist = cptr.alloc(2 * 4144);
+cptr.stPtr(cptr.add(rnglist, 0), rn2);
+cptr.st1(cptr.add(cptr.add(rnglist, 0), 8), (0));
+cptr.stI32(cptr.add(cptr.add(rnglist, 0), 16), 0);
+cptr.stPtr(cptr.add(rnglist, 4144), rn2_on_display_rng);
+cptr.st1(cptr.add(cptr.add(rnglist, 4144), 8), (0));
+cptr.stI32(cptr.add(cptr.add(rnglist, 4144), 16), 0);
 
 /** C ref: rnd.c:120 — @param {CPtr} fn @returns {CInt} */
 function whichrng(fn) {
     let i;
-    for (i = 0; i < rnglist.length; ++i)
-        if (rnglist[i].fn === fn)
+    for (i = 0; i < 2; ++i)
+        if (cptr.ldPtr(cptr.add(rnglist, i, 4144)) === fn)
             return i;
     return -1;
 }
@@ -200,20 +211,20 @@ export function init_isaac64(seed, fn) {
     if (rngindx < 0)
         panic(__sl6);
     for (i = 0; BigInt(i >>> 0) < 8n; i++) {
-        cptr.st1(cptr.add(cptr.decay(new_rng_state), i), Number(BigInt.asUintN(8, (seed & 255n))));
+        cptr.st1(cptr.add(cptr.decay(new_rng_state), i, 1), Number(BigInt.asUintN(8, (seed & 255n))));
         seed >>= 8n;
     }
-    rnglist[rngindx].rng_state = isaac64_init(new_rng_state);
+    cptr.stPtr(cptr.add(cptr.add(rnglist, rngindx, 4144), 16), isaac64_init(new_rng_state));
 }
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(rnglist[CORE].rng_state) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, 0, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
 }
 
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(rnglist[DISP].rng_state) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, 1, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);
@@ -245,7 +256,7 @@ export function rn2(x) {
 export function rnl(x) {
     let i;
     let adjustment;
-    adjustment = ((u.uluck + u.moreluck) | 0);
+    adjustment = ((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0);
     if (x <= 15) {
         adjustment = Math.imul((((Math.abs(adjustment) + 1) | 0) / 3) | 0, sgn(adjustment));
     }
@@ -300,7 +311,7 @@ export function d(n, x) {
 export function rne(x) {
     let tmp;
     let utmp;
-    utmp = (u.ulevel < 15) ? 5 : (u.ulevel / 3) | 0;
+    utmp = (cptr.ldI32(cptr.add(u, 48)) < 15) ? 5 : (cptr.ldI32(cptr.add(u, 48)) / 3) | 0;
     tmp = 1;
     while (tmp < utmp && !rn2(x))
         tmp++;

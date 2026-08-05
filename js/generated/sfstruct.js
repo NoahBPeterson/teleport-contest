@@ -5,7 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
-import { norm_ptrs_version_info } from './sfbase.js';
+import { norm_ptrs_any, norm_ptrs_arti_info, norm_ptrs_branch, norm_ptrs_bubble, norm_ptrs_cemetery, norm_ptrs_context_info, norm_ptrs_d_level, norm_ptrs_damage, norm_ptrs_dest_area, norm_ptrs_dgn_topology, norm_ptrs_dungeon, norm_ptrs_ebones, norm_ptrs_edog, norm_ptrs_egd, norm_ptrs_emin, norm_ptrs_engr, norm_ptrs_epri, norm_ptrs_eshk, norm_ptrs_fe, norm_ptrs_flag, norm_ptrs_fruit, norm_ptrs_gamelog_line, norm_ptrs_kinfo, norm_ptrs_levelflags, norm_ptrs_linfo, norm_ptrs_ls_t, norm_ptrs_mapseen_feat, norm_ptrs_mapseen_flags, norm_ptrs_mapseen_rooms, norm_ptrs_mkroom, norm_ptrs_monst, norm_ptrs_mvitals, norm_ptrs_nhcoord, norm_ptrs_nhrect, norm_ptrs_obj, norm_ptrs_objclass, norm_ptrs_q_score, norm_ptrs_rm, norm_ptrs_s_level, norm_ptrs_spell, norm_ptrs_stairway, norm_ptrs_trap, norm_ptrs_version_info, norm_ptrs_you } from './sfbase.js';
 import { nh_terminate, panic } from './end.js';
 import { WIN_MESSAGE, program_state } from './decl.js';
 import { impossible, pline } from './pline.js';
@@ -25,6 +25,1052 @@ const __sl8 = cptr.lit("Read %d instead of %u bytes.");
 const __sl9 = cptr.lit("Error restoring old game.");
 const __sl10 = cptr.lit("Error reading level file.");
 
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
+export function historical_sfo_arti_info(nhfp, d_arti_info, myname) {
+    norm_ptrs_arti_info(d_arti_info);
+    bwrite(cptr.ldI32(nhfp), d_arti_info, 36);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
+export function historical_sfi_arti_info(nhfp, d_arti_info, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_arti_info, 36);
+    norm_ptrs_arti_info(d_arti_info);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
+export function historical_sfo_nhrect(nhfp, d_nhrect, myname) {
+    norm_ptrs_nhrect(d_nhrect);
+    bwrite(cptr.ldI32(nhfp), d_nhrect, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
+export function historical_sfi_nhrect(nhfp, d_nhrect, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_nhrect, 8);
+    norm_ptrs_nhrect(d_nhrect);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
+export function historical_sfo_branch(nhfp, d_branch, myname) {
+    norm_ptrs_branch(d_branch);
+    bwrite(cptr.ldI32(nhfp), d_branch, 32);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
+export function historical_sfi_branch(nhfp, d_branch, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_branch, 32);
+    norm_ptrs_branch(d_branch);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
+export function historical_sfo_bubble(nhfp, d_bubble, myname) {
+    norm_ptrs_bubble(d_bubble);
+    bwrite(cptr.ldI32(nhfp), d_bubble, 40);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
+export function historical_sfi_bubble(nhfp, d_bubble, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_bubble, 40);
+    norm_ptrs_bubble(d_bubble);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
+export function historical_sfo_cemetery(nhfp, d_cemetery, myname) {
+    norm_ptrs_cemetery(d_cemetery);
+    bwrite(cptr.ldI32(nhfp), d_cemetery, 184);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
+export function historical_sfi_cemetery(nhfp, d_cemetery, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_cemetery, 184);
+    norm_ptrs_cemetery(d_cemetery);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
+export function historical_sfo_context_info(nhfp, d_context_info, myname) {
+    norm_ptrs_context_info(d_context_info);
+    bwrite(cptr.ldI32(nhfp), d_context_info, 720);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
+export function historical_sfi_context_info(nhfp, d_context_info, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_context_info, 720);
+    norm_ptrs_context_info(d_context_info);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
+export function historical_sfo_nhcoord(nhfp, d_nhcoord, myname) {
+    norm_ptrs_nhcoord(d_nhcoord);
+    bwrite(cptr.ldI32(nhfp), d_nhcoord, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
+export function historical_sfi_nhcoord(nhfp, d_nhcoord, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_nhcoord, 4);
+    norm_ptrs_nhcoord(d_nhcoord);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
+export function historical_sfo_damage(nhfp, d_damage, myname) {
+    norm_ptrs_damage(d_damage);
+    bwrite(cptr.ldI32(nhfp), d_damage, 32);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
+export function historical_sfi_damage(nhfp, d_damage, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_damage, 32);
+    norm_ptrs_damage(d_damage);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
+export function historical_sfo_dest_area(nhfp, d_dest_area, myname) {
+    norm_ptrs_dest_area(d_dest_area);
+    bwrite(cptr.ldI32(nhfp), d_dest_area, 16);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
+export function historical_sfi_dest_area(nhfp, d_dest_area, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_dest_area, 16);
+    norm_ptrs_dest_area(d_dest_area);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
+export function historical_sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
+    norm_ptrs_dgn_topology(d_dgn_topology);
+    bwrite(cptr.ldI32(nhfp), d_dgn_topology, 114);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
+export function historical_sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_dgn_topology, 114);
+    norm_ptrs_dgn_topology(d_dgn_topology);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
+export function historical_sfo_dungeon(nhfp, d_dungeon, myname) {
+    norm_ptrs_dungeon(d_dungeon);
+    bwrite(cptr.ldI32(nhfp), d_dungeon, 112);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
+export function historical_sfi_dungeon(nhfp, d_dungeon, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_dungeon, 112);
+    norm_ptrs_dungeon(d_dungeon);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
+export function historical_sfo_d_level(nhfp, d_d_level, myname) {
+    norm_ptrs_d_level(d_d_level);
+    bwrite(cptr.ldI32(nhfp), d_d_level, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
+export function historical_sfi_d_level(nhfp, d_d_level, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_d_level, 4);
+    norm_ptrs_d_level(d_d_level);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
+export function historical_sfo_ebones(nhfp, d_ebones, myname) {
+    norm_ptrs_ebones(d_ebones);
+    bwrite(cptr.ldI32(nhfp), d_ebones, 36);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
+export function historical_sfi_ebones(nhfp, d_ebones, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_ebones, 36);
+    norm_ptrs_ebones(d_ebones);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
+export function historical_sfo_edog(nhfp, d_edog, myname) {
+    norm_ptrs_edog(d_edog);
+    bwrite(cptr.ldI32(nhfp), d_edog, 64);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
+export function historical_sfi_edog(nhfp, d_edog, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_edog, 64);
+    norm_ptrs_edog(d_edog);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
+export function historical_sfo_egd(nhfp, d_egd, myname) {
+    norm_ptrs_egd(d_egd);
+    bwrite(cptr.ldI32(nhfp), d_egd, 652);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
+export function historical_sfi_egd(nhfp, d_egd, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_egd, 652);
+    norm_ptrs_egd(d_egd);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
+export function historical_sfo_emin(nhfp, d_emin, myname) {
+    norm_ptrs_emin(d_emin);
+    bwrite(cptr.ldI32(nhfp), d_emin, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
+export function historical_sfi_emin(nhfp, d_emin, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_emin, 8);
+    norm_ptrs_emin(d_emin);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
+export function historical_sfo_engr(nhfp, d_engr, myname) {
+    norm_ptrs_engr(d_engr);
+    bwrite(cptr.ldI32(nhfp), d_engr, 80);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
+export function historical_sfi_engr(nhfp, d_engr, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_engr, 80);
+    norm_ptrs_engr(d_engr);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
+export function historical_sfo_epri(nhfp, d_epri, myname) {
+    norm_ptrs_epri(d_epri);
+    bwrite(cptr.ldI32(nhfp), d_epri, 56);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
+export function historical_sfi_epri(nhfp, d_epri, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_epri, 56);
+    norm_ptrs_epri(d_epri);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
+export function historical_sfo_eshk(nhfp, d_eshk, myname) {
+    norm_ptrs_eshk(d_eshk);
+    bwrite(cptr.ldI32(nhfp), d_eshk, 4960);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
+export function historical_sfi_eshk(nhfp, d_eshk, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_eshk, 4960);
+    norm_ptrs_eshk(d_eshk);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
+export function historical_sfo_fe(nhfp, d_fe, myname) {
+    norm_ptrs_fe(d_fe);
+    bwrite(cptr.ldI32(nhfp), d_fe, 48);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
+export function historical_sfi_fe(nhfp, d_fe, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_fe, 48);
+    norm_ptrs_fe(d_fe);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
+export function historical_sfo_flag(nhfp, d_flag, myname) {
+    norm_ptrs_flag(d_flag);
+    bwrite(cptr.ldI32(nhfp), d_flag, 208);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
+export function historical_sfi_flag(nhfp, d_flag, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_flag, 208);
+    norm_ptrs_flag(d_flag);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
+export function historical_sfo_fruit(nhfp, d_fruit, myname) {
+    norm_ptrs_fruit(d_fruit);
+    bwrite(cptr.ldI32(nhfp), d_fruit, 48);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
+export function historical_sfi_fruit(nhfp, d_fruit, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_fruit, 48);
+    norm_ptrs_fruit(d_fruit);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
+export function historical_sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
+    norm_ptrs_gamelog_line(d_gamelog_line);
+    bwrite(cptr.ldI32(nhfp), d_gamelog_line, 32);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
+export function historical_sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_gamelog_line, 32);
+    norm_ptrs_gamelog_line(d_gamelog_line);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
+export function historical_sfo_kinfo(nhfp, d_kinfo, myname) {
+    norm_ptrs_kinfo(d_kinfo);
+    bwrite(cptr.ldI32(nhfp), d_kinfo, 272);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
+export function historical_sfi_kinfo(nhfp, d_kinfo, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_kinfo, 272);
+    norm_ptrs_kinfo(d_kinfo);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
+export function historical_sfo_levelflags(nhfp, d_levelflags, myname) {
+    norm_ptrs_levelflags(d_levelflags);
+    bwrite(cptr.ldI32(nhfp), d_levelflags, 128);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
+export function historical_sfi_levelflags(nhfp, d_levelflags, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_levelflags, 128);
+    norm_ptrs_levelflags(d_levelflags);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
+export function historical_sfo_ls_t(nhfp, d_ls_t, myname) {
+    norm_ptrs_ls_t(d_ls_t);
+    bwrite(cptr.ldI32(nhfp), d_ls_t, 32);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
+export function historical_sfi_ls_t(nhfp, d_ls_t, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_ls_t, 32);
+    norm_ptrs_ls_t(d_ls_t);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
+export function historical_sfo_linfo(nhfp, d_linfo, myname) {
+    norm_ptrs_linfo(d_linfo);
+    bwrite(cptr.ldI32(nhfp), d_linfo, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
+export function historical_sfi_linfo(nhfp, d_linfo, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_linfo, 1);
+    norm_ptrs_linfo(d_linfo);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
+export function historical_sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
+    norm_ptrs_mapseen_feat(d_mapseen_feat);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_feat, 52);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
+export function historical_sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_mapseen_feat, 52);
+    norm_ptrs_mapseen_feat(d_mapseen_feat);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
+export function historical_sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
+    norm_ptrs_mapseen_flags(d_mapseen_flags);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_flags, 64);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
+export function historical_sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_mapseen_flags, 64);
+    norm_ptrs_mapseen_flags(d_mapseen_flags);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
+export function historical_sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
+    norm_ptrs_mapseen_rooms(d_mapseen_rooms);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_rooms, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
+export function historical_sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_mapseen_rooms, 8);
+    norm_ptrs_mapseen_rooms(d_mapseen_rooms);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
+export function historical_sfo_mkroom(nhfp, d_mkroom, myname) {
+    norm_ptrs_mkroom(d_mkroom);
+    bwrite(cptr.ldI32(nhfp), d_mkroom, 224);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
+export function historical_sfi_mkroom(nhfp, d_mkroom, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_mkroom, 224);
+    norm_ptrs_mkroom(d_mkroom);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
+export function historical_sfo_monst(nhfp, d_monst, myname) {
+    norm_ptrs_monst(d_monst);
+    bwrite(cptr.ldI32(nhfp), d_monst, 320);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
+export function historical_sfi_monst(nhfp, d_monst, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_monst, 320);
+    norm_ptrs_monst(d_monst);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
+export function historical_sfo_mvitals(nhfp, d_mvitals, myname) {
+    norm_ptrs_mvitals(d_mvitals);
+    bwrite(cptr.ldI32(nhfp), d_mvitals, 12);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
+export function historical_sfi_mvitals(nhfp, d_mvitals, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_mvitals, 12);
+    norm_ptrs_mvitals(d_mvitals);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
+export function historical_sfo_obj(nhfp, d_obj, myname) {
+    norm_ptrs_obj(d_obj);
+    bwrite(cptr.ldI32(nhfp), d_obj, 216);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
+export function historical_sfi_obj(nhfp, d_obj, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_obj, 216);
+    norm_ptrs_obj(d_obj);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
+export function historical_sfo_objclass(nhfp, d_objclass, myname) {
+    norm_ptrs_objclass(d_objclass);
+    bwrite(cptr.ldI32(nhfp), d_objclass, 120);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
+export function historical_sfi_objclass(nhfp, d_objclass, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_objclass, 120);
+    norm_ptrs_objclass(d_objclass);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
+export function historical_sfo_q_score(nhfp, d_q_score, myname) {
+    norm_ptrs_q_score(d_q_score);
+    bwrite(cptr.ldI32(nhfp), d_q_score, 88);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
+export function historical_sfi_q_score(nhfp, d_q_score, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_q_score, 88);
+    norm_ptrs_q_score(d_q_score);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
+export function historical_sfo_rm(nhfp, d_rm, myname) {
+    norm_ptrs_rm(d_rm);
+    bwrite(cptr.ldI32(nhfp), d_rm, 36);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
+export function historical_sfi_rm(nhfp, d_rm, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_rm, 36);
+    norm_ptrs_rm(d_rm);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
+export function historical_sfo_spell(nhfp, d_spell, myname) {
+    norm_ptrs_spell(d_spell);
+    bwrite(cptr.ldI32(nhfp), d_spell, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
+export function historical_sfi_spell(nhfp, d_spell, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_spell, 8);
+    norm_ptrs_spell(d_spell);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
+export function historical_sfo_stairway(nhfp, d_stairway, myname) {
+    norm_ptrs_stairway(d_stairway);
+    bwrite(cptr.ldI32(nhfp), d_stairway, 24);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
+export function historical_sfi_stairway(nhfp, d_stairway, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_stairway, 24);
+    norm_ptrs_stairway(d_stairway);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
+export function historical_sfo_s_level(nhfp, d_s_level, myname) {
+    norm_ptrs_s_level(d_s_level);
+    bwrite(cptr.ldI32(nhfp), d_s_level, 56);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
+export function historical_sfi_s_level(nhfp, d_s_level, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_s_level, 56);
+    norm_ptrs_s_level(d_s_level);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
+export function historical_sfo_trap(nhfp, d_trap, myname) {
+    norm_ptrs_trap(d_trap);
+    bwrite(cptr.ldI32(nhfp), d_trap, 40);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
+export function historical_sfi_trap(nhfp, d_trap, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_trap, 40);
+    norm_ptrs_trap(d_trap);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
+export function historical_sfo_you(nhfp, d_you, myname) {
+    norm_ptrs_you(d_you);
+    bwrite(cptr.ldI32(nhfp), d_you, 2864);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
+export function historical_sfi_you(nhfp, d_you, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_you, 2864);
+    norm_ptrs_you(d_you);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
+export function historical_sfo_any(nhfp, d_any, myname) {
+    norm_ptrs_any(d_any);
+    bwrite(cptr.ldI32(nhfp), d_any, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
+export function historical_sfi_any(nhfp, d_any, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_any, 8);
+    norm_ptrs_any(d_any);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
+export function historical_sfo_aligntyp(nhfp, d_aligntyp, myname) {
+    bwrite(cptr.ldI32(nhfp), d_aligntyp, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
+export function historical_sfi_aligntyp(nhfp, d_aligntyp, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_aligntyp, 1);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
+export function historical_sfo_boolean(nhfp, d_boolean, myname) {
+    bwrite(cptr.ldI32(nhfp), d_boolean, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
+export function historical_sfi_boolean(nhfp, d_boolean, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_boolean, 1);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
+export function historical_sfo_coordxy(nhfp, d_coordxy, myname) {
+    bwrite(cptr.ldI32(nhfp), d_coordxy, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
+export function historical_sfi_coordxy(nhfp, d_coordxy, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_coordxy, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
+export function historical_sfo_int(nhfp, d_int, myname) {
+    bwrite(cptr.ldI32(nhfp), d_int, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
+export function historical_sfi_int(nhfp, d_int, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_int, 4);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
+export function historical_sfo_int16(nhfp, d_int16, myname) {
+    bwrite(cptr.ldI32(nhfp), d_int16, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
+export function historical_sfi_int16(nhfp, d_int16, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_int16, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
+export function historical_sfo_int32(nhfp, d_int32, myname) {
+    bwrite(cptr.ldI32(nhfp), d_int32, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
+export function historical_sfi_int32(nhfp, d_int32, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_int32, 4);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
+export function historical_sfo_int64(nhfp, d_int64, myname) {
+    bwrite(cptr.ldI32(nhfp), d_int64, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
+export function historical_sfi_int64(nhfp, d_int64, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_int64, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
+export function historical_sfo_long(nhfp, d_long, myname) {
+    bwrite(cptr.ldI32(nhfp), d_long, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
+export function historical_sfi_long(nhfp, d_long, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_long, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
+export function historical_sfo_schar(nhfp, d_schar, myname) {
+    bwrite(cptr.ldI32(nhfp), d_schar, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
+export function historical_sfi_schar(nhfp, d_schar, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_schar, 1);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
+export function historical_sfo_short(nhfp, d_short, myname) {
+    bwrite(cptr.ldI32(nhfp), d_short, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
+export function historical_sfi_short(nhfp, d_short, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_short, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
+export function historical_sfo_size_t(nhfp, d_size_t, myname) {
+    bwrite(cptr.ldI32(nhfp), d_size_t, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
+export function historical_sfi_size_t(nhfp, d_size_t, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_size_t, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
+export function historical_sfo_time_t(nhfp, d_time_t, myname) {
+    bwrite(cptr.ldI32(nhfp), d_time_t, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
+export function historical_sfi_time_t(nhfp, d_time_t, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_time_t, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
+export function historical_sfo_uchar(nhfp, d_uchar, myname) {
+    bwrite(cptr.ldI32(nhfp), d_uchar, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
+export function historical_sfi_uchar(nhfp, d_uchar, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_uchar, 1);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
+export function historical_sfo_uint16(nhfp, d_uint16, myname) {
+    bwrite(cptr.ldI32(nhfp), d_uint16, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
+export function historical_sfi_uint16(nhfp, d_uint16, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_uint16, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
+export function historical_sfo_uint32(nhfp, d_uint32, myname) {
+    bwrite(cptr.ldI32(nhfp), d_uint32, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
+export function historical_sfi_uint32(nhfp, d_uint32, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_uint32, 4);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
+export function historical_sfo_uint64(nhfp, d_uint64, myname) {
+    bwrite(cptr.ldI32(nhfp), d_uint64, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
+export function historical_sfi_uint64(nhfp, d_uint64, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_uint64, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
+export function historical_sfo_ulong(nhfp, d_ulong, myname) {
+    bwrite(cptr.ldI32(nhfp), d_ulong, 8);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
+export function historical_sfi_ulong(nhfp, d_ulong, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_ulong, 8);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
+export function historical_sfo_unsigned(nhfp, d_unsigned, myname) {
+    bwrite(cptr.ldI32(nhfp), d_unsigned, 4);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
+export function historical_sfi_unsigned(nhfp, d_unsigned, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_unsigned, 4);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
+export function historical_sfo_ushort(nhfp, d_ushort, myname) {
+    bwrite(cptr.ldI32(nhfp), d_ushort, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
+export function historical_sfi_ushort(nhfp, d_ushort, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_ushort, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
+export function historical_sfo_xint16(nhfp, d_xint16, myname) {
+    bwrite(cptr.ldI32(nhfp), d_xint16, 2);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
+export function historical_sfi_xint16(nhfp, d_xint16, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_xint16, 2);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
+export function historical_sfo_xint8(nhfp, d_xint8, myname) {
+    bwrite(cptr.ldI32(nhfp), d_xint8, 1);
+}
+
+/** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
+export function historical_sfi_xint8(nhfp, d_xint8, myname) {
+    if (cptr.ld1s(cptr.add(nhfp, 35))) {
+        sfstruct_read_error();
+    }
+    mread(cptr.ldI32(nhfp), d_xint8, 1);
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
+        cptr.st1(cptr.add(nhfp, 35), (1));
+}
+
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
 export function historical_sfo_version_info(nhfp, d_version_info, myname) {
     norm_ptrs_version_info(d_version_info);
@@ -38,7 +1084,7 @@ export function historical_sfi_version_info(nhfp, d_version_info, myname) {
     }
     mread(cptr.ldI32(nhfp), d_version_info, 24);
     norm_ptrs_version_info(d_version_info);
-    if (restoreinfo.mread_flags == -1)
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
         cptr.st1(cptr.add(nhfp, 35), (1));
 }
 
@@ -50,7 +1096,7 @@ export function historical_sfo_char(nhfp, d_char, myname, cnt) {
 /** C ref: sfstruct.c:113 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function historical_sfi_char(nhfp, d_char, myname, cnt) {
     mread(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt(cnt)) * 1n))));
-    if (restoreinfo.mread_flags == -1)
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
         cptr.st1(cptr.add(nhfp, 35), (1));
 }
 
@@ -65,7 +1111,7 @@ export function historical_sfi_genericptr_t(nhfp, d_genericptr_t, myname) {
         sfstruct_read_error();
     }
     mread(cptr.ldI32(nhfp), d_genericptr_t, 8);
-    if (restoreinfo.mread_flags == -1)
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
         cptr.st1(cptr.add(nhfp, 35), (1));
 }
 
@@ -80,12 +1126,12 @@ export function historical_sfi_bitfield(nhfp, d_bitfield, myname, bflen) {
         sfstruct_read_error();
     }
     mread(cptr.ldI32(nhfp), d_bitfield, 1);
-    if (restoreinfo.mread_flags == -1)
+    if (cptr.ldI32(cptr.add(restoreinfo, 8)) == -1)
         cptr.st1(cptr.add(nhfp, 35), (1));
 }
 
 /** C ref: sfstruct.c:149 — struct sf_structlevel_procs */
-let historical_sfo_procs = cptr.alloc(552);
+export let historical_sfo_procs = cptr.alloc(552);
 cptr.stPtr(historical_sfo_procs, __sl0);
 cptr.stPtr(cptr.add(historical_sfo_procs, 8), historical_sfo_arti_info);
 cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 8), historical_sfo_nhrect);
@@ -157,7 +1203,7 @@ cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 528), historical_sfo_char
 cptr.stPtr(cptr.add(cptr.add(historical_sfo_procs, 8), 536), historical_sfo_bitfield);
 
 /** C ref: sfstruct.c:225 — struct sf_structlevel_procs */
-let historical_sfi_procs = cptr.alloc(552);
+export let historical_sfi_procs = cptr.alloc(552);
 cptr.stPtr(historical_sfi_procs, __sl0);
 cptr.stPtr(cptr.add(historical_sfi_procs, 8), historical_sfi_arti_info);
 cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 8), historical_sfi_nhrect);
@@ -229,35 +1275,50 @@ cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 528), historical_sfi_char
 cptr.stPtr(cptr.add(cptr.add(historical_sfi_procs, 8), 536), historical_sfi_bitfield);
 
 /** C ref: sfstruct.c:320 — struct restore_info */
-let restoreinfo = cptr.alloc(16);
+export let restoreinfo = cptr.alloc(16);
 cptr.stPtr(restoreinfo, __sl1);
 cptr.stI32(cptr.add(restoreinfo, 8), 0);
 
 /** C ref: sfstruct.c:325 — enum */
-const NOFLG = 0;
-const NOSLOT = 1;
+export const NOFLG = 0;
+export const NOSLOT = 1;
 
 /** C ref: sfstruct.c:326 — int[5] */
-const bw_sticky = [-1, -1, -1, -1, -1];
+const bw_sticky = cptr.alloc(5 * 4);
+cptr.stI32(cptr.add(bw_sticky, 0), -1);
+cptr.stI32(cptr.add(bw_sticky, 4), -1);
+cptr.stI32(cptr.add(bw_sticky, 8), -1);
+cptr.stI32(cptr.add(bw_sticky, 12), -1);
+cptr.stI32(cptr.add(bw_sticky, 16), -1);
 
 /** C ref: sfstruct.c:327 — int[5] */
-const bw_buffered = [0, 0, 0, 0, 0];
+const bw_buffered = cptr.alloc(5 * 4);
+cptr.stI32(cptr.add(bw_buffered, 0), 0);
+cptr.stI32(cptr.add(bw_buffered, 4), 0);
+cptr.stI32(cptr.add(bw_buffered, 8), 0);
+cptr.stI32(cptr.add(bw_buffered, 12), 0);
+cptr.stI32(cptr.add(bw_buffered, 16), 0);
 
 /** C ref: sfstruct.c:329 — FILE *[5] */
-const bw_FILE = [null, null, null, null, null];
+const bw_FILE = cptr.alloc(5 * 8);
+cptr.stPtr(cptr.add(bw_FILE, 0), null);
+cptr.stPtr(cptr.add(bw_FILE, 8), null);
+cptr.stPtr(cptr.add(bw_FILE, 16), null);
+cptr.stPtr(cptr.add(bw_FILE, 24), null);
+cptr.stPtr(cptr.add(bw_FILE, 32), null);
 
 /** C ref: sfstruct.c:384 — @param {CInt} fd @param {CInt} flg @returns {CInt} */
 function getidx(fd, flg) {
     let i;
     let retval = -1;
     for (i = 0; i < 5; ++i)
-        if (bw_sticky[i] == fd)
+        if (cptr.ldI32(cptr.add(bw_sticky, i, 4)) == fd)
             return i;
-    if (flg == NOSLOT)
+    if (flg == 1)
         return retval;
     for (i = 0; i < 5; ++i)
-        if (bw_sticky[i] < 0) {
-            bw_sticky[i] = fd;
+        if (cptr.ldI32(cptr.add(bw_sticky, i, 4)) < 0) {
+            cptr.stI32(cptr.add(bw_sticky, i, 4), fd);
             retval = i;
             break;
         }
@@ -266,7 +1327,7 @@ function getidx(fd, flg) {
 
 /** C ref: sfstruct.c:404 — @param {CInt} fd @returns {CInt} */
 export function close_check(fd) {
-    let idx = getidx(fd, NOSLOT);
+    let idx = getidx(fd, 1);
     let retval = (0);
     if (idx >= 0)
         retval = (1);
@@ -275,49 +1336,49 @@ export function close_check(fd) {
 
 /** C ref: sfstruct.c:415 — @param {CInt} fd */
 export function bufon(fd) {
-    let idx = getidx(fd, NOFLG);
+    let idx = getidx(fd, 0);
     if (idx >= 0) {
-        bw_sticky[idx] = fd;
-        if (bw_buffered[idx])
+        cptr.stI32(cptr.add(bw_sticky, idx, 4), fd);
+        if (cptr.ldI32(cptr.add(bw_buffered, idx, 4)))
             panic(__sl2);
-        if (!cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) {
-            if ((cptr.stPtr(cptr.add(cptr.decay(bw_FILE), idx), fdopen(fd, __sl3))) === null)
+        if (!cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) {
+            if ((cptr.stPtr(cptr.add(bw_FILE, idx, 8), fdopen(fd, __sl3))) === null)
                 panic(__sl4, fd);
         }
-        bw_buffered[idx] = (cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx)) !== null);
+        cptr.stI32(cptr.add(bw_buffered, idx, 4), (cptr.ldPtr(cptr.add(bw_FILE, idx, 8)) !== null));
     }
 }
 
 /** C ref: sfstruct.c:436 — @param {CInt} fd */
 export function bufoff(fd) {
-    let idx = getidx(fd, NOFLG);
+    let idx = getidx(fd, 0);
     if (idx >= 0) {
         bflush(fd);
-        bw_buffered[idx] = 0;
+        cptr.stI32(cptr.add(bw_buffered, idx, 4), 0);
     }
 }
 
 /** C ref: sfstruct.c:447 — @param {CInt} fd */
 export function bclose(fd) {
-    let idx = getidx(fd, NOSLOT);
+    let idx = getidx(fd, 1);
     bufoff(fd);
     if (idx >= 0) {
-        if (cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) {
-            void fclose(cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx)));
-            cptr.stPtr(cptr.add(cptr.decay(bw_FILE), idx), null);
+        if (cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) {
+            void fclose(cptr.ldPtr(cptr.add(bw_FILE, idx, 8)));
+            cptr.stPtr(cptr.add(bw_FILE, idx, 8), null);
         } else
             close(fd);
-        bw_sticky[idx] = -1;
+        cptr.stI32(cptr.add(bw_sticky, idx, 4), -1);
     }
     return;
 }
 
 /** C ref: sfstruct.c:478 — @param {CInt} fd */
 export function bflush(fd) {
-    let idx = getidx(fd, NOFLG);
+    let idx = getidx(fd, 0);
     if (idx >= 0) {
-        if (cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) {
-            if (fflush(cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) == (-1))
+        if (cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) {
+            if (fflush(cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) == (-1))
                 panic(__sl5);
         }
     }
@@ -327,18 +1388,18 @@ export function bflush(fd) {
 /** C ref: sfstruct.c:494 — @param {CInt} fd @param {CPtr} loc @param {CUInt} num */
 export function bwrite(fd, loc, num) {
     let failed;
-    let idx = getidx(fd, NOFLG);
+    let idx = getidx(fd, 0);
     if (idx >= 0) {
         if (num == 0) {
             return;
         }
-        if (bw_buffered[idx] && cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) {
-            failed = schar((fwrite(loc, BigInt.asUintN(64, BigInt((num | 0))), 1n, cptr.ldPtr(cptr.add(cptr.decay(bw_FILE), idx))) != 1n));
+        if (cptr.ldI32(cptr.add(bw_buffered, idx, 4)) && cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) {
+            failed = schar((fwrite(loc, BigInt.asUintN(64, BigInt((num | 0))), 1n, cptr.ldPtr(cptr.add(bw_FILE, idx, 8))) != 1n));
         } else {
             failed = schar((cptr.write(fd, loc, BigInt(num >>> 0)) != BigInt(num >>> 0)));
         }
         if (failed) {
-            if (program_state.done_hup)
+            if (cptr.ldI32(cptr.add(program_state, 8)))
                 nh_terminate(1);
             else
                 panic(__sl6, num, fd);
@@ -352,13 +1413,13 @@ export function mread(fd, buf, len) {
     let rlen;
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
-        if ((cptr.ldI32(cptr.add(restoreinfo, 8)) == 1) || (program_state.reading_bonesfile == 1)) {
+        if ((cptr.ldI32(cptr.add(restoreinfo, 8)) == 1) || (cptr.ldI32(cptr.add(program_state, 92)) == 1)) {
             cptr.stI32(cptr.add(restoreinfo, 8), -1);
             return;
         } else {
             pline(__sl8, rlen | 0, len);
-            (windowprocs.win_display_nhwindow)(WIN_MESSAGE, (1));
-            if (program_state.restoring) {
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE, (1));
+            if (cptr.ldI32(cptr.add(program_state, 32))) {
                 void nhclose(fd);
                 void delete_savefile();
                 error(__sl9);

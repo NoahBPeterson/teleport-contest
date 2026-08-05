@@ -10,6 +10,7 @@ import { eos, nh_snprintf, strncmpi } from './hacklib.js';
 import { ARGV0, gc, gd, gh, iflags, program_state } from './decl.js';
 import { dupstr } from './alloc.js';
 import { nh_terminate } from './end.js';
+import { chdirx, whoami } from './unixmain.js';
 import { genl_display_file, windowprocs } from './windows.js';
 import { initoptions, match_optname } from './options.js';
 import { crashreport_bidshow, panictrace_setsignals } from './report.js';
@@ -29,1297 +30,1319 @@ const __sl4 = cptr.lit("dumpglyphids");
 const __sl5 = cptr.lit("dumpmongen");
 const __sl6 = cptr.lit("dumpweights");
 const __sl7 = cptr.lit("bidshow");
-const __sl8 = cptr.lit("[nothing]");
-const __sl9 = cptr.lit("Unknown option: %.60s");
-const __sl10 = cptr.lit("Value not allowed: %.60s");
-const __sl11 = cptr.lit("Missing required value: %.60s");
-const __sl12 = cptr.lit("command line");
-const __sl13 = cptr.lit("?");
-const __sl14 = cptr.lit("-directory");
-const __sl15 = cptr.lit("Flag -d must be followed by a directory name.");
-const __sl16 = cptr.lit("-help");
-const __sl17 = cptr.lit("-?");
-const __sl18 = cptr.lit("-no-nethackrc");
-const __sl19 = cptr.lit("/dev/null");
-const __sl20 = cptr.lit("-nethackrc");
-const __sl21 = cptr.lit("-scores");
-const __sl22 = cptr.lit("-usage");
-const __sl23 = cptr.lit("-windowtype");
-const __sl24 = cptr.lit("usagehlp");
-const __sl25 = cptr.lit("");
-const __sl26 = cptr.lit("-");
-const __sl27 = cptr.lit("paste");
-const __sl28 = cptr.lit("copy");
-const __sl29 = cptr.lit("dump");
-const __sl30 = cptr.lit("show");
-const __sl31 = cptr.lit("-%sversion can only be extended with -%sversion:copy or :dump or :show.\n");
-const __sl32 = cptr.lit("no");
-const __sl33 = cptr.lit("test");
-const __sl34 = cptr.lit("ttystatus");
-const __sl35 = cptr.lit("fuzzer");
-const __sl36 = cptr.lit("GIANT_ANT");
-const __sl37 = cptr.lit("KILLER_BEE");
-const __sl38 = cptr.lit("SOLDIER_ANT");
-const __sl39 = cptr.lit("FIRE_ANT");
-const __sl40 = cptr.lit("GIANT_BEETLE");
-const __sl41 = cptr.lit("QUEEN_BEE");
-const __sl42 = cptr.lit("ACID_BLOB");
-const __sl43 = cptr.lit("QUIVERING_BLOB");
-const __sl44 = cptr.lit("GELATINOUS_CUBE");
-const __sl45 = cptr.lit("CHICKATRICE");
-const __sl46 = cptr.lit("COCKATRICE");
-const __sl47 = cptr.lit("PYROLISK");
-const __sl48 = cptr.lit("JACKAL");
-const __sl49 = cptr.lit("FOX");
-const __sl50 = cptr.lit("COYOTE");
-const __sl51 = cptr.lit("WEREJACKAL");
-const __sl52 = cptr.lit("LITTLE_DOG");
-const __sl53 = cptr.lit("DINGO");
-const __sl54 = cptr.lit("DOG");
-const __sl55 = cptr.lit("LARGE_DOG");
-const __sl56 = cptr.lit("WOLF");
-const __sl57 = cptr.lit("WEREWOLF");
-const __sl58 = cptr.lit("WINTER_WOLF_CUB");
-const __sl59 = cptr.lit("WARG");
-const __sl60 = cptr.lit("WINTER_WOLF");
-const __sl61 = cptr.lit("HELL_HOUND_PUP");
-const __sl62 = cptr.lit("HELL_HOUND");
-const __sl63 = cptr.lit("GAS_SPORE");
-const __sl64 = cptr.lit("FLOATING_EYE");
-const __sl65 = cptr.lit("FREEZING_SPHERE");
-const __sl66 = cptr.lit("FLAMING_SPHERE");
-const __sl67 = cptr.lit("SHOCKING_SPHERE");
-const __sl68 = cptr.lit("KITTEN");
-const __sl69 = cptr.lit("HOUSECAT");
-const __sl70 = cptr.lit("JAGUAR");
-const __sl71 = cptr.lit("LYNX");
-const __sl72 = cptr.lit("PANTHER");
-const __sl73 = cptr.lit("LARGE_CAT");
-const __sl74 = cptr.lit("TIGER");
-const __sl75 = cptr.lit("DISPLACER_BEAST");
-const __sl76 = cptr.lit("GREMLIN");
-const __sl77 = cptr.lit("GARGOYLE");
-const __sl78 = cptr.lit("WINGED_GARGOYLE");
-const __sl79 = cptr.lit("HOBBIT");
-const __sl80 = cptr.lit("DWARF");
-const __sl81 = cptr.lit("BUGBEAR");
-const __sl82 = cptr.lit("DWARF_LEADER");
-const __sl83 = cptr.lit("DWARF_RULER");
-const __sl84 = cptr.lit("MIND_FLAYER");
-const __sl85 = cptr.lit("MASTER_MIND_FLAYER");
-const __sl86 = cptr.lit("MANES");
-const __sl87 = cptr.lit("HOMUNCULUS");
-const __sl88 = cptr.lit("IMP");
-const __sl89 = cptr.lit("LEMURE");
-const __sl90 = cptr.lit("QUASIT");
-const __sl91 = cptr.lit("TENGU");
-const __sl92 = cptr.lit("BLUE_JELLY");
-const __sl93 = cptr.lit("SPOTTED_JELLY");
-const __sl94 = cptr.lit("OCHRE_JELLY");
-const __sl95 = cptr.lit("KOBOLD");
-const __sl96 = cptr.lit("LARGE_KOBOLD");
-const __sl97 = cptr.lit("KOBOLD_LEADER");
-const __sl98 = cptr.lit("KOBOLD_SHAMAN");
-const __sl99 = cptr.lit("LEPRECHAUN");
-const __sl100 = cptr.lit("SMALL_MIMIC");
-const __sl101 = cptr.lit("LARGE_MIMIC");
-const __sl102 = cptr.lit("GIANT_MIMIC");
-const __sl103 = cptr.lit("WOOD_NYMPH");
-const __sl104 = cptr.lit("WATER_NYMPH");
-const __sl105 = cptr.lit("MOUNTAIN_NYMPH");
-const __sl106 = cptr.lit("GOBLIN");
-const __sl107 = cptr.lit("HOBGOBLIN");
-const __sl108 = cptr.lit("ORC");
-const __sl109 = cptr.lit("HILL_ORC");
-const __sl110 = cptr.lit("MORDOR_ORC");
-const __sl111 = cptr.lit("URUK_HAI");
-const __sl112 = cptr.lit("ORC_SHAMAN");
-const __sl113 = cptr.lit("ORC_CAPTAIN");
-const __sl114 = cptr.lit("ROCK_PIERCER");
-const __sl115 = cptr.lit("IRON_PIERCER");
-const __sl116 = cptr.lit("GLASS_PIERCER");
-const __sl117 = cptr.lit("ROTHE");
-const __sl118 = cptr.lit("MUMAK");
-const __sl119 = cptr.lit("LEOCROTTA");
-const __sl120 = cptr.lit("WUMPUS");
-const __sl121 = cptr.lit("TITANOTHERE");
-const __sl122 = cptr.lit("BALUCHITHERIUM");
-const __sl123 = cptr.lit("MASTODON");
-const __sl124 = cptr.lit("SEWER_RAT");
-const __sl125 = cptr.lit("GIANT_RAT");
-const __sl126 = cptr.lit("RABID_RAT");
-const __sl127 = cptr.lit("WERERAT");
-const __sl128 = cptr.lit("ROCK_MOLE");
-const __sl129 = cptr.lit("WOODCHUCK");
-const __sl130 = cptr.lit("CAVE_SPIDER");
-const __sl131 = cptr.lit("CENTIPEDE");
-const __sl132 = cptr.lit("GIANT_SPIDER");
-const __sl133 = cptr.lit("SCORPION");
-const __sl134 = cptr.lit("LURKER_ABOVE");
-const __sl135 = cptr.lit("TRAPPER");
-const __sl136 = cptr.lit("PONY");
-const __sl137 = cptr.lit("WHITE_UNICORN");
-const __sl138 = cptr.lit("GRAY_UNICORN");
-const __sl139 = cptr.lit("BLACK_UNICORN");
-const __sl140 = cptr.lit("HORSE");
-const __sl141 = cptr.lit("WARHORSE");
-const __sl142 = cptr.lit("FOG_CLOUD");
-const __sl143 = cptr.lit("DUST_VORTEX");
-const __sl144 = cptr.lit("ICE_VORTEX");
-const __sl145 = cptr.lit("ENERGY_VORTEX");
-const __sl146 = cptr.lit("STEAM_VORTEX");
-const __sl147 = cptr.lit("FIRE_VORTEX");
-const __sl148 = cptr.lit("BABY_LONG_WORM");
-const __sl149 = cptr.lit("BABY_PURPLE_WORM");
-const __sl150 = cptr.lit("LONG_WORM");
-const __sl151 = cptr.lit("PURPLE_WORM");
-const __sl152 = cptr.lit("GRID_BUG");
-const __sl153 = cptr.lit("XAN");
-const __sl154 = cptr.lit("YELLOW_LIGHT");
-const __sl155 = cptr.lit("BLACK_LIGHT");
-const __sl156 = cptr.lit("ZRUTY");
-const __sl157 = cptr.lit("COUATL");
-const __sl158 = cptr.lit("ALEAX");
-const __sl159 = cptr.lit("ANGEL");
-const __sl160 = cptr.lit("KI_RIN");
-const __sl161 = cptr.lit("ARCHON");
-const __sl162 = cptr.lit("BAT");
-const __sl163 = cptr.lit("GIANT_BAT");
-const __sl164 = cptr.lit("RAVEN");
-const __sl165 = cptr.lit("VAMPIRE_BAT");
-const __sl166 = cptr.lit("PLAINS_CENTAUR");
-const __sl167 = cptr.lit("FOREST_CENTAUR");
-const __sl168 = cptr.lit("MOUNTAIN_CENTAUR");
-const __sl169 = cptr.lit("BABY_GRAY_DRAGON");
-const __sl170 = cptr.lit("BABY_GOLD_DRAGON");
-const __sl171 = cptr.lit("BABY_SILVER_DRAGON");
-const __sl172 = cptr.lit("BABY_RED_DRAGON");
-const __sl173 = cptr.lit("BABY_WHITE_DRAGON");
-const __sl174 = cptr.lit("BABY_ORANGE_DRAGON");
-const __sl175 = cptr.lit("BABY_BLACK_DRAGON");
-const __sl176 = cptr.lit("BABY_BLUE_DRAGON");
-const __sl177 = cptr.lit("BABY_GREEN_DRAGON");
-const __sl178 = cptr.lit("BABY_YELLOW_DRAGON");
-const __sl179 = cptr.lit("GRAY_DRAGON");
-const __sl180 = cptr.lit("GOLD_DRAGON");
-const __sl181 = cptr.lit("SILVER_DRAGON");
-const __sl182 = cptr.lit("RED_DRAGON");
-const __sl183 = cptr.lit("WHITE_DRAGON");
-const __sl184 = cptr.lit("ORANGE_DRAGON");
-const __sl185 = cptr.lit("BLACK_DRAGON");
-const __sl186 = cptr.lit("BLUE_DRAGON");
-const __sl187 = cptr.lit("GREEN_DRAGON");
-const __sl188 = cptr.lit("YELLOW_DRAGON");
-const __sl189 = cptr.lit("STALKER");
-const __sl190 = cptr.lit("AIR_ELEMENTAL");
-const __sl191 = cptr.lit("FIRE_ELEMENTAL");
-const __sl192 = cptr.lit("EARTH_ELEMENTAL");
-const __sl193 = cptr.lit("WATER_ELEMENTAL");
-const __sl194 = cptr.lit("LICHEN");
-const __sl195 = cptr.lit("BROWN_MOLD");
-const __sl196 = cptr.lit("YELLOW_MOLD");
-const __sl197 = cptr.lit("GREEN_MOLD");
-const __sl198 = cptr.lit("RED_MOLD");
-const __sl199 = cptr.lit("SHRIEKER");
-const __sl200 = cptr.lit("VIOLET_FUNGUS");
-const __sl201 = cptr.lit("GNOME");
-const __sl202 = cptr.lit("GNOME_LEADER");
-const __sl203 = cptr.lit("GNOMISH_WIZARD");
-const __sl204 = cptr.lit("GNOME_RULER");
-const __sl205 = cptr.lit("GIANT");
-const __sl206 = cptr.lit("STONE_GIANT");
-const __sl207 = cptr.lit("HILL_GIANT");
-const __sl208 = cptr.lit("FIRE_GIANT");
-const __sl209 = cptr.lit("FROST_GIANT");
-const __sl210 = cptr.lit("ETTIN");
-const __sl211 = cptr.lit("STORM_GIANT");
-const __sl212 = cptr.lit("TITAN");
-const __sl213 = cptr.lit("MINOTAUR");
-const __sl214 = cptr.lit("JABBERWOCK");
-const __sl215 = cptr.lit("KEYSTONE_KOP");
-const __sl216 = cptr.lit("KOP_SERGEANT");
-const __sl217 = cptr.lit("KOP_LIEUTENANT");
-const __sl218 = cptr.lit("KOP_KAPTAIN");
-const __sl219 = cptr.lit("LICH");
-const __sl220 = cptr.lit("DEMILICH");
-const __sl221 = cptr.lit("MASTER_LICH");
-const __sl222 = cptr.lit("ARCH_LICH");
-const __sl223 = cptr.lit("KOBOLD_MUMMY");
-const __sl224 = cptr.lit("GNOME_MUMMY");
-const __sl225 = cptr.lit("ORC_MUMMY");
-const __sl226 = cptr.lit("DWARF_MUMMY");
-const __sl227 = cptr.lit("ELF_MUMMY");
-const __sl228 = cptr.lit("HUMAN_MUMMY");
-const __sl229 = cptr.lit("ETTIN_MUMMY");
-const __sl230 = cptr.lit("GIANT_MUMMY");
-const __sl231 = cptr.lit("RED_NAGA_HATCHLING");
-const __sl232 = cptr.lit("BLACK_NAGA_HATCHLING");
-const __sl233 = cptr.lit("GOLDEN_NAGA_HATCHLING");
-const __sl234 = cptr.lit("GUARDIAN_NAGA_HATCHLING");
-const __sl235 = cptr.lit("RED_NAGA");
-const __sl236 = cptr.lit("BLACK_NAGA");
-const __sl237 = cptr.lit("GOLDEN_NAGA");
-const __sl238 = cptr.lit("GUARDIAN_NAGA");
-const __sl239 = cptr.lit("OGRE");
-const __sl240 = cptr.lit("OGRE_LEADER");
-const __sl241 = cptr.lit("OGRE_TYRANT");
-const __sl242 = cptr.lit("GRAY_OOZE");
-const __sl243 = cptr.lit("BROWN_PUDDING");
-const __sl244 = cptr.lit("GREEN_SLIME");
-const __sl245 = cptr.lit("BLACK_PUDDING");
-const __sl246 = cptr.lit("QUANTUM_MECHANIC");
-const __sl247 = cptr.lit("GENETIC_ENGINEER");
-const __sl248 = cptr.lit("RUST_MONSTER");
-const __sl249 = cptr.lit("DISENCHANTER");
-const __sl250 = cptr.lit("GARTER_SNAKE");
-const __sl251 = cptr.lit("SNAKE");
-const __sl252 = cptr.lit("WATER_MOCCASIN");
-const __sl253 = cptr.lit("PYTHON");
-const __sl254 = cptr.lit("PIT_VIPER");
-const __sl255 = cptr.lit("COBRA");
-const __sl256 = cptr.lit("TROLL");
-const __sl257 = cptr.lit("ICE_TROLL");
-const __sl258 = cptr.lit("ROCK_TROLL");
-const __sl259 = cptr.lit("WATER_TROLL");
-const __sl260 = cptr.lit("OLOG_HAI");
-const __sl261 = cptr.lit("UMBER_HULK");
-const __sl262 = cptr.lit("VAMPIRE");
-const __sl263 = cptr.lit("VAMPIRE_LEADER");
-const __sl264 = cptr.lit("VLAD_THE_IMPALER");
-const __sl265 = cptr.lit("BARROW_WIGHT");
-const __sl266 = cptr.lit("WRAITH");
-const __sl267 = cptr.lit("NAZGUL");
-const __sl268 = cptr.lit("XORN");
-const __sl269 = cptr.lit("MONKEY");
-const __sl270 = cptr.lit("APE");
-const __sl271 = cptr.lit("OWLBEAR");
-const __sl272 = cptr.lit("YETI");
-const __sl273 = cptr.lit("CARNIVOROUS_APE");
-const __sl274 = cptr.lit("SASQUATCH");
-const __sl275 = cptr.lit("KOBOLD_ZOMBIE");
-const __sl276 = cptr.lit("GNOME_ZOMBIE");
-const __sl277 = cptr.lit("ORC_ZOMBIE");
-const __sl278 = cptr.lit("DWARF_ZOMBIE");
-const __sl279 = cptr.lit("ELF_ZOMBIE");
-const __sl280 = cptr.lit("HUMAN_ZOMBIE");
-const __sl281 = cptr.lit("ETTIN_ZOMBIE");
-const __sl282 = cptr.lit("GHOUL");
-const __sl283 = cptr.lit("GIANT_ZOMBIE");
-const __sl284 = cptr.lit("SKELETON");
-const __sl285 = cptr.lit("STRAW_GOLEM");
-const __sl286 = cptr.lit("PAPER_GOLEM");
-const __sl287 = cptr.lit("ROPE_GOLEM");
-const __sl288 = cptr.lit("GOLD_GOLEM");
-const __sl289 = cptr.lit("LEATHER_GOLEM");
-const __sl290 = cptr.lit("WOOD_GOLEM");
-const __sl291 = cptr.lit("FLESH_GOLEM");
-const __sl292 = cptr.lit("CLAY_GOLEM");
-const __sl293 = cptr.lit("STONE_GOLEM");
-const __sl294 = cptr.lit("GLASS_GOLEM");
-const __sl295 = cptr.lit("IRON_GOLEM");
-const __sl296 = cptr.lit("HUMAN");
-const __sl297 = cptr.lit("HUMAN_WERERAT");
-const __sl298 = cptr.lit("HUMAN_WEREJACKAL");
-const __sl299 = cptr.lit("HUMAN_WEREWOLF");
-const __sl300 = cptr.lit("ELF");
-const __sl301 = cptr.lit("WOODLAND_ELF");
-const __sl302 = cptr.lit("GREEN_ELF");
-const __sl303 = cptr.lit("GREY_ELF");
-const __sl304 = cptr.lit("ELF_NOBLE");
-const __sl305 = cptr.lit("ELVEN_MONARCH");
-const __sl306 = cptr.lit("DOPPELGANGER");
-const __sl307 = cptr.lit("SHOPKEEPER");
-const __sl308 = cptr.lit("GUARD");
-const __sl309 = cptr.lit("PRISONER");
-const __sl310 = cptr.lit("ORACLE");
-const __sl311 = cptr.lit("ALIGNED_CLERIC");
-const __sl312 = cptr.lit("HIGH_CLERIC");
-const __sl313 = cptr.lit("SOLDIER");
-const __sl314 = cptr.lit("SERGEANT");
-const __sl315 = cptr.lit("NURSE");
-const __sl316 = cptr.lit("LIEUTENANT");
-const __sl317 = cptr.lit("CAPTAIN");
-const __sl318 = cptr.lit("WATCHMAN");
-const __sl319 = cptr.lit("WATCH_CAPTAIN");
-const __sl320 = cptr.lit("MEDUSA");
-const __sl321 = cptr.lit("WIZARD_OF_YENDOR");
-const __sl322 = cptr.lit("CROESUS");
-const __sl323 = cptr.lit("GHOST");
-const __sl324 = cptr.lit("SHADE");
-const __sl325 = cptr.lit("WATER_DEMON");
-const __sl326 = cptr.lit("AMOROUS_DEMON");
-const __sl327 = cptr.lit("HORNED_DEVIL");
-const __sl328 = cptr.lit("ERINYS");
-const __sl329 = cptr.lit("BARBED_DEVIL");
-const __sl330 = cptr.lit("MARILITH");
-const __sl331 = cptr.lit("VROCK");
-const __sl332 = cptr.lit("HEZROU");
-const __sl333 = cptr.lit("BONE_DEVIL");
-const __sl334 = cptr.lit("ICE_DEVIL");
-const __sl335 = cptr.lit("NALFESHNEE");
-const __sl336 = cptr.lit("PIT_FIEND");
-const __sl337 = cptr.lit("SANDESTIN");
-const __sl338 = cptr.lit("BALROG");
-const __sl339 = cptr.lit("JUIBLEX");
-const __sl340 = cptr.lit("YEENOGHU");
-const __sl341 = cptr.lit("ORCUS");
-const __sl342 = cptr.lit("GERYON");
-const __sl343 = cptr.lit("DISPATER");
-const __sl344 = cptr.lit("BAALZEBUB");
-const __sl345 = cptr.lit("ASMODEUS");
-const __sl346 = cptr.lit("DEMOGORGON");
-const __sl347 = cptr.lit("DEATH");
-const __sl348 = cptr.lit("PESTILENCE");
-const __sl349 = cptr.lit("FAMINE");
-const __sl350 = cptr.lit("MAIL_DAEMON");
-const __sl351 = cptr.lit("DJINNI");
-const __sl352 = cptr.lit("JELLYFISH");
-const __sl353 = cptr.lit("PIRANHA");
-const __sl354 = cptr.lit("SHARK");
-const __sl355 = cptr.lit("GIANT_EEL");
-const __sl356 = cptr.lit("ELECTRIC_EEL");
-const __sl357 = cptr.lit("KRAKEN");
-const __sl358 = cptr.lit("NEWT");
-const __sl359 = cptr.lit("GECKO");
-const __sl360 = cptr.lit("IGUANA");
-const __sl361 = cptr.lit("BABY_CROCODILE");
-const __sl362 = cptr.lit("LIZARD");
-const __sl363 = cptr.lit("CHAMELEON");
-const __sl364 = cptr.lit("CROCODILE");
-const __sl365 = cptr.lit("SALAMANDER");
-const __sl366 = cptr.lit("LONG_WORM_TAIL");
-const __sl367 = cptr.lit("ARCHEOLOGIST");
-const __sl368 = cptr.lit("BARBARIAN");
-const __sl369 = cptr.lit("CAVE_DWELLER");
-const __sl370 = cptr.lit("HEALER");
-const __sl371 = cptr.lit("KNIGHT");
-const __sl372 = cptr.lit("MONK");
-const __sl373 = cptr.lit("CLERIC");
-const __sl374 = cptr.lit("RANGER");
-const __sl375 = cptr.lit("ROGUE");
-const __sl376 = cptr.lit("SAMURAI");
-const __sl377 = cptr.lit("TOURIST");
-const __sl378 = cptr.lit("VALKYRIE");
-const __sl379 = cptr.lit("WIZARD");
-const __sl380 = cptr.lit("LORD_CARNARVON");
-const __sl381 = cptr.lit("PELIAS");
-const __sl382 = cptr.lit("SHAMAN_KARNOV");
-const __sl383 = cptr.lit("HIPPOCRATES");
-const __sl384 = cptr.lit("KING_ARTHUR");
-const __sl385 = cptr.lit("GRAND_MASTER");
-const __sl386 = cptr.lit("ARCH_PRIEST");
-const __sl387 = cptr.lit("ORION");
-const __sl388 = cptr.lit("MASTER_OF_THIEVES");
-const __sl389 = cptr.lit("LORD_SATO");
-const __sl390 = cptr.lit("TWOFLOWER");
-const __sl391 = cptr.lit("NORN");
-const __sl392 = cptr.lit("NEFERET_THE_GREEN");
-const __sl393 = cptr.lit("MINION_OF_HUHETOTL");
-const __sl394 = cptr.lit("THOTH_AMON");
-const __sl395 = cptr.lit("CHROMATIC_DRAGON");
-const __sl396 = cptr.lit("CYCLOPS");
-const __sl397 = cptr.lit("IXOTH");
-const __sl398 = cptr.lit("MASTER_KAEN");
-const __sl399 = cptr.lit("NALZOK");
-const __sl400 = cptr.lit("SCORPIUS");
-const __sl401 = cptr.lit("MASTER_ASSASSIN");
-const __sl402 = cptr.lit("ASHIKAGA_TAKAUJI");
-const __sl403 = cptr.lit("LORD_SURTUR");
-const __sl404 = cptr.lit("DARK_ONE");
-const __sl405 = cptr.lit("STUDENT");
-const __sl406 = cptr.lit("CHIEFTAIN");
-const __sl407 = cptr.lit("NEANDERTHAL");
-const __sl408 = cptr.lit("ATTENDANT");
-const __sl409 = cptr.lit("PAGE");
-const __sl410 = cptr.lit("ABBOT");
-const __sl411 = cptr.lit("ACOLYTE");
-const __sl412 = cptr.lit("HUNTER");
-const __sl413 = cptr.lit("THUG");
-const __sl414 = cptr.lit("NINJA");
-const __sl415 = cptr.lit("ROSHI");
-const __sl416 = cptr.lit("GUIDE");
-const __sl417 = cptr.lit("WARRIOR");
-const __sl418 = cptr.lit("APPRENTICE");
-const __sl419 = cptr.lit("NUMMONS");
-const __sl420 = cptr.lit("NON_PM");
-const __sl421 = cptr.lit("LOW_PM");
-const __sl422 = cptr.lit("HIGH_PM");
-const __sl423 = cptr.lit("SPECIAL_PM");
-const __sl424 = cptr.lit("STRANGE_OBJECT");
-const __sl425 = cptr.lit("GENERIC_ILLOBJ");
-const __sl426 = cptr.lit("GENERIC_WEAPON");
-const __sl427 = cptr.lit("GENERIC_ARMOR");
-const __sl428 = cptr.lit("GENERIC_RING");
-const __sl429 = cptr.lit("GENERIC_AMULET");
-const __sl430 = cptr.lit("GENERIC_TOOL");
-const __sl431 = cptr.lit("GENERIC_FOOD");
-const __sl432 = cptr.lit("GENERIC_POTION");
-const __sl433 = cptr.lit("GENERIC_SCROLL");
-const __sl434 = cptr.lit("GENERIC_SPBOOK");
-const __sl435 = cptr.lit("GENERIC_WAND");
-const __sl436 = cptr.lit("GENERIC_COIN");
-const __sl437 = cptr.lit("GENERIC_GEM");
-const __sl438 = cptr.lit("GENERIC_ROCK");
-const __sl439 = cptr.lit("GENERIC_BALL");
-const __sl440 = cptr.lit("GENERIC_CHAIN");
-const __sl441 = cptr.lit("GENERIC_VENOM");
-const __sl442 = cptr.lit("ARROW");
-const __sl443 = cptr.lit("ELVEN_ARROW");
-const __sl444 = cptr.lit("ORCISH_ARROW");
-const __sl445 = cptr.lit("SILVER_ARROW");
-const __sl446 = cptr.lit("YA");
-const __sl447 = cptr.lit("CROSSBOW_BOLT");
-const __sl448 = cptr.lit("DART");
-const __sl449 = cptr.lit("SHURIKEN");
-const __sl450 = cptr.lit("BOOMERANG");
-const __sl451 = cptr.lit("SPEAR");
-const __sl452 = cptr.lit("ELVEN_SPEAR");
-const __sl453 = cptr.lit("ORCISH_SPEAR");
-const __sl454 = cptr.lit("DWARVISH_SPEAR");
-const __sl455 = cptr.lit("SILVER_SPEAR");
-const __sl456 = cptr.lit("JAVELIN");
-const __sl457 = cptr.lit("TRIDENT");
-const __sl458 = cptr.lit("DAGGER");
-const __sl459 = cptr.lit("ELVEN_DAGGER");
-const __sl460 = cptr.lit("ORCISH_DAGGER");
-const __sl461 = cptr.lit("SILVER_DAGGER");
-const __sl462 = cptr.lit("ATHAME");
-const __sl463 = cptr.lit("SCALPEL");
-const __sl464 = cptr.lit("KNIFE");
-const __sl465 = cptr.lit("STILETTO");
-const __sl466 = cptr.lit("WORM_TOOTH");
-const __sl467 = cptr.lit("CRYSKNIFE");
-const __sl468 = cptr.lit("AXE");
-const __sl469 = cptr.lit("BATTLE_AXE");
-const __sl470 = cptr.lit("SHORT_SWORD");
-const __sl471 = cptr.lit("ELVEN_SHORT_SWORD");
-const __sl472 = cptr.lit("ORCISH_SHORT_SWORD");
-const __sl473 = cptr.lit("DWARVISH_SHORT_SWORD");
-const __sl474 = cptr.lit("SCIMITAR");
-const __sl475 = cptr.lit("SILVER_SABER");
-const __sl476 = cptr.lit("BROADSWORD");
-const __sl477 = cptr.lit("ELVEN_BROADSWORD");
-const __sl478 = cptr.lit("LONG_SWORD");
-const __sl479 = cptr.lit("TWO_HANDED_SWORD");
-const __sl480 = cptr.lit("KATANA");
-const __sl481 = cptr.lit("TSURUGI");
-const __sl482 = cptr.lit("RUNESWORD");
-const __sl483 = cptr.lit("PARTISAN");
-const __sl484 = cptr.lit("RANSEUR");
-const __sl485 = cptr.lit("SPETUM");
-const __sl486 = cptr.lit("GLAIVE");
-const __sl487 = cptr.lit("HALBERD");
-const __sl488 = cptr.lit("BARDICHE");
-const __sl489 = cptr.lit("VOULGE");
-const __sl490 = cptr.lit("FAUCHARD");
-const __sl491 = cptr.lit("GUISARME");
-const __sl492 = cptr.lit("BILL_GUISARME");
-const __sl493 = cptr.lit("LUCERN_HAMMER");
-const __sl494 = cptr.lit("BEC_DE_CORBIN");
-const __sl495 = cptr.lit("DWARVISH_MATTOCK");
-const __sl496 = cptr.lit("LANCE");
-const __sl497 = cptr.lit("MACE");
-const __sl498 = cptr.lit("SILVER_MACE");
-const __sl499 = cptr.lit("MORNING_STAR");
-const __sl500 = cptr.lit("WAR_HAMMER");
-const __sl501 = cptr.lit("CLUB");
-const __sl502 = cptr.lit("RUBBER_HOSE");
-const __sl503 = cptr.lit("QUARTERSTAFF");
-const __sl504 = cptr.lit("AKLYS");
-const __sl505 = cptr.lit("FLAIL");
-const __sl506 = cptr.lit("BULLWHIP");
-const __sl507 = cptr.lit("BOW");
-const __sl508 = cptr.lit("ELVEN_BOW");
-const __sl509 = cptr.lit("ORCISH_BOW");
-const __sl510 = cptr.lit("YUMI");
-const __sl511 = cptr.lit("SLING");
-const __sl512 = cptr.lit("CROSSBOW");
-const __sl513 = cptr.lit("ELVEN_LEATHER_HELM");
-const __sl514 = cptr.lit("ORCISH_HELM");
-const __sl515 = cptr.lit("DWARVISH_IRON_HELM");
-const __sl516 = cptr.lit("FEDORA");
-const __sl517 = cptr.lit("CORNUTHAUM");
-const __sl518 = cptr.lit("DUNCE_CAP");
-const __sl519 = cptr.lit("DENTED_POT");
-const __sl520 = cptr.lit("HELM_OF_BRILLIANCE");
-const __sl521 = cptr.lit("HELMET");
-const __sl522 = cptr.lit("HELM_OF_CAUTION");
-const __sl523 = cptr.lit("HELM_OF_OPPOSITE_ALIGNMENT");
-const __sl524 = cptr.lit("HELM_OF_TELEPATHY");
-const __sl525 = cptr.lit("GRAY_DRAGON_SCALE_MAIL");
-const __sl526 = cptr.lit("GOLD_DRAGON_SCALE_MAIL");
-const __sl527 = cptr.lit("SILVER_DRAGON_SCALE_MAIL");
-const __sl528 = cptr.lit("RED_DRAGON_SCALE_MAIL");
-const __sl529 = cptr.lit("WHITE_DRAGON_SCALE_MAIL");
-const __sl530 = cptr.lit("ORANGE_DRAGON_SCALE_MAIL");
-const __sl531 = cptr.lit("BLACK_DRAGON_SCALE_MAIL");
-const __sl532 = cptr.lit("BLUE_DRAGON_SCALE_MAIL");
-const __sl533 = cptr.lit("GREEN_DRAGON_SCALE_MAIL");
-const __sl534 = cptr.lit("YELLOW_DRAGON_SCALE_MAIL");
-const __sl535 = cptr.lit("GRAY_DRAGON_SCALES");
-const __sl536 = cptr.lit("GOLD_DRAGON_SCALES");
-const __sl537 = cptr.lit("SILVER_DRAGON_SCALES");
-const __sl538 = cptr.lit("RED_DRAGON_SCALES");
-const __sl539 = cptr.lit("WHITE_DRAGON_SCALES");
-const __sl540 = cptr.lit("ORANGE_DRAGON_SCALES");
-const __sl541 = cptr.lit("BLACK_DRAGON_SCALES");
-const __sl542 = cptr.lit("BLUE_DRAGON_SCALES");
-const __sl543 = cptr.lit("GREEN_DRAGON_SCALES");
-const __sl544 = cptr.lit("YELLOW_DRAGON_SCALES");
-const __sl545 = cptr.lit("PLATE_MAIL");
-const __sl546 = cptr.lit("CRYSTAL_PLATE_MAIL");
-const __sl547 = cptr.lit("BRONZE_PLATE_MAIL");
-const __sl548 = cptr.lit("SPLINT_MAIL");
-const __sl549 = cptr.lit("BANDED_MAIL");
-const __sl550 = cptr.lit("DWARVISH_MITHRIL_COAT");
-const __sl551 = cptr.lit("ELVEN_MITHRIL_COAT");
-const __sl552 = cptr.lit("CHAIN_MAIL");
-const __sl553 = cptr.lit("ORCISH_CHAIN_MAIL");
-const __sl554 = cptr.lit("SCALE_MAIL");
-const __sl555 = cptr.lit("STUDDED_LEATHER_ARMOR");
-const __sl556 = cptr.lit("RING_MAIL");
-const __sl557 = cptr.lit("ORCISH_RING_MAIL");
-const __sl558 = cptr.lit("LEATHER_ARMOR");
-const __sl559 = cptr.lit("LEATHER_JACKET");
-const __sl560 = cptr.lit("HAWAIIAN_SHIRT");
-const __sl561 = cptr.lit("T_SHIRT");
-const __sl562 = cptr.lit("MUMMY_WRAPPING");
-const __sl563 = cptr.lit("ELVEN_CLOAK");
-const __sl564 = cptr.lit("ORCISH_CLOAK");
-const __sl565 = cptr.lit("DWARVISH_CLOAK");
-const __sl566 = cptr.lit("OILSKIN_CLOAK");
-const __sl567 = cptr.lit("ROBE");
-const __sl568 = cptr.lit("ALCHEMY_SMOCK");
-const __sl569 = cptr.lit("LEATHER_CLOAK");
-const __sl570 = cptr.lit("CLOAK_OF_PROTECTION");
-const __sl571 = cptr.lit("CLOAK_OF_INVISIBILITY");
-const __sl572 = cptr.lit("CLOAK_OF_MAGIC_RESISTANCE");
-const __sl573 = cptr.lit("CLOAK_OF_DISPLACEMENT");
-const __sl574 = cptr.lit("SMALL_SHIELD");
-const __sl575 = cptr.lit("SHIELD_OF_DRAIN_RESISTANCE");
-const __sl576 = cptr.lit("SHIELD_OF_SHOCK_RESISTANCE");
-const __sl577 = cptr.lit("ELVEN_SHIELD");
-const __sl578 = cptr.lit("URUK_HAI_SHIELD");
-const __sl579 = cptr.lit("ORCISH_SHIELD");
-const __sl580 = cptr.lit("LARGE_SHIELD");
-const __sl581 = cptr.lit("DWARVISH_ROUNDSHIELD");
-const __sl582 = cptr.lit("SHIELD_OF_REFLECTION");
-const __sl583 = cptr.lit("LEATHER_GLOVES");
-const __sl584 = cptr.lit("GAUNTLETS_OF_FUMBLING");
-const __sl585 = cptr.lit("GAUNTLETS_OF_POWER");
-const __sl586 = cptr.lit("GAUNTLETS_OF_DEXTERITY");
-const __sl587 = cptr.lit("LOW_BOOTS");
-const __sl588 = cptr.lit("IRON_SHOES");
-const __sl589 = cptr.lit("HIGH_BOOTS");
-const __sl590 = cptr.lit("SPEED_BOOTS");
-const __sl591 = cptr.lit("WATER_WALKING_BOOTS");
-const __sl592 = cptr.lit("JUMPING_BOOTS");
-const __sl593 = cptr.lit("ELVEN_BOOTS");
-const __sl594 = cptr.lit("KICKING_BOOTS");
-const __sl595 = cptr.lit("FUMBLE_BOOTS");
-const __sl596 = cptr.lit("LEVITATION_BOOTS");
-const __sl597 = cptr.lit("RIN_ADORNMENT");
-const __sl598 = cptr.lit("RIN_GAIN_STRENGTH");
-const __sl599 = cptr.lit("RIN_GAIN_CONSTITUTION");
-const __sl600 = cptr.lit("RIN_INCREASE_ACCURACY");
-const __sl601 = cptr.lit("RIN_INCREASE_DAMAGE");
-const __sl602 = cptr.lit("RIN_PROTECTION");
-const __sl603 = cptr.lit("RIN_REGENERATION");
-const __sl604 = cptr.lit("RIN_SEARCHING");
-const __sl605 = cptr.lit("RIN_STEALTH");
-const __sl606 = cptr.lit("RIN_SUSTAIN_ABILITY");
-const __sl607 = cptr.lit("RIN_LEVITATION");
-const __sl608 = cptr.lit("RIN_HUNGER");
-const __sl609 = cptr.lit("RIN_AGGRAVATE_MONSTER");
-const __sl610 = cptr.lit("RIN_CONFLICT");
-const __sl611 = cptr.lit("RIN_WARNING");
-const __sl612 = cptr.lit("RIN_POISON_RESISTANCE");
-const __sl613 = cptr.lit("RIN_FIRE_RESISTANCE");
-const __sl614 = cptr.lit("RIN_COLD_RESISTANCE");
-const __sl615 = cptr.lit("RIN_SHOCK_RESISTANCE");
-const __sl616 = cptr.lit("RIN_FREE_ACTION");
-const __sl617 = cptr.lit("RIN_SLOW_DIGESTION");
-const __sl618 = cptr.lit("RIN_TELEPORTATION");
-const __sl619 = cptr.lit("RIN_TELEPORT_CONTROL");
-const __sl620 = cptr.lit("RIN_POLYMORPH");
-const __sl621 = cptr.lit("RIN_POLYMORPH_CONTROL");
-const __sl622 = cptr.lit("RIN_INVISIBILITY");
-const __sl623 = cptr.lit("RIN_SEE_INVISIBLE");
-const __sl624 = cptr.lit("RIN_PROTECTION_FROM_SHAPE_CHAN");
-const __sl625 = cptr.lit("AMULET_OF_ESP");
-const __sl626 = cptr.lit("AMULET_OF_LIFE_SAVING");
-const __sl627 = cptr.lit("AMULET_OF_STRANGULATION");
-const __sl628 = cptr.lit("AMULET_OF_RESTFUL_SLEEP");
-const __sl629 = cptr.lit("AMULET_VERSUS_POISON");
-const __sl630 = cptr.lit("AMULET_OF_CHANGE");
-const __sl631 = cptr.lit("AMULET_OF_UNCHANGING");
-const __sl632 = cptr.lit("AMULET_OF_REFLECTION");
-const __sl633 = cptr.lit("AMULET_OF_MAGICAL_BREATHING");
-const __sl634 = cptr.lit("AMULET_OF_GUARDING");
-const __sl635 = cptr.lit("AMULET_OF_FLYING");
-const __sl636 = cptr.lit("FAKE_AMULET_OF_YENDOR");
-const __sl637 = cptr.lit("AMULET_OF_YENDOR");
-const __sl638 = cptr.lit("LARGE_BOX");
-const __sl639 = cptr.lit("CHEST");
-const __sl640 = cptr.lit("ICE_BOX");
-const __sl641 = cptr.lit("SACK");
-const __sl642 = cptr.lit("OILSKIN_SACK");
-const __sl643 = cptr.lit("BAG_OF_HOLDING");
-const __sl644 = cptr.lit("BAG_OF_TRICKS");
-const __sl645 = cptr.lit("SKELETON_KEY");
-const __sl646 = cptr.lit("LOCK_PICK");
-const __sl647 = cptr.lit("CREDIT_CARD");
-const __sl648 = cptr.lit("TALLOW_CANDLE");
-const __sl649 = cptr.lit("WAX_CANDLE");
-const __sl650 = cptr.lit("BRASS_LANTERN");
-const __sl651 = cptr.lit("OIL_LAMP");
-const __sl652 = cptr.lit("MAGIC_LAMP");
-const __sl653 = cptr.lit("EXPENSIVE_CAMERA");
-const __sl654 = cptr.lit("MIRROR");
-const __sl655 = cptr.lit("CRYSTAL_BALL");
-const __sl656 = cptr.lit("LENSES");
-const __sl657 = cptr.lit("BLINDFOLD");
-const __sl658 = cptr.lit("TOWEL");
-const __sl659 = cptr.lit("SADDLE");
-const __sl660 = cptr.lit("LEASH");
-const __sl661 = cptr.lit("STETHOSCOPE");
-const __sl662 = cptr.lit("TINNING_KIT");
-const __sl663 = cptr.lit("TIN_OPENER");
-const __sl664 = cptr.lit("CAN_OF_GREASE");
-const __sl665 = cptr.lit("FIGURINE");
-const __sl666 = cptr.lit("MAGIC_MARKER");
-const __sl667 = cptr.lit("LAND_MINE");
-const __sl668 = cptr.lit("BEARTRAP");
-const __sl669 = cptr.lit("TIN_WHISTLE");
-const __sl670 = cptr.lit("MAGIC_WHISTLE");
-const __sl671 = cptr.lit("WOODEN_FLUTE");
-const __sl672 = cptr.lit("MAGIC_FLUTE");
-const __sl673 = cptr.lit("TOOLED_HORN");
-const __sl674 = cptr.lit("FROST_HORN");
-const __sl675 = cptr.lit("FIRE_HORN");
-const __sl676 = cptr.lit("HORN_OF_PLENTY");
-const __sl677 = cptr.lit("WOODEN_HARP");
-const __sl678 = cptr.lit("MAGIC_HARP");
-const __sl679 = cptr.lit("BELL");
-const __sl680 = cptr.lit("BUGLE");
-const __sl681 = cptr.lit("LEATHER_DRUM");
-const __sl682 = cptr.lit("DRUM_OF_EARTHQUAKE");
-const __sl683 = cptr.lit("PICK_AXE");
-const __sl684 = cptr.lit("GRAPPLING_HOOK");
-const __sl685 = cptr.lit("UNICORN_HORN");
-const __sl686 = cptr.lit("CANDELABRUM_OF_INVOCATION");
-const __sl687 = cptr.lit("BELL_OF_OPENING");
-const __sl688 = cptr.lit("TRIPE_RATION");
-const __sl689 = cptr.lit("CORPSE");
-const __sl690 = cptr.lit("EGG");
-const __sl691 = cptr.lit("MEATBALL");
-const __sl692 = cptr.lit("MEAT_STICK");
-const __sl693 = cptr.lit("ENORMOUS_MEATBALL");
-const __sl694 = cptr.lit("MEAT_RING");
-const __sl695 = cptr.lit("GLOB_OF_GRAY_OOZE");
-const __sl696 = cptr.lit("GLOB_OF_BROWN_PUDDING");
-const __sl697 = cptr.lit("GLOB_OF_GREEN_SLIME");
-const __sl698 = cptr.lit("GLOB_OF_BLACK_PUDDING");
-const __sl699 = cptr.lit("KELP_FROND");
-const __sl700 = cptr.lit("EUCALYPTUS_LEAF");
-const __sl701 = cptr.lit("APPLE");
-const __sl702 = cptr.lit("ORANGE");
-const __sl703 = cptr.lit("PEAR");
-const __sl704 = cptr.lit("MELON");
-const __sl705 = cptr.lit("BANANA");
-const __sl706 = cptr.lit("CARROT");
-const __sl707 = cptr.lit("SPRIG_OF_WOLFSBANE");
-const __sl708 = cptr.lit("CLOVE_OF_GARLIC");
-const __sl709 = cptr.lit("SLIME_MOLD");
-const __sl710 = cptr.lit("LUMP_OF_ROYAL_JELLY");
-const __sl711 = cptr.lit("CREAM_PIE");
-const __sl712 = cptr.lit("CANDY_BAR");
-const __sl713 = cptr.lit("FORTUNE_COOKIE");
-const __sl714 = cptr.lit("PANCAKE");
-const __sl715 = cptr.lit("LEMBAS_WAFER");
-const __sl716 = cptr.lit("CRAM_RATION");
-const __sl717 = cptr.lit("FOOD_RATION");
-const __sl718 = cptr.lit("K_RATION");
-const __sl719 = cptr.lit("C_RATION");
-const __sl720 = cptr.lit("TIN");
-const __sl721 = cptr.lit("POT_GAIN_ABILITY");
-const __sl722 = cptr.lit("POT_RESTORE_ABILITY");
-const __sl723 = cptr.lit("POT_CONFUSION");
-const __sl724 = cptr.lit("POT_BLINDNESS");
-const __sl725 = cptr.lit("POT_PARALYSIS");
-const __sl726 = cptr.lit("POT_SPEED");
-const __sl727 = cptr.lit("POT_LEVITATION");
-const __sl728 = cptr.lit("POT_HALLUCINATION");
-const __sl729 = cptr.lit("POT_INVISIBILITY");
-const __sl730 = cptr.lit("POT_SEE_INVISIBLE");
-const __sl731 = cptr.lit("POT_HEALING");
-const __sl732 = cptr.lit("POT_EXTRA_HEALING");
-const __sl733 = cptr.lit("POT_GAIN_LEVEL");
-const __sl734 = cptr.lit("POT_ENLIGHTENMENT");
-const __sl735 = cptr.lit("POT_MONSTER_DETECTION");
-const __sl736 = cptr.lit("POT_OBJECT_DETECTION");
-const __sl737 = cptr.lit("POT_GAIN_ENERGY");
-const __sl738 = cptr.lit("POT_SLEEPING");
-const __sl739 = cptr.lit("POT_FULL_HEALING");
-const __sl740 = cptr.lit("POT_POLYMORPH");
-const __sl741 = cptr.lit("POT_BOOZE");
-const __sl742 = cptr.lit("POT_SICKNESS");
-const __sl743 = cptr.lit("POT_FRUIT_JUICE");
-const __sl744 = cptr.lit("POT_ACID");
-const __sl745 = cptr.lit("POT_OIL");
-const __sl746 = cptr.lit("POT_WATER");
-const __sl747 = cptr.lit("SCR_ENCHANT_ARMOR");
-const __sl748 = cptr.lit("SCR_DESTROY_ARMOR");
-const __sl749 = cptr.lit("SCR_CONFUSE_MONSTER");
-const __sl750 = cptr.lit("SCR_SCARE_MONSTER");
-const __sl751 = cptr.lit("SCR_REMOVE_CURSE");
-const __sl752 = cptr.lit("SCR_ENCHANT_WEAPON");
-const __sl753 = cptr.lit("SCR_CREATE_MONSTER");
-const __sl754 = cptr.lit("SCR_TAMING");
-const __sl755 = cptr.lit("SCR_GENOCIDE");
-const __sl756 = cptr.lit("SCR_LIGHT");
-const __sl757 = cptr.lit("SCR_TELEPORTATION");
-const __sl758 = cptr.lit("SCR_GOLD_DETECTION");
-const __sl759 = cptr.lit("SCR_FOOD_DETECTION");
-const __sl760 = cptr.lit("SCR_IDENTIFY");
-const __sl761 = cptr.lit("SCR_MAGIC_MAPPING");
-const __sl762 = cptr.lit("SCR_AMNESIA");
-const __sl763 = cptr.lit("SCR_FIRE");
-const __sl764 = cptr.lit("SCR_EARTH");
-const __sl765 = cptr.lit("SCR_PUNISHMENT");
-const __sl766 = cptr.lit("SCR_CHARGING");
-const __sl767 = cptr.lit("SCR_STINKING_CLOUD");
-const __sl768 = cptr.lit("SC01");
-const __sl769 = cptr.lit("SC02");
-const __sl770 = cptr.lit("SC03");
-const __sl771 = cptr.lit("SC04");
-const __sl772 = cptr.lit("SC05");
-const __sl773 = cptr.lit("SC06");
-const __sl774 = cptr.lit("SC07");
-const __sl775 = cptr.lit("SC08");
-const __sl776 = cptr.lit("SC09");
-const __sl777 = cptr.lit("SC10");
-const __sl778 = cptr.lit("SC11");
-const __sl779 = cptr.lit("SC12");
-const __sl780 = cptr.lit("SC13");
-const __sl781 = cptr.lit("SC14");
-const __sl782 = cptr.lit("SC15");
-const __sl783 = cptr.lit("SC16");
-const __sl784 = cptr.lit("SC17");
-const __sl785 = cptr.lit("SC18");
-const __sl786 = cptr.lit("SC19");
-const __sl787 = cptr.lit("SC20");
-const __sl788 = cptr.lit("SCR_MAIL");
-const __sl789 = cptr.lit("SCR_BLANK_PAPER");
-const __sl790 = cptr.lit("SPE_DIG");
-const __sl791 = cptr.lit("SPE_MAGIC_MISSILE");
-const __sl792 = cptr.lit("SPE_FIREBALL");
-const __sl793 = cptr.lit("SPE_CONE_OF_COLD");
-const __sl794 = cptr.lit("SPE_SLEEP");
-const __sl795 = cptr.lit("SPE_FINGER_OF_DEATH");
-const __sl796 = cptr.lit("SPE_LIGHT");
-const __sl797 = cptr.lit("SPE_DETECT_MONSTERS");
-const __sl798 = cptr.lit("SPE_HEALING");
-const __sl799 = cptr.lit("SPE_KNOCK");
-const __sl800 = cptr.lit("SPE_FORCE_BOLT");
-const __sl801 = cptr.lit("SPE_CONFUSE_MONSTER");
-const __sl802 = cptr.lit("SPE_CURE_BLINDNESS");
-const __sl803 = cptr.lit("SPE_DRAIN_LIFE");
-const __sl804 = cptr.lit("SPE_SLOW_MONSTER");
-const __sl805 = cptr.lit("SPE_WIZARD_LOCK");
-const __sl806 = cptr.lit("SPE_CREATE_MONSTER");
-const __sl807 = cptr.lit("SPE_DETECT_FOOD");
-const __sl808 = cptr.lit("SPE_CAUSE_FEAR");
-const __sl809 = cptr.lit("SPE_CLAIRVOYANCE");
-const __sl810 = cptr.lit("SPE_CURE_SICKNESS");
-const __sl811 = cptr.lit("SPE_CHARM_MONSTER");
-const __sl812 = cptr.lit("SPE_HASTE_SELF");
-const __sl813 = cptr.lit("SPE_DETECT_UNSEEN");
-const __sl814 = cptr.lit("SPE_LEVITATION");
-const __sl815 = cptr.lit("SPE_EXTRA_HEALING");
-const __sl816 = cptr.lit("SPE_RESTORE_ABILITY");
-const __sl817 = cptr.lit("SPE_INVISIBILITY");
-const __sl818 = cptr.lit("SPE_DETECT_TREASURE");
-const __sl819 = cptr.lit("SPE_REMOVE_CURSE");
-const __sl820 = cptr.lit("SPE_MAGIC_MAPPING");
-const __sl821 = cptr.lit("SPE_IDENTIFY");
-const __sl822 = cptr.lit("SPE_TURN_UNDEAD");
-const __sl823 = cptr.lit("SPE_POLYMORPH");
-const __sl824 = cptr.lit("SPE_TELEPORT_AWAY");
-const __sl825 = cptr.lit("SPE_CREATE_FAMILIAR");
-const __sl826 = cptr.lit("SPE_CANCELLATION");
-const __sl827 = cptr.lit("SPE_PROTECTION");
-const __sl828 = cptr.lit("SPE_JUMPING");
-const __sl829 = cptr.lit("SPE_STONE_TO_FLESH");
-const __sl830 = cptr.lit("SPE_CHAIN_LIGHTNING");
-const __sl831 = cptr.lit("SPE_BLANK_PAPER");
-const __sl832 = cptr.lit("SPE_NOVEL");
-const __sl833 = cptr.lit("SPE_BOOK_OF_THE_DEAD");
-const __sl834 = cptr.lit("WAN_LIGHT");
-const __sl835 = cptr.lit("WAN_SECRET_DOOR_DETECTION");
-const __sl836 = cptr.lit("WAN_ENLIGHTENMENT");
-const __sl837 = cptr.lit("WAN_CREATE_MONSTER");
-const __sl838 = cptr.lit("WAN_WISHING");
-const __sl839 = cptr.lit("WAN_STASIS");
-const __sl840 = cptr.lit("WAN_NOTHING");
-const __sl841 = cptr.lit("WAN_STRIKING");
-const __sl842 = cptr.lit("WAN_MAKE_INVISIBLE");
-const __sl843 = cptr.lit("WAN_SLOW_MONSTER");
-const __sl844 = cptr.lit("WAN_SPEED_MONSTER");
-const __sl845 = cptr.lit("WAN_UNDEAD_TURNING");
-const __sl846 = cptr.lit("WAN_POLYMORPH");
-const __sl847 = cptr.lit("WAN_CANCELLATION");
-const __sl848 = cptr.lit("WAN_TELEPORTATION");
-const __sl849 = cptr.lit("WAN_OPENING");
-const __sl850 = cptr.lit("WAN_LOCKING");
-const __sl851 = cptr.lit("WAN_PROBING");
-const __sl852 = cptr.lit("WAN_DIGGING");
-const __sl853 = cptr.lit("WAN_MAGIC_MISSILE");
-const __sl854 = cptr.lit("WAN_FIRE");
-const __sl855 = cptr.lit("WAN_COLD");
-const __sl856 = cptr.lit("WAN_SLEEP");
-const __sl857 = cptr.lit("WAN_DEATH");
-const __sl858 = cptr.lit("WAN_LIGHTNING");
-const __sl859 = cptr.lit("WAN1");
-const __sl860 = cptr.lit("WAN2");
-const __sl861 = cptr.lit("WAN3");
-const __sl862 = cptr.lit("GOLD_PIECE");
-const __sl863 = cptr.lit("DILITHIUM_CRYSTAL");
-const __sl864 = cptr.lit("DIAMOND");
-const __sl865 = cptr.lit("RUBY");
-const __sl866 = cptr.lit("JACINTH");
-const __sl867 = cptr.lit("SAPPHIRE");
-const __sl868 = cptr.lit("BLACK_OPAL");
-const __sl869 = cptr.lit("EMERALD");
-const __sl870 = cptr.lit("TURQUOISE");
-const __sl871 = cptr.lit("CITRINE");
-const __sl872 = cptr.lit("AQUAMARINE");
-const __sl873 = cptr.lit("AMBER");
-const __sl874 = cptr.lit("TOPAZ");
-const __sl875 = cptr.lit("JET");
-const __sl876 = cptr.lit("OPAL");
-const __sl877 = cptr.lit("CHRYSOBERYL");
-const __sl878 = cptr.lit("GARNET");
-const __sl879 = cptr.lit("AMETHYST");
-const __sl880 = cptr.lit("JASPER");
-const __sl881 = cptr.lit("FLUORITE");
-const __sl882 = cptr.lit("OBSIDIAN");
-const __sl883 = cptr.lit("AGATE");
-const __sl884 = cptr.lit("JADE");
-const __sl885 = cptr.lit("WORTHLESS_WHITE_GLASS");
-const __sl886 = cptr.lit("WORTHLESS_BLUE_GLASS");
-const __sl887 = cptr.lit("WORTHLESS_RED_GLASS");
-const __sl888 = cptr.lit("WORTHLESS_YELLOWBROWN_GLASS");
-const __sl889 = cptr.lit("WORTHLESS_ORANGE_GLASS");
-const __sl890 = cptr.lit("WORTHLESS_YELLOW_GLASS");
-const __sl891 = cptr.lit("WORTHLESS_BLACK_GLASS");
-const __sl892 = cptr.lit("WORTHLESS_GREEN_GLASS");
-const __sl893 = cptr.lit("WORTHLESS_VIOLET_GLASS");
-const __sl894 = cptr.lit("LUCKSTONE");
-const __sl895 = cptr.lit("LOADSTONE");
-const __sl896 = cptr.lit("TOUCHSTONE");
-const __sl897 = cptr.lit("FLINT");
-const __sl898 = cptr.lit("ROCK");
-const __sl899 = cptr.lit("BOULDER");
-const __sl900 = cptr.lit("STATUE");
-const __sl901 = cptr.lit("HEAVY_IRON_BALL");
-const __sl902 = cptr.lit("IRON_CHAIN");
-const __sl903 = cptr.lit("BLINDING_VENOM");
-const __sl904 = cptr.lit("ACID_VENOM");
-const __sl905 = cptr.lit("NUM_OBJECTS");
-const __sl906 = cptr.lit("S_stone");
-const __sl907 = cptr.lit("S_vwall");
-const __sl908 = cptr.lit("S_hwall");
-const __sl909 = cptr.lit("S_tlcorn");
-const __sl910 = cptr.lit("S_trcorn");
-const __sl911 = cptr.lit("S_blcorn");
-const __sl912 = cptr.lit("S_brcorn");
-const __sl913 = cptr.lit("S_crwall");
-const __sl914 = cptr.lit("S_tuwall");
-const __sl915 = cptr.lit("S_tdwall");
-const __sl916 = cptr.lit("S_tlwall");
-const __sl917 = cptr.lit("S_trwall");
-const __sl918 = cptr.lit("S_ndoor");
-const __sl919 = cptr.lit("S_vodoor");
-const __sl920 = cptr.lit("S_hodoor");
-const __sl921 = cptr.lit("S_vcdoor");
-const __sl922 = cptr.lit("S_hcdoor");
-const __sl923 = cptr.lit("S_bars");
-const __sl924 = cptr.lit("S_tree");
-const __sl925 = cptr.lit("S_room");
-const __sl926 = cptr.lit("S_darkroom");
-const __sl927 = cptr.lit("S_engroom");
-const __sl928 = cptr.lit("S_corr");
-const __sl929 = cptr.lit("S_litcorr");
-const __sl930 = cptr.lit("S_engrcorr");
-const __sl931 = cptr.lit("S_upstair");
-const __sl932 = cptr.lit("S_dnstair");
-const __sl933 = cptr.lit("S_upladder");
-const __sl934 = cptr.lit("S_dnladder");
-const __sl935 = cptr.lit("S_brupstair");
-const __sl936 = cptr.lit("S_brdnstair");
-const __sl937 = cptr.lit("S_brupladder");
-const __sl938 = cptr.lit("S_brdnladder");
-const __sl939 = cptr.lit("S_altar");
-const __sl940 = cptr.lit("S_grave");
-const __sl941 = cptr.lit("S_throne");
-const __sl942 = cptr.lit("S_sink");
-const __sl943 = cptr.lit("S_fountain");
-const __sl944 = cptr.lit("S_pool");
-const __sl945 = cptr.lit("S_ice");
-const __sl946 = cptr.lit("S_lava");
-const __sl947 = cptr.lit("S_lavawall");
-const __sl948 = cptr.lit("S_vodbridge");
-const __sl949 = cptr.lit("S_hodbridge");
-const __sl950 = cptr.lit("S_vcdbridge");
-const __sl951 = cptr.lit("S_hcdbridge");
-const __sl952 = cptr.lit("S_air");
-const __sl953 = cptr.lit("S_cloud");
-const __sl954 = cptr.lit("S_water");
-const __sl955 = cptr.lit("S_arrow_trap");
-const __sl956 = cptr.lit("S_dart_trap");
-const __sl957 = cptr.lit("S_falling_rock_trap");
-const __sl958 = cptr.lit("S_squeaky_board");
-const __sl959 = cptr.lit("S_bear_trap");
-const __sl960 = cptr.lit("S_land_mine");
-const __sl961 = cptr.lit("S_rolling_boulder_trap");
-const __sl962 = cptr.lit("S_sleeping_gas_trap");
-const __sl963 = cptr.lit("S_rust_trap");
-const __sl964 = cptr.lit("S_fire_trap");
-const __sl965 = cptr.lit("S_pit");
-const __sl966 = cptr.lit("S_spiked_pit");
-const __sl967 = cptr.lit("S_hole");
-const __sl968 = cptr.lit("S_trap_door");
-const __sl969 = cptr.lit("S_teleportation_trap");
-const __sl970 = cptr.lit("S_level_teleporter");
-const __sl971 = cptr.lit("S_magic_portal");
-const __sl972 = cptr.lit("S_web");
-const __sl973 = cptr.lit("S_statue_trap");
-const __sl974 = cptr.lit("S_magic_trap");
-const __sl975 = cptr.lit("S_anti_magic_trap");
-const __sl976 = cptr.lit("S_polymorph_trap");
-const __sl977 = cptr.lit("S_vibrating_square");
-const __sl978 = cptr.lit("S_trapped_door");
-const __sl979 = cptr.lit("S_trapped_chest");
-const __sl980 = cptr.lit("S_vbeam");
-const __sl981 = cptr.lit("S_hbeam");
-const __sl982 = cptr.lit("S_lslant");
-const __sl983 = cptr.lit("S_rslant");
-const __sl984 = cptr.lit("S_digbeam");
-const __sl985 = cptr.lit("S_flashbeam");
-const __sl986 = cptr.lit("S_boomleft");
-const __sl987 = cptr.lit("S_boomright");
-const __sl988 = cptr.lit("S_ss1");
-const __sl989 = cptr.lit("S_ss2");
-const __sl990 = cptr.lit("S_ss3");
-const __sl991 = cptr.lit("S_ss4");
-const __sl992 = cptr.lit("S_poisoncloud");
-const __sl993 = cptr.lit("S_goodpos");
-const __sl994 = cptr.lit("S_sw_tl");
-const __sl995 = cptr.lit("S_sw_tc");
-const __sl996 = cptr.lit("S_sw_tr");
-const __sl997 = cptr.lit("S_sw_ml");
-const __sl998 = cptr.lit("S_sw_mr");
-const __sl999 = cptr.lit("S_sw_bl");
-const __sl1000 = cptr.lit("S_sw_bc");
-const __sl1001 = cptr.lit("S_sw_br");
-const __sl1002 = cptr.lit("S_expl_tl");
-const __sl1003 = cptr.lit("S_expl_tc");
-const __sl1004 = cptr.lit("S_expl_tr");
-const __sl1005 = cptr.lit("S_expl_ml");
-const __sl1006 = cptr.lit("S_expl_mc");
-const __sl1007 = cptr.lit("S_expl_mr");
-const __sl1008 = cptr.lit("S_expl_bl");
-const __sl1009 = cptr.lit("S_expl_bc");
-const __sl1010 = cptr.lit("S_expl_br");
-const __sl1011 = cptr.lit("MAXPCHARS");
-const __sl1012 = cptr.lit("S_ANT");
-const __sl1013 = cptr.lit("S_BLOB");
-const __sl1014 = cptr.lit("S_COCKATRICE");
-const __sl1015 = cptr.lit("S_DOG");
-const __sl1016 = cptr.lit("S_EYE");
-const __sl1017 = cptr.lit("S_FELINE");
-const __sl1018 = cptr.lit("S_GREMLIN");
-const __sl1019 = cptr.lit("S_HUMANOID");
-const __sl1020 = cptr.lit("S_IMP");
-const __sl1021 = cptr.lit("S_JELLY");
-const __sl1022 = cptr.lit("S_KOBOLD");
-const __sl1023 = cptr.lit("S_LEPRECHAUN");
-const __sl1024 = cptr.lit("S_MIMIC");
-const __sl1025 = cptr.lit("S_NYMPH");
-const __sl1026 = cptr.lit("S_ORC");
-const __sl1027 = cptr.lit("S_PIERCER");
-const __sl1028 = cptr.lit("S_QUADRUPED");
-const __sl1029 = cptr.lit("S_RODENT");
-const __sl1030 = cptr.lit("S_SPIDER");
-const __sl1031 = cptr.lit("S_TRAPPER");
-const __sl1032 = cptr.lit("S_UNICORN");
-const __sl1033 = cptr.lit("S_VORTEX");
-const __sl1034 = cptr.lit("S_WORM");
-const __sl1035 = cptr.lit("S_XAN");
-const __sl1036 = cptr.lit("S_LIGHT");
-const __sl1037 = cptr.lit("S_ZRUTY");
-const __sl1038 = cptr.lit("S_ANGEL");
-const __sl1039 = cptr.lit("S_BAT");
-const __sl1040 = cptr.lit("S_CENTAUR");
-const __sl1041 = cptr.lit("S_DRAGON");
-const __sl1042 = cptr.lit("S_ELEMENTAL");
-const __sl1043 = cptr.lit("S_FUNGUS");
-const __sl1044 = cptr.lit("S_GNOME");
-const __sl1045 = cptr.lit("S_GIANT");
-const __sl1046 = cptr.lit("S_invisible");
-const __sl1047 = cptr.lit("S_JABBERWOCK");
-const __sl1048 = cptr.lit("S_KOP");
-const __sl1049 = cptr.lit("S_LICH");
-const __sl1050 = cptr.lit("S_MUMMY");
-const __sl1051 = cptr.lit("S_NAGA");
-const __sl1052 = cptr.lit("S_OGRE");
-const __sl1053 = cptr.lit("S_PUDDING");
-const __sl1054 = cptr.lit("S_QUANTMECH");
-const __sl1055 = cptr.lit("S_RUSTMONST");
-const __sl1056 = cptr.lit("S_SNAKE");
-const __sl1057 = cptr.lit("S_TROLL");
-const __sl1058 = cptr.lit("S_UMBER");
-const __sl1059 = cptr.lit("S_VAMPIRE");
-const __sl1060 = cptr.lit("S_WRAITH");
-const __sl1061 = cptr.lit("S_XORN");
-const __sl1062 = cptr.lit("S_YETI");
-const __sl1063 = cptr.lit("S_ZOMBIE");
-const __sl1064 = cptr.lit("S_HUMAN");
-const __sl1065 = cptr.lit("S_GHOST");
-const __sl1066 = cptr.lit("S_GOLEM");
-const __sl1067 = cptr.lit("S_DEMON");
-const __sl1068 = cptr.lit("S_EEL");
-const __sl1069 = cptr.lit("S_LIZARD");
-const __sl1070 = cptr.lit("S_WORM_TAIL");
-const __sl1071 = cptr.lit("S_MIMIC_DEF");
-const __sl1072 = cptr.lit("MAXMCLASSES");
-const __sl1073 = cptr.lit("DEF_ANT");
-const __sl1074 = cptr.lit("DEF_BLOB");
-const __sl1075 = cptr.lit("DEF_COCKATRICE");
-const __sl1076 = cptr.lit("DEF_DOG");
-const __sl1077 = cptr.lit("DEF_EYE");
-const __sl1078 = cptr.lit("DEF_FELINE");
-const __sl1079 = cptr.lit("DEF_GREMLIN");
-const __sl1080 = cptr.lit("DEF_HUMANOID");
-const __sl1081 = cptr.lit("DEF_IMP");
-const __sl1082 = cptr.lit("DEF_JELLY");
-const __sl1083 = cptr.lit("DEF_KOBOLD");
-const __sl1084 = cptr.lit("DEF_LEPRECHAUN");
-const __sl1085 = cptr.lit("DEF_MIMIC");
-const __sl1086 = cptr.lit("DEF_NYMPH");
-const __sl1087 = cptr.lit("DEF_ORC");
-const __sl1088 = cptr.lit("DEF_PIERCER");
-const __sl1089 = cptr.lit("DEF_QUADRUPED");
-const __sl1090 = cptr.lit("DEF_RODENT");
-const __sl1091 = cptr.lit("DEF_SPIDER");
-const __sl1092 = cptr.lit("DEF_TRAPPER");
-const __sl1093 = cptr.lit("DEF_UNICORN");
-const __sl1094 = cptr.lit("DEF_VORTEX");
-const __sl1095 = cptr.lit("DEF_WORM");
-const __sl1096 = cptr.lit("DEF_XAN");
-const __sl1097 = cptr.lit("DEF_LIGHT");
-const __sl1098 = cptr.lit("DEF_ZRUTY");
-const __sl1099 = cptr.lit("DEF_ANGEL");
-const __sl1100 = cptr.lit("DEF_BAT");
-const __sl1101 = cptr.lit("DEF_CENTAUR");
-const __sl1102 = cptr.lit("DEF_DRAGON");
-const __sl1103 = cptr.lit("DEF_ELEMENTAL");
-const __sl1104 = cptr.lit("DEF_FUNGUS");
-const __sl1105 = cptr.lit("DEF_GNOME");
-const __sl1106 = cptr.lit("DEF_GIANT");
-const __sl1107 = cptr.lit("DEF_INVISIBLE");
-const __sl1108 = cptr.lit("DEF_JABBERWOCK");
-const __sl1109 = cptr.lit("DEF_KOP");
-const __sl1110 = cptr.lit("DEF_LICH");
-const __sl1111 = cptr.lit("DEF_MUMMY");
-const __sl1112 = cptr.lit("DEF_NAGA");
-const __sl1113 = cptr.lit("DEF_OGRE");
-const __sl1114 = cptr.lit("DEF_PUDDING");
-const __sl1115 = cptr.lit("DEF_QUANTMECH");
-const __sl1116 = cptr.lit("DEF_RUSTMONST");
-const __sl1117 = cptr.lit("DEF_SNAKE");
-const __sl1118 = cptr.lit("DEF_TROLL");
-const __sl1119 = cptr.lit("DEF_UMBER");
-const __sl1120 = cptr.lit("DEF_VAMPIRE");
-const __sl1121 = cptr.lit("DEF_WRAITH");
-const __sl1122 = cptr.lit("DEF_XORN");
-const __sl1123 = cptr.lit("DEF_YETI");
-const __sl1124 = cptr.lit("DEF_ZOMBIE");
-const __sl1125 = cptr.lit("DEF_HUMAN");
-const __sl1126 = cptr.lit("DEF_GHOST");
-const __sl1127 = cptr.lit("DEF_GOLEM");
-const __sl1128 = cptr.lit("DEF_DEMON");
-const __sl1129 = cptr.lit("DEF_EEL");
-const __sl1130 = cptr.lit("DEF_LIZARD");
-const __sl1131 = cptr.lit("DEF_WORM_TAIL");
-const __sl1132 = cptr.lit("DEF_MIMIC_DEF");
-const __sl1133 = cptr.lit("ILLOBJ_SYM");
-const __sl1134 = cptr.lit("WEAPON_SYM");
-const __sl1135 = cptr.lit("ARMOR_SYM");
-const __sl1136 = cptr.lit("RING_SYM");
-const __sl1137 = cptr.lit("AMULET_SYM");
-const __sl1138 = cptr.lit("TOOL_SYM");
-const __sl1139 = cptr.lit("FOOD_SYM");
-const __sl1140 = cptr.lit("POTION_SYM");
-const __sl1141 = cptr.lit("SCROLL_SYM");
-const __sl1142 = cptr.lit("SPBOOK_SYM");
-const __sl1143 = cptr.lit("WAND_SYM");
-const __sl1144 = cptr.lit("GOLD_SYM");
-const __sl1145 = cptr.lit("GEM_SYM");
-const __sl1146 = cptr.lit("ROCK_SYM");
-const __sl1147 = cptr.lit("BALL_SYM");
-const __sl1148 = cptr.lit("CHAIN_SYM");
-const __sl1149 = cptr.lit("VENOM_SYM");
-const __sl1150 = cptr.lit("ILLOBJ_CLASS");
-const __sl1151 = cptr.lit("WEAPON_CLASS");
-const __sl1152 = cptr.lit("ARMOR_CLASS");
-const __sl1153 = cptr.lit("RING_CLASS");
-const __sl1154 = cptr.lit("AMULET_CLASS");
-const __sl1155 = cptr.lit("TOOL_CLASS");
-const __sl1156 = cptr.lit("FOOD_CLASS");
-const __sl1157 = cptr.lit("POTION_CLASS");
-const __sl1158 = cptr.lit("SCROLL_CLASS");
-const __sl1159 = cptr.lit("SPBOOK_CLASS");
-const __sl1160 = cptr.lit("WAND_CLASS");
-const __sl1161 = cptr.lit("COIN_CLASS");
-const __sl1162 = cptr.lit("GEM_CLASS");
-const __sl1163 = cptr.lit("ROCK_CLASS");
-const __sl1164 = cptr.lit("BALL_CLASS");
-const __sl1165 = cptr.lit("CHAIN_CLASS");
-const __sl1166 = cptr.lit("VENOM_CLASS");
-const __sl1167 = cptr.lit("MAXOCLASSES");
-const __sl1168 = cptr.lit("S_strange_obj");
-const __sl1169 = cptr.lit("S_weapon");
-const __sl1170 = cptr.lit("S_armor");
-const __sl1171 = cptr.lit("S_ring");
-const __sl1172 = cptr.lit("S_amulet");
-const __sl1173 = cptr.lit("S_tool");
-const __sl1174 = cptr.lit("S_food");
-const __sl1175 = cptr.lit("S_potion");
-const __sl1176 = cptr.lit("S_scroll");
-const __sl1177 = cptr.lit("S_book");
-const __sl1178 = cptr.lit("S_wand");
-const __sl1179 = cptr.lit("S_coin");
-const __sl1180 = cptr.lit("S_gem");
-const __sl1181 = cptr.lit("S_rock");
-const __sl1182 = cptr.lit("S_ball");
-const __sl1183 = cptr.lit("S_chain");
-const __sl1184 = cptr.lit("S_venom");
-const __sl1185 = cptr.lit("ART_NONARTIFACT");
-const __sl1186 = cptr.lit("ART_EXCALIBUR");
-const __sl1187 = cptr.lit("ART_STORMBRINGER");
-const __sl1188 = cptr.lit("ART_MJOLLNIR");
-const __sl1189 = cptr.lit("ART_CLEAVER");
-const __sl1190 = cptr.lit("ART_GRIMTOOTH");
-const __sl1191 = cptr.lit("ART_ORCRIST");
-const __sl1192 = cptr.lit("ART_STING");
-const __sl1193 = cptr.lit("ART_MAGICBANE");
-const __sl1194 = cptr.lit("ART_FROST_BRAND");
-const __sl1195 = cptr.lit("ART_FIRE_BRAND");
-const __sl1196 = cptr.lit("ART_DRAGONBANE");
-const __sl1197 = cptr.lit("ART_DEMONBANE");
-const __sl1198 = cptr.lit("ART_WEREBANE");
-const __sl1199 = cptr.lit("ART_GRAYSWANDIR");
-const __sl1200 = cptr.lit("ART_GIANTSLAYER");
-const __sl1201 = cptr.lit("ART_OGRESMASHER");
-const __sl1202 = cptr.lit("ART_TROLLSBANE");
-const __sl1203 = cptr.lit("ART_VORPAL_BLADE");
-const __sl1204 = cptr.lit("ART_SNICKERSNEE");
-const __sl1205 = cptr.lit("ART_SUNSWORD");
-const __sl1206 = cptr.lit("ART_ORB_OF_DETECTION");
-const __sl1207 = cptr.lit("ART_HEART_OF_AHRIMAN");
-const __sl1208 = cptr.lit("ART_SCEPTRE_OF_MIGHT");
-const __sl1209 = cptr.lit("ART_STAFF_OF_AESCULAPIUS");
-const __sl1210 = cptr.lit("ART_MAGIC_MIRROR_OF_MERLIN");
-const __sl1211 = cptr.lit("ART_EYES_OF_THE_OVERWORLD");
-const __sl1212 = cptr.lit("ART_MITRE_OF_HOLINESS");
-const __sl1213 = cptr.lit("ART_LONGBOW_OF_DIANA");
-const __sl1214 = cptr.lit("ART_MASTER_KEY_OF_THIEVERY");
-const __sl1215 = cptr.lit("ART_TSURUGI_OF_MURAMASA");
-const __sl1216 = cptr.lit("ART_YENDORIAN_EXPRESS_CARD");
-const __sl1217 = cptr.lit("ART_ORB_OF_FATE");
-const __sl1218 = cptr.lit("ART_EYE_OF_THE_AETHIOPICA");
-const __sl1219 = cptr.lit("AFTER_LAST_ARTIFACT");
-const __sl1220 = cptr.lit("PSI_BOLT");
-const __sl1221 = cptr.lit("OPEN_WOUNDS");
-const __sl1222 = cptr.lit("CURE_SELF");
-const __sl1223 = cptr.lit("HASTE_SELF");
-const __sl1224 = cptr.lit("CONFUSE_YOU");
-const __sl1225 = cptr.lit("STUN_YOU");
-const __sl1226 = cptr.lit("DISAPPEAR");
-const __sl1227 = cptr.lit("PARALYZE");
-const __sl1228 = cptr.lit("BLIND_YOU");
-const __sl1229 = cptr.lit("WEAKEN_YOU");
-const __sl1230 = cptr.lit("DESTRY_ARMR");
-const __sl1231 = cptr.lit("INSECTS");
-const __sl1232 = cptr.lit("CURSE_ITEMS");
-const __sl1233 = cptr.lit("LIGHTNING");
-const __sl1234 = cptr.lit("FIRE_PILLAR");
-const __sl1235 = cptr.lit("GEYSER");
-const __sl1236 = cptr.lit("AGGRAVATION");
-const __sl1237 = cptr.lit("SUMMON_MONS");
-const __sl1238 = cptr.lit("CLONE_WIZ");
-const __sl1239 = cptr.lit("DEATH_TOUCH");
-const __sl1240 = cptr.lit("enum %s = {");
-const __sl1241 = cptr.lit("dump_enums");
-const __sl1242 = cptr.lit("    /* '%c' */");
-const __sl1243 = cptr.lit("    %s%*s = %3d,%s");
-const __sl1244 = cptr.lit("};");
-const __sl1245 = cptr.lit("LAST_GENERIC");
-const __sl1246 = cptr.lit("OBJCLASS_HACK");
-const __sl1247 = cptr.lit("FIRST_OBJECT");
-const __sl1248 = cptr.lit("FIRST_AMULET");
-const __sl1249 = cptr.lit("LAST_AMULET");
-const __sl1250 = cptr.lit("FIRST_SPELL");
-const __sl1251 = cptr.lit("LAST_SPELL");
-const __sl1252 = cptr.lit("MAXSPELL");
-const __sl1253 = cptr.lit("FIRST_REAL_GEM");
-const __sl1254 = cptr.lit("LAST_REAL_GEM");
-const __sl1255 = cptr.lit("FIRST_GLASS_GEM");
-const __sl1256 = cptr.lit("LAST_GLASS_GEM");
-const __sl1257 = cptr.lit("NUM_REAL_GEMS");
-const __sl1258 = cptr.lit("NUM_GLASS_GEMS");
-const __sl1259 = cptr.lit("MAX_GLYPH");
-const __sl1260 = cptr.lit("monnums");
-const __sl1261 = cptr.lit("PM_");
-const __sl1262 = cptr.lit("objects_nums");
-const __sl1263 = cptr.lit("misc_object_nums");
-const __sl1264 = cptr.lit("cmap_symbols");
-const __sl1265 = cptr.lit("mon_syms");
-const __sl1266 = cptr.lit("mon_defchars");
-const __sl1267 = cptr.lit("objclass_defchars");
-const __sl1268 = cptr.lit("objclass_classes");
-const __sl1269 = cptr.lit("objclass_syms");
-const __sl1270 = cptr.lit("artifacts_nums");
-const __sl1271 = cptr.lit("mcast_spells");
-const __sl1272 = cptr.lit("MCAST_");
+const __sl8 = cptr.lit("Unknown option: %.60s");
+const __sl9 = cptr.lit("Value not allowed: %.60s");
+const __sl10 = cptr.lit("Missing required value: %.60s");
+const __sl11 = cptr.lit("command line");
+const __sl12 = cptr.lit("?");
+const __sl13 = cptr.lit("-directory");
+const __sl14 = cptr.lit("Flag -d must be followed by a directory name.");
+const __sl15 = cptr.lit("-help");
+const __sl16 = cptr.lit("-?");
+const __sl17 = cptr.lit("-no-nethackrc");
+const __sl18 = cptr.lit("/dev/null");
+const __sl19 = cptr.lit("-nethackrc");
+const __sl20 = cptr.lit("-scores");
+const __sl21 = cptr.lit("-usage");
+const __sl22 = cptr.lit("-windowtype");
+const __sl23 = cptr.lit("usagehlp");
+const __sl24 = cptr.lit("");
+const __sl25 = cptr.lit("-");
+const __sl26 = cptr.lit("paste");
+const __sl27 = cptr.lit("copy");
+const __sl28 = cptr.lit("dump");
+const __sl29 = cptr.lit("show");
+const __sl30 = cptr.lit("-%sversion can only be extended with -%sversion:copy or :dump or :show.\n");
+const __sl31 = cptr.lit("no");
+const __sl32 = cptr.lit("test");
+const __sl33 = cptr.lit("ttystatus");
+const __sl34 = cptr.lit("fuzzer");
+const __sl35 = cptr.lit("GIANT_ANT");
+const __sl36 = cptr.lit("KILLER_BEE");
+const __sl37 = cptr.lit("SOLDIER_ANT");
+const __sl38 = cptr.lit("FIRE_ANT");
+const __sl39 = cptr.lit("GIANT_BEETLE");
+const __sl40 = cptr.lit("QUEEN_BEE");
+const __sl41 = cptr.lit("ACID_BLOB");
+const __sl42 = cptr.lit("QUIVERING_BLOB");
+const __sl43 = cptr.lit("GELATINOUS_CUBE");
+const __sl44 = cptr.lit("CHICKATRICE");
+const __sl45 = cptr.lit("COCKATRICE");
+const __sl46 = cptr.lit("PYROLISK");
+const __sl47 = cptr.lit("JACKAL");
+const __sl48 = cptr.lit("FOX");
+const __sl49 = cptr.lit("COYOTE");
+const __sl50 = cptr.lit("WEREJACKAL");
+const __sl51 = cptr.lit("LITTLE_DOG");
+const __sl52 = cptr.lit("DINGO");
+const __sl53 = cptr.lit("DOG");
+const __sl54 = cptr.lit("LARGE_DOG");
+const __sl55 = cptr.lit("WOLF");
+const __sl56 = cptr.lit("WEREWOLF");
+const __sl57 = cptr.lit("WINTER_WOLF_CUB");
+const __sl58 = cptr.lit("WARG");
+const __sl59 = cptr.lit("WINTER_WOLF");
+const __sl60 = cptr.lit("HELL_HOUND_PUP");
+const __sl61 = cptr.lit("HELL_HOUND");
+const __sl62 = cptr.lit("GAS_SPORE");
+const __sl63 = cptr.lit("FLOATING_EYE");
+const __sl64 = cptr.lit("FREEZING_SPHERE");
+const __sl65 = cptr.lit("FLAMING_SPHERE");
+const __sl66 = cptr.lit("SHOCKING_SPHERE");
+const __sl67 = cptr.lit("KITTEN");
+const __sl68 = cptr.lit("HOUSECAT");
+const __sl69 = cptr.lit("JAGUAR");
+const __sl70 = cptr.lit("LYNX");
+const __sl71 = cptr.lit("PANTHER");
+const __sl72 = cptr.lit("LARGE_CAT");
+const __sl73 = cptr.lit("TIGER");
+const __sl74 = cptr.lit("DISPLACER_BEAST");
+const __sl75 = cptr.lit("GREMLIN");
+const __sl76 = cptr.lit("GARGOYLE");
+const __sl77 = cptr.lit("WINGED_GARGOYLE");
+const __sl78 = cptr.lit("HOBBIT");
+const __sl79 = cptr.lit("DWARF");
+const __sl80 = cptr.lit("BUGBEAR");
+const __sl81 = cptr.lit("DWARF_LEADER");
+const __sl82 = cptr.lit("DWARF_RULER");
+const __sl83 = cptr.lit("MIND_FLAYER");
+const __sl84 = cptr.lit("MASTER_MIND_FLAYER");
+const __sl85 = cptr.lit("MANES");
+const __sl86 = cptr.lit("HOMUNCULUS");
+const __sl87 = cptr.lit("IMP");
+const __sl88 = cptr.lit("LEMURE");
+const __sl89 = cptr.lit("QUASIT");
+const __sl90 = cptr.lit("TENGU");
+const __sl91 = cptr.lit("BLUE_JELLY");
+const __sl92 = cptr.lit("SPOTTED_JELLY");
+const __sl93 = cptr.lit("OCHRE_JELLY");
+const __sl94 = cptr.lit("KOBOLD");
+const __sl95 = cptr.lit("LARGE_KOBOLD");
+const __sl96 = cptr.lit("KOBOLD_LEADER");
+const __sl97 = cptr.lit("KOBOLD_SHAMAN");
+const __sl98 = cptr.lit("LEPRECHAUN");
+const __sl99 = cptr.lit("SMALL_MIMIC");
+const __sl100 = cptr.lit("LARGE_MIMIC");
+const __sl101 = cptr.lit("GIANT_MIMIC");
+const __sl102 = cptr.lit("WOOD_NYMPH");
+const __sl103 = cptr.lit("WATER_NYMPH");
+const __sl104 = cptr.lit("MOUNTAIN_NYMPH");
+const __sl105 = cptr.lit("GOBLIN");
+const __sl106 = cptr.lit("HOBGOBLIN");
+const __sl107 = cptr.lit("ORC");
+const __sl108 = cptr.lit("HILL_ORC");
+const __sl109 = cptr.lit("MORDOR_ORC");
+const __sl110 = cptr.lit("URUK_HAI");
+const __sl111 = cptr.lit("ORC_SHAMAN");
+const __sl112 = cptr.lit("ORC_CAPTAIN");
+const __sl113 = cptr.lit("ROCK_PIERCER");
+const __sl114 = cptr.lit("IRON_PIERCER");
+const __sl115 = cptr.lit("GLASS_PIERCER");
+const __sl116 = cptr.lit("ROTHE");
+const __sl117 = cptr.lit("MUMAK");
+const __sl118 = cptr.lit("LEOCROTTA");
+const __sl119 = cptr.lit("WUMPUS");
+const __sl120 = cptr.lit("TITANOTHERE");
+const __sl121 = cptr.lit("BALUCHITHERIUM");
+const __sl122 = cptr.lit("MASTODON");
+const __sl123 = cptr.lit("SEWER_RAT");
+const __sl124 = cptr.lit("GIANT_RAT");
+const __sl125 = cptr.lit("RABID_RAT");
+const __sl126 = cptr.lit("WERERAT");
+const __sl127 = cptr.lit("ROCK_MOLE");
+const __sl128 = cptr.lit("WOODCHUCK");
+const __sl129 = cptr.lit("CAVE_SPIDER");
+const __sl130 = cptr.lit("CENTIPEDE");
+const __sl131 = cptr.lit("GIANT_SPIDER");
+const __sl132 = cptr.lit("SCORPION");
+const __sl133 = cptr.lit("LURKER_ABOVE");
+const __sl134 = cptr.lit("TRAPPER");
+const __sl135 = cptr.lit("PONY");
+const __sl136 = cptr.lit("WHITE_UNICORN");
+const __sl137 = cptr.lit("GRAY_UNICORN");
+const __sl138 = cptr.lit("BLACK_UNICORN");
+const __sl139 = cptr.lit("HORSE");
+const __sl140 = cptr.lit("WARHORSE");
+const __sl141 = cptr.lit("FOG_CLOUD");
+const __sl142 = cptr.lit("DUST_VORTEX");
+const __sl143 = cptr.lit("ICE_VORTEX");
+const __sl144 = cptr.lit("ENERGY_VORTEX");
+const __sl145 = cptr.lit("STEAM_VORTEX");
+const __sl146 = cptr.lit("FIRE_VORTEX");
+const __sl147 = cptr.lit("BABY_LONG_WORM");
+const __sl148 = cptr.lit("BABY_PURPLE_WORM");
+const __sl149 = cptr.lit("LONG_WORM");
+const __sl150 = cptr.lit("PURPLE_WORM");
+const __sl151 = cptr.lit("GRID_BUG");
+const __sl152 = cptr.lit("XAN");
+const __sl153 = cptr.lit("YELLOW_LIGHT");
+const __sl154 = cptr.lit("BLACK_LIGHT");
+const __sl155 = cptr.lit("ZRUTY");
+const __sl156 = cptr.lit("COUATL");
+const __sl157 = cptr.lit("ALEAX");
+const __sl158 = cptr.lit("ANGEL");
+const __sl159 = cptr.lit("KI_RIN");
+const __sl160 = cptr.lit("ARCHON");
+const __sl161 = cptr.lit("BAT");
+const __sl162 = cptr.lit("GIANT_BAT");
+const __sl163 = cptr.lit("RAVEN");
+const __sl164 = cptr.lit("VAMPIRE_BAT");
+const __sl165 = cptr.lit("PLAINS_CENTAUR");
+const __sl166 = cptr.lit("FOREST_CENTAUR");
+const __sl167 = cptr.lit("MOUNTAIN_CENTAUR");
+const __sl168 = cptr.lit("BABY_GRAY_DRAGON");
+const __sl169 = cptr.lit("BABY_GOLD_DRAGON");
+const __sl170 = cptr.lit("BABY_SILVER_DRAGON");
+const __sl171 = cptr.lit("BABY_RED_DRAGON");
+const __sl172 = cptr.lit("BABY_WHITE_DRAGON");
+const __sl173 = cptr.lit("BABY_ORANGE_DRAGON");
+const __sl174 = cptr.lit("BABY_BLACK_DRAGON");
+const __sl175 = cptr.lit("BABY_BLUE_DRAGON");
+const __sl176 = cptr.lit("BABY_GREEN_DRAGON");
+const __sl177 = cptr.lit("BABY_YELLOW_DRAGON");
+const __sl178 = cptr.lit("GRAY_DRAGON");
+const __sl179 = cptr.lit("GOLD_DRAGON");
+const __sl180 = cptr.lit("SILVER_DRAGON");
+const __sl181 = cptr.lit("RED_DRAGON");
+const __sl182 = cptr.lit("WHITE_DRAGON");
+const __sl183 = cptr.lit("ORANGE_DRAGON");
+const __sl184 = cptr.lit("BLACK_DRAGON");
+const __sl185 = cptr.lit("BLUE_DRAGON");
+const __sl186 = cptr.lit("GREEN_DRAGON");
+const __sl187 = cptr.lit("YELLOW_DRAGON");
+const __sl188 = cptr.lit("STALKER");
+const __sl189 = cptr.lit("AIR_ELEMENTAL");
+const __sl190 = cptr.lit("FIRE_ELEMENTAL");
+const __sl191 = cptr.lit("EARTH_ELEMENTAL");
+const __sl192 = cptr.lit("WATER_ELEMENTAL");
+const __sl193 = cptr.lit("LICHEN");
+const __sl194 = cptr.lit("BROWN_MOLD");
+const __sl195 = cptr.lit("YELLOW_MOLD");
+const __sl196 = cptr.lit("GREEN_MOLD");
+const __sl197 = cptr.lit("RED_MOLD");
+const __sl198 = cptr.lit("SHRIEKER");
+const __sl199 = cptr.lit("VIOLET_FUNGUS");
+const __sl200 = cptr.lit("GNOME");
+const __sl201 = cptr.lit("GNOME_LEADER");
+const __sl202 = cptr.lit("GNOMISH_WIZARD");
+const __sl203 = cptr.lit("GNOME_RULER");
+const __sl204 = cptr.lit("GIANT");
+const __sl205 = cptr.lit("STONE_GIANT");
+const __sl206 = cptr.lit("HILL_GIANT");
+const __sl207 = cptr.lit("FIRE_GIANT");
+const __sl208 = cptr.lit("FROST_GIANT");
+const __sl209 = cptr.lit("ETTIN");
+const __sl210 = cptr.lit("STORM_GIANT");
+const __sl211 = cptr.lit("TITAN");
+const __sl212 = cptr.lit("MINOTAUR");
+const __sl213 = cptr.lit("JABBERWOCK");
+const __sl214 = cptr.lit("KEYSTONE_KOP");
+const __sl215 = cptr.lit("KOP_SERGEANT");
+const __sl216 = cptr.lit("KOP_LIEUTENANT");
+const __sl217 = cptr.lit("KOP_KAPTAIN");
+const __sl218 = cptr.lit("LICH");
+const __sl219 = cptr.lit("DEMILICH");
+const __sl220 = cptr.lit("MASTER_LICH");
+const __sl221 = cptr.lit("ARCH_LICH");
+const __sl222 = cptr.lit("KOBOLD_MUMMY");
+const __sl223 = cptr.lit("GNOME_MUMMY");
+const __sl224 = cptr.lit("ORC_MUMMY");
+const __sl225 = cptr.lit("DWARF_MUMMY");
+const __sl226 = cptr.lit("ELF_MUMMY");
+const __sl227 = cptr.lit("HUMAN_MUMMY");
+const __sl228 = cptr.lit("ETTIN_MUMMY");
+const __sl229 = cptr.lit("GIANT_MUMMY");
+const __sl230 = cptr.lit("RED_NAGA_HATCHLING");
+const __sl231 = cptr.lit("BLACK_NAGA_HATCHLING");
+const __sl232 = cptr.lit("GOLDEN_NAGA_HATCHLING");
+const __sl233 = cptr.lit("GUARDIAN_NAGA_HATCHLING");
+const __sl234 = cptr.lit("RED_NAGA");
+const __sl235 = cptr.lit("BLACK_NAGA");
+const __sl236 = cptr.lit("GOLDEN_NAGA");
+const __sl237 = cptr.lit("GUARDIAN_NAGA");
+const __sl238 = cptr.lit("OGRE");
+const __sl239 = cptr.lit("OGRE_LEADER");
+const __sl240 = cptr.lit("OGRE_TYRANT");
+const __sl241 = cptr.lit("GRAY_OOZE");
+const __sl242 = cptr.lit("BROWN_PUDDING");
+const __sl243 = cptr.lit("GREEN_SLIME");
+const __sl244 = cptr.lit("BLACK_PUDDING");
+const __sl245 = cptr.lit("QUANTUM_MECHANIC");
+const __sl246 = cptr.lit("GENETIC_ENGINEER");
+const __sl247 = cptr.lit("RUST_MONSTER");
+const __sl248 = cptr.lit("DISENCHANTER");
+const __sl249 = cptr.lit("GARTER_SNAKE");
+const __sl250 = cptr.lit("SNAKE");
+const __sl251 = cptr.lit("WATER_MOCCASIN");
+const __sl252 = cptr.lit("PYTHON");
+const __sl253 = cptr.lit("PIT_VIPER");
+const __sl254 = cptr.lit("COBRA");
+const __sl255 = cptr.lit("TROLL");
+const __sl256 = cptr.lit("ICE_TROLL");
+const __sl257 = cptr.lit("ROCK_TROLL");
+const __sl258 = cptr.lit("WATER_TROLL");
+const __sl259 = cptr.lit("OLOG_HAI");
+const __sl260 = cptr.lit("UMBER_HULK");
+const __sl261 = cptr.lit("VAMPIRE");
+const __sl262 = cptr.lit("VAMPIRE_LEADER");
+const __sl263 = cptr.lit("VLAD_THE_IMPALER");
+const __sl264 = cptr.lit("BARROW_WIGHT");
+const __sl265 = cptr.lit("WRAITH");
+const __sl266 = cptr.lit("NAZGUL");
+const __sl267 = cptr.lit("XORN");
+const __sl268 = cptr.lit("MONKEY");
+const __sl269 = cptr.lit("APE");
+const __sl270 = cptr.lit("OWLBEAR");
+const __sl271 = cptr.lit("YETI");
+const __sl272 = cptr.lit("CARNIVOROUS_APE");
+const __sl273 = cptr.lit("SASQUATCH");
+const __sl274 = cptr.lit("KOBOLD_ZOMBIE");
+const __sl275 = cptr.lit("GNOME_ZOMBIE");
+const __sl276 = cptr.lit("ORC_ZOMBIE");
+const __sl277 = cptr.lit("DWARF_ZOMBIE");
+const __sl278 = cptr.lit("ELF_ZOMBIE");
+const __sl279 = cptr.lit("HUMAN_ZOMBIE");
+const __sl280 = cptr.lit("ETTIN_ZOMBIE");
+const __sl281 = cptr.lit("GHOUL");
+const __sl282 = cptr.lit("GIANT_ZOMBIE");
+const __sl283 = cptr.lit("SKELETON");
+const __sl284 = cptr.lit("STRAW_GOLEM");
+const __sl285 = cptr.lit("PAPER_GOLEM");
+const __sl286 = cptr.lit("ROPE_GOLEM");
+const __sl287 = cptr.lit("GOLD_GOLEM");
+const __sl288 = cptr.lit("LEATHER_GOLEM");
+const __sl289 = cptr.lit("WOOD_GOLEM");
+const __sl290 = cptr.lit("FLESH_GOLEM");
+const __sl291 = cptr.lit("CLAY_GOLEM");
+const __sl292 = cptr.lit("STONE_GOLEM");
+const __sl293 = cptr.lit("GLASS_GOLEM");
+const __sl294 = cptr.lit("IRON_GOLEM");
+const __sl295 = cptr.lit("HUMAN");
+const __sl296 = cptr.lit("HUMAN_WERERAT");
+const __sl297 = cptr.lit("HUMAN_WEREJACKAL");
+const __sl298 = cptr.lit("HUMAN_WEREWOLF");
+const __sl299 = cptr.lit("ELF");
+const __sl300 = cptr.lit("WOODLAND_ELF");
+const __sl301 = cptr.lit("GREEN_ELF");
+const __sl302 = cptr.lit("GREY_ELF");
+const __sl303 = cptr.lit("ELF_NOBLE");
+const __sl304 = cptr.lit("ELVEN_MONARCH");
+const __sl305 = cptr.lit("DOPPELGANGER");
+const __sl306 = cptr.lit("SHOPKEEPER");
+const __sl307 = cptr.lit("GUARD");
+const __sl308 = cptr.lit("PRISONER");
+const __sl309 = cptr.lit("ORACLE");
+const __sl310 = cptr.lit("ALIGNED_CLERIC");
+const __sl311 = cptr.lit("HIGH_CLERIC");
+const __sl312 = cptr.lit("SOLDIER");
+const __sl313 = cptr.lit("SERGEANT");
+const __sl314 = cptr.lit("NURSE");
+const __sl315 = cptr.lit("LIEUTENANT");
+const __sl316 = cptr.lit("CAPTAIN");
+const __sl317 = cptr.lit("WATCHMAN");
+const __sl318 = cptr.lit("WATCH_CAPTAIN");
+const __sl319 = cptr.lit("MEDUSA");
+const __sl320 = cptr.lit("WIZARD_OF_YENDOR");
+const __sl321 = cptr.lit("CROESUS");
+const __sl322 = cptr.lit("GHOST");
+const __sl323 = cptr.lit("SHADE");
+const __sl324 = cptr.lit("WATER_DEMON");
+const __sl325 = cptr.lit("AMOROUS_DEMON");
+const __sl326 = cptr.lit("HORNED_DEVIL");
+const __sl327 = cptr.lit("ERINYS");
+const __sl328 = cptr.lit("BARBED_DEVIL");
+const __sl329 = cptr.lit("MARILITH");
+const __sl330 = cptr.lit("VROCK");
+const __sl331 = cptr.lit("HEZROU");
+const __sl332 = cptr.lit("BONE_DEVIL");
+const __sl333 = cptr.lit("ICE_DEVIL");
+const __sl334 = cptr.lit("NALFESHNEE");
+const __sl335 = cptr.lit("PIT_FIEND");
+const __sl336 = cptr.lit("SANDESTIN");
+const __sl337 = cptr.lit("BALROG");
+const __sl338 = cptr.lit("JUIBLEX");
+const __sl339 = cptr.lit("YEENOGHU");
+const __sl340 = cptr.lit("ORCUS");
+const __sl341 = cptr.lit("GERYON");
+const __sl342 = cptr.lit("DISPATER");
+const __sl343 = cptr.lit("BAALZEBUB");
+const __sl344 = cptr.lit("ASMODEUS");
+const __sl345 = cptr.lit("DEMOGORGON");
+const __sl346 = cptr.lit("DEATH");
+const __sl347 = cptr.lit("PESTILENCE");
+const __sl348 = cptr.lit("FAMINE");
+const __sl349 = cptr.lit("MAIL_DAEMON");
+const __sl350 = cptr.lit("DJINNI");
+const __sl351 = cptr.lit("JELLYFISH");
+const __sl352 = cptr.lit("PIRANHA");
+const __sl353 = cptr.lit("SHARK");
+const __sl354 = cptr.lit("GIANT_EEL");
+const __sl355 = cptr.lit("ELECTRIC_EEL");
+const __sl356 = cptr.lit("KRAKEN");
+const __sl357 = cptr.lit("NEWT");
+const __sl358 = cptr.lit("GECKO");
+const __sl359 = cptr.lit("IGUANA");
+const __sl360 = cptr.lit("BABY_CROCODILE");
+const __sl361 = cptr.lit("LIZARD");
+const __sl362 = cptr.lit("CHAMELEON");
+const __sl363 = cptr.lit("CROCODILE");
+const __sl364 = cptr.lit("SALAMANDER");
+const __sl365 = cptr.lit("LONG_WORM_TAIL");
+const __sl366 = cptr.lit("ARCHEOLOGIST");
+const __sl367 = cptr.lit("BARBARIAN");
+const __sl368 = cptr.lit("CAVE_DWELLER");
+const __sl369 = cptr.lit("HEALER");
+const __sl370 = cptr.lit("KNIGHT");
+const __sl371 = cptr.lit("MONK");
+const __sl372 = cptr.lit("CLERIC");
+const __sl373 = cptr.lit("RANGER");
+const __sl374 = cptr.lit("ROGUE");
+const __sl375 = cptr.lit("SAMURAI");
+const __sl376 = cptr.lit("TOURIST");
+const __sl377 = cptr.lit("VALKYRIE");
+const __sl378 = cptr.lit("WIZARD");
+const __sl379 = cptr.lit("LORD_CARNARVON");
+const __sl380 = cptr.lit("PELIAS");
+const __sl381 = cptr.lit("SHAMAN_KARNOV");
+const __sl382 = cptr.lit("HIPPOCRATES");
+const __sl383 = cptr.lit("KING_ARTHUR");
+const __sl384 = cptr.lit("GRAND_MASTER");
+const __sl385 = cptr.lit("ARCH_PRIEST");
+const __sl386 = cptr.lit("ORION");
+const __sl387 = cptr.lit("MASTER_OF_THIEVES");
+const __sl388 = cptr.lit("LORD_SATO");
+const __sl389 = cptr.lit("TWOFLOWER");
+const __sl390 = cptr.lit("NORN");
+const __sl391 = cptr.lit("NEFERET_THE_GREEN");
+const __sl392 = cptr.lit("MINION_OF_HUHETOTL");
+const __sl393 = cptr.lit("THOTH_AMON");
+const __sl394 = cptr.lit("CHROMATIC_DRAGON");
+const __sl395 = cptr.lit("CYCLOPS");
+const __sl396 = cptr.lit("IXOTH");
+const __sl397 = cptr.lit("MASTER_KAEN");
+const __sl398 = cptr.lit("NALZOK");
+const __sl399 = cptr.lit("SCORPIUS");
+const __sl400 = cptr.lit("MASTER_ASSASSIN");
+const __sl401 = cptr.lit("ASHIKAGA_TAKAUJI");
+const __sl402 = cptr.lit("LORD_SURTUR");
+const __sl403 = cptr.lit("DARK_ONE");
+const __sl404 = cptr.lit("STUDENT");
+const __sl405 = cptr.lit("CHIEFTAIN");
+const __sl406 = cptr.lit("NEANDERTHAL");
+const __sl407 = cptr.lit("ATTENDANT");
+const __sl408 = cptr.lit("PAGE");
+const __sl409 = cptr.lit("ABBOT");
+const __sl410 = cptr.lit("ACOLYTE");
+const __sl411 = cptr.lit("HUNTER");
+const __sl412 = cptr.lit("THUG");
+const __sl413 = cptr.lit("NINJA");
+const __sl414 = cptr.lit("ROSHI");
+const __sl415 = cptr.lit("GUIDE");
+const __sl416 = cptr.lit("WARRIOR");
+const __sl417 = cptr.lit("APPRENTICE");
+const __sl418 = cptr.lit("NUMMONS");
+const __sl419 = cptr.lit("NON_PM");
+const __sl420 = cptr.lit("LOW_PM");
+const __sl421 = cptr.lit("HIGH_PM");
+const __sl422 = cptr.lit("SPECIAL_PM");
+const __sl423 = cptr.lit("STRANGE_OBJECT");
+const __sl424 = cptr.lit("GENERIC_ILLOBJ");
+const __sl425 = cptr.lit("GENERIC_WEAPON");
+const __sl426 = cptr.lit("GENERIC_ARMOR");
+const __sl427 = cptr.lit("GENERIC_RING");
+const __sl428 = cptr.lit("GENERIC_AMULET");
+const __sl429 = cptr.lit("GENERIC_TOOL");
+const __sl430 = cptr.lit("GENERIC_FOOD");
+const __sl431 = cptr.lit("GENERIC_POTION");
+const __sl432 = cptr.lit("GENERIC_SCROLL");
+const __sl433 = cptr.lit("GENERIC_SPBOOK");
+const __sl434 = cptr.lit("GENERIC_WAND");
+const __sl435 = cptr.lit("GENERIC_COIN");
+const __sl436 = cptr.lit("GENERIC_GEM");
+const __sl437 = cptr.lit("GENERIC_ROCK");
+const __sl438 = cptr.lit("GENERIC_BALL");
+const __sl439 = cptr.lit("GENERIC_CHAIN");
+const __sl440 = cptr.lit("GENERIC_VENOM");
+const __sl441 = cptr.lit("ARROW");
+const __sl442 = cptr.lit("ELVEN_ARROW");
+const __sl443 = cptr.lit("ORCISH_ARROW");
+const __sl444 = cptr.lit("SILVER_ARROW");
+const __sl445 = cptr.lit("YA");
+const __sl446 = cptr.lit("CROSSBOW_BOLT");
+const __sl447 = cptr.lit("DART");
+const __sl448 = cptr.lit("SHURIKEN");
+const __sl449 = cptr.lit("BOOMERANG");
+const __sl450 = cptr.lit("SPEAR");
+const __sl451 = cptr.lit("ELVEN_SPEAR");
+const __sl452 = cptr.lit("ORCISH_SPEAR");
+const __sl453 = cptr.lit("DWARVISH_SPEAR");
+const __sl454 = cptr.lit("SILVER_SPEAR");
+const __sl455 = cptr.lit("JAVELIN");
+const __sl456 = cptr.lit("TRIDENT");
+const __sl457 = cptr.lit("DAGGER");
+const __sl458 = cptr.lit("ELVEN_DAGGER");
+const __sl459 = cptr.lit("ORCISH_DAGGER");
+const __sl460 = cptr.lit("SILVER_DAGGER");
+const __sl461 = cptr.lit("ATHAME");
+const __sl462 = cptr.lit("SCALPEL");
+const __sl463 = cptr.lit("KNIFE");
+const __sl464 = cptr.lit("STILETTO");
+const __sl465 = cptr.lit("WORM_TOOTH");
+const __sl466 = cptr.lit("CRYSKNIFE");
+const __sl467 = cptr.lit("AXE");
+const __sl468 = cptr.lit("BATTLE_AXE");
+const __sl469 = cptr.lit("SHORT_SWORD");
+const __sl470 = cptr.lit("ELVEN_SHORT_SWORD");
+const __sl471 = cptr.lit("ORCISH_SHORT_SWORD");
+const __sl472 = cptr.lit("DWARVISH_SHORT_SWORD");
+const __sl473 = cptr.lit("SCIMITAR");
+const __sl474 = cptr.lit("SILVER_SABER");
+const __sl475 = cptr.lit("BROADSWORD");
+const __sl476 = cptr.lit("ELVEN_BROADSWORD");
+const __sl477 = cptr.lit("LONG_SWORD");
+const __sl478 = cptr.lit("TWO_HANDED_SWORD");
+const __sl479 = cptr.lit("KATANA");
+const __sl480 = cptr.lit("TSURUGI");
+const __sl481 = cptr.lit("RUNESWORD");
+const __sl482 = cptr.lit("PARTISAN");
+const __sl483 = cptr.lit("RANSEUR");
+const __sl484 = cptr.lit("SPETUM");
+const __sl485 = cptr.lit("GLAIVE");
+const __sl486 = cptr.lit("HALBERD");
+const __sl487 = cptr.lit("BARDICHE");
+const __sl488 = cptr.lit("VOULGE");
+const __sl489 = cptr.lit("FAUCHARD");
+const __sl490 = cptr.lit("GUISARME");
+const __sl491 = cptr.lit("BILL_GUISARME");
+const __sl492 = cptr.lit("LUCERN_HAMMER");
+const __sl493 = cptr.lit("BEC_DE_CORBIN");
+const __sl494 = cptr.lit("DWARVISH_MATTOCK");
+const __sl495 = cptr.lit("LANCE");
+const __sl496 = cptr.lit("MACE");
+const __sl497 = cptr.lit("SILVER_MACE");
+const __sl498 = cptr.lit("MORNING_STAR");
+const __sl499 = cptr.lit("WAR_HAMMER");
+const __sl500 = cptr.lit("CLUB");
+const __sl501 = cptr.lit("RUBBER_HOSE");
+const __sl502 = cptr.lit("QUARTERSTAFF");
+const __sl503 = cptr.lit("AKLYS");
+const __sl504 = cptr.lit("FLAIL");
+const __sl505 = cptr.lit("BULLWHIP");
+const __sl506 = cptr.lit("BOW");
+const __sl507 = cptr.lit("ELVEN_BOW");
+const __sl508 = cptr.lit("ORCISH_BOW");
+const __sl509 = cptr.lit("YUMI");
+const __sl510 = cptr.lit("SLING");
+const __sl511 = cptr.lit("CROSSBOW");
+const __sl512 = cptr.lit("ELVEN_LEATHER_HELM");
+const __sl513 = cptr.lit("ORCISH_HELM");
+const __sl514 = cptr.lit("DWARVISH_IRON_HELM");
+const __sl515 = cptr.lit("FEDORA");
+const __sl516 = cptr.lit("CORNUTHAUM");
+const __sl517 = cptr.lit("DUNCE_CAP");
+const __sl518 = cptr.lit("DENTED_POT");
+const __sl519 = cptr.lit("HELM_OF_BRILLIANCE");
+const __sl520 = cptr.lit("HELMET");
+const __sl521 = cptr.lit("HELM_OF_CAUTION");
+const __sl522 = cptr.lit("HELM_OF_OPPOSITE_ALIGNMENT");
+const __sl523 = cptr.lit("HELM_OF_TELEPATHY");
+const __sl524 = cptr.lit("GRAY_DRAGON_SCALE_MAIL");
+const __sl525 = cptr.lit("GOLD_DRAGON_SCALE_MAIL");
+const __sl526 = cptr.lit("SILVER_DRAGON_SCALE_MAIL");
+const __sl527 = cptr.lit("RED_DRAGON_SCALE_MAIL");
+const __sl528 = cptr.lit("WHITE_DRAGON_SCALE_MAIL");
+const __sl529 = cptr.lit("ORANGE_DRAGON_SCALE_MAIL");
+const __sl530 = cptr.lit("BLACK_DRAGON_SCALE_MAIL");
+const __sl531 = cptr.lit("BLUE_DRAGON_SCALE_MAIL");
+const __sl532 = cptr.lit("GREEN_DRAGON_SCALE_MAIL");
+const __sl533 = cptr.lit("YELLOW_DRAGON_SCALE_MAIL");
+const __sl534 = cptr.lit("GRAY_DRAGON_SCALES");
+const __sl535 = cptr.lit("GOLD_DRAGON_SCALES");
+const __sl536 = cptr.lit("SILVER_DRAGON_SCALES");
+const __sl537 = cptr.lit("RED_DRAGON_SCALES");
+const __sl538 = cptr.lit("WHITE_DRAGON_SCALES");
+const __sl539 = cptr.lit("ORANGE_DRAGON_SCALES");
+const __sl540 = cptr.lit("BLACK_DRAGON_SCALES");
+const __sl541 = cptr.lit("BLUE_DRAGON_SCALES");
+const __sl542 = cptr.lit("GREEN_DRAGON_SCALES");
+const __sl543 = cptr.lit("YELLOW_DRAGON_SCALES");
+const __sl544 = cptr.lit("PLATE_MAIL");
+const __sl545 = cptr.lit("CRYSTAL_PLATE_MAIL");
+const __sl546 = cptr.lit("BRONZE_PLATE_MAIL");
+const __sl547 = cptr.lit("SPLINT_MAIL");
+const __sl548 = cptr.lit("BANDED_MAIL");
+const __sl549 = cptr.lit("DWARVISH_MITHRIL_COAT");
+const __sl550 = cptr.lit("ELVEN_MITHRIL_COAT");
+const __sl551 = cptr.lit("CHAIN_MAIL");
+const __sl552 = cptr.lit("ORCISH_CHAIN_MAIL");
+const __sl553 = cptr.lit("SCALE_MAIL");
+const __sl554 = cptr.lit("STUDDED_LEATHER_ARMOR");
+const __sl555 = cptr.lit("RING_MAIL");
+const __sl556 = cptr.lit("ORCISH_RING_MAIL");
+const __sl557 = cptr.lit("LEATHER_ARMOR");
+const __sl558 = cptr.lit("LEATHER_JACKET");
+const __sl559 = cptr.lit("HAWAIIAN_SHIRT");
+const __sl560 = cptr.lit("T_SHIRT");
+const __sl561 = cptr.lit("MUMMY_WRAPPING");
+const __sl562 = cptr.lit("ELVEN_CLOAK");
+const __sl563 = cptr.lit("ORCISH_CLOAK");
+const __sl564 = cptr.lit("DWARVISH_CLOAK");
+const __sl565 = cptr.lit("OILSKIN_CLOAK");
+const __sl566 = cptr.lit("ROBE");
+const __sl567 = cptr.lit("ALCHEMY_SMOCK");
+const __sl568 = cptr.lit("LEATHER_CLOAK");
+const __sl569 = cptr.lit("CLOAK_OF_PROTECTION");
+const __sl570 = cptr.lit("CLOAK_OF_INVISIBILITY");
+const __sl571 = cptr.lit("CLOAK_OF_MAGIC_RESISTANCE");
+const __sl572 = cptr.lit("CLOAK_OF_DISPLACEMENT");
+const __sl573 = cptr.lit("SMALL_SHIELD");
+const __sl574 = cptr.lit("SHIELD_OF_DRAIN_RESISTANCE");
+const __sl575 = cptr.lit("SHIELD_OF_SHOCK_RESISTANCE");
+const __sl576 = cptr.lit("ELVEN_SHIELD");
+const __sl577 = cptr.lit("URUK_HAI_SHIELD");
+const __sl578 = cptr.lit("ORCISH_SHIELD");
+const __sl579 = cptr.lit("LARGE_SHIELD");
+const __sl580 = cptr.lit("DWARVISH_ROUNDSHIELD");
+const __sl581 = cptr.lit("SHIELD_OF_REFLECTION");
+const __sl582 = cptr.lit("LEATHER_GLOVES");
+const __sl583 = cptr.lit("GAUNTLETS_OF_FUMBLING");
+const __sl584 = cptr.lit("GAUNTLETS_OF_POWER");
+const __sl585 = cptr.lit("GAUNTLETS_OF_DEXTERITY");
+const __sl586 = cptr.lit("LOW_BOOTS");
+const __sl587 = cptr.lit("IRON_SHOES");
+const __sl588 = cptr.lit("HIGH_BOOTS");
+const __sl589 = cptr.lit("SPEED_BOOTS");
+const __sl590 = cptr.lit("WATER_WALKING_BOOTS");
+const __sl591 = cptr.lit("JUMPING_BOOTS");
+const __sl592 = cptr.lit("ELVEN_BOOTS");
+const __sl593 = cptr.lit("KICKING_BOOTS");
+const __sl594 = cptr.lit("FUMBLE_BOOTS");
+const __sl595 = cptr.lit("LEVITATION_BOOTS");
+const __sl596 = cptr.lit("RIN_ADORNMENT");
+const __sl597 = cptr.lit("RIN_GAIN_STRENGTH");
+const __sl598 = cptr.lit("RIN_GAIN_CONSTITUTION");
+const __sl599 = cptr.lit("RIN_INCREASE_ACCURACY");
+const __sl600 = cptr.lit("RIN_INCREASE_DAMAGE");
+const __sl601 = cptr.lit("RIN_PROTECTION");
+const __sl602 = cptr.lit("RIN_REGENERATION");
+const __sl603 = cptr.lit("RIN_SEARCHING");
+const __sl604 = cptr.lit("RIN_STEALTH");
+const __sl605 = cptr.lit("RIN_SUSTAIN_ABILITY");
+const __sl606 = cptr.lit("RIN_LEVITATION");
+const __sl607 = cptr.lit("RIN_HUNGER");
+const __sl608 = cptr.lit("RIN_AGGRAVATE_MONSTER");
+const __sl609 = cptr.lit("RIN_CONFLICT");
+const __sl610 = cptr.lit("RIN_WARNING");
+const __sl611 = cptr.lit("RIN_POISON_RESISTANCE");
+const __sl612 = cptr.lit("RIN_FIRE_RESISTANCE");
+const __sl613 = cptr.lit("RIN_COLD_RESISTANCE");
+const __sl614 = cptr.lit("RIN_SHOCK_RESISTANCE");
+const __sl615 = cptr.lit("RIN_FREE_ACTION");
+const __sl616 = cptr.lit("RIN_SLOW_DIGESTION");
+const __sl617 = cptr.lit("RIN_TELEPORTATION");
+const __sl618 = cptr.lit("RIN_TELEPORT_CONTROL");
+const __sl619 = cptr.lit("RIN_POLYMORPH");
+const __sl620 = cptr.lit("RIN_POLYMORPH_CONTROL");
+const __sl621 = cptr.lit("RIN_INVISIBILITY");
+const __sl622 = cptr.lit("RIN_SEE_INVISIBLE");
+const __sl623 = cptr.lit("RIN_PROTECTION_FROM_SHAPE_CHAN");
+const __sl624 = cptr.lit("AMULET_OF_ESP");
+const __sl625 = cptr.lit("AMULET_OF_LIFE_SAVING");
+const __sl626 = cptr.lit("AMULET_OF_STRANGULATION");
+const __sl627 = cptr.lit("AMULET_OF_RESTFUL_SLEEP");
+const __sl628 = cptr.lit("AMULET_VERSUS_POISON");
+const __sl629 = cptr.lit("AMULET_OF_CHANGE");
+const __sl630 = cptr.lit("AMULET_OF_UNCHANGING");
+const __sl631 = cptr.lit("AMULET_OF_REFLECTION");
+const __sl632 = cptr.lit("AMULET_OF_MAGICAL_BREATHING");
+const __sl633 = cptr.lit("AMULET_OF_GUARDING");
+const __sl634 = cptr.lit("AMULET_OF_FLYING");
+const __sl635 = cptr.lit("FAKE_AMULET_OF_YENDOR");
+const __sl636 = cptr.lit("AMULET_OF_YENDOR");
+const __sl637 = cptr.lit("LARGE_BOX");
+const __sl638 = cptr.lit("CHEST");
+const __sl639 = cptr.lit("ICE_BOX");
+const __sl640 = cptr.lit("SACK");
+const __sl641 = cptr.lit("OILSKIN_SACK");
+const __sl642 = cptr.lit("BAG_OF_HOLDING");
+const __sl643 = cptr.lit("BAG_OF_TRICKS");
+const __sl644 = cptr.lit("SKELETON_KEY");
+const __sl645 = cptr.lit("LOCK_PICK");
+const __sl646 = cptr.lit("CREDIT_CARD");
+const __sl647 = cptr.lit("TALLOW_CANDLE");
+const __sl648 = cptr.lit("WAX_CANDLE");
+const __sl649 = cptr.lit("BRASS_LANTERN");
+const __sl650 = cptr.lit("OIL_LAMP");
+const __sl651 = cptr.lit("MAGIC_LAMP");
+const __sl652 = cptr.lit("EXPENSIVE_CAMERA");
+const __sl653 = cptr.lit("MIRROR");
+const __sl654 = cptr.lit("CRYSTAL_BALL");
+const __sl655 = cptr.lit("LENSES");
+const __sl656 = cptr.lit("BLINDFOLD");
+const __sl657 = cptr.lit("TOWEL");
+const __sl658 = cptr.lit("SADDLE");
+const __sl659 = cptr.lit("LEASH");
+const __sl660 = cptr.lit("STETHOSCOPE");
+const __sl661 = cptr.lit("TINNING_KIT");
+const __sl662 = cptr.lit("TIN_OPENER");
+const __sl663 = cptr.lit("CAN_OF_GREASE");
+const __sl664 = cptr.lit("FIGURINE");
+const __sl665 = cptr.lit("MAGIC_MARKER");
+const __sl666 = cptr.lit("LAND_MINE");
+const __sl667 = cptr.lit("BEARTRAP");
+const __sl668 = cptr.lit("TIN_WHISTLE");
+const __sl669 = cptr.lit("MAGIC_WHISTLE");
+const __sl670 = cptr.lit("WOODEN_FLUTE");
+const __sl671 = cptr.lit("MAGIC_FLUTE");
+const __sl672 = cptr.lit("TOOLED_HORN");
+const __sl673 = cptr.lit("FROST_HORN");
+const __sl674 = cptr.lit("FIRE_HORN");
+const __sl675 = cptr.lit("HORN_OF_PLENTY");
+const __sl676 = cptr.lit("WOODEN_HARP");
+const __sl677 = cptr.lit("MAGIC_HARP");
+const __sl678 = cptr.lit("BELL");
+const __sl679 = cptr.lit("BUGLE");
+const __sl680 = cptr.lit("LEATHER_DRUM");
+const __sl681 = cptr.lit("DRUM_OF_EARTHQUAKE");
+const __sl682 = cptr.lit("PICK_AXE");
+const __sl683 = cptr.lit("GRAPPLING_HOOK");
+const __sl684 = cptr.lit("UNICORN_HORN");
+const __sl685 = cptr.lit("CANDELABRUM_OF_INVOCATION");
+const __sl686 = cptr.lit("BELL_OF_OPENING");
+const __sl687 = cptr.lit("TRIPE_RATION");
+const __sl688 = cptr.lit("CORPSE");
+const __sl689 = cptr.lit("EGG");
+const __sl690 = cptr.lit("MEATBALL");
+const __sl691 = cptr.lit("MEAT_STICK");
+const __sl692 = cptr.lit("ENORMOUS_MEATBALL");
+const __sl693 = cptr.lit("MEAT_RING");
+const __sl694 = cptr.lit("GLOB_OF_GRAY_OOZE");
+const __sl695 = cptr.lit("GLOB_OF_BROWN_PUDDING");
+const __sl696 = cptr.lit("GLOB_OF_GREEN_SLIME");
+const __sl697 = cptr.lit("GLOB_OF_BLACK_PUDDING");
+const __sl698 = cptr.lit("KELP_FROND");
+const __sl699 = cptr.lit("EUCALYPTUS_LEAF");
+const __sl700 = cptr.lit("APPLE");
+const __sl701 = cptr.lit("ORANGE");
+const __sl702 = cptr.lit("PEAR");
+const __sl703 = cptr.lit("MELON");
+const __sl704 = cptr.lit("BANANA");
+const __sl705 = cptr.lit("CARROT");
+const __sl706 = cptr.lit("SPRIG_OF_WOLFSBANE");
+const __sl707 = cptr.lit("CLOVE_OF_GARLIC");
+const __sl708 = cptr.lit("SLIME_MOLD");
+const __sl709 = cptr.lit("LUMP_OF_ROYAL_JELLY");
+const __sl710 = cptr.lit("CREAM_PIE");
+const __sl711 = cptr.lit("CANDY_BAR");
+const __sl712 = cptr.lit("FORTUNE_COOKIE");
+const __sl713 = cptr.lit("PANCAKE");
+const __sl714 = cptr.lit("LEMBAS_WAFER");
+const __sl715 = cptr.lit("CRAM_RATION");
+const __sl716 = cptr.lit("FOOD_RATION");
+const __sl717 = cptr.lit("K_RATION");
+const __sl718 = cptr.lit("C_RATION");
+const __sl719 = cptr.lit("TIN");
+const __sl720 = cptr.lit("POT_GAIN_ABILITY");
+const __sl721 = cptr.lit("POT_RESTORE_ABILITY");
+const __sl722 = cptr.lit("POT_CONFUSION");
+const __sl723 = cptr.lit("POT_BLINDNESS");
+const __sl724 = cptr.lit("POT_PARALYSIS");
+const __sl725 = cptr.lit("POT_SPEED");
+const __sl726 = cptr.lit("POT_LEVITATION");
+const __sl727 = cptr.lit("POT_HALLUCINATION");
+const __sl728 = cptr.lit("POT_INVISIBILITY");
+const __sl729 = cptr.lit("POT_SEE_INVISIBLE");
+const __sl730 = cptr.lit("POT_HEALING");
+const __sl731 = cptr.lit("POT_EXTRA_HEALING");
+const __sl732 = cptr.lit("POT_GAIN_LEVEL");
+const __sl733 = cptr.lit("POT_ENLIGHTENMENT");
+const __sl734 = cptr.lit("POT_MONSTER_DETECTION");
+const __sl735 = cptr.lit("POT_OBJECT_DETECTION");
+const __sl736 = cptr.lit("POT_GAIN_ENERGY");
+const __sl737 = cptr.lit("POT_SLEEPING");
+const __sl738 = cptr.lit("POT_FULL_HEALING");
+const __sl739 = cptr.lit("POT_POLYMORPH");
+const __sl740 = cptr.lit("POT_BOOZE");
+const __sl741 = cptr.lit("POT_SICKNESS");
+const __sl742 = cptr.lit("POT_FRUIT_JUICE");
+const __sl743 = cptr.lit("POT_ACID");
+const __sl744 = cptr.lit("POT_OIL");
+const __sl745 = cptr.lit("POT_WATER");
+const __sl746 = cptr.lit("SCR_ENCHANT_ARMOR");
+const __sl747 = cptr.lit("SCR_DESTROY_ARMOR");
+const __sl748 = cptr.lit("SCR_CONFUSE_MONSTER");
+const __sl749 = cptr.lit("SCR_SCARE_MONSTER");
+const __sl750 = cptr.lit("SCR_REMOVE_CURSE");
+const __sl751 = cptr.lit("SCR_ENCHANT_WEAPON");
+const __sl752 = cptr.lit("SCR_CREATE_MONSTER");
+const __sl753 = cptr.lit("SCR_TAMING");
+const __sl754 = cptr.lit("SCR_GENOCIDE");
+const __sl755 = cptr.lit("SCR_LIGHT");
+const __sl756 = cptr.lit("SCR_TELEPORTATION");
+const __sl757 = cptr.lit("SCR_GOLD_DETECTION");
+const __sl758 = cptr.lit("SCR_FOOD_DETECTION");
+const __sl759 = cptr.lit("SCR_IDENTIFY");
+const __sl760 = cptr.lit("SCR_MAGIC_MAPPING");
+const __sl761 = cptr.lit("SCR_AMNESIA");
+const __sl762 = cptr.lit("SCR_FIRE");
+const __sl763 = cptr.lit("SCR_EARTH");
+const __sl764 = cptr.lit("SCR_PUNISHMENT");
+const __sl765 = cptr.lit("SCR_CHARGING");
+const __sl766 = cptr.lit("SCR_STINKING_CLOUD");
+const __sl767 = cptr.lit("SC01");
+const __sl768 = cptr.lit("SC02");
+const __sl769 = cptr.lit("SC03");
+const __sl770 = cptr.lit("SC04");
+const __sl771 = cptr.lit("SC05");
+const __sl772 = cptr.lit("SC06");
+const __sl773 = cptr.lit("SC07");
+const __sl774 = cptr.lit("SC08");
+const __sl775 = cptr.lit("SC09");
+const __sl776 = cptr.lit("SC10");
+const __sl777 = cptr.lit("SC11");
+const __sl778 = cptr.lit("SC12");
+const __sl779 = cptr.lit("SC13");
+const __sl780 = cptr.lit("SC14");
+const __sl781 = cptr.lit("SC15");
+const __sl782 = cptr.lit("SC16");
+const __sl783 = cptr.lit("SC17");
+const __sl784 = cptr.lit("SC18");
+const __sl785 = cptr.lit("SC19");
+const __sl786 = cptr.lit("SC20");
+const __sl787 = cptr.lit("SCR_MAIL");
+const __sl788 = cptr.lit("SCR_BLANK_PAPER");
+const __sl789 = cptr.lit("SPE_DIG");
+const __sl790 = cptr.lit("SPE_MAGIC_MISSILE");
+const __sl791 = cptr.lit("SPE_FIREBALL");
+const __sl792 = cptr.lit("SPE_CONE_OF_COLD");
+const __sl793 = cptr.lit("SPE_SLEEP");
+const __sl794 = cptr.lit("SPE_FINGER_OF_DEATH");
+const __sl795 = cptr.lit("SPE_LIGHT");
+const __sl796 = cptr.lit("SPE_DETECT_MONSTERS");
+const __sl797 = cptr.lit("SPE_HEALING");
+const __sl798 = cptr.lit("SPE_KNOCK");
+const __sl799 = cptr.lit("SPE_FORCE_BOLT");
+const __sl800 = cptr.lit("SPE_CONFUSE_MONSTER");
+const __sl801 = cptr.lit("SPE_CURE_BLINDNESS");
+const __sl802 = cptr.lit("SPE_DRAIN_LIFE");
+const __sl803 = cptr.lit("SPE_SLOW_MONSTER");
+const __sl804 = cptr.lit("SPE_WIZARD_LOCK");
+const __sl805 = cptr.lit("SPE_CREATE_MONSTER");
+const __sl806 = cptr.lit("SPE_DETECT_FOOD");
+const __sl807 = cptr.lit("SPE_CAUSE_FEAR");
+const __sl808 = cptr.lit("SPE_CLAIRVOYANCE");
+const __sl809 = cptr.lit("SPE_CURE_SICKNESS");
+const __sl810 = cptr.lit("SPE_CHARM_MONSTER");
+const __sl811 = cptr.lit("SPE_HASTE_SELF");
+const __sl812 = cptr.lit("SPE_DETECT_UNSEEN");
+const __sl813 = cptr.lit("SPE_LEVITATION");
+const __sl814 = cptr.lit("SPE_EXTRA_HEALING");
+const __sl815 = cptr.lit("SPE_RESTORE_ABILITY");
+const __sl816 = cptr.lit("SPE_INVISIBILITY");
+const __sl817 = cptr.lit("SPE_DETECT_TREASURE");
+const __sl818 = cptr.lit("SPE_REMOVE_CURSE");
+const __sl819 = cptr.lit("SPE_MAGIC_MAPPING");
+const __sl820 = cptr.lit("SPE_IDENTIFY");
+const __sl821 = cptr.lit("SPE_TURN_UNDEAD");
+const __sl822 = cptr.lit("SPE_POLYMORPH");
+const __sl823 = cptr.lit("SPE_TELEPORT_AWAY");
+const __sl824 = cptr.lit("SPE_CREATE_FAMILIAR");
+const __sl825 = cptr.lit("SPE_CANCELLATION");
+const __sl826 = cptr.lit("SPE_PROTECTION");
+const __sl827 = cptr.lit("SPE_JUMPING");
+const __sl828 = cptr.lit("SPE_STONE_TO_FLESH");
+const __sl829 = cptr.lit("SPE_CHAIN_LIGHTNING");
+const __sl830 = cptr.lit("SPE_BLANK_PAPER");
+const __sl831 = cptr.lit("SPE_NOVEL");
+const __sl832 = cptr.lit("SPE_BOOK_OF_THE_DEAD");
+const __sl833 = cptr.lit("WAN_LIGHT");
+const __sl834 = cptr.lit("WAN_SECRET_DOOR_DETECTION");
+const __sl835 = cptr.lit("WAN_ENLIGHTENMENT");
+const __sl836 = cptr.lit("WAN_CREATE_MONSTER");
+const __sl837 = cptr.lit("WAN_WISHING");
+const __sl838 = cptr.lit("WAN_STASIS");
+const __sl839 = cptr.lit("WAN_NOTHING");
+const __sl840 = cptr.lit("WAN_STRIKING");
+const __sl841 = cptr.lit("WAN_MAKE_INVISIBLE");
+const __sl842 = cptr.lit("WAN_SLOW_MONSTER");
+const __sl843 = cptr.lit("WAN_SPEED_MONSTER");
+const __sl844 = cptr.lit("WAN_UNDEAD_TURNING");
+const __sl845 = cptr.lit("WAN_POLYMORPH");
+const __sl846 = cptr.lit("WAN_CANCELLATION");
+const __sl847 = cptr.lit("WAN_TELEPORTATION");
+const __sl848 = cptr.lit("WAN_OPENING");
+const __sl849 = cptr.lit("WAN_LOCKING");
+const __sl850 = cptr.lit("WAN_PROBING");
+const __sl851 = cptr.lit("WAN_DIGGING");
+const __sl852 = cptr.lit("WAN_MAGIC_MISSILE");
+const __sl853 = cptr.lit("WAN_FIRE");
+const __sl854 = cptr.lit("WAN_COLD");
+const __sl855 = cptr.lit("WAN_SLEEP");
+const __sl856 = cptr.lit("WAN_DEATH");
+const __sl857 = cptr.lit("WAN_LIGHTNING");
+const __sl858 = cptr.lit("WAN1");
+const __sl859 = cptr.lit("WAN2");
+const __sl860 = cptr.lit("WAN3");
+const __sl861 = cptr.lit("GOLD_PIECE");
+const __sl862 = cptr.lit("DILITHIUM_CRYSTAL");
+const __sl863 = cptr.lit("DIAMOND");
+const __sl864 = cptr.lit("RUBY");
+const __sl865 = cptr.lit("JACINTH");
+const __sl866 = cptr.lit("SAPPHIRE");
+const __sl867 = cptr.lit("BLACK_OPAL");
+const __sl868 = cptr.lit("EMERALD");
+const __sl869 = cptr.lit("TURQUOISE");
+const __sl870 = cptr.lit("CITRINE");
+const __sl871 = cptr.lit("AQUAMARINE");
+const __sl872 = cptr.lit("AMBER");
+const __sl873 = cptr.lit("TOPAZ");
+const __sl874 = cptr.lit("JET");
+const __sl875 = cptr.lit("OPAL");
+const __sl876 = cptr.lit("CHRYSOBERYL");
+const __sl877 = cptr.lit("GARNET");
+const __sl878 = cptr.lit("AMETHYST");
+const __sl879 = cptr.lit("JASPER");
+const __sl880 = cptr.lit("FLUORITE");
+const __sl881 = cptr.lit("OBSIDIAN");
+const __sl882 = cptr.lit("AGATE");
+const __sl883 = cptr.lit("JADE");
+const __sl884 = cptr.lit("WORTHLESS_WHITE_GLASS");
+const __sl885 = cptr.lit("WORTHLESS_BLUE_GLASS");
+const __sl886 = cptr.lit("WORTHLESS_RED_GLASS");
+const __sl887 = cptr.lit("WORTHLESS_YELLOWBROWN_GLASS");
+const __sl888 = cptr.lit("WORTHLESS_ORANGE_GLASS");
+const __sl889 = cptr.lit("WORTHLESS_YELLOW_GLASS");
+const __sl890 = cptr.lit("WORTHLESS_BLACK_GLASS");
+const __sl891 = cptr.lit("WORTHLESS_GREEN_GLASS");
+const __sl892 = cptr.lit("WORTHLESS_VIOLET_GLASS");
+const __sl893 = cptr.lit("LUCKSTONE");
+const __sl894 = cptr.lit("LOADSTONE");
+const __sl895 = cptr.lit("TOUCHSTONE");
+const __sl896 = cptr.lit("FLINT");
+const __sl897 = cptr.lit("ROCK");
+const __sl898 = cptr.lit("BOULDER");
+const __sl899 = cptr.lit("STATUE");
+const __sl900 = cptr.lit("HEAVY_IRON_BALL");
+const __sl901 = cptr.lit("IRON_CHAIN");
+const __sl902 = cptr.lit("BLINDING_VENOM");
+const __sl903 = cptr.lit("ACID_VENOM");
+const __sl904 = cptr.lit("NUM_OBJECTS");
+const __sl905 = cptr.lit("S_stone");
+const __sl906 = cptr.lit("S_vwall");
+const __sl907 = cptr.lit("S_hwall");
+const __sl908 = cptr.lit("S_tlcorn");
+const __sl909 = cptr.lit("S_trcorn");
+const __sl910 = cptr.lit("S_blcorn");
+const __sl911 = cptr.lit("S_brcorn");
+const __sl912 = cptr.lit("S_crwall");
+const __sl913 = cptr.lit("S_tuwall");
+const __sl914 = cptr.lit("S_tdwall");
+const __sl915 = cptr.lit("S_tlwall");
+const __sl916 = cptr.lit("S_trwall");
+const __sl917 = cptr.lit("S_ndoor");
+const __sl918 = cptr.lit("S_vodoor");
+const __sl919 = cptr.lit("S_hodoor");
+const __sl920 = cptr.lit("S_vcdoor");
+const __sl921 = cptr.lit("S_hcdoor");
+const __sl922 = cptr.lit("S_bars");
+const __sl923 = cptr.lit("S_tree");
+const __sl924 = cptr.lit("S_room");
+const __sl925 = cptr.lit("S_darkroom");
+const __sl926 = cptr.lit("S_engroom");
+const __sl927 = cptr.lit("S_corr");
+const __sl928 = cptr.lit("S_litcorr");
+const __sl929 = cptr.lit("S_engrcorr");
+const __sl930 = cptr.lit("S_upstair");
+const __sl931 = cptr.lit("S_dnstair");
+const __sl932 = cptr.lit("S_upladder");
+const __sl933 = cptr.lit("S_dnladder");
+const __sl934 = cptr.lit("S_brupstair");
+const __sl935 = cptr.lit("S_brdnstair");
+const __sl936 = cptr.lit("S_brupladder");
+const __sl937 = cptr.lit("S_brdnladder");
+const __sl938 = cptr.lit("S_altar");
+const __sl939 = cptr.lit("S_grave");
+const __sl940 = cptr.lit("S_throne");
+const __sl941 = cptr.lit("S_sink");
+const __sl942 = cptr.lit("S_fountain");
+const __sl943 = cptr.lit("S_pool");
+const __sl944 = cptr.lit("S_ice");
+const __sl945 = cptr.lit("S_lava");
+const __sl946 = cptr.lit("S_lavawall");
+const __sl947 = cptr.lit("S_vodbridge");
+const __sl948 = cptr.lit("S_hodbridge");
+const __sl949 = cptr.lit("S_vcdbridge");
+const __sl950 = cptr.lit("S_hcdbridge");
+const __sl951 = cptr.lit("S_air");
+const __sl952 = cptr.lit("S_cloud");
+const __sl953 = cptr.lit("S_water");
+const __sl954 = cptr.lit("S_arrow_trap");
+const __sl955 = cptr.lit("S_dart_trap");
+const __sl956 = cptr.lit("S_falling_rock_trap");
+const __sl957 = cptr.lit("S_squeaky_board");
+const __sl958 = cptr.lit("S_bear_trap");
+const __sl959 = cptr.lit("S_land_mine");
+const __sl960 = cptr.lit("S_rolling_boulder_trap");
+const __sl961 = cptr.lit("S_sleeping_gas_trap");
+const __sl962 = cptr.lit("S_rust_trap");
+const __sl963 = cptr.lit("S_fire_trap");
+const __sl964 = cptr.lit("S_pit");
+const __sl965 = cptr.lit("S_spiked_pit");
+const __sl966 = cptr.lit("S_hole");
+const __sl967 = cptr.lit("S_trap_door");
+const __sl968 = cptr.lit("S_teleportation_trap");
+const __sl969 = cptr.lit("S_level_teleporter");
+const __sl970 = cptr.lit("S_magic_portal");
+const __sl971 = cptr.lit("S_web");
+const __sl972 = cptr.lit("S_statue_trap");
+const __sl973 = cptr.lit("S_magic_trap");
+const __sl974 = cptr.lit("S_anti_magic_trap");
+const __sl975 = cptr.lit("S_polymorph_trap");
+const __sl976 = cptr.lit("S_vibrating_square");
+const __sl977 = cptr.lit("S_trapped_door");
+const __sl978 = cptr.lit("S_trapped_chest");
+const __sl979 = cptr.lit("S_vbeam");
+const __sl980 = cptr.lit("S_hbeam");
+const __sl981 = cptr.lit("S_lslant");
+const __sl982 = cptr.lit("S_rslant");
+const __sl983 = cptr.lit("S_digbeam");
+const __sl984 = cptr.lit("S_flashbeam");
+const __sl985 = cptr.lit("S_boomleft");
+const __sl986 = cptr.lit("S_boomright");
+const __sl987 = cptr.lit("S_ss1");
+const __sl988 = cptr.lit("S_ss2");
+const __sl989 = cptr.lit("S_ss3");
+const __sl990 = cptr.lit("S_ss4");
+const __sl991 = cptr.lit("S_poisoncloud");
+const __sl992 = cptr.lit("S_goodpos");
+const __sl993 = cptr.lit("S_sw_tl");
+const __sl994 = cptr.lit("S_sw_tc");
+const __sl995 = cptr.lit("S_sw_tr");
+const __sl996 = cptr.lit("S_sw_ml");
+const __sl997 = cptr.lit("S_sw_mr");
+const __sl998 = cptr.lit("S_sw_bl");
+const __sl999 = cptr.lit("S_sw_bc");
+const __sl1000 = cptr.lit("S_sw_br");
+const __sl1001 = cptr.lit("S_expl_tl");
+const __sl1002 = cptr.lit("S_expl_tc");
+const __sl1003 = cptr.lit("S_expl_tr");
+const __sl1004 = cptr.lit("S_expl_ml");
+const __sl1005 = cptr.lit("S_expl_mc");
+const __sl1006 = cptr.lit("S_expl_mr");
+const __sl1007 = cptr.lit("S_expl_bl");
+const __sl1008 = cptr.lit("S_expl_bc");
+const __sl1009 = cptr.lit("S_expl_br");
+const __sl1010 = cptr.lit("MAXPCHARS");
+const __sl1011 = cptr.lit("S_ANT");
+const __sl1012 = cptr.lit("S_BLOB");
+const __sl1013 = cptr.lit("S_COCKATRICE");
+const __sl1014 = cptr.lit("S_DOG");
+const __sl1015 = cptr.lit("S_EYE");
+const __sl1016 = cptr.lit("S_FELINE");
+const __sl1017 = cptr.lit("S_GREMLIN");
+const __sl1018 = cptr.lit("S_HUMANOID");
+const __sl1019 = cptr.lit("S_IMP");
+const __sl1020 = cptr.lit("S_JELLY");
+const __sl1021 = cptr.lit("S_KOBOLD");
+const __sl1022 = cptr.lit("S_LEPRECHAUN");
+const __sl1023 = cptr.lit("S_MIMIC");
+const __sl1024 = cptr.lit("S_NYMPH");
+const __sl1025 = cptr.lit("S_ORC");
+const __sl1026 = cptr.lit("S_PIERCER");
+const __sl1027 = cptr.lit("S_QUADRUPED");
+const __sl1028 = cptr.lit("S_RODENT");
+const __sl1029 = cptr.lit("S_SPIDER");
+const __sl1030 = cptr.lit("S_TRAPPER");
+const __sl1031 = cptr.lit("S_UNICORN");
+const __sl1032 = cptr.lit("S_VORTEX");
+const __sl1033 = cptr.lit("S_WORM");
+const __sl1034 = cptr.lit("S_XAN");
+const __sl1035 = cptr.lit("S_LIGHT");
+const __sl1036 = cptr.lit("S_ZRUTY");
+const __sl1037 = cptr.lit("S_ANGEL");
+const __sl1038 = cptr.lit("S_BAT");
+const __sl1039 = cptr.lit("S_CENTAUR");
+const __sl1040 = cptr.lit("S_DRAGON");
+const __sl1041 = cptr.lit("S_ELEMENTAL");
+const __sl1042 = cptr.lit("S_FUNGUS");
+const __sl1043 = cptr.lit("S_GNOME");
+const __sl1044 = cptr.lit("S_GIANT");
+const __sl1045 = cptr.lit("S_invisible");
+const __sl1046 = cptr.lit("S_JABBERWOCK");
+const __sl1047 = cptr.lit("S_KOP");
+const __sl1048 = cptr.lit("S_LICH");
+const __sl1049 = cptr.lit("S_MUMMY");
+const __sl1050 = cptr.lit("S_NAGA");
+const __sl1051 = cptr.lit("S_OGRE");
+const __sl1052 = cptr.lit("S_PUDDING");
+const __sl1053 = cptr.lit("S_QUANTMECH");
+const __sl1054 = cptr.lit("S_RUSTMONST");
+const __sl1055 = cptr.lit("S_SNAKE");
+const __sl1056 = cptr.lit("S_TROLL");
+const __sl1057 = cptr.lit("S_UMBER");
+const __sl1058 = cptr.lit("S_VAMPIRE");
+const __sl1059 = cptr.lit("S_WRAITH");
+const __sl1060 = cptr.lit("S_XORN");
+const __sl1061 = cptr.lit("S_YETI");
+const __sl1062 = cptr.lit("S_ZOMBIE");
+const __sl1063 = cptr.lit("S_HUMAN");
+const __sl1064 = cptr.lit("S_GHOST");
+const __sl1065 = cptr.lit("S_GOLEM");
+const __sl1066 = cptr.lit("S_DEMON");
+const __sl1067 = cptr.lit("S_EEL");
+const __sl1068 = cptr.lit("S_LIZARD");
+const __sl1069 = cptr.lit("S_WORM_TAIL");
+const __sl1070 = cptr.lit("S_MIMIC_DEF");
+const __sl1071 = cptr.lit("MAXMCLASSES");
+const __sl1072 = cptr.lit("DEF_ANT");
+const __sl1073 = cptr.lit("DEF_BLOB");
+const __sl1074 = cptr.lit("DEF_COCKATRICE");
+const __sl1075 = cptr.lit("DEF_DOG");
+const __sl1076 = cptr.lit("DEF_EYE");
+const __sl1077 = cptr.lit("DEF_FELINE");
+const __sl1078 = cptr.lit("DEF_GREMLIN");
+const __sl1079 = cptr.lit("DEF_HUMANOID");
+const __sl1080 = cptr.lit("DEF_IMP");
+const __sl1081 = cptr.lit("DEF_JELLY");
+const __sl1082 = cptr.lit("DEF_KOBOLD");
+const __sl1083 = cptr.lit("DEF_LEPRECHAUN");
+const __sl1084 = cptr.lit("DEF_MIMIC");
+const __sl1085 = cptr.lit("DEF_NYMPH");
+const __sl1086 = cptr.lit("DEF_ORC");
+const __sl1087 = cptr.lit("DEF_PIERCER");
+const __sl1088 = cptr.lit("DEF_QUADRUPED");
+const __sl1089 = cptr.lit("DEF_RODENT");
+const __sl1090 = cptr.lit("DEF_SPIDER");
+const __sl1091 = cptr.lit("DEF_TRAPPER");
+const __sl1092 = cptr.lit("DEF_UNICORN");
+const __sl1093 = cptr.lit("DEF_VORTEX");
+const __sl1094 = cptr.lit("DEF_WORM");
+const __sl1095 = cptr.lit("DEF_XAN");
+const __sl1096 = cptr.lit("DEF_LIGHT");
+const __sl1097 = cptr.lit("DEF_ZRUTY");
+const __sl1098 = cptr.lit("DEF_ANGEL");
+const __sl1099 = cptr.lit("DEF_BAT");
+const __sl1100 = cptr.lit("DEF_CENTAUR");
+const __sl1101 = cptr.lit("DEF_DRAGON");
+const __sl1102 = cptr.lit("DEF_ELEMENTAL");
+const __sl1103 = cptr.lit("DEF_FUNGUS");
+const __sl1104 = cptr.lit("DEF_GNOME");
+const __sl1105 = cptr.lit("DEF_GIANT");
+const __sl1106 = cptr.lit("DEF_INVISIBLE");
+const __sl1107 = cptr.lit("DEF_JABBERWOCK");
+const __sl1108 = cptr.lit("DEF_KOP");
+const __sl1109 = cptr.lit("DEF_LICH");
+const __sl1110 = cptr.lit("DEF_MUMMY");
+const __sl1111 = cptr.lit("DEF_NAGA");
+const __sl1112 = cptr.lit("DEF_OGRE");
+const __sl1113 = cptr.lit("DEF_PUDDING");
+const __sl1114 = cptr.lit("DEF_QUANTMECH");
+const __sl1115 = cptr.lit("DEF_RUSTMONST");
+const __sl1116 = cptr.lit("DEF_SNAKE");
+const __sl1117 = cptr.lit("DEF_TROLL");
+const __sl1118 = cptr.lit("DEF_UMBER");
+const __sl1119 = cptr.lit("DEF_VAMPIRE");
+const __sl1120 = cptr.lit("DEF_WRAITH");
+const __sl1121 = cptr.lit("DEF_XORN");
+const __sl1122 = cptr.lit("DEF_YETI");
+const __sl1123 = cptr.lit("DEF_ZOMBIE");
+const __sl1124 = cptr.lit("DEF_HUMAN");
+const __sl1125 = cptr.lit("DEF_GHOST");
+const __sl1126 = cptr.lit("DEF_GOLEM");
+const __sl1127 = cptr.lit("DEF_DEMON");
+const __sl1128 = cptr.lit("DEF_EEL");
+const __sl1129 = cptr.lit("DEF_LIZARD");
+const __sl1130 = cptr.lit("DEF_WORM_TAIL");
+const __sl1131 = cptr.lit("DEF_MIMIC_DEF");
+const __sl1132 = cptr.lit("ILLOBJ_SYM");
+const __sl1133 = cptr.lit("WEAPON_SYM");
+const __sl1134 = cptr.lit("ARMOR_SYM");
+const __sl1135 = cptr.lit("RING_SYM");
+const __sl1136 = cptr.lit("AMULET_SYM");
+const __sl1137 = cptr.lit("TOOL_SYM");
+const __sl1138 = cptr.lit("FOOD_SYM");
+const __sl1139 = cptr.lit("POTION_SYM");
+const __sl1140 = cptr.lit("SCROLL_SYM");
+const __sl1141 = cptr.lit("SPBOOK_SYM");
+const __sl1142 = cptr.lit("WAND_SYM");
+const __sl1143 = cptr.lit("GOLD_SYM");
+const __sl1144 = cptr.lit("GEM_SYM");
+const __sl1145 = cptr.lit("ROCK_SYM");
+const __sl1146 = cptr.lit("BALL_SYM");
+const __sl1147 = cptr.lit("CHAIN_SYM");
+const __sl1148 = cptr.lit("VENOM_SYM");
+const __sl1149 = cptr.lit("ILLOBJ_CLASS");
+const __sl1150 = cptr.lit("WEAPON_CLASS");
+const __sl1151 = cptr.lit("ARMOR_CLASS");
+const __sl1152 = cptr.lit("RING_CLASS");
+const __sl1153 = cptr.lit("AMULET_CLASS");
+const __sl1154 = cptr.lit("TOOL_CLASS");
+const __sl1155 = cptr.lit("FOOD_CLASS");
+const __sl1156 = cptr.lit("POTION_CLASS");
+const __sl1157 = cptr.lit("SCROLL_CLASS");
+const __sl1158 = cptr.lit("SPBOOK_CLASS");
+const __sl1159 = cptr.lit("WAND_CLASS");
+const __sl1160 = cptr.lit("COIN_CLASS");
+const __sl1161 = cptr.lit("GEM_CLASS");
+const __sl1162 = cptr.lit("ROCK_CLASS");
+const __sl1163 = cptr.lit("BALL_CLASS");
+const __sl1164 = cptr.lit("CHAIN_CLASS");
+const __sl1165 = cptr.lit("VENOM_CLASS");
+const __sl1166 = cptr.lit("MAXOCLASSES");
+const __sl1167 = cptr.lit("S_strange_obj");
+const __sl1168 = cptr.lit("S_weapon");
+const __sl1169 = cptr.lit("S_armor");
+const __sl1170 = cptr.lit("S_ring");
+const __sl1171 = cptr.lit("S_amulet");
+const __sl1172 = cptr.lit("S_tool");
+const __sl1173 = cptr.lit("S_food");
+const __sl1174 = cptr.lit("S_potion");
+const __sl1175 = cptr.lit("S_scroll");
+const __sl1176 = cptr.lit("S_book");
+const __sl1177 = cptr.lit("S_wand");
+const __sl1178 = cptr.lit("S_coin");
+const __sl1179 = cptr.lit("S_gem");
+const __sl1180 = cptr.lit("S_rock");
+const __sl1181 = cptr.lit("S_ball");
+const __sl1182 = cptr.lit("S_chain");
+const __sl1183 = cptr.lit("S_venom");
+const __sl1184 = cptr.lit("ART_NONARTIFACT");
+const __sl1185 = cptr.lit("ART_EXCALIBUR");
+const __sl1186 = cptr.lit("ART_STORMBRINGER");
+const __sl1187 = cptr.lit("ART_MJOLLNIR");
+const __sl1188 = cptr.lit("ART_CLEAVER");
+const __sl1189 = cptr.lit("ART_GRIMTOOTH");
+const __sl1190 = cptr.lit("ART_ORCRIST");
+const __sl1191 = cptr.lit("ART_STING");
+const __sl1192 = cptr.lit("ART_MAGICBANE");
+const __sl1193 = cptr.lit("ART_FROST_BRAND");
+const __sl1194 = cptr.lit("ART_FIRE_BRAND");
+const __sl1195 = cptr.lit("ART_DRAGONBANE");
+const __sl1196 = cptr.lit("ART_DEMONBANE");
+const __sl1197 = cptr.lit("ART_WEREBANE");
+const __sl1198 = cptr.lit("ART_GRAYSWANDIR");
+const __sl1199 = cptr.lit("ART_GIANTSLAYER");
+const __sl1200 = cptr.lit("ART_OGRESMASHER");
+const __sl1201 = cptr.lit("ART_TROLLSBANE");
+const __sl1202 = cptr.lit("ART_VORPAL_BLADE");
+const __sl1203 = cptr.lit("ART_SNICKERSNEE");
+const __sl1204 = cptr.lit("ART_SUNSWORD");
+const __sl1205 = cptr.lit("ART_ORB_OF_DETECTION");
+const __sl1206 = cptr.lit("ART_HEART_OF_AHRIMAN");
+const __sl1207 = cptr.lit("ART_SCEPTRE_OF_MIGHT");
+const __sl1208 = cptr.lit("ART_STAFF_OF_AESCULAPIUS");
+const __sl1209 = cptr.lit("ART_MAGIC_MIRROR_OF_MERLIN");
+const __sl1210 = cptr.lit("ART_EYES_OF_THE_OVERWORLD");
+const __sl1211 = cptr.lit("ART_MITRE_OF_HOLINESS");
+const __sl1212 = cptr.lit("ART_LONGBOW_OF_DIANA");
+const __sl1213 = cptr.lit("ART_MASTER_KEY_OF_THIEVERY");
+const __sl1214 = cptr.lit("ART_TSURUGI_OF_MURAMASA");
+const __sl1215 = cptr.lit("ART_YENDORIAN_EXPRESS_CARD");
+const __sl1216 = cptr.lit("ART_ORB_OF_FATE");
+const __sl1217 = cptr.lit("ART_EYE_OF_THE_AETHIOPICA");
+const __sl1218 = cptr.lit("AFTER_LAST_ARTIFACT");
+const __sl1219 = cptr.lit("PSI_BOLT");
+const __sl1220 = cptr.lit("OPEN_WOUNDS");
+const __sl1221 = cptr.lit("CURE_SELF");
+const __sl1222 = cptr.lit("HASTE_SELF");
+const __sl1223 = cptr.lit("CONFUSE_YOU");
+const __sl1224 = cptr.lit("STUN_YOU");
+const __sl1225 = cptr.lit("DISAPPEAR");
+const __sl1226 = cptr.lit("PARALYZE");
+const __sl1227 = cptr.lit("BLIND_YOU");
+const __sl1228 = cptr.lit("WEAKEN_YOU");
+const __sl1229 = cptr.lit("DESTRY_ARMR");
+const __sl1230 = cptr.lit("INSECTS");
+const __sl1231 = cptr.lit("CURSE_ITEMS");
+const __sl1232 = cptr.lit("LIGHTNING");
+const __sl1233 = cptr.lit("FIRE_PILLAR");
+const __sl1234 = cptr.lit("GEYSER");
+const __sl1235 = cptr.lit("AGGRAVATION");
+const __sl1236 = cptr.lit("SUMMON_MONS");
+const __sl1237 = cptr.lit("CLONE_WIZ");
+const __sl1238 = cptr.lit("DEATH_TOUCH");
+const __sl1239 = cptr.lit("enum %s = {");
+const __sl1240 = cptr.lit("dump_enums");
+const __sl1241 = cptr.lit("    /* '%c' */");
+const __sl1242 = cptr.lit("    %s%*s = %3d,%s");
+const __sl1243 = cptr.lit("};");
+const __sl1244 = cptr.lit("LAST_GENERIC");
+const __sl1245 = cptr.lit("OBJCLASS_HACK");
+const __sl1246 = cptr.lit("FIRST_OBJECT");
+const __sl1247 = cptr.lit("FIRST_AMULET");
+const __sl1248 = cptr.lit("LAST_AMULET");
+const __sl1249 = cptr.lit("FIRST_SPELL");
+const __sl1250 = cptr.lit("LAST_SPELL");
+const __sl1251 = cptr.lit("MAXSPELL");
+const __sl1252 = cptr.lit("FIRST_REAL_GEM");
+const __sl1253 = cptr.lit("LAST_REAL_GEM");
+const __sl1254 = cptr.lit("FIRST_GLASS_GEM");
+const __sl1255 = cptr.lit("LAST_GLASS_GEM");
+const __sl1256 = cptr.lit("NUM_REAL_GEMS");
+const __sl1257 = cptr.lit("NUM_GLASS_GEMS");
+const __sl1258 = cptr.lit("MAX_GLYPH");
+const __sl1259 = cptr.lit("monnums");
+const __sl1260 = cptr.lit("PM_");
+const __sl1261 = cptr.lit("objects_nums");
+const __sl1262 = cptr.lit("misc_object_nums");
+const __sl1263 = cptr.lit("cmap_symbols");
+const __sl1264 = cptr.lit("mon_syms");
+const __sl1265 = cptr.lit("mon_defchars");
+const __sl1266 = cptr.lit("objclass_defchars");
+const __sl1267 = cptr.lit("objclass_classes");
+const __sl1268 = cptr.lit("objclass_syms");
+const __sl1269 = cptr.lit("artifacts_nums");
+const __sl1270 = cptr.lit("mcast_spells");
+const __sl1271 = cptr.lit("MCAST_");
 
 /** C ref: earlyarg.c:36 — struct early_opt[8] */
-const earlyopts = [
-    { e: ARG_DEBUG, name: __sl0, minlength: 5, valallowed: (1) },
-    { e: ARG_VERSION, name: __sl1, minlength: 4, valallowed: (1) },
-    { e: ARG_SHOWPATHS, name: __sl2, minlength: 8, valallowed: (0) },
-    { e: ARG_DUMPENUMS, name: __sl3, minlength: 9, valallowed: (0) },
-    { e: ARG_DUMPGLYPHIDS, name: __sl4, minlength: 12, valallowed: (0) },
-    { e: ARG_DUMPMONGEN, name: __sl5, minlength: 10, valallowed: (0) },
-    { e: ARG_DUMPWEIGHTS, name: __sl6, minlength: 11, valallowed: (0) },
-    { e: ARG_BIDSHOW, name: __sl7, minlength: 7, valallowed: (0) }
-];
+const earlyopts = cptr.alloc(8 * 24);
+cptr.stI32(cptr.add(earlyopts, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 0), 8), __sl0);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 0), 16), 5);
+cptr.st1(cptr.add(cptr.add(earlyopts, 0), 20), (1));
+cptr.stI32(cptr.add(earlyopts, 24), 1);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 24), 8), __sl1);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 24), 16), 4);
+cptr.st1(cptr.add(cptr.add(earlyopts, 24), 20), (1));
+cptr.stI32(cptr.add(earlyopts, 48), 2);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 48), 8), __sl2);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 48), 16), 8);
+cptr.st1(cptr.add(cptr.add(earlyopts, 48), 20), (0));
+cptr.stI32(cptr.add(earlyopts, 72), 3);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 72), 8), __sl3);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 72), 16), 9);
+cptr.st1(cptr.add(cptr.add(earlyopts, 72), 20), (0));
+cptr.stI32(cptr.add(earlyopts, 96), 4);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 96), 8), __sl4);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 96), 16), 12);
+cptr.st1(cptr.add(cptr.add(earlyopts, 96), 20), (0));
+cptr.stI32(cptr.add(earlyopts, 120), 5);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 120), 8), __sl5);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 120), 16), 10);
+cptr.st1(cptr.add(cptr.add(earlyopts, 120), 20), (0));
+cptr.stI32(cptr.add(earlyopts, 144), 6);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 144), 8), __sl6);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 144), 16), 11);
+cptr.st1(cptr.add(cptr.add(earlyopts, 144), 20), (0));
+cptr.stI32(cptr.add(earlyopts, 168), 7);
+cptr.stPtr(cptr.add(cptr.add(earlyopts, 168), 8), __sl7);
+cptr.stI32(cptr.add(cptr.add(earlyopts, 168), 16), 7);
+cptr.st1(cptr.add(cptr.add(earlyopts, 168), 20), (0));
 
 /** C ref: earlyarg.c:54 — char[10] */
-const ArgVal_novalue = __sl8;
+const ArgVal_novalue = cptr.bytes("[nothing]");
 
 /** C ref: earlyarg.c:56 — enum */
-const ArgValRequired = 0;
-const ArgValOptional = 1;
-const ArgValDisallowed = 2;
-const ArgVal_mask = 3;
-const ArgNamOneLetter = 4;
-const ArgNam_mask = 4;
-const ArgErrSilent = 0;
-const ArgErrComplain = 8;
-const ArgErr_mask = 8;
+export const ArgValRequired = 0;
+export const ArgValOptional = 1;
+export const ArgValDisallowed = 2;
+export const ArgVal_mask = 3;
+export const ArgNamOneLetter = 4;
+export const ArgNam_mask = 4;
+export const ArgErrSilent = 0;
+export const ArgErrComplain = 8;
+export const ArgErr_mask = 8;
 
 /** C ref: earlyarg.c:71 — @param {CPtr} arg @param {CInt} lflags @param {CPtr} optname @param {CPtr} origarg @param {CPtr} argc_p @param {CPtr} argv_p @returns {CPtr} */
 function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
@@ -1328,37 +1351,37 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let p;
     let nextarg = (argc > 1 && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, 1)), 0)) != 45) ? cptr.ldPtr(cptr.add(argv, 1)) : null;
     let l;
-    let opttype = (lflags & ArgVal_mask);
-    let oneletterok = schar(((lflags & ArgNam_mask) == ArgNamOneLetter));
-    let complain = schar(((lflags & ArgErr_mask) == ArgErrComplain));
+    let opttype = (lflags & 3);
+    let oneletterok = schar(((lflags & 4) == 4));
+    let complain = schar(((lflags & 8) == 8));
     if (cptr.ld1s(cptr.add(arg, 1)) != cptr.ld1s(cptr.add(optname, 1))) {
+        if (complain)
+            config_error_add(__sl8, origarg);
+        return null;
         if (complain)
             config_error_add(__sl9, origarg);
         return null;
         if (complain)
             config_error_add(__sl10, origarg);
         return null;
-        if (complain)
-            config_error_add(__sl11, origarg);
-        return null;
     }
     if ((p = cptr.strchr(arg, 61)) === null)
         p = cptr.strchr(arg, 58);
-    if (p && opttype == ArgValDisallowed)
+    if (p && opttype == 2)
         {
             if (complain)
-                config_error_add(__sl10, origarg);
+                config_error_add(__sl9, origarg);
             return null;
             if (complain)
-                config_error_add(__sl11, origarg);
+                config_error_add(__sl10, origarg);
             return null;
         }
     l = Number(BigInt.asIntN(32, (p ? (cptr.diff(p, arg)) : BigInt.asIntN(64, cptr.strlen(arg)))));
     if ((l > 2 || oneletterok) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l)))) {
         if (p)
             p = cptr.add(p, 1);
-        else if (opttype == ArgValRequired)
-            p = eos.v(arg);
+        else if (opttype == 0)
+            p = eos(arg);
         else
             return cptr.decay(ArgVal_novalue);
     } else if (oneletterok) {
@@ -1367,36 +1390,36 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
         } else {
             {
                 if (complain)
+                    config_error_add(__sl8, origarg);
+                return null;
+                if (complain)
                     config_error_add(__sl9, origarg);
                 return null;
                 if (complain)
                     config_error_add(__sl10, origarg);
-                return null;
-                if (complain)
-                    config_error_add(__sl11, origarg);
                 return null;
             }
         }
     } else {
         {
             if (complain)
+                config_error_add(__sl8, origarg);
+            return null;
+            if (complain)
                 config_error_add(__sl9, origarg);
             return null;
             if (complain)
                 config_error_add(__sl10, origarg);
             return null;
-            if (complain)
-                config_error_add(__sl11, origarg);
-            return null;
         }
     }
     if (!p || !cptr.ld1s(p)) {
-        if (nextarg && (opttype == ArgValRequired || opttype == ArgValOptional))
-            p = nextarg, --(cptr.ldI32(argc_p)), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
-        else if (opttype == ArgValRequired)
+        if (nextarg && (opttype == 0 || opttype == 1))
+            p = nextarg, cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
+        else if (opttype == 0)
             {
                 if (complain)
-                    config_error_add(__sl11, origarg);
+                    config_error_add(__sl10, origarg);
                 return null;
             }
         else
@@ -1417,15 +1440,15 @@ function consume_arg(ndx, ac_p, av_p) {
             cptr.stPtr(cptr.add(av, (i - 1) | 0), cptr.ldPtr(cptr.add(av, i)));
         cptr.stPtr(cptr.add(av, (ac - 1) | 0), gone);
     }
-    --(cptr.ldI32(ac_p));
+    cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
 
 /** C ref: earlyarg.c:166 — @param {CInt} ndx @param {CPtr} ac_p @param {CPtr} av_p */
 function consume_two_args(ndx, ac_p, av_p) {
     consume_arg(ndx, ac_p, av_p);
-    ++(cptr.ldI32(ac_p));
+    cptr.stI32(ac_p, cptr.ldI32(ac_p) + 1);
     consume_arg(ndx, ac_p, av_p);
-    --(cptr.ldI32(ac_p));
+    cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
 
 /** C ref: earlyarg.c:180 — @param {CPtr} argc_p @param {CPtr} argv_p @param {CPtr} hackdir_p */
@@ -1437,10 +1460,10 @@ export function early_options(argc_p, argv_p, hackdir_p) {
     let oldargc;
     let ndx = 0;
     let consumed = 0;
-    if (argcheck(cptr.ldI32(argc_p), cptr.ldPtr(argv_p), ARG_DUMPGLYPHIDS) == 2)
+    if (argcheck(cptr.ldI32(argc_p), cptr.ldPtr(argv_p), 4) == 2)
         opt_terminate();
-    config_error_init((0), __sl12, (0));
-    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtr(cptr.add((cptr.ldPtr(argv_p)), 1)), __sl13))
+    config_error_init((0), __sl11, (0));
+    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtr(cptr.add((cptr.ldPtr(argv_p)), 1)), __sl12))
         opt_usage(cptr.ldPtr(hackdir_p));
     for (ndx = 1; ndx < cptr.ldI32(argc_p); ndx = (ndx + (consumed ? 0 : 1)) | 0) {
         consumed = 0;
@@ -1453,24 +1476,24 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             arg = cptr.add(arg, 1);
         switch (cptr.ld1s(cptr.add(arg, 1))) {
             case 98:
-            if (argcheck(argc.v, argv.v, ARG_BIDSHOW) == 2) {
+            if (argcheck(argc.v, argv.v, 7) == 2) {
                 opt_terminate();
             }
             break;
             case 100:
-            if (argcheck(argc.v, argv.v, ARG_DEBUG) == 1) {
+            if (argcheck(argc.v, argv.v, 0) == 1) {
                 consume_arg(ndx, argc_p, argv_p), consumed = 1;
-            } else if (argcheck(argc.v, argv.v, ARG_DUMPENUMS) == 2) {
+            } else if (argcheck(argc.v, argv.v, 3) == 2) {
                 opt_terminate();
-            } else if (argcheck(argc.v, argv.v, ARG_DUMPMONGEN) == 2) {
+            } else if (argcheck(argc.v, argv.v, 5) == 2) {
                 opt_terminate();
-            } else if (argcheck(argc.v, argv.v, ARG_DUMPWEIGHTS) == 2) {
+            } else if (argcheck(argc.v, argv.v, 6) == 2) {
                 opt_terminate();
             } else {
                 oldargc = argc.v;
-                arg = lopt(arg, (ArgValRequired | ArgNamOneLetter | ArgErrSilent), __sl14, origarg, argc, argv);
+                arg = lopt(arg, (0 | 4 | 0), __sl13, origarg, argc, argv);
                 if (!arg)
-                    error(__sl15);
+                    error(__sl14);
                 if (cptr.ld1s(arg) != 101) {
                     cptr.stPtr(hackdir_p, arg);
                     if (oldargc == argc.v)
@@ -1482,17 +1505,17 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             break;
             case 104:
             case 63:
-            if (lopt(arg, ArgValDisallowed, __sl16, origarg, argc, argv) || lopt(arg, ArgValDisallowed | ArgNamOneLetter, __sl17, origarg, argc, argv))
+            if (lopt(arg, 2, __sl15, origarg, argc, argv) || lopt(arg, 2 | 4, __sl16, origarg, argc, argv))
                 opt_usage(cptr.ldPtr(hackdir_p));
             break;
             case 110:
             oldargc = argc.v;
-            if (!strcmp(arg, __sl18))
-                arg = (__sl19);
+            if (!strcmp(arg, __sl17))
+                arg = (__sl18);
             else
-                arg = lopt(arg, (ArgValRequired | ArgErrComplain), __sl20, origarg, argc, argv);
+                arg = lopt(arg, (0 | 8), __sl19, origarg, argc, argv);
             if (arg) {
-                gc.cmdline_rcfile = dupstr(arg);
+                cptr.stPtr(cptr.add(gc, 432), dupstr(arg));
                 if (oldargc == argc.v)
                     consume_arg(ndx, argc_p, argv_p), consumed = 1;
                 else
@@ -1500,30 +1523,30 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             }
             break;
             case 115:
-            if (argcheck(argc.v, argv.v, ARG_SHOWPATHS) == 2) {
-                gd.deferred_showpaths = (1);
-                gd.deferred_showpaths_dir = cptr.ldPtr(hackdir_p);
+            if (argcheck(argc.v, argv.v, 2) == 2) {
+                cptr.st1(cptr.add(gd, 146), (1));
+                cptr.stPtr(cptr.add(gd, 152), cptr.ldPtr(hackdir_p));
                 config_error_done();
                 return;
             }
-            if (lopt(arg, ((ArgValDisallowed | ArgErrComplain) | ((cptr.ld1s(cptr.add(origarg, 1)) != 45) ? ArgNamOneLetter : 0)), __sl21, origarg, argc, argv)) {
+            if (lopt(arg, ((2 | 8) | ((cptr.ld1s(cptr.add(origarg, 1)) != 45) ? 4 : 0)), __sl20, origarg, argc, argv)) {
                 scores_only((argc.v + 1) | 0, cptr.add(argv.v, -(1), 8), cptr.ldPtr(hackdir_p));
             }
             break;
             case 117:
-            if (lopt(arg, ArgValDisallowed, __sl22, origarg, argc, argv))
+            if (lopt(arg, 2, __sl21, origarg, argc, argv))
                 opt_usage(cptr.ldPtr(hackdir_p));
             break;
             case 118:
-            if (argcheck(argc.v, argv.v, ARG_VERSION) == 2) {
+            if (argcheck(argc.v, argv.v, 1) == 2) {
                 opt_terminate();
             }
             break;
             case 119:
-            arg = lopt(arg, (ArgValRequired | ArgNamOneLetter | ArgErrComplain), __sl23, origarg, argc, argv);
-            if (gc.cmdline_windowsys)
-                cptr.free(gc.cmdline_windowsys);
-            gc.cmdline_windowsys = arg ? dupstr(arg) : null;
+            arg = lopt(arg, (0 | 4 | 8), __sl22, origarg, argc, argv);
+            if (cptr.ldPtr(cptr.add(gc, 472)))
+                cptr.free(cptr.ldPtr(cptr.add(gc, 472)));
+            cptr.stPtr(cptr.add(gc, 472), arg ? dupstr(arg) : null);
             break;
             default:
             break;
@@ -1535,7 +1558,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
 
 /** C ref: earlyarg.c:366 */
 function opt_terminate() {
-    program_state.early_options = 0;
+    cptr.stI32(cptr.add(program_state, 108), 0);
     config_error_done();
     nh_terminate(0);
 }
@@ -1544,7 +1567,7 @@ function opt_terminate() {
 function opt_usage(hackdir) {
     chdirx(hackdir, (1));
     ;
-    genl_display_file(__sl24, (1));
+    genl_display_file(__sl23, (1));
     opt_terminate();
 }
 
@@ -1558,10 +1581,10 @@ export function after_opt_showpaths(dir) {
 function scores_only(argc, argv, dir) {
     config_error_done();
     chdirx(dir, (0));
-    iflags.initoptions_noterminate = (1);
+    cptr.st1(cptr.add(iflags, 93), (1));
     initoptions();
-    iflags.initoptions_noterminate = (0);
-    ARGV0 = gh.hname;
+    cptr.st1(cptr.add(iflags, 93), (0));
+    ARGV0 = cptr.ldPtr(gh);
     panictrace_setsignals((1));
     void whoami();
     prscore(argc, argv);
@@ -1574,24 +1597,24 @@ export function argcheck(argc, argv, e_arg) {
     let idx;
     let match = (0);
     let userea = null;
-    let dashdash = __sl25;
-    for (idx = 0; idx < earlyopts.length; idx++) {
-        if (earlyopts[idx].e == e_arg) {
+    let dashdash = __sl24;
+    for (idx = 0; idx < 8; idx++) {
+        if (cptr.add(earlyopts, idx, 24) == e_arg) {
             break;
         }
     }
-    if (idx >= earlyopts.length || argc < 1)
+    if (idx >= 8 || argc < 1)
         return 0;
     for (i = 0; i < argc; ++i) {
         if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i)), 0)) != 45)
             continue;
         if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(argv, i)), 1)) == 45) {
             userea = cptr.add(cptr.ldPtr(cptr.add(argv, i)), 2);
-            dashdash = __sl26;
+            dashdash = __sl25;
         } else {
             userea = cptr.add(cptr.ldPtr(cptr.add(argv, i)), 1);
         }
-        match = match_optname(userea, earlyopts[idx].name, earlyopts[idx].minlength, earlyopts[idx].valallowed);
+        match = match_optname(userea, cptr.ldPtr(cptr.add(cptr.add(earlyopts, idx, 24), 8)), cptr.ldI32(cptr.add(cptr.add(earlyopts, idx, 24), 16)), cptr.ld1s(cptr.add(cptr.add(earlyopts, idx, 24), 20)));
         if (match)
             break;
     }
@@ -1600,7 +1623,7 @@ export function argcheck(argc, argv, e_arg) {
         if (!extended_opt)
             extended_opt = cptr.strchr(userea, 61);
         switch (e_arg) {
-            case ARG_DEBUG >>> 0:
+            case 0:
             if (extended_opt) {
                 let cpy_extended_opt;
                 cpy_extended_opt = dupstr(extended_opt);
@@ -1608,41 +1631,41 @@ export function argcheck(argc, argv, e_arg) {
                 cptr.free(cpy_extended_opt);
             }
             return 1;
-            case ARG_VERSION >>> 0:
+            case 1:
             {
                 let insert_into_pastebuf = (0);
                 if (extended_opt) {
                     extended_opt = cptr.add(extended_opt, 1);
-                    if (match_optname(extended_opt, __sl27, 5, (0))) {
+                    if (match_optname(extended_opt, __sl26, 5, (0))) {
+                        insert_into_pastebuf = (1);
+                    } else if (match_optname(extended_opt, __sl27, 4, (0))) {
                         insert_into_pastebuf = (1);
                     } else if (match_optname(extended_opt, __sl28, 4, (0))) {
-                        insert_into_pastebuf = (1);
-                    } else if (match_optname(extended_opt, __sl29, 4, (0))) {
                         dump_version_info();
                         return 2;
-                    } else if (!match_optname(extended_opt, __sl30, 4, (0))) {
-                        raw_printf(__sl31, dashdash, dashdash);
+                    } else if (!match_optname(extended_opt, __sl29, 4, (0))) {
+                        raw_printf(__sl30, dashdash, dashdash);
                         return 2;
                     }
                 }
                 early_version_info(insert_into_pastebuf);
                 return 2;
             }
-            case ARG_SHOWPATHS >>> 0:
+            case 2:
             return 2;
-            case ARG_DUMPENUMS >>> 0:
+            case 3:
             dump_enums();
             return 2;
-            case ARG_DUMPGLYPHIDS >>> 0:
+            case 4:
             dump_glyphids();
             return 2;
-            case ARG_DUMPMONGEN >>> 0:
+            case 5:
             dump_mongen();
             return 2;
-            case ARG_DUMPWEIGHTS >>> 0:
+            case 6:
             dump_weights();
             return 2;
-            case ARG_BIDSHOW >>> 0:
+            case 7:
             crashreport_bidshow();
             return 2;
             default:
@@ -1665,1337 +1688,2587 @@ function debug_fields(opts) {
         return;
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
-    op = eos.v(opts);
+    op = eos(opts);
     while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
     if (!cptr.ld1s(opts)) {
         return;
     }
-    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl32, 2)) {
+    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl31, 2)) {
         if (cptr.ld1s(opts) == 33)
             opts = cptr.add(opts, 1);
         else
             opts = cptr.add(opts, 2);
         negated = schar((!negated));
     }
-    if (match_optname(opts, __sl33, 4, (0)))
-        iflags.debug.test = schar((negated ? 0 : 1));
-    if (match_optname(opts, __sl34, 9, (0)))
-        iflags.debug.ttystatus = schar((negated ? 0 : 1));
-    if (match_optname(opts, __sl35, 4, (0)))
-        iflags.fuzzerpending = (1);
+    if (match_optname(opts, __sl32, 4, (0)))
+        cptr.st1(cptr.add(iflags, 412), schar((negated ? 0 : 1)));
+    if (match_optname(opts, __sl33, 9, (0)))
+        cptr.st1(cptr.add(cptr.add(iflags, 412), 1), schar((negated ? 0 : 1)));
+    if (match_optname(opts, __sl34, 4, (0)))
+        cptr.st1(cptr.add(iflags, 1), (1));
     return;
 }
 
 /** C ref: earlyarg.c:628 — struct enum_dump[388] */
-const monsdump = [
-    { val: PM_GIANT_ANT, nm: __sl36 },
-    { val: PM_KILLER_BEE, nm: __sl37 },
-    { val: PM_SOLDIER_ANT, nm: __sl38 },
-    { val: PM_FIRE_ANT, nm: __sl39 },
-    { val: PM_GIANT_BEETLE, nm: __sl40 },
-    { val: PM_QUEEN_BEE, nm: __sl41 },
-    { val: PM_ACID_BLOB, nm: __sl42 },
-    { val: PM_QUIVERING_BLOB, nm: __sl43 },
-    { val: PM_GELATINOUS_CUBE, nm: __sl44 },
-    { val: PM_CHICKATRICE, nm: __sl45 },
-    { val: PM_COCKATRICE, nm: __sl46 },
-    { val: PM_PYROLISK, nm: __sl47 },
-    { val: PM_JACKAL, nm: __sl48 },
-    { val: PM_FOX, nm: __sl49 },
-    { val: PM_COYOTE, nm: __sl50 },
-    { val: PM_WEREJACKAL, nm: __sl51 },
-    { val: PM_LITTLE_DOG, nm: __sl52 },
-    { val: PM_DINGO, nm: __sl53 },
-    { val: PM_DOG, nm: __sl54 },
-    { val: PM_LARGE_DOG, nm: __sl55 },
-    { val: PM_WOLF, nm: __sl56 },
-    { val: PM_WEREWOLF, nm: __sl57 },
-    { val: PM_WINTER_WOLF_CUB, nm: __sl58 },
-    { val: PM_WARG, nm: __sl59 },
-    { val: PM_WINTER_WOLF, nm: __sl60 },
-    { val: PM_HELL_HOUND_PUP, nm: __sl61 },
-    { val: PM_HELL_HOUND, nm: __sl62 },
-    { val: PM_GAS_SPORE, nm: __sl63 },
-    { val: PM_FLOATING_EYE, nm: __sl64 },
-    { val: PM_FREEZING_SPHERE, nm: __sl65 },
-    { val: PM_FLAMING_SPHERE, nm: __sl66 },
-    { val: PM_SHOCKING_SPHERE, nm: __sl67 },
-    { val: PM_KITTEN, nm: __sl68 },
-    { val: PM_HOUSECAT, nm: __sl69 },
-    { val: PM_JAGUAR, nm: __sl70 },
-    { val: PM_LYNX, nm: __sl71 },
-    { val: PM_PANTHER, nm: __sl72 },
-    { val: PM_LARGE_CAT, nm: __sl73 },
-    { val: PM_TIGER, nm: __sl74 },
-    { val: PM_DISPLACER_BEAST, nm: __sl75 },
-    { val: PM_GREMLIN, nm: __sl76 },
-    { val: PM_GARGOYLE, nm: __sl77 },
-    { val: PM_WINGED_GARGOYLE, nm: __sl78 },
-    { val: PM_HOBBIT, nm: __sl79 },
-    { val: PM_DWARF, nm: __sl80 },
-    { val: PM_BUGBEAR, nm: __sl81 },
-    { val: PM_DWARF_LEADER, nm: __sl82 },
-    { val: PM_DWARF_RULER, nm: __sl83 },
-    { val: PM_MIND_FLAYER, nm: __sl84 },
-    { val: PM_MASTER_MIND_FLAYER, nm: __sl85 },
-    { val: PM_MANES, nm: __sl86 },
-    { val: PM_HOMUNCULUS, nm: __sl87 },
-    { val: PM_IMP, nm: __sl88 },
-    { val: PM_LEMURE, nm: __sl89 },
-    { val: PM_QUASIT, nm: __sl90 },
-    { val: PM_TENGU, nm: __sl91 },
-    { val: PM_BLUE_JELLY, nm: __sl92 },
-    { val: PM_SPOTTED_JELLY, nm: __sl93 },
-    { val: PM_OCHRE_JELLY, nm: __sl94 },
-    { val: PM_KOBOLD, nm: __sl95 },
-    { val: PM_LARGE_KOBOLD, nm: __sl96 },
-    { val: PM_KOBOLD_LEADER, nm: __sl97 },
-    { val: PM_KOBOLD_SHAMAN, nm: __sl98 },
-    { val: PM_LEPRECHAUN, nm: __sl99 },
-    { val: PM_SMALL_MIMIC, nm: __sl100 },
-    { val: PM_LARGE_MIMIC, nm: __sl101 },
-    { val: PM_GIANT_MIMIC, nm: __sl102 },
-    { val: PM_WOOD_NYMPH, nm: __sl103 },
-    { val: PM_WATER_NYMPH, nm: __sl104 },
-    { val: PM_MOUNTAIN_NYMPH, nm: __sl105 },
-    { val: PM_GOBLIN, nm: __sl106 },
-    { val: PM_HOBGOBLIN, nm: __sl107 },
-    { val: PM_ORC, nm: __sl108 },
-    { val: PM_HILL_ORC, nm: __sl109 },
-    { val: PM_MORDOR_ORC, nm: __sl110 },
-    { val: PM_URUK_HAI, nm: __sl111 },
-    { val: PM_ORC_SHAMAN, nm: __sl112 },
-    { val: PM_ORC_CAPTAIN, nm: __sl113 },
-    { val: PM_ROCK_PIERCER, nm: __sl114 },
-    { val: PM_IRON_PIERCER, nm: __sl115 },
-    { val: PM_GLASS_PIERCER, nm: __sl116 },
-    { val: PM_ROTHE, nm: __sl117 },
-    { val: PM_MUMAK, nm: __sl118 },
-    { val: PM_LEOCROTTA, nm: __sl119 },
-    { val: PM_WUMPUS, nm: __sl120 },
-    { val: PM_TITANOTHERE, nm: __sl121 },
-    { val: PM_BALUCHITHERIUM, nm: __sl122 },
-    { val: PM_MASTODON, nm: __sl123 },
-    { val: PM_SEWER_RAT, nm: __sl124 },
-    { val: PM_GIANT_RAT, nm: __sl125 },
-    { val: PM_RABID_RAT, nm: __sl126 },
-    { val: PM_WERERAT, nm: __sl127 },
-    { val: PM_ROCK_MOLE, nm: __sl128 },
-    { val: PM_WOODCHUCK, nm: __sl129 },
-    { val: PM_CAVE_SPIDER, nm: __sl130 },
-    { val: PM_CENTIPEDE, nm: __sl131 },
-    { val: PM_GIANT_SPIDER, nm: __sl132 },
-    { val: PM_SCORPION, nm: __sl133 },
-    { val: PM_LURKER_ABOVE, nm: __sl134 },
-    { val: PM_TRAPPER, nm: __sl135 },
-    { val: PM_PONY, nm: __sl136 },
-    { val: PM_WHITE_UNICORN, nm: __sl137 },
-    { val: PM_GRAY_UNICORN, nm: __sl138 },
-    { val: PM_BLACK_UNICORN, nm: __sl139 },
-    { val: PM_HORSE, nm: __sl140 },
-    { val: PM_WARHORSE, nm: __sl141 },
-    { val: PM_FOG_CLOUD, nm: __sl142 },
-    { val: PM_DUST_VORTEX, nm: __sl143 },
-    { val: PM_ICE_VORTEX, nm: __sl144 },
-    { val: PM_ENERGY_VORTEX, nm: __sl145 },
-    { val: PM_STEAM_VORTEX, nm: __sl146 },
-    { val: PM_FIRE_VORTEX, nm: __sl147 },
-    { val: PM_BABY_LONG_WORM, nm: __sl148 },
-    { val: PM_BABY_PURPLE_WORM, nm: __sl149 },
-    { val: PM_LONG_WORM, nm: __sl150 },
-    { val: PM_PURPLE_WORM, nm: __sl151 },
-    { val: PM_GRID_BUG, nm: __sl152 },
-    { val: PM_XAN, nm: __sl153 },
-    { val: PM_YELLOW_LIGHT, nm: __sl154 },
-    { val: PM_BLACK_LIGHT, nm: __sl155 },
-    { val: PM_ZRUTY, nm: __sl156 },
-    { val: PM_COUATL, nm: __sl157 },
-    { val: PM_ALEAX, nm: __sl158 },
-    { val: PM_ANGEL, nm: __sl159 },
-    { val: PM_KI_RIN, nm: __sl160 },
-    { val: PM_ARCHON, nm: __sl161 },
-    { val: PM_BAT, nm: __sl162 },
-    { val: PM_GIANT_BAT, nm: __sl163 },
-    { val: PM_RAVEN, nm: __sl164 },
-    { val: PM_VAMPIRE_BAT, nm: __sl165 },
-    { val: PM_PLAINS_CENTAUR, nm: __sl166 },
-    { val: PM_FOREST_CENTAUR, nm: __sl167 },
-    { val: PM_MOUNTAIN_CENTAUR, nm: __sl168 },
-    { val: PM_BABY_GRAY_DRAGON, nm: __sl169 },
-    { val: PM_BABY_GOLD_DRAGON, nm: __sl170 },
-    { val: PM_BABY_SILVER_DRAGON, nm: __sl171 },
-    { val: PM_BABY_RED_DRAGON, nm: __sl172 },
-    { val: PM_BABY_WHITE_DRAGON, nm: __sl173 },
-    { val: PM_BABY_ORANGE_DRAGON, nm: __sl174 },
-    { val: PM_BABY_BLACK_DRAGON, nm: __sl175 },
-    { val: PM_BABY_BLUE_DRAGON, nm: __sl176 },
-    { val: PM_BABY_GREEN_DRAGON, nm: __sl177 },
-    { val: PM_BABY_YELLOW_DRAGON, nm: __sl178 },
-    { val: PM_GRAY_DRAGON, nm: __sl179 },
-    { val: PM_GOLD_DRAGON, nm: __sl180 },
-    { val: PM_SILVER_DRAGON, nm: __sl181 },
-    { val: PM_RED_DRAGON, nm: __sl182 },
-    { val: PM_WHITE_DRAGON, nm: __sl183 },
-    { val: PM_ORANGE_DRAGON, nm: __sl184 },
-    { val: PM_BLACK_DRAGON, nm: __sl185 },
-    { val: PM_BLUE_DRAGON, nm: __sl186 },
-    { val: PM_GREEN_DRAGON, nm: __sl187 },
-    { val: PM_YELLOW_DRAGON, nm: __sl188 },
-    { val: PM_STALKER, nm: __sl189 },
-    { val: PM_AIR_ELEMENTAL, nm: __sl190 },
-    { val: PM_FIRE_ELEMENTAL, nm: __sl191 },
-    { val: PM_EARTH_ELEMENTAL, nm: __sl192 },
-    { val: PM_WATER_ELEMENTAL, nm: __sl193 },
-    { val: PM_LICHEN, nm: __sl194 },
-    { val: PM_BROWN_MOLD, nm: __sl195 },
-    { val: PM_YELLOW_MOLD, nm: __sl196 },
-    { val: PM_GREEN_MOLD, nm: __sl197 },
-    { val: PM_RED_MOLD, nm: __sl198 },
-    { val: PM_SHRIEKER, nm: __sl199 },
-    { val: PM_VIOLET_FUNGUS, nm: __sl200 },
-    { val: PM_GNOME, nm: __sl201 },
-    { val: PM_GNOME_LEADER, nm: __sl202 },
-    { val: PM_GNOMISH_WIZARD, nm: __sl203 },
-    { val: PM_GNOME_RULER, nm: __sl204 },
-    { val: PM_GIANT, nm: __sl205 },
-    { val: PM_STONE_GIANT, nm: __sl206 },
-    { val: PM_HILL_GIANT, nm: __sl207 },
-    { val: PM_FIRE_GIANT, nm: __sl208 },
-    { val: PM_FROST_GIANT, nm: __sl209 },
-    { val: PM_ETTIN, nm: __sl210 },
-    { val: PM_STORM_GIANT, nm: __sl211 },
-    { val: PM_TITAN, nm: __sl212 },
-    { val: PM_MINOTAUR, nm: __sl213 },
-    { val: PM_JABBERWOCK, nm: __sl214 },
-    { val: PM_KEYSTONE_KOP, nm: __sl215 },
-    { val: PM_KOP_SERGEANT, nm: __sl216 },
-    { val: PM_KOP_LIEUTENANT, nm: __sl217 },
-    { val: PM_KOP_KAPTAIN, nm: __sl218 },
-    { val: PM_LICH, nm: __sl219 },
-    { val: PM_DEMILICH, nm: __sl220 },
-    { val: PM_MASTER_LICH, nm: __sl221 },
-    { val: PM_ARCH_LICH, nm: __sl222 },
-    { val: PM_KOBOLD_MUMMY, nm: __sl223 },
-    { val: PM_GNOME_MUMMY, nm: __sl224 },
-    { val: PM_ORC_MUMMY, nm: __sl225 },
-    { val: PM_DWARF_MUMMY, nm: __sl226 },
-    { val: PM_ELF_MUMMY, nm: __sl227 },
-    { val: PM_HUMAN_MUMMY, nm: __sl228 },
-    { val: PM_ETTIN_MUMMY, nm: __sl229 },
-    { val: PM_GIANT_MUMMY, nm: __sl230 },
-    { val: PM_RED_NAGA_HATCHLING, nm: __sl231 },
-    { val: PM_BLACK_NAGA_HATCHLING, nm: __sl232 },
-    { val: PM_GOLDEN_NAGA_HATCHLING, nm: __sl233 },
-    { val: PM_GUARDIAN_NAGA_HATCHLING, nm: __sl234 },
-    { val: PM_RED_NAGA, nm: __sl235 },
-    { val: PM_BLACK_NAGA, nm: __sl236 },
-    { val: PM_GOLDEN_NAGA, nm: __sl237 },
-    { val: PM_GUARDIAN_NAGA, nm: __sl238 },
-    { val: PM_OGRE, nm: __sl239 },
-    { val: PM_OGRE_LEADER, nm: __sl240 },
-    { val: PM_OGRE_TYRANT, nm: __sl241 },
-    { val: PM_GRAY_OOZE, nm: __sl242 },
-    { val: PM_BROWN_PUDDING, nm: __sl243 },
-    { val: PM_GREEN_SLIME, nm: __sl244 },
-    { val: PM_BLACK_PUDDING, nm: __sl245 },
-    { val: PM_QUANTUM_MECHANIC, nm: __sl246 },
-    { val: PM_GENETIC_ENGINEER, nm: __sl247 },
-    { val: PM_RUST_MONSTER, nm: __sl248 },
-    { val: PM_DISENCHANTER, nm: __sl249 },
-    { val: PM_GARTER_SNAKE, nm: __sl250 },
-    { val: PM_SNAKE, nm: __sl251 },
-    { val: PM_WATER_MOCCASIN, nm: __sl252 },
-    { val: PM_PYTHON, nm: __sl253 },
-    { val: PM_PIT_VIPER, nm: __sl254 },
-    { val: PM_COBRA, nm: __sl255 },
-    { val: PM_TROLL, nm: __sl256 },
-    { val: PM_ICE_TROLL, nm: __sl257 },
-    { val: PM_ROCK_TROLL, nm: __sl258 },
-    { val: PM_WATER_TROLL, nm: __sl259 },
-    { val: PM_OLOG_HAI, nm: __sl260 },
-    { val: PM_UMBER_HULK, nm: __sl261 },
-    { val: PM_VAMPIRE, nm: __sl262 },
-    { val: PM_VAMPIRE_LEADER, nm: __sl263 },
-    { val: PM_VLAD_THE_IMPALER, nm: __sl264 },
-    { val: PM_BARROW_WIGHT, nm: __sl265 },
-    { val: PM_WRAITH, nm: __sl266 },
-    { val: PM_NAZGUL, nm: __sl267 },
-    { val: PM_XORN, nm: __sl268 },
-    { val: PM_MONKEY, nm: __sl269 },
-    { val: PM_APE, nm: __sl270 },
-    { val: PM_OWLBEAR, nm: __sl271 },
-    { val: PM_YETI, nm: __sl272 },
-    { val: PM_CARNIVOROUS_APE, nm: __sl273 },
-    { val: PM_SASQUATCH, nm: __sl274 },
-    { val: PM_KOBOLD_ZOMBIE, nm: __sl275 },
-    { val: PM_GNOME_ZOMBIE, nm: __sl276 },
-    { val: PM_ORC_ZOMBIE, nm: __sl277 },
-    { val: PM_DWARF_ZOMBIE, nm: __sl278 },
-    { val: PM_ELF_ZOMBIE, nm: __sl279 },
-    { val: PM_HUMAN_ZOMBIE, nm: __sl280 },
-    { val: PM_ETTIN_ZOMBIE, nm: __sl281 },
-    { val: PM_GHOUL, nm: __sl282 },
-    { val: PM_GIANT_ZOMBIE, nm: __sl283 },
-    { val: PM_SKELETON, nm: __sl284 },
-    { val: PM_STRAW_GOLEM, nm: __sl285 },
-    { val: PM_PAPER_GOLEM, nm: __sl286 },
-    { val: PM_ROPE_GOLEM, nm: __sl287 },
-    { val: PM_GOLD_GOLEM, nm: __sl288 },
-    { val: PM_LEATHER_GOLEM, nm: __sl289 },
-    { val: PM_WOOD_GOLEM, nm: __sl290 },
-    { val: PM_FLESH_GOLEM, nm: __sl291 },
-    { val: PM_CLAY_GOLEM, nm: __sl292 },
-    { val: PM_STONE_GOLEM, nm: __sl293 },
-    { val: PM_GLASS_GOLEM, nm: __sl294 },
-    { val: PM_IRON_GOLEM, nm: __sl295 },
-    { val: PM_HUMAN, nm: __sl296 },
-    { val: PM_HUMAN_WERERAT, nm: __sl297 },
-    { val: PM_HUMAN_WEREJACKAL, nm: __sl298 },
-    { val: PM_HUMAN_WEREWOLF, nm: __sl299 },
-    { val: PM_ELF, nm: __sl300 },
-    { val: PM_WOODLAND_ELF, nm: __sl301 },
-    { val: PM_GREEN_ELF, nm: __sl302 },
-    { val: PM_GREY_ELF, nm: __sl303 },
-    { val: PM_ELF_NOBLE, nm: __sl304 },
-    { val: PM_ELVEN_MONARCH, nm: __sl305 },
-    { val: PM_DOPPELGANGER, nm: __sl306 },
-    { val: PM_SHOPKEEPER, nm: __sl307 },
-    { val: PM_GUARD, nm: __sl308 },
-    { val: PM_PRISONER, nm: __sl309 },
-    { val: PM_ORACLE, nm: __sl310 },
-    { val: PM_ALIGNED_CLERIC, nm: __sl311 },
-    { val: PM_HIGH_CLERIC, nm: __sl312 },
-    { val: PM_SOLDIER, nm: __sl313 },
-    { val: PM_SERGEANT, nm: __sl314 },
-    { val: PM_NURSE, nm: __sl315 },
-    { val: PM_LIEUTENANT, nm: __sl316 },
-    { val: PM_CAPTAIN, nm: __sl317 },
-    { val: PM_WATCHMAN, nm: __sl318 },
-    { val: PM_WATCH_CAPTAIN, nm: __sl319 },
-    { val: PM_MEDUSA, nm: __sl320 },
-    { val: PM_WIZARD_OF_YENDOR, nm: __sl321 },
-    { val: PM_CROESUS, nm: __sl322 },
-    { val: PM_GHOST, nm: __sl323 },
-    { val: PM_SHADE, nm: __sl324 },
-    { val: PM_WATER_DEMON, nm: __sl325 },
-    { val: PM_AMOROUS_DEMON, nm: __sl326 },
-    { val: PM_HORNED_DEVIL, nm: __sl327 },
-    { val: PM_ERINYS, nm: __sl328 },
-    { val: PM_BARBED_DEVIL, nm: __sl329 },
-    { val: PM_MARILITH, nm: __sl330 },
-    { val: PM_VROCK, nm: __sl331 },
-    { val: PM_HEZROU, nm: __sl332 },
-    { val: PM_BONE_DEVIL, nm: __sl333 },
-    { val: PM_ICE_DEVIL, nm: __sl334 },
-    { val: PM_NALFESHNEE, nm: __sl335 },
-    { val: PM_PIT_FIEND, nm: __sl336 },
-    { val: PM_SANDESTIN, nm: __sl337 },
-    { val: PM_BALROG, nm: __sl338 },
-    { val: PM_JUIBLEX, nm: __sl339 },
-    { val: PM_YEENOGHU, nm: __sl340 },
-    { val: PM_ORCUS, nm: __sl341 },
-    { val: PM_GERYON, nm: __sl342 },
-    { val: PM_DISPATER, nm: __sl343 },
-    { val: PM_BAALZEBUB, nm: __sl344 },
-    { val: PM_ASMODEUS, nm: __sl345 },
-    { val: PM_DEMOGORGON, nm: __sl346 },
-    { val: PM_DEATH, nm: __sl347 },
-    { val: PM_PESTILENCE, nm: __sl348 },
-    { val: PM_FAMINE, nm: __sl349 },
-    { val: PM_MAIL_DAEMON, nm: __sl350 },
-    { val: PM_DJINNI, nm: __sl351 },
-    { val: PM_JELLYFISH, nm: __sl352 },
-    { val: PM_PIRANHA, nm: __sl353 },
-    { val: PM_SHARK, nm: __sl354 },
-    { val: PM_GIANT_EEL, nm: __sl355 },
-    { val: PM_ELECTRIC_EEL, nm: __sl356 },
-    { val: PM_KRAKEN, nm: __sl357 },
-    { val: PM_NEWT, nm: __sl358 },
-    { val: PM_GECKO, nm: __sl359 },
-    { val: PM_IGUANA, nm: __sl360 },
-    { val: PM_BABY_CROCODILE, nm: __sl361 },
-    { val: PM_LIZARD, nm: __sl362 },
-    { val: PM_CHAMELEON, nm: __sl363 },
-    { val: PM_CROCODILE, nm: __sl364 },
-    { val: PM_SALAMANDER, nm: __sl365 },
-    { val: PM_LONG_WORM_TAIL, nm: __sl366 },
-    { val: PM_ARCHEOLOGIST, nm: __sl367 },
-    { val: PM_BARBARIAN, nm: __sl368 },
-    { val: PM_CAVE_DWELLER, nm: __sl369 },
-    { val: PM_HEALER, nm: __sl370 },
-    { val: PM_KNIGHT, nm: __sl371 },
-    { val: PM_MONK, nm: __sl372 },
-    { val: PM_CLERIC, nm: __sl373 },
-    { val: PM_RANGER, nm: __sl374 },
-    { val: PM_ROGUE, nm: __sl375 },
-    { val: PM_SAMURAI, nm: __sl376 },
-    { val: PM_TOURIST, nm: __sl377 },
-    { val: PM_VALKYRIE, nm: __sl378 },
-    { val: PM_WIZARD, nm: __sl379 },
-    { val: PM_LORD_CARNARVON, nm: __sl380 },
-    { val: PM_PELIAS, nm: __sl381 },
-    { val: PM_SHAMAN_KARNOV, nm: __sl382 },
-    { val: PM_HIPPOCRATES, nm: __sl383 },
-    { val: PM_KING_ARTHUR, nm: __sl384 },
-    { val: PM_GRAND_MASTER, nm: __sl385 },
-    { val: PM_ARCH_PRIEST, nm: __sl386 },
-    { val: PM_ORION, nm: __sl387 },
-    { val: PM_MASTER_OF_THIEVES, nm: __sl388 },
-    { val: PM_LORD_SATO, nm: __sl389 },
-    { val: PM_TWOFLOWER, nm: __sl390 },
-    { val: PM_NORN, nm: __sl391 },
-    { val: PM_NEFERET_THE_GREEN, nm: __sl392 },
-    { val: PM_MINION_OF_HUHETOTL, nm: __sl393 },
-    { val: PM_THOTH_AMON, nm: __sl394 },
-    { val: PM_CHROMATIC_DRAGON, nm: __sl395 },
-    { val: PM_CYCLOPS, nm: __sl396 },
-    { val: PM_IXOTH, nm: __sl397 },
-    { val: PM_MASTER_KAEN, nm: __sl398 },
-    { val: PM_NALZOK, nm: __sl399 },
-    { val: PM_SCORPIUS, nm: __sl400 },
-    { val: PM_MASTER_ASSASSIN, nm: __sl401 },
-    { val: PM_ASHIKAGA_TAKAUJI, nm: __sl402 },
-    { val: PM_LORD_SURTUR, nm: __sl403 },
-    { val: PM_DARK_ONE, nm: __sl404 },
-    { val: PM_STUDENT, nm: __sl405 },
-    { val: PM_CHIEFTAIN, nm: __sl406 },
-    { val: PM_NEANDERTHAL, nm: __sl407 },
-    { val: PM_ATTENDANT, nm: __sl408 },
-    { val: PM_PAGE, nm: __sl409 },
-    { val: PM_ABBOT, nm: __sl410 },
-    { val: PM_ACOLYTE, nm: __sl411 },
-    { val: PM_HUNTER, nm: __sl412 },
-    { val: PM_THUG, nm: __sl413 },
-    { val: PM_NINJA, nm: __sl414 },
-    { val: PM_ROSHI, nm: __sl415 },
-    { val: PM_GUIDE, nm: __sl416 },
-    { val: PM_WARRIOR, nm: __sl417 },
-    { val: PM_APPRENTICE, nm: __sl418 },
-    { val: NUMMONS, nm: __sl419 },
-    { val: NON_PM, nm: __sl420 },
-    { val: LOW_PM, nm: __sl421 },
-    { val: HIGH_PM, nm: __sl422 },
-    { val: SPECIAL_PM, nm: __sl423 }
-];
+export const monsdump = cptr.alloc(388 * 16);
+cptr.stI32(cptr.add(monsdump, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 0), 8), __sl35);
+cptr.stI32(cptr.add(monsdump, 16), 1);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 16), 8), __sl36);
+cptr.stI32(cptr.add(monsdump, 32), 2);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 32), 8), __sl37);
+cptr.stI32(cptr.add(monsdump, 48), 3);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 48), 8), __sl38);
+cptr.stI32(cptr.add(monsdump, 64), 4);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 64), 8), __sl39);
+cptr.stI32(cptr.add(monsdump, 80), 5);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 80), 8), __sl40);
+cptr.stI32(cptr.add(monsdump, 96), 6);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 96), 8), __sl41);
+cptr.stI32(cptr.add(monsdump, 112), 7);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 112), 8), __sl42);
+cptr.stI32(cptr.add(monsdump, 128), 8);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 128), 8), __sl43);
+cptr.stI32(cptr.add(monsdump, 144), 9);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 144), 8), __sl44);
+cptr.stI32(cptr.add(monsdump, 160), 10);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 160), 8), __sl45);
+cptr.stI32(cptr.add(monsdump, 176), 11);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 176), 8), __sl46);
+cptr.stI32(cptr.add(monsdump, 192), 12);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 192), 8), __sl47);
+cptr.stI32(cptr.add(monsdump, 208), 13);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 208), 8), __sl48);
+cptr.stI32(cptr.add(monsdump, 224), 14);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 224), 8), __sl49);
+cptr.stI32(cptr.add(monsdump, 240), 15);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 240), 8), __sl50);
+cptr.stI32(cptr.add(monsdump, 256), 16);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 256), 8), __sl51);
+cptr.stI32(cptr.add(monsdump, 272), 17);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 272), 8), __sl52);
+cptr.stI32(cptr.add(monsdump, 288), 18);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 288), 8), __sl53);
+cptr.stI32(cptr.add(monsdump, 304), 19);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 304), 8), __sl54);
+cptr.stI32(cptr.add(monsdump, 320), 20);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 320), 8), __sl55);
+cptr.stI32(cptr.add(monsdump, 336), 21);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 336), 8), __sl56);
+cptr.stI32(cptr.add(monsdump, 352), 22);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 352), 8), __sl57);
+cptr.stI32(cptr.add(monsdump, 368), 23);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 368), 8), __sl58);
+cptr.stI32(cptr.add(monsdump, 384), 24);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 384), 8), __sl59);
+cptr.stI32(cptr.add(monsdump, 400), 25);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 400), 8), __sl60);
+cptr.stI32(cptr.add(monsdump, 416), 26);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 416), 8), __sl61);
+cptr.stI32(cptr.add(monsdump, 432), 27);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 432), 8), __sl62);
+cptr.stI32(cptr.add(monsdump, 448), 28);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 448), 8), __sl63);
+cptr.stI32(cptr.add(monsdump, 464), 29);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 464), 8), __sl64);
+cptr.stI32(cptr.add(monsdump, 480), 30);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 480), 8), __sl65);
+cptr.stI32(cptr.add(monsdump, 496), 31);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 496), 8), __sl66);
+cptr.stI32(cptr.add(monsdump, 512), 32);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 512), 8), __sl67);
+cptr.stI32(cptr.add(monsdump, 528), 33);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 528), 8), __sl68);
+cptr.stI32(cptr.add(monsdump, 544), 34);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 544), 8), __sl69);
+cptr.stI32(cptr.add(monsdump, 560), 35);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 560), 8), __sl70);
+cptr.stI32(cptr.add(monsdump, 576), 36);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 576), 8), __sl71);
+cptr.stI32(cptr.add(monsdump, 592), 37);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 592), 8), __sl72);
+cptr.stI32(cptr.add(monsdump, 608), 38);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 608), 8), __sl73);
+cptr.stI32(cptr.add(monsdump, 624), 39);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 624), 8), __sl74);
+cptr.stI32(cptr.add(monsdump, 640), 40);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 640), 8), __sl75);
+cptr.stI32(cptr.add(monsdump, 656), 41);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 656), 8), __sl76);
+cptr.stI32(cptr.add(monsdump, 672), 42);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 672), 8), __sl77);
+cptr.stI32(cptr.add(monsdump, 688), 43);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 688), 8), __sl78);
+cptr.stI32(cptr.add(monsdump, 704), 44);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 704), 8), __sl79);
+cptr.stI32(cptr.add(monsdump, 720), 45);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 720), 8), __sl80);
+cptr.stI32(cptr.add(monsdump, 736), 46);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 736), 8), __sl81);
+cptr.stI32(cptr.add(monsdump, 752), 47);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 752), 8), __sl82);
+cptr.stI32(cptr.add(monsdump, 768), 48);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 768), 8), __sl83);
+cptr.stI32(cptr.add(monsdump, 784), 49);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 784), 8), __sl84);
+cptr.stI32(cptr.add(monsdump, 800), 50);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 800), 8), __sl85);
+cptr.stI32(cptr.add(monsdump, 816), 51);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 816), 8), __sl86);
+cptr.stI32(cptr.add(monsdump, 832), 52);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 832), 8), __sl87);
+cptr.stI32(cptr.add(monsdump, 848), 53);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 848), 8), __sl88);
+cptr.stI32(cptr.add(monsdump, 864), 54);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 864), 8), __sl89);
+cptr.stI32(cptr.add(monsdump, 880), 55);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 880), 8), __sl90);
+cptr.stI32(cptr.add(monsdump, 896), 56);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 896), 8), __sl91);
+cptr.stI32(cptr.add(monsdump, 912), 57);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 912), 8), __sl92);
+cptr.stI32(cptr.add(monsdump, 928), 58);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 928), 8), __sl93);
+cptr.stI32(cptr.add(monsdump, 944), 59);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 944), 8), __sl94);
+cptr.stI32(cptr.add(monsdump, 960), 60);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 960), 8), __sl95);
+cptr.stI32(cptr.add(monsdump, 976), 61);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 976), 8), __sl96);
+cptr.stI32(cptr.add(monsdump, 992), 62);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 992), 8), __sl97);
+cptr.stI32(cptr.add(monsdump, 1008), 63);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1008), 8), __sl98);
+cptr.stI32(cptr.add(monsdump, 1024), 64);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1024), 8), __sl99);
+cptr.stI32(cptr.add(monsdump, 1040), 65);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1040), 8), __sl100);
+cptr.stI32(cptr.add(monsdump, 1056), 66);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1056), 8), __sl101);
+cptr.stI32(cptr.add(monsdump, 1072), 67);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1072), 8), __sl102);
+cptr.stI32(cptr.add(monsdump, 1088), 68);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1088), 8), __sl103);
+cptr.stI32(cptr.add(monsdump, 1104), 69);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1104), 8), __sl104);
+cptr.stI32(cptr.add(monsdump, 1120), 70);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1120), 8), __sl105);
+cptr.stI32(cptr.add(monsdump, 1136), 71);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1136), 8), __sl106);
+cptr.stI32(cptr.add(monsdump, 1152), 72);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1152), 8), __sl107);
+cptr.stI32(cptr.add(monsdump, 1168), 73);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1168), 8), __sl108);
+cptr.stI32(cptr.add(monsdump, 1184), 74);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1184), 8), __sl109);
+cptr.stI32(cptr.add(monsdump, 1200), 75);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1200), 8), __sl110);
+cptr.stI32(cptr.add(monsdump, 1216), 76);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1216), 8), __sl111);
+cptr.stI32(cptr.add(monsdump, 1232), 77);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1232), 8), __sl112);
+cptr.stI32(cptr.add(monsdump, 1248), 78);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1248), 8), __sl113);
+cptr.stI32(cptr.add(monsdump, 1264), 79);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1264), 8), __sl114);
+cptr.stI32(cptr.add(monsdump, 1280), 80);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1280), 8), __sl115);
+cptr.stI32(cptr.add(monsdump, 1296), 81);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1296), 8), __sl116);
+cptr.stI32(cptr.add(monsdump, 1312), 82);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1312), 8), __sl117);
+cptr.stI32(cptr.add(monsdump, 1328), 83);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1328), 8), __sl118);
+cptr.stI32(cptr.add(monsdump, 1344), 84);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1344), 8), __sl119);
+cptr.stI32(cptr.add(monsdump, 1360), 85);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1360), 8), __sl120);
+cptr.stI32(cptr.add(monsdump, 1376), 86);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1376), 8), __sl121);
+cptr.stI32(cptr.add(monsdump, 1392), 87);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1392), 8), __sl122);
+cptr.stI32(cptr.add(monsdump, 1408), 88);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1408), 8), __sl123);
+cptr.stI32(cptr.add(monsdump, 1424), 89);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1424), 8), __sl124);
+cptr.stI32(cptr.add(monsdump, 1440), 90);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1440), 8), __sl125);
+cptr.stI32(cptr.add(monsdump, 1456), 91);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1456), 8), __sl126);
+cptr.stI32(cptr.add(monsdump, 1472), 92);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1472), 8), __sl127);
+cptr.stI32(cptr.add(monsdump, 1488), 93);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1488), 8), __sl128);
+cptr.stI32(cptr.add(monsdump, 1504), 94);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1504), 8), __sl129);
+cptr.stI32(cptr.add(monsdump, 1520), 95);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1520), 8), __sl130);
+cptr.stI32(cptr.add(monsdump, 1536), 96);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1536), 8), __sl131);
+cptr.stI32(cptr.add(monsdump, 1552), 97);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1552), 8), __sl132);
+cptr.stI32(cptr.add(monsdump, 1568), 98);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1568), 8), __sl133);
+cptr.stI32(cptr.add(monsdump, 1584), 99);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1584), 8), __sl134);
+cptr.stI32(cptr.add(monsdump, 1600), 100);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1600), 8), __sl135);
+cptr.stI32(cptr.add(monsdump, 1616), 101);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1616), 8), __sl136);
+cptr.stI32(cptr.add(monsdump, 1632), 102);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1632), 8), __sl137);
+cptr.stI32(cptr.add(monsdump, 1648), 103);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1648), 8), __sl138);
+cptr.stI32(cptr.add(monsdump, 1664), 104);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1664), 8), __sl139);
+cptr.stI32(cptr.add(monsdump, 1680), 105);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1680), 8), __sl140);
+cptr.stI32(cptr.add(monsdump, 1696), 106);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1696), 8), __sl141);
+cptr.stI32(cptr.add(monsdump, 1712), 107);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1712), 8), __sl142);
+cptr.stI32(cptr.add(monsdump, 1728), 108);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1728), 8), __sl143);
+cptr.stI32(cptr.add(monsdump, 1744), 109);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1744), 8), __sl144);
+cptr.stI32(cptr.add(monsdump, 1760), 110);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1760), 8), __sl145);
+cptr.stI32(cptr.add(monsdump, 1776), 111);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1776), 8), __sl146);
+cptr.stI32(cptr.add(monsdump, 1792), 112);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1792), 8), __sl147);
+cptr.stI32(cptr.add(monsdump, 1808), 113);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1808), 8), __sl148);
+cptr.stI32(cptr.add(monsdump, 1824), 114);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1824), 8), __sl149);
+cptr.stI32(cptr.add(monsdump, 1840), 115);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1840), 8), __sl150);
+cptr.stI32(cptr.add(monsdump, 1856), 116);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1856), 8), __sl151);
+cptr.stI32(cptr.add(monsdump, 1872), 117);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1872), 8), __sl152);
+cptr.stI32(cptr.add(monsdump, 1888), 118);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1888), 8), __sl153);
+cptr.stI32(cptr.add(monsdump, 1904), 119);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1904), 8), __sl154);
+cptr.stI32(cptr.add(monsdump, 1920), 120);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1920), 8), __sl155);
+cptr.stI32(cptr.add(monsdump, 1936), 121);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1936), 8), __sl156);
+cptr.stI32(cptr.add(monsdump, 1952), 122);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1952), 8), __sl157);
+cptr.stI32(cptr.add(monsdump, 1968), 123);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1968), 8), __sl158);
+cptr.stI32(cptr.add(monsdump, 1984), 124);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 1984), 8), __sl159);
+cptr.stI32(cptr.add(monsdump, 2000), 125);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2000), 8), __sl160);
+cptr.stI32(cptr.add(monsdump, 2016), 126);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2016), 8), __sl161);
+cptr.stI32(cptr.add(monsdump, 2032), 127);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2032), 8), __sl162);
+cptr.stI32(cptr.add(monsdump, 2048), 128);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2048), 8), __sl163);
+cptr.stI32(cptr.add(monsdump, 2064), 129);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2064), 8), __sl164);
+cptr.stI32(cptr.add(monsdump, 2080), 130);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2080), 8), __sl165);
+cptr.stI32(cptr.add(monsdump, 2096), 131);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2096), 8), __sl166);
+cptr.stI32(cptr.add(monsdump, 2112), 132);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2112), 8), __sl167);
+cptr.stI32(cptr.add(monsdump, 2128), 133);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2128), 8), __sl168);
+cptr.stI32(cptr.add(monsdump, 2144), 134);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2144), 8), __sl169);
+cptr.stI32(cptr.add(monsdump, 2160), 135);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2160), 8), __sl170);
+cptr.stI32(cptr.add(monsdump, 2176), 136);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2176), 8), __sl171);
+cptr.stI32(cptr.add(monsdump, 2192), 137);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2192), 8), __sl172);
+cptr.stI32(cptr.add(monsdump, 2208), 138);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2208), 8), __sl173);
+cptr.stI32(cptr.add(monsdump, 2224), 139);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2224), 8), __sl174);
+cptr.stI32(cptr.add(monsdump, 2240), 140);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2240), 8), __sl175);
+cptr.stI32(cptr.add(monsdump, 2256), 141);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2256), 8), __sl176);
+cptr.stI32(cptr.add(monsdump, 2272), 142);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2272), 8), __sl177);
+cptr.stI32(cptr.add(monsdump, 2288), 143);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2288), 8), __sl178);
+cptr.stI32(cptr.add(monsdump, 2304), 144);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2304), 8), __sl179);
+cptr.stI32(cptr.add(monsdump, 2320), 145);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2320), 8), __sl180);
+cptr.stI32(cptr.add(monsdump, 2336), 146);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2336), 8), __sl181);
+cptr.stI32(cptr.add(monsdump, 2352), 147);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2352), 8), __sl182);
+cptr.stI32(cptr.add(monsdump, 2368), 148);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2368), 8), __sl183);
+cptr.stI32(cptr.add(monsdump, 2384), 149);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2384), 8), __sl184);
+cptr.stI32(cptr.add(monsdump, 2400), 150);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2400), 8), __sl185);
+cptr.stI32(cptr.add(monsdump, 2416), 151);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2416), 8), __sl186);
+cptr.stI32(cptr.add(monsdump, 2432), 152);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2432), 8), __sl187);
+cptr.stI32(cptr.add(monsdump, 2448), 153);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2448), 8), __sl188);
+cptr.stI32(cptr.add(monsdump, 2464), 154);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2464), 8), __sl189);
+cptr.stI32(cptr.add(monsdump, 2480), 155);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2480), 8), __sl190);
+cptr.stI32(cptr.add(monsdump, 2496), 156);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2496), 8), __sl191);
+cptr.stI32(cptr.add(monsdump, 2512), 157);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2512), 8), __sl192);
+cptr.stI32(cptr.add(monsdump, 2528), 158);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2528), 8), __sl193);
+cptr.stI32(cptr.add(monsdump, 2544), 159);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2544), 8), __sl194);
+cptr.stI32(cptr.add(monsdump, 2560), 160);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2560), 8), __sl195);
+cptr.stI32(cptr.add(monsdump, 2576), 161);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2576), 8), __sl196);
+cptr.stI32(cptr.add(monsdump, 2592), 162);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2592), 8), __sl197);
+cptr.stI32(cptr.add(monsdump, 2608), 163);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2608), 8), __sl198);
+cptr.stI32(cptr.add(monsdump, 2624), 164);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2624), 8), __sl199);
+cptr.stI32(cptr.add(monsdump, 2640), 165);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2640), 8), __sl200);
+cptr.stI32(cptr.add(monsdump, 2656), 166);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2656), 8), __sl201);
+cptr.stI32(cptr.add(monsdump, 2672), 167);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2672), 8), __sl202);
+cptr.stI32(cptr.add(monsdump, 2688), 168);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2688), 8), __sl203);
+cptr.stI32(cptr.add(monsdump, 2704), 169);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2704), 8), __sl204);
+cptr.stI32(cptr.add(monsdump, 2720), 170);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2720), 8), __sl205);
+cptr.stI32(cptr.add(monsdump, 2736), 171);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2736), 8), __sl206);
+cptr.stI32(cptr.add(monsdump, 2752), 172);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2752), 8), __sl207);
+cptr.stI32(cptr.add(monsdump, 2768), 173);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2768), 8), __sl208);
+cptr.stI32(cptr.add(monsdump, 2784), 174);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2784), 8), __sl209);
+cptr.stI32(cptr.add(monsdump, 2800), 175);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2800), 8), __sl210);
+cptr.stI32(cptr.add(monsdump, 2816), 176);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2816), 8), __sl211);
+cptr.stI32(cptr.add(monsdump, 2832), 177);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2832), 8), __sl212);
+cptr.stI32(cptr.add(monsdump, 2848), 178);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2848), 8), __sl213);
+cptr.stI32(cptr.add(monsdump, 2864), 179);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2864), 8), __sl214);
+cptr.stI32(cptr.add(monsdump, 2880), 180);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2880), 8), __sl215);
+cptr.stI32(cptr.add(monsdump, 2896), 181);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2896), 8), __sl216);
+cptr.stI32(cptr.add(monsdump, 2912), 182);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2912), 8), __sl217);
+cptr.stI32(cptr.add(monsdump, 2928), 183);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2928), 8), __sl218);
+cptr.stI32(cptr.add(monsdump, 2944), 184);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2944), 8), __sl219);
+cptr.stI32(cptr.add(monsdump, 2960), 185);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2960), 8), __sl220);
+cptr.stI32(cptr.add(monsdump, 2976), 186);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2976), 8), __sl221);
+cptr.stI32(cptr.add(monsdump, 2992), 187);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 2992), 8), __sl222);
+cptr.stI32(cptr.add(monsdump, 3008), 188);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3008), 8), __sl223);
+cptr.stI32(cptr.add(monsdump, 3024), 189);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3024), 8), __sl224);
+cptr.stI32(cptr.add(monsdump, 3040), 190);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3040), 8), __sl225);
+cptr.stI32(cptr.add(monsdump, 3056), 191);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3056), 8), __sl226);
+cptr.stI32(cptr.add(monsdump, 3072), 192);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3072), 8), __sl227);
+cptr.stI32(cptr.add(monsdump, 3088), 193);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3088), 8), __sl228);
+cptr.stI32(cptr.add(monsdump, 3104), 194);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3104), 8), __sl229);
+cptr.stI32(cptr.add(monsdump, 3120), 195);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3120), 8), __sl230);
+cptr.stI32(cptr.add(monsdump, 3136), 196);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3136), 8), __sl231);
+cptr.stI32(cptr.add(monsdump, 3152), 197);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3152), 8), __sl232);
+cptr.stI32(cptr.add(monsdump, 3168), 198);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3168), 8), __sl233);
+cptr.stI32(cptr.add(monsdump, 3184), 199);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3184), 8), __sl234);
+cptr.stI32(cptr.add(monsdump, 3200), 200);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3200), 8), __sl235);
+cptr.stI32(cptr.add(monsdump, 3216), 201);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3216), 8), __sl236);
+cptr.stI32(cptr.add(monsdump, 3232), 202);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3232), 8), __sl237);
+cptr.stI32(cptr.add(monsdump, 3248), 203);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3248), 8), __sl238);
+cptr.stI32(cptr.add(monsdump, 3264), 204);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3264), 8), __sl239);
+cptr.stI32(cptr.add(monsdump, 3280), 205);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3280), 8), __sl240);
+cptr.stI32(cptr.add(monsdump, 3296), 206);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3296), 8), __sl241);
+cptr.stI32(cptr.add(monsdump, 3312), 207);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3312), 8), __sl242);
+cptr.stI32(cptr.add(monsdump, 3328), 208);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3328), 8), __sl243);
+cptr.stI32(cptr.add(monsdump, 3344), 209);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3344), 8), __sl244);
+cptr.stI32(cptr.add(monsdump, 3360), 210);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3360), 8), __sl245);
+cptr.stI32(cptr.add(monsdump, 3376), 211);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3376), 8), __sl246);
+cptr.stI32(cptr.add(monsdump, 3392), 212);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3392), 8), __sl247);
+cptr.stI32(cptr.add(monsdump, 3408), 213);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3408), 8), __sl248);
+cptr.stI32(cptr.add(monsdump, 3424), 214);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3424), 8), __sl249);
+cptr.stI32(cptr.add(monsdump, 3440), 215);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3440), 8), __sl250);
+cptr.stI32(cptr.add(monsdump, 3456), 216);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3456), 8), __sl251);
+cptr.stI32(cptr.add(monsdump, 3472), 217);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3472), 8), __sl252);
+cptr.stI32(cptr.add(monsdump, 3488), 218);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3488), 8), __sl253);
+cptr.stI32(cptr.add(monsdump, 3504), 219);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3504), 8), __sl254);
+cptr.stI32(cptr.add(monsdump, 3520), 220);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3520), 8), __sl255);
+cptr.stI32(cptr.add(monsdump, 3536), 221);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3536), 8), __sl256);
+cptr.stI32(cptr.add(monsdump, 3552), 222);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3552), 8), __sl257);
+cptr.stI32(cptr.add(monsdump, 3568), 223);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3568), 8), __sl258);
+cptr.stI32(cptr.add(monsdump, 3584), 224);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3584), 8), __sl259);
+cptr.stI32(cptr.add(monsdump, 3600), 225);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3600), 8), __sl260);
+cptr.stI32(cptr.add(monsdump, 3616), 226);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3616), 8), __sl261);
+cptr.stI32(cptr.add(monsdump, 3632), 227);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3632), 8), __sl262);
+cptr.stI32(cptr.add(monsdump, 3648), 228);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3648), 8), __sl263);
+cptr.stI32(cptr.add(monsdump, 3664), 229);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3664), 8), __sl264);
+cptr.stI32(cptr.add(monsdump, 3680), 230);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3680), 8), __sl265);
+cptr.stI32(cptr.add(monsdump, 3696), 231);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3696), 8), __sl266);
+cptr.stI32(cptr.add(monsdump, 3712), 232);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3712), 8), __sl267);
+cptr.stI32(cptr.add(monsdump, 3728), 233);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3728), 8), __sl268);
+cptr.stI32(cptr.add(monsdump, 3744), 234);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3744), 8), __sl269);
+cptr.stI32(cptr.add(monsdump, 3760), 235);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3760), 8), __sl270);
+cptr.stI32(cptr.add(monsdump, 3776), 236);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3776), 8), __sl271);
+cptr.stI32(cptr.add(monsdump, 3792), 237);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3792), 8), __sl272);
+cptr.stI32(cptr.add(monsdump, 3808), 238);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3808), 8), __sl273);
+cptr.stI32(cptr.add(monsdump, 3824), 239);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3824), 8), __sl274);
+cptr.stI32(cptr.add(monsdump, 3840), 240);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3840), 8), __sl275);
+cptr.stI32(cptr.add(monsdump, 3856), 241);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3856), 8), __sl276);
+cptr.stI32(cptr.add(monsdump, 3872), 242);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3872), 8), __sl277);
+cptr.stI32(cptr.add(monsdump, 3888), 243);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3888), 8), __sl278);
+cptr.stI32(cptr.add(monsdump, 3904), 244);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3904), 8), __sl279);
+cptr.stI32(cptr.add(monsdump, 3920), 245);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3920), 8), __sl280);
+cptr.stI32(cptr.add(monsdump, 3936), 246);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3936), 8), __sl281);
+cptr.stI32(cptr.add(monsdump, 3952), 247);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3952), 8), __sl282);
+cptr.stI32(cptr.add(monsdump, 3968), 248);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3968), 8), __sl283);
+cptr.stI32(cptr.add(monsdump, 3984), 249);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 3984), 8), __sl284);
+cptr.stI32(cptr.add(monsdump, 4000), 250);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4000), 8), __sl285);
+cptr.stI32(cptr.add(monsdump, 4016), 251);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4016), 8), __sl286);
+cptr.stI32(cptr.add(monsdump, 4032), 252);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4032), 8), __sl287);
+cptr.stI32(cptr.add(monsdump, 4048), 253);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4048), 8), __sl288);
+cptr.stI32(cptr.add(monsdump, 4064), 254);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4064), 8), __sl289);
+cptr.stI32(cptr.add(monsdump, 4080), 255);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4080), 8), __sl290);
+cptr.stI32(cptr.add(monsdump, 4096), 256);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4096), 8), __sl291);
+cptr.stI32(cptr.add(monsdump, 4112), 257);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4112), 8), __sl292);
+cptr.stI32(cptr.add(monsdump, 4128), 258);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4128), 8), __sl293);
+cptr.stI32(cptr.add(monsdump, 4144), 259);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4144), 8), __sl294);
+cptr.stI32(cptr.add(monsdump, 4160), 260);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4160), 8), __sl295);
+cptr.stI32(cptr.add(monsdump, 4176), 261);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4176), 8), __sl296);
+cptr.stI32(cptr.add(monsdump, 4192), 262);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4192), 8), __sl297);
+cptr.stI32(cptr.add(monsdump, 4208), 263);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4208), 8), __sl298);
+cptr.stI32(cptr.add(monsdump, 4224), 264);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4224), 8), __sl299);
+cptr.stI32(cptr.add(monsdump, 4240), 265);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4240), 8), __sl300);
+cptr.stI32(cptr.add(monsdump, 4256), 266);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4256), 8), __sl301);
+cptr.stI32(cptr.add(monsdump, 4272), 267);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4272), 8), __sl302);
+cptr.stI32(cptr.add(monsdump, 4288), 268);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4288), 8), __sl303);
+cptr.stI32(cptr.add(monsdump, 4304), 269);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4304), 8), __sl304);
+cptr.stI32(cptr.add(monsdump, 4320), 270);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4320), 8), __sl305);
+cptr.stI32(cptr.add(monsdump, 4336), 271);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4336), 8), __sl306);
+cptr.stI32(cptr.add(monsdump, 4352), 272);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4352), 8), __sl307);
+cptr.stI32(cptr.add(monsdump, 4368), 273);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4368), 8), __sl308);
+cptr.stI32(cptr.add(monsdump, 4384), 274);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4384), 8), __sl309);
+cptr.stI32(cptr.add(monsdump, 4400), 275);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4400), 8), __sl310);
+cptr.stI32(cptr.add(monsdump, 4416), 276);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4416), 8), __sl311);
+cptr.stI32(cptr.add(monsdump, 4432), 277);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4432), 8), __sl312);
+cptr.stI32(cptr.add(monsdump, 4448), 278);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4448), 8), __sl313);
+cptr.stI32(cptr.add(monsdump, 4464), 279);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4464), 8), __sl314);
+cptr.stI32(cptr.add(monsdump, 4480), 280);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4480), 8), __sl315);
+cptr.stI32(cptr.add(monsdump, 4496), 281);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4496), 8), __sl316);
+cptr.stI32(cptr.add(monsdump, 4512), 282);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4512), 8), __sl317);
+cptr.stI32(cptr.add(monsdump, 4528), 283);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4528), 8), __sl318);
+cptr.stI32(cptr.add(monsdump, 4544), 284);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4544), 8), __sl319);
+cptr.stI32(cptr.add(monsdump, 4560), 285);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4560), 8), __sl320);
+cptr.stI32(cptr.add(monsdump, 4576), 286);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4576), 8), __sl321);
+cptr.stI32(cptr.add(monsdump, 4592), 287);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4592), 8), __sl322);
+cptr.stI32(cptr.add(monsdump, 4608), 288);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4608), 8), __sl323);
+cptr.stI32(cptr.add(monsdump, 4624), 289);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4624), 8), __sl324);
+cptr.stI32(cptr.add(monsdump, 4640), 290);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4640), 8), __sl325);
+cptr.stI32(cptr.add(monsdump, 4656), 291);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4656), 8), __sl326);
+cptr.stI32(cptr.add(monsdump, 4672), 292);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4672), 8), __sl327);
+cptr.stI32(cptr.add(monsdump, 4688), 293);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4688), 8), __sl328);
+cptr.stI32(cptr.add(monsdump, 4704), 294);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4704), 8), __sl329);
+cptr.stI32(cptr.add(monsdump, 4720), 295);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4720), 8), __sl330);
+cptr.stI32(cptr.add(monsdump, 4736), 296);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4736), 8), __sl331);
+cptr.stI32(cptr.add(monsdump, 4752), 297);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4752), 8), __sl332);
+cptr.stI32(cptr.add(monsdump, 4768), 298);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4768), 8), __sl333);
+cptr.stI32(cptr.add(monsdump, 4784), 299);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4784), 8), __sl334);
+cptr.stI32(cptr.add(monsdump, 4800), 300);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4800), 8), __sl335);
+cptr.stI32(cptr.add(monsdump, 4816), 301);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4816), 8), __sl336);
+cptr.stI32(cptr.add(monsdump, 4832), 302);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4832), 8), __sl337);
+cptr.stI32(cptr.add(monsdump, 4848), 303);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4848), 8), __sl338);
+cptr.stI32(cptr.add(monsdump, 4864), 304);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4864), 8), __sl339);
+cptr.stI32(cptr.add(monsdump, 4880), 305);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4880), 8), __sl340);
+cptr.stI32(cptr.add(monsdump, 4896), 306);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4896), 8), __sl341);
+cptr.stI32(cptr.add(monsdump, 4912), 307);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4912), 8), __sl342);
+cptr.stI32(cptr.add(monsdump, 4928), 308);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4928), 8), __sl343);
+cptr.stI32(cptr.add(monsdump, 4944), 309);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4944), 8), __sl344);
+cptr.stI32(cptr.add(monsdump, 4960), 310);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4960), 8), __sl345);
+cptr.stI32(cptr.add(monsdump, 4976), 311);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4976), 8), __sl346);
+cptr.stI32(cptr.add(monsdump, 4992), 312);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 4992), 8), __sl347);
+cptr.stI32(cptr.add(monsdump, 5008), 313);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5008), 8), __sl348);
+cptr.stI32(cptr.add(monsdump, 5024), 314);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5024), 8), __sl349);
+cptr.stI32(cptr.add(monsdump, 5040), 315);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5040), 8), __sl350);
+cptr.stI32(cptr.add(monsdump, 5056), 316);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5056), 8), __sl351);
+cptr.stI32(cptr.add(monsdump, 5072), 317);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5072), 8), __sl352);
+cptr.stI32(cptr.add(monsdump, 5088), 318);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5088), 8), __sl353);
+cptr.stI32(cptr.add(monsdump, 5104), 319);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5104), 8), __sl354);
+cptr.stI32(cptr.add(monsdump, 5120), 320);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5120), 8), __sl355);
+cptr.stI32(cptr.add(monsdump, 5136), 321);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5136), 8), __sl356);
+cptr.stI32(cptr.add(monsdump, 5152), 322);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5152), 8), __sl357);
+cptr.stI32(cptr.add(monsdump, 5168), 323);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5168), 8), __sl358);
+cptr.stI32(cptr.add(monsdump, 5184), 324);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5184), 8), __sl359);
+cptr.stI32(cptr.add(monsdump, 5200), 325);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5200), 8), __sl360);
+cptr.stI32(cptr.add(monsdump, 5216), 326);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5216), 8), __sl361);
+cptr.stI32(cptr.add(monsdump, 5232), 327);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5232), 8), __sl362);
+cptr.stI32(cptr.add(monsdump, 5248), 328);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5248), 8), __sl363);
+cptr.stI32(cptr.add(monsdump, 5264), 329);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5264), 8), __sl364);
+cptr.stI32(cptr.add(monsdump, 5280), 330);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5280), 8), __sl365);
+cptr.stI32(cptr.add(monsdump, 5296), 331);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5296), 8), __sl366);
+cptr.stI32(cptr.add(monsdump, 5312), 332);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5312), 8), __sl367);
+cptr.stI32(cptr.add(monsdump, 5328), 333);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5328), 8), __sl368);
+cptr.stI32(cptr.add(monsdump, 5344), 334);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5344), 8), __sl369);
+cptr.stI32(cptr.add(monsdump, 5360), 335);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5360), 8), __sl370);
+cptr.stI32(cptr.add(monsdump, 5376), 336);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5376), 8), __sl371);
+cptr.stI32(cptr.add(monsdump, 5392), 337);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5392), 8), __sl372);
+cptr.stI32(cptr.add(monsdump, 5408), 338);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5408), 8), __sl373);
+cptr.stI32(cptr.add(monsdump, 5424), 339);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5424), 8), __sl374);
+cptr.stI32(cptr.add(monsdump, 5440), 340);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5440), 8), __sl375);
+cptr.stI32(cptr.add(monsdump, 5456), 341);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5456), 8), __sl376);
+cptr.stI32(cptr.add(monsdump, 5472), 342);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5472), 8), __sl377);
+cptr.stI32(cptr.add(monsdump, 5488), 343);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5488), 8), __sl378);
+cptr.stI32(cptr.add(monsdump, 5504), 344);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5504), 8), __sl379);
+cptr.stI32(cptr.add(monsdump, 5520), 345);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5520), 8), __sl380);
+cptr.stI32(cptr.add(monsdump, 5536), 346);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5536), 8), __sl381);
+cptr.stI32(cptr.add(monsdump, 5552), 347);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5552), 8), __sl382);
+cptr.stI32(cptr.add(monsdump, 5568), 348);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5568), 8), __sl383);
+cptr.stI32(cptr.add(monsdump, 5584), 349);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5584), 8), __sl384);
+cptr.stI32(cptr.add(monsdump, 5600), 350);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5600), 8), __sl385);
+cptr.stI32(cptr.add(monsdump, 5616), 351);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5616), 8), __sl386);
+cptr.stI32(cptr.add(monsdump, 5632), 352);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5632), 8), __sl387);
+cptr.stI32(cptr.add(monsdump, 5648), 353);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5648), 8), __sl388);
+cptr.stI32(cptr.add(monsdump, 5664), 354);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5664), 8), __sl389);
+cptr.stI32(cptr.add(monsdump, 5680), 355);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5680), 8), __sl390);
+cptr.stI32(cptr.add(monsdump, 5696), 356);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5696), 8), __sl391);
+cptr.stI32(cptr.add(monsdump, 5712), 357);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5712), 8), __sl392);
+cptr.stI32(cptr.add(monsdump, 5728), 358);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5728), 8), __sl393);
+cptr.stI32(cptr.add(monsdump, 5744), 359);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5744), 8), __sl394);
+cptr.stI32(cptr.add(monsdump, 5760), 360);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5760), 8), __sl395);
+cptr.stI32(cptr.add(monsdump, 5776), 361);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5776), 8), __sl396);
+cptr.stI32(cptr.add(monsdump, 5792), 362);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5792), 8), __sl397);
+cptr.stI32(cptr.add(monsdump, 5808), 363);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5808), 8), __sl398);
+cptr.stI32(cptr.add(monsdump, 5824), 364);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5824), 8), __sl399);
+cptr.stI32(cptr.add(monsdump, 5840), 365);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5840), 8), __sl400);
+cptr.stI32(cptr.add(monsdump, 5856), 366);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5856), 8), __sl401);
+cptr.stI32(cptr.add(monsdump, 5872), 367);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5872), 8), __sl402);
+cptr.stI32(cptr.add(monsdump, 5888), 368);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5888), 8), __sl403);
+cptr.stI32(cptr.add(monsdump, 5904), 369);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5904), 8), __sl404);
+cptr.stI32(cptr.add(monsdump, 5920), 370);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5920), 8), __sl405);
+cptr.stI32(cptr.add(monsdump, 5936), 371);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5936), 8), __sl406);
+cptr.stI32(cptr.add(monsdump, 5952), 372);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5952), 8), __sl407);
+cptr.stI32(cptr.add(monsdump, 5968), 373);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5968), 8), __sl408);
+cptr.stI32(cptr.add(monsdump, 5984), 374);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 5984), 8), __sl409);
+cptr.stI32(cptr.add(monsdump, 6000), 375);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6000), 8), __sl410);
+cptr.stI32(cptr.add(monsdump, 6016), 376);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6016), 8), __sl411);
+cptr.stI32(cptr.add(monsdump, 6032), 377);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6032), 8), __sl412);
+cptr.stI32(cptr.add(monsdump, 6048), 378);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6048), 8), __sl413);
+cptr.stI32(cptr.add(monsdump, 6064), 379);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6064), 8), __sl414);
+cptr.stI32(cptr.add(monsdump, 6080), 380);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6080), 8), __sl415);
+cptr.stI32(cptr.add(monsdump, 6096), 381);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6096), 8), __sl416);
+cptr.stI32(cptr.add(monsdump, 6112), 382);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6112), 8), __sl417);
+cptr.stI32(cptr.add(monsdump, 6128), 383);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6128), 8), __sl418);
+cptr.stI32(cptr.add(monsdump, 6144), -1);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6144), 8), __sl419);
+cptr.stI32(cptr.add(monsdump, 6160), 0);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6160), 8), __sl420);
+cptr.stI32(cptr.add(monsdump, 6176), 382);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6176), 8), __sl421);
+cptr.stI32(cptr.add(monsdump, 6192), 330);
+cptr.stPtr(cptr.add(cptr.add(monsdump, 6192), 8), __sl422);
 
 /** C ref: earlyarg.c:636 — struct enum_dump[482] */
-const objdump = [
-    { val: STRANGE_OBJECT, nm: __sl424 },
-    { val: GENERIC_ILLOBJ, nm: __sl425 },
-    { val: GENERIC_WEAPON, nm: __sl426 },
-    { val: GENERIC_ARMOR, nm: __sl427 },
-    { val: GENERIC_RING, nm: __sl428 },
-    { val: GENERIC_AMULET, nm: __sl429 },
-    { val: GENERIC_TOOL, nm: __sl430 },
-    { val: GENERIC_FOOD, nm: __sl431 },
-    { val: GENERIC_POTION, nm: __sl432 },
-    { val: GENERIC_SCROLL, nm: __sl433 },
-    { val: GENERIC_SPBOOK, nm: __sl434 },
-    { val: GENERIC_WAND, nm: __sl435 },
-    { val: GENERIC_COIN, nm: __sl436 },
-    { val: GENERIC_GEM, nm: __sl437 },
-    { val: GENERIC_ROCK, nm: __sl438 },
-    { val: GENERIC_BALL, nm: __sl439 },
-    { val: GENERIC_CHAIN, nm: __sl440 },
-    { val: GENERIC_VENOM, nm: __sl441 },
-    { val: ARROW, nm: __sl442 },
-    { val: ELVEN_ARROW, nm: __sl443 },
-    { val: ORCISH_ARROW, nm: __sl444 },
-    { val: SILVER_ARROW, nm: __sl445 },
-    { val: YA, nm: __sl446 },
-    { val: CROSSBOW_BOLT, nm: __sl447 },
-    { val: DART, nm: __sl448 },
-    { val: SHURIKEN, nm: __sl449 },
-    { val: BOOMERANG, nm: __sl450 },
-    { val: SPEAR, nm: __sl451 },
-    { val: ELVEN_SPEAR, nm: __sl452 },
-    { val: ORCISH_SPEAR, nm: __sl453 },
-    { val: DWARVISH_SPEAR, nm: __sl454 },
-    { val: SILVER_SPEAR, nm: __sl455 },
-    { val: JAVELIN, nm: __sl456 },
-    { val: TRIDENT, nm: __sl457 },
-    { val: DAGGER, nm: __sl458 },
-    { val: ELVEN_DAGGER, nm: __sl459 },
-    { val: ORCISH_DAGGER, nm: __sl460 },
-    { val: SILVER_DAGGER, nm: __sl461 },
-    { val: ATHAME, nm: __sl462 },
-    { val: SCALPEL, nm: __sl463 },
-    { val: KNIFE, nm: __sl464 },
-    { val: STILETTO, nm: __sl465 },
-    { val: WORM_TOOTH, nm: __sl466 },
-    { val: CRYSKNIFE, nm: __sl467 },
-    { val: AXE, nm: __sl468 },
-    { val: BATTLE_AXE, nm: __sl469 },
-    { val: SHORT_SWORD, nm: __sl470 },
-    { val: ELVEN_SHORT_SWORD, nm: __sl471 },
-    { val: ORCISH_SHORT_SWORD, nm: __sl472 },
-    { val: DWARVISH_SHORT_SWORD, nm: __sl473 },
-    { val: SCIMITAR, nm: __sl474 },
-    { val: SILVER_SABER, nm: __sl475 },
-    { val: BROADSWORD, nm: __sl476 },
-    { val: ELVEN_BROADSWORD, nm: __sl477 },
-    { val: LONG_SWORD, nm: __sl478 },
-    { val: TWO_HANDED_SWORD, nm: __sl479 },
-    { val: KATANA, nm: __sl480 },
-    { val: TSURUGI, nm: __sl481 },
-    { val: RUNESWORD, nm: __sl482 },
-    { val: PARTISAN, nm: __sl483 },
-    { val: RANSEUR, nm: __sl484 },
-    { val: SPETUM, nm: __sl485 },
-    { val: GLAIVE, nm: __sl486 },
-    { val: HALBERD, nm: __sl487 },
-    { val: BARDICHE, nm: __sl488 },
-    { val: VOULGE, nm: __sl489 },
-    { val: FAUCHARD, nm: __sl490 },
-    { val: GUISARME, nm: __sl491 },
-    { val: BILL_GUISARME, nm: __sl492 },
-    { val: LUCERN_HAMMER, nm: __sl493 },
-    { val: BEC_DE_CORBIN, nm: __sl494 },
-    { val: DWARVISH_MATTOCK, nm: __sl495 },
-    { val: LANCE, nm: __sl496 },
-    { val: MACE, nm: __sl497 },
-    { val: SILVER_MACE, nm: __sl498 },
-    { val: MORNING_STAR, nm: __sl499 },
-    { val: WAR_HAMMER, nm: __sl500 },
-    { val: CLUB, nm: __sl501 },
-    { val: RUBBER_HOSE, nm: __sl502 },
-    { val: QUARTERSTAFF, nm: __sl503 },
-    { val: AKLYS, nm: __sl504 },
-    { val: FLAIL, nm: __sl505 },
-    { val: BULLWHIP, nm: __sl506 },
-    { val: BOW, nm: __sl507 },
-    { val: ELVEN_BOW, nm: __sl508 },
-    { val: ORCISH_BOW, nm: __sl509 },
-    { val: YUMI, nm: __sl510 },
-    { val: SLING, nm: __sl511 },
-    { val: CROSSBOW, nm: __sl512 },
-    { val: ELVEN_LEATHER_HELM, nm: __sl513 },
-    { val: ORCISH_HELM, nm: __sl514 },
-    { val: DWARVISH_IRON_HELM, nm: __sl515 },
-    { val: FEDORA, nm: __sl516 },
-    { val: CORNUTHAUM, nm: __sl517 },
-    { val: DUNCE_CAP, nm: __sl518 },
-    { val: DENTED_POT, nm: __sl519 },
-    { val: HELM_OF_BRILLIANCE, nm: __sl520 },
-    { val: HELMET, nm: __sl521 },
-    { val: HELM_OF_CAUTION, nm: __sl522 },
-    { val: HELM_OF_OPPOSITE_ALIGNMENT, nm: __sl523 },
-    { val: HELM_OF_TELEPATHY, nm: __sl524 },
-    { val: GRAY_DRAGON_SCALE_MAIL, nm: __sl525 },
-    { val: GOLD_DRAGON_SCALE_MAIL, nm: __sl526 },
-    { val: SILVER_DRAGON_SCALE_MAIL, nm: __sl527 },
-    { val: RED_DRAGON_SCALE_MAIL, nm: __sl528 },
-    { val: WHITE_DRAGON_SCALE_MAIL, nm: __sl529 },
-    { val: ORANGE_DRAGON_SCALE_MAIL, nm: __sl530 },
-    { val: BLACK_DRAGON_SCALE_MAIL, nm: __sl531 },
-    { val: BLUE_DRAGON_SCALE_MAIL, nm: __sl532 },
-    { val: GREEN_DRAGON_SCALE_MAIL, nm: __sl533 },
-    { val: YELLOW_DRAGON_SCALE_MAIL, nm: __sl534 },
-    { val: GRAY_DRAGON_SCALES, nm: __sl535 },
-    { val: GOLD_DRAGON_SCALES, nm: __sl536 },
-    { val: SILVER_DRAGON_SCALES, nm: __sl537 },
-    { val: RED_DRAGON_SCALES, nm: __sl538 },
-    { val: WHITE_DRAGON_SCALES, nm: __sl539 },
-    { val: ORANGE_DRAGON_SCALES, nm: __sl540 },
-    { val: BLACK_DRAGON_SCALES, nm: __sl541 },
-    { val: BLUE_DRAGON_SCALES, nm: __sl542 },
-    { val: GREEN_DRAGON_SCALES, nm: __sl543 },
-    { val: YELLOW_DRAGON_SCALES, nm: __sl544 },
-    { val: PLATE_MAIL, nm: __sl545 },
-    { val: CRYSTAL_PLATE_MAIL, nm: __sl546 },
-    { val: BRONZE_PLATE_MAIL, nm: __sl547 },
-    { val: SPLINT_MAIL, nm: __sl548 },
-    { val: BANDED_MAIL, nm: __sl549 },
-    { val: DWARVISH_MITHRIL_COAT, nm: __sl550 },
-    { val: ELVEN_MITHRIL_COAT, nm: __sl551 },
-    { val: CHAIN_MAIL, nm: __sl552 },
-    { val: ORCISH_CHAIN_MAIL, nm: __sl553 },
-    { val: SCALE_MAIL, nm: __sl554 },
-    { val: STUDDED_LEATHER_ARMOR, nm: __sl555 },
-    { val: RING_MAIL, nm: __sl556 },
-    { val: ORCISH_RING_MAIL, nm: __sl557 },
-    { val: LEATHER_ARMOR, nm: __sl558 },
-    { val: LEATHER_JACKET, nm: __sl559 },
-    { val: HAWAIIAN_SHIRT, nm: __sl560 },
-    { val: T_SHIRT, nm: __sl561 },
-    { val: MUMMY_WRAPPING, nm: __sl562 },
-    { val: ELVEN_CLOAK, nm: __sl563 },
-    { val: ORCISH_CLOAK, nm: __sl564 },
-    { val: DWARVISH_CLOAK, nm: __sl565 },
-    { val: OILSKIN_CLOAK, nm: __sl566 },
-    { val: ROBE, nm: __sl567 },
-    { val: ALCHEMY_SMOCK, nm: __sl568 },
-    { val: LEATHER_CLOAK, nm: __sl569 },
-    { val: CLOAK_OF_PROTECTION, nm: __sl570 },
-    { val: CLOAK_OF_INVISIBILITY, nm: __sl571 },
-    { val: CLOAK_OF_MAGIC_RESISTANCE, nm: __sl572 },
-    { val: CLOAK_OF_DISPLACEMENT, nm: __sl573 },
-    { val: SMALL_SHIELD, nm: __sl574 },
-    { val: SHIELD_OF_DRAIN_RESISTANCE, nm: __sl575 },
-    { val: SHIELD_OF_SHOCK_RESISTANCE, nm: __sl576 },
-    { val: ELVEN_SHIELD, nm: __sl577 },
-    { val: URUK_HAI_SHIELD, nm: __sl578 },
-    { val: ORCISH_SHIELD, nm: __sl579 },
-    { val: LARGE_SHIELD, nm: __sl580 },
-    { val: DWARVISH_ROUNDSHIELD, nm: __sl581 },
-    { val: SHIELD_OF_REFLECTION, nm: __sl582 },
-    { val: LEATHER_GLOVES, nm: __sl583 },
-    { val: GAUNTLETS_OF_FUMBLING, nm: __sl584 },
-    { val: GAUNTLETS_OF_POWER, nm: __sl585 },
-    { val: GAUNTLETS_OF_DEXTERITY, nm: __sl586 },
-    { val: LOW_BOOTS, nm: __sl587 },
-    { val: IRON_SHOES, nm: __sl588 },
-    { val: HIGH_BOOTS, nm: __sl589 },
-    { val: SPEED_BOOTS, nm: __sl590 },
-    { val: WATER_WALKING_BOOTS, nm: __sl591 },
-    { val: JUMPING_BOOTS, nm: __sl592 },
-    { val: ELVEN_BOOTS, nm: __sl593 },
-    { val: KICKING_BOOTS, nm: __sl594 },
-    { val: FUMBLE_BOOTS, nm: __sl595 },
-    { val: LEVITATION_BOOTS, nm: __sl596 },
-    { val: RIN_ADORNMENT, nm: __sl597 },
-    { val: RIN_GAIN_STRENGTH, nm: __sl598 },
-    { val: RIN_GAIN_CONSTITUTION, nm: __sl599 },
-    { val: RIN_INCREASE_ACCURACY, nm: __sl600 },
-    { val: RIN_INCREASE_DAMAGE, nm: __sl601 },
-    { val: RIN_PROTECTION, nm: __sl602 },
-    { val: RIN_REGENERATION, nm: __sl603 },
-    { val: RIN_SEARCHING, nm: __sl604 },
-    { val: RIN_STEALTH, nm: __sl605 },
-    { val: RIN_SUSTAIN_ABILITY, nm: __sl606 },
-    { val: RIN_LEVITATION, nm: __sl607 },
-    { val: RIN_HUNGER, nm: __sl608 },
-    { val: RIN_AGGRAVATE_MONSTER, nm: __sl609 },
-    { val: RIN_CONFLICT, nm: __sl610 },
-    { val: RIN_WARNING, nm: __sl611 },
-    { val: RIN_POISON_RESISTANCE, nm: __sl612 },
-    { val: RIN_FIRE_RESISTANCE, nm: __sl613 },
-    { val: RIN_COLD_RESISTANCE, nm: __sl614 },
-    { val: RIN_SHOCK_RESISTANCE, nm: __sl615 },
-    { val: RIN_FREE_ACTION, nm: __sl616 },
-    { val: RIN_SLOW_DIGESTION, nm: __sl617 },
-    { val: RIN_TELEPORTATION, nm: __sl618 },
-    { val: RIN_TELEPORT_CONTROL, nm: __sl619 },
-    { val: RIN_POLYMORPH, nm: __sl620 },
-    { val: RIN_POLYMORPH_CONTROL, nm: __sl621 },
-    { val: RIN_INVISIBILITY, nm: __sl622 },
-    { val: RIN_SEE_INVISIBLE, nm: __sl623 },
-    { val: RIN_PROTECTION_FROM_SHAPE_CHAN, nm: __sl624 },
-    { val: AMULET_OF_ESP, nm: __sl625 },
-    { val: AMULET_OF_LIFE_SAVING, nm: __sl626 },
-    { val: AMULET_OF_STRANGULATION, nm: __sl627 },
-    { val: AMULET_OF_RESTFUL_SLEEP, nm: __sl628 },
-    { val: AMULET_VERSUS_POISON, nm: __sl629 },
-    { val: AMULET_OF_CHANGE, nm: __sl630 },
-    { val: AMULET_OF_UNCHANGING, nm: __sl631 },
-    { val: AMULET_OF_REFLECTION, nm: __sl632 },
-    { val: AMULET_OF_MAGICAL_BREATHING, nm: __sl633 },
-    { val: AMULET_OF_GUARDING, nm: __sl634 },
-    { val: AMULET_OF_FLYING, nm: __sl635 },
-    { val: FAKE_AMULET_OF_YENDOR, nm: __sl636 },
-    { val: AMULET_OF_YENDOR, nm: __sl637 },
-    { val: LARGE_BOX, nm: __sl638 },
-    { val: CHEST, nm: __sl639 },
-    { val: ICE_BOX, nm: __sl640 },
-    { val: SACK, nm: __sl641 },
-    { val: OILSKIN_SACK, nm: __sl642 },
-    { val: BAG_OF_HOLDING, nm: __sl643 },
-    { val: BAG_OF_TRICKS, nm: __sl644 },
-    { val: SKELETON_KEY, nm: __sl645 },
-    { val: LOCK_PICK, nm: __sl646 },
-    { val: CREDIT_CARD, nm: __sl647 },
-    { val: TALLOW_CANDLE, nm: __sl648 },
-    { val: WAX_CANDLE, nm: __sl649 },
-    { val: BRASS_LANTERN, nm: __sl650 },
-    { val: OIL_LAMP, nm: __sl651 },
-    { val: MAGIC_LAMP, nm: __sl652 },
-    { val: EXPENSIVE_CAMERA, nm: __sl653 },
-    { val: MIRROR, nm: __sl654 },
-    { val: CRYSTAL_BALL, nm: __sl655 },
-    { val: LENSES, nm: __sl656 },
-    { val: BLINDFOLD, nm: __sl657 },
-    { val: TOWEL, nm: __sl658 },
-    { val: SADDLE, nm: __sl659 },
-    { val: LEASH, nm: __sl660 },
-    { val: STETHOSCOPE, nm: __sl661 },
-    { val: TINNING_KIT, nm: __sl662 },
-    { val: TIN_OPENER, nm: __sl663 },
-    { val: CAN_OF_GREASE, nm: __sl664 },
-    { val: FIGURINE, nm: __sl665 },
-    { val: MAGIC_MARKER, nm: __sl666 },
-    { val: LAND_MINE, nm: __sl667 },
-    { val: BEARTRAP, nm: __sl668 },
-    { val: TIN_WHISTLE, nm: __sl669 },
-    { val: MAGIC_WHISTLE, nm: __sl670 },
-    { val: WOODEN_FLUTE, nm: __sl671 },
-    { val: MAGIC_FLUTE, nm: __sl672 },
-    { val: TOOLED_HORN, nm: __sl673 },
-    { val: FROST_HORN, nm: __sl674 },
-    { val: FIRE_HORN, nm: __sl675 },
-    { val: HORN_OF_PLENTY, nm: __sl676 },
-    { val: WOODEN_HARP, nm: __sl677 },
-    { val: MAGIC_HARP, nm: __sl678 },
-    { val: BELL, nm: __sl679 },
-    { val: BUGLE, nm: __sl680 },
-    { val: LEATHER_DRUM, nm: __sl681 },
-    { val: DRUM_OF_EARTHQUAKE, nm: __sl682 },
-    { val: PICK_AXE, nm: __sl683 },
-    { val: GRAPPLING_HOOK, nm: __sl684 },
-    { val: UNICORN_HORN, nm: __sl685 },
-    { val: CANDELABRUM_OF_INVOCATION, nm: __sl686 },
-    { val: BELL_OF_OPENING, nm: __sl687 },
-    { val: TRIPE_RATION, nm: __sl688 },
-    { val: CORPSE, nm: __sl689 },
-    { val: EGG, nm: __sl690 },
-    { val: MEATBALL, nm: __sl691 },
-    { val: MEAT_STICK, nm: __sl692 },
-    { val: ENORMOUS_MEATBALL, nm: __sl693 },
-    { val: MEAT_RING, nm: __sl694 },
-    { val: GLOB_OF_GRAY_OOZE, nm: __sl695 },
-    { val: GLOB_OF_BROWN_PUDDING, nm: __sl696 },
-    { val: GLOB_OF_GREEN_SLIME, nm: __sl697 },
-    { val: GLOB_OF_BLACK_PUDDING, nm: __sl698 },
-    { val: KELP_FROND, nm: __sl699 },
-    { val: EUCALYPTUS_LEAF, nm: __sl700 },
-    { val: APPLE, nm: __sl701 },
-    { val: ORANGE, nm: __sl702 },
-    { val: PEAR, nm: __sl703 },
-    { val: MELON, nm: __sl704 },
-    { val: BANANA, nm: __sl705 },
-    { val: CARROT, nm: __sl706 },
-    { val: SPRIG_OF_WOLFSBANE, nm: __sl707 },
-    { val: CLOVE_OF_GARLIC, nm: __sl708 },
-    { val: SLIME_MOLD, nm: __sl709 },
-    { val: LUMP_OF_ROYAL_JELLY, nm: __sl710 },
-    { val: CREAM_PIE, nm: __sl711 },
-    { val: CANDY_BAR, nm: __sl712 },
-    { val: FORTUNE_COOKIE, nm: __sl713 },
-    { val: PANCAKE, nm: __sl714 },
-    { val: LEMBAS_WAFER, nm: __sl715 },
-    { val: CRAM_RATION, nm: __sl716 },
-    { val: FOOD_RATION, nm: __sl717 },
-    { val: K_RATION, nm: __sl718 },
-    { val: C_RATION, nm: __sl719 },
-    { val: TIN, nm: __sl720 },
-    { val: POT_GAIN_ABILITY, nm: __sl721 },
-    { val: POT_RESTORE_ABILITY, nm: __sl722 },
-    { val: POT_CONFUSION, nm: __sl723 },
-    { val: POT_BLINDNESS, nm: __sl724 },
-    { val: POT_PARALYSIS, nm: __sl725 },
-    { val: POT_SPEED, nm: __sl726 },
-    { val: POT_LEVITATION, nm: __sl727 },
-    { val: POT_HALLUCINATION, nm: __sl728 },
-    { val: POT_INVISIBILITY, nm: __sl729 },
-    { val: POT_SEE_INVISIBLE, nm: __sl730 },
-    { val: POT_HEALING, nm: __sl731 },
-    { val: POT_EXTRA_HEALING, nm: __sl732 },
-    { val: POT_GAIN_LEVEL, nm: __sl733 },
-    { val: POT_ENLIGHTENMENT, nm: __sl734 },
-    { val: POT_MONSTER_DETECTION, nm: __sl735 },
-    { val: POT_OBJECT_DETECTION, nm: __sl736 },
-    { val: POT_GAIN_ENERGY, nm: __sl737 },
-    { val: POT_SLEEPING, nm: __sl738 },
-    { val: POT_FULL_HEALING, nm: __sl739 },
-    { val: POT_POLYMORPH, nm: __sl740 },
-    { val: POT_BOOZE, nm: __sl741 },
-    { val: POT_SICKNESS, nm: __sl742 },
-    { val: POT_FRUIT_JUICE, nm: __sl743 },
-    { val: POT_ACID, nm: __sl744 },
-    { val: POT_OIL, nm: __sl745 },
-    { val: POT_WATER, nm: __sl746 },
-    { val: SCR_ENCHANT_ARMOR, nm: __sl747 },
-    { val: SCR_DESTROY_ARMOR, nm: __sl748 },
-    { val: SCR_CONFUSE_MONSTER, nm: __sl749 },
-    { val: SCR_SCARE_MONSTER, nm: __sl750 },
-    { val: SCR_REMOVE_CURSE, nm: __sl751 },
-    { val: SCR_ENCHANT_WEAPON, nm: __sl752 },
-    { val: SCR_CREATE_MONSTER, nm: __sl753 },
-    { val: SCR_TAMING, nm: __sl754 },
-    { val: SCR_GENOCIDE, nm: __sl755 },
-    { val: SCR_LIGHT, nm: __sl756 },
-    { val: SCR_TELEPORTATION, nm: __sl757 },
-    { val: SCR_GOLD_DETECTION, nm: __sl758 },
-    { val: SCR_FOOD_DETECTION, nm: __sl759 },
-    { val: SCR_IDENTIFY, nm: __sl760 },
-    { val: SCR_MAGIC_MAPPING, nm: __sl761 },
-    { val: SCR_AMNESIA, nm: __sl762 },
-    { val: SCR_FIRE, nm: __sl763 },
-    { val: SCR_EARTH, nm: __sl764 },
-    { val: SCR_PUNISHMENT, nm: __sl765 },
-    { val: SCR_CHARGING, nm: __sl766 },
-    { val: SCR_STINKING_CLOUD, nm: __sl767 },
-    { val: SC01, nm: __sl768 },
-    { val: SC02, nm: __sl769 },
-    { val: SC03, nm: __sl770 },
-    { val: SC04, nm: __sl771 },
-    { val: SC05, nm: __sl772 },
-    { val: SC06, nm: __sl773 },
-    { val: SC07, nm: __sl774 },
-    { val: SC08, nm: __sl775 },
-    { val: SC09, nm: __sl776 },
-    { val: SC10, nm: __sl777 },
-    { val: SC11, nm: __sl778 },
-    { val: SC12, nm: __sl779 },
-    { val: SC13, nm: __sl780 },
-    { val: SC14, nm: __sl781 },
-    { val: SC15, nm: __sl782 },
-    { val: SC16, nm: __sl783 },
-    { val: SC17, nm: __sl784 },
-    { val: SC18, nm: __sl785 },
-    { val: SC19, nm: __sl786 },
-    { val: SC20, nm: __sl787 },
-    { val: SCR_MAIL, nm: __sl788 },
-    { val: SCR_BLANK_PAPER, nm: __sl789 },
-    { val: SPE_DIG, nm: __sl790 },
-    { val: SPE_MAGIC_MISSILE, nm: __sl791 },
-    { val: SPE_FIREBALL, nm: __sl792 },
-    { val: SPE_CONE_OF_COLD, nm: __sl793 },
-    { val: SPE_SLEEP, nm: __sl794 },
-    { val: SPE_FINGER_OF_DEATH, nm: __sl795 },
-    { val: SPE_LIGHT, nm: __sl796 },
-    { val: SPE_DETECT_MONSTERS, nm: __sl797 },
-    { val: SPE_HEALING, nm: __sl798 },
-    { val: SPE_KNOCK, nm: __sl799 },
-    { val: SPE_FORCE_BOLT, nm: __sl800 },
-    { val: SPE_CONFUSE_MONSTER, nm: __sl801 },
-    { val: SPE_CURE_BLINDNESS, nm: __sl802 },
-    { val: SPE_DRAIN_LIFE, nm: __sl803 },
-    { val: SPE_SLOW_MONSTER, nm: __sl804 },
-    { val: SPE_WIZARD_LOCK, nm: __sl805 },
-    { val: SPE_CREATE_MONSTER, nm: __sl806 },
-    { val: SPE_DETECT_FOOD, nm: __sl807 },
-    { val: SPE_CAUSE_FEAR, nm: __sl808 },
-    { val: SPE_CLAIRVOYANCE, nm: __sl809 },
-    { val: SPE_CURE_SICKNESS, nm: __sl810 },
-    { val: SPE_CHARM_MONSTER, nm: __sl811 },
-    { val: SPE_HASTE_SELF, nm: __sl812 },
-    { val: SPE_DETECT_UNSEEN, nm: __sl813 },
-    { val: SPE_LEVITATION, nm: __sl814 },
-    { val: SPE_EXTRA_HEALING, nm: __sl815 },
-    { val: SPE_RESTORE_ABILITY, nm: __sl816 },
-    { val: SPE_INVISIBILITY, nm: __sl817 },
-    { val: SPE_DETECT_TREASURE, nm: __sl818 },
-    { val: SPE_REMOVE_CURSE, nm: __sl819 },
-    { val: SPE_MAGIC_MAPPING, nm: __sl820 },
-    { val: SPE_IDENTIFY, nm: __sl821 },
-    { val: SPE_TURN_UNDEAD, nm: __sl822 },
-    { val: SPE_POLYMORPH, nm: __sl823 },
-    { val: SPE_TELEPORT_AWAY, nm: __sl824 },
-    { val: SPE_CREATE_FAMILIAR, nm: __sl825 },
-    { val: SPE_CANCELLATION, nm: __sl826 },
-    { val: SPE_PROTECTION, nm: __sl827 },
-    { val: SPE_JUMPING, nm: __sl828 },
-    { val: SPE_STONE_TO_FLESH, nm: __sl829 },
-    { val: SPE_CHAIN_LIGHTNING, nm: __sl830 },
-    { val: SPE_BLANK_PAPER, nm: __sl831 },
-    { val: SPE_NOVEL, nm: __sl832 },
-    { val: SPE_BOOK_OF_THE_DEAD, nm: __sl833 },
-    { val: WAN_LIGHT, nm: __sl834 },
-    { val: WAN_SECRET_DOOR_DETECTION, nm: __sl835 },
-    { val: WAN_ENLIGHTENMENT, nm: __sl836 },
-    { val: WAN_CREATE_MONSTER, nm: __sl837 },
-    { val: WAN_WISHING, nm: __sl838 },
-    { val: WAN_STASIS, nm: __sl839 },
-    { val: WAN_NOTHING, nm: __sl840 },
-    { val: WAN_STRIKING, nm: __sl841 },
-    { val: WAN_MAKE_INVISIBLE, nm: __sl842 },
-    { val: WAN_SLOW_MONSTER, nm: __sl843 },
-    { val: WAN_SPEED_MONSTER, nm: __sl844 },
-    { val: WAN_UNDEAD_TURNING, nm: __sl845 },
-    { val: WAN_POLYMORPH, nm: __sl846 },
-    { val: WAN_CANCELLATION, nm: __sl847 },
-    { val: WAN_TELEPORTATION, nm: __sl848 },
-    { val: WAN_OPENING, nm: __sl849 },
-    { val: WAN_LOCKING, nm: __sl850 },
-    { val: WAN_PROBING, nm: __sl851 },
-    { val: WAN_DIGGING, nm: __sl852 },
-    { val: WAN_MAGIC_MISSILE, nm: __sl853 },
-    { val: WAN_FIRE, nm: __sl854 },
-    { val: WAN_COLD, nm: __sl855 },
-    { val: WAN_SLEEP, nm: __sl856 },
-    { val: WAN_DEATH, nm: __sl857 },
-    { val: WAN_LIGHTNING, nm: __sl858 },
-    { val: WAN1, nm: __sl859 },
-    { val: WAN2, nm: __sl860 },
-    { val: WAN3, nm: __sl861 },
-    { val: GOLD_PIECE, nm: __sl862 },
-    { val: DILITHIUM_CRYSTAL, nm: __sl863 },
-    { val: DIAMOND, nm: __sl864 },
-    { val: RUBY, nm: __sl865 },
-    { val: JACINTH, nm: __sl866 },
-    { val: SAPPHIRE, nm: __sl867 },
-    { val: BLACK_OPAL, nm: __sl868 },
-    { val: EMERALD, nm: __sl869 },
-    { val: TURQUOISE, nm: __sl870 },
-    { val: CITRINE, nm: __sl871 },
-    { val: AQUAMARINE, nm: __sl872 },
-    { val: AMBER, nm: __sl873 },
-    { val: TOPAZ, nm: __sl874 },
-    { val: JET, nm: __sl875 },
-    { val: OPAL, nm: __sl876 },
-    { val: CHRYSOBERYL, nm: __sl877 },
-    { val: GARNET, nm: __sl878 },
-    { val: AMETHYST, nm: __sl879 },
-    { val: JASPER, nm: __sl880 },
-    { val: FLUORITE, nm: __sl881 },
-    { val: OBSIDIAN, nm: __sl882 },
-    { val: AGATE, nm: __sl883 },
-    { val: JADE, nm: __sl884 },
-    { val: WORTHLESS_WHITE_GLASS, nm: __sl885 },
-    { val: WORTHLESS_BLUE_GLASS, nm: __sl886 },
-    { val: WORTHLESS_RED_GLASS, nm: __sl887 },
-    { val: WORTHLESS_YELLOWBROWN_GLASS, nm: __sl888 },
-    { val: WORTHLESS_ORANGE_GLASS, nm: __sl889 },
-    { val: WORTHLESS_YELLOW_GLASS, nm: __sl890 },
-    { val: WORTHLESS_BLACK_GLASS, nm: __sl891 },
-    { val: WORTHLESS_GREEN_GLASS, nm: __sl892 },
-    { val: WORTHLESS_VIOLET_GLASS, nm: __sl893 },
-    { val: LUCKSTONE, nm: __sl894 },
-    { val: LOADSTONE, nm: __sl895 },
-    { val: TOUCHSTONE, nm: __sl896 },
-    { val: FLINT, nm: __sl897 },
-    { val: ROCK, nm: __sl898 },
-    { val: BOULDER, nm: __sl899 },
-    { val: STATUE, nm: __sl900 },
-    { val: HEAVY_IRON_BALL, nm: __sl901 },
-    { val: IRON_CHAIN, nm: __sl902 },
-    { val: BLINDING_VENOM, nm: __sl903 },
-    { val: ACID_VENOM, nm: __sl904 },
-    { val: NUM_OBJECTS, nm: __sl905 }
-];
+export const objdump = cptr.alloc(482 * 16);
+cptr.stI32(cptr.add(objdump, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(objdump, 0), 8), __sl423);
+cptr.stI32(cptr.add(objdump, 16), 1);
+cptr.stPtr(cptr.add(cptr.add(objdump, 16), 8), __sl424);
+cptr.stI32(cptr.add(objdump, 32), 2);
+cptr.stPtr(cptr.add(cptr.add(objdump, 32), 8), __sl425);
+cptr.stI32(cptr.add(objdump, 48), 3);
+cptr.stPtr(cptr.add(cptr.add(objdump, 48), 8), __sl426);
+cptr.stI32(cptr.add(objdump, 64), 4);
+cptr.stPtr(cptr.add(cptr.add(objdump, 64), 8), __sl427);
+cptr.stI32(cptr.add(objdump, 80), 5);
+cptr.stPtr(cptr.add(cptr.add(objdump, 80), 8), __sl428);
+cptr.stI32(cptr.add(objdump, 96), 6);
+cptr.stPtr(cptr.add(cptr.add(objdump, 96), 8), __sl429);
+cptr.stI32(cptr.add(objdump, 112), 7);
+cptr.stPtr(cptr.add(cptr.add(objdump, 112), 8), __sl430);
+cptr.stI32(cptr.add(objdump, 128), 8);
+cptr.stPtr(cptr.add(cptr.add(objdump, 128), 8), __sl431);
+cptr.stI32(cptr.add(objdump, 144), 9);
+cptr.stPtr(cptr.add(cptr.add(objdump, 144), 8), __sl432);
+cptr.stI32(cptr.add(objdump, 160), 10);
+cptr.stPtr(cptr.add(cptr.add(objdump, 160), 8), __sl433);
+cptr.stI32(cptr.add(objdump, 176), 11);
+cptr.stPtr(cptr.add(cptr.add(objdump, 176), 8), __sl434);
+cptr.stI32(cptr.add(objdump, 192), 12);
+cptr.stPtr(cptr.add(cptr.add(objdump, 192), 8), __sl435);
+cptr.stI32(cptr.add(objdump, 208), 13);
+cptr.stPtr(cptr.add(cptr.add(objdump, 208), 8), __sl436);
+cptr.stI32(cptr.add(objdump, 224), 14);
+cptr.stPtr(cptr.add(cptr.add(objdump, 224), 8), __sl437);
+cptr.stI32(cptr.add(objdump, 240), 15);
+cptr.stPtr(cptr.add(cptr.add(objdump, 240), 8), __sl438);
+cptr.stI32(cptr.add(objdump, 256), 16);
+cptr.stPtr(cptr.add(cptr.add(objdump, 256), 8), __sl439);
+cptr.stI32(cptr.add(objdump, 272), 17);
+cptr.stPtr(cptr.add(cptr.add(objdump, 272), 8), __sl440);
+cptr.stI32(cptr.add(objdump, 288), 18);
+cptr.stPtr(cptr.add(cptr.add(objdump, 288), 8), __sl441);
+cptr.stI32(cptr.add(objdump, 304), 19);
+cptr.stPtr(cptr.add(cptr.add(objdump, 304), 8), __sl442);
+cptr.stI32(cptr.add(objdump, 320), 20);
+cptr.stPtr(cptr.add(cptr.add(objdump, 320), 8), __sl443);
+cptr.stI32(cptr.add(objdump, 336), 21);
+cptr.stPtr(cptr.add(cptr.add(objdump, 336), 8), __sl444);
+cptr.stI32(cptr.add(objdump, 352), 22);
+cptr.stPtr(cptr.add(cptr.add(objdump, 352), 8), __sl445);
+cptr.stI32(cptr.add(objdump, 368), 23);
+cptr.stPtr(cptr.add(cptr.add(objdump, 368), 8), __sl446);
+cptr.stI32(cptr.add(objdump, 384), 24);
+cptr.stPtr(cptr.add(cptr.add(objdump, 384), 8), __sl447);
+cptr.stI32(cptr.add(objdump, 400), 25);
+cptr.stPtr(cptr.add(cptr.add(objdump, 400), 8), __sl448);
+cptr.stI32(cptr.add(objdump, 416), 26);
+cptr.stPtr(cptr.add(cptr.add(objdump, 416), 8), __sl449);
+cptr.stI32(cptr.add(objdump, 432), 27);
+cptr.stPtr(cptr.add(cptr.add(objdump, 432), 8), __sl450);
+cptr.stI32(cptr.add(objdump, 448), 28);
+cptr.stPtr(cptr.add(cptr.add(objdump, 448), 8), __sl451);
+cptr.stI32(cptr.add(objdump, 464), 29);
+cptr.stPtr(cptr.add(cptr.add(objdump, 464), 8), __sl452);
+cptr.stI32(cptr.add(objdump, 480), 30);
+cptr.stPtr(cptr.add(cptr.add(objdump, 480), 8), __sl453);
+cptr.stI32(cptr.add(objdump, 496), 31);
+cptr.stPtr(cptr.add(cptr.add(objdump, 496), 8), __sl454);
+cptr.stI32(cptr.add(objdump, 512), 32);
+cptr.stPtr(cptr.add(cptr.add(objdump, 512), 8), __sl455);
+cptr.stI32(cptr.add(objdump, 528), 33);
+cptr.stPtr(cptr.add(cptr.add(objdump, 528), 8), __sl456);
+cptr.stI32(cptr.add(objdump, 544), 34);
+cptr.stPtr(cptr.add(cptr.add(objdump, 544), 8), __sl457);
+cptr.stI32(cptr.add(objdump, 560), 35);
+cptr.stPtr(cptr.add(cptr.add(objdump, 560), 8), __sl458);
+cptr.stI32(cptr.add(objdump, 576), 36);
+cptr.stPtr(cptr.add(cptr.add(objdump, 576), 8), __sl459);
+cptr.stI32(cptr.add(objdump, 592), 37);
+cptr.stPtr(cptr.add(cptr.add(objdump, 592), 8), __sl460);
+cptr.stI32(cptr.add(objdump, 608), 38);
+cptr.stPtr(cptr.add(cptr.add(objdump, 608), 8), __sl461);
+cptr.stI32(cptr.add(objdump, 624), 39);
+cptr.stPtr(cptr.add(cptr.add(objdump, 624), 8), __sl462);
+cptr.stI32(cptr.add(objdump, 640), 40);
+cptr.stPtr(cptr.add(cptr.add(objdump, 640), 8), __sl463);
+cptr.stI32(cptr.add(objdump, 656), 41);
+cptr.stPtr(cptr.add(cptr.add(objdump, 656), 8), __sl464);
+cptr.stI32(cptr.add(objdump, 672), 42);
+cptr.stPtr(cptr.add(cptr.add(objdump, 672), 8), __sl465);
+cptr.stI32(cptr.add(objdump, 688), 43);
+cptr.stPtr(cptr.add(cptr.add(objdump, 688), 8), __sl466);
+cptr.stI32(cptr.add(objdump, 704), 44);
+cptr.stPtr(cptr.add(cptr.add(objdump, 704), 8), __sl467);
+cptr.stI32(cptr.add(objdump, 720), 45);
+cptr.stPtr(cptr.add(cptr.add(objdump, 720), 8), __sl468);
+cptr.stI32(cptr.add(objdump, 736), 46);
+cptr.stPtr(cptr.add(cptr.add(objdump, 736), 8), __sl469);
+cptr.stI32(cptr.add(objdump, 752), 47);
+cptr.stPtr(cptr.add(cptr.add(objdump, 752), 8), __sl470);
+cptr.stI32(cptr.add(objdump, 768), 48);
+cptr.stPtr(cptr.add(cptr.add(objdump, 768), 8), __sl471);
+cptr.stI32(cptr.add(objdump, 784), 49);
+cptr.stPtr(cptr.add(cptr.add(objdump, 784), 8), __sl472);
+cptr.stI32(cptr.add(objdump, 800), 50);
+cptr.stPtr(cptr.add(cptr.add(objdump, 800), 8), __sl473);
+cptr.stI32(cptr.add(objdump, 816), 51);
+cptr.stPtr(cptr.add(cptr.add(objdump, 816), 8), __sl474);
+cptr.stI32(cptr.add(objdump, 832), 52);
+cptr.stPtr(cptr.add(cptr.add(objdump, 832), 8), __sl475);
+cptr.stI32(cptr.add(objdump, 848), 53);
+cptr.stPtr(cptr.add(cptr.add(objdump, 848), 8), __sl476);
+cptr.stI32(cptr.add(objdump, 864), 54);
+cptr.stPtr(cptr.add(cptr.add(objdump, 864), 8), __sl477);
+cptr.stI32(cptr.add(objdump, 880), 55);
+cptr.stPtr(cptr.add(cptr.add(objdump, 880), 8), __sl478);
+cptr.stI32(cptr.add(objdump, 896), 56);
+cptr.stPtr(cptr.add(cptr.add(objdump, 896), 8), __sl479);
+cptr.stI32(cptr.add(objdump, 912), 57);
+cptr.stPtr(cptr.add(cptr.add(objdump, 912), 8), __sl480);
+cptr.stI32(cptr.add(objdump, 928), 58);
+cptr.stPtr(cptr.add(cptr.add(objdump, 928), 8), __sl481);
+cptr.stI32(cptr.add(objdump, 944), 59);
+cptr.stPtr(cptr.add(cptr.add(objdump, 944), 8), __sl482);
+cptr.stI32(cptr.add(objdump, 960), 60);
+cptr.stPtr(cptr.add(cptr.add(objdump, 960), 8), __sl483);
+cptr.stI32(cptr.add(objdump, 976), 61);
+cptr.stPtr(cptr.add(cptr.add(objdump, 976), 8), __sl484);
+cptr.stI32(cptr.add(objdump, 992), 62);
+cptr.stPtr(cptr.add(cptr.add(objdump, 992), 8), __sl485);
+cptr.stI32(cptr.add(objdump, 1008), 63);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1008), 8), __sl486);
+cptr.stI32(cptr.add(objdump, 1024), 64);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1024), 8), __sl487);
+cptr.stI32(cptr.add(objdump, 1040), 65);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1040), 8), __sl488);
+cptr.stI32(cptr.add(objdump, 1056), 66);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1056), 8), __sl489);
+cptr.stI32(cptr.add(objdump, 1072), 67);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1072), 8), __sl490);
+cptr.stI32(cptr.add(objdump, 1088), 68);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1088), 8), __sl491);
+cptr.stI32(cptr.add(objdump, 1104), 69);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1104), 8), __sl492);
+cptr.stI32(cptr.add(objdump, 1120), 70);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1120), 8), __sl493);
+cptr.stI32(cptr.add(objdump, 1136), 71);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1136), 8), __sl494);
+cptr.stI32(cptr.add(objdump, 1152), 72);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1152), 8), __sl495);
+cptr.stI32(cptr.add(objdump, 1168), 73);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1168), 8), __sl496);
+cptr.stI32(cptr.add(objdump, 1184), 74);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1184), 8), __sl497);
+cptr.stI32(cptr.add(objdump, 1200), 75);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1200), 8), __sl498);
+cptr.stI32(cptr.add(objdump, 1216), 76);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1216), 8), __sl499);
+cptr.stI32(cptr.add(objdump, 1232), 77);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1232), 8), __sl500);
+cptr.stI32(cptr.add(objdump, 1248), 78);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1248), 8), __sl501);
+cptr.stI32(cptr.add(objdump, 1264), 79);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1264), 8), __sl502);
+cptr.stI32(cptr.add(objdump, 1280), 80);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1280), 8), __sl503);
+cptr.stI32(cptr.add(objdump, 1296), 81);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1296), 8), __sl504);
+cptr.stI32(cptr.add(objdump, 1312), 82);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1312), 8), __sl505);
+cptr.stI32(cptr.add(objdump, 1328), 83);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1328), 8), __sl506);
+cptr.stI32(cptr.add(objdump, 1344), 84);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1344), 8), __sl507);
+cptr.stI32(cptr.add(objdump, 1360), 85);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1360), 8), __sl508);
+cptr.stI32(cptr.add(objdump, 1376), 86);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1376), 8), __sl509);
+cptr.stI32(cptr.add(objdump, 1392), 87);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1392), 8), __sl510);
+cptr.stI32(cptr.add(objdump, 1408), 88);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1408), 8), __sl511);
+cptr.stI32(cptr.add(objdump, 1424), 89);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1424), 8), __sl512);
+cptr.stI32(cptr.add(objdump, 1440), 90);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1440), 8), __sl513);
+cptr.stI32(cptr.add(objdump, 1456), 91);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1456), 8), __sl514);
+cptr.stI32(cptr.add(objdump, 1472), 92);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1472), 8), __sl515);
+cptr.stI32(cptr.add(objdump, 1488), 93);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1488), 8), __sl516);
+cptr.stI32(cptr.add(objdump, 1504), 94);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1504), 8), __sl517);
+cptr.stI32(cptr.add(objdump, 1520), 95);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1520), 8), __sl518);
+cptr.stI32(cptr.add(objdump, 1536), 96);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1536), 8), __sl519);
+cptr.stI32(cptr.add(objdump, 1552), 97);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1552), 8), __sl520);
+cptr.stI32(cptr.add(objdump, 1568), 98);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1568), 8), __sl521);
+cptr.stI32(cptr.add(objdump, 1584), 99);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1584), 8), __sl522);
+cptr.stI32(cptr.add(objdump, 1600), 100);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1600), 8), __sl523);
+cptr.stI32(cptr.add(objdump, 1616), 101);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1616), 8), __sl524);
+cptr.stI32(cptr.add(objdump, 1632), 102);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1632), 8), __sl525);
+cptr.stI32(cptr.add(objdump, 1648), 103);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1648), 8), __sl526);
+cptr.stI32(cptr.add(objdump, 1664), 104);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1664), 8), __sl527);
+cptr.stI32(cptr.add(objdump, 1680), 105);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1680), 8), __sl528);
+cptr.stI32(cptr.add(objdump, 1696), 106);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1696), 8), __sl529);
+cptr.stI32(cptr.add(objdump, 1712), 107);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1712), 8), __sl530);
+cptr.stI32(cptr.add(objdump, 1728), 108);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1728), 8), __sl531);
+cptr.stI32(cptr.add(objdump, 1744), 109);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1744), 8), __sl532);
+cptr.stI32(cptr.add(objdump, 1760), 110);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1760), 8), __sl533);
+cptr.stI32(cptr.add(objdump, 1776), 111);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1776), 8), __sl534);
+cptr.stI32(cptr.add(objdump, 1792), 112);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1792), 8), __sl535);
+cptr.stI32(cptr.add(objdump, 1808), 113);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1808), 8), __sl536);
+cptr.stI32(cptr.add(objdump, 1824), 114);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1824), 8), __sl537);
+cptr.stI32(cptr.add(objdump, 1840), 115);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1840), 8), __sl538);
+cptr.stI32(cptr.add(objdump, 1856), 116);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1856), 8), __sl539);
+cptr.stI32(cptr.add(objdump, 1872), 117);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1872), 8), __sl540);
+cptr.stI32(cptr.add(objdump, 1888), 118);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1888), 8), __sl541);
+cptr.stI32(cptr.add(objdump, 1904), 119);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1904), 8), __sl542);
+cptr.stI32(cptr.add(objdump, 1920), 120);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1920), 8), __sl543);
+cptr.stI32(cptr.add(objdump, 1936), 121);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1936), 8), __sl544);
+cptr.stI32(cptr.add(objdump, 1952), 122);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1952), 8), __sl545);
+cptr.stI32(cptr.add(objdump, 1968), 123);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1968), 8), __sl546);
+cptr.stI32(cptr.add(objdump, 1984), 124);
+cptr.stPtr(cptr.add(cptr.add(objdump, 1984), 8), __sl547);
+cptr.stI32(cptr.add(objdump, 2000), 125);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2000), 8), __sl548);
+cptr.stI32(cptr.add(objdump, 2016), 126);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2016), 8), __sl549);
+cptr.stI32(cptr.add(objdump, 2032), 127);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2032), 8), __sl550);
+cptr.stI32(cptr.add(objdump, 2048), 128);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2048), 8), __sl551);
+cptr.stI32(cptr.add(objdump, 2064), 129);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2064), 8), __sl552);
+cptr.stI32(cptr.add(objdump, 2080), 130);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2080), 8), __sl553);
+cptr.stI32(cptr.add(objdump, 2096), 131);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2096), 8), __sl554);
+cptr.stI32(cptr.add(objdump, 2112), 132);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2112), 8), __sl555);
+cptr.stI32(cptr.add(objdump, 2128), 133);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2128), 8), __sl556);
+cptr.stI32(cptr.add(objdump, 2144), 134);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2144), 8), __sl557);
+cptr.stI32(cptr.add(objdump, 2160), 135);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2160), 8), __sl558);
+cptr.stI32(cptr.add(objdump, 2176), 136);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2176), 8), __sl559);
+cptr.stI32(cptr.add(objdump, 2192), 137);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2192), 8), __sl560);
+cptr.stI32(cptr.add(objdump, 2208), 138);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2208), 8), __sl561);
+cptr.stI32(cptr.add(objdump, 2224), 139);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2224), 8), __sl562);
+cptr.stI32(cptr.add(objdump, 2240), 140);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2240), 8), __sl563);
+cptr.stI32(cptr.add(objdump, 2256), 141);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2256), 8), __sl564);
+cptr.stI32(cptr.add(objdump, 2272), 142);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2272), 8), __sl565);
+cptr.stI32(cptr.add(objdump, 2288), 143);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2288), 8), __sl566);
+cptr.stI32(cptr.add(objdump, 2304), 144);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2304), 8), __sl567);
+cptr.stI32(cptr.add(objdump, 2320), 145);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2320), 8), __sl568);
+cptr.stI32(cptr.add(objdump, 2336), 146);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2336), 8), __sl569);
+cptr.stI32(cptr.add(objdump, 2352), 147);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2352), 8), __sl570);
+cptr.stI32(cptr.add(objdump, 2368), 148);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2368), 8), __sl571);
+cptr.stI32(cptr.add(objdump, 2384), 149);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2384), 8), __sl572);
+cptr.stI32(cptr.add(objdump, 2400), 150);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2400), 8), __sl573);
+cptr.stI32(cptr.add(objdump, 2416), 151);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2416), 8), __sl574);
+cptr.stI32(cptr.add(objdump, 2432), 152);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2432), 8), __sl575);
+cptr.stI32(cptr.add(objdump, 2448), 153);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2448), 8), __sl576);
+cptr.stI32(cptr.add(objdump, 2464), 154);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2464), 8), __sl577);
+cptr.stI32(cptr.add(objdump, 2480), 155);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2480), 8), __sl578);
+cptr.stI32(cptr.add(objdump, 2496), 156);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2496), 8), __sl579);
+cptr.stI32(cptr.add(objdump, 2512), 157);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2512), 8), __sl580);
+cptr.stI32(cptr.add(objdump, 2528), 158);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2528), 8), __sl581);
+cptr.stI32(cptr.add(objdump, 2544), 159);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2544), 8), __sl582);
+cptr.stI32(cptr.add(objdump, 2560), 160);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2560), 8), __sl583);
+cptr.stI32(cptr.add(objdump, 2576), 161);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2576), 8), __sl584);
+cptr.stI32(cptr.add(objdump, 2592), 162);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2592), 8), __sl585);
+cptr.stI32(cptr.add(objdump, 2608), 163);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2608), 8), __sl586);
+cptr.stI32(cptr.add(objdump, 2624), 164);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2624), 8), __sl587);
+cptr.stI32(cptr.add(objdump, 2640), 165);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2640), 8), __sl588);
+cptr.stI32(cptr.add(objdump, 2656), 166);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2656), 8), __sl589);
+cptr.stI32(cptr.add(objdump, 2672), 167);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2672), 8), __sl590);
+cptr.stI32(cptr.add(objdump, 2688), 168);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2688), 8), __sl591);
+cptr.stI32(cptr.add(objdump, 2704), 169);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2704), 8), __sl592);
+cptr.stI32(cptr.add(objdump, 2720), 170);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2720), 8), __sl593);
+cptr.stI32(cptr.add(objdump, 2736), 171);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2736), 8), __sl594);
+cptr.stI32(cptr.add(objdump, 2752), 172);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2752), 8), __sl595);
+cptr.stI32(cptr.add(objdump, 2768), 173);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2768), 8), __sl596);
+cptr.stI32(cptr.add(objdump, 2784), 174);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2784), 8), __sl597);
+cptr.stI32(cptr.add(objdump, 2800), 175);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2800), 8), __sl598);
+cptr.stI32(cptr.add(objdump, 2816), 176);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2816), 8), __sl599);
+cptr.stI32(cptr.add(objdump, 2832), 177);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2832), 8), __sl600);
+cptr.stI32(cptr.add(objdump, 2848), 178);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2848), 8), __sl601);
+cptr.stI32(cptr.add(objdump, 2864), 179);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2864), 8), __sl602);
+cptr.stI32(cptr.add(objdump, 2880), 180);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2880), 8), __sl603);
+cptr.stI32(cptr.add(objdump, 2896), 181);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2896), 8), __sl604);
+cptr.stI32(cptr.add(objdump, 2912), 182);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2912), 8), __sl605);
+cptr.stI32(cptr.add(objdump, 2928), 183);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2928), 8), __sl606);
+cptr.stI32(cptr.add(objdump, 2944), 184);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2944), 8), __sl607);
+cptr.stI32(cptr.add(objdump, 2960), 185);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2960), 8), __sl608);
+cptr.stI32(cptr.add(objdump, 2976), 186);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2976), 8), __sl609);
+cptr.stI32(cptr.add(objdump, 2992), 187);
+cptr.stPtr(cptr.add(cptr.add(objdump, 2992), 8), __sl610);
+cptr.stI32(cptr.add(objdump, 3008), 188);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3008), 8), __sl611);
+cptr.stI32(cptr.add(objdump, 3024), 189);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3024), 8), __sl612);
+cptr.stI32(cptr.add(objdump, 3040), 190);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3040), 8), __sl613);
+cptr.stI32(cptr.add(objdump, 3056), 191);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3056), 8), __sl614);
+cptr.stI32(cptr.add(objdump, 3072), 192);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3072), 8), __sl615);
+cptr.stI32(cptr.add(objdump, 3088), 193);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3088), 8), __sl616);
+cptr.stI32(cptr.add(objdump, 3104), 194);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3104), 8), __sl617);
+cptr.stI32(cptr.add(objdump, 3120), 195);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3120), 8), __sl618);
+cptr.stI32(cptr.add(objdump, 3136), 196);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3136), 8), __sl619);
+cptr.stI32(cptr.add(objdump, 3152), 197);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3152), 8), __sl620);
+cptr.stI32(cptr.add(objdump, 3168), 198);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3168), 8), __sl621);
+cptr.stI32(cptr.add(objdump, 3184), 199);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3184), 8), __sl622);
+cptr.stI32(cptr.add(objdump, 3200), 200);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3200), 8), __sl623);
+cptr.stI32(cptr.add(objdump, 3216), 201);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3216), 8), __sl624);
+cptr.stI32(cptr.add(objdump, 3232), 202);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3232), 8), __sl625);
+cptr.stI32(cptr.add(objdump, 3248), 203);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3248), 8), __sl626);
+cptr.stI32(cptr.add(objdump, 3264), 204);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3264), 8), __sl627);
+cptr.stI32(cptr.add(objdump, 3280), 205);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3280), 8), __sl628);
+cptr.stI32(cptr.add(objdump, 3296), 206);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3296), 8), __sl629);
+cptr.stI32(cptr.add(objdump, 3312), 207);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3312), 8), __sl630);
+cptr.stI32(cptr.add(objdump, 3328), 208);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3328), 8), __sl631);
+cptr.stI32(cptr.add(objdump, 3344), 209);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3344), 8), __sl632);
+cptr.stI32(cptr.add(objdump, 3360), 210);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3360), 8), __sl633);
+cptr.stI32(cptr.add(objdump, 3376), 211);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3376), 8), __sl634);
+cptr.stI32(cptr.add(objdump, 3392), 212);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3392), 8), __sl635);
+cptr.stI32(cptr.add(objdump, 3408), 213);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3408), 8), __sl636);
+cptr.stI32(cptr.add(objdump, 3424), 214);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3424), 8), __sl637);
+cptr.stI32(cptr.add(objdump, 3440), 215);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3440), 8), __sl638);
+cptr.stI32(cptr.add(objdump, 3456), 216);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3456), 8), __sl639);
+cptr.stI32(cptr.add(objdump, 3472), 217);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3472), 8), __sl640);
+cptr.stI32(cptr.add(objdump, 3488), 218);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3488), 8), __sl641);
+cptr.stI32(cptr.add(objdump, 3504), 219);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3504), 8), __sl642);
+cptr.stI32(cptr.add(objdump, 3520), 220);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3520), 8), __sl643);
+cptr.stI32(cptr.add(objdump, 3536), 221);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3536), 8), __sl644);
+cptr.stI32(cptr.add(objdump, 3552), 222);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3552), 8), __sl645);
+cptr.stI32(cptr.add(objdump, 3568), 223);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3568), 8), __sl646);
+cptr.stI32(cptr.add(objdump, 3584), 224);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3584), 8), __sl647);
+cptr.stI32(cptr.add(objdump, 3600), 225);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3600), 8), __sl648);
+cptr.stI32(cptr.add(objdump, 3616), 226);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3616), 8), __sl649);
+cptr.stI32(cptr.add(objdump, 3632), 227);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3632), 8), __sl650);
+cptr.stI32(cptr.add(objdump, 3648), 228);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3648), 8), __sl651);
+cptr.stI32(cptr.add(objdump, 3664), 229);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3664), 8), __sl652);
+cptr.stI32(cptr.add(objdump, 3680), 230);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3680), 8), __sl653);
+cptr.stI32(cptr.add(objdump, 3696), 231);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3696), 8), __sl654);
+cptr.stI32(cptr.add(objdump, 3712), 232);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3712), 8), __sl655);
+cptr.stI32(cptr.add(objdump, 3728), 233);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3728), 8), __sl656);
+cptr.stI32(cptr.add(objdump, 3744), 234);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3744), 8), __sl657);
+cptr.stI32(cptr.add(objdump, 3760), 235);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3760), 8), __sl658);
+cptr.stI32(cptr.add(objdump, 3776), 236);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3776), 8), __sl659);
+cptr.stI32(cptr.add(objdump, 3792), 237);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3792), 8), __sl660);
+cptr.stI32(cptr.add(objdump, 3808), 238);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3808), 8), __sl661);
+cptr.stI32(cptr.add(objdump, 3824), 239);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3824), 8), __sl662);
+cptr.stI32(cptr.add(objdump, 3840), 240);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3840), 8), __sl663);
+cptr.stI32(cptr.add(objdump, 3856), 241);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3856), 8), __sl664);
+cptr.stI32(cptr.add(objdump, 3872), 242);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3872), 8), __sl665);
+cptr.stI32(cptr.add(objdump, 3888), 243);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3888), 8), __sl666);
+cptr.stI32(cptr.add(objdump, 3904), 244);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3904), 8), __sl667);
+cptr.stI32(cptr.add(objdump, 3920), 245);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3920), 8), __sl668);
+cptr.stI32(cptr.add(objdump, 3936), 246);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3936), 8), __sl669);
+cptr.stI32(cptr.add(objdump, 3952), 247);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3952), 8), __sl670);
+cptr.stI32(cptr.add(objdump, 3968), 248);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3968), 8), __sl671);
+cptr.stI32(cptr.add(objdump, 3984), 249);
+cptr.stPtr(cptr.add(cptr.add(objdump, 3984), 8), __sl672);
+cptr.stI32(cptr.add(objdump, 4000), 250);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4000), 8), __sl673);
+cptr.stI32(cptr.add(objdump, 4016), 251);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4016), 8), __sl674);
+cptr.stI32(cptr.add(objdump, 4032), 252);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4032), 8), __sl675);
+cptr.stI32(cptr.add(objdump, 4048), 253);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4048), 8), __sl676);
+cptr.stI32(cptr.add(objdump, 4064), 254);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4064), 8), __sl677);
+cptr.stI32(cptr.add(objdump, 4080), 255);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4080), 8), __sl678);
+cptr.stI32(cptr.add(objdump, 4096), 256);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4096), 8), __sl679);
+cptr.stI32(cptr.add(objdump, 4112), 257);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4112), 8), __sl680);
+cptr.stI32(cptr.add(objdump, 4128), 258);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4128), 8), __sl681);
+cptr.stI32(cptr.add(objdump, 4144), 259);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4144), 8), __sl682);
+cptr.stI32(cptr.add(objdump, 4160), 260);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4160), 8), __sl683);
+cptr.stI32(cptr.add(objdump, 4176), 261);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4176), 8), __sl684);
+cptr.stI32(cptr.add(objdump, 4192), 262);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4192), 8), __sl685);
+cptr.stI32(cptr.add(objdump, 4208), 263);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4208), 8), __sl686);
+cptr.stI32(cptr.add(objdump, 4224), 264);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4224), 8), __sl687);
+cptr.stI32(cptr.add(objdump, 4240), 265);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4240), 8), __sl688);
+cptr.stI32(cptr.add(objdump, 4256), 266);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4256), 8), __sl689);
+cptr.stI32(cptr.add(objdump, 4272), 267);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4272), 8), __sl690);
+cptr.stI32(cptr.add(objdump, 4288), 268);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4288), 8), __sl691);
+cptr.stI32(cptr.add(objdump, 4304), 269);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4304), 8), __sl692);
+cptr.stI32(cptr.add(objdump, 4320), 270);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4320), 8), __sl693);
+cptr.stI32(cptr.add(objdump, 4336), 271);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4336), 8), __sl694);
+cptr.stI32(cptr.add(objdump, 4352), 272);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4352), 8), __sl695);
+cptr.stI32(cptr.add(objdump, 4368), 273);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4368), 8), __sl696);
+cptr.stI32(cptr.add(objdump, 4384), 274);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4384), 8), __sl697);
+cptr.stI32(cptr.add(objdump, 4400), 275);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4400), 8), __sl698);
+cptr.stI32(cptr.add(objdump, 4416), 276);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4416), 8), __sl699);
+cptr.stI32(cptr.add(objdump, 4432), 277);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4432), 8), __sl700);
+cptr.stI32(cptr.add(objdump, 4448), 278);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4448), 8), __sl701);
+cptr.stI32(cptr.add(objdump, 4464), 279);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4464), 8), __sl702);
+cptr.stI32(cptr.add(objdump, 4480), 280);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4480), 8), __sl703);
+cptr.stI32(cptr.add(objdump, 4496), 281);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4496), 8), __sl704);
+cptr.stI32(cptr.add(objdump, 4512), 282);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4512), 8), __sl705);
+cptr.stI32(cptr.add(objdump, 4528), 283);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4528), 8), __sl706);
+cptr.stI32(cptr.add(objdump, 4544), 284);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4544), 8), __sl707);
+cptr.stI32(cptr.add(objdump, 4560), 285);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4560), 8), __sl708);
+cptr.stI32(cptr.add(objdump, 4576), 286);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4576), 8), __sl709);
+cptr.stI32(cptr.add(objdump, 4592), 287);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4592), 8), __sl710);
+cptr.stI32(cptr.add(objdump, 4608), 288);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4608), 8), __sl711);
+cptr.stI32(cptr.add(objdump, 4624), 289);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4624), 8), __sl712);
+cptr.stI32(cptr.add(objdump, 4640), 290);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4640), 8), __sl713);
+cptr.stI32(cptr.add(objdump, 4656), 291);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4656), 8), __sl714);
+cptr.stI32(cptr.add(objdump, 4672), 292);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4672), 8), __sl715);
+cptr.stI32(cptr.add(objdump, 4688), 293);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4688), 8), __sl716);
+cptr.stI32(cptr.add(objdump, 4704), 294);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4704), 8), __sl717);
+cptr.stI32(cptr.add(objdump, 4720), 295);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4720), 8), __sl718);
+cptr.stI32(cptr.add(objdump, 4736), 296);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4736), 8), __sl719);
+cptr.stI32(cptr.add(objdump, 4752), 297);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4752), 8), __sl720);
+cptr.stI32(cptr.add(objdump, 4768), 298);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4768), 8), __sl721);
+cptr.stI32(cptr.add(objdump, 4784), 299);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4784), 8), __sl722);
+cptr.stI32(cptr.add(objdump, 4800), 300);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4800), 8), __sl723);
+cptr.stI32(cptr.add(objdump, 4816), 301);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4816), 8), __sl724);
+cptr.stI32(cptr.add(objdump, 4832), 302);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4832), 8), __sl725);
+cptr.stI32(cptr.add(objdump, 4848), 303);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4848), 8), __sl726);
+cptr.stI32(cptr.add(objdump, 4864), 304);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4864), 8), __sl727);
+cptr.stI32(cptr.add(objdump, 4880), 305);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4880), 8), __sl728);
+cptr.stI32(cptr.add(objdump, 4896), 306);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4896), 8), __sl729);
+cptr.stI32(cptr.add(objdump, 4912), 307);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4912), 8), __sl730);
+cptr.stI32(cptr.add(objdump, 4928), 308);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4928), 8), __sl731);
+cptr.stI32(cptr.add(objdump, 4944), 309);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4944), 8), __sl732);
+cptr.stI32(cptr.add(objdump, 4960), 310);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4960), 8), __sl733);
+cptr.stI32(cptr.add(objdump, 4976), 311);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4976), 8), __sl734);
+cptr.stI32(cptr.add(objdump, 4992), 312);
+cptr.stPtr(cptr.add(cptr.add(objdump, 4992), 8), __sl735);
+cptr.stI32(cptr.add(objdump, 5008), 313);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5008), 8), __sl736);
+cptr.stI32(cptr.add(objdump, 5024), 314);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5024), 8), __sl737);
+cptr.stI32(cptr.add(objdump, 5040), 315);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5040), 8), __sl738);
+cptr.stI32(cptr.add(objdump, 5056), 316);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5056), 8), __sl739);
+cptr.stI32(cptr.add(objdump, 5072), 317);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5072), 8), __sl740);
+cptr.stI32(cptr.add(objdump, 5088), 318);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5088), 8), __sl741);
+cptr.stI32(cptr.add(objdump, 5104), 319);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5104), 8), __sl742);
+cptr.stI32(cptr.add(objdump, 5120), 320);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5120), 8), __sl743);
+cptr.stI32(cptr.add(objdump, 5136), 321);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5136), 8), __sl744);
+cptr.stI32(cptr.add(objdump, 5152), 322);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5152), 8), __sl745);
+cptr.stI32(cptr.add(objdump, 5168), 323);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5168), 8), __sl746);
+cptr.stI32(cptr.add(objdump, 5184), 324);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5184), 8), __sl747);
+cptr.stI32(cptr.add(objdump, 5200), 325);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5200), 8), __sl748);
+cptr.stI32(cptr.add(objdump, 5216), 326);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5216), 8), __sl749);
+cptr.stI32(cptr.add(objdump, 5232), 327);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5232), 8), __sl750);
+cptr.stI32(cptr.add(objdump, 5248), 328);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5248), 8), __sl751);
+cptr.stI32(cptr.add(objdump, 5264), 329);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5264), 8), __sl752);
+cptr.stI32(cptr.add(objdump, 5280), 330);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5280), 8), __sl753);
+cptr.stI32(cptr.add(objdump, 5296), 331);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5296), 8), __sl754);
+cptr.stI32(cptr.add(objdump, 5312), 332);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5312), 8), __sl755);
+cptr.stI32(cptr.add(objdump, 5328), 333);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5328), 8), __sl756);
+cptr.stI32(cptr.add(objdump, 5344), 334);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5344), 8), __sl757);
+cptr.stI32(cptr.add(objdump, 5360), 335);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5360), 8), __sl758);
+cptr.stI32(cptr.add(objdump, 5376), 336);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5376), 8), __sl759);
+cptr.stI32(cptr.add(objdump, 5392), 337);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5392), 8), __sl760);
+cptr.stI32(cptr.add(objdump, 5408), 338);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5408), 8), __sl761);
+cptr.stI32(cptr.add(objdump, 5424), 339);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5424), 8), __sl762);
+cptr.stI32(cptr.add(objdump, 5440), 340);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5440), 8), __sl763);
+cptr.stI32(cptr.add(objdump, 5456), 341);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5456), 8), __sl764);
+cptr.stI32(cptr.add(objdump, 5472), 342);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5472), 8), __sl765);
+cptr.stI32(cptr.add(objdump, 5488), 343);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5488), 8), __sl766);
+cptr.stI32(cptr.add(objdump, 5504), 344);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5504), 8), __sl767);
+cptr.stI32(cptr.add(objdump, 5520), 345);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5520), 8), __sl768);
+cptr.stI32(cptr.add(objdump, 5536), 346);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5536), 8), __sl769);
+cptr.stI32(cptr.add(objdump, 5552), 347);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5552), 8), __sl770);
+cptr.stI32(cptr.add(objdump, 5568), 348);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5568), 8), __sl771);
+cptr.stI32(cptr.add(objdump, 5584), 349);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5584), 8), __sl772);
+cptr.stI32(cptr.add(objdump, 5600), 350);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5600), 8), __sl773);
+cptr.stI32(cptr.add(objdump, 5616), 351);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5616), 8), __sl774);
+cptr.stI32(cptr.add(objdump, 5632), 352);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5632), 8), __sl775);
+cptr.stI32(cptr.add(objdump, 5648), 353);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5648), 8), __sl776);
+cptr.stI32(cptr.add(objdump, 5664), 354);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5664), 8), __sl777);
+cptr.stI32(cptr.add(objdump, 5680), 355);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5680), 8), __sl778);
+cptr.stI32(cptr.add(objdump, 5696), 356);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5696), 8), __sl779);
+cptr.stI32(cptr.add(objdump, 5712), 357);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5712), 8), __sl780);
+cptr.stI32(cptr.add(objdump, 5728), 358);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5728), 8), __sl781);
+cptr.stI32(cptr.add(objdump, 5744), 359);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5744), 8), __sl782);
+cptr.stI32(cptr.add(objdump, 5760), 360);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5760), 8), __sl783);
+cptr.stI32(cptr.add(objdump, 5776), 361);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5776), 8), __sl784);
+cptr.stI32(cptr.add(objdump, 5792), 362);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5792), 8), __sl785);
+cptr.stI32(cptr.add(objdump, 5808), 363);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5808), 8), __sl786);
+cptr.stI32(cptr.add(objdump, 5824), 364);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5824), 8), __sl787);
+cptr.stI32(cptr.add(objdump, 5840), 365);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5840), 8), __sl788);
+cptr.stI32(cptr.add(objdump, 5856), 366);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5856), 8), __sl789);
+cptr.stI32(cptr.add(objdump, 5872), 367);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5872), 8), __sl790);
+cptr.stI32(cptr.add(objdump, 5888), 368);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5888), 8), __sl791);
+cptr.stI32(cptr.add(objdump, 5904), 369);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5904), 8), __sl792);
+cptr.stI32(cptr.add(objdump, 5920), 370);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5920), 8), __sl793);
+cptr.stI32(cptr.add(objdump, 5936), 371);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5936), 8), __sl794);
+cptr.stI32(cptr.add(objdump, 5952), 372);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5952), 8), __sl795);
+cptr.stI32(cptr.add(objdump, 5968), 373);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5968), 8), __sl796);
+cptr.stI32(cptr.add(objdump, 5984), 374);
+cptr.stPtr(cptr.add(cptr.add(objdump, 5984), 8), __sl797);
+cptr.stI32(cptr.add(objdump, 6000), 375);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6000), 8), __sl798);
+cptr.stI32(cptr.add(objdump, 6016), 376);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6016), 8), __sl799);
+cptr.stI32(cptr.add(objdump, 6032), 377);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6032), 8), __sl800);
+cptr.stI32(cptr.add(objdump, 6048), 378);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6048), 8), __sl801);
+cptr.stI32(cptr.add(objdump, 6064), 379);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6064), 8), __sl802);
+cptr.stI32(cptr.add(objdump, 6080), 380);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6080), 8), __sl803);
+cptr.stI32(cptr.add(objdump, 6096), 381);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6096), 8), __sl804);
+cptr.stI32(cptr.add(objdump, 6112), 382);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6112), 8), __sl805);
+cptr.stI32(cptr.add(objdump, 6128), 383);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6128), 8), __sl806);
+cptr.stI32(cptr.add(objdump, 6144), 384);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6144), 8), __sl807);
+cptr.stI32(cptr.add(objdump, 6160), 385);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6160), 8), __sl808);
+cptr.stI32(cptr.add(objdump, 6176), 386);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6176), 8), __sl809);
+cptr.stI32(cptr.add(objdump, 6192), 387);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6192), 8), __sl810);
+cptr.stI32(cptr.add(objdump, 6208), 388);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6208), 8), __sl811);
+cptr.stI32(cptr.add(objdump, 6224), 389);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6224), 8), __sl812);
+cptr.stI32(cptr.add(objdump, 6240), 390);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6240), 8), __sl813);
+cptr.stI32(cptr.add(objdump, 6256), 391);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6256), 8), __sl814);
+cptr.stI32(cptr.add(objdump, 6272), 392);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6272), 8), __sl815);
+cptr.stI32(cptr.add(objdump, 6288), 393);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6288), 8), __sl816);
+cptr.stI32(cptr.add(objdump, 6304), 394);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6304), 8), __sl817);
+cptr.stI32(cptr.add(objdump, 6320), 395);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6320), 8), __sl818);
+cptr.stI32(cptr.add(objdump, 6336), 396);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6336), 8), __sl819);
+cptr.stI32(cptr.add(objdump, 6352), 397);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6352), 8), __sl820);
+cptr.stI32(cptr.add(objdump, 6368), 398);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6368), 8), __sl821);
+cptr.stI32(cptr.add(objdump, 6384), 399);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6384), 8), __sl822);
+cptr.stI32(cptr.add(objdump, 6400), 400);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6400), 8), __sl823);
+cptr.stI32(cptr.add(objdump, 6416), 401);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6416), 8), __sl824);
+cptr.stI32(cptr.add(objdump, 6432), 402);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6432), 8), __sl825);
+cptr.stI32(cptr.add(objdump, 6448), 403);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6448), 8), __sl826);
+cptr.stI32(cptr.add(objdump, 6464), 404);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6464), 8), __sl827);
+cptr.stI32(cptr.add(objdump, 6480), 405);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6480), 8), __sl828);
+cptr.stI32(cptr.add(objdump, 6496), 406);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6496), 8), __sl829);
+cptr.stI32(cptr.add(objdump, 6512), 407);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6512), 8), __sl830);
+cptr.stI32(cptr.add(objdump, 6528), 408);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6528), 8), __sl831);
+cptr.stI32(cptr.add(objdump, 6544), 409);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6544), 8), __sl832);
+cptr.stI32(cptr.add(objdump, 6560), 410);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6560), 8), __sl833);
+cptr.stI32(cptr.add(objdump, 6576), 411);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6576), 8), __sl834);
+cptr.stI32(cptr.add(objdump, 6592), 412);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6592), 8), __sl835);
+cptr.stI32(cptr.add(objdump, 6608), 413);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6608), 8), __sl836);
+cptr.stI32(cptr.add(objdump, 6624), 414);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6624), 8), __sl837);
+cptr.stI32(cptr.add(objdump, 6640), 415);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6640), 8), __sl838);
+cptr.stI32(cptr.add(objdump, 6656), 416);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6656), 8), __sl839);
+cptr.stI32(cptr.add(objdump, 6672), 417);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6672), 8), __sl840);
+cptr.stI32(cptr.add(objdump, 6688), 418);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6688), 8), __sl841);
+cptr.stI32(cptr.add(objdump, 6704), 419);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6704), 8), __sl842);
+cptr.stI32(cptr.add(objdump, 6720), 420);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6720), 8), __sl843);
+cptr.stI32(cptr.add(objdump, 6736), 421);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6736), 8), __sl844);
+cptr.stI32(cptr.add(objdump, 6752), 422);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6752), 8), __sl845);
+cptr.stI32(cptr.add(objdump, 6768), 423);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6768), 8), __sl846);
+cptr.stI32(cptr.add(objdump, 6784), 424);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6784), 8), __sl847);
+cptr.stI32(cptr.add(objdump, 6800), 425);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6800), 8), __sl848);
+cptr.stI32(cptr.add(objdump, 6816), 426);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6816), 8), __sl849);
+cptr.stI32(cptr.add(objdump, 6832), 427);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6832), 8), __sl850);
+cptr.stI32(cptr.add(objdump, 6848), 428);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6848), 8), __sl851);
+cptr.stI32(cptr.add(objdump, 6864), 429);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6864), 8), __sl852);
+cptr.stI32(cptr.add(objdump, 6880), 430);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6880), 8), __sl853);
+cptr.stI32(cptr.add(objdump, 6896), 431);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6896), 8), __sl854);
+cptr.stI32(cptr.add(objdump, 6912), 432);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6912), 8), __sl855);
+cptr.stI32(cptr.add(objdump, 6928), 433);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6928), 8), __sl856);
+cptr.stI32(cptr.add(objdump, 6944), 434);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6944), 8), __sl857);
+cptr.stI32(cptr.add(objdump, 6960), 435);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6960), 8), __sl858);
+cptr.stI32(cptr.add(objdump, 6976), 436);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6976), 8), __sl859);
+cptr.stI32(cptr.add(objdump, 6992), 437);
+cptr.stPtr(cptr.add(cptr.add(objdump, 6992), 8), __sl860);
+cptr.stI32(cptr.add(objdump, 7008), 438);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7008), 8), __sl861);
+cptr.stI32(cptr.add(objdump, 7024), 439);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7024), 8), __sl862);
+cptr.stI32(cptr.add(objdump, 7040), 440);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7040), 8), __sl863);
+cptr.stI32(cptr.add(objdump, 7056), 441);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7056), 8), __sl864);
+cptr.stI32(cptr.add(objdump, 7072), 442);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7072), 8), __sl865);
+cptr.stI32(cptr.add(objdump, 7088), 443);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7088), 8), __sl866);
+cptr.stI32(cptr.add(objdump, 7104), 444);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7104), 8), __sl867);
+cptr.stI32(cptr.add(objdump, 7120), 445);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7120), 8), __sl868);
+cptr.stI32(cptr.add(objdump, 7136), 446);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7136), 8), __sl869);
+cptr.stI32(cptr.add(objdump, 7152), 447);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7152), 8), __sl870);
+cptr.stI32(cptr.add(objdump, 7168), 448);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7168), 8), __sl871);
+cptr.stI32(cptr.add(objdump, 7184), 449);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7184), 8), __sl872);
+cptr.stI32(cptr.add(objdump, 7200), 450);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7200), 8), __sl873);
+cptr.stI32(cptr.add(objdump, 7216), 451);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7216), 8), __sl874);
+cptr.stI32(cptr.add(objdump, 7232), 452);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7232), 8), __sl875);
+cptr.stI32(cptr.add(objdump, 7248), 453);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7248), 8), __sl876);
+cptr.stI32(cptr.add(objdump, 7264), 454);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7264), 8), __sl877);
+cptr.stI32(cptr.add(objdump, 7280), 455);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7280), 8), __sl878);
+cptr.stI32(cptr.add(objdump, 7296), 456);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7296), 8), __sl879);
+cptr.stI32(cptr.add(objdump, 7312), 457);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7312), 8), __sl880);
+cptr.stI32(cptr.add(objdump, 7328), 458);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7328), 8), __sl881);
+cptr.stI32(cptr.add(objdump, 7344), 459);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7344), 8), __sl882);
+cptr.stI32(cptr.add(objdump, 7360), 460);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7360), 8), __sl883);
+cptr.stI32(cptr.add(objdump, 7376), 461);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7376), 8), __sl884);
+cptr.stI32(cptr.add(objdump, 7392), 462);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7392), 8), __sl885);
+cptr.stI32(cptr.add(objdump, 7408), 463);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7408), 8), __sl886);
+cptr.stI32(cptr.add(objdump, 7424), 464);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7424), 8), __sl887);
+cptr.stI32(cptr.add(objdump, 7440), 465);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7440), 8), __sl888);
+cptr.stI32(cptr.add(objdump, 7456), 466);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7456), 8), __sl889);
+cptr.stI32(cptr.add(objdump, 7472), 467);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7472), 8), __sl890);
+cptr.stI32(cptr.add(objdump, 7488), 468);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7488), 8), __sl891);
+cptr.stI32(cptr.add(objdump, 7504), 469);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7504), 8), __sl892);
+cptr.stI32(cptr.add(objdump, 7520), 470);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7520), 8), __sl893);
+cptr.stI32(cptr.add(objdump, 7536), 471);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7536), 8), __sl894);
+cptr.stI32(cptr.add(objdump, 7552), 472);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7552), 8), __sl895);
+cptr.stI32(cptr.add(objdump, 7568), 473);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7568), 8), __sl896);
+cptr.stI32(cptr.add(objdump, 7584), 474);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7584), 8), __sl897);
+cptr.stI32(cptr.add(objdump, 7600), 475);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7600), 8), __sl898);
+cptr.stI32(cptr.add(objdump, 7616), 476);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7616), 8), __sl899);
+cptr.stI32(cptr.add(objdump, 7632), 477);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7632), 8), __sl900);
+cptr.stI32(cptr.add(objdump, 7648), 478);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7648), 8), __sl901);
+cptr.stI32(cptr.add(objdump, 7664), 479);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7664), 8), __sl902);
+cptr.stI32(cptr.add(objdump, 7680), 480);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7680), 8), __sl903);
+cptr.stI32(cptr.add(objdump, 7696), 481);
+cptr.stPtr(cptr.add(cptr.add(objdump, 7696), 8), __sl904);
 
 /** C ref: earlyarg.c:642 — struct enum_dump[106] */
-const defsym_cmap_dump = [
-    { val: S_stone, nm: __sl906 },
-    { val: S_vwall, nm: __sl907 },
-    { val: S_hwall, nm: __sl908 },
-    { val: S_tlcorn, nm: __sl909 },
-    { val: S_trcorn, nm: __sl910 },
-    { val: S_blcorn, nm: __sl911 },
-    { val: S_brcorn, nm: __sl912 },
-    { val: S_crwall, nm: __sl913 },
-    { val: S_tuwall, nm: __sl914 },
-    { val: S_tdwall, nm: __sl915 },
-    { val: S_tlwall, nm: __sl916 },
-    { val: S_trwall, nm: __sl917 },
-    { val: S_ndoor, nm: __sl918 },
-    { val: S_vodoor, nm: __sl919 },
-    { val: S_hodoor, nm: __sl920 },
-    { val: S_vcdoor, nm: __sl921 },
-    { val: S_hcdoor, nm: __sl922 },
-    { val: S_bars, nm: __sl923 },
-    { val: S_tree, nm: __sl924 },
-    { val: S_room, nm: __sl925 },
-    { val: S_darkroom, nm: __sl926 },
-    { val: S_engroom, nm: __sl927 },
-    { val: S_corr, nm: __sl928 },
-    { val: S_litcorr, nm: __sl929 },
-    { val: S_engrcorr, nm: __sl930 },
-    { val: S_upstair, nm: __sl931 },
-    { val: S_dnstair, nm: __sl932 },
-    { val: S_upladder, nm: __sl933 },
-    { val: S_dnladder, nm: __sl934 },
-    { val: S_brupstair, nm: __sl935 },
-    { val: S_brdnstair, nm: __sl936 },
-    { val: S_brupladder, nm: __sl937 },
-    { val: S_brdnladder, nm: __sl938 },
-    { val: S_altar, nm: __sl939 },
-    { val: S_grave, nm: __sl940 },
-    { val: S_throne, nm: __sl941 },
-    { val: S_sink, nm: __sl942 },
-    { val: S_fountain, nm: __sl943 },
-    { val: S_pool, nm: __sl944 },
-    { val: S_ice, nm: __sl945 },
-    { val: S_lava, nm: __sl946 },
-    { val: S_lavawall, nm: __sl947 },
-    { val: S_vodbridge, nm: __sl948 },
-    { val: S_hodbridge, nm: __sl949 },
-    { val: S_vcdbridge, nm: __sl950 },
-    { val: S_hcdbridge, nm: __sl951 },
-    { val: S_air, nm: __sl952 },
-    { val: S_cloud, nm: __sl953 },
-    { val: S_water, nm: __sl954 },
-    { val: S_arrow_trap, nm: __sl955 },
-    { val: S_dart_trap, nm: __sl956 },
-    { val: S_falling_rock_trap, nm: __sl957 },
-    { val: S_squeaky_board, nm: __sl958 },
-    { val: S_bear_trap, nm: __sl959 },
-    { val: S_land_mine, nm: __sl960 },
-    { val: S_rolling_boulder_trap, nm: __sl961 },
-    { val: S_sleeping_gas_trap, nm: __sl962 },
-    { val: S_rust_trap, nm: __sl963 },
-    { val: S_fire_trap, nm: __sl964 },
-    { val: S_pit, nm: __sl965 },
-    { val: S_spiked_pit, nm: __sl966 },
-    { val: S_hole, nm: __sl967 },
-    { val: S_trap_door, nm: __sl968 },
-    { val: S_teleportation_trap, nm: __sl969 },
-    { val: S_level_teleporter, nm: __sl970 },
-    { val: S_magic_portal, nm: __sl971 },
-    { val: S_web, nm: __sl972 },
-    { val: S_statue_trap, nm: __sl973 },
-    { val: S_magic_trap, nm: __sl974 },
-    { val: S_anti_magic_trap, nm: __sl975 },
-    { val: S_polymorph_trap, nm: __sl976 },
-    { val: S_vibrating_square, nm: __sl977 },
-    { val: S_trapped_door, nm: __sl978 },
-    { val: S_trapped_chest, nm: __sl979 },
-    { val: S_vbeam, nm: __sl980 },
-    { val: S_hbeam, nm: __sl981 },
-    { val: S_lslant, nm: __sl982 },
-    { val: S_rslant, nm: __sl983 },
-    { val: S_digbeam, nm: __sl984 },
-    { val: S_flashbeam, nm: __sl985 },
-    { val: S_boomleft, nm: __sl986 },
-    { val: S_boomright, nm: __sl987 },
-    { val: S_ss1, nm: __sl988 },
-    { val: S_ss2, nm: __sl989 },
-    { val: S_ss3, nm: __sl990 },
-    { val: S_ss4, nm: __sl991 },
-    { val: S_poisoncloud, nm: __sl992 },
-    { val: S_goodpos, nm: __sl993 },
-    { val: S_sw_tl, nm: __sl994 },
-    { val: S_sw_tc, nm: __sl995 },
-    { val: S_sw_tr, nm: __sl996 },
-    { val: S_sw_ml, nm: __sl997 },
-    { val: S_sw_mr, nm: __sl998 },
-    { val: S_sw_bl, nm: __sl999 },
-    { val: S_sw_bc, nm: __sl1000 },
-    { val: S_sw_br, nm: __sl1001 },
-    { val: S_expl_tl, nm: __sl1002 },
-    { val: S_expl_tc, nm: __sl1003 },
-    { val: S_expl_tr, nm: __sl1004 },
-    { val: S_expl_ml, nm: __sl1005 },
-    { val: S_expl_mc, nm: __sl1006 },
-    { val: S_expl_mr, nm: __sl1007 },
-    { val: S_expl_bl, nm: __sl1008 },
-    { val: S_expl_bc, nm: __sl1009 },
-    { val: S_expl_br, nm: __sl1010 },
-    { val: MAXPCHARS, nm: __sl1011 }
-];
+const defsym_cmap_dump = cptr.alloc(106 * 16);
+cptr.stI32(cptr.add(defsym_cmap_dump, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 0), 8), __sl905);
+cptr.stI32(cptr.add(defsym_cmap_dump, 16), 1);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 16), 8), __sl906);
+cptr.stI32(cptr.add(defsym_cmap_dump, 32), 2);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 32), 8), __sl907);
+cptr.stI32(cptr.add(defsym_cmap_dump, 48), 3);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 48), 8), __sl908);
+cptr.stI32(cptr.add(defsym_cmap_dump, 64), 4);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 64), 8), __sl909);
+cptr.stI32(cptr.add(defsym_cmap_dump, 80), 5);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 80), 8), __sl910);
+cptr.stI32(cptr.add(defsym_cmap_dump, 96), 6);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 96), 8), __sl911);
+cptr.stI32(cptr.add(defsym_cmap_dump, 112), 7);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 112), 8), __sl912);
+cptr.stI32(cptr.add(defsym_cmap_dump, 128), 8);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 128), 8), __sl913);
+cptr.stI32(cptr.add(defsym_cmap_dump, 144), 9);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 144), 8), __sl914);
+cptr.stI32(cptr.add(defsym_cmap_dump, 160), 10);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 160), 8), __sl915);
+cptr.stI32(cptr.add(defsym_cmap_dump, 176), 11);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 176), 8), __sl916);
+cptr.stI32(cptr.add(defsym_cmap_dump, 192), 12);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 192), 8), __sl917);
+cptr.stI32(cptr.add(defsym_cmap_dump, 208), 13);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 208), 8), __sl918);
+cptr.stI32(cptr.add(defsym_cmap_dump, 224), 14);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 224), 8), __sl919);
+cptr.stI32(cptr.add(defsym_cmap_dump, 240), 15);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 240), 8), __sl920);
+cptr.stI32(cptr.add(defsym_cmap_dump, 256), 16);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 256), 8), __sl921);
+cptr.stI32(cptr.add(defsym_cmap_dump, 272), 17);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 272), 8), __sl922);
+cptr.stI32(cptr.add(defsym_cmap_dump, 288), 18);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 288), 8), __sl923);
+cptr.stI32(cptr.add(defsym_cmap_dump, 304), 19);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 304), 8), __sl924);
+cptr.stI32(cptr.add(defsym_cmap_dump, 320), 20);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 320), 8), __sl925);
+cptr.stI32(cptr.add(defsym_cmap_dump, 336), 21);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 336), 8), __sl926);
+cptr.stI32(cptr.add(defsym_cmap_dump, 352), 22);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 352), 8), __sl927);
+cptr.stI32(cptr.add(defsym_cmap_dump, 368), 23);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 368), 8), __sl928);
+cptr.stI32(cptr.add(defsym_cmap_dump, 384), 24);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 384), 8), __sl929);
+cptr.stI32(cptr.add(defsym_cmap_dump, 400), 25);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 400), 8), __sl930);
+cptr.stI32(cptr.add(defsym_cmap_dump, 416), 26);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 416), 8), __sl931);
+cptr.stI32(cptr.add(defsym_cmap_dump, 432), 27);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 432), 8), __sl932);
+cptr.stI32(cptr.add(defsym_cmap_dump, 448), 28);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 448), 8), __sl933);
+cptr.stI32(cptr.add(defsym_cmap_dump, 464), 29);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 464), 8), __sl934);
+cptr.stI32(cptr.add(defsym_cmap_dump, 480), 30);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 480), 8), __sl935);
+cptr.stI32(cptr.add(defsym_cmap_dump, 496), 31);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 496), 8), __sl936);
+cptr.stI32(cptr.add(defsym_cmap_dump, 512), 32);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 512), 8), __sl937);
+cptr.stI32(cptr.add(defsym_cmap_dump, 528), 33);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 528), 8), __sl938);
+cptr.stI32(cptr.add(defsym_cmap_dump, 544), 34);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 544), 8), __sl939);
+cptr.stI32(cptr.add(defsym_cmap_dump, 560), 35);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 560), 8), __sl940);
+cptr.stI32(cptr.add(defsym_cmap_dump, 576), 36);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 576), 8), __sl941);
+cptr.stI32(cptr.add(defsym_cmap_dump, 592), 37);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 592), 8), __sl942);
+cptr.stI32(cptr.add(defsym_cmap_dump, 608), 38);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 608), 8), __sl943);
+cptr.stI32(cptr.add(defsym_cmap_dump, 624), 39);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 624), 8), __sl944);
+cptr.stI32(cptr.add(defsym_cmap_dump, 640), 40);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 640), 8), __sl945);
+cptr.stI32(cptr.add(defsym_cmap_dump, 656), 41);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 656), 8), __sl946);
+cptr.stI32(cptr.add(defsym_cmap_dump, 672), 42);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 672), 8), __sl947);
+cptr.stI32(cptr.add(defsym_cmap_dump, 688), 43);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 688), 8), __sl948);
+cptr.stI32(cptr.add(defsym_cmap_dump, 704), 44);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 704), 8), __sl949);
+cptr.stI32(cptr.add(defsym_cmap_dump, 720), 45);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 720), 8), __sl950);
+cptr.stI32(cptr.add(defsym_cmap_dump, 736), 46);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 736), 8), __sl951);
+cptr.stI32(cptr.add(defsym_cmap_dump, 752), 47);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 752), 8), __sl952);
+cptr.stI32(cptr.add(defsym_cmap_dump, 768), 48);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 768), 8), __sl953);
+cptr.stI32(cptr.add(defsym_cmap_dump, 784), 49);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 784), 8), __sl954);
+cptr.stI32(cptr.add(defsym_cmap_dump, 800), 50);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 800), 8), __sl955);
+cptr.stI32(cptr.add(defsym_cmap_dump, 816), 51);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 816), 8), __sl956);
+cptr.stI32(cptr.add(defsym_cmap_dump, 832), 52);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 832), 8), __sl957);
+cptr.stI32(cptr.add(defsym_cmap_dump, 848), 53);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 848), 8), __sl958);
+cptr.stI32(cptr.add(defsym_cmap_dump, 864), 54);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 864), 8), __sl959);
+cptr.stI32(cptr.add(defsym_cmap_dump, 880), 55);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 880), 8), __sl960);
+cptr.stI32(cptr.add(defsym_cmap_dump, 896), 56);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 896), 8), __sl961);
+cptr.stI32(cptr.add(defsym_cmap_dump, 912), 57);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 912), 8), __sl962);
+cptr.stI32(cptr.add(defsym_cmap_dump, 928), 58);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 928), 8), __sl963);
+cptr.stI32(cptr.add(defsym_cmap_dump, 944), 59);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 944), 8), __sl964);
+cptr.stI32(cptr.add(defsym_cmap_dump, 960), 60);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 960), 8), __sl965);
+cptr.stI32(cptr.add(defsym_cmap_dump, 976), 61);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 976), 8), __sl966);
+cptr.stI32(cptr.add(defsym_cmap_dump, 992), 62);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 992), 8), __sl967);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1008), 63);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1008), 8), __sl968);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1024), 64);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1024), 8), __sl969);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1040), 65);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1040), 8), __sl970);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1056), 66);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1056), 8), __sl971);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1072), 67);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1072), 8), __sl972);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1088), 68);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1088), 8), __sl973);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1104), 69);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1104), 8), __sl974);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1120), 70);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1120), 8), __sl975);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1136), 71);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1136), 8), __sl976);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1152), 72);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1152), 8), __sl977);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1168), 73);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1168), 8), __sl978);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1184), 74);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1184), 8), __sl979);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1200), 75);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1200), 8), __sl980);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1216), 76);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1216), 8), __sl981);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1232), 77);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1232), 8), __sl982);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1248), 78);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1248), 8), __sl983);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1264), 79);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1264), 8), __sl984);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1280), 80);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1280), 8), __sl985);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1296), 81);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1296), 8), __sl986);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1312), 82);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1312), 8), __sl987);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1328), 83);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1328), 8), __sl988);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1344), 84);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1344), 8), __sl989);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1360), 85);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1360), 8), __sl990);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1376), 86);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1376), 8), __sl991);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1392), 87);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1392), 8), __sl992);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1408), 88);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1408), 8), __sl993);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1424), 89);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1424), 8), __sl994);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1440), 90);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1440), 8), __sl995);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1456), 91);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1456), 8), __sl996);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1472), 92);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1472), 8), __sl997);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1488), 93);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1488), 8), __sl998);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1504), 94);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1504), 8), __sl999);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1520), 95);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1520), 8), __sl1000);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1536), 96);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1536), 8), __sl1001);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1552), 97);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1552), 8), __sl1002);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1568), 98);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1568), 8), __sl1003);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1584), 99);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1584), 8), __sl1004);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1600), 100);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1600), 8), __sl1005);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1616), 101);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1616), 8), __sl1006);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1632), 102);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1632), 8), __sl1007);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1648), 103);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1648), 8), __sl1008);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1664), 104);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1664), 8), __sl1009);
+cptr.stI32(cptr.add(defsym_cmap_dump, 1680), 105);
+cptr.stPtr(cptr.add(cptr.add(defsym_cmap_dump, 1680), 8), __sl1010);
 
 /** C ref: earlyarg.c:649 — struct enum_dump[61] */
-const defsym_mon_syms_dump = [
-    { val: S_ANT, nm: __sl1012 },
-    { val: S_BLOB, nm: __sl1013 },
-    { val: S_COCKATRICE, nm: __sl1014 },
-    { val: S_DOG, nm: __sl1015 },
-    { val: S_EYE, nm: __sl1016 },
-    { val: S_FELINE, nm: __sl1017 },
-    { val: S_GREMLIN, nm: __sl1018 },
-    { val: S_HUMANOID, nm: __sl1019 },
-    { val: S_IMP, nm: __sl1020 },
-    { val: S_JELLY, nm: __sl1021 },
-    { val: S_KOBOLD, nm: __sl1022 },
-    { val: S_LEPRECHAUN, nm: __sl1023 },
-    { val: S_MIMIC, nm: __sl1024 },
-    { val: S_NYMPH, nm: __sl1025 },
-    { val: S_ORC, nm: __sl1026 },
-    { val: S_PIERCER, nm: __sl1027 },
-    { val: S_QUADRUPED, nm: __sl1028 },
-    { val: S_RODENT, nm: __sl1029 },
-    { val: S_SPIDER, nm: __sl1030 },
-    { val: S_TRAPPER, nm: __sl1031 },
-    { val: S_UNICORN, nm: __sl1032 },
-    { val: S_VORTEX, nm: __sl1033 },
-    { val: S_WORM, nm: __sl1034 },
-    { val: S_XAN, nm: __sl1035 },
-    { val: S_LIGHT, nm: __sl1036 },
-    { val: S_ZRUTY, nm: __sl1037 },
-    { val: S_ANGEL, nm: __sl1038 },
-    { val: S_BAT, nm: __sl1039 },
-    { val: S_CENTAUR, nm: __sl1040 },
-    { val: S_DRAGON, nm: __sl1041 },
-    { val: S_ELEMENTAL, nm: __sl1042 },
-    { val: S_FUNGUS, nm: __sl1043 },
-    { val: S_GNOME, nm: __sl1044 },
-    { val: S_GIANT, nm: __sl1045 },
-    { val: S_invisible, nm: __sl1046 },
-    { val: S_JABBERWOCK, nm: __sl1047 },
-    { val: S_KOP, nm: __sl1048 },
-    { val: S_LICH, nm: __sl1049 },
-    { val: S_MUMMY, nm: __sl1050 },
-    { val: S_NAGA, nm: __sl1051 },
-    { val: S_OGRE, nm: __sl1052 },
-    { val: S_PUDDING, nm: __sl1053 },
-    { val: S_QUANTMECH, nm: __sl1054 },
-    { val: S_RUSTMONST, nm: __sl1055 },
-    { val: S_SNAKE, nm: __sl1056 },
-    { val: S_TROLL, nm: __sl1057 },
-    { val: S_UMBER, nm: __sl1058 },
-    { val: S_VAMPIRE, nm: __sl1059 },
-    { val: S_WRAITH, nm: __sl1060 },
-    { val: S_XORN, nm: __sl1061 },
-    { val: S_YETI, nm: __sl1062 },
-    { val: S_ZOMBIE, nm: __sl1063 },
-    { val: S_HUMAN, nm: __sl1064 },
-    { val: S_GHOST, nm: __sl1065 },
-    { val: S_GOLEM, nm: __sl1066 },
-    { val: S_DEMON, nm: __sl1067 },
-    { val: S_EEL, nm: __sl1068 },
-    { val: S_LIZARD, nm: __sl1069 },
-    { val: S_WORM_TAIL, nm: __sl1070 },
-    { val: S_MIMIC_DEF, nm: __sl1071 },
-    { val: MAXMCLASSES, nm: __sl1072 }
-];
+const defsym_mon_syms_dump = cptr.alloc(61 * 16);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 0), 1);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 0), 8), __sl1011);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 16), 2);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 16), 8), __sl1012);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 32), 3);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 32), 8), __sl1013);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 48), 4);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 48), 8), __sl1014);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 64), 5);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 64), 8), __sl1015);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 80), 6);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 80), 8), __sl1016);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 96), 7);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 96), 8), __sl1017);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 112), 8);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 112), 8), __sl1018);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 128), 9);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 128), 8), __sl1019);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 144), 10);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 144), 8), __sl1020);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 160), 11);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 160), 8), __sl1021);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 176), 12);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 176), 8), __sl1022);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 192), 13);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 192), 8), __sl1023);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 208), 14);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 208), 8), __sl1024);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 224), 15);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 224), 8), __sl1025);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 240), 16);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 240), 8), __sl1026);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 256), 17);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 256), 8), __sl1027);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 272), 18);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 272), 8), __sl1028);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 288), 19);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 288), 8), __sl1029);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 304), 20);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 304), 8), __sl1030);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 320), 21);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 320), 8), __sl1031);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 336), 22);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 336), 8), __sl1032);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 352), 23);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 352), 8), __sl1033);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 368), 24);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 368), 8), __sl1034);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 384), 25);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 384), 8), __sl1035);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 400), 26);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 400), 8), __sl1036);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 416), 27);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 416), 8), __sl1037);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 432), 28);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 432), 8), __sl1038);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 448), 29);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 448), 8), __sl1039);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 464), 30);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 464), 8), __sl1040);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 480), 31);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 480), 8), __sl1041);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 496), 32);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 496), 8), __sl1042);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 512), 33);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 512), 8), __sl1043);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 528), 34);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 528), 8), __sl1044);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 544), 35);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 544), 8), __sl1045);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 560), 36);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 560), 8), __sl1046);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 576), 37);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 576), 8), __sl1047);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 592), 38);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 592), 8), __sl1048);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 608), 39);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 608), 8), __sl1049);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 624), 40);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 624), 8), __sl1050);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 640), 41);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 640), 8), __sl1051);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 656), 42);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 656), 8), __sl1052);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 672), 43);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 672), 8), __sl1053);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 688), 44);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 688), 8), __sl1054);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 704), 45);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 704), 8), __sl1055);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 720), 46);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 720), 8), __sl1056);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 736), 47);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 736), 8), __sl1057);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 752), 48);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 752), 8), __sl1058);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 768), 49);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 768), 8), __sl1059);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 784), 50);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 784), 8), __sl1060);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 800), 51);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 800), 8), __sl1061);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 816), 52);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 816), 8), __sl1062);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 832), 53);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 832), 8), __sl1063);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 848), 54);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 848), 8), __sl1064);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 864), 55);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 864), 8), __sl1065);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 880), 56);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 880), 8), __sl1066);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 896), 57);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 896), 8), __sl1067);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 912), 58);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 912), 8), __sl1068);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 928), 59);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 928), 8), __sl1069);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 944), 60);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 944), 8), __sl1070);
+cptr.stI32(cptr.add(defsym_mon_syms_dump, 960), 61);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_syms_dump, 960), 8), __sl1071);
 
 /** C ref: earlyarg.c:656 — struct enum_dump[60] */
-const defsym_mon_defchars_dump = [
-    { val: DEF_ANT, nm: __sl1073 },
-    { val: DEF_BLOB, nm: __sl1074 },
-    { val: DEF_COCKATRICE, nm: __sl1075 },
-    { val: DEF_DOG, nm: __sl1076 },
-    { val: DEF_EYE, nm: __sl1077 },
-    { val: DEF_FELINE, nm: __sl1078 },
-    { val: DEF_GREMLIN, nm: __sl1079 },
-    { val: DEF_HUMANOID, nm: __sl1080 },
-    { val: DEF_IMP, nm: __sl1081 },
-    { val: DEF_JELLY, nm: __sl1082 },
-    { val: DEF_KOBOLD, nm: __sl1083 },
-    { val: DEF_LEPRECHAUN, nm: __sl1084 },
-    { val: DEF_MIMIC, nm: __sl1085 },
-    { val: DEF_NYMPH, nm: __sl1086 },
-    { val: DEF_ORC, nm: __sl1087 },
-    { val: DEF_PIERCER, nm: __sl1088 },
-    { val: DEF_QUADRUPED, nm: __sl1089 },
-    { val: DEF_RODENT, nm: __sl1090 },
-    { val: DEF_SPIDER, nm: __sl1091 },
-    { val: DEF_TRAPPER, nm: __sl1092 },
-    { val: DEF_UNICORN, nm: __sl1093 },
-    { val: DEF_VORTEX, nm: __sl1094 },
-    { val: DEF_WORM, nm: __sl1095 },
-    { val: DEF_XAN, nm: __sl1096 },
-    { val: DEF_LIGHT, nm: __sl1097 },
-    { val: DEF_ZRUTY, nm: __sl1098 },
-    { val: DEF_ANGEL, nm: __sl1099 },
-    { val: DEF_BAT, nm: __sl1100 },
-    { val: DEF_CENTAUR, nm: __sl1101 },
-    { val: DEF_DRAGON, nm: __sl1102 },
-    { val: DEF_ELEMENTAL, nm: __sl1103 },
-    { val: DEF_FUNGUS, nm: __sl1104 },
-    { val: DEF_GNOME, nm: __sl1105 },
-    { val: DEF_GIANT, nm: __sl1106 },
-    { val: DEF_INVISIBLE, nm: __sl1107 },
-    { val: DEF_JABBERWOCK, nm: __sl1108 },
-    { val: DEF_KOP, nm: __sl1109 },
-    { val: DEF_LICH, nm: __sl1110 },
-    { val: DEF_MUMMY, nm: __sl1111 },
-    { val: DEF_NAGA, nm: __sl1112 },
-    { val: DEF_OGRE, nm: __sl1113 },
-    { val: DEF_PUDDING, nm: __sl1114 },
-    { val: DEF_QUANTMECH, nm: __sl1115 },
-    { val: DEF_RUSTMONST, nm: __sl1116 },
-    { val: DEF_SNAKE, nm: __sl1117 },
-    { val: DEF_TROLL, nm: __sl1118 },
-    { val: DEF_UMBER, nm: __sl1119 },
-    { val: DEF_VAMPIRE, nm: __sl1120 },
-    { val: DEF_WRAITH, nm: __sl1121 },
-    { val: DEF_XORN, nm: __sl1122 },
-    { val: DEF_YETI, nm: __sl1123 },
-    { val: DEF_ZOMBIE, nm: __sl1124 },
-    { val: DEF_HUMAN, nm: __sl1125 },
-    { val: DEF_GHOST, nm: __sl1126 },
-    { val: DEF_GOLEM, nm: __sl1127 },
-    { val: DEF_DEMON, nm: __sl1128 },
-    { val: DEF_EEL, nm: __sl1129 },
-    { val: DEF_LIZARD, nm: __sl1130 },
-    { val: DEF_WORM_TAIL, nm: __sl1131 },
-    { val: DEF_MIMIC_DEF, nm: __sl1132 }
-];
+const defsym_mon_defchars_dump = cptr.alloc(60 * 16);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 0), 97);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 0), 8), __sl1072);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 16), 98);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 16), 8), __sl1073);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 32), 99);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 32), 8), __sl1074);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 48), 100);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 48), 8), __sl1075);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 64), 101);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 64), 8), __sl1076);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 80), 102);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 80), 8), __sl1077);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 96), 103);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 96), 8), __sl1078);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 112), 104);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 112), 8), __sl1079);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 128), 105);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 128), 8), __sl1080);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 144), 106);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 144), 8), __sl1081);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 160), 107);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 160), 8), __sl1082);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 176), 108);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 176), 8), __sl1083);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 192), 109);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 192), 8), __sl1084);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 208), 110);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 208), 8), __sl1085);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 224), 111);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 224), 8), __sl1086);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 240), 112);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 240), 8), __sl1087);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 256), 113);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 256), 8), __sl1088);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 272), 114);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 272), 8), __sl1089);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 288), 115);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 288), 8), __sl1090);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 304), 116);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 304), 8), __sl1091);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 320), 117);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 320), 8), __sl1092);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 336), 118);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 336), 8), __sl1093);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 352), 119);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 352), 8), __sl1094);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 368), 120);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 368), 8), __sl1095);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 384), 121);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 384), 8), __sl1096);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 400), 122);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 400), 8), __sl1097);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 416), 65);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 416), 8), __sl1098);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 432), 66);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 432), 8), __sl1099);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 448), 67);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 448), 8), __sl1100);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 464), 68);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 464), 8), __sl1101);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 480), 69);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 480), 8), __sl1102);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 496), 70);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 496), 8), __sl1103);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 512), 71);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 512), 8), __sl1104);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 528), 72);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 528), 8), __sl1105);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 544), 73);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 544), 8), __sl1106);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 560), 74);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 560), 8), __sl1107);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 576), 75);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 576), 8), __sl1108);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 592), 76);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 592), 8), __sl1109);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 608), 77);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 608), 8), __sl1110);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 624), 78);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 624), 8), __sl1111);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 640), 79);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 640), 8), __sl1112);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 656), 80);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 656), 8), __sl1113);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 672), 81);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 672), 8), __sl1114);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 688), 82);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 688), 8), __sl1115);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 704), 83);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 704), 8), __sl1116);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 720), 84);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 720), 8), __sl1117);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 736), 85);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 736), 8), __sl1118);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 752), 86);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 752), 8), __sl1119);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 768), 87);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 768), 8), __sl1120);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 784), 88);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 784), 8), __sl1121);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 800), 89);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 800), 8), __sl1122);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 816), 90);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 816), 8), __sl1123);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 832), 64);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 832), 8), __sl1124);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 848), 32);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 848), 8), __sl1125);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 864), 39);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 864), 8), __sl1126);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 880), 38);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 880), 8), __sl1127);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 896), 59);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 896), 8), __sl1128);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 912), 58);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 912), 8), __sl1129);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 928), 126);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 928), 8), __sl1130);
+cptr.stI32(cptr.add(defsym_mon_defchars_dump, 944), 93);
+cptr.stPtr(cptr.add(cptr.add(defsym_mon_defchars_dump, 944), 8), __sl1131);
 
 /** C ref: earlyarg.c:662 — struct enum_dump[17] */
-const objclass_defchars_dump = [
-    { val: ILLOBJ_SYM, nm: __sl1133 },
-    { val: WEAPON_SYM, nm: __sl1134 },
-    { val: ARMOR_SYM, nm: __sl1135 },
-    { val: RING_SYM, nm: __sl1136 },
-    { val: AMULET_SYM, nm: __sl1137 },
-    { val: TOOL_SYM, nm: __sl1138 },
-    { val: FOOD_SYM, nm: __sl1139 },
-    { val: POTION_SYM, nm: __sl1140 },
-    { val: SCROLL_SYM, nm: __sl1141 },
-    { val: SPBOOK_SYM, nm: __sl1142 },
-    { val: WAND_SYM, nm: __sl1143 },
-    { val: GOLD_SYM, nm: __sl1144 },
-    { val: GEM_SYM, nm: __sl1145 },
-    { val: ROCK_SYM, nm: __sl1146 },
-    { val: BALL_SYM, nm: __sl1147 },
-    { val: CHAIN_SYM, nm: __sl1148 },
-    { val: VENOM_SYM, nm: __sl1149 }
-];
+const objclass_defchars_dump = cptr.alloc(17 * 16);
+cptr.stI32(cptr.add(objclass_defchars_dump, 0), 93);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 0), 8), __sl1132);
+cptr.stI32(cptr.add(objclass_defchars_dump, 16), 41);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 16), 8), __sl1133);
+cptr.stI32(cptr.add(objclass_defchars_dump, 32), 91);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 32), 8), __sl1134);
+cptr.stI32(cptr.add(objclass_defchars_dump, 48), 61);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 48), 8), __sl1135);
+cptr.stI32(cptr.add(objclass_defchars_dump, 64), 34);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 64), 8), __sl1136);
+cptr.stI32(cptr.add(objclass_defchars_dump, 80), 40);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 80), 8), __sl1137);
+cptr.stI32(cptr.add(objclass_defchars_dump, 96), 37);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 96), 8), __sl1138);
+cptr.stI32(cptr.add(objclass_defchars_dump, 112), 33);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 112), 8), __sl1139);
+cptr.stI32(cptr.add(objclass_defchars_dump, 128), 63);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 128), 8), __sl1140);
+cptr.stI32(cptr.add(objclass_defchars_dump, 144), 43);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 144), 8), __sl1141);
+cptr.stI32(cptr.add(objclass_defchars_dump, 160), 47);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 160), 8), __sl1142);
+cptr.stI32(cptr.add(objclass_defchars_dump, 176), 36);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 176), 8), __sl1143);
+cptr.stI32(cptr.add(objclass_defchars_dump, 192), 42);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 192), 8), __sl1144);
+cptr.stI32(cptr.add(objclass_defchars_dump, 208), 96);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 208), 8), __sl1145);
+cptr.stI32(cptr.add(objclass_defchars_dump, 224), 48);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 224), 8), __sl1146);
+cptr.stI32(cptr.add(objclass_defchars_dump, 240), 95);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 240), 8), __sl1147);
+cptr.stI32(cptr.add(objclass_defchars_dump, 256), 46);
+cptr.stPtr(cptr.add(cptr.add(objclass_defchars_dump, 256), 8), __sl1148);
 
 /** C ref: earlyarg.c:668 — struct enum_dump[18] */
-const objclass_classes_dump = [
-    { val: ILLOBJ_CLASS, nm: __sl1150 },
-    { val: WEAPON_CLASS, nm: __sl1151 },
-    { val: ARMOR_CLASS, nm: __sl1152 },
-    { val: RING_CLASS, nm: __sl1153 },
-    { val: AMULET_CLASS, nm: __sl1154 },
-    { val: TOOL_CLASS, nm: __sl1155 },
-    { val: FOOD_CLASS, nm: __sl1156 },
-    { val: POTION_CLASS, nm: __sl1157 },
-    { val: SCROLL_CLASS, nm: __sl1158 },
-    { val: SPBOOK_CLASS, nm: __sl1159 },
-    { val: WAND_CLASS, nm: __sl1160 },
-    { val: COIN_CLASS, nm: __sl1161 },
-    { val: GEM_CLASS, nm: __sl1162 },
-    { val: ROCK_CLASS, nm: __sl1163 },
-    { val: BALL_CLASS, nm: __sl1164 },
-    { val: CHAIN_CLASS, nm: __sl1165 },
-    { val: VENOM_CLASS, nm: __sl1166 },
-    { val: MAXOCLASSES, nm: __sl1167 }
-];
+const objclass_classes_dump = cptr.alloc(18 * 16);
+cptr.stI32(cptr.add(objclass_classes_dump, 0), 1);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 0), 8), __sl1149);
+cptr.stI32(cptr.add(objclass_classes_dump, 16), 2);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 16), 8), __sl1150);
+cptr.stI32(cptr.add(objclass_classes_dump, 32), 3);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 32), 8), __sl1151);
+cptr.stI32(cptr.add(objclass_classes_dump, 48), 4);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 48), 8), __sl1152);
+cptr.stI32(cptr.add(objclass_classes_dump, 64), 5);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 64), 8), __sl1153);
+cptr.stI32(cptr.add(objclass_classes_dump, 80), 6);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 80), 8), __sl1154);
+cptr.stI32(cptr.add(objclass_classes_dump, 96), 7);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 96), 8), __sl1155);
+cptr.stI32(cptr.add(objclass_classes_dump, 112), 8);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 112), 8), __sl1156);
+cptr.stI32(cptr.add(objclass_classes_dump, 128), 9);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 128), 8), __sl1157);
+cptr.stI32(cptr.add(objclass_classes_dump, 144), 10);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 144), 8), __sl1158);
+cptr.stI32(cptr.add(objclass_classes_dump, 160), 11);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 160), 8), __sl1159);
+cptr.stI32(cptr.add(objclass_classes_dump, 176), 12);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 176), 8), __sl1160);
+cptr.stI32(cptr.add(objclass_classes_dump, 192), 13);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 192), 8), __sl1161);
+cptr.stI32(cptr.add(objclass_classes_dump, 208), 14);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 208), 8), __sl1162);
+cptr.stI32(cptr.add(objclass_classes_dump, 224), 15);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 224), 8), __sl1163);
+cptr.stI32(cptr.add(objclass_classes_dump, 240), 16);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 240), 8), __sl1164);
+cptr.stI32(cptr.add(objclass_classes_dump, 256), 17);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 256), 8), __sl1165);
+cptr.stI32(cptr.add(objclass_classes_dump, 272), 18);
+cptr.stPtr(cptr.add(cptr.add(objclass_classes_dump, 272), 8), __sl1166);
 
 /** C ref: earlyarg.c:675 — struct enum_dump[17] */
-const objclass_syms_dump = [
-    { val: S_strange_obj, nm: __sl1168 },
-    { val: S_weapon, nm: __sl1169 },
-    { val: S_armor, nm: __sl1170 },
-    { val: S_ring, nm: __sl1171 },
-    { val: S_amulet, nm: __sl1172 },
-    { val: S_tool, nm: __sl1173 },
-    { val: S_food, nm: __sl1174 },
-    { val: S_potion, nm: __sl1175 },
-    { val: S_scroll, nm: __sl1176 },
-    { val: S_book, nm: __sl1177 },
-    { val: S_wand, nm: __sl1178 },
-    { val: S_coin, nm: __sl1179 },
-    { val: S_gem, nm: __sl1180 },
-    { val: S_rock, nm: __sl1181 },
-    { val: S_ball, nm: __sl1182 },
-    { val: S_chain, nm: __sl1183 },
-    { val: S_venom, nm: __sl1184 }
-];
+const objclass_syms_dump = cptr.alloc(17 * 16);
+cptr.stI32(cptr.add(objclass_syms_dump, 0), 1);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 0), 8), __sl1167);
+cptr.stI32(cptr.add(objclass_syms_dump, 16), 2);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 16), 8), __sl1168);
+cptr.stI32(cptr.add(objclass_syms_dump, 32), 3);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 32), 8), __sl1169);
+cptr.stI32(cptr.add(objclass_syms_dump, 48), 4);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 48), 8), __sl1170);
+cptr.stI32(cptr.add(objclass_syms_dump, 64), 5);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 64), 8), __sl1171);
+cptr.stI32(cptr.add(objclass_syms_dump, 80), 6);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 80), 8), __sl1172);
+cptr.stI32(cptr.add(objclass_syms_dump, 96), 7);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 96), 8), __sl1173);
+cptr.stI32(cptr.add(objclass_syms_dump, 112), 8);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 112), 8), __sl1174);
+cptr.stI32(cptr.add(objclass_syms_dump, 128), 9);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 128), 8), __sl1175);
+cptr.stI32(cptr.add(objclass_syms_dump, 144), 10);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 144), 8), __sl1176);
+cptr.stI32(cptr.add(objclass_syms_dump, 160), 11);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 160), 8), __sl1177);
+cptr.stI32(cptr.add(objclass_syms_dump, 176), 12);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 176), 8), __sl1178);
+cptr.stI32(cptr.add(objclass_syms_dump, 192), 13);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 192), 8), __sl1179);
+cptr.stI32(cptr.add(objclass_syms_dump, 208), 14);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 208), 8), __sl1180);
+cptr.stI32(cptr.add(objclass_syms_dump, 224), 15);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 224), 8), __sl1181);
+cptr.stI32(cptr.add(objclass_syms_dump, 240), 16);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 240), 8), __sl1182);
+cptr.stI32(cptr.add(objclass_syms_dump, 256), 17);
+cptr.stPtr(cptr.add(cptr.add(objclass_syms_dump, 256), 8), __sl1183);
 
 /** C ref: earlyarg.c:681 — struct enum_dump[35] */
-const arti_enum_dump = [
-    { val: ART_NONARTIFACT, nm: __sl1185 },
-    { val: ART_EXCALIBUR, nm: __sl1186 },
-    { val: ART_STORMBRINGER, nm: __sl1187 },
-    { val: ART_MJOLLNIR, nm: __sl1188 },
-    { val: ART_CLEAVER, nm: __sl1189 },
-    { val: ART_GRIMTOOTH, nm: __sl1190 },
-    { val: ART_ORCRIST, nm: __sl1191 },
-    { val: ART_STING, nm: __sl1192 },
-    { val: ART_MAGICBANE, nm: __sl1193 },
-    { val: ART_FROST_BRAND, nm: __sl1194 },
-    { val: ART_FIRE_BRAND, nm: __sl1195 },
-    { val: ART_DRAGONBANE, nm: __sl1196 },
-    { val: ART_DEMONBANE, nm: __sl1197 },
-    { val: ART_WEREBANE, nm: __sl1198 },
-    { val: ART_GRAYSWANDIR, nm: __sl1199 },
-    { val: ART_GIANTSLAYER, nm: __sl1200 },
-    { val: ART_OGRESMASHER, nm: __sl1201 },
-    { val: ART_TROLLSBANE, nm: __sl1202 },
-    { val: ART_VORPAL_BLADE, nm: __sl1203 },
-    { val: ART_SNICKERSNEE, nm: __sl1204 },
-    { val: ART_SUNSWORD, nm: __sl1205 },
-    { val: ART_ORB_OF_DETECTION, nm: __sl1206 },
-    { val: ART_HEART_OF_AHRIMAN, nm: __sl1207 },
-    { val: ART_SCEPTRE_OF_MIGHT, nm: __sl1208 },
-    { val: ART_STAFF_OF_AESCULAPIUS, nm: __sl1209 },
-    { val: ART_MAGIC_MIRROR_OF_MERLIN, nm: __sl1210 },
-    { val: ART_EYES_OF_THE_OVERWORLD, nm: __sl1211 },
-    { val: ART_MITRE_OF_HOLINESS, nm: __sl1212 },
-    { val: ART_LONGBOW_OF_DIANA, nm: __sl1213 },
-    { val: ART_MASTER_KEY_OF_THIEVERY, nm: __sl1214 },
-    { val: ART_TSURUGI_OF_MURAMASA, nm: __sl1215 },
-    { val: ART_YENDORIAN_EXPRESS_CARD, nm: __sl1216 },
-    { val: ART_ORB_OF_FATE, nm: __sl1217 },
-    { val: ART_EYE_OF_THE_AETHIOPICA, nm: __sl1218 },
-    { val: AFTER_LAST_ARTIFACT, nm: __sl1219 }
-];
+const arti_enum_dump = cptr.alloc(35 * 16);
+cptr.stI32(cptr.add(arti_enum_dump, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 0), 8), __sl1184);
+cptr.stI32(cptr.add(arti_enum_dump, 16), 1);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 16), 8), __sl1185);
+cptr.stI32(cptr.add(arti_enum_dump, 32), 2);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 32), 8), __sl1186);
+cptr.stI32(cptr.add(arti_enum_dump, 48), 3);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 48), 8), __sl1187);
+cptr.stI32(cptr.add(arti_enum_dump, 64), 4);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 64), 8), __sl1188);
+cptr.stI32(cptr.add(arti_enum_dump, 80), 5);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 80), 8), __sl1189);
+cptr.stI32(cptr.add(arti_enum_dump, 96), 6);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 96), 8), __sl1190);
+cptr.stI32(cptr.add(arti_enum_dump, 112), 7);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 112), 8), __sl1191);
+cptr.stI32(cptr.add(arti_enum_dump, 128), 8);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 128), 8), __sl1192);
+cptr.stI32(cptr.add(arti_enum_dump, 144), 9);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 144), 8), __sl1193);
+cptr.stI32(cptr.add(arti_enum_dump, 160), 10);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 160), 8), __sl1194);
+cptr.stI32(cptr.add(arti_enum_dump, 176), 11);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 176), 8), __sl1195);
+cptr.stI32(cptr.add(arti_enum_dump, 192), 12);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 192), 8), __sl1196);
+cptr.stI32(cptr.add(arti_enum_dump, 208), 13);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 208), 8), __sl1197);
+cptr.stI32(cptr.add(arti_enum_dump, 224), 14);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 224), 8), __sl1198);
+cptr.stI32(cptr.add(arti_enum_dump, 240), 15);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 240), 8), __sl1199);
+cptr.stI32(cptr.add(arti_enum_dump, 256), 16);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 256), 8), __sl1200);
+cptr.stI32(cptr.add(arti_enum_dump, 272), 17);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 272), 8), __sl1201);
+cptr.stI32(cptr.add(arti_enum_dump, 288), 18);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 288), 8), __sl1202);
+cptr.stI32(cptr.add(arti_enum_dump, 304), 19);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 304), 8), __sl1203);
+cptr.stI32(cptr.add(arti_enum_dump, 320), 20);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 320), 8), __sl1204);
+cptr.stI32(cptr.add(arti_enum_dump, 336), 21);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 336), 8), __sl1205);
+cptr.stI32(cptr.add(arti_enum_dump, 352), 22);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 352), 8), __sl1206);
+cptr.stI32(cptr.add(arti_enum_dump, 368), 23);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 368), 8), __sl1207);
+cptr.stI32(cptr.add(arti_enum_dump, 384), 24);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 384), 8), __sl1208);
+cptr.stI32(cptr.add(arti_enum_dump, 400), 25);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 400), 8), __sl1209);
+cptr.stI32(cptr.add(arti_enum_dump, 416), 26);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 416), 8), __sl1210);
+cptr.stI32(cptr.add(arti_enum_dump, 432), 27);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 432), 8), __sl1211);
+cptr.stI32(cptr.add(arti_enum_dump, 448), 28);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 448), 8), __sl1212);
+cptr.stI32(cptr.add(arti_enum_dump, 464), 29);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 464), 8), __sl1213);
+cptr.stI32(cptr.add(arti_enum_dump, 480), 30);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 480), 8), __sl1214);
+cptr.stI32(cptr.add(arti_enum_dump, 496), 31);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 496), 8), __sl1215);
+cptr.stI32(cptr.add(arti_enum_dump, 512), 32);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 512), 8), __sl1216);
+cptr.stI32(cptr.add(arti_enum_dump, 528), 33);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 528), 8), __sl1217);
+cptr.stI32(cptr.add(arti_enum_dump, 544), 34);
+cptr.stPtr(cptr.add(cptr.add(arti_enum_dump, 544), 8), __sl1218);
 
 /** C ref: earlyarg.c:689 — enum */
-const MCAST_DUMPENUM_PSI_BOLT = 0;
-const MCAST_DUMPENUM_OPEN_WOUNDS = 1;
-const MCAST_DUMPENUM_CURE_SELF = 2;
-const MCAST_DUMPENUM_HASTE_SELF = 3;
-const MCAST_DUMPENUM_CONFUSE_YOU = 4;
-const MCAST_DUMPENUM_STUN_YOU = 5;
-const MCAST_DUMPENUM_DISAPPEAR = 6;
-const MCAST_DUMPENUM_PARALYZE = 7;
-const MCAST_DUMPENUM_BLIND_YOU = 8;
-const MCAST_DUMPENUM_WEAKEN_YOU = 9;
-const MCAST_DUMPENUM_DESTRY_ARMR = 10;
-const MCAST_DUMPENUM_INSECTS = 11;
-const MCAST_DUMPENUM_CURSE_ITEMS = 12;
-const MCAST_DUMPENUM_LIGHTNING = 13;
-const MCAST_DUMPENUM_FIRE_PILLAR = 14;
-const MCAST_DUMPENUM_GEYSER = 15;
-const MCAST_DUMPENUM_AGGRAVATION = 16;
-const MCAST_DUMPENUM_SUMMON_MONS = 17;
-const MCAST_DUMPENUM_CLONE_WIZ = 18;
-const MCAST_DUMPENUM_DEATH_TOUCH = 19;
+export const MCAST_DUMPENUM_PSI_BOLT = 0;
+export const MCAST_DUMPENUM_OPEN_WOUNDS = 1;
+export const MCAST_DUMPENUM_CURE_SELF = 2;
+export const MCAST_DUMPENUM_HASTE_SELF = 3;
+export const MCAST_DUMPENUM_CONFUSE_YOU = 4;
+export const MCAST_DUMPENUM_STUN_YOU = 5;
+export const MCAST_DUMPENUM_DISAPPEAR = 6;
+export const MCAST_DUMPENUM_PARALYZE = 7;
+export const MCAST_DUMPENUM_BLIND_YOU = 8;
+export const MCAST_DUMPENUM_WEAKEN_YOU = 9;
+export const MCAST_DUMPENUM_DESTRY_ARMR = 10;
+export const MCAST_DUMPENUM_INSECTS = 11;
+export const MCAST_DUMPENUM_CURSE_ITEMS = 12;
+export const MCAST_DUMPENUM_LIGHTNING = 13;
+export const MCAST_DUMPENUM_FIRE_PILLAR = 14;
+export const MCAST_DUMPENUM_GEYSER = 15;
+export const MCAST_DUMPENUM_AGGRAVATION = 16;
+export const MCAST_DUMPENUM_SUMMON_MONS = 17;
+export const MCAST_DUMPENUM_CLONE_WIZ = 18;
+export const MCAST_DUMPENUM_DEATH_TOUCH = 19;
 
 /** C ref: earlyarg.c:695 — struct enum_dump[20] */
-const mcastu_enum_dump = [
-    { val: MCAST_DUMPENUM_PSI_BOLT, nm: __sl1220 },
-    { val: MCAST_DUMPENUM_OPEN_WOUNDS, nm: __sl1221 },
-    { val: MCAST_DUMPENUM_CURE_SELF, nm: __sl1222 },
-    { val: MCAST_DUMPENUM_HASTE_SELF, nm: __sl1223 },
-    { val: MCAST_DUMPENUM_CONFUSE_YOU, nm: __sl1224 },
-    { val: MCAST_DUMPENUM_STUN_YOU, nm: __sl1225 },
-    { val: MCAST_DUMPENUM_DISAPPEAR, nm: __sl1226 },
-    { val: MCAST_DUMPENUM_PARALYZE, nm: __sl1227 },
-    { val: MCAST_DUMPENUM_BLIND_YOU, nm: __sl1228 },
-    { val: MCAST_DUMPENUM_WEAKEN_YOU, nm: __sl1229 },
-    { val: MCAST_DUMPENUM_DESTRY_ARMR, nm: __sl1230 },
-    { val: MCAST_DUMPENUM_INSECTS, nm: __sl1231 },
-    { val: MCAST_DUMPENUM_CURSE_ITEMS, nm: __sl1232 },
-    { val: MCAST_DUMPENUM_LIGHTNING, nm: __sl1233 },
-    { val: MCAST_DUMPENUM_FIRE_PILLAR, nm: __sl1234 },
-    { val: MCAST_DUMPENUM_GEYSER, nm: __sl1235 },
-    { val: MCAST_DUMPENUM_AGGRAVATION, nm: __sl1236 },
-    { val: MCAST_DUMPENUM_SUMMON_MONS, nm: __sl1237 },
-    { val: MCAST_DUMPENUM_CLONE_WIZ, nm: __sl1238 },
-    { val: MCAST_DUMPENUM_DEATH_TOUCH, nm: __sl1239 }
-];
+const mcastu_enum_dump = cptr.alloc(20 * 16);
+cptr.stI32(cptr.add(mcastu_enum_dump, 0), 0);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 0), 8), __sl1219);
+cptr.stI32(cptr.add(mcastu_enum_dump, 16), 1);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 16), 8), __sl1220);
+cptr.stI32(cptr.add(mcastu_enum_dump, 32), 2);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 32), 8), __sl1221);
+cptr.stI32(cptr.add(mcastu_enum_dump, 48), 3);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 48), 8), __sl1222);
+cptr.stI32(cptr.add(mcastu_enum_dump, 64), 4);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 64), 8), __sl1223);
+cptr.stI32(cptr.add(mcastu_enum_dump, 80), 5);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 80), 8), __sl1224);
+cptr.stI32(cptr.add(mcastu_enum_dump, 96), 6);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 96), 8), __sl1225);
+cptr.stI32(cptr.add(mcastu_enum_dump, 112), 7);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 112), 8), __sl1226);
+cptr.stI32(cptr.add(mcastu_enum_dump, 128), 8);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 128), 8), __sl1227);
+cptr.stI32(cptr.add(mcastu_enum_dump, 144), 9);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 144), 8), __sl1228);
+cptr.stI32(cptr.add(mcastu_enum_dump, 160), 10);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 160), 8), __sl1229);
+cptr.stI32(cptr.add(mcastu_enum_dump, 176), 11);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 176), 8), __sl1230);
+cptr.stI32(cptr.add(mcastu_enum_dump, 192), 12);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 192), 8), __sl1231);
+cptr.stI32(cptr.add(mcastu_enum_dump, 208), 13);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 208), 8), __sl1232);
+cptr.stI32(cptr.add(mcastu_enum_dump, 224), 14);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 224), 8), __sl1233);
+cptr.stI32(cptr.add(mcastu_enum_dump, 240), 15);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 240), 8), __sl1234);
+cptr.stI32(cptr.add(mcastu_enum_dump, 256), 16);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 256), 8), __sl1235);
+cptr.stI32(cptr.add(mcastu_enum_dump, 272), 17);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 272), 8), __sl1236);
+cptr.stI32(cptr.add(mcastu_enum_dump, 288), 18);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 288), 8), __sl1237);
+cptr.stI32(cptr.add(mcastu_enum_dump, 304), 19);
+cptr.stPtr(cptr.add(cptr.add(mcastu_enum_dump, 304), 8), __sl1238);
 
-const __static_dump_enums_omdump = [
-    { val: LAST_GENERIC, nm: __sl1245 },
-    { val: OBJCLASS_HACK, nm: __sl1246 },
-    { val: FIRST_OBJECT, nm: __sl1247 },
-    { val: FIRST_AMULET, nm: __sl1248 },
-    { val: LAST_AMULET, nm: __sl1249 },
-    { val: FIRST_SPELL, nm: __sl1250 },
-    { val: LAST_SPELL, nm: __sl1251 },
-    { val: MAXSPELL, nm: __sl1252 },
-    { val: FIRST_REAL_GEM, nm: __sl1253 },
-    { val: LAST_REAL_GEM, nm: __sl1254 },
-    { val: FIRST_GLASS_GEM, nm: __sl1255 },
-    { val: LAST_GLASS_GEM, nm: __sl1256 },
-    { val: NUM_REAL_GEMS, nm: __sl1257 },
-    { val: NUM_GLASS_GEMS, nm: __sl1258 },
-    { val: MAX_GLYPH, nm: __sl1259 }
-]; /** C ref: earlyarg.c:724 — struct enum_dump[15] (function-static) */
-const __static_dump_enums_ed = [
-    cptr.decay(monsdump),
-    cptr.decay(objdump),
-    cptr.decay(__static_dump_enums_omdump),
-    cptr.decay(defsym_cmap_dump),
-    cptr.decay(defsym_mon_syms_dump),
-    cptr.decay(defsym_mon_defchars_dump),
-    cptr.decay(objclass_defchars_dump),
-    cptr.decay(objclass_classes_dump),
-    cptr.decay(objclass_syms_dump),
-    cptr.decay(arti_enum_dump),
-    cptr.decay(mcastu_enum_dump)
-]; /** C ref: earlyarg.c:743 — struct enum_dump *[11] (function-static) */
-const __static_dump_enums_edmp = [
-    { title: __sl1260, pfx: __sl1261, unprefixed_count: (5), dumpflgs: 0, szd: monsdump.length },
-    { title: __sl1262, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: objdump.length },
-    { title: __sl1263, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: omdump.length },
-    { title: __sl1264, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: defsym_cmap_dump.length },
-    { title: __sl1265, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: defsym_mon_syms_dump.length },
-    { title: __sl1266, pfx: __sl25, unprefixed_count: 1, dumpflgs: 1, szd: defsym_mon_defchars_dump.length },
-    { title: __sl1267, pfx: __sl25, unprefixed_count: 1, dumpflgs: 1, szd: objclass_defchars_dump.length },
-    { title: __sl1268, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: objclass_classes_dump.length },
-    { title: __sl1269, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: objclass_syms_dump.length },
-    { title: __sl1270, pfx: __sl25, unprefixed_count: 1, dumpflgs: 0, szd: arti_enum_dump.length },
-    { title: __sl1271, pfx: __sl1272, unprefixed_count: 0, dumpflgs: 0, szd: mcastu_enum_dump.length }
-]; /** C ref: earlyarg.c:760 — struct de_params[11] (function-static) */
+const __static_dump_enums_omdump = cptr.alloc(15 * 16);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 0), 17);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 0), 8), __sl1244);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 16), 17);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 16), 8), __sl1245);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 32), 18);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 32), 8), __sl1246);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 48), 201);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 48), 8), __sl1247);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 64), 213);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 64), 8), __sl1248);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 80), 366);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 80), 8), __sl1249);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 96), 407);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 96), 8), __sl1250);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 112), 42);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 112), 8), __sl1251);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 128), 439);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 128), 8), __sl1252);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 144), 460);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 144), 8), __sl1253);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 160), 461);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 160), 8), __sl1254);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 176), 469);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 176), 8), __sl1255);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 192), 22);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 192), 8), __sl1256);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 208), 9);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 208), 8), __sl1257);
+cptr.stI32(cptr.add(__static_dump_enums_omdump, 224), 9624);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_omdump, 224), 8), __sl1258); /** C ref: earlyarg.c:724 — struct enum_dump[15] (function-static) */
+const __static_dump_enums_ed = cptr.alloc(11 * 8);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 0), monsdump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 8), objdump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 16), __static_dump_enums_omdump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 24), defsym_cmap_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 32), defsym_mon_syms_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 40), defsym_mon_defchars_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 48), objclass_defchars_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 56), objclass_classes_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 64), objclass_syms_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 72), arti_enum_dump);
+cptr.stPtr(cptr.add(__static_dump_enums_ed, 80), mcastu_enum_dump); /** C ref: earlyarg.c:743 — struct enum_dump *[11] (function-static) */
+const __static_dump_enums_edmp = cptr.alloc(11 * 32);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 0), __sl1259);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 0), 8), __sl1260);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 0), 16), (5));
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 0), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 0), 24), 388);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 32), __sl1261);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 32), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 32), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 32), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 32), 24), 482);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 64), __sl1262);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 64), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 64), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 64), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 64), 24), 15);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 96), __sl1263);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 96), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 96), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 96), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 96), 24), 106);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 128), __sl1264);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 128), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 128), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 128), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 128), 24), 61);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 160), __sl1265);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 160), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 160), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 160), 20), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 160), 24), 60);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 192), __sl1266);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 192), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 192), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 192), 20), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 192), 24), 17);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 224), __sl1267);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 224), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 224), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 224), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 224), 24), 18);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 256), __sl1268);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 256), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 256), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 256), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 256), 24), 17);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 288), __sl1269);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 288), 8), __sl24);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 288), 16), 1);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 288), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 288), 24), 35);
+cptr.stPtr(cptr.add(__static_dump_enums_edmp, 320), __sl1270);
+cptr.stPtr(cptr.add(cptr.add(__static_dump_enums_edmp, 320), 8), __sl1271);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 320), 16), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 320), 20), 0);
+cptr.stI32(cptr.add(cptr.add(__static_dump_enums_edmp, 320), 24), 20); /** C ref: earlyarg.c:760 — struct de_params[11] (function-static) */
 
 /** C ref: earlyarg.c:706 */
 function dump_enums() {
@@ -3004,22 +4277,22 @@ function dump_enums() {
     let j;
     let nmwidth;
     let comment = new Uint8Array(256);
-    for (i = 0; i < NUM_ENUM_DUMPS; ++i) {
-        raw_printf(__sl1240, __static_dump_enums_edmp[i].title);
-        for (j = 0; j < __static_dump_enums_edmp[i].szd; ++j) {
-            nmprefix = (j >= ((__static_dump_enums_edmp[i].szd - __static_dump_enums_edmp[i].unprefixed_count) | 0)) ? __sl25 : __static_dump_enums_edmp[i].pfx;
+    for (i = 0; i < 11; ++i) {
+        raw_printf(__sl1239, cptr.ldPtr(cptr.add(__static_dump_enums_edmp, i, 32)));
+        for (j = 0; j < cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 24)); ++j) {
+            nmprefix = (j >= ((cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 24)) - cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 16))) | 0)) ? __sl24 : cptr.ldPtr(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 8));
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
-            if (__static_dump_enums_edmp[i].dumpflgs > 0) {
-                nh_snprintf(__sl1241, 788, cptr.decay(comment), 256n, __sl1242, (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_dump_enums_ed), i)), j, 16)) >= 32 && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_dump_enums_ed), i)), j, 16)) <= 126) ? cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_dump_enums_ed), i)), j, 16)) : 32);
+            if (cptr.ldI32(cptr.add(cptr.add(__static_dump_enums_edmp, i, 32), 20)) > 0) {
+                nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) >= 32 && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) <= 126) ? cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)) : 32);
             } else {
-                cptr.st1(cptr.add(cptr.decay(comment), 0), 0);
+                cptr.st1(cptr.add(cptr.decay(comment), 0, 1), 0);
             }
-            raw_printf(__sl1243, nmprefix, -nmwidth, cptr.ldPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_dump_enums_ed), i)), j, 16), 8)), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_dump_enums_ed), i)), j, 16)), cptr.decay(comment));
+            raw_printf(__sl1242, nmprefix, -nmwidth, cptr.ldPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16), 8)), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(__static_dump_enums_ed, i, 8)), j, 16)), cptr.decay(comment));
         }
-        (windowprocs.win_raw_print)(__sl1244);
-        (windowprocs.win_raw_print)(__sl25);
+        (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl1243);
+        (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl24);
     }
-    (windowprocs.win_raw_print)(__sl25);
+    (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl24);
 }
 
 /** C ref: earlyarg.c:806 */

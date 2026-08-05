@@ -36,7 +36,7 @@ const __sl21 = cptr.lit(".");
 let nomakedefs_populated = 0;
 
 /** C ref: date.c:25 — struct nomakedefs_s */
-let nomakedefs = cptr.alloc(96);
+export let nomakedefs = cptr.alloc(96);
 cptr.stPtr(nomakedefs, __sl0);
 cptr.stPtr(cptr.add(nomakedefs, 8), __sl1);
 cptr.stPtr(cptr.add(nomakedefs, 16), null);
@@ -56,31 +56,31 @@ export function populate_nomakedefs(version) {
     let tmpbuf1 = new Uint8Array(256);
     let tmpbuf2 = new Uint8Array(256);
     let strp;
-    let mth = [__sl4, __sl5, __sl6, __sl7, __sl8, __sl9, __sl10, __sl11, __sl12, __sl13, __sl14, __sl15];
+    let mth = cptr.alloc(12 * 8); cptr.stPtr(cptr.add(mth, 0), __sl4); cptr.stPtr(cptr.add(mth, 8), __sl5); cptr.stPtr(cptr.add(mth, 16), __sl6); cptr.stPtr(cptr.add(mth, 24), __sl7); cptr.stPtr(cptr.add(mth, 32), __sl8); cptr.stPtr(cptr.add(mth, 40), __sl9); cptr.stPtr(cptr.add(mth, 48), __sl10); cptr.stPtr(cptr.add(mth, 56), __sl11); cptr.stPtr(cptr.add(mth, 64), __sl12); cptr.stPtr(cptr.add(mth, 72), __sl13); cptr.stPtr(cptr.add(mth, 80), __sl14); cptr.stPtr(cptr.add(mth, 88), __sl15);
     let t = cptr.alloc(56); cptr.stI32(t, 0);
     let timeresult;
     nh_snprintf(__sl16, 90, cptr.decay(tmpbuf1), 256n, __sl17, getenv(__sl18) ? __sl19 : __sl20);
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
         do {
             for (i = 0; i < 4; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 7) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 7) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
         cptr.stI32(cptr.add(t, 20), (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
         do {
             for (i = 0; i < 3; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 0) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 0) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
-        for (i = 0; i < mth.length; ++i)
-            if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtr(cptr.add(cptr.decay(mth), i)))) {
+        for (i = 0; i < 12; ++i)
+            if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtr(cptr.add(mth, i, 8)))) {
                 cptr.stI32(cptr.add(t, 16), i);
                 break;
             }
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 4) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 4) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
         strp = cptr.decay(tmpbuf2);
         if (cptr.ld1s(strp) == 32)
@@ -88,20 +88,20 @@ export function populate_nomakedefs(version) {
         cptr.stI32(cptr.add(t, 12), atoi(strp));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 12) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 12) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
         cptr.stI32(cptr.add(t, 8), atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 15) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 15) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
         cptr.stI32(cptr.add(t, 4), atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 18) | 0)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i), 0);
+                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 18) | 0, 1)));
+            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
         } while (0);
         cptr.stI32(t, atoi(cptr.decay(tmpbuf2)));
         timeresult = mktime(t);

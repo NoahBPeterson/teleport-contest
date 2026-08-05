@@ -195,9 +195,9 @@ const __sl152 = cptr.lit("%s %s!");
 
 /** C ref: lock.c:17 — @param {CPtr} x @param {CPtr} y @returns {CInt} */
 export function picking_lock(x, y) {
-    if (go.occupation === picklock) {
-        cptr.stI16(x, i16(((u.ux + u.dx) | 0)));
-        cptr.stI16(y, i16(((u.uy + u.dy) | 0)));
+    if (cptr.ldPtr(cptr.add(go, 56)) === picklock) {
+        cptr.stI16(x, i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)));
+        cptr.stI16(y, i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
         return (1);
     } else {
         cptr.stI16(x, cptr.stI16(y, 0));
@@ -207,107 +207,111 @@ export function picking_lock(x, y) {
 
 /** C ref: lock.c:30 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function picking_at(x, y) {
-    return schar((go.occupation === picklock && cptr.eq(gx.xlock.door, cptr.add(cptr.decay(svl.level.locations[x]), y))));
+    return schar((cptr.ldPtr(cptr.add(go, 56)) === picklock && cptr.eq(cptr.ldPtr(cptr.add(gx, 8)), cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36))));
 }
 
-const __static_lock_action_actions = [__sl0, __sl1, __sl2, __sl3]; /** C ref: lock.c:41 — char *[4] (function-static) */
+const __static_lock_action_actions = cptr.alloc(4 * 8);
+cptr.stPtr(cptr.add(__static_lock_action_actions, 0), __sl0);
+cptr.stPtr(cptr.add(__static_lock_action_actions, 8), __sl1);
+cptr.stPtr(cptr.add(__static_lock_action_actions, 16), __sl2);
+cptr.stPtr(cptr.add(__static_lock_action_actions, 24), __sl3); /** C ref: lock.c:41 — char *[4] (function-static) */
 
 /** C ref: lock.c:38 @returns {CPtr} */
 function lock_action() {
-    if (gx.xlock.door && !((cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) & 8))
-        return cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 0)), 2);
-    else if (gx.xlock.box && !cptr.ldI32(cptr.add(gx.xlock.box, 124)))
-        return cptr.ldI16(cptr.add(gx.xlock.box, 32)) == CHEST ? cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 1)), 2) : cptr.add(cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 2)), 2);
-    else if (gx.xlock.picktyp == LOCK_PICK)
-        return cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 3));
-    else if (gx.xlock.picktyp == CREDIT_CARD)
-        return cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 3));
-    else if (gx.xlock.door)
-        return cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 0));
-    else if (gx.xlock.box)
-        return cptr.ldI16(cptr.add(gx.xlock.box, 32)) == CHEST ? cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 1)) : cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 2));
+    if (cptr.ldPtr(cptr.add(gx, 8)) && !((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) & 8))
+        return cptr.add(cptr.ldPtr(cptr.add(__static_lock_action_actions, 0, 8)), 2);
+    else if (cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)) && !cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 124)))
+        return cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 32)) == 215 ? cptr.add(cptr.ldPtr(cptr.add(__static_lock_action_actions, 1, 8)), 2) : cptr.add(cptr.ldPtr(cptr.add(__static_lock_action_actions, 2, 8)), 2);
+    else if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 16)) == 222)
+        return cptr.ldPtr(cptr.add(__static_lock_action_actions, 3, 8));
+    else if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 16)) == 223)
+        return cptr.ldPtr(cptr.add(__static_lock_action_actions, 3, 8));
+    else if (cptr.ldPtr(cptr.add(gx, 8)))
+        return cptr.ldPtr(cptr.add(__static_lock_action_actions, 0, 8));
+    else if (cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)))
+        return cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 32)) == 215 ? cptr.ldPtr(cptr.add(__static_lock_action_actions, 1, 8)) : cptr.ldPtr(cptr.add(__static_lock_action_actions, 2, 8));
     else
-        return cptr.ldPtr(cptr.add(cptr.decay(__static_lock_action_actions), 3));
+        return cptr.ldPtr(cptr.add(__static_lock_action_actions, 3, 8));
 }
 
 /** C ref: lock.c:68 @returns {CInt} */
 function picklock() {
-    if (gx.xlock.box) {
-        if (cptr.ld1s(cptr.add(gx.xlock.box, 52)) != 1 || cptr.ldI16(cptr.add(gx.xlock.box, 28)) != u.ux || cptr.ldI16(cptr.add(gx.xlock.box, 30)) != u.uy) {
-            return ((gx.xlock.usedtime = 0));
+    if (cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8))) {
+        if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 52)) != 1 || cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 28)) != cptr.ldI16(u) || cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 30)) != cptr.ldI16(cptr.add(u, 2))) {
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
         }
     } else {
-        if (!cptr.eq(gx.xlock.door, cptr.add(cptr.decay(svl.level.locations[(u.ux + u.dx) | 0]), (u.uy + u.dy) | 0))) {
-            return ((gx.xlock.usedtime = 0));
+        if (!cptr.eq(cptr.ldPtr(cptr.add(gx, 8)), cptr.add(cptr.add(cptr.add(svl, 1680), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 756), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 36))) {
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
         }
-        switch (cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) {
+        switch (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) {
             case 0:
             pline(__sl4);
-            return ((gx.xlock.usedtime = 0));
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
             case 2:
             You(__sl5);
-            return ((gx.xlock.usedtime = 0));
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
             case 1:
             pline(__sl6);
-            return ((gx.xlock.usedtime = 0));
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
         }
     }
-    if (gx.xlock.usedtime++ >= 50 || ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
+    if ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), cptr.ldI32(cptr.add(cptr.add(gx, 8), 24)) + 1)) - 1 >= 50 || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
         You(__sl7, lock_action());
-        exercise(A_DEX, (1));
-        return ((gx.xlock.usedtime = 0));
+        exercise(3, (1));
+        return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 98, __sl9), rn2(100)) : rn2(100)) >= gx.xlock.chance)
+    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 98, __sl9), rn2(100)) : rn2(100)) >= cptr.ldI32(cptr.add(cptr.add(gx, 8), 20)))
         return 1;
-    if ((!gx.xlock.door ? cptr.ldI32(cptr.add(gx.xlock.box, 132)) | 0 : ((cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) & 16) != 0) && gx.xlock.magic_key) {
-        gx.xlock.chance = (gx.xlock.chance + 20) | 0;
-        if (!gx.xlock.door) {
-            if (!cptr.ldI32(cptr.add(gx.xlock.box, 104)))
+    if ((!cptr.ldPtr(cptr.add(gx, 8)) ? cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 132)) | 0 : ((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) & 16) != 0) && cptr.ld1s(cptr.add(cptr.add(gx, 8), 28))) {
+        cptr.st1(cptr.add(cptr.add(gx, 8), 20), cptr.ld1s(cptr.add(cptr.add(gx, 8), 20)) + 20);
+        if (!cptr.ldPtr(cptr.add(gx, 8))) {
+            if (!cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 104)))
                 You(__sl10);
-            cptr.stI32(cptr.add(gx.xlock.box, 104), 1);
+            cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 104), 1);
         }
         if (yn_function(__sl11, cptr.decay(ynchars), 110, (1)) == 121) {
             let what;
             let alreadyunlocked;
-            if (gx.xlock.door) {
-                cptr.st1(cptr.add(gx.xlock.door, 8), cptr.ld1u(cptr.add(gx.xlock.door, 8)) & ~16);
+            if (cptr.ldPtr(cptr.add(gx, 8))) {
+                cptr.st1(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) & ~16);
                 what = __sl12;
-                alreadyunlocked = schar((!((cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) & 8)));
+                alreadyunlocked = schar((!((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) & 8)));
             } else {
-                cptr.stI32(cptr.add(gx.xlock.box, 132), 0);
-                cptr.stI32(cptr.add(gx.xlock.box, 104), 0);
-                what = (cptr.ldI16(cptr.add(gx.xlock.box, 32)) == CHEST) ? __sl13 : __sl14;
-                alreadyunlocked = schar((!cptr.ldI32(cptr.add(gx.xlock.box, 124))));
+                cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 132), 0);
+                cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 104), 0);
+                what = (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 32)) == 215) ? __sl13 : __sl14;
+                alreadyunlocked = schar((!cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 124))));
             }
             You(__sl15, what, alreadyunlocked ? __sl16 : __sl17);
-            exercise(A_WIS, (1));
+            exercise(2, (1));
         } else {
             You(__sl18, lock_action());
-            exercise(A_WIS, (0));
+            exercise(2, (0));
         }
-        return ((gx.xlock.usedtime = 0));
+        return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
     }
     You(__sl19, lock_action());
-    if (gx.xlock.door) {
-        if ((cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) & 16) {
-            b_trapped(__sl12, FINGER);
-            cptr.stI32(cptr.add(gx.xlock.door, 8), 0);
-            unblock_point((u.ux + u.dx) | 0, (u.uy + u.dy) | 0);
-            if (cptr.ld1s(in_rooms(i16(((u.ux + u.dx) | 0)), i16(((u.uy + u.dy) | 0)), SHOPBASE)))
-                add_damage(i16(((u.ux + u.dx) | 0)), i16(((u.uy + u.dy) | 0)), 400n);
-            newsym(i16(((u.ux + u.dx) | 0)), i16(((u.uy + u.dy) | 0)));
-        } else if ((cptr.ldI32(cptr.add(gx.xlock.door, 8)) | 0) & 8)
-            cptr.stI32(cptr.add(gx.xlock.door, 8), 4);
+    if (cptr.ldPtr(cptr.add(gx, 8))) {
+        if ((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) & 16) {
+            b_trapped(__sl12, 3);
+            cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8), 0);
+            unblock_point((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0);
+            if (cptr.ld1s(in_rooms(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)), 14)))
+                add_damage(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)), 400n);
+            newsym(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
+        } else if ((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8)) | 0) & 8)
+            cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8), 4);
         else
-            cptr.stI32(cptr.add(gx.xlock.door, 8), 8);
+            cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(gx, 8)), 8), 8);
     } else {
-        cptr.stI32(cptr.add(gx.xlock.box, 124), (!cptr.ldI32(cptr.add(gx.xlock.box, 124))) >>> 0);
-        cptr.stI32(cptr.add(gx.xlock.box, 100), 1);
-        if (cptr.ldI32(cptr.add(gx.xlock.box, 132)))
-            void chest_trap(gx.xlock.box, FINGER, (0));
+        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 124), (!cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 124))) >>> 0);
+        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 100), 1);
+        if (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 132)))
+            void chest_trap(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 3, (0));
     }
-    exercise(A_DEX, (1));
-    return ((gx.xlock.usedtime = 0));
+    exercise(3, (1));
+    return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
 }
 
 /** C ref: lock.c:162 — @param {CPtr} box @param {CInt} destroyit */
@@ -315,39 +319,39 @@ export function breakchestlock(box, destroyit) {
     if (!destroyit) {
         let hide_contents = cptr.ldPtr(cptr.add(box, 16));
         cptr.stPtr(cptr.add(box, 16), null);
-        costly_alteration(box, COST_BRKLCK);
+        costly_alteration(box, 15);
         cptr.stPtr(cptr.add(box, 16), hide_contents);
         cptr.stI32(cptr.add(box, 124), 0);
         cptr.stI32(cptr.add(box, 128), 1);
         cptr.stI32(cptr.add(box, 100), 1);
     } else {
         let otmp;
-        let shkp = (cptr.ld1s(cptr.decay(u.ushops)) && costly_spot(u.ux, u.uy)) ? shop_keeper(cptr.ld1s(cptr.decay(u.ushops))) : null;
+        let shkp = (cptr.ld1s(cptr.add(u, 83)) && costly_spot(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) ? shop_keeper(cptr.ld1s(cptr.add(u, 83))) : null;
         let costly = schar((shkp !== null));
         let peaceful_shk = schar((costly && schar(cptr.ldI32(cptr.add(shkp, 168)))));
         let loss = 0n;
         pline(__sl20, the(xname(box)));
         while ((otmp = cptr.ldPtr(cptr.add(box, 16))) !== null) {
             obj_extract_self(otmp);
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl8, 186, __sl21), rn2(3)) : rn2(3)) || cptr.ld1s(cptr.add(otmp, 49)) == POTION_CLASS) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl8, 186, __sl21), rn2(3)) : rn2(3)) || cptr.ld1s(cptr.add(otmp, 49)) == 8) {
                 chest_shatter_msg(otmp);
                 if (costly)
-                    loss += stolen_value(otmp, u.ux, u.uy, peaceful_shk, (1));
+                    loss += stolen_value(otmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), peaceful_shk, (1));
                 if (cptr.ldI64(cptr.add(otmp, 40)) == 1n) {
                     obfree(otmp, null);
                     continue;
                 }
                 useup(otmp);
             }
-            if (cptr.ldI16(cptr.add(box, 32)) == ICE_BOX && cptr.ldI16(cptr.add(otmp, 32)) == CORPSE) {
-                cptr.stU64(cptr.add(otmp, 184), svm.moves - cptr.ldI64(cptr.add(otmp, 184)));
+            if (cptr.ldI16(cptr.add(box, 32)) == 216 && cptr.ldI16(cptr.add(otmp, 32)) == 265) {
+                cptr.stU64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(otmp, 184)));
                 start_corpse_timeout(otmp);
             }
-            place_object(otmp, u.ux, u.uy);
+            place_object(otmp, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
             stackobj(otmp);
         }
         if (costly)
-            loss += stolen_value(box, u.ux, u.uy, peaceful_shk, (1));
+            loss += stolen_value(box, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), peaceful_shk, (1));
         if (loss)
             You(__sl22, loss, currency(loss));
         delobj(box);
@@ -356,44 +360,44 @@ export function breakchestlock(box, destroyit) {
 
 /** C ref: lock.c:216 @returns {CInt} */
 function forcelock() {
-    if ((cptr.ldI16(cptr.add(gx.xlock.box, 28)) != u.ux) || (cptr.ldI16(cptr.add(gx.xlock.box, 30)) != u.uy))
-        return ((gx.xlock.usedtime = 0));
-    if (gx.xlock.usedtime++ >= 50 || !uwep.v || ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
+    if ((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 28)) != cptr.ldI16(u)) || (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), 30)) != cptr.ldI16(cptr.add(u, 2))))
+        return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
+    if ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), cptr.ldI32(cptr.add(cptr.add(gx, 8), 24)) + 1)) - 1 >= 50 || !uwep.v || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
         You(__sl23);
-        if (gx.xlock.usedtime >= 50)
-            exercise((gx.xlock.picktyp) ? A_DEX : A_STR, (1));
-        return ((gx.xlock.usedtime = 0));
+        if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 24)) >= 50)
+            exercise((cptr.ldI32(cptr.add(cptr.add(gx, 8), 16))) ? 3 : 0, (1));
+        return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
     }
-    if (gx.xlock.picktyp) {
+    if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 16))) {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 229, __sl24), rn2((1000 - cptr.ld1s(cptr.add(uwep.v, 48))) | 0)) : rn2((1000 - cptr.ld1s(cptr.add(uwep.v, 48))) | 0)) > ((992 - Math.imul(((cptr.ldI32(cptr.add((uwep.v), 112)) | 0) > (cptr.ldI32(cptr.add((uwep.v), 116)) | 0) ? cptr.ldI32(cptr.add((uwep.v), 112)) | 0 : cptr.ldI32(cptr.add((uwep.v), 116)) | 0), 10)) | 0) && !cptr.ldI32(cptr.add(uwep.v, 56)) && !obj_resists(uwep.v, 0, 99)) {
             pline(__sl25, (cptr.ldI64(cptr.add(uwep.v, 40)) > 1n) ? __sl26 : __sl27, xname(uwep.v));
             useup(uwep.v);
             You(__sl23);
-            exercise(A_DEX, (1));
-            return ((gx.xlock.usedtime = 0));
+            exercise(3, (1));
+            return ((cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0)));
         }
     } else
         wake_nearby((0));
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 244, __sl24), rn2(100)) : rn2(100)) >= gx.xlock.chance)
+    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 244, __sl24), rn2(100)) : rn2(100)) >= cptr.ldI32(cptr.add(cptr.add(gx, 8), 20)))
         return 1;
     You(__sl28);
-    exercise(gx.xlock.picktyp ? A_DEX : A_STR, (1));
-    breakchestlock(gx.xlock.box, schar((!gx.xlock.picktyp && !(rng_log_enabled() ? (rng_log_set_caller(__sl8, 252, __sl24), rn2(3)) : rn2(3)))));
+    exercise(cptr.ldI32(cptr.add(cptr.add(gx, 8), 16)) ? 3 : 0, (1));
+    breakchestlock(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), schar((!cptr.ldI32(cptr.add(cptr.add(gx, 8), 16)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl8, 252, __sl24), rn2(3)) : rn2(3)))));
     reset_pick();
     return 0;
 }
 
 /** C ref: lock.c:259 */
 export function reset_pick() {
-    gx.xlock.usedtime = (gx.xlock.chance = (gx.xlock.picktyp = 0));
-    gx.xlock.magic_key = (0);
-    gx.xlock.door = null;
-    gx.xlock.box = null;
+    cptr.stI32(cptr.add(cptr.add(gx, 8), 24), cptr.stI32(cptr.add(cptr.add(gx, 8), 20), cptr.stI32(cptr.add(cptr.add(gx, 8), 16), 0)));
+    cptr.st1(cptr.add(cptr.add(gx, 8), 28), (0));
+    cptr.stPtr(cptr.add(gx, 8), null);
+    cptr.stPtr(cptr.add(cptr.add(gx, 8), 8), null);
 }
 
 /** C ref: lock.c:269 — @param {CPtr} container */
 export function maybe_reset_pick(container) {
-    if (container ? (cptr.eq(container, gx.xlock.box)) : (!gx.xlock.box || !(cptr.ld1s(cptr.add((gx.xlock.box), 52)) == 3)))
+    if (container ? (cptr.eq(container, cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)))) : (!cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)) || !(cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8))), 52)) == 3)))
         reset_pick();
 }
 
@@ -408,18 +412,18 @@ export function autokey(opening) {
     let acard;
     key = (pick = (card = null));
     akey = (apick = (acard = null));
-    for (o = gi.invent; o; o = cptr.ldPtr(o)) {
-        if ((cptr.ld1s(cptr.add((o), 51)) >= ART_ORB_OF_DETECTION) && !is_quest_artifact(o)) {
+    for (o = cptr.ldPtr(cptr.add(gi, 8)); o; o = cptr.ldPtr(o)) {
+        if ((cptr.ld1s(cptr.add((o), 51)) >= 21) && !is_quest_artifact(o)) {
             switch (cptr.ldI16(cptr.add(o, 32))) {
-                case SKELETON_KEY:
+                case 221:
                 if (!akey)
                     akey = o;
                 break;
-                case LOCK_PICK:
+                case 222:
                 if (!apick)
                     apick = o;
                 break;
-                case CREDIT_CARD:
+                case 223:
                 if (!acard)
                     acard = o;
                 break;
@@ -428,15 +432,15 @@ export function autokey(opening) {
             }
         } else {
             switch (cptr.ldI16(cptr.add(o, 32))) {
-                case SKELETON_KEY:
-                if (!key || is_magic_key(cptr.boxProp(gy, 'youmonst'), o))
+                case 221:
+                if (!key || is_magic_key(cptr.add(gy, 8), o))
                     key = o;
                 break;
-                case LOCK_PICK:
+                case 222:
                 if (!pick)
                     pick = o;
                 break;
-                case CREDIT_CARD:
+                case 223:
                 if (!card)
                     card = o;
                 break;
@@ -470,38 +474,38 @@ export function pick_lock(pick, rx, ry, container) {
     let qbuf = new Uint8Array(128);
     let autounlock = schar((rx != 0 || !cptr.eq(container, (null))));
     if (!pick) {
-        cptr.memcpy(dummypick, cg.zeroobj, 216);
+        cptr.memcpy(dummypick, cg, 216);
         pick = dummypick;
     }
     picktyp = cptr.ldI16(cptr.add(pick, 32));
-    if (gx.xlock.usedtime && picktyp == gx.xlock.picktyp) {
-        if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
-            let what = (picktyp == LOCK_PICK) ? __sl29 : __sl30;
-            if (picktyp == CREDIT_CARD)
+    if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 24)) && picktyp == cptr.ldI32(cptr.add(cptr.add(gx, 8), 16))) {
+        if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
+            let what = (picktyp == 222) ? __sl29 : __sl30;
+            if (picktyp == 223)
                 what = __sl31;
             pline(cptr.decay(__static_pick_lock_no_longer), __sl32, what);
             reset_pick();
             return (-1);
-        } else if (u.uswallow | 0 || (gx.xlock.box && !can_reach_floor((1)))) {
+        } else if (cptr.ldI32(cptr.add(u, 1848)) | 0 || (cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)) && !can_reach_floor((1)))) {
             pline(cptr.decay(__static_pick_lock_no_longer), __sl33, __sl34);
             reset_pick();
             return (-1);
         } else {
             let action = lock_action();
             You(__sl35, action);
-            gx.xlock.magic_key = is_magic_key(cptr.boxProp(gy, 'youmonst'), pick);
+            cptr.st1(cptr.add(cptr.add(gx, 8), 28), is_magic_key(cptr.add(gy, 8), pick));
             set_occupation(picklock, action, 0n);
             return 1;
         }
     }
-    if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
+    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
         You_cant(__sl36, doname(pick));
         return 0;
-    } else if (u.uswallow) {
-        You_cant(__sl37, (picktyp == CREDIT_CARD) ? __sl17 : __sl38, mon_nam(u.ustuck));
+    } else if (cptr.ldI32(cptr.add(u, 1848))) {
+        You_cant(__sl37, (picktyp == 223) ? __sl17 : __sl38, mon_nam(cptr.ldPtr(cptr.add(u, 2416))));
         return 0;
     }
-    if (!cptr.eq(pick, dummypick) && picktyp != SKELETON_KEY && picktyp != LOCK_PICK && picktyp != CREDIT_CARD) {
+    if (!cptr.eq(pick, dummypick) && picktyp != 221 && picktyp != 222 && picktyp != 223) {
         impossible(__sl39, picktyp);
         return 0;
     }
@@ -509,30 +513,30 @@ export function pick_lock(pick, rx, ry, container) {
     if (rx != 0) {
         cptr.stI16(cc, rx);
         cptr.stI16(cptr.add(cc, 2), ry);
-    } else if (!get_adjacent_loc(null, __sl40, u.ux, u.uy, cc)) {
+    } else if (!get_adjacent_loc(null, __sl40, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cc)) {
         return 0;
     }
-    if (((cptr.ldI16(cc)) == u.ux && (cptr.ldI16(cptr.add(cc, 2))) == u.uy)) {
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)))) {
         let verb;
         let qsfx = new Uint8Array(128);
         let it;
         let count;
-        if (u.dz < 0 && !autounlock) {
-            There(__sl41, ((u.uprops[LEVITATION].intrinsic || u.uprops[LEVITATION].extrinsic) && !u.uprops[LEVITATION].blocked) ? __sl42 : __sl43);
+        if (cptr.ldI32(cptr.add(u, 12)) < 0 && !autounlock) {
+            There(__sl41, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8))) ? __sl42 : __sl43);
             return (-1);
-        } else if (is_lava(u.ux, u.uy)) {
+        } else if (is_lava(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
             pline(__sl44, yname(pick));
             return (-1);
-        } else if (is_pool(u.ux, u.uy) && !(u.uinwater)) {
+        } else if (is_pool(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) && !(cptr.ldI32(cptr.add(u, 1852)))) {
             pline_The(__sl45, hliquid(__sl46));
             return (-1);
         }
         count = 0;
         c = 110;
-        for (otmp = cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)))); otmp; otmp = cptr.ldPtr(cptr.add(otmp, 8))) {
+        for (otmp = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)); otmp; otmp = cptr.ldPtr(cptr.add(otmp, 8))) {
             if (autounlock && !cptr.eq(otmp, container))
                 continue;
-            if ((cptr.ldI16(cptr.add((otmp), 32)) == LARGE_BOX || cptr.ldI16(cptr.add((otmp), 32)) == CHEST)) {
+            if ((cptr.ldI16(cptr.add((otmp), 32)) == 214 || cptr.ldI16(cptr.add((otmp), 32)) == 215)) {
                 ++count;
                 if (!can_reach_floor((1))) {
                     You_cant(__sl47, the(xname(otmp)));
@@ -543,16 +547,16 @@ export function pick_lock(pick, rx, ry, container) {
                     verb = __sl48;
                 else if (!cptr.ldI32(cptr.add(otmp, 124)))
                     verb = __sl34, it = 1;
-                else if (picktyp != LOCK_PICK)
+                else if (picktyp != 222)
                     verb = __sl49, it = 1;
                 else
                     verb = __sl29;
-                if (autounlock && ((flags.autounlock & 1) >>> 0) != 0 && could_untrap((0), (1)) && (c = cptr.ldI32(cptr.add(otmp, 104)) | 0 ? (cptr.ldI32(cptr.add(otmp, 132)) | 0 ? 121 : 110) : yn_function(safe_qbuf(cptr.decay(qbuf), __sl50, __sl51, otmp, yname, ysimple_name, __sl52), cptr.decay(ynqchars), 113, (1))) != 110) {
+                if (autounlock && ((cptr.ldI32(cptr.add(flags, 60)) & 1) >>> 0) != 0 && could_untrap((0), (1)) && (c = cptr.ldI32(cptr.add(otmp, 104)) | 0 ? (cptr.ldI32(cptr.add(otmp, 132)) | 0 ? 121 : 110) : yn_function(safe_qbuf(cptr.decay(qbuf), __sl50, __sl51, otmp, yname, ysimple_name, __sl52), cptr.decay(ynqchars), 113, (1))) != 110) {
                     if (c == 113)
                         return 0;
                     untrap((0), 0, 0, otmp);
                     return 1;
-                } else if (autounlock && ((flags.autounlock & 2) >>> 0) != 0) {
+                } else if (autounlock && ((cptr.ldI32(cptr.add(flags, 60)) & 2) >>> 0) != 0) {
                     c = 113;
                     if (!cptr.eq(pick, dummypick)) {
                         void cptr.sprintf(cptr.decay(qbuf), __sl53, yname(pick));
@@ -573,29 +577,29 @@ export function pick_lock(pick, rx, ry, container) {
                 if (cptr.ldI32(cptr.add(otmp, 128))) {
                     You_cant(__sl59, ansimpleoname(pick));
                     return (-1);
-                } else if (picktyp == CREDIT_CARD && !cptr.ldI32(cptr.add(otmp, 124))) {
+                } else if (picktyp == 223 && !cptr.ldI32(cptr.add(otmp, 124))) {
                     You_cant(__sl60, an(simple_typename(picktyp)));
                     return (-1);
-                } else if (autounlock && !touch_artifact(pick, cptr.boxProp(gy, 'youmonst'))) {
+                } else if (autounlock && !touch_artifact(pick, cptr.add(gy, 8))) {
                     return 1;
                 }
                 switch (picktyp) {
-                    case CREDIT_CARD:
-                    ch = ((acurr(A_DEX)) + Math.imul(20, (gu.urole.mnum == (PM_ROGUE)))) | 0;
+                    case 223:
+                    ch = ((acurr(3)) + Math.imul(20, (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)))) | 0;
                     break;
-                    case LOCK_PICK:
-                    ch = (Math.imul(4, (acurr(A_DEX))) + Math.imul(25, (gu.urole.mnum == (PM_ROGUE)))) | 0;
+                    case 222:
+                    ch = (Math.imul(4, (acurr(3))) + Math.imul(25, (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)))) | 0;
                     break;
-                    case SKELETON_KEY:
-                    ch = (75 + (acurr(A_DEX))) | 0;
+                    case 221:
+                    ch = (75 + (acurr(3))) | 0;
                     break;
                     default:
                     ch = 0;
                 }
                 if (cptr.ldI32(cptr.add(otmp, 56)))
                     ch = (ch / 2) | 0;
-                gx.xlock.box = otmp;
-                gx.xlock.door = null;
+                cptr.stPtr(cptr.add(cptr.add(gx, 8), 8), otmp);
+                cptr.stPtr(cptr.add(gx, 8), null);
                 break;
             }
         }
@@ -606,36 +610,36 @@ export function pick_lock(pick, rx, ry, container) {
         }
     } else {
         let mtmp;
-        if (u.utrap && u.utraptype == TT_PIT >>> 0) {
+        if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2) {
             You_cant(__sl62);
             return 0;
         }
-        door = cptr.add(cptr.decay(svl.level.locations[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)));
-        mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)))));
-        if (mtmp && canseemon(mtmp) && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != M_AP_FURNITURE && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != M_AP_OBJECT) {
-            if (picktyp == CREDIT_CARD && (cptr.ldI32(cptr.add(mtmp, 180)) | 0 || cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(cptr.decay(mons), PM_ORACLE)))) {
+        door = cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36);
+        mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)));
+        if (mtmp && canseemon(mtmp) && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != 1 && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != 2) {
+            if (picktyp == 223 && (cptr.ldI32(cptr.add(mtmp, 180)) | 0 || cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 274, 96)))) {
                 ;
                 verbalize(__sl63);
             } else {
                 pline(__sl64, mon_nam(mtmp));
             }
             return (-1);
-        } else if (mtmp && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == M_AP_FURNITURE && (cptr.ldI32(cptr.add((mtmp), 60)) == S_hcdoor >>> 0 || cptr.ldI32(cptr.add((mtmp), 60)) == S_vcdoor >>> 0))) {
+        } else if (mtmp && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 && (cptr.ldI32(cptr.add((mtmp), 60)) == 16 || cptr.ldI32(cptr.add((mtmp), 60)) == 15))) {
             stumble_onto_mimic(mtmp);
             maybe_absorb_item(mtmp, pick, 50, 10);
             return (-1);
         }
-        if (!((cptr.ld1s(cptr.add(door, 4))) == DOOR)) {
+        if (!((cptr.ld1s(cptr.add(door, 4))) == 23)) {
             let res = 0;
             let oldglyph = cptr.ldI32(door);
             let oldlastseentyp = schar(update_mapseen_for(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))));
             feel_location(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
-            if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.decay(svl.lastseentyp[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)))) != oldlastseentyp)
+            if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.add(svl, cptr.ldI16(cc), 21), cptr.ldI16(cptr.add(cc, 2)), 1)) != oldlastseentyp)
                 res = (-1);
             if (is_drawbridge_wall(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) >= 0)
-                You(__sl65, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl66 : __sl67);
+                You(__sl65, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl66 : __sl67);
             else
-                You(__sl68, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl66 : __sl67);
+                You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl66 : __sl67);
             return res;
         }
         switch (cptr.ldI32(cptr.add(door, 8)) | 0) {
@@ -649,13 +653,13 @@ export function pick_lock(pick, rx, ry, container) {
             pline(__sl6);
             return (-1);
             default:
-            if (((flags.autounlock & 1) >>> 0) != 0 && could_untrap((0), (0)) && (c = yn_function(__sl69, cptr.decay(ynqchars), 113, (1))) != 110) {
+            if (((cptr.ldI32(cptr.add(flags, 60)) & 1) >>> 0) != 0 && could_untrap((0), (0)) && (c = yn_function(__sl69, cptr.decay(ynqchars), 113, (1))) != 110) {
                 if (c == 113)
                     return 0;
                 untrap((0), cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), null);
                 return 1;
             }
-            if (picktyp == CREDIT_CARD && !((cptr.ldI32(cptr.add(door, 8)) | 0) & 8)) {
+            if (picktyp == 223 && !((cptr.ldI32(cptr.add(door, 8)) | 0) & 8)) {
                 You_cant(__sl70);
                 return (-1);
             }
@@ -663,37 +667,37 @@ export function pick_lock(pick, rx, ry, container) {
             c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1));
             if (c != 121)
                 return 0;
-            if (autounlock && !touch_artifact(pick, cptr.boxProp(gy, 'youmonst')))
+            if (autounlock && !touch_artifact(pick, cptr.add(gy, 8)))
                 return 1;
             switch (picktyp) {
-                case CREDIT_CARD:
-                ch = (Math.imul(2, (acurr(A_DEX))) + Math.imul(20, (gu.urole.mnum == (PM_ROGUE)))) | 0;
+                case 223:
+                ch = (Math.imul(2, (acurr(3))) + Math.imul(20, (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)))) | 0;
                 break;
-                case LOCK_PICK:
-                ch = (Math.imul(3, (acurr(A_DEX))) + Math.imul(30, (gu.urole.mnum == (PM_ROGUE)))) | 0;
+                case 222:
+                ch = (Math.imul(3, (acurr(3))) + Math.imul(30, (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)))) | 0;
                 break;
-                case SKELETON_KEY:
-                ch = (70 + (acurr(A_DEX))) | 0;
+                case 221:
+                ch = (70 + (acurr(3))) | 0;
                 break;
                 default:
                 ch = 0;
             }
-            gx.xlock.door = door;
-            gx.xlock.box = null;
+            cptr.stPtr(cptr.add(gx, 8), door);
+            cptr.stPtr(cptr.add(cptr.add(gx, 8), 8), null);
         }
     }
-    svc.context.move = 0;
-    gx.xlock.chance = ch;
-    gx.xlock.picktyp = picktyp;
-    gx.xlock.magic_key = is_magic_key(cptr.boxProp(gy, 'youmonst'), pick);
-    gx.xlock.usedtime = 0;
+    cptr.st1(cptr.add(svc, 78), 0);
+    cptr.stI32(cptr.add(cptr.add(gx, 8), 20), ch);
+    cptr.stI32(cptr.add(cptr.add(gx, 8), 16), picktyp);
+    cptr.st1(cptr.add(cptr.add(gx, 8), 28), is_magic_key(cptr.add(gy, 8), pick));
+    cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0);
     set_occupation(picklock, lock_action(), 0n);
     return 1;
 }
 
 /** C ref: lock.c:660 @returns {CInt} */
 export function u_have_forceable_weapon() {
-    if (!uwep.v || ((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || (cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE)) ? (objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp < P_DAGGER || objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_FLAIL || objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp > P_LANCE) : cptr.ld1s(cptr.add(uwep.v, 49)) != ROCK_CLASS))
+    if (!uwep.v || ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0)) ? (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) < 1 || cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 13 || cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) > 19) : cptr.ld1s(cptr.add(uwep.v, 49)) != 14))
         return (0);
     return (1);
 }
@@ -704,28 +708,28 @@ export function doforce() {
     let c;
     let picktyp;
     let qbuf = new Uint8Array(128);
-    if (u.uswallow) {
+    if (cptr.ldI32(cptr.add(u, 1848))) {
         You_cant(__sl75);
         return 0;
     }
     if (!u_have_forceable_weapon()) {
         let use_plural = schar((uwep.v && cptr.ldI64(cptr.add(uwep.v, 40)) > 1n));
-        You_cant(__sl76, !uwep.v ? __sl77 : ((cptr.ld1s(cptr.add(uwep.v, 49)) != WEAPON_CLASS && !(cptr.ld1s(cptr.add((uwep.v), 49)) == TOOL_CLASS && objects[cptr.ldI16(cptr.add((uwep.v), 32))].oc_subtyp != P_NONE)) ? (use_plural ? __sl78 : __sl79) : (use_plural ? __sl80 : __sl81)), use_plural ? __sl82 : __sl17);
+        You_cant(__sl76, !uwep.v ? __sl77 : ((cptr.ld1s(cptr.add(uwep.v, 49)) != 2 && !(cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0)) ? (use_plural ? __sl78 : __sl79) : (use_plural ? __sl80 : __sl81)), use_plural ? __sl82 : __sl17);
         return 0;
     }
     if (!can_reach_floor((1))) {
-        cant_reach_floor(u.ux, u.uy, (0), (1), (0));
+        cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0), (1), (0));
         return 0;
     }
-    picktyp = (cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp >= P_DAGGER && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp <= P_SABER) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == TOOL_CLASS) && objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_subtyp == P_PICK_AXE);
-    if (gx.xlock.usedtime && gx.xlock.box && picktyp == gx.xlock.picktyp) {
+    picktyp = (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= 1 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= 9) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 4);
+    if (cptr.ldI32(cptr.add(cptr.add(gx, 8), 24)) && cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)) && picktyp == cptr.ldI32(cptr.add(cptr.add(gx, 8), 16))) {
         You(__sl83);
         set_occupation(forcelock, __sl84, 0n);
         return 1;
     }
-    gx.xlock.box = null;
-    for (otmp = cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[u.ux]), u.uy)); otmp; otmp = cptr.ldPtr(cptr.add(otmp, 8)))
-        if ((cptr.ldI16(cptr.add((otmp), 32)) == LARGE_BOX || cptr.ldI16(cptr.add((otmp), 32)) == CHEST)) {
+    cptr.stPtr(cptr.add(cptr.add(gx, 8), 8), null);
+    for (otmp = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)); otmp; otmp = cptr.ldPtr(cptr.add(otmp, 8)))
+        if ((cptr.ldI16(cptr.add((otmp), 32)) == 214 || cptr.ldI16(cptr.add((otmp), 32)) == 215)) {
             if (cptr.ldI32(cptr.add(otmp, 128)) | 0 || !cptr.ldI32(cptr.add(otmp, 124))) {
                 cptr.stI32(cptr.add(otmp, 100), 0);
                 There(__sl85, doname(otmp), cptr.ldI32(cptr.add(otmp, 128)) | 0 ? __sl86 : __sl87);
@@ -743,14 +747,14 @@ export function doforce() {
                 You(__sl89, yname(uwep.v));
             else
                 You(__sl90, yname(uwep.v));
-            gx.xlock.box = otmp;
-            gx.xlock.chance = Math.imul(objects[cptr.ldI16(cptr.add(uwep.v, 32))].oc_wldam, 2);
-            gx.xlock.picktyp = picktyp;
-            gx.xlock.magic_key = (0);
-            gx.xlock.usedtime = 0;
+            cptr.stPtr(cptr.add(cptr.add(gx, 8), 8), otmp);
+            cptr.stI32(cptr.add(cptr.add(gx, 8), 20), Math.imul(cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 83)), 2));
+            cptr.stI32(cptr.add(cptr.add(gx, 8), 16), picktyp);
+            cptr.st1(cptr.add(cptr.add(gx, 8), 28), (0));
+            cptr.stI32(cptr.add(cptr.add(gx, 8), 24), 0);
             break;
         }
-    if (gx.xlock.box)
+    if (cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)))
         set_occupation(forcelock, __sl84, 0n);
     else
         You(__sl91);
@@ -760,7 +764,7 @@ export function doforce() {
 /** C ref: lock.c:759 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function stumble_on_door_mimic(x, y) {
     let mtmp;
-    if ((mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[x]), y)))) && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == M_AP_FURNITURE && (cptr.ldI32(cptr.add((mtmp), 60)) == S_hcdoor >>> 0 || cptr.ldI32(cptr.add((mtmp), 60)) == S_vcdoor >>> 0)) && !(u.uprops[PROT_FROM_SHAPE_CHANGERS].intrinsic || u.uprops[PROT_FROM_SHAPE_CHANGERS].extrinsic)) {
+    if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)))) && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 && (cptr.ldI32(cptr.add((mtmp), 60)) == 16 || cptr.ldI32(cptr.add((mtmp), 60)) == 15)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)))) {
         stumble_onto_mimic(mtmp);
         return (1);
     }
@@ -779,47 +783,47 @@ export function doopen_indir(x, y) {
     let portcullis;
     let dirprompt;
     let res = 0;
-    if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
+    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
         You_cant(__sl92);
         return 0;
     }
     dirprompt = null;
-    if (u.utrap && u.utraptype == TT_PIT >>> 0 && container_at(u.ux, u.uy, (0)))
+    if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2 && container_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0)))
         dirprompt = __sl93;
     if (x > 0 && y >= 0) {
         cptr.stI16(cc, x);
         cptr.stI16(cptr.add(cc, 2), y);
-    } else if (!get_adjacent_loc(dirprompt, null, u.ux, u.uy, cc)) {
+    } else if (!get_adjacent_loc(dirprompt, null, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cc)) {
         return 0;
     }
-    if (((cptr.ldI16(cc)) == u.ux && (cptr.ldI16(cptr.add(cc, 2))) == u.uy) && (u.dz > 0 || !closed_door(u.ux, u.uy)))
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2))) && (cptr.ldI32(cptr.add(u, 12)) > 0 || !closed_door(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))))
         return doloot();
-    if (u.utrap && u.utraptype == TT_PIT >>> 0) {
+    if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2) {
         You_cant(__sl62);
         return 0;
     }
     if (stumble_on_door_mimic(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))))
         return 1;
-    if (u.uprops[CONFUSION].intrinsic || u.uprops[STUNNED].intrinsic)
+    if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)))
         res = 1;
-    door = cptr.add(cptr.decay(svl.level.locations[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)));
+    door = cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16(cptr.add(cc, 2)), 36);
     portcullis = schar((is_drawbridge_wall(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) >= 0));
     {
         let oldglyph = cptr.ldI32(door);
         let oldlastseentyp = schar(update_mapseen_for(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))));
         newsym(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
-        if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.decay(svl.lastseentyp[cptr.ldI16(cc)]), cptr.ldI16(cptr.add(cc, 2)))) != oldlastseentyp)
+        if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.add(svl, cptr.ldI16(cc), 21), cptr.ldI16(cptr.add(cc, 2)), 1)) != oldlastseentyp)
             res = 1;
     }
-    if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == DOOR)) {
-        if (is_db_wall(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) || cptr.ld1s(cptr.add(door, 4)) == DRAWBRIDGE_UP)
+    if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == 23)) {
+        if (is_db_wall(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2))) || cptr.ld1s(cptr.add(door, 4)) == 19)
             There(__sl94);
-        else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == DRAWBRIDGE_DOWN)
+        else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == 34)
             pline_The(__sl95);
         else if (container_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), (1)))
-            pline(__sl96, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl97 : __sl98);
+            pline(__sl96, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl97 : __sl98);
         else
-            You(__sl68, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl66 : __sl67);
+            You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl66 : __sl67);
         return res;
     }
     if (!((cptr.ldI32(cptr.add(door, 8)) | 0) & 4)) {
@@ -842,37 +846,37 @@ export function doopen_indir(x, y) {
         }
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         pline(__sl103, mesg);
-        if (locked && flags.autounlock) {
+        if (locked && cptr.ldI32(cptr.add(flags, 60))) {
             let unlocktool;
-            u.dz = 0;
-            if (((flags.autounlock & 2) >>> 0) != 0 && (unlocktool = autokey((1))) !== null) {
+            cptr.stI32(cptr.add(u, 12), 0);
+            if (((cptr.ldI32(cptr.add(flags, 60)) & 2) >>> 0) != 0 && (unlocktool = autokey((1))) !== null) {
                 res = pick_lock(unlocktool, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), null) ? 1 : 0;
-            } else if (((flags.autounlock & 4) >>> 0) != 0 && !u.usteed && yn_function(__sl104, cptr.decay(ynqchars), 113, (1)) == 121) {
-                cmdq_add_ec(CQ_CANNED, dokick);
-                cmdq_add_dir(CQ_CANNED, schar(sgn((cptr.ldI16(cc) - u.ux) | 0)), schar(sgn((cptr.ldI16(cptr.add(cc, 2)) - u.uy) | 0)), 0);
+            } else if (((cptr.ldI32(cptr.add(flags, 60)) & 4) >>> 0) != 0 && !cptr.ldPtr(cptr.add(u, 2424)) && yn_function(__sl104, cptr.decay(ynqchars), 113, (1)) == 121) {
+                cmdq_add_ec(0, dokick);
+                cmdq_add_dir(0, schar(sgn((cptr.ldI16(cc) - cptr.ldI16(u)) | 0)), schar(sgn((cptr.ldI16(cptr.add(cc, 2)) - cptr.ldI16(cptr.add(u, 2))) | 0)), 0);
                 res = 0;
             }
         }
         return res;
     }
-    if ((cptr.ld1u(cptr.add((gy.youmonst.data), 67)) < 1)) {
+    if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1)) {
         pline(__sl105);
         return res;
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 904, __sl106), rnl(20)) : rnl(20)) < (((((((acurrstr()) + (acurr(A_DEX))) | 0) + (acurr(A_CON))) | 0) / 3) | 0)) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 904, __sl106), rnl(20)) : rnl(20)) < (((((((acurrstr()) + (acurr(3))) | 0) + (acurr(4))) | 0) / 3) | 0)) {
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         pline_The(__sl107);
         if ((cptr.ldI32(cptr.add(door, 8)) | 0) & 16) {
-            b_trapped(__sl12, FINGER);
+            b_trapped(__sl12, 3);
             cptr.stI32(cptr.add(door, 8), 0);
-            if (cptr.ld1s(in_rooms(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), SHOPBASE)))
+            if (cptr.ld1s(in_rooms(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), 14)))
                 add_damage(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), 400n);
         } else
             cptr.stI32(cptr.add(door, 8), 2);
         feel_newsym(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         recalc_block_point(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
     } else {
-        exercise(A_STR, (1));
+        exercise(0, (1));
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         pline_The(__sl108);
     }
@@ -881,12 +885,12 @@ export function doopen_indir(x, y) {
 
 /** C ref: lock.c:926 — @param {CInt} x @param {CInt} y @param {CInt} quietly @returns {CInt} */
 function obstructed(x, y, quietly) {
-    let mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[x]), y)));
-    if (mtmp && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != M_AP_FURNITURE) {
-        if ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == M_AP_OBJECT)
+    let mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)));
+    if (mtmp && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) != 1) {
+        if ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2)
             {
                 if (!quietly)
-                    pline(__sl109, c_common_strings.c_Something);
+                    pline(__sl109, cptr.ldPtr(cptr.add(c_common_strings, 48)));
                 return (1);
             }
         if (!quietly) {
@@ -899,9 +903,9 @@ function obstructed(x, y, quietly) {
             map_invisible(x, y);
         return (1);
     }
-    if ((cptr.ldPtr(cptr.add(cptr.decay(svl.level.objects[x]), y)) !== null)) {
+    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8)) !== null)) {
         if (!quietly)
-            pline(__sl109, c_common_strings.c_Something);
+            pline(__sl109, cptr.ldPtr(cptr.add(c_common_strings, 48)));
         return (1);
     }
     return (0);
@@ -916,19 +920,19 @@ export function doclose() {
         let door;
         let portcullis;
         let res = 0;
-        if (((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 8192n) != 0n)) {
+        if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n)) {
             You_cant(__sl112);
             return 0;
         }
-        if (u.utrap && u.utraptype == TT_PIT >>> 0) {
+        if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2) {
             You_cant(__sl62);
             return 0;
         }
         if (!getdir(null))
             return 2;
-        x = i16(((u.ux + u.dx) | 0));
-        y = i16(((u.uy + u.dy) | 0));
-        if (((x) == u.ux && (y) == u.uy) && !(u.uprops[PASSES_WALLS].intrinsic || u.uprops[PASSES_WALLS].extrinsic)) {
+        x = i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0));
+        y = i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0));
+        if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2))) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 53, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 53, 24)))) {
             You(__sl113);
             return 1;
         }
@@ -936,21 +940,21 @@ export function doclose() {
             { __go_nodoor = true; break __skip_nodoor; }
         if (stumble_on_door_mimic(x, y))
             return 1;
-        if (u.uprops[CONFUSION].intrinsic || u.uprops[STUNNED].intrinsic)
+        if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)))
             res = 1;
-        door = cptr.add(cptr.decay(svl.level.locations[x]), y);
+        door = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
         portcullis = schar((is_drawbridge_wall(x, y) >= 0));
-        if (((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked)) {
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)))) {
             let oldglyph = cptr.ldI32(door);
             let oldlastseentyp = schar(update_mapseen_for(x, y));
             feel_location(x, y);
-            if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.decay(svl.lastseentyp[x]), y)) != oldlastseentyp)
+            if (cptr.ldI32(door) != oldglyph || cptr.ld1s(cptr.add(cptr.add(svl, x, 21), y, 1)) != oldlastseentyp)
                 res = 1;
         }
-        if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == DOOR)) {
-            if (is_db_wall(x, y) || cptr.ld1s(cptr.add(door, 4)) == DRAWBRIDGE_UP)
+        if (portcullis || !((cptr.ld1s(cptr.add(door, 4))) == 23)) {
+            if (is_db_wall(x, y) || cptr.ld1s(cptr.add(door, 4)) == 19)
                 pline_The(__sl114);
-            else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == DRAWBRIDGE_DOWN)
+            else if (portcullis || cptr.ld1s(cptr.add(door, 4)) == 34)
                 There(__sl115);
             else {
                 __go_nodoor = true; break __skip_nodoor;
@@ -959,7 +963,7 @@ export function doclose() {
         }
     }
     if (__go_nodoor) {
-        You(__sl68, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl66 : __sl67);
+        You(__sl68, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl66 : __sl67);
     }
     if ((cptr.ldI32(cptr.add(door, 8)) | 0) == 0) {
         pline(__sl4);
@@ -974,17 +978,17 @@ export function doclose() {
         return res;
     }
     if ((cptr.ldI32(cptr.add(door, 8)) | 0) == 2) {
-        if ((cptr.ld1u(cptr.add((gy.youmonst.data), 67)) < 1) && !u.usteed) {
+        if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) && !cptr.ldPtr(cptr.add(u, 2424))) {
             pline(__sl117);
             return res;
         }
-        if (u.usteed || (rng_log_enabled() ? (rng_log_set_caller(__sl8, 1039, __sl118), rn2(25)) : rn2(25)) < (((((((acurrstr()) + (acurr(A_DEX))) | 0) + (acurr(A_CON))) | 0) / 3) | 0)) {
+        if (cptr.ldPtr(cptr.add(u, 2424)) || (rng_log_enabled() ? (rng_log_set_caller(__sl8, 1039, __sl118), rn2(25)) : rn2(25)) < (((((((acurrstr()) + (acurr(3))) | 0) + (acurr(4))) | 0) / 3) | 0)) {
             pline_The(__sl119);
             cptr.stI32(cptr.add(door, 8), 4);
             feel_newsym(x, y);
             block_point(x, y);
         } else {
-            exercise(A_STR, (1));
+            exercise(0, (1));
             pline_The(__sl108);
         }
     }
@@ -995,37 +999,37 @@ export function doclose() {
 export function boxlock(obj, otmp) {
     let res = 0;
     switch (cptr.ldI16(cptr.add(otmp, 32))) {
-        case WAN_LOCKING:
-        case SPE_WIZARD_LOCK:
+        case 426:
+        case 381:
         if (!cptr.ldI32(cptr.add(obj, 124))) {
             ;
             pline(__sl120);
             cptr.stI32(cptr.add(obj, 124), 1);
             cptr.stI32(cptr.add(obj, 128), 0);
-            if ((gu.urole.mnum == (PM_WIZARD)))
+            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)))
                 cptr.stI32(cptr.add(obj, 100), 1);
             else
                 cptr.stI32(cptr.add(obj, 100), 0);
             res = 1;
         }
         break;
-        case WAN_OPENING:
-        case SPE_KNOCK:
+        case 425:
+        case 375:
         if (cptr.ldI32(cptr.add(obj, 124))) {
             ;
             pline(__sl121);
             cptr.stI32(cptr.add(obj, 124), 0);
             res = 1;
-            if ((gu.urole.mnum == (PM_WIZARD)))
+            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)))
                 cptr.stI32(cptr.add(obj, 100), 1);
             else
                 cptr.stI32(cptr.add(obj, 100), 0);
         } else
             cptr.stI32(cptr.add(obj, 128), 0);
         break;
-        case WAN_POLYMORPH:
-        case SPE_POLYMORPH:
-        if (cptr.eq(gx.xlock.box, obj))
+        case 422:
+        case 399:
+        if (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gx, 8), 8)), obj))
             reset_pick();
         break;
     }
@@ -1034,38 +1038,38 @@ export function boxlock(obj, otmp) {
 
 /** C ref: lock.c:1103 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function doorlock(otmp, x, y) {
-    let door = cptr.add(cptr.decay(svl.level.locations[x]), y);
+    let door = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
     let res = (1);
     let loudness = 0;
     let msg = null;
     let dustcloud = __sl122;
     let quickly_dissipates = __sl123;
-    let mysterywand = schar((cptr.ld1s(cptr.add(otmp, 49)) == WAND_CLASS && !cptr.ldI32(cptr.add(otmp, 84))));
-    if (cptr.ld1s(cptr.add(door, 4)) == SDOOR) {
+    let mysterywand = schar((cptr.ld1s(cptr.add(otmp, 49)) == 11 && !cptr.ldI32(cptr.add(otmp, 84))));
+    if (cptr.ld1s(cptr.add(door, 4)) == 14) {
         switch (cptr.ldI16(cptr.add(otmp, 32))) {
-            case WAN_OPENING:
-            case SPE_KNOCK:
-            case WAN_STRIKING:
-            case SPE_FORCE_BOLT:
-            cptr.st1(cptr.add(door, 4), schar(DOOR));
+            case 425:
+            case 375:
+            case 417:
+            case 376:
+            cptr.st1(cptr.add(door, 4), 23);
             cptr.stI32(cptr.add(door, 8), (4 | ((cptr.ldI32(cptr.add(door, 8)) | 0) & 16)) >>> 0);
             newsym(x, y);
-            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0))
+            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0))
                 pline(__sl124);
-            if (cptr.ldI16(cptr.add(otmp, 32)) == WAN_OPENING || cptr.ldI16(cptr.add(otmp, 32)) == SPE_KNOCK)
+            if (cptr.ldI16(cptr.add(otmp, 32)) == 425 || cptr.ldI16(cptr.add(otmp, 32)) == 375)
                 return (1);
             break;
-            case WAN_LOCKING:
-            case SPE_WIZARD_LOCK:
+            case 426:
+            case 381:
             default:
             return (0);
         }
     }
     switch (cptr.ldI16(cptr.add(otmp, 32))) {
-        case WAN_LOCKING:
-        case SPE_WIZARD_LOCK:
-        if ((((cptr.ldI16(cptr.add((cptr.boxProp(svd.dungeon_topology, 'd_rogue_level')), 2)) || cptr.ldI16((cptr.boxProp(svd.dungeon_topology, 'd_rogue_level')))) && on_level(cptr.boxProp(u, 'uz'), cptr.boxProp(svd.dungeon_topology, 'd_rogue_level'))))) {
-            let vis = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0));
+        case 426:
+        case 381:
+        if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8)))) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8))))) {
+            let vis = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0));
             if (vis) {
                 pline(__sl125, dustcloud);
             } else {
@@ -1078,7 +1082,7 @@ export function doorlock(otmp, x, y) {
                 return (0);
             }
             block_point(x, y);
-            cptr.st1(cptr.add(door, 4), schar(SDOOR)), cptr.stI32(cptr.add(door, 8), 0);
+            cptr.st1(cptr.add(door, 4), 14), cptr.stI32(cptr.add(door, 8), 0);
             if (vis)
                 pline_The(__sl128);
             newsym(x, y);
@@ -1111,56 +1115,56 @@ export function doorlock(otmp, x, y) {
         cptr.stI32(cptr.add(door, 8), (8 | ((cptr.ldI32(cptr.add(door, 8)) | 0) & 16)) >>> 0);
         newsym(x, y);
         break;
-        case WAN_OPENING:
-        case SPE_KNOCK:
+        case 425:
+        case 375:
         if ((cptr.ldI32(cptr.add(door, 8)) | 0) & 8) {
             msg = __sl134;
             cptr.stI32(cptr.add(door, 8), (4 | ((cptr.ldI32(cptr.add(door, 8)) | 0) & 16)) >>> 0);
         } else
             res = (0);
         break;
-        case WAN_STRIKING:
-        case SPE_FORCE_BOLT:
+        case 417:
+        case 376:
         if ((cptr.ldI32(cptr.add(door, 8)) | 0) & (8 | 4)) {
             let sawit;
             let seeit;
             if ((cptr.ldI32(cptr.add(door, 8)) | 0) & 16) {
-                let mtmp = (cptr.ldPtr(cptr.add(cptr.decay(svl.level.monsters[x]), y)));
-                sawit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0)));
+                let mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)));
+                sawit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0)));
                 cptr.stI32(cptr.add(door, 8), 0);
                 unblock_point(x, y);
                 newsym(x, y);
-                seeit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0)));
+                seeit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0)));
                 if (mtmp) {
                     void mb_trapped(mtmp, schar((sawit || seeit)));
                 } else {
                     loudness = 40;
-                    if (flags.verbose) {
+                    if (cptr.ld1s(cptr.add(flags, 48))) {
                         ;
-                        if ((sawit || seeit) && !(gm.multi < 0n && (unconscious() || is_fainted()))) {
+                        if ((sawit || seeit) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted()))) {
                             pline(__sl135);
-                        } else if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf)) {
+                        } else if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) {
                             ;
-                            You_hear(__sl136, (dist2((x), (y), u.ux, u.uy) > Math.imul(7, 7)) ? __sl137 : __sl138);
+                            You_hear(__sl136, (dist2((x), (y), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) > Math.imul(7, 7)) ? __sl137 : __sl138);
                         }
                     }
                 }
                 break;
             }
-            sawit = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0));
+            sawit = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0));
             cptr.stI32(cptr.add(door, 8), 1);
             recalc_block_point(x, y);
-            seeit = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0));
+            seeit = schar(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0));
             newsym(x, y);
-            if (flags.verbose) {
-                if ((sawit || seeit) && !(gm.multi < 0n && (unconscious() || is_fainted()))) {
+            if (cptr.ld1s(cptr.add(flags, 48))) {
+                if ((sawit || seeit) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted()))) {
                     pline_The(__sl139);
-                } else if (!(u.uprops[DEAF].intrinsic || u.uprops[DEAF].extrinsic || u.uroleplay.deaf)) {
+                } else if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)))) {
                     ;
                     You_hear(__sl140);
                 }
             }
-            if (gv.vision_full_recalc)
+            if (cptr.ld1s(cptr.add(gv, 144)))
                 vision_recalc(0);
             loudness = 20;
         } else
@@ -1170,11 +1174,11 @@ export function doorlock(otmp, x, y) {
         impossible(__sl141, cptr.ldI16(cptr.add(otmp, 32)));
         break;
     }
-    if (msg && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gv.viz_array, y)), x)) & 2) != 0))
+    if (msg && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y)), x)) & 2) != 0))
         pline(__sl142, msg);
     if (loudness > 0) {
         wake_nearto(x, y, loudness);
-        if (cptr.ld1s(in_rooms(x, y, SHOPBASE)))
+        if (cptr.ld1s(in_rooms(x, y, 14)))
             add_damage(x, y, 0n);
     }
     if (res && picking_at(x, y)) {
@@ -1190,33 +1194,33 @@ function chest_shatter_msg(otmp) {
     let thing;
     let save_HBlinded;
     let save_BBlinded;
-    if (cptr.ld1s(cptr.add(otmp, 49)) == POTION_CLASS) {
-        You(__sl143, ((u.uprops[BLINDED].intrinsic || u.uprops[BLINDED].extrinsic) && !u.uprops[BLINDED].blocked) ? __sl144 : __sl67, an(bottlename()));
-        if (!((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 1024n) != 0n) || ((cptr.ldU64(cptr.add((gy.youmonst.data), 72)) & 4096n) == 0n))
+    if (cptr.ld1s(cptr.add(otmp, 49)) == 8) {
+        You(__sl143, ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24))) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8))) ? __sl144 : __sl67, an(bottlename()));
+        if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 1024n) != 0n) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 4096n) == 0n))
             potionbreathe(otmp);
         return;
     }
-    save_HBlinded = u.uprops[BLINDED].intrinsic, save_BBlinded = u.uprops[BLINDED].blocked;
-    u.uprops[BLINDED].intrinsic = 1n, u.uprops[BLINDED].blocked = 0n;
+    save_HBlinded = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)), save_BBlinded = cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8));
+    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), 1n), cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), 0n);
     thing = singular(otmp, xname);
-    u.uprops[BLINDED].intrinsic = save_HBlinded, u.uprops[BLINDED].blocked = save_BBlinded;
-    switch (objects[cptr.ldI16(cptr.add(otmp, 32))].oc_material | 0) {
-        case PAPER:
+    cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16), save_HBlinded), cptr.stU64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8), save_BBlinded);
+    switch (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) | 0) {
+        case 5:
         disposition = __sl145;
         break;
-        case WAX:
+        case 2:
         disposition = __sl146;
         break;
-        case VEGGY:
+        case 3:
         disposition = __sl147;
         break;
-        case FLESH:
+        case 4:
         disposition = __sl148;
         break;
-        case GLASS:
+        case 19:
         disposition = __sl149;
         break;
-        case WOOD:
+        case 8:
         disposition = __sl150;
         break;
         default:
