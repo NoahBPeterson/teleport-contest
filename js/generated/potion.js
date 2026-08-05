@@ -1674,23 +1674,23 @@ export function potionhit(mon, obj, how) {
         angermon = your_fault;
         cureblind = (0);
         let __sw10 = cptr.ldI16(cptr.add(obj, 32));
-        if (__sw10 === 315) { __pc = 11; continue; }
-        if (__sw10 === 308) { __pc = 12; continue; }
-        if (__sw10 === 307) { __pc = 13; continue; }
-        if (__sw10 === 298) { __pc = 14; continue; }
-        if (__sw10 === 297) { __pc = 15; continue; }
-        if (__sw10 === 318) { __pc = 16; continue; }
-        if (__sw10 === 299) { __pc = 17; continue; }
-        if (__sw10 === 317) { __pc = 18; continue; }
-        if (__sw10 === 305) { __pc = 19; continue; }
-        if (__sw10 === 314) { __pc = 20; continue; }
-        if (__sw10 === 301) { __pc = 21; continue; }
-        if (__sw10 === 302) { __pc = 22; continue; }
-        if (__sw10 === 300) { __pc = 23; continue; }
-        if (__sw10 === 322) { __pc = 24; continue; }
-        if (__sw10 === 321) { __pc = 25; continue; }
-        if (__sw10 === 320) { __pc = 26; continue; }
-        if (__sw10 === 316) { __pc = 27; continue; }
+        if (__sw10 === (315)) { __pc = 11; continue; }
+        if (__sw10 === (308)) { __pc = 12; continue; }
+        if (__sw10 === (307)) { __pc = 13; continue; }
+        if (__sw10 === (298)) { __pc = 14; continue; }
+        if (__sw10 === (297)) { __pc = 15; continue; }
+        if (__sw10 === (318)) { __pc = 16; continue; }
+        if (__sw10 === (299)) { __pc = 17; continue; }
+        if (__sw10 === (317)) { __pc = 18; continue; }
+        if (__sw10 === (305)) { __pc = 19; continue; }
+        if (__sw10 === (314)) { __pc = 20; continue; }
+        if (__sw10 === (301)) { __pc = 21; continue; }
+        if (__sw10 === (302)) { __pc = 22; continue; }
+        if (__sw10 === (300)) { __pc = 23; continue; }
+        if (__sw10 === (322)) { __pc = 24; continue; }
+        if (__sw10 === (321)) { __pc = 25; continue; }
+        if (__sw10 === (320)) { __pc = 26; continue; }
+        if (__sw10 === (316)) { __pc = 27; continue; }
         __pc = 9; continue;
         }
         case 11: {

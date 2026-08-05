@@ -1683,16 +1683,16 @@ function doname_base(obj, doname_flags) {
             } while (0);
         }
         let __sw4 = (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) ? 2 : cptr.ld1s(cptr.add(obj, 49));
-        if (__sw4 === 5) { __pc = 5; continue; }
-        if (__sw4 === 3) { __pc = 6; continue; }
-        if (__sw4 === 2) { __pc = 7; continue; }
-        if (__sw4 === 6) { __pc = 8; continue; }
-        if (__sw4 === 11) { __pc = 9; continue; }
-        if (__sw4 === 8) { __pc = 10; continue; }
-        if (__sw4 === 4) { __pc = 11; continue; }
-        if (__sw4 === 7) { __pc = 12; continue; }
-        if (__sw4 === 15) { __pc = 13; continue; }
-        if (__sw4 === 16) { __pc = 14; continue; }
+        if (__sw4 === (5)) { __pc = 5; continue; }
+        if (__sw4 === (3)) { __pc = 6; continue; }
+        if (__sw4 === (2)) { __pc = 7; continue; }
+        if (__sw4 === (6)) { __pc = 8; continue; }
+        if (__sw4 === (11)) { __pc = 9; continue; }
+        if (__sw4 === (8)) { __pc = 10; continue; }
+        if (__sw4 === (4)) { __pc = 11; continue; }
+        if (__sw4 === (7)) { __pc = 12; continue; }
+        if (__sw4 === (15)) { __pc = 13; continue; }
+        if (__sw4 === (16)) { __pc = 14; continue; }
         __pc = 3; continue;
         }
         case 5: {
@@ -4463,12 +4463,12 @@ export function readobjnam(bp, no_wish) {
             cptr.stI32(cptr.add(d, 72), 1);
         readobjnam_parse_charges(d);
         let __sw11 = readobjnam_postparse1(d);
-        if (__sw11 === 0) { __pc = 13; continue; }
-        if (__sw11 === 1) { __pc = 14; continue; }
-        if (__sw11 === 2) { __pc = 15; continue; }
-        if (__sw11 === 3) { __pc = 16; continue; }
-        if (__sw11 === 4) { __pc = 17; continue; }
-        if (__sw11 === 5) { __pc = 18; continue; }
+        if (__sw11 === (0)) { __pc = 13; continue; }
+        if (__sw11 === (1)) { __pc = 14; continue; }
+        if (__sw11 === (2)) { __pc = 15; continue; }
+        if (__sw11 === (3)) { __pc = 16; continue; }
+        if (__sw11 === (4)) { __pc = 17; continue; }
+        if (__sw11 === (5)) { __pc = 18; continue; }
         __pc = 12; continue;
         }
         case 12: {
@@ -4511,12 +4511,12 @@ export function readobjnam(bp, no_wish) {
         }
         case 1 /* retry: */: {
         let __sw20 = readobjnam_postparse2(d);
-        if (__sw20 === 0) { __pc = 22; continue; }
-        if (__sw20 === 1) { __pc = 23; continue; }
-        if (__sw20 === 2) { __pc = 24; continue; }
-        if (__sw20 === 3) { __pc = 25; continue; }
-        if (__sw20 === 4) { __pc = 26; continue; }
-        if (__sw20 === 5) { __pc = 27; continue; }
+        if (__sw20 === (0)) { __pc = 22; continue; }
+        if (__sw20 === (1)) { __pc = 23; continue; }
+        if (__sw20 === (2)) { __pc = 24; continue; }
+        if (__sw20 === (3)) { __pc = 25; continue; }
+        if (__sw20 === (4)) { __pc = 26; continue; }
+        if (__sw20 === (5)) { __pc = 27; continue; }
         __pc = 21; continue;
         }
         case 21: {
@@ -4559,13 +4559,13 @@ export function readobjnam(bp, no_wish) {
         }
         case 2 /* srch: */: {
         let __sw29 = readobjnam_postparse3(d);
-        if (__sw29 === 0) { __pc = 31; continue; }
-        if (__sw29 === 1) { __pc = 32; continue; }
-        if (__sw29 === 2) { __pc = 33; continue; }
-        if (__sw29 === 3) { __pc = 34; continue; }
-        if (__sw29 === 4) { __pc = 35; continue; }
-        if (__sw29 === 5) { __pc = 36; continue; }
-        if (__sw29 === 6) { __pc = 37; continue; }
+        if (__sw29 === (0)) { __pc = 31; continue; }
+        if (__sw29 === (1)) { __pc = 32; continue; }
+        if (__sw29 === (2)) { __pc = 33; continue; }
+        if (__sw29 === (3)) { __pc = 34; continue; }
+        if (__sw29 === (4)) { __pc = 35; continue; }
+        if (__sw29 === (5)) { __pc = 36; continue; }
+        if (__sw29 === (6)) { __pc = 37; continue; }
         __pc = 30; continue;
         }
         case 30: {

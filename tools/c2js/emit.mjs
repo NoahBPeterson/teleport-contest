@@ -1981,7 +1981,12 @@ export class Emitter {
     const defIdx = clauses.findIndex((c) => c.value === null);
     for (let i = 0; i < clauses.length; i++) {
       if (clauses[i].value !== null) {
-        this.smLine(`if (${tmp} === ${clauses[i].value}) { __pc = ${states[i]}; continue; }`);
+        // parenthesize: a case label like `ROLL | LAUNCH_KNOWN` emits as
+        // `1 | 128`, and `x === 1 | 128` parses as `(x === 1) | 128` — always
+        // truthy, so launch_obj() took the ROLL|LAUNCH_UNSEEN arm for every
+        // style and announced "You hear rumbling nearby" for boulder traps
+        // the hero triggered in plain sight.
+        this.smLine(`if (${tmp} === (${clauses[i].value})) { __pc = ${states[i]}; continue; }`);
       }
     }
     this.smLine(`__pc = ${defIdx >= 0 ? states[defIdx] : cont}; continue;`);

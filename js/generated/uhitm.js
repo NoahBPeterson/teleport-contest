@@ -4356,23 +4356,23 @@ function hmonas(mon) {
         case 9: {
         weapon = null;
         let __sw12 = cptr.ld1u(mattk);
-        if (__sw12 === 254) { __pc = 13; continue; }
-        if (__sw12 === 1) { __pc = 14; continue; }
-        if (__sw12 === 5) { __pc = 15; continue; }
-        if (__sw12 === 3) { __pc = 16; continue; }
-        if (__sw12 === 2) { __pc = 17; continue; }
-        if (__sw12 === 6) { __pc = 18; continue; }
-        if (__sw12 === 4) { __pc = 19; continue; }
-        if (__sw12 === 16) { __pc = 20; continue; }
-        if (__sw12 === 7) { __pc = 21; continue; }
-        if (__sw12 === 13) { __pc = 22; continue; }
-        if (__sw12 === 11) { __pc = 23; continue; }
-        if (__sw12 === 255) { __pc = 24; continue; }
-        if (__sw12 === 0) { __pc = 25; continue; }
-        if (__sw12 === 14) { __pc = 26; continue; }
-        if (__sw12 === 12) { __pc = 27; continue; }
-        if (__sw12 === 10) { __pc = 28; continue; }
-        if (__sw12 === 15) { __pc = 29; continue; }
+        if (__sw12 === (254)) { __pc = 13; continue; }
+        if (__sw12 === (1)) { __pc = 14; continue; }
+        if (__sw12 === (5)) { __pc = 15; continue; }
+        if (__sw12 === (3)) { __pc = 16; continue; }
+        if (__sw12 === (2)) { __pc = 17; continue; }
+        if (__sw12 === (6)) { __pc = 18; continue; }
+        if (__sw12 === (4)) { __pc = 19; continue; }
+        if (__sw12 === (16)) { __pc = 20; continue; }
+        if (__sw12 === (7)) { __pc = 21; continue; }
+        if (__sw12 === (13)) { __pc = 22; continue; }
+        if (__sw12 === (11)) { __pc = 23; continue; }
+        if (__sw12 === (255)) { __pc = 24; continue; }
+        if (__sw12 === (0)) { __pc = 25; continue; }
+        if (__sw12 === (14)) { __pc = 26; continue; }
+        if (__sw12 === (12)) { __pc = 27; continue; }
+        if (__sw12 === (10)) { __pc = 28; continue; }
+        if (__sw12 === (15)) { __pc = 29; continue; }
         __pc = 30; continue;
         }
         case 13: {

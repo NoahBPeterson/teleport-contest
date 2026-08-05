@@ -1935,9 +1935,9 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
         case 4: {
         seetrap(trap);
         let __sw7 = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 1610, __sl147), rn2(5)) : rn2(5));
-        if (__sw7 === 0) { __pc = 8; continue; }
-        if (__sw7 === 1) { __pc = 9; continue; }
-        if (__sw7 === 2) { __pc = 10; continue; }
+        if (__sw7 === (0)) { __pc = 8; continue; }
+        if (__sw7 === (1)) { __pc = 9; continue; }
+        if (__sw7 === (2)) { __pc = 10; continue; }
         __pc = 11; continue;
         }
         case 8: {
@@ -2011,9 +2011,9 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
         if (in_sight)
             seetrap(trap);
         let __sw15 = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 1663, __sl147), rn2(5)) : rn2(5));
-        if (__sw15 === 0) { __pc = 16; continue; }
-        if (__sw15 === 1) { __pc = 17; continue; }
-        if (__sw15 === 2) { __pc = 18; continue; }
+        if (__sw15 === (0)) { __pc = 16; continue; }
+        if (__sw15 === (1)) { __pc = 17; continue; }
+        if (__sw15 === (2)) { __pc = 18; continue; }
         __pc = 19; continue;
         }
         case 16: {
@@ -3258,9 +3258,9 @@ export function launch_obj(otyp, x1, y1, x2, y2, style) {
         dx = sgn((x2 - x1) | 0);
         dy = sgn((y2 - y1) | 0);
         let __sw3 = style;
-        if (__sw3 === 1 | 64) { __pc = 4; continue; }
-        if (__sw3 === 1 | 128) { __pc = 5; continue; }
-        if (__sw3 === 1) { __pc = 6; continue; }
+        if (__sw3 === (1 | 64)) { __pc = 4; continue; }
+        if (__sw3 === (1 | 128)) { __pc = 5; continue; }
+        if (__sw3 === (1)) { __pc = 6; continue; }
         __pc = 7; continue;
         }
         case 4: {

@@ -557,11 +557,11 @@ export function steal(mtmp, objnambuf) {
         }
         case 30: {
         let __sw33 = cptr.ld1s(cptr.add(otmp, 49));
-        if (__sw33 === 6) { __pc = 34; continue; }
-        if (__sw33 === 5) { __pc = 35; continue; }
-        if (__sw33 === 4) { __pc = 36; continue; }
-        if (__sw33 === 7) { __pc = 37; continue; }
-        if (__sw33 === 3) { __pc = 38; continue; }
+        if (__sw33 === (6)) { __pc = 34; continue; }
+        if (__sw33 === (5)) { __pc = 35; continue; }
+        if (__sw33 === (4)) { __pc = 36; continue; }
+        if (__sw33 === (7)) { __pc = 37; continue; }
+        if (__sw33 === (3)) { __pc = 38; continue; }
         __pc = 39; continue;
         }
         case 34: {

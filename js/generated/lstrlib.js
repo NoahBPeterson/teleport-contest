@@ -598,10 +598,10 @@ function match(ms, s, p) {
         }
         case 4: {
         let __sw6 = cptr.ld1s(p);
-        if (__sw6 === 40) { __pc = 7; continue; }
-        if (__sw6 === 41) { __pc = 8; continue; }
-        if (__sw6 === 36) { __pc = 9; continue; }
-        if (__sw6 === 37) { __pc = 10; continue; }
+        if (__sw6 === (40)) { __pc = 7; continue; }
+        if (__sw6 === (41)) { __pc = 8; continue; }
+        if (__sw6 === (36)) { __pc = 9; continue; }
+        if (__sw6 === (37)) { __pc = 10; continue; }
         __pc = 11; continue;
         }
         case 7: {
@@ -636,18 +636,18 @@ function match(ms, s, p) {
         }
         case 10: {
         let __sw15 = cptr.ld1s((cptr.add(p, 1)));
-        if (__sw15 === 98) { __pc = 16; continue; }
-        if (__sw15 === 102) { __pc = 17; continue; }
-        if (__sw15 === 48) { __pc = 18; continue; }
-        if (__sw15 === 49) { __pc = 19; continue; }
-        if (__sw15 === 50) { __pc = 20; continue; }
-        if (__sw15 === 51) { __pc = 21; continue; }
-        if (__sw15 === 52) { __pc = 22; continue; }
-        if (__sw15 === 53) { __pc = 23; continue; }
-        if (__sw15 === 54) { __pc = 24; continue; }
-        if (__sw15 === 55) { __pc = 25; continue; }
-        if (__sw15 === 56) { __pc = 26; continue; }
-        if (__sw15 === 57) { __pc = 27; continue; }
+        if (__sw15 === (98)) { __pc = 16; continue; }
+        if (__sw15 === (102)) { __pc = 17; continue; }
+        if (__sw15 === (48)) { __pc = 18; continue; }
+        if (__sw15 === (49)) { __pc = 19; continue; }
+        if (__sw15 === (50)) { __pc = 20; continue; }
+        if (__sw15 === (51)) { __pc = 21; continue; }
+        if (__sw15 === (52)) { __pc = 22; continue; }
+        if (__sw15 === (53)) { __pc = 23; continue; }
+        if (__sw15 === (54)) { __pc = 24; continue; }
+        if (__sw15 === (55)) { __pc = 25; continue; }
+        if (__sw15 === (56)) { __pc = 26; continue; }
+        if (__sw15 === (57)) { __pc = 27; continue; }
         __pc = 28; continue;
         }
         case 16: {
@@ -779,10 +779,10 @@ function match(ms, s, p) {
         }
         case 37: {
         let __sw42 = cptr.ld1s(ep);
-        if (__sw42 === 63) { __pc = 43; continue; }
-        if (__sw42 === 43) { __pc = 44; continue; }
-        if (__sw42 === 42) { __pc = 45; continue; }
-        if (__sw42 === 45) { __pc = 46; continue; }
+        if (__sw42 === (63)) { __pc = 43; continue; }
+        if (__sw42 === (43)) { __pc = 44; continue; }
+        if (__sw42 === (42)) { __pc = 45; continue; }
+        if (__sw42 === (45)) { __pc = 46; continue; }
         __pc = 47; continue;
         }
         case 43: {
@@ -1315,23 +1315,23 @@ function str_format(L) {
             return luaL_argerror(L, arg, __sl41);
         strfrmt = getformat(L, strfrmt, cptr.decay(form));
         let __sw12 = cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }));
-        if (__sw12 === 99) { __pc = 13; continue; }
-        if (__sw12 === 100) { __pc = 14; continue; }
-        if (__sw12 === 105) { __pc = 15; continue; }
-        if (__sw12 === 117) { __pc = 16; continue; }
-        if (__sw12 === 111) { __pc = 17; continue; }
-        if (__sw12 === 120) { __pc = 18; continue; }
-        if (__sw12 === 88) { __pc = 19; continue; }
-        if (__sw12 === 97) { __pc = 20; continue; }
-        if (__sw12 === 65) { __pc = 21; continue; }
-        if (__sw12 === 102) { __pc = 22; continue; }
-        if (__sw12 === 101) { __pc = 23; continue; }
-        if (__sw12 === 69) { __pc = 24; continue; }
-        if (__sw12 === 103) { __pc = 25; continue; }
-        if (__sw12 === 71) { __pc = 26; continue; }
-        if (__sw12 === 112) { __pc = 27; continue; }
-        if (__sw12 === 113) { __pc = 28; continue; }
-        if (__sw12 === 115) { __pc = 29; continue; }
+        if (__sw12 === (99)) { __pc = 13; continue; }
+        if (__sw12 === (100)) { __pc = 14; continue; }
+        if (__sw12 === (105)) { __pc = 15; continue; }
+        if (__sw12 === (117)) { __pc = 16; continue; }
+        if (__sw12 === (111)) { __pc = 17; continue; }
+        if (__sw12 === (120)) { __pc = 18; continue; }
+        if (__sw12 === (88)) { __pc = 19; continue; }
+        if (__sw12 === (97)) { __pc = 20; continue; }
+        if (__sw12 === (65)) { __pc = 21; continue; }
+        if (__sw12 === (102)) { __pc = 22; continue; }
+        if (__sw12 === (101)) { __pc = 23; continue; }
+        if (__sw12 === (69)) { __pc = 24; continue; }
+        if (__sw12 === (103)) { __pc = 25; continue; }
+        if (__sw12 === (71)) { __pc = 26; continue; }
+        if (__sw12 === (112)) { __pc = 27; continue; }
+        if (__sw12 === (113)) { __pc = 28; continue; }
+        if (__sw12 === (115)) { __pc = 29; continue; }
         __pc = 30; continue;
         }
         case 13: {
