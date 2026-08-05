@@ -2,3 +2,4 @@ node_modules/
 .cache/
 logs/
 tools/c2js/fixtures/printf_ref
+.DS_Store
