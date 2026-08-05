@@ -183,13 +183,13 @@ function dumpHeader(D) {
 /** C ref: ldump.c:217 — @param {CPtr} L @param {CPtr} f @param {CPtr} w @param {CPtr} data @param {CInt} strip @returns {CInt} */
 export function luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);
-    D.v.L = L;
-    D.v.writer = w;
-    D.v.data = data;
-    D.v.strip = strip;
-    D.v.status = 0;
-    dumpHeader(D.v);
-    dumpByte(D.v, cptr.ldI32(cptr.add(f, 16)));
-    dumpFunction(D.v, f, null);
-    return D.v.status;
+    cptr.stPtr(D, L);
+    cptr.stPtr(cptr.add(D, 8), w);
+    cptr.stPtr(cptr.add(D, 16), data);
+    cptr.stI32(cptr.add(D, 24), strip);
+    cptr.stI32(cptr.add(D, 28), 0);
+    dumpHeader(D);
+    dumpByte(D, cptr.ldI32(cptr.add(f, 16)));
+    dumpFunction(D, f, null);
+    return cptr.ldI32(cptr.add(D, 28));
 }

@@ -2325,6 +2325,7 @@ export class Emitter {
         const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
         const q = desugar(d.type);
         const tgt = this.boxedVars?.has(d.name) ? `${jsName(d.name)}.v` : jsName(d.name);
+        if (this.emitHoistedArrayAssign(d, q, init, indent, lines)) continue;
         if (parseType(q).cls === 'record' && !this.isEnumType(q)) {
           const recName = this.recordNameForType(q);
           lines.push(`${indent}${jsName(d.name)} = ${this.cptrCall('alloc', String(this.layoutOf(recName).size))};`);
@@ -2336,6 +2337,7 @@ export class Emitter {
       }
       if (this.regionHoisted?.has(d.name)) {
         const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
+        if (this.emitHoistedArrayAssign(d, desugar(d.type), init, indent, lines)) continue;
         if (init) lines.push(`${indent}${this.boxedVars?.has(d.name) ? `${jsName(d.name)}.v` : jsName(d.name)} = ${this.emitExpr(init).code};`);
         continue; // declaration hoisted to function top
       }
@@ -2375,6 +2377,25 @@ export class Emitter {
       return this.cptrCall('alloc', `${arr.count} * ${sz}`);
     }
     throw new Error(`array storage for "${q}" unsupported (v1)`);
+  }
+
+  /**
+   * Hoisted decls (smMode / regionHoisted) leave a bare `let` at fn top; a
+   * local ARRAY still needs its storage created at the decl site. Returns
+   * true when the decl was array-typed and an assignment was emitted.
+   */
+  emitHoistedArrayAssign(d, q, init, indent, lines) {
+    if (!arrayParts(q)) return false;
+    const nm = jsName(d.name);
+    if (init && init.kind === 'StringLiteral') {
+      lines.push(`${indent}${nm} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`);
+      return true;
+    }
+    const packed = this.emitBytePackedArray(nm, q, init, `${nm} = `);
+    if (packed) { lines.push(`${indent}${packed.join(' ')}`); return true; }
+    if (init) lines.push(`${indent}${nm} = ${this.emitExpr(init).code};`);
+    else lines.push(`${indent}${nm} = ${this.arrayStorage(q)};`);
+    return true;
   }
 
   localVarDecl(d) {
@@ -2735,10 +2756,14 @@ export class Emitter {
       if (n.kind === 'UnaryOperator' && n.opcode === '&') {
         const sub = n.inner[0];
         if (sub.kind === 'DeclRefExpr') {
-          // strip qualifiers before the record test ("const struct x" IS a record)
-          const q = (sub.type?.desugaredQualType || sub.type?.qualType || '').replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').replace(/\s+/g, ' ').trim();
+          // strip qualifiers before the record test ("const struct x" IS a record).
+          // Resolve typedefs with the shared desugar — the slim IR often has only
+          // the alias name (e.g. "terrain"), which the raw regex can't classify.
+          const q = desugar(sub.type).replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').replace(/\s+/g, ' ').trim();
           const nm = sub.name || sub.referencedDecl?.name;
-          const isRecordValue = /^(struct|union)\b[^*]*$/.test(q);
+          const isRecordValue = /^(struct|union)\b[^*]*$/.test(q)
+            || (!q.includes('*') && !q.includes('[') && !q.includes('(')
+                && parseType(q).cls === 'record' && !self.isEnumType(q));
           // hoisted statics have module lifetime and their own storage —
           // box them under their HOISTED name (the box is their address)
           const hoisted = sub.referencedDecl?.id && self.staticLocals.get(sub.referencedDecl.id);

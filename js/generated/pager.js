@@ -1594,12 +1594,15 @@ export function do_look(mode, click_cc) {
             if (found) {
                 (cptr.ldPtr(cptr.add(windowprocs, 152)))(WIN_MESSAGE.v, 0, cptr.decay(out_str));
                 {
+                    dmpbuf = new Uint8Array(256);
                     void decode_mixed(cptr.decay(dmpbuf), cptr.decay(out_str));
                     if (cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) < 32 || cptr.ld1s(cptr.add(cptr.decay(dmpbuf), 0, 1)) >= 127 ? 1 : 0)
                         cptr.st1(cptr.add(cptr.decay(dmpbuf), 0, 1), 32);
                     dumplogmsg(cptr.decay(dmpbuf));
                 }
                 if ((((found == 1 && ans != 1 ? 1 : 0) && ans != 2 ? 1 : 0) && (ans == 3 || (cptr.ld1s(cptr.add(flags, 16)) && !quick ? 1 : 0) ? 1 : 0) ? 1 : 0) && !clicklook ? 1 : 0) {
+                    temp_buf = new Uint8Array(256);
+                    supplemental_name = new Uint8Array(256);
                     cptr.st1(cptr.add(cptr.decay(supplemental_name), 0, 1), 0);
                     void cptr.strcpy(cptr.decay(temp_buf), firstmatch.v);
                     void checkfile(cptr.decay(temp_buf), pm, ((ans == 3) ? 2 : 0) >>> 0, cptr.decay(supplemental_name));

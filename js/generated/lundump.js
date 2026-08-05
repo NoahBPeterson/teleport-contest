@@ -310,15 +310,15 @@ export function luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);
     let cl;
     if (cptr.ld1s(name) == 64 || cptr.ld1s(name) == 61 ? 1 : 0)
-        S.v.name = cptr.add(name, 1);
+        cptr.stPtr(cptr.add(S, 16), cptr.add(name, 1));
     else if (cptr.ld1s(name) == cptr.ld1s(cptr.add(__sl5, 0, 1)))
-        S.v.name = __sl16;
+        cptr.stPtr(cptr.add(S, 16), __sl16);
     else
-        S.v.name = name;
-    S.v.L = L;
-    S.v.Z = Z;
-    checkHeader(S.v);
-    cl = luaF_newLclosure(L, loadByte(S.v));
+        cptr.stPtr(cptr.add(S, 16), name);
+    cptr.stPtr(S, L);
+    cptr.stPtr(cptr.add(S, 8), Z);
+    checkHeader(S);
+    cl = luaF_newLclosure(L, loadByte(S));
     {
         let io = (((cptr.ldPtr(cptr.add(L, 16)))));
         let x_ = (cl);
@@ -330,7 +330,7 @@ export function luaU_undump(L, Z, name) {
     luaD_inctop(L);
     cptr.stPtr(cptr.add(cl, 24), luaF_newproto(L));
     ((((cptr.ld1u(cptr.add((cl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtr(cptr.add(cl, 24))))))) : (void ((0))));
-    loadFunction(S.v, cptr.ldPtr(cptr.add(cl, 24)), null);
+    loadFunction(S, cptr.ldPtr(cptr.add(cl, 24)), null);
     (void 0);
     ;
     return cl;

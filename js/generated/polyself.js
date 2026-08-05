@@ -840,6 +840,7 @@ export function polyself(psflags) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
+        buf = new Uint8Array(256);
         gvariant.v = 2;
         forcecontrol = schar(((psflags & 1) != 0));
         low_control = schar(((psflags & 8) != 0));

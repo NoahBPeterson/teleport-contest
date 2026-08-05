@@ -4613,6 +4613,7 @@ export function getdir(s) {
         __pc = 12; continue;
         }
         case 11: {
+        qbuf = new Uint8Array(128);
         cc = cptr.alloc(4);
         void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 7, 1))));
         cc.x = cptr.ldI16(u), cc.y = cptr.ldI16(cptr.add(u, 2));

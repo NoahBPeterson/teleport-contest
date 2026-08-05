@@ -1307,6 +1307,7 @@ function str_format(L) {
         continue;
         }
         case 10: {
+        form = new Uint8Array(32);
         maxitem = 120;
         buff = luaL_prepbuffsize(b, BigInt.asUintN(64, BigInt(maxitem)));
         nb = 0;

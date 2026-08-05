@@ -1605,6 +1605,7 @@ export function potionhit(mon, obj, how) {
                 pline(__sl202);
             } else {
                 mnam = mon_nam(mon);
+                buf = new Uint8Array(256);
                 if (hit_saddle && saddle ? 1 : 0) {
                     void cptr.sprintf(cptr.decay(buf), __sl203, s_suffix(x_monnam(mon, 1, null, (1 | 8), (0))));
                 } else if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 32768n) == 0n)) {
@@ -1650,6 +1651,8 @@ export function potionhit(mon, obj, how) {
         __pc = 8; continue;
         }
         case 7: {
+        buf = new Uint8Array(256);
+        saddle_glows = new Uint8Array(256);
         affected = (0);
         useeit = schar(((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && canseemon(mon) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), ty, 8)), tx)) & 2) != 0) ? 1 : 0));
         mnam = x_monnam(mon, 1, null, (1 | 8), (0));

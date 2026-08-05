@@ -879,6 +879,7 @@ export function gd_move(grd) {
         if (cptr.ldI32(cptr.add(egrd, 8)) == 1) {
             if (u_in_vault && (u_carry_gold || um_dist(cptr.ldI16(cptr.add(grd, 28)), cptr.ldI16(cptr.add(grd, 30)), 1) ? 1 : 0) ? 1 : 0) {
                 if (cptr.ld1s(cptr.add(egrd, 28)) == 3 && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) {
+                    buf = new Uint8Array(256);
                     void cptr.sprintf(cptr.decay(buf), __sl64, u_carry_gold ? (!umoney ? __sl65 : __sl66) : __sl26);
                     ;
                     if (cptr.ld1s(cptr.add(egrd, 29)) || !u_carry_gold ? 1 : 0)

@@ -256,6 +256,7 @@ function getpos_help(force, goal) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
+        sbuf = new Uint8Array(256);
         tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         void cptr.sprintf(cptr.decay(sbuf), __sl30, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
@@ -298,6 +299,7 @@ function getpos_help(force, goal) {
         __pc = 4; continue;
         }
         case 5: {
+        kbuf = new Uint8Array(256);
         if (getpos_getvalid) {
             void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 23, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 24, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
@@ -693,14 +695,16 @@ export function getpos(ccp, force, goal) {
         switch (__pc) {
         case 0: {
         cq = cptr.alloc(32);
+        pick_chars = new Uint8Array(6);
+        mMoOdDxX = new Uint8Array(13);
         result = 0;
         tx.v = cptr.ldI16(u);
         ty.v = cptr.ldI16(cptr.add(u, 2));
         msg_given = (1);
         show_goal_msg = (0);
-        garr = [];
-        gcount = [];
-        gidx = [];
+        garr = cptr.alloc(6 * 8);
+        gcount = cptr.alloc(6 * 4);
+        gidx = cptr.alloc(6 * 4);
         udx = schar(cptr.ldI32(cptr.add(u, 4)));
         udy = schar(cptr.ldI32(cptr.add(u, 8)));
         udz = schar(cptr.ldI32(cptr.add(u, 12)));
@@ -1008,6 +1012,7 @@ export function getpos(ccp, force, goal) {
         __pc = 51; continue;
         }
         case 52: {
+        matching = new Uint8Array(105);
         k = 0;
         void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
         for (sidx.v = 0; sidx.v < 105; sidx.v++) {
@@ -1148,6 +1153,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 55: {
+        note = new Uint8Array(128);
         if (!force)
             void cptr.strcpy(cptr.decay(note), __sl102);
         else

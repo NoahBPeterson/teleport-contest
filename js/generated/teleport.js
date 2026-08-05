@@ -877,6 +877,7 @@ export function level_tele() {
         case 0: {
         newlevel = cptr.alloc(4);
         escape_by_flying = null;
+        buf = new Uint8Array(256);
         force_dest = (0);
         if (cptr.ld1s(cptr.add(iflags, 15))) {
             do {
@@ -895,6 +896,7 @@ export function level_tele() {
         __pc = 5; continue;
         }
         case 4: {
+        qbuf = new Uint8Array(256);
         trycnt = 0;
         void cptr.strcpy(cptr.decay(qbuf), __sl50);
         __pc = 7; continue;

@@ -364,6 +364,7 @@ export function steal(mtmp, objnambuf) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
+        Monnambuf = new Uint8Array(256);
         named = 0;
         retrycnt = 0;
         monkey_business = schar(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 262144n) != 0n));

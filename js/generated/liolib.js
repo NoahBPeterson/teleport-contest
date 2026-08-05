@@ -322,32 +322,32 @@ function read_number(L, f) {
     let count = 0;
     let hex = 0;
     let decp = new Uint8Array(2);
-    rn.v.f = f;
-    rn.v.n = 0;
+    cptr.stPtr(rn, f);
+    cptr.stI32(cptr.add(rn, 12), 0);
     cptr.st1(cptr.add(cptr.decay(decp), 0, 1), (cptr.ld1s(cptr.add(cptr.ldPtr(localeconv()), 0))));
     cptr.st1(cptr.add(cptr.decay(decp), 1, 1), 46);
-    flockfile(rn.v.f);
+    flockfile(cptr.ldPtr(rn));
     do {
-        rn.v.c = (cptr.stI32(cptr.add((rn.v.f), 8), cptr.ldI32(cptr.add((rn.v.f), 8)) + -1) < 0 ? __srget(rn.v.f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((rn.v.f)), (v) => { cptr.stPtr((rn.v.f), v); }))));
-    } while (isspace(rn.v.c));
-    test2(rn.v, __sl16);
-    if (test2(rn.v, __sl17)) {
-        if (test2(rn.v, __sl18))
+        cptr.stI32(cptr.add(rn, 8), (cptr.stI32(cptr.add((cptr.ldPtr(rn)), 8), cptr.ldI32(cptr.add((cptr.ldPtr(rn)), 8)) + -1) < 0 ? __srget(cptr.ldPtr(rn)) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((cptr.ldPtr(rn))), (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); })))));
+    } while (isspace(cptr.ldI32(cptr.add(rn, 8))));
+    test2(rn, __sl16);
+    if (test2(rn, __sl17)) {
+        if (test2(rn, __sl18))
             hex = 1;
         else
             count = 1;
     }
-    count = (count + readdigits(rn.v, hex)) | 0;
-    if (test2(rn.v, cptr.decay(decp)))
-        count = (count + readdigits(rn.v, hex)) | 0;
-    if (count > 0 && test2(rn.v, (hex ? __sl19 : __sl20)) ? 1 : 0) {
-        test2(rn.v, __sl16);
-        readdigits(rn.v, 0);
+    count = (count + readdigits(rn, hex)) | 0;
+    if (test2(rn, cptr.decay(decp)))
+        count = (count + readdigits(rn, hex)) | 0;
+    if (count > 0 && test2(rn, (hex ? __sl19 : __sl20)) ? 1 : 0) {
+        test2(rn, __sl16);
+        readdigits(rn, 0);
     }
-    ungetc(rn.v.c, rn.v.f);
-    funlockfile(rn.v.f);
-    cptr.st1(cptr.add(cptr.decay(rn.v.buff), rn.v.n, 1), 0);
-    if ((__builtin_expect(BigInt(((lua_stringtonumber(L, cptr.decay(rn.v.buff))) != 0n)), 1n)))
+    ungetc(cptr.ldI32(cptr.add(rn, 8)), cptr.ldPtr(rn));
+    funlockfile(cptr.ldPtr(rn));
+    cptr.st1(cptr.add(cptr.add(rn, 16), cptr.ldI32(cptr.add(rn, 12)), 1), 0);
+    if ((__builtin_expect(BigInt(((lua_stringtonumber(L, cptr.add(rn, 16))) != 0n)), 1n)))
         return 1;
     else {
         lua_pushnil(L);

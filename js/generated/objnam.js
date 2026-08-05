@@ -1614,6 +1614,8 @@ function doname_base(obj, doname_flags) {
         with_price = schar((((doname_flags & 1) >>> 0) != 0));
         vague_quan = schar((((doname_flags & 2) >>> 0) != 0));
         for_menu = schar((((doname_flags & 4) >>> 0) != 0));
+        prefix = new Uint8Array(80);
+        tmpbuf = new Uint8Array(81);
         aname = null;
         omndx = cptr.ldI32(cptr.add(obj, 168));
         bp = xname(obj);
@@ -1765,6 +1767,7 @@ function doname_base(obj, doname_flags) {
             break;
         }
         if (cptr.ldI16(cptr.add(obj, 32)) == 262) {
+            suffix = new Uint8Array(20);
             void cptr.sprintf(cptr.decay(suffix), __sl35, (((cptr.ld1s(cptr.add(obj, 48))) == 1) ? __sl13 : __sl121), !cptr.ldI32(cptr.add(obj, 76)) ? __sl132 : __sl133);
             do {
                 nh_snprintf(__sl106, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl134, cptr.ld1s(cptr.add(obj, 48)), cptr.decay(suffix));
@@ -1944,6 +1947,7 @@ function doname_base(obj, doname_flags) {
                 } while (0);
             } else {
                 hand_s = body_part(6);
+                handsbuf = new Uint8Array(40);
                 if (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) | 0 ? 1 : 0)) {
                     hand_s = cptr.strcpy(cptr.decay(handsbuf), obufp = makeplural(hand_s));
                     releaseobuf(obufp);
@@ -2005,6 +2009,7 @@ function doname_base(obj, doname_flags) {
         if (cptr.ldI32(cptr.add(iflags, 64)) || cptr.ldI32(cptr.add(program_state, 32)) ? 1 : 0) {
             ;
         } else if (is_unpaid(obj)) {
+            pricebuf = new Uint8Array(40);
             quotedprice = unpaid_cost(obj, 1);
             void cptr.sprintf(cptr.decay(pricebuf), __sl161, quotedprice, currency(quotedprice));
             do {
@@ -2016,6 +2021,7 @@ function doname_base(obj, doname_flags) {
             nochrg.v = 0;
             price = get_cost_of_shop_item(obj, nochrg);
             if (price > 0n) {
+                pricebuf = new Uint8Array(40);
                 void cptr.sprintf(cptr.decay(pricebuf), __sl161, price, currency(price));
                 do {
                     nh_snprintf(__sl106, 1673, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl162, nochrg.v ? __sl164 : __sl165, cptr.decay(pricebuf));

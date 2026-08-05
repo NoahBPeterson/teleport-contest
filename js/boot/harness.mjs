@@ -127,7 +127,10 @@ export async function runBootGame(opts) {
   const err = (s) => { if (trace) process.stderr.write(s); };
 
   const inputQueue = [];
-  for (const ch of moves) inputQueue.push(ch.charCodeAt(0));
+  // The canonical sessions were captured under tmux, whose pty line discipline
+  // maps incoming CR to LF (ICRNL) before the game reads it. The recorder's
+  // pipe feed replicates that (record-session.mjs); so must we.
+  for (const ch of moves) inputQueue.push(ch === '\r' ? 10 : ch.charCodeAt(0));
 
   const g = globalThis;
   const cptr = await import('../cptr.js');
@@ -333,6 +336,12 @@ export async function runBootGame(opts) {
     throw { __bootExit: 1 };
   };
   g.sethanguphandler = (fn) => {};
+  // sys/share/unixtty.c globals (file not in the transpiled corpus). Patch 006
+  // seeds these under NOMUX_MARKERS: DEL erase, ^U kill, ^C intr — matching a
+  // tmux pty capture. No corpus code writes them (gettty isn't transpiled).
+  g.erase_char = 127;
+  g.kill_char = 21;
+  g.intr_char = 3;
   g.chdir = (p) => { currentDir = resolveP(cptr.cstr(p)); __trace('chdir', currentDir); return 0; };
   g.open = (p, flags, mode) => { __trace('open', cptr.cstr(p), flags);
     const acc = Number(flags) & 3;

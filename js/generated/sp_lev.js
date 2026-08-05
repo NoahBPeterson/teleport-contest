@@ -2949,147 +2949,147 @@ export function lspo_monster(L) {
     let mgend = cptr.box(2);
     let mappear = null;
     create_des_coder();
-    tmpmons.v.peaceful = schar((-1));
-    tmpmons.v.asleep = schar((-1));
-    tmpmons.v.name.str = null;
-    tmpmons.v.appear = 0;
-    tmpmons.v.appear_as.str = null;
-    tmpmons.v.sp_amask = 128;
-    tmpmons.v.female = 0;
-    tmpmons.v.invis = 0;
-    tmpmons.v.cancelled = 0;
-    tmpmons.v.revived = 0;
-    tmpmons.v.avenge = 0;
-    tmpmons.v.fleeing = 0;
-    tmpmons.v.blinded = 0;
-    tmpmons.v.paralyzed = 0;
-    tmpmons.v.stunned = 0;
-    tmpmons.v.confused = 0;
-    tmpmons.v.seentraps = 0n;
-    tmpmons.v.has_invent = 2;
-    tmpmons.v.waiting = 0;
-    tmpmons.v.mm_flags = 0;
-    tmpmons.v.m_lev_adj = 0;
+    cptr.st1(cptr.add(tmpmons, 40), schar((-1)));
+    cptr.st1(cptr.add(tmpmons, 41), schar((-1)));
+    cptr.stPtr(tmpmons, null);
+    cptr.stI16(cptr.add(tmpmons, 38), 0);
+    cptr.stPtr(cptr.add(tmpmons, 8), null);
+    cptr.stI32(cptr.add(tmpmons, 20), 128);
+    cptr.stI16(cptr.add(tmpmons, 42), 0);
+    cptr.stI16(cptr.add(tmpmons, 44), 0);
+    cptr.stI16(cptr.add(tmpmons, 46), 0);
+    cptr.stI16(cptr.add(tmpmons, 48), 0);
+    cptr.stI16(cptr.add(tmpmons, 50), 0);
+    cptr.stI16(cptr.add(tmpmons, 52), 0);
+    cptr.stI16(cptr.add(tmpmons, 54), 0);
+    cptr.stI16(cptr.add(tmpmons, 56), 0);
+    cptr.stI16(cptr.add(tmpmons, 58), 0);
+    cptr.stI16(cptr.add(tmpmons, 60), 0);
+    cptr.stU64(cptr.add(tmpmons, 72), 0n);
+    cptr.stI16(cptr.add(tmpmons, 80), 2);
+    cptr.stI16(cptr.add(tmpmons, 62), 0);
+    cptr.stI32(cptr.add(tmpmons, 84), 0);
+    cptr.stI16(cptr.add(tmpmons, 64), 0);
     if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
         let paramstr = (luaL_checklstring(L, (1), null));
         if (cptr.strlen(paramstr) == 1n) {
-            tmpmons.v.class = i16(cptr.ld1s(paramstr));
-            tmpmons.v.id = -1;
+            cptr.stI16(cptr.add(tmpmons, 36), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpmons, 16), -1);
         } else {
-            tmpmons.v.class = i16((-1));
-            tmpmons.v.id = i16(find_montype(L, paramstr, mgend));
-            tmpmons.v.female = i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3256, __sl73), rn2(2)) : rn2(2)))));
+            cptr.stI16(cptr.add(tmpmons, 36), i16((-1)));
+            cptr.stI16(cptr.add(tmpmons, 16), i16(find_montype(L, paramstr, mgend)));
+            cptr.stI16(cptr.add(tmpmons, 42), i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3256, __sl73), rn2(2)) : rn2(2))))));
         }
     } else if ((argc == 2 && lua_type(L, 1) == 4 ? 1 : 0) && lua_type(L, 2) == 5 ? 1 : 0) {
         let paramstr = (luaL_checklstring(L, (1), null));
         void get_coord(L, 2, mx, my);
         if (cptr.strlen(paramstr) == 1n) {
-            tmpmons.v.class = i16(cptr.ld1s(paramstr));
-            tmpmons.v.id = -1;
+            cptr.stI16(cptr.add(tmpmons, 36), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpmons, 16), -1);
         } else {
-            tmpmons.v.class = i16((-1));
-            tmpmons.v.id = i16(find_montype(L, paramstr, mgend));
-            tmpmons.v.female = i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3271, __sl73), rn2(2)) : rn2(2)))));
+            cptr.stI16(cptr.add(tmpmons, 36), i16((-1)));
+            cptr.stI16(cptr.add(tmpmons, 16), i16(find_montype(L, paramstr, mgend)));
+            cptr.stI16(cptr.add(tmpmons, 42), i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3271, __sl73), rn2(2)) : rn2(2))))));
         }
     } else if (argc == 3) {
         let paramstr = (luaL_checklstring(L, (1), null));
         mx.v = luaL_checkinteger(L, 2);
         my.v = luaL_checkinteger(L, 3);
         if (cptr.strlen(paramstr) == 1n) {
-            tmpmons.v.class = i16(cptr.ld1s(paramstr));
-            tmpmons.v.id = -1;
+            cptr.stI16(cptr.add(tmpmons, 36), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpmons, 16), -1);
         } else {
-            tmpmons.v.class = i16((-1));
-            tmpmons.v.id = i16(find_montype(L, paramstr, mgend));
-            tmpmons.v.female = i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3287, __sl73), rn2(2)) : rn2(2)))));
+            cptr.stI16(cptr.add(tmpmons, 36), i16((-1)));
+            cptr.stI16(cptr.add(tmpmons, 16), i16(find_montype(L, paramstr, mgend)));
+            cptr.stI16(cptr.add(tmpmons, 42), i16(((mgend.v == 1) ? 1 : ((mgend.v == 0) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3287, __sl73), rn2(2)) : rn2(2))))));
         }
     } else {
         let keep_default_invent = -1;
         lcheck_param_table(L);
-        tmpmons.v.peaceful = schar(get_table_boolean_opt(L, __sl74, (-1)));
-        tmpmons.v.asleep = schar(get_table_boolean_opt(L, __sl75, (-1)));
-        tmpmons.v.name.str = get_table_str_opt(L, __sl76, null);
-        tmpmons.v.appear = 0;
-        tmpmons.v.appear_as.str = null;
-        tmpmons.v.sp_amask = get_table_align(L) >>> 0;
-        tmpmons.v.female = i16(get_table_boolean_opt(L, __sl77, (-1)));
-        tmpmons.v.invis = i16(get_table_boolean_opt(L, __sl78, 0));
-        tmpmons.v.cancelled = i16(get_table_boolean_opt(L, __sl79, 0));
-        tmpmons.v.revived = i16(get_table_boolean_opt(L, __sl80, 0));
-        tmpmons.v.avenge = i16(get_table_boolean_opt(L, __sl81, 0));
-        tmpmons.v.fleeing = i16(get_table_int_opt(L, __sl82, 0));
-        tmpmons.v.blinded = i16(get_table_int_opt(L, __sl83, 0));
-        tmpmons.v.paralyzed = i16(get_table_int_opt(L, __sl84, 0));
-        tmpmons.v.stunned = i16(get_table_boolean_opt(L, __sl85, 0));
-        tmpmons.v.confused = i16(get_table_boolean_opt(L, __sl86, 0));
-        tmpmons.v.waiting = i16(get_table_boolean_opt(L, __sl87, 0));
-        tmpmons.v.m_lev_adj = i16(get_table_int_opt(L, __sl88, 0));
-        tmpmons.v.seentraps = 0n;
+        cptr.st1(cptr.add(tmpmons, 40), schar(get_table_boolean_opt(L, __sl74, (-1))));
+        cptr.st1(cptr.add(tmpmons, 41), schar(get_table_boolean_opt(L, __sl75, (-1))));
+        cptr.stPtr(tmpmons, get_table_str_opt(L, __sl76, null));
+        cptr.stI16(cptr.add(tmpmons, 38), 0);
+        cptr.stPtr(cptr.add(tmpmons, 8), null);
+        cptr.stI32(cptr.add(tmpmons, 20), get_table_align(L) >>> 0);
+        cptr.stI16(cptr.add(tmpmons, 42), i16(get_table_boolean_opt(L, __sl77, (-1))));
+        cptr.stI16(cptr.add(tmpmons, 44), i16(get_table_boolean_opt(L, __sl78, 0)));
+        cptr.stI16(cptr.add(tmpmons, 46), i16(get_table_boolean_opt(L, __sl79, 0)));
+        cptr.stI16(cptr.add(tmpmons, 48), i16(get_table_boolean_opt(L, __sl80, 0)));
+        cptr.stI16(cptr.add(tmpmons, 50), i16(get_table_boolean_opt(L, __sl81, 0)));
+        cptr.stI16(cptr.add(tmpmons, 52), i16(get_table_int_opt(L, __sl82, 0)));
+        cptr.stI16(cptr.add(tmpmons, 54), i16(get_table_int_opt(L, __sl83, 0)));
+        cptr.stI16(cptr.add(tmpmons, 56), i16(get_table_int_opt(L, __sl84, 0)));
+        cptr.stI16(cptr.add(tmpmons, 58), i16(get_table_boolean_opt(L, __sl85, 0)));
+        cptr.stI16(cptr.add(tmpmons, 60), i16(get_table_boolean_opt(L, __sl86, 0)));
+        cptr.stI16(cptr.add(tmpmons, 62), i16(get_table_boolean_opt(L, __sl87, 0)));
+        cptr.stI16(cptr.add(tmpmons, 64), i16(get_table_int_opt(L, __sl88, 0)));
+        cptr.stU64(cptr.add(tmpmons, 72), 0n);
         keep_default_invent = get_table_boolean_opt(L, __sl89, -1);
         if (!get_table_boolean_opt(L, __sl90, 1))
-            tmpmons.v.mm_flags = Number(BigInt.asUintN(32, BigInt(tmpmons.v.mm_flags >>> 0) | 16384n));
+            cptr.stI32(cptr.add(tmpmons, 84), Number(BigInt.asUintN(32, BigInt(cptr.ldI32(cptr.add(tmpmons, 84)) >>> 0) | 16384n)));
         if (!get_table_boolean_opt(L, __sl91, 1))
-            tmpmons.v.mm_flags = Number(BigInt.asUintN(32, BigInt(tmpmons.v.mm_flags >>> 0) | 8192n));
+            cptr.stI32(cptr.add(tmpmons, 84), Number(BigInt.asUintN(32, BigInt(cptr.ldI32(cptr.add(tmpmons, 84)) >>> 0) | 8192n)));
         if (get_table_boolean_opt(L, __sl92, 0))
-            tmpmons.v.mm_flags = Number(BigInt.asUintN(32, BigInt(tmpmons.v.mm_flags >>> 0) | 16n));
+            cptr.stI32(cptr.add(tmpmons, 84), Number(BigInt.asUintN(32, BigInt(cptr.ldI32(cptr.add(tmpmons, 84)) >>> 0) | 16n)));
         if (get_table_boolean_opt(L, __sl93, 0))
-            tmpmons.v.mm_flags = Number(BigInt.asUintN(32, BigInt(tmpmons.v.mm_flags >>> 0) | 8n));
+            cptr.stI32(cptr.add(tmpmons, 84), Number(BigInt.asUintN(32, BigInt(cptr.ldI32(cptr.add(tmpmons, 84)) >>> 0) | 8n)));
         if (!get_table_boolean_opt(L, __sl94, 1))
-            tmpmons.v.mm_flags = Number(BigInt.asUintN(32, BigInt(tmpmons.v.mm_flags >>> 0) | 4n));
+            cptr.stI32(cptr.add(tmpmons, 84), Number(BigInt.asUintN(32, BigInt(cptr.ldI32(cptr.add(tmpmons, 84)) >>> 0) | 4n)));
         mappear = get_table_str_opt(L, __sl95, null);
         if (mappear) {
             if (!cptr.strncmp(__sl96, mappear, 4n)) {
-                tmpmons.v.appear = 2;
+                cptr.stI16(cptr.add(tmpmons, 38), 2);
             } else if (!cptr.strncmp(__sl97, mappear, 4n)) {
-                tmpmons.v.appear = 3;
+                cptr.stI16(cptr.add(tmpmons, 38), 3);
             } else if (!cptr.strncmp(__sl98, mappear, 4n)) {
-                tmpmons.v.appear = 1;
+                cptr.stI16(cptr.add(tmpmons, 38), 1);
             } else {
                 nhl_error(L, __sl99);
             }
-            tmpmons.v.appear_as.str = dupstr(cptr.add(mappear, 4));
+            cptr.stPtr(cptr.add(tmpmons, 8), dupstr(cptr.add(mappear, 4)));
             do {
                 if (mappear)
                     cptr.free((mappear));
             } while (0);
         }
         get_table_xy_or_coord(L, mx, my);
-        tmpmons.v.id = i16(get_table_montype(L, mgend));
-        if (mgend.v != 2 && ((tmpmons.v.female == (-1) || ((cptr.ldU64(cptr.add((cptr.add(mons, tmpmons.v.id, 96)), 80)) & 131072n) != 0n) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.add(mons, tmpmons.v.id, 96)), 80)) & 65536n) != 0n) ? 1 : 0) ? 1 : 0)
-            tmpmons.v.female = i16(mgend.v);
-        if (tmpmons.v.female == (-1))
-            tmpmons.v.female = 0;
-        tmpmons.v.class = i16(get_table_monclass(L));
+        cptr.stI16(cptr.add(tmpmons, 16), i16(get_table_montype(L, mgend)));
+        if (mgend.v != 2 && ((cptr.ldI16(cptr.add(tmpmons, 42)) == (-1) || ((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI16(cptr.add(tmpmons, 16)), 96)), 80)) & 131072n) != 0n) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI16(cptr.add(tmpmons, 16)), 96)), 80)) & 65536n) != 0n) ? 1 : 0) ? 1 : 0)
+            cptr.stI16(cptr.add(tmpmons, 42), i16(mgend.v));
+        if (cptr.ldI16(cptr.add(tmpmons, 42)) == (-1))
+            cptr.stI16(cptr.add(tmpmons, 42), 0);
+        cptr.stI16(cptr.add(tmpmons, 36), i16(get_table_monclass(L)));
         lua_getfield(L, 1, __sl100);
         if (!(lua_type(L, (-1)) == 0)) {
-            tmpmons.v.has_invent = 1;
+            cptr.stI16(cptr.add(tmpmons, 80), 1);
             if (keep_default_invent == 1)
-                tmpmons.v.has_invent = i16(tmpmons.v.has_invent | 2);
+                cptr.stI16(cptr.add(tmpmons, 80), cptr.ldI16(cptr.add(tmpmons, 80)) | 2);
         } else {
             if (keep_default_invent == 0)
-                tmpmons.v.has_invent = 0;
+                cptr.stI16(cptr.add(tmpmons, 80), 0);
         }
     }
     if (mx.v == BigInt((-1)) && my.v == BigInt((-1)) ? 1 : 0)
-        tmpmons.v.coord = (16777216n | 0n);
+        cptr.stU64(cptr.add(tmpmons, 24), (16777216n | 0n));
     else
-        tmpmons.v.coord = (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n)));
-    if (tmpmons.v.id != -1 && tmpmons.v.class == -1 ? 1 : 0)
-        tmpmons.v.class = i16((cptr.ld1s(cptr.add(def_monsyms, cptr.ld1s(cptr.add((cptr.add(mons, tmpmons.v.id, 96)), 28)), 24))));
-    create_monster(tmpmons.v, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
-    if ((tmpmons.v.has_invent & 1) && lua_type(L, -1) == 6 ? 1 : 0) {
+        cptr.stU64(cptr.add(tmpmons, 24), (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n))));
+    if (cptr.ldI16(cptr.add(tmpmons, 16)) != -1 && cptr.ldI16(cptr.add(tmpmons, 36)) == -1 ? 1 : 0)
+        cptr.stI16(cptr.add(tmpmons, 36), i16((cptr.ld1s(cptr.add(def_monsyms, cptr.ld1s(cptr.add((cptr.add(mons, cptr.ldI16(cptr.add(tmpmons, 16)), 96)), 28)), 24)))));
+    create_monster(tmpmons, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
+    if ((cptr.ldI16(cptr.add(tmpmons, 80)) & 1) && lua_type(L, -1) == 6 ? 1 : 0) {
         (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
         nhl_pcall_handle(L, 0, 0, __sl73, 0);
         spo_end_moninvent();
     } else
         lua_settop(L, (-(1) - 1) | 0);
     do {
-        if (tmpmons.v.name.str)
-            cptr.free((tmpmons.v.name.str));
+        if (cptr.ldPtr(tmpmons))
+            cptr.free((cptr.ldPtr(tmpmons)));
     } while (0);
     do {
-        if (tmpmons.v.appear_as.str)
-            cptr.free((tmpmons.v.appear_as.str));
+        if (cptr.ldPtr(cptr.add(tmpmons, 8)))
+            cptr.free((cptr.ldPtr(cptr.add(tmpmons, 8))));
     } while (0);
     return 0;
 }
@@ -3254,83 +3254,83 @@ export function lspo_object(L) {
     let maybe_contents = 0;
     let otmp = null;
     create_des_coder();
-    cptr.memcpy(tmpobj.v, __static_lspo_object_zeroobject, 64);
-    tmpobj.v.name.str = null;
-    tmpobj.v.spe = i16((-127));
-    tmpobj.v.quan = -1;
-    tmpobj.v.trapped = i16((-1));
-    tmpobj.v.tknown = i16((-1));
-    tmpobj.v.locked = i16((-1));
-    tmpobj.v.corpsenm = -1;
+    cptr.memcpy(tmpobj, __static_lspo_object_zeroobject, 64);
+    cptr.stPtr(tmpobj, null);
+    cptr.stI16(cptr.add(tmpobj, 14), i16((-127)));
+    cptr.stI32(cptr.add(tmpobj, 36), -1);
+    cptr.stI16(cptr.add(tmpobj, 48), i16((-1)));
+    cptr.stI16(cptr.add(tmpobj, 50), i16((-1)));
+    cptr.stI16(cptr.add(tmpobj, 46), i16((-1)));
+    cptr.stI32(cptr.add(tmpobj, 8), -1);
     if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
         let paramstr = (luaL_checklstring(L, (1), null));
         if (cptr.strlen(paramstr) == 1n) {
-            tmpobj.v.class = i16(cptr.ld1s(paramstr));
-            tmpobj.v.id = 0;
+            cptr.stI16(cptr.add(tmpobj, 28), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpobj, 12), 0);
         } else {
-            tmpobj.v.class = i16((-1));
-            tmpobj.v.id = i16(find_objtype(L, paramstr, schar((-1))));
+            cptr.stI16(cptr.add(tmpobj, 28), i16((-1)));
+            cptr.stI16(cptr.add(tmpobj, 12), i16(find_objtype(L, paramstr, schar((-1)))));
         }
     } else if ((argc == 2 && lua_type(L, 1) == 4 ? 1 : 0) && lua_type(L, 2) == 5 ? 1 : 0) {
         let paramstr = (luaL_checklstring(L, (1), null));
         void get_coord(L, 2, ox, oy);
         if (cptr.strlen(paramstr) == 1n) {
-            tmpobj.v.class = i16(cptr.ld1s(paramstr));
-            tmpobj.v.id = 0;
+            cptr.stI16(cptr.add(tmpobj, 28), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpobj, 12), 0);
         } else {
-            tmpobj.v.class = i16((-1));
-            tmpobj.v.id = i16(find_objtype(L, paramstr, schar((-1))));
+            cptr.stI16(cptr.add(tmpobj, 28), i16((-1)));
+            cptr.stI16(cptr.add(tmpobj, 12), i16(find_objtype(L, paramstr, schar((-1)))));
         }
     } else if ((argc == 3 && lua_type(L, 2) == 3 ? 1 : 0) && lua_type(L, 3) == 3 ? 1 : 0) {
         let paramstr = (luaL_checklstring(L, (1), null));
         ox.v = luaL_checkinteger(L, 2);
         oy.v = luaL_checkinteger(L, 3);
         if (cptr.strlen(paramstr) == 1n) {
-            tmpobj.v.class = i16(cptr.ld1s(paramstr));
-            tmpobj.v.id = 0;
+            cptr.stI16(cptr.add(tmpobj, 28), i16(cptr.ld1s(paramstr)));
+            cptr.stI16(cptr.add(tmpobj, 12), 0);
         } else {
-            tmpobj.v.class = i16((-1));
-            tmpobj.v.id = i16(find_objtype(L, paramstr, schar((-1))));
+            cptr.stI16(cptr.add(tmpobj, 28), i16((-1)));
+            cptr.stI16(cptr.add(tmpobj, 12), i16(find_objtype(L, paramstr, schar((-1)))));
         }
     } else {
         lcheck_param_table(L);
-        tmpobj.v.spe = Number(BigInt.asIntN(16, get_table_int_or_random(L, __sl118, -127)));
-        tmpobj.v.curse_state = schar(get_table_buc(L));
-        tmpobj.v.corpsenm = -1;
-        tmpobj.v.name.str = get_table_str_opt(L, __sl76, null);
-        tmpobj.v.quan = Number(BigInt.asIntN(32, get_table_int_or_random(L, __sl119, -1)));
-        tmpobj.v.buried = i16(get_table_boolean_opt(L, __sl120, 0));
-        tmpobj.v.lit = i16(get_table_boolean_opt(L, __sl53, 0));
-        tmpobj.v.eroded = i16(get_table_int_opt(L, __sl121, 0));
-        tmpobj.v.locked = i16(get_table_boolean_opt(L, __sl122, -1));
-        tmpobj.v.trapped = i16(get_table_boolean_opt(L, __sl123, -1));
-        tmpobj.v.tknown = i16(get_table_boolean_opt(L, __sl124, -1));
-        tmpobj.v.recharged = i16(get_table_int_opt(L, __sl125, 0));
-        tmpobj.v.greased = i16(get_table_boolean_opt(L, __sl126, 0));
-        tmpobj.v.broken = i16(get_table_boolean_opt(L, __sl127, 0));
-        tmpobj.v.achievement = i16(get_table_boolean_opt(L, __sl128, 0));
+        cptr.stI16(cptr.add(tmpobj, 14), Number(BigInt.asIntN(16, get_table_int_or_random(L, __sl118, -127))));
+        cptr.st1(cptr.add(tmpobj, 32), schar(get_table_buc(L)));
+        cptr.stI32(cptr.add(tmpobj, 8), -1);
+        cptr.stPtr(tmpobj, get_table_str_opt(L, __sl76, null));
+        cptr.stI32(cptr.add(tmpobj, 36), Number(BigInt.asIntN(32, get_table_int_or_random(L, __sl119, -1))));
+        cptr.stI16(cptr.add(tmpobj, 40), i16(get_table_boolean_opt(L, __sl120, 0)));
+        cptr.stI16(cptr.add(tmpobj, 42), i16(get_table_boolean_opt(L, __sl53, 0)));
+        cptr.stI16(cptr.add(tmpobj, 44), i16(get_table_int_opt(L, __sl121, 0)));
+        cptr.stI16(cptr.add(tmpobj, 46), i16(get_table_boolean_opt(L, __sl122, -1)));
+        cptr.stI16(cptr.add(tmpobj, 48), i16(get_table_boolean_opt(L, __sl123, -1)));
+        cptr.stI16(cptr.add(tmpobj, 50), i16(get_table_boolean_opt(L, __sl124, -1)));
+        cptr.stI16(cptr.add(tmpobj, 52), i16(get_table_int_opt(L, __sl125, 0)));
+        cptr.stI16(cptr.add(tmpobj, 56), i16(get_table_boolean_opt(L, __sl126, 0)));
+        cptr.stI16(cptr.add(tmpobj, 58), i16(get_table_boolean_opt(L, __sl127, 0)));
+        cptr.stI16(cptr.add(tmpobj, 60), i16(get_table_boolean_opt(L, __sl128, 0)));
         get_table_xy_or_coord(L, ox, oy);
-        tmpobj.v.id = i16(get_table_objtype(L));
-        tmpobj.v.class = i16(get_table_objclass(L));
+        cptr.stI16(cptr.add(tmpobj, 12), i16(get_table_objtype(L)));
+        cptr.stI16(cptr.add(tmpobj, 28), i16(get_table_objclass(L)));
         maybe_contents = 1;
     }
     if (ox.v == BigInt((-1)) && oy.v == BigInt((-1)) ? 1 : 0)
-        tmpobj.v.coord = (16777216n | 0n);
+        cptr.stU64(cptr.add(tmpobj, 16), (16777216n | 0n));
     else
-        tmpobj.v.coord = (BigInt.asIntN(64, ((ox.v) & 255n) + (((oy.v) & 255n) << 16n)));
-    if (tmpobj.v.class == -1 && tmpobj.v.id > 0 ? 1 : 0)
-        tmpobj.v.class = i16(cptr.ld1s(cptr.add(cptr.add(objects, tmpobj.v.id, 120), 70)));
-    else if (tmpobj.v.class > -1 && tmpobj.v.id == 0 ? 1 : 0)
-        tmpobj.v.id = i16((-1));
-    if ((((tmpobj.v.id == 476 || tmpobj.v.id == 266 ? 1 : 0) || tmpobj.v.id == 265 ? 1 : 0) || tmpobj.v.id == 296 ? 1 : 0) || tmpobj.v.id == 241 ? 1 : 0) {
+        cptr.stU64(cptr.add(tmpobj, 16), (BigInt.asIntN(64, ((ox.v) & 255n) + (((oy.v) & 255n) << 16n))));
+    if (cptr.ldI16(cptr.add(tmpobj, 28)) == -1 && cptr.ldI16(cptr.add(tmpobj, 12)) > 0 ? 1 : 0)
+        cptr.stI16(cptr.add(tmpobj, 28), i16(cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(tmpobj, 12)), 120), 70))));
+    else if (cptr.ldI16(cptr.add(tmpobj, 28)) > -1 && cptr.ldI16(cptr.add(tmpobj, 12)) == 0 ? 1 : 0)
+        cptr.stI16(cptr.add(tmpobj, 12), i16((-1)));
+    if ((((cptr.ldI16(cptr.add(tmpobj, 12)) == 476 || cptr.ldI16(cptr.add(tmpobj, 12)) == 266 ? 1 : 0) || cptr.ldI16(cptr.add(tmpobj, 12)) == 265 ? 1 : 0) || cptr.ldI16(cptr.add(tmpobj, 12)) == 296 ? 1 : 0) || cptr.ldI16(cptr.add(tmpobj, 12)) == 241 ? 1 : 0) {
         let pm = null;
         let nonpmobj = (0);
         let i;
         let montype = get_table_str_opt(L, __sl129, null);
         if (montype) {
-            if ((tmpobj.v.id == 296 && (!strncmpi((montype), (__sl130), -1) || !strncmpi((montype), (__sl131), -1) ? 1 : 0) ? 1 : 0) || (tmpobj.v.id == 266 && !strncmpi((montype), (__sl131), -1) ? 1 : 0) ? 1 : 0) {
-                tmpobj.v.corpsenm = -1;
-                tmpobj.v.spe = i16((!strncmpi((montype), (__sl130), -1) ? 1 : 0));
+            if ((cptr.ldI16(cptr.add(tmpobj, 12)) == 296 && (!strncmpi((montype), (__sl130), -1) || !strncmpi((montype), (__sl131), -1) ? 1 : 0) ? 1 : 0) || (cptr.ldI16(cptr.add(tmpobj, 12)) == 266 && !strncmpi((montype), (__sl131), -1) ? 1 : 0) ? 1 : 0) {
+                cptr.stI32(cptr.add(tmpobj, 8), -1);
+                cptr.stI16(cptr.add(tmpobj, 14), i16((!strncmpi((montype), (__sl130), -1) ? 1 : 0)));
                 nonpmobj = (1);
             } else if (cptr.strlen(montype) == 1n && def_char_to_monclass(cptr.ld1s(montype)) != 61 ? 1 : 0) {
                 pm = mkclass(schar(def_char_to_monclass(cptr.ld1s(montype))), 512 | 32768);
@@ -3343,11 +3343,11 @@ export function lspo_object(L) {
             }
             cptr.free(montype);
             if (pm)
-                tmpobj.v.corpsenm = (cptr.ldI32(cptr.add((pm), 24)));
+                cptr.stI32(cptr.add(tmpobj, 8), (cptr.ldI32(cptr.add((pm), 24))));
             else if (!nonpmobj)
                 nhl_error(L, __sl132);
         }
-        if (tmpobj.v.id == 476 || tmpobj.v.id == 265 ? 1 : 0) {
+        if (cptr.ldI16(cptr.add(tmpobj, 12)) == 476 || cptr.ldI16(cptr.add(tmpobj, 12)) == 265 ? 1 : 0) {
             let lflags = 0;
             if (get_table_boolean_opt(L, __sl133, 0))
                 lflags |= 4;
@@ -3355,36 +3355,36 @@ export function lspo_object(L) {
                 lflags |= 2;
             if (get_table_boolean_opt(L, __sl77, 0))
                 lflags |= 1;
-            tmpobj.v.spe = i16(lflags);
-        } else if (tmpobj.v.id == 266) {
-            tmpobj.v.spe = i16((get_table_boolean_opt(L, __sl135, 0) ? 1 : 0));
+            cptr.stI16(cptr.add(tmpobj, 14), i16(lflags));
+        } else if (cptr.ldI16(cptr.add(tmpobj, 12)) == 266) {
+            cptr.stI16(cptr.add(tmpobj, 14), i16((get_table_boolean_opt(L, __sl135, 0) ? 1 : 0)));
         } else if (!nonpmobj) {
-            tmpobj.v.spe = 0;
+            cptr.stI16(cptr.add(tmpobj, 14), 0);
         }
     }
-    quancnt = BigInt(((tmpobj.v.id > 0) ? tmpobj.v.quan : 0));
+    quancnt = BigInt(((cptr.ldI16(cptr.add(tmpobj, 12)) > 0) ? cptr.ldI32(cptr.add(tmpobj, 36)) : 0));
     if (container_idx)
-        tmpobj.v.containment = i16(tmpobj.v.containment | 1);
+        cptr.stI16(cptr.add(tmpobj, 30), cptr.ldI16(cptr.add(tmpobj, 30)) | 1);
     if (maybe_contents) {
         lua_getfield(L, 1, __sl136);
         if (!(lua_type(L, (-1)) == 0))
-            tmpobj.v.containment = i16(tmpobj.v.containment | 2);
+            cptr.stI16(cptr.add(tmpobj, 30), cptr.ldI16(cptr.add(tmpobj, 30)) | 2);
     }
     do {
-        otmp = create_object(tmpobj.v, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
+        otmp = create_object(tmpobj, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
         quancnt--;
-    } while ((quancnt > 0n) && ((tmpobj.v.id > 0) && !cptr.ldI32(cptr.add(cptr.add(objects, tmpobj.v.id, 120), 20)) ? 1 : 0) ? 1 : 0);
+    } while ((quancnt > 0n) && ((cptr.ldI16(cptr.add(tmpobj, 12)) > 0) && !cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(tmpobj, 12)), 120), 20)) ? 1 : 0) ? 1 : 0);
     if (lua_type(L, -1) == 6) {
         (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
         nhl_push_obj(L, otmp);
         nhl_pcall_handle(L, 1, 0, __sl137, 0);
     } else
         lua_settop(L, (-(1) - 1) | 0);
-    if ((tmpobj.v.containment & 2) != 0)
+    if ((cptr.ldI16(cptr.add(tmpobj, 30)) & 2) != 0)
         spo_pop_container();
     do {
-        if (tmpobj.v.name.str)
-            cptr.free((tmpobj.v.name.str));
+        if (cptr.ldPtr(tmpobj))
+            cptr.free((cptr.ldPtr(tmpobj)));
     } while (0);
     nhl_push_obj(L, otmp);
     return 1;
@@ -3481,21 +3481,21 @@ export function lspo_level_init(L) {
     create_des_coder();
     lcheck_param_table(L);
     splev_init_present = (1);
-    init_lev.v.init_style = i16(cptr.ldI32(cptr.add(__static_lspo_level_init_initstyles2i, get_table_option(L, __sl165, __sl166, __static_lspo_level_init_initstyles), 4)));
-    init_lev.v.fg = get_table_mapchr_opt(L, __sl167, 25);
-    init_lev.v.bg = get_table_mapchr_opt(L, __sl168, 127);
-    init_lev.v.smoothed = schar(get_table_boolean_opt(L, __sl169, 0));
-    init_lev.v.joined = schar(get_table_boolean_opt(L, __sl170, 0));
-    init_lev.v.lit = i16(get_table_boolean_opt(L, __sl53, (-1)));
-    init_lev.v.walled = i16(get_table_boolean_opt(L, __sl171, 0));
-    init_lev.v.filling = get_table_mapchr_opt(L, __sl172, init_lev.v.fg);
-    init_lev.v.corrwid = get_table_int_opt(L, __sl173, -1);
-    init_lev.v.wallthick = get_table_int_opt(L, __sl174, -1);
-    init_lev.v.rm_deadends = schar((!get_table_boolean_opt(L, __sl175, 1)));
-    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 84), init_lev.v.joined);
-    if (init_lev.v.bg == 127)
-        init_lev.v.bg = schar(((init_lev.v.init_style == 6) ? 17 : 0));
-    splev_initlev(init_lev.v);
+    cptr.stI16(init_lev, i16(cptr.ldI32(cptr.add(__static_lspo_level_init_initstyles2i, get_table_option(L, __sl165, __sl166, __static_lspo_level_init_initstyles), 4))));
+    cptr.st1(cptr.add(init_lev, 19), get_table_mapchr_opt(L, __sl167, 25));
+    cptr.st1(cptr.add(init_lev, 20), get_table_mapchr_opt(L, __sl168, 127));
+    cptr.st1(cptr.add(init_lev, 21), schar(get_table_boolean_opt(L, __sl169, 0)));
+    cptr.st1(cptr.add(init_lev, 22), schar(get_table_boolean_opt(L, __sl170, 0)));
+    cptr.stI16(cptr.add(init_lev, 24), i16(get_table_boolean_opt(L, __sl53, (-1))));
+    cptr.stI16(cptr.add(init_lev, 26), i16(get_table_boolean_opt(L, __sl171, 0)));
+    cptr.st1(cptr.add(init_lev, 16), get_table_mapchr_opt(L, __sl172, cptr.ld1s(cptr.add(init_lev, 19))));
+    cptr.stI32(cptr.add(init_lev, 32), get_table_int_opt(L, __sl173, -1));
+    cptr.stI32(cptr.add(init_lev, 36), get_table_int_opt(L, __sl174, -1));
+    cptr.st1(cptr.add(init_lev, 40), schar((!get_table_boolean_opt(L, __sl175, 1))));
+    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 84), cptr.ld1s(cptr.add(init_lev, 22)));
+    if (cptr.ld1s(cptr.add(init_lev, 20)) == 127)
+        cptr.st1(cptr.add(init_lev, 20), schar(((cptr.ldI16(init_lev) == 6) ? 17 : 0)));
+    splev_initlev(init_lev);
     return 0;
 }
 
@@ -3929,10 +3929,10 @@ export function lspo_altar(L) {
         acoord = (16777216n | 0n);
     else
         acoord = (BigInt.asIntN(64, ((x.v) & 255n) + (((y.v) & 255n) << 16n)));
-    tmpaltar.v.coord = acoord;
-    tmpaltar.v.sp_amask = al >>> 0;
-    tmpaltar.v.shrine = i16(shrine);
-    create_altar(tmpaltar.v, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
+    cptr.stU64(tmpaltar, acoord);
+    cptr.stI32(cptr.add(tmpaltar, 12), al >>> 0);
+    cptr.stI16(cptr.add(tmpaltar, 16), i16(shrine));
+    create_altar(tmpaltar, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
     return 0;
 }
 
@@ -4035,29 +4035,29 @@ export function lspo_trap(L) {
     let y = cptr.box(0n);
     let argc = lua_gettop(L);
     create_des_coder();
-    tmptrap.v.spider_on_web = (1);
-    tmptrap.v.seen = (0);
-    tmptrap.v.novictim = (0);
+    cptr.st1(cptr.add(tmptrap, 14), (1));
+    cptr.st1(cptr.add(tmptrap, 15), (0));
+    cptr.st1(cptr.add(tmptrap, 16), (0));
     if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
         let trapstr = (luaL_checklstring(L, (1), null));
-        tmptrap.v.type = i16(get_traptype_byname(trapstr));
+        cptr.stI16(cptr.add(tmptrap, 12), i16(get_traptype_byname(trapstr)));
         x.v = (y.v = BigInt((-1)));
     } else if ((argc == 2 && lua_type(L, 1) == 4 ? 1 : 0) && lua_type(L, 2) == 5 ? 1 : 0) {
         let trapstr = (luaL_checklstring(L, (1), null));
-        tmptrap.v.type = i16(get_traptype_byname(trapstr));
+        cptr.stI16(cptr.add(tmptrap, 12), i16(get_traptype_byname(trapstr)));
         void get_coord(L, 2, x, y);
     } else if (argc == 3) {
         let trapstr = (luaL_checklstring(L, (1), null));
-        tmptrap.v.type = i16(get_traptype_byname(trapstr));
+        cptr.stI16(cptr.add(tmptrap, 12), i16(get_traptype_byname(trapstr)));
         x.v = luaL_checkinteger(L, 2);
         y.v = luaL_checkinteger(L, 3);
     } else {
         lcheck_param_table(L);
         get_table_xy_or_coord(L, x, y);
-        tmptrap.v.type = i16(get_table_traptype_opt(L, __sl56, -1));
-        tmptrap.v.spider_on_web = schar(get_table_boolean_opt(L, __sl268, 1));
-        tmptrap.v.seen = schar(get_table_boolean_opt(L, __sl269, 0));
-        tmptrap.v.novictim = schar((!get_table_boolean_opt(L, __sl270, 1)));
+        cptr.stI16(cptr.add(tmptrap, 12), i16(get_table_traptype_opt(L, __sl56, -1)));
+        cptr.st1(cptr.add(tmptrap, 14), schar(get_table_boolean_opt(L, __sl268, 1)));
+        cptr.st1(cptr.add(tmptrap, 15), schar(get_table_boolean_opt(L, __sl269, 0)));
+        cptr.st1(cptr.add(tmptrap, 16), schar((!get_table_boolean_opt(L, __sl270, 1))));
         lua_getfield(L, -1, __sl271);
         if (lua_type(L, -1) == 5) {
             let lx = cptr.box(BigInt((-1)));
@@ -4079,13 +4079,13 @@ export function lspo_trap(L) {
         } else
             lua_settop(L, (-(1) - 1) | 0);
     }
-    if (tmptrap.v.type == 0)
+    if (cptr.ldI16(cptr.add(tmptrap, 12)) == 0)
         nhl_error(L, __sl273);
     if (x.v == BigInt((-1)) && y.v == BigInt((-1)) ? 1 : 0)
-        tmptrap.v.coord = (16777216n | 0n);
+        cptr.stU64(tmptrap, (16777216n | 0n));
     else
-        tmptrap.v.coord = (BigInt.asIntN(64, ((x.v) & 255n) + (((y.v) & 255n) << 16n)));
-    create_trap(tmptrap.v, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
+        cptr.stU64(tmptrap, (BigInt.asIntN(64, ((x.v) & 255n) + (((y.v) & 255n) << 16n))));
+    create_trap(tmptrap, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
     cptr.stI16(cptr.add(cptr.add(gl, 528), 8), cptr.stI16(cptr.add(cptr.add(gl, 528), 10), 0));
     return 0;
 }
@@ -4151,13 +4151,13 @@ export function lspo_corridor(L) {
     let tc = cptr.alloc(12);
     create_des_coder();
     lcheck_param_table(L);
-    tc.v.src.room = i16(get_table_int(L, __sl276));
-    tc.v.src.door = i16(get_table_int(L, __sl277));
-    tc.v.src.wall = i16(cptr.ldI32(cptr.add(__static_lspo_corridor_walldirs2i, get_table_option(L, __sl278, __sl279, __static_lspo_corridor_walldirs), 4)));
-    tc.v.dest.room = i16(get_table_int(L, __sl280));
-    tc.v.dest.door = i16(get_table_int(L, __sl281));
-    tc.v.dest.wall = i16(cptr.ldI32(cptr.add(__static_lspo_corridor_walldirs2i, get_table_option(L, __sl282, __sl279, __static_lspo_corridor_walldirs), 4)));
-    create_corridor(tc.v);
+    cptr.stI16(tc, i16(get_table_int(L, __sl276)));
+    cptr.stI16(cptr.add(tc, 4), i16(get_table_int(L, __sl277)));
+    cptr.stI16(cptr.add(tc, 2), i16(cptr.ldI32(cptr.add(__static_lspo_corridor_walldirs2i, get_table_option(L, __sl278, __sl279, __static_lspo_corridor_walldirs), 4))));
+    cptr.stI16(cptr.add(tc, 6), i16(get_table_int(L, __sl280)));
+    cptr.stI16(cptr.add(cptr.add(tc, 6), 4), i16(get_table_int(L, __sl281)));
+    cptr.stI16(cptr.add(cptr.add(tc, 6), 2), i16(cptr.ldI32(cptr.add(__static_lspo_corridor_walldirs2i, get_table_option(L, __sl282, __sl279, __static_lspo_corridor_walldirs), 4))));
+    create_corridor(tc);
     return 0;
 }
 
@@ -4165,13 +4165,13 @@ export function lspo_corridor(L) {
 export function lspo_random_corridors(L) {
     let tc = cptr.alloc(12);
     create_des_coder();
-    tc.v.src.room = i16((-1));
-    tc.v.src.door = i16((-1));
-    tc.v.src.wall = i16((-1));
-    tc.v.dest.room = i16((-1));
-    tc.v.dest.door = i16((-1));
-    tc.v.dest.wall = i16((-1));
-    create_corridor(tc.v);
+    cptr.stI16(tc, i16((-1)));
+    cptr.stI16(cptr.add(tc, 4), i16((-1)));
+    cptr.stI16(cptr.add(tc, 2), i16((-1)));
+    cptr.stI16(cptr.add(tc, 6), i16((-1)));
+    cptr.stI16(cptr.add(cptr.add(tc, 6), 4), i16((-1)));
+    cptr.stI16(cptr.add(cptr.add(tc, 6), 2), i16((-1)));
+    create_corridor(tc);
     return 0;
 }
 
@@ -4309,11 +4309,11 @@ export function lspo_door(L) {
     typ.v = i16(((msk == -1) ? rnddoor() : i16(msk)));
     if (x.v == -1 && y.v == -1 ? 1 : 0) {
         let tmpd = cptr.alloc(8);
-        tmpd.v.secret = i16(((typ.v == 32) ? 1 : 0));
-        tmpd.v.mask = i16(msk);
-        tmpd.v.pos = i16(get_table_int_opt(L, __sl289, -1));
-        tmpd.v.wall = i16(cptr.ldI32(cptr.add(__static_lspo_door_walldirs2i, get_table_option(L, __sl290, __sl279, __static_lspo_door_walldirs), 4)));
-        create_door(tmpd.v, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
+        cptr.stI16(cptr.add(tmpd, 4), i16(((typ.v == 32) ? 1 : 0)));
+        cptr.stI16(cptr.add(tmpd, 6), i16(msk));
+        cptr.stI16(cptr.add(tmpd, 2), i16(get_table_int_opt(L, __sl289, -1)));
+        cptr.stI16(tmpd, i16(cptr.ldI32(cptr.add(__static_lspo_door_walldirs2i, get_table_option(L, __sl290, __sl279, __static_lspo_door_walldirs), 4))));
+        create_door(tmpd, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)));
     } else {
         get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
         if (!isok(x.v, y.v)) {
@@ -4514,8 +4514,8 @@ export function lspo_terrain(L) {
     let sel = null;
     let argc = lua_gettop(L);
     create_des_coder();
-    tmpterrain.v.tlit = i16((-2));
-    tmpterrain.v.ter = 127;
+    cptr.stI16(cptr.add(tmpterrain, 2), i16((-2)));
+    cptr.stI16(tmpterrain, 127);
     if (argc == 1) {
         let tx = cptr.box(0n);
         let ty = cptr.box(0n);
@@ -4527,37 +4527,37 @@ export function lspo_terrain(L) {
             sel = l_selection_check(L, -1);
             lua_settop(L, (-(1) - 1) | 0);
         }
-        tmpterrain.v.ter = i16(get_table_mapchr(L, __sl313));
-        tmpterrain.v.tlit = i16(get_table_int_opt(L, __sl53, -2));
+        cptr.stI16(tmpterrain, i16(get_table_mapchr(L, __sl313)));
+        cptr.stI16(cptr.add(tmpterrain, 2), i16(get_table_int_opt(L, __sl53, -2)));
     } else if ((argc == 2 && lua_type(L, 1) == 5 ? 1 : 0) && lua_type(L, 2) == 4 ? 1 : 0) {
         let tx = cptr.box(0n);
         let ty = cptr.box(0n);
-        tmpterrain.v.ter = i16(check_mapchr((luaL_checklstring(L, (2), null))));
+        cptr.stI16(tmpterrain, i16(check_mapchr((luaL_checklstring(L, (2), null)))));
         lua_settop(L, (-(1) - 1) | 0);
         void get_coord(L, 1, tx, ty);
         x.v = Number(BigInt.asIntN(16, tx.v));
         y.v = Number(BigInt.asIntN(16, ty.v));
     } else if (argc == 2) {
         sel = l_selection_check(L, 1);
-        tmpterrain.v.ter = i16(check_mapchr((luaL_checklstring(L, (2), null))));
+        cptr.stI16(tmpterrain, i16(check_mapchr((luaL_checklstring(L, (2), null)))));
     } else if (argc == 3) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
-        tmpterrain.v.ter = i16(check_mapchr((luaL_checklstring(L, (3), null))));
+        cptr.stI16(tmpterrain, i16(check_mapchr((luaL_checklstring(L, (3), null)))));
     } else {
         nhl_error(L, __sl312);
     }
-    if (tmpterrain.v.ter == 127)
+    if (cptr.ldI16(tmpterrain) == 127)
         nhl_error(L, __sl314);
     if (sel) {
-        selection_iterate(sel, sel_set_ter, tmpterrain.v);
+        selection_iterate(sel, sel_set_ter, tmpterrain);
     } else {
         get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
         if (!isok(x.v, y.v)) {
             nhl_error(L, __sl315);
             return 0;
         }
-        sel_set_ter(x.v, y.v, tmpterrain.v);
+        sel_set_ter(x.v, y.v, tmpterrain);
     }
     return 0;
 }
@@ -4884,11 +4884,11 @@ export function lspo_teleport_region(L) {
     let tmplregion = cptr.alloc(32);
     create_des_coder();
     lcheck_param_table(L);
-    l_get_lregion(L, tmplregion.v);
-    tmplregion.v.rtype = i16(cptr.ldI32(cptr.add(__static_lspo_teleport_region_teledirs2i, get_table_option(L, __sl239, __sl332, __static_lspo_teleport_region_teledirs), 4)));
-    tmplregion.v.padding = 0;
-    tmplregion.v.rname.str = null;
-    levregion_add(tmplregion.v);
+    l_get_lregion(L, tmplregion);
+    cptr.stI16(cptr.add(tmplregion, 18), i16(cptr.ldI32(cptr.add(__static_lspo_teleport_region_teledirs2i, get_table_option(L, __sl239, __sl332, __static_lspo_teleport_region_teledirs), 4))));
+    cptr.stI16(cptr.add(tmplregion, 20), 0);
+    cptr.stPtr(cptr.add(tmplregion, 24), null);
+    levregion_add(tmplregion);
     return 0;
 }
 
@@ -4916,11 +4916,11 @@ export function lspo_levregion(L) {
     let tmplregion = cptr.alloc(32);
     create_des_coder();
     lcheck_param_table(L);
-    l_get_lregion(L, tmplregion.v);
-    tmplregion.v.rtype = i16(cptr.ldI32(cptr.add(__static_lspo_levregion_regiontypes2i, get_table_option(L, __sl56, __sl333, __static_lspo_levregion_regiontypes), 4)));
-    tmplregion.v.padding = i16(get_table_int_opt(L, __sl334, 0));
-    tmplregion.v.rname.str = get_table_str_opt(L, __sl76, null);
-    levregion_add(tmplregion.v);
+    l_get_lregion(L, tmplregion);
+    cptr.stI16(cptr.add(tmplregion, 18), i16(cptr.ldI32(cptr.add(__static_lspo_levregion_regiontypes2i, get_table_option(L, __sl56, __sl333, __static_lspo_levregion_regiontypes), 4))));
+    cptr.stI16(cptr.add(tmplregion, 20), i16(get_table_int_opt(L, __sl334, 0)));
+    cptr.stPtr(cptr.add(tmplregion, 24), get_table_str_opt(L, __sl76, null));
+    levregion_add(tmplregion);
     return 0;
 }
 
@@ -5057,12 +5057,12 @@ export function lspo_region(L) {
         let tmpregion = cptr.alloc(14);
         if (!room_not_needed)
             impossible(__sl343);
-        tmpregion.v.rlit = i16(rlit.v);
-        tmpregion.v.x1 = dx1.v;
-        tmpregion.v.y1 = dy1.v;
-        tmpregion.v.x2 = dx2.v;
-        tmpregion.v.y2 = dy2.v;
-        light_region(tmpregion.v);
+        cptr.stI16(cptr.add(tmpregion, 10), i16(rlit.v));
+        cptr.stI16(tmpregion, dx1.v);
+        cptr.stI16(cptr.add(tmpregion, 2), dy1.v);
+        cptr.stI16(cptr.add(tmpregion, 4), dx2.v);
+        cptr.stI16(cptr.add(tmpregion, 6), dy2.v);
+        light_region(tmpregion);
         return 0;
     }
     troom = cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224);
@@ -5614,9 +5614,9 @@ export function lspo_map(L) {
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 28), 0);
                     cptr.st1(cptr.add(cptr.decay(SpLev_Map[x.v]), y.v, 1), 1);
                     selection_setpoint(Number(BigInt.asIntN(16, x.v)), Number(BigInt.asIntN(16, y.v)), sel, 1);
-                    terr.v.ter = mptyp;
-                    terr.v.tlit = i16(lit);
-                    sel_set_ter(Number(BigInt.asIntN(16, x.v)), Number(BigInt.asIntN(16, y.v)), terr.v);
+                    cptr.stI16(terr, mptyp);
+                    cptr.stI16(cptr.add(terr, 2), i16(lit));
+                    sel_set_ter(Number(BigInt.asIntN(16, x.v)), Number(BigInt.asIntN(16, y.v)), terr);
                 }
         }
         mapfrag_free(mf);
