@@ -71,13 +71,14 @@ function sys_random_seed() {
   throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
-// -- extern state stubs (decl.c / struct you) --------------------------------
-// struct you u — only the fields rnd.c reads (u.ulevel at offset 48 in rne,
-// Luck == u.uluck(2186) + u.moreluck(2187) in rnl; byte-packed cptr storage
-// like every other record global). ulevel defaults to 1 (game start); the
-// driver can override via __setU.
-const u = cptr.alloc(2864);
-cptr.stI32(cptr.add(u, 48), 1); // u.ulevel
+// -- extern state (decl.c / struct you) --------------------------------------
+// rnd.c reads u.ulevel (offset 48, in rne) and Luck == u.uluck(2186) +
+// u.moreluck(2187) (in rnl). This MUST be decl.c's real `u`: a private stub
+// here silently pins Luck at 0 and ulevel at 1 for the whole game, so rnl()
+// never draws its internal rn2(37 + abs(Luck)) — the full-moon/Friday-13th
+// Luck bonus and every luckstone become invisible to the PRNG stream.
+// decl.js imports only cmachine/cptr, so there is no cycle.
+import { u } from './decl.js';
 export function __setU(props) {
   if (props.ulevel !== undefined) cptr.stI32(cptr.add(u, 48), props.ulevel);
   if (props.uluck !== undefined) cptr.st1(cptr.add(u, 2186), props.uluck);
