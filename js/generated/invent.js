@@ -1521,82 +1521,133 @@ const __static_getobj_only_one = cptr.bytes("can only throw one at a time"); /**
 
 /** C ref: invent.c:1752 — @param {CPtr} word @param {CPtr} obj_ok @param {CUInt} ctrlflags @returns {CPtr} */
 export function getobj(word, obj_ok, ctrlflags) {
-    let otmp;
-    let ilet = 0;
-    let buf = new Uint8Array(256);
-    let qbuf = new Uint8Array(128);
-    let lets = new Uint8Array(256);
-    let altlets = new Uint8Array(256);
-    let suggested = 0;
-    let bp = cptr.decay(buf);
-    let ap = cptr.decay(altlets);
-    let allowcnt = schar(((ctrlflags & 1) >>> 0));
-    let forceprompt = schar(((ctrlflags & 2) >>> 0));
-    let allownone = (0);
-    let inaccess = 0;
-    let cnt = 0n;
-    let cntgiven = (0);
-    let msggiven = (0);
-    let oneloop = (0);
-    let sortedinvent = cptr.box(0);
-    let srtinv;
-    let cq = cptr.alloc(32);
-    let cmdq;
-    let need_more_cq = (0);
-    __lbl_need_more_cq: do {
-        if ((cmdq = cmdq_pop()) !== null) {
-            cptr.memcpy(cq, cmdq, 32);
-            cptr.free(cmdq);
-            if (cptr.ldI32(cq) != 3) {
-                otmp = null;
-                if (cptr.ldI32(cq) == 0) {
-                    let v;
-                    if (cptr.ld1s(cptr.add(cq, 4)) == 45) {
-                        v = (obj_ok)(null);
-                        if (v == 2 || v == 1 ? 1 : 0)
-                            otmp = hands_obj;
-                    } else {
-                        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
-                            if (cptr.ld1s(cptr.add(otmp, 50)) == cptr.ld1s(cptr.add(cq, 4))) {
-                                v = (obj_ok)(otmp);
-                                if (v == 2 || v == 1 ? 1 : 0)
-                                    break;
-                            }
-                    }
-                } else if (cptr.ldI32(cq) == 4) {
-                    if (!cntgiven && allowcnt ? 1 : 0) {
-                        cnt = BigInt(cptr.ldI32(cptr.add(cq, 8)));
-                        cntgiven = (1);
-                        continue __lbl_need_more_cq;
-                    } else {
-                        cmdq_clear(0);
-                        return null;
-                    }
+    let otmp, ilet, buf, qbuf, lets, altlets, suggested, bp, ap, allowcnt, forceprompt, allownone, inaccess, cnt, cntgiven, msggiven, oneloop, sortedinvent = cptr.box(0), srtinv, cq, cmdq, need_more_cq, v, tmpcnt = cptr.box(0), allowed_choices, ctmp = cptr.box(0), menuquery, handsbuf, coins;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        ilet = 0;
+        buf = new Uint8Array(256);
+        qbuf = new Uint8Array(128);
+        lets = new Uint8Array(256);
+        altlets = new Uint8Array(256);
+        suggested = 0;
+        bp = cptr.decay(buf);
+        ap = cptr.decay(altlets);
+        allowcnt = schar(((ctrlflags & 1) >>> 0));
+        forceprompt = schar(((ctrlflags & 2) >>> 0));
+        allownone = (0);
+        inaccess = 0;
+        cnt = 0n;
+        cntgiven = (0);
+        msggiven = (0);
+        oneloop = (0);
+        cq = cptr.alloc(32);
+        need_more_cq = (0);
+        __pc = 1;
+        continue;
+        }
+        case 1 /* need_more_cq: */: {
+        if ((cmdq = cmdq_pop()) !== null) { __pc = 5; continue; }
+        __pc = 6; continue;
+        }
+        case 5: {
+        cptr.memcpy(cq, cmdq, 32);
+        cptr.free(cmdq);
+        if (cptr.ldI32(cq) != 3) { __pc = 8; continue; }
+        __pc = 7; continue;
+        }
+        case 8: {
+        otmp = null;
+        if (cptr.ldI32(cq) == 0) { __pc = 10; continue; }
+        __pc = 11; continue;
+        }
+        case 10: {
+        if (cptr.ld1s(cptr.add(cq, 4)) == 45) {
+            v = (obj_ok)(null);
+            if (v == 2 || v == 1 ? 1 : 0)
+                otmp = hands_obj;
+        } else {
+            for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
+                if (cptr.ld1s(cptr.add(otmp, 50)) == cptr.ld1s(cptr.add(cq, 4))) {
+                    v = (obj_ok)(otmp);
+                    if (v == 2 || v == 1 ? 1 : 0)
+                        break;
                 }
-                if (!otmp) {
-                    cmdq_clear(0);
-                } else if (cntgiven) {
-                    if (cnt < 1n || cptr.ldI64(cptr.add(otmp, 40)) <= cnt ? 1 : 0)
-                        cntgiven = (0);
-                    {
-                        if (cntgiven) {
-                            if (cnt == 0n)
-                                return null;
-                            if (cnt != cptr.ldI64(cptr.add(otmp, 40))) {
-                                if (splittable(otmp))
-                                    otmp = splitobj(otmp, cnt);
-                                else if (cptr.ldI16(cptr.add(otmp, 32)) == 471 && cptr.ldI32(cptr.add(otmp, 56)) | 0 ? 1 : 0)
-                                    cptr.stI32(cptr.add(otmp, 168), Number(BigInt.asIntN(32, cnt)));
-                            }
-                        }
-                        return otmp;
-                    }
-                }
-                return otmp;
-            }
-        } else if (need_more_cq) {
+        }
+        __pc = 9;
+        continue;
+        }
+        case 11: {
+        if (cptr.ldI32(cq) == 4) { __pc = 13; continue; }
+        __pc = 12; continue;
+        }
+        case 13: {
+        if (!cntgiven && allowcnt ? 1 : 0) { __pc = 15; continue; }
+        __pc = 16; continue;
+        }
+        case 15: {
+        cnt = BigInt(cptr.ldI32(cptr.add(cq, 8)));
+        cntgiven = (1);
+        { __pc = 1; continue; }
+        __pc = 14;
+        continue;
+        }
+        case 16: {
+        cmdq_clear(0);
+        return null;
+        __pc = 14;
+        continue;
+        }
+        case 14: {
+        __pc = 12;
+        continue;
+        }
+        case 12: {
+        __pc = 9;
+        continue;
+        }
+        case 9: {
+        if (!otmp) { __pc = 18; continue; }
+        __pc = 19; continue;
+        }
+        case 18: {
+        cmdq_clear(0);
+        __pc = 17;
+        continue;
+        }
+        case 19: {
+        if (cntgiven) { __pc = 21; continue; }
+        __pc = 20; continue;
+        }
+        case 21: {
+        if (cnt < 1n || cptr.ldI64(cptr.add(otmp, 40)) <= cnt ? 1 : 0)
+            cntgiven = (0);
+        { __pc = 3; continue; }
+        __pc = 20;
+        continue;
+        }
+        case 20: {
+        __pc = 17;
+        continue;
+        }
+        case 17: {
+        return otmp;
+        __pc = 7;
+        continue;
+        }
+        case 7: {
+        __pc = 4;
+        continue;
+        }
+        case 6: {
+        if (need_more_cq) {
             return null;
         }
+        __pc = 4;
+        continue;
+        }
+        case 4: {
         switch ((obj_ok)(null)) {
             case 2:
             allownone = (1);
@@ -1658,132 +1709,209 @@ export function getobj(word, obj_ok, ctrlflags) {
             You(__sl76, inaccess ? __sl77 : __sl0, word);
             return null;
         }
-        for (; ; ) {
-            cnt = 0n;
-            cntgiven = (0);
-            void cptr.sprintf(cptr.decay(qbuf), __sl78, word);
-            if (cptr.ldI32(gi)) {
-                ilet = readchar();
-            } else if (cptr.ld1s(cptr.add(iflags, 131))) {
-                if (!oneloop)
-                    ilet = schar(((cptr.ld1s(cptr.decay(lets)) || cptr.ld1s(cptr.decay(altlets)) ? 1 : 0) ? 63 : 42));
-                if (!msggiven)
-                    (cptr.ldPtr(cptr.add(windowprocs, 352)))(cptr.decay(qbuf), (0));
-                msggiven = (1);
-                oneloop = (1);
-            } else {
-                if (!cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)))
-                    void cptr.strcat(cptr.decay(qbuf), __sl79);
-                else
-                    void cptr.sprintf(eos(cptr.decay(qbuf)), __sl80, cptr.decay(buf));
-                ilet = yn_function(cptr.decay(qbuf), null, 0, (0));
-            }
-            if (digit(ilet)) {
-                let tmpcnt = cptr.box(0n);
-                if (!allowcnt) {
-                    pline(__sl81);
-                    continue;
-                }
-                ilet = get_count(null, ilet, 32767n, tmpcnt, 1);
-                if (tmpcnt.v) {
-                    cnt = tmpcnt.v;
-                    cntgiven = (1);
-                }
-            }
-            if (cptr.strchr(cptr.decay(quitchars), ilet)) {
-                if (cptr.ld1s(cptr.add(flags, 48)))
-                    pline(__sl82, cptr.ldPtr(cptr.add(c_common_strings, 64)));
+        __pc = 23; continue;
+        }
+        case 23: {
+        __pc = 24; continue;
+        }
+        case 24: {
+        cnt = 0n;
+        cntgiven = (0);
+        void cptr.sprintf(cptr.decay(qbuf), __sl78, word);
+        if (cptr.ldI32(gi)) {
+            ilet = readchar();
+        } else if (cptr.ld1s(cptr.add(iflags, 131))) {
+            if (!oneloop)
+                ilet = schar(((cptr.ld1s(cptr.decay(lets)) || cptr.ld1s(cptr.decay(altlets)) ? 1 : 0) ? 63 : 42));
+            if (!msggiven)
+                (cptr.ldPtr(cptr.add(windowprocs, 352)))(cptr.decay(qbuf), (0));
+            msggiven = (1);
+            oneloop = (1);
+        } else {
+            if (!cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)))
+                void cptr.strcat(cptr.decay(qbuf), __sl79);
+            else
+                void cptr.sprintf(eos(cptr.decay(qbuf)), __sl80, cptr.decay(buf));
+            ilet = yn_function(cptr.decay(qbuf), null, 0, (0));
+        }
+        if (digit(ilet)) { __pc = 27; continue; }
+        __pc = 26; continue;
+        }
+        case 27: {
+        tmpcnt.v = 0n;
+        if (!allowcnt) { __pc = 29; continue; }
+        __pc = 28; continue;
+        }
+        case 29: {
+        pline(__sl81);
+        { __pc = 25; continue; }
+        __pc = 28;
+        continue;
+        }
+        case 28: {
+        ilet = get_count(null, ilet, 32767n, tmpcnt, 1);
+        if (tmpcnt.v) {
+            cnt = tmpcnt.v;
+            cntgiven = (1);
+        }
+        __pc = 26;
+        continue;
+        }
+        case 26: {
+        if (cptr.strchr(cptr.decay(quitchars), ilet)) {
+            if (cptr.ld1s(cptr.add(flags, 48)))
+                pline(__sl82, cptr.ldPtr(cptr.add(c_common_strings, 64)));
+            return null;
+        }
+        if (ilet == 45) {
+            if (!allownone)
+                mime_action(word);
+            return (allownone ? hands_obj : null);
+        }
+        __pc = 2;
+        continue;
+        }
+        case 2 /* redo_menu: */: {
+        if (ilet == 63 || ilet == 42 ? 1 : 0) { __pc = 31; continue; }
+        __pc = 30; continue;
+        }
+        case 31: {
+        allowed_choices = (ilet == 63) ? cptr.decay(lets) : null;
+        ctmp.v = 0n;
+        menuquery = new Uint8Array(128);
+        handsbuf = null;
+        if ((ilet == 63 && !cptr.ld1s(cptr.decay(lets)) ? 1 : 0) && cptr.ld1s(cptr.decay(altlets)) ? 1 : 0)
+            allowed_choices = cptr.decay(altlets);
+        cptr.st1(cptr.add(cptr.decay(menuquery), 0, 1), cptr.st1(cptr.add(cptr.decay(qbuf), 0, 1), 0));
+        if (cptr.ld1s(cptr.add(iflags, 131)))
+            nh_snprintf(__sl83, 1975, cptr.decay(menuquery), 128n, __sl78, word);
+        if ((!allowed_choices || cptr.ld1s(allowed_choices) == 45 ? 1 : 0) || cptr.ld1s(cptr.decay(buf)) == 45 ? 1 : 0)
+            handsbuf = getobj_hands_txt(word, cptr.decay(qbuf));
+        ilet = display_pickinv(allowed_choices, handsbuf, cptr.decay(menuquery), allownone, (1), allowcnt ? ctmp : null);
+        if (!ilet) { __pc = 33; continue; }
+        __pc = 32; continue;
+        }
+        case 33: {
+        if (oneloop)
+            return null;
+        { __pc = 25; continue; }
+        __pc = 32;
+        continue;
+        }
+        case 32: {
+        if (ilet == 45)
+            return hands_obj;
+        if (ilet == 27) {
+            if (cptr.ld1s(cptr.add(flags, 48)))
+                pline(__sl82, cptr.ldPtr(cptr.add(c_common_strings, 64)));
+            return null;
+        }
+        if (ilet == 42 || ilet == 63 ? 1 : 0) { __pc = 35; continue; }
+        __pc = 34; continue;
+        }
+        case 35: {
+        { __pc = 2; continue; }
+        __pc = 34;
+        continue;
+        }
+        case 34: {
+        if (allowcnt && ctmp.v >= 0n ? 1 : 0) {
+            cnt = ctmp.v;
+            cntgiven = (1);
+        }
+        __pc = 30;
+        continue;
+        }
+        case 30: {
+        for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
+            if (cptr.ld1s(cptr.add(otmp, 50)) == ilet)
+                break;
+        if (ilet == 36 || (otmp && cptr.ld1s(cptr.add(otmp, 49)) == 12 ? 1 : 0) ? 1 : 0) {
+            if (otmp && obj_ok(otmp) <= -3 ? 1 : 0) {
+                You(__sl84, word);
                 return null;
             }
-            if (ilet == 45) {
-                if (!allownone)
-                    mime_action(word);
-                return (allownone ? hands_obj : null);
+            if (cntgiven && cnt <= 0n ? 1 : 0) {
+                if (cnt < 0n)
+                    pline_The(__sl85);
+                return null;
             }
-            __lbl_redo_menu: do {
-                if (ilet == 63 || ilet == 42 ? 1 : 0) {
-                    let allowed_choices = (ilet == 63) ? cptr.decay(lets) : null;
-                    let ctmp = cptr.box(0n);
-                    let menuquery = new Uint8Array(128);
-                    let handsbuf = null;
-                    if ((ilet == 63 && !cptr.ld1s(cptr.decay(lets)) ? 1 : 0) && cptr.ld1s(cptr.decay(altlets)) ? 1 : 0)
-                        allowed_choices = cptr.decay(altlets);
-                    cptr.st1(cptr.add(cptr.decay(menuquery), 0, 1), cptr.st1(cptr.add(cptr.decay(qbuf), 0, 1), 0));
-                    if (cptr.ld1s(cptr.add(iflags, 131)))
-                        nh_snprintf(__sl83, 1975, cptr.decay(menuquery), 128n, __sl78, word);
-                    if ((!allowed_choices || cptr.ld1s(allowed_choices) == 45 ? 1 : 0) || cptr.ld1s(cptr.decay(buf)) == 45 ? 1 : 0)
-                        handsbuf = getobj_hands_txt(word, cptr.decay(qbuf));
-                    ilet = display_pickinv(allowed_choices, handsbuf, cptr.decay(menuquery), allownone, (1), allowcnt ? ctmp : null);
-                    if (!ilet) {
-                        if (oneloop)
-                            return null;
-                        continue;
-                    }
-                    if (ilet == 45)
-                        return hands_obj;
-                    if (ilet == 27) {
-                        if (cptr.ld1s(cptr.add(flags, 48)))
-                            pline(__sl82, cptr.ldPtr(cptr.add(c_common_strings, 64)));
-                        return null;
-                    }
-                    if (ilet == 42 || ilet == 63 ? 1 : 0)
-                        continue __lbl_redo_menu;
-                    if (allowcnt && ctmp.v >= 0n ? 1 : 0) {
-                        cnt = ctmp.v;
-                        cntgiven = (1);
-                    }
-                }
-                for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
-                    if (cptr.ld1s(cptr.add(otmp, 50)) == ilet)
-                        break;
-                if (ilet == 36 || (otmp && cptr.ld1s(cptr.add(otmp, 49)) == 12 ? 1 : 0) ? 1 : 0) {
-                    if (otmp && obj_ok(otmp) <= -3 ? 1 : 0) {
-                        You(__sl84, word);
-                        return null;
-                    }
-                    if (cntgiven && cnt <= 0n ? 1 : 0) {
-                        if (cnt < 0n)
-                            pline_The(__sl85);
-                        return null;
-                    }
-                }
-                if (cntgiven && !strcmp(word, __sl86) ? 1 : 0) {
-                    let coins;
-                    if (cnt == 0n || !otmp ? 1 : 0)
-                        return null;
-                    coins = schar((cptr.ld1s(cptr.add(otmp, 49)) == 12));
-                    if (cnt > 1n && (!coins || cnt > cptr.ldI64(cptr.add(otmp, 40)) ? 1 : 0) ? 1 : 0) {
-                        if (cnt > cptr.ldI64(cptr.add(otmp, 40)))
-                            You(__sl87, cptr.ldI64(cptr.add(otmp, 40)), (!coins && cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0) ? __sl88 : __sl0, (!coins && cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0) ? cptr.decay(__static_getobj_only_one) : __sl0);
-                        else
-                            You(__sl89, cptr.decay(__static_getobj_only_one));
-                        continue;
-                    }
-                }
-                cptr.st1(disp, (1));
-                if (otmp && !cptr.ldI32(gi) ? 1 : 0) {
-                    if (cntgiven && cnt > 0n ? 1 : 0)
-                        cmdq_add_int(1, Number(BigInt.asIntN(32, cnt)));
-                    cmdq_add_key(1, ilet);
-                }
-                if (!otmp) {
-                    You(__sl90);
-                    if (cptr.ldI32(gi))
-                        return null;
-                    continue;
-                } else if (cnt < 0n || cptr.ldI64(cptr.add(otmp, 40)) < cnt ? 1 : 0) {
-                    You(__sl91, cptr.ldI64(cptr.add(otmp, 40)));
-                    if (cptr.ldI32(gi))
-                        return null;
-                    continue;
-                }
-                break;
-            } while (false);
         }
+        if (cntgiven && !strcmp(word, __sl86) ? 1 : 0) { __pc = 37; continue; }
+        __pc = 36; continue;
+        }
+        case 37: {
+        if (cnt == 0n || !otmp ? 1 : 0)
+            return null;
+        coins = schar((cptr.ld1s(cptr.add(otmp, 49)) == 12));
+        if (cnt > 1n && (!coins || cnt > cptr.ldI64(cptr.add(otmp, 40)) ? 1 : 0) ? 1 : 0) { __pc = 39; continue; }
+        __pc = 38; continue;
+        }
+        case 39: {
+        if (cnt > cptr.ldI64(cptr.add(otmp, 40)))
+            You(__sl87, cptr.ldI64(cptr.add(otmp, 40)), (!coins && cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0) ? __sl88 : __sl0, (!coins && cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0) ? cptr.decay(__static_getobj_only_one) : __sl0);
+        else
+            You(__sl89, cptr.decay(__static_getobj_only_one));
+        { __pc = 25; continue; }
+        __pc = 38;
+        continue;
+        }
+        case 38: {
+        __pc = 36;
+        continue;
+        }
+        case 36: {
+        cptr.st1(disp, (1));
+        if (otmp && !cptr.ldI32(gi) ? 1 : 0) {
+            if (cntgiven && cnt > 0n ? 1 : 0)
+                cmdq_add_int(1, Number(BigInt.asIntN(32, cnt)));
+            cmdq_add_key(1, ilet);
+        }
+        if (!otmp) { __pc = 41; continue; }
+        __pc = 42; continue;
+        }
+        case 41: {
+        You(__sl90);
+        if (cptr.ldI32(gi))
+            return null;
+        { __pc = 25; continue; }
+        __pc = 40;
+        continue;
+        }
+        case 42: {
+        if (cnt < 0n || cptr.ldI64(cptr.add(otmp, 40)) < cnt ? 1 : 0) { __pc = 44; continue; }
+        __pc = 43; continue;
+        }
+        case 44: {
+        You(__sl91, cptr.ldI64(cptr.add(otmp, 40)));
+        if (cptr.ldI32(gi))
+            return null;
+        { __pc = 25; continue; }
+        __pc = 43;
+        continue;
+        }
+        case 43: {
+        __pc = 40;
+        continue;
+        }
+        case 40: {
+        { __pc = 22; continue; }
+        __pc = 25;
+        continue;
+        }
+        case 25: {
+        __pc = 23;
+        continue;
+        }
+        case 22: {
         if (obj_ok(otmp) == -3) {
             silly_thing(word, otmp);
             return null;
         }
+        __pc = 3;
+        continue;
+        }
+        case 3 /* split_otmp: */: {
         if (cntgiven) {
             if (cnt == 0n)
                 return null;
@@ -1795,7 +1923,12 @@ export function getobj(word, obj_ok, ctrlflags) {
             }
         }
         return otmp;
-    } while (false);
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
+    }
 }
 
 /** C ref: invent.c:2094 — @param {CPtr} word @param {CPtr} otmp */
@@ -2032,7 +2165,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     bycat = schar((((((menu_class_present(117) || menu_class_present(66) ? 1 : 0) || menu_class_present(85) ? 1 : 0) || menu_class_present(67) ? 1 : 0) || menu_class_present(88) ? 1 : 0) || menu_class_present(80) ? 1 : 0));
     sortedchn.v = sortloot(objchn, 2, (0), null);
     first = (1);
-    __lbl_nextclass: do {
+    __lbl_nextclass: while (true) {
         ilet = schar(((97 - 1) | 0));
         if (cptr.ldPtr(objchn) && cptr.ld1s(cptr.add((cptr.ldPtr(objchn)), 49)) == 12 ? 1 : 0)
             ilet--;
@@ -2132,7 +2265,8 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
         unsortloot(sortedchn);
         clear_bypasses();
         return cnt;
-    } while (false);
+        break __lbl_nextclass;
+    }
 }
 
 /** C ref: invent.c:2552 @returns {CInt} */
@@ -2583,7 +2717,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         add_menu(win, nul_glyphinfo.v, any, 45, 0, 0, clr, xtra_choice, 0);
         gotsomething = (1);
     }
-    __lbl_nextclass: do {
+    __lbl_nextclass: while (true) {
         classcount = 0;
         prevorderclass = 0;
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
@@ -2692,7 +2826,8 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         } else
             ret = schar((!n ? 0 : 27));
         return ret;
-    } while (false);
+        break __lbl_nextclass;
+    }
 }
 
 /** C ref: invent.c:3428 — @param {CPtr} lets @param {CInt} want_reply @returns {CInt} */

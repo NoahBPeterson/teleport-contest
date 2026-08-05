@@ -1211,7 +1211,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 return found;
             }
     }
-    __lbl_check_monsters: do {
+    __lbl_check_monsters: while (true) {
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 8) >>> 0) != 0 ? 1 : 0) {
             for (i = 1; i < 61; i++) {
                 if (i == 35)
@@ -1390,7 +1390,8 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
             }
         }
         return found;
-    } while (false);
+        break __lbl_check_monsters;
+    }
 }
 
 /** C ref: pager.c:1631 — @param {CInt} x @param {CInt} y @param {CPtr} buf @param {CInt} force @returns {CInt} */

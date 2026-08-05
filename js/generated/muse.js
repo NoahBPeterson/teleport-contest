@@ -1139,7 +1139,7 @@ export function rnd_defensive_item(mtmp) {
     let trycnt = 0;
     if ((((((cptr.ldU64(cptr.add((pm), 72)) & 262144n) != 0n) || attacktype(pm, 13) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || cptr.ld1s(cptr.add(pm, 28)) == 54 ? 1 : 0) || cptr.ld1s(cptr.add(pm, 28)) == 37 ? 1 : 0)
         return 0;
-    __lbl_try_again: do {
+    __lbl_try_again: while (true) {
         switch ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1232, __sl88), rn2((((((8 + (difficulty > 3)) | 0) + (difficulty > 6)) | 0) + (difficulty > 8)) | 0)) : rn2((((((8 + (difficulty > 3)) | 0) + (difficulty > 6)) | 0) + (difficulty > 8)) | 0))) {
             case 6:
             case 9:
@@ -1173,7 +1173,8 @@ export function rnd_defensive_item(mtmp) {
                 return 0;
             return 428;
         }
-    } while (false);
+        break __lbl_try_again;
+    }
     return 0;
 }
 

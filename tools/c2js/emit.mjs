@@ -1565,6 +1565,30 @@ export class Emitter {
               }
             }
           }
+          // decls in the label's block BEFORE the label are in scope at the
+          // natural position but NOT at goto-site splices in other blocks
+          // (C permits jumping past declarations; a spliced JS copy has no
+          // `let` in scope — dobuzz's `int bchance; make_bounce:` crashed).
+          // Hoist any the region references; aggregates go to sm fallback.
+          {
+            const refd = new Set();
+            (function names(x) {
+              if (!x || typeof x !== 'object') return;
+              if (x.kind === 'DeclRefExpr') { const nm = x.name || x.referencedDecl?.name; if (nm) refd.add(nm); }
+              for (const c of x.inner || []) names(c);
+            })({ inner: lab.region });
+            for (const it of items.slice(0, lab.index)) {
+              if (it.kind !== 'DeclStmt') continue;
+              for (const dv of (it.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
+                if (!refd.has(dv.name) || dv.storageClass === 'static' || dv.storageClass === 'extern') continue;
+                const q = desugar(dv.type);
+                if (arrayParts(q) || (parseType(q).cls === 'record' && !this.isEnumType(q) && !q.includes('*'))) {
+                  throw new Error(`goto ${name}: spliced region references block-scoped aggregate ${dv.name} in ${fnName} (unsupported)`);
+                }
+                (this.regionHoisted || (this.regionHoisted = new Set())).add(dv.name);
+              }
+            }
+          }
           if (!blockLabels.has(lab.xblock.B)) blockLabels.set(lab.xblock.B, []);
           blockLabels.get(lab.xblock.B).push(lab);
           continue;
@@ -2013,9 +2037,13 @@ export class Emitter {
       lines.push(`${indent}}`);
       for (const lab of xterm) {
         lines.push(`${indent}if (__go_${lab.name}) {`);
-        if (lab.hasLoop) lines.push(`${indent}    __lbl_${lab.name}: do {`);
+        if (lab.hasLoop) {
+          // while(true)+break, not do{}while(false) (see bwds comment)
+          for (const st of lab.region) if (this.hasUnboundBreak(st) || this.hasUnboundContinue(st)) throw new Error(`goto ${lab.name}: xterminal loop region has unbound break/continue (sm fallback)`);
+          lines.push(`${indent}    __lbl_${lab.name}: while (true) {`);
+        }
         lines.push(...lab.region.flatMap((x) => this.emitStmt(x, indent + (lab.hasLoop ? '        ' : '    '))));
-        if (lab.hasLoop) lines.push(`${indent}    } while (false);`);
+        if (lab.hasLoop) lines.push(`${indent}        break __lbl_${lab.name};`, `${indent}    }`);
         lines.push(`${indent}}`);
       }
       return lines;
@@ -2032,9 +2060,13 @@ export class Emitter {
       lines.push(...cutAndEmit(rest[idx], indent + '    ', lab, 'forward'));
       lines.push(`${indent}}`);
       lines.push(`${indent}if (__go_${lab.name}) {`);
-      if (lab.hasLoop) lines.push(`${indent}    __lbl_${lab.name}: do {`);
+      if (lab.hasLoop) {
+        // while(true)+break, not do{}while(false) (see bwds comment)
+        for (const st of lab.region) if (this.hasUnboundBreak(st) || this.hasUnboundContinue(st)) throw new Error(`goto ${lab.name}: xforward loop region has unbound break/continue (sm fallback)`);
+        lines.push(`${indent}    __lbl_${lab.name}: while (true) {`);
+      }
       lines.push(...lab.region.flatMap((x) => this.emitStmt(x, indent + (lab.hasLoop ? '        ' : '    '))));
-      if (lab.hasLoop) lines.push(`${indent}    } while (false);`);
+      if (lab.hasLoop) lines.push(`${indent}        break __lbl_${lab.name};`, `${indent}    }`);
       lines.push(`${indent}}`);
       // remaining items continue after this label's dispatch; later xforward
       // labels are re-indexed relative to the rest
@@ -2051,8 +2083,10 @@ export class Emitter {
    * Emit block items with labels lowered:
    *  - forward labels: nested labeled blocks L: { ...region... } with
    *    `goto L` -> `break L` (region = block start .. label position).
-   *  - backward labels: labeled one-shot loops L: do { ... } while (false)
+   *  - backward labels: labeled loops L: while (true) { ...region... break L; }
    *    with `goto L` -> `continue L` (region = label position .. block end).
+   *    NOT do{}while(false): `continue L` on a do-while jumps to the (false)
+   *    condition and exits — backward gotos would skip the tail, not loop.
    */
   emitLabeledItems(items, indent, labelPlan, itemEmit) {
     const emitItem = itemEmit || ((x, ind) => this.emitStmt(x, ind));
@@ -2066,7 +2100,12 @@ export class Emitter {
       lines.push(...items.flatMap((it) => {
         if (it.kind === 'LabelStmt' && it.name === l.name) {
           const sub = (it.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
-          if (l.hasBwd) return [`${bodyIndent}${this.mangleLabel(l.name)}: do {`, ...this.emitStmt(sub, bodyIndent + '    '), `${bodyIndent}} while (false);`];
+          if (l.hasBwd) {
+            // while(true)+break, not do{}while(false): continue L on a
+            // do-while exits instead of re-dispatching (see bwds comment)
+            if (this.hasUnboundContinue(sub)) throw new Error(`goto ${l.name}: swlabel region has unbound continue (sm fallback)`);
+            return [`${bodyIndent}${this.mangleLabel(l.name)}: while (true) {`, ...this.emitStmt(sub, bodyIndent + '    '), `${bodyIndent}    break ${this.mangleLabel(l.name)};`, `${bodyIndent}}`];
+          }
           return this.emitStmt(sub, bodyIndent);
         }
         return this.emitStmt(it, bodyIndent);
@@ -2160,6 +2199,7 @@ export class Emitter {
       // labeled loop re-entering at the label for backward jumps
       const name = mixed[0].name;
       const b = bounds.get(name);
+      for (const st of seq.slice(b)) if (this.hasUnboundBreak(st) || this.hasUnboundContinue(st)) throw new Error(`goto ${name}: mixed-label region has unbound break/continue (sm fallback)`);
       return [
         ...leadLines,
         `${indent}__skip_${name}: {`,
@@ -2197,16 +2237,26 @@ export class Emitter {
       }
       return [...leadLines, ...inner, ...tail.flatMap((x) => this.emitStmt(x, indent))];
     }
-    // backward labels: nest labeled do-loops (outermost = smallest boundary)
+    // backward labels: nest labeled loops (outermost = smallest boundary).
+    // `while (true)` + explicit trailing `break L`, NOT `do{}while(false)`:
+    // `continue L` on a do-while jumps to the (false) condition and EXITS,
+    // so lowered backward gotos would silently skip the region tail instead
+    // of looping (this lost the inventory menu: display_pickinv's nextclass).
     const bs = bwds.map((l) => ({ name: l.name, b: bounds.get(l.name) })).sort((a, b) => a.b - b.b);
-    // nested labeled do-loops, outermost = smallest boundary
+    for (const st of seq.slice(Math.min(...bs.map((x) => x.b)))) {
+      // a bare C break/continue in the region would bind to the synthetic
+      // loop instead of the real enclosing loop/switch: not representable here
+      if (this.hasUnboundBreak(st) || this.hasUnboundContinue(st))
+        throw new Error(`goto: backward-label region has unbound break/continue (sm fallback)`);
+    }
     const build = (j, ind) => {
       const start = bs[j].b;
       const end = j + 1 < bs.length ? bs[j + 1].b : seq.length;
-      const lines2 = [`${ind}${this.mangleLabel(bs[j].name)}: do {`];
+      const lines2 = [`${ind}${this.mangleLabel(bs[j].name)}: while (true) {`];
       lines2.push(...seq.slice(start, end).flatMap((x) => this.emitStmt(x, ind + '    ')));
       if (j + 1 < bs.length) lines2.push(...build(j + 1, ind + '    '));
-      lines2.push(`${ind}} while (false);`);
+      lines2.push(`${ind}    break ${this.mangleLabel(bs[j].name)};`);
+      lines2.push(`${ind}}`);
       return lines2;
     };
     return [...leadLines, ...seq.slice(0, bs[0].b).flatMap((x) => this.emitStmt(x, indent)), ...build(0, indent)];
@@ -2625,7 +2675,12 @@ export class Emitter {
     }
     lines.push(`${indent}}`);
     const swloops = (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir === 'swloop');
-    for (const l of swloops) lines = [`${indent}${this.mangleLabel(l.name)}: do {`, ...lines.map((x) => '    ' + x), `${indent}} while (false);`];
+    for (const l of swloops) {
+      // while(true)+break, not do{}while(false): continue L on a do-while
+      // exits instead of re-dispatching the switch (see bwds comment)
+      if (this.hasUnboundContinue(body)) throw new Error(`goto ${l.name}: swloop switch body has unbound continue (sm fallback)`);
+      lines = [`${indent}${this.mangleLabel(l.name)}: while (true) {`, ...lines.map((x) => '    ' + x), `${indent}    break ${this.mangleLabel(l.name)};`, `${indent}}`];
+    }
     return lines;
   }
 

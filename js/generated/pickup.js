@@ -422,7 +422,7 @@ function query_classes(oclasses, one_at_a_time, everything, action, objs, here, 
         let sym;
         let oc_of_sym;
         let p;
-        __lbl_ask_again: do {
+        __lbl_ask_again: while (true) {
             cptr.st1(cptr.add(oclasses, oclassct = 0), 0);
             cptr.st1(one_at_a_time, cptr.st1(everything, (0)));
             not_everything = (filtered = (0));
@@ -475,7 +475,8 @@ function query_classes(oclasses, one_at_a_time, everything, action, objs, here, 
                 cptr.st1(one_at_a_time, (1));
                 cptr.st1(everything, (0));
             }
-        } while (false);
+            break __lbl_ask_again;
+        }
     }
     return (1);
 }

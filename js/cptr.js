@@ -268,7 +268,11 @@ export function strcpy(dst, src) {
 
 /** @param {CPtr} dst @param {CPtr} src @returns {CPtr} dst */
 export function strcat(dst, src) {
-  return strcpy(add(dst, strlen(dst)), src);
+  // C strcat returns the ORIGINAL dst, not dst+strlen(dst); returning the
+  // advanced pointer silently dropped prefixes at every strcat-as-expression
+  // call site (YouMessage: "You cannot eat that!" -> "cannot eat that!")
+  strcpy(add(dst, strlen(dst)), src);
+  return dst;
 }
 
 /** @param {CPtr} a @param {CPtr} b @param {number|bigint} n @returns {number} */
@@ -276,7 +280,7 @@ export function strncmp(a, b, n) {
   n = Number(n);
   for (let i = 0; i < n; i++) {
     const ca = a.buf[a.off + i], cb = b.buf[b.off + i];
-    if (ca !== cb) return ca < cb ? -1 : 1;
+    if (ca !== cb) return ca - cb; // byte difference, matching libc (not just sign)
     if (ca === 0) return 0;
   }
   return 0;

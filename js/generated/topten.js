@@ -1129,7 +1129,7 @@ export function get_rnd_toptenentry() {
     }
     tt = __static_get_rnd_toptenentry_tt_buf;
     rank = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1395, __sl167), rnd(cptr.ldI32(cptr.add(sysopt, 120)))) : rnd(cptr.ldI32(cptr.add(sysopt, 120))));
-    __lbl_pickentry: do {
+    __lbl_pickentry: while (true) {
         for (i = rank; i; i--) {
             readentry(rfile, tt);
             if (cptr.ldI64(cptr.add(tt, 8)) == 0n)
@@ -1145,7 +1145,8 @@ export function get_rnd_toptenentry() {
         }
         void fclose(rfile);
         return tt;
-    } while (false);
+        break __lbl_pickentry;
+    }
 }
 
 /** C ref: topten.c:1422 — @param {CPtr} otmp @returns {CPtr} */

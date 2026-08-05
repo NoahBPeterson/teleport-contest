@@ -150,7 +150,7 @@ export function main(argc, argv) {
     ;
     vision_init();
     init_sound_disp_gamewindows();
-    __lbl_attempt_restore: do {
+    __lbl_attempt_restore: while (true) {
         if (cptr.ld1s(svp)) {
             getlock();
             cptr.stI32(cptr.add(program_state, 12), 0);
@@ -208,7 +208,8 @@ export function main(argc, argv) {
         moveloop(resuming);
         exit(0);
         return 0;
-    } while (false);
+        break __lbl_attempt_restore;
+    }
 }
 
 /** C ref: unixmain.c:330 — @param {CInt} argc @param {CPtr} argv */

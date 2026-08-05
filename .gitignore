@@ -3,3 +3,4 @@ node_modules/
 logs/
 tools/c2js/fixtures/printf_ref
 .DS_Store
+.claude/

@@ -19,6 +19,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as S from '../js/libc/string.js';
+import * as CP from '../js/cptr.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD_DIR = path.join(repoRoot, '.cache/c2js/build');
@@ -76,38 +77,38 @@ const retPtr = (r) => {
 };
 
 const DISPATCH = {
-  strlen: ({ ptrs }) => [retSize(S.strlen(ptrs[0])), ...bufLines()],
-  strcpy: ({ ptrs }) => [retPtr(S.strcpy(ptrs[1], ptrs[0])), ...bufLines()],
-  strncpy: ({ ptrs, args }) => [retPtr(S.strncpy(ptrs[1], ptrs[0], args[0])), ...bufLines()],
-  strcat: ({ ptrs }) => [retPtr(S.strcat(ptrs[0], ptrs[1])), ...bufLines()],
-  strncat: ({ ptrs, args }) => [retPtr(S.strncat(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strcmp: ({ ptrs }) => [retInt(S.strcmp(ptrs[0], ptrs[1])), ...bufLines()],
-  strncmp: ({ ptrs, args }) => [retInt(S.strncmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strcasecmp: ({ ptrs }) => [retInt(S.strcasecmp(ptrs[0], ptrs[1])), ...bufLines()],
-  strncasecmp: ({ ptrs, args }) => [retInt(S.strncasecmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strchr: ({ ptrs, args }) => [retPtr(S.strchr(ptrs[0], args[0])), ...bufLines()],
-  strrchr: ({ ptrs, args }) => [retPtr(S.strrchr(ptrs[0], args[0])), ...bufLines()],
-  strstr: ({ ptrs }) => [retPtr(S.strstr(ptrs[0], ptrs[1])), ...bufLines()],
-  strspn: ({ ptrs }) => [retSize(S.strspn(ptrs[0], ptrs[1])), ...bufLines()],
-  strcspn: ({ ptrs }) => [retSize(S.strcspn(ptrs[0], ptrs[1])), ...bufLines()],
-  strpbrk: ({ ptrs }) => [retPtr(S.strpbrk(ptrs[0], ptrs[1])), ...bufLines()],
-  memcpy: ({ ptrs, args }) => [retPtr(S.memcpy(ptrs[2], ptrs[0], args[0])), ...bufLines()],
-  memmove: ({ ptrs, args }) => {
+  strlen: ({ ptrs }, M = S) => [retSize(M.strlen(ptrs[0])), ...bufLines()],
+  strcpy: ({ ptrs }, M = S) => [retPtr(M.strcpy(ptrs[1], ptrs[0])), ...bufLines()],
+  strncpy: ({ ptrs, args }, M = S) => [retPtr(M.strncpy(ptrs[1], ptrs[0], args[0])), ...bufLines()],
+  strcat: ({ ptrs }, M = S) => [retPtr(M.strcat(ptrs[0], ptrs[1])), ...bufLines()],
+  strncat: ({ ptrs, args }, M = S) => [retPtr(M.strncat(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strcmp: ({ ptrs }, M = S) => [retInt(M.strcmp(ptrs[0], ptrs[1])), ...bufLines()],
+  strncmp: ({ ptrs, args }, M = S) => [retInt(M.strncmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strcasecmp: ({ ptrs }, M = S) => [retInt(M.strcasecmp(ptrs[0], ptrs[1])), ...bufLines()],
+  strncasecmp: ({ ptrs, args }, M = S) => [retInt(M.strncasecmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strchr: ({ ptrs, args }, M = S) => [retPtr(M.strchr(ptrs[0], args[0])), ...bufLines()],
+  strrchr: ({ ptrs, args }, M = S) => [retPtr(M.strrchr(ptrs[0], args[0])), ...bufLines()],
+  strstr: ({ ptrs }, M = S) => [retPtr(M.strstr(ptrs[0], ptrs[1])), ...bufLines()],
+  strspn: ({ ptrs }, M = S) => [retSize(M.strspn(ptrs[0], ptrs[1])), ...bufLines()],
+  strcspn: ({ ptrs }, M = S) => [retSize(M.strcspn(ptrs[0], ptrs[1])), ...bufLines()],
+  strpbrk: ({ ptrs }, M = S) => [retPtr(M.strpbrk(ptrs[0], ptrs[1])), ...bufLines()],
+  memcpy: ({ ptrs, args }, M = S) => [retPtr(M.memcpy(ptrs[2], ptrs[0], args[0])), ...bufLines()],
+  memmove: ({ ptrs, args }, M = S) => {
     const [d, s, n] = args;
-    return [retPtr(S.memmove({ buf: bufs[0], off: d }, { buf: bufs[0], off: s }, n)), ...bufLines()];
+    return [retPtr(M.memmove({ buf: bufs[0], off: d }, { buf: bufs[0], off: s }, n)), ...bufLines()];
   },
-  memset: ({ ptrs, args }) => [retPtr(S.memset(ptrs[0], args[0], args[1])), ...bufLines()],
-  memcmp: ({ ptrs, args }) => [retInt(S.memcmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  memchr: ({ ptrs, args }) => [retPtr(S.memchr(ptrs[0], args[0], args[1])), ...bufLines()],
-  isalpha: ({ args }) => [retInt(S.isalpha(args[0])), ...bufLines()],
-  isdigit: ({ args }) => [retInt(S.isdigit(args[0])), ...bufLines()],
-  isalnum: ({ args }) => [retInt(S.isalnum(args[0])), ...bufLines()],
-  isspace: ({ args }) => [retInt(S.isspace(args[0])), ...bufLines()],
-  isupper: ({ args }) => [retInt(S.isupper(args[0])), ...bufLines()],
-  islower: ({ args }) => [retInt(S.islower(args[0])), ...bufLines()],
-  isxdigit: ({ args }) => [retInt(S.isxdigit(args[0])), ...bufLines()],
-  toupper: ({ args }) => [retInt(S.toupper(args[0])), ...bufLines()],
-  tolower: ({ args }) => [retInt(S.tolower(args[0])), ...bufLines()],
+  memset: ({ ptrs, args }, M = S) => [retPtr(M.memset(ptrs[0], args[0], args[1])), ...bufLines()],
+  memcmp: ({ ptrs, args }, M = S) => [retInt(M.memcmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  memchr: ({ ptrs, args }, M = S) => [retPtr(M.memchr(ptrs[0], args[0], args[1])), ...bufLines()],
+  isalpha: ({ args }, M = S) => [retInt(M.isalpha(args[0])), ...bufLines()],
+  isdigit: ({ args }, M = S) => [retInt(M.isdigit(args[0])), ...bufLines()],
+  isalnum: ({ args }, M = S) => [retInt(M.isalnum(args[0])), ...bufLines()],
+  isspace: ({ args }, M = S) => [retInt(M.isspace(args[0])), ...bufLines()],
+  isupper: ({ args }, M = S) => [retInt(M.isupper(args[0])), ...bufLines()],
+  islower: ({ args }, M = S) => [retInt(M.islower(args[0])), ...bufLines()],
+  isxdigit: ({ args }, M = S) => [retInt(M.isxdigit(args[0])), ...bufLines()],
+  toupper: ({ args }, M = S) => [retInt(M.toupper(args[0])), ...bufLines()],
+  tolower: ({ args }, M = S) => [retInt(M.tolower(args[0])), ...bufLines()],
 };
 
 // ---- parse transcript, replay, diff ----
@@ -142,6 +143,23 @@ for (let li = 0; li < lines.length; li++) {
   }
   if (got.join('\n') === expected.join('\n')) pass++;
   else failures.push({ fn, idx, expected, got });
+
+  // second pass: js/cptr.js reimplements a subset of these (generated code
+  // calls cptr.strcat etc., NOT js/libc/string.js) — replay through cptr too,
+  // or divergences hide (cptr.strcat returned dst+len; caught 2026-08-05)
+  if (typeof CP[fn] === 'function') {
+    total++;
+    resetBufs();
+    let got2;
+    try {
+      got2 = DISPATCH[fn](decodeIn(tokens), CP);
+    } catch (err) {
+      failures.push({ fn: `cptr.${fn}`, idx, err: String(err.stack || err) });
+      continue;
+    }
+    if (got2.join('\n') === expected.join('\n')) pass++;
+    else failures.push({ fn: `cptr.${fn}`, idx, expected, got: got2 });
+  }
 }
 
 console.log(`string battery: ${pass}/${total} cases passed`);

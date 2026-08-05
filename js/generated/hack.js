@@ -1191,7 +1191,7 @@ function findtravelpath(mode) {
                 ux = cptr.ldI16(u);
                 uy = cptr.ldI16(cptr.add(u, 2));
             }
-            __lbl_noguess: do {
+            __lbl_noguess: while (true) {
                 void __builtin___memset_chk(cptr.decay(travel), 0, 3360n, __builtin_object_size(cptr.decay(travel), 0));
                 cptr.stI16(cptr.add(cptr.decay(travelstepx[0]), 0, 2), tx);
                 cptr.stI16(cptr.add(cptr.decay(travelstepy[0]), 0, 2), ty);
@@ -1323,7 +1323,8 @@ function findtravelpath(mode) {
                     continue __lbl_noguess;
                 }
                 return (0);
-            } while (false);
+                break __lbl_noguess;
+            }
         }
     }
     cptr.stI32(cptr.add(u, 4), 0);

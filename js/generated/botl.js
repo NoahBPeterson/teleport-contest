@@ -3894,7 +3894,7 @@ function status_hilite_menu_add(origfld) {
     let colorqry = new Uint8Array(256);
     let attrqry = new Uint8Array(256);
     let retry = 0;
-    __lbl_choose_field: do {
+    __lbl_choose_field: while (true) {
         fld = origfld;
         if (fld == -1) {
             fld = status_hilite_menu_choose_field();
@@ -3909,7 +3909,7 @@ function status_hilite_menu_add(origfld) {
         cptr.stPtr(cptr.add(hilite, 120), null);
         cptr.st1(cptr.add(hilite, 4), (0));
         cptr.stI32(hilite, fld);
-        __lbl_choose_behavior: do {
+        __lbl_choose_behavior: while (true) {
             behavior = status_hilite_menu_choose_behavior(fld);
             if (behavior == ((0 - 1) | 0)) {
                 return (0);
@@ -3919,7 +3919,7 @@ function status_hilite_menu_add(origfld) {
                 return (0);
             }
             cptr.stI32(cptr.add(hilite, 24), behavior);
-            __lbl_choose_value: do {
+            __lbl_choose_value: while (true) {
                 if (retry++ > 5) {
                     pline(__sl414);
                     return (0);
@@ -4113,7 +4113,7 @@ function status_hilite_menu_add(origfld) {
                     void cptr.sprintf(cptr.decay(colorqry), __sl444, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                     void cptr.sprintf(cptr.decay(attrqry), __sl445, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                 }
-                __lbl_choose_color: do {
+                __lbl_choose_color: while (true) {
                     clr = query_color(cptr.decay(colorqry), 8);
                     if (clr == -1) {
                         if (behavior != 105)
@@ -4173,10 +4173,14 @@ function status_hilite_menu_add(origfld) {
                     }
                     reset_status_hilites();
                     return (1);
-                } while (false);
-            } while (false);
-        } while (false);
-    } while (false);
+                    break __lbl_choose_color;
+                }
+                break __lbl_choose_value;
+            }
+            break __lbl_choose_behavior;
+        }
+        break __lbl_choose_field;
+    }
 }
 
 /** C ref: botl.c:4305 — @param {CInt} id @returns {CInt} */
@@ -4343,7 +4347,7 @@ export function status_hilite_menu() {
     let redo;
     let countall;
     let clr = 8;
-    __lbl_shlmenu_redo: do {
+    __lbl_shlmenu_redo: while (true) {
         redo = (0);
         tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
@@ -4389,5 +4393,6 @@ export function status_hilite_menu() {
         if (countall > 0 && !cptr.ldI64(cptr.add(iflags, 152)) ? 1 : 0)
             cptr.stU64(cptr.add(iflags, 152), 3n);
         return (1);
-    } while (false);
+        break __lbl_shlmenu_redo;
+    }
 }

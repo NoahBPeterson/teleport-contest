@@ -497,7 +497,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             return res;
         }
     }
-    __lbl_tryagain: do {
+    __lbl_tryagain: while (true) {
         lua_getfield(L, -1, fallback_msgid ? fallback_msgid : msgid);
         if (!(lua_type(L, (-1)) == 5)) {
             if (!fallback_msgid) {
@@ -596,7 +596,8 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             cptr.free(fallback_msgid);
         nhl_done(L);
         return res;
-    } while (false);
+        break __lbl_tryagain;
+    }
 }
 
 /** C ref: questpgr.c:624 — @param {CPtr} msgid */

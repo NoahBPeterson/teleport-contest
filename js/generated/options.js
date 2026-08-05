@@ -10164,7 +10164,7 @@ function handler_autopickup_exception() {
     let apebuf = new Uint8Array(258);
     let ape;
     let clr = 8;
-    __lbl_ape_again: do {
+    __lbl_ape_again: while (true) {
         numapes = count_apes();
         opt_idx = handle_add_list_remove(__sl776, numapes);
         if (opt_idx == 3) {
@@ -10212,7 +10212,8 @@ function handler_autopickup_exception() {
                 continue __lbl_ape_again;
         }
         return 1;
-    } while (false);
+        break __lbl_ape_again;
+    }
 }
 
 /** C ref: options.c:6407 @returns {CInt} */
@@ -10226,7 +10227,7 @@ function handler_menu_colors() {
     let mcattr;
     let mcbuf = new Uint8Array(256);
     let clr = 8;
-    __lbl_menucolors_again: do {
+    __lbl_menucolors_again: while (true) {
         nmc = count_menucolors();
         opt_idx = handle_add_list_remove(__sl784, nmc);
         if (opt_idx == 3) {
@@ -10294,7 +10295,8 @@ function handler_menu_colors() {
                 continue __lbl_menucolors_again;
         }
         return 1;
-    } while (false);
+        break __lbl_menucolors_again;
+    }
 }
 
 /** C ref: options.c:6502 @returns {CInt} */
@@ -10305,7 +10307,7 @@ function handler_msgtype() {
     let nmt;
     let mttyp;
     let mtbuf = new Uint8Array(256);
-    __lbl_msgtypes_again: do {
+    __lbl_msgtypes_again: while (true) {
         nmt = msgtype_count();
         opt_idx = handle_add_list_remove(__sl793, nmt);
         if (opt_idx == 3) {
@@ -10358,7 +10360,8 @@ function handler_msgtype() {
                 continue __lbl_msgtypes_again;
         }
         return 1;
-    } while (false);
+        break __lbl_msgtypes_again;
+    }
 }
 
 /** C ref: options.c:6573 @returns {CInt} */
@@ -11634,7 +11637,7 @@ function doset_simple_menu() {
     else
         void cptr.strcpy(cptr.decay(fmtstr_doset_simple), cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple));
     fmtstr = cptr.decay(fmtstr_doset_simple);
-    __lbl_redo_opt_help: do {
+    __lbl_redo_opt_help: while (true) {
         tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         if (cptr.ld1s(cptr.add(gs, 976))) {
@@ -11733,7 +11736,8 @@ function doset_simple_menu() {
             continue __lbl_redo_opt_help;
         }
         return pick_cnt;
-    } while (false);
+        break __lbl_redo_opt_help;
+    }
 }
 
 /** C ref: options.c:8707 @returns {CInt} */
@@ -11815,7 +11819,7 @@ export function doset() {
         return doset_simple();
     }
     cptr.stI32(cptr.add(go, 520), 6);
-    __lbl_rerun: do {
+    __lbl_rerun: while (true) {
         tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         if (!skiphelp) {
@@ -11932,7 +11936,8 @@ export function doset() {
         }
         reset_needed_visuals();
         return 0;
-    } while (false);
+        break __lbl_rerun;
+    }
 }
 
 /** C ref: options.c:8980 */

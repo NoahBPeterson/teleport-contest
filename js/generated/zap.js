@@ -3921,6 +3921,7 @@ export function buzz(type, nd, sx, sy, dx, dy) {
 export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
     dx = cptr.box(dx);
     dy = cptr.box(dy);
+    let bchance;
     let range;
     let fltyp = zaptype(type);
     let damgtype = fltyp % 10;
@@ -4107,7 +4108,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         if (gas_hit)
             void zap_over_floor(sx, sy, type, shopdamage, (1), 0);
         if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= 16) || (closed_door(sx, sy) && range >= 0 ? 1 : 0) ? 1 : 0) {
-            let bchance;
             bchance = (!isok(sx, sy) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == 0 ? 1 : 0) ? 10 : ((In_mines(cptr.add(u, 24)) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) <= 12 ? 1 : 0) ? 1 : 0) ? 20 : 75);
             if (((--range > 0 && isok(lsx, lsy) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), lsy, 8)), lsx)) & 2) != 0) ? 1 : 0) || fireball ? 1 : 0) {
                 if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0))) {
@@ -5096,7 +5096,7 @@ export function makewish() {
     cptr.memcpy(nothing, cg, 216);
     if (cptr.ld1s(cptr.add(flags, 48)))
         You(__sl372);
-    __lbl_retry: do {
+    __lbl_retry: while (true) {
         void cptr.strcpy(cptr.decay(promptbuf), __sl373);
         if (cptr.ld1s(cptr.add(iflags, 178)) && tries > 0 ? 1 : 0)
             void cptr.strcat(cptr.decay(promptbuf), __sl374);
@@ -5153,7 +5153,8 @@ export function makewish() {
         let oops_msg = (cptr.ldI32(cptr.add(u, 1848)) | 0 ? __sl386 : (((((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) < 22 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) >= 33 ? 1 : 0) ? __sl387 : (!(cptr.ldI16(cptr.add(otmp, 32)) == 265 && cptr.ldI32(cptr.add(otmp, 172)) ? 1 : 0) ? __sl388 : __sl389)));
         void hold_another_object(otmp, oops_msg, The(aobjnam(otmp, verb)), null);
         cptr.stI32(cptr.add(u, 2352), (cptr.ldI32(cptr.add(u, 2352)) + (((rng_log_enabled() ? (rng_log_set_caller(__sl21, 6421, __sl378), rn2(100)) : rn2(100)) + (50)) | 0)) | 0);
-    } while (false);
+        break __lbl_retry;
+    }
 }
 
 const __static_flash_str_fltxt = new Uint8Array(256); /** C ref: zap.c:6433 — char[256] (function-static) */

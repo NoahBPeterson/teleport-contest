@@ -117,7 +117,7 @@ function md_start(startp) {
     }
     lax = 0;
     max_distance = -1;
-    __lbl_retry: do {
+    __lbl_retry: while (true) {
         for (row = 0; row < 21; row++) {
             if (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 128)), row, 2)) < cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 136)), row, 2))) {
                 dd = dist2((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 128)), row, 2))), i16((row)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -152,7 +152,8 @@ function md_start(startp) {
             return (0);
         }
         return (1);
-    } while (false);
+        break __lbl_retry;
+    }
 }
 
 /** C ref: mail.c:248 — @param {CPtr} stopp @param {CPtr} startp @returns {CInt} */

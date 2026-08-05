@@ -3236,7 +3236,7 @@ export function handler_rebind_keys() {
     let npick;
     let picks = cptr.box(null);
     let clr = 8;
-    __lbl_redo_rebind: do {
+    __lbl_redo_rebind: while (true) {
         win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
@@ -3261,7 +3261,8 @@ export function handler_rebind_keys() {
             }
             continue __lbl_redo_rebind;
         }
-    } while (false);
+        break __lbl_redo_rebind;
+    }
 }
 
 /** C ref: cmd.c:2449 */

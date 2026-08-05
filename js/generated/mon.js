@@ -1698,7 +1698,7 @@ export function mfndpos(mon, data, flag) {
         if (rockok || treeok ? 1 : 0)
             thrudoor = (1);
     }
-    __lbl_nexttry: do {
+    __lbl_nexttry: while (true) {
         if (cptr.ldI32(cptr.add(mon, 164))) {
             flag |= (262144n | 524288n | 1048576n | 131072n);
             flag &= BigInt.asIntN(64, ~2097152n);
@@ -1822,7 +1822,8 @@ export function mfndpos(mon, data, flag) {
         }
         cptr.stI32(data, cnt);
         return cnt;
-    } while (false);
+        break __lbl_nexttry;
+    }
 }
 
 /** C ref: mon.c:2388 — @param {CPtr} magr @param {CPtr} mdef @returns {CLongLong} */

@@ -4259,283 +4259,522 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
 
 /** C ref: uhitm.c:5424 — @param {CPtr} mon @returns {CInt} */
 function hmonas(mon) {
-    let mattk;
-    let alt_attk = cptr.alloc(4);
-    let weapon;
-    let originalweapon;
-    let altwep = (0);
-    let weapon_used = (0);
-    let odd_claw = (1);
-    let i;
-    let tmp;
-    let dieroll;
-    let armorpenalty = cptr.box(0);
-    let sum = cptr.alloc(6 * 4);
-    let dhit = cptr.box(0);
-    let attknum = cptr.box(0);
-    let multi_claw = 0;
-    let multi_weap = 0;
-    let monster_survived;
-    cptr.st1(cptr.add(gv, 80), schar((canseemon(mon) || (dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0)));
-    for (i = 0; i < 6; i++) {
-        cptr.stI32(cptr.add(sum, i, 4), 0);
-        mattk = getmattk(cptr.add(gy, 8), mon, i, sum, alt_attk);
-        if (cptr.ld1u(mattk) == 254)
-            ++multi_weap;
-        if ((cptr.ld1u(mattk) == 254 || cptr.ld1u(mattk) == 1 ? 1 : 0) || cptr.ld1u(mattk) == 5 ? 1 : 0)
-            ++multi_claw;
-    }
-    multi_claw = (multi_claw > 1);
-    cptr.stI32(cptr.add(gt, 444), 0);
-    cptr.st1(cptr.add(gs, 944), (0));
-    for (i = 0; i < 6; i++) {
-        __lbl_passivedone: {
-            if (i > 0 && (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(gb, 4768)), 168), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), 8))), mon) || (cptr.ldI32(cptr.add((mon), 52)) < 1) ? 1 : 0) ? 1 : 0)
-                continue;
+    let mattk, alt_attk, weapon, originalweapon, altwep, weapon_used, odd_claw, i, tmp, dieroll, armorpenalty = cptr.box(0), sum, dhit = cptr.box(0), attknum = cptr.box(0), multi_claw, multi_weap, monster_survived, compat, specialdmg, silverhit = cptr.box(0), verb, byhand, unconcerned;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+        alt_attk = cptr.alloc(4);
+        altwep = (0);
+        weapon_used = (0);
+        odd_claw = (1);
+        sum = cptr.alloc(6 * 4);
+        dhit.v = 0;
+        attknum.v = 0;
+        multi_claw = 0;
+        multi_weap = 0;
+        cptr.st1(cptr.add(gv, 80), schar((canseemon(mon) || (dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0)));
+        for (i = 0; i < 6; i++) {
+            cptr.stI32(cptr.add(sum, i, 4), 0);
             mattk = getmattk(cptr.add(gy, 8), mon, i, sum, alt_attk);
-            if ((cptr.ld1s(cptr.add(gs, 944)) && cptr.ld1u(mattk) == 16 ? 1 : 0) && cptr.ld1u(cptr.add(mattk, 1)) == 32 ? 1 : 0)
-                continue;
-            weapon = null;
-            __lbl_use_weapon: do {
-                switch (cptr.ld1u(mattk)) {
-                    case 254:
-                    odd_claw = schar((!odd_claw));
-                    if (((weapon_used && (cptr.ldI32(cptr.add(sum, (i - 1) | 0, 4)) > 0) ? 1 : 0) && uwep.v ? 1 : 0) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0)
-                        continue;
-                    weapon_used = (1);
-                    originalweapon = (altwep && uswapwep.v ? 1 : 0) ? uswapwep : uwep;
-                    if (((((((((uswapwep.v && uwep.v ? 1 : 0) && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) && !uarms.v ? 1 : 0) && !cptr.ld1s(cptr.add(uswapwep.v, 51)) ? 1 : 0) && (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uswapwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= 20 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= 22 ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) && !((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 64)) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-                        altwep = schar((!altwep));
-                    weapon = cptr.ldPtr(originalweapon);
-                    if (!weapon)
-                        originalweapon = uarmg;
-                    tmp = find_roll_to_hit(mon, 254, weapon, attknum, armorpenalty);
-                    mon_maybe_unparalyze(mon);
-                    dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5521, __sl399), rnd(20)) : rnd(20));
-                    dhit.v = (tmp > dieroll || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0);
-                    if (multi_weap > 1)
-                        cptr.stI32(cptr.add(gt, 444), cptr.ldI32(cptr.add(gt, 444)) + 1);
-                    monster_survived = known_hitum(mon, weapon, dhit, tmp, armorpenalty.v, mattk, dieroll);
-                    weapon = cptr.ldPtr(originalweapon);
-                    if (!monster_survived) {
-                        cptr.stI32(cptr.add(sum, i, 4), 2);
-                        break;
-                    } else
-                        cptr.stI32(cptr.add(sum, i, 4), dhit.v ? 1 : 0);
-                    if (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 8))), mon)) {
-                        i = 6;
-                        break __lbl_passivedone;
-                    }
-                    if ((dhit.v && cptr.ld1u(cptr.add(mattk, 1)) != 241 ? 1 : 0) && cptr.ld1u(cptr.add(mattk, 1)) != 0 ? 1 : 0)
-                        cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, 0));
-                    break;
-                    case 1:
-                    if ((uwep.v && !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0) ? 1 : 0) && !weapon_used ? 1 : 0)
-                        break __lbl_use_weapon;
-                    // @FallThrough
-                    ;
-                    case 5:
-                    if ((uwep.v && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 38 ? 1 : 0) && !weapon_used ? 1 : 0)
-                        break __lbl_use_weapon;
-                    // @FallThrough
-                    ;
-                    case 3:
-                    if (cptr.ld1u(mattk) == 3 && mtrapped_in_pit(cptr.add(gy, 8)) ? 1 : 0)
-                        continue;
-                    // @FallThrough
-                    ;
-                    case 2:
-                    case 6:
-                    case 4:
-                    case 16:
-                    tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
-                    mon_maybe_unparalyze(mon);
-                    dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5571, __sl399), rnd(20)) : rnd(20));
-                    dhit.v = (tmp > dieroll || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0);
-                    if (dhit.v) {
-                        let compat;
-                        let specialdmg;
-                        let silverhit = cptr.box(0n);
-                        let verb = null;
-                        if (!cptr.ldI32(cptr.add(u, 1848)) && (compat = could_seduce(cptr.add(gy, 8), mon, mattk)) != 0 ? 1 : 0) {
-                            You(__sl400, (cptr.ldI32(cptr.add(mon, 112)) | 0 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 4096n) == 0n) ? 1 : 0) ? __sl401 : __sl402, mon_nam(mon), (compat == 2) ? __sl403 : __sl404);
-                            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, 0));
-                            break;
-                        }
-                        wakeup(mon, (1));
-                        specialdmg = 0;
-                        switch (cptr.ld1u(mattk)) {
-                            case 1:
-                            case 5:
-                            verb = (cptr.ld1u(mattk) == 5) ? __sl405 : __sl406;
-                            odd_claw = schar((!odd_claw));
-                            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 16n | ((odd_claw || !multi_claw ? 1 : 0) ? 131072n : 0n) | ((!odd_claw || !multi_claw ? 1 : 0) ? 262144n : 0n), silverhit);
-                            break;
-                            case 16:
-                            verb = __sl407;
-                            break;
-                            case 3:
-                            verb = __sl408;
-                            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 32n, silverhit);
-                            break;
-                            case 4:
-                            verb = __sl409;
-                            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 4n, silverhit);
-                            break;
-                            case 2:
-                            verb = __sl410;
-                            break;
-                            case 6:
-                            verb = __sl411;
-                            break;
-                            default:
-                            verb = __sl93;
-                            break;
-                        }
-                        if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96)) && !specialdmg ? 1 : 0) {
-                            if (!strcmp(verb, __sl93) || (cptr.ld1u(mattk) == 1 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 131072n) != 0n) ? 1 : 0) ? 1 : 0)
-                                verb = __sl120;
-                            Your(__sl412, verb, vtense(verb, __sl124), mon_nam(mon));
-                        } else {
-                            if (failed_grab(cptr.add(gy, 8), mon, mattk))
-                                break;
-                            if (cptr.ld1u(mattk) == 16) {
-                                Your(__sl413, mon_nam(mon));
-                            } else {
-                                if (cptr.ld1u(mattk) == 1)
-                                    verb = __sl93;
-                                You(__sl324, verb, mon_nam(mon));
-                                if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
-                                    silver_sears(cptr.add(gy, 8), mon, silverhit.v);
-                            }
-                            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
-                        }
-                    } else {
-                        missum(mon, mattk, schar((((tmp + armorpenalty.v) | 0) > dieroll)));
-                    }
-                    break;
-                    case 7:
-                    {
-                        let specialdmg;
-                        let silverhit = cptr.box(0n);
-                        let byhand = schar((cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96)), cptr.add(mons, 251, 96))));
-                        let unconcerned = schar((byhand && !can_be_strangled(mon) ? 1 : 0));
-                        if (((sticks(cptr.ldPtr(cptr.add(mon, 8))) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) || cptr.ld1s(cptr.add(gn, 86)) ? 1 : 0) || (byhand && (uwep.v || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 32768n) == 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                            if (((byhand && uwep.v ? 1 : 0) && cptr.ldPtr(cptr.add(u, 2416)) ? 1 : 0) && !(sticks(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) ? 1 : 0)
-                                uunstick();
-                            continue;
-                        }
-                        dhit.v = 1;
-                        wakeup(mon, (1));
-                        specialdmg = special_dmgval(cptr.add(gy, 8), mon, byhand ? (16n | 131072n | 262144n) : (2n | 1n | 64n), silverhit);
-                        if (unconcerned) {
-                            if (!cptr.eq(mattk, alt_attk)) {
-                                cptr.memcpy(alt_attk, mattk, 4);
-                                mattk = alt_attk;
-                            }
-                            cptr.st1(cptr.add(mattk, 2), cptr.st1(cptr.add(mattk, 3), 1));
-                            if ((specialdmg || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || cptr.ldI32(cptr.add(mon, 52)) <= ((1 + ((cptr.ld1s(cptr.add(u, 2189))) > (1) ? (cptr.ld1s(cptr.add(u, 2189))) : (1))) | 0) ? 1 : 0)
-                                unconcerned = (0);
-                        }
-                        if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) {
-                            let verb = byhand ? __sl414 : __sl415;
-                            if (specialdmg) {
-                                You(__sl90, verb, mon_nam(mon), exclam(specialdmg));
-                                if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
-                                    silver_sears(cptr.add(gy, 8), mon, silverhit.v);
-                                cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
-                            } else {
-                                Your(__sl416, verb, mon_nam(mon));
-                            }
-                            break;
-                        }
-                        if (failed_grab(cptr.add(gy, 8), mon, mattk))
-                            break;
-                        if (cptr.eq(mon, cptr.ldPtr(cptr.add(u, 2416)))) {
-                            pline(__sl417, Monnam(mon), byhand ? __sl418 : __sl291, unconcerned ? __sl419 : __sl6);
-                            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
-                                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
-                            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
-                        } else if ((i >= 2 && (cptr.ldI32(cptr.add(sum, (i - 1) | 0, 4)) > 0) ? 1 : 0) && (cptr.ldI32(cptr.add(sum, (i - 2) | 0, 4)) > 0) ? 1 : 0) {
-                            if (cptr.ldPtr(cptr.add(u, 2416)) && !cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), mon) ? 1 : 0)
-                                uunstick();
-                            You(__sl420, mon_nam(mon));
-                            set_ustuck(mon);
-                            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
-                                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
-                            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
-                        }
-                        break;
-                    }
-                    case 13:
-                    dhit.v = -1;
-                    wakeup(mon, (1));
-                    You(__sl421);
-                    cptr.stI32(cptr.add(sum, i, 4), explum(mon, mattk));
-                    break;
-                    case 11:
-                    tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
-                    mon_maybe_unparalyze(mon);
-                    if ((dhit.v = (tmp > (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5773, __sl399), rnd((20 + i) | 0)) : rnd((20 + i) | 0))))) {
-                        wakeup(mon, (1));
-                        if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) {
-                            Your(__sl422, mon_nam(mon));
-                        } else if (failed_grab(cptr.add(gy, 8), mon, mattk)) {
-                            ;
-                        } else {
-                            cptr.stI32(cptr.add(sum, i, 4), gulpum(mon, mattk));
-                            if (((cptr.ldI32(cptr.add(sum, i, 4)) == 2 && (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 28)) == 52 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 28)) == 39 ? 1 : 0) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5786, __sl399), rn2(5)) : rn2(5)) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 10, 24)) ? 1 : 0) || defended(cptr.add(gy, 8), 33) ? 1 : 0) ? 1 : 0) {
-                                You_feel(__sl423, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16))) ? __sl194 : __sl6);
-                                mdamageu(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5788, __sl399), rnd(8)) : rnd(8)));
-                            }
-                        }
-                    } else {
-                        missum(mon, mattk, (0));
-                    }
-                    break;
-                    case 255:
-                    if (((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 11 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 15 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 33 ? 1 : 0) && !weapon_used ? 1 : 0)
-                        break __lbl_use_weapon;
-                    // @FallThrough
-                    ;
-                    case 0:
-                    case 14:
-                    continue;
-                    case 12:
-                    case 10:
-                    case 15:
-                    dhit.v = 0;
-                    break;
-                    default:
-                    impossible(__sl424, cptr.ld1u(mattk));
-                }
-            } while (false);
-            if (dhit.v == -1) {
-                cptr.stI32(cptr.add(u, 1812), -1);
-                rehumanize();
+            if (cptr.ld1u(mattk) == 254)
+                ++multi_weap;
+            if ((cptr.ld1u(mattk) == 254 || cptr.ld1u(mattk) == 1 ? 1 : 0) || cptr.ld1u(mattk) == 5 ? 1 : 0)
+                ++multi_claw;
+        }
+        multi_claw = (multi_claw > 1);
+        cptr.stI32(cptr.add(gt, 444), 0);
+        cptr.st1(cptr.add(gs, 944), (0));
+        i = 0;
+        __pc = 4; continue;
+        }
+        case 4: {
+        if (!(i < 6)) { __pc = 3; continue; }
+        __pc = 5; continue;
+        }
+        case 5: {
+        if (i > 0 && (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(gb, 4768)), 168), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), 8))), mon) || (cptr.ldI32(cptr.add((mon), 52)) < 1) ? 1 : 0) ? 1 : 0) { __pc = 8; continue; }
+        __pc = 7; continue;
+        }
+        case 8: {
+        { __pc = 6; continue; }
+        __pc = 7;
+        continue;
+        }
+        case 7: {
+        mattk = getmattk(cptr.add(gy, 8), mon, i, sum, alt_attk);
+        if ((cptr.ld1s(cptr.add(gs, 944)) && cptr.ld1u(mattk) == 16 ? 1 : 0) && cptr.ld1u(cptr.add(mattk, 1)) == 32 ? 1 : 0) { __pc = 10; continue; }
+        __pc = 9; continue;
+        }
+        case 10: {
+        { __pc = 6; continue; }
+        __pc = 9;
+        continue;
+        }
+        case 9: {
+        weapon = null;
+        let __sw12 = cptr.ld1u(mattk);
+        if (__sw12 === 254) { __pc = 13; continue; }
+        if (__sw12 === 1) { __pc = 14; continue; }
+        if (__sw12 === 5) { __pc = 15; continue; }
+        if (__sw12 === 3) { __pc = 16; continue; }
+        if (__sw12 === 2) { __pc = 17; continue; }
+        if (__sw12 === 6) { __pc = 18; continue; }
+        if (__sw12 === 4) { __pc = 19; continue; }
+        if (__sw12 === 16) { __pc = 20; continue; }
+        if (__sw12 === 7) { __pc = 21; continue; }
+        if (__sw12 === 13) { __pc = 22; continue; }
+        if (__sw12 === 11) { __pc = 23; continue; }
+        if (__sw12 === 255) { __pc = 24; continue; }
+        if (__sw12 === 0) { __pc = 25; continue; }
+        if (__sw12 === 14) { __pc = 26; continue; }
+        if (__sw12 === 12) { __pc = 27; continue; }
+        if (__sw12 === 10) { __pc = 28; continue; }
+        if (__sw12 === 15) { __pc = 29; continue; }
+        __pc = 30; continue;
+        }
+        case 13: {
+        __pc = 1;
+        continue;
+        }
+        case 1 /* use_weapon: */: {
+        odd_claw = schar((!odd_claw));
+        if (((weapon_used && (cptr.ldI32(cptr.add(sum, (i - 1) | 0, 4)) > 0) ? 1 : 0) && uwep.v ? 1 : 0) && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) { __pc = 32; continue; }
+        __pc = 31; continue;
+        }
+        case 32: {
+        { __pc = 6; continue; }
+        __pc = 31;
+        continue;
+        }
+        case 31: {
+        weapon_used = (1);
+        originalweapon = (altwep && uswapwep.v ? 1 : 0) ? uswapwep : uwep;
+        if (((((((((uswapwep.v && uwep.v ? 1 : 0) && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) && !uarms.v ? 1 : 0) && !cptr.ld1s(cptr.add(uswapwep.v, 51)) ? 1 : 0) && (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uswapwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= 20 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= 22 ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) | 0 ? 1 : 0) ? 1 : 0) && !((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 64)) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            altwep = schar((!altwep));
+        weapon = cptr.ldPtr(originalweapon);
+        if (!weapon)
+            originalweapon = uarmg;
+        tmp = find_roll_to_hit(mon, 254, weapon, attknum, armorpenalty);
+        mon_maybe_unparalyze(mon);
+        dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5521, __sl399), rnd(20)) : rnd(20));
+        dhit.v = (tmp > dieroll || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0);
+        if (multi_weap > 1)
+            cptr.stI32(cptr.add(gt, 444), cptr.ldI32(cptr.add(gt, 444)) + 1);
+        monster_survived = known_hitum(mon, weapon, dhit, tmp, armorpenalty.v, mattk, dieroll);
+        weapon = cptr.ldPtr(originalweapon);
+        if (!monster_survived) { __pc = 34; continue; }
+        __pc = 35; continue;
+        }
+        case 34: {
+        cptr.stI32(cptr.add(sum, i, 4), 2);
+        { __pc = 11; continue; }
+        __pc = 33;
+        continue;
+        }
+        case 35: {
+        cptr.stI32(cptr.add(sum, i, 4), dhit.v ? 1 : 0);
+        __pc = 33;
+        continue;
+        }
+        case 33: {
+        if (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 8))), mon)) { __pc = 37; continue; }
+        __pc = 36; continue;
+        }
+        case 37: {
+        i = 6;
+        { __pc = 2; continue; }
+        __pc = 36;
+        continue;
+        }
+        case 36: {
+        if ((dhit.v && cptr.ld1u(cptr.add(mattk, 1)) != 241 ? 1 : 0) && cptr.ld1u(cptr.add(mattk, 1)) != 0 ? 1 : 0)
+            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, 0));
+        { __pc = 11; continue; }
+        __pc = 14;
+        continue;
+        }
+        case 14: {
+        if ((uwep.v && !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0) ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 39; continue; }
+        __pc = 38; continue;
+        }
+        case 39: {
+        { __pc = 1; continue; }
+        __pc = 38;
+        continue;
+        }
+        case 38: {
+        // @FallThrough
+        ;
+        __pc = 15;
+        continue;
+        }
+        case 15: {
+        if ((uwep.v && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 38 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 41; continue; }
+        __pc = 40; continue;
+        }
+        case 41: {
+        { __pc = 1; continue; }
+        __pc = 40;
+        continue;
+        }
+        case 40: {
+        // @FallThrough
+        ;
+        __pc = 16;
+        continue;
+        }
+        case 16: {
+        if (cptr.ld1u(mattk) == 3 && mtrapped_in_pit(cptr.add(gy, 8)) ? 1 : 0) { __pc = 43; continue; }
+        __pc = 42; continue;
+        }
+        case 43: {
+        { __pc = 6; continue; }
+        __pc = 42;
+        continue;
+        }
+        case 42: {
+        // @FallThrough
+        ;
+        __pc = 17;
+        continue;
+        }
+        case 17: {
+        __pc = 18;
+        continue;
+        }
+        case 18: {
+        __pc = 19;
+        continue;
+        }
+        case 19: {
+        __pc = 20;
+        continue;
+        }
+        case 20: {
+        tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
+        mon_maybe_unparalyze(mon);
+        dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5571, __sl399), rnd(20)) : rnd(20));
+        dhit.v = (tmp > dieroll || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0);
+        if (dhit.v) { __pc = 45; continue; }
+        __pc = 46; continue;
+        }
+        case 45: {
+        silverhit.v = 0n;
+        verb = null;
+        if (!cptr.ldI32(cptr.add(u, 1848)) && (compat = could_seduce(cptr.add(gy, 8), mon, mattk)) != 0 ? 1 : 0) { __pc = 48; continue; }
+        __pc = 47; continue;
+        }
+        case 48: {
+        You(__sl400, (cptr.ldI32(cptr.add(mon, 112)) | 0 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 4096n) == 0n) ? 1 : 0) ? __sl401 : __sl402, mon_nam(mon), (compat == 2) ? __sl403 : __sl404);
+        cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, 0));
+        { __pc = 11; continue; }
+        __pc = 47;
+        continue;
+        }
+        case 47: {
+        wakeup(mon, (1));
+        specialdmg = 0;
+        switch (cptr.ld1u(mattk)) {
+            case 1:
+            case 5:
+            verb = (cptr.ld1u(mattk) == 5) ? __sl405 : __sl406;
+            odd_claw = schar((!odd_claw));
+            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 16n | ((odd_claw || !multi_claw ? 1 : 0) ? 131072n : 0n) | ((!odd_claw || !multi_claw ? 1 : 0) ? 262144n : 0n), silverhit);
+            break;
+            case 16:
+            verb = __sl407;
+            break;
+            case 3:
+            verb = __sl408;
+            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 32n, silverhit);
+            break;
+            case 4:
+            verb = __sl409;
+            specialdmg = special_dmgval(cptr.add(gy, 8), mon, 4n, silverhit);
+            break;
+            case 2:
+            verb = __sl410;
+            break;
+            case 6:
+            verb = __sl411;
+            break;
+            default:
+            verb = __sl93;
+            break;
+        }
+        if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96)) && !specialdmg ? 1 : 0) { __pc = 50; continue; }
+        __pc = 51; continue;
+        }
+        case 50: {
+        if (!strcmp(verb, __sl93) || (cptr.ld1u(mattk) == 1 && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 131072n) != 0n) ? 1 : 0) ? 1 : 0)
+            verb = __sl120;
+        Your(__sl412, verb, vtense(verb, __sl124), mon_nam(mon));
+        __pc = 49;
+        continue;
+        }
+        case 51: {
+        if (failed_grab(cptr.add(gy, 8), mon, mattk)) { __pc = 53; continue; }
+        __pc = 52; continue;
+        }
+        case 53: {
+        { __pc = 11; continue; }
+        __pc = 52;
+        continue;
+        }
+        case 52: {
+        if (cptr.ld1u(mattk) == 16) {
+            Your(__sl413, mon_nam(mon));
+        } else {
+            if (cptr.ld1u(mattk) == 1)
+                verb = __sl93;
+            You(__sl324, verb, mon_nam(mon));
+            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
+                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
+        }
+        cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
+        __pc = 49;
+        continue;
+        }
+        case 49: {
+        __pc = 44;
+        continue;
+        }
+        case 46: {
+        missum(mon, mattk, schar((((tmp + armorpenalty.v) | 0) > dieroll)));
+        __pc = 44;
+        continue;
+        }
+        case 44: {
+        { __pc = 11; continue; }
+        __pc = 21;
+        continue;
+        }
+        case 21: {
+        silverhit.v = 0n;
+        byhand = schar((cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(u, 1808)), 96)), cptr.add(mons, 251, 96))));
+        unconcerned = schar((byhand && !can_be_strangled(mon) ? 1 : 0));
+        if (((sticks(cptr.ldPtr(cptr.add(mon, 8))) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) || cptr.ld1s(cptr.add(gn, 86)) ? 1 : 0) || (byhand && (uwep.v || !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 32768n) == 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0) { __pc = 55; continue; }
+        __pc = 54; continue;
+        }
+        case 55: {
+        if (((byhand && uwep.v ? 1 : 0) && cptr.ldPtr(cptr.add(u, 2416)) ? 1 : 0) && !(sticks(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))) || cptr.ldI32(cptr.add(u, 1848)) | 0 ? 1 : 0) ? 1 : 0)
+            uunstick();
+        { __pc = 6; continue; }
+        __pc = 54;
+        continue;
+        }
+        case 54: {
+        dhit.v = 1;
+        wakeup(mon, (1));
+        specialdmg = special_dmgval(cptr.add(gy, 8), mon, byhand ? (16n | 131072n | 262144n) : (2n | 1n | 64n), silverhit);
+        if (unconcerned) {
+            if (!cptr.eq(mattk, alt_attk)) {
+                cptr.memcpy(alt_attk, mattk, 4);
+                mattk = alt_attk;
             }
-            if (cptr.ldI32(cptr.add(sum, i, 4)) == 2) {
-                void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), (0));
+            cptr.st1(cptr.add(mattk, 2), cptr.st1(cptr.add(mattk, 3), 1));
+            if ((specialdmg || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || cptr.ldI32(cptr.add(mon, 52)) <= ((1 + ((cptr.ld1s(cptr.add(u, 2189))) > (1) ? (cptr.ld1s(cptr.add(u, 2189))) : (1))) | 0) ? 1 : 0)
+                unconcerned = (0);
+        }
+        if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) { __pc = 57; continue; }
+        __pc = 56; continue;
+        }
+        case 57: {
+        verb = byhand ? __sl414 : __sl415;
+        if (specialdmg) {
+            You(__sl90, verb, mon_nam(mon), exclam(specialdmg));
+            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
+                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
+            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
+        } else {
+            Your(__sl416, verb, mon_nam(mon));
+        }
+        { __pc = 11; continue; }
+        __pc = 56;
+        continue;
+        }
+        case 56: {
+        if (failed_grab(cptr.add(gy, 8), mon, mattk)) { __pc = 59; continue; }
+        __pc = 58; continue;
+        }
+        case 59: {
+        { __pc = 11; continue; }
+        __pc = 58;
+        continue;
+        }
+        case 58: {
+        if (cptr.eq(mon, cptr.ldPtr(cptr.add(u, 2416)))) {
+            pline(__sl417, Monnam(mon), byhand ? __sl418 : __sl291, unconcerned ? __sl419 : __sl6);
+            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
+                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
+            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
+        } else if ((i >= 2 && (cptr.ldI32(cptr.add(sum, (i - 1) | 0, 4)) > 0) ? 1 : 0) && (cptr.ldI32(cptr.add(sum, (i - 2) | 0, 4)) > 0) ? 1 : 0) {
+            if (cptr.ldPtr(cptr.add(u, 2416)) && !cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), mon) ? 1 : 0)
+                uunstick();
+            You(__sl420, mon_nam(mon));
+            set_ustuck(mon);
+            if (silverhit.v && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
+                silver_sears(cptr.add(gy, 8), mon, silverhit.v);
+            cptr.stI32(cptr.add(sum, i, 4), damageum(mon, mattk, specialdmg));
+        }
+        { __pc = 11; continue; }
+        __pc = 22;
+        continue;
+        }
+        case 22: {
+        dhit.v = -1;
+        wakeup(mon, (1));
+        You(__sl421);
+        cptr.stI32(cptr.add(sum, i, 4), explum(mon, mattk));
+        { __pc = 11; continue; }
+        __pc = 23;
+        continue;
+        }
+        case 23: {
+        tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
+        mon_maybe_unparalyze(mon);
+        if ((dhit.v = (tmp > (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5773, __sl399), rnd((20 + i) | 0)) : rnd((20 + i) | 0))))) {
+            wakeup(mon, (1));
+            if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) {
+                Your(__sl422, mon_nam(mon));
+            } else if (failed_grab(cptr.add(gy, 8), mon, mattk)) {
+                ;
             } else {
-                void passive(mon, weapon, schar((cptr.ldI32(cptr.add(sum, i, 4)) != 0)), 1, cptr.ld1u(mattk), (0));
+                cptr.stI32(cptr.add(sum, i, 4), gulpum(mon, mattk));
+                if (((cptr.ldI32(cptr.add(sum, i, 4)) == 2 && (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 28)) == 52 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mon, 8)), 28)) == 39 ? 1 : 0) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5786, __sl399), rn2(5)) : rn2(5)) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 10, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 10, 24)) ? 1 : 0) || defended(cptr.add(gy, 8), 33) ? 1 : 0) ? 1 : 0) {
+                    You_feel(__sl423, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16))) ? __sl194 : __sl6);
+                    mdamageu(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5788, __sl399), rnd(8)) : rnd(8)));
+                }
             }
-            if (mhitm_knockback(cptr.add(gy, 8), mon, mattk, cptr.add(sum, i, 4), weapon_used))
-                break;
+        } else {
+            missum(mon, mattk, (0));
         }
-        if ((uswapwep.v && cptr.eq(weapon, uswapwep.v) ? 1 : 0) && cptr.ldI32(cptr.add(weapon, 56)) | 0 ? 1 : 0) {
-            drop_uswapwep();
-            break;
+        { __pc = 11; continue; }
+        __pc = 24;
+        continue;
         }
-        if ((cptr.ldI32(cptr.add((mon), 52)) < 1))
-            break;
-        if (!(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))))
-            break;
-        if (cptr.ldI64(cptr.add(gm, 8)) < 0n)
-            break;
+        case 24: {
+        if (((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 11 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 15 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 33 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 61; continue; }
+        __pc = 60; continue;
+        }
+        case 61: {
+        { __pc = 1; continue; }
+        __pc = 60;
+        continue;
+        }
+        case 60: {
+        // @FallThrough
+        ;
+        __pc = 25;
+        continue;
+        }
+        case 25: {
+        __pc = 26;
+        continue;
+        }
+        case 26: {
+        { __pc = 6; continue; }
+        __pc = 27;
+        continue;
+        }
+        case 27: {
+        __pc = 28;
+        continue;
+        }
+        case 28: {
+        __pc = 29;
+        continue;
+        }
+        case 29: {
+        dhit.v = 0;
+        { __pc = 11; continue; }
+        __pc = 30;
+        continue;
+        }
+        case 30: {
+        impossible(__sl424, cptr.ld1u(mattk));
+        __pc = 11;
+        continue;
+        }
+        case 11: {
+        if (dhit.v == -1) {
+            cptr.stI32(cptr.add(u, 1812), -1);
+            rehumanize();
+        }
+        if (cptr.ldI32(cptr.add(sum, i, 4)) == 2) {
+            void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), (0));
+        } else {
+            void passive(mon, weapon, schar((cptr.ldI32(cptr.add(sum, i, 4)) != 0)), 1, cptr.ld1u(mattk), (0));
+        }
+        if (mhitm_knockback(cptr.add(gy, 8), mon, mattk, cptr.add(sum, i, 4), weapon_used)) { __pc = 63; continue; }
+        __pc = 62; continue;
+        }
+        case 63: {
+        { __pc = 3; continue; }
+        __pc = 62;
+        continue;
+        }
+        case 62: {
+        __pc = 2;
+        continue;
+        }
+        case 2 /* passivedone: */: {
+        if ((uswapwep.v && cptr.eq(weapon, uswapwep.v) ? 1 : 0) && cptr.ldI32(cptr.add(weapon, 56)) | 0 ? 1 : 0) { __pc = 65; continue; }
+        __pc = 64; continue;
+        }
+        case 65: {
+        drop_uswapwep();
+        { __pc = 3; continue; }
+        __pc = 64;
+        continue;
+        }
+        case 64: {
+        if ((cptr.ldI32(cptr.add((mon), 52)) < 1)) { __pc = 67; continue; }
+        __pc = 66; continue;
+        }
+        case 67: {
+        { __pc = 3; continue; }
+        __pc = 66;
+        continue;
+        }
+        case 66: {
+        if (!(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) { __pc = 69; continue; }
+        __pc = 68; continue;
+        }
+        case 69: {
+        { __pc = 3; continue; }
+        __pc = 68;
+        continue;
+        }
+        case 68: {
+        if (cptr.ldI64(cptr.add(gm, 8)) < 0n) { __pc = 71; continue; }
+        __pc = 70; continue;
+        }
+        case 71: {
+        { __pc = 3; continue; }
+        __pc = 70;
+        continue;
+        }
+        case 70: {
+        __pc = 6;
+        continue;
+        }
+        case 6: {
+        i++;
+        __pc = 4;
+        continue;
+        }
+        case 3: {
+        cptr.st1(cptr.add(gv, 80), (0));
+        cptr.stI32(cptr.add(gt, 444), 0);
+        return schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1)));
+        __pc = -1;
+        continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    cptr.st1(cptr.add(gv, 80), (0));
-    cptr.stI32(cptr.add(gt, 444), 0);
-    return schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1)));
 }
 
 /** C ref: uhitm.c:5865 — @param {CPtr} mon @param {CPtr} weapon @param {CInt} mhitb @param {CInt} maliveb @param {CUInt} aatyp @param {CInt} wep_was_destroyed @returns {CInt} */

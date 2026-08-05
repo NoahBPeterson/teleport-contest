@@ -1512,7 +1512,7 @@ export function check_room(lowx, ddx, lowy, ddy, vault) {
         hix = (80 - 3) | 0;
     if (hiy > ((21 - 3) | 0))
         hiy = (21 - 3) | 0;
-    __lbl_chk: do {
+    __lbl_chk: while (true) {
         if (hix <= cptr.ldI16(lowx) || hiy <= cptr.ldI16(lowy) ? 1 : 0)
             return (0);
         if ((((cptr.ld1s(cptr.add(gi, 64)) && (s_lowx != cptr.ldI16(lowx)) ? 1 : 0) && (s_ddx != cptr.ldI16(ddx)) ? 1 : 0) && (s_lowy != cptr.ldI16(lowy)) ? 1 : 0) && (s_ddy != cptr.ldI16(ddy)) ? 1 : 0)
@@ -1559,7 +1559,8 @@ export function check_room(lowx, ddx, lowy, ddy, vault) {
         if ((((cptr.ld1s(cptr.add(gi, 64)) && (s_lowx != cptr.ldI16(lowx)) ? 1 : 0) && (s_ddx != cptr.ldI16(ddx)) ? 1 : 0) && (s_lowy != cptr.ldI16(lowy)) ? 1 : 0) && (s_ddy != cptr.ldI16(ddy)) ? 1 : 0)
             return (0);
         return (1);
-    } while (false);
+        break __lbl_chk;
+    }
 }
 
 /** C ref: sp_lev.c:1486 — @param {CInt} x @param {CInt} y @param {CInt} w @param {CInt} h @param {CInt} xal @param {CInt} yal @param {CInt} rtype @param {CInt} rlit @returns {CInt} */
@@ -5460,7 +5461,7 @@ export function lspo_map(L) {
     sel = selection_new();
     ox = Number(BigInt.asIntN(32, x.v));
     oy = Number(BigInt.asIntN(32, y.v));
-    __lbl_redo_maploc: do {
+    __lbl_redo_maploc: while (true) {
         cptr.stI16(cptr.add(gx, 50), i16(cptr.ldI32(mf.v)));
         cptr.stI16(cptr.add(gy, 342), i16(cptr.ldI32(cptr.add(mf.v, 4))));
         if (lr == -1 && tb == -1 ? 1 : 0) {
@@ -5630,7 +5631,8 @@ export function lspo_map(L) {
         l_selection_push_copy(L, sel);
         selection_free(sel, (1));
         return 1;
-    } while (false);
+        break __lbl_redo_maploc;
+    }
 }
 
 /** C ref: sp_lev.c:6324 */

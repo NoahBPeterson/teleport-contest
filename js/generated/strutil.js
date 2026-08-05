@@ -85,7 +85,7 @@ export function Strlen_(str, file, line) {
 function pmatch_internal(patrn, strng, ci, sk) {
     let s;
     let p;
-    __lbl_pmatch_top: do {
+    __lbl_pmatch_top: while (true) {
         if (!sk) {
             s = cptr.ld1s(cptr.postinc(() => strng, (v) => { strng = v; }));
             p = cptr.ld1s(cptr.postinc(() => patrn, (v) => { patrn = v; }));
@@ -105,7 +105,8 @@ function pmatch_internal(patrn, strng, ci, sk) {
             return (0);
         else
             continue __lbl_pmatch_top;
-    } while (false);
+        break __lbl_pmatch_top;
+    }
 }
 
 /** C ref: strutil.c:145 — @param {CPtr} patrn @param {CPtr} strng @returns {CInt} */

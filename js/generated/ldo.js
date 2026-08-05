@@ -508,7 +508,7 @@ function precallC(L, func, nresults, f) {
 
 /** C ref: ldo.c:550 — @param {CPtr} L @param {CPtr} ci @param {CPtr} func @param {CInt} narg1 @param {CInt} delta @returns {CInt} */
 export function luaD_pretailcall(L, ci, func, narg1, delta) {
-    __lbl_retry: do {
+    __lbl_retry: while (true) {
         switch ((((cptr.ld1u(cptr.add((((func))), 8)))) & 63)) {
             case ((6) | ((2) << 4)):
             return precallC(L, func, (-1), cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((func))))))))))), 24)));
@@ -565,12 +565,13 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
                 continue __lbl_retry;
             }
         }
-    } while (false);
+        break __lbl_retry;
+    }
 }
 
 /** C ref: ldo.c:595 — @param {CPtr} L @param {CPtr} func @param {CInt} nresults @returns {CPtr} */
 export function luaD_precall(L, func, nresults) {
-    __lbl_retry: do {
+    __lbl_retry: while (true) {
         switch ((((cptr.ld1u(cptr.add((((func))), 8)))) & 63)) {
             case ((6) | ((2) << 4)):
             precallC(L, func, nresults, cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((func))))))))))), 24)));
@@ -616,7 +617,8 @@ export function luaD_precall(L, func, nresults) {
                 continue __lbl_retry;
             }
         }
-    } while (false);
+        break __lbl_retry;
+    }
 }
 
 /** C ref: ldo.c:635 — @param {CPtr} L @param {CPtr} func @param {CInt} nResults @param {CUInt} inc */

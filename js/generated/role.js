@@ -2693,7 +2693,7 @@ export function genl_player_setup(screenheight) {
                 pick4u = 97;
         } while ((pick4u != 121 && pick4u != 110 ? 1 : 0) && pick4u != 97 ? 1 : 0);
     }
-    __lbl_makepicks: do {
+    __lbl_makepicks: while (true) {
         nextpick = 1;
         do {
             if (nextpick == 1) {
@@ -3054,7 +3054,8 @@ export function genl_player_setup(screenheight) {
         result = 1;
         (cptr.stI32(cptr.add(program_state, 68), cptr.ldI32(cptr.add(program_state, 68)) + -1)) - (-1);
         return result;
-    } while (false);
+        break __lbl_makepicks;
+    }
 }
 
 /** C ref: role.c:2728 @returns {CInt} */
