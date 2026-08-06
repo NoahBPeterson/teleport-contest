@@ -33,11 +33,25 @@
 // that script consumed. Running the same session with trace-only and with the
 // port live gives a per-script RNG-consumption diff — see tools/lua-oracle.mjs.
 
+// TWO KINDS OF PORT. A level script's whole effect is the C bindings it calls,
+// so its port runs against a port-owned lua_State (bridge.mjs) and the
+// interpreter's state is irrelevant. A *read-back* script — dungeon.lua,
+// quest.lua — has no effect at all except the global table it leaves behind
+// for C to read afterwards, so its port must build that table in the state
+// nhl_loadlua() was handed. interp-state.mjs finds that state; READBACK below
+// lists the scripts that need it. Everything else about the seam is the same.
+
 import * as cptr from '../cptr.js';
 import { svl } from '../generated/decl.js';
+import { gu } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
-import { runPortedScript } from './bridge.mjs';
+import { com_pager, qt_pager } from '../generated/questpgr.js';
+import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
+import { installStateProbe, interpState, stateIsFresh, stateSeed } from './interp-state.mjs';
+import { dumpGlobal, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
+import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
+import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 
 /**
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
@@ -46,6 +60,19 @@ import oracle from './scripts/oracle.mjs';
 const PORTS = new Map([
     ['oracle.lua', oracle],
 ]);
+
+/**
+ * Ported scripts that define a global for C to read back, keyed the same way.
+ * `global` is the name the script assigns; the port is handed a `setGlobal`
+ * bound to the interpreter's state.
+ */
+const READBACK = new Map([
+    ['dungeon.lua', { body: dungeonPort, global: dungeonGlobal }],
+    ['quest.lua', { body: questPort, global: questGlobal }],
+]);
+
+/** Every script this registry handles, ported or read-back. */
+function handles(name) { return PORTS.has(name) || READBACK.has(name); }
 
 function env(name) { return globalThis.process?.env?.[name]; }
 
@@ -66,6 +93,36 @@ function fpEnabled() {
     const v = env('C2JS_LUA_FP');
     return v === '1' || v === 'on' || v === 'true';
 }
+
+/**
+ * C2JS_LUA_READBACK=dump: fingerprint the global table a read-back script
+ * leaves behind, on whichever side is running.
+ *
+ * On the interpreter side this also moves the chunk's execution into this
+ * module (see onClose): the interpreter's own compile is given the stub, and
+ * runRealChunk() executes the real bytes at the same seam. That is what makes
+ * the two dumps comparable — same point in the run, same state, one execution
+ * of the script either way.
+ */
+function readbackDump() { return env('C2JS_LUA_READBACK') === 'dump'; }
+
+/**
+ * C2JS_LUA_QUESTPROBE=1: once the game is up, deliver a fixed list of quest
+ * messages for the hero's own role. Nothing in a normal recorded session
+ * reaches quest.lua's role sections — only `common.legacy` — so this drives
+ * the qt_pager() path that the corpus cannot, and the delivered text lands in
+ * the screen sequence the oracle already compares byte for byte.
+ */
+function questProbeEnabled() {
+    const v = env('C2JS_LUA_QUESTPROBE');
+    return v === '1' || v === 'on' || v === 'true';
+}
+
+/** Read once: tick() is on the key-read path and must stay a null check. */
+const QUEST_PROBE = questProbeEnabled();
+
+/** Message ids present in every one of quest.lua's 13 role sections. */
+const QUEST_PROBE_MSGIDS = ['firsttime', 'goal_first', 'encourage', 'discourage', 'gotit'];
 
 // levl[x][y] layout, read straight out of the transpiled accessor the des
 // bindings use (js/generated/sp_lev.js:613):
@@ -116,15 +173,42 @@ function levelFingerprint() {
 }
 
 /** @returns {string[]} the ported script names */
-export function portedScripts() { return [...PORTS.keys()]; }
+export function portedScripts() { return [...PORTS.keys(), ...READBACK.keys()]; }
 
 /** True when the harness should consult this registry at all. */
 export function active() {
-    return PORTS.size > 0 && (portsEnabled() || traceEnabled() || fpEnabled());
+    const on = (PORTS.size + READBACK.size) > 0
+        && (portsEnabled() || traceEnabled() || fpEnabled() || readbackDump() || questProbeEnabled());
+    // The read-back ports need the interpreter's lua_State, and the only place
+    // it can be caught is at creation — before main() runs, which is where the
+    // harness imports this module. Installing it here rather than at module
+    // scope keeps `realloc` untouched whenever the registry is inert.
+    if (on && READBACK.size > 0) installStateProbe();
+    return on;
 }
 
 /** 'run' = the port replaces the script; 'trace' = observe only. */
 export function mode() { return portsEnabled() ? 'run' : 'trace'; }
+
+/**
+ * The lua_State a read-back script must define its global in, verified.
+ *
+ * A read-back port that cannot find its state is a hard error, not a silent
+ * fallback: falling back would leave the global undefined and panic C
+ * ("dungeon is not a lua table") somewhere far away, and a fallback that
+ * quietly restored the interpreter would let a broken port pass the corpus.
+ *
+ * @param {string} name
+ * @param {string} globalName
+ */
+function readbackState(name, globalName) {
+    const L = interpState();
+    if (!L) throw new Error(`lua-port ${name}: interpreter lua_State not found`);
+    if (!stateIsFresh(L, globalName)) {
+        throw new Error(`lua-port ${name}: state already defines '${globalName}'`);
+    }
+    return L;
+}
 
 /** Per-load records: {script, mode, rngFrom, rngTo}. */
 export const loads = [];
@@ -134,7 +218,7 @@ export const loads = [];
  * @returns {string|null} the same name if this registry handles it
  */
 export function scriptFor(vendoredName) {
-    if (vendoredName === null || !PORTS.has(vendoredName)) return null;
+    if (vendoredName === null || !handles(vendoredName)) return null;
     return active() ? vendoredName : null;
 }
 
@@ -168,8 +252,15 @@ export function stubFor(orig) {
  * @returns {Uint8Array|null} replacement bytes, or null to leave them alone
  */
 export function onOpen(name, orig) {
-    loads.push({ script: name, mode: mode(), rngFrom: getRngLog().length, rngTo: -1 });
-    return mode() === 'run' ? stubFor(orig) : null;
+    const rec = { script: name, mode: mode(), rngFrom: getRngLog().length, rngTo: -1 };
+    loads.push(rec);
+    if (mode() === 'run') return stubFor(orig);
+    // Interpreter side. A read-back script under C2JS_LUA_READBACK=dump is the
+    // one case where 'trace' still swaps the bytes: this module runs the real
+    // chunk itself at fclose so the dump can be taken at the same seam as the
+    // port's, and the interpreter must then not run it a second time.
+    if (readbackDump() && READBACK.has(name)) { rec.realBytes = orig.slice(); return stubFor(orig); }
+    return null;
 }
 
 /**
@@ -180,14 +271,40 @@ export function onOpen(name, orig) {
  */
 export function onClose(name) {
     const rec = loads[loads.length - 1];
+    const rb = READBACK.get(name);
     if (mode() === 'run') {
-        const body = PORTS.get(name);
-        if (!body) throw new Error(`lua-port: no port registered for ${name}`);
-        runPortedScript(name, body);
+        if (rb) {
+            const L = readbackState(name, rb.global);
+            runProtected(L, name, () => rb.body({ setGlobal: (k, v) => setGlobal(L, k, v) }));
+            if (readbackDump()) recordDump(rec, L, rb.global);
+        } else {
+            const body = PORTS.get(name);
+            if (!body) throw new Error(`lua-port: no port registered for ${name}`);
+            runPortedScript(name, body);
+        }
+        rec.rngTo = getRngLog().length;
+    } else if (rec.realBytes) {
+        // Interpreter side of the read-back oracle: same seam, same state, the
+        // real chunk.
+        const L = readbackState(name, rb.global);
+        runRealChunk(L, rec.realBytes, name);
+        recordDump(rec, L, rb.global);
+        rec.realBytes = null;
         rec.rngTo = getRngLog().length;
     }
     // trace mode: the chunk has not run yet; the slice is closed lazily.
     if (fpEnabled()) armed = rec;
+}
+
+/** Attach the read-back fingerprint of `globalName` to a load record. */
+function recordDump(rec, L, globalName) {
+    const d = dumpGlobal(L, globalName);
+    rec.readbackGlobal = globalName;
+    rec.readbackHash = d.hash;          // canonical: content only
+    rec.readbackOrder = d.order;        // raw lua_next order, seed-dependent
+    rec.readbackValues = d.values;
+    rec.readbackKeys = d.keys;
+    rec.readbackSeed = stateSeed(L);
 }
 
 /** Load record awaiting a level fingerprint, or null. */
@@ -200,9 +317,38 @@ let armed = null;
  * fingerprint is taken.
  */
 export function tick() {
+    if (QUEST_PROBE && !questProbed) runQuestProbe();
     if (armed === null) return;
     armed.typFingerprint = levelFingerprint();
     armed = null;
+}
+
+/** Whether the C2JS_LUA_QUESTPROBE deliveries have already been made. */
+let questProbed = false;
+
+/**
+ * Deliver quest text for the hero's own role, and the two role-independent
+ * `common` messages a normal game never shows.
+ *
+ * Each call is a full com_pager_core(): nhl_init(), nhl_loadlua("quest.lua")
+ * — so the port (or the interpreter) runs again — lua_getglobal("questtext"),
+ * lua_getfield(section), lua_getfield(msgid), and delivery through pline or a
+ * text window. Whatever comes out is on the screen, which the oracle compares
+ * byte for byte, and each load also produces its own read-back dump.
+ *
+ * gu+192 is u.urole.filecode (js/generated/questpgr.js:611), the role's
+ * three-letter section name. It is set by role_init(), which runs during
+ * character generation — far too early to deliver anything, since the message
+ * window does not exist yet. The gate is instead the game's *own* first quest
+ * load: com_pager("legacy") is the last thing newgame() does (allmain.c:832),
+ * so once a quest.lua load has been recorded the game is fully up.
+ */
+function runQuestProbe() {
+    if (!loads.some((l) => l.script === 'quest.lua')) return;
+    if (!cptr.ldPtro(gu, 192)) return;   // role not set up yet
+    questProbed = true;
+    for (const id of QUEST_PROBE_MSGIDS) qt_pager(cptr.lit(id));
+    for (const id of ['quest_portal', 'banished']) com_pager(cptr.lit(id));
 }
 
 /**
