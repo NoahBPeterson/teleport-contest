@@ -109,6 +109,14 @@ export async function runBootGame(opts) {
     NETHACK_RNGLOG: 'memory',
     NETHACK_SEED: seed,
     NOMUX_MARKERS: ENV_C2JS_NOMUX || '1',
+    // The recorder ran with NETHACK_NO_DELAY=1 (tools/play-record.mjs,
+    // scripts/record-session.mjs). In tty_delay_output that is the branch that
+    // calls nomux_capture_write_screen() — i.e. it is what makes the
+    // intermediate animation frames (zap beams, thrown objects, hurtle steps,
+    // explosions) get emitted as KIND=anim markers at all. Without it we fell
+    // through to the ospeed/`nh_CM` padding loop, which is a no-op here, so we
+    // emitted zero anim frames and scored 0/1483 on the supplemental metric.
+    NETHACK_NO_DELAY: '1',
   };
 
   // ---------------- VFS: vendored base + write overlay ----------------------
