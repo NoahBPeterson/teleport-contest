@@ -37,8 +37,26 @@ const PORT = Number(flag('--port', '8917'));
 const LOG = flag('--log', '');
 const RESULT_FILE = flag('--result', '');
 
-// Exactly what the mirror publishes.
+// Exactly what the mirror publishes: two directories, plus the play page and
+// its snapshot at the root. (Verified against the live mirror:
+//   /play/<owner>/index.html      200
+//   /play/<owner>/snapshot.json   200
+//   /play/<owner>/js/**           200
+//   /play/<owner>/frozen/**       200
+//   /play/<owner>/README.md       404 )
 const SERVED_ROOTS = ['js', 'frozen'];
+const SERVED_FILES = ['/', '/index.html', '/snapshot.json'];
+
+// --coi sends COOP/COEP, which is what makes crossOriginIsolated (and hence
+// SharedArrayBuffer) available. GitHub Pages does NOT send them, so the
+// default here matches the real mirror and exercises the service-worker
+// input path instead.
+const COI = args.includes('--coi');
+const COI_HEADERS = COI ? {
+    'cross-origin-opener-policy': 'same-origin',
+    'cross-origin-embedder-policy': 'require-corp',
+    'cross-origin-resource-policy': 'same-origin',
+} : {};
 
 const MIME = {
     '.js': 'text/javascript; charset=utf-8',
@@ -64,6 +82,7 @@ function classify(pathname) {
     // of anyone's module graph, and the real mirror 404s it just as harmlessly.
     if (pathname === '/favicon.ico') return 'BROWSER-UA';
     if (pathname.startsWith('/__sim/')) return 'HARNESS';
+    if (SERVED_FILES.includes(pathname)) return 'IN-SCOPE';
     const seg = pathname.split('/').filter(Boolean)[0];
     return SERVED_ROOTS.includes(seg) ? 'IN-SCOPE' : 'BLOCKED';
 }
@@ -75,6 +94,7 @@ function send(res, status, body, type, extra = {}) {
         // No caching: every reload must re-fetch, so the request log is a true
         // record of what the module graph pulled.
         'cache-control': 'no-store',
+        ...COI_HEADERS,
         ...extra,
     });
     res.end(body);
@@ -139,8 +159,9 @@ const server = http.createServer(async (req, res) => {
     }
 
     // IN-SCOPE: plain static file out of js/ or frozen/, no directory escapes.
-    const file = path.join(ROOT, pathname);
-    const okRoot = SERVED_ROOTS.some(r => file.startsWith(path.join(ROOT, r) + path.sep));
+    const file = path.join(ROOT, pathname === '/' ? 'index.html' : pathname);
+    const okRoot = SERVED_ROOTS.some(r => file.startsWith(path.join(ROOT, r) + path.sep))
+        || SERVED_FILES.includes(pathname);
     if (!okRoot || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
         finish(404);
         return send(res, 404, 'Not Found\n', 'text/plain');

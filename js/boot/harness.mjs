@@ -87,7 +87,8 @@ function bytesToB64(u) {
  * js/boot/isolation.mjs's `?c2jsseg=N` tag (js/jsmain.js does).
  * @param {{seed: number|string, datetime: string, nethackrc: string,
  *          moves: string, storage?: object, trace?: boolean,
- *          stdoutSink?: (s: string) => void}} opts
+ *          stdoutSink?: (s: string) => void,
+ *          waitForKey?: () => number}} opts
  * @returns {Promise<{screens: string[], cursors: Array, animFramesByStep: Array,
  *          rngLog: string[], stdout: string, exitCode: number|null, error: Error|null}>}
  */
@@ -98,6 +99,8 @@ export async function runBootGame(opts) {
   const storage = opts.storage || null;
   const trace = !!opts.trace;
   const stdoutSink = opts.stdoutSink || null;
+  // Interactive play only — see g.getchar below. null during scoring.
+  const waitForKey = typeof opts.waitForKey === 'function' ? opts.waitForKey : null;
   const segId = ++__segCounter;
 
   const tmpHome = VHOME;
@@ -227,7 +230,10 @@ export async function runBootGame(opts) {
   // ---------------- output collection + shims ----------------
 
   const stdoutChunks = [];
-  const out = (s) => { stdoutChunks.push(s); if (stdoutSink) stdoutSink(s); };
+  // Interactive play streams frames out through the sink as they happen and
+  // never looks at the accumulated buffer, so don't grow one: a long game is
+  // thousands of 2 KB screens.
+  const out = (s) => { if (!waitForKey) stdoutChunks.push(s); if (stdoutSink) stdoutSink(s); };
   const err = (s) => { if (trace) traceOut(s); };
 
   const inputQueue = [];
@@ -787,7 +793,20 @@ export async function runBootGame(opts) {
     // (it is blocked in this read). An empty queue means that point: end the
     // run now — returning EOF here would play ESC keypresses the recording
     // never saw, emitting spurious markers and RNG draws.
-    if (!inputQueue.length) throw new Error('input exhausted');
+    //
+    // ...unless we are being played rather than replayed. `opts.waitForKey` is
+    // the interactive input source (js/boot/engine-worker.mjs): a *blocking*
+    // call that parks this thread until a human presses a key. It is only ever
+    // set when the harness runs inside the engine worker; the judge's replay
+    // path never passes it, so the branch below is dead code during scoring and
+    // the byte-for-byte behaviour of a scored segment is unchanged.
+    if (!inputQueue.length) {
+      if (waitForKey) {
+        const c = waitForKey();
+        if (typeof c === 'number' && c >= 0) return c;
+      }
+      throw new Error('input exhausted');
+    }
     return inputQueue.shift();
   };
   g.vfprintf = (f, fmt, ap) => { const s = cptr.sprintfCore(fmt, ap && ap.args ? ap.args.slice(ap.i) : []); g.fputs(cptr.lit(s), f); return s.length; };

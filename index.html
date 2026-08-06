@@ -256,7 +256,7 @@ if (snap?.owner && snap?.fork) {
 const [
     { GameDisplay },
     { NethackGame },
-    { game },
+    { game, readVfsFile },
     { moveloop_core },
     { vfsReadFile },
 ] = await Promise.all([
@@ -268,6 +268,12 @@ const [
 ]);
 
 function loadNethackrc() {
+    // Bench mode may pin the options (role/race/…) so the measurement runs in
+    // the dungeon rather than in the character-creation prompts.
+    if (BENCH) {
+        const rc = new URLSearchParams(location.search).get('rc');
+        if (rc) return rc;
+    }
     try {
         const stored = localStorage.getItem(NETHACKRC_KEY);
         if (stored && stored.trim()) return stored;
@@ -281,7 +287,11 @@ function showGameOver() {
     if (!panel || !recordPre) return;
     let text = '';
     try {
-        const recordContent = vfsReadFile('/record');
+        // This port keeps its whole VFS in one localStorage blob, so read the
+        // topten out of that (js/gstate.js readVfsFile); fall back to the
+        // frozen per-file layout for anything that wrote it that way.
+        const recordContent = readVfsFile(window.__TELEPORT_STORAGE, '/record')
+            || vfsReadFile('/record');
         if (recordContent) {
             // Most recent line at the top.
             text = String(recordContent).split('\n').filter(Boolean).slice(-5).reverse().join('\n');
@@ -352,11 +362,90 @@ class FrontalLocalStorage {
     }
 }
 
+// --- automated play, for measuring ms/move --------------------------------
+// ?bench=<report-url>[&keys=<key string>][&seed=N] replays a key stream
+// through the *real* keyboard path (synthetic keydown on document -> the
+// frozen Terminal's handler -> the game), timing each keystroke from
+// dispatch to painted frame, and POSTs the result to <report-url>.
+// tools/judge-sim/playability.mjs drives this in headless Chrome. Nothing
+// below runs unless the parameter is present.
+const BENCH = new URLSearchParams(location.search).get('bench');
+
+function benchRow(display, r) {
+    let s = '';
+    for (let c = 0; c < 80; c++) s += display.grid[r][c].ch;
+    return s.trimEnd();
+}
+
+function benchKeys() {
+    const q = new URLSearchParams(location.search).get('keys');
+    if (q) return q;
+    // Default: dismiss the opening --More-- screens, then N keystrokes of
+    // walking and searching — what "holding a movement key" actually costs.
+    const n = Number(new URLSearchParams(location.search).get('bmoves') || 240);
+    // The trailing space after each command clears any --More-- the move
+    // produced; without it the whole run measures the cost of beeping at a
+    // message prompt instead of the cost of walking.
+    let s = '   ';
+    for (let i = 0; s.length < n + 3; i++) s += 'lljjhhkk'[i % 8] + ' ' + 'hjkl'[(i * 5) % 4] + ' ' + 's ';
+    return s;
+}
+
+async function runBench(display, reportUrl) {
+    const keys = benchKeys();
+    const nextFrame = () => new Promise((res) => { display.onFrame = () => { display.onFrame = null; res(); }; });
+    const dispatch = (ch) => document.dispatchEvent(new KeyboardEvent('keydown', { key: ch, bubbles: true }));
+
+    const times = [];
+    const t_first = performance.now();
+    for (let i = 0; i < keys.length; i++) {
+        const waited = nextFrame();
+        const t0 = performance.now();
+        dispatch(keys[i]);
+        await waited;
+        times.push(performance.now() - t0);
+        if (game.program_state?.gameover) break;
+    }
+    const wall = performance.now() - t_first;
+    const sorted = times.slice().sort((a, b) => a - b);
+    const report = {
+        moves: times.length,
+        wall_ms: Math.round(wall),
+        ms_per_move: +(wall / Math.max(1, times.length)).toFixed(3),
+        median_ms: +(sorted[sorted.length >> 1] || 0).toFixed(3),
+        p95_ms: +(sorted[Math.floor(sorted.length * 0.95)] || 0).toFixed(3),
+        max_ms: +(sorted[sorted.length - 1] || 0).toFixed(3),
+        engine_mode: window.__NH?.engine?.mode || 'unknown',
+        crossOriginIsolated: !!window.crossOriginIsolated,
+        gameover: !!game.program_state?.gameover,
+        frames: display.frames,
+        // How much of ms_per_move is the game itself, as measured on the
+        // engine thread; the remainder is browser overhead (message hop or
+        // service-worker round-trip, plus the DOM repaint).
+        engine_ms_per_move: window.__NH?.engine?.engineTime
+            ? +(window.__NH.engine.engineTime.ms / window.__NH.engine.engineTime.steps).toFixed(3)
+            : null,
+        // Proof that a real game is on screen and not a prompt loop.
+        top_line: benchRow(display, 0),
+        status_line: benchRow(display, 22),
+        // T: on this line is the game's turn counter — the honest answer to
+        // "did those keystrokes actually move the game forward?"
+        bottom_line: benchRow(display, 23),
+    };
+    try {
+        await fetch(reportUrl, { method: 'POST', body: JSON.stringify(report) });
+    } catch (e) { /* nothing else to do with it */ }
+    window.__BENCH_RESULT = report;
+    console.log('[bench]', JSON.stringify(report));
+}
+
 async function main() {
     const display = new GameDisplay('game-container');
     display.flags = { color: true };
 
-    const seed = Math.floor(Math.random() * 10000);
+    const seed = BENCH
+        ? Number(new URLSearchParams(location.search).get('seed') || 8000)
+        : Math.floor(Math.random() * 10000);
     const nethackrc = loadNethackrc();
 
     display.putstr(0, 0, `Starting NetHack with seed ${seed}...`);
@@ -369,8 +458,45 @@ async function main() {
     }
     display.putstr(0, 3, 'Click here and press any key.');
 
+    // Keyboard translation. NOTE: a keyMapper *replaces* the frozen Terminal's
+    // built-in translation outright — Terminal._onKeyDown returns as soon as a
+    // keyMapper is present, whatever it answers — so this has to handle every
+    // key, not just the ones we want to change. Returning null means "drop
+    // this keystroke", which is right for bare modifier presses and wrong for
+    // everything else.
+    //
+    // The one real change from the default: arrow keys. Terminal's default
+    // pushes the raw ANSI sequence (ESC [ A), and this is the real tty
+    // NetHack, where ESC means "cancel the current command". Send the vi keys
+    // the game binds instead; Shift+arrow sends the run-in-that-direction
+    // capital.
+    display.keyMapper = (e) => {
+        const VI = { ArrowUp: 'k', ArrowDown: 'j', ArrowLeft: 'h', ArrowRight: 'l' };
+        if (!e.altKey && !e.metaKey && VI[e.key]) {
+            const c = e.shiftKey || e.ctrlKey ? VI[e.key].toUpperCase() : VI[e.key];
+            return c.charCodeAt(0);
+        }
+        if (e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
+            const c = e.key.toLowerCase().charCodeAt(0);
+            return (c >= 97 && c <= 122) ? c - 96 : null;
+        }
+        if (e.altKey || e.metaKey) return null;
+        switch (e.key) {
+        case 'Enter':     return 13;
+        case 'Backspace': return 8;
+        case 'Delete':    return 127;
+        case 'Escape':    return 27;
+        case 'Tab':       return 9;
+        default:          return e.key.length === 1 ? e.key.charCodeAt(0) : null;
+        }
+    };
+
+    // Bench mode answers the "press any key" prompt itself.
+    if (BENCH) setTimeout(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' })), 0);
+
     await display.readKey();
     display.clearScreen();
+    display.putstr(0, 0, 'Booting the dungeon…');
 
     // Build a per-fork localStorage view and attach it as the
     // contestant's `_storage`. Contestants whose persistence layer
@@ -429,7 +555,19 @@ async function main() {
     wireToolbarButton(document.getElementById('play-again-btn'),
                       () => location.reload());
 
+    // start() boots the engine on its own thread and paints the first frame.
+    // From here on the page's job is only to move keys in and frames out: the
+    // game itself stays resident over there for as long as you play it (see
+    // js/boot/interactive.mjs).
     await nhGame.start();
+    window.__NH = { game: nhGame, display, engine: nhGame.engine };  // for the harness/console
+
+    // Stop the engine thread if the tab goes away mid-game, so a reload
+    // doesn't leave an orphan blocked in getchar().
+    window.addEventListener('pagehide', () => { try { nhGame.stop(); } catch (e) { /* going away anyway */ } });
+
+    // Deliberately not awaited: the bench feeds keys *into* the loop below.
+    if (BENCH) runBench(display, BENCH);
 
     for (;;) {
         await moveloop_core();
@@ -442,6 +580,14 @@ main().catch(e => {
     console.error(e);
     const c = document.getElementById('game-container');
     if (c) c.textContent = 'Error: ' + (e && e.message ? e.message : e);
+    // In bench mode a crash has to be *reported*, not just displayed —
+    // otherwise the driver in tools/judge-sim/playability.mjs just times out
+    // and we learn nothing about why.
+    if (BENCH) {
+        try {
+            fetch(BENCH, { method: 'POST', body: JSON.stringify({ moves: 0, error: String((e && e.stack) || e) }) });
+        } catch (_) { /* nothing left to try */ }
+    }
 });
 </script>
 </body>

@@ -1,0 +1,230 @@
+// engine-worker.mjs — the resident game engine, on a thread of its own.
+//
+// The transpiled corpus is straight-line synchronous C: tty_nhgetch() calls
+// getchar() and *expects a byte back*.  There is no way to suspend a
+// synchronous JS call stack mid-flight and resume it later, so an interactive
+// port has exactly two honest options:
+//
+//   1. re-run the whole key prefix on every keystroke (O(n^2), ~1.2 s of
+//      startup per key — this is what makes a naive browser port unplayable),
+//   2. put the engine on a thread that is *allowed to block*, and hand it keys
+//      through shared memory.
+//
+// This file is (2).  main() runs once, top to bottom, for the whole game, and
+// blocks inside getchar() until the UI thread delivers the next key.  The game
+// state never leaves the C arena; a keystroke costs one wake-up plus the
+// engine work that key actually causes.
+//
+// Two ways to block, picked at init time by the driver (js/boot/interactive.mjs):
+//
+//   'sab'  Atomics.wait() on a SharedArrayBuffer.  Node always has this;
+//          browsers only when the page is crossOriginIsolated (COOP+COEP).
+//   'xhr'  synchronous XMLHttpRequest to a URL parked by our service worker
+//          (js/sw.js), which does not answer until the page hands it a key.
+//          Works on plain static hosting — GitHub Pages, where
+//          mazesofmenace.ai/play/<owner>/ lives, sends no COOP/COEP, so this
+//          is the path real players take.
+//
+// Runs unmodified in a browser `new Worker(url, {type:'module'})` and in a
+// Node `worker_threads.Worker`; the only difference is which port object we
+// talk through.
+//
+// Protocol
+//   driver -> worker  { type:'init', job, mode, ctl?, keyUrl? }
+//                     { type:'key', code }         (xhr mode uses the SW instead)
+//   worker -> driver  { type:'ready' }
+//                     { type:'frame', screen, cx, cy, anim }  at each input boundary
+//                     { type:'exit', code, error, storage }
+//
+// Frames are the harness's own KIND=input markers, parsed out of the stdout
+// stream as they are written (see js/boot/harness.mjs) — the exact bytes the
+// judge scores, so what you see in the browser is what the scorer sees.
+
+import { installBrowserGlobals } from './browser-env.mjs';
+
+installBrowserGlobals();
+
+const IS_BROWSER_WORKER = typeof self !== 'undefined' && typeof self.postMessage === 'function';
+
+let post, listen;
+if (IS_BROWSER_WORKER) {
+    post = (m) => self.postMessage(m);
+    listen = (fn) => { self.onmessage = (ev) => fn(ev.data); };
+} else {
+    const { parentPort } = await import('node:worker_threads');
+    post = (m) => parentPort.postMessage(m);
+    listen = (fn) => parentPort.on('message', fn);
+}
+
+// ---------------------------------------------------------------------------
+// Blocking input
+
+const KEY_EOF = -1;
+
+/** Atomics.wait over ctl[0] (state) / ctl[1] (key). state: 0 idle, 1 key, 2 eof. */
+function sabWaiter(sab) {
+    const ctl = new Int32Array(sab);
+    return () => {
+        while (Atomics.load(ctl, 0) === 0) Atomics.wait(ctl, 0, 0);
+        const state = Atomics.load(ctl, 0);
+        const code = Atomics.load(ctl, 1);
+        Atomics.store(ctl, 0, 0);
+        return state === 2 ? KEY_EOF : code;
+    };
+}
+
+/**
+ * Is this worker actually a controlled service-worker client? A dedicated
+ * worker whose script is in scope should be, but that is exactly the kind of
+ * thing that differs between engines — and getting it wrong means the game
+ * hangs on the first keystroke instead of failing. One synchronous probe
+ * before the game starts turns that into a clean fallback.
+ */
+function xhrTransportWorks(keyUrl) {
+    try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', keyUrl + (keyUrl.includes('?') ? '&' : '?') + 'probe=1', false);
+        xhr.send(null);
+        return xhr.status === 200 && xhr.responseText.trim() === 'nhkey-ok';
+    } catch (e) {
+        return false;
+    }
+}
+
+/** Synchronous XHR to the service worker's parked key endpoint. */
+function xhrWaiter(keyUrl) {
+    let n = 0;
+    // The service worker hands over every key it has queued, so a burst costs
+    // one round-trip instead of one per key. Drain the buffer before asking
+    // again.
+    let buffered = [];
+    return () => {
+        for (;;) {
+            if (buffered.length) return buffered.shift();
+            const xhr = new XMLHttpRequest();
+            // Cache-buster: a sync XHR that hit the HTTP cache would return the
+            // previous key instantly and spin the engine.
+            xhr.open('GET', keyUrl + (keyUrl.includes('?') ? '&' : '?') + 'n=' + (++n), false);
+            try {
+                xhr.send(null);
+            } catch (e) {
+                return KEY_EOF;   // service worker gone (unregistered, page closed)
+            }
+            if (xhr.status !== 200) return KEY_EOF;
+            const codes = xhr.responseText.split(',').map((s) => parseInt(s, 10));
+            if (codes.length === 1 && codes[0] === -2) continue;   // parked out; ask again (js/sw.js)
+            if (!codes.length || !Number.isFinite(codes[0])) return KEY_EOF;
+            buffered = codes;
+        }
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Frame extraction.
+//
+// harness.mjs writes an OSC marker + payload at every input boundary; we are
+// called synchronously right after the boundary marker was flushed, so
+// everything we need is already in the buffer.
+
+const OSC = '\x1b]7777;';
+
+function makeFrameReader() {
+    let buf = '';
+    return {
+        sink(s) { buf += s; },
+        /** Consume every complete marker; return the last input frame + any anim frames. */
+        take() {
+            let i = 0, last = null;
+            const anim = [];
+            for (;;) {
+                const m = buf.indexOf(OSC, i);
+                if (m < 0) break;
+                const end = buf.indexOf('\x07', m);
+                if (end < 0) break;
+                const kv = Object.fromEntries(buf.slice(m + OSC.length, end).split(';').map((p) => p.split('=')));
+                const len = Number(kv.LEN);
+                if (buf.length < end + 1 + len) break;   // payload still coming
+                const frame = {
+                    screen: buf.slice(end + 1, end + 1 + len),
+                    cx: Number(kv.CX), cy: Number(kv.CY),
+                };
+                if (kv.KIND === 'anim') anim.push(frame);
+                else last = frame;
+                i = end + 1 + len;
+            }
+            buf = buf.slice(i);
+            return { last, anim };
+        },
+    };
+}
+
+// ---------------------------------------------------------------------------
+
+function storageHandleOver(map) {
+    return {
+        getItem(k) { return map.has(k) ? map.get(k) : null; },
+        setItem(k, v) { map.set(k, String(v)); },
+        removeItem(k) { map.delete(k); },
+        get length() { return map.size; },
+        key(i) { let n = 0; for (const k of map.keys()) { if (n === i) return k; n++; } return null; },
+    };
+}
+
+let started = false;
+
+listen(async (msg) => {
+    if (!msg || msg.type !== 'init' || started) return;
+    started = true;
+
+    if (msg.mode === 'xhr' && !xhrTransportWorks(msg.keyUrl)) {
+        post({ type: 'exit', code: null, error: 'no-blocking-transport: the service worker is not intercepting this worker', storage: {} });
+        return;
+    }
+    const waitForKeyRaw = msg.mode === 'xhr' ? xhrWaiter(msg.keyUrl) : sabWaiter(msg.ctl);
+    const frames = makeFrameReader();
+    const map = new Map(Object.entries(msg.job.storage || {}));
+
+    // Called from inside getchar() with the C stack live. Everything here is
+    // synchronous by necessity: we are 40 frames deep in transpiled C.
+    //
+    // `engineMs` is the time the *game* spent on the previous keystroke —
+    // from the moment that key was delivered to the moment the resulting
+    // frame is ready. Reported alongside each frame so a benchmark can tell
+    // our cost apart from the browser's (message hop, service-worker
+    // round-trip, DOM paint).
+    let tKeyDelivered = 0, engineMs = 0, steps = 0;
+    const waitForKey = () => {
+        const now = performance.now();
+        if (tKeyDelivered) { engineMs += now - tKeyDelivered; steps++; }
+        const { last, anim } = frames.take();
+        if (last) post({ type: 'frame', screen: last.screen, cx: last.cx, cy: last.cy, anim, engineMs, steps });
+        const code = waitForKeyRaw();
+        tKeyDelivered = performance.now();
+        return code;
+    };
+
+    let out;
+    try {
+        const { runBootGame } = await import('./harness.mjs');
+        const r = await runBootGame({
+            seed: msg.job.seed,
+            datetime: msg.job.datetime,
+            nethackrc: msg.job.nethackrc || '',
+            moves: msg.job.moves || '',
+            storage: storageHandleOver(map),
+            stdoutSink: frames.sink,
+            waitForKey,
+        });
+        // The last screen the game painted (topten, DYWYPI, ...) never gets a
+        // boundary of its own if the game exited without asking for a key.
+        const { last, anim } = frames.take();
+        if (last) post({ type: 'frame', screen: last.screen, cx: last.cx, cy: last.cy, anim });
+        out = { type: 'exit', code: r.exitCode, error: r.error ? String(r.error.stack || r.error) : null,
+                storage: Object.fromEntries(map) };
+    } catch (e) {
+        out = { type: 'exit', code: null, error: String((e && e.stack) || e), storage: Object.fromEntries(map) };
+    }
+    post(out);
+});
+
+post({ type: 'ready' });
