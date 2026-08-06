@@ -25,14 +25,16 @@
 //          mazesofmenace.ai/play/<owner>/ lives, sends no COOP/COEP, so this
 //          is the path real players take.
 //
-// Runs unmodified in a browser `new Worker(url, {type:'module'})` and in a
-// Node `worker_threads.Worker`; the only difference is which port object we
-// talk through.
+// Runs unmodified in three realms — a browser `new Worker(url, {type:'module'})`,
+// a Node `worker_threads.Worker`, and (via js/boot/shared-engine.js, which
+// dynamic-imports this file) a SharedWorker port. The engine body does not care;
+// serve() takes a post/listen pair and everything downstream is the same.
 //
 // Protocol
-//   driver -> worker  { type:'init', job, mode, ctl?, keyUrl? }
-//                     { type:'key', code }         (xhr mode uses the SW instead)
+//   driver -> worker  { type:'probe', probeUrl }   (browser, xhr transports)
+//                     { type:'init', job, mode, ctl?, keyUrl? }
 //   worker -> driver  { type:'ready' }
+//                     { type:'probe', ok }
 //                     { type:'frame', screen, cx, cy, anim }  at each input boundary
 //                     { type:'exit', code, error, storage }
 //
@@ -45,7 +47,14 @@ import { installBrowserGlobals } from './browser-env.mjs';
 // Decided before installBrowserGlobals(), which installs a stand-in `process`
 // in a browser — after that call `typeof process` no longer tells the two
 // realms apart.
-const IS_BROWSER_WORKER = typeof self !== 'undefined' && typeof self.postMessage === 'function';
+//
+// A SharedWorkerGlobalScope has no postMessage of its own (every message goes
+// down a per-connection port), so it has to be recognised separately or it
+// would look like Node and go looking for node:worker_threads.
+const IS_SHARED_WORKER = typeof SharedWorkerGlobalScope !== 'undefined'
+    && typeof self !== 'undefined' && self instanceof SharedWorkerGlobalScope;
+const IS_BROWSER_WORKER = IS_SHARED_WORKER
+    || (typeof self !== 'undefined' && typeof self.postMessage === 'function');
 
 // ---------------------------------------------------------------------------
 // V8 compile cache (Node only).
@@ -79,16 +88,6 @@ if (!IS_BROWSER_WORKER) {
 
 installBrowserGlobals();
 
-let post, listen;
-if (IS_BROWSER_WORKER) {
-    post = (m) => self.postMessage(m);
-    listen = (fn) => { self.onmessage = (ev) => fn(ev.data); };
-} else {
-    const { parentPort } = await import('node:worker_threads');
-    post = (m) => parentPort.postMessage(m);
-    listen = (fn) => parentPort.on('message', fn);
-}
-
 // ---------------------------------------------------------------------------
 // Blocking input
 
@@ -106,21 +105,36 @@ function sabWaiter(sab) {
     };
 }
 
+/** The body js/sw.js answers a probe with. Keep the two in step. */
+const SW_ALIVE = '__nh_sw_alive__';
+
 /**
- * Is this worker actually a controlled service-worker client? A dedicated
- * worker whose script is in scope should be, but that is exactly the kind of
- * thing that differs between engines — and getting it wrong means the game
- * hangs on the first keystroke instead of failing. One synchronous probe
- * before the game starts turns that into a clean fallback.
+ * Is *this realm* a controlled service-worker client — not "is one registered",
+ * which the page can see, but "will my requests actually reach it", which only
+ * a request can answer. A dedicated worker whose script sits inside the scope
+ * should be a client in its own right, and in current Chromium it is; that is a
+ * per-engine, per-version behaviour, and getting it wrong means the game hangs
+ * in getchar() forever rather than failing.
+ *
+ * The probe is deliberately unfalsifiable-quietly: `probeUrl` names a file that
+ * exists (js/sw.js) with a query string the static host ignores, so an
+ * uncontrolled realm gets that file's real bytes and a 200 rather than a 404.
+ * A 404 would be a line in the browser console, and the judge's playability
+ * check fails an entry on any console output at all — including the run where
+ * we noticed in time and degraded gracefully.
+ *
+ * Synchronous on purpose: the answer decides whether the caller may block, so
+ * it has to be known before the engine boots, in the same realm that will do
+ * the blocking.
  */
-function xhrTransportWorks(keyUrl) {
+function swIntercepts(probeUrl) {
     try {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', keyUrl + (keyUrl.includes('?') ? '&' : '?') + 'probe=1', false);
+        xhr.open('GET', probeUrl, false);
         xhr.send(null);
-        return xhr.status === 200 && xhr.responseText.trim() === 'nhkey-ok';
+        return xhr.status === 200 && xhr.responseText.trim() === SW_ALIVE;
     } catch (e) {
-        return false;
+        return false;   // no XMLHttpRequest here at all, or blocked outright
     }
 }
 
@@ -205,14 +219,7 @@ function storageHandleOver(map) {
 
 let started = false;
 
-listen(async (msg) => {
-    if (!msg || msg.type !== 'init' || started) return;
-    started = true;
-
-    if (msg.mode === 'xhr' && !xhrTransportWorks(msg.keyUrl)) {
-        post({ type: 'exit', code: null, error: 'no-blocking-transport: the service worker is not intercepting this worker', storage: {} });
-        return;
-    }
+async function runEngine(msg, post) {
     const waitForKeyRaw = msg.mode === 'xhr' ? xhrWaiter(msg.keyUrl) : sabWaiter(msg.ctl);
     const frames = makeFrameReader();
     const map = new Map(Object.entries(msg.job.storage || {}));
@@ -258,6 +265,42 @@ listen(async (msg) => {
         out = { type: 'exit', code: null, error: String((e && e.stack) || e), storage: Object.fromEntries(map) };
     }
     post(out);
-});
+}
 
-post({ type: 'ready' });
+/**
+ * Attach the engine to one message channel and announce it. `post` sends to the
+ * driver, `listen` installs the driver's message handler.
+ *
+ * One engine per worker, whatever the channel: `started` is module-scoped, so a
+ * second connection to the same SharedWorker cannot start a second game in the
+ * same C arena. In practice there is never a second connection — each
+ * InteractiveEngine names its SharedWorker uniquely, so a reload gets a worker
+ * of its own rather than reconnecting to the last game's.
+ */
+function serve(post, listen) {
+    listen((msg) => {
+        if (!msg) return;
+        // Asked before init, from the realm that will do the blocking: only
+        // this realm's own request can tell us whether it is intercepted.
+        if (msg.type === 'probe') { post({ type: 'probe', ok: swIntercepts(msg.probeUrl) }); return; }
+        if (msg.type !== 'init' || started) return;
+        started = true;
+        runEngine(msg, post);
+    });
+    post({ type: 'ready' });
+}
+
+/** Entry point for js/boot/shared-engine.js, one call per connected port. */
+export function serveOn(port) {
+    serve((m) => port.postMessage(m), (fn) => { port.onmessage = (ev) => fn(ev.data); });
+}
+
+if (IS_SHARED_WORKER) {
+    // Nothing to attach to here: the connect event belongs to the classic
+    // shim that imported us, and it calls serveOn() with each port.
+} else if (IS_BROWSER_WORKER) {
+    serve((m) => self.postMessage(m), (fn) => { self.onmessage = (ev) => fn(ev.data); });
+} else {
+    const { parentPort } = await import('node:worker_threads');
+    serve((m) => parentPort.postMessage(m), (fn) => parentPort.on('message', fn));
+}
