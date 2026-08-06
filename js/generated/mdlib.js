@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { datamodel, eos, nh_snprintf } from './hacklib.js';
 import { dupstr } from './alloc.js';
 import { free_nomakedefs, populate_nomakedefs } from './date.js';
@@ -186,7 +187,7 @@ cptr.st1(cptr.add(window_opts, 40), 0);
 
 /** C ref: mdlib.c:184 — struct soundlib_information[2] */
 const soundlib_opts = cptr.alloc(2 * 32);
-cptr.stI32(cptr.add(soundlib_opts, 0), 0);
+cptr.stI32(cptr.add(soundlib_opts, 0), NHC.soundlib_nosound);
 cptr.stPtr(cptr.add(soundlib_opts, 8), __sl36);
 cptr.stPtr(cptr.add(soundlib_opts, 16), __sl0);
 cptr.st1(cptr.add(soundlib_opts, 24), 0);
@@ -208,9 +209,9 @@ function make_version() {
     for (i = 1; cptr.ldPtr(cptr.add(artifact_names, i, 8)); i++)
         continue;
     cptr.stU64(cptr.add(version, 16), BigInt.asUintN(64, BigInt(((i - 1) | 0))));
-    i = 481;
+    i = NHC.NUM_OBJECTS;
     cptr.stU64(cptr.add(version, 16), (cptr.ldU64(cptr.add(version, 16)) << 12n) | BigInt.asUintN(64, BigInt(i)));
-    i = 383;
+    i = NHC.NUMMONS;
     cptr.stU64(cptr.add(version, 16), (cptr.ldU64(cptr.add(version, 16)) << 12n) | BigInt.asUintN(64, BigInt(i)));
     return;
 }

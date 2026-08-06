@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { alloc } from './alloc.js';
 import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
 import { mons } from './monst.js';
@@ -182,7 +183,7 @@ export function add_mon_to_reg(reg, mon) {
     let i;
     let tmp_m;
     if (mon_in_region(reg, mon)) {
-        if (!cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 114, 96)))
+        if (!cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, NHC.PM_LONG_WORM, 96)))
             impossible(__sl0, m_monnam(mon), cptr.ldI32(cptr.add(mon, 16)));
         return;
     }
@@ -292,7 +293,7 @@ export function remove_region(reg) {
     if (cptr.ld1s(cptr.add(reg, 76))) {
         let pass;
         let tmp_uinwater = schar((cptr.ldI32(cptr.add(u, 1852)) & 1));
-        for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
+        for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
             cptr.stI32(cptr.add(u, 1852), ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
             for (x = cptr.ldI16(reg); x <= cptr.ldI16(cptr.add(reg, 4)); x++)
                 for (y = cptr.ldI16(cptr.add(reg, 2)); y <= cptr.ldI16(cptr.add(reg, 6)); y++)
@@ -723,7 +724,7 @@ export function expire_gas_cloud(p1, p2) {
         cptr.stI64(cptr.add(reg, 40), 2n);
         return 0;
     }
-    for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
+    for (pass = 1; pass <= (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) ? 1 : 2); ++pass) {
         for (x = cptr.ldI16(reg); x <= cptr.ldI16(cptr.add(reg, 4)); x++) {
             for (y = cptr.ldI16(cptr.add(reg, 2)); y <= cptr.ldI16(cptr.add(reg, 6)); y++) {
                 if (inside_region(reg, x, y)) {
@@ -751,23 +752,23 @@ export function inside_gas_cloud(p1, p2) {
     let mtmp = p2;
     let umon = mtmp ? mtmp : cptr.add(gy, 8);
     let dam = cptr.ldI32(cptr.add(reg, 88));
-    if ((cptr.ldI64(cptr.add(reg, 40)) < 20n && umon ? 1 : 0) && cptr.eq(cptr.ldPtr(cptr.add(umon, 8)), cptr.add(mons, 106, 96)) ? 1 : 0)
+    if ((cptr.ldI64(cptr.add(reg, 40)) < 20n && umon ? 1 : 0) && cptr.eq(cptr.ldPtr(cptr.add(umon, 8)), cptr.add(mons, NHC.PM_FOG_CLOUD, 96)) ? 1 : 0)
         cptr.stI64(cptr.add(reg, 40), cptr.ldI64(cptr.add(reg, 40)) + 5n);
     if (dam < 1)
         return 0;
     if (!mtmp) {
         if (m_poisongas_ok(cptr.add(gy, 8)) == 2)
             return 0;
-        if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
-            Your(__sl41, makeplural(body_part(1)));
+        if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0)) {
+            Your(__sl41, makeplural(body_part(NHC.EYE)));
             make_blinded(1n, 0);
         }
-        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24)) ? 1 : 0)) {
-            pline(__sl42, cptr.ldPtr(cptr.add(c_common_strings, 48)), makeplural(body_part(16)));
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24)) ? 1 : 0)) {
+            pline(__sl42, cptr.ldPtr(cptr.add(c_common_strings, 48)), makeplural(body_part(NHC.LUNG)));
             You(__sl43);
             wake_nearto(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 2);
-            dam = (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) ? 1 : 0)) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
-            if (((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == 234 ? 1 : 0) && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0 ? 1 : 0))
+            dam = (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALF_PHDAM, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALF_PHDAM, 24)) ? 1 : 0)) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
+            if (((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == NHC.TOWEL ? 1 : 0) && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0 ? 1 : 0))
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __sl46, 0);
             monstunseesu(64n);
@@ -781,7 +782,7 @@ export function inside_gas_cloud(p1, p2) {
     } else {
         mtmp = p2;
         if (m_poisongas_ok(mtmp) != 2) {
-            if (!(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == 0)) {
+            if (!(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == NHC.MS_SILENT)) {
                 if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)), 8)), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0) || (dist2((cptr.ldI16(cptr.add(mtmp, 28))), (cptr.ldI16(cptr.add(mtmp, 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < 8) ? 1 : 0)
                     pline(__sl48, Monnam(mtmp));
                 wake_nearto(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)), 2);
@@ -792,7 +793,7 @@ export function inside_gas_cloud(p1, p2) {
                 cptr.stI32(cptr.add(mtmp, 148), 1);
                 cptr.stI32(cptr.add(mtmp, 112), 0);
             }
-            if (Resists_Elem(mtmp, 6))
+            if (Resists_Elem(mtmp, NHC.POISON_RES))
                 return 0;
             cptr.stI32(cptr.add(mtmp, 52), (cptr.ldI32(cptr.add(mtmp, 52)) - (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1152, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0)) | 0);
             if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
@@ -827,11 +828,11 @@ function make_gas_cloud(cloud, damage, inside_cloud) {
     cptr.memcpy(cptr.add(cloud, 88), cptr.add(cg, 536), 8);
     cptr.stI32(cptr.add(cloud, 88), damage);
     cptr.st1(cptr.add(cloud, 76), 1);
-    cptr.stI32(cptr.add(cloud, 80), (((damage ? 86 : 47) == 0) ? 3929 : (((damage ? 86 : 47) <= 11) ? (((((damage ? 86 : 47) - 1) | 0) + (In_mines(cptr.add(u, 24)) ? 3941 : (In_hell(cptr.add(u, 24)) ? 3952 : ((((cptr.ldI16(cptr.add((cptr.add(svd, 1894)), 2)) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? 3963 : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1874)))) ? 3974 : 3930))))) | 0) : (((damage ? 86 : 47) < 33) ? (((((damage ? 86 : 47) - 12) | 0) + 3985) | 0) : (((damage ? 86 : 47) == 33) ? 4008 : (((damage ? 86 : 47) < 74) ? (((((damage ? 86 : 47) - 34) | 0) + 4011) | 0) : (((damage ? 86 : 47) <= 87) ? (((((damage ? 86 : 47) - 78) | 0) + 4083) | 0) : 9624)))))));
+    cptr.stI32(cptr.add(cloud, 80), (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16(cptr.add((cptr.add(svd, 1894)), 2)) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1874)))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? 4008 : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < 74) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
     add_region(cloud);
     if ((!cptr.ld1s(cptr.add(gi, 4)) && !inside_cloud ? 1 : 0) && is_hero_inside_gas_cloud() ? 1 : 0) {
         You(__sl49, damage ? __sl50 : __sl51);
-        cptr.stI32(cptr.add(iflags, 40), 4);
+        cptr.stI32(cptr.add(iflags, 40), NHC.PLNMSG_ENVELOPED_IN_GAS);
     }
 }
 
@@ -935,9 +936,9 @@ export function region_danger() {
             continue;
         f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58));
         if (f_indx == 0) {
-            if (((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, 50, 96)) ? 1 : 0) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == 55) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == 22 ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 1024n) != 0n) ? 1 : 0) ? 1 : 0)
+            if (((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, NHC.PM_MANES, 96)) ? 1 : 0) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == NHC.S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == NHC.S_VORTEX ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 1024n) != 0n) ? 1 : 0) ? 1 : 0)
                 continue;
-            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 6, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 6, 24)) ? 1 : 0))
+            if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24)) ? 1 : 0))
                 continue;
             ++n;
         }
@@ -963,7 +964,7 @@ export function region_safety() {
     if (n > 1 || (n == 1 && !r ? 1 : 0) ? 1 : 0) {
         void safe_teleds(0);
         if (region_danger()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1391, __sl54), d(4, 4)) : d(4, 4)) + 4) | 0)));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1391, __sl54), d(4, 4)) : d(4, 4)) + 4) | 0)));
             You_feel(__sl55);
         }
     } else if (r) {
@@ -972,6 +973,6 @@ export function region_safety() {
     } else {
         pline_The(__sl57);
     }
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) == 1n)
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) & 16777215n) == 1n)
         make_blinded(0n, 1);
 }

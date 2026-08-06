@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { cg, gu, svd, svl, u } from './decl.js';
 import { mons } from './monst.js';
@@ -156,7 +157,7 @@ function dev_name() {
         match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
         for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
+            if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
                 continue;
             if (!cptr.strncmp(cptr.ldPtr(cptr.add(developers, i, 8)), ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) : __sl39, cptr.strlen(cptr.ldPtr(cptr.add(developers, i, 8))))) {
                 match = 1;
@@ -192,7 +193,7 @@ function get_mplname(mtmp, nam) {
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
 function mk_mplayer_armor(mon, typ) {
     let obj;
-    if (typ == 0)
+    if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = mksobj(typ, 0, 0);
     cptr.stI32(cptr.add(obj, 112), cptr.stI32(cptr.add(obj, 116), 0));
@@ -210,7 +211,7 @@ function mk_mplayer_armor(mon, typ) {
 export function mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
-    if (!((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
+    if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
         return (null);
     if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)) !== null))
         void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8))), 5);
@@ -229,110 +230,110 @@ export function mk_mplayer(ptr, x, y, special) {
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = christen_monst(mtmp, cptr.decay(nam));
-            void mongets(mtmp, 212);
+            void mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR);
         }
         cptr.stI32(cptr.add(mtmp, 168), 0);
         set_malign(mtmp);
-        weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 150, __sl48), rn2(2)) : rn2(2)) ? 54 : rnd_class(27, 82)));
-        armor = i16(rnd_class(101, 110));
-        cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(142, 149)));
-        helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(89, 100)));
-        shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? 0 : rnd_class(153, 158)));
+        weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 150, __sl48), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
+        armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
+        cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
+        helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
+        shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
         switch ((cptr.ldI32(cptr.add((ptr), 24)))) {
-            case 331:
+            case NHC.PM_ARCHEOLOGIST:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 161, __sl48), rn2(2)) : rn2(2)))
-                weapon = 82;
+                weapon = NHC.BULLWHIP;
             break;
-            case 332:
+            case NHC.PM_BARBARIAN:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 165, __sl48), rn2(2)) : rn2(2))) {
-                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 166, __sl48), rn2(2)) : rn2(2)) ? 55 : 45));
-                shield = 0;
+                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 166, __sl48), rn2(2)) : rn2(2)) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
+                shield = NHC.STRANGE_OBJECT;
             }
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 169, __sl48), rn2(2)) : rn2(2)))
-                armor = i16(rnd_class(121, 128));
-            if (helm == 96)
-                helm = 0;
+                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
+            if (helm == NHC.HELM_OF_BRILLIANCE)
+                helm = NHC.STRANGE_OBJECT;
             break;
-            case 333:
+            case NHC.PM_CAVE_DWELLER:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 175, __sl48), rn2(4)) : rn2(4)))
-                weapon = 73;
+                weapon = NHC.MACE;
             else if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 177, __sl48), rn2(2)) : rn2(2)))
-                weapon = 77;
-            if (helm == 96)
-                helm = 0;
+                weapon = NHC.CLUB;
+            if (helm == NHC.HELM_OF_BRILLIANCE)
+                helm = NHC.STRANGE_OBJECT;
             break;
-            case 334:
+            case NHC.PM_HEALER:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 183, __sl48), rn2(4)) : rn2(4)))
-                weapon = 79;
+                weapon = NHC.QUARTERSTAFF;
             else if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 185, __sl48), rn2(2)) : rn2(2)))
-                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 186, __sl48), rn2(2)) : rn2(2)) ? 261 : 39));
+                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 186, __sl48), rn2(2)) : rn2(2)) ? NHC.UNICORN_HORN : NHC.SCALPEL));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 187, __sl48), rn2(4)) : rn2(4)))
-                helm = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 188, __sl48), rn2(2)) : rn2(2)) ? 96 : 100));
+                helm = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 188, __sl48), rn2(2)) : rn2(2)) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 189, __sl48), rn2(2)) : rn2(2)))
-                shield = 0;
+                shield = NHC.STRANGE_OBJECT;
             break;
-            case 335:
+            case NHC.PM_KNIGHT:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 193, __sl48), rn2(4)) : rn2(4)))
-                weapon = 54;
+                weapon = NHC.LONG_SWORD;
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 195, __sl48), rn2(2)) : rn2(2)))
-                armor = i16(rnd_class(121, 128));
+                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
             break;
-            case 336:
-            weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 199, __sl48), rn2(3)) : rn2(3)) ? 25 : 0));
-            armor = 0;
-            cloak = 143;
+            case NHC.PM_MONK:
+            weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 199, __sl48), rn2(3)) : rn2(3)) ? NHC.SHURIKEN : NHC.STRANGE_OBJECT));
+            armor = NHC.STRANGE_OBJECT;
+            cloak = NHC.ROBE;
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 202, __sl48), rn2(2)) : rn2(2)))
-                shield = 0;
+                shield = NHC.STRANGE_OBJECT;
             break;
-            case 337:
+            case NHC.PM_CLERIC:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 206, __sl48), rn2(2)) : rn2(2)))
-                weapon = 73;
+                weapon = NHC.MACE;
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 208, __sl48), rn2(2)) : rn2(2)))
-                armor = i16(rnd_class(121, 128));
+                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 210, __sl48), rn2(4)) : rn2(4)))
-                cloak = 143;
+                cloak = NHC.ROBE;
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 212, __sl48), rn2(4)) : rn2(4)))
-                helm = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 213, __sl48), rn2(2)) : rn2(2)) ? 96 : 100));
+                helm = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 213, __sl48), rn2(2)) : rn2(2)) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 214, __sl48), rn2(2)) : rn2(2)))
-                shield = 0;
+                shield = NHC.STRANGE_OBJECT;
             break;
-            case 338:
+            case NHC.PM_RANGER:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 218, __sl48), rn2(2)) : rn2(2)))
-                weapon = 35;
+                weapon = NHC.ELVEN_DAGGER;
             break;
-            case 339:
+            case NHC.PM_ROGUE:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 222, __sl48), rn2(2)) : rn2(2)))
-                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 223, __sl48), rn2(2)) : rn2(2)) ? 46 : 36));
+                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 223, __sl48), rn2(2)) : rn2(2)) ? NHC.SHORT_SWORD : NHC.ORCISH_DAGGER));
             break;
-            case 340:
+            case NHC.PM_SAMURAI:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 226, __sl48), rn2(2)) : rn2(2)))
-                weapon = 56;
+                weapon = NHC.KATANA;
             break;
-            case 341:
+            case NHC.PM_TOURIST:
             break;
-            case 342:
+            case NHC.PM_VALKYRIE:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 233, __sl48), rn2(2)) : rn2(2)))
-                weapon = 76;
+                weapon = NHC.WAR_HAMMER;
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 235, __sl48), rn2(2)) : rn2(2)))
-                armor = i16(rnd_class(121, 128));
+                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
             break;
-            case 343:
+            case NHC.PM_WIZARD:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 239, __sl48), rn2(4)) : rn2(4)))
-                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 240, __sl48), rn2(2)) : rn2(2)) ? 79 : 38));
+                weapon = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 240, __sl48), rn2(2)) : rn2(2)) ? NHC.QUARTERSTAFF : NHC.ATHAME));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 241, __sl48), rn2(2)) : rn2(2))) {
-                armor = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 242, __sl48), rn2(2)) : rn2(2)) ? 107 : 103));
-                cloak = 148;
+                armor = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 242, __sl48), rn2(2)) : rn2(2)) ? NHC.BLACK_DRAGON_SCALE_MAIL : NHC.SILVER_DRAGON_SCALE_MAIL));
+                cloak = NHC.CLOAK_OF_MAGIC_RESISTANCE;
             }
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 246, __sl48), rn2(4)) : rn2(4)))
-                helm = 96;
-            shield = 0;
+                helm = NHC.HELM_OF_BRILLIANCE;
+            shield = NHC.STRANGE_OBJECT;
             break;
             default:
             impossible(__sl49);
             weapon = 0;
             break;
         }
-        if (weapon != 0) {
+        if (weapon != NHC.STRANGE_OBJECT) {
             otmp = mksobj(weapon, 1, 0);
             cptr.stI32(cptr.add(otmp, 112), cptr.stI32(cptr.add(otmp, 116), 0));
             cptr.st1(cptr.add(otmp, 48), schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
@@ -343,33 +344,33 @@ export function mk_mplayer(ptr, x, y, special) {
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
                 otmp = mk_artifact(otmp, -128, 99, 0);
             if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) & 1) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
-                cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8))));
+                cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
-            if (is_art(otmp, 8))
+            if (is_art(otmp, NHC.ART_MAGICBANE))
                 cptr.st1(cptr.add(otmp, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
             void mpickobj(mtmp, otmp);
         }
         if (special) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 279, __sl48), rn2(10)) : rn2(10)))
-                void mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 280, __sl48), rn2(3)) : rn2(3)) ? 470 : 471);
+                void mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 280, __sl48), rn2(3)) : rn2(3)) ? NHC.LUCKSTONE : NHC.LOADSTONE);
             mk_mplayer_armor(mtmp, armor);
             mk_mplayer_armor(mtmp, cloak);
             mk_mplayer_armor(mtmp, helm);
             mk_mplayer_armor(mtmp, shield);
-            if (weapon == 76)
-                mk_mplayer_armor(mtmp, 161);
+            if (weapon == NHC.WAR_HAMMER)
+                mk_mplayer_armor(mtmp, NHC.GAUNTLETS_OF_POWER);
             else if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 287, __sl48), rn2(8)) : rn2(8)))
-                mk_mplayer_armor(mtmp, i16(rnd_class(159, 162)));
+                mk_mplayer_armor(mtmp, i16(rnd_class(NHC.LEATHER_GLOVES, NHC.GAUNTLETS_OF_DEXTERITY)));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 290, __sl48), rn2(8)) : rn2(8)))
-                mk_mplayer_armor(mtmp, i16(rnd_class(163, 172)));
+                mk_mplayer_armor(mtmp, i16(rnd_class(NHC.LOW_BOOTS, NHC.LEVITATION_BOOTS)));
             m_dowear(mtmp, 1);
             quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(3)) : rn2(3)) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(16)) : rn2(16));
             while (quan--)
-                void mongets(mtmp, rnd_class(439, 460));
+                void mongets(mtmp, rnd_class(NHC.DILITHIUM_CRYSTAL, NHC.JADE));
             mkmonmoney(mtmp, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 300, __sl48), rn2(1000)) : rn2(1000))));
             quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 301, __sl48), rn2(10)) : rn2(10));
             while (quan--)
-                void mpickobj(mtmp, mkobj(0, 0));
+                void mpickobj(mtmp, mkobj(NHC.RANDOM_CLASS, 0));
         }
         quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 305, __sl48), rnd(3)) : rnd(3));
         while (quan--)
@@ -393,7 +394,7 @@ export function create_mplayers(num, special) {
     cptr.memcpy(fakemon, cptr.add(cg, 216), 320);
     while (num) {
         let tryct = 0;
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(13)) : rn2(13)) + 331) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, 96));
         do {
             x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2(76)) : rn2(76)) + 2) | 0);

@@ -6,6 +6,7 @@
 import { i16, u16, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as cjmp from '../cjmp.js';
+import * as NHC from './nhconst.js';
 import { luaE_checkcstack, luaE_extendCI, luaE_resetthread, luaE_shrinkCI } from './lstate.js';
 import { luaS_new, luaS_newlstr } from './lstring.js';
 import { luaM_free_, luaM_realloc_, luaM_saferealloc_ } from './lmem.js';
@@ -366,7 +367,7 @@ function tryfuncTM(L, func) {
         (void 0);
     }
     ;
-    tm = luaT_gettmbyobj(L, ((func)), 23);
+    tm = luaT_gettmbyobj(L, ((func)), NHC.TM_CALL);
     if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == 0)) != 0)), 0n)))
         luaG_callerror(L, ((func)));
     for (p = cptr.ldPtr(cptr.add(L, 16)); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {

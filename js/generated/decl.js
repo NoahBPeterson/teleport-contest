@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("cmd_before");
@@ -187,7 +188,7 @@ export const ydir = [0, -1, -1, -1, 0, 1, 1, 1, 0, 0];
 export const zdir = [0, 0, 0, 0, 0, 0, 0, 0, 1, -1];
 
 /** C ref: decl.c:81 — schar[8] */
-export const dirs_ord = [0, 2, 4, 6, 1, 3, 5, 7];
+export const dirs_ord = [NHC.DIR_W, NHC.DIR_N, NHC.DIR_E, NHC.DIR_S, NHC.DIR_NW, NHC.DIR_NE, NHC.DIR_SE, NHC.DIR_SW];
 
 /** C ref: decl.c:84 — signed char */
 export let has_strong_rngseed = cptr.box(0);
@@ -231,27 +232,27 @@ export const quitchars = cptr.bytes(" \r\n\x1b");
 
 /** C ref: decl.c:97 — int[21] */
 export const shield_static = cptr.alloc(21 * 4);
-cptr.stI32(cptr.add(shield_static, 0), 82);
-cptr.stI32(cptr.add(shield_static, 4), 83);
-cptr.stI32(cptr.add(shield_static, 8), 84);
-cptr.stI32(cptr.add(shield_static, 12), 83);
-cptr.stI32(cptr.add(shield_static, 16), 82);
-cptr.stI32(cptr.add(shield_static, 20), 83);
-cptr.stI32(cptr.add(shield_static, 24), 85);
-cptr.stI32(cptr.add(shield_static, 28), 82);
-cptr.stI32(cptr.add(shield_static, 32), 83);
-cptr.stI32(cptr.add(shield_static, 36), 84);
-cptr.stI32(cptr.add(shield_static, 40), 83);
-cptr.stI32(cptr.add(shield_static, 44), 82);
-cptr.stI32(cptr.add(shield_static, 48), 83);
-cptr.stI32(cptr.add(shield_static, 52), 85);
-cptr.stI32(cptr.add(shield_static, 56), 82);
-cptr.stI32(cptr.add(shield_static, 60), 83);
-cptr.stI32(cptr.add(shield_static, 64), 84);
-cptr.stI32(cptr.add(shield_static, 68), 83);
-cptr.stI32(cptr.add(shield_static, 72), 82);
-cptr.stI32(cptr.add(shield_static, 76), 83);
-cptr.stI32(cptr.add(shield_static, 80), 85);
+cptr.stI32(cptr.add(shield_static, 0), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 4), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 8), NHC.S_ss3);
+cptr.stI32(cptr.add(shield_static, 12), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 16), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 20), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 24), NHC.S_ss4);
+cptr.stI32(cptr.add(shield_static, 28), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 32), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 36), NHC.S_ss3);
+cptr.stI32(cptr.add(shield_static, 40), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 44), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 48), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 52), NHC.S_ss4);
+cptr.stI32(cptr.add(shield_static, 56), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 60), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 64), NHC.S_ss3);
+cptr.stI32(cptr.add(shield_static, 68), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 72), NHC.S_ss1);
+cptr.stI32(cptr.add(shield_static, 76), NHC.S_ss2);
+cptr.stI32(cptr.add(shield_static, 80), NHC.S_ss4);
 
 /** C ref: decl.c:102 — struct you */
 export let u = cptr.alloc(2864);
@@ -380,13 +381,13 @@ cptr.stPtr(cptr.add(urole_init_data, 176), __sl63);
 cptr.stPtr(cptr.add(urole_init_data, 184), __sl64);
 cptr.stPtr(cptr.add(urole_init_data, 192), __sl65);
 cptr.stPtr(cptr.add(urole_init_data, 200), __sl66);
-cptr.stI16(cptr.add(urole_init_data, 208), -1);
-cptr.stI16(cptr.add(urole_init_data, 210), -1);
-cptr.stI16(cptr.add(urole_init_data, 212), -1);
-cptr.stI16(cptr.add(urole_init_data, 214), -1);
-cptr.stI16(cptr.add(urole_init_data, 216), -1);
-cptr.stI16(cptr.add(urole_init_data, 218), -1);
-cptr.stI16(cptr.add(urole_init_data, 220), -1);
+cptr.stI16(cptr.add(urole_init_data, 208), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 210), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 212), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 214), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 216), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 218), NHC.NON_PM);
+cptr.stI16(cptr.add(urole_init_data, 220), NHC.NON_PM);
 cptr.st1(cptr.add(urole_init_data, 222), 0);
 cptr.st1(cptr.add(urole_init_data, 223), 0);
 cptr.stI16(cptr.add(urole_init_data, 224), 0);
@@ -421,7 +422,7 @@ cptr.stI32(cptr.add(urole_init_data, 280), 10);
 cptr.stI32(cptr.add(urole_init_data, 284), 0);
 cptr.stI32(cptr.add(urole_init_data, 288), 0);
 cptr.stI32(cptr.add(urole_init_data, 292), 4);
-cptr.stI32(cptr.add(urole_init_data, 296), 1);
+cptr.stI32(cptr.add(urole_init_data, 296), NHC.A_INT);
 cptr.stI32(cptr.add(urole_init_data, 300), 0);
 cptr.stI32(cptr.add(urole_init_data, 304), -3);
 
@@ -433,9 +434,9 @@ cptr.stPtr(cptr.add(urace_init_data, 16), __sl30);
 cptr.stPtr(cptr.add(urace_init_data, 24), __sl64);
 cptr.stPtr(cptr.add(urace_init_data, 32), null);
 cptr.stPtr(cptr.add(urace_init_data, 40), null);
-cptr.stI16(cptr.add(urace_init_data, 48), -1);
-cptr.stI16(cptr.add(urace_init_data, 50), -1);
-cptr.stI16(cptr.add(urace_init_data, 52), -1);
+cptr.stI16(cptr.add(urace_init_data, 48), NHC.NON_PM);
+cptr.stI16(cptr.add(urace_init_data, 50), NHC.NON_PM);
+cptr.stI16(cptr.add(urace_init_data, 52), NHC.NON_PM);
 cptr.stI16(cptr.add(urace_init_data, 54), 0);
 cptr.stI16(cptr.add(urace_init_data, 56), 0);
 cptr.stI16(cptr.add(urace_init_data, 58), 0);
@@ -482,7 +483,7 @@ cptr.stI32(cptr.add(g_init_a, 244), 0);
 cptr.stI32(cptr.add(g_init_a, 248), 0);
 cptr.st1(cptr.add(g_init_a, 252), 0);
 cptr.st1(cptr.add(g_init_a, 253), 0);
-cptr.stI32(cptr.add(g_init_a, 256), 0);
+cptr.stI32(cptr.add(g_init_a, 256), NHC.soundlib_nosound);
 cptr.stI32(cptr.add(g_init_a, 260), 0);
 cptr.stI32(cptr.add(g_init_a, 264), 0);
 cptr.st1(cptr.add(g_init_a, 268), 0);
@@ -491,7 +492,7 @@ cptr.st1(cptr.add(g_init_a, 272), 1);
 /** C ref: decl.c:206 — struct instance_globals_b */
 let g_init_b = cptr.alloc(4872);
 cptr.stPtr(cptr.add(g_init_b, 0), [
-    { fldname: null, fldfmt: null, time: 0n, chg: 0, percent_matters: 0, percent_value: 0, anytype: 18, a: { a_void: null }, rawval: { a_void: null }, val: null, valwidth: 0, idxmax: 0, fld: 0, hilite_rule: null, thresholds: null }
+    { fldname: null, fldfmt: null, time: 0n, chg: 0, percent_matters: 0, percent_value: 0, anytype: NHC.ANY_INVALID, a: { a_void: null }, rawval: { a_void: null }, val: null, valwidth: 0, idxmax: 0, fld: 0, hilite_rule: null, thresholds: null }
 ]);
 cptr.st1(cptr.add(g_init_b, 4752), 0);
 cptr.stI64(cptr.add(g_init_b, 4760), 0n);
@@ -569,9 +570,9 @@ cptr.stPtr(cptr.add(g_init_c, 480), null);
 cptr.stPtr(cptr.add(g_init_c, 488), null);
 cptr.st1(cptr.add(g_init_c, 496), 0);
 cptr.st1(cptr.add(g_init_c, 497), 0);
-cptr.stI32(cptr.add(g_init_c, 564), 0);
+cptr.stI32(cptr.add(g_init_c, 564), NHC.soundlib_nosound);
 cptr.stPtr(cptr.add(g_init_c, 568), null);
-cptr.stI16(cptr.add(g_init_c, 576), -1);
+cptr.stI16(cptr.add(g_init_c, 576), NHC.NON_PM);
 cptr.st1(cptr.add(g_init_c, 578), 0);
 cptr.st1(cptr.add(g_init_c, 579), 1);
 
@@ -723,7 +724,7 @@ cptr.stPtr(cptr.add(g_init_m, 16), null);
 cptr.st1(cptr.add(g_init_m, 24), 0);
 cptr.stI32(cptr.add(g_init_m, 152), 0);
 cptr.stI32(cptr.add(g_init_m, 156), 0);
-cptr.stI16(cptr.add(g_init_m, 160), 0);
+cptr.stI16(cptr.add(g_init_m, 160), NHC.STRANGE_OBJECT);
 cptr.st1(cptr.add(g_init_m, 162), 0);
 cptr.st1(cptr.add(g_init_m, 164), 0);
 cptr.stPtr(cptr.add(g_init_m, 168), null);
@@ -766,10 +767,10 @@ cptr.st1(cptr.add(g_init_n, 86), 0);
 cptr.st1(cptr.add(g_init_n, 87), 0);
 cptr.stI32(cptr.add(g_init_n, 152), 0);
 cptr.stI32(cptr.add(g_init_n, 156), 0);
-cptr.stI16(cptr.add(g_init_n, 160), 0);
-cptr.stI16(cptr.add(g_init_n, 162), 0);
-cptr.stI16(cptr.add(g_init_n, 164), 0);
-cptr.stI16(cptr.add(g_init_n, 166), 0);
+cptr.stI16(cptr.add(g_init_n, 160), NHC.STRANGE_OBJECT);
+cptr.stI16(cptr.add(g_init_n, 162), NHC.STRANGE_OBJECT);
+cptr.stI16(cptr.add(g_init_n, 164), NHC.STRANGE_OBJECT);
+cptr.stI16(cptr.add(g_init_n, 166), NHC.STRANGE_OBJECT);
 cptr.st1(cptr.add(g_init_n, 168), 1);
 
 /** C ref: decl.c:577 — struct instance_globals_o */
@@ -785,7 +786,7 @@ cptr.st1(cptr.add(g_init_o, 88), 0);
 cptr.st1(cptr.add(g_init_o, 284), 0);
 cptr.stI16(cptr.add(g_init_o, 480), 0);
 cptr.stI16(cptr.add(g_init_o, 484), 0);
-cptr.stI32(cptr.add(g_init_o, 520), 0);
+cptr.stI32(cptr.add(g_init_o, 520), NHC.phase_not_set);
 cptr.st1(cptr.add(g_init_o, 524), 0);
 cptr.st1(cptr.add(g_init_o, 525), 0);
 cptr.st1(cptr.add(g_init_o, 526), 0);
@@ -924,16 +925,16 @@ cptr.stPtr(cptr.add(g_init_u, 184), null);
 cptr.stPtr(cptr.add(g_init_u, 192), null);
 cptr.stPtr(cptr.add(g_init_u, 200), null);
 cptr.stPtr(cptr.add(g_init_u, 208), null);
-cptr.stI16(cptr.add(g_init_u, 216), -1);
-cptr.stI16(cptr.add(g_init_u, 218), -1);
-cptr.stI16(cptr.add(g_init_u, 220), -1);
-cptr.stI16(cptr.add(g_init_u, 222), -1);
-cptr.stI16(cptr.add(g_init_u, 224), -1);
-cptr.stI16(cptr.add(g_init_u, 226), -1);
-cptr.stI16(cptr.add(g_init_u, 228), -1);
+cptr.stI16(cptr.add(g_init_u, 216), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 218), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 220), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 222), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 224), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 226), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 228), NHC.NON_PM);
 cptr.st1(cptr.add(g_init_u, 230), 0);
 cptr.st1(cptr.add(g_init_u, 231), 0);
-cptr.stI16(cptr.add(g_init_u, 232), 0);
+cptr.stI16(cptr.add(g_init_u, 232), NHC.STRANGE_OBJECT);
 cptr.stI16(cptr.add(g_init_u, 234), 0);
 cptr.stI16(cptr.add(g_init_u, 236), 0);
 cptr.stI16(cptr.add(g_init_u, 248), 0);
@@ -954,9 +955,9 @@ cptr.stPtr(cptr.add(g_init_u, 336), null);
 cptr.stPtr(cptr.add(g_init_u, 344), null);
 cptr.stPtr(cptr.add(g_init_u, 352), null);
 cptr.stPtr(cptr.add(g_init_u, 360), null);
-cptr.stI16(cptr.add(g_init_u, 368), -1);
-cptr.stI16(cptr.add(g_init_u, 370), -1);
-cptr.stI16(cptr.add(g_init_u, 372), -1);
+cptr.stI16(cptr.add(g_init_u, 368), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 370), NHC.NON_PM);
+cptr.stI16(cptr.add(g_init_u, 372), NHC.NON_PM);
 cptr.stI16(cptr.add(g_init_u, 374), 0);
 cptr.stI16(cptr.add(g_init_u, 376), 0);
 cptr.stI16(cptr.add(g_init_u, 378), 0);
@@ -1016,7 +1017,7 @@ cptr.st1(cptr.add(g_init_w, 17), 0);
 cptr.st1(cptr.add(g_init_w, 23), 0);
 cptr.stI32(cptr.add(g_init_w, 152), 0);
 cptr.stPtr(cptr.add(g_init_w, 160), null);
-cptr.stI32(cptr.add(g_init_w, 168), 0);
+cptr.stI32(cptr.add(g_init_w, 168), NHC.wdmode_traditional);
 cptr.stI32(cptr.add(g_init_w, 172), 8);
 cptr.stI64(cptr.add(g_init_w, 176), 0n);
 cptr.st1(cptr.add(g_init_w, 184), 1);

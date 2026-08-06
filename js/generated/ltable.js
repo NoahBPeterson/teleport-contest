@@ -5,6 +5,7 @@
 
 import { u32div, u32mod, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { u } from './decl.js';
 import { luaS_eqlngstr, luaS_hashlongstr } from './lstring.js';
 import { luaG_runerror } from './ldebug.js';
@@ -490,7 +491,7 @@ function luaH_newkey(L, t, key, value) {
     else if (((cptr.ld1u(cptr.add(((key)), 8))) == 19)) {
         let f = (cptr.ldF64(((key))));
         let k = cptr.box(0n);
-        if (luaV_flttointeger(f, k, 0)) {
+        if (luaV_flttointeger(f, k, NHC.F2Ieq)) {
             {
                 let io = (aux);
                 cptr.stI64(((io)), (k.v));
@@ -624,7 +625,7 @@ export function luaH_get(t, key) {
         case 19:
         {
             let k = cptr.box(0n);
-            if (luaV_flttointeger((cptr.ldF64(((key)))), k, 0))
+            if (luaV_flttointeger((cptr.ldF64(((key)))), k, NHC.F2Ieq))
                 return luaH_getint(t, k.v);
         }
         default:

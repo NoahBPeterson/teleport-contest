@@ -5,6 +5,7 @@
 
 import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
 import { eos, nh_deterministic_qsort, nh_snprintf, sgn, strsubst, visctrl } from './hacklib.js';
@@ -143,24 +144,24 @@ export const HiliteGoodposSymbol = 1;
 export const HiliteBackground = 2;
 
 /** C ref: getpos.c:37 — enum getposHiliteState */
-let getpos_hilite_state = 0;
+let getpos_hilite_state = NHC.HiliteNormalMap;
 
 /** C ref: getpos.c:38 — enum getposHiliteState */
-let defaultHiliteState = 0;
+let defaultHiliteState = NHC.HiliteNormalMap;
 
 /** C ref: getpos.c:41 — @param {CPtr} gp_hilitef @param {CPtr} gp_getvalidf */
 export function getpos_sethilite(gp_hilitef, gp_getvalidf) {
     let old_getvalid = getpos_getvalid;
     let old_map_frame_color = cptr.ldI32(cptr.add(gw, 172));
     let sel = selection_new();
-    defaultHiliteState = cptr.ld1s(cptr.add(iflags, 72)) ? 2 : 0;
+    defaultHiliteState = cptr.ld1s(cptr.add(iflags, 72)) ? NHC.HiliteBackground : NHC.HiliteNormalMap;
     if (gp_getvalidf !== old_getvalid)
         getpos_hilite_state = defaultHiliteState;
     getpos_getvalids_selection(sel, getpos_getvalid);
     getpos_hilitefunc = gp_hilitef;
     getpos_getvalid = gp_getvalidf;
     getpos_getvalids_selection(sel, getpos_getvalid);
-    cptr.stI32(cptr.add(gw, 172), ((getpos_hilite_state == 2) ? 12 : 8) >>> 0);
+    cptr.stI32(cptr.add(gw, 172), ((getpos_hilite_state == NHC.HiliteBackground) ? 12 : 8) >>> 0);
     if (getpos_getvalid !== old_getvalid || cptr.ldI32(cptr.add(gw, 172)) != old_map_frame_color ? 1 : 0)
         selection_force_newsyms(sel);
     selection_free(sel, 1);
@@ -168,12 +169,12 @@ export function getpos_sethilite(gp_hilitef, gp_getvalidf) {
 
 /** C ref: getpos.c:72 */
 function getpos_toggle_hilite_state() {
-    if (getpos_hilite_state == 1) {
+    if (getpos_hilite_state == NHC.HiliteGoodposSymbol) {
         (getpos_hilitefunc)(0);
     }
     getpos_hilite_state = u32mod(((getpos_hilite_state + 1) >>> 0), (cptr.ld1s(cptr.add(iflags, 72)) ? 3 : 2) >>> 0);
     getpos_sethilite(getpos_hilitefunc, getpos_getvalid);
-    if (getpos_hilite_state == 1) {
+    if (getpos_hilite_state == NHC.HiliteGoodposSymbol) {
         (getpos_hilitefunc)(1);
     }
 }
@@ -236,7 +237,7 @@ function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
     let fbuf = new Uint8Array(128);
     let move_cursor_to = __sl24;
     let filtertxt = cptr.ldPtr(cptr.add(gloc_filtertxt, cptr.ldI32(cptr.add(iflags, 32)), 8));
-    if (gloc == 3) {
+    if (gloc == NHC.GLOC_EXPLORE) {
         move_cursor_to = __sl25;
         if (cptr.ld1s(cptr.add(iflags, 75)))
             filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __sl26, __sl27);
@@ -265,10 +266,10 @@ function getpos_help(force, goal) {
         void cptr.sprintf(cptr.decay(sbuf), __sl32, visctrl(cmd_from_func(do_run)), visctrl(cmd_from_func(do_rush)));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl33);
-        void cptr.sprintf(cptr.decay(sbuf), __sl34, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 6, 1))));
+        void cptr.sprintf(cptr.decay(sbuf), __sl34, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_SELF, 1))));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 8) >>> 0) != 0 ? 1 : 0) {
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 13, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 14, 1))), 0);
+            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MON_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MON_PREV, 1))), NHC.GLOC_MONS);
         }
         if (goal && !strcmp(goal, __sl35) ? 1 : 0) { __pc = 3; continue; }
         __pc = 2; continue;
@@ -280,19 +281,19 @@ function getpos_help(force, goal) {
         }
         case 2: {
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 4) >>> 0) != 0 ? 1 : 0) {
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 15, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 16, 1))), 1);
+            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_OBJ_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_OBJ_PREV, 1))), NHC.GLOC_OBJS);
         }
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 1) >>> 0) != 0 ? 1 : 0) {
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 17, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 18, 1))), 2);
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 19, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 20, 1))), 3);
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 21, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 22, 1))), 4);
+            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_DOOR_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_DOOR_PREV, 1))), NHC.GLOC_DOOR);
+            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_UNEX_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_UNEX_PREV, 1))), NHC.GLOC_EXPLORE);
+            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_INTERESTING_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_INTERESTING_PREV, 1))), NHC.GLOC_INTERESTING);
         }
-        void cptr.sprintf(cptr.decay(sbuf), __sl36, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 28, 1))), cptr.ldPtr(cptr.add(__static_getpos_help_fastmovemode, !cptr.ld1s(cptr.add(iflags, 73)), 8)));
+        void cptr.sprintf(cptr.decay(sbuf), __sl36, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MOVESKIP, 1))), cptr.ldPtr(cptr.add(__static_getpos_help_fastmovemode, !cptr.ld1s(cptr.add(iflags, 73)), 8)));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 32) >>> 0) == 0 ? 1 : 0) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl37, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 26, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl37, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MENU, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 27, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_LIMITVIEW, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
         if (!cptr.ldI32(cptr.add(iflags, 68))) { __pc = 5; continue; }
@@ -301,17 +302,17 @@ function getpos_help(force, goal) {
         case 5: {
         kbuf = new Uint8Array(256);
         if (getpos_getvalid) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 23, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 24, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_VALID_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_VALID_PREV, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
         if (getpos_hilitefunc) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 11, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_SHOWVALID, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
-        void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 12, 1))));
+        void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_AUTODESC, 1))));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         if (cptr.ld1s(cptr.add(iflags, 178))) {
-            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32(cptr.add(iflags, 100)) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 12, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32(cptr.add(iflags, 100)) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_AUTODESC, 1))));
         }
         __pc = 1;
         continue;
@@ -319,20 +320,20 @@ function getpos_help(force, goal) {
         case 1 /* skip_non_mons: */: {
         doing_what_is = schar((cptr.eq(goal, cptr.decay(what_is_a_location))));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(kbuf), __sl44, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 7, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 9, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 10, 1))));
+            void cptr.sprintf(cptr.decay(kbuf), __sl44, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_Q, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_O, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_V, 1))));
         } else {
-            void cptr.sprintf(cptr.decay(kbuf), __sl45, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 7, 1))));
+            void cptr.sprintf(cptr.decay(kbuf), __sl45, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK, 1))));
         }
         nh_snprintf(__sl46, 280, cptr.decay(sbuf), 256n, __sl47, cptr.decay(kbuf));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl48, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 10, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl48, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_V, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl49, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 7, 1))), (cptr.ld1s(cptr.add(flags, 16)) && !force ? 1 : 0) ? __sl50 : __sl21);
+            void cptr.sprintf(cptr.decay(sbuf), __sl49, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK, 1))), (cptr.ld1s(cptr.add(flags, 16)) && !force ? 1 : 0) ? __sl50 : __sl21);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl51, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 8, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl51, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_Q, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl52, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 9, 1))));
+            void cptr.sprintf(cptr.decay(sbuf), __sl52, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK_O, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         }
         __pc = 4;
@@ -374,18 +375,18 @@ function cmp_coord_distu(a, b) {
 /** C ref: getpos.c:341 — @param {CInt} glyph @returns {CInt} */
 function gloc_filter_classify_glyph(glyph) {
     let c;
-    if (!((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0))
+    if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0))
         return 0;
     c = glyph_to_cmap(glyph);
-    if (((c) >= 19 && (c) <= 20 ? 1 : 0) || ((c) >= 25 && (c) <= 37 ? 1 : 0) ? 1 : 0)
+    if (((c) >= NHC.S_room && (c) <= NHC.S_darkroom ? 1 : 0) || ((c) >= NHC.S_upstair && (c) <= NHC.S_fountain ? 1 : 0) ? 1 : 0)
         return 1;
-    else if (((c) >= 0 && (c) <= 11 ? 1 : 0) || c == 18 ? 1 : 0)
+    else if (((c) >= NHC.S_stone && (c) <= NHC.S_trwall ? 1 : 0) || c == NHC.S_tree ? 1 : 0)
         return 2;
-    else if (((c) >= 22 && (c) <= 23 ? 1 : 0))
+    else if (((c) >= NHC.S_corr && (c) <= NHC.S_litcorr ? 1 : 0))
         return 3;
-    else if (((c) == 38 || (c) == 48 ? 1 : 0))
+    else if (((c) == NHC.S_pool || (c) == NHC.S_water ? 1 : 0))
         return 4;
-    else if (((c) == 40 || (c) == 41 ? 1 : 0))
+    else if (((c) == NHC.S_lava || (c) == NHC.S_lavawall ? 1 : 0))
         return 5;
     return 0;
 }
@@ -411,11 +412,11 @@ function gloc_filter_floodfill(x, y) {
 
 /** C ref: getpos.c:391 */
 function gloc_filter_init() {
-    if (cptr.ldI32(cptr.add(iflags, 32)) == 2) {
+    if (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_AREA) {
         if (!cptr.ldPtr(cptr.add(gg, 94168))) {
             cptr.stPtr(cptr.add(gg, 94168), selection_new());
         }
-        if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 23)) {
+        if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == NHC.DOOR)) {
             if ((cptr.ldI32(cptr.add(u, 4)) || cptr.ldI32(cptr.add(u, 8)) ? 1 : 0) && isok(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0))) ? 1 : 0) {
                 gloc_filter_floodfill(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
             } else {
@@ -438,7 +439,7 @@ function gloc_filter_done() {
 function known_vibrating_square_at(x, y) {
     if (invocation_pos(x, y)) {
         let ttmp = t_at(x, y);
-        return schar(((ttmp && ((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) == 23 ? 1 : 0) && (cptr.ldI32(cptr.add(ttmp, 24)) & 1) | 0 ? 1 : 0));
+        return schar(((ttmp && ((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) == NHC.VIBRATING_SQUARE ? 1 : 0) && (cptr.ldI32(cptr.add(ttmp, 24)) & 1) | 0 ? 1 : 0));
     }
     return 0;
 }
@@ -447,29 +448,29 @@ function known_vibrating_square_at(x, y) {
 export function gather_locs_interesting(x, y, gloc) {
     let glyph;
     let sym;
-    if (cptr.ldI32(cptr.add(iflags, 32)) == 1 && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) ? 1 : 0)
+    if (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_VIEW && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) ? 1 : 0)
         return 0;
-    if (((((cptr.ldI32(cptr.add(iflags, 32)) == 2 && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0)
+    if (((((cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0)
         return 0;
     glyph = glyph_at(x, y);
-    sym = ((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) ? glyph_to_cmap(glyph) : -1;
+    sym = ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) ? glyph_to_cmap(glyph) : -1;
     switch (gloc) {
         default:
-        case 0:
-        return schar(((((((((glyph) >= 0 && (glyph) < 383 ? 1 : 0) || ((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) || ((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) || ((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) || ((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0) && glyph != 330 ? 1 : 0) && glyph != 713 ? 1 : 0));
-        case 1:
-        return schar(((((((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0) && glyph != 3923 ? 1 : 0) && glyph != 3922 ? 1 : 0));
-        case 2:
-        return schar((((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) && ((((sym) >= 13 && (sym) <= 16 ? 1 : 0) || ((sym) >= 42 && (sym) <= 45 ? 1 : 0) ? 1 : 0) || sym == 12 ? 1 : 0) ? 1 : 0));
-        case 3:
-        return schar((((((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) && !((glyph_to_cmap(glyph)) == 9623) ? 1 : 0) && ((((((sym) >= 13 && (sym) <= 16 ? 1 : 0) || ((sym) >= 42 && (sym) <= 45 ? 1 : 0) ? 1 : 0) || sym == 12 ? 1 : 0) || ((sym) >= 19 && (sym) <= 20 ? 1 : 0) ? 1 : 0) || ((sym) >= 22 && (sym) <= 23 ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ((x + 1) | 0), 756), (y), 36))) == 9622) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ((x + 1) | 0), 756), (y), 36), 5)) ? 1 : 0) || ((isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ((x - 1) | 0), 756), (y), 36))) == 9622) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ((x - 1) | 0), 756), (y), 36), 5)) ? 1 : 0) ? 1 : 0) || ((isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y + 1) | 0), 36))) == 9622) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y + 1) | 0), 36), 5)) ? 1 : 0) ? 1 : 0) || ((isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y - 1) | 0), 36))) == 9622) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y - 1) | 0), 36), 5)) ? 1 : 0) ? 1 : 0) ? 1 : 0));
-        case 5:
+        case NHC.GLOC_MONS:
+        return schar(((((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < 383 ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < 1149 ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < 3065 ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < 1916 ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0) && glyph != 330 ? 1 : 0) && glyph != 713 ? 1 : 0));
+        case NHC.GLOC_OBJS:
+        return schar(((((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < 3465 ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0) && glyph != 3923 ? 1 : 0) && glyph != 3922 ? 1 : 0));
+        case NHC.GLOC_DOOR:
+        return schar((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) && ((((sym) >= NHC.S_vodoor && (sym) <= NHC.S_hcdoor ? 1 : 0) || ((sym) >= NHC.S_vodbridge && (sym) <= NHC.S_hcdbridge ? 1 : 0) ? 1 : 0) || sym == NHC.S_ndoor ? 1 : 0) ? 1 : 0));
+        case NHC.GLOC_EXPLORE:
+        return schar((((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) ? 1 : 0) && ((((((sym) >= NHC.S_vodoor && (sym) <= NHC.S_hcdoor ? 1 : 0) || ((sym) >= NHC.S_vodbridge && (sym) <= NHC.S_hcdbridge ? 1 : 0) ? 1 : 0) || sym == NHC.S_ndoor ? 1 : 0) || ((sym) >= NHC.S_room && (sym) <= NHC.S_darkroom ? 1 : 0) ? 1 : 0) || ((sym) >= NHC.S_corr && (sym) <= NHC.S_litcorr ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ((x + 1) | 0), 756), (y), 36))) == NHC.GLYPH_UNEXPLORED_OFF) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ((x + 1) | 0), 756), (y), 36), 5)) ? 1 : 0) || ((isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), ((x - 1) | 0), 756), (y), 36))) == NHC.GLYPH_UNEXPLORED_OFF) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ((x - 1) | 0), 756), (y), 36), 5)) ? 1 : 0) ? 1 : 0) || ((isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y + 1) | 0), 36))) == NHC.GLYPH_UNEXPLORED_OFF) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y + 1) | 0), 36), 5)) ? 1 : 0) ? 1 : 0) || ((isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y - 1) | 0), 36))) == NHC.GLYPH_UNEXPLORED_OFF) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x), 756), ((y - 1) | 0), 36), 5)) ? 1 : 0) ? 1 : 0) ? 1 : 0));
+        case NHC.GLOC_VALID:
         if (getpos_getvalid)
             return (getpos_getvalid)(x, y);
         // @FallThrough
         ;
-        case 4:
-        return schar(((gather_locs_interesting(x, y, 2) || !(((((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) && ((((((((((((sym) >= 0 && (sym) <= 11 ? 1 : 0) || sym == 18 ? 1 : 0) || sym == 17 ? 1 : 0) || sym == 39 ? 1 : 0) || sym == 46 ? 1 : 0) || sym == 47 ? 1 : 0) || ((sym) == 40 || (sym) == 41 ? 1 : 0) ? 1 : 0) || ((sym) == 38 || (sym) == 48 ? 1 : 0) ? 1 : 0) || sym == 12 ? 1 : 0) || ((sym) >= 19 && (sym) <= 20 ? 1 : 0) ? 1 : 0) || ((sym) >= 22 && (sym) <= 23 ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 9623) ? 1 : 0) || ((glyph) == 9622) ? 1 : 0) ? 1 : 0) || known_vibrating_square_at(x, y) ? 1 : 0));
+        case NHC.GLOC_INTERESTING:
+        return schar(((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !(((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) && ((((((((((((sym) >= NHC.S_stone && (sym) <= NHC.S_trwall ? 1 : 0) || sym == NHC.S_tree ? 1 : 0) || sym == NHC.S_bars ? 1 : 0) || sym == NHC.S_ice ? 1 : 0) || sym == NHC.S_air ? 1 : 0) || sym == NHC.S_cloud ? 1 : 0) || ((sym) == NHC.S_lava || (sym) == NHC.S_lavawall ? 1 : 0) ? 1 : 0) || ((sym) == NHC.S_pool || (sym) == NHC.S_water ? 1 : 0) ? 1 : 0) || sym == NHC.S_ndoor ? 1 : 0) || ((sym) >= NHC.S_room && (sym) <= NHC.S_darkroom ? 1 : 0) ? 1 : 0) || ((sym) >= NHC.S_corr && (sym) <= NHC.S_litcorr ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_NOTHING_OFF) ? 1 : 0) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF) ? 1 : 0) ? 1 : 0) || known_vibrating_square_at(x, y) ? 1 : 0));
     }
     return 0;
 }
@@ -595,7 +596,7 @@ export function getpos_menu(ccp, gloc) {
     gather_locs(garr, gcount, gloc);
     if (gcount.v < 2) {
         cptr.free(garr.v);
-        You(__sl79, (cptr.ldI32(cptr.add(iflags, 32)) == 1) ? __sl80 : __sl81, cptr.ldPtr(cptr.add(cptr.decay(gloc_descr[gloc]), 0, 8)));
+        You(__sl79, (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_VIEW) ? __sl80 : __sl81, cptr.ldPtr(cptr.add(cptr.decay(gloc_descr[gloc]), 0, 8)));
         return 0;
     }
     tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
@@ -650,38 +651,38 @@ function truncate_to_map(cx, cy, dx, dy) {
 
 /** C ref: getpos.c:753 */
 function getpos_refresh() {
-    if (getpos_hilitefunc && getpos_hilite_state == 1 ? 1 : 0) {
+    if (getpos_hilitefunc && getpos_hilite_state == NHC.HiliteGoodposSymbol ? 1 : 0) {
         (getpos_hilitefunc)(0);
         getpos_hilite_state = defaultHiliteState;
     }
-    docrt_flags(1);
-    if (getpos_hilitefunc && getpos_hilite_state == 2 ? 1 : 0) {
+    docrt_flags(NHC.docrtRefresh);
+    if (getpos_hilitefunc && getpos_hilite_state == NHC.HiliteBackground ? 1 : 0) {
         getpos_sethilite(getpos_hilitefunc, getpos_getvalid);
     }
 }
 
 const __static_getpos_pick_chars_def = cptr.alloc(4 * 8);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 0), 7);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 4), 0);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 8), 8);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 12), 1);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 16), 9);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 20), 2);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 24), 10);
-cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 28), 3); /** C ref: getpos.c:775 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/getpos.c:773:12)[4] (function-static) */
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 0), NHC.NHKF_GETPOS_PICK);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 4), NHC.LOOK_TRADITIONAL);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 8), NHC.NHKF_GETPOS_PICK_Q);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 12), NHC.LOOK_QUICK);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 16), NHC.NHKF_GETPOS_PICK_O);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 20), NHC.LOOK_ONCE);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 24), NHC.NHKF_GETPOS_PICK_V);
+cptr.stI32(cptr.add(__static_getpos_pick_chars_def, 28), NHC.LOOK_VERBOSE); /** C ref: getpos.c:775 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/getpos.c:773:12)[4] (function-static) */
 const __static_getpos_mMoOdDxX_def = cptr.alloc(12 * 4);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 0), 13);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 4), 14);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 8), 15);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 12), 16);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 16), 17);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 20), 18);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 24), 19);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 28), 20);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 32), 21);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 36), 22);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 40), 23);
-cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 44), 24); /** C ref: getpos.c:781 — int[12] (function-static) */
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 0), NHC.NHKF_GETPOS_MON_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 4), NHC.NHKF_GETPOS_MON_PREV);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 8), NHC.NHKF_GETPOS_OBJ_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 12), NHC.NHKF_GETPOS_OBJ_PREV);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 16), NHC.NHKF_GETPOS_DOOR_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 20), NHC.NHKF_GETPOS_DOOR_PREV);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 24), NHC.NHKF_GETPOS_UNEX_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 28), NHC.NHKF_GETPOS_UNEX_PREV);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 32), NHC.NHKF_GETPOS_INTERESTING_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 36), NHC.NHKF_GETPOS_INTERESTING_PREV);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 40), NHC.NHKF_GETPOS_VALID_NEXT);
+cptr.stI32(cptr.add(__static_getpos_mMoOdDxX_def, 44), NHC.NHKF_GETPOS_VALID_PREV); /** C ref: getpos.c:781 — int[12] (function-static) */
 const __static_getpos_view_filters = cptr.alloc(3 * 8);
 cptr.stPtr(cptr.add(__static_getpos_view_filters, 0), __sl106);
 cptr.stPtr(cptr.add(__static_getpos_view_filters, 8), __sl107);
@@ -713,11 +714,11 @@ export function getpos(ccp, force, goal) {
             if ((cmdq = cmdq_pop()) !== null) {
                 cptr.memcpy(cq, cmdq, 32);
                 cptr.free(cmdq);
-                if (cptr.ldI32(cq) == 2 && !cptr.ld1s(cptr.add(cq, 7)) ? 1 : 0) {
+                if (cptr.ldI32(cq) == NHC.CMDQ_DIR && !cptr.ld1s(cptr.add(cq, 7)) ? 1 : 0) {
                     cptr.stI16(ccp, i16(((cptr.ldI16(u) + cptr.ld1s(cptr.add(cq, 5))) | 0)));
                     cptr.stI16(cptr.add(ccp, 2), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ld1s(cptr.add(cq, 6))) | 0)));
                 } else {
-                    cmdq_clear(0);
+                    cmdq_clear(NHC.CQ_CANNED);
                     result = -1;
                 }
                 return result;
@@ -729,12 +730,12 @@ export function getpos(ccp, force, goal) {
         for (i = 0; i < 12; i++)
             cptr.st1(cptr.add(cptr.decay(mMoOdDxX), i, 1), cptr.ld1s(cptr.add(cptr.add(gc, 264), cptr.ldI32(cptr.add(__static_getpos_mMoOdDxX_def, i, 4)), 1)));
         cptr.st1(cptr.add(cptr.decay(mMoOdDxX), 12, 1), 0);
-        if (handle_tip(3))
+        if (handle_tip(NHC.TIP_GETPOS))
             show_goal_msg = 1;
         if (!goal)
             goal = __sl86;
         if (cptr.ld1s(cptr.add(flags, 48))) {
-            pline(__sl87, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 25, 1))));
+            pline(__sl87, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_HELP, 1))));
             msg_given = 1;
         }
         cx.v = cptr.stI16(cptr.add(gg, 94164), cptr.ldI16(ccp));
@@ -762,7 +763,7 @@ export function getpos(ccp, force, goal) {
         __pc = 11; continue;
         }
         case 10: {
-        if (cptr.ldI32(cmdq) == 0) { __pc = 13; continue; }
+        if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) { __pc = 13; continue; }
         __pc = 14; continue;
         }
         case 13: {
@@ -771,7 +772,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 14: {
-        cmdq_clear(0);
+        cmdq_clear(NHC.CQ_CANNED);
         result = -1;
         { __pc = 4; continue; }
         __pc = 12;
@@ -785,14 +786,14 @@ export function getpos(ccp, force, goal) {
         case 11: {
         c = readchar_poskey(tx, ty, sidx);
         if (cptr.ld1s(cptr.add(iflags, 11)) && !cptr.ldI32(gi) ? 1 : 0)
-            cmdq_add_key(1, schar(c));
+            cmdq_add_key(NHC.CQ_REPEAT, schar(c));
         __pc = 9;
         continue;
         }
         case 9: {
         if (cptr.ld1s(cptr.add(iflags, 126)))
             msg_given = 0;
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1))) { __pc = 16; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_ESC, 1))) { __pc = 16; continue; }
         __pc = 15; continue;
         }
         case 16: {
@@ -838,7 +839,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 23: {
-        if (movecmd(schar(c), 0)) { __pc = 25; continue; }
+        if (movecmd(schar(c), NHC.MV_WALK)) { __pc = 25; continue; }
         __pc = 26; continue;
         }
         case 25: {
@@ -859,7 +860,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 26: {
-        if (movecmd(schar(c), 2) || movecmd(schar(c), 1) ? 1 : 0) { __pc = 30; continue; }
+        if (movecmd(schar(c), NHC.MV_RUSH) || movecmd(schar(c), NHC.MV_RUN) ? 1 : 0) { __pc = 30; continue; }
         __pc = 29; continue;
         }
         case 30: {
@@ -893,11 +894,11 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 21: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 25, 1)) || redraw_cmd(schar(c)) ? 1 : 0) { __pc = 32; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_HELP, 1)) || redraw_cmd(schar(c)) ? 1 : 0) { __pc = 32; continue; }
         __pc = 33; continue;
         }
         case 32: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 25, 1)))
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_HELP, 1)))
             getpos_help(force, goal);
         getpos_refresh();
         (cptr.ldPtr(cptr.add(windowprocs, 136)))(WIN_MAP.v, cx.v, cy.v);
@@ -906,7 +907,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 33: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 11, 1))) { __pc = 35; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_SHOWVALID, 1))) { __pc = 35; continue; }
         __pc = 36; continue;
         }
         case 35: {
@@ -920,7 +921,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 36: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 12, 1))) { __pc = 38; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_AUTODESC, 1))) { __pc = 38; continue; }
         __pc = 39; continue;
         }
         case 38: {
@@ -934,12 +935,12 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 39: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 27, 1))) { __pc = 41; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_LIMITVIEW, 1))) { __pc = 41; continue; }
         __pc = 42; continue;
         }
         case 41: {
-        cptr.stI32(cptr.add(iflags, 32), ((cptr.ldI32(cptr.add(iflags, 32)) + 1) | 0) % 3);
-        for (i = 0; i < 6; i++) {
+        cptr.stI32(cptr.add(iflags, 32), ((cptr.ldI32(cptr.add(iflags, 32)) + 1) | 0) % NHC.NUM_GFILTER);
+        for (i = 0; i < NHC.NUM_GLOCS; i++) {
             if (cptr.ldPtr(cptr.add(garr, i, 8))) {
                 cptr.free(cptr.ldPtr(cptr.add(garr, i, 8)));
                 cptr.stPtr(cptr.add(garr, i, 8), null);
@@ -953,7 +954,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 42: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 26, 1))) { __pc = 44; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MENU, 1))) { __pc = 44; continue; }
         __pc = 45; continue;
         }
         case 44: {
@@ -965,11 +966,11 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 45: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 6, 1))) { __pc = 47; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_SELF, 1))) { __pc = 47; continue; }
         __pc = 48; continue;
         }
         case 47: {
-        for (i = 0; i < 6; i++)
+        for (i = 0; i < NHC.NUM_GLOCS; i++)
             cptr.stI32(cptr.add(gidx, i, 4), 0);
         cx.v = cptr.ldI16(u);
         cy.v = cptr.ldI16(cptr.add(u, 2));
@@ -978,7 +979,7 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 48: {
-        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), 28, 1))) { __pc = 50; continue; }
+        if (c == cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MOVESKIP, 1))) { __pc = 50; continue; }
         __pc = 51; continue;
         }
         case 50: {
@@ -1034,10 +1035,10 @@ export function getpos(ccp, force, goal) {
         matching = new Uint8Array(105);
         k = 0;
         void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
-        for (sidx.v = 0; sidx.v < 105; sidx.v++) {
-            if ((((((sidx.v) >= 0 && (sidx.v) <= 11 ? 1 : 0) || ((sidx.v) >= 19 && (sidx.v) <= 20 ? 1 : 0) ? 1 : 0) || ((sidx.v) >= 22 && (sidx.v) <= 23 ? 1 : 0) ? 1 : 0) || ((sidx.v) >= 13 && (sidx.v) <= 16 ? 1 : 0) ? 1 : 0) || sidx.v == 12 ? 1 : 0)
+        for (sidx.v = 0; sidx.v < NHC.MAXPCHARS; sidx.v++) {
+            if ((((((sidx.v) >= NHC.S_stone && (sidx.v) <= NHC.S_trwall ? 1 : 0) || ((sidx.v) >= NHC.S_room && (sidx.v) <= NHC.S_darkroom ? 1 : 0) ? 1 : 0) || ((sidx.v) >= NHC.S_corr && (sidx.v) <= NHC.S_litcorr ? 1 : 0) ? 1 : 0) || ((sidx.v) >= NHC.S_vodoor && (sidx.v) <= NHC.S_hcdoor ? 1 : 0) ? 1 : 0) || sidx.v == NHC.S_ndoor ? 1 : 0)
                 continue;
-            if (((c == cptr.ld1u(cptr.add(defsyms, sidx.v, 24)) || c == cptr.ld1u(cptr.add(cptr.add(gs, 680), sidx.v, 1)) ? 1 : 0) || (c == 94 && ((sidx.v) >= 49 && (sidx.v) < 74 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (c == cptr.ld1u(cptr.add(cptr.add(gs, 680), 21, 1)) && ((sidx.v) == 21 || (sidx.v) == 24 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if (((c == cptr.ld1u(cptr.add(defsyms, sidx.v, 24)) || c == cptr.ld1u(cptr.add(cptr.add(gs, 680), sidx.v, 1)) ? 1 : 0) || (c == 94 && ((sidx.v) >= NHC.S_arrow_trap && (sidx.v) < 74 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (c == cptr.ld1u(cptr.add(cptr.add(gs, 680), NHC.S_engroom, 1)) && ((sidx.v) == NHC.S_engroom || (sidx.v) == NHC.S_engrcorr ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 cptr.st1(cptr.add(cptr.decay(matching), sidx.v, 1), schar((++k)));
         }
         if (k) { __pc = 60; continue; }
@@ -1073,7 +1074,7 @@ export function getpos(ccp, force, goal) {
         }
         case 72: {
         k = glyph_at(tx.v, ty.v);
-        if (((k) >= 3929 && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 75; continue; }
+        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 75; continue; }
         __pc = 74; continue;
         }
         case 75: {
@@ -1087,7 +1088,7 @@ export function getpos(ccp, force, goal) {
         }
         case 77: {
         k = cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), tx.v, 756), ty.v, 36));
-        if (((k) >= 3929 && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 79; continue; }
+        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 79; continue; }
         __pc = 78; continue;
         }
         case 79: {
@@ -1114,7 +1115,7 @@ export function getpos(ccp, force, goal) {
         }
         case 83: {
         k = back_to_glyph(tx.v, ty.v);
-        if (((k) >= 3929 && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 85; continue; }
+        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < 4093 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.decay(matching), glyph_to_cmap(k), 1)) ? 1 : 0) { __pc = 85; continue; }
         __pc = 84; continue;
         }
         case 85: {
@@ -1176,7 +1177,7 @@ export function getpos(ccp, force, goal) {
         if (!force)
             void cptr.strcpy(cptr.decay(note), __sl102);
         else
-            void cptr.sprintf(cptr.decay(note), __sl103, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 7, 1))));
+            void cptr.sprintf(cptr.decay(note), __sl103, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_PICK, 1))));
         pline(__sl104, visctrl(schar(c)), cptr.decay(note));
         msg_given = 1;
         __pc = 59;
@@ -1260,7 +1261,7 @@ export function getpos(ccp, force, goal) {
         cptr.stI16(ccp, cx.v);
         cptr.stI16(cptr.add(ccp, 2), cy.v);
         cptr.stI16(cptr.add(gg, 94164), cptr.stI16(cptr.add(gg, 94166), 0));
-        for (i = 0; i < 6; i++)
+        for (i = 0; i < NHC.NUM_GLOCS; i++)
             if (cptr.ldPtr(cptr.add(garr, i, 8)))
                 cptr.free(cptr.ldPtr(cptr.add(garr, i, 8)));
         getpos_sethilite(null, null);

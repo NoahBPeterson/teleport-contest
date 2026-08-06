@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { getioctls, setioctls } from './ioctl.js';
 import { windowprocs } from './windows.js';
 import { term_end_screen, term_start_screen } from './termcap.js';
@@ -108,7 +109,7 @@ export function gettty() {
 
 /** C ref: unixtty.c:247 — @param {CPtr} s */
 export function settty(s) {
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == 1))
+    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty))
         term_end_screen();
     if (s)
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(s);
@@ -157,13 +158,13 @@ export function setftty() {
     }
     if (change)
         setctty();
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == 1))
+    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty))
         term_start_screen();
 }
 
 /** C ref: unixtty.c:338 */
 export function intron() {
-    if (((cptr.ldI32(cptr.add(windowprocs, 8)) == 1) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) != 3 ? 1 : 0) {
+    if (((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) != 3 ? 1 : 0) {
         cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), 3);
         setctty();
     }
@@ -171,7 +172,7 @@ export function intron() {
 
 /** C ref: unixtty.c:350 */
 export function introff() {
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == 1) && BigInt(cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
+    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty) && BigInt(cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
         cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }

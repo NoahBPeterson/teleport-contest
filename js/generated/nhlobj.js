@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_setfuncs } from './lauxlib.js';
 import { nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error, nhl_get_timertype } from './nhlua.js';
 import { add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight } from './mkobj.js';
@@ -295,7 +296,7 @@ function l_obj_to_table(L) {
         return 1;
     }
     nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtr(cptr.add((obj), 16)) !== null)));
-    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16(cptr.add((obj), 32)) >= 214 && cptr.ldI16(cptr.add((obj), 32)) <= 220 ? 1 : 0)));
+    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16(cptr.add((obj), 32)) >= NHC.LARGE_BOX && cptr.ldI16(cptr.add((obj), 32)) <= NHC.BAG_OF_TRICKS ? 1 : 0)));
     nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32(cptr.add(obj, 24)) >>> 0));
     nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16(cptr.add(obj, 28))));
     nhl_add_table_entry_int(L, __sl34, BigInt(cptr.ldI16(cptr.add(obj, 30))));
@@ -307,9 +308,9 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI32(cptr.add(obj, 36)) >>> 0));
     nhl_add_table_entry_int(L, __sl39, cptr.ldI64(cptr.add(obj, 40)));
     nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1s(cptr.add(obj, 48))));
-    if (cptr.ldI16(cptr.add(obj, 32)) == 476)
+    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE)
         nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 4) != 0)));
-    if (cptr.ldI16(cptr.add(obj, 32)) == 265 || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) {
+    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) {
         nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 2) != 0)));
         nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 1) != 0)));
     }
@@ -325,7 +326,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl53, BigInt((cptr.ldI32(cptr.add(obj, 88)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32(cptr.add(obj, 92)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl55, BigInt((cptr.ldI32(cptr.add(obj, 104)) & 1) >>> 0));
-    if (cptr.ld1s(cptr.add(obj, 49)) == 8)
+    if (cptr.ld1s(cptr.add(obj, 49)) == NHC.POTION_CLASS)
         nhl_add_table_entry_int(L, __sl56, BigInt((cptr.ldI32(cptr.add(obj, 112)) & 3) >>> 0));
     else
         nhl_add_table_entry_int(L, __sl57, BigInt((cptr.ldI32(cptr.add(obj, 112)) & 3) >>> 0));
@@ -333,7 +334,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32(cptr.add(obj, 120)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32(cptr.add(obj, 124)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32(cptr.add(obj, 128)) & 1) >>> 0));
-    if ((((cptr.ld1s(cptr.add(obj, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
+    if ((((cptr.ld1s(cptr.add(obj, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
         nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32(cptr.add(obj, 132)) & 1) >>> 0));
     else
         nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32(cptr.add(obj, 132)) & 1) >>> 0));
@@ -348,8 +349,8 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl72, BigInt((cptr.ldI32(cptr.add(obj, 96)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl73, BigInt((cptr.ldI32(cptr.add(obj, 100)) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32(cptr.add(obj, 168))));
-    if (cptr.ldI32(cptr.add(obj, 168)) != -1 && ((((cptr.ldI16(cptr.add(obj, 32)) == 296 || cptr.ldI16(cptr.add(obj, 32)) == 265 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 266 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 241 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) ? 1 : 0)
-        nhl_add_table_entry_str(L, __sl75, cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), 2, 8)));
+    if (cptr.ldI32(cptr.add(obj, 168)) != NHC.NON_PM && ((((cptr.ldI16(cptr.add(obj, 32)) == NHC.TIN || cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.EGG ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.FIGURINE ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) ? 1 : 0)
+        nhl_add_table_entry_str(L, __sl75, cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), NHC.NEUTRAL, 8)));
     nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32(cptr.add(obj, 172))));
     nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32(cptr.add(obj, 176)) >>> 0));
     nhl_add_table_entry_int(L, __sl78, cptr.ldI64(cptr.add(obj, 184)));
@@ -376,12 +377,12 @@ function l_obj_new_readobjnam(L) {
         let id = i16(get_table_objtype(L));
         let class$ = i16(get_table_objclass(L));
         let otmp;
-        if (id >= 18) {
+        if (id >= NHC.FIRST_OBJECT) {
             otmp = mksobj(id, 1, 0);
         } else {
             class$ = i16(def_char_to_objclass(schar(class$)));
-            if (class$ >= 18)
-                class$ = 0;
+            if (class$ >= NHC.MAXOCLASSES)
+                class$ = NHC.RANDOM_CLASS;
             otmp = mkobj(class$, 0);
         }
         lua_settop(L, -2);
@@ -468,7 +469,7 @@ function l_obj_timer_has(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushboolean(L, obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype));
             return 1;
         } else {
@@ -486,7 +487,7 @@ function l_obj_timer_peek(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
             return 1;
         } else {
@@ -509,7 +510,7 @@ function l_obj_timer_stop(L) {
     } else if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
             lua_pushinteger(L, stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
             return 1;
         } else {
@@ -528,10 +529,10 @@ function l_obj_timer_start(L) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
         let when = luaL_checkinteger(L, 3);
-        if (((((((((((timertype) == 0 || (timertype) == 1 ? 1 : 0) || (timertype) == 2 ? 1 : 0) || (timertype) == 3 ? 1 : 0) || (timertype) == 4 ? 1 : 0) || (timertype) == 5 ? 1 : 0) || (timertype) == 6 ? 1 : 0) || (timertype) == 7 ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && when > 0n ? 1 : 0) {
+        if (((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && when > 0n ? 1 : 0) {
             if (obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype))
                 stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
-            start_timer(when, 3, timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
+            start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
         }
     } else
         nhl_error(L, __sl89);

@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaX_syntaxerror } from './llex.js';
 import { luaP_opmodes } from './lopcodes.js';
 import { luaM_growaux_ } from './lmem.js';
@@ -32,7 +33,7 @@ function tonumeral(e, v) {
     if ((cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))))
         return 0;
     switch (cptr.ldI32(e)) {
-        case 6:
+        case NHC.VKINT:
         if (v) {
             let io = (v);
             cptr.stI64(((io)), (cptr.ldI64(cptr.add(e, 8))));
@@ -40,7 +41,7 @@ function tonumeral(e, v) {
         }
         ;
         return 1;
-        case 5:
+        case NHC.VKFLT:
         if (v) {
             let io = (v);
             cptr.stF64(((io)), (cptr.ldF64(cptr.add(e, 8))));
@@ -64,16 +65,16 @@ export function luaK_exp2const(fs, e, v) {
     if ((cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))))
         return 0;
     switch (cptr.ldI32(e)) {
-        case 3:
+        case NHC.VFALSE:
         (cptr.st1(cptr.add((v), 8), 1));
         return 1;
-        case 2:
+        case NHC.VTRUE:
         (cptr.st1(cptr.add((v), 8), 17));
         return 1;
-        case 1:
+        case NHC.VNIL:
         (cptr.st1(cptr.add((v), 8), 0));
         return 1;
-        case 7:
+        case NHC.VKSTR:
         {
             {
                 let io = (v);
@@ -85,7 +86,7 @@ export function luaK_exp2const(fs, e, v) {
             ;
             return 1;
         }
-        case 11:
+        case NHC.VCONST:
         {
             {
                 let io1 = (v);
@@ -117,7 +118,7 @@ function previousinstruction(fs) {
 export function luaK_nil(fs, from, n) {
     let l = (((from + n) | 0) - 1) | 0;
     let previous = previousinstruction(fs);
-    if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == 8) {
+    if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_LOADNIL) {
         let pfrom = (((((((cptr.ldI32(previous)) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
         let pl = (pfrom + ((((((((cptr.ldI32(previous)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) | 0;
         if ((pfrom <= from && from <= ((pl + 1) | 0) ? 1 : 0) || (from <= pfrom && pfrom <= ((l + 1) | 0) ? 1 : 0) ? 1 : 0) {
@@ -130,7 +131,7 @@ export function luaK_nil(fs, from, n) {
             return;
         }
     }
-    luaK_codeABCk(fs, 8, from, (n - 1) | 0, 0, 0);
+    luaK_codeABCk(fs, NHC.OP_LOADNIL, from, (n - 1) | 0, 0, 0);
 }
 
 /** C ref: lcode.c:155 — @param {CPtr} fs @param {CInt} pc @returns {CInt} */
@@ -170,7 +171,7 @@ export function luaK_concat(fs, l1, l2) {
 
 /** C ref: lcode.c:200 — @param {CPtr} fs @returns {CInt} */
 export function luaK_jump(fs) {
-    return codesJ(fs, 56, -1, 0);
+    return codesJ(fs, NHC.OP_JMP, -1, 0);
 }
 
 /** C ref: lcode.c:208 — @param {CPtr} fs @param {CInt} first @param {CInt} nret */
@@ -178,13 +179,13 @@ export function luaK_ret(fs, first, nret) {
     let op;
     switch (nret) {
         case 0:
-        op = 71;
+        op = NHC.OP_RETURN0;
         break;
         case 1:
-        op = 72;
+        op = NHC.OP_RETURN1;
         break;
         default:
-        op = 70;
+        op = NHC.OP_RETURN;
         break;
     }
     luaK_codeABCk(fs, op, first, (nret + 1) | 0, 0, 0);
@@ -214,7 +215,7 @@ function getjumpcontrol(fs, pc) {
 /** C ref: lcode.c:260 — @param {CPtr} fs @param {CInt} node @param {CInt} reg @returns {CInt} */
 function patchtestreg(fs, node, reg) {
     let i = getjumpcontrol(fs, node);
-    if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != 67)
+    if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
         return 0;
     if (reg != 255 && reg != ((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) ? 1 : 0)
         (cptr.stI32(i, (((((cptr.ldI32(i)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
@@ -338,9 +339,9 @@ function codeextraarg(fs, a) {
 /** C ref: lcode.c:452 — @param {CPtr} fs @param {CInt} reg @param {CInt} k @returns {CInt} */
 function luaK_codek(fs, reg, k) {
     if (k <= 131071)
-        return luaK_codeABx(fs, 3, reg, k >>> 0);
+        return luaK_codeABx(fs, NHC.OP_LOADK, reg, k >>> 0);
     else {
-        let p = luaK_codeABx(fs, 4, reg, 0);
+        let p = luaK_codeABx(fs, NHC.OP_LOADKX, reg, 0);
         codeextraarg(fs, k);
         return p;
     }
@@ -383,14 +384,14 @@ function freeregs(fs, r1, r2) {
 
 /** C ref: lcode.c:518 — @param {CPtr} fs @param {CPtr} e */
 function freeexp(fs, e) {
-    if (cptr.ldI32(e) == 8)
+    if (cptr.ldI32(e) == NHC.VNONRELOC)
         freereg(fs, cptr.ldI32(cptr.add(e, 8)));
 }
 
 /** C ref: lcode.c:528 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 */
 function freeexps(fs, e1, e2) {
-    let r1 = (cptr.ldI32(e1) == 8) ? cptr.ldI32(cptr.add(e1, 8)) : -1;
-    let r2 = (cptr.ldI32(e2) == 8) ? cptr.ldI32(cptr.add(e2, 8)) : -1;
+    let r1 = (cptr.ldI32(e1) == NHC.VNONRELOC) ? cptr.ldI32(cptr.add(e1, 8)) : -1;
+    let r2 = (cptr.ldI32(e2) == NHC.VNONRELOC) ? cptr.ldI32(cptr.add(e2, 8)) : -1;
     freeregs(fs, r1, r2);
 }
 
@@ -469,7 +470,7 @@ function luaK_numberK(fs, r) {
         (cptr.st1(cptr.add((io), 8), 19));
     }
     ;
-    if (!luaV_flttointeger(r, ik, 0))
+    if (!luaV_flttointeger(r, ik, NHC.F2Ieq))
         return addk(fs, o, o);
     else {
         let nbm = 53;
@@ -530,7 +531,7 @@ function fitsBx(i) {
 /** C ref: lcode.c:673 — @param {CPtr} fs @param {CInt} reg @param {CLongLong} i */
 export function luaK_int(fs, reg, i) {
     if (fitsBx(i))
-        codeAsBx(fs, 1, reg, (Number(BigInt.asIntN(32, ((i))))));
+        codeAsBx(fs, NHC.OP_LOADI, reg, (Number(BigInt.asIntN(32, ((i))))));
     else
         luaK_codek(fs, reg, luaK_intK(fs, i));
 }
@@ -538,8 +539,8 @@ export function luaK_int(fs, reg, i) {
 /** C ref: lcode.c:681 — @param {CPtr} fs @param {CInt} reg @param {CDouble} f */
 function luaK_float(fs, reg, f) {
     let fi = cptr.box(0n);
-    if (luaV_flttointeger(f, fi, 0) && fitsBx(fi.v) ? 1 : 0)
-        codeAsBx(fs, 2, reg, (Number(BigInt.asIntN(32, ((fi.v))))));
+    if (luaV_flttointeger(f, fi, NHC.F2Ieq) && fitsBx(fi.v) ? 1 : 0)
+        codeAsBx(fs, NHC.OP_LOADF, reg, (Number(BigInt.asIntN(32, ((fi.v))))));
     else
         luaK_codek(fs, reg, luaK_numberK(fs, f));
 }
@@ -548,25 +549,25 @@ function luaK_float(fs, reg, f) {
 function const2exp(v, e) {
     switch ((((cptr.ld1u(cptr.add((v), 8)))) & 63)) {
         case 3:
-        cptr.stI32(e, 6);
+        cptr.stI32(e, NHC.VKINT);
         cptr.stI64(cptr.add(e, 8), (cptr.ldI64(((v)))));
         break;
         case 19:
-        cptr.stI32(e, 5);
+        cptr.stI32(e, NHC.VKFLT);
         cptr.stF64(cptr.add(e, 8), (cptr.ldF64(((v)))));
         break;
         case 1:
-        cptr.stI32(e, 3);
+        cptr.stI32(e, NHC.VFALSE);
         break;
         case 17:
-        cptr.stI32(e, 2);
+        cptr.stI32(e, NHC.VTRUE);
         break;
         case 0:
-        cptr.stI32(e, 1);
+        cptr.stI32(e, NHC.VNIL);
         break;
         case 4:
         case 20:
-        cptr.stI32(e, 7);
+        cptr.stI32(e, NHC.VKSTR);
         cptr.stPtr(cptr.add(e, 8), ((((((cptr.ldPtr(((v))))))))));
         break;
         default:
@@ -577,7 +578,7 @@ function const2exp(v, e) {
 /** C ref: lcode.c:722 — @param {CPtr} fs @param {CPtr} e @param {CInt} nresults */
 export function luaK_setreturns(fs, e, nresults) {
     let pc = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4);
-    if (cptr.ldI32(e) == 18)
+    if (cptr.ldI32(e) == NHC.VCALL)
         (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | (((((((nresults + 1) | 0) >>> 0) << 24) >>> 0) & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));
     else {
         (void 0);
@@ -591,71 +592,71 @@ export function luaK_setreturns(fs, e, nresults) {
 function str2K(fs, e) {
     (void 0);
     cptr.stI32(cptr.add(e, 8), stringK(fs, cptr.ldPtr(cptr.add(e, 8))));
-    cptr.stI32(e, 4);
+    cptr.stI32(e, NHC.VK);
 }
 
 /** C ref: lcode.c:755 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_setoneret(fs, e) {
-    if (cptr.ldI32(e) == 18) {
+    if (cptr.ldI32(e) == NHC.VCALL) {
         (void 0);
-        cptr.stI32(e, 8);
+        cptr.stI32(e, NHC.VNONRELOC);
         cptr.stI32(cptr.add(e, 8), ((((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4)))) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-    } else if (cptr.ldI32(e) == 19) {
+    } else if (cptr.ldI32(e) == NHC.VVARARG) {
         (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4)))) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | ((33554432 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));
-        cptr.stI32(e, 17);
+        cptr.stI32(e, NHC.VRELOC);
     }
 }
 
 /** C ref: lcode.c:773 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_dischargevars(fs, e) {
     switch (cptr.ldI32(e)) {
-        case 11:
+        case NHC.VCONST:
         {
             const2exp(const2val(fs, e), e);
             break;
         }
-        case 9:
+        case NHC.VLOCAL:
         {
             let temp = cptr.ld1u(cptr.add(e, 8));
             cptr.stI32(cptr.add(e, 8), temp);
-            cptr.stI32(e, 8);
+            cptr.stI32(e, NHC.VNONRELOC);
             break;
         }
-        case 10:
+        case NHC.VUPVAL:
         {
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 9, 0, cptr.ldI32(cptr.add(e, 8)), 0, 0));
-            cptr.stI32(e, 17);
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_GETUPVAL, 0, cptr.ldI32(cptr.add(e, 8)), 0, 0));
+            cptr.stI32(e, NHC.VRELOC);
             break;
         }
-        case 13:
+        case NHC.VINDEXUP:
         {
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 11, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
-            cptr.stI32(e, 17);
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_GETTABUP, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
+            cptr.stI32(e, NHC.VRELOC);
             break;
         }
-        case 14:
-        {
-            freereg(fs, cptr.ld1u(cptr.add(e, 10)));
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 13, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
-            cptr.stI32(e, 17);
-            break;
-        }
-        case 15:
+        case NHC.VINDEXI:
         {
             freereg(fs, cptr.ld1u(cptr.add(e, 10)));
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 14, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
-            cptr.stI32(e, 17);
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_GETI, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
+            cptr.stI32(e, NHC.VRELOC);
             break;
         }
-        case 12:
+        case NHC.VINDEXSTR:
+        {
+            freereg(fs, cptr.ld1u(cptr.add(e, 10)));
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_GETFIELD, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
+            cptr.stI32(e, NHC.VRELOC);
+            break;
+        }
+        case NHC.VINDEXED:
         {
             freeregs(fs, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)));
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 12, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
-            cptr.stI32(e, 17);
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_GETTABLE, 0, cptr.ld1u(cptr.add(e, 10)), cptr.ldI16(cptr.add(e, 8)), 0));
+            cptr.stI32(e, NHC.VRELOC);
             break;
         }
-        case 19:
-        case 18:
+        case NHC.VVARARG:
+        case NHC.VCALL:
         {
             luaK_setoneret(fs, e);
             break;
@@ -669,50 +670,50 @@ export function luaK_dischargevars(fs, e) {
 function discharge2reg(fs, e, reg) {
     luaK_dischargevars(fs, e);
     switch (cptr.ldI32(e)) {
-        case 1:
+        case NHC.VNIL:
         {
             luaK_nil(fs, reg, 1);
             break;
         }
-        case 3:
+        case NHC.VFALSE:
         {
-            luaK_codeABCk(fs, 5, reg, 0, 0, 0);
+            luaK_codeABCk(fs, NHC.OP_LOADFALSE, reg, 0, 0, 0);
             break;
         }
-        case 2:
+        case NHC.VTRUE:
         {
-            luaK_codeABCk(fs, 7, reg, 0, 0, 0);
+            luaK_codeABCk(fs, NHC.OP_LOADTRUE, reg, 0, 0, 0);
             break;
         }
-        case 7:
+        case NHC.VKSTR:
         {
             str2K(fs, e);
         }
-        case 4:
+        case NHC.VK:
         {
             luaK_codek(fs, reg, cptr.ldI32(cptr.add(e, 8)));
             break;
         }
-        case 5:
+        case NHC.VKFLT:
         {
             luaK_float(fs, reg, cptr.ldF64(cptr.add(e, 8)));
             break;
         }
-        case 6:
+        case NHC.VKINT:
         {
             luaK_int(fs, reg, cptr.ldI64(cptr.add(e, 8)));
             break;
         }
-        case 17:
+        case NHC.VRELOC:
         {
             let pc = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4);
             (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
             break;
         }
-        case 8:
+        case NHC.VNONRELOC:
         {
             if (reg != cptr.ldI32(cptr.add(e, 8)))
-                luaK_codeABCk(fs, 0, reg, cptr.ldI32(cptr.add(e, 8)), 0, 0);
+                luaK_codeABCk(fs, NHC.OP_MOVE, reg, cptr.ldI32(cptr.add(e, 8)), 0, 0);
             break;
         }
         default:
@@ -722,12 +723,12 @@ function discharge2reg(fs, e, reg) {
         }
     }
     cptr.stI32(cptr.add(e, 8), reg);
-    cptr.stI32(e, 8);
+    cptr.stI32(e, NHC.VNONRELOC);
 }
 
 /** C ref: lcode.c:882 — @param {CPtr} fs @param {CPtr} e */
 function discharge2anyreg(fs, e) {
-    if (cptr.ldI32(e) != 8) {
+    if (cptr.ldI32(e) != NHC.VNONRELOC) {
         luaK_reserveregs(fs, 1);
         discharge2reg(fs, e, (cptr.ld1u(cptr.add(fs, 68)) - 1) | 0);
     }
@@ -743,7 +744,7 @@ function code_loadbool(fs, A, op) {
 function need_value(fs, list) {
     for (; list != -1; list = getjump(fs, list)) {
         let i = cptr.ldI32(getjumpcontrol(fs, list));
-        if (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != 67)
+        if (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
             return 1;
     }
     return 0;
@@ -752,16 +753,16 @@ function need_value(fs, list) {
 /** C ref: lcode.c:916 — @param {CPtr} fs @param {CPtr} e @param {CInt} reg */
 function exp2reg(fs, e, reg) {
     discharge2reg(fs, e, reg);
-    if (cptr.ldI32(e) == 16)
+    if (cptr.ldI32(e) == NHC.VJMP)
         luaK_concat(fs, cptr.add(e, 16), cptr.ldI32(cptr.add(e, 8)));
     if ((cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20)))) {
         let final;
         let p_f = -1;
         let p_t = -1;
         if (need_value(fs, cptr.ldI32(cptr.add(e, 16))) || need_value(fs, cptr.ldI32(cptr.add(e, 20))) ? 1 : 0) {
-            let fj = (cptr.ldI32(e) == 16) ? -1 : luaK_jump(fs);
-            p_f = code_loadbool(fs, reg, 6);
-            p_t = code_loadbool(fs, reg, 7);
+            let fj = (cptr.ldI32(e) == NHC.VJMP) ? -1 : luaK_jump(fs);
+            p_f = code_loadbool(fs, reg, NHC.OP_LFALSESKIP);
+            p_t = code_loadbool(fs, reg, NHC.OP_LOADTRUE);
             luaK_patchtohere(fs, fj);
         }
         final = luaK_getlabel(fs);
@@ -770,7 +771,7 @@ function exp2reg(fs, e, reg) {
     }
     cptr.stI32(cptr.add(e, 20), cptr.stI32(cptr.add(e, 16), -1));
     cptr.stI32(cptr.add(e, 8), reg);
-    cptr.stI32(e, 8);
+    cptr.stI32(e, NHC.VNONRELOC);
 }
 
 /** C ref: lcode.c:944 — @param {CPtr} fs @param {CPtr} e */
@@ -784,7 +785,7 @@ export function luaK_exp2nextreg(fs, e) {
 /** C ref: lcode.c:956 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
 export function luaK_exp2anyreg(fs, e) {
     luaK_dischargevars(fs, e);
-    if (cptr.ldI32(e) == 8) {
+    if (cptr.ldI32(e) == NHC.VNONRELOC) {
         if (!(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))))
             return cptr.ldI32(cptr.add(e, 8));
         if (cptr.ldI32(cptr.add(e, 8)) >= luaY_nvarstack(fs)) {
@@ -798,13 +799,13 @@ export function luaK_exp2anyreg(fs, e) {
 
 /** C ref: lcode.c:978 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_exp2anyregup(fs, e) {
-    if (cptr.ldI32(e) != 10 || (cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0)
+    if (cptr.ldI32(e) != NHC.VUPVAL || (cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0)
         luaK_exp2anyreg(fs, e);
 }
 
 /** C ref: lcode.c:988 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_exp2val(fs, e) {
-    if (cptr.ldI32(e) == 16 || (cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0)
+    if (cptr.ldI32(e) == NHC.VJMP || (cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0)
         luaK_exp2anyreg(fs, e);
     else
         luaK_dischargevars(fs, e);
@@ -815,32 +816,32 @@ function luaK_exp2K(fs, e) {
     if (!(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20)))) {
         let info;
         switch (cptr.ldI32(e)) {
-            case 2:
+            case NHC.VTRUE:
             info = boolT(fs);
             break;
-            case 3:
+            case NHC.VFALSE:
             info = boolF(fs);
             break;
-            case 1:
+            case NHC.VNIL:
             info = nilK(fs);
             break;
-            case 6:
+            case NHC.VKINT:
             info = luaK_intK(fs, cptr.ldI64(cptr.add(e, 8)));
             break;
-            case 5:
+            case NHC.VKFLT:
             info = luaK_numberK(fs, cptr.ldF64(cptr.add(e, 8)));
             break;
-            case 7:
+            case NHC.VKSTR:
             info = stringK(fs, cptr.ldPtr(cptr.add(e, 8)));
             break;
-            case 4:
+            case NHC.VK:
             info = cptr.ldI32(cptr.add(e, 8));
             break;
             default:
             return 0;
         }
         if (info <= 255) {
-            cptr.stI32(e, 4);
+            cptr.stI32(e, NHC.VK);
             cptr.stI32(cptr.add(e, 8), info);
             return 1;
         }
@@ -867,36 +868,36 @@ function codeABRK(fs, o, a, b, ec) {
 /** C ref: lcode.c:1050 — @param {CPtr} fs @param {CPtr} var @param {CPtr} ex */
 export function luaK_storevar(fs, var$, ex) {
     switch (cptr.ldI32(var$)) {
-        case 9:
+        case NHC.VLOCAL:
         {
             freeexp(fs, ex);
             exp2reg(fs, ex, cptr.ld1u(cptr.add(var$, 8)));
             return;
         }
-        case 10:
+        case NHC.VUPVAL:
         {
             let e = luaK_exp2anyreg(fs, ex);
-            luaK_codeABCk(fs, 10, e, cptr.ldI32(cptr.add(var$, 8)), 0, 0);
+            luaK_codeABCk(fs, NHC.OP_SETUPVAL, e, cptr.ldI32(cptr.add(var$, 8)), 0, 0);
             break;
         }
-        case 13:
+        case NHC.VINDEXUP:
         {
-            codeABRK(fs, 15, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
+            codeABRK(fs, NHC.OP_SETTABUP, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
             break;
         }
-        case 14:
+        case NHC.VINDEXI:
         {
-            codeABRK(fs, 17, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
+            codeABRK(fs, NHC.OP_SETI, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
             break;
         }
-        case 15:
+        case NHC.VINDEXSTR:
         {
-            codeABRK(fs, 18, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
+            codeABRK(fs, NHC.OP_SETFIELD, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
             break;
         }
-        case 12:
+        case NHC.VINDEXED:
         {
-            codeABRK(fs, 16, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
+            codeABRK(fs, NHC.OP_SETTABLE, cptr.ld1u(cptr.add(var$, 10)), cptr.ldI16(cptr.add(var$, 8)), ex);
             break;
         }
         default:
@@ -912,9 +913,9 @@ export function luaK_self(fs, e, key) {
     ereg = cptr.ldI32(cptr.add(e, 8));
     freeexp(fs, e);
     cptr.stI32(cptr.add(e, 8), cptr.ld1u(cptr.add(fs, 68)));
-    cptr.stI32(e, 8);
+    cptr.stI32(e, NHC.VNONRELOC);
     luaK_reserveregs(fs, 2);
-    codeABRK(fs, 20, cptr.ldI32(cptr.add(e, 8)), ereg, key);
+    codeABRK(fs, NHC.OP_SELF, cptr.ldI32(cptr.add(e, 8)), ereg, key);
     freeexp(fs, key);
 }
 
@@ -927,16 +928,16 @@ function negatecondition(fs, e) {
 
 /** C ref: lcode.c:1117 — @param {CPtr} fs @param {CPtr} e @param {CInt} cond @returns {CInt} */
 function jumponcond(fs, e, cond) {
-    if (cptr.ldI32(e) == 17) {
+    if (cptr.ldI32(e) == NHC.VRELOC) {
         let ie = (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4)));
-        if (((((((ie) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == 51) {
+        if (((((((ie) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_NOT) {
             removelastinstruction(fs);
-            return condjump(fs, 66, ((((((((ie) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 0, 0, !cond);
+            return condjump(fs, NHC.OP_TEST, ((((((((ie) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 0, 0, !cond);
         }
     }
     discharge2anyreg(fs, e);
     freeexp(fs, e);
-    return condjump(fs, 67, 255, cptr.ldI32(cptr.add(e, 8)), 0, cond);
+    return condjump(fs, NHC.OP_TESTSET, 255, cptr.ldI32(cptr.add(e, 8)), 0, cond);
 }
 
 /** C ref: lcode.c:1135 — @param {CPtr} fs @param {CPtr} e */
@@ -944,17 +945,17 @@ export function luaK_goiftrue(fs, e) {
     let pc;
     luaK_dischargevars(fs, e);
     switch (cptr.ldI32(e)) {
-        case 16:
+        case NHC.VJMP:
         {
             negatecondition(fs, e);
             pc = cptr.ldI32(cptr.add(e, 8));
             break;
         }
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 2:
+        case NHC.VK:
+        case NHC.VKFLT:
+        case NHC.VKINT:
+        case NHC.VKSTR:
+        case NHC.VTRUE:
         {
             pc = -1;
             break;
@@ -975,13 +976,13 @@ export function luaK_goiffalse(fs, e) {
     let pc;
     luaK_dischargevars(fs, e);
     switch (cptr.ldI32(e)) {
-        case 16:
+        case NHC.VJMP:
         {
             pc = cptr.ldI32(cptr.add(e, 8));
             break;
         }
-        case 1:
-        case 3:
+        case NHC.VNIL:
+        case NHC.VFALSE:
         {
             pc = -1;
             break;
@@ -1000,33 +1001,33 @@ export function luaK_goiffalse(fs, e) {
 /** C ref: lcode.c:1188 — @param {CPtr} fs @param {CPtr} e */
 function codenot(fs, e) {
     switch (cptr.ldI32(e)) {
-        case 1:
-        case 3:
+        case NHC.VNIL:
+        case NHC.VFALSE:
         {
-            cptr.stI32(e, 2);
+            cptr.stI32(e, NHC.VTRUE);
             break;
         }
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 2:
+        case NHC.VK:
+        case NHC.VKFLT:
+        case NHC.VKINT:
+        case NHC.VKSTR:
+        case NHC.VTRUE:
         {
-            cptr.stI32(e, 3);
+            cptr.stI32(e, NHC.VFALSE);
             break;
         }
-        case 16:
+        case NHC.VJMP:
         {
             negatecondition(fs, e);
             break;
         }
-        case 17:
-        case 8:
+        case NHC.VRELOC:
+        case NHC.VNONRELOC:
         {
             discharge2anyreg(fs, e);
             freeexp(fs, e);
-            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, 51, 0, cptr.ldI32(cptr.add(e, 8)), 0, 0));
-            cptr.stI32(e, 17);
+            cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, NHC.OP_NOT, 0, cptr.ldI32(cptr.add(e, 8)), 0, 0));
+            cptr.stI32(e, NHC.VRELOC);
             break;
         }
         default:
@@ -1043,12 +1044,12 @@ function codenot(fs, e) {
 
 /** C ref: lcode.c:1222 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
 function isKstr(fs, e) {
-    return (((cptr.ldI32(e) == 4 && !(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0) && cptr.ldI32(cptr.add(e, 8)) <= 255 ? 1 : 0) && ((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(fs), 56)), cptr.ldI32(cptr.add(e, 8)), 16))), 8))) == 68) ? 1 : 0);
+    return (((cptr.ldI32(e) == NHC.VK && !(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0) && cptr.ldI32(cptr.add(e, 8)) <= 255 ? 1 : 0) && ((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(fs), 56)), cptr.ldI32(cptr.add(e, 8)), 16))), 8))) == 68) ? 1 : 0);
 }
 
 /** C ref: lcode.c:1230 — @param {CPtr} e @returns {CInt} */
 function isKint(e) {
-    return (cptr.ldI32(e) == 6 && !(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0);
+    return (cptr.ldI32(e) == NHC.VKINT && !(cptr.ldI32(cptr.add((e), 16)) != cptr.ldI32(cptr.add((e), 20))) ? 1 : 0);
 }
 
 /** C ref: lcode.c:1239 — @param {CPtr} e @returns {CInt} */
@@ -1064,9 +1065,9 @@ function isSCint(e) {
 /** C ref: lcode.c:1257 — @param {CPtr} e @param {CPtr} pi @param {CPtr} isfloat @returns {CInt} */
 function isSCnumber(e, pi, isfloat) {
     let i = cptr.box(0n);
-    if (cptr.ldI32(e) == 6)
+    if (cptr.ldI32(e) == NHC.VKINT)
         i.v = cptr.ldI64(cptr.add(e, 8));
-    else if (cptr.ldI32(e) == 5 && luaV_flttointeger(cptr.ldF64(cptr.add(e, 8)), i, 0) ? 1 : 0)
+    else if (cptr.ldI32(e) == NHC.VKFLT && luaV_flttointeger(cptr.ldF64(cptr.add(e, 8)), i, NHC.F2Ieq) ? 1 : 0)
         cptr.stI32(isfloat, 1);
     else
         return 0;
@@ -1079,28 +1080,28 @@ function isSCnumber(e, pi, isfloat) {
 
 /** C ref: lcode.c:1280 — @param {CPtr} fs @param {CPtr} t @param {CPtr} k */
 export function luaK_indexed(fs, t, k) {
-    if (cptr.ldI32(k) == 7)
+    if (cptr.ldI32(k) == NHC.VKSTR)
         str2K(fs, k);
     (void 0);
-    if (cptr.ldI32(t) == 10 && !isKstr(fs, k) ? 1 : 0)
+    if (cptr.ldI32(t) == NHC.VUPVAL && !isKstr(fs, k) ? 1 : 0)
         luaK_exp2anyreg(fs, t);
-    if (cptr.ldI32(t) == 10) {
+    if (cptr.ldI32(t) == NHC.VUPVAL) {
         let temp = cptr.ldI32(cptr.add(t, 8));
         (void 0);
         cptr.st1(cptr.add(t, 10), uchar(temp));
         cptr.stI16(cptr.add(t, 8), i16(cptr.ldI32(cptr.add(k, 8))));
-        cptr.stI32(t, 13);
+        cptr.stI32(t, NHC.VINDEXUP);
     } else {
-        cptr.st1(cptr.add(t, 10), uchar(((cptr.ldI32(t) == 9) ? cptr.ld1u(cptr.add(t, 8)) : cptr.ldI32(cptr.add(t, 8)))));
+        cptr.st1(cptr.add(t, 10), uchar(((cptr.ldI32(t) == NHC.VLOCAL) ? cptr.ld1u(cptr.add(t, 8)) : cptr.ldI32(cptr.add(t, 8)))));
         if (isKstr(fs, k)) {
             cptr.stI16(cptr.add(t, 8), i16(cptr.ldI32(cptr.add(k, 8))));
-            cptr.stI32(t, 15);
+            cptr.stI32(t, NHC.VINDEXSTR);
         } else if (isCint(k)) {
             cptr.stI16(cptr.add(t, 8), i16((Number(BigInt.asIntN(32, ((cptr.ldI64(cptr.add(k, 8)))))))));
-            cptr.stI32(t, 14);
+            cptr.stI32(t, NHC.VINDEXI);
         } else {
             cptr.stI16(cptr.add(t, 8), i16(luaK_exp2anyreg(fs, k)));
-            cptr.stI32(t, 12);
+            cptr.stI32(t, NHC.VINDEXED);
         }
     }
 }
@@ -1116,7 +1117,7 @@ function validop(op, v1, v2) {
         case 13:
         {
             let i = cptr.box(0n);
-            return (luaV_tointegerns(v1, i, 0) && luaV_tointegerns(v2, i, 0) ? 1 : 0);
+            return (luaV_tointegerns(v1, i, NHC.F2Ieq) && luaV_tointegerns(v2, i, NHC.F2Ieq) ? 1 : 0);
         }
         case 5:
         case 6:
@@ -1136,13 +1137,13 @@ function constfolding(fs, op, e1, e2) {
         return 0;
     luaO_rawarith(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(fs, 16)), 56)), op, v1, v2, res);
     if (((cptr.ld1u(cptr.add(((res)), 8))) == 3)) {
-        cptr.stI32(e1, 6);
+        cptr.stI32(e1, NHC.VKINT);
         cptr.stI64(cptr.add(e1, 8), (cptr.ldI64(((res)))));
     } else {
         let n = (cptr.ldF64(((res))));
         if ((!(((n)) == ((n)))) || n == 0 ? 1 : 0)
             return 0;
-        cptr.stI32(e1, 5);
+        cptr.stI32(e1, NHC.VKFLT);
         cptr.stF64(cptr.add(e1, 8), n);
     }
     return 1;
@@ -1156,13 +1157,13 @@ function binopr2op(opr, baser, base) {
 
 /** C ref: lcode.c:1372 — @param {*} opr @returns {*} */
 function unopr2op(opr) {
-    return ((((((((opr))) - 0) | 0) + 49) | 0));
+    return ((((((((opr))) - NHC.OPR_MINUS) | 0) + NHC.OP_UNM) | 0));
 }
 
 /** C ref: lcode.c:1381 — @param {*} opr @returns {*} */
 function binopr2TM(opr) {
     (void 0);
-    return ((((((((opr))) - 0) | 0) + 6) | 0));
+    return ((((((((opr))) - NHC.OPR_ADD) | 0) + NHC.TM_ADD) | 0));
 }
 
 /** C ref: lcode.c:1392 — @param {CPtr} fs @param {*} op @param {CPtr} e @param {CInt} line */
@@ -1170,7 +1171,7 @@ function codeunexpval(fs, op, e, line) {
     let r = luaK_exp2anyreg(fs, e);
     freeexp(fs, e);
     cptr.stI32(cptr.add(e, 8), luaK_codeABCk(fs, op, 0, r, 0, 0));
-    cptr.stI32(e, 17);
+    cptr.stI32(e, NHC.VRELOC);
     luaK_fixline(fs, line);
 }
 
@@ -1180,7 +1181,7 @@ function finishbinexpval(fs, e1, e2, op, v2, flip, line, mmop, event) {
     let pc = luaK_codeABCk(fs, op, 0, v1, v2, 0);
     freeexps(fs, e1, e2);
     cptr.stI32(cptr.add(e1, 8), pc);
-    cptr.stI32(e1, 17);
+    cptr.stI32(e1, NHC.VRELOC);
     luaK_fixline(fs, line);
     luaK_codeABCk(fs, mmop, v1, v2, event, flip);
     luaK_fixline(fs, line);
@@ -1188,26 +1189,26 @@ function finishbinexpval(fs, e1, e2, op, v2, flip, line, mmop, event) {
 
 /** C ref: lcode.c:1425 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
 function codebinexpval(fs, opr, e1, e2, line) {
-    let op = binopr2op(opr, 0, 34);
+    let op = binopr2op(opr, NHC.OPR_ADD, NHC.OP_ADD);
     let v2 = luaK_exp2anyreg(fs, e2);
     (void 0);
     (void 0);
-    finishbinexpval(fs, e1, e2, op, v2, 0, line, 46, binopr2TM(opr));
+    finishbinexpval(fs, e1, e2, op, v2, 0, line, NHC.OP_MMBIN, binopr2TM(opr));
 }
 
 /** C ref: lcode.c:1440 — @param {CPtr} fs @param {*} op @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line @param {*} event */
 function codebini(fs, op, e1, e2, flip, line, event) {
     let v2 = ((((Number(BigInt.asIntN(32, ((cptr.ldI64(cptr.add(e2, 8)))))))) + 127) | 0);
     (void 0);
-    finishbinexpval(fs, e1, e2, op, v2, flip, line, 47, event);
+    finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINI, event);
 }
 
 /** C ref: lcode.c:1452 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line */
 function codebinK(fs, opr, e1, e2, flip, line) {
     let event = binopr2TM(opr);
     let v2 = cptr.ldI32(cptr.add(e2, 8));
-    let op = binopr2op(opr, 0, 22);
-    finishbinexpval(fs, e1, e2, op, v2, flip, line, 48, event);
+    let op = binopr2op(opr, NHC.OPR_ADD, NHC.OP_ADDK);
+    finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINK, event);
 }
 
 /** C ref: lcode.c:1464 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 @param {*} op @param {CInt} line @param {*} event @returns {CInt} */
@@ -1220,7 +1221,7 @@ function finishbinexpneg(fs, e1, e2, op, line, event) {
             return 0;
         else {
             let v2 = (Number(BigInt.asIntN(32, ((i2)))));
-            finishbinexpval(fs, e1, e2, op, (((-v2) + 127) | 0), 0, line, 47, event);
+            finishbinexpval(fs, e1, e2, op, (((-v2) + 127) | 0), 0, line, NHC.OP_MMBINI, event);
             (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(fs), 64)), (cptr.ldI32(cptr.add(fs, 32)) - 1) | 0, 4), (((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(fs), 64)), (cptr.ldI32(cptr.add(fs, 32)) - 1) | 0, 4))) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((((v2) + 127) | 0)) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0)));
             return 1;
         }
@@ -1256,8 +1257,8 @@ function codecommutative(fs, op, e1, e2, line) {
         swapexps(e1, e2);
         flip = 1;
     }
-    if (op == 0 && isSCint(e2) ? 1 : 0)
-        codebini(fs, 21, e1, e2, flip, line, 6);
+    if (op == NHC.OPR_ADD && isSCint(e2) ? 1 : 0)
+        codebini(fs, NHC.OP_ADDI, e1, e2, flip, line, NHC.TM_ADD);
     else
         codearith(fs, op, e1, e2, flip, line);
 }
@@ -1265,11 +1266,11 @@ function codecommutative(fs, op, e1, e2, line) {
 /** C ref: lcode.c:1535 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
 function codebitwise(fs, opr, e1, e2, line) {
     let flip = 0;
-    if (cptr.ldI32(e1) == 6) {
+    if (cptr.ldI32(e1) == NHC.VKINT) {
         swapexps(e1, e2);
         flip = 1;
     }
-    if (cptr.ldI32(e2) == 6 && luaK_exp2K(fs, e2) ? 1 : 0)
+    if (cptr.ldI32(e2) == NHC.VKINT && luaK_exp2K(fs, e2) ? 1 : 0)
         codebinK(fs, opr, e1, e2, flip, line);
     else
         codebinNoK(fs, opr, e1, e2, flip, line);
@@ -1285,19 +1286,19 @@ function codeorder(fs, opr, e1, e2) {
     if (isSCnumber(e2, im, isfloat)) {
         r1 = luaK_exp2anyreg(fs, e1);
         r2 = im.v;
-        op = binopr2op(opr, 14, 62);
+        op = binopr2op(opr, NHC.OPR_LT, NHC.OP_LTI);
     } else if (isSCnumber(e1, im, isfloat)) {
         r1 = luaK_exp2anyreg(fs, e2);
         r2 = im.v;
-        op = binopr2op(opr, 14, 64);
+        op = binopr2op(opr, NHC.OPR_LT, NHC.OP_GTI);
     } else {
         r1 = luaK_exp2anyreg(fs, e1);
         r2 = luaK_exp2anyreg(fs, e2);
-        op = binopr2op(opr, 14, 58);
+        op = binopr2op(opr, NHC.OPR_LT, NHC.OP_LT);
     }
     freeexps(fs, e1, e2);
     cptr.stI32(cptr.add(e1, 8), condjump(fs, op, r1, r2, isfloat.v, 1));
-    cptr.stI32(e1, 16);
+    cptr.stI32(e1, NHC.VJMP);
 }
 
 /** C ref: lcode.c:1585 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 */
@@ -1307,28 +1308,28 @@ function codeeq(fs, opr, e1, e2) {
     let im = cptr.box(0);
     let isfloat = cptr.box(0);
     let op;
-    if (cptr.ldI32(e1) != 8) {
+    if (cptr.ldI32(e1) != NHC.VNONRELOC) {
         (void 0);
         swapexps(e1, e2);
     }
     r1 = luaK_exp2anyreg(fs, e1);
     if (isSCnumber(e2, im, isfloat)) {
-        op = 61;
+        op = NHC.OP_EQI;
         r2 = im.v;
     } else if (exp2RK(fs, e2)) {
-        op = 60;
+        op = NHC.OP_EQK;
         r2 = cptr.ldI32(cptr.add(e2, 8));
     } else {
-        op = 57;
+        op = NHC.OP_EQ;
         r2 = luaK_exp2anyreg(fs, e2);
     }
     freeexps(fs, e1, e2);
-    cptr.stI32(cptr.add(e1, 8), condjump(fs, op, r1, r2, isfloat.v, (opr == 13)));
-    cptr.stI32(e1, 16);
+    cptr.stI32(cptr.add(e1, 8), condjump(fs, op, r1, r2, isfloat.v, (opr == NHC.OPR_EQ)));
+    cptr.stI32(e1, NHC.VJMP);
 }
 
 let __static_luaK_prefix_ef = cptr.alloc(24); /** C ref: lcode.c:1617 — struct expdesc (function-static) */
-cptr.stI32(__static_luaK_prefix_ef, 6);
+cptr.stI32(__static_luaK_prefix_ef, NHC.VKINT);
 cptr.stI64(cptr.add(__static_luaK_prefix_ef, 8), 0n);
 cptr.stI32(cptr.add(__static_luaK_prefix_ef, 16), -1);
 cptr.stI32(cptr.add(__static_luaK_prefix_ef, 20), -1);
@@ -1337,14 +1338,14 @@ cptr.stI32(cptr.add(__static_luaK_prefix_ef, 20), -1);
 export function luaK_prefix(fs, opr, e, line) {
     luaK_dischargevars(fs, e);
     switch (opr) {
-        case 0:
-        case 1:
+        case NHC.OPR_MINUS:
+        case NHC.OPR_BNOT:
         if (constfolding(fs, ((opr + 12) >>> 0) | 0, e, __static_luaK_prefix_ef))
             break;
-        case 3:
+        case NHC.OPR_LEN:
         codeunexpval(fs, unopr2op(opr), e, line);
         break;
-        case 2:
+        case NHC.OPR_NOT:
         codenot(fs, e);
         break;
         default:
@@ -1356,49 +1357,49 @@ export function luaK_prefix(fs, opr, e, line) {
 export function luaK_infix(fs, op, v) {
     luaK_dischargevars(fs, v);
     switch (op) {
-        case 19:
+        case NHC.OPR_AND:
         {
             luaK_goiftrue(fs, v);
             break;
         }
-        case 20:
+        case NHC.OPR_OR:
         {
             luaK_goiffalse(fs, v);
             break;
         }
-        case 12:
+        case NHC.OPR_CONCAT:
         {
             luaK_exp2nextreg(fs, v);
             break;
         }
-        case 0:
-        case 1:
-        case 2:
-        case 5:
-        case 6:
-        case 3:
-        case 4:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
+        case NHC.OPR_ADD:
+        case NHC.OPR_SUB:
+        case NHC.OPR_MUL:
+        case NHC.OPR_DIV:
+        case NHC.OPR_IDIV:
+        case NHC.OPR_MOD:
+        case NHC.OPR_POW:
+        case NHC.OPR_BAND:
+        case NHC.OPR_BOR:
+        case NHC.OPR_BXOR:
+        case NHC.OPR_SHL:
+        case NHC.OPR_SHR:
         {
             if (!tonumeral(v, null))
                 luaK_exp2anyreg(fs, v);
             break;
         }
-        case 13:
-        case 16:
+        case NHC.OPR_EQ:
+        case NHC.OPR_NE:
         {
             if (!tonumeral(v, null))
                 exp2RK(fs, v);
             break;
         }
-        case 14:
-        case 15:
-        case 17:
-        case 18:
+        case NHC.OPR_LT:
+        case NHC.OPR_LE:
+        case NHC.OPR_GT:
+        case NHC.OPR_GE:
         {
             let dummy = cptr.box(0);
             let dummy2 = cptr.box(0);
@@ -1414,14 +1415,14 @@ export function luaK_infix(fs, op, v) {
 /** C ref: lcode.c:1686 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
 function codeconcat(fs, e1, e2, line) {
     let ie2 = previousinstruction(fs);
-    if (((((((cptr.ldI32(ie2)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == 53) {
+    if (((((((cptr.ldI32(ie2)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_CONCAT) {
         let n = ((((((((cptr.ldI32(ie2)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
         (void 0);
         freeexp(fs, e2);
         (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((cptr.ldI32(cptr.add(e1, 8))) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
         (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((n + 1) | 0) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0)));
     } else {
-        luaK_codeABCk(fs, 53, cptr.ldI32(cptr.add(e1, 8)), 2, 0, 0);
+        luaK_codeABCk(fs, NHC.OP_CONCAT, cptr.ldI32(cptr.add(e1, 8)), 2, 0, 0);
         freeexp(fs, e2);
         luaK_fixline(fs, line);
     }
@@ -1430,88 +1431,88 @@ function codeconcat(fs, e1, e2, line) {
 /** C ref: lcode.c:1706 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
 export function luaK_posfix(fs, opr, e1, e2, line) {
     luaK_dischargevars(fs, e2);
-    if (((opr) <= 11) && constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2) ? 1 : 0)
+    if (((opr) <= NHC.OPR_SHR) && constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2) ? 1 : 0)
         return;
     switch (opr) {
-        case 19:
+        case NHC.OPR_AND:
         {
             (void 0);
             luaK_concat(fs, cptr.add(e2, 20), cptr.ldI32(cptr.add(e1, 20)));
             cptr.memcpy(e1, e2, 24);
             break;
         }
-        case 20:
+        case NHC.OPR_OR:
         {
             (void 0);
             luaK_concat(fs, cptr.add(e2, 16), cptr.ldI32(cptr.add(e1, 16)));
             cptr.memcpy(e1, e2, 24);
             break;
         }
-        case 12:
+        case NHC.OPR_CONCAT:
         {
             luaK_exp2nextreg(fs, e2);
             codeconcat(fs, e1, e2, line);
             break;
         }
-        case 0:
-        case 2:
+        case NHC.OPR_ADD:
+        case NHC.OPR_MUL:
         {
             codecommutative(fs, opr, e1, e2, line);
             break;
         }
-        case 1:
+        case NHC.OPR_SUB:
         {
-            if (finishbinexpneg(fs, e1, e2, 21, line, 7))
+            if (finishbinexpneg(fs, e1, e2, NHC.OP_ADDI, line, NHC.TM_SUB))
                 break;
         }
-        case 5:
-        case 6:
-        case 3:
-        case 4:
+        case NHC.OPR_DIV:
+        case NHC.OPR_IDIV:
+        case NHC.OPR_MOD:
+        case NHC.OPR_POW:
         {
             codearith(fs, opr, e1, e2, 0, line);
             break;
         }
-        case 7:
-        case 8:
-        case 9:
+        case NHC.OPR_BAND:
+        case NHC.OPR_BOR:
+        case NHC.OPR_BXOR:
         {
             codebitwise(fs, opr, e1, e2, line);
             break;
         }
-        case 10:
+        case NHC.OPR_SHL:
         {
             if (isSCint(e1)) {
                 swapexps(e1, e2);
-                codebini(fs, 33, e1, e2, 1, line, 16);
-            } else if (finishbinexpneg(fs, e1, e2, 32, line, 16)) {
+                codebini(fs, NHC.OP_SHLI, e1, e2, 1, line, NHC.TM_SHL);
+            } else if (finishbinexpneg(fs, e1, e2, NHC.OP_SHRI, line, NHC.TM_SHL)) {
                 ;
             } else
                 codebinexpval(fs, opr, e1, e2, line);
             break;
         }
-        case 11:
+        case NHC.OPR_SHR:
         {
             if (isSCint(e2))
-                codebini(fs, 32, e1, e2, 0, line, 17);
+                codebini(fs, NHC.OP_SHRI, e1, e2, 0, line, NHC.TM_SHR);
             else
                 codebinexpval(fs, opr, e1, e2, line);
             break;
         }
-        case 13:
-        case 16:
+        case NHC.OPR_EQ:
+        case NHC.OPR_NE:
         {
             codeeq(fs, opr, e1, e2);
             break;
         }
-        case 17:
-        case 18:
+        case NHC.OPR_GT:
+        case NHC.OPR_GE:
         {
             swapexps(e1, e2);
-            opr = (((((opr - 17) >>> 0) + 14) >>> 0));
+            opr = (((((opr - NHC.OPR_GT) >>> 0) + NHC.OPR_LT) >>> 0));
         }
-        case 14:
-        case 15:
+        case NHC.OPR_LT:
+        case NHC.OPR_LE:
         {
             codeorder(fs, opr, e1, e2);
             break;
@@ -1544,11 +1545,11 @@ export function luaK_setlist(fs, base, nelems, tostore) {
     if (tostore == -1)
         tostore = 0;
     if (nelems <= 255)
-        luaK_codeABCk(fs, 78, base, tostore, nelems, 0);
+        luaK_codeABCk(fs, NHC.OP_SETLIST, base, tostore, nelems, 0);
     else {
         let extra = (nelems / 256) | 0;
         nelems %= 256;
-        luaK_codeABCk(fs, 78, base, tostore, nelems, 1);
+        luaK_codeABCk(fs, NHC.OP_SETLIST, base, tostore, nelems, 1);
         codeextraarg(fs, extra);
     }
     cptr.st1(cptr.add(fs, 68), uchar(((base + 1) | 0)));
@@ -1559,7 +1560,7 @@ function finaltarget(code, i) {
     let count;
     for (count = 0; count < 100; count++) {
         let pc = cptr.ldI32(cptr.add(code, i, 4));
-        if (((((((pc) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != 56)
+        if (((((((pc) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_JMP)
             break;
         else
             i = (i + (((((((((((pc) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0) + 1) | 0)) | 0;
@@ -1575,15 +1576,15 @@ export function luaK_finish(fs) {
         let pc = cptr.add(cptr.ldPtr(cptr.add(p, 64)), i, 4);
         (void 0);
         switch (((((((cptr.ldI32(pc)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
-            case 71:
-            case 72:
+            case NHC.OP_RETURN0:
+            case NHC.OP_RETURN1:
             {
                 if (!(cptr.ld1u(cptr.add(fs, 70)) || cptr.ld1u(cptr.add(p, 11)) ? 1 : 0))
                     break;
                 (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | ((70 & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0)));
             }
-            case 70:
-            case 69:
+            case NHC.OP_RETURN:
+            case NHC.OP_TAILCALL:
             {
                 if (cptr.ld1u(cptr.add(fs, 70)))
                     (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) | ((32768 & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
@@ -1591,7 +1592,7 @@ export function luaK_finish(fs) {
                     (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | (((((((cptr.ld1u(cptr.add(p, 10)) + 1) | 0) >>> 0) << 24) >>> 0) & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));
                 break;
             }
-            case 56:
+            case NHC.OP_JMP:
             {
                 let target = finaltarget(cptr.ldPtr(cptr.add(p, 64)), i);
                 fixjump(fs, i, target);

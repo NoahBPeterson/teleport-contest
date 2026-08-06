@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { tty_procs, win_tty_init } from './wintty.js';
 import { WIN_STATUS, cg, flags, gb, gl, gm, go, gs, hexdd, iflags, program_state, svc } from './decl.js';
 import { eos, mungspaces, strncmpi } from './hacklib.js';
@@ -206,7 +207,7 @@ export function genl_putmsghistory(msg, is_restoring) {
 /** C ref: windows.c:562 — struct window_procs */
 let hup_procs = cptr.alloc(416);
 cptr.stPtr(hup_procs, __sl8);
-cptr.stI32(cptr.add(hup_procs, 8), 9);
+cptr.stI32(cptr.add(hup_procs, 8), NHC.wp_hup);
 cptr.stU64(cptr.add(hup_procs, 16), 0n);
 cptr.stU64(cptr.add(hup_procs, 24), 0n);
 cptr.st1(cptr.add(hup_procs, 32), 0);
@@ -435,7 +436,7 @@ export const status_activefields = new Uint8Array(27);
 /** C ref: windows.c:893 */
 export function genl_status_init() {
     let i;
-    for (i = 0; i < 27; ++i) {
+    for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         cptr.stPtr(cptr.add(status_vals, i, 8), alloc(200));
         cptr.st1(cptr.ldPtr(cptr.add(status_vals, i, 8)), 0);
         cptr.st1(cptr.add(cptr.decay(status_activefields), i, 1), 0);
@@ -448,7 +449,7 @@ export function genl_status_init() {
 /** C ref: windows.c:909 */
 export function genl_status_finish() {
     let i;
-    for (i = 0; i < 27; ++i) {
+    for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         if (cptr.ldPtr(cptr.add(status_vals, i, 8)))
             cptr.free(cptr.ldPtr(cptr.add(status_vals, i, 8))), cptr.stPtr(cptr.add(status_vals, i, 8), null);
     }
@@ -462,81 +463,81 @@ export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
 }
 
 const __static_genl_status_update_fieldorder = (function () { const flat = new Uint8Array(5 * 15 * 4); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * 15 * 4, (r + 1) * 15 * 4)); a.buf = flat; return a; })();
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 0), 0);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 4), 1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 8), 2);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 12), 3);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 16), 4);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 20), 5);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 24), 6);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 28), 7);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 32), 8);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 36), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 40), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 44), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 0), 20);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 4), 10);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 8), 18);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 12), 19);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 16), 11);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 20), 12);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 24), 14);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 28), 13);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 32), 21);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 36), 15);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 40), 16);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 44), 17);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 48), 9);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 52), 22);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 0), 20);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 4), 10);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 8), 18);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 12), 19);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 16), 11);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 20), 12);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 24), 14);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 28), 13);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 32), 21);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 36), 15);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 40), 17);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 44), 9);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 48), 22);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 52), 16);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 0), 20);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 4), 10);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 8), 18);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 12), 19);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 16), 11);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 20), 12);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 24), 14);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 28), 17);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 32), 9);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 36), 22);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 40), 13);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 44), 21);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 48), 15);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 52), 16);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 0), 18);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 4), 19);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 8), 11);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 12), 12);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 16), 14);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 20), 17);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 24), 9);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 28), 22);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 32), 20);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 36), 10);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 40), 13);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 44), 21);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 48), 15);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 52), 16);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 56), -1); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 0), NHC.BL_TITLE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 4), NHC.BL_STR);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 8), NHC.BL_DX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 12), NHC.BL_CO);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 16), NHC.BL_IN);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 20), NHC.BL_WI);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 24), NHC.BL_CH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 28), NHC.BL_ALIGN);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 32), NHC.BL_SCORE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 36), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 40), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 44), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 0), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 4), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 8), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 12), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 16), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 20), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 24), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 28), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 32), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 36), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 40), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 44), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 48), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 52), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 0), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 4), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 8), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 12), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 16), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 20), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 24), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 28), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 32), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 36), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 40), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 44), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 48), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 52), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 0), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 4), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 8), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 12), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 16), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 20), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 24), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 28), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 32), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 36), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 40), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 44), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 48), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 52), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 0), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 4), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 8), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 12), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 16), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 20), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 24), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 28), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 32), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 36), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 40), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 44), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 48), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 52), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 56), NHC.BL_FLUSH); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
 
 /** C ref: windows.c:937 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr} colormasks */
 export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
@@ -557,7 +558,7 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
             return;
         switch (idx) {
-            case 22:
+            case NHC.BL_CONDITION:
             cond = condptr ? cptr.ldI64(condptr) : 0n;
             nb = cptr.ldPtr(cptr.add(status_vals, idx, 8));
             cptr.st1(nb, 0);
@@ -594,38 +595,38 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         }
         return;
     }
-    if (!(idx == -1 || idx == -2 ? 1 : 0))
+    if (!(idx == NHC.BL_FLUSH || idx == NHC.BL_RESET ? 1 : 0))
         return;
     nb = cptr.decay(newbot1);
     cptr.st1(nb, 0);
-    for (i = 0; (idx1 = cptr.ldI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4))) != -1; ++i) {
+    for (i = 0; (idx1 = cptr.ldI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4))) != NHC.BL_FLUSH; ++i) {
         if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx1, 1)))
             void cptr.strcpy(nb = eos(nb), cptr.ldPtr(cptr.add(status_vals, idx1, 8)));
     }
-    lndelta = ((cptr.ld1s(cptr.add(cptr.decay(status_activefields), 10, 1)) && cptr.strstr(cptr.ldPtr(cptr.add(status_vals, 10, 8)), __sl23) ? 1 : 0) ? 9 : 0) >>> 0;
+    lndelta = ((cptr.ld1s(cptr.add(cptr.decay(status_activefields), NHC.BL_GOLD, 1)) && cptr.strstr(cptr.ldPtr(cptr.add(status_vals, NHC.BL_GOLD, 8)), __sl23) ? 1 : 0) ? 9 : 0) >>> 0;
     for (pass = 1; pass <= 4; pass++) {
         fieldlist = cptr.decay(__static_genl_status_update_fieldorder[pass]);
         nb = cptr.decay(newbot2);
         cptr.st1(nb, 0);
-        for (i = 0; (idx2 = cptr.ldI32(cptr.add(fieldlist, i, 4))) != -1; ++i) {
+        for (i = 0; (idx2 = cptr.ldI32(cptr.add(fieldlist, i, 4))) != NHC.BL_FLUSH; ++i) {
             if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx2, 1))) {
                 let val = cptr.ldPtr(cptr.add(status_vals, idx2, 8));
                 switch (idx2) {
-                    case 18:
-                    case 13:
-                    case 15:
-                    case 16:
+                    case NHC.BL_HP:
+                    case NHC.BL_XP:
+                    case NHC.BL_HD:
+                    case NHC.BL_TIME:
                     void cptr.strcpy(nb = eos(nb), __sl24);
                     break;
-                    case 20:
+                    case NHC.BL_LEVELDESC:
                     if (i != 0)
                         void cptr.strcpy(nb = eos(nb), __sl24);
                     break;
-                    case 17:
+                    case NHC.BL_HUNGER:
                     if (strcmp(val, __sl24))
                         void cptr.strcpy(nb = eos(nb), __sl24);
                     break;
-                    case 9:
+                    case NHC.BL_CAP:
                     if (!strcmp(val, __sl24))
                         val = cptr.add(val, 1);
                     break;
@@ -634,10 +635,10 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                 }
                 void cptr.strcpy(nb = eos(nb), val);
             }
-            if ((idx2 == 22 && pass < 4 ? 1 : 0) && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n ? 1 : 0)
+            if ((idx2 == NHC.BL_CONDITION && pass < 4 ? 1 : 0) && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n ? 1 : 0)
                 break;
         }
-        if (idx2 == -1) {
+        if (idx2 == NHC.BL_FLUSH) {
             if (pass > 1)
                 mungspaces(cptr.decay(newbot2));
             break;
@@ -710,7 +711,7 @@ function dump_start_menu(win, mbehavior) {
 /** C ref: windows.c:1328 — @param {CInt} win @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr} str @param {CUInt} itemflags */
 function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     if (dumplog_file) {
-        if (cptr.ldI32(glyphinfo) == 9624)
+        if (cptr.ldI32(glyphinfo) == NHC.MAX_GLYPH)
             fprintf(dumplog_file, __sl26, str);
         else
             fprintf(dumplog_file, __sl27, ch, str);
@@ -1016,7 +1017,7 @@ export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
     cptr.stI32(cptr.add(wri, 40), cptr.ldI32(style));
     cptr.stI32(cptr.add(wri, 44), cptr.ldI32(cptr.add(style, 4)));
-    void (cptr.ldPtr(cptr.add(windowprocs, 408)))(window, 3, wri);
+    void (cptr.ldPtr(cptr.add(windowprocs, 408)))(window, NHC.set_menu_promptstyle, wri);
     cptr.st1(cptr.add(go, 528), 0);
 }
 
@@ -1088,7 +1089,7 @@ export function getlin(query, bufp) {
     let got_cmdq = 0;
     let cmdq = null;
     while ((cmdq = cmdq_pop()) !== null) {
-        if (cptr.ldI32(cmdq) == 0) {
+        if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             got_cmdq = 1;
             cptr.st1(bufp, schar(((cptr.ld1s(cptr.add(cmdq, 4)) != 10) ? cptr.ld1s(cptr.add(cmdq, 4)) : 0)));
             bufp = cptr.add(bufp, 1);

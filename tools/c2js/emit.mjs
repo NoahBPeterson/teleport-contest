@@ -284,23 +284,40 @@ function mergeConstAdd(baseCode, offCode) {
 }
 
 // JS strict-mode reserved words get a $ suffix when used as identifiers
-const JS_RESERVED = new Set(('in let class const var function delete typeof new yield await enum static implements interface package private protected public arguments eval this super export import extends finally catch instanceof void with debugger default do else if for while switch case break continue return try throw').split(' '));
+export const JS_RESERVED = new Set(('in let class const var function delete typeof new yield await enum static implements interface package private protected public arguments eval this super export import extends finally catch instanceof void with debugger default do else if for while switch case break continue return try throw').split(' '));
 export function jsName(name) { return JS_RESERVED.has(name) ? name + '$' : name; }
 
 // libc calls routed to cptr.* (same name)
 const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrchr', 'strstr', 'memcpy',
   'malloc', 'free', 'qsort', 'read', 'write', 'isupper', 'tolower', 'sprintf', 'snprintf', 'vsnprintf', 'printf']);
 
+// ---------------------------------------------------- named constants ----
+//
+// C enum constants used to inline as bare integers, which is unreadable
+// (`if (otmp->oclass == 5)`) and, for the 5.1 re-transpile, spreads the
+// renumbering churn over every generated file.  They now reference one
+// generated module, js/generated/nhconst.js, through a NAMESPACE import:
+// C lets a local or parameter shadow an enum constant name, so a named
+// import could be captured by an unrelated `int WAND_CLASS;` — a namespace
+// prefix cannot be.  The prefix is checked for collisions at assemble time
+// (build.mjs asserts no emitted body contains a bare `NHC` token).
+export const CONST_NS = 'NHC';
+export const CONST_MODULE = './nhconst.js';
+
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 4;
+export const EMIT_VERSION = 5;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
+    // enum constants that nhconst.js exports (corpus-wide, conflict-free);
+    // empty in single-file mode, where enum constants stay file-local
+    this.constNames = constNames instanceof Set ? constNames : new Set(constNames || []);
+    this.usesConsts = false;
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
@@ -697,15 +714,49 @@ export class Emitter {
     let got;
     try {
       // eslint-disable-next-line no-new-func
-      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', `return (${code});`)(
+      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, `return (${code});`)(
         (a, b) => { a >>>= 0; b >>>= 0; return ((a - (a % b)) / b) >>> 0; },
         (a, b) => (a >>> 0) % (b >>> 0),
-        (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF);
+        (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF,
+        // named constants stand in for their values: the audit checks the
+        // emitted arithmetic, and nhconst.js binds exactly these numbers
+        (this._constObj ||= Object.fromEntries(this.enumValues)));
     } catch (e) { FOLD_AUDIT.skipped.push(`eval: ${e.message} :: ${code}`); return; }
     const want = c.t.bits === 64 ? c.v : Number(c.v);
     const same = typeof got === 'bigint' ? got === BigInt(want) : Number(got) === Number(want);
     FOLD_AUDIT.checked++;
     if (!same) FOLD_AUDIT.bad.push(`${this.cref(n)}: ${code} => ${got}, folded ${want}`);
+  }
+
+  /**
+   * The nhconst.js name a foldable node IS, or null.
+   *
+   * Phase A of named constants: only a *bare* enum constant reference —
+   * possibly wrapped in parens/casts that do not change its value — becomes
+   * `NHC.NAME`.  A compound constant expression (`A | B`, `A + 1`) keeps its
+   * folded literal, so the fold's parity guarantee is untouched.
+   */
+  namedConst(n, c) {
+    if (!this.constNames.size) return null;
+    if (c.t.bits === 64) return null; // constExpr would emit `123n`; NHC.X is a Number
+    let x = n;
+    while (x && (x.kind === 'ParenExpr' || x.kind === 'ConstantExpr'
+      || ((x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr') && (x.inner || []).length === 1))) {
+      if (x.kind === 'CStyleCastExpr' && this.matchSizeIdiom(x)) return null;
+      x = x.inner[0];
+    }
+    if (!x || x.kind !== 'DeclRefExpr' || x.referencedDecl?.kind !== 'EnumConstantDecl') return null;
+    const name = x.name || x.referencedDecl?.name;
+    if (!name || !this.constNames.has(name) || !this.enumValues.has(name)) return null;
+    // a narrowing cast may have changed the value (`(char) BIG_ENUM`)
+    if (BigInt(this.enumValues.get(name)) !== c.v) return null;
+    return name;
+  }
+
+  /** `NHC.NAME` descriptor; keeps `const` so downstream folds still see a value */
+  constRefExpr(name, value) {
+    this.usesConsts = true;
+    return { code: `${CONST_NS}.${name}`, prec: PREC.atom, const: String(value), rep: 'val' };
   }
 
   /** emitted descriptor for a folded {v, t} */
@@ -727,6 +778,9 @@ export class Emitter {
         // A folded expression is closed (literals and arithmetic only), so it
         // evaluates standalone. Build-time audit only; off by default.
         if (FOLD_VERIFY) this.verifyFold(n, c);
+        // a fold that is exactly one enum constant keeps its name
+        const nm = this.namedConst(n, c);
+        if (nm) return this.constRefExpr(nm, Number(c.v));
         return this.constExpr(c);
       }
     }
@@ -777,9 +831,11 @@ export class Emitter {
     let name = n.name || n.referencedDecl?.name;
     const refId = n.referencedDecl?.id;
     const refKind = n.referencedDecl?.kind;
-    // header enum constants inline as literals (they are compile-time constants)
+    // enum constants are compile-time values: named through nhconst.js when
+    // that module exports them, otherwise inlined as literals
     if (refKind === 'EnumConstantDecl' && this.enumValues?.has(name)) {
       const v = this.enumValues.get(name);
+      if (this.constNames.has(name)) return this.constRefExpr(name, v);
       return { code: String(v), prec: PREC.atom, const: String(v), rep: 'val' };
     }
     if (name && (refKind === 'FunctionDecl' || refKind === 'VarDecl') && !(refId && this.staticLocals.has(refId))) {

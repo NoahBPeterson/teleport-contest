@@ -5,6 +5,7 @@
 
 import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { dealloc_obj, newoextra } from './mkobj.js';
@@ -480,16 +481,16 @@ function alreadynamed(mtmp, monnambuf, usrbuf) {
     let p;
     if (!cptr.ld1s(usrbuf)) {
         let name_not_title = schar((((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 524288n) != 0n) ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0));
-        pline(__sl1, upstart(monnambuf), ((cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 311, 96)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 313, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 312, 96)) ? 1 : 0) ? __sl2 : (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 24))), name_not_title ? __sl3 : __sl4);
+        pline(__sl1, upstart(monnambuf), ((cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_FAMINE, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_PESTILENCE, 96)) ? 1 : 0) ? __sl2 : (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 24))), name_not_title ? __sl3 : __sl4);
         return 1;
     } else if (((fuzzymatch(usrbuf, monnambuf, __sl5, 1) || (!strncmpi(monnambuf, __sl6, 4) && fuzzymatch(usrbuf, cptr.add(monnambuf, 4), __sl5, 1) ? 1 : 0) ? 1 : 0) || ((p = strstri(monnambuf, __sl7)) !== null && fuzzymatch(usrbuf, cptr.add(p, 10), __sl5, 1) ? 1 : 0) ? 1 : 0) || ((p = strstri(monnambuf, __sl8)) !== null && fuzzymatch(usrbuf, cptr.add(p, 4), __sl5, 1) ? 1 : 0) ? 1 : 0) {
-        if (((cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 311, 96)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 313, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 312, 96)) ? 1 : 0)) {
+        if (((cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_FAMINE, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_PESTILENCE, 96)) ? 1 : 0)) {
             pline(__sl9, upstart(monnambuf));
         } else {
             pline(__sl10, upstart(cptr.strcpy(cptr.decay(pronounbuf), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mtmp, 2), 48), 8))))), monnambuf);
         }
         return 1;
-    } else if ((cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 303, 96)) && strstri(monnambuf, __sl11) ? 1 : 0) && !strncmpi((usrbuf), (__sl12), -1) ? 1 : 0) {
+    } else if ((cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, NHC.PM_JUIBLEX, 96)) && strstri(monnambuf, __sl11) ? 1 : 0) && !strncmpi((usrbuf), (__sl12), -1) ? 1 : 0) {
         pline(__sl13, upstart(monnambuf), usrbuf);
         return 1;
     }
@@ -506,7 +507,7 @@ function do_mgivenname() {
     let cy;
     let mtmp = null;
     let do_swallow = 0;
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0)) {
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0)) {
         You(__sl14);
         return;
     }
@@ -526,12 +527,12 @@ function do_mgivenname() {
         mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cx, 168), cy, 8)));
     if (!mtmp && (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) {
         let glyph = glyph_at(i16(cx), i16(cy));
-        if (((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0)) {
+        if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < 7157 ? 1 : 0)) {
             mtmp = cptr.ldPtr(cptr.add(u, 2416));
             do_swallow = 1;
         }
     }
-    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && ((((!(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cy, 8)), cx)) & 2) != 0) || see_with_infrared(mtmp) ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2 ? 1 : 0) || ((cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && ((((!(((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cy, 8)), cx)) & 2) != 0) || see_with_infrared(mtmp) ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == NHC.M_AP_FURNITURE ? 1 : 0) || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == NHC.M_AP_OBJECT ? 1 : 0) || ((cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         pline(__sl17);
         return;
     }
@@ -541,12 +542,12 @@ function do_mgivenname() {
     if ((cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & 4096) && !(cptr.ldI32(cptr.add(mtmp, 192)) & 1) ? 1 : 0) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf)))
             pline(__sl19, upstart(cptr.decay(monnambuf)));
-    } else if ((cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 && !((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) || ((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) ? 1 : 0) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) <= 17 ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 && !((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.DEAF, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) || ((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) ? 1 : 0) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 66)) <= NHC.MS_ANIMAL ? 1 : 0) ? 1 : 0) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf))) {
             ;
             verbalize(__sl20, shkname(mtmp), cptr.decay(buf));
         }
-    } else if (((((cptr.ldI32(cptr.add(mtmp, 192)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 184)) & 1) | 0 ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0) || cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 287, 96)) ? 1 : 0) || (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 48))) ? 1 : 0) ? 1 : 0) {
+    } else if (((((cptr.ldI32(cptr.add(mtmp, 192)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 184)) & 1) | 0 ? 1 : 0) || (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0) || cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, NHC.PM_GHOST, 96)) ? 1 : 0) || (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mtmp), 312)), 48))) ? 1 : 0) ? 1 : 0) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf)))
             pline(__sl21, upstart(cptr.decay(monnambuf)), cptr.decay(buf));
     } else {
@@ -561,12 +562,12 @@ function do_oname(obj) {
     let bufcpy = new Uint8Array(256);
     let qbuf = new Uint8Array(128);
     let aname;
-    let objtyp = cptr.box(0);
-    if (cptr.ldI16(cptr.add(obj, 32)) == 408) {
+    let objtyp = cptr.box(NHC.STRANGE_OBJECT);
+    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.SPE_NOVEL) {
         pline(__sl22, Ysimple_name2(obj));
         return;
     }
-    void cptr.sprintf(cptr.decay(qbuf), __sl23, (cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == 26 && !undiscovered_artifact(26) ? 1 : 0) ? 1 : 0) ? __sl24 : __sl25);
+    void cptr.sprintf(cptr.decay(qbuf), __sl23, (cptr.ldI64(cptr.add((obj), 40)) != 1n || (cptr.ld1s(cptr.add((obj), 51)) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD) ? 1 : 0) ? 1 : 0) ? __sl24 : __sl25);
     void safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl26, obj, xname, simpleonames, __sl27);
     if (!name_from_player(cptr.decay(buf), cptr.decay(qbuf), safe_oname(obj)))
         return;
@@ -581,7 +582,7 @@ function do_oname(obj) {
         do {
             wipeout_text(bufp, rnd_on_display_rng(2), 0);
         } while (!strcmp(cptr.decay(buf), cptr.decay(bufcpy)));
-        pline(__sl30, body_part(6));
+        pline(__sl30, body_part(NHC.HAND));
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 0);
         You(__sl31, cptr.decay(buf));
         (cptr.stI64(cptr.add(u, 2016), cptr.ldI64(cptr.add(u, 2016)) + 1n)) - (1n);
@@ -636,20 +637,20 @@ export function objtyp_is_callable(i) {
     if (cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)))
         return 1;
     switch (cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70))) {
-        case 5:
-        if (i == 213 || i == 212 ? 1 : 0)
+        case NHC.AMULET_CLASS:
+        if (i == NHC.AMULET_OF_YENDOR || i == NHC.FAKE_AMULET_OF_YENDOR ? 1 : 0)
             break;
         // @FallThrough
         ;
-        case 9:
-        case 8:
-        case 11:
-        case 4:
-        case 13:
-        case 10:
-        case 3:
-        case 6:
-        case 17:
+        case NHC.SCROLL_CLASS:
+        case NHC.POTION_CLASS:
+        case NHC.WAND_CLASS:
+        case NHC.RING_CLASS:
+        case NHC.GEM_CLASS:
+        case NHC.SPBOOK_CLASS:
+        case NHC.ARMOR_CLASS:
+        case NHC.TOOL_CLASS:
+        case NHC.VENOM_CLASS:
         if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, i, 120)), 2)), 16), 8))))
             return 1;
         break;
@@ -661,20 +662,20 @@ export function objtyp_is_callable(i) {
 
 /** C ref: do_name.c:467 — @param {CPtr} obj @returns {CInt} */
 export function name_ok(obj) {
-    if (!obj || cptr.ld1s(cptr.add(obj, 49)) == 12 ? 1 : 0)
-        return -3;
-    if ((!(cptr.ldI32(cptr.add(obj, 84)) & 1) || cptr.ld1s(cptr.add(obj, 51)) ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 408 ? 1 : 0)
-        return 1;
-    return 2;
+    if (!obj || cptr.ld1s(cptr.add(obj, 49)) == NHC.COIN_CLASS ? 1 : 0)
+        return NHC.GETOBJ_EXCLUDE;
+    if ((!(cptr.ldI32(cptr.add(obj, 84)) & 1) || cptr.ld1s(cptr.add(obj, 51)) ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.SPE_NOVEL ? 1 : 0)
+        return NHC.GETOBJ_DOWNPLAY;
+    return NHC.GETOBJ_SUGGEST;
 }
 
 /** C ref: do_name.c:480 — @param {CPtr} obj @returns {CInt} */
 export function call_ok(obj) {
     if (!obj || !objtyp_is_callable(cptr.ldI16(cptr.add(obj, 32))) ? 1 : 0)
-        return -3;
+        return NHC.GETOBJ_EXCLUDE;
     if (!(cptr.ldI32(cptr.add(obj, 84)) & 1) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 16)) & 1) | 0 && !cptr.ldPtr(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 8)) ? 1 : 0) ? 1 : 0)
-        return 1;
-    return 2;
+        return NHC.GETOBJ_DOWNPLAY;
+    return NHC.GETOBJ_SUGGEST;
 }
 
 /** C ref: do_name.c:499 @returns {CInt} */
@@ -692,10 +693,10 @@ export function docallcmd() {
         if ((cmdq = cmdq_pop()) !== null) {
             cptr.memcpy(cq, cmdq, 32);
             cptr.free(cmdq);
-            if (cptr.ldI32(cq) == 0)
+            if (cptr.ldI32(cq) == NHC.CMDQ_KEY)
                 ch = cptr.ld1s(cptr.add(cq, 4));
             else
-                cmdq_clear(0);
+                cmdq_clear(NHC.CQ_CANNED);
             break __lbl_docallcmd;
         }
         win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
@@ -766,19 +767,19 @@ function docall_xname(obj) {
     cptr.stPtr(cptr.add(otemp, 208), null);
     cptr.stI64(cptr.add(otemp, 40), 1n);
     cptr.stI32(cptr.add(otemp, 60), cptr.stI32(cptr.add(otemp, 56), 0));
-    if (cptr.ld1s(cptr.add(otemp, 49)) == 2)
+    if (cptr.ld1s(cptr.add(otemp, 49)) == NHC.WEAPON_CLASS)
         cptr.stI32(cptr.add(otemp, 132), 0);
-    else if (cptr.ld1s(cptr.add(otemp, 49)) == 8)
+    else if (cptr.ld1s(cptr.add(otemp, 49)) == NHC.POTION_CLASS)
         cptr.stI32(cptr.add(otemp, 112), 0);
-    else if (cptr.ldI16(cptr.add(otemp, 32)) == 234 || cptr.ldI16(cptr.add(otemp, 32)) == 476 ? 1 : 0)
+    else if (cptr.ldI16(cptr.add(otemp, 32)) == NHC.TOWEL || cptr.ldI16(cptr.add(otemp, 32)) == NHC.STATUE ? 1 : 0)
         cptr.st1(cptr.add(otemp, 48), 0);
-    else if (cptr.ldI16(cptr.add(otemp, 32)) == 296)
+    else if (cptr.ldI16(cptr.add(otemp, 32)) == NHC.TIN)
         cptr.stI32(cptr.add(otemp, 80), 0);
-    else if (cptr.ldI16(cptr.add(otemp, 32)) == 241)
-        cptr.stI32(cptr.add(otemp, 168), -1);
-    else if (cptr.ldI16(cptr.add(otemp, 32)) == 477)
-        cptr.stI32(cptr.add(otemp, 36), cptr.ldI32(cptr.add(cptr.add(objects, 477, 120), 76)));
-    else if (cptr.ld1s(cptr.add(otemp, 49)) == 7 && (cptr.ldI32(cptr.add(otemp, 136)) & 1) | 0 ? 1 : 0)
+    else if (cptr.ldI16(cptr.add(otemp, 32)) == NHC.FIGURINE)
+        cptr.stI32(cptr.add(otemp, 168), NHC.NON_PM);
+    else if (cptr.ldI16(cptr.add(otemp, 32)) == NHC.HEAVY_IRON_BALL)
+        cptr.stI32(cptr.add(otemp, 36), cptr.ldI32(cptr.add(cptr.add(objects, NHC.HEAVY_IRON_BALL, 120), 76)));
+    else if (cptr.ld1s(cptr.add(otemp, 49)) == NHC.FOOD_CLASS && (cptr.ldI32(cptr.add(otemp, 136)) & 1) | 0 ? 1 : 0)
         cptr.stI32(cptr.add(otemp, 36), 120);
     return an(xname(otemp));
 }
@@ -792,7 +793,7 @@ export function docall(obj) {
     if (!(cptr.ldI32(cptr.add(obj, 84)) & 1))
         return;
     flush_screen(1);
-    if (cptr.ld1s(cptr.add(obj, 49)) == 8 && cptr.ldI32(cptr.add(obj, 168)) ? 1 : 0)
+    if (cptr.ld1s(cptr.add(obj, 49)) == NHC.POTION_CLASS && cptr.ldI32(cptr.add(obj, 168)) ? 1 : 0)
         void cptr.sprintf(cptr.decay(qbuf), __sl46, (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))));
     else
         void safe_qbuf(cptr.decay(qbuf), __sl47, __sl48, obj, docall_xname, simpleonames, __sl49);
@@ -831,16 +832,16 @@ function namefloorobj() {
         obj.v = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)));
     } else {
         glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
-        if (((((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0))
+        if (((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < 3465 ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0))
             fakeobj = object_from_map(glyph, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), obj);
     }
     if (!obj.v) {
         There(__sl53, ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? __sl54 : __sl55);
         return;
     }
-    void cptr.strcpy(cptr.decay(buf), (cptr.ldI16(cptr.add(obj.v, 32)) != 0) ? simpleonames(obj.v) : cptr.ldPtr(cptr.add(obj_descr, 0, 16)));
+    void cptr.strcpy(cptr.decay(buf), (cptr.ldI16(cptr.add(obj.v, 32)) != NHC.STRANGE_OBJECT) ? simpleonames(obj.v) : cptr.ldPtr(cptr.add(obj_descr, NHC.STRANGE_OBJECT, 16)));
     use_plural = schar((cptr.ldI64(cptr.add(obj.v, 40)) > 1n));
-    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0)) {
+    if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0)) {
         let unames = cptr.alloc(6 * 8);
         let tmpbuf = new Uint8Array(256);
         cptr.stPtr(cptr.add(unames, 0, 8), (((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) && cptr.ldPtr(cptr.add(gu, 16)) ? 1 : 0) ? cptr.ldPtr(cptr.add(gu, 16)) : cptr.ldPtr(cptr.add(gu, 8)));
@@ -850,7 +851,7 @@ function namefloorobj() {
         cptr.stPtr(cptr.add(unames, 4, 8), roguename());
         cptr.stPtr(cptr.add(unames, 5, 8), __sl56);
         pline(__sl57, The(cptr.decay(buf)), use_plural ? __sl58 : __sl59, cptr.ldPtr(cptr.add(unames, rn2_on_display_rng(6), 8)));
-    } else if (call_ok(obj.v) == -3) {
+    } else if (call_ok(obj.v) == NHC.GETOBJ_EXCLUDE) {
         pline(__sl60, use_plural ? __sl61 : __sl62, cptr.decay(buf));
     } else if (!(cptr.ldI32(cptr.add(obj.v, 84)) & 1)) {
         You(__sl63, use_plural ? __sl64 : __sl65, cptr.decay(buf), use_plural ? __sl66 : __sl67);
@@ -921,7 +922,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     let name_at_start;
     let has_adjectives;
     let insertbuf2;
-    let mappear_as_mon = schar(((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 3));
+    let mappear_as_mon = schar(((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == NHC.M_AP_MONSTER));
     let bp;
     let buf2 = new Uint8Array(256);
     if (cptr.eq(mtmp, cptr.add(gy, 8)))
@@ -934,7 +935,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         article = 1;
         suppress |= 2;
     }
-    do_hallu = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && !(suppress & 4) ? 1 : 0));
+    do_hallu = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) && !(suppress & 4) ? 1 : 0));
     do_invis = schar(((cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 && !(suppress & 2) ? 1 : 0));
     do_it = schar((((((!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) && article != 3 ? 1 : 0) && !cptr.ldI32(program_state) ? 1 : 0) && !cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2424))) ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0) ? 1 : 0) && !(suppress & 1) ? 1 : 0));
     do_saddle = schar((!(suppress & 8)));
@@ -950,14 +951,14 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     }
     if (((cptr.ldI32(cptr.add(mtmp, 192)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 184)) & 1) | 0 ? 1 : 0) && !do_mappear ? 1 : 0) {
         let name;
-        let save_prop = cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24));
+        let save_prop = cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24));
         let save_invis = (cptr.ldI32(cptr.add(mtmp, 88)) & 1);
         if (!do_hallu)
-            cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), 1n);
+            cptr.stI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 1n);
         if (!do_invis)
             cptr.stI32(cptr.add(mtmp, 88), 0);
         name = priestname(mtmp, article, do_exact, cptr.decay(buf2));
-        cptr.stI64(cptr.add(cptr.add(u, 112), 24, 24), save_prop);
+        cptr.stI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), save_prop);
         cptr.stI32(cptr.add(mtmp, 88), save_invis);
         if (article == 0 && !cptr.strncmp(name, __sl6, 4n) ? 1 : 0)
             name = cptr.add(name, 4);
@@ -975,7 +976,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
             void cptr.strcat(buf, shkname(mtmp));
         } else {
             void cptr.strcat(buf, shkname(mtmp));
-            if (!cptr.eq(mdat, cptr.add(mons, 271, 96)) || do_invis ? 1 : 0) {
+            if (!cptr.eq(mdat, cptr.add(mons, NHC.PM_SHOPKEEPER, 96)) || do_invis ? 1 : 0) {
                 void cptr.strcat(buf, __sl109);
                 if (do_invis)
                     void cptr.strcat(buf, __sl7);
@@ -988,7 +989,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         void cptr.strcat(cptr.strcat(buf, adjective), __sl108);
     if (do_invis)
         void cptr.strcat(buf, __sl7);
-    if (((do_saddle && (cptr.ldI64(cptr.add(mtmp, 296)) & 1048576n) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (((do_saddle && (cptr.ldI64(cptr.add(mtmp, 296)) & 1048576n) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
         void cptr.strcat(buf, __sl110);
     has_adjectives = schar((cptr.ld1s(cptr.add(buf, 0)) != 0));
     if (do_hallu) {
@@ -998,13 +999,13 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         name_at_start = bogon_is_pname(rnamecode.v);
     } else if (do_name && (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0) ? 1 : 0) {
         let name = (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312))));
-        if (cptr.eq(mdat, cptr.add(mons, 287, 96))) {
+        if (cptr.eq(mdat, cptr.add(mons, NHC.PM_GHOST, 96))) {
             void cptr.sprintf(eos(buf), __sl111, s_suffix(name));
             name_at_start = 1;
         } else if (called) {
             void cptr.sprintf(eos(buf), __sl112, pm_name, name);
             name_at_start = schar(((cptr.ldU64(cptr.add((mdat), 80)) & 524288n) != 0n));
-        } else if (((cptr.cmp((mdat), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0) && (bp = strstri(name, __sl109)) !== null ? 1 : 0) {
+        } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0) && (bp = strstri(name, __sl109)) !== null ? 1 : 0) {
             let pbuf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(pbuf), name);
             cptr.st1(cptr.add(cptr.decay(pbuf), BigInt.asIntN(64, cptr.diff(bp, name) + 5n), 1), 0);
@@ -1018,7 +1019,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
             void cptr.strcat(buf, name);
             name_at_start = 1;
         }
-    } else if (((cptr.cmp((mdat), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0) && !(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 1 : 0) {
+    } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0) && !(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 1 : 0) {
         let pbuf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(pbuf), rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.ldI32(cptr.add((mdat), 24))), schar((cptr.ldI32(cptr.add(mtmp, 84)) & 1))));
         void cptr.strcat(buf, lcase(cptr.decay(pbuf)));
@@ -1028,7 +1029,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         name_at_start = schar(((cptr.ldU64(cptr.add((mdat), 80)) & 524288n) != 0n));
     }
     if (name_at_start && (article == 3 || !has_adjectives ? 1 : 0) ? 1 : 0) {
-        if (cptr.eq(mdat, cptr.add(mons, 285, 96)))
+        if (cptr.eq(mdat, cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96)))
             article = 1;
         else
             article = 0;
@@ -1147,7 +1148,7 @@ export function Amonnam(mtmp) {
 
 /** C ref: do_name.c:1170 — @param {CPtr} mon @param {CInt} article @param {CPtr} outbuf @returns {CPtr} */
 export function distant_monnam(mon, article, outbuf) {
-    if (((cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 276, 96)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ldI16(cptr.add((cptr.add(svd, 1868)), 2)) || cptr.ldI16((cptr.add(svd, 1868))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1868)) ? 1 : 0)) ? 1 : 0) && !(dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0) {
+    if (((cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ldI16(cptr.add((cptr.add(svd, 1868)), 2)) || cptr.ldI16((cptr.add(svd, 1868))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1868)) ? 1 : 0)) ? 1 : 0) && !(dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0) {
         void cptr.strcpy(outbuf, article == 1 ? __sl6 : __sl0);
         void cptr.strcat(outbuf, (cptr.ldI32(cptr.add(mon, 84)) & 1) | 0 ? __sl114 : __sl115);
     } else {
@@ -1214,13 +1215,13 @@ export function minimal_monnam(mon, ckloc) {
         void cptr.strcpy(outbuf, __sl121);
     } else if (cptr.cmp(ptr, cptr.add(mons, 0, 96)) < 0) {
         void cptr.sprintf(outbuf, __sl122, fmt_ptr(cptr.ldPtr(cptr.add(mon, 8))), fmt_ptr(cptr.add(mons, 0, 96)));
-    } else if (cptr.cmp(ptr, cptr.add(mons, 383, 96)) >= 0) {
-        void cptr.sprintf(outbuf, __sl123, fmt_ptr(cptr.ldPtr(cptr.add(mon, 8))), fmt_ptr(cptr.add(mons, 383, 96)));
-    } else if (((ckloc && cptr.eq(ptr, cptr.add(mons, 114, 96)) ? 1 : 0) && cptr.ldI16(cptr.add(mon, 28)) ? 1 : 0) && !cptr.eq(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(cptr.add(mon, 28)), 168), cptr.ldI16(cptr.add(mon, 30)), 8)), mon) ? 1 : 0) {
-        void cptr.sprintf(outbuf, __sl124, pmname(cptr.add(mons, 330, 96), Mgender(mon)), cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
+    } else if (cptr.cmp(ptr, cptr.add(mons, NHC.NUMMONS, 96)) >= 0) {
+        void cptr.sprintf(outbuf, __sl123, fmt_ptr(cptr.ldPtr(cptr.add(mon, 8))), fmt_ptr(cptr.add(mons, NHC.NUMMONS, 96)));
+    } else if (((ckloc && cptr.eq(ptr, cptr.add(mons, NHC.PM_LONG_WORM, 96)) ? 1 : 0) && cptr.ldI16(cptr.add(mon, 28)) ? 1 : 0) && !cptr.eq(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(cptr.add(mon, 28)), 168), cptr.ldI16(cptr.add(mon, 30)), 8)), mon) ? 1 : 0) {
+        void cptr.sprintf(outbuf, __sl124, pmname(cptr.add(mons, NHC.PM_LONG_WORM_TAIL, 96), Mgender(mon)), cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
     } else {
         void cptr.sprintf(outbuf, __sl125, cptr.ld1s(cptr.add(mon, 65)) ? __sl126 : ((cptr.ldI32(cptr.add(mon, 168)) & 1) | 0 ? __sl127 : __sl0), mon_pmname(mon), cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)));
-        if (cptr.ldI16(cptr.add(mon, 22)) != -1)
+        if (cptr.ldI16(cptr.add(mon, 22)) != NHC.NON_PM)
             void cptr.sprintf(eos(outbuf), __sl128, pmname(cptr.add(mons, cptr.ldI16(cptr.add(mon, 22)), 96), Mgender(mon)));
     }
     return outbuf;
@@ -1228,20 +1229,20 @@ export function minimal_monnam(mon, ckloc) {
 
 /** C ref: do_name.c:1289 — @param {CPtr} mtmp @returns {CInt} */
 export function Mgender(mtmp) {
-    let mgender = 0;
+    let mgender = NHC.MALE;
     if (cptr.eq(mtmp, cptr.add(gy, 8))) {
         if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13)))
-            mgender = 1;
+            mgender = NHC.FEMALE;
     } else if ((cptr.ldI32(cptr.add(mtmp, 84)) & 1)) {
-        mgender = 1;
+        mgender = NHC.FEMALE;
     }
     return mgender;
 }
 
 /** C ref: do_name.c:1303 — @param {CPtr} pm @param {CInt} mgender @returns {CPtr} */
 export function pmname(pm, mgender) {
-    if ((mgender < 0 || mgender >= 3 ? 1 : 0) || !cptr.ldPtr(cptr.add(pm, mgender, 8)) ? 1 : 0)
-        mgender = 2;
+    if ((mgender < NHC.MALE || mgender >= NHC.NUM_MGENDERS ? 1 : 0) || !cptr.ldPtr(cptr.add(pm, mgender, 8)) ? 1 : 0)
+        mgender = NHC.NEUTRAL;
     return cptr.ldPtr(cptr.add(pm, mgender, 8));
 }
 
@@ -1252,12 +1253,12 @@ export function mon_pmname(mon) {
 
 /** C ref: do_name.c:1321 — @param {CPtr} obj @returns {CPtr} */
 export function obj_pmname(obj) {
-    if (((cptr.ldI16(cptr.add(obj, 32)) == 265 || cptr.ldI16(cptr.add(obj, 32)) == 476 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 241 ? 1 : 0) && ((cptr.ldI32(cptr.add(obj, 168))) >= 0 && (cptr.ldI32(cptr.add(obj, 168))) < 383 ? 1 : 0) ? 1 : 0) {
+    if (((cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.FIGURINE ? 1 : 0) && ((cptr.ldI32(cptr.add(obj, 168))) >= NHC.LOW_PM && (cptr.ldI32(cptr.add(obj, 168))) < NHC.NUMMONS ? 1 : 0) ? 1 : 0) {
         let cgend = (cptr.ld1s(cptr.add(obj, 48)) & 3);
-        let mgend = ((cgend == 2) ? 0 : ((cgend == 1) ? 1 : 2));
+        let mgend = ((cgend == 2) ? NHC.MALE : ((cgend == 1) ? NHC.FEMALE : NHC.NEUTRAL));
         let mndx = cptr.ldI32(cptr.add(obj, 168));
-        if (mndx == 275 && cgend == 0 ? 1 : 0)
-            mndx = 337;
+        if (mndx == NHC.PM_ALIGNED_CLERIC && cgend == 0 ? 1 : 0)
+            mndx = NHC.PM_CLERIC;
         return pmname(cptr.add(mons, mndx, 96), mgend);
     }
     impossible(__sl129, cptr.ldI16(cptr.add(obj, 32)), cptr.ldI32(cptr.add(obj, 168)));
@@ -1292,9 +1293,9 @@ export function rndmonnam(code) {
     if (code)
         cptr.st1(code, 0);
     do {
-        name = (rn2_on_display_rng(430) + 0) | 0;
-    } while (name < 330 && (((cptr.ldU64(cptr.add((cptr.add(mons, name, 96)), 80)) & 524288n) != 0n) || (cptr.ldU16(cptr.add(cptr.add(mons, name, 96), 34)) & 512) ? 1 : 0) ? 1 : 0);
-    if (name >= 330) {
+        name = (rn2_on_display_rng(430) + NHC.LOW_PM) | 0;
+    } while (name < NHC.SPECIAL_PM && (((cptr.ldU64(cptr.add((cptr.add(mons, name, 96)), 80)) & 524288n) != 0n) || (cptr.ldU16(cptr.add(cptr.add(mons, name, 96), 34)) & 512) ? 1 : 0) ? 1 : 0);
+    if (name >= NHC.SPECIAL_PM) {
         mnam = bogusmon(cptr.decay(__static_rndmonnam_buf), code);
     } else {
         mnam = cptr.strcpy(cptr.decay(__static_rndmonnam_buf), pmname(cptr.add(mons, name, 96), rn2_on_display_rng(2)));
@@ -1404,13 +1405,13 @@ cptr.stPtr(cptr.add(hcolors, 584), __sl213);
 
 /** C ref: do_name.c:1461 — @param {CPtr} colorpref @returns {CPtr} */
 export function hcolor(colorpref) {
-    return ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) || !colorpref ? 1 : 0) ? cptr.ldPtr(cptr.add(hcolors, rn2_on_display_rng(74), 8)) : colorpref;
+    return ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) || !colorpref ? 1 : 0) ? cptr.ldPtr(cptr.add(hcolors, rn2_on_display_rng(74), 8)) : colorpref;
 }
 
 /** C ref: do_name.c:1470 @returns {CPtr} */
 export function rndcolor() {
     let k = (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1472, __sl214), rn2(16)) : rn2(16));
-    return (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? hcolor(null) : ((k == 8) ? __sl189 : cptr.ldPtr(cptr.add(c_obj_colors, k, 8)));
+    return (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? hcolor(null) : ((k == 8) ? __sl189 : cptr.ldPtr(cptr.add(c_obj_colors, k, 8)));
 }
 
 /** C ref: do_name.c:1479 — char *[40] */
@@ -1458,7 +1459,7 @@ cptr.stPtr(cptr.add(hliquids, 312), __sl254);
 
 /** C ref: do_name.c:1493 — @param {CPtr} liquidpref @returns {CPtr} */
 export function hliquid(liquidpref) {
-    let hallucinate = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && !cptr.ldI32(program_state) ? 1 : 0));
+    let hallucinate = schar(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) && !cptr.ldI32(program_state) ? 1 : 0));
     if ((hallucinate || !liquidpref ? 1 : 0) || !cptr.ld1s(liquidpref) ? 1 : 0) {
         let indx;
         let count = 40;

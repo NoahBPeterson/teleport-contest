@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { gc, gg, gs, hexdd } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { glyphmap, map_glyphinfo, nul_glyphinfo } from './display.js';
@@ -54,7 +55,7 @@ export function free_all_glyphmap_u() {
     let glyph;
     let x;
     let y;
-    for (glyph = 0; glyph < 9624; ++glyph) {
+    for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24))) {
             if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8))) {
                 cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8)));
@@ -122,16 +123,16 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
 
 /** C ref: utf8map.c:148 — @param {CPtr} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr} utf8str @param {*} which_set @returns {CInt} */
 export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
-    let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), 2, 32);
+    let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), NHC.custom_ureps, 32);
     let details;
     let newdetails = null;
     if (!cptr.ldPtr(cptr.add(gdc, 16))) {
         cptr.stPtr(gdc, dupstr(customization_name));
-        cptr.stI32(cptr.add(gdc, 12), 2);
+        cptr.stI32(cptr.add(gdc, 12), NHC.custom_ureps);
         cptr.stPtr(cptr.add(gdc, 16), null);
         cptr.stPtr(cptr.add(gdc, 24), null);
     }
-    details = find_matching_customization(customization_name, 2, which_set);
+    details = find_matching_customization(customization_name, NHC.custom_ureps, which_set);
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
@@ -171,5 +172,5 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
 /** C ref: utf8map.c:211 */
 export function reset_customsymbols() {
     free_all_glyphmap_u();
-    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), 2);
+    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), NHC.do_custom_symbols);
 }

@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { nh_snprintf } from './hacklib.js';
 import { historical_sfi_procs, historical_sfo_procs } from './sfstruct.js';
 
@@ -2633,12 +2634,12 @@ export function complex_dump(a) {
 
 /** C ref: sfbase.c:647 */
 export function sf_init() {
-    cptr.memcpy(cptr.add(sfoprocs, 0, 552), zerosfoprocs, 552);
-    cptr.memcpy(cptr.add(sfiprocs, 0, 552), zerosfiprocs, 552);
-    cptr.memcpy(cptr.add(sfoprocs, 1, 552), historical_sfo_procs, 552);
-    cptr.memcpy(cptr.add(sfiprocs, 1, 552), historical_sfi_procs, 552);
-    cptr.memcpy(cptr.add(sfoflprocs, 2, 552), zerosfoflprocs, 552);
-    cptr.memcpy(cptr.add(sfiflprocs, 2, 552), zerosfiflprocs, 552);
+    cptr.memcpy(cptr.add(sfoprocs, NHC.invalid, 552), zerosfoprocs, 552);
+    cptr.memcpy(cptr.add(sfiprocs, NHC.invalid, 552), zerosfiprocs, 552);
+    cptr.memcpy(cptr.add(sfoprocs, NHC.historical, 552), historical_sfo_procs, 552);
+    cptr.memcpy(cptr.add(sfiprocs, NHC.historical, 552), historical_sfi_procs, 552);
+    cptr.memcpy(cptr.add(sfoflprocs, NHC.exportascii, 552), zerosfoflprocs, 552);
+    cptr.memcpy(cptr.add(sfiflprocs, NHC.exportascii, 552), zerosfiflprocs, 552);
 }
 
 /** C ref: sfbase.c:658 — @param {CInt} idx @param {CPtr} sfi @param {CPtr} sfo */

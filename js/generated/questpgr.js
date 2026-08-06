@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -84,11 +85,11 @@ export function quest_info(typ) {
     switch (typ) {
         case 0:
         return cptr.ldI16(cptr.add(gu, 232));
-        case 36:
+        case NHC.MS_LEADER:
         return cptr.ldI16(cptr.add(gu, 220));
-        case 37:
+        case NHC.MS_NEMESIS:
         return cptr.ldI16(cptr.add(gu, 224));
-        case 38:
+        case NHC.MS_GUARDIAN:
         return cptr.ldI16(cptr.add(gu, 222));
         default:
         impossible(__sl0, typ);
@@ -99,7 +100,7 @@ export function quest_info(typ) {
 /** C ref: questpgr.c:50 @returns {CPtr} */
 export function ldrname() {
     let i = cptr.ldI16(cptr.add(gu, 220));
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8)));
+    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), NHC.NEUTRAL, 8)));
     return cptr.add(gn, 87);
 }
 
@@ -159,14 +160,14 @@ export function find_quest_artifact(whichchains) {
 /** C ref: questpgr.c:124 @returns {CPtr} */
 function neminame() {
     let i = cptr.ldI16(cptr.add(gu, 224));
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8)));
+    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), NHC.NEUTRAL, 8)));
     return cptr.add(gn, 87);
 }
 
 /** C ref: questpgr.c:134 @returns {CPtr} */
 function guardname() {
     let i = cptr.ldI16(cptr.add(gu, 222));
-    return cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8));
+    return cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), NHC.NEUTRAL, 8));
 }
 
 /** C ref: questpgr.c:142 @returns {CPtr} */
@@ -278,7 +279,7 @@ function convert_arg(c) {
         str = __sl24;
         break;
         case 120:
-        str = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl25 : __sl26;
+        str = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) ? __sl25 : __sl26;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
@@ -616,12 +617,12 @@ export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16(cptr.add(gu, 226));
-        if ((qpm != -1 && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
+        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
             return cptr.add(mons, qpm, 96);
         return mkclass(cptr.ld1s(cptr.add(gu, 230)), 0);
     }
     qpm = cptr.ldI16(cptr.add(gu, 228));
-    if ((qpm != -1 && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
+    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
         return cptr.add(mons, qpm, 96);
     return mkclass(cptr.ld1s(cptr.add(gu, 231)), 0);
 }

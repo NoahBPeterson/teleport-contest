@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_optinteger, luaL_setfuncs } from './lauxlib.js';
 import { check_mapchr, get_table_int, get_table_int_opt, get_table_option, lcheck_param_table, nhl_add_table_entry_int, nhl_error, nhl_get_xy_params, nhl_pcall_handle } from './nhlua.js';
 import { selection_clear, selection_do_ellipse, selection_do_gradient, selection_do_grow, selection_do_line, selection_do_randline, selection_filter_mapchar, selection_filter_percent, selection_floodfill, selection_free, selection_from_mkroom, selection_getbounds, selection_getpoint, selection_new, selection_not, selection_recalc_bounds, selection_rndcoord, selection_setpoint, selection_size_description } from './selvar.js';
@@ -553,7 +554,7 @@ function l_selection_filter_mapchar(L) {
     let typ = i16(check_mapchr(mapchr));
     let lit = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, -2n)));
     let tmp;
-    if (typ == 127)
+    if (typ == NHC.INVALID_TYPE)
         nhl_error(L, __sl19);
     tmp = selection_filter_mapchar(sel, typ, lit);
     lua_settop(L, (-(argc) - 1) | 0);
@@ -767,7 +768,7 @@ function l_selection_iterate(L) {
                         lua_pushvalue(L, 2);
                         lua_pushinteger(L, BigInt(tmpx.v));
                         lua_pushinteger(L, BigInt(tmpy.v));
-                        if (nhl_pcall_handle(L, 2, 0, __sl29, 1)) {
+                        if (nhl_pcall_handle(L, 2, 0, __sl29, NHC.NHLpa_impossible)) {
                             break __lbl_out;
                         }
                     }

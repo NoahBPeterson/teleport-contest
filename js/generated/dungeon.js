@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { debugcore } from './files.js';
 import { WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs, svt, svu, u, vowels } from './decl.js';
 import { sfi_branch, sfi_char, sfi_d_level, sfi_dgn_topology, sfi_dungeon, sfi_int, sfi_int16, sfi_linfo, sfi_mapseen_feat, sfi_mapseen_flags, sfi_mapseen_rooms, sfi_nhcoord, sfi_unsigned, sfi_xint16, sfo_branch, sfo_char, sfo_d_level, sfo_dgn_topology, sfo_dungeon, sfo_int, sfo_int16, sfo_linfo, sfo_mapseen_feat, sfo_mapseen_flags, sfo_mapseen_rooms, sfo_nhcoord, sfo_unsigned, sfo_xint16 } from './sfbase.js';
@@ -1430,7 +1431,7 @@ export function prev_level(at_stairs) {
         cptr.st1(cptr.add(stway, 10), 1);
     if ((at_stairs && stway ? 1 : 0) && cptr.ldI16(cptr.add(stway, 4)) != cptr.ldI16(cptr.add(u, 24)) ? 1 : 0) {
         if ((!cptr.ldI16(cptr.add(u, 24)) && cptr.ldI16(cptr.add(u, 26)) == 1 ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? 1 : 0)
-            done(14);
+            done(NHC.ESCAPED);
         else {
             cptr.stI16(newlevel, cptr.ldI16(cptr.add(stway, 4)));
             cptr.stI16(cptr.add(newlevel, 2), cptr.ldI16(cptr.add(stway, 6)));
@@ -1446,15 +1447,15 @@ export function prev_level(at_stairs) {
 /** C ref: dungeon.c:1548 */
 function earth_sense() {
     let otmp;
-    if (!(cptr.ldI16(cptr.add(gu, 368)) == 44))
+    if (!(cptr.ldI16(cptr.add(gu, 368)) == NHC.PM_DWARF))
         return;
-    if (((cptr.ldPtr(cptr.add(u, 2424)) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0)
+    if (((cptr.ldPtr(cptr.add(u, 2424)) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.FLYING, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 8)) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8)) ? 1 : 0) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0)
         return;
-    if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) != 24 && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) != 25 ? 1 : 0)
+    if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) != NHC.CORR && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) != NHC.ROOM ? 1 : 0)
         return;
     for (otmp = cptr.ldPtr(cptr.add(svl, 89048)); otmp; otmp = cptr.ldPtr(otmp))
         if (((cptr.ldI16(cptr.add(otmp, 28))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(otmp, 30))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
-            You(__sl143, makeplural(body_part(5)));
+            You(__sl143, makeplural(body_part(NHC.FOOT)));
             return;
         }
 }
@@ -1475,9 +1476,9 @@ export function u_on_newpos(x, y) {
     if (!on_level(cptr.add(u, 24), cptr.add(u, 28))) {
         cptr.stI16(cptr.add(u, 20), cptr.ldI16(u)), cptr.stI16(cptr.add(u, 22), cptr.ldI16(cptr.add(u, 2)));
         map_location(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0);
-        cptr.stI32(cptr.add(iflags, 108), 37);
+        cptr.stI32(cptr.add(iflags, 108), NHC.MAX_TYPE);
     } else {
-        if ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1848)) & 1) ? 1 : 0)
+        if ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1848)) & 1) ? 1 : 0)
             see_nearby_objects();
     }
     earth_sense();
@@ -1488,11 +1489,11 @@ export function u_on_rndspot(upflag) {
     let up = (upflag & 1);
     let was_in_W_tower = (upflag & 2);
     if (was_in_W_tower && On_W_tower_level(cptr.add(u, 24)) ? 1 : 0)
-        place_lregion(cptr.ldI16(cptr.add(svd, 1914)), cptr.ldI16(cptr.add(svd, 1916)), cptr.ldI16(cptr.add(svd, 1918)), cptr.ldI16(cptr.add(svd, 1920)), 0, 0, 0, 0, 6, null);
+        place_lregion(cptr.ldI16(cptr.add(svd, 1914)), cptr.ldI16(cptr.add(svd, 1916)), cptr.ldI16(cptr.add(svd, 1918)), cptr.ldI16(cptr.add(svd, 1920)), 0, 0, 0, 0, NHC.LR_DOWNTELE, null);
     else if (up)
-        place_lregion(cptr.ldI16(svu), cptr.ldI16(cptr.add(svu, 2)), cptr.ldI16(cptr.add(svu, 4)), cptr.ldI16(cptr.add(svu, 6)), cptr.ldI16(cptr.add(svu, 8)), cptr.ldI16(cptr.add(svu, 10)), cptr.ldI16(cptr.add(svu, 12)), cptr.ldI16(cptr.add(svu, 14)), 5, null);
+        place_lregion(cptr.ldI16(svu), cptr.ldI16(cptr.add(svu, 2)), cptr.ldI16(cptr.add(svu, 4)), cptr.ldI16(cptr.add(svu, 6)), cptr.ldI16(cptr.add(svu, 8)), cptr.ldI16(cptr.add(svu, 10)), cptr.ldI16(cptr.add(svu, 12)), cptr.ldI16(cptr.add(svu, 14)), NHC.LR_UPTELE, null);
     else
-        place_lregion(cptr.ldI16(cptr.add(svd, 1906)), cptr.ldI16(cptr.add(svd, 1908)), cptr.ldI16(cptr.add(svd, 1910)), cptr.ldI16(cptr.add(svd, 1912)), cptr.ldI16(cptr.add(svd, 1914)), cptr.ldI16(cptr.add(svd, 1916)), cptr.ldI16(cptr.add(svd, 1918)), cptr.ldI16(cptr.add(svd, 1920)), 6, null);
+        place_lregion(cptr.ldI16(cptr.add(svd, 1906)), cptr.ldI16(cptr.add(svd, 1908)), cptr.ldI16(cptr.add(svd, 1910)), cptr.ldI16(cptr.add(svd, 1912)), cptr.ldI16(cptr.add(svd, 1914)), cptr.ldI16(cptr.add(svd, 1916)), cptr.ldI16(cptr.add(svd, 1918)), cptr.ldI16(cptr.add(svd, 1920)), NHC.LR_DOWNTELE, null);
     switch_terrain();
 }
 
@@ -1537,15 +1538,15 @@ export function avoid_ceiling(lev) {
 export function ceiling(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
     let what;
-    if (cptr.ld1s(in_rooms(x, y, 4)))
+    if (cptr.ld1s(in_rooms(x, y, NHC.VAULT)))
         what = __sl145;
-    else if (cptr.ld1s(in_rooms(x, y, 10)))
+    else if (cptr.ld1s(in_rooms(x, y, NHC.TEMPLE)))
         what = __sl146;
-    else if (cptr.ld1s(in_rooms(x, y, 14)))
+    else if (cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)))
         what = __sl147;
     else if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)))
         what = __sl148;
-    else if (((cptr.ld1s(cptr.add(lev, 4))) == 35 || (cptr.ld1s(cptr.add(lev, 4))) == 36 ? 1 : 0))
+    else if (((cptr.ld1s(cptr.add(lev, 4))) == NHC.AIR || (cptr.ld1s(cptr.add(lev, 4))) == NHC.CLOUD ? 1 : 0))
         what = __sl149;
     else if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1860)), 2)) || cptr.ldI16((cptr.add(svd, 1860))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1860)) ? 1 : 0)))
         what = __sl150;
@@ -1553,7 +1554,7 @@ export function ceiling(x, y) {
         what = __sl151;
     else if (((cptr.ldI32(cptr.add(u, 1852)) & 1)))
         what = __sl152;
-    else if ((((((cptr.ld1s(cptr.add(lev, 4))) >= 25) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1852)), 2)) || cptr.ldI16((cptr.add(svd, 1852))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1852)) ? 1 : 0)) ? 1 : 0) || ((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= 12 ? 1 : 0) ? 1 : 0) || ((cptr.ld1s(cptr.add(lev, 4))) == 23) ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == 14 ? 1 : 0)
+    else if ((((((cptr.ld1s(cptr.add(lev, 4))) >= NHC.ROOM) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1852)), 2)) || cptr.ldI16((cptr.add(svd, 1852))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1852)) ? 1 : 0)) ? 1 : 0) || ((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) ? 1 : 0) || ((cptr.ld1s(cptr.add(lev, 4))) == NHC.DOOR) ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0)
         what = __sl153;
     else
         what = __sl154;
@@ -1563,32 +1564,32 @@ export function ceiling(x, y) {
 /** C ref: dungeon.c:1750 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function surface(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
-    let levtyp = ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 19) ? db_under_typ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)));
+    let levtyp = ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)));
     if ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) && (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 72)) & 262144n) != 0n) ? 1 : 0)
         return (dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 26, 11) !== null) ? __sl155 : ((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 28, 11) !== null) ? __sl156 : __sl157);
-    else if (((levtyp) == 35 || (levtyp) == 36 ? 1 : 0))
-        return (((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? __sl158 : ((levtyp == 36) ? __sl159 : __sl47);
+    else if (((levtyp) == NHC.AIR || (levtyp) == NHC.CLOUD ? 1 : 0))
+        return (((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? __sl158 : ((levtyp == NHC.CLOUD) ? __sl159 : __sl47);
     else if (is_pool(x, y))
         return (((cptr.ldI32(cptr.add(u, 1852)) & 1)) | 0 && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0) ? __sl160 : hliquid(__sl64);
     else if (is_ice(x, y))
         return __sl161;
     else if (is_lava(x, y))
         return hliquid(__sl162);
-    else if (cptr.ld1s(cptr.add(lev, 4)) == 34)
+    else if (cptr.ld1s(cptr.add(lev, 4)) == NHC.DRAWBRIDGE_DOWN)
         return __sl163;
-    else if (((levtyp) == 32))
+    else if (((levtyp) == NHC.ALTAR))
         return __sl164;
-    else if (((levtyp) == 31))
+    else if (((levtyp) == NHC.GRAVE))
         return __sl165;
-    else if (((levtyp) == 28))
+    else if (((levtyp) == NHC.FOUNTAIN))
         return __sl166;
     else if (On_stairs(x, y))
         return __sl167;
-    else if (((levtyp) && (levtyp) <= 12 ? 1 : 0) || levtyp == 14 ? 1 : 0)
+    else if (((levtyp) && (levtyp) <= NHC.DBWALL ? 1 : 0) || levtyp == NHC.SDOOR ? 1 : 0)
         return __sl168;
-    else if (((levtyp) == 23))
+    else if (((levtyp) == NHC.DOOR))
         return __sl169;
-    else if (((levtyp) >= 25) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1852)), 2)) || cptr.ldI16((cptr.add(svd, 1852))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1852)) ? 1 : 0)) ? 1 : 0)
+    else if (((levtyp) >= NHC.ROOM) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1852)), 2)) || cptr.ldI16((cptr.add(svd, 1852))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1852)) ? 1 : 0)) ? 1 : 0)
         return __sl170;
     else
         return __sl171;
@@ -1740,7 +1741,7 @@ export function level_difficulty() {
         if (builds_up(cptr.add(u, 24)))
             res = i16(res + Math.imul(2, ((((cptr.ldI16(cptr.add(cptr.add(svd, cptr.ldI16(cptr.add(u, 24)), 112), 96)) - cptr.ldI16(cptr.add(u, 26))) | 0) + 1) | 0)));
     }
-    if (cptr.ldI64(cptr.add(cptr.add(u, 112), 43, 24)))
+    if (cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.AGGRAVATE_MONSTER, 24)))
         res = i16((res > 25 ? 50 : Math.imul(res, 2)));
     return res;
 }
@@ -1974,7 +1975,7 @@ export function print_dungeon(bymenu, rlev, rdgn) {
         let trap;
         cptr.st1(cptr.decay(buf), 0);
         for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
-            if (((cptr.ldI32(cptr.add(trap, 20)) & 31) | 0) == 17)
+            if (((cptr.ldI32(cptr.add(trap, 20)) & 31) | 0) == NHC.MAGIC_PORTAL)
                 break;
         if (trap)
             void cptr.sprintf(cptr.decay(buf), __sl204, cptr.ldI16(cptr.add(trap, 8)), cptr.ldI16(cptr.add(trap, 10)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -2331,9 +2332,9 @@ function interest_mapseen(mptr) {
 export function update_lastseentyp(x, y) {
     let mtmp;
     let ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
-    if (ltyp == 19)
+    if (ltyp == NHC.DRAWBRIDGE_UP)
         ltyp = db_under_typ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0);
-    if (((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) !== null && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 ? 1 : 0) && canseemon(mtmp) ? 1 : 0)
+    if (((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) !== null && (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == NHC.M_AP_FURNITURE ? 1 : 0) && canseemon(mtmp) ? 1 : 0)
         ltyp = cmap_to_type(cptr.ldI32(cptr.add(mtmp, 60)) | 0);
     cptr.st1(cptr.add(cptr.add(svl, x, 21), y, 1), schar(ltyp));
 }
@@ -2349,32 +2350,32 @@ function count_feat_lastseentyp(mptr, x, y) {
     let count;
     let atmp;
     switch (cptr.ld1s(cptr.add(cptr.add(svl, x, 21), y, 1))) {
-        case 13:
+        case NHC.TREE:
         count = (((cptr.ldI32(cptr.add(mptr, 40)) & 3) | 0) + 1) | 0;
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 40), count >>> 0);
         break;
-        case 28:
+        case NHC.FOUNTAIN:
         count = (((cptr.ldI32(cptr.add(mptr, 20)) & 3) | 0) + 1) | 0;
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 20), count >>> 0);
         break;
-        case 29:
+        case NHC.THRONE:
         count = (((cptr.ldI32(cptr.add(mptr, 32)) & 3) | 0) + 1) | 0;
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 32), count >>> 0);
         break;
-        case 30:
+        case NHC.SINK:
         count = (((cptr.ldI32(cptr.add(mptr, 24)) & 3) | 0) + 1) | 0;
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 24), count >>> 0);
         break;
-        case 31:
+        case NHC.GRAVE:
         count = (((cptr.ldI32(cptr.add(mptr, 36)) & 3) | 0) + 1) | 0;
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 36), count >>> 0);
         break;
-        case 32:
+        case NHC.ALTAR:
         atmp = altarmask_at(x, y) >>> 0;
         atmp = ((((cptr.ldI16(cptr.add((cptr.add(svd, 1868)), 2)) || cptr.ldI16((cptr.add(svd, 1868))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1868)) ? 1 : 0)) && (cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 5)) & 255) != 255 ? 1 : 0) ? 0 : (((((atmp) & 7) >>> 0) == 4) ? 3 : ((atmp) & 7) >>> 0);
         if (!(cptr.ldI32(cptr.add(mptr, 28)) & 3))
@@ -2385,12 +2386,12 @@ function count_feat_lastseentyp(mptr, x, y) {
         if (count <= 3)
             cptr.stI32(cptr.add(mptr, 28), count >>> 0);
         break;
-        case 23:
+        case NHC.DOOR:
         if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1894)), 2)) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0))) {
             let ty;
             let tx = (x - 4) | 0;
             for (ty = (y - 1) | 0; ty <= ((y + 1) | 0); ++ty)
-                if (isok(i16(tx), i16(ty)) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) == 29) ? 1 : 0) {
+                if (isok(i16(tx), i16(ty)) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36), 4))) == NHC.THRONE) ? 1 : 0) {
                     cptr.stI32(cptr.add(mptr, 112), 1);
                     break;
                 }
@@ -2400,8 +2401,8 @@ function count_feat_lastseentyp(mptr, x, y) {
             break;
         // @FallThrough
         ;
-        case 12:
-        case 34:
+        case NHC.DBWALL:
+        case NHC.DRAWBRIDGE_DOWN:
         if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1808)), 2)) || cptr.ldI16((cptr.add(svd, 1808))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1808)) ? 1 : 0)))
             cptr.stI32(cptr.add(mptr, 96), 1), cptr.stI32(cptr.add(mptr, 100), 1);
         break;
@@ -2440,7 +2441,7 @@ export function recalc_mapseen() {
     }
     cptr.stI32(cptr.add(mptr, 80), 0);
     cptr.stI32(cptr.add(mptr, 88), ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1874)))) && !(cptr.ldI32(cptr.add(svl, 89144)) & 1) ? 1 : 0) >>> 0);
-    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
+    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0))
         cptr.stI32(cptr.add(mptr, 92), (((cptr.ldI16(cptr.add((cptr.add(svd, 1796)), 2)) || cptr.ldI16((cptr.add(svd, 1796))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1796)) ? 1 : 0)) >>> 0);
     else if ((cptr.ldI32(cptr.add(mptr, 76)) & 1))
         cptr.stI32(cptr.add(mptr, 92), 0);
@@ -2453,11 +2454,11 @@ export function recalc_mapseen() {
     for (i = 0; (uroom = cptr.ld1s(cptr.add(cptr.add(u, 68), i, 1))) != 0; ++i) {
         ridx = (uroom - 3) >>> 0;
         cptr.stI32(cptr.add(cptr.add(mptr, 148), ridx, 8), 1);
-        cptr.stI32(cptr.add(cptr.add(cptr.add(mptr, 148), ridx, 8), 4), ((cptr.ld1s(cptr.add(cptr.add(svr, ridx, 224), 8)) >= 14) ? (!(mtmp = shop_keeper(uroom)) || !inhishop(mtmp) ? 1 : 0) : ((cptr.ld1s(cptr.add(cptr.add(svr, ridx, 224), 8)) == 10) ? (!(mtmp = findpriest(uroom)) || !inhistemple(mtmp) ? 1 : 0) : 0)) >>> 0);
+        cptr.stI32(cptr.add(cptr.add(cptr.add(mptr, 148), ridx, 8), 4), ((cptr.ld1s(cptr.add(cptr.add(svr, ridx, 224), 8)) >= NHC.SHOPBASE) ? (!(mtmp = shop_keeper(uroom)) || !inhishop(mtmp) ? 1 : 0) : ((cptr.ld1s(cptr.add(cptr.add(svr, ridx, 224), 8)) == NHC.TEMPLE) ? (!(mtmp = findpriest(uroom)) || !inhistemple(mtmp) ? 1 : 0) : 0)) >>> 0);
     }
     for (i = 0; i < Number(BigInt.asIntN(32, (656n / 8n))) >>> 0; ++i) {
         if ((cptr.ldI32(cptr.add(cptr.add(mptr, 148), i, 8)) & 1)) {
-            if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)) >= 14) {
+            if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)) >= NHC.SHOPBASE) {
                 if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(mptr, 148), i, 8), 4)) & 1))
                     cptr.stI32(cptr.add(mptr, 68), 13);
                 else if (!(cptr.ldI32(cptr.add(mptr, 56)) & 3))
@@ -2467,16 +2468,16 @@ export function recalc_mapseen() {
                 count = (((cptr.ldI32(cptr.add(mptr, 56)) & 3) | 0) + 1) | 0;
                 if (count <= 3)
                     cptr.stI32(cptr.add(mptr, 56), count >>> 0);
-            } else if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)) == 10) {
+            } else if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)) == NHC.TEMPLE) {
                 count = (((cptr.ldI32(cptr.add(mptr, 60)) & 3) | 0) + 1) | 0;
                 if (count <= 3)
                     cptr.stI32(cptr.add(mptr, 60), count >>> 0);
-            } else if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 9)) == 9) {
+            } else if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 9)) == NHC.DELPHI) {
                 cptr.stI32(cptr.add(mptr, 84), 1);
             }
         }
     }
-    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0))
+    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8)) ? 1 : 0))
         update_lastseentyp(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     for (x = 1; x < 80; x++) {
         for (y = 0; y < 21; y++) {
@@ -2498,7 +2499,7 @@ export function recalc_mapseen() {
         }
     } else if (Invocation_lev(cptr.add(u, 24))) {
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-            if (((cptr.ldI32(cptr.add(t, 20)) & 31) | 0) == 23)
+            if (((cptr.ldI32(cptr.add(t, 20)) & 31) | 0) == NHC.VIBRATING_SQUARE)
                 break;
         cptr.stI32(cptr.add(mptr, 128), (t ? (cptr.ldI32(cptr.add(t, 24)) & 1) | 0 : ((oth_mptr = find_mapseen(cptr.add(svd, 1848))) === null || !(cptr.ldI32(cptr.add(oth_mptr, 108)) & 1) ? 1 : 0)) >>> 0);
     }
@@ -2650,7 +2651,7 @@ export function endgamelevelname(outbuf, indx) {
 
 /** C ref: dungeon.c:3441 — @param {CInt} rtype @returns {CPtr} */
 function shop_string(rtype) {
-    let shoptype = (rtype - 14) | 0;
+    let shoptype = (rtype - NHC.SHOPBASE) | 0;
     let str = __sl251;
     if (shoptype < 0) {
         str = __sl252;
@@ -2712,7 +2713,7 @@ function print_mapseen(win, mptr, final, how, printdun) {
     if (cptr.ldPtr(cptr.add(mptr, 136)))
         void cptr.sprintf(eos(cptr.decay(buf)), __sl264, cptr.ldPtr(cptr.add(mptr, 136)));
     if (on_level(cptr.add(u, 24), cptr.add(mptr, 16)))
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl265, (final <= 0 || (final == 1 && how == 15 ? 1 : 0) ? 1 : 0) ? __sl266 : ((final == 1 && how == 14 ? 1 : 0) ? __sl267 : __sl268));
+        void cptr.sprintf(eos(cptr.decay(buf)), __sl265, (final <= 0 || (final == 1 && how == NHC.ASCENDED ? 1 : 0) ? 1 : 0) ? __sl266 : ((final == 1 && how == NHC.ESCAPED ? 1 : 0) ? __sl267 : __sl268));
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     if (final == -1)
         cptr.stI32(any, (ledger_no(cptr.add(mptr, 16)) + 1) | 0);

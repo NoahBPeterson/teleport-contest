@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
@@ -51,14 +52,14 @@ export function newuexp(lev) {
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
 function enermod(en) {
     switch ((cptr.ldI16(cptr.add(gu, 216)))) {
-        case 337:
-        case 343:
+        case NHC.PM_CLERIC:
+        case NHC.PM_WIZARD:
         return (Math.imul(2, en));
-        case 334:
-        case 335:
+        case NHC.PM_HEALER:
+        case NHC.PM_KNIGHT:
         return (((Math.imul(3, en)) / 2) | 0);
-        case 332:
-        case 342:
+        case NHC.PM_BARBARIAN:
+        case NHC.PM_VALKYRIE:
         return (((Math.imul(3, en)) / 4) | 0);
         default:
         return en;
@@ -77,7 +78,7 @@ export function newpw() {
         if (cptr.ldI16(cptr.add(gu, 420)) > 0)
             en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16(cptr.add(gu, 420)))) : rnd(cptr.ldI16(cptr.add(gu, 420))))) | 0;
     } else {
-        enrnd = ((acurr(2)) / 2) | 0;
+        enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32(cptr.add(u, 48)) < cptr.ldI16(cptr.add(gu, 284))) {
             enrnd = (enrnd + ((cptr.ldI16(cptr.add(gu, 278)) + cptr.ldI16(cptr.add(gu, 424))) | 0)) | 0;
             enfix = (cptr.ldI16(cptr.add(gu, 276)) + cptr.ldI16(cptr.add(gu, 422))) | 0;
@@ -132,14 +133,14 @@ export function experience(mtmp, nk) {
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
         if ((Math.imul(cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 3)), cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 2)))) > 23)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
-        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
+        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64(cptr.add((ptr), 80)) & 33554432n) != 0n))
         tmp = (tmp + (Math.imul(7, cptr.ld1u(cptr.add(mtmp, 26))))) | 0;
     if (cptr.ld1u(cptr.add(mtmp, 26)) > 8)
         tmp = (tmp + 50) | 0;
-    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 314, 96)))
+    if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
         tmp = 1;
     if ((cptr.ldI32(cptr.add(mtmp, 124)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 128)) & 1) | 0 ? 1 : 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1 ? 1 : 0; ++i) {
@@ -173,7 +174,7 @@ export function more_experienced(exper, rexp) {
     if (newrexp != oldrexp) {
         cptr.stI64(cptr.add(u, 2384), newrexp);
     }
-    if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(gu, 216)) == 343) ? 1000 : 2000)))
+    if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(gu, 216)) == NHC.PM_WIZARD) ? 1000 : 2000)))
         cptr.st1(cptr.add(flags, 5), 0);
 }
 
@@ -198,7 +199,7 @@ export function losexp(drainer) {
             cptr.stI32(cptr.add(svk, 12), 1);
             if (!cptr.eq(cptr.add(svk, 16), drainer))
                 void cptr.strcpy(cptr.add(svk, 16), drainer);
-            done(0);
+            done(NHC.DIED);
         }
         if (cptr.ldI32(cptr.add(u, 48)) > 1)
             return;

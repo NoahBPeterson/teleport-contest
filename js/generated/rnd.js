@@ -6,6 +6,7 @@
 import { isaac64_init, isaac64_next_uint64 } from '../isaac64.js';
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/rnd-prelude.js) ----
 // rng-log runtime + minimal libc shims + extern stubs for the parity harness.
@@ -220,12 +221,12 @@ export function init_isaac64(seed, fn) {
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, 0, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, NHC.CORE, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
 }
 
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, 1, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, NHC.DISP, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp ? 1 : 0) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);

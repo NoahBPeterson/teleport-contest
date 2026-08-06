@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov, nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend, tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color, term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor, term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output, tty_nhbell, tty_number_pad, xputs } from './termcap.js';
 import { addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory, tty_putmsghistory, tty_yn_function, update_topl } from './topl.js';
 import { morc, tty_get_ext_cmd, tty_getlin, xwaitforspace } from './getline.js';
@@ -113,7 +114,7 @@ const __sl77 = cptr.lit("/");
 /** C ref: wintty.c:98 — struct window_procs */
 export let tty_procs = cptr.alloc(416);
 cptr.stPtr(tty_procs, __sl0);
-cptr.stI32(cptr.add(tty_procs, 8), 1);
+cptr.stI32(cptr.add(tty_procs, 8), NHC.wp_tty);
 cptr.stU64(cptr.add(tty_procs, 16), 67109123n);
 cptr.stU64(cptr.add(tty_procs, 24), 972280n);
 cptr.st1(cptr.add(tty_procs, 32), 1);
@@ -281,7 +282,7 @@ function resize_tty() {
     term_clear_screen();
     new_status_window();
     if (map_active) {
-        docrt_flags(1);
+        docrt_flags(NHC.docrtRefresh);
         bot();
         for (i = 0; i < 20; ++i) {
             if (((i == BASE_WINDOW || i == WIN_MAP.v ? 1 : 0) || i == WIN_STATUS.v ? 1 : 0) || i == WIN_MESSAGE.v ? 1 : 0)
@@ -367,7 +368,7 @@ export function tty_init_nhwindows(argcp, argv) {
     tty_display_nhwindow(BASE_WINDOW, 0);
     tty_curs(BASE_WINDOW, 1, 11);
     if ((cptr.ldU64(cptr.add(tty_procs, 24)) & 1024n) != 0n)
-        set_wc2_option_mod_status(1024n, 4);
+        set_wc2_option_mod_status(1024n, NHC.set_in_game);
 }
 
 /** C ref: wintty.c:596 — @param {CPtr} pref */
@@ -946,7 +947,7 @@ function process_menu_window(window, cw) {
             }
         if (n > 0)
             for (rp = cptr.decay(gacc), curr = cptr.ldPtr(cptr.add(cw, 96)); curr; curr = cptr.ldPtr(curr))
-                if (((cptr.ld1s(cptr.add(curr, 97)) && (cptr.ld1s(cptr.add(curr, 97)) != cptr.ld1s(cptr.add(curr, 96)) || cptr.ld1s(cptr.add(curr, 97)) == 36 ? 1 : 0) ? 1 : 0) && !cptr.strchr(cptr.decay(gacc), cptr.ld1s(cptr.add(curr, 97))) ? 1 : 0) && (cptr.ldI16(cptr.add(cw, 136)) == 2 || cptr.ldI32(cptr.add(gcnt, ((cptr.ld1s(cptr.add(curr, 97))) & 127), 4)) == 1 ? 1 : 0) ? 1 : 0) {
+                if (((cptr.ld1s(cptr.add(curr, 97)) && (cptr.ld1s(cptr.add(curr, 97)) != cptr.ld1s(cptr.add(curr, 96)) || cptr.ld1s(cptr.add(curr, 97)) == NHC.GOLD_SYM ? 1 : 0) ? 1 : 0) && !cptr.strchr(cptr.decay(gacc), cptr.ld1s(cptr.add(curr, 97))) ? 1 : 0) && (cptr.ldI16(cptr.add(cw, 136)) == 2 || cptr.ldI32(cptr.add(gcnt, ((cptr.ld1s(cptr.add(curr, 97))) & 127), 4)) == 1 ? 1 : 0) ? 1 : 0) {
                     cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1s(cptr.add(curr, 97)));
                     cptr.st1(rp, 0);
                 }
@@ -1013,7 +1014,7 @@ function process_menu_window(window, cw) {
                                 cptr.stI16(cptr.add(ttyDisplay, 4), i16(svx));
                             }
                             void putchar(c);
-                        } else if (((n == 2 && cptr.ldPtr(cptr.add(curr, 8)) !== null ? 1 : 0) && show_obj_syms ? 1 : 0) && cptr.ldI32(cptr.add(curr, 32)) != 9624 ? 1 : 0) {
+                        } else if (((n == 2 && cptr.ldPtr(cptr.add(curr, 8)) !== null ? 1 : 0) && show_obj_syms ? 1 : 0) && cptr.ldI32(cptr.add(curr, 32)) != NHC.MAX_GLYPH ? 1 : 0) {
                             let gcolor = cptr.ldI32(cptr.add(curr, 52));
                             toggle_menu_attr(1, gcolor, 0);
                             void putchar(cptr.ldI32(cptr.add(curr, 36)));
@@ -1288,7 +1289,7 @@ function process_text_window(window, cw) {
             term_start_attr(attr);
             for (cp = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), i, 8)), 1), linestart = 1; cptr.ld1s(cp) && cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1) < cptr.ldI16(cptr.add(ttyDisplay, 2)) ? 1 : 0; cp = cptr.add(cp, 1)) {
                 if (linestart) {
-                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5)) {
+                    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8)) {
                         g_putch(cptr.ld1s(cp));
                     } else if ((cptr.ld1s(cp) & 128) != 0) {
                         g_putch(cptr.ld1s(cp));
@@ -1975,10 +1976,10 @@ export function tty_ctrl_nhwindow(window, request, wri) {
     if (!wri)
         return null;
     switch (request) {
-        case 1:
-        case 2:
+        case NHC.set_mode:
+        case NHC.request_settings:
         break;
-        case 3:
+        case NHC.set_menu_promptstyle:
         cptr.memcpy(tty_menu_promptstyle, cptr.add(wri, 40), 8);
         break;
         default:
@@ -2087,9 +2088,9 @@ export function g_putch(in_ch) {
             return;
         }
     } while (0);
-    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5)) {
+    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8)) {
         void putchar(ch);
-    } else if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 1) || (cptr.ld1s(cptr.add(iflags, 366)) && (!(cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2) || (in_ch & 127) < 96 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_IBM) || (cptr.ld1s(cptr.add(iflags, 366)) && (!(cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_DEC) || (in_ch & 127) < 96 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         void putchar(ch);
     } else if (ch & 128) {
         if (!GFlag || HE_resets_AS.v ? 1 : 0) {
@@ -2222,7 +2223,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         term_start_attr(7);
         inverse_on = 1;
     }
-    if ((((!glyphdone && (cptr.ldU64(cptr.add(tty_procs, 24)) & 131072n) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5) ? 1 : 0) && cptr.ldPtr(cptr.add(glyphinfo, 40)) ? 1 : 0) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)) ? 1 : 0) {
+    if ((((!glyphdone && (cptr.ldU64(cptr.add(tty_procs, 24)) & 131072n) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8) ? 1 : 0) && cptr.ldPtr(cptr.add(glyphinfo, 40)) ? 1 : 0) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)) ? 1 : 0) {
         g_pututf8(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)));
         glyphdone = 1;
     }
@@ -2352,7 +2353,7 @@ export function tty_putmixed(window, attr, str) {
         return;
     }
     cptr.stI32(cptr.add(ttyDisplay, 56), 1);
-    if ((cptr.ldU64(cptr.add(windowprocs, 24)) & 131072n) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 5) ? 1 : 0) {
+    if ((cptr.ldU64(cptr.add(windowprocs, 24)) & 131072n) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8) ? 1 : 0) {
         mixed_to_utf8(cptr.decay(buf), 256n, str, utf8flag);
         if (cptr.ldI16(cptr.add(cw, 4)) == 1)
             cptr.stI32(cptr.add(ttyDisplay, 52), utf8flag.v);
@@ -2401,120 +2402,120 @@ cptr.stPtr(cptr.add(cptr.decay(encvals[2]), 40), __sl62);
 
 /** C ref: wintty.c:4351 — enum statusfields[3][19] */
 const twolineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 0), 0);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 4), 1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 8), 2);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 12), 3);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 16), 4);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 20), 5);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 24), 6);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 28), 7);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 32), 8);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 36), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 40), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 44), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 60), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 64), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 68), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 72), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 0), 20);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 4), 10);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 8), 18);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 12), 19);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 16), 11);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 20), 12);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 24), 14);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 28), 13);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 32), 21);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 36), 15);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 40), 16);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 44), 17);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 48), 9);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 52), 22);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 56), 23);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 60), 24);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 64), 25);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 68), 26);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 72), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 0), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 4), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 8), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 12), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 16), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 20), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 24), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 28), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 32), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 36), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 40), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 44), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 60), -1);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 0), NHC.BL_TITLE);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 4), NHC.BL_STR);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 8), NHC.BL_DX);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 12), NHC.BL_CO);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 16), NHC.BL_IN);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 20), NHC.BL_WI);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 24), NHC.BL_CH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 28), NHC.BL_ALIGN);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 32), NHC.BL_SCORE);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 36), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 40), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 44), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 60), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 64), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 68), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[0]), 72), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 0), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 4), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 8), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 12), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 16), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 20), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 24), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 28), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 32), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 36), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 40), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 44), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 48), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 52), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 56), NHC.BL_WEAPON);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 60), NHC.BL_ARMOR);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 64), NHC.BL_TERRAIN);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 68), NHC.BL_VERS);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[1]), 72), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 0), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 4), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 8), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 12), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 16), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 20), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 24), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 28), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 32), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 36), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 40), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 44), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(twolineorder[2]), 60), NHC.BL_FLUSH);
 
 /** C ref: wintty.c:4363 — enum statusfields[3][19] */
 const threelineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 0), 0);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 4), 1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 8), 2);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 12), 3);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 16), 4);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 20), 5);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 24), 6);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 28), 8);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 32), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 36), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 40), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 44), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 60), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 64), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 68), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 72), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 0), 7);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 4), 10);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 8), 18);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 12), 19);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 16), 11);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 20), 12);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 24), 14);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 28), 13);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 32), 21);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 36), 15);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 40), 17);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 44), 9);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 60), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 64), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 68), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 72), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 0), 20);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 4), 16);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 8), 22);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 12), 23);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 16), 24);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 20), 25);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 24), 26);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 28), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 32), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 36), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 40), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 44), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 48), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 52), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 56), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 60), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 64), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 68), -1);
-cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 72), -1);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 0), NHC.BL_TITLE);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 4), NHC.BL_STR);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 8), NHC.BL_DX);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 12), NHC.BL_CO);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 16), NHC.BL_IN);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 20), NHC.BL_WI);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 24), NHC.BL_CH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 28), NHC.BL_SCORE);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 32), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 36), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 40), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 44), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 60), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 64), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 68), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[0]), 72), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 0), NHC.BL_ALIGN);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 4), NHC.BL_GOLD);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 8), NHC.BL_HP);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 12), NHC.BL_HPMAX);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 16), NHC.BL_ENE);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 20), NHC.BL_ENEMAX);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 24), NHC.BL_AC);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 28), NHC.BL_XP);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 32), NHC.BL_EXP);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 36), NHC.BL_HD);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 40), NHC.BL_HUNGER);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 44), NHC.BL_CAP);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 60), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 64), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 68), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[1]), 72), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 0), NHC.BL_LEVELDESC);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 4), NHC.BL_TIME);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 8), NHC.BL_CONDITION);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 12), NHC.BL_WEAPON);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 16), NHC.BL_ARMOR);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 20), NHC.BL_TERRAIN);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 24), NHC.BL_VERS);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 28), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 32), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 36), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 40), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 44), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 48), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 52), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 56), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 60), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 64), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 68), NHC.BL_FLUSH);
+cptr.stI32(cptr.add(cptr.decay(threelineorder[2]), 72), NHC.BL_FLUSH);
 
 /** C ref: wintty.c:4373 — enum statusfields (*)[19] */
 let fieldorder = null;
@@ -2549,8 +2550,8 @@ export function tty_status_init() {
     let num_rows;
     num_rows = ((cptr.ldI32(cptr.add(iflags, 388)) <= 2) ? 2 : 3);
     fieldorder = (num_rows != 3) ? cptr.decay(twolineorder) : cptr.decay(threelineorder);
-    for (i = 0; i < 27; ++i) {
-        cptr.stI32(cptr.add(cptr.decay(tty_status[1]), i, 40), -1);
+    for (i = 0; i < NHC.MAXBLSTATS; ++i) {
+        cptr.stI32(cptr.add(cptr.decay(tty_status[1]), i, 40), NHC.BL_FLUSH);
         cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 4), 8);
         cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 8), 0);
         cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 12), cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 16), 0));
@@ -2580,21 +2581,21 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
     let p;
     let fmt;
     let reset_state = 0;
-    if ((fldidx < -2) || (fldidx >= 27) ? 1 : 0)
+    if ((fldidx < NHC.BL_RESET) || (fldidx >= NHC.MAXBLSTATS) ? 1 : 0)
         return;
-    if ((fldidx >= 0 && fldidx < 27 ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.decay(status_activefields), fldidx, 1)) ? 1 : 0)
+    if ((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.decay(status_activefields), fldidx, 1)) ? 1 : 0)
         return;
     switch (fldidx) {
-        case -2:
+        case NHC.BL_RESET:
         reset_state = 1;
         // @FallThrough
         ;
-        case -1:
+        case NHC.BL_FLUSH:
         if (make_things_fit(reset_state) || truncation_expected ? 1 : 0) {
             render_status();
         }
         return;
-        case 22:
+        case NHC.BL_CONDITION:
         cptr.stI32(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), fldidx);
         tty_condition_bits = cptr.ldI64(condptr);
         tty_colormasks = colormasks;
@@ -2603,7 +2604,7 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 35), 1);
         truncation_expected = 0;
         break;
-        case 10:
+        case NHC.BL_GOLD:
         text = decode_mixed(cptr.decay(goldbuf), text);
         // @FallThrough
         ;
@@ -2624,26 +2625,26 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 35), 1);
         break;
     }
-    if (((fldidx >= 0 && fldidx < 27 ? 1 : 0) && cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) == 1n ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0)) == 32 ? 1 : 0) {
+    if (((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) == 1n ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0)) == 32 ? 1 : 0) {
         cptr.st1(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0), 0);
         cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), 0n);
     }
     switch (fldidx) {
-        case 18:
+        case NHC.BL_HP:
         if (cptr.ld1s(cptr.add(iflags, 372))) {
             hpbar_percent = percent;
             hpbar_crit_hp = critically_low_hp(1) ? 1 : 0;
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 0, 40), 4), (color & 255));
-            attrmask = 64 | (hpbar_crit_hp ? 32 : 0);
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 0, 40), 8), term_attr_fixup(attrmask));
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), 0, 40), 33), 1);
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 4), (color & 255));
+            attrmask = NHC.HL_INVERSE | (hpbar_crit_hp ? NHC.HL_BLINK : 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 8), term_attr_fixup(attrmask));
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 33), 1);
         }
         break;
-        case 20:
+        case NHC.BL_LEVELDESC:
         dlvl_shrinklvl = 0;
         // @FallThrough
         ;
-        case 17:
+        case NHC.BL_HUNGER:
         if (cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) > 0n) {
             p = cptr.ldPtr(cptr.add(status_vals, fldidx, 8));
             for (lastchar = eos(p); cptr.cmp(lastchar, p) > 0 && cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32 ? 1 : 0; ) {
@@ -2652,15 +2653,15 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
             }
         }
         break;
-        case 0:
+        case NHC.BL_TITLE:
         if (cptr.ld1s(cptr.add(iflags, 372)))
             cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), 32n);
         break;
-        case 10:
+        case NHC.BL_GOLD:
         if ((p = cptr.strchr(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 92)) !== null && cptr.ld1s(cptr.add(p, 1)) == 71 ? 1 : 0)
             cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) - 9n);
         break;
-        case 9:
+        case NHC.BL_CAP:
         enc_shrinklvl = 0;
         enclev = stat_cap_indx();
         break;
@@ -2736,7 +2737,7 @@ function check_fields(forcefields, sz) {
         cptr.stI32(cptr.add(sz, row, 4), 0);
         col = 1;
         update_right = 0;
-        for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != -1; ++i) {
+        for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
                 continue;
             if (!cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 32)))
@@ -2752,7 +2753,7 @@ function check_fields(forcefields, sz) {
                 update_right = 0;
             matchprev = 0;
             if (((valid && !update_right ? 1 : 0) && !forcefields ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34)) ? 1 : 0) {
-                if (((do_field_opt && idx != 22 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 4)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 4))) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 8)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 8))) ? 1 : 0) {
+                if (((do_field_opt && idx != NHC.BL_CONDITION ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 4)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 4))) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 8)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 8))) ? 1 : 0) {
                     matchprev = 1;
                     if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 33))) {
                         let ob;
@@ -2825,28 +2826,28 @@ function set_condition_length() {
                 lth = (lth + ((1 + Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(cptr.add(cptr.add(conditions, c, 48), 24), cond_shrinklvl, 8)))))) | 0)) | 0;
         }
     }
-    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), 22, 40), 24), BigInt.asUintN(64, BigInt(lth)));
+    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CONDITION, 40), 24), BigInt.asUintN(64, BigInt(lth)));
 }
 
 /** C ref: wintty.c:4936 — @param {CInt} lvl */
 function shrink_enc(lvl) {
     if (lvl <= 2) {
         enc_shrinklvl = lvl;
-        void cptr.sprintf(cptr.ldPtr(cptr.add(status_vals, 9, 8)), __sl64, cptr.ldPtr(cptr.add(cptr.decay(encvals[lvl]), enclev, 8)));
+        void cptr.sprintf(cptr.ldPtr(cptr.add(status_vals, NHC.BL_CAP, 8)), __sl64, cptr.ldPtr(cptr.add(cptr.decay(encvals[lvl]), enclev, 8)));
     }
-    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), 9, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, 9, 8))));
+    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CAP, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_CAP, 8))));
 }
 
 /** C ref: wintty.c:4947 — @param {CInt} lvl */
 function shrink_dlvl(lvl) {
     let buf = new Uint8Array(256);
-    let levval = cptr.strchr(cptr.ldPtr(cptr.add(status_vals, 20, 8)), 58);
+    let levval = cptr.strchr(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8)), 58);
     if (levval) {
         dlvl_shrinklvl = lvl;
         void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __sl65 : __sl66);
         void cptr.strcat(cptr.decay(buf), levval);
-        void cptr.strcpy(cptr.ldPtr(cptr.add(status_vals, 20, 8)), cptr.decay(buf));
-        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), 20, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, 20, 8))));
+        void cptr.strcpy(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8)), cptr.decay(buf));
+        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_LEVELDESC, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8))));
     }
 }
 
@@ -2882,22 +2883,22 @@ function condattr(bm, bmarray) {
             if ((BigInt.asUintN(64, bm) & cptr.ldU64(cptr.add(bmarray, i, 8))) != 0n) {
                 switch (i) {
                     case 18:
-                    attr |= 2;
+                    attr |= NHC.HL_BOLD;
                     break;
                     case 19:
-                    attr |= 4;
+                    attr |= NHC.HL_DIM;
                     break;
                     case 20:
-                    attr |= 8;
+                    attr |= NHC.HL_ITALIC;
                     break;
                     case 21:
-                    attr |= 16;
+                    attr |= NHC.HL_ULINE;
                     break;
                     case 22:
-                    attr |= 32;
+                    attr |= NHC.HL_BLINK;
                     break;
                     case 23:
-                    attr |= 64;
+                    attr |= NHC.HL_INVERSE;
                     break;
                 }
             }
@@ -2939,24 +2940,24 @@ function render_status() {
         } while (0);
         y = row;
         tty_curs(WIN_STATUS.v, 1, y);
-        for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != -1; ++i) {
+        for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
                 continue;
             x = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 12));
             text = cptr.ldPtr(cptr.add(status_vals, idx, 8));
             tlth = Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24))));
             if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34)) || !do_field_opt ? 1 : 0) {
-                let hitpointbar = schar((idx == 0 && cptr.ld1s(cptr.add(iflags, 372)) ? 1 : 0));
-                if (idx == 22) {
+                let hitpointbar = schar((idx == NHC.BL_TITLE && cptr.ld1s(cptr.add(iflags, 372)) ? 1 : 0));
+                if (idx == NHC.BL_CONDITION) {
                     bits = tty_condition_bits;
                     if (row == 2 && bits != 0n ? 1 : 0) {
                         let cstart;
                         let last_col = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 24))));
                         let dat = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), y, 8)), 0);
-                        if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), 26, 1)) && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == 26 ? 1 : 0)
-                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), 26, 40), 24))))) | 0;
-                        if ((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), 17, 40), 16)) < row && x < cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), 17, 40), 12)) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), 17, 40), 12)) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
-                            cstart = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), 17, 40), 12));
+                        if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), NHC.BL_VERS, 1)) && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == NHC.BL_VERS ? 1 : 0)
+                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_VERS, 40), 24))))) | 0;
+                        if ((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 16)) < row && x < cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12)) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12)) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
+                            cstart = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12));
                         else if (BigInt(((x + tlth) | 0)) < BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 24)) - 1n))
                             cstart = (last_col - tlth) | 0;
                         else
@@ -2966,7 +2967,7 @@ function render_status() {
                                 if (cptr.ld1s(cptr.add(dat, (x - 1) | 0)) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < cstart);
-                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 22, 40), 12), x);
+                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CONDITION, 40), 12), x);
                             tty_curs(WIN_STATUS.v, x, y);
                         }
                     }
@@ -2980,17 +2981,17 @@ function render_status() {
                                 attrmask = condattr(mask, tty_colormasks);
                                 do {
                                     if (attrmask) {
-                                        if ((attrmask) & 2)
+                                        if ((attrmask) & NHC.HL_BOLD)
                                             term_start_attr(1);
-                                        if ((attrmask) & 4)
+                                        if ((attrmask) & NHC.HL_DIM)
                                             term_start_attr(2);
-                                        if ((attrmask) & 8)
+                                        if ((attrmask) & NHC.HL_ITALIC)
                                             term_start_attr(3);
-                                        if ((attrmask) & 16)
+                                        if ((attrmask) & NHC.HL_ULINE)
                                             term_start_attr(4);
-                                        if ((attrmask) & 32)
+                                        if ((attrmask) & NHC.HL_BLINK)
                                             term_start_attr(5);
-                                        if ((attrmask) & 64)
+                                        if ((attrmask) & NHC.HL_INVERSE)
                                             term_start_attr(7);
                                     }
                                 } while (0);
@@ -3011,17 +3012,17 @@ function render_status() {
                                     term_end_color();
                                 do {
                                     if (attrmask) {
-                                        if ((attrmask) & 64)
+                                        if ((attrmask) & NHC.HL_INVERSE)
                                             term_end_attr(7);
-                                        if ((attrmask) & 32)
+                                        if ((attrmask) & NHC.HL_BLINK)
                                             term_end_attr(5);
-                                        if ((attrmask) & 16)
+                                        if ((attrmask) & NHC.HL_ULINE)
                                             term_end_attr(4);
-                                        if ((attrmask) & 8)
+                                        if ((attrmask) & NHC.HL_ITALIC)
                                             term_end_attr(3);
-                                        if ((attrmask) & 4)
+                                        if ((attrmask) & NHC.HL_DIM)
                                             term_end_attr(2);
-                                        if ((attrmask) & 2)
+                                        if ((attrmask) & NHC.HL_BOLD)
                                             term_end_attr(1);
                                     }
                                 } while (0);
@@ -3043,7 +3044,7 @@ function render_status() {
                     let twoparts = schar((hpbar_percent < 100));
                     if (cptr.strlen(text) != 30n) {
                         void cptr.sprintf(cptr.decay(bar), __sl74, text);
-                        void cptr.strcpy(cptr.ldPtr(cptr.add(status_vals, 0, 8)), cptr.decay(bar));
+                        void cptr.strcpy(cptr.ldPtr(cptr.add(status_vals, NHC.BL_TITLE, 8)), cptr.decay(bar));
                     } else {
                         void cptr.strcpy(cptr.decay(bar), text);
                     }
@@ -3063,21 +3064,21 @@ function render_status() {
                     }
                     tty_putstatusfield(__sl75, x++, y);
                     if (cptr.ld1s(cptr.decay(bar))) {
-                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 0, 40), 4));
-                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 0, 40), 8));
+                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 4));
+                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 8));
                         do {
                             if (attrmask) {
-                                if ((attrmask) & 2)
+                                if ((attrmask) & NHC.HL_BOLD)
                                     term_start_attr(1);
-                                if ((attrmask) & 4)
+                                if ((attrmask) & NHC.HL_DIM)
                                     term_start_attr(2);
-                                if ((attrmask) & 8)
+                                if ((attrmask) & NHC.HL_ITALIC)
                                     term_start_attr(3);
-                                if ((attrmask) & 16)
+                                if ((attrmask) & NHC.HL_ULINE)
                                     term_start_attr(4);
-                                if ((attrmask) & 32)
+                                if ((attrmask) & NHC.HL_BLINK)
                                     term_start_attr(5);
-                                if ((attrmask) & 64)
+                                if ((attrmask) & NHC.HL_INVERSE)
                                     term_start_attr(7);
                             }
                         } while (0);
@@ -3089,37 +3090,37 @@ function render_status() {
                             term_end_color();
                         do {
                             if (attrmask) {
-                                if ((attrmask) & 64)
+                                if ((attrmask) & NHC.HL_INVERSE)
                                     term_end_attr(7);
-                                if ((attrmask) & 32)
+                                if ((attrmask) & NHC.HL_BLINK)
                                     term_end_attr(5);
-                                if ((attrmask) & 16)
+                                if ((attrmask) & NHC.HL_ULINE)
                                     term_end_attr(4);
-                                if ((attrmask) & 8)
+                                if ((attrmask) & NHC.HL_ITALIC)
                                     term_end_attr(3);
-                                if ((attrmask) & 4)
+                                if ((attrmask) & NHC.HL_DIM)
                                     term_end_attr(2);
-                                if ((attrmask) & 2)
+                                if ((attrmask) & NHC.HL_BOLD)
                                     term_end_attr(1);
                             }
                         } while (0);
                     }
                     if (twoparts) {
-                        if ((attrmask & 32) != 0)
+                        if ((attrmask & NHC.HL_BLINK) != 0)
                             term_start_attr(5);
                         cptr.st1(bar2, savedch);
                         tty_putstatusfield(bar2, x, y);
                         x = (x + Number(BigInt.asIntN(32, cptr.strlen(bar2)))) | 0;
-                        if ((attrmask & 32) != 0)
+                        if ((attrmask & NHC.HL_BLINK) != 0)
                             term_end_attr(5);
                     }
                     tty_putstatusfield(__sl76, x++, y);
                 } else {
-                    if (idx == 26 && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == -1 ? 1 : 0) {
+                    if (idx == NHC.BL_VERS && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == NHC.BL_FLUSH ? 1 : 0) {
                         let vstart;
                         let dat = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), y, 8)), 0);
-                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), 22, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[0]), 22, 40), 24)))));
-                        if ((i > 0 && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i - 1) | 0, 4)) == 22 ? 1 : 0) && x != vx ? 1 : 0) {
+                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_CONDITION, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_CONDITION, 40), 24)))));
+                        if ((i > 0 && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i - 1) | 0, 4)) == NHC.BL_CONDITION ? 1 : 0) && x != vx ? 1 : 0) {
                             x = vx;
                             tty_curs(WIN_STATUS.v, x, y);
                         }
@@ -3129,7 +3130,7 @@ function render_status() {
                                 if (cptr.ld1s(cptr.add(dat, (x - 1) | 0)) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < vstart);
-                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), 26, 40), 12), x);
+                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_VERS, 40), 12), x);
                         }
                     }
                     if (cptr.ldI64(cptr.add(iflags, 152))) {
@@ -3137,24 +3138,24 @@ function render_status() {
                             tty_putstatusfield(__sl12, x++, y);
                             text = cptr.add(text, 1);
                         }
-                        if (cptr.ld1s(text) == 47 && idx == 21 ? 1 : 0) {
+                        if (cptr.ld1s(text) == 47 && idx == NHC.BL_EXP ? 1 : 0) {
                             tty_putstatusfield(__sl77, x++, y);
                             text = cptr.add(text, 1);
                         }
                         attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 8));
                         do {
                             if (attrmask) {
-                                if ((attrmask) & 2)
+                                if ((attrmask) & NHC.HL_BOLD)
                                     term_start_attr(1);
-                                if ((attrmask) & 4)
+                                if ((attrmask) & NHC.HL_DIM)
                                     term_start_attr(2);
-                                if ((attrmask) & 8)
+                                if ((attrmask) & NHC.HL_ITALIC)
                                     term_start_attr(3);
-                                if ((attrmask) & 16)
+                                if ((attrmask) & NHC.HL_ULINE)
                                     term_start_attr(4);
-                                if ((attrmask) & 32)
+                                if ((attrmask) & NHC.HL_BLINK)
                                     term_start_attr(5);
-                                if ((attrmask) & 64)
+                                if ((attrmask) & NHC.HL_INVERSE)
                                     term_start_attr(7);
                             }
                         } while (0);
@@ -3169,17 +3170,17 @@ function render_status() {
                             term_end_color();
                         do {
                             if (attrmask) {
-                                if ((attrmask) & 64)
+                                if ((attrmask) & NHC.HL_INVERSE)
                                     term_end_attr(7);
-                                if ((attrmask) & 32)
+                                if ((attrmask) & NHC.HL_BLINK)
                                     term_end_attr(5);
-                                if ((attrmask) & 16)
+                                if ((attrmask) & NHC.HL_ULINE)
                                     term_end_attr(4);
-                                if ((attrmask) & 8)
+                                if ((attrmask) & NHC.HL_ITALIC)
                                     term_end_attr(3);
-                                if ((attrmask) & 4)
+                                if ((attrmask) & NHC.HL_DIM)
                                     term_end_attr(2);
-                                if ((attrmask) & 2)
+                                if ((attrmask) & NHC.HL_BOLD)
                                     term_end_attr(1);
                             }
                         } while (0);

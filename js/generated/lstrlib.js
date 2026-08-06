@@ -5,6 +5,7 @@
 
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaL_addlstring, luaL_addstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_buffinitsize, luaL_checkinteger, luaL_checklstring, luaL_checknumber, luaL_checkstack, luaL_checktype, luaL_checkversion_, luaL_error, luaL_getmetafield, luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_pushresultsize, luaL_setfuncs, luaL_tolstring, luaL_typeerror } from './lauxlib.js';
 import { lua_arith, lua_callk, lua_createtable, lua_dump, lua_gettable, lua_gettop, lua_isinteger, lua_isstring, lua_newuserdatauv, lua_pushcclosure, lua_pushinteger, lua_pushlstring, lua_pushnil, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rotate, lua_setfield, lua_setmetatable, lua_settop, lua_stringtonumber, lua_toboolean, lua_tointegerx, lua_tolstring, lua_tonumberx, lua_topointer, lua_touserdata, lua_type, lua_typename } from './lapi.js';
 import { flags, gm } from './decl.js';
@@ -1551,61 +1552,61 @@ function getoption(h, fmt, size) {
     switch (opt) {
         case 98:
         cptr.stI32(size, 1);
-        return 0;
+        return NHC.Kint;
         case 66:
         cptr.stI32(size, 1);
-        return 1;
+        return NHC.Kuint;
         case 104:
         cptr.stI32(size, 2);
-        return 0;
+        return NHC.Kint;
         case 72:
         cptr.stI32(size, 2);
-        return 1;
+        return NHC.Kuint;
         case 108:
         cptr.stI32(size, 8);
-        return 0;
+        return NHC.Kint;
         case 76:
         cptr.stI32(size, 8);
-        return 1;
+        return NHC.Kuint;
         case 106:
         cptr.stI32(size, 8);
-        return 0;
+        return NHC.Kint;
         case 74:
         cptr.stI32(size, 8);
-        return 1;
+        return NHC.Kuint;
         case 84:
         cptr.stI32(size, 8);
-        return 1;
+        return NHC.Kuint;
         case 102:
         cptr.stI32(size, 4);
-        return 2;
+        return NHC.Kfloat;
         case 110:
         cptr.stI32(size, 8);
-        return 3;
+        return NHC.Knumber;
         case 100:
         cptr.stI32(size, 8);
-        return 4;
+        return NHC.Kdouble;
         case 105:
         cptr.stI32(size, getnumlimit(h, fmt, 4));
-        return 0;
+        return NHC.Kint;
         case 73:
         cptr.stI32(size, getnumlimit(h, fmt, 4));
-        return 1;
+        return NHC.Kuint;
         case 115:
         cptr.stI32(size, getnumlimit(h, fmt, 8));
-        return 6;
+        return NHC.Kstring;
         case 99:
         cptr.stI32(size, getnum(fmt, -1));
         if ((__builtin_expect(BigInt(((cptr.ldI32(size) == -1) != 0)), 0n)))
             luaL_error(cptr.ldPtr(h), __sl53);
-        return 5;
+        return NHC.Kchar;
         case 122:
-        return 7;
+        return NHC.Kzstr;
         case 120:
         cptr.stI32(size, 1);
-        return 8;
+        return NHC.Kpadding;
         case 88:
-        return 9;
+        return NHC.Kpaddalign;
         case 32:
         break;
         case 60:
@@ -1626,18 +1627,18 @@ function getoption(h, fmt, size) {
         default:
         luaL_error(cptr.ldPtr(h), __sl54, opt);
     }
-    return 10;
+    return NHC.Knop;
 }
 
 /** C ref: lstrlib.c:1541 — @param {CPtr} h @param {CLongLong} totalsize @param {CPtr} fmt @param {CPtr} psize @param {CPtr} ntoalign @returns {*} */
 function getdetails(h, totalsize, fmt, psize, ntoalign) {
     let opt = getoption(h, fmt, psize);
     let align = cptr.box(cptr.ldI32(psize));
-    if (opt == 9) {
-        if ((cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == 5 ? 1 : 0) || align.v == 0 ? 1 : 0)
+    if (opt == NHC.Kpaddalign) {
+        if ((cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == NHC.Kchar ? 1 : 0) || align.v == 0 ? 1 : 0)
             luaL_argerror(cptr.ldPtr(h), 1, __sl55);
     }
-    if (align.v <= 1 || opt == 5 ? 1 : 0)
+    if (align.v <= 1 || opt == NHC.Kchar ? 1 : 0)
         cptr.stI32(ntoalign, 0);
     else {
         if (align.v > cptr.ldI32(cptr.add(h, 12)))
@@ -1695,7 +1696,7 @@ function str_pack(L) {
             (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), 0)));
         arg++;
         switch (opt) {
-            case 0:
+            case NHC.Kint:
             {
                 let n = luaL_checkinteger(L, arg);
                 if (size.v < 8) {
@@ -1705,7 +1706,7 @@ function str_pack(L) {
                 packint(b, BigInt.asUintN(64, n), cptr.ldI32(cptr.add(h, 8)), size.v, (n < 0n));
                 break;
             }
-            case 1:
+            case NHC.Kuint:
             {
                 let n = luaL_checkinteger(L, arg);
                 if (size.v < 8)
@@ -1713,7 +1714,7 @@ function str_pack(L) {
                 packint(b, BigInt.asUintN(64, n), cptr.ldI32(cptr.add(h, 8)), size.v, 0);
                 break;
             }
-            case 2:
+            case NHC.Kfloat:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 4n);
@@ -1721,7 +1722,7 @@ function str_pack(L) {
                 (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case 3:
+            case NHC.Knumber:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
@@ -1729,7 +1730,7 @@ function str_pack(L) {
                 (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case 4:
+            case NHC.Kdouble:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
@@ -1737,7 +1738,7 @@ function str_pack(L) {
                 (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
-            case 5:
+            case NHC.Kchar:
             {
                 let len = cptr.box(0n);
                 let s = luaL_checklstring(L, arg, len);
@@ -1747,7 +1748,7 @@ function str_pack(L) {
                     (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), 0)));
                 break;
             }
-            case 6:
+            case NHC.Kstring:
             {
                 let len = cptr.box(0n);
                 let s = luaL_checklstring(L, arg, len);
@@ -1757,7 +1758,7 @@ function str_pack(L) {
                 totalsize += len.v;
                 break;
             }
-            case 7:
+            case NHC.Kzstr:
             {
                 let len = cptr.box(0n);
                 let s = luaL_checklstring(L, arg, len);
@@ -1767,10 +1768,10 @@ function str_pack(L) {
                 totalsize += BigInt.asUintN(64, len.v + 1n);
                 break;
             }
-            case 8:
+            case NHC.Kpadding:
             (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), 0)));
-            case 9:
-            case 10:
+            case NHC.Kpaddalign:
+            case NHC.Knop:
             arg--;
             break;
         }
@@ -1789,7 +1790,7 @@ function str_packsize(L) {
         let size = cptr.box(0);
         let ntoalign = cptr.box(0);
         let opt = getdetails(h, totalsize, fmt, size, ntoalign);
-        (void ((__builtin_expect(BigInt(((opt != 6 && opt != 7 ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 1, (__sl61)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((opt != NHC.Kstring && opt != NHC.Kzstr ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 1, (__sl61)) ? 1 : 0));
         size.v = (size.v + ntoalign.v) | 0;
         (void ((__builtin_expect(BigInt(((totalsize <= BigInt.asUintN(64, 2147483647n - BigInt.asUintN(64, BigInt(size.v)))) != 0)), 1n)) || luaL_argerror(L, 1, (__sl62)) ? 1 : 0));
         totalsize += BigInt.asUintN(64, BigInt(size.v));
@@ -1841,40 +1842,40 @@ function str_unpack(L) {
         luaL_checkstack(L, 2, __sl66);
         n++;
         switch (opt) {
-            case 0:
-            case 1:
+            case NHC.Kint:
+            case NHC.Kuint:
             {
-                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, (opt == 0));
+                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, (opt == NHC.Kint));
                 lua_pushinteger(L, res);
                 break;
             }
-            case 2:
+            case NHC.Kfloat:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 4, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case 3:
+            case NHC.Knumber:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case 4:
+            case NHC.Kdouble:
             {
                 let f = cptr.box(0);
                 copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32(cptr.add(h, 8)));
                 lua_pushnumber(L, f.v);
                 break;
             }
-            case 5:
+            case NHC.Kchar:
             {
                 lua_pushlstring(L, cptr.add(data, pos), BigInt.asUintN(64, BigInt(size.v)));
                 break;
             }
-            case 6:
+            case NHC.Kstring:
             {
                 let len = BigInt.asUintN(64, unpackint(L, cptr.add(data, pos), cptr.ldI32(cptr.add(h, 8)), size.v, 0));
                 (void ((__builtin_expect(BigInt(((len <= BigInt.asUintN(64, BigInt.asUintN(64, ld.v - pos) - BigInt.asUintN(64, BigInt(size.v)))) != 0)), 1n)) || luaL_argerror(L, 2, (__sl65)) ? 1 : 0));
@@ -1882,7 +1883,7 @@ function str_unpack(L) {
                 pos += len;
                 break;
             }
-            case 7:
+            case NHC.Kzstr:
             {
                 let len = cptr.strlen(cptr.add(data, pos));
                 (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, pos + len) < ld.v) != 0)), 1n)) || luaL_argerror(L, 2, (__sl67)) ? 1 : 0));
@@ -1890,9 +1891,9 @@ function str_unpack(L) {
                 pos += BigInt.asUintN(64, len + 1n);
                 break;
             }
-            case 9:
-            case 8:
-            case 10:
+            case NHC.Kpaddalign:
+            case NHC.Kpadding:
+            case NHC.Knop:
             n--;
             break;
         }

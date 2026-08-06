@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { gm, gn, gs, svl, svn, svr, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { isok } from './cmd.js';
@@ -155,7 +156,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     let i;
     let nx;
     let fg_typ = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4));
-    while ((sx > 0 && (anyroom ? ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= 25) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == fg_typ) ? 1 : 0) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) != rmno ? 1 : 0)
+    while ((sx > 0 && (anyroom ? ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4))) >= NHC.ROOM) : cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == fg_typ) ? 1 : 0) && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) != rmno ? 1 : 0)
         sx--;
     sx++;
     if (sx < cptr.ldI16(cptr.add(gm, 222)))
@@ -170,7 +171,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
             let jj;
             for (ii = i16((i == sx ? (i - 1) | 0 : i)); ii <= ((i + 1) | 0); ii++)
                 for (jj = i16(((sy - 1) | 0)); jj <= ((sy + 1) | 0); jj++)
-                    if (isok(ii, jj) && ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) <= 12 ? 1 : 0) || ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) == 23) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4)) == 14 ? 1 : 0) ? 1 : 0) {
+                    if (isok(ii, jj) && ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) <= NHC.DBWALL ? 1 : 0) || ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4))) == NHC.DOOR) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 4)) == NHC.SDOOR ? 1 : 0) ? 1 : 0) {
                         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 28), 1);
                         if (lit)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 16), lit);
@@ -251,7 +252,7 @@ function join_map(bg_typ, fg_typ) {
                     cptr.stI32(cptr.add(gn, 80), 0);
                     flood_fill_rm(x, y, (cptr.ldI32(cptr.add(svn, 44)) + 3) | 0, 0, 0);
                     if (cptr.ldI32(cptr.add(gn, 80)) > 3) {
-                        add_room(cptr.ldI16(cptr.add(gm, 222)), cptr.ldI16(cptr.add(gm, 226)), cptr.ldI16(cptr.add(gm, 224)), cptr.ldI16(cptr.add(gm, 228)), 0, 0, 1);
+                        add_room(cptr.ldI16(cptr.add(gm, 222)), cptr.ldI16(cptr.add(gm, 226)), cptr.ldI16(cptr.add(gm, 224)), cptr.ldI16(cptr.add(gm, 228)), 0, NHC.OROOM, 1);
                         cptr.st1(cptr.add(cptr.add(svr, (cptr.ldI32(cptr.add(svn, 44)) - 1) | 0, 224), 21), 1);
                         if (cptr.ldI32(cptr.add(svn, 44)) >= 80)
                             break __lbl_joinm;
@@ -292,16 +293,16 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     if (lit) {
         for (x = 1; x < 80; x++)
             for (y = 0; y < 21; y++)
-                if ((((!((fg_typ) < 16) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ ? 1 : 0) || (!((bg_typ) < 16) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (bg_typ == 13 && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (walled && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) <= 12 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+                if ((((!((fg_typ) < NHC.POOL) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ ? 1 : 0) || (!((bg_typ) < NHC.POOL) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (bg_typ == NHC.TREE && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (walled && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) <= NHC.DBWALL ? 1 : 0) ? 1 : 0) ? 1 : 0)
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 1);
         for (x = 0; x < cptr.ldI32(cptr.add(svn, 44)); x++)
             cptr.st1(cptr.add(cptr.add(svr, x, 224), 10), 1);
     }
     for (x = 1; x < 80; x++)
         for (y = 0; y < 21; y++) {
-            if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 20)
+            if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.LAVAPOOL)
                 cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 1);
-            else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == 33)
+            else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.ICE)
                 cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), (icedpools ? 8 : 16) >>> 0);
         }
 }

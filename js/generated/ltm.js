@@ -5,6 +5,7 @@
 
 import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaS_new } from './lstring.js';
 import { luaC_fix, luaC_step } from './lgc.js';
 import { luaH_getshortstr } from './ltable.js';
@@ -99,7 +100,7 @@ cptr.stPtr(cptr.add(__static_luaT_init_luaT_eventname, 192), __sl34); /** C ref:
 /** C ref: ltm.c:38 — @param {CPtr} L */
 export function luaT_init(L) {
     let i;
-    for (i = 0; i < 25; i++) {
+    for (i = 0; i < NHC.TM_N; i++) {
         cptr.stPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), i, 8), luaS_new(L, cptr.ldPtr(cptr.add(__static_luaT_init_luaT_eventname, i, 8))));
         luaC_fix(L, ((((cptr.ldPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), i, 8)))))));
     }
@@ -252,12 +253,12 @@ function callbinTM(L, p1, p2, res, event) {
 export function luaT_trybinTM(L, p1, p2, res, event) {
     if ((__builtin_expect(BigInt(((!callbinTM(L, p1, p2, res, event)) != 0)), 0n))) {
         switch (event) {
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 19:
+            case NHC.TM_BAND:
+            case NHC.TM_BOR:
+            case NHC.TM_BXOR:
+            case NHC.TM_SHL:
+            case NHC.TM_SHR:
+            case NHC.TM_BNOT:
             {
                 if ((((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == 3) && (((((cptr.ld1u(cptr.add(((p2)), 8)))) & 15)) == 3) ? 1 : 0)
                     luaG_tointerror(L, p1, p2);
@@ -273,7 +274,7 @@ export function luaT_trybinTM(L, p1, p2, res, event) {
 /** C ref: ltm.c:167 — @param {CPtr} L */
 export function luaT_tryconcatTM(L) {
     let top = cptr.ldPtr(cptr.add(L, 16));
-    if ((__builtin_expect(BigInt(((!callbinTM(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))), cptr.add(top, -(2), 16), 22)) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((!callbinTM(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))), cptr.add(top, -(2), 16), NHC.TM_CONCAT)) != 0)), 0n)))
         luaG_concaterror(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))));
 }
 

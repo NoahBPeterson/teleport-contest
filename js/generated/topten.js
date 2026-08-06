@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { flags, gh, gi, gm, gt, gu, iflags, program_state, svd, svk, svm, svp, u, ubirthday, urealtime } from './decl.js';
 import { impossible, raw_printf } from './pline.js';
 import { an } from './objnam.js';
@@ -482,77 +483,77 @@ function encode_extended_achievements(buf) {
         achidx = cptr.ld1s(cptr.add(cptr.add(u, 2822), i, 1));
         absidx = Math.abs(achidx);
         switch (absidx) {
-            case 9:
+            case NHC.ACH_UWIN:
             achievement = __sl41;
             break;
-            case 8:
+            case NHC.ACH_ASTR:
             achievement = __sl42;
             break;
-            case 7:
+            case NHC.ACH_ENDG:
             achievement = __sl43;
             break;
-            case 6:
+            case NHC.ACH_AMUL:
             achievement = __sl44;
             break;
-            case 5:
+            case NHC.ACH_INVK:
             achievement = __sl45;
             break;
-            case 4:
+            case NHC.ACH_BOOK:
             achievement = __sl46;
             break;
-            case 1:
+            case NHC.ACH_BELL:
             achievement = __sl47;
             break;
-            case 3:
+            case NHC.ACH_CNDL:
             achievement = __sl48;
             break;
-            case 2:
+            case NHC.ACH_HELL:
             achievement = __sl49;
             break;
-            case 12:
+            case NHC.ACH_MEDU:
             achievement = __sl50;
             break;
-            case 10:
+            case NHC.ACH_MINE_PRIZE:
             achievement = __sl51;
             break;
-            case 11:
+            case NHC.ACH_SOKO_PRIZE:
             achievement = __sl52;
             break;
-            case 19:
+            case NHC.ACH_ORCL:
             achievement = __sl53;
             break;
-            case 20:
+            case NHC.ACH_NOVL:
             achievement = __sl54;
             break;
-            case 15:
+            case NHC.ACH_MINE:
             achievement = __sl55;
             break;
-            case 16:
+            case NHC.ACH_TOWN:
             achievement = __sl56;
             break;
-            case 17:
+            case NHC.ACH_SHOP:
             achievement = __sl57;
             break;
-            case 18:
+            case NHC.ACH_TMPL:
             achievement = __sl58;
             break;
-            case 21:
+            case NHC.ACH_SOKO:
             achievement = __sl59;
             break;
-            case 22:
+            case NHC.ACH_BGRM:
             achievement = __sl60;
             break;
-            case 31:
+            case NHC.ACH_TUNE:
             achievement = __sl61;
             break;
-            case 23:
-            case 24:
-            case 25:
-            case 26:
-            case 27:
-            case 28:
-            case 29:
-            case 30:
+            case NHC.ACH_RNK1:
+            case NHC.ACH_RNK2:
+            case NHC.ACH_RNK3:
+            case NHC.ACH_RNK4:
+            case NHC.ACH_RNK5:
+            case NHC.ACH_RNK6:
+            case NHC.ACH_RNK7:
+            case NHC.ACH_RNK8:
             void cptr.sprintf(cptr.decay(rnkbuf), __sl62, rank_of(rank_to_xlev((absidx - 22) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
             strNsubst(cptr.decay(rnkbuf), __sl63, __sl19, 0);
             achievement = lcase(cptr.decay(rnkbuf));
@@ -670,7 +671,7 @@ export function topten(how, when) {
             unlock_file(__sl87);
         }
         if (cptr.ld1s(cptr.add(flags, 10)) || cptr.ld1s(cptr.add(flags, 12)) ? 1 : 0) {
-            if (how != 11)
+            if (how != NHC.PANICKED)
                 if (!cptr.ldI32(cptr.add(program_state, 8))) {
                     let pbuf = new Uint8Array(256);
                     topten_print(__sl14);
@@ -1102,16 +1103,16 @@ function classmon(plch) {
     let i;
     for (i = 0; cptr.ldPtr(cptr.add(roles, i, 312)); i++) {
         if (!cptr.strncmp(plch, cptr.ldPtr(cptr.add(cptr.add(roles, i, 312), 184)), 3n)) {
-            if (cptr.ldI16(cptr.add(cptr.add(roles, i, 312), 208)) != -1)
+            if (cptr.ldI16(cptr.add(cptr.add(roles, i, 312), 208)) != NHC.NON_PM)
                 return cptr.ldI16(cptr.add(cptr.add(roles, i, 312), 208));
             else
-                return 260;
+                return NHC.PM_HUMAN;
         }
     }
     if (!strcmp(plch, __sl164))
-        return 338;
+        return NHC.PM_RANGER;
     impossible(__sl165, plch);
-    return 192;
+    return NHC.PM_HUMAN_MUMMY;
 }
 
 let __static_get_rnd_toptenentry_tt_buf = cptr.alloc(208); /** C ref: topten.c:1386 — struct toptenentry (function-static) */
@@ -1171,7 +1172,7 @@ export function tt_doppel(mon) {
     let tt = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1446, __sl168), rn2(13)) : rn2(13)) ? get_rnd_toptenentry() : null;
     let ret;
     if (!tt)
-        ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(13)) : rn2(13)) + 331) | 0);
+        ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1s(cptr.add(cptr.add(tt, 84), 0, 1)) == 70)
             cptr.stI32(cptr.add(mon, 84), 1);

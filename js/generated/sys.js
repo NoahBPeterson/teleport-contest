@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { dupstr } from './alloc.js';
 import { panic } from './end.js';
 import { gc } from './decl.js';
@@ -59,7 +60,7 @@ export function sys_early_init() {
     cptr.stI32(cptr.add(sysopt, 88), 0);
     cptr.stI32(cptr.add(sysopt, 80), 1);
     sysopt_seduce_set(cptr.ldI32(cptr.add(sysopt, 80)));
-    cptr.stI32(cptr.add(cptr.add(sysopt, 160), 0, 4), cptr.stI32(cptr.add(cptr.add(sysopt, 168), 0, 4), 1));
+    cptr.stI32(cptr.add(cptr.add(sysopt, 160), 0, 4), cptr.stI32(cptr.add(cptr.add(sysopt, 168), 0, 4), NHC.historical));
     cptr.stI32(cptr.add(sysopt, 176), 0);
     cptr.stI32(cptr.add(sysopt, 180), 0);
     return;

@@ -5,6 +5,7 @@
 
 import { schar, u32div, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaF_getlocalname } from './lfunc.js';
 import { luaO_chunkid, luaO_pushfstring, luaO_pushvfstring } from './lobject.js';
 import { luaH_new, luaH_setint } from './ltable.js';
@@ -453,24 +454,24 @@ function findsetreg(p, lastpc, reg) {
         let a = (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
         let change;
         switch (op) {
-            case 8:
+            case NHC.OP_LOADNIL:
             {
                 let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
                 change = (a <= reg && reg <= ((a + b) | 0) ? 1 : 0);
                 break;
             }
-            case 76:
+            case NHC.OP_TFORCALL:
             {
                 change = (reg >= ((a + 2) | 0));
                 break;
             }
-            case 68:
-            case 69:
+            case NHC.OP_CALL:
+            case NHC.OP_TAILCALL:
             {
                 change = (reg >= a);
                 break;
             }
-            case 56:
+            case NHC.OP_JMP:
             {
                 let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
                 let dest = (((pc + 1) | 0) + b) | 0;
@@ -512,21 +513,21 @@ function basicgetobjname(p, ppc, reg, name) {
         let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), pc, 4));
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
-            case 0:
+            case NHC.OP_MOVE:
             {
                 let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
                 if (b < (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
                     return basicgetobjname(p, ppc, b, name);
                 break;
             }
-            case 9:
+            case NHC.OP_GETUPVAL:
             {
                 cptr.stPtr(name, upvalname(p, ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
                 return cptr.decay(strupval);
             }
-            case 3:
+            case NHC.OP_LOADK:
             return kname(p, ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
-            case 4:
+            case NHC.OP_LOADKX:
             return kname(p, ((((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), (pc + 1) | 0, 4))) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
             default:
             break;
@@ -577,30 +578,30 @@ function getobjname(p, lastpc, reg, name) {
         let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), lastpc.v, 4));
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
-            case 11:
+            case NHC.OP_GETTABUP:
             {
                 let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
                 kname(p, k, name);
                 return isEnv(p, lastpc.v, i, 1);
             }
-            case 12:
+            case NHC.OP_GETTABLE:
             {
                 let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
                 rname(p, lastpc.v, k, name);
                 return isEnv(p, lastpc.v, i, 0);
             }
-            case 13:
+            case NHC.OP_GETI:
             {
                 cptr.stPtr(name, __sl14);
                 return __sl13;
             }
-            case 14:
+            case NHC.OP_GETFIELD:
             {
                 let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
                 kname(p, k, name);
                 return isEnv(p, lastpc.v, i, 0);
             }
-            case 20:
+            case NHC.OP_SELF:
             {
                 rkname(p, lastpc.v, i, name);
                 return __sl15;
@@ -617,62 +618,62 @@ function funcnamefromcode(L, p, pc, name) {
     let tm = 0;
     let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), pc, 4));
     switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
-        case 68:
-        case 69:
+        case NHC.OP_CALL:
+        case NHC.OP_TAILCALL:
         return getobjname(p, pc, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), name);
-        case 76:
+        case NHC.OP_TFORCALL:
         {
             cptr.stPtr(name, __sl16);
             return __sl16;
         }
-        case 20:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        tm = 0;
+        case NHC.OP_SELF:
+        case NHC.OP_GETTABUP:
+        case NHC.OP_GETTABLE:
+        case NHC.OP_GETI:
+        case NHC.OP_GETFIELD:
+        tm = NHC.TM_INDEX;
         break;
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        tm = 1;
+        case NHC.OP_SETTABUP:
+        case NHC.OP_SETTABLE:
+        case NHC.OP_SETI:
+        case NHC.OP_SETFIELD:
+        tm = NHC.TM_NEWINDEX;
         break;
-        case 46:
-        case 47:
-        case 48:
+        case NHC.OP_MMBIN:
+        case NHC.OP_MMBINI:
+        case NHC.OP_MMBINK:
         {
             tm = ((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
             break;
         }
-        case 49:
-        tm = 18;
+        case NHC.OP_UNM:
+        tm = NHC.TM_UNM;
         break;
-        case 50:
-        tm = 19;
+        case NHC.OP_BNOT:
+        tm = NHC.TM_BNOT;
         break;
-        case 52:
-        tm = 4;
+        case NHC.OP_LEN:
+        tm = NHC.TM_LEN;
         break;
-        case 53:
-        tm = 22;
+        case NHC.OP_CONCAT:
+        tm = NHC.TM_CONCAT;
         break;
-        case 57:
-        tm = 5;
+        case NHC.OP_EQ:
+        tm = NHC.TM_EQ;
         break;
-        case 58:
-        case 62:
-        case 64:
-        tm = 20;
+        case NHC.OP_LT:
+        case NHC.OP_LTI:
+        case NHC.OP_GTI:
+        tm = NHC.TM_LT;
         break;
-        case 59:
-        case 63:
-        case 65:
-        tm = 21;
+        case NHC.OP_LE:
+        case NHC.OP_LEI:
+        case NHC.OP_GEI:
+        tm = NHC.TM_LE;
         break;
-        case 54:
-        case 70:
-        tm = 24;
+        case NHC.OP_CLOSE:
+        case NHC.OP_RETURN:
+        tm = NHC.TM_CLOSE;
         break;
         default:
         return null;
@@ -785,7 +786,7 @@ export function luaG_opinterror(L, p1, p2, msg) {
 /** C ref: ldebug.c:804 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
 export function luaG_tointerror(L, p1, p2) {
     let temp = cptr.box(0n);
-    if (!luaV_tointegerns(p1, temp, 0))
+    if (!luaV_tointegerns(p1, temp, NHC.F2Ieq))
         p2 = p1;
     luaG_runerror(L, __sl25, varinfo(L, p2));
 }

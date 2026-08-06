@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { obj_descr, objects } from './objects.js';
 import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { gu, gy, svb, svp, u } from './decl.js';
@@ -81,40 +82,40 @@ const __sl54 = cptr.lit("cloth");
 
 /** C ref: write.c:14 — @param {CPtr} otmp @returns {CInt} */
 function cost(otmp) {
-    if (cptr.ld1s(cptr.add(otmp, 49)) == 10)
+    if (cptr.ld1s(cptr.add(otmp, 49)) == NHC.SPBOOK_CLASS)
         return (Math.imul(10, cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 85))));
     switch (cptr.ldI16(cptr.add(otmp, 32))) {
-        case 364:
+        case NHC.SCR_MAIL:
         return 2;
-        case 332:
-        case 334:
-        case 335:
-        case 337:
-        case 338:
-        case 339:
-        case 340:
+        case NHC.SCR_LIGHT:
+        case NHC.SCR_GOLD_DETECTION:
+        case NHC.SCR_FOOD_DETECTION:
+        case NHC.SCR_MAGIC_MAPPING:
+        case NHC.SCR_AMNESIA:
+        case NHC.SCR_FIRE:
+        case NHC.SCR_EARTH:
         return 8;
-        case 324:
-        case 329:
-        case 341:
+        case NHC.SCR_DESTROY_ARMOR:
+        case NHC.SCR_CREATE_MONSTER:
+        case NHC.SCR_PUNISHMENT:
         return 10;
-        case 325:
+        case NHC.SCR_CONFUSE_MONSTER:
         return 12;
-        case 336:
+        case NHC.SCR_IDENTIFY:
         return 14;
-        case 323:
-        case 327:
-        case 328:
-        case 342:
+        case NHC.SCR_ENCHANT_ARMOR:
+        case NHC.SCR_REMOVE_CURSE:
+        case NHC.SCR_ENCHANT_WEAPON:
+        case NHC.SCR_CHARGING:
         return 16;
-        case 326:
-        case 343:
-        case 330:
-        case 333:
+        case NHC.SCR_SCARE_MONSTER:
+        case NHC.SCR_STINKING_CLOUD:
+        case NHC.SCR_TAMING:
+        case NHC.SCR_TELEPORTATION:
         return 20;
-        case 331:
+        case NHC.SCR_GENOCIDE:
         return 30;
-        case 365:
+        case NHC.SCR_BLANK_PAPER:
         default:
         impossible(__sl0);
     }
@@ -123,11 +124,11 @@ function cost(otmp) {
 
 /** C ref: write.c:61 — @param {CPtr} obj @returns {CInt} */
 function write_ok(obj) {
-    if (!obj || (cptr.ld1s(cptr.add(obj, 49)) != 9 && cptr.ld1s(cptr.add(obj, 49)) != 10 ? 1 : 0) ? 1 : 0)
-        return -3;
-    if (cptr.ldI16(cptr.add(obj, 32)) == 365 || cptr.ldI16(cptr.add(obj, 32)) == 407 ? 1 : 0)
-        return 2;
-    return 1;
+    if (!obj || (cptr.ld1s(cptr.add(obj, 49)) != NHC.SCROLL_CLASS && cptr.ld1s(cptr.add(obj, 49)) != NHC.SPBOOK_CLASS ? 1 : 0) ? 1 : 0)
+        return NHC.GETOBJ_EXCLUDE;
+    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.SCR_BLANK_PAPER || cptr.ldI16(cptr.add(obj, 32)) == NHC.SPE_BLANK_PAPER ? 1 : 0)
+        return NHC.GETOBJ_SUGGEST;
+    return NHC.GETOBJ_DOWNPLAY;
 }
 
 /** C ref: write.c:74 — @param {CPtr} pen @returns {CInt} */
@@ -154,7 +155,7 @@ export function dowrite(pen) {
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n)) {
             You(__sl1);
             return 0;
-        } else if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 21, 24), 16))) {
+        } else if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.GLIB, 24), 16))) {
             pline(__sl2, Tobjnam(pen, __sl3), fingers_or_gloves(0));
             dropx(pen);
             return 1;
@@ -162,23 +163,23 @@ export function dowrite(pen) {
         paper = getobj(__sl4, write_ok, 0);
         if (!paper)
             return 2;
-        typeword = (cptr.ldI16(cptr.add(paper, 32)) == 408) ? __sl5 : ((cptr.ld1s(cptr.add(paper, 49)) == 10) ? __sl6 : __sl7);
-        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
+        typeword = (cptr.ldI16(cptr.add(paper, 32)) == NHC.SPE_NOVEL) ? __sl5 : ((cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS) ? __sl6 : __sl7);
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0)) {
             if (!(cptr.ldI32(cptr.add(paper, 84)) & 1)) {
                 You(__sl8, typeword);
                 return 0;
-            } else if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
+            } else if (cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS) {
                 pline(__sl9, upstart(ysimple_name(pen)));
                 return 0;
             }
         }
         observe_object(paper);
-        if (cptr.ldI16(cptr.add(paper, 32)) != 365 && cptr.ldI16(cptr.add(paper, 32)) != 407 ? 1 : 0) {
+        if (cptr.ldI16(cptr.add(paper, 32)) != NHC.SCR_BLANK_PAPER && cptr.ldI16(cptr.add(paper, 32)) != NHC.SPE_BLANK_PAPER ? 1 : 0) {
             pline(__sl10, typeword);
-            exercise(2, 0);
+            exercise(NHC.A_WIS, 0);
             return 1;
         }
-        discover_object(365, 1, 1, 1);
+        discover_object(NHC.SCR_BLANK_PAPER, 1, 1, 1);
         void cptr.sprintf(cptr.decay(qbuf), __sl11, typeword);
         getlin(cptr.decay(qbuf), cptr.decay(namebuf));
         void mungspaces(cptr.decay(namebuf));
@@ -203,7 +204,7 @@ export function dowrite(pen) {
             if (!(cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))))
                 continue;
             if (!strncmpi(((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))), (nm), -1)) {
-                if ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) | 0 || cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) {
+                if ((cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) | 0 || cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS ? 1 : 0) {
                     break __lbl_found;
                 } else {
                     real = (deferred = i);
@@ -228,17 +229,17 @@ export function dowrite(pen) {
         There(__sl19, typeword);
         return 1;
     }
-    if (i == 365 || i == 407 ? 1 : 0) {
+    if (i == NHC.SCR_BLANK_PAPER || i == NHC.SPE_BLANK_PAPER ? 1 : 0) {
         You_cant(__sl20);
         pline(__sl21);
         return 1;
-    } else if (i == 408) {
+    } else if (i == NHC.SPE_NOVEL) {
         let fanfic = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         let tearup = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         if (!fanfic) {
-            You(__sl22, !tearup ? __sl23 : __sl24, !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? __sl25 : __sl26);
+            You(__sl22, !tearup ? __sl23 : __sl24, !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? __sl25 : __sl26);
         } else {
-            You(__sl27, !tearup ? __sl28 : __sl29, !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? __sl30 : __sl31);
+            You(__sl27, !tearup ? __sl28 : __sl29, !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? __sl30 : __sl31);
         }
         if (!tearup) {
             You(__sl32);
@@ -247,10 +248,10 @@ export function dowrite(pen) {
             useup(paper);
         }
         return 1;
-    } else if (i == 409) {
+    } else if (i == NHC.SPE_BOOK_OF_THE_DEAD) {
         pline(__sl34);
         return 1;
-    } else if ((by_descr && cptr.ld1s(cptr.add(paper, 49)) == 10 ? 1 : 0) && !(cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) ? 1 : 0) {
+    } else if ((by_descr && cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS ? 1 : 0) && !(cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) ? 1 : 0) {
         pline(__sl35);
         return 1;
     }
@@ -267,11 +268,11 @@ export function dowrite(pen) {
     }
     actualcost = (((rng_log_enabled() ? (rng_log_set_caller(__sl17, 265, __sl18), rn2((basecost / 2) | 0)) : rn2((basecost / 2) | 0)) + ((basecost / 2) | 0)) | 0);
     curseval = (bcsign(pen) + bcsign(paper)) | 0;
-    exercise(2, 1);
+    exercise(NHC.A_WIS, 1);
     if (cptr.ld1s(cptr.add(pen, 48)) < actualcost) {
         cptr.st1(cptr.add(pen, 48), 0);
         Your(__sl38);
-        if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
+        if (cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS) {
             pline_The(__sl39);
             update_inventory();
         } else {
@@ -282,14 +283,14 @@ export function dowrite(pen) {
         return 1;
     }
     cptr.st1(cptr.add(pen, 48), cptr.ld1s(cptr.add(pen, 48)) - actualcost);
-    if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
+    if (cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS) {
         spell_knowledge = known_spell(cptr.ldI16(cptr.add(new_obj, 32)));
     } else {
-        spell_knowledge = 0;
+        spell_knowledge = NHC.spe_Unknown;
     }
-    if (((!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) & 1) && !(by_descr && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 28)) & 1) | 0 ? 1 : 0) ? 1 : 0) && spell_knowledge != 1 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16(cptr.add(gu, 216)) == 343) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) : rnl((((cptr.ldI16(cptr.add(gu, 216)) == 343) && cptr.ld1s(cptr.add(paper, 49)) != 10 ? 1 : 0) || spell_knowledge == 2 ? 1 : 0) ? 5 : 15)) ? 1 : 0) {
+    if (((!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) & 1) && !(by_descr && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 28)) & 1) | 0 ? 1 : 0) ? 1 : 0) && spell_knowledge != NHC.spe_Fresh ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16(cptr.add(gu, 216)) == NHC.PM_WIZARD) && cptr.ld1s(cptr.add(paper, 49)) != NHC.SPBOOK_CLASS ? 1 : 0) || spell_knowledge == NHC.spe_GoingStale ? 1 : 0) ? 5 : 15)) : rnl((((cptr.ldI16(cptr.add(gu, 216)) == NHC.PM_WIZARD) && cptr.ld1s(cptr.add(paper, 49)) != NHC.SPBOOK_CLASS ? 1 : 0) || spell_knowledge == NHC.spe_GoingStale ? 1 : 0) ? 5 : 15)) ? 1 : 0) {
         You(__sl41, by_descr ? __sl42 : __sl43);
-        if (cptr.ld1s(cptr.add(paper, 49)) == 10) {
+        if (cptr.ld1s(cptr.add(paper, 49)) == NHC.SPBOOK_CLASS) {
             You(__sl44);
             update_inventory();
         } else {
@@ -304,19 +305,19 @@ export function dowrite(pen) {
         obfree(new_obj, null);
         return 1;
     }
-    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3)) ? 1 : 0) {
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3)) ? 1 : 0) {
         You(__sl47);
         useup(paper);
         obfree(new_obj, null);
         return 1;
     }
     useup(paper);
-    if (cptr.ld1s(cptr.add(new_obj, 49)) == 10) {
+    if (cptr.ld1s(cptr.add(new_obj, 49)) == NHC.SPBOOK_CLASS) {
         pline_The(__sl48, new_book_description(cptr.ldI16(cptr.add(new_obj, 32)), cptr.decay(namebuf)));
     }
     cptr.stI32(cptr.add(new_obj, 60), (curseval > 0) >>> 0);
     cptr.stI32(cptr.add(new_obj, 56), (curseval < 0) >>> 0);
-    if (cptr.ldI16(cptr.add(new_obj, 32)) == 364)
+    if (cptr.ldI16(cptr.add(new_obj, 32)) == NHC.SCR_MAIL)
         cptr.st1(cptr.add(new_obj, 48), 2);
     cptr.stI32(cptr.add(new_obj, 84), 0);
     if ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(new_obj, 32)), 120), 16)) & 1) | 0 || by_descr ? 1 : 0)

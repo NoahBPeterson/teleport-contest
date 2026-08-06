@@ -5,6 +5,7 @@
 
 import { schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { WIN_MESSAGE, a11y, flags, ge, gg, gm, gp, gs, gv, gy, iflags, program_state, svm, u, ynchars } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { windowprocs } from './windows.js';
@@ -202,7 +203,7 @@ function vpline(line, the_args) {
             dumplogmsg(line);
         if (__static_vpline_in_pline++ || !cptr.ld1s(cptr.add(iflags, 81)) ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 240)))(line);
-            cptr.stI32(cptr.add(iflags, 40), 0);
+            cptr.stI32(cptr.add(iflags, 40), NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
         }
         no_repeat = schar((((cptr.ldI32(cptr.add(gp, 240)) & 1) >>> 0) ? 1 : 0));
@@ -221,7 +222,7 @@ function vpline(line, the_args) {
             flush_screen(((cptr.ldI32(cptr.add(gp, 240)) & 64) >>> 0) ? 0 : 1);
         putmesg(line);
         execplinehandler(line);
-        cptr.stI32(cptr.add(iflags, 40), 0);
+        cptr.stI32(cptr.add(iflags, 40), NHC.PLNMSG_UNKNOWN);
         void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 1)), cptr.st1(cptr.add(cptr.add(gp, 244), 255, 1), 0);
         if (msgtyp == 3)
             (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
@@ -339,7 +340,7 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
+    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.DEAF, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
         return;
     the_args = cptr.vaList(__va);
     if (((cptr.ldI32(cptr.add(u, 1852)) & 1)))
@@ -359,7 +360,7 @@ export function You_see(line, ...__va) {
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
-    else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
+    else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
     else
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __sl15);
@@ -452,7 +453,7 @@ export function impossible(s, ...__va) {
     the_args = null;
     cptr.st1(cptr.add(cptr.decay(pbuf), 255, 1), 0);
     paniclog(__sl20, cptr.decay(pbuf));
-    if (cptr.ld1s(cptr.add(iflags, 15)) == 1)
+    if (cptr.ld1s(cptr.add(iflags, 15)) == NHC.fuzzer_impossible_panic)
         panic(__sl21, cptr.decay(pbuf));
     cptr.stI32(cptr.add(gp, 240), 8);
     pline(__sl21, cptr.decay(pbuf));

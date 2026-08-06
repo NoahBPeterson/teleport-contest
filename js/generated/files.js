@@ -5,6 +5,7 @@
 
 import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
 import { bclose, close_check } from './sfstruct.js';
@@ -398,7 +399,7 @@ export function create_levelfile(lev, errbuf) {
         cptr.st1(cptr.add(nhfp, 34), 0);
         cptr.st1(cptr.add(nhfp, 72), 0);
         cptr.st1(cptr.add(nhfp, 73), 1);
-        cptr.stI32(cptr.add(nhfp, 12), 1);
+        cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
         cptr.stI32(nhfp, creat(fq_lock, 432));
@@ -428,7 +429,7 @@ export function open_levelfile(lev, errbuf) {
         cptr.st1(cptr.add(nhfp, 72), 0);
         cptr.st1(cptr.add(nhfp, 73), 1);
         cptr.stI32(cptr.add(nhfp, 8), 1);
-        cptr.stI32(cptr.add(nhfp, 12), 1);
+        cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
     }
@@ -514,7 +515,7 @@ export function create_bonesfile(lev, bonesid, errbuf) {
         cptr.st1(cptr.add(nhfp, 34), 1);
         cptr.st1(cptr.add(nhfp, 72), 1);
         cptr.st1(cptr.add(nhfp, 73), 1);
-        cptr.stI32(cptr.add(nhfp, 12), 1);
+        cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
         if (cptr.ldPtr(cptr.add(nhfp, 40))) {
@@ -562,7 +563,7 @@ export function open_bonesfile(lev, bonesid) {
         cptr.stI32(cptr.add(nhfp, 4), 0);
         cptr.st1(cptr.add(nhfp, 34), 1);
         cptr.st1(cptr.add(nhfp, 72), 1);
-        cptr.st1(cptr.add(nhfp, 73), schar((cptr.ldI32(cptr.add(cptr.add(sysopt, 168), 0, 4)) != 2)));
+        cptr.st1(cptr.add(nhfp, 73), schar((cptr.ldI32(cptr.add(cptr.add(sysopt, 168), 0, 4)) != NHC.exportascii)));
         cptr.stI32(cptr.add(nhfp, 12), cptr.ldI32(cptr.add(cptr.add(sysopt, 168), 0, 4)));
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
@@ -656,7 +657,7 @@ export function create_savefile() {
             cptr.st1(cptr.add(nhfp, 34), 0);
             cptr.st1(cptr.add(nhfp, 72), 0);
             cptr.st1(cptr.add(nhfp, 73), 1);
-            cptr.stI32(cptr.add(nhfp, 12), 1);
+            cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
             cptr.stI32(nhfp, -1);
             cptr.stPtr(cptr.add(nhfp, 40), null);
             cptr.stI32(nhfp, creat(fq_save, 432));
@@ -684,7 +685,7 @@ export function open_savefile() {
             cptr.st1(cptr.add(nhfp, 34), 0);
             cptr.st1(cptr.add(nhfp, 72), 0);
             cptr.st1(cptr.add(nhfp, 73), 1);
-            cptr.stI32(cptr.add(nhfp, 12), 1);
+            cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
             cptr.stI32(nhfp, -1);
             cptr.stPtr(cptr.add(nhfp, 40), null);
         }
@@ -860,7 +861,7 @@ function docompress_file(filename, uncomp) {
     let f;
     let childstatus = cptr.box(0);
     let ln;
-    let istty = schar((cptr.ldI32(cptr.add(windowprocs, 8)) == 1));
+    let istty = schar((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty));
     xtra = __sl20;
     ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))));
     cfn = alloc((ln + 1) >>> 0);
@@ -1199,9 +1200,9 @@ function wizkit_addinv(obj) {
     if (!obj || cptr.eq(obj, hands_obj) ? 1 : 0)
         return;
     observe_object(obj);
-    if ((cptr.ldI16(cptr.add(gu, 216)) == 337))
+    if ((cptr.ldI16(cptr.add(gu, 216)) == NHC.PM_CLERIC))
         cptr.stI32(cptr.add(obj, 88), 1);
-    if ((cptr.ld1s(cptr.add(obj, 49)) != 12 && inv_cnt(0) >= 52 ? 1 : 0) && !merge_choice(cptr.ldPtr(cptr.add(gi, 8)), obj) ? 1 : 0) {
+    if ((cptr.ld1s(cptr.add(obj, 49)) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic ? 1 : 0) && !merge_choice(cptr.ldPtr(cptr.add(gi, 8)), obj) ? 1 : 0) {
         add_to_migration(obj);
         cptr.stI16(cptr.add(obj, 28), 0);
         cptr.stI16(cptr.add(obj, 30), 1);

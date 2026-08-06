@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { gr, gs, svl, svn, svr } from './decl.js';
 import { impossible } from './pline.js';
@@ -74,7 +75,7 @@ function roguecorr(x, y, dir) {
             fromy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12 ? 1 : 0))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
@@ -96,7 +97,7 @@ function roguecorr(x, y, dir) {
             toy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) - 1) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12 ? 1 : 0))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl5, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
@@ -116,7 +117,7 @@ function roguecorr(x, y, dir) {
             fromy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 100, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))))) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= 12 ? 1 : 0))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
@@ -138,7 +139,7 @@ function roguecorr(x, y, dir) {
             toy = i16(((cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 122, __sl2), rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6)))) : rn2(cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))))) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= 12 ? 1 : 0))
+            if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl7, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
@@ -230,7 +231,7 @@ export function makeroguerooms() {
                 lowy = i16(((Math.imul(7, y) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2))) | 0));
                 hix = i16(((((((((1 + Math.imul(26, x)) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16))) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) - 1) | 0));
                 hiy = i16(((((((Math.imul(7, y) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2))) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) - 1) | 0));
-                add_room(lowx, lowy, hix, hiy, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl10), rn2(7)) : rn2(7)))), 0, 0);
+                add_room(lowx, lowy, hix, hiy, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl10), rn2(7)) : rn2(7)))), NHC.OROOM, 0);
             }
         }
     for (y = 0; y < 3; y++)
@@ -249,9 +250,9 @@ export function makeroguerooms() {
 /** C ref: extralev.c:278 — @param {CInt} x @param {CInt} y */
 export function corr(x, y) {
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 280, __sl13), rn2(50)) : rn2(50))) {
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), 24);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), NHC.CORR);
     } else {
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), 15);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), NHC.SCORR);
     }
 }
 
@@ -267,46 +268,46 @@ export function makerogueghost() {
     croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 297, __sl14), rn2(cptr.ldI32(cptr.add(svn, 44)))) : rn2(cptr.ldI32(cptr.add(svn, 44)))), 224);
     x = i16(somex(croom));
     y = i16(somey(croom));
-    if (!(ghost = makemon(cptr.add(mons, 287, 96), x, y, 0)))
+    if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, 96), x, y, 0)))
         return;
     cptr.stI32(cptr.add(ghost, 144), 1);
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 306, __sl14), rn2(4)) : rn2(4))) {
-        ghostobj = mksobj_at(293, x, y, 0, 0);
+        ghostobj = mksobj_at(NHC.FOOD_RATION, x, y, 0, 0);
         cptr.stI64(cptr.add(ghostobj, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
         cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(73, x, y, 0, 0);
+        ghostobj = mksobj_at(NHC.MACE, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl14), rnd(3)) : rnd(3))));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
-        ghostobj = mksobj_at(55, x, y, 0, 0);
+        ghostobj = mksobj_at(NHC.TWO_HANDED_SWORD, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 318, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 319, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     }
-    ghostobj = mksobj_at(83, x, y, 0, 0);
+    ghostobj = mksobj_at(NHC.BOW, x, y, 0, 0);
     cptr.st1(cptr.add(ghostobj, 48), 1);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 324, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
-    ghostobj = mksobj_at(18, x, y, 0, 0);
+    ghostobj = mksobj_at(NHC.ARROW, x, y, 0, 0);
     cptr.st1(cptr.add(ghostobj, 48), 0);
     cptr.stI64(cptr.add(ghostobj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + 25) | 0)));
     cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 331, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 334, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(132, x, y, 0, 0);
+        ghostobj = mksobj_at(NHC.RING_MAIL, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 336, __sl14), rn2(3)) : rn2(3))));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 337, __sl14), rn2(3)) : rn2(3)))
             cptr.stI32(cptr.add(ghostobj, 120), 1);
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 339, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
-        ghostobj = mksobj_at(121, x, y, 0, 0);
+        ghostobj = mksobj_at(NHC.PLATE_MAIL, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 343, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 344, __sl14), rn2(3)) : rn2(3)))
             cptr.stI32(cptr.add(ghostobj, 120), 1);
@@ -314,7 +315,7 @@ export function makerogueghost() {
             curse(ghostobj);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 349, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(212, x, y, 1, 0);
+        ghostobj = mksobj_at(NHC.FAKE_AMULET_OF_YENDOR, x, y, 1, 0);
         cptr.stI32(cptr.add(ghostobj, 80), 1);
     }
 }

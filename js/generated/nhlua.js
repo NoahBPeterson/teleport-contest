@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as cjmp from '../cjmp.js';
+import * as NHC from './nhconst.js';
 import { WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd, svl, svm, svn, svs, u } from './decl.js';
 import { impossible, livelog_printf, pline, verbalize } from './pline.js';
 import { lua_atpanic, lua_callk, lua_createtable, lua_error, lua_gc, lua_getallocf, lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_isstring, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawset, lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settable, lua_settop, lua_setwarnf, lua_toboolean, lua_tointegerx, lua_tolstring, lua_type } from './lapi.js';
@@ -405,7 +406,7 @@ export function l_nhcore_init() {
             cptr.stPtr(cptr.add(gl, 216), null);
         } else {
             let i;
-            for (i = 0; i < 7; i++)
+            for (i = 0; i < NHC.NUM_NHCORE_CALLS; i++)
                 cptr.st1(cptr.add(cptr.decay(nhcore_call_available), i, 1), 1);
         }
     } else
@@ -424,7 +425,7 @@ export function l_nhcore_done() {
 /** C ref: nhlua.c:171 — @param {CInt} callidx */
 export function l_nhcore_call(callidx) {
     let ltyp;
-    if (((callidx < 0 || callidx >= 7 ? 1 : 0) || !cptr.ldPtr(cptr.add(gl, 216)) ? 1 : 0) || !cptr.ld1s(cptr.add(cptr.decay(nhcore_call_available), callidx, 1)) ? 1 : 0)
+    if (((callidx < 0 || callidx >= NHC.NUM_NHCORE_CALLS ? 1 : 0) || !cptr.ldPtr(cptr.add(gl, 216)) ? 1 : 0) || !cptr.ld1s(cptr.add(cptr.decay(nhcore_call_available), callidx, 1)) ? 1 : 0)
         return;
     lua_getglobal(cptr.ldPtr(cptr.add(gl, 216)), __sl9);
     if (!(lua_type(cptr.ldPtr(cptr.add(gl, 216)), -1) == 5)) {
@@ -435,7 +436,7 @@ export function l_nhcore_call(callidx) {
     lua_getfield(cptr.ldPtr(cptr.add(gl, 216)), -1, cptr.ldPtr(cptr.add(nhcore_call_names, callidx, 8)));
     ltyp = lua_type(cptr.ldPtr(cptr.add(gl, 216)), -1);
     if (ltyp == 6) {
-        nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 1, __sl10, 0);
+        nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 1, __sl10, NHC.NHLpa_panic);
     } else {
         cptr.st1(cptr.add(cptr.decay(nhcore_call_available), callidx, 1), 0);
     }
@@ -468,7 +469,7 @@ export function get_table_mapchr(L, name) {
     let typ;
     ter = get_table_str(L, name);
     typ = check_mapchr(ter);
-    if (typ == 127)
+    if (typ == NHC.INVALID_TYPE)
         nhl_error(L, __sl14);
     if (ter)
         cptr.free(ter);
@@ -482,7 +483,7 @@ export function get_table_mapchr_opt(L, name, defval) {
     ter = get_table_str_opt(L, name, cptr.decay(emptystr));
     if (ter && cptr.ld1s(ter) ? 1 : 0) {
         typ = check_mapchr(ter);
-        if (typ == 127)
+        if (typ == NHC.INVALID_TYPE)
             nhl_error(L, __sl14);
     } else
         typ = defval;
@@ -506,7 +507,7 @@ cptr.stPtr(cptr.add(__static_nhl_get_timertype_timerstr, 72), null); /** C ref: 
 /** C ref: nhlua.c:276 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
 export function nhl_get_timertype(L, idx) {
     let ret = i16(luaL_checkoption(L, idx, null, __static_nhl_get_timertype_timerstr));
-    if (ret < 0 || ret >= 9 ? 1 : 0)
+    if (ret < 0 || ret >= NHC.NUM_TIME_FUNCS ? 1 : 0)
         nhl_error(L, __sl15);
     return ret;
 }
@@ -557,75 +558,75 @@ export function nhl_add_table_entry_region(L, name, x1, y1, x2, y2) {
 /** C ref: nhlua.c:345 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:342:14)[35] */
 const char2typ = cptr.alloc(35 * 2);
 cptr.st1(cptr.add(char2typ, 0), 32);
-cptr.st1(cptr.add(char2typ, 1), 0);
+cptr.st1(cptr.add(char2typ, 1), NHC.STONE);
 cptr.st1(cptr.add(char2typ, 2), 35);
-cptr.st1(cptr.add(char2typ, 3), 24);
+cptr.st1(cptr.add(char2typ, 3), NHC.CORR);
 cptr.st1(cptr.add(char2typ, 4), 46);
-cptr.st1(cptr.add(char2typ, 5), 25);
+cptr.st1(cptr.add(char2typ, 5), NHC.ROOM);
 cptr.st1(cptr.add(char2typ, 6), 45);
-cptr.st1(cptr.add(char2typ, 7), 2);
+cptr.st1(cptr.add(char2typ, 7), NHC.HWALL);
 cptr.st1(cptr.add(char2typ, 8), 45);
-cptr.st1(cptr.add(char2typ, 9), 3);
+cptr.st1(cptr.add(char2typ, 9), NHC.TLCORNER);
 cptr.st1(cptr.add(char2typ, 10), 45);
-cptr.st1(cptr.add(char2typ, 11), 4);
+cptr.st1(cptr.add(char2typ, 11), NHC.TRCORNER);
 cptr.st1(cptr.add(char2typ, 12), 45);
-cptr.st1(cptr.add(char2typ, 13), 5);
+cptr.st1(cptr.add(char2typ, 13), NHC.BLCORNER);
 cptr.st1(cptr.add(char2typ, 14), 45);
-cptr.st1(cptr.add(char2typ, 15), 6);
+cptr.st1(cptr.add(char2typ, 15), NHC.BRCORNER);
 cptr.st1(cptr.add(char2typ, 16), 45);
-cptr.st1(cptr.add(char2typ, 17), 7);
+cptr.st1(cptr.add(char2typ, 17), NHC.CROSSWALL);
 cptr.st1(cptr.add(char2typ, 18), 45);
-cptr.st1(cptr.add(char2typ, 19), 8);
+cptr.st1(cptr.add(char2typ, 19), NHC.TUWALL);
 cptr.st1(cptr.add(char2typ, 20), 45);
-cptr.st1(cptr.add(char2typ, 21), 9);
+cptr.st1(cptr.add(char2typ, 21), NHC.TDWALL);
 cptr.st1(cptr.add(char2typ, 22), 45);
-cptr.st1(cptr.add(char2typ, 23), 10);
+cptr.st1(cptr.add(char2typ, 23), NHC.TLWALL);
 cptr.st1(cptr.add(char2typ, 24), 45);
-cptr.st1(cptr.add(char2typ, 25), 11);
+cptr.st1(cptr.add(char2typ, 25), NHC.TRWALL);
 cptr.st1(cptr.add(char2typ, 26), 45);
-cptr.st1(cptr.add(char2typ, 27), 12);
+cptr.st1(cptr.add(char2typ, 27), NHC.DBWALL);
 cptr.st1(cptr.add(char2typ, 28), 124);
-cptr.st1(cptr.add(char2typ, 29), 1);
+cptr.st1(cptr.add(char2typ, 29), NHC.VWALL);
 cptr.st1(cptr.add(char2typ, 30), 43);
-cptr.st1(cptr.add(char2typ, 31), 23);
+cptr.st1(cptr.add(char2typ, 31), NHC.DOOR);
 cptr.st1(cptr.add(char2typ, 32), 65);
-cptr.st1(cptr.add(char2typ, 33), 35);
+cptr.st1(cptr.add(char2typ, 33), NHC.AIR);
 cptr.st1(cptr.add(char2typ, 34), 67);
-cptr.st1(cptr.add(char2typ, 35), 36);
+cptr.st1(cptr.add(char2typ, 35), NHC.CLOUD);
 cptr.st1(cptr.add(char2typ, 36), 83);
-cptr.st1(cptr.add(char2typ, 37), 14);
+cptr.st1(cptr.add(char2typ, 37), NHC.SDOOR);
 cptr.st1(cptr.add(char2typ, 38), 72);
-cptr.st1(cptr.add(char2typ, 39), 15);
+cptr.st1(cptr.add(char2typ, 39), NHC.SCORR);
 cptr.st1(cptr.add(char2typ, 40), 123);
-cptr.st1(cptr.add(char2typ, 41), 28);
+cptr.st1(cptr.add(char2typ, 41), NHC.FOUNTAIN);
 cptr.st1(cptr.add(char2typ, 42), 92);
-cptr.st1(cptr.add(char2typ, 43), 29);
+cptr.st1(cptr.add(char2typ, 43), NHC.THRONE);
 cptr.st1(cptr.add(char2typ, 44), 75);
-cptr.st1(cptr.add(char2typ, 45), 30);
+cptr.st1(cptr.add(char2typ, 45), NHC.SINK);
 cptr.st1(cptr.add(char2typ, 46), 125);
-cptr.st1(cptr.add(char2typ, 47), 17);
+cptr.st1(cptr.add(char2typ, 47), NHC.MOAT);
 cptr.st1(cptr.add(char2typ, 48), 80);
-cptr.st1(cptr.add(char2typ, 49), 16);
+cptr.st1(cptr.add(char2typ, 49), NHC.POOL);
 cptr.st1(cptr.add(char2typ, 50), 76);
-cptr.st1(cptr.add(char2typ, 51), 20);
+cptr.st1(cptr.add(char2typ, 51), NHC.LAVAPOOL);
 cptr.st1(cptr.add(char2typ, 52), 90);
-cptr.st1(cptr.add(char2typ, 53), 21);
+cptr.st1(cptr.add(char2typ, 53), NHC.LAVAWALL);
 cptr.st1(cptr.add(char2typ, 54), 73);
-cptr.st1(cptr.add(char2typ, 55), 33);
+cptr.st1(cptr.add(char2typ, 55), NHC.ICE);
 cptr.st1(cptr.add(char2typ, 56), 87);
-cptr.st1(cptr.add(char2typ, 57), 18);
+cptr.st1(cptr.add(char2typ, 57), NHC.WATER);
 cptr.st1(cptr.add(char2typ, 58), 84);
-cptr.st1(cptr.add(char2typ, 59), 13);
+cptr.st1(cptr.add(char2typ, 59), NHC.TREE);
 cptr.st1(cptr.add(char2typ, 60), 70);
-cptr.st1(cptr.add(char2typ, 61), 22);
+cptr.st1(cptr.add(char2typ, 61), NHC.IRONBARS);
 cptr.st1(cptr.add(char2typ, 62), 120);
-cptr.st1(cptr.add(char2typ, 63), 37);
+cptr.st1(cptr.add(char2typ, 63), NHC.MAX_TYPE);
 cptr.st1(cptr.add(char2typ, 64), 66);
-cptr.st1(cptr.add(char2typ, 65), 7);
+cptr.st1(cptr.add(char2typ, 65), NHC.CROSSWALL);
 cptr.st1(cptr.add(char2typ, 66), 119);
-cptr.st1(cptr.add(char2typ, 67), 38);
+cptr.st1(cptr.add(char2typ, 67), NHC.MATCH_WALL);
 cptr.st1(cptr.add(char2typ, 68), 0);
-cptr.st1(cptr.add(char2typ, 69), 0);
+cptr.st1(cptr.add(char2typ, 69), NHC.STONE);
 
 /** C ref: nhlua.c:384 — @param {CInt} c @returns {CInt} */
 export function splev_chr2typ(c) {
@@ -633,20 +634,20 @@ export function splev_chr2typ(c) {
     for (i = 0; cptr.ld1s(cptr.add(char2typ, i, 2)); i++)
         if (c == cptr.ld1s(cptr.add(char2typ, i, 2)))
             return cptr.ld1s(cptr.add(cptr.add(char2typ, i, 2), 1));
-    return 127;
+    return NHC.INVALID_TYPE;
 }
 
 /** C ref: nhlua.c:395 — @param {CPtr} s @returns {CInt} */
 export function check_mapchr(s) {
     if (s && cptr.strlen(s) == 1n ? 1 : 0)
         return splev_chr2typ(cptr.ld1s(cptr.add(s, 0)));
-    return 127;
+    return NHC.INVALID_TYPE;
 }
 
 /** C ref: nhlua.c:403 — @param {CInt} typ @returns {CInt} */
 function splev_typ2chr(typ) {
     let i;
-    for (i = 0; cptr.ld1s(cptr.add(cptr.add(char2typ, i, 2), 1)) < 37; i++)
+    for (i = 0; cptr.ld1s(cptr.add(cptr.add(char2typ, i, 2), 1)) < NHC.MAX_TYPE; i++)
         if (typ == cptr.ld1s(cptr.add(cptr.add(char2typ, i, 2), 1)))
             return cptr.ld1s(cptr.add(char2typ, i, 2));
     return 120;
@@ -677,17 +678,17 @@ function nhl_gettrap(L) {
             nhl_add_table_entry_bool(L, __sl36, schar((cptr.ldI32(cptr.add(ttmp, 32)) & 1)));
             nhl_add_table_entry_bool(L, __sl37, schar((cptr.ldI32(cptr.add(ttmp, 28)) & 1)));
             switch ((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) {
-                case 4:
+                case NHC.SQKY_BOARD:
                 nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI16(cptr.add(ttmp, 36))));
                 break;
-                case 7:
+                case NHC.ROLLING_BOULDER_TRAP:
                 nhl_add_table_entry_int(L, __sl39, BigInt(cptr.ldI16(cptr.add(ttmp, 16))));
                 nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ldI16(cptr.add(ttmp, 18))));
                 nhl_add_table_entry_int(L, __sl41, BigInt(cptr.ldI16(cptr.add(ttmp, 36))));
                 nhl_add_table_entry_int(L, __sl42, BigInt(cptr.ldI16(cptr.add(ttmp, 38))));
                 break;
-                case 11:
-                case 12:
+                case NHC.PIT:
+                case NHC.SPIKED_PIT:
                 nhl_add_table_entry_int(L, __sl43, BigInt(cptr.ld1u(cptr.add(ttmp, 36)) >>> 0));
                 break;
             }
@@ -771,24 +772,24 @@ function nhl_getmap(L) {
         nhl_add_table_entry_bool(L, __sl57, schar((t_at(x.v, y.v) ? 1 : 0)));
         lua_pushstring(L, __sl58);
         lua_createtable(L, 0, 0);
-        if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 23)) {
+        if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == NHC.DOOR)) {
             nhl_add_table_entry_bool(L, __sl59, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) == 0)));
             nhl_add_table_entry_bool(L, __sl60, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
             nhl_add_table_entry_bool(L, __sl61, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
             nhl_add_table_entry_bool(L, __sl62, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 4)));
             nhl_add_table_entry_bool(L, __sl63, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 8)));
             nhl_add_table_entry_bool(L, __sl64, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 16)));
-        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 32)) {
+        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == NHC.ALTAR)) {
             nhl_add_table_entry_bool(L, __sl65, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 8)));
-        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 29)) {
+        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == NHC.THRONE)) {
             nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
-        } else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4)) == 13) {
+        } else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4)) == NHC.TREE) {
             nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
             nhl_add_table_entry_bool(L, __sl67, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
-        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 28)) {
+        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == NHC.FOUNTAIN)) {
             nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
             nhl_add_table_entry_bool(L, __sl68, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
-        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == 30)) {
+        } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))) == NHC.SINK)) {
             nhl_add_table_entry_bool(L, __sl69, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 1)));
             nhl_add_table_entry_bool(L, __sl70, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 2)));
             nhl_add_table_entry_bool(L, __sl71, schar((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 8)) & 31) | 0) & 4)));
@@ -1183,7 +1184,7 @@ function nhl_is_genocided(L) {
         let paramstr = (luaL_checklstring(L, 1, null));
         let mgend = cptr.box(0);
         let i = name_to_mon(paramstr, mgend);
-        lua_pushboolean(L, ((i != -1) && (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), i, 12), 2)) & 2) ? 1 : 0) ? 1 : 0);
+        lua_pushboolean(L, ((i != NHC.NON_PM) && (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), i, 12), 2)) & 2) ? 1 : 0) ? 1 : 0);
     } else {
         nhl_error(L, __sl73);
     }
@@ -1248,7 +1249,7 @@ export function get_table_str_opt(L, name, defval) {
     if (ltyp == 4 || ltyp == 0 ? 1 : 0) {
         ret = (luaL_optlstring(L, -1, (defval), null));
     } else if (ltyp == 6) {
-        nhl_pcall_handle(L, 0, 1, __sl95, 0);
+        nhl_pcall_handle(L, 0, 1, __sl95, NHC.NHLpa_panic);
         ret = (luaL_optlstring(L, -1, (defval), null));
     } else {
         nhl_error(L, __sl96);
@@ -1330,7 +1331,7 @@ function nhl_int_to_pm_name(L) {
     if (argc == 1) {
         let i = luaL_checkinteger(L, 1);
         if (i >= 0n && i <= 382n ? 1 : 0)
-            lua_pushstring(L, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8)));
+            lua_pushstring(L, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), NHC.NEUTRAL, 8)));
         else
             lua_pushstring(L, __sl74);
     } else
@@ -1387,9 +1388,9 @@ function nhl_variable(L) {
         else if (typ == 5) {
             lua_getglobal(cptr.ldPtr(cptr.add(gl, 216)), __sl106);
             lua_pushvalue(cptr.ldPtr(cptr.add(gl, 216)), -2);
-            nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 1, 1, __sl107, 0);
+            nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 1, 1, __sl107, NHC.NHLpa_panic);
             luaL_loadstring(L, lua_tolstring(cptr.ldPtr(cptr.add(gl, 216)), -1, null));
-            nhl_pcall_handle(L, 0, 1, __sl108, 0);
+            nhl_pcall_handle(L, 0, 1, __sl108, NHC.NHLpa_panic);
         } else
             nhl_error(L, __sl109);
         return 1;
@@ -1412,9 +1413,9 @@ function nhl_variable(L) {
             lua_getglobal(L, __sl110);
             lua_pushstring(L, key);
             lua_pushvalue(L, -3);
-            nhl_pcall_handle(L, 2, 1, __sl111, 0);
+            nhl_pcall_handle(L, 2, 1, __sl111, NHC.NHLpa_panic);
             luaL_loadstring(cptr.ldPtr(cptr.add(gl, 216)), lua_tolstring(L, -1, null));
-            nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 0, __sl112, 0);
+            nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 0, __sl112, NHC.NHLpa_panic);
         } else
             nhl_error(L, __sl113);
         return 0;
@@ -1432,7 +1433,7 @@ export function get_nh_lua_variables() {
     }
     lua_getglobal(cptr.ldPtr(cptr.add(gl, 216)), __sl115);
     if (lua_type(cptr.ldPtr(cptr.add(gl, 216)), -1) == 6) {
-        if (nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 1, __sl116, 1)) {
+        if (nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 1, __sl116, NHC.NHLpa_impossible)) {
             return key;
         }
         key = dupstr(lua_tolstring(cptr.ldPtr(cptr.add(gl, 216)), -1, null));
@@ -1465,7 +1466,7 @@ export function restore_luadata(nhfp) {
         l_nhcore_init();
     luaL_loadstring(cptr.ldPtr(cptr.add(gl, 216)), lua_data);
     cptr.free(lua_data);
-    nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 0, __sl120, 0);
+    nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 0, 0, __sl120, NHC.NHLpa_panic);
 }
 
 /** C ref: nhlua.c:1523 — @param {CPtr} L @returns {CInt} */
@@ -1511,7 +1512,7 @@ function nhl_pushkey(L) {
     if (argc == 1) {
         let key = (luaL_checklstring(L, 1, null));
         while (cptr.ld1s(key)) {
-            cmdq_add_key(0, cptr.ld1s(key));
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1s(key));
             key = cptr.add(key, 1);
         }
     }
@@ -1614,7 +1615,7 @@ function nhl_timer_peek_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == 8) && isok(x.v, y.v) ? 1 : 0)
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0)
         when = spot_time_expires(x.v, y.v, timertype);
     lua_pushinteger(L, when);
     return 1;
@@ -1635,7 +1636,7 @@ function nhl_timer_stop_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == 8) && isok(x.v, y.v) ? 1 : 0)
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0)
         spot_stop_timers(x.v, y.v, timertype);
     return 0;
 }
@@ -1656,10 +1657,10 @@ function nhl_timer_start_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == 8) && isok(x.v, y.v) ? 1 : 0) {
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0) {
         let where = (BigInt(x.v) << 16n) | BigInt(y.v);
         spot_stop_timers(x.v, y.v, timertype);
-        void start_timer(when, 1, 8, long_to_any(where));
+        void start_timer(when, NHC.TIMER_LEVEL, NHC.MELT_ICE_AWAY, long_to_any(where));
     }
     return 0;
 }
@@ -1697,10 +1698,10 @@ function nhl_callback(L) {
             fn = (luaL_checklstring(L, -2, null));
             cb = (luaL_checklstring(L, -3, null));
         }
-        for (i = 0; i < 4; i++)
+        for (i = 0; i < NHC.NUM_NHCB; i++)
             if (!strcmp(cb, cptr.ldPtr(cptr.add(nhcb_name, i, 8))))
                 break;
-        if (i >= 4)
+        if (i >= NHC.NUM_NHCB)
             return 0;
         if (rm) {
             (cptr.stI32(cptr.add(nhcb_counts, i, 4), cptr.ldI32(cptr.add(nhcb_counts, i, 4)) + -1)) - (-1);
@@ -1712,7 +1713,7 @@ function nhl_callback(L) {
         lua_getglobal(cptr.ldPtr(cptr.add(gl, 216)), rm ? __sl138 : __sl139);
         lua_pushstring(cptr.ldPtr(cptr.add(gl, 216)), cb);
         lua_pushstring(cptr.ldPtr(cptr.add(gl, 216)), fn);
-        nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 2, 0, __sl140, 0);
+        nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 2, 0, __sl140, NHC.NHLpa_panic);
     }
     return 0;
 }
@@ -1754,7 +1755,7 @@ function nhl_gamestate(L) {
         void cptr.memcpy(cptr.add(svd, 1940), cptr.ldPtr(cptr.add(gg, 94608)), 962n);
         (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtr(cptr.add(gg, 94616)), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1911, __sl148) : void 0);
         void cptr.memcpy(cptr.add(svm, 16), cptr.ldPtr(cptr.add(gg, 94616)), 4596n);
-        for (otyp = 0; otyp < 481; otyp++)
+        for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
             if (cptr.ldPtr(cptr.add(cptr.add(objects, otyp, 120), 8))) {
                 cptr.free(cptr.ldPtr(cptr.add(cptr.add(objects, otyp, 120), 8)));
                 cptr.stPtr(cptr.add(cptr.add(objects, otyp, 120), 8), null);
@@ -1809,9 +1810,9 @@ export function free_tutorial() {
 
 /** C ref: nhlua.c:1991 — @param {CInt} entering */
 export function tutorial(entering) {
-    l_nhcore_call(entering ? 5 : 6);
+    l_nhcore_call(entering ? NHC.NHCORE_ENTER_TUTORIAL : NHC.NHCORE_LEAVE_TUTORIAL);
     if (!entering) {
-        cptr.st1(cptr.add(cptr.decay(nhcore_call_available), 5, 1), cptr.st1(cptr.add(cptr.decay(nhcore_call_available), 6, 1), 0));
+        cptr.st1(cptr.add(cptr.decay(nhcore_call_available), NHC.NHCORE_ENTER_TUTORIAL, 1), cptr.st1(cptr.add(cptr.decay(nhcore_call_available), NHC.NHCORE_LEAVE_TUTORIAL, 1), 0));
     }
 }
 
@@ -1939,15 +1940,15 @@ function init_nhc_data(L) {
 function nhl_push_anything(L, anytype, src) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, 536), 8);
     switch (anytype) {
-        case 4:
+        case NHC.ANY_INT:
         cptr.stI32(any, cptr.ldI32(src));
         lua_pushinteger(L, BigInt(cptr.ldI32(any)));
         break;
-        case 6:
+        case NHC.ANY_UCHAR:
         cptr.st1(any, cptr.ld1u(src));
         lua_pushinteger(L, BigInt(cptr.ld1u(any) >>> 0));
         break;
-        case 7:
+        case NHC.ANY_SCHAR:
         cptr.st1(any, cptr.ld1s(src));
         lua_pushinteger(L, BigInt(cptr.ld1s(any)));
         break;
@@ -1958,76 +1959,76 @@ function nhl_push_anything(L, anytype, src) {
 const __static_nhl_meta_u_index_ustruct = cptr.alloc(24 * 24);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 0), __sl209);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 8), u);
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 16), 6);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 16), NHC.ANY_UCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 24), __sl210);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 32), cptr.add(u, 2));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 40), 6);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 40), NHC.ANY_UCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 48), __sl211);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 56), cptr.add(u, 4));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 64), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 64), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 72), __sl212);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 80), cptr.add(u, 8));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 88), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 88), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 96), __sl213);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 104), cptr.add(u, 12));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 112), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 112), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 120), __sl31);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 128), cptr.add(u, 16));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 136), 6);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 136), NHC.ANY_UCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 144), __sl32);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 152), cptr.add(u, 18));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 160), 6);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 160), NHC.ANY_UCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 168), __sl214);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 176), cptr.add(u, 48));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 184), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 184), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 192), __sl215);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 200), cptr.add(u, 52));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 208), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 208), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 216), __sl216);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 224), cptr.add(u, 104));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 232), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 232), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 240), __sl217);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 248), cptr.add(u, 1776));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 256), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 256), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 264), __sl218);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 272), cptr.add(u, 1780));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 280), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 280), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 288), __sl219);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 296), cptr.add(u, 1804));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 304), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 304), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 312), __sl220);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 320), cptr.add(u, 1808));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 328), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 328), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 336), __sl221);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 344), cptr.add(u, 1812));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 352), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 352), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 360), __sl222);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 368), cptr.add(u, 1816));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 376), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 376), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 384), __sl223);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 392), cptr.add(u, 1820));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 400), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 400), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 408), __sl126);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 416), cptr.add(u, 26));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 424), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 424), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 432), __sl125);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 440), cptr.add(u, 24));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 448), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 448), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 456), __sl224);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 464), cptr.add(u, 2186));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 472), 7);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 472), NHC.ANY_SCHAR);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 480), __sl225);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 488), cptr.add(u, 2196));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 496), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 496), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 504), __sl226);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 512), cptr.add(u, 2200));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 520), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 520), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 528), __sl227);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 536), cptr.add(u, 2208));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 544), 4);
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 544), NHC.ANY_INT);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 552), __sl228);
 cptr.stPtr(cptr.add(__static_nhl_meta_u_index_ustruct, 560), cptr.add(u, 2212));
-cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 568), 4); /** C ref: nhlua.c:2124 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:2120:18)[24] (function-static) */
+cptr.stI32(cptr.add(__static_nhl_meta_u_index_ustruct, 568), NHC.ANY_INT); /** C ref: nhlua.c:2124 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:2120:18)[24] (function-static) */
 
 /** C ref: nhlua.c:2118 — @param {CPtr} L @returns {CInt} */
 function nhl_meta_u_index(L) {
@@ -2161,10 +2162,10 @@ export function nhl_pcall_handle(L, nargs, nresults, name, npa) {
         let nud = cptr.box(0);
         void lua_getallocf(L, nud);
         switch (npa) {
-            case 0:
+            case NHC.NHLpa_panic:
             panic(__sl239, cptr.ldI32(cptr.add(nud.v, 32)), cptr.ldPtr(cptr.add(nud.v, 40)) ? cptr.ldPtr(cptr.add(nud.v, 40)) : __sl236, lua_tolstring(L, -1, null));
             break;
-            case 1:
+            case NHC.NHLpa_impossible:
             impossible(__sl240, cptr.ldI32(cptr.add(nud.v, 32)), cptr.ldPtr(cptr.add(nud.v, 40)) ? cptr.ldPtr(cptr.add(nud.v, 40)) : __sl236, lua_tolstring(L, -1, null));
             lua_settop(L, -2);
         }
@@ -2241,7 +2242,7 @@ export function nhl_loadlua(L, fname) {
             ret = 0;
             break __lbl_give_up;
         } else {
-            if (nhl_pcall_handle(L, 0, -1, fname, 1)) {
+            if (nhl_pcall_handle(L, 0, -1, fname, NHC.NHLpa_impossible)) {
                 ret = 0;
                 break __lbl_give_up;
             }
@@ -2367,156 +2368,156 @@ export const EOT = 2;
 
 /** C ref: nhlua.c:2654 — struct e[10] */
 const ct_base_base = cptr.alloc(10 * 16);
-cptr.stI32(cptr.add(ct_base_base, 0), 1);
+cptr.stI32(cptr.add(ct_base_base, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 8), __sl260);
-cptr.stI32(cptr.add(ct_base_base, 16), 1);
+cptr.stI32(cptr.add(ct_base_base, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 24), __sl261);
-cptr.stI32(cptr.add(ct_base_base, 32), 1);
+cptr.stI32(cptr.add(ct_base_base, 32), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 40), __sl262);
-cptr.stI32(cptr.add(ct_base_base, 48), 1);
+cptr.stI32(cptr.add(ct_base_base, 48), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 56), __sl263);
-cptr.stI32(cptr.add(ct_base_base, 64), 1);
+cptr.stI32(cptr.add(ct_base_base, 64), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 72), __sl264);
-cptr.stI32(cptr.add(ct_base_base, 80), 1);
+cptr.stI32(cptr.add(ct_base_base, 80), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 88), __sl265);
-cptr.stI32(cptr.add(ct_base_base, 96), 1);
+cptr.stI32(cptr.add(ct_base_base, 96), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 104), __sl266);
-cptr.stI32(cptr.add(ct_base_base, 112), 1);
+cptr.stI32(cptr.add(ct_base_base, 112), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 120), __sl267);
-cptr.stI32(cptr.add(ct_base_base, 128), 1);
+cptr.stI32(cptr.add(ct_base_base, 128), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_base, 136), __sl268);
-cptr.stI32(cptr.add(ct_base_base, 144), 2);
+cptr.stI32(cptr.add(ct_base_base, 144), NHC.EOT);
 cptr.stPtr(cptr.add(ct_base_base, 152), null);
 
 /** C ref: nhlua.c:2668 — struct e[5] */
 const ct_base_error = cptr.alloc(5 * 16);
-cptr.stI32(cptr.add(ct_base_error, 0), 1);
+cptr.stI32(cptr.add(ct_base_error, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_error, 8), __sl269);
-cptr.stI32(cptr.add(ct_base_error, 16), 1);
+cptr.stI32(cptr.add(ct_base_error, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_error, 24), __sl270);
-cptr.stI32(cptr.add(ct_base_error, 32), 0);
+cptr.stI32(cptr.add(ct_base_error, 32), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_base_error, 40), __sl271);
-cptr.stI32(cptr.add(ct_base_error, 48), 0);
+cptr.stI32(cptr.add(ct_base_error, 48), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_base_error, 56), __sl272);
-cptr.stI32(cptr.add(ct_base_error, 64), 2);
+cptr.stI32(cptr.add(ct_base_error, 64), NHC.EOT);
 cptr.stPtr(cptr.add(ct_base_error, 72), null);
 
 /** C ref: nhlua.c:2679 — struct e[7] */
 const ct_base_meta = cptr.alloc(7 * 16);
-cptr.stI32(cptr.add(ct_base_meta, 0), 1);
+cptr.stI32(cptr.add(ct_base_meta, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 8), __sl273);
-cptr.stI32(cptr.add(ct_base_meta, 16), 1);
+cptr.stI32(cptr.add(ct_base_meta, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 24), __sl274);
-cptr.stI32(cptr.add(ct_base_meta, 32), 1);
+cptr.stI32(cptr.add(ct_base_meta, 32), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 40), __sl275);
-cptr.stI32(cptr.add(ct_base_meta, 48), 1);
+cptr.stI32(cptr.add(ct_base_meta, 48), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 56), __sl276);
-cptr.stI32(cptr.add(ct_base_meta, 64), 1);
+cptr.stI32(cptr.add(ct_base_meta, 64), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 72), __sl277);
-cptr.stI32(cptr.add(ct_base_meta, 80), 1);
+cptr.stI32(cptr.add(ct_base_meta, 80), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_meta, 88), __sl278);
-cptr.stI32(cptr.add(ct_base_meta, 96), 2);
+cptr.stI32(cptr.add(ct_base_meta, 96), NHC.EOT);
 cptr.stPtr(cptr.add(ct_base_meta, 104), null);
 
 /** C ref: nhlua.c:2690 — struct e[2] */
 const ct_base_iffy = cptr.alloc(2 * 16);
-cptr.stI32(cptr.add(ct_base_iffy, 0), 1);
+cptr.stI32(cptr.add(ct_base_iffy, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_iffy, 8), __sl279);
-cptr.stI32(cptr.add(ct_base_iffy, 16), 2);
+cptr.stI32(cptr.add(ct_base_iffy, 16), NHC.EOT);
 cptr.stPtr(cptr.add(ct_base_iffy, 24), null);
 
 /** C ref: nhlua.c:2698 — struct e[4] */
 const ct_base_unsafe = cptr.alloc(4 * 16);
-cptr.stI32(cptr.add(ct_base_unsafe, 0), 1);
+cptr.stI32(cptr.add(ct_base_unsafe, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_unsafe, 8), __sl280);
-cptr.stI32(cptr.add(ct_base_unsafe, 16), 1);
+cptr.stI32(cptr.add(ct_base_unsafe, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_unsafe, 24), __sl281);
-cptr.stI32(cptr.add(ct_base_unsafe, 32), 1);
+cptr.stI32(cptr.add(ct_base_unsafe, 32), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_base_unsafe, 40), __sl282);
-cptr.stI32(cptr.add(ct_base_unsafe, 48), 2);
+cptr.stI32(cptr.add(ct_base_unsafe, 48), NHC.EOT);
 cptr.stPtr(cptr.add(ct_base_unsafe, 56), null);
 
 /** C ref: nhlua.c:2713 — struct e[17] */
 const ct_debug_debug = cptr.alloc(17 * 16);
-cptr.stI32(cptr.add(ct_debug_debug, 0), 0);
+cptr.stI32(cptr.add(ct_debug_debug, 0), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_debug_debug, 8), __sl283);
-cptr.stI32(cptr.add(ct_debug_debug, 16), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 24), __sl284);
-cptr.stI32(cptr.add(ct_debug_debug, 32), 0);
+cptr.stI32(cptr.add(ct_debug_debug, 32), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_debug_debug, 40), __sl285);
-cptr.stI32(cptr.add(ct_debug_debug, 48), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 48), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 56), __sl286);
-cptr.stI32(cptr.add(ct_debug_debug, 64), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 64), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 72), __sl287);
-cptr.stI32(cptr.add(ct_debug_debug, 80), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 80), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 88), __sl288);
-cptr.stI32(cptr.add(ct_debug_debug, 96), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 96), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 104), __sl273);
-cptr.stI32(cptr.add(ct_debug_debug, 112), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 112), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 120), __sl289);
-cptr.stI32(cptr.add(ct_debug_debug, 128), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 128), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 136), __sl290);
-cptr.stI32(cptr.add(ct_debug_debug, 144), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 144), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 152), __sl291);
-cptr.stI32(cptr.add(ct_debug_debug, 160), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 160), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 168), __sl292);
-cptr.stI32(cptr.add(ct_debug_debug, 176), 0);
+cptr.stI32(cptr.add(ct_debug_debug, 176), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_debug_debug, 184), __sl293);
-cptr.stI32(cptr.add(ct_debug_debug, 192), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 192), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 200), __sl294);
-cptr.stI32(cptr.add(ct_debug_debug, 208), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 208), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 216), __sl278);
-cptr.stI32(cptr.add(ct_debug_debug, 224), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 224), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 232), __sl295);
-cptr.stI32(cptr.add(ct_debug_debug, 240), 1);
+cptr.stI32(cptr.add(ct_debug_debug, 240), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_debug, 248), __sl296);
-cptr.stI32(cptr.add(ct_debug_debug, 256), 2);
+cptr.stI32(cptr.add(ct_debug_debug, 256), NHC.EOT);
 cptr.stPtr(cptr.add(ct_debug_debug, 264), null);
 
 /** C ref: nhlua.c:2732 — struct e[2] */
 const ct_debug_safe = cptr.alloc(2 * 16);
-cptr.stI32(cptr.add(ct_debug_safe, 0), 1);
+cptr.stI32(cptr.add(ct_debug_safe, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_debug_safe, 8), __sl297);
-cptr.stI32(cptr.add(ct_debug_safe, 16), 2);
+cptr.stI32(cptr.add(ct_debug_safe, 16), NHC.EOT);
 cptr.stPtr(cptr.add(ct_debug_safe, 24), null);
 
 /** C ref: nhlua.c:2738 — struct e[5] */
 const ct_os_time = cptr.alloc(5 * 16);
-cptr.stI32(cptr.add(ct_os_time, 0), 1);
+cptr.stI32(cptr.add(ct_os_time, 0), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_time, 8), __sl298);
-cptr.stI32(cptr.add(ct_os_time, 16), 1);
+cptr.stI32(cptr.add(ct_os_time, 16), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_time, 24), __sl299);
-cptr.stI32(cptr.add(ct_os_time, 32), 1);
+cptr.stI32(cptr.add(ct_os_time, 32), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_time, 40), __sl300);
-cptr.stI32(cptr.add(ct_os_time, 48), 1);
+cptr.stI32(cptr.add(ct_os_time, 48), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_time, 56), __sl301);
-cptr.stI32(cptr.add(ct_os_time, 64), 2);
+cptr.stI32(cptr.add(ct_os_time, 64), NHC.EOT);
 cptr.stPtr(cptr.add(ct_os_time, 72), null);
 
 /** C ref: nhlua.c:2746 — struct e[8] */
 const ct_os_files = cptr.alloc(8 * 16);
-cptr.stI32(cptr.add(ct_os_files, 0), 0);
+cptr.stI32(cptr.add(ct_os_files, 0), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_os_files, 8), __sl302);
-cptr.stI32(cptr.add(ct_os_files, 16), 0);
+cptr.stI32(cptr.add(ct_os_files, 16), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_os_files, 24), __sl303);
-cptr.stI32(cptr.add(ct_os_files, 32), 0);
+cptr.stI32(cptr.add(ct_os_files, 32), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_os_files, 40), __sl304);
-cptr.stI32(cptr.add(ct_os_files, 48), 1);
+cptr.stI32(cptr.add(ct_os_files, 48), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_files, 56), __sl305);
-cptr.stI32(cptr.add(ct_os_files, 64), 1);
+cptr.stI32(cptr.add(ct_os_files, 64), NHC.IFFLAG);
 cptr.stPtr(cptr.add(ct_os_files, 72), __sl306);
-cptr.stI32(cptr.add(ct_os_files, 80), 0);
+cptr.stI32(cptr.add(ct_os_files, 80), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_os_files, 88), __sl307);
-cptr.stI32(cptr.add(ct_os_files, 96), 0);
+cptr.stI32(cptr.add(ct_os_files, 96), NHC.NEVER);
 cptr.stPtr(cptr.add(ct_os_files, 104), __sl308);
-cptr.stI32(cptr.add(ct_os_files, 112), 2);
+cptr.stI32(cptr.add(ct_os_files, 112), NHC.EOT);
 cptr.stPtr(cptr.add(ct_os_files, 120), null);
 
 /** C ref: nhlua.c:2762 — @param {CPtr} L @param {CInt} flag @param {CInt} tndx @param {CPtr} todo */
 function nhl_clearfromtable(L, flag, tndx, todo) {
-    while (cptr.ldI32(todo) != 2) {
+    while (cptr.ldI32(todo) != NHC.EOT) {
         lua_pushnil(L);
-        if (cptr.ldI32(todo) == 0 || !flag ? 1 : 0) {
+        if (cptr.ldI32(todo) == NHC.NEVER || !flag ? 1 : 0) {
             lua_setfield(L, tndx, cptr.ldPtr(cptr.add(todo, 8)));
         }
         todo = cptr.add(todo, 1, 16);

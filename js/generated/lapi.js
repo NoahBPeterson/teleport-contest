@@ -5,6 +5,7 @@
 
 import { i16, u16, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaD_call, luaD_callnoyield, luaD_growstack, luaD_pcall, luaD_protectedparser, luaD_throw } from './ldo.js';
 import { luaF_close, luaF_newCclosure, luaF_newtbcupval } from './lfunc.js';
 import { luaC_barrier_, luaC_barrierback_, luaC_changemode, luaC_checkfinalizer, luaC_fullgc, luaC_step } from './lgc.js';
@@ -399,7 +400,7 @@ export function lua_tonumberx(L, idx, pisnum) {
 export function lua_tointegerx(L, idx, pisnum) {
     let res = cptr.box(0n);
     let o = index2value(L, idx);
-    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, 0));
+    let isnum = ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((o)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((res), (cptr.ldI64(((o))))), 1) : luaV_tointeger(o, res, NHC.F2Ieq));
     if (pisnum)
         cptr.stI32(pisnum, isnum);
     return res.v;

@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc, svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, ynchars } from './decl.js';
 import { cmdbind_freeall, cmdq_clear, yn_function } from './cmd.js';
@@ -261,7 +262,7 @@ export function dosave0() {
                 if (!cptr.ldI32(cptr.add(program_state, 8)))
                     void cptr.strcpy(cptr.add(svk, 16), cptr.decay(whynot));
                 if (!cptr.ldI32(cptr.add(program_state, 8)))
-                    done(12);
+                    done(NHC.TRICKED);
                 break __lbl_done;
             }
             getlev(onhfp, cptr.ldI32(svh), ltmp.v);
@@ -355,7 +356,7 @@ function savegamestate(nhfp) {
     savemonchn(nhfp, cptr.ldPtr(cptr.add(gm, 192)));
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
         cptr.stPtr(cptr.add(gm, 192), null);
-    for (i = 0; i < 383; ++i) {
+    for (i = 0; i < NHC.NUMMONS; ++i) {
         sfo_mvitals(nhfp, cptr.add(cptr.add(svm, 16), i, 12), __sl25);
     }
     save_dungeon(nhfp, schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 3))), schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 4))));
@@ -385,7 +386,7 @@ export function tricked_fileremoved(nhfp, whynot) {
         pline(__sl7, whynot);
         pline(__sl30);
         void cptr.strcpy(cptr.add(svk, 16), whynot);
-        done(12);
+        done(NHC.TRICKED);
         return 1;
     }
     return 0;
@@ -410,7 +411,7 @@ export function savestateinlock() {
             {
                 void cptr.strcpy(cptr.add(svk, 16), cptr.decay(whynot));
                 (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
-                done(12);
+                done(NHC.TRICKED);
                 return;
             }
         }
@@ -420,7 +421,7 @@ export function savestateinlock() {
             pline(__sl7, cptr.decay(whynot));
             void cptr.strcpy(cptr.add(svk, 16), cptr.decay(whynot));
             (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
-            done(12);
+            done(NHC.TRICKED);
             return;
         }
         cptr.stI32(cptr.add(nhfp, 4), 2);
@@ -616,7 +617,7 @@ function save_stairs(nhfp) {
     let buflen = cptr.box(24);
     while (stway) {
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
-            let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(stway, 4)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
+            let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != NHC.REST_GSTATE && cptr.ldI16(cptr.add(stway, 4)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
             if (use_relative) {
                 cptr.stI16(cptr.add(stway, 6), cptr.ldI16(cptr.add(stway, 6)) - cptr.ldI16(cptr.add(u, 26)));
             }
@@ -825,7 +826,7 @@ let __static_savetrapchn_zerotrap = cptr.alloc(40); /** C ref: save.c:922 — st
 function savetrapchn(nhfp, trap) {
     let trap2;
     while (trap) {
-        let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != 1 && cptr.ldI16(cptr.add(trap, 12)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
+        let use_relative = schar((cptr.ldI32(cptr.add(program_state, 32)) != NHC.REST_GSTATE && cptr.ldI16(cptr.add(trap, 12)) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0));
         trap2 = cptr.ldPtr(trap);
         if (use_relative)
             cptr.stI16(cptr.add(trap, 14), cptr.ldI16(cptr.add(trap, 14)) - cptr.ldI16(cptr.add(u, 26)));
@@ -941,7 +942,7 @@ export function free_dungeons() {
     let tnhfp = get_freeing_nhfile();
     savelevchn(tnhfp);
     save_dungeon(tnhfp, 0, 1);
-    free_luathemes(1);
+    free_luathemes(NHC.all_themes);
     close_nhfile(tnhfp);
     return;
 }
@@ -977,8 +978,8 @@ export function freedynamicdata() {
     free_CapMons();
     free_rect();
     freeroleoptvals();
-    cmdq_clear(0);
-    cmdq_clear(1);
+    cmdq_clear(NHC.CQ_CANNED);
+    cmdq_clear(NHC.CQ_REPEAT);
     cmdbind_freeall();
     free_tutorial();
     wish_history_flush();

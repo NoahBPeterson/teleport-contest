@@ -5,6 +5,7 @@
 
 import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaC_barrier_, luaC_newobj } from './lgc.js';
 import { luaT_gettmbyobj } from './ltm.js';
 import { luaD_call, luaD_callnoyield, luaD_seterrorobj } from './ldo.js';
@@ -82,7 +83,7 @@ export function luaF_findupval(L, level) {
 /** C ref: lfunc.c:107 — @param {CPtr} L @param {CPtr} obj @param {CPtr} err @param {CInt} yy */
 function callclosemethod(L, obj, err, yy) {
     let top = cptr.ldPtr(cptr.add(L, 16));
-    let tm = luaT_gettmbyobj(L, obj, 24);
+    let tm = luaT_gettmbyobj(L, obj, NHC.TM_CLOSE);
     {
         let io1 = (((top)));
         let io2 = (tm);
@@ -119,7 +120,7 @@ function callclosemethod(L, obj, err, yy) {
 
 /** C ref: lfunc.c:125 — @param {CPtr} L @param {CPtr} level */
 function checkclosemth(L, level) {
-    let tm = luaT_gettmbyobj(L, ((level)), 24);
+    let tm = luaT_gettmbyobj(L, ((level)), NHC.TM_CLOSE);
     if ((((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == 0)) {
         let idx = (Number(BigInt.asIntN(32, ((cptr.diff(level, cptr.ldPtr(cptr.ldPtr(cptr.add(L, 32)))) / 16n)))));
         let vname = luaG_findlocal(L, cptr.ldPtr(cptr.add(L, 32)), idx, null);

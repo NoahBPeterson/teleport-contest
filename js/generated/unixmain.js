@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { early_init, init_sound_disp_gamewindows, moveloop, newgame } from './allmain.js';
 import { rng_log_init } from './rnd.js';
 import { ARGV0, flags, ge, gh, gl, gp, gs, has_strong_rngseed, iflags, program_state, svh, svn, svp, u, ynchars } from './decl.js';
@@ -236,7 +237,7 @@ function process_options(argc, argv) {
             if ((cptr.ld1s(cptr.add(arg, 1)) == 68 && !cptr.ld1s(cptr.add(arg, 2)) ? 1 : 0) || !strncmpi((arg), (__sl11), -1) ? 1 : 0) {
                 cptr.st1(cptr.add(flags, 10), 1), cptr.st1(cptr.add(flags, 12), 0);
             } else if (!strncmpi(arg, __sl12, l)) {
-                load_symset(__sl13, 0);
+                load_symset(__sl13, NHC.PRIMARYSET);
                 switch_symbols(1);
             } else {
                 config_error_add(__sl14, origarg);
@@ -270,8 +271,8 @@ function process_options(argc, argv) {
             case 73:
             case 105:
             if (!strncmpi(arg, __sl18, l)) {
-                load_symset(__sl19, 0);
-                load_symset(__sl20, 1);
+                load_symset(__sl19, NHC.PRIMARYSET);
+                load_symset(__sl20, NHC.ROGUESET);
                 switch_symbols(1);
             } else {
                 config_error_add(__sl14, origarg);

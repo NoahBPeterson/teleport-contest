@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { error, tty_utf8graphics_fixup } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { flags, gc, gs, gt, iflags } from './decl.js';
@@ -334,7 +335,7 @@ function tty_decgraphics_termcap_fixup() {
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
-    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2)) {
+    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_DEC)) {
         xputs(__sl46);
         xputs(cptr.ldPtr(cptr.add(gt, 344)));
     }
@@ -360,7 +361,7 @@ function tty_decgraphics_termcap_fixup() {
 export function term_start_screen() {
     xputs(TI);
     xputs(VS);
-    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2))
+    if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_DEC))
         tty_decgraphics_termcap_fixup();
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
     utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
@@ -1086,15 +1087,15 @@ function e_atr2str(n) {
 
 /** C ref: termcap.c:1781 — @param {CInt} msk @returns {CInt} */
 export function term_attr_fixup(msk) {
-    if ((msk & 16) && (!cptr.ldPtr(cptr.add(tc_lcl_data, 40)) || !cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 40))) ? 1 : 0) ? 1 : 0) {
-        msk |= 2;
+    if ((msk & NHC.HL_ULINE) && (!cptr.ldPtr(cptr.add(tc_lcl_data, 40)) || !cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 40))) ? 1 : 0) ? 1 : 0) {
+        msk |= NHC.HL_BOLD;
         msk &= -17;
     }
-    if ((msk & 32) && (!MB || !cptr.ld1s(MB) ? 1 : 0) ? 1 : 0) {
-        msk |= 2;
+    if ((msk & NHC.HL_BLINK) && (!MB || !cptr.ld1s(MB) ? 1 : 0) ? 1 : 0) {
+        msk |= NHC.HL_BOLD;
         msk &= -33;
     }
-    if ((msk & 4) && (!MH || !cptr.ld1s(MH) ? 1 : 0) ? 1 : 0) {
+    if ((msk & NHC.HL_DIM) && (!MH || !cptr.ld1s(MH) ? 1 : 0) ? 1 : 0) {
         msk &= -5;
     }
     return msk;

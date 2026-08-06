@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
@@ -189,8 +190,8 @@ export function wormgone(worm) {
     toss_wsegs(cptr.ldPtr(cptr.add(wtails, wnum, 8)), 1);
     cptr.stPtr(cptr.add(wheads, wnum, 8), cptr.stPtr(cptr.add(wtails, wnum, 8), null));
     cptr.stI64(cptr.add(wgrowtime, wnum, 8), 0n);
-    if (cptr.eq(cptr.ldPtr(cptr.add(worm, 8)), cptr.add(mons, 114, 96)) && (cptr.ldPtr(cptr.add((worm), 312)) && (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56))) != -1 ? 1 : 0) ? 1 : 0)
-        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56), -1);
+    if (cptr.eq(cptr.ldPtr(cptr.add(worm, 8)), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtr(cptr.add((worm), 312)) && (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56))) != NHC.NON_PM ? 1 : 0) ? 1 : 0)
+        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add((worm), 312)), 56), NHC.NON_PM);
 }
 
 /** C ref: worm.c:344 — @param {CPtr} worm @returns {CInt} */
@@ -285,9 +286,9 @@ export function see_wsegs(worm) {
 export function detect_wsegs(worm, use_detection_glyph) {
     let num;
     let curr = cptr.ldPtr(cptr.add(wtails, (cptr.ldI32(cptr.add(worm, 200)) & 31), 8));
-    let what_tail = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(383)) : 330);
+    let what_tail = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
     while (!cptr.eq(curr, cptr.ldPtr(cptr.add(wheads, (cptr.ldI32(cptr.add(worm, 200)) & 31), 8)))) {
-        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? 1 : 0) == 0) ? 1533 : 1916)) | 0) : (cptr.ld1s(cptr.add(worm, 65)) ? (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? 1 : 0) == 0) ? 766 : 1149)) | 0) : (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? 1 : 0) == 0) ? 0 : 383)) | 0));
+        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1s(cptr.add(worm, 65)) ? (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32(cptr.add(worm, 84)) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
         show_glyph(cptr.ldI16(cptr.add(curr, 8)), cptr.ldI16(cptr.add(curr, 10)), num);
         curr = cptr.ldPtr(curr);
     }

@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { u, uleft, uright } from './decl.js';
 import { distmin } from './hacklib.js';
 import { sfi_int, sfi_nhcoord, sfo_int, sfo_nhcoord } from './sfbase.js';
@@ -32,7 +33,7 @@ export function initrack() {
 
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == 181 ? 1 : 0) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == 181 ? 1 : 0) ? 1 : 0)
+    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == NHC.RIN_STEALTH ? 1 : 0) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == NHC.RIN_STEALTH ? 1 : 0) ? 1 : 0)
         return;
     if (utcnt.v < 100)
         utcnt.v++;

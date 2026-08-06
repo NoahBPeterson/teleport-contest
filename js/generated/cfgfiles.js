@@ -5,6 +5,7 @@
 
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { pline, raw_printf } from './pline.js';
 import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js';
 import { windowprocs } from './windows.js';
@@ -227,7 +228,7 @@ function fopen_config_file(filename, src) {
     let fp;
     let tmp_config = new Uint8Array(256);
     let envp;
-    if (src == 0) {
+    if (src == NHC.set_in_sysconf) {
         if (filename && cptr.ld1s(filename) ? 1 : 0) {
             set_configfile_name(fqname(filename, 7, 0));
             fp = fopen(cptr.decay(configfile), __sl8);
@@ -662,7 +663,7 @@ function cnf_line_CHECK_PLNAME(bufp) {
 function cnf_line_SEDUCE(bufp) {
     let n = !!atoi(bufp);
     let src = cptr.ldI32(cptr.add(iflags, 52));
-    let in_sysconf = schar((src == 0));
+    let in_sysconf = schar((src == NHC.set_in_sysconf));
     if ((!in_sysconf && !cptr.ldI32(cptr.add(sysopt, 80)) ? 1 : 0) && n != 0 ? 1 : 0) {
         config_error_add(__sl26);
         n = 0;
@@ -854,7 +855,7 @@ function cnf_line_WARNINGS(bufp) {
 
 /** C ref: cfgfiles.c:1191 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_ROGUESYMBOLS(bufp) {
-    if (parsesymbols(bufp, 1)) {
+    if (parsesymbols(bufp, NHC.ROGUESET)) {
         switch_symbols(1);
         return 1;
     }
@@ -864,7 +865,7 @@ function cnf_line_ROGUESYMBOLS(bufp) {
 
 /** C ref: cfgfiles.c:1202 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_SYMBOLS(bufp) {
-    if (parsesymbols(bufp, 0)) {
+    if (parsesymbols(bufp, NHC.PRIMARYSET)) {
         switch_symbols(1);
         return 1;
     }
@@ -1211,7 +1212,7 @@ const disregarded_config_lines = new Uint8Array(59);
 /** C ref: cfgfiles.c:1389 — @param {CPtr} origbuf @returns {CInt} */
 export function parse_config_line(origbuf) {
     let src = cptr.ldI32(cptr.add(iflags, 52));
-    let in_sysconf = schar((src == 0));
+    let in_sysconf = schar((src == NHC.set_in_sysconf));
     let bufp;
     let buf = new Uint8Array(1024);
     let i;
@@ -1565,7 +1566,7 @@ export function rcfile() {
     let envname;
     let namesrc;
     let nameval;
-    cptr.stI32(cptr.add(go, 520), 4);
+    cptr.stI32(cptr.add(go, 520), NHC.environ_opt);
     envname = __sl126;
     opts = getenv(envname);
     if (!opts) {
@@ -1588,7 +1589,7 @@ export function rcfile() {
         nameval = (namesrc = null);
         xtraopts = opts;
     }
-    cptr.stI32(cptr.add(go, 520), 3);
+    cptr.stI32(cptr.add(go, 520), NHC.rc_file_opt);
     if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128 ? 1 : 0) {
         config_error_init(1, namesrc, 0);
         config_error_add(__sl128, nameval);
@@ -1596,10 +1597,10 @@ export function rcfile() {
         nameval = (namesrc = null);
     }
     config_error_init(1, nameval, schar((nameval ? 1 : 0)));
-    void read_config_file(nameval, 1);
+    void read_config_file(nameval, NHC.set_in_config);
     config_error_done();
     if (xtraopts) {
-        cptr.stI32(cptr.add(go, 520), 4);
+        cptr.stI32(cptr.add(go, 520), NHC.environ_opt);
         config_error_init(0, envname, 0);
         void parseoptions(xtraopts, 1, 0);
         config_error_done();
@@ -1613,15 +1614,15 @@ export function rcfile_interface_options() {
     allopt_array_init();
     disregard_all_options();
     disregard_all_config_statements();
-    heed_this_option(0);
-    heed_this_option(166);
+    heed_this_option(NHC.opt_windowtype);
+    heed_this_option(NHC.opt_soundlib);
     set_ignore_errors_on_unmatched();
     ignore_statement_errors = 1;
     rcfile();
     heed_all_config_statements();
     heed_all_options();
-    disregard_this_option(0);
-    disregard_this_option(166);
+    disregard_this_option(NHC.opt_windowtype);
+    disregard_this_option(NHC.opt_soundlib);
     clear_ignore_errors_on_unmatched();
     ignore_statement_errors = 0;
 }

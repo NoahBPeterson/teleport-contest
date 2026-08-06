@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand, what_datamodel_is_this } from './hacklib.js';
 import { nomakedefs } from './date.js';
 import { do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init } from './mdlib.js';
@@ -610,7 +611,7 @@ export function store_critical_bytes(nhfp) {
     let indicate = cptr.box(117);
     let csc_count = cptr.box(80);
     if (cptr.ldI32(cptr.add(nhfp, 4)) & 2) {
-        indicate.v = schar(((cptr.ld1s(cptr.add(nhfp, 32))) ? 104 : ((cptr.ldI32(cptr.add(nhfp, 12)) == 2) ? 97 : 63)));
+        indicate.v = schar(((cptr.ld1s(cptr.add(nhfp, 32))) ? 104 : ((cptr.ldI32(cptr.add(nhfp, 12)) == NHC.exportascii) ? 97 : 63)));
         sfo_char(nhfp, indicate, __sl101, 1);
         sfo_char(nhfp, csc_count, __sl102, 1);
         cnt = csc_count.v;

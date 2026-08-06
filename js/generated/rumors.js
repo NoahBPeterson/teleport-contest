@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -179,7 +180,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
         if (count >= 50)
             impossible(__sl7);
         else if (!cptr.ld1s(cptr.add(gi, 4)))
-            exercise(2, schar((adjtruth > 0)));
+            exercise(NHC.A_WIS, schar((adjtruth > 0)));
     } else {
         couldnt_open_file(__sl0);
         cptr.stI64(cptr.add(gt, 400), -1n);
@@ -415,7 +416,7 @@ export function outrumor(truth, mechanism) {
     if (reading) {
         if (is_fainted() && mechanism == 1 ? 1 : 0) {
             return;
-        } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
+        } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0)) {
             if (mechanism == 1)
                 pline(cptr.decay(__static_outrumor_fortune_msg));
             pline(__sl33);
@@ -588,7 +589,7 @@ export function doconsult(oracl) {
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, 1);
     if (!(cptr.ldI32(cptr.add(u, 1888)) & 1) && !(cptr.ldI32(cptr.add(u, 1884)) & 1) ? 1 : 0)
-        record_achievement(19);
+        record_achievement(NHC.ACH_ORCL);
     add_xpts = 0;
     if (u_pay == minor_cost) {
         outrumor(1, 0);
@@ -601,7 +602,7 @@ export function doconsult(oracl) {
         if (!cheapskate && !(cptr.ldI32(cptr.add(u, 1888)) & 1) ? 1 : 0)
             add_xpts = (u_pay / ((cptr.ldI32(cptr.add(u, 1884)) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(u, 1888), 1);
-        exercise(2, schar((!cheapskate)));
+        exercise(NHC.A_WIS, schar((!cheapskate)));
     }
     if (add_xpts) {
         more_experienced(add_xpts, (u_pay / 50) | 0);
@@ -654,11 +655,11 @@ function init_CapMons() {
         let mndx;
         let mgend;
         CapMonstCnt = (CapBogonCnt = 0);
-        for (mndx = 0; mndx < 383; ++mndx) {
+        for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
             if ((cptr.ldU16(cptr.add(mptr, 34)) & 4096) != 0 && !the_unique_pm(mptr) ? 1 : 0)
                 continue;
-            for (mgend = 0; mgend < 3; ++mgend) {
+            for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
                 nam = cptr.ldPtr(cptr.add(mptr, mgend, 8));
                 if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam)) ? 1 : 0) {
                     if (pass == 2)

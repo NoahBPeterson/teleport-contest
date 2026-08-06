@@ -5,6 +5,7 @@
 
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHC from './nhconst.js';
 import { luaV_concat, luaV_idiv, luaV_mod, luaV_modf, luaV_shiftl, luaV_tointegerns } from './lvm.js';
 import { luaT_trybinTM } from './ltm.js';
 import { luai_ctype_ } from './lctype.js';
@@ -108,7 +109,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
         {
             let i1 = cptr.box(0n);
             let i2 = cptr.box(0n);
-            if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((p1)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, 0)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((p2)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, 0)) ? 1 : 0) {
+            if (((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((p1)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, NHC.F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((p2)), 8))) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, NHC.F2Ieq)) ? 1 : 0) {
                 {
                     let io = (res);
                     cptr.stI64(((io)), (intarith(L, op, i1.v, i2.v)));
@@ -164,7 +165,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
 /** C ref: lobject.c:126 — @param {CPtr} L @param {CInt} op @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res */
 export function luaO_arith(L, op, p1, p2, res) {
     if (!luaO_rawarith(L, op, p1, p2, ((res)))) {
-        luaT_trybinTM(L, p1, p2, res, (((((op - 0) | 0) + 6) | 0)));
+        luaT_trybinTM(L, p1, p2, res, (((((op - 0) | 0) + NHC.TM_ADD) | 0)));
     }
 }
 
