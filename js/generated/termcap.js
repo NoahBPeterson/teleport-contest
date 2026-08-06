@@ -208,8 +208,8 @@ export function term_startup(wid, hgt) {
         cptr.st1(cptr.add(flags, 29), 0);
     if (tgetent(tptr, term) < 1) {
         let buf = new Uint8Array(256);
-        void __builtin___strncpy_chk(cptr.decay(buf), term, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((256 - 1) | 0))) - (27n)), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.decay(buf), (256 - 1) | 0, 1), 0);
+        void __builtin___strncpy_chk(cptr.decay(buf), term, 228n, __builtin_object_size(cptr.decay(buf), 1));
+        cptr.st1(cptr.add(cptr.decay(buf), 255, 1), 0);
         error(__sl3, term);
     }
     if ((pc = (tgetstr((__sl4), tbufptr))) !== null)
@@ -218,11 +218,11 @@ export function term_startup(wid, hgt) {
         error(__sl6);
     }
     HO = (tgetstr((__sl7), tbufptr));
-    if (!cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)))
-        cptr.stI32(cptr.add(cptr.add(gt, 336), 20), tgetnum((__sl8)));
-    if (!cptr.ldI32(cptr.add(cptr.add(gt, 336), 16)))
-        cptr.stI32(cptr.add(cptr.add(gt, 336), 16), tgetnum((__sl9)));
-    if (cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) < 80 || cptr.ldI32(cptr.add(cptr.add(gt, 336), 16)) < ((21 + 3) | 0) ? 1 : 0)
+    if (!cptr.ldI32(cptr.add(gt, 356)))
+        cptr.stI32(cptr.add(gt, 356), tgetnum((__sl8)));
+    if (!cptr.ldI32(cptr.add(gt, 352)))
+        cptr.stI32(cptr.add(gt, 352), tgetnum((__sl9)));
+    if (cptr.ldI32(cptr.add(gt, 356)) < 80 || cptr.ldI32(cptr.add(gt, 352)) < 24 ? 1 : 0)
         setclipped();
     cptr.stPtr(cptr.add(tc_lcl_data, 8), (tgetstr((__sl10), tbufptr)));
     if (tgetflag((__sl11)))
@@ -275,11 +275,11 @@ export function term_startup(wid, hgt) {
     cptr.stPtr(cptr.add(tc_lcl_data, 32), dupstr(cptr.add(ME, i)));
     dynamic_HIHE = 1;
     cptr.stPtr(cptr.add(gt, 336), (tgetstr((__sl40), tbufptr)));
-    cptr.stPtr(cptr.add(cptr.add(gt, 336), 8), (tgetstr((__sl41), tbufptr)));
+    cptr.stPtr(cptr.add(gt, 344), (tgetstr((__sl41), tbufptr)));
     cptr.stPtr(cptr.add(tc_lcl_data, 16), (tgetstr((__sl42), tbufptr)));
     init_hilite();
-    cptr.stI32(wid, cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)));
-    cptr.stI32(hgt, cptr.ldI32(cptr.add(cptr.add(gt, 336), 16)));
+    cptr.stI32(wid, cptr.ldI32(cptr.add(gt, 356)));
+    cptr.stI32(hgt, cptr.ldI32(cptr.add(gt, 352)));
     if (!(CL = (tgetstr((__sl43), tbufptr))))
         error(__sl44);
     if (Number(BigInt.asIntN(32, (cptr.diff(tbufptr.v, cptr.decay(tbuf))))) > 512)
@@ -328,17 +328,17 @@ const __static_tty_decgraphics_termcap_fixup_numMode = cptr.bytes("\x1b>"); /** 
 function tty_decgraphics_termcap_fixup() {
     if (!cptr.ldPtr(cptr.add(gt, 336)))
         cptr.stPtr(cptr.add(gt, 336), cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlN));
-    if (!cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8)))
-        cptr.stPtr(cptr.add(cptr.add(gt, 336), 8), cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO));
+    if (!cptr.ldPtr(cptr.add(gt, 344)))
+        cptr.stPtr(cptr.add(gt, 344), cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO));
     if (!KS)
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
     if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == 2)) {
         xputs(__sl46);
-        xputs(cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8)));
+        xputs(cptr.ldPtr(cptr.add(gt, 344)));
     }
-    let ae = cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8));
+    let ae = cptr.ldPtr(cptr.add(gt, 344));
     if (digit(cptr.ld1s(ae))) {
         do
             ae = cptr.add(ae, 1);
@@ -353,7 +353,7 @@ function tty_decgraphics_termcap_fixup() {
     }
     if ((cptr.ldPtr(cptr.add(tc_lcl_data, 32)) && cptr.strstr(cptr.ldPtr(cptr.add(tc_lcl_data, 32)), ae) ? 1 : 0) || (ME && cptr.strstr(ME, ae) ? 1 : 0) ? 1 : 0)
         HE_resets_AS.v = 1;
-    xputs(cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8)));
+    xputs(cptr.ldPtr(cptr.add(gt, 344)));
 }
 
 /** C ref: termcap.c:511 */
@@ -364,7 +364,7 @@ export function term_start_screen() {
         tty_decgraphics_termcap_fixup();
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
     utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
-    if (cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)))
+    if (cptr.ld1s(cptr.add(gc, 220)))
         tty_number_pad(1);
 }
 
@@ -733,7 +733,7 @@ export function cl_end() {
         nomux_clear_to_eol(cptr.ldI16(cptr.add(ttyDisplay, 6)), cptr.ldI16(cptr.add(ttyDisplay, 4)));
     } else {
         let cx = (cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1) | 0;
-        while (cx < cptr.ldI32(cptr.add(cptr.add(gt, 336), 20))) {
+        while (cx < cptr.ldI32(cptr.add(gt, 356))) {
             void xputc(32);
             cx++;
         }
@@ -797,8 +797,8 @@ export function graph_on() {
 /** C ref: termcap.c:1113 */
 export function graph_off() {
     nomux_decgfx_cur = 0;
-    if (cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8)))
-        xputs(cptr.ldPtr(cptr.add(cptr.add(gt, 336), 8)));
+    if (cptr.ldPtr(cptr.add(gt, 344)))
+        xputs(cptr.ldPtr(cptr.add(gt, 344)));
 }
 
 /** C ref: termcap.c:1128 — short[15] */
@@ -859,7 +859,7 @@ export function cl_eos() {
         }
     } else {
         let cy = (cptr.ldI16(cptr.add(ttyDisplay, 6)) + 1) | 0;
-        while (cy <= ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 16)) - 2) | 0)) {
+        while (cy <= ((cptr.ldI32(cptr.add(gt, 352)) - 2) | 0)) {
             cl_end();
             void xputc(10);
             cy++;
@@ -874,23 +874,23 @@ export function cl_eos() {
 /** C ref: termcap.c:1294 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/win/tty/termcap.c:1292:7)[6] */
 export const ti_map = cptr.alloc(6 * 12);
 cptr.stI32(cptr.add(ti_map, 0), 1);
-cptr.stI32(cptr.add(cptr.add(ti_map, 0), 4), 1);
-cptr.stI32(cptr.add(cptr.add(ti_map, 0), 8), 9);
+cptr.stI32(cptr.add(ti_map, 4), 1);
+cptr.stI32(cptr.add(ti_map, 8), 9);
 cptr.stI32(cptr.add(ti_map, 12), 2);
-cptr.stI32(cptr.add(cptr.add(ti_map, 12), 4), 2);
-cptr.stI32(cptr.add(cptr.add(ti_map, 12), 8), 10);
+cptr.stI32(cptr.add(ti_map, 16), 2);
+cptr.stI32(cptr.add(ti_map, 20), 10);
 cptr.stI32(cptr.add(ti_map, 24), 3);
-cptr.stI32(cptr.add(cptr.add(ti_map, 24), 4), 3);
-cptr.stI32(cptr.add(cptr.add(ti_map, 24), 8), 11);
+cptr.stI32(cptr.add(ti_map, 28), 3);
+cptr.stI32(cptr.add(ti_map, 32), 11);
 cptr.stI32(cptr.add(ti_map, 36), 4);
-cptr.stI32(cptr.add(cptr.add(ti_map, 36), 4), 4);
-cptr.stI32(cptr.add(cptr.add(ti_map, 36), 8), 12);
+cptr.stI32(cptr.add(ti_map, 40), 4);
+cptr.stI32(cptr.add(ti_map, 44), 12);
 cptr.stI32(cptr.add(ti_map, 48), 5);
-cptr.stI32(cptr.add(cptr.add(ti_map, 48), 4), 5);
-cptr.stI32(cptr.add(cptr.add(ti_map, 48), 8), 13);
+cptr.stI32(cptr.add(ti_map, 52), 5);
+cptr.stI32(cptr.add(ti_map, 56), 13);
 cptr.stI32(cptr.add(ti_map, 60), 6);
-cptr.stI32(cptr.add(cptr.add(ti_map, 60), 4), 6);
-cptr.stI32(cptr.add(cptr.add(ti_map, 60), 8), 14);
+cptr.stI32(cptr.add(ti_map, 64), 6);
+cptr.stI32(cptr.add(ti_map, 68), 14);
 
 /** C ref: termcap.c:1302 — struct undefined {  } (memory model v0.5) */
 
@@ -949,7 +949,7 @@ function init_hilite() {
         }
     }
     if (colors >= 16) {
-        scratch = tparm(setf, 7 | 8);
+        scratch = tparm(setf, 15);
         cptr.stPtr(cptr.add(hilites, 15, 8), dupstr(scratch));
     } else {
         scratch = tparm(setf, 7);
@@ -961,7 +961,7 @@ function init_hilite() {
     cptr.stPtr(cptr.add(hilites, 8, 8), cptr.decay(nilstring));
     if (cptr.ld1s(cptr.add(iflags, 371))) {
         if (colors >= 16) {
-            scratch = tparm(setf, 0 | 8);
+            scratch = tparm(setf, 8);
             cptr.stPtr(cptr.add(hilites, 0, 8), dupstr(scratch));
         } else {
             scratch = tparm(setf, 0);
@@ -1088,14 +1088,14 @@ function e_atr2str(n) {
 export function term_attr_fixup(msk) {
     if ((msk & 16) && (!cptr.ldPtr(cptr.add(tc_lcl_data, 40)) || !cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 40))) ? 1 : 0) ? 1 : 0) {
         msk |= 2;
-        msk &= ~16;
+        msk &= -17;
     }
     if ((msk & 32) && (!MB || !cptr.ld1s(MB) ? 1 : 0) ? 1 : 0) {
         msk |= 2;
-        msk &= ~32;
+        msk &= -33;
     }
     if ((msk & 4) && (!MH || !cptr.ld1s(MH) ? 1 : 0) ? 1 : 0) {
-        msk &= ~4;
+        msk &= -5;
     }
     return msk;
 }

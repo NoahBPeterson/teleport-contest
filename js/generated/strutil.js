@@ -102,7 +102,7 @@ function pmatch_internal(patrn, strng, ci, sk) {
         else if (p == 42)
             return schar(((!cptr.ld1s(patrn) || pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk) ? 1 : 0) ? 1 : (s ? pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk) : 0)));
         else if ((ci ? lowc(p) != lowc(s) : p != s) && (p != 63 || !s ? 1 : 0) ? 1 : 0)
-            return (0);
+            return 0;
         else
             continue __lbl_pmatch_top;
         break __lbl_pmatch_top;
@@ -111,10 +111,10 @@ function pmatch_internal(patrn, strng, ci, sk) {
 
 /** C ref: strutil.c:145 — @param {CPtr} patrn @param {CPtr} strng @returns {CInt} */
 export function pmatch(patrn, strng) {
-    return pmatch_internal(patrn, strng, (0), null);
+    return pmatch_internal(patrn, strng, 0, null);
 }
 
 /** C ref: strutil.c:152 — @param {CPtr} patrn @param {CPtr} strng @returns {CInt} */
 export function pmatchi(patrn, strng) {
-    return pmatch_internal(patrn, strng, (1), null);
+    return pmatch_internal(patrn, strng, 1, null);
 }

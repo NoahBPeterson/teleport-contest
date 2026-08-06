@@ -245,7 +245,7 @@ const __sl193 = cptr.lit("blengr");
 /** C ref: engrave.c:51 — @param {CPtr} outbuf @param {CPtr} pristine_copy @returns {CPtr} */
 export function random_engraving(outbuf, pristine_copy) {
     let rumor;
-    if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl1), rn2(4)) : rn2(4)) || !(rumor = getrumor(0, pristine_copy, (1))) ? 1 : 0) || !cptr.ld1s(rumor) ? 1 : 0)
+    if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl1), rn2(4)) : rn2(4)) || !(rumor = getrumor(0, pristine_copy, 1)) ? 1 : 0) || !cptr.ld1s(rumor) ? 1 : 0)
         void get_rnd_text(__sl2, pristine_copy, rn2, 60);
     void cptr.strcpy(outbuf, pristine_copy);
     wipeout_text(outbuf, Number(BigInt.asIntN(32, (cptr.strlen(outbuf) / 4n))), 0);
@@ -257,101 +257,101 @@ export function random_engraving(outbuf, pristine_copy) {
 /** C ref: engrave.c:69 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/engrave.c:66:14)[48] */
 const rubouts = cptr.alloc(48 * 16);
 cptr.st1(cptr.add(rubouts, 0), 65);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 0), 8), __sl3);
+cptr.stPtr(cptr.add(rubouts, 8), __sl3);
 cptr.st1(cptr.add(rubouts, 16), 66);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 16), 8), __sl4);
+cptr.stPtr(cptr.add(rubouts, 24), __sl4);
 cptr.st1(cptr.add(rubouts, 32), 67);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 32), 8), __sl5);
+cptr.stPtr(cptr.add(rubouts, 40), __sl5);
 cptr.st1(cptr.add(rubouts, 48), 68);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 48), 8), __sl6);
+cptr.stPtr(cptr.add(rubouts, 56), __sl6);
 cptr.st1(cptr.add(rubouts, 64), 69);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 64), 8), __sl7);
+cptr.stPtr(cptr.add(rubouts, 72), __sl7);
 cptr.st1(cptr.add(rubouts, 80), 70);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 80), 8), __sl8);
+cptr.stPtr(cptr.add(rubouts, 88), __sl8);
 cptr.st1(cptr.add(rubouts, 96), 71);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 96), 8), __sl9);
+cptr.stPtr(cptr.add(rubouts, 104), __sl9);
 cptr.st1(cptr.add(rubouts, 112), 72);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 112), 8), __sl8);
+cptr.stPtr(cptr.add(rubouts, 120), __sl8);
 cptr.st1(cptr.add(rubouts, 128), 73);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 128), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 136), __sl10);
 cptr.st1(cptr.add(rubouts, 144), 75);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 144), 8), __sl11);
+cptr.stPtr(cptr.add(rubouts, 152), __sl11);
 cptr.st1(cptr.add(rubouts, 160), 76);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 160), 8), __sl12);
+cptr.stPtr(cptr.add(rubouts, 168), __sl12);
 cptr.st1(cptr.add(rubouts, 176), 77);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 176), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 184), __sl10);
 cptr.st1(cptr.add(rubouts, 192), 78);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 192), 8), __sl13);
+cptr.stPtr(cptr.add(rubouts, 200), __sl13);
 cptr.st1(cptr.add(rubouts, 208), 79);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 208), 8), __sl9);
+cptr.stPtr(cptr.add(rubouts, 216), __sl9);
 cptr.st1(cptr.add(rubouts, 224), 80);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 224), 8), __sl14);
+cptr.stPtr(cptr.add(rubouts, 232), __sl14);
 cptr.st1(cptr.add(rubouts, 240), 81);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 240), 8), __sl9);
+cptr.stPtr(cptr.add(rubouts, 248), __sl9);
 cptr.st1(cptr.add(rubouts, 256), 82);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 256), 8), __sl15);
+cptr.stPtr(cptr.add(rubouts, 264), __sl15);
 cptr.st1(cptr.add(rubouts, 272), 84);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 272), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 280), __sl10);
 cptr.st1(cptr.add(rubouts, 288), 85);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 288), 8), __sl16);
+cptr.stPtr(cptr.add(rubouts, 296), __sl16);
 cptr.st1(cptr.add(rubouts, 304), 86);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 304), 8), __sl17);
+cptr.stPtr(cptr.add(rubouts, 312), __sl17);
 cptr.st1(cptr.add(rubouts, 320), 87);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 320), 8), __sl18);
+cptr.stPtr(cptr.add(rubouts, 328), __sl18);
 cptr.st1(cptr.add(rubouts, 336), 90);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 336), 8), __sl19);
+cptr.stPtr(cptr.add(rubouts, 344), __sl19);
 cptr.st1(cptr.add(rubouts, 352), 98);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 352), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 360), __sl10);
 cptr.st1(cptr.add(rubouts, 368), 100);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 368), 8), __sl20);
+cptr.stPtr(cptr.add(rubouts, 376), __sl20);
 cptr.st1(cptr.add(rubouts, 384), 101);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 384), 8), __sl21);
+cptr.stPtr(cptr.add(rubouts, 392), __sl21);
 cptr.st1(cptr.add(rubouts, 400), 103);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 400), 8), __sl21);
+cptr.stPtr(cptr.add(rubouts, 408), __sl21);
 cptr.st1(cptr.add(rubouts, 416), 104);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 416), 8), __sl22);
+cptr.stPtr(cptr.add(rubouts, 424), __sl22);
 cptr.st1(cptr.add(rubouts, 432), 106);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 432), 8), __sl23);
+cptr.stPtr(cptr.add(rubouts, 440), __sl23);
 cptr.st1(cptr.add(rubouts, 448), 107);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 448), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 456), __sl10);
 cptr.st1(cptr.add(rubouts, 464), 108);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 464), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 472), __sl10);
 cptr.st1(cptr.add(rubouts, 480), 109);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 480), 8), __sl24);
+cptr.stPtr(cptr.add(rubouts, 488), __sl24);
 cptr.st1(cptr.add(rubouts, 496), 110);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 496), 8), __sl25);
+cptr.stPtr(cptr.add(rubouts, 504), __sl25);
 cptr.st1(cptr.add(rubouts, 512), 111);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 512), 8), __sl21);
+cptr.stPtr(cptr.add(rubouts, 520), __sl21);
 cptr.st1(cptr.add(rubouts, 528), 113);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 528), 8), __sl21);
+cptr.stPtr(cptr.add(rubouts, 536), __sl21);
 cptr.st1(cptr.add(rubouts, 544), 119);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 544), 8), __sl26);
+cptr.stPtr(cptr.add(rubouts, 552), __sl26);
 cptr.st1(cptr.add(rubouts, 560), 121);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 560), 8), __sl26);
+cptr.stPtr(cptr.add(rubouts, 568), __sl26);
 cptr.st1(cptr.add(rubouts, 576), 58);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 576), 8), __sl27);
+cptr.stPtr(cptr.add(rubouts, 584), __sl27);
 cptr.st1(cptr.add(rubouts, 592), 59);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 592), 8), __sl28);
+cptr.stPtr(cptr.add(rubouts, 600), __sl28);
 cptr.st1(cptr.add(rubouts, 608), 44);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 608), 8), __sl27);
+cptr.stPtr(cptr.add(rubouts, 616), __sl27);
 cptr.st1(cptr.add(rubouts, 624), 61);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 624), 8), __sl29);
+cptr.stPtr(cptr.add(rubouts, 632), __sl29);
 cptr.st1(cptr.add(rubouts, 640), 43);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 640), 8), __sl30);
+cptr.stPtr(cptr.add(rubouts, 648), __sl30);
 cptr.st1(cptr.add(rubouts, 656), 42);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 656), 8), __sl31);
+cptr.stPtr(cptr.add(rubouts, 664), __sl31);
 cptr.st1(cptr.add(rubouts, 672), 64);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 672), 8), __sl32);
+cptr.stPtr(cptr.add(rubouts, 680), __sl32);
 cptr.st1(cptr.add(rubouts, 688), 48);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 688), 8), __sl9);
+cptr.stPtr(cptr.add(rubouts, 696), __sl9);
 cptr.st1(cptr.add(rubouts, 704), 49);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 704), 8), __sl10);
+cptr.stPtr(cptr.add(rubouts, 712), __sl10);
 cptr.st1(cptr.add(rubouts, 720), 54);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 720), 8), __sl33);
+cptr.stPtr(cptr.add(rubouts, 728), __sl33);
 cptr.st1(cptr.add(rubouts, 736), 55);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 736), 8), __sl19);
+cptr.stPtr(cptr.add(rubouts, 744), __sl19);
 cptr.st1(cptr.add(rubouts, 752), 56);
-cptr.stPtr(cptr.add(cptr.add(rubouts, 752), 8), __sl34);
+cptr.stPtr(cptr.add(rubouts, 760), __sl34);
 
 /** C ref: engrave.c:120 — @param {CPtr} engr @param {CInt} cnt @param {CUInt} seed */
 export function wipeout_text(engr, cnt, seed) {
@@ -368,7 +368,7 @@ export function wipeout_text(engr, cnt, seed) {
                 use_rubout = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 135, __sl35), rn2(4)) : rn2(4));
             } else {
                 nxt = u32mod(seed, lth) | 0;
-                seed = Math.imul(seed, 31), seed %= ((256 - 1) | 0) >>> 0;
+                seed = Math.imul(seed, 31), seed %= 255;
                 use_rubout = ((seed & 3) >>> 0) | 0;
             }
             s = cptr.add(engr, nxt);
@@ -387,7 +387,7 @@ export function wipeout_text(engr, cnt, seed) {
                         if (!seed) {
                             j = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 164, __sl35), rn2(ln | 0)) : rn2(ln | 0));
                         } else {
-                            seed = Math.imul(seed, 31), seed %= ((256 - 1) | 0) >>> 0;
+                            seed = Math.imul(seed, 31), seed %= 255;
                             j = u32mod(seed, ln) | 0;
                         }
                         cptr.st1(s, cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(rubouts, i, 16), 8)), j)));
@@ -405,22 +405,22 @@ export function wipeout_text(engr, cnt, seed) {
 /** C ref: engrave.c:187 — @param {CInt} check_pit @returns {CInt} */
 export function can_reach_floor(check_pit) {
     let t;
-    if (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 || ((cptr.ldPtr(cptr.add(u, 2416)) && !sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) && attacktype(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8)), 7) ? 1 : 0) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) && !((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        return (0);
+    if (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 || ((cptr.ldPtr(cptr.add(u, 2416)) && !sticks(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) && attacktype(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8)), 7) ? 1 : 0) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) && !((((cptr.ldI16(cptr.add((cptr.add(svd, 1864)), 2)) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        return 0;
     if (cptr.ldPtr(cptr.add(u, 2424)) && (cptr.ldI16(cptr.add(cptr.add(u, 2588), 37, 6))) < 2 ? 1 : 0)
-        return (0);
-    if ((cptr.ldI32(cptr.add(u, 1856)) & 1) | 0 && (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 256n) != 0n) && ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 16n) != 0n) && cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28)) != 13 ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        return (0);
-    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 67)) >= 4 ? 1 : 0)
-        return (1);
+        return 0;
+    if ((cptr.ldI32(cptr.add(u, 1856)) & 1) | 0 && (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 256n) != 0n) && ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 16n) != 0n) && cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) != 13 ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        return 0;
+    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 67)) >= 4 ? 1 : 0)
+        return 1;
     if ((check_pit && (t = t_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) !== null ? 1 : 0) && (uteetering_at_seen_pit(t) || uescaped_shaft(t) ? 1 : 0) ? 1 : 0)
-        return (0);
-    return (1);
+        return 0;
+    return 1;
 }
 
 /** C ref: engrave.c:218 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CInt} check_pit @param {CInt} wand_engraving */
 export function cant_reach_floor(x, y, up, check_pit, wand_engraving) {
-    pline(__sl37, wand_engraving ? __sl38 : __sl39, up ? ceiling(x, y) : ((check_pit && can_reach_floor((0)) ? 1 : 0) ? __sl40 : surface(x, y)));
+    pline(__sl37, wand_engraving ? __sl38 : __sl39, up ? ceiling(x, y) : ((check_pit && can_reach_floor(0) ? 1 : 0) ? __sl40 : surface(x, y)));
 }
 
 /** C ref: engrave.c:231 — @param {CInt} x @param {CInt} y @returns {CPtr} */
@@ -446,8 +446,8 @@ export function sengr_at(s, x, y, strict) {
 
 /** C ref: engrave.c:264 — @param {CInt} cnt */
 export function u_wipe_engr(cnt) {
-    if (can_reach_floor((1)))
-        wipe_engr_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), i16(cnt), (0));
+    if (can_reach_floor(1))
+        wipe_engr_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), i16(cnt), 0);
 }
 
 /** C ref: engrave.c:271 — @param {CInt} x @param {CInt} y @param {CInt} cnt @param {CInt} magical */
@@ -455,7 +455,7 @@ export function wipe_engr_at(x, y, cnt, magical) {
     let ep = engr_at(x, y);
     if ((ep && cptr.ld1s(cptr.add(ep, 56)) != 6 ? 1 : 0) && !(cptr.ldI32(cptr.add(ep, 64)) & 1) ? 1 : 0) {
         do {
-            if (debugcore(__sl0, (1))) {
+            if (debugcore(__sl0, 1)) {
                 let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                 pline(__sl41, cnt);
                 cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
@@ -465,7 +465,7 @@ export function wipe_engr_at(x, y, cnt, magical) {
             if (cptr.ld1s(cptr.add(ep, 56)) != 1 && cptr.ld1s(cptr.add(ep, 56)) != 5 ? 1 : 0) {
                 cnt = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl0, 280, __sl42), rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) : rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) ? 0 : 1));
                 do {
-                    if (debugcore(__sl0, (1))) {
+                    if (debugcore(__sl0, 1)) {
                         let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                         pline(__sl43, cnt);
                         cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
@@ -483,18 +483,18 @@ export function wipe_engr_at(x, y, cnt, magical) {
 
 /** C ref: engrave.c:297 — @param {CPtr} ep @returns {CInt} */
 export function engr_can_be_felt(ep) {
-    let canfeel = (0);
+    let canfeel = 0;
     switch (cptr.ld1s(cptr.add(ep, 56))) {
         case 2:
         case 6:
         case 3:
-        canfeel = (1);
+        canfeel = 1;
         break;
         case 1:
         case 4:
         case 5:
         default:
-        canfeel = (0);
+        canfeel = 0;
         break;
     }
     return canfeel;
@@ -515,13 +515,13 @@ export function read_engr_at(x, y) {
             break;
             case 2:
             case 6:
-            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor((1)) ? 1 : 0) {
+            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor(1) ? 1 : 0) {
                 sensed = 1;
                 pline(__sl47, cptr.ldPtr(cptr.add(c_common_strings, 48)), eloc);
             }
             break;
             case 3:
-            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor((1)) ? 1 : 0) {
+            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor(1) ? 1 : 0) {
                 sensed = 1;
                 pline(__sl48, is_ice(x, y) ? __sl49 : __sl50, eloc);
             }
@@ -546,11 +546,11 @@ export function read_engr_at(x, y) {
             let et;
             let buf = new Uint8Array(256);
             let endpunct;
-            let maxelen = Number(BigInt.asIntN(32, (BigInt.asUintN(64, 256n - 24n))));
+            let maxelen = 232;
             let elen = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)))));
             let off = Number(BigInt.asIntN(32, (cptr.diff(cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), ((cptr.add((ep), 1, 80)))))));
             if (elen > maxelen) {
-                void __builtin___strncpy_chk(cptr.decay(buf), cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), BigInt.asUintN(64, BigInt(maxelen)), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
+                void __builtin___strncpy_chk(cptr.decay(buf), cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), BigInt.asUintN(64, BigInt(maxelen)), __builtin_object_size(cptr.decay(buf), 1));
                 cptr.st1(cptr.add(cptr.decay(buf), maxelen, 1), 0);
                 et = cptr.decay(buf);
                 elen = maxelen;
@@ -576,12 +576,12 @@ export function make_engr_at(x, y, s, pristine_s, e_time, e_type) {
     let i;
     let ep;
     let smem = (Strlen_(s, __sl59, 417) + 1) >>> 0;
-    let havepristine = (0);
+    let havepristine = 0;
     if (!cptr.eq(pristine_s, (null))) {
         let prmem = (Strlen_(pristine_s, __sl59, 421) + 1) >>> 0;
         if (prmem > smem)
             smem = prmem;
-        havepristine = (1);
+        havepristine = 1;
     }
     if ((ep = engr_at(x, y)) !== null)
         del_engr(ep);
@@ -602,10 +602,10 @@ export function make_engr_at(x, y, s, pristine_s, e_time, e_type) {
         if (cptr.ld1s(cptr.add(gi, 4)))
             cptr.stI32(cptr.add(ep, 60), 1);
         else
-            exercise(2, (1));
+            exercise(2, 1);
     }
     cptr.stI64(cptr.add(ep, 48), e_time);
-    cptr.st1(cptr.add(ep, 56), schar(((e_type > 0) ? e_type : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 452, __sl59), rnd((6 - 1) | 0)) : rnd((6 - 1) | 0)))));
+    cptr.st1(cptr.add(ep, 56), schar(((e_type > 0) ? e_type : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 452, __sl59), rnd(5)) : rnd(5)))));
     cptr.stI32(cptr.add(ep, 36), smem);
     cptr.stI32(cptr.add(ep, 40), Math.imul(smem, 3) >>> 0);
 }
@@ -639,44 +639,44 @@ function u_can_engrave() {
     if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 72)) & 262144n) != 0n)) {
             pline(__sl61);
-            return (0);
+            return 0;
         } else if ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 28)) == 22 || cptr.eq((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), cptr.add(mons, 154, 96)) ? 1 : 0)) {
-            cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0), (0), (0));
-            return (0);
+            cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0, 0, 0);
+            return 0;
         }
     } else if (is_lava(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
         You_cant(__sl62, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
-        return (0);
+        return 0;
     } else if (is_pool(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) || ((levtyp) == 28) ? 1 : 0) {
         You_cant(__sl62, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
-        return (0);
+        return 0;
     } else if (((levtyp) == 35 || (levtyp) == 36 ? 1 : 0)) {
         You_cant(__sl63, (levtyp == 36) ? __sl64 : __sl65);
-        return (0);
+        return 0;
     } else if (!((levtyp) >= 23)) {
         You_cant(__sl66);
-        return (0);
+        return 0;
     }
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
         You_cant(__sl67);
-        return (0);
+        return 0;
     }
     if (check_capacity(null))
-        return (0);
-    return (1);
+        return 0;
+    return 1;
 }
 
 /** C ref: engrave.c:545 — @param {CPtr} de */
 function doengrave_ctx_init(de) {
-    cptr.st1(de, (0));
-    cptr.st1(cptr.add(de, 1), (0));
-    cptr.st1(cptr.add(de, 2), (0));
-    cptr.st1(cptr.add(de, 3), (0));
-    cptr.st1(cptr.add(de, 5), (1));
-    cptr.st1(cptr.add(de, 6), (0));
-    cptr.st1(cptr.add(de, 7), (0));
-    cptr.st1(cptr.add(de, 8), (0));
-    cptr.st1(cptr.add(de, 10), (0));
+    cptr.st1(de, 0);
+    cptr.st1(cptr.add(de, 1), 0);
+    cptr.st1(cptr.add(de, 2), 0);
+    cptr.st1(cptr.add(de, 3), 0);
+    cptr.st1(cptr.add(de, 5), 1);
+    cptr.st1(cptr.add(de, 6), 0);
+    cptr.st1(cptr.add(de, 7), 0);
+    cptr.st1(cptr.add(de, 8), 0);
+    cptr.st1(cptr.add(de, 10), 0);
     cptr.stI32(cptr.add(de, 12), 0);
     cptr.stI32(cptr.add(de, 16), 1);
     cptr.stI32(cptr.add(de, 20), 0);
@@ -690,7 +690,7 @@ function doengrave_ctx_init(de) {
     cptr.stPtr(cptr.add(de, 1192), null);
     if (cptr.ldPtr(cptr.add(de, 32)))
         cptr.stI32(cptr.add(de, 20), cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)));
-    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 80)) & 256n) != 0n) || (cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28)) == 48) ? 1 : 0)
+    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 256n) != 0n) || (cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == 48) ? 1 : 0)
         cptr.stI32(cptr.add(de, 16), 5);
     cptr.st1(cptr.add(de, 4), schar(((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 72)) & 262144n) != 0n) || (cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), 28)) == 22 || cptr.eq((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8))), cptr.add(mons, 154, 96)) ? 1 : 0) ? 1 : 0) ? 1 : 0)));
     cptr.st1(cptr.add(de, 9), is_ice(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
@@ -732,7 +732,7 @@ function doengrave_sfx_item_WAN(de) {
                     cptr.stI32(cptr.add(de, 16), cptr.ldI32(cptr.add(de, 20)));
                 xcrypt(blengr(), cptr.add(de, 40));
             }
-            cptr.st1(de, (1));
+            cptr.st1(de, 1);
         }
         break;
         case 416:
@@ -742,7 +742,7 @@ function doengrave_sfx_item_WAN(de) {
         case 427:
         break;
         case 429:
-        cptr.st1(cptr.add(de, 5), (1));
+        cptr.st1(cptr.add(de, 5), 1);
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
             void cptr.sprintf(cptr.add(de, 936), __sl71, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
         }
@@ -765,49 +765,49 @@ function doengrave_sfx_item_WAN(de) {
         if (cptr.ldPtr(cptr.add(de, 32)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) != 6 ? 1 : 0) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline_The(__sl74, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
-            cptr.st1(de, (1));
+            cptr.st1(de, 1);
         }
         break;
         case 424:
         if (cptr.ldPtr(cptr.add(de, 32)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) != 6 ? 1 : 0) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline_The(__sl74, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
-            cptr.st1(cptr.add(de, 6), (1));
+            cptr.st1(cptr.add(de, 6), 1);
         }
         break;
         case 428:
-        cptr.st1(cptr.add(de, 5), (1));
+        cptr.st1(cptr.add(de, 5), 1);
         cptr.stI32(cptr.add(de, 16), 2);
         if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 32)), 120), 16)) & 1)) {
             if (cptr.ld1s(cptr.add(flags, 48)))
                 pline(__sl75, xname(cptr.ldPtr(cptr.add(de, 24))));
-            cptr.st1(cptr.add(de, 2), (1));
+            cptr.st1(cptr.add(de, 2), 1);
         }
-        void cptr.strcpy(cptr.add(de, 936), (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) ? __sl76 : (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl77 : (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 31) ? __sl78 : (cptr.ld1s(cptr.add(de, 9)) ? __sl79 : ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) == 34) ? __sl80 : __sl81)))));
+        void cptr.strcpy(cptr.add(de, 936), (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) ? 1 : 0) ? __sl76 : (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl77 : (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 31) ? __sl78 : (cptr.ld1s(cptr.add(de, 9)) ? __sl79 : ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) == 34) ? __sl80 : __sl81)))));
         break;
         case 430:
-        cptr.st1(cptr.add(de, 5), (1));
+        cptr.st1(cptr.add(de, 5), 1);
         cptr.stI32(cptr.add(de, 16), 3);
         if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 32)), 120), 16)) & 1)) {
             if (cptr.ld1s(cptr.add(flags, 48)))
                 pline(__sl82, xname(cptr.ldPtr(cptr.add(de, 24))));
-            cptr.st1(cptr.add(de, 2), (1));
+            cptr.st1(cptr.add(de, 2), 1);
         }
         void cptr.strcpy(cptr.add(de, 936), ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl83 : __sl84);
         break;
         case 434:
-        cptr.st1(cptr.add(de, 5), (1));
+        cptr.st1(cptr.add(de, 5), 1);
         cptr.stI32(cptr.add(de, 16), 3);
         if (!(cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 32)), 120), 16)) & 1)) {
             if (cptr.ld1s(cptr.add(flags, 48)))
                 pline(__sl85, xname(cptr.ldPtr(cptr.add(de, 24))));
-            cptr.st1(cptr.add(de, 2), (1));
+            cptr.st1(cptr.add(de, 2), 1);
         }
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
             void cptr.strcpy(cptr.add(de, 936), __sl86);
-            cptr.st1(cptr.add(de, 1), (1));
+            cptr.st1(cptr.add(de, 1), 1);
         } else {
-            void cptr.strcpy(cptr.add(de, 936), !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? __sl87 : __sl88);
+            void cptr.strcpy(cptr.add(de, 936), !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) ? __sl87 : __sl88);
         }
         break;
     }
@@ -839,13 +839,13 @@ function doengrave_sfx_item(de) {
         case 15:
         case 14:
         You_cant(__sl89);
-        cptr.st1(cptr.add(de, 5), (0));
+        cptr.st1(cptr.add(de, 5), 0);
         break;
         case 7:
         case 9:
         case 10:
         pline(__sl90, Yname2(cptr.ldPtr(cptr.add(de, 24))), cptr.ld1s(cptr.add(de, 9)) ? __sl91 : __sl92);
-        cptr.st1(cptr.add(de, 5), (0));
+        cptr.st1(cptr.add(de, 5), 0);
         break;
         case 0:
         break;
@@ -855,17 +855,17 @@ function doengrave_sfx_item(de) {
             if ((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 56)) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 794, __sl93), rn2(100)) : rn2(100)) ? 1 : 0) {
                 wand_explode(cptr.ldPtr(cptr.add(de, 24)), 0);
                 cptr.stI32(cptr.add(de, 12), 1);
-                return (0);
+                return 0;
             }
-            cptr.st1(cptr.add(de, 7), (1));
-            if (!can_reach_floor((1)))
-                cptr.st1(cptr.add(de, 5), (0));
+            cptr.st1(cptr.add(de, 7), 1);
+            if (!can_reach_floor(1))
+                cptr.st1(cptr.add(de, 5), 0);
             doengrave_sfx_item_WAN(de);
         } else {
-            cptr.st1(cptr.add(de, 5), (0));
-            if (can_reach_floor((1))) {
+            cptr.st1(cptr.add(de, 5), 0);
+            if (can_reach_floor(1)) {
                 if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 48)) < 0)
-                    cptr.st1(cptr.add(de, 7), (1));
+                    cptr.st1(cptr.add(de, 7), 1);
                 else
                     pline_The(__sl94);
             }
@@ -887,7 +887,7 @@ function doengrave_sfx_item(de) {
         if (cptr.eq(cptr.ldPtr(cptr.add(de, 24)), ublindf.v)) {
             pline(__sl98);
             cptr.stI32(cptr.add(de, 12), 4);
-            return (0);
+            return 0;
         }
         switch (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 32))) {
             case 242:
@@ -897,16 +897,16 @@ function doengrave_sfx_item(de) {
                 cptr.stI32(cptr.add(de, 16), 4);
             break;
             case 234:
-            cptr.st1(cptr.add(de, 5), (0));
+            cptr.st1(cptr.add(de, 5), 0);
             if (cptr.ldPtr(cptr.add(de, 32))) {
                 if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 1 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 5 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 4 ? 1 : 0) {
                     if ((cptr.ldI16(cptr.add((cptr.ldPtr(cptr.add(de, 24))), 32)) == 234 && cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(de, 24))), 48)) > 0 ? 1 : 0))
-                        dry_a_towel(cptr.ldPtr(cptr.add(de, 24)), -1, (1));
+                        dry_a_towel(cptr.ldPtr(cptr.add(de, 24)), -1, 1);
                     if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                         You(__sl100);
                     else
                         pline(__sl101, Yobjnam2(cptr.ldPtr(cptr.add(de, 24)), __sl102), cptr.ld1s(cptr.add(de, 9)) ? __sl103 : __sl104);
-                    cptr.st1(de, (1));
+                    cptr.st1(de, 1);
                 } else {
                     pline(__sl105, Yname2(cptr.ldPtr(cptr.add(de, 24))));
                 }
@@ -925,7 +925,7 @@ function doengrave_sfx_item(de) {
         impossible(__sl107);
         break;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: engrave.c:896 — @param {CPtr} de */
@@ -961,7 +961,7 @@ export function doengrave() {
     let sp;
     let de;
     let retval;
-    let initial_msg_given = (0);
+    let initial_msg_given = 0;
     __lbl_doengr_exit: {
         if (!u_can_engrave())
             return 4;
@@ -989,13 +989,13 @@ export function doengrave() {
             Your(__sl128);
             break __lbl_doengr_exit;
         }
-        if (!can_reach_floor((1))) {
+        if (!can_reach_floor(1)) {
             if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 49)) != 11) {
-                cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0), (1), (0));
+                cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0, 1, 0);
                 break __lbl_doengr_exit;
             } else {
                 You(__sl129, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
-                initial_msg_given = (1);
+                initial_msg_given = 1;
             }
         }
         if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 32)) {
@@ -1020,8 +1020,8 @@ export function doengrave() {
                 cptr.stI32(cptr.add(de, 16), 6);
             } else {
                 cptr.stI32(cptr.add(de, 16), 1);
-                cptr.st1(de, (0));
-                cptr.st1(cptr.add(de, 6), (0));
+                cptr.st1(de, 0);
+                cptr.st1(cptr.add(de, 6), 0);
                 cptr.st1(cptr.add(cptr.add(de, 40), 0, 1), 0);
             }
         }
@@ -1034,13 +1034,13 @@ export function doengrave() {
             rloc_engr(cptr.ldPtr(cptr.add(de, 32)));
             cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 68), 0);
             cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 72), 0);
-            cptr.st1(cptr.add(de, 8), (1));
+            cptr.st1(cptr.add(de, 8), 1);
             cptr.stPtr(cptr.add(de, 32), null);
         }
         if (cptr.ld1s(de)) {
             del_engr(cptr.ldPtr(cptr.add(de, 32)));
             cptr.stPtr(cptr.add(de, 32), null);
-            cptr.st1(cptr.add(de, 8), (1));
+            cptr.st1(cptr.add(de, 8), 1);
         }
         if (cptr.ld1s(cptr.add(de, 40))) {
             let tmp_ep;
@@ -1051,10 +1051,10 @@ export function doengrave() {
                     pline_The(__sl132, cptr.add(de, 40));
                     cptr.stI32(cptr.add(tmp_ep, 68), 1);
                     cptr.stI32(cptr.add(tmp_ep, 72), 1);
-                    cptr.st1(cptr.add(de, 8), (1));
+                    cptr.st1(cptr.add(de, 8), 1);
                 }
             }
-            cptr.st1(cptr.add(de, 5), (0));
+            cptr.st1(cptr.add(de, 5), 0);
         }
         if (cptr.ld1s(cptr.add(de, 7)) && (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 48)) < 0) ? 1 : 0) {
             pline(__sl133, The(xname(cptr.ldPtr(cptr.add(de, 24)))), ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl54 : __sl134);
@@ -1062,11 +1062,11 @@ export function doengrave() {
                 You(__sl135, cptr.ld1s(cptr.add(de, 9)) ? __sl45 : __sl46);
             useup(cptr.ldPtr(cptr.add(de, 24)));
             cptr.stPtr(cptr.add(de, 24), null);
-            cptr.st1(cptr.add(de, 5), (0));
+            cptr.st1(cptr.add(de, 5), 0);
         }
         if (!cptr.ld1s(cptr.add(de, 5))) {
-            if ((cptr.ldPtr(cptr.add(de, 24)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 49)) == 11 ? 1 : 0) && !can_reach_floor((1)) ? 1 : 0)
-                cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (0), (1), (1));
+            if ((cptr.ldPtr(cptr.add(de, 24)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 24)), 49)) == 11 ? 1 : 0) && !can_reach_floor(1) ? 1 : 0)
+                cant_reach_floor(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0, 1, 1);
             cptr.stI32(cptr.add(de, 12), 1);
             break __lbl_doengr_exit;
         }
@@ -1075,7 +1075,7 @@ export function doengrave() {
             if (cptr.ldI32(cptr.add(de, 16)) == 6) {
                 c = 121;
             } else if (cptr.ldI32(cptr.add(de, 16)) == cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) && ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 3 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 2 ? 1 : 0) ? 1 : 0) {
-                c = yn_function(__sl136, cptr.decay(ynqchars), 121, (1));
+                c = yn_function(__sl136, cptr.decay(ynqchars), 121, 1);
                 if (c == 113) {
                     pline(__sl137, cptr.ldPtr(cptr.add(c_common_strings, 64)));
                     break __lbl_doengr_exit;
@@ -1087,20 +1087,20 @@ export function doengrave() {
                         You(__sl138, (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 1) ? (cptr.ld1s(cptr.add(de, 9)) ? __sl139 : __sl140) : ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 5) ? __sl141 : __sl142));
                         del_engr(cptr.ldPtr(cptr.add(de, 32)));
                         cptr.stPtr(cptr.add(de, 32), null);
-                        cptr.st1(cptr.add(de, 8), (1));
+                        cptr.st1(cptr.add(de, 8), 1);
                     } else {
-                        cptr.st1(cptr.add(de, 3), (1));
+                        cptr.st1(cptr.add(de, 3), 1);
                     }
                 } else if ((cptr.ldI32(cptr.add(de, 16)) == 1 || cptr.ldI32(cptr.add(de, 16)) == 4 ? 1 : 0) || cptr.ldI32(cptr.add(de, 16)) == 5 ? 1 : 0) {
                     You(__sl143, (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) == 3) ? (cptr.ld1s(cptr.add(de, 9)) ? __sl144 : __sl145) : __sl146, surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
                     cptr.stI32(cptr.add(de, 12), 1);
                     break __lbl_doengr_exit;
                 } else if (cptr.ldI32(cptr.add(de, 16)) != cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 56)) || c == 110 ? 1 : 0) {
-                    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor((1)) ? 1 : 0)
+                    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || can_reach_floor(1) ? 1 : 0)
                         You(__sl147);
-                    cptr.st1(cptr.add(de, 3), (1));
+                    cptr.st1(cptr.add(de, 3), 1);
                 }
-            } else if (cptr.ldPtr(cptr.add(de, 32)) && Strlen_(cptr.ldPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 8), 0, 8)), __sl148, 1163) >= ((256 - 1) | 0) >>> 0 ? 1 : 0) {
+            } else if (cptr.ldPtr(cptr.add(de, 32)) && Strlen_(cptr.ldPtr(cptr.add(cptr.add(cptr.ldPtr(cptr.add(de, 32)), 8), 0, 8)), __sl148, 1163) >= 255 ? 1 : 0) {
                 There(__sl149);
                 cptr.stI32(cptr.add(de, 12), 1);
                 break __lbl_doengr_exit;
@@ -1132,32 +1132,32 @@ export function doengrave() {
             }
         }
         if (cptr.ldU64(cptr.add(de, 1216)) != 1n || (!cptr.strchr(cptr.add(de, 296), 120) && !cptr.strchr(cptr.add(de, 296), 88) ? 1 : 0) ? 1 : 0)
-            if (!((cptr.stI64(cptr.add(cptr.add(u, 1968), 48), cptr.ldI64(cptr.add(cptr.add(u, 1968), 48)) + 1n)) - (1n)))
+            if (!((cptr.stI64(cptr.add(u, 2016), cptr.ldI64(cptr.add(u, 2016)) + 1n)) - (1n)))
                 livelog_printf(32n, __sl157, cptr.add(de, 296));
         for (sp = cptr.add(de, 296); cptr.ld1s(sp); sp = cptr.add(sp, 1)) {
             if (cptr.ld1s(sp) == 32)
                 continue;
             if ((((((cptr.ldI32(cptr.add(de, 16)) == 1 || cptr.ldI32(cptr.add(de, 16)) == 5 ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1223, __sl148), rn2(25)) : rn2(25)) ? 1 : 0) || (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1224, __sl148), rn2(11)) : rn2(11)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1224, __sl148), rn2(7)) : rn2(7)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1225, __sl148), rn2(4)) : rn2(4)) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1225, __sl148), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0)
-                cptr.st1(sp, schar(((32 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1226, __sl148), rnd((96 - 2) | 0)) : rnd((96 - 2) | 0))) | 0)));
+                cptr.st1(sp, schar(((32 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1226, __sl148), rnd(94)) : rnd(94))) | 0)));
         }
         if (cptr.ld1s(cptr.add(de, 3))) {
             del_engr(cptr.ldPtr(cptr.add(de, 32)));
             cptr.stPtr(cptr.add(de, 32), null);
-            cptr.st1(cptr.add(de, 8), (1));
+            cptr.st1(cptr.add(de, 8), 1);
         }
         void cptr.strcpy(cptr.add(svc, 168), cptr.add(de, 296));
-        cptr.stPtr(cptr.add(cptr.add(svc, 168), 256), cptr.add(svc, 168));
-        cptr.stPtr(cptr.add(cptr.add(svc, 168), 264), cptr.ldPtr(cptr.add(de, 24)));
-        cptr.st1(cptr.add(cptr.add(svc, 168), 272), schar(cptr.ldI32(cptr.add(de, 16))));
-        cptr.stI16(cptr.add(cptr.add(svc, 168), 274), cptr.ldI16(u));
-        cptr.stI16(cptr.add(cptr.add(cptr.add(svc, 168), 274), 2), cptr.ldI16(cptr.add(u, 2)));
-        cptr.stI32(cptr.add(cptr.add(svc, 168), 280), 0);
+        cptr.stPtr(cptr.add(svc, 424), cptr.add(svc, 168));
+        cptr.stPtr(cptr.add(svc, 432), cptr.ldPtr(cptr.add(de, 24)));
+        cptr.st1(cptr.add(svc, 440), schar(cptr.ldI32(cptr.add(de, 16))));
+        cptr.stI16(cptr.add(svc, 442), cptr.ldI16(u));
+        cptr.stI16(cptr.add(svc, 444), cptr.ldI16(cptr.add(u, 2)));
+        cptr.stI32(cptr.add(svc, 448), 0);
         set_occupation(engrave, __sl158, 0n);
         if (cptr.ld1s(cptr.add(cptr.add(de, 936), 0, 1)))
             pline(__sl137, cptr.add(de, 936));
         if (cptr.ld1s(cptr.add(de, 1)) && !resists_blnd(cptr.add(gy, 8)) ? 1 : 0) {
             You(__sl159);
-            make_blinded(BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1250, __sl148), rnd(50)) : rnd(50))), (0));
+            make_blinded(BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1250, __sl148), rnd(50)) : rnd(50))), 0);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 Your(__sl137, cptr.ldPtr(cptr.add(c_common_strings, 72)));
         }
@@ -1175,25 +1175,25 @@ function engrave() {
     let buf = new Uint8Array(256);
     let finishverb;
     let stylus;
-    let firsttime = schar((cptr.ldI32(cptr.add(cptr.add(svc, 168), 280)) == 0));
+    let firsttime = schar((cptr.ldI32(cptr.add(svc, 448)) == 0));
     let rate = 10;
-    let truncate = (0);
-    let neweng = schar((cptr.ldI32(cptr.add(cptr.add(svc, 168), 280)) == 0));
-    let carving = schar((cptr.ld1s(cptr.add(cptr.add(svc, 168), 272)) == 2 || cptr.ld1s(cptr.add(cptr.add(svc, 168), 272)) == 6 ? 1 : 0));
+    let truncate = 0;
+    let neweng = schar((cptr.ldI32(cptr.add(svc, 448)) == 0));
+    let carving = schar((cptr.ld1s(cptr.add(svc, 440)) == 2 || cptr.ld1s(cptr.add(svc, 440)) == 6 ? 1 : 0));
     let dulling_wep;
     let marker;
     let endc;
     let i;
     let space_left;
-    if (cptr.ldI16(cptr.add(cptr.add(svc, 168), 274)) != cptr.ldI16(u) || cptr.ldI16(cptr.add(cptr.add(cptr.add(svc, 168), 274), 2)) != cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) {
+    if (cptr.ldI16(cptr.add(svc, 442)) != cptr.ldI16(u) || cptr.ldI16(cptr.add(svc, 444)) != cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) {
         You(__sl160);
         return 0;
     }
-    if (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(svc, 168), 264)), hands_obj)) {
+    if (cptr.eq(cptr.ldPtr(cptr.add(svc, 432)), hands_obj)) {
         stylus = null;
     } else {
         for (stylus = cptr.ldPtr(cptr.add(gi, 8)); stylus; stylus = cptr.ldPtr(stylus)) {
-            if (cptr.eq(stylus, cptr.ldPtr(cptr.add(cptr.add(svc, 168), 264))))
+            if (cptr.eq(stylus, cptr.ldPtr(cptr.add(svc, 432))))
                 break;
         }
         if (!stylus) {
@@ -1202,11 +1202,11 @@ function engrave() {
         }
     }
     dulling_wep = schar((((carving && stylus ? 1 : 0) && cptr.ld1s(cptr.add(stylus, 49)) == 2 ? 1 : 0) && (cptr.ldI16(cptr.add(stylus, 32)) != 38 || (cptr.ldI32(cptr.add(stylus, 56)) & 1) | 0 ? 1 : 0) ? 1 : 0));
-    marker = schar(((stylus && cptr.ldI16(cptr.add(stylus, 32)) == 242 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(svc, 168), 272)) == 4 ? 1 : 0));
-    (cptr.stI32(cptr.add(cptr.add(svc, 168), 280), cptr.ldI32(cptr.add(cptr.add(svc, 168), 280)) + 1)) - (1);
+    marker = schar(((stylus && cptr.ldI16(cptr.add(stylus, 32)) == 242 ? 1 : 0) && cptr.ld1s(cptr.add(svc, 440)) == 4 ? 1 : 0));
+    (cptr.stI32(cptr.add(svc, 448), cptr.ldI32(cptr.add(svc, 448)) + 1)) - (1);
     if (dulling_wep && !((cptr.ld1s(cptr.add(stylus, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(stylus, 32)), 120), 68)) >= 1 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(stylus, 32)), 120), 68)) <= 9 ? 1 : 0) ? 1 : 0) {
         impossible(__sl161);
-    } else if (cptr.ld1s(cptr.add(cptr.add(svc, 168), 272)) == 4 && !marker ? 1 : 0) {
+    } else if (cptr.ld1s(cptr.add(svc, 440)) == 4 && !marker ? 1 : 0) {
         impossible(__sl162);
     }
     if ((carving && stylus ? 1 : 0) && ((dulling_wep || cptr.ld1s(cptr.add(stylus, 49)) == 4 ? 1 : 0) || cptr.ld1s(cptr.add(stylus, 49)) == 13 ? 1 : 0) ? 1 : 0) {
@@ -1215,33 +1215,33 @@ function engrave() {
         rate = ((rate) < (Math.imul(cptr.ld1s(cptr.add(stylus, 48)), 2)) ? (rate) : (Math.imul(cptr.ld1s(cptr.add(stylus, 48)), 2)));
     }
     i = rate;
-    for (endc = cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256)); cptr.ld1s(endc) && i > 0 ? 1 : 0; endc = cptr.add(endc, 1)) {
+    for (endc = cptr.ldPtr(cptr.add(svc, 424)); cptr.ld1s(endc) && i > 0 ? 1 : 0; endc = cptr.add(endc, 1)) {
         if (cptr.ld1s(endc) != 32) {
             i--;
         }
     }
     if (dulling_wep) {
-        let splitstack = (0);
-        let dulled = (0);
+        let splitstack = 0;
+        let dulled = 0;
         if (cptr.ldI64(cptr.add(stylus, 40)) > 1n) {
             if (firsttime)
                 pline(__sl163, yname(stylus));
-            stylus = cptr.stPtr(cptr.add(cptr.add(svc, 168), 264), splitobj(stylus, 1n));
+            stylus = cptr.stPtr(cptr.add(svc, 432), splitobj(stylus, 1n));
             cptr.stI64(cptr.add(stylus, 192), 0n);
-            splitstack = (1);
+            splitstack = 1;
         } else {
             if (firsttime)
                 pline(__sl164, Yname2(stylus));
         }
-        if (cptr.ldI32(cptr.add(cptr.add(svc, 168), 280)) % 2 == 1) {
+        if (cptr.ldI32(cptr.add(svc, 448)) % 2 == 1) {
             if (cptr.ld1s(cptr.add(stylus, 48)) <= -3) {
                 if (firsttime) {
                     impossible(__sl165);
                 }
-                truncate = (1);
-            } else if (cptr.ld1s(endc) || cptr.ldI32(cptr.add(cptr.add(svc, 168), 280)) == 1 ? 1 : 0) {
+                truncate = 1;
+            } else if (cptr.ld1s(endc) || cptr.ldI32(cptr.add(svc, 448)) == 1 ? 1 : 0) {
                 cptr.st1(cptr.add(stylus, 48), cptr.ld1s(cptr.add(stylus, 48)) - 1);
-                dulled = (1);
+                dulled = 1;
             }
         }
         if (splitstack) {
@@ -1253,20 +1253,20 @@ function engrave() {
             update_inventory();
         }
     } else if (marker) {
-        let ink_cost = (((rate / 2) | 0) > (1) ? ((rate / 2) | 0) : (1));
+        let ink_cost = (((rate / 2) | 0) > 1 ? ((rate / 2) | 0) : 1);
         if (cptr.ld1s(cptr.add(stylus, 48)) < ink_cost) {
             impossible(__sl167);
             ink_cost = cptr.ld1s(cptr.add(stylus, 48));
-            truncate = (1);
+            truncate = 1;
         }
         cptr.st1(cptr.add(stylus, 48), cptr.ld1s(cptr.add(stylus, 48)) - ink_cost);
         update_inventory();
         if (cptr.ld1s(cptr.add(stylus, 48)) == 0) {
             Your(__sl168);
-            truncate = (1);
+            truncate = 1;
         }
     }
-    switch (cptr.ld1s(cptr.add(cptr.add(svc, 168), 272))) {
+    switch (cptr.ld1s(cptr.add(svc, 440))) {
         default:
         finishverb = __sl169;
         break;
@@ -1291,28 +1291,28 @@ function engrave() {
     if (oep)
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtr(cptr.add(cptr.add(oep, 8), 0, 8)));
     space_left = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(buf))) - 1n))));
-    if (cptr.diff(endc, cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256))) > BigInt(space_left)) {
+    if (cptr.diff(endc, cptr.ldPtr(cptr.add(svc, 424))) > BigInt(space_left)) {
         You(__sl176);
-        endc = cptr.add(cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256)), space_left);
-        truncate = (1);
+        endc = cptr.add(cptr.ldPtr(cptr.add(svc, 424)), space_left);
+        truncate = 1;
     }
     if (truncate && cptr.ld1s(endc) != 0 ? 1 : 0) {
         cptr.st1(endc, 0);
         You(__sl177, cptr.add(svc, 168));
     } else {
-        truncate = (0);
+        truncate = 0;
     }
-    void __builtin___strncat_chk(cptr.decay(buf), cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256)), BigInt.asUintN(64, (BigInt((space_left)) < (cptr.diff(endc, cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256)))) ? BigInt((space_left)) : (cptr.diff(endc, cptr.ldPtr(cptr.add(cptr.add(svc, 168), 256)))))), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-    make_engr_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.decay(buf), null, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(gm, 8))), cptr.ld1s(cptr.add(cptr.add(svc, 168), 272)));
+    void __builtin___strncat_chk(cptr.decay(buf), cptr.ldPtr(cptr.add(svc, 424)), BigInt.asUintN(64, (BigInt((space_left)) < (cptr.diff(endc, cptr.ldPtr(cptr.add(svc, 424)))) ? BigInt((space_left)) : (cptr.diff(endc, cptr.ldPtr(cptr.add(svc, 424)))))), __builtin_object_size(cptr.decay(buf), 1));
+    make_engr_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), cptr.decay(buf), null, BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add(gm, 8))), cptr.ld1s(cptr.add(svc, 440)));
     oep = engr_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     if (oep) {
         cptr.stI32(cptr.add(oep, 68), 1);
         cptr.stI32(cptr.add(oep, 72), 1);
     }
     if (cptr.ld1s(endc)) {
-        cptr.stPtr(cptr.add(cptr.add(svc, 168), 256), endc);
+        cptr.stPtr(cptr.add(svc, 424), endc);
         if (neweng) {
-            newsym(cptr.ldI16(cptr.add(cptr.add(svc, 168), 274)), cptr.ldI16(cptr.add(cptr.add(cptr.add(svc, 168), 274), 2)));
+            newsym(cptr.ldI16(cptr.add(svc, 442)), cptr.ldI16(cptr.add(svc, 444)));
         }
         return 1;
     } else {
@@ -1322,11 +1322,11 @@ function engrave() {
             You(__sl179, finishverb);
         }
         cptr.st1(cptr.add(cptr.add(svc, 168), 0, 1), 0);
-        cptr.stPtr(cptr.add(cptr.add(svc, 168), 256), null);
-        cptr.stPtr(cptr.add(cptr.add(svc, 168), 264), null);
+        cptr.stPtr(cptr.add(svc, 424), null);
+        cptr.stPtr(cptr.add(svc, 432), null);
     }
     if (neweng)
-        newsym(cptr.ldI16(cptr.add(cptr.add(svc, 168), 274)), cptr.ldI16(cptr.add(cptr.add(cptr.add(svc, 168), 274), 2)));
+        newsym(cptr.ldI16(cptr.add(svc, 442)), cptr.ldI16(cptr.add(svc, 444)));
     return 0;
 }
 
@@ -1350,7 +1350,7 @@ export function forget_engravings() {
 export function engraving_sanity_check() {
     let ep;
     let levtyp;
-    if (head_engr.v && ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) {
+    if (head_engr.v && ((((cptr.ldI16(cptr.add((cptr.add(svd, 1864)), 2)) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0) ? 1 : 0) {
         impossible(__sl180);
         return;
     }
@@ -1378,7 +1378,7 @@ export function save_engravings(nhfp) {
     let szeach;
     for (ep = head_engr.v; ep; ep = ep2) {
         ep2 = cptr.ldPtr(ep);
-        if ((cptr.ldI32(cptr.add(ep, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), 0)) ? 1 : 0) && (cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2)) ? 1 : 0) {
+        if ((cptr.ldI32(cptr.add(ep, 40)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(ep, 8), 0, 8)), 0)) ? 1 : 0) && (cptr.ldI32(cptr.add((nhfp), 4)) & 3) ? 1 : 0) {
             engr_alloc.v = cptr.ldI32(cptr.add(ep, 40));
             szeach = cptr.ldI32(cptr.add(ep, 36));
             sfo_unsigned(nhfp, engr_alloc, __sl183);
@@ -1393,7 +1393,7 @@ export function save_engravings(nhfp) {
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
             cptr.free((ep));
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         sfo_unsigned(nhfp, no_more_engr, __sl183);
     }
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
@@ -1468,7 +1468,7 @@ export function rloc_engr(ep) {
     do {
         if (--tryct < 0)
             return;
-        tx = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1674, __sl188), rn2((80 - 3) | 0)) : rn2((80 - 3) | 0)) + (2)) | 0);
+        tx = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1674, __sl188), rn2(77)) : rn2(77)) + 2) | 0);
         ty = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1675, __sl188), rn2(21)) : rn2(21));
     } while (engr_at(i16(tx), i16(ty)) || !goodpos(i16(tx), i16(ty), null, 0) ? 1 : 0);
     cptr.stI16(cptr.add(ep, 32), i16(tx));
@@ -1501,7 +1501,7 @@ export function disturb_grave(x, y) {
         You(__sl192);
         cptr.stI32(cptr.add(lev, 12), 1);
         void makemon(cptr.add(mons, 246, 96), x, y, 0);
-        exercise(2, (0));
+        exercise(2, 0);
     }
 }
 

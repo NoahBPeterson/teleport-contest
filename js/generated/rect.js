@@ -28,15 +28,15 @@ let rect_cnt = 0;
 /** C ref: rect.c:29 */
 export function init_rect() {
     if (!rect) {
-        n_rects = ((Math.imul(80, 21)) / 30) | 0;
+        n_rects = 56;
         rect = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt.asUintN(64, BigInt(n_rects))))));
         if (!rect)
             panic(__sl0);
     }
     rect_cnt = 1;
     cptr.stI16(cptr.add(rect, 0, 8), cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 2), 0));
-    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 4), i16(((80 - 1) | 0)));
-    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 6), i16(((21 - 1) | 0)));
+    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 4), 79);
+    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 6), 20);
 }
 
 /** C ref: rect.c:45 */
@@ -91,14 +91,14 @@ export function rnd_rect() {
 /** C ref: rect.c:116 — @param {CPtr} r1 @param {CPtr} r2 @param {CPtr} r3 @returns {CInt} */
 function intersect(r1, r2, r3) {
     if (((cptr.ldI16(r2) > cptr.ldI16(cptr.add(r1, 4)) || cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 6)) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 4)) < cptr.ldI16(r1) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 6)) < cptr.ldI16(cptr.add(r1, 2)) ? 1 : 0)
-        return (0);
+        return 0;
     cptr.stI16(r3, i16((cptr.ldI16(r2) > cptr.ldI16(r1) ? cptr.ldI16(r2) : cptr.ldI16(r1))));
     cptr.stI16(cptr.add(r3, 2), i16((cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 2)) ? cptr.ldI16(cptr.add(r2, 2)) : cptr.ldI16(cptr.add(r1, 2)))));
     cptr.stI16(cptr.add(r3, 4), i16((cptr.ldI16(cptr.add(r2, 4)) > cptr.ldI16(cptr.add(r1, 4)) ? cptr.ldI16(cptr.add(r1, 4)) : cptr.ldI16(cptr.add(r2, 4)))));
     cptr.stI16(cptr.add(r3, 6), i16((cptr.ldI16(cptr.add(r2, 6)) > cptr.ldI16(cptr.add(r1, 6)) ? cptr.ldI16(cptr.add(r1, 6)) : cptr.ldI16(cptr.add(r2, 6)))));
     if (cptr.ldI16(r3) > cptr.ldI16(cptr.add(r3, 4)) || cptr.ldI16(cptr.add(r3, 2)) > cptr.ldI16(cptr.add(r3, 6)) ? 1 : 0)
-        return (0);
-    return (1);
+        return 0;
+    return 1;
 }
 
 /** C ref: rect.c:134 — @param {*} r1 @param {*} r2 @param {CPtr} r3 */
@@ -141,22 +141,22 @@ export function split_rects(r1, r2) {
     for (i = (rect_cnt - 1) | 0; i >= 0; i--)
         if (intersect(cptr.add(rect, i, 8), r2, r))
             split_rects(cptr.add(rect, i, 8), r);
-    if (((((cptr.ldI16(cptr.add(r2, 2)) - cptr.ldI16(cptr.add(old_r, 2))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 6)) < ((21 - 1) | 0) ? Math.imul(2, 3) : (3 + 1) | 0) + 4) | 0)) {
+    if (((((cptr.ldI16(cptr.add(r2, 2)) - cptr.ldI16(cptr.add(old_r, 2))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 6)) < 20 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(cptr.add(r, 6), i16(((cptr.ldI16(cptr.add(r2, 2)) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 4)) < ((80 - 1) | 0) ? Math.imul(2, 4) : (4 + 1) | 0) + 4) | 0)) {
+    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 4)) < 79 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(cptr.add(r, 4), i16(((cptr.ldI16(r2) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(cptr.add(old_r, 6)) - cptr.ldI16(cptr.add(r2, 6))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 2)) > 0 ? Math.imul(2, 3) : (3 + 1) | 0) + 4) | 0)) {
+    if (((((cptr.ldI16(cptr.add(old_r, 6)) - cptr.ldI16(cptr.add(r2, 6))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 2)) > 0 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(cptr.add(r, 2), i16(((cptr.ldI16(cptr.add(r2, 6)) + 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(cptr.add(old_r, 4)) - cptr.ldI16(cptr.add(r2, 4))) | 0) - 1) | 0) > (((cptr.ldI16(old_r) > 0 ? Math.imul(2, 4) : (4 + 1) | 0) + 4) | 0)) {
+    if (((((cptr.ldI16(cptr.add(old_r, 4)) - cptr.ldI16(cptr.add(r2, 4))) | 0) - 1) | 0) > (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(r, i16(((cptr.ldI16(cptr.add(r2, 4)) + 2) | 0)));
         add_rect(r);

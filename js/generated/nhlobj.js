@@ -171,7 +171,7 @@ function l_obj_gc(L) {
 /** C ref: nhlobj.c:73 — @param {CPtr} L @param {CPtr} otmp @returns {CPtr} */
 function l_obj_push(L, otmp) {
     let lo = lua_newuserdatauv(L, 16n, 1);
-    (lua_getfield(L, ((-1000000 - 1000) | 0), (__sl0)));
+    (lua_getfield(L, -1001000, (__sl0)));
     lua_setmetatable(L, -2);
     cptr.stI32(lo, 0);
     cptr.stPtr(cptr.add(lo, 8), otmp);
@@ -247,7 +247,7 @@ function l_obj_objects_to_table(L) {
         if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
             otyp = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 32));
     }
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     if (otyp == -1) {
         nhl_error(L, __sl3);
         return 0;
@@ -366,8 +366,8 @@ function l_obj_new_readobjnam(L) {
     if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
         let buf = new Uint8Array(256);
         let otmp;
-        void cptr.sprintf(cptr.decay(buf), __sl82, (luaL_checklstring(L, (1), null)));
-        lua_settop(L, (-(1) - 1) | 0);
+        void cptr.sprintf(cptr.decay(buf), __sl82, (luaL_checklstring(L, 1, null)));
+        lua_settop(L, -2);
         if (cptr.eq((otmp = readobjnam(cptr.decay(buf), null)), hands_obj))
             otmp = null;
         void l_obj_push(L, otmp);
@@ -377,14 +377,14 @@ function l_obj_new_readobjnam(L) {
         let class$ = i16(get_table_objclass(L));
         let otmp;
         if (id >= 18) {
-            otmp = mksobj(id, (1), (0));
+            otmp = mksobj(id, 1, 0);
         } else {
             class$ = i16(def_char_to_objclass(schar(class$)));
             if (class$ >= 18)
                 class$ = 0;
-            otmp = mkobj(class$, (0));
+            otmp = mkobj(class$, 0);
         }
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
         void l_obj_push(L, otmp);
         return 1;
     } else
@@ -401,8 +401,8 @@ function l_obj_at(L) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         cvt_to_abscoord(x, y);
-        lua_settop(L, (-(2) - 1) | 0);
-        void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x.v, 168), y.v, 8)));
+        lua_settop(L, -3);
+        void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x.v, 168), y.v, 8)));
         return 1;
     } else
         nhl_error(L, __sl84);
@@ -420,7 +420,7 @@ function l_obj_placeobj(L) {
     x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
     y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
     cvt_to_abscoord(x, y);
-    lua_settop(L, (-(3) - 1) | 0);
+    lua_settop(L, -4);
     if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0)) {
         obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
         place_object(cptr.ldPtr(cptr.add(lo, 8)), x.v, y.v);
@@ -433,10 +433,10 @@ function l_obj_placeobj(L) {
 function l_obj_nextobj(L) {
     let argc = lua_gettop(L);
     if (argc == 0) {
-        void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87360)));
+        void l_obj_push(L, cptr.ldPtr(cptr.add(svl, 89040)));
     } else {
         let lo = l_obj_check(L, 1);
-        let use_nexthere = (0);
+        let use_nexthere = 0;
         if (argc == 2)
             use_nexthere = schar(lua_toboolean(L, 2));
         if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
@@ -541,7 +541,7 @@ function l_obj_timer_start(L) {
 /** C ref: nhlobj.c:603 — @param {CPtr} L @returns {CInt} */
 function l_obj_bury(L) {
     let argc = lua_gettop(L);
-    let dealloced = cptr.box((0));
+    let dealloced = cptr.box(0);
     let lo = l_obj_check(L, 1);
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -549,8 +549,8 @@ function l_obj_bury(L) {
         x.v = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28));
         y.v = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 30));
     } else if (argc == 3) {
-        x.v = Number(BigInt.asIntN(16, lua_tointegerx(L, (2), null)));
-        y.v = Number(BigInt.asIntN(16, lua_tointegerx(L, (3), null)));
+        x.v = Number(BigInt.asIntN(16, lua_tointegerx(L, 2, null)));
+        y.v = Number(BigInt.asIntN(16, lua_tointegerx(L, 3, null)));
         cvt_to_abscoord(x, y);
     } else
         nhl_error(L, __sl90);
@@ -566,55 +566,55 @@ function l_obj_bury(L) {
 /** C ref: nhlobj.c:629 — struct luaL_Reg[16] */
 const l_obj_methods = cptr.alloc(16 * 16);
 cptr.stPtr(cptr.add(l_obj_methods, 0), __sl91);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 0), 8), l_obj_new_readobjnam);
+cptr.stPtr(cptr.add(l_obj_methods, 8), l_obj_new_readobjnam);
 cptr.stPtr(cptr.add(l_obj_methods, 16), __sl92);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 16), 8), l_obj_isnull);
+cptr.stPtr(cptr.add(l_obj_methods, 24), l_obj_isnull);
 cptr.stPtr(cptr.add(l_obj_methods, 32), __sl93);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 32), 8), l_obj_at);
+cptr.stPtr(cptr.add(l_obj_methods, 40), l_obj_at);
 cptr.stPtr(cptr.add(l_obj_methods, 48), __sl94);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 48), 8), l_obj_nextobj);
+cptr.stPtr(cptr.add(l_obj_methods, 56), l_obj_nextobj);
 cptr.stPtr(cptr.add(l_obj_methods, 64), __sl95);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 64), 8), l_obj_to_table);
+cptr.stPtr(cptr.add(l_obj_methods, 72), l_obj_to_table);
 cptr.stPtr(cptr.add(l_obj_methods, 80), __sl20);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 80), 8), l_obj_objects_to_table);
+cptr.stPtr(cptr.add(l_obj_methods, 88), l_obj_objects_to_table);
 cptr.stPtr(cptr.add(l_obj_methods, 96), __sl96);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 96), 8), l_obj_placeobj);
+cptr.stPtr(cptr.add(l_obj_methods, 104), l_obj_placeobj);
 cptr.stPtr(cptr.add(l_obj_methods, 112), __sl97);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 112), 8), l_obj_container);
+cptr.stPtr(cptr.add(l_obj_methods, 120), l_obj_container);
 cptr.stPtr(cptr.add(l_obj_methods, 128), __sl98);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 128), 8), l_obj_getcontents);
+cptr.stPtr(cptr.add(l_obj_methods, 136), l_obj_getcontents);
 cptr.stPtr(cptr.add(l_obj_methods, 144), __sl99);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 144), 8), l_obj_add_to_container);
+cptr.stPtr(cptr.add(l_obj_methods, 152), l_obj_add_to_container);
 cptr.stPtr(cptr.add(l_obj_methods, 160), __sl100);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 160), 8), l_obj_timer_has);
+cptr.stPtr(cptr.add(l_obj_methods, 168), l_obj_timer_has);
 cptr.stPtr(cptr.add(l_obj_methods, 176), __sl101);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 176), 8), l_obj_timer_peek);
+cptr.stPtr(cptr.add(l_obj_methods, 184), l_obj_timer_peek);
 cptr.stPtr(cptr.add(l_obj_methods, 192), __sl102);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 192), 8), l_obj_timer_stop);
+cptr.stPtr(cptr.add(l_obj_methods, 200), l_obj_timer_stop);
 cptr.stPtr(cptr.add(l_obj_methods, 208), __sl103);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 208), 8), l_obj_timer_start);
+cptr.stPtr(cptr.add(l_obj_methods, 216), l_obj_timer_start);
 cptr.stPtr(cptr.add(l_obj_methods, 224), __sl104);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 224), 8), l_obj_bury);
+cptr.stPtr(cptr.add(l_obj_methods, 232), l_obj_bury);
 cptr.stPtr(cptr.add(l_obj_methods, 240), null);
-cptr.stPtr(cptr.add(cptr.add(l_obj_methods, 240), 8), null);
+cptr.stPtr(cptr.add(l_obj_methods, 248), null);
 
 /** C ref: nhlobj.c:648 — luaL_Reg[2] */
 const l_obj_meta = cptr.alloc(2 * 16);
 cptr.stPtr(cptr.add(l_obj_meta, 0), __sl105);
-cptr.stPtr(cptr.add(cptr.add(l_obj_meta, 0), 8), l_obj_gc);
+cptr.stPtr(cptr.add(l_obj_meta, 8), l_obj_gc);
 cptr.stPtr(cptr.add(l_obj_meta, 16), null);
-cptr.stPtr(cptr.add(cptr.add(l_obj_meta, 16), 8), null);
+cptr.stPtr(cptr.add(l_obj_meta, 24), null);
 
 /** C ref: nhlobj.c:654 — @param {CPtr} L @returns {CInt} */
 export function l_obj_register(L) {
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n)))), luaL_setfuncs(L, l_obj_methods, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n)))), luaL_setfuncs(L, l_obj_methods, 0));
     luaL_newmetatable(L, __sl0);
     luaL_setfuncs(L, l_obj_meta, 0);
     lua_pushvalue(L, -2);
     lua_setfield(L, -2, __sl106);
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 32n / 16n - 1n)))), luaL_setfuncs(L, l_obj_meta, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 32n / 16n - 1n)))), luaL_setfuncs(L, l_obj_meta, 0));
     lua_setfield(L, -2, __sl107);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     lua_setglobal(L, __sl0);
     return 0;
 }

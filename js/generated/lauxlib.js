@@ -84,22 +84,22 @@ const __sl69 = cptr.lit("version mismatch: app. needs %f, Lua core provides %f")
 
 /** C ref: lauxlib.c:52 — @param {CPtr} L @param {CInt} objidx @param {CInt} level @returns {CInt} */
 function findfield(L, objidx, level) {
-    if (level == 0 || !(lua_type(L, (-1)) == 5) ? 1 : 0)
+    if (level == 0 || !(lua_type(L, -1) == 5) ? 1 : 0)
         return 0;
     lua_pushnil(L);
     while (lua_next(L, -2)) {
         if (lua_type(L, -2) == 4) {
             if (lua_rawequal(L, objidx, -1)) {
-                lua_settop(L, (-(1) - 1) | 0);
+                lua_settop(L, -2);
                 return 1;
             } else if (findfield(L, objidx, (level - 1) | 0)) {
                 lua_pushstring(L, __sl0);
-                (lua_copy(L, -1, (-3)), lua_settop(L, (-(1) - 1) | 0));
+                (lua_copy(L, -1, -3), lua_settop(L, -2));
                 lua_concat(L, 3);
                 return 1;
             }
         }
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
     }
     return 0;
 }
@@ -108,13 +108,13 @@ function findfield(L, objidx, level) {
 function pushglobalfuncname(L, ar) {
     let top = lua_gettop(L);
     lua_getinfo(L, __sl1, ar);
-    lua_getfield(L, ((-1000000 - 1000) | 0), __sl2);
+    lua_getfield(L, -1001000, __sl2);
     luaL_checkstack(L, 6, __sl3);
     if (findfield(L, (top + 1) | 0, 2)) {
-        let name = lua_tolstring(L, (-1), null);
+        let name = lua_tolstring(L, -1, null);
         if (cptr.strncmp(name, __sl4, 3n) == 0) {
             lua_pushstring(L, cptr.add(name, 3));
-            (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+            (lua_rotate(L, -2, -1), lua_settop(L, -2));
         }
         lua_copy(L, -1, (top + 1) | 0);
         lua_settop(L, (top + 1) | 0);
@@ -128,8 +128,8 @@ function pushglobalfuncname(L, ar) {
 /** C ref: lauxlib.c:101 — @param {CPtr} L @param {CPtr} ar */
 function pushfuncname(L, ar) {
     if (pushglobalfuncname(L, ar)) {
-        lua_pushfstring(L, __sl5, lua_tolstring(L, (-1), null));
-        (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+        lua_pushfstring(L, __sl5, lua_tolstring(L, -1, null));
+        (lua_rotate(L, -2, -1), lua_settop(L, -2));
     } else if (cptr.ld1s(cptr.ldPtr(cptr.add(ar, 16))) != 0)
         lua_pushfstring(L, __sl6, cptr.ldPtr(cptr.add(ar, 16)), cptr.ldPtr(cptr.add(ar, 8)));
     else if (cptr.ld1s(cptr.ldPtr(cptr.add(ar, 24))) == 109)
@@ -164,7 +164,7 @@ export function luaL_traceback(L, L1, msg, level) {
     let b = cptr.alloc(1056);
     let ar = cptr.alloc(136);
     let last = lastlevel(L1);
-    let limit2show = (((last - level) | 0) > ((10 + 11) | 0)) ? 10 : -1;
+    let limit2show = (((last - level) | 0) > 21) ? 10 : -1;
     luaL_buffinit(L, b);
     if (msg) {
         luaL_addstring(b, msg);
@@ -205,7 +205,7 @@ export function luaL_argerror(L, arg, extramsg) {
             return luaL_error(L, __sl19, cptr.ldPtr(cptr.add(ar, 8)), extramsg);
     }
     if (cptr.eq(cptr.ldPtr(cptr.add(ar, 8)), (null)))
-        cptr.stPtr(cptr.add(ar, 8), (pushglobalfuncname(L, ar)) ? lua_tolstring(L, (-1), null) : __sl9);
+        cptr.stPtr(cptr.add(ar, 8), (pushglobalfuncname(L, ar)) ? lua_tolstring(L, -1, null) : __sl9);
     return luaL_error(L, __sl20, arg, cptr.ldPtr(cptr.add(ar, 8)), extramsg);
 }
 
@@ -214,7 +214,7 @@ export function luaL_typeerror(L, arg, tname) {
     let msg;
     let typearg;
     if (luaL_getmetafield(L, arg, __sl21) == 4)
-        typearg = lua_tolstring(L, (-1), null);
+        typearg = lua_tolstring(L, -1, null);
     else if (lua_type(L, arg) == 2)
         typearg = __sl22;
     else
@@ -296,20 +296,20 @@ export function luaL_execresult(L, stat) {
 
 /** C ref: lauxlib.c:314 — @param {CPtr} L @param {CPtr} tname @returns {CInt} */
 export function luaL_newmetatable(L, tname) {
-    if ((lua_getfield(L, ((-1000000 - 1000) | 0), (tname))) != 0)
+    if ((lua_getfield(L, -1001000, (tname))) != 0)
         return 0;
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     lua_createtable(L, 0, 2);
     lua_pushstring(L, tname);
     lua_setfield(L, -2, __sl21);
     lua_pushvalue(L, -1);
-    lua_setfield(L, ((-1000000 - 1000) | 0), tname);
+    lua_setfield(L, -1001000, tname);
     return 1;
 }
 
 /** C ref: lauxlib.c:327 — @param {CPtr} L @param {CPtr} tname */
 export function luaL_setmetatable(L, tname) {
-    (lua_getfield(L, ((-1000000 - 1000) | 0), (tname)));
+    (lua_getfield(L, -1001000, (tname)));
     lua_setmetatable(L, -2);
 }
 
@@ -318,10 +318,10 @@ export function luaL_testudata(L, ud, tname) {
     let p = lua_touserdata(L, ud);
     if (!cptr.eq(p, (null))) {
         if (lua_getmetatable(L, ud)) {
-            (lua_getfield(L, ((-1000000 - 1000) | 0), (tname)));
+            (lua_getfield(L, -1001000, (tname)));
             if (!lua_rawequal(L, -1, -2))
                 p = (null);
-            lua_settop(L, (-(2) - 1) | 0);
+            lua_settop(L, -3);
             return p;
         }
     }
@@ -363,7 +363,7 @@ export function luaL_checktype(L, arg, t) {
 
 /** C ref: lauxlib.c:399 — @param {CPtr} L @param {CInt} arg */
 export function luaL_checkany(L, arg) {
-    if ((__builtin_expect(BigInt(((lua_type(L, arg) == (-1)) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((lua_type(L, arg) == -1) != 0)), 0n)))
         luaL_argerror(L, arg, __sl34);
 }
 
@@ -450,11 +450,11 @@ function boxgc(L) {
 /** C ref: lauxlib.c:497 — luaL_Reg[3] */
 const boxmt = cptr.alloc(3 * 16);
 cptr.stPtr(cptr.add(boxmt, 0), __sl37);
-cptr.stPtr(cptr.add(cptr.add(boxmt, 0), 8), boxgc);
+cptr.stPtr(cptr.add(boxmt, 8), boxgc);
 cptr.stPtr(cptr.add(boxmt, 16), __sl38);
-cptr.stPtr(cptr.add(cptr.add(boxmt, 16), 8), boxgc);
+cptr.stPtr(cptr.add(boxmt, 24), boxgc);
 cptr.stPtr(cptr.add(boxmt, 32), null);
-cptr.stPtr(cptr.add(cptr.add(boxmt, 32), 8), null);
+cptr.stPtr(cptr.add(boxmt, 40), null);
 
 /** C ref: lauxlib.c:504 — @param {CPtr} L */
 function newbox(L) {
@@ -469,7 +469,7 @@ function newbox(L) {
 /** C ref: lauxlib.c:535 — @param {CPtr} B @param {CLongLong} sz @returns {*} */
 function newbuffsize(B, sz) {
     let newsize = BigInt.asUintN(64, (cptr.ldU64(cptr.add(B, 8)) / 2n) * 3n);
-    if ((__builtin_expect(BigInt(((BigInt.asUintN(64, ((BigInt.asUintN(64, ~0n))) - sz) < cptr.ldU64(cptr.add(B, 16))) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((BigInt.asUintN(64, 18446744073709551615n - sz) < cptr.ldU64(cptr.add(B, 16))) != 0)), 0n)))
         return BigInt.asUintN(64, BigInt(luaL_error(cptr.ldPtr(cptr.add(B, 24)), __sl40)));
     if (newsize < BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 16)) + sz))
         newsize = BigInt.asUintN(64, cptr.ldU64(cptr.add(B, 16)) + sz);
@@ -488,7 +488,7 @@ function prepbuffsize(B, sz, boxidx) {
         if ((!cptr.eq(cptr.ldPtr((B)), cptr.add((B), 32))))
             newbuff = resizebox(L, boxidx, newsize);
         else {
-            (lua_rotate(L, (boxidx), -1), lua_settop(L, (-(1) - 1) | 0));
+            (lua_rotate(L, (boxidx), -1), lua_settop(L, -2));
             newbox(L);
             lua_rotate(L, (boxidx), 1);
             lua_toclose(L, boxidx);
@@ -527,7 +527,7 @@ export function luaL_pushresult(B) {
     lua_pushlstring(L, cptr.ldPtr(B), cptr.ldU64(cptr.add(B, 16)));
     if ((!cptr.eq(cptr.ldPtr((B)), cptr.add((B), 32))))
         lua_closeslot(L, -2);
-    (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, -2, -1), lua_settop(L, -2));
 }
 
 /** C ref: lauxlib.c:607 — @param {CPtr} B @param {CLongLong} sz */
@@ -544,7 +544,7 @@ export function luaL_addvalue(B) {
     let b = prepbuffsize(B, len.v, -2);
     cptr.memcpy(b, s, BigInt.asUintN(64, len.v * 1n));
     (cptr.stU64(cptr.add((B), 16), cptr.ldU64(cptr.add((B), 16)) + (len.v)));
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
 }
 
 /** C ref: lauxlib.c:633 — @param {CPtr} L @param {CPtr} B */
@@ -552,7 +552,7 @@ export function luaL_buffinit(L, B) {
     cptr.stPtr(cptr.add(B, 24), L);
     cptr.stPtr(B, cptr.add(B, 32));
     cptr.stU64(cptr.add(B, 16), 0n);
-    cptr.stU64(cptr.add(B, 8), BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))));
+    cptr.stU64(cptr.add(B, 8), 1024n);
     lua_pushlightuserdata(L, B);
 }
 
@@ -565,23 +565,23 @@ export function luaL_buffinitsize(L, B, sz) {
 /** C ref: lauxlib.c:664 — @param {CPtr} L @param {CInt} t @returns {CInt} */
 export function luaL_ref(L, t) {
     let ref;
-    if ((lua_type(L, (-1)) == 0)) {
-        lua_settop(L, (-(1) - 1) | 0);
-        return (-1);
+    if ((lua_type(L, -1) == 0)) {
+        lua_settop(L, -2);
+        return -1;
     }
     t = lua_absindex(L, t);
-    if (lua_rawgeti(L, t, BigInt(((2 + 1) | 0))) == 0) {
+    if (lua_rawgeti(L, t, 3n) == 0) {
         ref = 0;
         lua_pushinteger(L, 0n);
-        lua_rawseti(L, t, BigInt(((2 + 1) | 0)));
+        lua_rawseti(L, t, 3n);
     } else {
         (void 0);
-        ref = Number(BigInt.asIntN(32, lua_tointegerx(L, (-1), null)));
+        ref = Number(BigInt.asIntN(32, lua_tointegerx(L, -1, null)));
     }
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     if (ref != 0) {
         lua_rawgeti(L, t, BigInt(ref));
-        lua_rawseti(L, t, BigInt(((2 + 1) | 0)));
+        lua_rawseti(L, t, 3n);
     } else
         ref = (Number(BigInt.asIntN(32, lua_rawlen(L, t))) + 1) | 0;
     lua_rawseti(L, t, BigInt(ref));
@@ -592,11 +592,11 @@ export function luaL_ref(L, t) {
 export function luaL_unref(L, t, ref) {
     if (ref >= 0) {
         t = lua_absindex(L, t);
-        lua_rawgeti(L, t, BigInt(((2 + 1) | 0)));
+        lua_rawgeti(L, t, 3n);
         (void 0);
         lua_rawseti(L, t, BigInt(ref));
         lua_pushinteger(L, BigInt(ref));
-        lua_rawseti(L, t, BigInt(((2 + 1) | 0)));
+        lua_rawseti(L, t, 3n);
     }
 }
 
@@ -627,8 +627,8 @@ function errfile(L, what, fnameindex) {
         lua_pushfstring(L, __sl41, what, filename, strerror(err));
     else
         lua_pushfstring(L, __sl42, what, filename);
-    (lua_rotate(L, (fnameindex), -1), lua_settop(L, (-(1) - 1) | 0));
-    return ((5 + 1) | 0);
+    (lua_rotate(L, (fnameindex), -1), lua_settop(L, -2));
+    return 6;
 }
 
 /** C ref: lauxlib.c:755 — @param {CPtr} f @returns {CInt} */
@@ -646,7 +646,7 @@ function skipcomment(f, cp) {
     if (c == 35) {
         do {
             c = getc(f);
-        } while (c != (-1) && c != 10 ? 1 : 0);
+        } while (c != -1 && c != 10 ? 1 : 0);
         cptr.stI32(cp, getc(f));
         return 1;
     } else
@@ -683,10 +683,10 @@ export function luaL_loadfilex(L, filename, mode) {
             skipcomment(cptr.ldPtr(cptr.add(lf, 8)), c);
         }
     }
-    if (c.v != (-1))
+    if (c.v != -1)
         cptr.st1(cptr.add(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1), schar(c.v));
     cptr.stI32(__error(), 0);
-    status = lua_load(L, getF, lf, lua_tolstring(L, (-1), null), mode);
+    status = lua_load(L, getF, lf, lua_tolstring(L, -1, null), mode);
     readstatus = ferror(cptr.ldPtr(cptr.add(lf, 8)));
     if (filename)
         fclose(cptr.ldPtr(cptr.add(lf, 8)));
@@ -694,7 +694,7 @@ export function luaL_loadfilex(L, filename, mode) {
         lua_settop(L, fnameindex);
         return errfile(L, __sl50, fnameindex);
     }
-    (lua_rotate(L, (fnameindex), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, (fnameindex), -1), lua_settop(L, -2));
     return status;
 }
 
@@ -735,9 +735,9 @@ export function luaL_getmetafield(L, obj, event) {
         lua_pushstring(L, event);
         tt = lua_rawget(L, -2);
         if (tt == 0)
-            lua_settop(L, (-(2) - 1) | 0);
+            lua_settop(L, -3);
         else
-            (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+            (lua_rotate(L, -2, -1), lua_settop(L, -2));
         return tt;
     }
 }
@@ -748,7 +748,7 @@ export function luaL_callmeta(L, obj, event) {
     if (luaL_getmetafield(L, obj, event) == 0)
         return 0;
     lua_pushvalue(L, obj);
-    lua_callk(L, (1), (1), 0n, null);
+    lua_callk(L, 1, 1, 0n, null);
     return 1;
 }
 
@@ -760,7 +760,7 @@ export function luaL_len(L, idx) {
     l = lua_tointegerx(L, -1, isnum);
     if ((__builtin_expect(BigInt(((!isnum.v) != 0)), 0n)))
         luaL_error(L, __sl51);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     return l;
 }
 
@@ -792,10 +792,10 @@ export function luaL_tolstring(L, idx, len) {
             default:
             {
                 let tt = luaL_getmetafield(L, idx, __sl21);
-                let kind = (tt == 4) ? lua_tolstring(L, (-1), null) : lua_typename(L, lua_type(L, (idx)));
+                let kind = (tt == 4) ? lua_tolstring(L, -1, null) : lua_typename(L, lua_type(L, (idx)));
                 lua_pushfstring(L, __sl59, kind, lua_topointer(L, idx));
                 if (tt != 0)
-                    (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+                    (lua_rotate(L, -2, -1), lua_settop(L, -2));
                 break;
             }
         }
@@ -825,7 +825,7 @@ export function luaL_getsubtable(L, idx, fname) {
     if (lua_getfield(L, idx, fname) == 5)
         return 1;
     else {
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
         idx = lua_absindex(L, idx);
         lua_createtable(L, 0, 0);
         lua_pushvalue(L, -1);
@@ -836,17 +836,17 @@ export function luaL_getsubtable(L, idx, fname) {
 
 /** C ref: lauxlib.c:983 — @param {CPtr} L @param {CPtr} modname @param {CPtr} openf @param {CInt} glb */
 export function luaL_requiref(L, modname, openf, glb) {
-    luaL_getsubtable(L, ((-1000000 - 1000) | 0), __sl2);
+    luaL_getsubtable(L, -1001000, __sl2);
     lua_getfield(L, -1, modname);
     if (!lua_toboolean(L, -1)) {
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
         lua_pushcclosure(L, (openf), 0);
         lua_pushstring(L, modname);
-        lua_callk(L, (1), (1), 0n, null);
+        lua_callk(L, 1, 1, 0n, null);
         lua_pushvalue(L, -1);
         lua_setfield(L, -3, modname);
     }
-    (lua_rotate(L, (-2), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, -2, -1), lua_settop(L, -2));
     if (glb) {
         lua_pushvalue(L, -1);
         lua_setglobal(L, modname);
@@ -871,7 +871,7 @@ export function luaL_gsub(L, s, p, r) {
     luaL_buffinit(L, b);
     luaL_addgsub(b, s, p, r);
     luaL_pushresult(b);
-    return lua_tolstring(L, (-1), null);
+    return lua_tolstring(L, -1, null);
 }
 
 /** C ref: lauxlib.c:1026 — @param {CPtr} ud @param {CPtr} ptr @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
@@ -887,7 +887,7 @@ function l_alloc(ud, ptr, osize, nsize) {
 
 /** C ref: lauxlib.c:1041 — @param {CPtr} L @returns {CInt} */
 function panic(L) {
-    let msg = (lua_type(L, -1) == 4) ? lua_tolstring(L, (-1), null) : __sl61;
+    let msg = (lua_type(L, -1) == 4) ? lua_tolstring(L, -1, null) : __sl61;
     (fprintf(__stderrp, (__sl62), (msg)), fflush(__stderrp));
     return 0;
 }
@@ -943,7 +943,7 @@ export function luaL_newstate() {
 /** C ref: lauxlib.c:1118 — @param {CPtr} L @param {CDouble} ver @param {CLongLong} sz */
 export function luaL_checkversion_(L, ver, sz) {
     let v = lua_version(L);
-    if (sz != (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n)))
+    if (sz != 136n)
         luaL_error(L, __sl68);
     else if (v != ver)
         luaL_error(L, __sl69, ver, v);

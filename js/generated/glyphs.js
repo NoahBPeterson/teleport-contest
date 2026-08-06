@@ -151,7 +151,7 @@ let glyphcache_find = cptr.alloc(64);
 let to_custom_symbol_find = cptr.alloc(64);
 
 /** C ref: glyphs.c:37 — long */
-let nonzero_black = BigInt((0 | 16777216));
+let nonzero_black = 16777216n;
 
 let __static_to_custom_symset_entry_callback_glyphnag = 0; /** C ref: glyphs.c:84 — int (function-static) */
 let __static_to_custom_symset_entry_callback_colornag = 0; /** C ref: glyphs.c:97 — int (function-static) */
@@ -194,8 +194,8 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
     let cp;
     let reslt = 0;
     let rgb = 0n;
-    let slash = (0);
-    let colon = (0);
+    let slash = 0;
+    let colon = 0;
     if (!glyphid_cache)
         reslt = 1;
     (void (reslt));
@@ -205,22 +205,22 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
     while (cptr.ld1s(cp)) {
         if (cptr.ld1s(cp) == 58 || cptr.ld1s(cp) == 47 ? 1 : 0) {
             if (cptr.ld1s(cp) == 58) {
-                colon = (1);
+                colon = 1;
                 cptr.st1(cp, 0);
             }
             if (cptr.ld1s(cp) == 47) {
-                slash = (1);
+                slash = 1;
                 cptr.st1(cp, 0);
             }
         }
         cp = cptr.add(cp, 1);
         if (colon) {
             c_unicode = cp;
-            colon = (0);
+            colon = 0;
         }
         if (slash) {
             c_colorval = cp;
-            slash = (0);
+            slash = 0;
         }
     }
     if (c_glyphid && cptr.ld1s(c_glyphid) == 32 ? 1 : 0)
@@ -235,7 +235,7 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
     if (c_unicode && !cptr.ld1s(c_unicode) ? 1 : 0)
         c_unicode = null;
     if ((c_colorval && (rgb = BigInt(rgbstr_to_int32(c_colorval))) != -1n ? 1 : 0) || !c_colorval ? 1 : 0) {
-        cptr.stI32(cptr.add(to_custom_symbol_find, 24), Number(BigInt.asUintN(32, ((rgb == BigInt((-1)) || !c_colorval ? 1 : 0) ? 0n : ((rgb == 0n) ? nonzero_black : rgb)))));
+        cptr.stI32(cptr.add(to_custom_symbol_find, 24), Number(BigInt.asUintN(32, ((rgb == -1n || !c_colorval ? 1 : 0) ? 0n : ((rgb == 0n) ? nonzero_black : rgb)))));
     }
     if (c_unicode)
         cptr.stPtr(cptr.add(to_custom_symbol_find, 32), c_unicode);
@@ -250,7 +250,7 @@ function fix_glyphname(str) {
     let c;
     for (c = str; cptr.ld1s(c); c = cptr.add(c, 1)) {
         if (cptr.ld1s(c) >= 65 && cptr.ld1s(c) <= 90 ? 1 : 0)
-            cptr.st1(c, cptr.ld1s(c) + schar(((97 - 65) | 0)));
+            cptr.st1(c, cptr.ld1s(c) + 32);
         else if (cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57 ? 1 : 0)
             ;
         else if (cptr.ld1s(c) < 97 || cptr.ld1s(c) > 122 ? 1 : 0)
@@ -263,30 +263,30 @@ function fix_glyphname(str) {
 export function glyph_to_cmap(glyph) {
     if (glyph == 3929)
         return 0;
-    else if (((glyph) >= 3930 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3930) | 0) ? 1 : 0))
+    else if (((glyph) >= 3930 && (glyph) < 3941 ? 1 : 0))
         return (((glyph - 3930) | 0) + 1) | 0;
-    else if (((glyph) >= 3941 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3941) | 0) ? 1 : 0))
+    else if (((glyph) >= 3941 && (glyph) < 3952 ? 1 : 0))
         return (((glyph - 3941) | 0) + 1) | 0;
-    else if (((glyph) >= 3952 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3952) | 0) ? 1 : 0))
+    else if (((glyph) >= 3952 && (glyph) < 3963 ? 1 : 0))
         return (((glyph - 3952) | 0) + 1) | 0;
-    else if (((glyph) >= 3963 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3963) | 0) ? 1 : 0))
+    else if (((glyph) >= 3963 && (glyph) < 3974 ? 1 : 0))
         return (((glyph - 3963) | 0) + 1) | 0;
-    else if (((glyph) >= 3974 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3974) | 0) ? 1 : 0))
+    else if (((glyph) >= 3974 && (glyph) < 3985 ? 1 : 0))
         return (((glyph - 3974) | 0) + 1) | 0;
-    else if (((glyph) >= 3985 && (glyph) < ((((((32 - 12) | 0) + 1) | 0) + 3985) | 0) ? 1 : 0))
+    else if (((glyph) >= 3985 && (glyph) < 4006 ? 1 : 0))
         return (((glyph - 3985) | 0) + 12) | 0;
-    else if (((glyph) >= 4006 && (glyph) < ((5 + 4006) | 0) ? 1 : 0))
+    else if (((glyph) >= 4006 && (glyph) < 4011 ? 1 : 0))
         return 33;
-    else if (((glyph) >= 4011 && ((glyph) < ((((((49 + ((26 - 1) | 0)) | 0) - 34) | 0) + 4011) | 0)) ? 1 : 0))
+    else if (((glyph) >= 4011 && ((glyph) < 4051) ? 1 : 0))
         return (((glyph - 4011) | 0) + 34) | 0;
-    else if (((glyph) >= 4083 && (glyph) < ((((((87 - 78) | 0) + 1) | 0) + 4083) | 0) ? 1 : 0))
+    else if (((glyph) >= 4083 && (glyph) < 4093 ? 1 : 0))
         return (((glyph - 4083) | 0) + 78) | 0;
-    else if (((glyph) >= 4051 && (glyph) < (((8 << 2) + 4051) | 0) ? 1 : 0))
+    else if (((glyph) >= 4051 && (glyph) < 4083 ? 1 : 0))
         return ((((glyph - 4051) | 0) % 4) + 74) | 0;
-    else if (((glyph) >= 4093 && (glyph) < ((((383 << 3) + 4093) | 0)) ? 1 : 0))
-        return ((((glyph) >= 4093 && (glyph) < ((((383 << 3) + 4093) | 0)) ? 1 : 0) ? ((((glyph) - 4093) | 0) & 7) : 0) + 88) | 0;
-    else if (((glyph) >= 7157 && (glyph) < ((9 + 7211) | 0) ? 1 : 0))
-        return ((((glyph) >= 7157 && (glyph) < ((9 + 7211) | 0) ? 1 : 0) ? ((((glyph) - 7157) | 0) % ((((104 - 96) | 0) + 1) | 0)) : 0) + 96) | 0;
+    else if (((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0))
+        return ((((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0) ? ((((glyph) - 4093) | 0) & 7) : 0) + 88) | 0;
+    else if (((glyph) >= 7157 && (glyph) < 7220 ? 1 : 0))
+        return ((((glyph) >= 7157 && (glyph) < 7220 ? 1 : 0) ? ((((glyph) - 7157) | 0) % 9) : 0) + 96) | 0;
     else
         return 105;
 }
@@ -295,35 +295,35 @@ export function glyph_to_cmap(glyph) {
 function glyph_find_core(id, findwhat) {
     let glyph;
     let do_callback;
-    let end_find = (0);
+    let end_find = 0;
     if (parse_id(id, findwhat)) {
         if (cptr.ldI32(findwhat) == 4) {
             (cptr.ldPtr(cptr.add(findwhat, 40)))(cptr.ldI32(cptr.add(findwhat, 4)), findwhat);
         } else {
             for (glyph = 0; glyph < 9624; ++glyph) {
-                do_callback = (0);
+                do_callback = 0;
                 switch (cptr.ldI32(findwhat)) {
                     case 3:
                     if (glyph_to_cmap(glyph) == cptr.ldI32(cptr.add(findwhat, 4)))
-                        do_callback = (1);
+                        do_callback = 1;
                     break;
                     case 1:
-                    if (((((((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) || ((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) || ((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) || ((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) || ((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(mons, (((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) ? (((glyph) - 2682) | 0) : 383)))))))), 96), 28)) == cptr.ldI32(cptr.add(findwhat, 4)) ? 1 : 0)
-                        do_callback = (1);
+                    if (((((((glyph) >= 0 && (glyph) < 383 ? 1 : 0) || ((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) || ((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) || ((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) || ((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(mons, (((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < 383 ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) ? (((glyph) - 2682) | 0) : 383)))))))), 96), 28)) == cptr.ldI32(cptr.add(findwhat, 4)) ? 1 : 0)
+                        do_callback = 1;
                     break;
                     case 2:
-                    if (((((((glyph) == 3448 || ((glyph) >= ((((3448 + 18) | 0) - 1) | 0) && (glyph) < ((3448 + 481) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < ((((3448 + 18) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 265 : ((((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 476 : ((((glyph) > 3448 && (glyph) < ((((3448 + 18) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 7992 : 3448)) | 0) : ((((glyph) == 3448 || ((glyph) >= ((((3448 + 18) | 0) - 1) | 0) && (glyph) < ((3448 + 481) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 7992 : 3448)) | 0) : 481)))) == cptr.ldI32(cptr.add(findwhat, 4)) ? 1 : 0)
-                        do_callback = (1);
+                    if (((((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 265 : ((((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 476 : ((((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 7992 : 3448)) | 0) : ((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 7992 : 3448)) | 0) : 481)))) == cptr.ldI32(cptr.add(findwhat, 4)) ? 1 : 0)
+                        do_callback = 1;
                     break;
                     case 4:
                     if (glyph == cptr.ldI32(cptr.add(findwhat, 4))) {
-                        do_callback = (1);
-                        end_find = (1);
+                        do_callback = 1;
+                        end_find = 1;
                     }
                     break;
                     case 0:
                     default:
-                    end_find = (1);
+                    end_find = 1;
                     break;
                 }
                 if (do_callback)
@@ -361,7 +361,7 @@ function init_glyph_cache() {
     let glyph;
     glyphid_cache_lsize = 0;
     glyphid_cache_size = 1n;
-    while (glyphid_cache_size < BigInt.asUintN(64, BigInt(Math.imul(2, 9624)))) {
+    while (glyphid_cache_size < 19248n) {
         ++glyphid_cache_lsize;
         glyphid_cache_size <<= 1n;
     }
@@ -442,7 +442,7 @@ function glyph_hash(id) {
     for (i = 0n; cptr.ld1s(cptr.add(id, i)) != 0; ++i) {
         let ch = cptr.ld1s(cptr.add(id, i));
         if (65 <= ch && ch <= 90 ? 1 : 0) {
-            ch = schar(ch + ((97 - 65) | 0));
+            ch = schar(ch + 32);
         }
         hash = (((hash << 1) >>> 0) | (hash >>> 31)) >>> 0;
         hash ^= ch;
@@ -515,21 +515,21 @@ export function apply_customizations(which_set, docustomize) {
     let gmap;
     let details;
     let sc;
-    let at_least_one = (0);
+    let at_least_one = 0;
     let do_colors = schar((((docustomize & 1) >>> 0) != 0));
     let do_symbols = schar((((docustomize & 2) >>> 0) != 0));
     let custs;
     for (custs = 0; custs < 4; ++custs) {
         sc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), custs, 32);
         if (cptr.ldI32(cptr.add(sc, 8)) && cptr.ldPtr(cptr.add(sc, 16)) ? 1 : 0) {
-            at_least_one = (1);
+            at_least_one = 1;
             details = cptr.ldPtr(cptr.add(sc, 16));
             while (details) {
                 if (cptr.ld1s(cptr.add(iflags, 183)) && do_symbols ? 1 : 0) {
                     if (cptr.ldI32(cptr.add(sc, 12)) == 2) {
                         gmap = cptr.add(glyphmap, cptr.ldI32(details), 32);
                         if (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 28)) == 5)
-                            void set_map_u(gmap, cptr.ldI32(cptr.add(details, 8)), cptr.ldPtr(cptr.add(cptr.add(details, 8), 8)));
+                            void set_map_u(gmap, cptr.ldI32(cptr.add(details, 8)), cptr.ldPtr(cptr.add(details, 16)));
                     }
                 }
                 if (cptr.ld1s(cptr.add(iflags, 182)) && do_colors ? 1 : 0) {
@@ -623,7 +623,7 @@ export function find_matching_customization(customization_name, custtype, which_
 /** C ref: glyphs.c:751 */
 export function purge_all_custom_entries() {
     let i;
-    for (i = 0; i < ((2 + 1) | 0); ++i) {
+    for (i = 0; i < 3; ++i) {
         purge_custom_entries(i);
     }
 }
@@ -640,9 +640,9 @@ export function purge_custom_entries(which_set) {
         while (details) {
             next = cptr.ldPtr(cptr.add(details, 24));
             if (cptr.ldI32(cptr.add(gdc, 12)) == 2) {
-                if (cptr.ldPtr(cptr.add(cptr.add(details, 8), 8)))
-                    cptr.free(cptr.ldPtr(cptr.add(cptr.add(details, 8), 8)));
-                cptr.stPtr(cptr.add(cptr.add(details, 8), 8), null);
+                if (cptr.ldPtr(cptr.add(details, 16)))
+                    cptr.free(cptr.ldPtr(cptr.add(details, 16)));
+                cptr.stPtr(cptr.add(details, 16), null);
             } else if (cptr.ldI32(cptr.add(gdc, 12)) == 1) {
                 cptr.stPtr(details, null);
                 cptr.st1(cptr.add(details, 8), 0);
@@ -742,25 +742,25 @@ function parse_id(id, findwhat) {
     let pm_count = 0;
     let oc_count = 0;
     let cmap_count = 0;
-    let skip_base = (0);
-    let skip_this_one = (0);
-    let dump_ids = (0);
-    let filling_cache = (0);
-    let is_S = (0);
-    let is_G = (0);
+    let skip_base = 0;
+    let skip_this_one = 0;
+    let dump_ids = 0;
+    let filling_cache = 0;
+    let is_S = 0;
+    let is_G = 0;
     let buf = (function () { const flat = new Uint8Array(4 * (128 * 1)); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1))); a.buf = flat; return a; })();
     if (cptr.ldI32(findwhat) == 0 && cptr.ldI32(cptr.add(findwhat, 48)) ? 1 : 0) {
         if (cptr.ldI32(cptr.add(findwhat, 48)) == 1) {
             if (cptr.ldPtr(cptr.add(findwhat, 56))) {
                 fp = cptr.ldPtr(cptr.add(findwhat, 56));
-                dump_ids = (1);
+                dump_ids = 1;
             } else {
                 return 0;
             }
         }
         if (cptr.ldI32(cptr.add(findwhat, 48)) == 2) {
             if (cptr.ldPtr(cptr.add(findwhat, 56)) && cptr.eq(cptr.ldPtr(cptr.add(findwhat, 56)), glyphid_cache) ? 1 : 0) {
-                filling_cache = (1);
+                filling_cache = 1;
             } else {
                 return 0;
             }
@@ -801,48 +801,48 @@ function parse_id(id, findwhat) {
             let buf3;
             let buf4;
             for (glyph = 0; glyph < 9624; ++glyph) {
-                skip_base = (0);
-                skip_this_one = (0);
+                skip_base = 0;
+                skip_this_one = 0;
                 cptr.st1(cptr.add(cptr.decay(buf[0]), 0, 1), cptr.st1(cptr.add(cptr.decay(buf[1]), 0, 1), cptr.st1(cptr.add(cptr.decay(buf[2]), 0, 1), cptr.st1(cptr.add(cptr.decay(buf[3]), 0, 1), 0))));
-                if (((((((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) || ((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) || ((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) || ((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) || ((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+                if (((((((glyph) >= 0 && (glyph) < 383 ? 1 : 0) || ((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) || ((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) || ((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) || ((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
                     buf2 = __sl8;
-                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, (((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) ? (((glyph) - 2682) | 0) : 383)))))))), 16), 8));
-                    if (((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0)) {
+                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, (((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < 383 ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) ? (((glyph) - 2682) | 0) : 383)))))))), 16), 8));
+                    if (((glyph) >= 0 && (glyph) < 383 ? 1 : 0)) {
                         buf2 = __sl9;
-                    } else if (((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 383 && (glyph) < 766 ? 1 : 0)) {
                         buf2 = __sl10;
-                    } else if (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0)) {
                         buf2 = __sl11;
-                    } else if (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0)) {
                         buf2 = __sl12;
-                    } else if (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0)) {
                         buf2 = __sl13;
-                    } else if (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0)) {
                         buf2 = __sl14;
-                    } else if (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0)) {
                         buf2 = __sl15;
-                    } else if (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0)) {
                         buf2 = __sl16;
                     }
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if (((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0)) {
-                    buf2 = (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? __sl18 : __sl19;
-                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, ((((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? (((glyph) - 8473) | 0) : (((glyph) - 2299) | 0)), 16), 8));
+                } else if (((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0)) {
+                    buf2 = (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? __sl18 : __sl19;
+                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, ((((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? (((glyph) - 8473) | 0) : (((glyph) - 2299) | 0)), 16), 8));
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if ((((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
-                    buf2 = (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? __sl20 : (((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? __sl21 : ((((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? __sl22 : (((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? __sl23 : __sl8)));
-                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, ((((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? (((glyph) - 9239) | 0) : ((((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? (((glyph) - 8856) | 0) : (((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? (((glyph) - 7609) | 0) : (((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? (((glyph) - 7226) | 0) : 9624)))), 16), 8));
+                } else if ((((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+                    buf2 = (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? __sl20 : (((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? __sl21 : ((((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? __sl22 : (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) ? __sl23 : __sl8)));
+                    buf3 = cptr.ldPtr(cptr.add(cptr.add(monsdump, ((((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? (((glyph) - 9239) | 0) : ((((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? (((glyph) - 8856) | 0) : (((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? (((glyph) - 7609) | 0) : (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) ? (((glyph) - 7226) | 0) : 9624)))), 16), 8));
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if (((((((glyph) == 3448 || ((glyph) >= ((((3448 + 18) | 0) - 1) | 0) && (glyph) < ((3448 + 481) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < ((((3448 + 18) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
-                    i = (((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 265 : ((((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 476 : ((((glyph) > 3448 && (glyph) < ((((3448 + 18) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 7992 : 3448)) | 0) : ((((glyph) == 3448 || ((glyph) >= ((((3448 + 18) | 0) - 1) | 0) && (glyph) < ((3448 + 481) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 7992 : 3448)) | 0) : 481))));
+                } else if (((((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+                    i = (((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 265 : ((((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 476 : ((((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 7992 : 3448)) | 0) : ((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 7992 : 3448)) | 0) : 481))));
                     if (((i > 343) && (i < 364) ? 1 : 0) || ((i > 434) && (i < 438) ? 1 : 0) ? 1 : 0)
-                        skip_this_one = (1);
+                        skip_this_one = 1;
                     if (!skip_this_one) {
                         if ((i >= 410) && (i <= 434) ? 1 : 0)
                             buf2 = __sl24;
@@ -860,12 +860,12 @@ function parse_id(id, findwhat) {
                             buf2 = __sl8;
                         buf3 = (i == 365) ? __sl31 : ((i == 407) ? __sl32 : ((i == 285) ? __sl33 : (cptr.ldPtr(cptr.add(obj_descr, i, 16)) ? cptr.ldPtr(cptr.add(obj_descr, i, 16)) : cptr.ldPtr(cptr.add(cptr.add(obj_descr, i, 16), 8)))));
                         void cptr.strcpy(cptr.decay(buf[0]), __sl17);
-                        if (((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0))
+                        if (((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0))
                             void cptr.strcat(cptr.decay(buf[0]), __sl34);
                         void cptr.strcat(cptr.decay(buf[0]), buf2);
                         void cptr.strcat(cptr.decay(buf[0]), buf3);
                     }
-                } else if (((((glyph) >= 3929 && (glyph) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) || ((glyph) >= 4051 && (glyph) < (((8 << 2) + 4051) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) >= 4093 && (glyph) < ((((383 << 3) + 4093) | 0)) ? 1 : 0) ? 1 : 0) || ((glyph) >= 7157 && (glyph) < ((9 + 7211) | 0) ? 1 : 0) ? 1 : 0) {
+                } else if (((((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) || ((glyph) >= 4051 && (glyph) < 4083 ? 1 : 0) ? 1 : 0) || ((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0) ? 1 : 0) || ((glyph) >= 7157 && (glyph) < 7220 ? 1 : 0) ? 1 : 0) {
                     let cmap = -1;
                     buf2 = __sl8;
                     buf3 = __sl8;
@@ -873,25 +873,25 @@ function parse_id(id, findwhat) {
                     if (glyph == 3929) {
                         cmap = 0;
                         buf3 = __sl35;
-                        skip_base = (1);
-                    } else if (((glyph) >= 3952 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3952) | 0) ? 1 : 0)) {
+                        skip_base = 1;
+                    } else if (((glyph) >= 3952 && (glyph) < 3963 ? 1 : 0)) {
                         cmap = (((glyph - 3952) | 0) + 1) | 0;
                         buf4 = __sl36;
-                    } else if (((glyph) >= 3963 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3963) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3963 && (glyph) < 3974 ? 1 : 0)) {
                         cmap = (((glyph - 3963) | 0) + 1) | 0;
                         buf4 = __sl37;
-                    } else if (((glyph) >= 3930 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3930) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3930 && (glyph) < 3941 ? 1 : 0)) {
                         cmap = (((glyph - 3930) | 0) + 1) | 0;
                         buf4 = __sl38;
-                    } else if (((glyph) >= 3941 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3941) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3941 && (glyph) < 3952 ? 1 : 0)) {
                         cmap = (((glyph - 3941) | 0) + 1) | 0;
                         buf4 = __sl39;
-                    } else if (((glyph) >= 3974 && (glyph) < ((((((11 - 1) | 0) + 1) | 0) + 3974) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3974 && (glyph) < 3985 ? 1 : 0)) {
                         cmap = (((glyph - 3974) | 0) + 1) | 0;
                         buf4 = __sl40;
-                    } else if (((glyph) >= 3985 && (glyph) < ((((((32 - 12) | 0) + 1) | 0) + 3985) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 3985 && (glyph) < 4006 ? 1 : 0)) {
                         cmap = (((glyph - 3985) | 0) + 12) | 0;
-                    } else if (((glyph) >= 4006 && (glyph) < ((5 + 4006) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 4006 && (glyph) < 4011 ? 1 : 0)) {
                         j = ((glyph - 4006) | 0);
                         cmap = 33;
                         if (j != 4) {
@@ -899,41 +899,41 @@ function parse_id(id, findwhat) {
                             buf2 = cptr.decay(buf[2]);
                         } else {
                             buf3 = __sl43;
-                            skip_base = (1);
+                            skip_base = 1;
                         }
-                    } else if (((glyph) >= 4011 && ((glyph) < ((((((49 + ((26 - 1) | 0)) | 0) - 34) | 0) + 4011) | 0)) ? 1 : 0)) {
+                    } else if (((glyph) >= 4011 && ((glyph) < 4051) ? 1 : 0)) {
                         cmap = (((glyph - 4011) | 0) + 34) | 0;
-                    } else if (((glyph) >= 4051 && (glyph) < (((8 << 2) + 4051) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= 4051 && (glyph) < 4083 ? 1 : 0)) {
                         j = ((glyph - 4051) | 0);
                         cmap = ((j % 4) + 74) | 0;
                         nh_snprintf(__sl41, 1042, cptr.decay(buf[2]), 128n, __sl5, cptr.add(cptr.ldPtr(cptr.add(cptr.add(loadsyms, (cmap + cmap_offset) | 0, 16), 8)), 2));
                         nh_snprintf(__sl41, 1044, cptr.decay(buf[3]), 128n, __sl44, cptr.ldPtr(cptr.add(__static_parse_id_zap_texts, (j / 4) | 0, 8)), fix_glyphname(cptr.decay(buf[2])));
                         buf3 = cptr.decay(buf[3]);
                         buf2 = __sl8;
-                        skip_base = (1);
-                    } else if (((glyph) >= 4083 && (glyph) < ((((((87 - 78) | 0) + 1) | 0) + 4083) | 0) ? 1 : 0)) {
+                        skip_base = 1;
+                    } else if (((glyph) >= 4083 && (glyph) < 4093 ? 1 : 0)) {
                         cmap = (((glyph - 4083) | 0) + 78) | 0;
-                    } else if (((glyph) >= 4093 && (glyph) < ((((383 << 3) + 4093) | 0)) ? 1 : 0)) {
+                    } else if (((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0)) {
                         j = (glyph - 4093) | 0;
-                        cmap = (((glyph) >= 4093 && (glyph) < ((((383 << 3) + 4093) | 0)) ? 1 : 0) ? ((((glyph) - 4093) | 0) & 7) : 0);
-                        mnum = (j / ((((95 - 88) | 0) + 1) | 0)) | 0;
+                        cmap = (((glyph) >= 4093 && (glyph) < 7157 ? 1 : 0) ? ((((glyph) - 4093) | 0) & 7) : 0);
+                        mnum = (j / 8) | 0;
                         void cptr.strcpy(cptr.decay(buf[3]), __sl45);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtr(cptr.add(cptr.add(monsdump, mnum, 16), 8)));
                         void cptr.strcat(cptr.decay(buf[3]), __sl46);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtr(cptr.add(__static_parse_id_swallow_texts, cmap, 8)));
                         buf3 = cptr.decay(buf[3]);
-                        skip_base = (1);
-                    } else if (((glyph) >= 7157 && (glyph) < ((9 + 7211) | 0) ? 1 : 0)) {
+                        skip_base = 1;
+                    } else if (((glyph) >= 7157 && (glyph) < 7220 ? 1 : 0)) {
                         let expl;
                         j = (glyph - 7157) | 0;
-                        expl = (j / ((((104 - 96) | 0) + 1) | 0)) | 0;
-                        cmap = ((((glyph) >= 7157 && (glyph) < ((9 + 7211) | 0) ? 1 : 0) ? ((((glyph) - 7157) | 0) % ((((104 - 96) | 0) + 1) | 0)) : 0) + 96) | 0;
+                        expl = (j / 9) | 0;
+                        cmap = ((((glyph) >= 7157 && (glyph) < 7220 ? 1 : 0) ? ((((glyph) - 7157) | 0) % 9) : 0) + 96) | 0;
                         i = (cmap - 96) | 0;
                         nh_snprintf(__sl41, 1082, cptr.decay(buf[2]), 128n, __sl47, cptr.ldPtr(cptr.add(__static_parse_id_expl_type_texts, expl, 8)));
                         buf2 = cptr.decay(buf[2]);
                         nh_snprintf(__sl41, 1085, cptr.decay(buf[3]), 128n, __sl48, __sl49, cptr.ldPtr(cptr.add(__static_parse_id_expl_texts, i, 8)));
                         buf3 = cptr.decay(buf[3]);
-                        skip_base = (1);
+                        skip_base = 1;
                     }
                     if (!skip_base) {
                         if (cmap >= 0 && cmap < 105 ? 1 : 0) {
@@ -950,7 +950,7 @@ function parse_id(id, findwhat) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl51);
                 } else if (((glyph) == 9622)) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl52);
-                } else if (((glyph) >= 7220 && (glyph) < ((7220 + 6) | 0) ? 1 : 0)) {
+                } else if (((glyph) >= 7220 && (glyph) < 7226 ? 1 : 0)) {
                     j = (glyph - 7220) | 0;
                     nh_snprintf(__sl41, 1106, cptr.decay(buf[0]), 128n, __sl53, __sl54, j);
                 }

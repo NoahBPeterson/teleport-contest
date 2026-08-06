@@ -49,7 +49,7 @@ const __sl36 = cptr.lit("tmpname");
 
 /** C ref: loslib.c:142 — @param {CPtr} L @returns {CInt} */
 function os_execute(L) {
-    let cmd = (luaL_optlstring(L, (1), null, null));
+    let cmd = (luaL_optlstring(L, 1, null, null));
     let stat;
     cptr.stI32(__error(), 0);
     stat = system(cmd);
@@ -63,15 +63,15 @@ function os_execute(L) {
 
 /** C ref: loslib.c:156 — @param {CPtr} L @returns {CInt} */
 function os_remove(L) {
-    let filename = (luaL_checklstring(L, (1), null));
+    let filename = (luaL_checklstring(L, 1, null));
     cptr.stI32(__error(), 0);
     return luaL_fileresult(L, remove(filename) == 0, filename);
 }
 
 /** C ref: loslib.c:163 — @param {CPtr} L @returns {CInt} */
 function os_rename(L) {
-    let fromname = (luaL_checklstring(L, (1), null));
-    let toname = (luaL_checklstring(L, (2), null));
+    let fromname = (luaL_checklstring(L, 1, null));
+    let toname = (luaL_checklstring(L, 2, null));
     cptr.stI32(__error(), 0);
     return luaL_fileresult(L, rename(fromname, toname) == 0, null);
 }
@@ -96,13 +96,13 @@ function os_tmpname(L) {
 
 /** C ref: loslib.c:182 — @param {CPtr} L @returns {CInt} */
 function os_getenv(L) {
-    lua_pushstring(L, getenv((luaL_checklstring(L, (1), null))));
+    lua_pushstring(L, getenv((luaL_checklstring(L, 1, null))));
     return 1;
 }
 
 /** C ref: loslib.c:188 — @param {CPtr} L @returns {CInt} */
 function os_clock(L) {
-    lua_pushnumber(L, (Number(clock())) / Number((1000000n)));
+    lua_pushnumber(L, (Number(clock())) / Number(1000000n));
     return 1;
 }
 
@@ -137,7 +137,7 @@ function setallfields(L, stm) {
 function getboolfield(L, key) {
     let res;
     res = (lua_getfield(L, -1, key) == 0) ? -1 : lua_toboolean(L, -1);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     return res;
 }
 
@@ -153,11 +153,11 @@ function getfield(L, key, d, delta) {
             return luaL_error(L, __sl12, key);
         res = BigInt(d);
     } else {
-        if (!(res >= 0n ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n : BigInt(((((-2147483647 - 1) | 0) + delta) | 0)) <= res))
+        if (!(res >= 0n ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n : BigInt(((-2147483648 + delta) | 0)) <= res))
             return luaL_error(L, __sl13, key);
         res -= BigInt(delta);
     }
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     return Number(BigInt.asIntN(32, res));
 }
 
@@ -189,7 +189,7 @@ function l_checktime(L, arg) {
 function os_date(L) {
     let slen = cptr.box(0n);
     let s = luaL_optlstring(L, 1, __sl17, slen);
-    let t = cptr.box(((lua_type(L, ((2))) <= 0) ? (time(null)) : l_checktime(L, (2))));
+    let t = cptr.box(((lua_type(L, 2) <= 0) ? (time(null)) : l_checktime(L, 2)));
     let se = cptr.add(s, slen.v);
     let tmr = cptr.alloc(56);
     let stm;
@@ -228,7 +228,7 @@ function os_date(L) {
 /** C ref: loslib.c:346 — @param {CPtr} L @returns {CInt} */
 function os_time(L) {
     let t;
-    if ((lua_type(L, (1)) <= 0))
+    if ((lua_type(L, 1) <= 0))
         t = time(null);
     else {
         let ts = cptr.alloc(56);
@@ -244,7 +244,7 @@ function os_time(L) {
         t = mktime(ts);
         setallfields(L, ts);
     }
-    if (t != t || t == BigInt((-1)) ? 1 : 0)
+    if (t != t || t == -1n ? 1 : 0)
         return luaL_error(L, __sl20);
     lua_pushinteger(L, (t));
     return 1;
@@ -276,7 +276,7 @@ cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 48), null); /** C ref: losli
 
 /** C ref: loslib.c:382 — @param {CPtr} L @returns {CInt} */
 function os_setlocale(L) {
-    let l = (luaL_optlstring(L, (1), null, null));
+    let l = (luaL_optlstring(L, 1, null, null));
     let op = luaL_checkoption(L, 2, __sl21, __static_os_setlocale_catnames);
     lua_pushstring(L, setlocale(cptr.ldI32(cptr.add(__static_os_setlocale_cat, op, 4)), l));
     return 1;
@@ -285,7 +285,7 @@ function os_setlocale(L) {
 /** C ref: loslib.c:394 — @param {CPtr} L @returns {CInt} */
 function os_exit(L) {
     let status;
-    if ((lua_type(L, (1)) == 1))
+    if ((lua_type(L, 1) == 1))
         status = (lua_toboolean(L, 1) ? 0 : 1);
     else
         status = Number(BigInt.asIntN(32, luaL_optinteger(L, 1, 0n)));
@@ -299,32 +299,32 @@ function os_exit(L) {
 /** C ref: loslib.c:407 — luaL_Reg[12] */
 const syslib = cptr.alloc(12 * 16);
 cptr.stPtr(cptr.add(syslib, 0), __sl27);
-cptr.stPtr(cptr.add(cptr.add(syslib, 0), 8), os_clock);
+cptr.stPtr(cptr.add(syslib, 8), os_clock);
 cptr.stPtr(cptr.add(syslib, 16), __sl28);
-cptr.stPtr(cptr.add(cptr.add(syslib, 16), 8), os_date);
+cptr.stPtr(cptr.add(syslib, 24), os_date);
 cptr.stPtr(cptr.add(syslib, 32), __sl29);
-cptr.stPtr(cptr.add(cptr.add(syslib, 32), 8), os_difftime);
+cptr.stPtr(cptr.add(syslib, 40), os_difftime);
 cptr.stPtr(cptr.add(syslib, 48), __sl30);
-cptr.stPtr(cptr.add(cptr.add(syslib, 48), 8), os_execute);
+cptr.stPtr(cptr.add(syslib, 56), os_execute);
 cptr.stPtr(cptr.add(syslib, 64), __sl31);
-cptr.stPtr(cptr.add(cptr.add(syslib, 64), 8), os_exit);
+cptr.stPtr(cptr.add(syslib, 72), os_exit);
 cptr.stPtr(cptr.add(syslib, 80), __sl32);
-cptr.stPtr(cptr.add(cptr.add(syslib, 80), 8), os_getenv);
+cptr.stPtr(cptr.add(syslib, 88), os_getenv);
 cptr.stPtr(cptr.add(syslib, 96), __sl33);
-cptr.stPtr(cptr.add(cptr.add(syslib, 96), 8), os_remove);
+cptr.stPtr(cptr.add(syslib, 104), os_remove);
 cptr.stPtr(cptr.add(syslib, 112), __sl34);
-cptr.stPtr(cptr.add(cptr.add(syslib, 112), 8), os_rename);
+cptr.stPtr(cptr.add(syslib, 120), os_rename);
 cptr.stPtr(cptr.add(syslib, 128), __sl35);
-cptr.stPtr(cptr.add(cptr.add(syslib, 128), 8), os_setlocale);
+cptr.stPtr(cptr.add(syslib, 136), os_setlocale);
 cptr.stPtr(cptr.add(syslib, 144), __sl26);
-cptr.stPtr(cptr.add(cptr.add(syslib, 144), 8), os_time);
+cptr.stPtr(cptr.add(syslib, 152), os_time);
 cptr.stPtr(cptr.add(syslib, 160), __sl36);
-cptr.stPtr(cptr.add(cptr.add(syslib, 160), 8), os_tmpname);
+cptr.stPtr(cptr.add(syslib, 168), os_tmpname);
 cptr.stPtr(cptr.add(syslib, 176), null);
-cptr.stPtr(cptr.add(cptr.add(syslib, 176), 8), null);
+cptr.stPtr(cptr.add(syslib, 184), null);
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_os(L) {
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
     return 1;
 }

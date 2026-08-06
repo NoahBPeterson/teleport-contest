@@ -61,7 +61,7 @@ export function tty_doprev_message() {
             do {
                 morc.v = 0;
                 if (cptr.ldI64(cptr.add(cw, 56)) == cptr.ldI64(cptr.add(cw, 48))) {
-                    cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
+                    cptr.st1(cptr.add(ttyDisplay, 48), 16);
                     redotoplin(cptr.add(gt, 26));
                     (cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 56)) + -1n)) - (-1n);
                     if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
@@ -69,7 +69,7 @@ export function tty_doprev_message() {
                     if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                         cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 } else if (cptr.ldI64(cptr.add(cw, 56)) == (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 48)) - 1n))) {
-                    cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
+                    cptr.st1(cptr.add(ttyDisplay, 48), 16);
                     redotoplin(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)));
                     (cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 56)) + -1n)) - (-1n);
                     if (cptr.ldI64(cptr.add(cw, 56)) < 0n)
@@ -91,7 +91,7 @@ export function tty_doprev_message() {
                     (cptr.ldPtr(cptr.add(windowprocs, 120)))(prevmsg_win, 1);
                     (cptr.ldPtr(cptr.add(windowprocs, 128)))(prevmsg_win);
                 }
-            } while (morc.v == (31 & (112)));
+            } while (morc.v == 16);
             cptr.st1(cptr.add(ttyDisplay, 48), 0);
         } else {
             morc.v = 0;
@@ -116,7 +116,7 @@ export function tty_doprev_message() {
             cptr.st1(cptr.add(ttyDisplay, 48), 0);
         }
     } else if (cptr.ld1s(cptr.add(iflags, 176)) == 115) {
-        cptr.st1(cptr.add(ttyDisplay, 48), schar((31 & (112))));
+        cptr.st1(cptr.add(ttyDisplay, 48), 16);
         do {
             morc.v = 0;
             if (cptr.ldI64(cptr.add(cw, 56)) == cptr.ldI64(cptr.add(cw, 48)))
@@ -128,7 +128,7 @@ export function tty_doprev_message() {
                 cptr.stI64(cptr.add(cw, 56), BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) - 1n));
             if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                 cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
-        } while (morc.v == (31 & (112)));
+        } while (morc.v == 16);
         cptr.st1(cptr.add(ttyDisplay, 48), 0);
     }
     return 0;
@@ -155,8 +155,8 @@ function redotoplin(str) {
 /** C ref: topl.c:145 — @param {CPtr} str */
 export function show_topl(str) {
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
-    if ((cptr.ldI32(cw) & (1 | 4)) != 1) {
-        cptr.stI32(cw, cptr.ldI32(cw) & ~(1 | 4));
+    if ((cptr.ldI32(cw) & 5) != 1) {
+        cptr.stI32(cw, cptr.ldI32(cw) & -6);
         if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 2 ? 1 : 0)
             tty_clear_nhwindow(WIN_MESSAGE.v);
         cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
@@ -208,7 +208,7 @@ export function more() {
     (cptr.stI32(cptr.add(ttyDisplay, 32), cptr.ldI32(cptr.add(ttyDisplay, 32)) + 1)) - (1);
     if (cptr.ldI32(cptr.add(ttyDisplay, 24))) {
         tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
-        if (cptr.ldI64(cptr.add(cw, 32)) >= BigInt(((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 8) | 0)))
+        if (cptr.ldI64(cptr.add(cw, 32)) >= BigInt(((cptr.ldI32(cptr.add(gt, 356)) - 8) | 0)))
             topl_putsym(10);
     }
     if (cptr.ld1s(cptr.add(flags, 44)))
@@ -241,9 +241,9 @@ export function update_topl(bp) {
     let n0;
     let notdied = 1;
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
-    let skip = schar(((cptr.ldI32(cw) & (1 | 4)) == 1));
+    let skip = schar(((cptr.ldI32(cw) & 5) == 1));
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
-    if ((((cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 || skip ? 1 : 0) && cptr.ldI64(cptr.add(cw, 40)) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
+    if ((((cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 || skip ? 1 : 0) && cptr.ldI64(cptr.add(cw, 40)) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(gt, 356)) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
         void cptr.strcat(cptr.add(gt, 26), __sl4);
         void cptr.strcat(cptr.add(gt, 26), bp);
         cptr.stI64(cptr.add(cw, 32), cptr.ldI64(cptr.add(cw, 32)) + 2n);
@@ -259,11 +259,11 @@ export function update_topl(bp) {
         }
     }
     remember_topl();
-    void __builtin___strncpy_chk(cptr.add(gt, 26), bp, 300n, __builtin_object_size(cptr.add(gt, 26), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.add(gt, 26), (300 - 1) | 0, 1), 0);
-    for (tl = cptr.add(gt, 26); n0 >= cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)); ) {
+    void __builtin___strncpy_chk(cptr.add(gt, 26), bp, 300n, __builtin_object_size(cptr.add(gt, 26), 1));
+    cptr.st1(cptr.add(cptr.add(gt, 26), 299, 1), 0);
+    for (tl = cptr.add(gt, 26); n0 >= cptr.ldI32(cptr.add(gt, 356)); ) {
         otl = tl;
-        for (tl = cptr.add(tl, (cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 1) | 0); !cptr.eq(tl, otl); tl = cptr.add(tl, -1))
+        for (tl = cptr.add(tl, (cptr.ldI32(cptr.add(gt, 356)) - 1) | 0); !cptr.eq(tl, otl); tl = cptr.add(tl, -1))
             if (cptr.ld1s(tl) == 32)
                 break;
         if (cptr.eq(tl, otl)) {
@@ -275,7 +275,7 @@ export function update_topl(bp) {
         n0 = Number(BigInt.asIntN(32, cptr.strlen(tl)));
     }
     if (!notdied)
-        cptr.stI32(cw, cptr.ldI32(cw) & ~1), skip = 0;
+        cptr.stI32(cw, cptr.ldI32(cw) & -2), skip = 0;
     if (!skip)
         redotoplin(cptr.add(gt, 26));
 }
@@ -288,7 +288,7 @@ function topl_putsym(c) {
     switch (c) {
         case 8:
         if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == 0 && cptr.ldI16(cptr.add(ttyDisplay, 6)) > 0 ? 1 : 0)
-            tty_curs(BASE_WINDOW, cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)), (cptr.ldI16(cptr.add(ttyDisplay, 6)) - 1) | 0);
+            tty_curs(BASE_WINDOW, cptr.ldI32(cptr.add(gt, 356)), (cptr.ldI16(cptr.add(ttyDisplay, 6)) - 1) | 0);
         backsp();
         void ((!!(cptr.ldI16(cptr.add(ttyDisplay, 4)) > 0)) || (nhassert_failed(__sl6, __sl7, 317), 0) ? 1 : 0);
         (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + -1)) - (-1);
@@ -301,7 +301,7 @@ function topl_putsym(c) {
         cptr.stI64(cptr.add(cw, 40), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 6))));
         break;
         default:
-        if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == ((cptr.ldI32(cptr.add(cptr.add(gt, 336), 20)) - 1) | 0))
+        if (cptr.ldI16(cptr.add(ttyDisplay, 4)) == ((cptr.ldI32(cptr.add(gt, 356)) - 1) | 0))
             topl_putsym(10);
         (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
     }
@@ -341,9 +341,9 @@ export function tty_yn_function(query, resp, def) {
     let prompt = new Uint8Array(256);
     __lbl_clean_up: {
         yn_number.v = 0n;
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && (cptr.ldI32(cw) & (1 | 4)) != 1 ? 1 : 0)
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && (cptr.ldI32(cw) & 5) != 1 ? 1 : 0)
             more();
-        cptr.stI32(cw, cptr.ldI32(cw) & ~(1 | 4));
+        cptr.stI32(cw, cptr.ldI32(cw) & -6);
         cptr.stI32(cptr.add(ttyDisplay, 24), 3);
         (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + 1)) - (1);
         if (resp) {
@@ -358,16 +358,16 @@ export function tty_yn_function(query, resp, def) {
                 }
             if ((rb = cptr.strchr(cptr.decay(respbuf), 27)) !== null)
                 cptr.st1(rb, 0);
-            void __builtin___strncpy_chk(cptr.decay(prompt), query, BigInt.asUintN(64, BigInt(((128 - 1) | 0))), __builtin_object_size(cptr.decay(prompt), 2 > 1 ? 1 : 0));
-            cptr.st1(cptr.add(cptr.decay(prompt), (128 - 1) | 0, 1), 0);
+            void __builtin___strncpy_chk(cptr.decay(prompt), query, 127n, __builtin_object_size(cptr.decay(prompt), 1));
+            cptr.st1(cptr.add(cptr.decay(prompt), 127, 1), 0);
             void cptr.sprintf(eos(cptr.decay(prompt)), __sl9, cptr.decay(respbuf));
             if (def)
                 void cptr.sprintf(eos(cptr.decay(prompt)), __sl10, def);
             void cptr.strcat(cptr.decay(prompt), __sl11);
-            custompline((2 | 4) >>> 0, __sl12, cptr.decay(prompt));
+            custompline(6, __sl12, cptr.decay(prompt));
         } else {
             void cptr.sprintf(cptr.decay(prompt), __sl13, query);
-            custompline((2 | 4) >>> 0, __sl12, cptr.decay(prompt));
+            custompline(6, __sl12, cptr.decay(prompt));
             q = readchar();
             break __lbl_clean_up;
         }
@@ -435,25 +435,25 @@ export function tty_yn_function(query, resp, def) {
                         z = lowc(z);
                     if (digit(z)) {
                         let dgt = BigInt(((z - 48) | 0));
-                        value = (((value) < 9223372036854775807n / 10n || ((value) == 9223372036854775807n / 10n && (dgt) <= 9223372036854775807n % 10n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt)) : -1n);
+                        value = (((value) < 922337203685477580n || ((value) == 922337203685477580n && (dgt) <= 7n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt)) : -1n);
                         if (value < 0n)
                             break;
                         cptr.st1(cptr.add(cptr.decay(digit_string), 0, 1), z);
                         addtopl(cptr.decay(digit_string)), n_len++;
                     } else if (z == 121 || cptr.strchr(cptr.decay(quitchars), z) ? 1 : 0) {
                         if (z == 27)
-                            value = BigInt((-1));
+                            value = -1n;
                         z = 10;
                     } else if (z == erase_char || z == 8 ? 1 : 0) {
                         if (n_len <= 1) {
-                            value = BigInt((-1));
+                            value = -1n;
                             break;
                         } else {
                             value /= 10n;
                             removetopl(1), n_len--;
                         }
                     } else {
-                        value = BigInt((-1));
+                        value = -1n;
                         tty_nhbell();
                         break;
                     }
@@ -494,7 +494,7 @@ function msghistory_snapshot(purge) {
     let inidx;
     let outidx;
     let cw;
-    if (WIN_MESSAGE.v == (-1) || !cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)) ? 1 : 0)
+    if (WIN_MESSAGE.v == -1 || !cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)) ? 1 : 0)
         return;
     cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     remember_topl();
@@ -530,7 +530,7 @@ function free_msghistory_snapshot(purged) {
         }
         cptr.free(snapshot_mesgs), snapshot_mesgs = null;
         if (!purged)
-            cptr.stI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), cptr.ldI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8))) & ~2);
+            cptr.stI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), cptr.ldI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8))) & -3);
     }
 }
 

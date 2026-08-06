@@ -257,880 +257,880 @@ const __sl200 = cptr.lit("like fire");
 /** C ref: artifact.c:46 — struct artifact[35] */
 const artilist = cptr.alloc(35 * 80);
 cptr.stI16(cptr.add(artilist, 0), 0);
-cptr.stPtr(cptr.add(cptr.add(artilist, 0), 8), __sl0);
-cptr.stU64(cptr.add(cptr.add(artilist, 0), 16), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 0), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 0), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 0), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 0), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 0), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 59), 0);
-cptr.stI64(cptr.add(cptr.add(artilist, 0), 64), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 0), 72), 8);
+cptr.stPtr(cptr.add(artilist, 8), __sl0);
+cptr.stU64(cptr.add(artilist, 16), 0n);
+cptr.stU64(cptr.add(artilist, 24), 0n);
+cptr.stU64(cptr.add(artilist, 32), 0n);
+cptr.st1(cptr.add(artilist, 40), 0);
+cptr.st1(cptr.add(artilist, 41), 0);
+cptr.st1(cptr.add(artilist, 42), 0);
+cptr.st1(cptr.add(artilist, 43), 0);
+cptr.st1(cptr.add(artilist, 44), 0);
+cptr.st1(cptr.add(artilist, 45), 0);
+cptr.st1(cptr.add(artilist, 46), 0);
+cptr.st1(cptr.add(artilist, 47), 0);
+cptr.st1(cptr.add(artilist, 48), 0);
+cptr.st1(cptr.add(artilist, 49), 0);
+cptr.st1(cptr.add(artilist, 50), 0);
+cptr.st1(cptr.add(artilist, 51), 0);
+cptr.st1(cptr.add(artilist, 52), 0);
+cptr.st1(cptr.add(artilist, 53), -128);
+cptr.stI16(cptr.add(artilist, 54), -1);
+cptr.stI16(cptr.add(artilist, 56), -1);
+cptr.st1(cptr.add(artilist, 58), 0);
+cptr.st1(cptr.add(artilist, 59), 0);
+cptr.stI64(cptr.add(artilist, 64), 0n);
+cptr.st1(cptr.add(artilist, 72), 8);
 cptr.stI16(cptr.add(artilist, 80), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 80), 8), __sl1);
-cptr.stU64(cptr.add(cptr.add(artilist, 80), 16), BigInt.asUintN(64, (1n | 2n | 16n | 128n | 4n | 512n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 80), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 80), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 40), 3), 10);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 44), 1), 15);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 80), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 80), 54), 335);
-cptr.stI16(cptr.add(cptr.add(artilist, 80), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 59), 10);
-cptr.stI64(cptr.add(cptr.add(artilist, 80), 64), 4000n);
-cptr.st1(cptr.add(cptr.add(artilist, 80), 72), 8);
+cptr.stPtr(cptr.add(artilist, 88), __sl1);
+cptr.stU64(cptr.add(artilist, 96), 663n);
+cptr.stU64(cptr.add(artilist, 104), 0n);
+cptr.stU64(cptr.add(artilist, 112), 0n);
+cptr.st1(cptr.add(artilist, 120), 0);
+cptr.st1(cptr.add(artilist, 121), 0);
+cptr.st1(cptr.add(artilist, 122), 5);
+cptr.st1(cptr.add(artilist, 123), 10);
+cptr.st1(cptr.add(artilist, 124), 0);
+cptr.st1(cptr.add(artilist, 125), 15);
+cptr.st1(cptr.add(artilist, 126), 0);
+cptr.st1(cptr.add(artilist, 127), 0);
+cptr.st1(cptr.add(artilist, 128), 0);
+cptr.st1(cptr.add(artilist, 129), 0);
+cptr.st1(cptr.add(artilist, 130), 0);
+cptr.st1(cptr.add(artilist, 131), 0);
+cptr.st1(cptr.add(artilist, 132), 0);
+cptr.st1(cptr.add(artilist, 133), 1);
+cptr.stI16(cptr.add(artilist, 134), 335);
+cptr.stI16(cptr.add(artilist, 136), -1);
+cptr.st1(cptr.add(artilist, 138), 0);
+cptr.st1(cptr.add(artilist, 139), 10);
+cptr.stI64(cptr.add(artilist, 144), 4000n);
+cptr.st1(cptr.add(artilist, 152), 8);
 cptr.stI16(cptr.add(artilist, 160), 58);
-cptr.stPtr(cptr.add(cptr.add(artilist, 160), 8), __sl2);
-cptr.stU64(cptr.add(cptr.add(artilist, 160), 16), BigInt.asUintN(64, (2n | 64n | 128n | 4n | 256n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 160), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 160), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 40), 1), 15);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 40), 3), 2);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 44), 1), 15);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 160), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 160), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 160), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 59), 9);
-cptr.stI64(cptr.add(cptr.add(artilist, 160), 64), 8000n);
-cptr.st1(cptr.add(cptr.add(artilist, 160), 72), 8);
+cptr.stPtr(cptr.add(artilist, 168), __sl2);
+cptr.stU64(cptr.add(artilist, 176), 454n);
+cptr.stU64(cptr.add(artilist, 184), 0n);
+cptr.stU64(cptr.add(artilist, 192), 0n);
+cptr.st1(cptr.add(artilist, 200), 0);
+cptr.st1(cptr.add(artilist, 201), 15);
+cptr.st1(cptr.add(artilist, 202), 5);
+cptr.st1(cptr.add(artilist, 203), 2);
+cptr.st1(cptr.add(artilist, 204), 0);
+cptr.st1(cptr.add(artilist, 205), 15);
+cptr.st1(cptr.add(artilist, 206), 0);
+cptr.st1(cptr.add(artilist, 207), 0);
+cptr.st1(cptr.add(artilist, 208), 0);
+cptr.st1(cptr.add(artilist, 209), 0);
+cptr.st1(cptr.add(artilist, 210), 0);
+cptr.st1(cptr.add(artilist, 211), 0);
+cptr.st1(cptr.add(artilist, 212), 0);
+cptr.st1(cptr.add(artilist, 213), -1);
+cptr.stI16(cptr.add(artilist, 214), -1);
+cptr.stI16(cptr.add(artilist, 216), -1);
+cptr.st1(cptr.add(artilist, 218), 0);
+cptr.st1(cptr.add(artilist, 219), 9);
+cptr.stI64(cptr.add(artilist, 224), 8000n);
+cptr.st1(cptr.add(artilist, 232), 8);
 cptr.stI16(cptr.add(artilist, 240), 76);
-cptr.stPtr(cptr.add(cptr.add(artilist, 240), 8), __sl3);
-cptr.stU64(cptr.add(cptr.add(artilist, 240), 16), BigInt.asUintN(64, (2n | 64n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 240), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 240), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 40), 1), 6);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 40), 3), 24);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 240), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 240), 54), 342);
-cptr.stI16(cptr.add(cptr.add(artilist, 240), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 59), 8);
-cptr.stI64(cptr.add(cptr.add(artilist, 240), 64), 4000n);
-cptr.st1(cptr.add(cptr.add(artilist, 240), 72), 8);
+cptr.stPtr(cptr.add(artilist, 248), __sl3);
+cptr.stU64(cptr.add(artilist, 256), 66n);
+cptr.stU64(cptr.add(artilist, 264), 0n);
+cptr.stU64(cptr.add(artilist, 272), 0n);
+cptr.st1(cptr.add(artilist, 280), 0);
+cptr.st1(cptr.add(artilist, 281), 6);
+cptr.st1(cptr.add(artilist, 282), 5);
+cptr.st1(cptr.add(artilist, 283), 24);
+cptr.st1(cptr.add(artilist, 284), 0);
+cptr.st1(cptr.add(artilist, 285), 0);
+cptr.st1(cptr.add(artilist, 286), 0);
+cptr.st1(cptr.add(artilist, 287), 0);
+cptr.st1(cptr.add(artilist, 288), 0);
+cptr.st1(cptr.add(artilist, 289), 0);
+cptr.st1(cptr.add(artilist, 290), 0);
+cptr.st1(cptr.add(artilist, 291), 0);
+cptr.st1(cptr.add(artilist, 292), 0);
+cptr.st1(cptr.add(artilist, 293), 0);
+cptr.stI16(cptr.add(artilist, 294), 342);
+cptr.stI16(cptr.add(artilist, 296), -1);
+cptr.st1(cptr.add(artilist, 298), 0);
+cptr.st1(cptr.add(artilist, 299), 8);
+cptr.stI64(cptr.add(artilist, 304), 4000n);
+cptr.st1(cptr.add(artilist, 312), 8);
 cptr.stI16(cptr.add(artilist, 320), 45);
-cptr.stPtr(cptr.add(cptr.add(artilist, 320), 8), __sl4);
-cptr.stU64(cptr.add(cptr.add(artilist, 320), 16), 2n);
-cptr.stU64(cptr.add(cptr.add(artilist, 320), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 320), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 40), 2), 3);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 40), 3), 6);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 320), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 320), 54), 332);
-cptr.stI16(cptr.add(cptr.add(artilist, 320), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 59), 8);
-cptr.stI64(cptr.add(cptr.add(artilist, 320), 64), 1500n);
-cptr.st1(cptr.add(cptr.add(artilist, 320), 72), 8);
+cptr.stPtr(cptr.add(artilist, 328), __sl4);
+cptr.stU64(cptr.add(artilist, 336), 2n);
+cptr.stU64(cptr.add(artilist, 344), 0n);
+cptr.stU64(cptr.add(artilist, 352), 0n);
+cptr.st1(cptr.add(artilist, 360), 0);
+cptr.st1(cptr.add(artilist, 361), 0);
+cptr.st1(cptr.add(artilist, 362), 3);
+cptr.st1(cptr.add(artilist, 363), 6);
+cptr.st1(cptr.add(artilist, 364), 0);
+cptr.st1(cptr.add(artilist, 365), 0);
+cptr.st1(cptr.add(artilist, 366), 0);
+cptr.st1(cptr.add(artilist, 367), 0);
+cptr.st1(cptr.add(artilist, 368), 0);
+cptr.st1(cptr.add(artilist, 369), 0);
+cptr.st1(cptr.add(artilist, 370), 0);
+cptr.st1(cptr.add(artilist, 371), 0);
+cptr.st1(cptr.add(artilist, 372), 0);
+cptr.st1(cptr.add(artilist, 373), 0);
+cptr.stI16(cptr.add(artilist, 374), 332);
+cptr.stI16(cptr.add(artilist, 376), -1);
+cptr.st1(cptr.add(artilist, 378), 0);
+cptr.st1(cptr.add(artilist, 379), 8);
+cptr.stI64(cptr.add(artilist, 384), 1500n);
+cptr.st1(cptr.add(artilist, 392), 8);
 cptr.stI16(cptr.add(artilist, 400), 36);
-cptr.stPtr(cptr.add(cptr.add(artilist, 400), 8), __sl5);
-cptr.stU64(cptr.add(cptr.add(artilist, 400), 16), BigInt.asUintN(64, (2n | 32n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 400), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 400), 32), 16n);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 40), 2), 2);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 40), 3), 6);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 44), 1), 7);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 400), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 52), 79);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 400), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 400), 56), 72);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 59), 5);
-cptr.stI64(cptr.add(cptr.add(artilist, 400), 64), 1200n);
-cptr.st1(cptr.add(cptr.add(artilist, 400), 72), 1);
+cptr.stPtr(cptr.add(artilist, 408), __sl5);
+cptr.stU64(cptr.add(artilist, 416), 8388642n);
+cptr.stU64(cptr.add(artilist, 424), 0n);
+cptr.stU64(cptr.add(artilist, 432), 16n);
+cptr.st1(cptr.add(artilist, 440), 0);
+cptr.st1(cptr.add(artilist, 441), 0);
+cptr.st1(cptr.add(artilist, 442), 2);
+cptr.st1(cptr.add(artilist, 443), 6);
+cptr.st1(cptr.add(artilist, 444), 0);
+cptr.st1(cptr.add(artilist, 445), 7);
+cptr.st1(cptr.add(artilist, 446), 0);
+cptr.st1(cptr.add(artilist, 447), 0);
+cptr.st1(cptr.add(artilist, 448), 0);
+cptr.st1(cptr.add(artilist, 449), 0);
+cptr.st1(cptr.add(artilist, 450), 0);
+cptr.st1(cptr.add(artilist, 451), 0);
+cptr.st1(cptr.add(artilist, 452), 79);
+cptr.st1(cptr.add(artilist, 453), -1);
+cptr.stI16(cptr.add(artilist, 454), -1);
+cptr.stI16(cptr.add(artilist, 456), 72);
+cptr.st1(cptr.add(artilist, 458), 0);
+cptr.st1(cptr.add(artilist, 459), 5);
+cptr.stI64(cptr.add(artilist, 464), 1200n);
+cptr.st1(cptr.add(artilist, 472), 1);
 cptr.stI16(cptr.add(artilist, 480), 53);
-cptr.stPtr(cptr.add(cptr.add(artilist, 480), 8), __sl6);
-cptr.stU64(cptr.add(cptr.add(artilist, 480), 16), BigInt.asUintN(64, (32n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 480), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 480), 32), 128n);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 480), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 480), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 480), 56), 264);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 58), 3);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 59), 4);
-cptr.stI64(cptr.add(cptr.add(artilist, 480), 64), 2000n);
-cptr.st1(cptr.add(cptr.add(artilist, 480), 72), 12);
+cptr.stPtr(cptr.add(artilist, 488), __sl6);
+cptr.stU64(cptr.add(artilist, 496), 8388640n);
+cptr.stU64(cptr.add(artilist, 504), 0n);
+cptr.stU64(cptr.add(artilist, 512), 128n);
+cptr.st1(cptr.add(artilist, 520), 0);
+cptr.st1(cptr.add(artilist, 521), 0);
+cptr.st1(cptr.add(artilist, 522), 5);
+cptr.st1(cptr.add(artilist, 523), 0);
+cptr.st1(cptr.add(artilist, 524), 0);
+cptr.st1(cptr.add(artilist, 525), 0);
+cptr.st1(cptr.add(artilist, 526), 0);
+cptr.st1(cptr.add(artilist, 527), 0);
+cptr.st1(cptr.add(artilist, 528), 0);
+cptr.st1(cptr.add(artilist, 529), 0);
+cptr.st1(cptr.add(artilist, 530), 0);
+cptr.st1(cptr.add(artilist, 531), 0);
+cptr.st1(cptr.add(artilist, 532), 0);
+cptr.st1(cptr.add(artilist, 533), -1);
+cptr.stI16(cptr.add(artilist, 534), -1);
+cptr.stI16(cptr.add(artilist, 536), 264);
+cptr.st1(cptr.add(artilist, 538), 3);
+cptr.st1(cptr.add(artilist, 539), 4);
+cptr.stI64(cptr.add(artilist, 544), 2000n);
+cptr.st1(cptr.add(artilist, 552), 12);
 cptr.stI16(cptr.add(artilist, 560), 35);
-cptr.stPtr(cptr.add(cptr.add(artilist, 560), 8), __sl7);
-cptr.stU64(cptr.add(cptr.add(artilist, 560), 16), BigInt.asUintN(64, (32n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 560), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 560), 32), 128n);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 560), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 560), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 560), 56), 264);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 58), 3);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 59), 1);
-cptr.stI64(cptr.add(cptr.add(artilist, 560), 64), 800n);
-cptr.st1(cptr.add(cptr.add(artilist, 560), 72), 12);
+cptr.stPtr(cptr.add(artilist, 568), __sl7);
+cptr.stU64(cptr.add(artilist, 576), 8388640n);
+cptr.stU64(cptr.add(artilist, 584), 0n);
+cptr.stU64(cptr.add(artilist, 592), 128n);
+cptr.st1(cptr.add(artilist, 600), 0);
+cptr.st1(cptr.add(artilist, 601), 0);
+cptr.st1(cptr.add(artilist, 602), 5);
+cptr.st1(cptr.add(artilist, 603), 0);
+cptr.st1(cptr.add(artilist, 604), 0);
+cptr.st1(cptr.add(artilist, 605), 0);
+cptr.st1(cptr.add(artilist, 606), 0);
+cptr.st1(cptr.add(artilist, 607), 0);
+cptr.st1(cptr.add(artilist, 608), 0);
+cptr.st1(cptr.add(artilist, 609), 0);
+cptr.st1(cptr.add(artilist, 610), 0);
+cptr.st1(cptr.add(artilist, 611), 0);
+cptr.st1(cptr.add(artilist, 612), 0);
+cptr.st1(cptr.add(artilist, 613), -1);
+cptr.stI16(cptr.add(artilist, 614), -1);
+cptr.stI16(cptr.add(artilist, 616), 264);
+cptr.st1(cptr.add(artilist, 618), 3);
+cptr.st1(cptr.add(artilist, 619), 1);
+cptr.stI64(cptr.add(artilist, 624), 800n);
+cptr.st1(cptr.add(artilist, 632), 12);
 cptr.stI16(cptr.add(artilist, 640), 38);
-cptr.stPtr(cptr.add(cptr.add(artilist, 640), 8), __sl8);
-cptr.stU64(cptr.add(cptr.add(artilist, 640), 16), BigInt.asUintN(64, (2n | 64n | 128n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 640), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 640), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 40), 1), 12);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 40), 2), 3);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 40), 3), 4);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 44), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 640), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 640), 54), 343);
-cptr.stI16(cptr.add(cptr.add(artilist, 640), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 59), 7);
-cptr.stI64(cptr.add(cptr.add(artilist, 640), 64), 3500n);
-cptr.st1(cptr.add(cptr.add(artilist, 640), 72), 8);
+cptr.stPtr(cptr.add(artilist, 648), __sl8);
+cptr.stU64(cptr.add(artilist, 656), 194n);
+cptr.stU64(cptr.add(artilist, 664), 0n);
+cptr.stU64(cptr.add(artilist, 672), 0n);
+cptr.st1(cptr.add(artilist, 680), 0);
+cptr.st1(cptr.add(artilist, 681), 12);
+cptr.st1(cptr.add(artilist, 682), 3);
+cptr.st1(cptr.add(artilist, 683), 4);
+cptr.st1(cptr.add(artilist, 684), 0);
+cptr.st1(cptr.add(artilist, 685), 1);
+cptr.st1(cptr.add(artilist, 686), 0);
+cptr.st1(cptr.add(artilist, 687), 0);
+cptr.st1(cptr.add(artilist, 688), 0);
+cptr.st1(cptr.add(artilist, 689), 0);
+cptr.st1(cptr.add(artilist, 690), 0);
+cptr.st1(cptr.add(artilist, 691), 0);
+cptr.st1(cptr.add(artilist, 692), 0);
+cptr.st1(cptr.add(artilist, 693), 0);
+cptr.stI16(cptr.add(artilist, 694), 343);
+cptr.stI16(cptr.add(artilist, 696), -1);
+cptr.st1(cptr.add(artilist, 698), 0);
+cptr.st1(cptr.add(artilist, 699), 7);
+cptr.stI64(cptr.add(artilist, 704), 3500n);
+cptr.st1(cptr.add(artilist, 712), 8);
 cptr.stI16(cptr.add(artilist, 720), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 720), 8), __sl9);
-cptr.stU64(cptr.add(cptr.add(artilist, 720), 16), BigInt.asUintN(64, (2n | 64n | 128n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 720), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 720), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 40), 1), 3);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 44), 1), 3);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 720), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 52), 81);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 720), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 720), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 59), 9);
-cptr.stI64(cptr.add(cptr.add(artilist, 720), 64), 3000n);
-cptr.st1(cptr.add(cptr.add(artilist, 720), 72), 8);
+cptr.stPtr(cptr.add(artilist, 728), __sl9);
+cptr.stU64(cptr.add(artilist, 736), 194n);
+cptr.stU64(cptr.add(artilist, 744), 0n);
+cptr.stU64(cptr.add(artilist, 752), 0n);
+cptr.st1(cptr.add(artilist, 760), 0);
+cptr.st1(cptr.add(artilist, 761), 3);
+cptr.st1(cptr.add(artilist, 762), 5);
+cptr.st1(cptr.add(artilist, 763), 0);
+cptr.st1(cptr.add(artilist, 764), 0);
+cptr.st1(cptr.add(artilist, 765), 3);
+cptr.st1(cptr.add(artilist, 766), 0);
+cptr.st1(cptr.add(artilist, 767), 0);
+cptr.st1(cptr.add(artilist, 768), 0);
+cptr.st1(cptr.add(artilist, 769), 0);
+cptr.st1(cptr.add(artilist, 770), 0);
+cptr.st1(cptr.add(artilist, 771), 0);
+cptr.st1(cptr.add(artilist, 772), 81);
+cptr.st1(cptr.add(artilist, 773), -128);
+cptr.stI16(cptr.add(artilist, 774), -1);
+cptr.stI16(cptr.add(artilist, 776), -1);
+cptr.st1(cptr.add(artilist, 778), 0);
+cptr.st1(cptr.add(artilist, 779), 9);
+cptr.stI64(cptr.add(artilist, 784), 3000n);
+cptr.st1(cptr.add(artilist, 792), 8);
 cptr.stI16(cptr.add(artilist, 800), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 800), 8), __sl10);
-cptr.stU64(cptr.add(cptr.add(artilist, 800), 16), BigInt.asUintN(64, (2n | 64n | 128n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 800), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 800), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 40), 1), 2);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 44), 1), 2);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 800), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 52), 80);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 800), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 800), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 59), 5);
-cptr.stI64(cptr.add(cptr.add(artilist, 800), 64), 3000n);
-cptr.st1(cptr.add(cptr.add(artilist, 800), 72), 8);
+cptr.stPtr(cptr.add(artilist, 808), __sl10);
+cptr.stU64(cptr.add(artilist, 816), 194n);
+cptr.stU64(cptr.add(artilist, 824), 0n);
+cptr.stU64(cptr.add(artilist, 832), 0n);
+cptr.st1(cptr.add(artilist, 840), 0);
+cptr.st1(cptr.add(artilist, 841), 2);
+cptr.st1(cptr.add(artilist, 842), 5);
+cptr.st1(cptr.add(artilist, 843), 0);
+cptr.st1(cptr.add(artilist, 844), 0);
+cptr.st1(cptr.add(artilist, 845), 2);
+cptr.st1(cptr.add(artilist, 846), 0);
+cptr.st1(cptr.add(artilist, 847), 0);
+cptr.st1(cptr.add(artilist, 848), 0);
+cptr.st1(cptr.add(artilist, 849), 0);
+cptr.st1(cptr.add(artilist, 850), 0);
+cptr.st1(cptr.add(artilist, 851), 0);
+cptr.st1(cptr.add(artilist, 852), 80);
+cptr.st1(cptr.add(artilist, 853), -128);
+cptr.stI16(cptr.add(artilist, 854), -1);
+cptr.stI16(cptr.add(artilist, 856), -1);
+cptr.st1(cptr.add(artilist, 858), 0);
+cptr.st1(cptr.add(artilist, 859), 5);
+cptr.stI64(cptr.add(artilist, 864), 3000n);
+cptr.st1(cptr.add(artilist, 872), 8);
 cptr.stI16(cptr.add(artilist, 880), 52);
-cptr.stPtr(cptr.add(cptr.add(artilist, 880), 8), __sl11);
-cptr.stU64(cptr.add(cptr.add(artilist, 880), 16), BigInt.asUintN(64, (2n | 2097152n | 67108864n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 880), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 880), 32), 30n);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 880), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 880), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 880), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 58), 2);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 59), 5);
-cptr.stI64(cptr.add(cptr.add(artilist, 880), 64), 500n);
-cptr.st1(cptr.add(cptr.add(artilist, 880), 72), 8);
+cptr.stPtr(cptr.add(artilist, 888), __sl11);
+cptr.stU64(cptr.add(artilist, 896), 69206018n);
+cptr.stU64(cptr.add(artilist, 904), 0n);
+cptr.stU64(cptr.add(artilist, 912), 30n);
+cptr.st1(cptr.add(artilist, 920), 0);
+cptr.st1(cptr.add(artilist, 921), 0);
+cptr.st1(cptr.add(artilist, 922), 5);
+cptr.st1(cptr.add(artilist, 923), 0);
+cptr.st1(cptr.add(artilist, 924), 0);
+cptr.st1(cptr.add(artilist, 925), 0);
+cptr.st1(cptr.add(artilist, 926), 0);
+cptr.st1(cptr.add(artilist, 927), 0);
+cptr.st1(cptr.add(artilist, 928), 0);
+cptr.st1(cptr.add(artilist, 929), 0);
+cptr.st1(cptr.add(artilist, 930), 0);
+cptr.st1(cptr.add(artilist, 931), 0);
+cptr.st1(cptr.add(artilist, 932), 0);
+cptr.st1(cptr.add(artilist, 933), -128);
+cptr.stI16(cptr.add(artilist, 934), -1);
+cptr.stI16(cptr.add(artilist, 936), -1);
+cptr.st1(cptr.add(artilist, 938), 2);
+cptr.st1(cptr.add(artilist, 939), 5);
+cptr.stI64(cptr.add(artilist, 944), 500n);
+cptr.st1(cptr.add(artilist, 952), 8);
 cptr.stI16(cptr.add(artilist, 960), 74);
-cptr.stPtr(cptr.add(cptr.add(artilist, 960), 8), __sl12);
-cptr.stU64(cptr.add(cptr.add(artilist, 960), 16), BigInt.asUintN(64, (2n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 960), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 960), 32), 256n);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 960), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 52), 78);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 960), 54), 337);
-cptr.stI16(cptr.add(cptr.add(artilist, 960), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 58), 1);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 59), 3);
-cptr.stI64(cptr.add(cptr.add(artilist, 960), 64), 2500n);
-cptr.st1(cptr.add(cptr.add(artilist, 960), 72), 8);
+cptr.stPtr(cptr.add(artilist, 968), __sl12);
+cptr.stU64(cptr.add(artilist, 976), 8388610n);
+cptr.stU64(cptr.add(artilist, 984), 0n);
+cptr.stU64(cptr.add(artilist, 992), 256n);
+cptr.st1(cptr.add(artilist, 1000), 0);
+cptr.st1(cptr.add(artilist, 1001), 0);
+cptr.st1(cptr.add(artilist, 1002), 5);
+cptr.st1(cptr.add(artilist, 1003), 0);
+cptr.st1(cptr.add(artilist, 1004), 0);
+cptr.st1(cptr.add(artilist, 1005), 0);
+cptr.st1(cptr.add(artilist, 1006), 0);
+cptr.st1(cptr.add(artilist, 1007), 0);
+cptr.st1(cptr.add(artilist, 1008), 0);
+cptr.st1(cptr.add(artilist, 1009), 0);
+cptr.st1(cptr.add(artilist, 1010), 0);
+cptr.st1(cptr.add(artilist, 1011), 0);
+cptr.st1(cptr.add(artilist, 1012), 78);
+cptr.st1(cptr.add(artilist, 1013), 1);
+cptr.stI16(cptr.add(artilist, 1014), 337);
+cptr.stI16(cptr.add(artilist, 1016), -1);
+cptr.st1(cptr.add(artilist, 1018), 1);
+cptr.st1(cptr.add(artilist, 1019), 3);
+cptr.stI64(cptr.add(artilist, 1024), 2500n);
+cptr.st1(cptr.add(artilist, 1032), 8);
 cptr.stI16(cptr.add(artilist, 1040), 51);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1040), 8), __sl13);
-cptr.stU64(cptr.add(cptr.add(artilist, 1040), 16), BigInt.asUintN(64, (2n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1040), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1040), 32), 4n);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 44), 1), 29);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1040), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 1040), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1040), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 58), 1);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 59), 4);
-cptr.stI64(cptr.add(cptr.add(artilist, 1040), 64), 1500n);
-cptr.st1(cptr.add(cptr.add(artilist, 1040), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1048), __sl13);
+cptr.stU64(cptr.add(artilist, 1056), 8388610n);
+cptr.stU64(cptr.add(artilist, 1064), 0n);
+cptr.stU64(cptr.add(artilist, 1072), 4n);
+cptr.st1(cptr.add(artilist, 1080), 0);
+cptr.st1(cptr.add(artilist, 1081), 0);
+cptr.st1(cptr.add(artilist, 1082), 5);
+cptr.st1(cptr.add(artilist, 1083), 0);
+cptr.st1(cptr.add(artilist, 1084), 0);
+cptr.st1(cptr.add(artilist, 1085), 29);
+cptr.st1(cptr.add(artilist, 1086), 0);
+cptr.st1(cptr.add(artilist, 1087), 0);
+cptr.st1(cptr.add(artilist, 1088), 0);
+cptr.st1(cptr.add(artilist, 1089), 0);
+cptr.st1(cptr.add(artilist, 1090), 0);
+cptr.st1(cptr.add(artilist, 1091), 0);
+cptr.st1(cptr.add(artilist, 1092), 0);
+cptr.st1(cptr.add(artilist, 1093), -128);
+cptr.stI16(cptr.add(artilist, 1094), -1);
+cptr.stI16(cptr.add(artilist, 1096), -1);
+cptr.st1(cptr.add(artilist, 1098), 1);
+cptr.st1(cptr.add(artilist, 1099), 4);
+cptr.stI64(cptr.add(artilist, 1104), 1500n);
+cptr.st1(cptr.add(artilist, 1112), 8);
 cptr.stI16(cptr.add(artilist, 1120), 51);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1120), 8), __sl14);
-cptr.stU64(cptr.add(cptr.add(artilist, 1120), 16), BigInt.asUintN(64, (2n | 2048n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1120), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1120), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1120), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1120), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1120), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 59), 10);
-cptr.stI64(cptr.add(cptr.add(artilist, 1120), 64), 8000n);
-cptr.st1(cptr.add(cptr.add(artilist, 1120), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1128), __sl14);
+cptr.stU64(cptr.add(artilist, 1136), 2050n);
+cptr.stU64(cptr.add(artilist, 1144), 0n);
+cptr.stU64(cptr.add(artilist, 1152), 0n);
+cptr.st1(cptr.add(artilist, 1160), 0);
+cptr.st1(cptr.add(artilist, 1161), 0);
+cptr.st1(cptr.add(artilist, 1162), 5);
+cptr.st1(cptr.add(artilist, 1163), 0);
+cptr.st1(cptr.add(artilist, 1164), 0);
+cptr.st1(cptr.add(artilist, 1165), 0);
+cptr.st1(cptr.add(artilist, 1166), 0);
+cptr.st1(cptr.add(artilist, 1167), 0);
+cptr.st1(cptr.add(artilist, 1168), 0);
+cptr.st1(cptr.add(artilist, 1169), 0);
+cptr.st1(cptr.add(artilist, 1170), 0);
+cptr.st1(cptr.add(artilist, 1171), 0);
+cptr.st1(cptr.add(artilist, 1172), 0);
+cptr.st1(cptr.add(artilist, 1173), 1);
+cptr.stI16(cptr.add(artilist, 1174), -1);
+cptr.stI16(cptr.add(artilist, 1176), -1);
+cptr.st1(cptr.add(artilist, 1178), 0);
+cptr.st1(cptr.add(artilist, 1179), 10);
+cptr.stI64(cptr.add(artilist, 1184), 8000n);
+cptr.st1(cptr.add(artilist, 1192), 8);
 cptr.stI16(cptr.add(artilist, 1200), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1200), 8), __sl15);
-cptr.stU64(cptr.add(cptr.add(artilist, 1200), 16), BigInt.asUintN(64, (2n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1200), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1200), 32), 8192n);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1200), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 1200), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1200), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 58), 2);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 59), 4);
-cptr.stI64(cptr.add(cptr.add(artilist, 1200), 64), 200n);
-cptr.st1(cptr.add(cptr.add(artilist, 1200), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1208), __sl15);
+cptr.stU64(cptr.add(artilist, 1216), 8388610n);
+cptr.stU64(cptr.add(artilist, 1224), 0n);
+cptr.stU64(cptr.add(artilist, 1232), 8192n);
+cptr.st1(cptr.add(artilist, 1240), 0);
+cptr.st1(cptr.add(artilist, 1241), 0);
+cptr.st1(cptr.add(artilist, 1242), 5);
+cptr.st1(cptr.add(artilist, 1243), 0);
+cptr.st1(cptr.add(artilist, 1244), 0);
+cptr.st1(cptr.add(artilist, 1245), 0);
+cptr.st1(cptr.add(artilist, 1246), 0);
+cptr.st1(cptr.add(artilist, 1247), 0);
+cptr.st1(cptr.add(artilist, 1248), 0);
+cptr.st1(cptr.add(artilist, 1249), 0);
+cptr.st1(cptr.add(artilist, 1250), 0);
+cptr.st1(cptr.add(artilist, 1251), 0);
+cptr.st1(cptr.add(artilist, 1252), 0);
+cptr.st1(cptr.add(artilist, 1253), 0);
+cptr.stI16(cptr.add(artilist, 1254), -1);
+cptr.stI16(cptr.add(artilist, 1256), -1);
+cptr.st1(cptr.add(artilist, 1258), 2);
+cptr.st1(cptr.add(artilist, 1259), 4);
+cptr.stI64(cptr.add(artilist, 1264), 200n);
+cptr.st1(cptr.add(artilist, 1272), 8);
 cptr.stI16(cptr.add(artilist, 1280), 76);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1280), 8), __sl16);
-cptr.stU64(cptr.add(cptr.add(artilist, 1280), 16), BigInt.asUintN(64, (2n | 2097152n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1280), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1280), 32), 41n);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1280), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 1280), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1280), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 58), 2);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 59), 1);
-cptr.stI64(cptr.add(cptr.add(artilist, 1280), 64), 200n);
-cptr.st1(cptr.add(cptr.add(artilist, 1280), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1288), __sl16);
+cptr.stU64(cptr.add(artilist, 1296), 2097154n);
+cptr.stU64(cptr.add(artilist, 1304), 0n);
+cptr.stU64(cptr.add(artilist, 1312), 41n);
+cptr.st1(cptr.add(artilist, 1320), 0);
+cptr.st1(cptr.add(artilist, 1321), 0);
+cptr.st1(cptr.add(artilist, 1322), 5);
+cptr.st1(cptr.add(artilist, 1323), 0);
+cptr.st1(cptr.add(artilist, 1324), 0);
+cptr.st1(cptr.add(artilist, 1325), 0);
+cptr.st1(cptr.add(artilist, 1326), 0);
+cptr.st1(cptr.add(artilist, 1327), 0);
+cptr.st1(cptr.add(artilist, 1328), 0);
+cptr.st1(cptr.add(artilist, 1329), 0);
+cptr.st1(cptr.add(artilist, 1330), 0);
+cptr.st1(cptr.add(artilist, 1331), 0);
+cptr.st1(cptr.add(artilist, 1332), 0);
+cptr.st1(cptr.add(artilist, 1333), -128);
+cptr.stI16(cptr.add(artilist, 1334), -1);
+cptr.stI16(cptr.add(artilist, 1336), -1);
+cptr.st1(cptr.add(artilist, 1338), 2);
+cptr.st1(cptr.add(artilist, 1339), 1);
+cptr.stI64(cptr.add(artilist, 1344), 200n);
+cptr.st1(cptr.add(artilist, 1352), 8);
 cptr.stI16(cptr.add(artilist, 1360), 75);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1360), 8), __sl17);
-cptr.stU64(cptr.add(cptr.add(artilist, 1360), 16), BigInt.asUintN(64, (2n | 2097152n | 16384n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1360), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1360), 32), 46n);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1360), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 1360), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1360), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 58), 2);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 59), 1);
-cptr.stI64(cptr.add(cptr.add(artilist, 1360), 64), 200n);
-cptr.st1(cptr.add(cptr.add(artilist, 1360), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1368), __sl17);
+cptr.stU64(cptr.add(artilist, 1376), 2113538n);
+cptr.stU64(cptr.add(artilist, 1384), 0n);
+cptr.stU64(cptr.add(artilist, 1392), 46n);
+cptr.st1(cptr.add(artilist, 1400), 0);
+cptr.st1(cptr.add(artilist, 1401), 0);
+cptr.st1(cptr.add(artilist, 1402), 5);
+cptr.st1(cptr.add(artilist, 1403), 0);
+cptr.st1(cptr.add(artilist, 1404), 0);
+cptr.st1(cptr.add(artilist, 1405), 0);
+cptr.st1(cptr.add(artilist, 1406), 0);
+cptr.st1(cptr.add(artilist, 1407), 0);
+cptr.st1(cptr.add(artilist, 1408), 0);
+cptr.st1(cptr.add(artilist, 1409), 0);
+cptr.st1(cptr.add(artilist, 1410), 0);
+cptr.st1(cptr.add(artilist, 1411), 0);
+cptr.st1(cptr.add(artilist, 1412), 0);
+cptr.st1(cptr.add(artilist, 1413), -128);
+cptr.stI16(cptr.add(artilist, 1414), -1);
+cptr.stI16(cptr.add(artilist, 1416), -1);
+cptr.st1(cptr.add(artilist, 1418), 2);
+cptr.st1(cptr.add(artilist, 1419), 1);
+cptr.stI64(cptr.add(artilist, 1424), 200n);
+cptr.st1(cptr.add(artilist, 1432), 8);
 cptr.stI16(cptr.add(artilist, 1440), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1440), 8), __sl18);
-cptr.stU64(cptr.add(cptr.add(artilist, 1440), 16), BigInt.asUintN(64, (2n | 1024n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1440), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1440), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 40), 3), 1);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1440), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 1440), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1440), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 58), 1);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 59), 5);
-cptr.stI64(cptr.add(cptr.add(artilist, 1440), 64), 4000n);
-cptr.st1(cptr.add(cptr.add(artilist, 1440), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1448), __sl18);
+cptr.stU64(cptr.add(artilist, 1456), 1026n);
+cptr.stU64(cptr.add(artilist, 1464), 0n);
+cptr.stU64(cptr.add(artilist, 1472), 0n);
+cptr.st1(cptr.add(artilist, 1480), 0);
+cptr.st1(cptr.add(artilist, 1481), 0);
+cptr.st1(cptr.add(artilist, 1482), 5);
+cptr.st1(cptr.add(artilist, 1483), 1);
+cptr.st1(cptr.add(artilist, 1484), 0);
+cptr.st1(cptr.add(artilist, 1485), 0);
+cptr.st1(cptr.add(artilist, 1486), 0);
+cptr.st1(cptr.add(artilist, 1487), 0);
+cptr.st1(cptr.add(artilist, 1488), 0);
+cptr.st1(cptr.add(artilist, 1489), 0);
+cptr.st1(cptr.add(artilist, 1490), 0);
+cptr.st1(cptr.add(artilist, 1491), 0);
+cptr.st1(cptr.add(artilist, 1492), 0);
+cptr.st1(cptr.add(artilist, 1493), 0);
+cptr.stI16(cptr.add(artilist, 1494), -1);
+cptr.stI16(cptr.add(artilist, 1496), -1);
+cptr.st1(cptr.add(artilist, 1498), 1);
+cptr.st1(cptr.add(artilist, 1499), 5);
+cptr.stI64(cptr.add(artilist, 1504), 4000n);
+cptr.st1(cptr.add(artilist, 1512), 8);
 cptr.stI16(cptr.add(artilist, 1520), 56);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1520), 8), __sl19);
-cptr.stU64(cptr.add(cptr.add(artilist, 1520), 16), 2n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1520), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1520), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 40), 3), 8);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1520), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1520), 54), 340);
-cptr.stI16(cptr.add(cptr.add(artilist, 1520), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 59), 8);
-cptr.stI64(cptr.add(cptr.add(artilist, 1520), 64), 1200n);
-cptr.st1(cptr.add(cptr.add(artilist, 1520), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1528), __sl19);
+cptr.stU64(cptr.add(artilist, 1536), 2n);
+cptr.stU64(cptr.add(artilist, 1544), 0n);
+cptr.stU64(cptr.add(artilist, 1552), 0n);
+cptr.st1(cptr.add(artilist, 1560), 0);
+cptr.st1(cptr.add(artilist, 1561), 0);
+cptr.st1(cptr.add(artilist, 1562), 0);
+cptr.st1(cptr.add(artilist, 1563), 8);
+cptr.st1(cptr.add(artilist, 1564), 0);
+cptr.st1(cptr.add(artilist, 1565), 0);
+cptr.st1(cptr.add(artilist, 1566), 0);
+cptr.st1(cptr.add(artilist, 1567), 0);
+cptr.st1(cptr.add(artilist, 1568), 0);
+cptr.st1(cptr.add(artilist, 1569), 0);
+cptr.st1(cptr.add(artilist, 1570), 0);
+cptr.st1(cptr.add(artilist, 1571), 0);
+cptr.st1(cptr.add(artilist, 1572), 0);
+cptr.st1(cptr.add(artilist, 1573), 1);
+cptr.stI16(cptr.add(artilist, 1574), 340);
+cptr.stI16(cptr.add(artilist, 1576), -1);
+cptr.st1(cptr.add(artilist, 1578), 0);
+cptr.st1(cptr.add(artilist, 1579), 8);
+cptr.stI64(cptr.add(artilist, 1584), 1200n);
+cptr.st1(cptr.add(artilist, 1592), 8);
 cptr.stI16(cptr.add(artilist, 1600), 54);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1600), 8), __sl20);
-cptr.stU64(cptr.add(cptr.add(artilist, 1600), 16), BigInt.asUintN(64, (2n | 8388608n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1600), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1600), 32), 2n);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 44), 1), 11);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1600), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 52), 82);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1600), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1600), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 59), 6);
-cptr.stI64(cptr.add(cptr.add(artilist, 1600), 64), 1500n);
-cptr.st1(cptr.add(cptr.add(artilist, 1600), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1608), __sl20);
+cptr.stU64(cptr.add(artilist, 1616), 8388610n);
+cptr.stU64(cptr.add(artilist, 1624), 0n);
+cptr.stU64(cptr.add(artilist, 1632), 2n);
+cptr.st1(cptr.add(artilist, 1640), 0);
+cptr.st1(cptr.add(artilist, 1641), 0);
+cptr.st1(cptr.add(artilist, 1642), 5);
+cptr.st1(cptr.add(artilist, 1643), 0);
+cptr.st1(cptr.add(artilist, 1644), 0);
+cptr.st1(cptr.add(artilist, 1645), 11);
+cptr.st1(cptr.add(artilist, 1646), 0);
+cptr.st1(cptr.add(artilist, 1647), 0);
+cptr.st1(cptr.add(artilist, 1648), 0);
+cptr.st1(cptr.add(artilist, 1649), 0);
+cptr.st1(cptr.add(artilist, 1650), 0);
+cptr.st1(cptr.add(artilist, 1651), 0);
+cptr.st1(cptr.add(artilist, 1652), 82);
+cptr.st1(cptr.add(artilist, 1653), 1);
+cptr.stI16(cptr.add(artilist, 1654), -1);
+cptr.stI16(cptr.add(artilist, 1656), -1);
+cptr.st1(cptr.add(artilist, 1658), 0);
+cptr.st1(cptr.add(artilist, 1659), 6);
+cptr.stI64(cptr.add(artilist, 1664), 1500n);
+cptr.st1(cptr.add(artilist, 1672), 8);
 cptr.stI16(cptr.add(artilist, 1680), 231);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1680), 8), __sl21);
-cptr.stU64(cptr.add(cptr.add(artilist, 1680), 16), BigInt.asUintN(64, (1n | 2n | 4n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1680), 24), BigInt.asUintN(64, (4096n | 65536n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1680), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 48), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1680), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 52), 40);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1680), 54), 331);
-cptr.stI16(cptr.add(cptr.add(artilist, 1680), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 1680), 64), 2500n);
-cptr.st1(cptr.add(cptr.add(artilist, 1680), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1688), __sl21);
+cptr.stU64(cptr.add(artilist, 1696), 7n);
+cptr.stU64(cptr.add(artilist, 1704), 69632n);
+cptr.stU64(cptr.add(artilist, 1712), 0n);
+cptr.st1(cptr.add(artilist, 1720), 0);
+cptr.st1(cptr.add(artilist, 1721), 0);
+cptr.st1(cptr.add(artilist, 1722), 0);
+cptr.st1(cptr.add(artilist, 1723), 0);
+cptr.st1(cptr.add(artilist, 1724), 0);
+cptr.st1(cptr.add(artilist, 1725), 0);
+cptr.st1(cptr.add(artilist, 1726), 0);
+cptr.st1(cptr.add(artilist, 1727), 0);
+cptr.st1(cptr.add(artilist, 1728), 0);
+cptr.st1(cptr.add(artilist, 1729), 1);
+cptr.st1(cptr.add(artilist, 1730), 0);
+cptr.st1(cptr.add(artilist, 1731), 0);
+cptr.st1(cptr.add(artilist, 1732), 40);
+cptr.st1(cptr.add(artilist, 1733), 1);
+cptr.stI16(cptr.add(artilist, 1734), 331);
+cptr.stI16(cptr.add(artilist, 1736), -1);
+cptr.st1(cptr.add(artilist, 1738), 0);
+cptr.st1(cptr.add(artilist, 1739), 12);
+cptr.stI64(cptr.add(artilist, 1744), 2500n);
+cptr.st1(cptr.add(artilist, 1752), 8);
 cptr.stI16(cptr.add(artilist, 1760), 470);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1760), 8), __sl22);
-cptr.stU64(cptr.add(cptr.add(artilist, 1760), 16), BigInt.asUintN(64, (1n | 2n | 4n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1760), 24), 8192n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1760), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1760), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 52), 48);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 1760), 54), 332);
-cptr.stI16(cptr.add(cptr.add(artilist, 1760), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 1760), 64), 2500n);
-cptr.st1(cptr.add(cptr.add(artilist, 1760), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1768), __sl22);
+cptr.stU64(cptr.add(artilist, 1776), 7n);
+cptr.stU64(cptr.add(artilist, 1784), 8192n);
+cptr.stU64(cptr.add(artilist, 1792), 0n);
+cptr.st1(cptr.add(artilist, 1800), 0);
+cptr.st1(cptr.add(artilist, 1801), 0);
+cptr.st1(cptr.add(artilist, 1802), 5);
+cptr.st1(cptr.add(artilist, 1803), 0);
+cptr.st1(cptr.add(artilist, 1804), 0);
+cptr.st1(cptr.add(artilist, 1805), 0);
+cptr.st1(cptr.add(artilist, 1806), 0);
+cptr.st1(cptr.add(artilist, 1807), 0);
+cptr.st1(cptr.add(artilist, 1808), 0);
+cptr.st1(cptr.add(artilist, 1809), 0);
+cptr.st1(cptr.add(artilist, 1810), 0);
+cptr.st1(cptr.add(artilist, 1811), 0);
+cptr.st1(cptr.add(artilist, 1812), 48);
+cptr.st1(cptr.add(artilist, 1813), 0);
+cptr.stI16(cptr.add(artilist, 1814), 332);
+cptr.stI16(cptr.add(artilist, 1816), -1);
+cptr.st1(cptr.add(artilist, 1818), 0);
+cptr.st1(cptr.add(artilist, 1819), 12);
+cptr.stI64(cptr.add(artilist, 1824), 2500n);
+cptr.st1(cptr.add(artilist, 1832), 8);
 cptr.stI16(cptr.add(artilist, 1840), 73);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1840), 8), __sl23);
-cptr.stU64(cptr.add(cptr.add(artilist, 1840), 16), BigInt.asUintN(64, (1n | 2n | 4n | 16777216n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1840), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1840), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 44), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1840), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 52), 44);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 1840), 54), 333);
-cptr.stI16(cptr.add(cptr.add(artilist, 1840), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 1840), 64), 2500n);
-cptr.st1(cptr.add(cptr.add(artilist, 1840), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1848), __sl23);
+cptr.stU64(cptr.add(artilist, 1856), 16777223n);
+cptr.stU64(cptr.add(artilist, 1864), 0n);
+cptr.stU64(cptr.add(artilist, 1872), 0n);
+cptr.st1(cptr.add(artilist, 1880), 0);
+cptr.st1(cptr.add(artilist, 1881), 0);
+cptr.st1(cptr.add(artilist, 1882), 5);
+cptr.st1(cptr.add(artilist, 1883), 0);
+cptr.st1(cptr.add(artilist, 1884), 0);
+cptr.st1(cptr.add(artilist, 1885), 1);
+cptr.st1(cptr.add(artilist, 1886), 0);
+cptr.st1(cptr.add(artilist, 1887), 0);
+cptr.st1(cptr.add(artilist, 1888), 0);
+cptr.st1(cptr.add(artilist, 1889), 0);
+cptr.st1(cptr.add(artilist, 1890), 0);
+cptr.st1(cptr.add(artilist, 1891), 0);
+cptr.st1(cptr.add(artilist, 1892), 44);
+cptr.st1(cptr.add(artilist, 1893), 1);
+cptr.stI16(cptr.add(artilist, 1894), 333);
+cptr.stI16(cptr.add(artilist, 1896), -1);
+cptr.st1(cptr.add(artilist, 1898), 0);
+cptr.st1(cptr.add(artilist, 1899), 12);
+cptr.stI64(cptr.add(artilist, 1904), 2500n);
+cptr.st1(cptr.add(artilist, 1912), 8);
 cptr.stI16(cptr.add(artilist, 1920), 79);
-cptr.stPtr(cptr.add(cptr.add(artilist, 1920), 8), __sl24);
-cptr.stU64(cptr.add(cptr.add(artilist, 1920), 16), BigInt.asUintN(64, (1n | 2n | 64n | 4n | 256n | 16384n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 1920), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 1920), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 40), 1), 15);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 44), 1), 15);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 1920), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 52), 70);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 1920), 54), 334);
-cptr.stI16(cptr.add(cptr.add(artilist, 1920), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 1920), 64), 5000n);
-cptr.st1(cptr.add(cptr.add(artilist, 1920), 72), 8);
+cptr.stPtr(cptr.add(artilist, 1928), __sl24);
+cptr.stU64(cptr.add(artilist, 1936), 16711n);
+cptr.stU64(cptr.add(artilist, 1944), 0n);
+cptr.stU64(cptr.add(artilist, 1952), 0n);
+cptr.st1(cptr.add(artilist, 1960), 0);
+cptr.st1(cptr.add(artilist, 1961), 15);
+cptr.st1(cptr.add(artilist, 1962), 0);
+cptr.st1(cptr.add(artilist, 1963), 0);
+cptr.st1(cptr.add(artilist, 1964), 0);
+cptr.st1(cptr.add(artilist, 1965), 15);
+cptr.st1(cptr.add(artilist, 1966), 0);
+cptr.st1(cptr.add(artilist, 1967), 0);
+cptr.st1(cptr.add(artilist, 1968), 0);
+cptr.st1(cptr.add(artilist, 1969), 0);
+cptr.st1(cptr.add(artilist, 1970), 0);
+cptr.st1(cptr.add(artilist, 1971), 0);
+cptr.st1(cptr.add(artilist, 1972), 70);
+cptr.st1(cptr.add(artilist, 1973), 0);
+cptr.stI16(cptr.add(artilist, 1974), 334);
+cptr.stI16(cptr.add(artilist, 1976), -1);
+cptr.st1(cptr.add(artilist, 1978), 0);
+cptr.st1(cptr.add(artilist, 1979), 12);
+cptr.stI64(cptr.add(artilist, 1984), 5000n);
+cptr.st1(cptr.add(artilist, 1992), 8);
 cptr.stI16(cptr.add(artilist, 2000), 230);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2000), 8), __sl25);
-cptr.stU64(cptr.add(cptr.add(artilist, 2000), 16), BigInt.asUintN(64, (1n | 2n | 4n | 8n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2000), 24), 4096n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2000), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 48), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2000), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 2000), 54), 335);
-cptr.stI16(cptr.add(cptr.add(artilist, 2000), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2000), 64), 1500n);
-cptr.st1(cptr.add(cptr.add(artilist, 2000), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2008), __sl25);
+cptr.stU64(cptr.add(artilist, 2016), 15n);
+cptr.stU64(cptr.add(artilist, 2024), 4096n);
+cptr.stU64(cptr.add(artilist, 2032), 0n);
+cptr.st1(cptr.add(artilist, 2040), 0);
+cptr.st1(cptr.add(artilist, 2041), 0);
+cptr.st1(cptr.add(artilist, 2042), 0);
+cptr.st1(cptr.add(artilist, 2043), 0);
+cptr.st1(cptr.add(artilist, 2044), 0);
+cptr.st1(cptr.add(artilist, 2045), 0);
+cptr.st1(cptr.add(artilist, 2046), 0);
+cptr.st1(cptr.add(artilist, 2047), 0);
+cptr.st1(cptr.add(artilist, 2048), 0);
+cptr.st1(cptr.add(artilist, 2049), 1);
+cptr.st1(cptr.add(artilist, 2050), 0);
+cptr.st1(cptr.add(artilist, 2051), 0);
+cptr.st1(cptr.add(artilist, 2052), 0);
+cptr.st1(cptr.add(artilist, 2053), 1);
+cptr.stI16(cptr.add(artilist, 2054), 335);
+cptr.stI16(cptr.add(artilist, 2056), -1);
+cptr.st1(cptr.add(artilist, 2058), 0);
+cptr.st1(cptr.add(artilist, 2059), 12);
+cptr.stI64(cptr.add(artilist, 2064), 1500n);
+cptr.st1(cptr.add(artilist, 2072), 8);
 cptr.stI16(cptr.add(artilist, 2080), 232);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2080), 8), __sl26);
-cptr.stU64(cptr.add(cptr.add(artilist, 2080), 16), BigInt.asUintN(64, (1n | 2n | 4n | 33554432n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2080), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2080), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 44), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2080), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 52), 76);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 2080), 54), 336);
-cptr.stI16(cptr.add(cptr.add(artilist, 2080), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2080), 64), 2500n);
-cptr.st1(cptr.add(cptr.add(artilist, 2080), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2088), __sl26);
+cptr.stU64(cptr.add(artilist, 2096), 33554439n);
+cptr.stU64(cptr.add(artilist, 2104), 0n);
+cptr.stU64(cptr.add(artilist, 2112), 0n);
+cptr.st1(cptr.add(artilist, 2120), 0);
+cptr.st1(cptr.add(artilist, 2121), 0);
+cptr.st1(cptr.add(artilist, 2122), 0);
+cptr.st1(cptr.add(artilist, 2123), 0);
+cptr.st1(cptr.add(artilist, 2124), 0);
+cptr.st1(cptr.add(artilist, 2125), 1);
+cptr.st1(cptr.add(artilist, 2126), 0);
+cptr.st1(cptr.add(artilist, 2127), 0);
+cptr.st1(cptr.add(artilist, 2128), 0);
+cptr.st1(cptr.add(artilist, 2129), 0);
+cptr.st1(cptr.add(artilist, 2130), 0);
+cptr.st1(cptr.add(artilist, 2131), 0);
+cptr.st1(cptr.add(artilist, 2132), 76);
+cptr.st1(cptr.add(artilist, 2133), 0);
+cptr.stI16(cptr.add(artilist, 2134), 336);
+cptr.stI16(cptr.add(artilist, 2136), -1);
+cptr.st1(cptr.add(artilist, 2138), 0);
+cptr.st1(cptr.add(artilist, 2139), 12);
+cptr.stI64(cptr.add(artilist, 2144), 2500n);
+cptr.st1(cptr.add(artilist, 2152), 8);
 cptr.stI16(cptr.add(artilist, 2160), 96);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2160), 8), __sl27);
-cptr.stU64(cptr.add(cptr.add(artilist, 2160), 16), BigInt.asUintN(64, (1n | 2n | 8388608n | 4n | 134217728n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2160), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2160), 32), 2n);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 48), 1), 2);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2160), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 52), 71);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 2160), 54), 337);
-cptr.stI16(cptr.add(cptr.add(artilist, 2160), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2160), 64), 2000n);
-cptr.st1(cptr.add(cptr.add(artilist, 2160), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2168), __sl27);
+cptr.stU64(cptr.add(artilist, 2176), 142606343n);
+cptr.stU64(cptr.add(artilist, 2184), 0n);
+cptr.stU64(cptr.add(artilist, 2192), 2n);
+cptr.st1(cptr.add(artilist, 2200), 0);
+cptr.st1(cptr.add(artilist, 2201), 0);
+cptr.st1(cptr.add(artilist, 2202), 0);
+cptr.st1(cptr.add(artilist, 2203), 0);
+cptr.st1(cptr.add(artilist, 2204), 0);
+cptr.st1(cptr.add(artilist, 2205), 0);
+cptr.st1(cptr.add(artilist, 2206), 0);
+cptr.st1(cptr.add(artilist, 2207), 0);
+cptr.st1(cptr.add(artilist, 2208), 0);
+cptr.st1(cptr.add(artilist, 2209), 2);
+cptr.st1(cptr.add(artilist, 2210), 0);
+cptr.st1(cptr.add(artilist, 2211), 0);
+cptr.st1(cptr.add(artilist, 2212), 71);
+cptr.st1(cptr.add(artilist, 2213), 1);
+cptr.stI16(cptr.add(artilist, 2214), 337);
+cptr.stI16(cptr.add(artilist, 2216), -1);
+cptr.st1(cptr.add(artilist, 2218), 0);
+cptr.st1(cptr.add(artilist, 2219), 12);
+cptr.stI64(cptr.add(artilist, 2224), 2000n);
+cptr.st1(cptr.add(artilist, 2232), 8);
 cptr.stI16(cptr.add(artilist, 2240), 83);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2240), 8), __sl28);
-cptr.stU64(cptr.add(cptr.add(artilist, 2240), 16), BigInt.asUintN(64, (1n | 2n | 4n | 67108864n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2240), 24), 4096n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2240), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 40), 2), 5);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2240), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 52), 77);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 2240), 54), 338);
-cptr.stI16(cptr.add(cptr.add(artilist, 2240), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2240), 64), 4000n);
-cptr.st1(cptr.add(cptr.add(artilist, 2240), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2248), __sl28);
+cptr.stU64(cptr.add(artilist, 2256), 67108871n);
+cptr.stU64(cptr.add(artilist, 2264), 4096n);
+cptr.stU64(cptr.add(artilist, 2272), 0n);
+cptr.st1(cptr.add(artilist, 2280), 0);
+cptr.st1(cptr.add(artilist, 2281), 0);
+cptr.st1(cptr.add(artilist, 2282), 5);
+cptr.st1(cptr.add(artilist, 2283), 0);
+cptr.st1(cptr.add(artilist, 2284), 0);
+cptr.st1(cptr.add(artilist, 2285), 0);
+cptr.st1(cptr.add(artilist, 2286), 0);
+cptr.st1(cptr.add(artilist, 2287), 0);
+cptr.st1(cptr.add(artilist, 2288), 0);
+cptr.st1(cptr.add(artilist, 2289), 0);
+cptr.st1(cptr.add(artilist, 2290), 0);
+cptr.st1(cptr.add(artilist, 2291), 0);
+cptr.st1(cptr.add(artilist, 2292), 77);
+cptr.st1(cptr.add(artilist, 2293), -1);
+cptr.stI16(cptr.add(artilist, 2294), 338);
+cptr.stI16(cptr.add(artilist, 2296), -1);
+cptr.st1(cptr.add(artilist, 2298), 0);
+cptr.st1(cptr.add(artilist, 2299), 12);
+cptr.stI64(cptr.add(artilist, 2304), 4000n);
+cptr.st1(cptr.add(artilist, 2312), 8);
 cptr.stI16(cptr.add(artilist, 2320), 221);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2320), 8), __sl29);
-cptr.stU64(cptr.add(cptr.add(artilist, 2320), 16), BigInt.asUintN(64, (1n | 2n | 4n | 8n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2320), 24), BigInt.asUintN(64, (32n | 262144n | 131072n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2320), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2320), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 52), 72);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 53), schar((-1)));
-cptr.stI16(cptr.add(cptr.add(artilist, 2320), 54), 339);
-cptr.stI16(cptr.add(cptr.add(artilist, 2320), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2320), 64), 3500n);
-cptr.st1(cptr.add(cptr.add(artilist, 2320), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2328), __sl29);
+cptr.stU64(cptr.add(artilist, 2336), 15n);
+cptr.stU64(cptr.add(artilist, 2344), 393248n);
+cptr.stU64(cptr.add(artilist, 2352), 0n);
+cptr.st1(cptr.add(artilist, 2360), 0);
+cptr.st1(cptr.add(artilist, 2361), 0);
+cptr.st1(cptr.add(artilist, 2362), 0);
+cptr.st1(cptr.add(artilist, 2363), 0);
+cptr.st1(cptr.add(artilist, 2364), 0);
+cptr.st1(cptr.add(artilist, 2365), 0);
+cptr.st1(cptr.add(artilist, 2366), 0);
+cptr.st1(cptr.add(artilist, 2367), 0);
+cptr.st1(cptr.add(artilist, 2368), 0);
+cptr.st1(cptr.add(artilist, 2369), 0);
+cptr.st1(cptr.add(artilist, 2370), 0);
+cptr.st1(cptr.add(artilist, 2371), 0);
+cptr.st1(cptr.add(artilist, 2372), 72);
+cptr.st1(cptr.add(artilist, 2373), -1);
+cptr.stI16(cptr.add(artilist, 2374), 339);
+cptr.stI16(cptr.add(artilist, 2376), -1);
+cptr.st1(cptr.add(artilist, 2378), 0);
+cptr.st1(cptr.add(artilist, 2379), 12);
+cptr.stI64(cptr.add(artilist, 2384), 3500n);
+cptr.st1(cptr.add(artilist, 2392), 8);
 cptr.stI16(cptr.add(artilist, 2400), 57);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2400), 8), __sl30);
-cptr.stU64(cptr.add(cptr.add(artilist, 2400), 16), BigInt.asUintN(64, (1n | 2n | 4n | 1024n | 524288n | 134217728n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2400), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2400), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 40), 3), 8);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2400), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 53), 1);
-cptr.stI16(cptr.add(cptr.add(artilist, 2400), 54), 340);
-cptr.stI16(cptr.add(cptr.add(artilist, 2400), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2400), 64), 4500n);
-cptr.st1(cptr.add(cptr.add(artilist, 2400), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2408), __sl30);
+cptr.stU64(cptr.add(artilist, 2416), 134743047n);
+cptr.stU64(cptr.add(artilist, 2424), 0n);
+cptr.stU64(cptr.add(artilist, 2432), 0n);
+cptr.st1(cptr.add(artilist, 2440), 0);
+cptr.st1(cptr.add(artilist, 2441), 0);
+cptr.st1(cptr.add(artilist, 2442), 0);
+cptr.st1(cptr.add(artilist, 2443), 8);
+cptr.st1(cptr.add(artilist, 2444), 0);
+cptr.st1(cptr.add(artilist, 2445), 0);
+cptr.st1(cptr.add(artilist, 2446), 0);
+cptr.st1(cptr.add(artilist, 2447), 0);
+cptr.st1(cptr.add(artilist, 2448), 0);
+cptr.st1(cptr.add(artilist, 2449), 0);
+cptr.st1(cptr.add(artilist, 2450), 0);
+cptr.st1(cptr.add(artilist, 2451), 0);
+cptr.st1(cptr.add(artilist, 2452), 0);
+cptr.st1(cptr.add(artilist, 2453), 1);
+cptr.stI16(cptr.add(artilist, 2454), 340);
+cptr.stI16(cptr.add(artilist, 2456), -1);
+cptr.st1(cptr.add(artilist, 2458), 0);
+cptr.st1(cptr.add(artilist, 2459), 12);
+cptr.stI64(cptr.add(artilist, 2464), 4500n);
+cptr.st1(cptr.add(artilist, 2472), 8);
 cptr.stI16(cptr.add(artilist, 2480), 223);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2480), 8), __sl31);
-cptr.stU64(cptr.add(cptr.add(artilist, 2480), 16), BigInt.asUintN(64, (1n | 2n | 4n | 128n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2480), 24), BigInt.asUintN(64, (4096n | 65536n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2480), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 48), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2480), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 52), 73);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 2480), 54), 341);
-cptr.stI16(cptr.add(cptr.add(artilist, 2480), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2480), 64), 7000n);
-cptr.st1(cptr.add(cptr.add(artilist, 2480), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2488), __sl31);
+cptr.stU64(cptr.add(artilist, 2496), 135n);
+cptr.stU64(cptr.add(artilist, 2504), 69632n);
+cptr.stU64(cptr.add(artilist, 2512), 0n);
+cptr.st1(cptr.add(artilist, 2520), 0);
+cptr.st1(cptr.add(artilist, 2521), 0);
+cptr.st1(cptr.add(artilist, 2522), 0);
+cptr.st1(cptr.add(artilist, 2523), 0);
+cptr.st1(cptr.add(artilist, 2524), 0);
+cptr.st1(cptr.add(artilist, 2525), 0);
+cptr.st1(cptr.add(artilist, 2526), 0);
+cptr.st1(cptr.add(artilist, 2527), 0);
+cptr.st1(cptr.add(artilist, 2528), 0);
+cptr.st1(cptr.add(artilist, 2529), 1);
+cptr.st1(cptr.add(artilist, 2530), 0);
+cptr.st1(cptr.add(artilist, 2531), 0);
+cptr.st1(cptr.add(artilist, 2532), 73);
+cptr.st1(cptr.add(artilist, 2533), 0);
+cptr.stI16(cptr.add(artilist, 2534), 341);
+cptr.stI16(cptr.add(artilist, 2536), -1);
+cptr.st1(cptr.add(artilist, 2538), 0);
+cptr.st1(cptr.add(artilist, 2539), 12);
+cptr.stI64(cptr.add(artilist, 2544), 7000n);
+cptr.st1(cptr.add(artilist, 2552), 8);
 cptr.stI16(cptr.add(artilist, 2560), 231);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2560), 8), __sl32);
-cptr.stU64(cptr.add(cptr.add(artilist, 2560), 16), BigInt.asUintN(64, (1n | 2n | 4n | 524288n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2560), 24), BigInt.asUintN(64, (32n | 65536n | 131072n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2560), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2560), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 52), 74);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 2560), 54), 342);
-cptr.stI16(cptr.add(cptr.add(artilist, 2560), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2560), 64), 3500n);
-cptr.st1(cptr.add(cptr.add(artilist, 2560), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2568), __sl32);
+cptr.stU64(cptr.add(artilist, 2576), 524295n);
+cptr.stU64(cptr.add(artilist, 2584), 196640n);
+cptr.stU64(cptr.add(artilist, 2592), 0n);
+cptr.st1(cptr.add(artilist, 2600), 0);
+cptr.st1(cptr.add(artilist, 2601), 0);
+cptr.st1(cptr.add(artilist, 2602), 0);
+cptr.st1(cptr.add(artilist, 2603), 0);
+cptr.st1(cptr.add(artilist, 2604), 0);
+cptr.st1(cptr.add(artilist, 2605), 0);
+cptr.st1(cptr.add(artilist, 2606), 0);
+cptr.st1(cptr.add(artilist, 2607), 0);
+cptr.st1(cptr.add(artilist, 2608), 0);
+cptr.st1(cptr.add(artilist, 2609), 0);
+cptr.st1(cptr.add(artilist, 2610), 0);
+cptr.st1(cptr.add(artilist, 2611), 0);
+cptr.st1(cptr.add(artilist, 2612), 74);
+cptr.st1(cptr.add(artilist, 2613), 0);
+cptr.stI16(cptr.add(artilist, 2614), 342);
+cptr.stI16(cptr.add(artilist, 2616), -1);
+cptr.st1(cptr.add(artilist, 2618), 0);
+cptr.st1(cptr.add(artilist, 2619), 12);
+cptr.stI64(cptr.add(artilist, 2624), 3500n);
+cptr.st1(cptr.add(artilist, 2632), 8);
 cptr.stI16(cptr.add(artilist, 2640), 201);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2640), 8), __sl33);
-cptr.stU64(cptr.add(cptr.add(artilist, 2640), 16), BigInt.asUintN(64, (1n | 2n | 4n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2640), 24), BigInt.asUintN(64, (32768n | 65536n)));
-cptr.stU64(cptr.add(cptr.add(artilist, 2640), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 44), 1), 1);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2640), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 52), 75);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 53), 0);
-cptr.stI16(cptr.add(cptr.add(artilist, 2640), 54), 343);
-cptr.stI16(cptr.add(cptr.add(artilist, 2640), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 59), 12);
-cptr.stI64(cptr.add(cptr.add(artilist, 2640), 64), 4000n);
-cptr.st1(cptr.add(cptr.add(artilist, 2640), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2648), __sl33);
+cptr.stU64(cptr.add(artilist, 2656), 7n);
+cptr.stU64(cptr.add(artilist, 2664), 98304n);
+cptr.stU64(cptr.add(artilist, 2672), 0n);
+cptr.st1(cptr.add(artilist, 2680), 0);
+cptr.st1(cptr.add(artilist, 2681), 0);
+cptr.st1(cptr.add(artilist, 2682), 0);
+cptr.st1(cptr.add(artilist, 2683), 0);
+cptr.st1(cptr.add(artilist, 2684), 0);
+cptr.st1(cptr.add(artilist, 2685), 1);
+cptr.st1(cptr.add(artilist, 2686), 0);
+cptr.st1(cptr.add(artilist, 2687), 0);
+cptr.st1(cptr.add(artilist, 2688), 0);
+cptr.st1(cptr.add(artilist, 2689), 0);
+cptr.st1(cptr.add(artilist, 2690), 0);
+cptr.st1(cptr.add(artilist, 2691), 0);
+cptr.st1(cptr.add(artilist, 2692), 75);
+cptr.st1(cptr.add(artilist, 2693), 0);
+cptr.stI16(cptr.add(artilist, 2694), 343);
+cptr.stI16(cptr.add(artilist, 2696), -1);
+cptr.st1(cptr.add(artilist, 2698), 0);
+cptr.st1(cptr.add(artilist, 2699), 12);
+cptr.stI64(cptr.add(artilist, 2704), 4000n);
+cptr.st1(cptr.add(artilist, 2712), 8);
 cptr.stI16(cptr.add(artilist, 2720), 0);
-cptr.stPtr(cptr.add(cptr.add(artilist, 2720), 8), null);
-cptr.stU64(cptr.add(cptr.add(artilist, 2720), 16), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2720), 24), 0n);
-cptr.stU64(cptr.add(cptr.add(artilist, 2720), 32), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 40), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 40), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 40), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 40), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 44), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 44), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 44), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 44), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 48), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 48), 1), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 48), 2), 0);
-cptr.st1(cptr.add(cptr.add(cptr.add(artilist, 2720), 48), 3), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 52), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 53), schar((-128)));
-cptr.stI16(cptr.add(cptr.add(artilist, 2720), 54), -1);
-cptr.stI16(cptr.add(cptr.add(artilist, 2720), 56), -1);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 58), 0);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 59), 0);
-cptr.stI64(cptr.add(cptr.add(artilist, 2720), 64), 0n);
-cptr.st1(cptr.add(cptr.add(artilist, 2720), 72), 8);
+cptr.stPtr(cptr.add(artilist, 2728), null);
+cptr.stU64(cptr.add(artilist, 2736), 0n);
+cptr.stU64(cptr.add(artilist, 2744), 0n);
+cptr.stU64(cptr.add(artilist, 2752), 0n);
+cptr.st1(cptr.add(artilist, 2760), 0);
+cptr.st1(cptr.add(artilist, 2761), 0);
+cptr.st1(cptr.add(artilist, 2762), 0);
+cptr.st1(cptr.add(artilist, 2763), 0);
+cptr.st1(cptr.add(artilist, 2764), 0);
+cptr.st1(cptr.add(artilist, 2765), 0);
+cptr.st1(cptr.add(artilist, 2766), 0);
+cptr.st1(cptr.add(artilist, 2767), 0);
+cptr.st1(cptr.add(artilist, 2768), 0);
+cptr.st1(cptr.add(artilist, 2769), 0);
+cptr.st1(cptr.add(artilist, 2770), 0);
+cptr.st1(cptr.add(artilist, 2771), 0);
+cptr.st1(cptr.add(artilist, 2772), 0);
+cptr.st1(cptr.add(artilist, 2773), -128);
+cptr.stI16(cptr.add(artilist, 2774), -1);
+cptr.stI16(cptr.add(artilist, 2776), -1);
+cptr.st1(cptr.add(artilist, 2778), 0);
+cptr.st1(cptr.add(artilist, 2779), 0);
+cptr.stI64(cptr.add(artilist, 2784), 0n);
+cptr.st1(cptr.add(artilist, 2792), 8);
 
 /** C ref: artifact.c:70 — struct arti_info[34] */
 const artiexist = cptr.alloc(34 * 36);
@@ -1147,13 +1147,13 @@ function hack_artifacts() {
     let art;
     let alignmnt = cptr.ld1s(cptr.add(cptr.add(aligns, cptr.ldI32(cptr.add(flags, 156)), 32), 26));
     for (art = cptr.add(artilist, 1, 80); cptr.ldI16(art); art = cptr.add(art, 1, 80))
-        if (cptr.ldI16(cptr.add(art, 54)) == (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))) && cptr.ld1s(cptr.add(art, 53)) != (-128) ? 1 : 0)
+        if (cptr.ldI16(cptr.add(art, 54)) == (cptr.ldI16(cptr.add(gu, 216))) && cptr.ld1s(cptr.add(art, 53)) != -128 ? 1 : 0)
             cptr.st1(cptr.add(art, 53), schar(alignmnt));
-    if (!(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (335)))
+    if (!(cptr.ldI16(cptr.add(gu, 216)) == 335))
         cptr.stI16(cptr.add(cptr.add(artilist, 1, 80), 54), -1);
-    if (cptr.ldI16(cptr.add(cptr.add(gu, 8), 224))) {
-        cptr.st1(cptr.add(cptr.add(artilist, cptr.ldI16(cptr.add(cptr.add(gu, 8), 224)), 80), 53), schar(alignmnt));
-        cptr.stI16(cptr.add(cptr.add(artilist, cptr.ldI16(cptr.add(cptr.add(gu, 8), 224)), 80), 54), (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))));
+    if (cptr.ldI16(cptr.add(gu, 232))) {
+        cptr.st1(cptr.add(cptr.add(artilist, cptr.ldI16(cptr.add(gu, 232)), 80), 53), schar(alignmnt));
+        cptr.stI16(cptr.add(cptr.add(artilist, cptr.ldI16(cptr.add(gu, 232)), 80), 54), (cptr.ldI16(cptr.add(gu, 216))));
     }
     return;
 }
@@ -1168,7 +1168,7 @@ export function init_artifacts() {
 /** C ref: artifact.c:119 — @param {CPtr} nhfp */
 export function save_artifacts(nhfp) {
     let i;
-    for (i = 0; i < ((33 + 1) | 0); ++i)
+    for (i = 0; i < 34; ++i)
         sfo_arti_info(nhfp, cptr.add(artiexist, i, 36), __sl34);
     for (i = 0; i < 33; ++i)
         sfo_xint16(nhfp, cptr.add(artidisco, i, 2), __sl35);
@@ -1177,7 +1177,7 @@ export function save_artifacts(nhfp) {
 /** C ref: artifact.c:133 — @param {CPtr} nhfp */
 export function restore_artifacts(nhfp) {
     let i;
-    for (i = 0; i < ((33 + 1) | 0); ++i)
+    for (i = 0; i < 34; ++i)
         sfi_arti_info(nhfp, cptr.add(artiexist, i, 36), __sl34);
     for (i = 0; i < 33; ++i)
         sfi_short(nhfp, cptr.add(artidisco, i, 2), __sl35);
@@ -1197,7 +1197,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let m;
     let n;
     let altn;
-    let by_align = schar((alignment != (-128)));
+    let by_align = schar((alignment != -128));
     let o_typ = i16(((by_align || !otmp ? 1 : 0) ? 0 : cptr.ldI16(cptr.add(otmp, 32))));
     let unique = schar(((!by_align && otmp ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, o_typ, 120), 40)) & 1) | 0 ? 1 : 0));
     let eligible = cptr.alloc(33 * 2);
@@ -1209,15 +1209,15 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             continue;
         if ((cptr.ldU64(cptr.add(a, 16)) & 1n) || unique ? 1 : 0)
             continue;
-        if (cptr.ld1u(cptr.add(a, 59)) > max_giftvalue && !(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (cptr.ldI16(cptr.add(a, 54)))) ? 1 : 0)
+        if (cptr.ld1u(cptr.add(a, 59)) > max_giftvalue && !(cptr.ldI16(cptr.add(gu, 216)) == (cptr.ldI16(cptr.add(a, 54)))) ? 1 : 0)
             continue;
         if (!by_align) {
             if (cptr.ldI16(a) == o_typ)
                 cptr.stI16(cptr.add(eligible, n++, 2), i16(m));
             continue;
         }
-        if ((cptr.ld1s(cptr.add(a, 53)) == alignment || cptr.ld1s(cptr.add(a, 53)) == (-128) ? 1 : 0) && (cptr.ldI16(cptr.add(a, 56)) == -1 || !((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI16(cptr.add(a, 56)), 96)), 80)) & BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(cptr.add(gu, 320), 60))))) != 0n) ? 1 : 0) ? 1 : 0) {
-            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (cptr.ldI16(cptr.add(a, 54))))) {
+        if ((cptr.ld1s(cptr.add(a, 53)) == alignment || cptr.ld1s(cptr.add(a, 53)) == -128 ? 1 : 0) && (cptr.ldI16(cptr.add(a, 56)) == -1 || !((cptr.ldU64(cptr.add((cptr.add(mons, cptr.ldI16(cptr.add(a, 56)), 96)), 80)) & BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(gu, 380))))) != 0n) ? 1 : 0) ? 1 : 0) {
+            if ((cptr.ldI16(cptr.add(gu, 216)) == (cptr.ldI16(cptr.add(a, 54))))) {
                 cptr.stI16(cptr.add(eligible, 0, 2), i16(m));
                 n = 1;
                 break;
@@ -1230,7 +1230,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
                 else
                     skill_compatibility = (cptr.ldI16(cptr.add(cptr.add(cptr.add(u, 2588), skill, 6), 2)));
             }
-            if (((cptr.ld1s(cptr.add(a, 53)) != (-128) || cptr.ldI32(cptr.add(u, 2344)) > 0 ? 1 : 0) || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 230, __sl37), rn2(3)) : rn2(3)) ? 1 : 0) && ((!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 231, __sl37), rn2(4)) : rn2(4)) || skill_compatibility >= 3 ? 1 : 0) || (skill_compatibility >= 2 && (rng_log_enabled() ? (rng_log_set_caller(__sl36, 232, __sl37), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+            if (((cptr.ld1s(cptr.add(a, 53)) != -128 || cptr.ldI32(cptr.add(u, 2344)) > 0 ? 1 : 0) || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 230, __sl37), rn2(3)) : rn2(3)) ? 1 : 0) && ((!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 231, __sl37), rn2(4)) : rn2(4)) || skill_compatibility >= 3 ? 1 : 0) || (skill_compatibility >= 2 && (rng_log_enabled() ? (rng_log_set_caller(__sl36, 232, __sl37), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
                 cptr.stI16(cptr.add(eligible, n++, 2), i16(m));
             } else {
                 if (!n)
@@ -1244,7 +1244,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
         m = cptr.ldI16(cptr.add(eligible, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 259, __sl37), rn2(n)) : rn2(n)), 2));
         a = cptr.add(artilist, m, 80);
         if (by_align) {
-            let artiobj = mksobj(cptr.ldI16(a), (1), (0));
+            let artiobj = mksobj(cptr.ldI16(a), 1, 0);
             if (otmp)
                 dispose_of_orig_obj(otmp);
             otmp = artiobj;
@@ -1289,7 +1289,7 @@ export function artifact_name(name, otyp_p, fuzzy) {
         aname = cptr.ldPtr(cptr.add(a, 8));
         if (!strncmpi(aname, __sl40, 4))
             aname = cptr.add(aname, 4);
-        if (!fuzzy ? !strncmpi((name), (aname), -1) : fuzzymatch(name, aname, __sl41, (1))) {
+        if (!fuzzy ? !strncmpi((name), (aname), -1) : fuzzymatch(name, aname, __sl41, 1)) {
             if (otyp_p)
                 cptr.stI16(otyp_p, cptr.ldI16(a));
             return cptr.ldPtr(cptr.add(a, 8));
@@ -1306,7 +1306,7 @@ export function exist_artifact(otyp, name) {
         for (a = cptr.add(artilist, 1, 80), arex = cptr.add(artiexist, 1, 36); cptr.ldI16(a); a = cptr.add(a, 1, 80), arex = cptr.add(arex, 1, 36))
             if (cptr.ldI16(a) == otyp && !strcmp(cptr.ldPtr(cptr.add(a, 8)), name) ? 1 : 0)
                 return schar(((cptr.ldI32(arex) & 1) | 0 ? 1 : 0));
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:371 — @param {CPtr} otmp @param {CPtr} name @param {CInt} mod @param {CUInt} flgs */
@@ -1321,7 +1321,7 @@ export function artifact_exists(otmp, name, mod, flgs) {
                 if (cptr.ldI16(cptr.add(otmp, 32)) == 177)
                     cptr.st1(cptr.add(otmp, 48), 0);
                 if (mod) {
-                    if (((flgs & (((((((2 | 4) >>> 0 | 8) >>> 0 | 16) >>> 0 | 32) >>> 0 | 64) >>> 0 | 128) >>> 0)) >>> 0) == 0)
+                    if (((flgs & 254) >>> 0) == 0)
                         flgs |= 128;
                     artifact_origin(otmp, flgs);
                 } else {
@@ -1401,7 +1401,7 @@ export function spec_ability(otmp, abil) {
 /** C ref: artifact.c:526 — @param {CPtr} obj @returns {CInt} */
 export function confers_luck(obj) {
     if (cptr.ldI16(cptr.add(obj, 32)) == 470)
-        return (1);
+        return 1;
     return schar((cptr.ld1s(cptr.add(obj, 51)) && spec_ability(obj, 524288n) ? 1 : 0));
 }
 
@@ -1409,23 +1409,23 @@ export function confers_luck(obj) {
 export function arti_reflects(obj) {
     let arti = get_artifact(obj);
     if (!cptr.eq(arti, cptr.add(artilist, 0, 80))) {
-        if ((cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~4096n)) && (cptr.ldU64(cptr.add(arti, 16)) & 67108864n) ? 1 : 0)
-            return (1);
+        if ((cptr.ldI64(cptr.add(obj, 192)) & -4097n) && (cptr.ldU64(cptr.add(arti, 16)) & 67108864n) ? 1 : 0)
+            return 1;
         if (cptr.ldU64(cptr.add(arti, 24)) & 67108864n)
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:555 — @param {CPtr} obj @returns {CInt} */
 export function shade_glare(obj) {
     let arti;
     if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14)
-        return (1);
+        return 1;
     arti = get_artifact(obj);
     if ((!cptr.eq(arti, cptr.add(artilist, 0, 80)) && (cptr.ldU64(cptr.add(arti, 16)) & 8388608n) ? 1 : 0) && cptr.ldU64(cptr.add(arti, 32)) == 2n ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 /** C ref: artifact.c:575 — @param {CPtr} otmp @param {CPtr} name @returns {CInt} */
@@ -1441,18 +1441,18 @@ export function restrict_name(otmp, name) {
     let otyp = cptr.ldI16(cptr.add(otmp, 32));
     let ocls = cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 70));
     if (!cptr.ld1s(name))
-        return (0);
+        return 0;
     if (!strncmpi(name, __sl40, 4))
         name = cptr.add(name, 4);
     void __builtin___memset_chk(cptr.decay(sametype), 0, 481n, __builtin_object_size(cptr.decay(sametype), 0));
-    cptr.st1(cptr.add(cptr.decay(sametype), otyp, 1), (1));
+    cptr.st1(cptr.add(cptr.decay(sametype), otyp, 1), 1);
     if (!(cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 16)) & 1) && (odesc = (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, otyp, 120)), 2)), 16), 8)))) !== null ? 1 : 0) {
         obj_shuffle_range(otyp, lo, hi);
         for (i = cptr.ldI32(cptr.add(cptr.add(svb, 16), ocls, 4)); i < 481; i++) {
             if (cptr.ld1s(cptr.add(cptr.add(objects, i, 120), 70)) != ocls)
                 break;
             if ((!(cptr.ldI32(cptr.add(cptr.add(objects, i, 120), 16)) & 1) && (other = (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, i, 120)), 2)), 16), 8)))) !== null ? 1 : 0) && (!strcmp(odesc, other) || (i >= lo.v && i <= hi.v ? 1 : 0) ? 1 : 0) ? 1 : 0)
-                cptr.st1(cptr.add(cptr.decay(sametype), i, 1), (1));
+                cptr.st1(cptr.add(cptr.decay(sametype), i, 1), 1);
         }
     }
     for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80)) {
@@ -1462,30 +1462,30 @@ export function restrict_name(otmp, name) {
         if (!strncmpi(aname, __sl40, 4))
             aname = cptr.add(aname, 4);
         if (!strcmp(aname, name))
-            return schar(((cptr.ldU64(cptr.add(a, 16)) & BigInt.asUintN(64, (1n | 2n))) != 0n || cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0));
+            return schar(((cptr.ldU64(cptr.add(a, 16)) & 3n) != 0n || cptr.ldI64(cptr.add(otmp, 40)) > 1n ? 1 : 0));
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:626 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
 export function attacks(adtyp, otmp) {
     let weap;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, 0, 80)))
-        return schar((cptr.ld1u(cptr.add(cptr.add(weap, 40), 1)) == adtyp));
-    return (0);
+        return schar((cptr.ld1u(cptr.add(weap, 41)) == adtyp));
+    return 0;
 }
 
 /** C ref: artifact.c:636 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
 export function defends(adtyp, otmp) {
     let weap;
     if (!otmp)
-        return (0);
+        return 0;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, 0, 80)))
-        return schar((cptr.ld1u(cptr.add(cptr.add(weap, 44), 1)) == adtyp));
+        return schar((cptr.ld1u(cptr.add(weap, 45)) == adtyp));
     if (((cptr.ldI16(cptr.add((otmp), 32)) >= 111 && cptr.ldI16(cptr.add((otmp), 32)) <= 120 ? 1 : 0) || (cptr.ldI16(cptr.add((otmp), 32)) >= 101 && cptr.ldI16(cptr.add((otmp), 32)) <= 110 ? 1 : 0) ? 1 : 0)) {
         let otyp = cptr.ldI16(cptr.add(otmp, 32));
         if ((cptr.ldI16(cptr.add((otmp), 32)) >= 101 && cptr.ldI16(cptr.add((otmp), 32)) <= 110 ? 1 : 0))
-            otyp = (otyp + ((111 - 101) | 0)) | 0;
+            otyp = (otyp + 10) | 0;
         switch (adtyp) {
             case 1:
             return schar((otyp == 111));
@@ -1514,25 +1514,25 @@ export function defends(adtyp, otmp) {
             break;
         }
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:687 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
 export function defends_when_carried(adtyp, otmp) {
     let weap;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, 0, 80)))
-        return schar((cptr.ld1u(cptr.add(cptr.add(weap, 48), 1)) == adtyp));
-    return (0);
+        return schar((cptr.ld1u(cptr.add(weap, 49)) == adtyp));
+    return 0;
 }
 
 /** C ref: artifact.c:698 — @param {CPtr} otmp @param {CInt} being_worn @returns {CInt} */
 export function protects(otmp, being_worn) {
     let arti;
     if (being_worn && cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 69)) == 59 ? 1 : 0)
-        return (1);
+        return 1;
     arti = get_artifact(otmp);
     if (cptr.eq(arti, cptr.add(artilist, 0, 80)))
-        return (0);
+        return 0;
     return schar(((cptr.ldU64(cptr.add(arti, 24)) & 134217728n) != 0n || (being_worn && (cptr.ldU64(cptr.add(arti, 16)) & 134217728n) != 0n ? 1 : 0) ? 1 : 0));
 }
 
@@ -1546,7 +1546,7 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     let spfx;
     if (cptr.eq(oart, cptr.add(artilist, 0, 80)))
         return;
-    dtyp = uchar(((wp_mask != 4096n) ? cptr.ld1u(cptr.add(cptr.add(oart, 44), 1)) : cptr.ld1u(cptr.add(cptr.add(oart, 48), 1))));
+    dtyp = uchar(((wp_mask != 4096n) ? cptr.ld1u(cptr.add(oart, 45)) : cptr.ld1u(cptr.add(oart, 49))));
     if (dtyp == 2)
         mask = cptr.add(cptr.add(u, 112), 1, 24);
     else if (dtyp == 3)
@@ -1565,7 +1565,7 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         for (obj = cptr.ldPtr(cptr.add(gi, 8)); obj; obj = cptr.ldPtr(obj)) {
             if (!cptr.eq(obj, otmp) && cptr.ld1s(cptr.add(obj, 51)) ? 1 : 0) {
                 art = get_artifact(obj);
-                if (!cptr.eq(art, cptr.add(artilist, 0, 80)) && cptr.ld1u(cptr.add(cptr.add(art, 48), 1)) == dtyp ? 1 : 0) {
+                if (!cptr.eq(art, cptr.add(artilist, 0, 80)) && cptr.ld1u(cptr.add(art, 49)) == dtyp ? 1 : 0) {
                     mask = null;
                     break;
                 }
@@ -1698,19 +1698,19 @@ export function touch_artifact(obj, mon) {
     let badalign;
     let self_willed;
     let yours;
-    touch_blasted = (0);
+    touch_blasted = 0;
     if (cptr.eq(oart, cptr.add(artilist, 0, 80)))
         return 1;
     yours = schar((cptr.eq(mon, cptr.add(gy, 8))));
     self_willed = schar(((cptr.ldU64(cptr.add(oart, 16)) & 4n) != 0n));
     if (yours) {
-        badclass = schar((self_willed && ((cptr.ldI16(cptr.add(oart, 54)) != -1 && !(cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (cptr.ldI16(cptr.add(oart, 54)))) ? 1 : 0) || (cptr.ldI16(cptr.add(oart, 56)) != -1 && !(cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (cptr.ldI16(cptr.add(oart, 56)))) ? 1 : 0) ? 1 : 0) ? 1 : 0));
-        badalign = schar((((cptr.ldU64(cptr.add(oart, 16)) & 2n) != 0n && cptr.ld1s(cptr.add(oart, 53)) != (-128) ? 1 : 0) && (cptr.ld1s(cptr.add(oart, 53)) != cptr.ld1s(cptr.add(u, 2172)) || cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) < 0 ? 1 : 0) ? 1 : 0));
+        badclass = schar((self_willed && ((cptr.ldI16(cptr.add(oart, 54)) != -1 && !(cptr.ldI16(cptr.add(gu, 216)) == (cptr.ldI16(cptr.add(oart, 54)))) ? 1 : 0) || (cptr.ldI16(cptr.add(oart, 56)) != -1 && !(cptr.ldI16(cptr.add(gu, 368)) == (cptr.ldI16(cptr.add(oart, 56)))) ? 1 : 0) ? 1 : 0) ? 1 : 0));
+        badalign = schar((((cptr.ldU64(cptr.add(oart, 16)) & 2n) != 0n && cptr.ld1s(cptr.add(oart, 53)) != -128 ? 1 : 0) && (cptr.ld1s(cptr.add(oart, 53)) != cptr.ld1s(cptr.add(u, 2172)) || cptr.ldI32(cptr.add(u, 2176)) < 0 ? 1 : 0) ? 1 : 0));
     } else if (!((cptr.ldU16(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 88)) & 31)) && !((cptr.cmp((cptr.ldPtr(cptr.add(mon, 8))), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mon, 8))), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0) ? 1 : 0) {
         badclass = schar(((self_willed && cptr.ldI16(cptr.add(oart, 54)) != -1 ? 1 : 0) && !cptr.eq(oart, cptr.add(artilist, 1, 80)) ? 1 : 0));
-        badalign = schar((((cptr.ldU64(cptr.add(oart, 16)) & 2n) && cptr.ld1s(cptr.add(oart, 53)) != (-128) ? 1 : 0) && (cptr.ld1s(cptr.add(oart, 53)) != mon_aligntyp(mon)) ? 1 : 0));
+        badalign = schar((((cptr.ldU64(cptr.add(oart, 16)) & 2n) && cptr.ld1s(cptr.add(oart, 53)) != -128 ? 1 : 0) && (cptr.ld1s(cptr.add(oart, 53)) != mon_aligntyp(mon)) ? 1 : 0));
     } else {
-        badclass = (badalign = (0));
+        badclass = (badalign = 0);
     }
     if (!badalign)
         badalign = bane_applies(oart, mon);
@@ -1721,13 +1721,13 @@ export function touch_artifact(obj, mon) {
         if (!yours)
             return 0;
         You(__sl51, s_suffix(the(xname(obj))));
-        touch_blasted = (1);
+        touch_blasted = 1;
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 953, __sl50), d((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0) ? 2 : 4)), ((self_willed ? 10 : 4)))) : d((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0) ? 2 : 4)), ((self_willed ? 10 : 4))));
-        if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0)
+        if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) ? 1 : 0)
             tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 956, __sl50), rnd(10)) : rnd(10)), dmg = (dmg + (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 56, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 56, 24)) ? 1 : 0)) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
         void cptr.sprintf(cptr.decay(buf), __sl52, cptr.ldPtr(cptr.add(oart, 8)));
         losehp(dmg, cptr.decay(buf), 1);
-        exercise(2, (0));
+        exercise(2, 0);
     }
     if ((badclass && badalign ? 1 : 0) && self_willed ? 1 : 0) {
         if (yours) {
@@ -1745,10 +1745,10 @@ export function touch_artifact(obj, mon) {
 export function arti_immune(obj, dtyp) {
     let weap = get_artifact(obj);
     if (cptr.eq(weap, cptr.add(artilist, 0, 80)))
-        return (0);
+        return 0;
     if (dtyp == 0)
-        return (0);
-    return schar(((cptr.ld1u(cptr.add(cptr.add(weap, 40), 1)) == dtyp || cptr.ld1u(cptr.add(cptr.add(weap, 44), 1)) == dtyp ? 1 : 0) || cptr.ld1u(cptr.add(cptr.add(weap, 48), 1)) == dtyp ? 1 : 0));
+        return 0;
+    return schar(((cptr.ld1u(cptr.add(weap, 41)) == dtyp || cptr.ld1u(cptr.add(weap, 45)) == dtyp ? 1 : 0) || cptr.ld1u(cptr.add(weap, 49)) == dtyp ? 1 : 0));
 }
 
 /** C ref: artifact.c:993 — @param {CPtr} oart @param {CPtr} mon @returns {CInt} */
@@ -1758,17 +1758,17 @@ function bane_applies(oart, mon) {
         cptr.memcpy(atmp, oart, 80);
         cptr.stU64(cptr.add(atmp, 16), cptr.ldU64(cptr.add(atmp, 16)) & 32505856n);
         if (spec_applies(atmp, mon))
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:1009 — @param {CPtr} weap @param {CPtr} mtmp @returns {CInt} */
 function spec_applies(weap, mtmp) {
     let ptr;
     let yours;
-    if (!(cptr.ldU64(cptr.add(weap, 16)) & BigInt.asUintN(64, (32505856n | 64n))))
-        return (cptr.ld1u(cptr.add(cptr.add(weap, 40), 1)) == 0);
+    if (!(cptr.ldU64(cptr.add(weap, 16)) & 32505920n))
+        return (cptr.ld1u(cptr.add(weap, 41)) == 0);
     yours = schar((cptr.eq(mtmp, cptr.add(gy, 8))));
     ptr = cptr.ldPtr(cptr.add(mtmp, 8));
     if (cptr.ldU64(cptr.add(weap, 16)) & 1048576n) {
@@ -1778,13 +1778,13 @@ function spec_applies(weap, mtmp) {
     } else if (cptr.ldU64(cptr.add(weap, 16)) & 4194304n) {
         return ((cptr.ldU64(cptr.add(ptr, 72)) & cptr.ldU64(cptr.add(weap, 32))) != 0n);
     } else if (cptr.ldU64(cptr.add(weap, 16)) & 8388608n) {
-        return ((cptr.ldU64(cptr.add(ptr, 80)) & cptr.ldU64(cptr.add(weap, 32))) || (yours && ((!(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && (BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(cptr.add(gu, 320), 56)))) & cptr.ldU64(cptr.add(weap, 32))) ? 1 : 0) || ((cptr.ldU64(cptr.add(weap, 32)) & 4n) && ((cptr.ldI32(cptr.add(u, 1836))) >= 0 && (cptr.ldI32(cptr.add(u, 1836))) < 383 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0);
+        return ((cptr.ldU64(cptr.add(ptr, 80)) & cptr.ldU64(cptr.add(weap, 32))) || (yours && ((!(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && (BigInt.asUintN(64, BigInt(cptr.ldI16(cptr.add(gu, 376)))) & cptr.ldU64(cptr.add(weap, 32))) ? 1 : 0) || ((cptr.ldU64(cptr.add(weap, 32)) & 4n) && ((cptr.ldI32(cptr.add(u, 1836))) >= 0 && (cptr.ldI32(cptr.add(u, 1836))) < 383 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0);
     } else if (cptr.ldU64(cptr.add(weap, 16)) & 16777216n) {
-        return yours ? (cptr.ld1s(cptr.add(u, 2172)) != cptr.ld1s(cptr.add(weap, 53))) : (cptr.ld1s(cptr.add(ptr, 33)) == (-128) || sgn(cptr.ld1s(cptr.add(ptr, 33))) != cptr.ld1s(cptr.add(weap, 53)) ? 1 : 0);
+        return yours ? (cptr.ld1s(cptr.add(u, 2172)) != cptr.ld1s(cptr.add(weap, 53))) : (cptr.ld1s(cptr.add(ptr, 33)) == -128 || sgn(cptr.ld1s(cptr.add(ptr, 33))) != cptr.ld1s(cptr.add(weap, 53)) ? 1 : 0);
     } else if (cptr.ldU64(cptr.add(weap, 16)) & 64n) {
-        if (defended(mtmp, cptr.ld1u(cptr.add(cptr.add(weap, 40), 1))))
+        if (defended(mtmp, cptr.ld1u(cptr.add(weap, 41))))
             return 0;
-        switch (cptr.ld1u(cptr.add(cptr.add(weap, 40), 1))) {
+        switch (cptr.ld1u(cptr.add(weap, 41))) {
             case 2:
             return !(yours ? (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 1, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 1, 24)) ? 1 : 0) : Resists_Elem(mtmp, 1));
             case 3:
@@ -1818,22 +1818,22 @@ export function spec_m2(otmp) {
 /** C ref: artifact.c:1076 — @param {CPtr} otmp @param {CPtr} mon @returns {CInt} */
 export function spec_abon(otmp, mon) {
     let weap = get_artifact(otmp);
-    if ((!cptr.eq(weap, cptr.add(artilist, 0, 80)) && cptr.ld1u(cptr.add(cptr.add(weap, 40), 2)) ? 1 : 0) && spec_applies(weap, mon) ? 1 : 0)
-        return (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1085, __sl59), rnd(cptr.ld1u(cptr.add(cptr.add(weap, 40), 2)))) : rnd(cptr.ld1u(cptr.add(cptr.add(weap, 40), 2))));
+    if ((!cptr.eq(weap, cptr.add(artilist, 0, 80)) && cptr.ld1u(cptr.add(weap, 42)) ? 1 : 0) && spec_applies(weap, mon) ? 1 : 0)
+        return (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1085, __sl59), rnd(cptr.ld1u(cptr.add(weap, 42)))) : rnd(cptr.ld1u(cptr.add(weap, 42))));
     return 0;
 }
 
 /** C ref: artifact.c:1091 — @param {CPtr} otmp @param {CPtr} mon @param {CInt} tmp @returns {CInt} */
 export function spec_dbon(otmp, mon, tmp) {
     let weap = get_artifact(otmp);
-    if ((cptr.eq(weap, cptr.add(artilist, 0, 80))) || ((cptr.ld1u(cptr.add(cptr.add(weap, 40), 1)) == 0 && cptr.ld1u(cptr.add(cptr.add(weap, 40), 2)) == 0 ? 1 : 0) && cptr.ld1u(cptr.add(cptr.add(weap, 40), 3)) == 0 ? 1 : 0) ? 1 : 0)
+    if ((cptr.eq(weap, cptr.add(artilist, 0, 80))) || ((cptr.ld1u(cptr.add(weap, 41)) == 0 && cptr.ld1u(cptr.add(weap, 42)) == 0 ? 1 : 0) && cptr.ld1u(cptr.add(weap, 43)) == 0 ? 1 : 0) ? 1 : 0)
         cptr.stI32(gs, 0);
     else if (is_art(otmp, 5))
         cptr.stI32(gs, 1);
     else
         cptr.stI32(gs, spec_applies(weap, mon));
     if (cptr.ldI32(gs))
-        return cptr.ld1u(cptr.add(cptr.add(weap, 40), 3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1107, __sl60), rnd(cptr.ld1u(cptr.add(cptr.add(weap, 40), 3)))) : rnd(cptr.ld1u(cptr.add(cptr.add(weap, 40), 3)))) : ((tmp) > (1) ? (tmp) : (1));
+        return cptr.ld1u(cptr.add(weap, 43)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1107, __sl60), rnd(cptr.ld1u(cptr.add(weap, 43)))) : rnd(cptr.ld1u(cptr.add(weap, 43)))) : ((tmp) > 1 ? (tmp) : 1);
     return 0;
 }
 
@@ -1853,10 +1853,10 @@ export function undiscovered_artifact(m) {
     let i;
     for (i = 0; i < 33; i++)
         if (cptr.ldI16(cptr.add(artidisco, i, 2)) == m)
-            return (0);
+            return 0;
         else if (cptr.ldI16(cptr.add(artidisco, i, 2)) == 0)
             break;
-    return (1);
+    return 1;
 }
 
 /** C ref: artifact.c:1147 — @param {CInt} tmpwin @returns {CInt} */
@@ -1869,10 +1869,10 @@ export function disp_artifact_discoveries(tmpwin) {
     for (i = 0; i < 33; i++) {
         if (cptr.ldI16(cptr.add(artidisco, i, 2)) == 0)
             break;
-        if (tmpwin == (-1))
+        if (tmpwin == -1)
             continue;
         if (i == 0)
-            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), __sl62);
+            (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(iflags, 116)), __sl62);
         m = cptr.ldI16(cptr.add(artidisco, i, 2));
         otyp = cptr.ldI16(cptr.add(artilist, m, 80));
         algnstr = align_str(cptr.ld1s(cptr.add(cptr.add(artilist, m, 80), 53)));
@@ -1889,7 +1889,7 @@ export function dump_artifact_info(tmpwin) {
     let m;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
-    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4)), __sl62);
+    (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, cptr.ldI32(cptr.add(iflags, 116)), __sl62);
     for (m = 1; m <= 33; ++m) {
         nh_snprintf(__sl66, 1197, cptr.decay(buf2), 256n, __sl67, (cptr.ldI32(cptr.add(artiexist, m, 36)) & 1) | 0 ? __sl68 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 4)) & 1) | 0 ? __sl69 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 8)) & 1) | 0 ? __sl70 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 12)) & 1) | 0 ? __sl71 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 16)) & 1) | 0 ? __sl72 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 20)) & 1) | 0 ? __sl73 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 24)) & 1) | 0 ? __sl74 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 28)) & 1) | 0 ? __sl75 : __sl0, (cptr.ldI32(cptr.add(cptr.add(artiexist, m, 36), 32)) & 1) | 0 ? __sl76 : __sl0);
         nh_snprintf(__sl66, 1204, cptr.decay(buf), 256n, __sl77, artiname(m), cptr.decay(buf2));
@@ -1922,19 +1922,19 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     let verb;
     let youattack = schar((cptr.eq(magr, cptr.add(gy, 8))));
     let youdefend = schar((cptr.eq(mdef, cptr.add(gy, 8))));
-    let resisted = (0);
+    let resisted = 0;
     let do_stun;
     let do_confuse;
     let result;
     let attack_indx;
     let fakeidx;
-    let scare_dieroll = (8 / 2) | 0;
-    result = (0);
+    let scare_dieroll = 4;
+    result = 0;
     if (cptr.ld1s(cptr.add(mb, 48)) >= 3)
         scare_dieroll = (scare_dieroll / (1 << ((cptr.ld1s(cptr.add(mb, 48)) / 3) | 0))) | 0;
     if (!cptr.ldI32(gs))
         dieroll = (dieroll + 1) | 0;
-    do_stun = schar((((cptr.ld1s(cptr.add(mb, 48))) > (0) ? (cptr.ld1s(cptr.add(mb, 48))) : (0)) < (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1277, __sl86), rn2(cptr.ldI32(gs) ? 11 : 7)) : rn2(cptr.ldI32(gs) ? 11 : 7))));
+    do_stun = schar((((cptr.ld1s(cptr.add(mb, 48))) > 0 ? (cptr.ld1s(cptr.add(mb, 48))) : 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1277, __sl86), rn2(cptr.ldI32(gs) ? 11 : 7)) : rn2(cptr.ldI32(gs) ? 11 : 7))));
     attack_indx = 0;
     cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1287, __sl86), rnd(4)) : rnd(4))) | 0);
     if (do_stun) {
@@ -1951,26 +1951,26 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     }
     verb = cptr.ldPtr(cptr.add(cptr.decay(mb_verb[!!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0]), attack_indx, 8));
     if ((youattack || youdefend ? 1 : 0) || vis ? 1 : 0) {
-        result = (1);
+        result = 1;
         pline_The(__sl87, vtense(null, verb), hittee);
         if (attack_indx == 0 && !(canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0)
             map_invisible(cptr.ldI16(cptr.add(mdef, 28)), cptr.ldI16(cptr.add(mdef, 30)));
     }
     switch (attack_indx) {
         case 3:
-        old_mdat = youdefend ? cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)) : cptr.ldPtr(cptr.add(mdef, 8));
-        if (!cancel_monst(mdef, mb, youattack, (0), (0))) {
-            resisted = (1);
+        old_mdat = youdefend ? cptr.ldPtr(cptr.add(gy, 16)) : cptr.ldPtr(cptr.add(mdef, 8));
+        if (!cancel_monst(mdef, mb, youattack, 0, 0)) {
+            resisted = 1;
         } else {
-            do_stun = (0);
+            do_stun = 0;
             if (youdefend) {
-                if (!cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), old_mdat))
+                if (!cptr.eq(cptr.ldPtr(cptr.add(gy, 16)), old_mdat))
                     cptr.stI32(dmgptr, 0);
                 if (cptr.ldI32(cptr.add(u, 2212)) > 0) {
                     (cptr.stI32(cptr.add(u, 2212), cptr.ldI32(cptr.add(u, 2212)) + -1)) - (-1);
                     if (cptr.ldI32(cptr.add(u, 2208)) > 0)
                         (cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2208)) + -1)) - (-1);
-                    cptr.st1(disp, (1));
+                    cptr.st1(disp, 1);
                     You(__sl88);
                 }
             } else {
@@ -1983,7 +1983,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                     if (cptr.ldI32(cptr.add(u, 2212)) > cptr.ldI32(cptr.add(u, 2216)))
                         cptr.stI32(cptr.add(u, 2216), cptr.ldI32(cptr.add(u, 2212)));
                     (cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2208)) + 1)) - (1);
-                    cptr.st1(disp, (1));
+                    cptr.st1(disp, 1);
                     You(__sl89);
                 }
             }
@@ -1992,27 +1992,27 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         case 2:
         if (youdefend) {
             if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 12, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 12, 24)) ? 1 : 0)) {
-                resisted = (1);
+                resisted = 1;
             } else {
                 nomul(-3);
                 cptr.stPtr(cptr.add(gm, 16), __sl90);
                 cptr.stPtr(cptr.add(gn, 8), __sl0);
-                if ((magr && cptr.eq(magr, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) && sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) {
+                if ((magr && cptr.eq(magr, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) && sticks(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) {
                     set_ustuck(null);
                     You(__sl91, mon_nam(magr));
                 }
             }
         } else {
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1368, __sl86), rn2(2)) : rn2(2)) && resist(mdef, 2, 0, 0) ? 1 : 0)
-                resisted = (1);
+                resisted = 1;
             else
-                monflee(mdef, 3, (0), schar((cptr.ldI32(cptr.add(mdef, 52)) > cptr.ldI32(dmgptr))));
+                monflee(mdef, 3, 0, schar((cptr.ldI32(cptr.add(mdef, 52)) > cptr.ldI32(dmgptr))));
         }
         if (!resisted)
-            do_stun = (0);
+            do_stun = 0;
         break;
         case 1:
-        do_stun = (1);
+        do_stun = 1;
         break;
         case 0:
         if (youattack && (cptr.ld1s(cptr.add(mb, 48)) == 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1382, __sl86), rn2(Math.imul(3, Math.abs(cptr.ld1s(cptr.add(mb, 48)))))) : rn2(Math.imul(3, Math.abs(cptr.ld1s(cptr.add(mb, 48)))))) ? 1 : 0) ? 1 : 0) {
@@ -2023,16 +2023,16 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     }
     if (do_stun) {
         if (youdefend)
-            make_stunned((BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & 16777215n) + 3n)), (0));
+            make_stunned((BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & 16777215n) + 3n)), 0);
         else
             cptr.stI32(cptr.add(mdef, 152), 1);
         if (attack_indx == 1)
-            do_stun = (0);
+            do_stun = 0;
     }
     do_confuse = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1400, __sl86), rn2(12)) : rn2(12))));
     if (do_confuse) {
         if (youdefend)
-            make_confused(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) & 16777215n) + 4n), (0));
+            make_confused(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) & 16777215n) + 4n), 0);
         else
             cptr.stI32(cptr.add(mdef, 164), 1);
     }
@@ -2075,7 +2075,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + spec_dbon(otmp, mdef, cptr.ldI32(dmgptr))) | 0);
     if (youattack && youdefend ? 1 : 0) {
         impossible(__sl99);
-        return (0);
+        return 0;
     }
     realizes_damage = schar(((youdefend || vis ? 1 : 0) || (youattack && cptr.eq(mdef, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) ? 1 : 0));
     if (attacks(2, otmp)) {
@@ -2105,7 +2105,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         if (realizes_damage)
             pline_The(__sl107, !cptr.ldI32(gs) ? __sl0 : __sl108, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         if (cptr.ldI32(gs))
-            wake_nearto(cptr.ldI16(cptr.add(mdef, 28)), cptr.ldI16(cptr.add(mdef, 30)), Math.imul(4, 4));
+            wake_nearto(cptr.ldI16(cptr.add(mdef, 28)), cptr.ldI16(cptr.add(mdef, 30)), 16);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1520, __sl104), rn2(5)) : rn2(5))) {
             let itemdmg = destroy_items(mdef, 6, cptr.ldI32(dmgptr));
             if (!youdefend)
@@ -2122,7 +2122,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         return Mb_hit(magr, mdef, otmp, dmgptr, dieroll, vis, cptr.decay(hittee));
     }
     if (!cptr.ldI32(gs)) {
-        return (0);
+        return 0;
     }
     if (spec_ability(otmp, 1024n)) {
         if (is_art(otmp, 30) && dieroll == 1 ? 1 : 0) {
@@ -2130,37 +2130,37 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (youattack && ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mdef))) ? 1 : 0) ? 1 : 0) {
                 You(__sl112, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32(cptr.add(mdef, 52))) + 200) | 0);
-                return (1);
+                return 1;
             }
             if (!youdefend) {
                 if (cptr.ld1s(cptr.add(gn, 86)))
-                    return (0);
+                    return 0;
                 if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mdef, 8))), 67)) >= 3)) {
                     if (youattack)
                         You(__sl113, mon_nam(mdef));
                     else if (vis)
                         pline(__sl114, Monnam(magr), cptr.decay(hittee));
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
-                    return (1);
+                    return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32(cptr.add(mdef, 52))) + 200) | 0);
                 pline(__sl115, wepdesc, mon_nam(mdef));
                 observe_object(otmp);
-                return (1);
+                return 1;
             } else {
-                if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) >= 3)) {
+                if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) >= 3)) {
                     pline(__sl116, magr ? Monnam(magr) : wepdesc);
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
-                    return (1);
+                    return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1812)) : cptr.ldI32(cptr.add(u, 2196)))) + 200) | 0);
                 pline(__sl117, wepdesc);
                 observe_object(otmp);
-                return (1);
+                return 1;
             }
         } else if (is_art(otmp, 18) && (dieroll == 1 || cptr.eq(cptr.ldPtr(cptr.add(mdef, 8)), cptr.add(mons, 178, 96)) ? 1 : 0) ? 1 : 0) {
             if (youattack && ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mdef))) ? 1 : 0) ? 1 : 0)
-                return (0);
+                return 0;
             wepdesc = cptr.ldPtr(cptr.add(cptr.add(artilist, 18, 80), 8));
             if (!youdefend) {
                 if ((!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mdef, 8))), 72)) & 32768n) == 0n) || cptr.ld1s(cptr.add(gn, 86)) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) {
@@ -2173,28 +2173,28 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 }
                 if ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mdef, 8))), 28)) == 54) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mdef, 8))), 72)) & 4n) != 0n) ? 1 : 0) {
                     pline(__sl120, wepdesc, s_suffix(mon_nam(mdef)), mbodypart(mdef, 11));
-                    return (1);
+                    return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32(cptr.add(mdef, 52))) + 200) | 0);
                 pline(cptr.ldPtr(cptr.add(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1618, __sl104), rn2(2)) : rn2(2)), 8)), wepdesc, mon_nam(mdef));
                 if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0)
                     pline(__sl121);
                 observe_object(otmp);
-                return (1);
+                return 1;
             } else {
-                if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 32768n) == 0n)) {
+                if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 32768n) == 0n)) {
                     pline(__sl122, magr ? mon_nam(magr) : wepdesc);
                     cptr.stI32(dmgptr, 0);
-                    return (1);
+                    return 1;
                 }
-                if ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28)) == 54) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 4n) != 0n) ? 1 : 0) {
+                if ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 28)) == 54) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 4n) != 0n) ? 1 : 0) {
                     pline(__sl123, wepdesc, body_part(11));
-                    return (1);
+                    return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1812)) : cptr.ldI32(cptr.add(u, 2196)))) + 200) | 0);
                 pline(cptr.ldPtr(cptr.add(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1638, __sl104), rn2(2)) : rn2(2)), 8)), wepdesc, __sl124);
                 observe_object(otmp);
-                return (1);
+                return 1;
             }
         }
     }
@@ -2223,7 +2223,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (drain > 0) {
                 drain = (((drain + 1) | 0) / 2) | 0;
                 if (youattack) {
-                    healup(drain, 0, (0), (0));
+                    healup(drain, 0, 0, 0);
                 } else {
                     (__builtin_expect(BigInt((!(magr !== null))), 0n) ? __assert_rtn(__sl104, __sl38, 1688, __sl129) : void 0);
                     healmon(magr, drain, 0);
@@ -2245,10 +2245,10 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (magr && cptr.ldI32(cptr.add(magr, 52)) < cptr.ldI32(cptr.add(magr, 56)) ? 1 : 0) {
                 healmon(magr, (((Math.abs((oldhpmax - cptr.ldI32(cptr.add(u, 2200))) | 0) + 1) | 0) / 2) | 0, 0);
             }
-            return (1);
+            return 1;
         }
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:1727 — @param {CPtr} obj @returns {CInt} */
@@ -2268,7 +2268,7 @@ export function doinvoke() {
     obj.v = getobj(__sl138, invoke_ok, 2);
     if (!obj.v)
         return 2;
-    if (!retouch_object(obj, (0)))
+    if (!retouch_object(obj, 0))
         return 1;
     return arti_invoke(obj.v);
 }
@@ -2297,7 +2297,7 @@ function invoke_healing(obj) {
     if (((healamt || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)) ? 1 : 0) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16)) ? 1 : 0) || BigInt((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) > creamed ? 1 : 0)
         You_feel(__sl140);
     if (((healamt || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)) ? 1 : 0) || cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16)) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) > creamed ? 1 : 0)
-        You_feel(__sl141, (((!healamt && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16)) ? 1 : 0) && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & BigInt.asIntN(64, ~16777215n)) != 0n ? 1 : 0) ? __sl142 : __sl0);
+        You_feel(__sl141, (((!healamt && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16)) ? 1 : 0) && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & -16777216n) != 0n ? 1 : 0) ? __sl142 : __sl0);
     else {
         nothing_special(obj);
         return 1;
@@ -2309,12 +2309,12 @@ function invoke_healing(obj) {
             cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) + healamt) | 0);
     }
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)))
-        make_sick(0n, null, (0), 3);
+        make_sick(0n, null, 0, 3);
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16)))
         make_slimed(0n, null);
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) > creamed)
-        make_blinded(creamed, (0));
-    cptr.st1(disp, (1));
+        make_blinded(creamed, 0);
+    cptr.st1(disp, 1);
     return 1;
 }
 
@@ -2327,7 +2327,7 @@ function invoke_energy_boost(obj) {
         epboost = (cptr.ldI32(cptr.add(u, 2212)) - cptr.ldI32(cptr.add(u, 2208))) | 0;
     if (epboost) {
         cptr.stI32(cptr.add(u, 2208), (cptr.ldI32(cptr.add(u, 2208)) + epboost) | 0);
-        cptr.st1(disp, (1));
+        cptr.st1(disp, 1);
         You_feel(__sl143);
     } else {
         nothing_special(obj);
@@ -2338,7 +2338,7 @@ function invoke_energy_boost(obj) {
 
 /** C ref: artifact.c:1838 — @param {CPtr} obj @returns {CInt} */
 function invoke_untrap(obj) {
-    if (!untrap((1), 0, 0, null)) {
+    if (!untrap(1, 0, 0, null)) {
         cptr.stI64(cptr.add(obj, 184), 0n);
         return 2;
     }
@@ -2348,13 +2348,13 @@ function invoke_untrap(obj) {
 /** C ref: artifact.c:1848 — @param {CPtr} obj @returns {CInt} */
 function invoke_charge_obj(obj) {
     let oart = get_artifact(obj);
-    let otmp = getobj(__sl144, charge_ok, (2 | 1) >>> 0);
+    let otmp = getobj(__sl144, charge_ok, 3);
     let b_effect;
     if (!otmp) {
         cptr.stI64(cptr.add(obj, 184), 0n);
         return 2;
     }
-    b_effect = schar(((cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 && (cptr.ldI16(cptr.add(oart, 54)) == (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))) || cptr.ldI16(cptr.add(oart, 54)) == -1 ? 1 : 0) ? 1 : 0));
+    b_effect = schar(((cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 && (cptr.ldI16(cptr.add(oart, 54)) == (cptr.ldI16(cptr.add(gu, 216))) || cptr.ldI16(cptr.add(oart, 54)) == -1 ? 1 : 0) ? 1 : 0));
     recharge(otmp, b_effect ? 1 : ((cptr.ldI32(cptr.add(obj, 56)) & 1) | 0 ? -1 : 0));
     update_inventory();
     return 1;
@@ -2374,7 +2374,7 @@ function invoke_create_portal(obj) {
     for (i = (num_ok_dungeons = 0); i < cptr.ldI32(svn); i++) {
         if (!cptr.ldI16(cptr.add(cptr.add(svd, i, 112), 100)))
             continue;
-        if (i == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 88))))
+        if (i == (cptr.ldI16(cptr.add(svd, 1880))))
             continue;
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.add(svd, i, 112), 0);
@@ -2401,21 +2401,21 @@ function invoke_create_portal(obj) {
         cptr.stI16(cptr.add(newlev, 2), cptr.ldI16(cptr.add(cptr.add(svd, i, 112), 96)));
     else
         cptr.stI16(cptr.add(newlev, 2), cptr.ldI16(cptr.add(cptr.add(svd, i, 112), 100)));
-    if (((((cptr.ldI32(cptr.add(u, 1944)) & 1) | 0 || (cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) ? 1 : 0) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) ? 1 : 0) || cptr.ldI16(newlev) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0) || !next_to_u() ? 1 : 0) {
+    if (((((cptr.ldI32(cptr.add(u, 1944)) & 1) | 0 || (cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 1 : 0) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(svd, 1868)))) ? 1 : 0) || cptr.ldI16(newlev) == cptr.ldI16(cptr.add(u, 24)) ? 1 : 0) || !next_to_u() ? 1 : 0) {
         You_feel(__sl146);
     } else {
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
             You(__sl147);
         else
             You_feel(__sl148);
-        goto_level(newlev, (0), (0), (0));
+        goto_level(newlev, 0, 0, 0);
     }
     return 1;
 }
 
 /** C ref: artifact.c:1934 — @param {CPtr} obj @returns {CInt} */
 function invoke_create_ammo(obj) {
-    let otmp = mksobj(18, (1), (0));
+    let otmp = mksobj(18, 1, 0);
     if (!otmp) {
         nothing_special(obj);
         return 1;
@@ -2447,7 +2447,7 @@ function invoke_banish(obj) {
     let mtmp2;
     let dest = cptr.alloc(4);
     find_hell(dest);
-    for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = mtmp2) {
+    for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = mtmp2) {
         let chance = 1;
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1) || !isok(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30))) ? 1 : 0)
@@ -2471,7 +2471,7 @@ function invoke_banish(obj) {
                 cptr.stI16(cptr.add(dest, 2), i16((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1996, __sl152), rn2(dunlevs_in_dungeon(dest))) : rn2(dunlevs_in_dungeon(dest)))));
                 migrate_mon(mtmp, ledger_no(dest), 0);
             } else {
-                u_teleport_mon(mtmp, (0));
+                u_teleport_mon(mtmp, 0);
             }
         } else {
             nstayed++;
@@ -2490,9 +2490,9 @@ function invoke_banish(obj) {
 function invoke_fling_poison(obj) {
     if (getdir(null)) {
         let venom = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2025, __sl158), rn2(2)) : rn2(2)) ? 479 : 480;
-        let otmp = mksobj(venom, (1), (0));
+        let otmp = mksobj(venom, 1, 0);
         cptr.st1(cptr.add(otmp, 48), 1);
-        throwit(otmp, 0n, (0), null);
+        throwit(otmp, 0n, 0, null);
     } else {
         pline(__sl159, cptr.ldPtr(cptr.add(c_common_strings, 64)));
         cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(svm, 8)));
@@ -2508,7 +2508,7 @@ function invoke_storm_spell(obj) {
     let skill = spell_skilltype(storm);
     let expertise = (cptr.ldI16(cptr.add(cptr.add(u, 2588), skill, 6)));
     cptr.stI16(cptr.add(cptr.add(u, 2588), skill, 6), 4);
-    void spelleffects(storm, (0), (1));
+    void spelleffects(storm, 0, 1);
     cptr.stI16(cptr.add(cptr.add(u, 2588), skill, 6), i16(expertise));
     return 1;
 }
@@ -2519,14 +2519,14 @@ function invoke_blinding_ray(obj) {
         if (cptr.ldI32(cptr.add(u, 4)) || cptr.ldI32(cptr.add(u, 8)) ? 1 : 0) {
             do_blinding_ray(obj);
         } else if (cptr.ldI32(cptr.add(u, 12))) {
-            litroom((1), obj);
+            litroom(1, obj);
             pline(__sl159, (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 16)) & 1) | 0 ? 1 : 0) && !(cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 20)) & 1) ? 1 : 0) ? __sl160 : cptr.ldPtr(cptr.add(c_common_strings, 8))));
         } else {
             let vulnerable = schar((cptr.ldI32(cptr.add(u, 1808)) == 40));
             let damg = (cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 ? 15 : (!(cptr.ldI32(cptr.add(obj, 56)) & 1) ? 10 : 5);
             if (vulnerable)
-                void lightdamage(obj, (1), Math.imul(2, damg));
-            if (!flashburn(BigInt(((damg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2075, __sl161), rnd(damg)) : rnd(damg))) | 0)), (0)) && !vulnerable ? 1 : 0)
+                void lightdamage(obj, 1, Math.imul(2, damg));
+            if (!flashburn(BigInt(((damg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2075, __sl161), rnd(damg)) : rnd(damg))) | 0)), 0) && !vulnerable ? 1 : 0)
                 pline(__sl159, cptr.ldPtr(cptr.add(c_common_strings, 8)));
         }
     } else {
@@ -2541,7 +2541,7 @@ function invoke_blinding_ray(obj) {
 function arti_invoke_cost_pw(obj) {
     let oart = get_artifact(obj);
     if (cptr.ld1u(cptr.add(oart, 52)) == 79 || cptr.ld1u(cptr.add(oart, 52)) == 82 ? 1 : 0) {
-        return (Math.imul((5), 5));
+        return 25;
     }
     return -1;
 }
@@ -2552,17 +2552,17 @@ function arti_invoke_cost(obj) {
         let pw_cost = arti_invoke_cost_pw(obj);
         if (pw_cost < 0 || cptr.ldI32(cptr.add(u, 2208)) < pw_cost ? 1 : 0) {
             You_feel(__sl162, the(xname(obj)), otense(obj, __sl56));
-            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl163), d((3), (10))) : d((3), (10)))));
-            return (0);
+            cptr.stI64(cptr.add(obj, 184), cptr.ldI64(cptr.add(obj, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl163), d(3, 10)) : d(3, 10))));
+            return 0;
         } else {
             You_feel(__sl164);
             cptr.stI32(cptr.add(u, 2208), (cptr.ldI32(cptr.add(u, 2208)) - pw_cost) | 0);
-            cptr.st1(disp, (1));
+            cptr.st1(disp, 1);
         }
     } else {
         cptr.stI64(cptr.add(obj, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2125, __sl163), rnz(100)) : rnz(100)))));
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: artifact.c:2131 — @param {CPtr} obj @returns {CInt} */
@@ -2640,12 +2640,12 @@ function arti_invoke(obj) {
         if (on && cptr.ldI64(cptr.add(obj.v, 184)) > cptr.ldI64(cptr.add(svm, 8)) ? 1 : 0) {
             cptr.stI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24), cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(oart, 52)), 24)) ^ 8192n);
             You_feel(__sl162, the(xname(obj.v)), otense(obj.v, __sl56));
-            cptr.stI64(cptr.add(obj.v, 184), cptr.ldI64(cptr.add(obj.v, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl167), d((3), (10))) : d((3), (10)))));
+            cptr.stI64(cptr.add(obj.v, 184), cptr.ldI64(cptr.add(obj.v, 184)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl167), d(3, 10)) : d(3, 10))));
             return 1;
         } else if (!on) {
             cptr.stI64(cptr.add(obj.v, 184), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2194, __sl167), rnz(100)) : rnz(100)))));
         }
-        if ((eprop & BigInt.asIntN(64, ~8192n)) || iprop ? 1 : 0) {
+        if ((eprop & -8193n) || iprop ? 1 : 0) {
             nothing_special(obj.v);
             return 1;
         }
@@ -2659,9 +2659,9 @@ function arti_invoke(obj) {
             case 48:
             if (on) {
                 float_up();
-                spoteffects((0));
+                spoteffects(0);
             } else
-                void float_down(536870912n | 16777215n, 8192n);
+                void float_down(553648127n, 8192n);
             break;
             case 40:
             if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0) {
@@ -2685,10 +2685,10 @@ export function finesse_ahriman(obj) {
     let save_Lev = cptr.alloc(24);
     let result;
     if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) || cptr.eq((oart = get_artifact(obj)), cptr.add(artilist, 0, 80)) ? 1 : 0) || cptr.ld1u(cptr.add(oart, 52)) != 48 ? 1 : 0) || !(cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & 8192n) ? 1 : 0)
-        return (0);
+        return 0;
     cptr.memcpy(save_Lev, cptr.add(cptr.add(u, 112), 48, 24), 24);
-    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & BigInt.asIntN(64, ~(536870912n | 16777215n)));
-    cptr.stI64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & BigInt.asIntN(64, ~8192n));
+    cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) & (-553648128n));
+    cptr.stI64(cptr.add(cptr.add(u, 112), 48, 24), cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) & (-8193n));
     result = schar((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0)));
     cptr.memcpy(cptr.add(cptr.add(u, 112), 48, 24), save_Lev, 24);
     return result;
@@ -2697,7 +2697,7 @@ export function finesse_ahriman(obj) {
 /** C ref: artifact.c:2264 — @param {CPtr} obj @returns {CInt} */
 export function artifact_light(obj) {
     if ((obj && (cptr.ldI16(cptr.add(obj, 32)) == 102 || cptr.ldI16(cptr.add(obj, 32)) == 112 ? 1 : 0) ? 1 : 0) && (cptr.ldI64(cptr.add(obj, 192)) & 1n) != 0n ? 1 : 0)
-        return (1);
+        return 1;
     return schar(((!cptr.eq(get_artifact(obj), cptr.add(artilist, 0, 80))) && is_art(obj, 20) ? 1 : 0));
 }
 
@@ -2708,7 +2708,7 @@ export function arti_speak(obj) {
     let buf = new Uint8Array(256);
     if (cptr.eq(oart, cptr.add(artilist, 0, 80)) || !(cptr.ldU64(cptr.add(oart, 16)) & 8n) ? 1 : 0)
         return 0;
-    line = getrumor(bcsign(obj), cptr.decay(buf), (1));
+    line = getrumor(bcsign(obj), cptr.decay(buf), 1);
     if (!cptr.ld1s(line))
         line = __sl174;
     pline(__sl175, Tobjnam(obj, __sl176));
@@ -2735,7 +2735,7 @@ export function arti_cost(otmp) {
 
 /** C ref: artifact.c:2320 — @param {CPtr} abil @returns {*} */
 function abil_to_adtyp(abil) {
-    let abil2adtyp = cptr.alloc(7 * 16); cptr.stPtr(cptr.add(abil2adtyp, 0), cptr.add(cptr.add(u, 112), 1, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 0), 8), 2); cptr.stPtr(cptr.add(abil2adtyp, 16), cptr.add(cptr.add(u, 112), 2, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 16), 8), 3); cptr.stPtr(cptr.add(abil2adtyp, 32), cptr.add(cptr.add(u, 112), 5, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 32), 8), 6); cptr.stPtr(cptr.add(abil2adtyp, 48), cptr.add(cptr.add(u, 112), 12, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 48), 8), 1); cptr.stPtr(cptr.add(abil2adtyp, 64), cptr.add(cptr.add(u, 112), 4, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 64), 8), 5); cptr.stPtr(cptr.add(abil2adtyp, 80), cptr.add(cptr.add(u, 112), 6, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 80), 8), 7); cptr.stPtr(cptr.add(abil2adtyp, 96), cptr.add(cptr.add(u, 112), 9, 24)); cptr.st1(cptr.add(cptr.add(abil2adtyp, 96), 8), 15);
+    let abil2adtyp = cptr.alloc(7 * 16); cptr.stPtr(cptr.add(abil2adtyp, 0), cptr.add(cptr.add(u, 112), 1, 24)); cptr.st1(cptr.add(abil2adtyp, 8), 2); cptr.stPtr(cptr.add(abil2adtyp, 16), cptr.add(cptr.add(u, 112), 2, 24)); cptr.st1(cptr.add(abil2adtyp, 24), 3); cptr.stPtr(cptr.add(abil2adtyp, 32), cptr.add(cptr.add(u, 112), 5, 24)); cptr.st1(cptr.add(abil2adtyp, 40), 6); cptr.stPtr(cptr.add(abil2adtyp, 48), cptr.add(cptr.add(u, 112), 12, 24)); cptr.st1(cptr.add(abil2adtyp, 56), 1); cptr.stPtr(cptr.add(abil2adtyp, 64), cptr.add(cptr.add(u, 112), 4, 24)); cptr.st1(cptr.add(abil2adtyp, 72), 5); cptr.stPtr(cptr.add(abil2adtyp, 80), cptr.add(cptr.add(u, 112), 6, 24)); cptr.st1(cptr.add(abil2adtyp, 88), 7); cptr.stPtr(cptr.add(abil2adtyp, 96), cptr.add(cptr.add(u, 112), 9, 24)); cptr.st1(cptr.add(abil2adtyp, 104), 15);
     let k;
     for (k = 0; k < 7; k++) {
         if (cptr.eq(cptr.ldPtr(cptr.add(abil2adtyp, k, 16)), abil))
@@ -2746,29 +2746,29 @@ function abil_to_adtyp(abil) {
 
 const __static_abil_to_spfx_abil2spfx = cptr.alloc(12 * 16);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 0), cptr.add(cptr.add(u, 112), 34, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 0), 8), 512n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 8), 512n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 16), cptr.add(cptr.add(u, 112), 24, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 16), 8), 2048n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 24), 2048n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 32), cptr.add(cptr.add(u, 112), 30, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 32), 8), 4096n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 40), 4096n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 48), cptr.add(cptr.add(u, 112), 42, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 48), 8), 8192n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 56), 8192n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 64), cptr.add(cptr.add(u, 112), 57, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 64), 8), 16384n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 72), 16384n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 80), cptr.add(cptr.add(u, 112), 47, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 80), 8), 262144n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 88), 262144n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 96), cptr.add(cptr.add(u, 112), 32, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 96), 8), 32n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 104), 32n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 112), cptr.add(cptr.add(u, 112), 31, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 112), 8), 32n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 120), 32n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 128), cptr.add(cptr.add(u, 112), 58, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 128), 8), 32768n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 136), 32768n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 144), cptr.add(cptr.add(u, 112), 55, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 144), 8), 65536n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 152), 65536n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 160), cptr.add(cptr.add(u, 112), 56, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 160), 8), 131072n);
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 168), 131072n);
 cptr.stPtr(cptr.add(__static_abil_to_spfx_abil2spfx, 176), cptr.add(cptr.add(u, 112), 65, 24));
-cptr.stU64(cptr.add(cptr.add(__static_abil_to_spfx_abil2spfx, 176), 8), 67108864n); /** C ref: artifact.c:2349 — struct abil2spfx_tag[12] (function-static) */
+cptr.stU64(cptr.add(__static_abil_to_spfx_abil2spfx, 184), 67108864n); /** C ref: artifact.c:2349 — struct abil2spfx_tag[12] (function-static) */
 
 /** C ref: artifact.c:2344 — @param {CPtr} abil @returns {CLongLong} */
 function abil_to_spfx(abil) {
@@ -2786,7 +2786,7 @@ export function what_gives(abil) {
     let dtyp;
     let spfx;
     let wornbits;
-    let wornmask = (1n | 2n | 4n | 8n | 16n | 32n | 64n | 65536n | 131072n | 262144n | 524288n | 4096n | 8192n);
+    let wornmask = 995455n;
     if (cptr.ld1s(cptr.add(u, 2816)))
         wornmask |= 1024n;
     dtyp = abil_to_adtyp(abil);
@@ -2797,7 +2797,7 @@ export function what_gives(abil) {
             let art = get_artifact(obj);
             if (!cptr.eq(art, cptr.add(artilist, 0, 80))) {
                 if (dtyp) {
-                    if (cptr.ld1u(cptr.add(cptr.add(art, 48), 1)) == dtyp || (cptr.ld1u(cptr.add(cptr.add(art, 44), 1)) == dtyp && (cptr.ldI64(cptr.add(obj, 192)) & BigInt.asIntN(64, ~(4096n | 8192n))) ? 1 : 0) ? 1 : 0)
+                    if (cptr.ld1u(cptr.add(art, 49)) == dtyp || (cptr.ld1u(cptr.add(art, 45)) == dtyp && (cptr.ldI64(cptr.add(obj, 192)) & -12289n) ? 1 : 0) ? 1 : 0)
                         return obj;
                 }
                 if (spfx) {
@@ -2853,15 +2853,15 @@ export function Sting_effects(orc_count) {
         let oldstr = glow_strength(cptr.ldI32(gw));
         let newstr = glow_strength(orc_count);
         if (orc_count == -1 && cptr.ldI32(gw) > 0 ? 1 : 0) {
-            pline(__sl182, bare_artifactname(uwep.v), glow_verb(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 0 : cptr.ldI32(gw), (1)));
+            pline(__sl182, bare_artifactname(uwep.v), glow_verb(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 0 : cptr.ldI32(gw), 1));
         } else if (newstr > 0 && newstr != oldstr ? 1 : 0) {
             maybe_lvltport_feedback();
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
-                pline(__sl98, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, (0))), glow_color(cptr.ld1s(cptr.add(uwep.v, 51))), (newstr > oldstr) ? 33 : 46);
+                pline(__sl98, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, 0)), glow_color(cptr.ld1s(cptr.add(uwep.v, 51))), (newstr > oldstr) ? 33 : 46);
             else if (oldstr == 0)
-                pline(__sl183, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, (0))));
+                pline(__sl183, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, 0)));
         } else if (orc_count == 0 && cptr.ldI32(gw) > 0 ? 1 : 0) {
-            pline(__sl184, bare_artifactname(uwep.v), glow_verb(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 0 : cptr.ldI32(gw), (1)));
+            pline(__sl184, bare_artifactname(uwep.v), glow_verb(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 0 : cptr.ldI32(gw), 1));
         }
     }
 }
@@ -2876,7 +2876,7 @@ export function retouch_object(objp, loseit) {
         let buf = new Uint8Array(256);
         let dmg = 0;
         let tmp;
-        let ag = schar((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0));
+        let ag = schar((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) ? 1 : 0));
         let bane = bane_applies(get_artifact(obj), cptr.add(gy, 8));
         if (!ag && !bane ? 1 : 0)
             return 1;
@@ -2895,12 +2895,12 @@ export function retouch_object(objp, loseit) {
                 dmg = (dmg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2554, __sl189), rnd(10)) : rnd(10))) | 0;
             void cptr.sprintf(cptr.decay(buf), __sl190, what);
             losehp(dmg, cptr.decay(buf), 1);
-            exercise(4, (0));
+            exercise(4, 0);
         }
     }
     if (cptr.ldI64(cptr.add(obj, 192))) {
         let otmp;
-        remove_worn_item(obj, (0));
+        remove_worn_item(obj, 0);
         for (otmp = cptr.ldPtr(cptr.add(gi, 8)); otmp; otmp = cptr.ldPtr(otmp))
             if (cptr.eq(otmp, obj))
                 break;
@@ -2910,7 +2910,7 @@ export function retouch_object(objp, loseit) {
     if (loseit && obj ? 1 : 0) {
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0)) {
             freeinv(obj);
-            hitfloor(obj, (1));
+            hitfloor(obj, 1);
         } else {
             if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 32))
                 pline(__sl191, Tobjnam(obj, __sl151), surface(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))));
@@ -2931,19 +2931,19 @@ function untouchable(obj, drop_untouchable) {
     let wearmask = BigInt.asIntN(64, ~(512n | (cptr.ld1s(cptr.add(u, 2816)) ? 0n : 1024n) | 2097152n));
     beingworn = schar((obj.v && ((cptr.ldI64(cptr.add(obj.v, 192)) & wearmask) != 0n || (cptr.ld1s(cptr.add(obj.v, 49)) == 6 && (((cptr.ldI32(cptr.add(obj.v, 76)) & 1) | 0 || (cptr.ldI16(cptr.add(obj.v, 32)) == 236 && cptr.ldI32(cptr.add(obj.v, 168)) ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cptr.add((obj.v), 32)) >= 214 && cptr.ldI16(cptr.add((obj.v), 32)) <= 220 ? 1 : 0) && (cptr.ldPtr(cptr.add((obj.v), 16)) !== null) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0));
     if (!cptr.eq((art = get_artifact(obj.v)), cptr.add(artilist, 0, 80))) {
-        carryeffect = schar((cptr.ld1u(cptr.add(cptr.add(art, 48), 1)) || cptr.ldU64(cptr.add(art, 24)) ? 1 : 0));
+        carryeffect = schar((cptr.ld1u(cptr.add(art, 49)) || cptr.ldU64(cptr.add(art, 24)) ? 1 : 0));
         invoked = schar(((cptr.ld1u(cptr.add(art, 52)) > 0 && cptr.ld1u(cptr.add(art, 52)) <= 68 ? 1 : 0) && (cptr.ldI64(cptr.add(cptr.add(u, 112), cptr.ld1u(cptr.add(art, 52)), 24)) & 8192n) != 0n ? 1 : 0));
     } else {
-        carryeffect = (invoked = (0));
+        carryeffect = (invoked = 0);
     }
     if ((beingworn || carryeffect ? 1 : 0) || invoked ? 1 : 0) {
         if (!retouch_object(obj, drop_untouchable)) {
             if (invoked && obj.v ? 1 : 0)
                 void arti_invoke(obj.v);
-            return (1);
+            return 1;
         }
     }
-    return (0);
+    return 0;
 }
 
 let __static_retouch_equipment_nesting = 0; /** C ref: artifact.c:2643 — int (function-static) */
@@ -2966,7 +2966,7 @@ export function retouch_equipment(dropflag) {
         void untouchable(uwep.v, dropit);
     }
     if (cptr.ldPtr(cptr.add(u, 2424)) && (obj = which_armor(cptr.ldPtr(cptr.add(u, 2424)), 1048576n)) !== null ? 1 : 0) {
-        if (untouchable(obj, (0)))
+        if (untouchable(obj, 0))
             dismount_steed(2);
     }
     dropit = schar((dropflag == 1));
@@ -2993,7 +2993,7 @@ function count_surround_traps(x, y) {
             if (!isok(dx, dy))
                 continue;
             glyph = glyph_at(dx, dy);
-            if (((glyph) >= (((4011 + ((49 - 34) | 0)) | 0)) && (glyph) < (((((4011 + ((49 - 34) | 0)) | 0)) + ((26 - 1) | 0)) | 0) ? 1 : 0))
+            if (((glyph) >= 4026 && (glyph) < 4051 ? 1 : 0))
                 continue;
             if (t_at(dx, dy)) {
                 ++ret;
@@ -3004,7 +3004,7 @@ function count_surround_traps(x, y) {
                 ++ret;
                 continue;
             }
-            for (o = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), dx, 168), dy, 8)); o; o = cptr.ldPtr(cptr.add(o, 8)))
+            for (o = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), dx, 168), dy, 8)); o; o = cptr.ldPtr(cptr.add(o, 8)))
                 if ((cptr.ldI16(cptr.add((o), 32)) >= 214 && cptr.ldI16(cptr.add((o), 32)) <= 220 ? 1 : 0) && (cptr.ldI32(cptr.add(o, 132)) & 1) | 0 ? 1 : 0) {
                     ++ret;
                     break;
@@ -3039,11 +3039,11 @@ export function mkot_trap_warn() {
 /** C ref: artifact.c:2775 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
 export function is_magic_key(mon, obj) {
     if (is_art(obj, 29)) {
-        if ((cptr.eq(mon, cptr.add(gy, 8))) ? (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)) : (mon && cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 339, 96)) ? 1 : 0))
+        if ((cptr.eq(mon, cptr.add(gy, 8))) ? (cptr.ldI16(cptr.add(gu, 216)) == 339) : (mon && cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 339, 96)) ? 1 : 0))
             return schar((!(cptr.ldI32(cptr.add(obj, 56)) & 1)));
         return schar((cptr.ldI32(cptr.add(obj, 60)) & 1));
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: artifact.c:2790 — @param {CPtr} mon @returns {CPtr} */
@@ -3052,7 +3052,7 @@ export function has_magic_key(mon) {
     let key = cptr.ldI16(cptr.add(artilist, 29, 80));
     if (!mon)
         mon = cptr.add(gy, 8);
-    for (o = ((cptr.eq(mon, cptr.add(gy, 8))) ? cptr.ldPtr(cptr.add(gi, 8)) : cptr.ldPtr(cptr.add(mon, 280))); o; o = nxtobj(o, key, (0))) {
+    for (o = ((cptr.eq(mon, cptr.add(gy, 8))) ? cptr.ldPtr(cptr.add(gi, 8)) : cptr.ldPtr(cptr.add(mon, 280))); o; o = nxtobj(o, key, 0)) {
         if (is_magic_key(mon, o))
             return o;
     }
@@ -3062,8 +3062,8 @@ export function has_magic_key(mon) {
 /** C ref: artifact.c:2808 — @param {CPtr} obj @param {CInt} art @returns {CInt} */
 export function is_art(obj, art) {
     if (obj && cptr.ld1s(cptr.add(obj, 51)) == art ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 /** C ref: artifact.c:2821 — @param {CPtr} obj @returns {CPtr} */

@@ -60,7 +60,7 @@ export function luaM_free_(L, block, osize) {
 /** C ref: lmem.c:162 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
 function tryagain(L, block, osize, nsize) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    if (((((((cptr.ld1u(cptr.add(((cptr.add(g, 80))), 8)))) & 15)) == (0)) && !cptr.ld1u(cptr.add(g, 103)) ? 1 : 0)) {
+    if (((((((cptr.ld1u(cptr.add(((cptr.add(g, 80))), 8)))) & 15)) == 0) && !cptr.ld1u(cptr.add(g, 103)) ? 1 : 0)) {
         luaC_fullgc(L, 1);
         return ((cptr.ldPtr(g))(cptr.ldPtr(cptr.add(g, 8)), block, osize, nsize));
     } else

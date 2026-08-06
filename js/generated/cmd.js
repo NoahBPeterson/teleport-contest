@@ -964,7 +964,7 @@ export function pgetchar() {
 
 /** C ref: cmd.c:457 @returns {CInt} */
 export function extcmd_initiator() {
-    return cptr.ld1s(cptr.add(cptr.add(gc, 216), 77));
+    return cptr.ld1s(cptr.add(gc, 293));
 }
 
 /** C ref: cmd.c:463 — @param {CPtr} extcmd @returns {CInt} */
@@ -977,20 +977,20 @@ function can_do_extcmd(extcmd) {
         nhl_pcall_handle(cptr.ldPtr(cptr.add(gl, 216)), 2, 1, __sl2, 0);
         if (!lua_toboolean(cptr.ldPtr(cptr.add(gl, 216)), -1)) {
             lua_settop(cptr.ldPtr(cptr.add(gl, 216)), 0);
-            return (0);
+            return 0;
         }
         lua_settop(cptr.ldPtr(cptr.add(gl, 216)), 0);
     }
     if (!cptr.ld1s(cptr.add(flags, 10)) && (ecflags & 4) ? 1 : 0) {
         pline(cptr.decay(unavailcmd), cptr.ldPtr(cptr.add(extcmd, 8)));
-        return (0);
+        return 0;
     } else if ((cptr.ldI32(cptr.add(u, 1868)) & 1) | 0 && !(ecflags & 1) ? 1 : 0) {
         You_cant(__sl3);
-        return (0);
+        return 0;
     } else if (cptr.ld1s(cptr.add(iflags, 15)) && (ecflags & 32) ? 1 : 0) {
-        return (0);
+        return 0;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: cmd.c:493 @returns {CInt} */
@@ -1007,7 +1007,7 @@ export function doextcmd() {
             return 0;
         if (cptr.ld1s(cptr.add(iflags, 135)) && !accept_menu_prefix(cptr.add(extcmdlist, idx, 48)) ? 1 : 0) {
             pline(__sl4, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtr(cptr.add(cptr.add(extcmdlist, idx, 48), 8)));
-            cptr.st1(cptr.add(iflags, 135), (0));
+            cptr.st1(cptr.add(iflags, 135), 0);
         }
         cptr.stPtr(cptr.add(ge, 8), cptr.add(extcmdlist, idx, 48));
         retval = (func)();
@@ -1062,13 +1062,13 @@ export function doextlist() {
     let menumode = 0;
     let menushown = cptr.alloc(2 * 4);
     let onelist = 0;
-    let redisplay = (1);
-    let search = (0);
+    let redisplay = 1;
+    let search = 0;
     let clr = 8;
     cptr.st1(cptr.add(cptr.decay(searchbuf), 0, 1), 0);
     menuwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
     while (redisplay) {
-        redisplay = (0);
+        redisplay = 0;
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(menuwin, 0n);
         add_menu_str(menuwin, __sl7);
@@ -1098,7 +1098,7 @@ export function doextlist() {
                 break;
             for (efp = extcmdlist; cptr.ldPtr(cptr.add(efp, 8)); efp = cptr.add(efp, 1, 48)) {
                 let wizc;
-                if (((cptr.ldI32(cptr.add(efp, 32)) & (16 | 64) >>> 0) >>> 0) != 0)
+                if (((cptr.ldI32(cptr.add(efp, 32)) & 80) >>> 0) != 0)
                     continue;
                 if (menumode == 1 && ((cptr.ldI32(cptr.add(efp, 32)) & 2) >>> 0) == 0 ? 1 : 0)
                     continue;
@@ -1134,26 +1134,26 @@ export function doextlist() {
             switch (cptr.ldI32(cptr.add(selected.v, 0, 24))) {
                 case 1:
                 menumode = (1 - menumode) | 0;
-                redisplay = (1);
+                redisplay = 1;
                 break;
                 case 2:
-                search = (1);
+                search = 1;
                 break;
                 case 3:
-                search = (0);
+                search = 0;
                 cptr.st1(cptr.add(cptr.decay(searchbuf), 0, 1), 0);
-                redisplay = (1);
+                redisplay = 1;
                 break;
                 case 4:
-                search = (0);
+                search = 0;
                 cptr.st1(cptr.add(cptr.decay(searchbuf), 0, 1), 0);
                 onelist = (1 - onelist) | 0;
-                redisplay = (1);
+                redisplay = 1;
                 break;
             }
             cptr.free(selected.v);
         } else {
-            search = (0);
+            search = 0;
             cptr.st1(cptr.add(cptr.decay(searchbuf), 0, 1), 0);
         }
         if (search) {
@@ -1164,8 +1164,8 @@ export function doextlist() {
             if (cptr.ld1s(cptr.add(cptr.decay(searchbuf), 0, 1)) == 27)
                 cptr.st1(cptr.add(cptr.decay(searchbuf), 0, 1), 0);
             if (cptr.ld1s(cptr.decay(searchbuf)))
-                redisplay = (1);
-            search = (0);
+                redisplay = 1;
+            search = 0;
         }
     }
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(menuwin);
@@ -1203,14 +1203,14 @@ export function extcmd_via_menu() {
         i = (n = 0);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         for (efp = extcmdlist; cptr.ldPtr(cptr.add(efp, 8)); efp = cptr.add(efp, 1, 48)) {
-            if ((((cptr.ldI32(cptr.add(efp, 32)) & (16 | 64) >>> 0) >>> 0) || !((cptr.ldI32(cptr.add(efp, 32)) & 2) >>> 0) ? 1 : 0) || (!cptr.ld1s(cptr.add(flags, 10)) && ((cptr.ldI32(cptr.add(efp, 32)) & 4) >>> 0) ? 1 : 0) ? 1 : 0)
+            if ((((cptr.ldI32(cptr.add(efp, 32)) & 80) >>> 0) || !((cptr.ldI32(cptr.add(efp, 32)) & 2) >>> 0) ? 1 : 0) || (!cptr.ld1s(cptr.add(flags, 10)) && ((cptr.ldI32(cptr.add(efp, 32)) & 4) >>> 0) ? 1 : 0) ? 1 : 0)
                 continue;
             if (!matchlevel || !cptr.strncmp(cptr.ldPtr(cptr.add(efp, 8)), cptr.decay(cbuf), BigInt.asUintN(64, BigInt(matchlevel))) ? 1 : 0) {
                 cptr.stPtr(cptr.add(choices, i, 8), efp);
                 if ((len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(efp, 16)))))) > biggest)
                     biggest = len;
                 if (++i > 200) {
-                    cptr.st1(cptr.add(iflags, 177), (0));
+                    cptr.st1(cptr.add(iflags, 177), 0);
                     return -1;
                 }
             }
@@ -1225,22 +1225,22 @@ export function extcmd_via_menu() {
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
         void cptr.sprintf(cptr.decay(fmtstr), __sl26, (biggest + 15) | 0);
         cptr.st1(cptr.add(cptr.decay(prompt), 0, 1), 0);
-        wastoolong = (0);
-        one_per_line = schar((nchoices < ((21 - 3) | 0)));
+        wastoolong = 0;
+        one_per_line = schar((nchoices < 18));
         prevaccelerator = 0;
         acount = 0;
         for (i = 0; cptr.ldPtr(cptr.add(choices, i, 8)); ++i) {
             accelerator = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(choices, i, 8)), 8)), matchlevel));
             if (accelerator != prevaccelerator || one_per_line ? 1 : 0)
-                wastoolong = (0);
-            if ((accelerator != prevaccelerator || one_per_line ? 1 : 0) || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(choices, i, 8)), 8)))) >= ((128n) < BigInt.asUintN(64, BigInt(((80 - 6) | 0))) ? (128n) : BigInt.asUintN(64, BigInt(((80 - 6) | 0))))) ? 1 : 0) ? 1 : 0) {
+                wastoolong = 0;
+            if ((accelerator != prevaccelerator || one_per_line ? 1 : 0) || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(choices, i, 8)), 8)))) >= 74n) ? 1 : 0) ? 1 : 0) {
                 if (acount) {
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
                     cptr.st1(any, schar(prevaccelerator));
                     add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, 0, clr, cptr.decay(buf), 0);
                     acount = 0;
                     if (!(accelerator != prevaccelerator || one_per_line ? 1 : 0))
-                        wastoolong = (1);
+                        wastoolong = 1;
                 }
             }
             prevaccelerator = accelerator;
@@ -1264,7 +1264,7 @@ export function extcmd_via_menu() {
         n = select_menu(win, 1, pick_list);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
         if (n == 1) {
-            if (matchlevel > ((128 - 2) | 0)) {
+            if (matchlevel > 126) {
                 cptr.free(pick_list.v);
                 ret = -1;
             } else {
@@ -1285,11 +1285,11 @@ export function extcmd_via_menu() {
 
 /** C ref: cmd.c:890 @returns {CInt} */
 export function domonability() {
-    let uptr = cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8));
+    let uptr = cptr.ldPtr(cptr.add(gy, 16));
     let might_hide = schar((((cptr.ldU64(cptr.add((uptr), 72)) & 256n) != 0n) || ((cptr.ldU64(cptr.add((uptr), 72)) & 128n) != 0n) ? 1 : 0));
     let c = 0;
     if (might_hide && (cptr.eq((uptr), cptr.add(mons, 94, 96)) || cptr.eq((uptr), cptr.add(mons, 96, 96)) ? 1 : 0) ? 1 : 0) {
-        c = yn_function(__sl33, cptr.decay(hidespinchars), 113, (1));
+        c = yn_function(__sl33, cptr.decay(hidespinchars), 113, 1);
         if (c == 113 || c == 27 ? 1 : 0)
             return 0;
     }
@@ -1312,7 +1312,7 @@ export function domonability() {
     else if (cptr.ldI32(cptr.add(u, 1808)) == 40) {
         if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 28)) {
             if (split_mon(cptr.add(gy, 8), null))
-                dryup(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (1));
+                dryup(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1);
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
             void split_mon(cptr.add(gy, 8), null);
         } else {
@@ -1330,7 +1330,7 @@ export function domonability() {
     } else if ((cptr.ld1s(cptr.add((uptr), 28)) == 48) || ((cptr.ldI16(cptr.add((cptr.add(gy, 8)), 22)) == 226 || cptr.ldI16(cptr.add((cptr.add(gy, 8)), 22)) == 227 ? 1 : 0) || cptr.ldI16(cptr.add((cptr.add(gy, 8)), 22)) == 228 ? 1 : 0) ? 1 : 0) {
         return dopoly();
     } else if (cptr.ldPtr(cptr.add(u, 2424)) && attacktype(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8)), 12) ? 1 : 0) {
-        void pet_ranged_attk(cptr.ldPtr(cptr.add(u, 2424)), (1));
+        void pet_ranged_attk(cptr.ldPtr(cptr.add(u, 2424)), 1);
         return 1;
     } else if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         pline(__sl37);
@@ -1356,8 +1356,8 @@ export function enter_explore_mode() {
         }
         pline(__sl44, oldmode);
         if (paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 2) >>> 0) != 0)), __sl45)) {
-            cptr.st1(cptr.add(flags, 12), (1));
-            cptr.st1(cptr.add(flags, 10), (0));
+            cptr.st1(cptr.add(flags, 12), 1);
+            cptr.st1(cptr.add(flags, 10), 0);
             (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
             You(__sl46);
         } else {
@@ -1378,27 +1378,27 @@ export function makemap_prepost(pre, wiztower) {
         makemap_remove_mons();
         rm_mapseen(ledger_no(cptr.add(u, 24)));
         {
-            if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 106)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 106))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 106)) ? 1 : 0))) {
+            if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1898)), 2)) || cptr.ldI16((cptr.add(svd, 1898))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1898)) ? 1 : 0))) {
                 if (remove_achievement(10))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl48);
                 cptr.stI32(cptr.add(svc, 672), 0);
-            } else if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 110)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 110))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 110)) ? 1 : 0))) {
+            } else if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1902)), 2)) || cptr.ldI16((cptr.add(svd, 1902))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1902)) ? 1 : 0))) {
                 if (remove_achievement(11))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl49);
-                cptr.stI32(cptr.add(cptr.add(svc, 672), 4), 0);
+                cptr.stI32(cptr.add(svc, 676), 0);
             }
         }
         if ((uball.v !== null)) {
-            ballrelease((0));
+            ballrelease(0);
             unplacebc();
         }
         maybe_reset_pick(null);
-        if (on_level(cptr.add(cptr.add(svc, 96), 4), cptr.add(u, 24)))
+        if (on_level(cptr.add(svc, 100), cptr.add(u, 24)))
             void __builtin___memset_chk(cptr.add(svc, 96), 0, 32n, __builtin_object_size(cptr.add(svc, 96), 0));
-        cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), 0));
+        cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(iflags, 78), 0));
         cptr.stPtr(cptr.add(svc, 584), null);
-        reset_utrap((0));
-        check_special_room((1));
+        reset_utrap(0);
+        check_special_room(1);
         void __builtin___memset_chk(cptr.add(svd, 1906), 0, 16n, __builtin_object_size(cptr.add(svd, 1906), 0));
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
         cptr.stPtr(cptr.add(u, 2416), null);
@@ -1417,7 +1417,7 @@ export function makemap_prepost(pre, wiztower) {
         u_on_rndspot(((cptr.ldI32(cptr.add(u, 1944)) & 1) | 0 ? 1 : 0) | (wiztower ? 2 : 0));
         losedogs();
         kill_genocided_monsters();
-        if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)))) !== null)
+        if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)))) !== null)
             u_collide_m(mtmp);
         initrack();
         if ((uball.v !== null)) {
@@ -1427,7 +1427,7 @@ export function makemap_prepost(pre, wiztower) {
         docrt();
         flush_screen(1);
         deliver_splev_message();
-        check_special_room((0));
+        check_special_room(0);
         save_currentstate();
     }
 }
@@ -1522,13 +1522,13 @@ function doterrain() {
         reveal_terrain(1);
         break;
         case 2:
-        reveal_terrain((1 | 2) >>> 0);
+        reveal_terrain(3);
         break;
         case 3:
-        reveal_terrain(((1 | 2) >>> 0 | 4) >>> 0);
+        reveal_terrain(7);
         break;
         case 4:
-        reveal_terrain((1 | 16) >>> 0);
+        reveal_terrain(17);
         break;
         case 5:
         wiz_map_levltyp();
@@ -1551,8 +1551,8 @@ function u_have_seen_whole_selection(sel) {
     for (x = cptr.ldI16(rect); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
         for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++)
             if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == 9622 ? 1 : 0)
-                return (0);
-    return (1);
+                return 0;
+    return 1;
 }
 
 /** C ref: cmd.c:1213 — @param {CPtr} sel @returns {CInt} */
@@ -1564,20 +1564,20 @@ function u_have_seen_bounds_selection(sel) {
     for (x = cptr.ldI16(rect); x <= cptr.ldI16(cptr.add(rect, 4)); x++) {
         y = cptr.ldI16(cptr.add(rect, 2));
         if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == 9622 ? 1 : 0)
-            return (0);
+            return 0;
         y = cptr.ldI16(cptr.add(rect, 6));
         if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == 9622 ? 1 : 0)
-            return (0);
+            return 0;
     }
     for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++) {
         x = cptr.ldI16(rect);
         if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == 9622 ? 1 : 0)
-            return (0);
+            return 0;
         x = cptr.ldI16(cptr.add(rect, 4));
         if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == 9622 ? 1 : 0)
-            return (0);
+            return 0;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: cmd.c:1246 — @param {CPtr} sel @returns {CInt} */
@@ -1589,14 +1589,14 @@ function u_can_see_whole_selection(sel) {
     for (x = cptr.ldI16(rect); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
         for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++)
             if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) ? 1 : 0)
-                return (0);
-    return (1);
+                return 0;
+    return 1;
 }
 
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
     let typ = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
-    if ((((((((((typ) <= 12) || ((typ) == 23) ? 1 : 0) || ((typ) == 13 || ((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 76)) & 1) | 0 && (typ) == 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((typ) == 18) ? 1 : 0) || typ == 21 ? 1 : 0) || typ == 22 ? 1 : 0) || typ == 15 ? 1 : 0) || typ == 14 ? 1 : 0) || typ == 19 ? 1 : 0)
+    if ((((((((((typ) <= 12) || ((typ) == 23) ? 1 : 0) || ((typ) == 13 || ((cptr.ldI32(cptr.add(svl, 89156)) & 1) | 0 && (typ) == 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((typ) == 18) ? 1 : 0) || typ == 21 ? 1 : 0) || typ == 22 ? 1 : 0) || typ == 15 ? 1 : 0) || typ == 14 ? 1 : 0) || typ == 19 ? 1 : 0)
         return 0;
     return 1;
 }
@@ -1607,7 +1607,7 @@ function lookaround_known_room(x, y) {
     let rmno = (cptr.ld1s(cptr.add(cptr.add(u, 68), 0, 1)) - 3) | 0;
     let qbuf = new Uint8Array(128);
     set_selection_floodfillchk(dolookaround_floodfill_findroom);
-    selection_floodfill(sel, x, y, (1));
+    selection_floodfill(sel, x, y, 1);
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
         set_msg_xy(x, y);
     if (u_have_seen_whole_selection(sel)) {
@@ -1618,7 +1618,7 @@ function lookaround_known_room(x, y) {
     } else {
         You(__sl103, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? __sl101 : __sl102);
     }
-    selection_free(sel, (1));
+    selection_free(sel, 1);
 }
 
 /** C ref: cmd.c:1310 @returns {CInt} */
@@ -1627,19 +1627,19 @@ export function dolookaround() {
     let y;
     let tmp_getloc_filter = cptr.ldI32(cptr.add(iflags, 32));
     let tmp_accessiblemsg = cptr.ld1s(a11y);
-    let corr_next2u = (0);
-    cptr.st1(a11y, (1));
+    let corr_next2u = 0;
+    cptr.st1(a11y, 1);
     if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) == 24) {
-        corr_next2u = (1);
+        corr_next2u = 1;
     } else if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 23)) {
         let i;
-        for (i = 0; i < ((10 - 2) | 0); i = (i + 2) | 0) {
+        for (i = 0; i < 8; i = (i + 2) | 0) {
             x = i16(((cptr.ldI16(u) + cptr.ld1s(cptr.add(cptr.decay(xdir), i, 1))) | 0));
             y = i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ld1s(cptr.add(cptr.decay(ydir), i, 1))) | 0));
             if (isok(x, y) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) >= 25) ? 1 : 0)
                 lookaround_known_room(x, y);
         }
-        corr_next2u = (1);
+        corr_next2u = 1;
     } else {
         lookaround_known_room(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     }
@@ -1648,14 +1648,14 @@ export function dolookaround() {
         for (x = 1; x < 80; x++) {
             let glyph;
             let mapsym;
-            let iscorr = schar((((corr_next2u && (glyph = glyph_at(x, y)) >= 0 ? 1 : 0) && ((glyph) >= 3929 && (glyph) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0) ? 1 : 0) && ((mapsym = glyph_to_cmap(glyph)) == 22 || mapsym == 23 ? 1 : 0) ? 1 : 0));
+            let iscorr = schar((((corr_next2u && (glyph = glyph_at(x, y)) >= 0 ? 1 : 0) && ((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0) ? 1 : 0) && ((mapsym = glyph_to_cmap(glyph)) == 22 || mapsym == 23 ? 1 : 0) ? 1 : 0));
             if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) && (gather_locs_interesting(x, y, 4) || iscorr ? 1 : 0) ? 1 : 0) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
                 let sym = 0;
                 let firstmatch = cptr.box(null);
                 cptr.stI16(cc, x), cptr.stI16(cptr.add(cc, 2), y);
-                do_screen_description(cc, (1), sym, cptr.decay(buf), firstmatch, null);
+                do_screen_description(cc, 1, sym, cptr.decay(buf), firstmatch, null);
                 pline_xy(x, y, __sl104, firstmatch.v);
             }
         }
@@ -1836,10 +1836,10 @@ export function do_run_southwest() {
 export function do_reqmenu() {
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         Norep(__sl106, visctrl(cmd_from_func(do_reqmenu)));
-        cptr.st1(cptr.add(iflags, 135), (0));
+        cptr.st1(cptr.add(iflags, 135), 0);
         return 2;
     }
-    cptr.st1(cptr.add(iflags, 135), (1));
+    cptr.st1(cptr.add(iflags, 135), 1);
     return 0;
 }
 
@@ -1897,7 +1897,7 @@ export function do_repeat() {
         cptr.stI32(gi, 0);
         cmdq_clear(1);
         cptr.stPtr(cptr.add(gc, 1, 8), repeat_copy);
-        cptr.st1(cptr.add(iflags, 135), (0));
+        cptr.st1(cptr.add(iflags, 135), 0);
         if (cptr.ld1s(cptr.add(svc, 78)))
             res = 1;
     }
@@ -1907,1031 +1907,1031 @@ export function do_repeat() {
 /** C ref: cmd.c:1667 — struct ext_func_tab[171] */
 export const extcmdlist = cptr.alloc(171 * 48);
 cptr.st1(cptr.add(extcmdlist, 0), 35);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 0), 8), __sl111);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 0), 16), __sl112);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 0), 24), doextcmd);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 0), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 0), 40), null);
-cptr.st1(cptr.add(extcmdlist, 48), uchar((((63) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 48), 8), __sl23);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 48), 16), __sl113);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 48), 24), doextlist);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 48), 32), (1 | 2 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 48), 40), null);
-cptr.st1(cptr.add(extcmdlist, 96), uchar((((97) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 96), 8), __sl114);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 96), 16), __sl115);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 96), 24), doorganize);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 96), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 96), 40), null);
-cptr.st1(cptr.add(extcmdlist, 144), uchar((((65) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 144), 8), __sl116);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 144), 16), __sl117);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 144), 24), donamelevel);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 144), 32), (1 | 2 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 144), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 8), __sl111);
+cptr.stPtr(cptr.add(extcmdlist, 16), __sl112);
+cptr.stPtr(cptr.add(extcmdlist, 24), doextcmd);
+cptr.stI32(cptr.add(extcmdlist, 32), 137);
+cptr.stPtr(cptr.add(extcmdlist, 40), null);
+cptr.st1(cptr.add(extcmdlist, 48), 191);
+cptr.stPtr(cptr.add(extcmdlist, 56), __sl23);
+cptr.stPtr(cptr.add(extcmdlist, 64), __sl113);
+cptr.stPtr(cptr.add(extcmdlist, 72), doextlist);
+cptr.stI32(cptr.add(extcmdlist, 80), 139);
+cptr.stPtr(cptr.add(extcmdlist, 88), null);
+cptr.st1(cptr.add(extcmdlist, 96), 225);
+cptr.stPtr(cptr.add(extcmdlist, 104), __sl114);
+cptr.stPtr(cptr.add(extcmdlist, 112), __sl115);
+cptr.stPtr(cptr.add(extcmdlist, 120), doorganize);
+cptr.stI32(cptr.add(extcmdlist, 128), 11);
+cptr.stPtr(cptr.add(extcmdlist, 136), null);
+cptr.st1(cptr.add(extcmdlist, 144), 193);
+cptr.stPtr(cptr.add(extcmdlist, 152), __sl116);
+cptr.stPtr(cptr.add(extcmdlist, 160), __sl117);
+cptr.stPtr(cptr.add(extcmdlist, 168), donamelevel);
+cptr.stI32(cptr.add(extcmdlist, 176), 139);
+cptr.stPtr(cptr.add(extcmdlist, 184), null);
 cptr.st1(cptr.add(extcmdlist, 192), 97);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 192), 8), __sl118);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 192), 16), __sl119);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 192), 24), doapply);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 192), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 192), 40), null);
-cptr.st1(cptr.add(extcmdlist, 240), uchar((31 & (120))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 240), 8), __sl120);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 240), 16), __sl121);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 240), 24), doattributes);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 240), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 240), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 200), __sl118);
+cptr.stPtr(cptr.add(extcmdlist, 208), __sl119);
+cptr.stPtr(cptr.add(extcmdlist, 216), doapply);
+cptr.stI32(cptr.add(extcmdlist, 224), 128);
+cptr.stPtr(cptr.add(extcmdlist, 232), null);
+cptr.st1(cptr.add(extcmdlist, 240), 24);
+cptr.stPtr(cptr.add(extcmdlist, 248), __sl120);
+cptr.stPtr(cptr.add(extcmdlist, 256), __sl121);
+cptr.stPtr(cptr.add(extcmdlist, 264), doattributes);
+cptr.stI32(cptr.add(extcmdlist, 272), 9);
+cptr.stPtr(cptr.add(extcmdlist, 280), null);
 cptr.st1(cptr.add(extcmdlist, 288), 64);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 288), 8), __sl122);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 288), 16), __sl123);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 288), 24), dotogglepickup);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 288), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 288), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 296), __sl122);
+cptr.stPtr(cptr.add(extcmdlist, 304), __sl123);
+cptr.stPtr(cptr.add(extcmdlist, 312), dotogglepickup);
+cptr.stI32(cptr.add(extcmdlist, 320), 9);
+cptr.stPtr(cptr.add(extcmdlist, 328), null);
 cptr.st1(cptr.add(extcmdlist, 336), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 336), 8), __sl124);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 336), 16), __sl125);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 336), 24), dobugreport);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 336), 32), (8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 336), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 344), __sl124);
+cptr.stPtr(cptr.add(extcmdlist, 352), __sl125);
+cptr.stPtr(cptr.add(extcmdlist, 360), dobugreport);
+cptr.stI32(cptr.add(extcmdlist, 368), 40);
+cptr.stPtr(cptr.add(extcmdlist, 376), null);
 cptr.st1(cptr.add(extcmdlist, 384), 67);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 384), 8), __sl126);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 384), 16), __sl127);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 384), 24), docallcmd);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 384), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 384), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 392), __sl126);
+cptr.stPtr(cptr.add(extcmdlist, 400), __sl127);
+cptr.stPtr(cptr.add(extcmdlist, 408), docallcmd);
+cptr.stI32(cptr.add(extcmdlist, 416), 9);
+cptr.stPtr(cptr.add(extcmdlist, 424), null);
 cptr.st1(cptr.add(extcmdlist, 432), 90);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 432), 8), __sl128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 432), 16), __sl129);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 432), 24), docast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 432), 32), 1);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 432), 40), null);
-cptr.st1(cptr.add(extcmdlist, 480), uchar((((99) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 480), 8), __sl130);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 480), 16), __sl131);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 480), 24), dotalk);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 480), 32), (1 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 480), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 440), __sl128);
+cptr.stPtr(cptr.add(extcmdlist, 448), __sl129);
+cptr.stPtr(cptr.add(extcmdlist, 456), docast);
+cptr.stI32(cptr.add(extcmdlist, 464), 1);
+cptr.stPtr(cptr.add(extcmdlist, 472), null);
+cptr.st1(cptr.add(extcmdlist, 480), 227);
+cptr.stPtr(cptr.add(extcmdlist, 488), __sl130);
+cptr.stPtr(cptr.add(extcmdlist, 496), __sl131);
+cptr.stPtr(cptr.add(extcmdlist, 504), dotalk);
+cptr.stI32(cptr.add(extcmdlist, 512), 3);
+cptr.stPtr(cptr.add(extcmdlist, 520), null);
 cptr.st1(cptr.add(extcmdlist, 528), 118);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 528), 8), __sl132);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 528), 16), __sl133);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 528), 24), do_gamelog);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 528), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 528), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 536), __sl132);
+cptr.stPtr(cptr.add(extcmdlist, 544), __sl133);
+cptr.stPtr(cptr.add(extcmdlist, 552), do_gamelog);
+cptr.stI32(cptr.add(extcmdlist, 560), 11);
+cptr.stPtr(cptr.add(extcmdlist, 568), null);
 cptr.st1(cptr.add(extcmdlist, 576), 99);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 576), 8), __sl134);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 576), 16), __sl135);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 576), 24), doclose);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 576), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 576), 40), null);
-cptr.st1(cptr.add(extcmdlist, 624), uchar((((67) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 624), 8), __sl136);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 624), 16), __sl137);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 624), 24), doconduct);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 624), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 624), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 584), __sl134);
+cptr.stPtr(cptr.add(extcmdlist, 592), __sl135);
+cptr.stPtr(cptr.add(extcmdlist, 600), doclose);
+cptr.stI32(cptr.add(extcmdlist, 608), 0);
+cptr.stPtr(cptr.add(extcmdlist, 616), null);
+cptr.st1(cptr.add(extcmdlist, 624), 195);
+cptr.stPtr(cptr.add(extcmdlist, 632), __sl136);
+cptr.stPtr(cptr.add(extcmdlist, 640), __sl137);
+cptr.stPtr(cptr.add(extcmdlist, 648), doconduct);
+cptr.stI32(cptr.add(extcmdlist, 656), 11);
+cptr.stPtr(cptr.add(extcmdlist, 664), null);
 cptr.st1(cptr.add(extcmdlist, 672), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 672), 8), __sl138);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 672), 16), __sl139);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 672), 24), wiz_fuzzer);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 672), 32), (1 | 4 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 672), 40), null);
-cptr.st1(cptr.add(extcmdlist, 720), uchar((((100) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 720), 8), __sl140);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 720), 16), __sl141);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 720), 24), dodip);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 720), 32), (2 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 720), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 680), __sl138);
+cptr.stPtr(cptr.add(extcmdlist, 688), __sl139);
+cptr.stPtr(cptr.add(extcmdlist, 696), wiz_fuzzer);
+cptr.stI32(cptr.add(extcmdlist, 704), 37);
+cptr.stPtr(cptr.add(extcmdlist, 712), null);
+cptr.st1(cptr.add(extcmdlist, 720), 228);
+cptr.stPtr(cptr.add(extcmdlist, 728), __sl140);
+cptr.stPtr(cptr.add(extcmdlist, 736), __sl141);
+cptr.stPtr(cptr.add(extcmdlist, 744), dodip);
+cptr.stI32(cptr.add(extcmdlist, 752), 130);
+cptr.stPtr(cptr.add(extcmdlist, 760), null);
 cptr.st1(cptr.add(extcmdlist, 768), 62);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 768), 8), __sl142);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 768), 16), __sl143);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 768), 24), dodown);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 768), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 768), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 776), __sl142);
+cptr.stPtr(cptr.add(extcmdlist, 784), __sl143);
+cptr.stPtr(cptr.add(extcmdlist, 792), dodown);
+cptr.stI32(cptr.add(extcmdlist, 800), 128);
+cptr.stPtr(cptr.add(extcmdlist, 808), null);
 cptr.st1(cptr.add(extcmdlist, 816), 100);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 816), 8), __sl144);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 816), 16), __sl145);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 816), 24), dodrop);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 816), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 816), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 824), __sl144);
+cptr.stPtr(cptr.add(extcmdlist, 832), __sl145);
+cptr.stPtr(cptr.add(extcmdlist, 840), dodrop);
+cptr.stI32(cptr.add(extcmdlist, 848), 0);
+cptr.stPtr(cptr.add(extcmdlist, 856), null);
 cptr.st1(cptr.add(extcmdlist, 864), 68);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 864), 8), __sl146);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 864), 16), __sl147);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 864), 24), doddrop);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 864), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 864), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 872), __sl146);
+cptr.stPtr(cptr.add(extcmdlist, 880), __sl147);
+cptr.stPtr(cptr.add(extcmdlist, 888), doddrop);
+cptr.stI32(cptr.add(extcmdlist, 896), 0);
+cptr.stPtr(cptr.add(extcmdlist, 904), null);
 cptr.st1(cptr.add(extcmdlist, 912), 101);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 912), 8), __sl148);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 912), 16), __sl149);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 912), 24), doeat);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 912), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 912), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 920), __sl148);
+cptr.stPtr(cptr.add(extcmdlist, 928), __sl149);
+cptr.stPtr(cptr.add(extcmdlist, 936), doeat);
+cptr.stI32(cptr.add(extcmdlist, 944), 128);
+cptr.stPtr(cptr.add(extcmdlist, 952), null);
 cptr.st1(cptr.add(extcmdlist, 960), 69);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 960), 8), __sl150);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 960), 16), __sl151);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 960), 24), doengrave);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 960), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 960), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1008), uchar((((101) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1008), 8), __sl152);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1008), 16), __sl153);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1008), 24), enhance_weapon_skill);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1008), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1008), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1056), uchar((((88) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1056), 8), __sl154);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1056), 16), __sl155);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1056), 24), enter_explore_mode);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1056), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1056), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 968), __sl150);
+cptr.stPtr(cptr.add(extcmdlist, 976), __sl151);
+cptr.stPtr(cptr.add(extcmdlist, 984), doengrave);
+cptr.stI32(cptr.add(extcmdlist, 992), 0);
+cptr.stPtr(cptr.add(extcmdlist, 1000), null);
+cptr.st1(cptr.add(extcmdlist, 1008), 229);
+cptr.stPtr(cptr.add(extcmdlist, 1016), __sl152);
+cptr.stPtr(cptr.add(extcmdlist, 1024), __sl153);
+cptr.stPtr(cptr.add(extcmdlist, 1032), enhance_weapon_skill);
+cptr.stI32(cptr.add(extcmdlist, 1040), 11);
+cptr.stPtr(cptr.add(extcmdlist, 1048), null);
+cptr.st1(cptr.add(extcmdlist, 1056), 216);
+cptr.stPtr(cptr.add(extcmdlist, 1064), __sl154);
+cptr.stPtr(cptr.add(extcmdlist, 1072), __sl155);
+cptr.stPtr(cptr.add(extcmdlist, 1080), enter_explore_mode);
+cptr.stI32(cptr.add(extcmdlist, 1088), 41);
+cptr.stPtr(cptr.add(extcmdlist, 1096), null);
 cptr.st1(cptr.add(extcmdlist, 1104), 70);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1104), 8), __sl156);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1104), 16), __sl157);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1104), 24), do_fight);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1104), 32), 512);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1104), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1112), __sl156);
+cptr.stPtr(cptr.add(extcmdlist, 1120), __sl157);
+cptr.stPtr(cptr.add(extcmdlist, 1128), do_fight);
+cptr.stI32(cptr.add(extcmdlist, 1136), 512);
+cptr.stPtr(cptr.add(extcmdlist, 1144), null);
 cptr.st1(cptr.add(extcmdlist, 1152), 102);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1152), 8), __sl158);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1152), 16), __sl159);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1152), 24), dofire);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1152), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1152), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1200), uchar((((102) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1200), 8), __sl160);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1200), 16), __sl161);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1200), 24), doforce);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1200), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1200), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1248), uchar((((103) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1248), 8), __sl162);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1248), 16), __sl163);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1248), 24), dogenocided);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1248), 32), (1 | 2 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1248), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1160), __sl158);
+cptr.stPtr(cptr.add(extcmdlist, 1168), __sl159);
+cptr.stPtr(cptr.add(extcmdlist, 1176), dofire);
+cptr.stI32(cptr.add(extcmdlist, 1184), 0);
+cptr.stPtr(cptr.add(extcmdlist, 1192), null);
+cptr.st1(cptr.add(extcmdlist, 1200), 230);
+cptr.stPtr(cptr.add(extcmdlist, 1208), __sl160);
+cptr.stPtr(cptr.add(extcmdlist, 1216), __sl161);
+cptr.stPtr(cptr.add(extcmdlist, 1224), doforce);
+cptr.stI32(cptr.add(extcmdlist, 1232), 2);
+cptr.stPtr(cptr.add(extcmdlist, 1240), null);
+cptr.st1(cptr.add(extcmdlist, 1248), 231);
+cptr.stPtr(cptr.add(extcmdlist, 1256), __sl162);
+cptr.stPtr(cptr.add(extcmdlist, 1264), __sl163);
+cptr.stPtr(cptr.add(extcmdlist, 1272), dogenocided);
+cptr.stI32(cptr.add(extcmdlist, 1280), 139);
+cptr.stPtr(cptr.add(extcmdlist, 1288), null);
 cptr.st1(cptr.add(extcmdlist, 1296), 59);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1296), 8), __sl164);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1296), 16), __sl165);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1296), 24), doquickwhatis);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1296), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1296), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1304), __sl164);
+cptr.stPtr(cptr.add(extcmdlist, 1312), __sl165);
+cptr.stPtr(cptr.add(extcmdlist, 1320), doquickwhatis);
+cptr.stI32(cptr.add(extcmdlist, 1328), 9);
+cptr.stPtr(cptr.add(extcmdlist, 1336), null);
 cptr.st1(cptr.add(extcmdlist, 1344), 63);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1344), 8), __sl166);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1344), 16), __sl167);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1344), 24), dohelp);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1344), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1344), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1352), __sl166);
+cptr.stPtr(cptr.add(extcmdlist, 1360), __sl167);
+cptr.stPtr(cptr.add(extcmdlist, 1368), dohelp);
+cptr.stI32(cptr.add(extcmdlist, 1376), 9);
+cptr.stPtr(cptr.add(extcmdlist, 1384), null);
 cptr.st1(cptr.add(extcmdlist, 1392), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1392), 8), __sl168);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1392), 16), __sl169);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1392), 24), doherecmdmenu);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1392), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1392), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1400), __sl168);
+cptr.stPtr(cptr.add(extcmdlist, 1408), __sl169);
+cptr.stPtr(cptr.add(extcmdlist, 1416), doherecmdmenu);
+cptr.stI32(cptr.add(extcmdlist, 1424), 11);
+cptr.stPtr(cptr.add(extcmdlist, 1432), null);
 cptr.st1(cptr.add(extcmdlist, 1440), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1440), 8), __sl170);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1440), 16), __sl171);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1440), 24), dohistory);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1440), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1440), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1448), __sl170);
+cptr.stPtr(cptr.add(extcmdlist, 1456), __sl171);
+cptr.stPtr(cptr.add(extcmdlist, 1464), dohistory);
+cptr.stI32(cptr.add(extcmdlist, 1472), 11);
+cptr.stPtr(cptr.add(extcmdlist, 1480), null);
 cptr.st1(cptr.add(extcmdlist, 1488), 105);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1488), 8), __sl172);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1488), 16), __sl173);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1488), 24), ddoinv);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1488), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1488), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1496), __sl172);
+cptr.stPtr(cptr.add(extcmdlist, 1504), __sl173);
+cptr.stPtr(cptr.add(extcmdlist, 1512), ddoinv);
+cptr.stI32(cptr.add(extcmdlist, 1520), 9);
+cptr.stPtr(cptr.add(extcmdlist, 1528), null);
 cptr.st1(cptr.add(extcmdlist, 1536), 73);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1536), 8), __sl174);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1536), 16), __sl175);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1536), 24), dotypeinv);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1536), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1536), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1584), uchar((((105) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1584), 8), __sl176);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1584), 16), __sl177);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1584), 24), doinvoke);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1584), 32), (1 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1584), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1632), uchar((((106) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1632), 8), __sl178);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1632), 16), __sl179);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1632), 24), dojump);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1632), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1632), 40), null);
-cptr.st1(cptr.add(extcmdlist, 1680), uchar((31 & (100))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1680), 8), __sl180);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1680), 16), __sl181);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1680), 24), dokick);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1680), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1680), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1544), __sl174);
+cptr.stPtr(cptr.add(extcmdlist, 1552), __sl175);
+cptr.stPtr(cptr.add(extcmdlist, 1560), dotypeinv);
+cptr.stI32(cptr.add(extcmdlist, 1568), 9);
+cptr.stPtr(cptr.add(extcmdlist, 1576), null);
+cptr.st1(cptr.add(extcmdlist, 1584), 233);
+cptr.stPtr(cptr.add(extcmdlist, 1592), __sl176);
+cptr.stPtr(cptr.add(extcmdlist, 1600), __sl177);
+cptr.stPtr(cptr.add(extcmdlist, 1608), doinvoke);
+cptr.stI32(cptr.add(extcmdlist, 1616), 3);
+cptr.stPtr(cptr.add(extcmdlist, 1624), null);
+cptr.st1(cptr.add(extcmdlist, 1632), 234);
+cptr.stPtr(cptr.add(extcmdlist, 1640), __sl178);
+cptr.stPtr(cptr.add(extcmdlist, 1648), __sl179);
+cptr.stPtr(cptr.add(extcmdlist, 1656), dojump);
+cptr.stI32(cptr.add(extcmdlist, 1664), 2);
+cptr.stPtr(cptr.add(extcmdlist, 1672), null);
+cptr.st1(cptr.add(extcmdlist, 1680), 4);
+cptr.stPtr(cptr.add(extcmdlist, 1688), __sl180);
+cptr.stPtr(cptr.add(extcmdlist, 1696), __sl181);
+cptr.stPtr(cptr.add(extcmdlist, 1704), dokick);
+cptr.stI32(cptr.add(extcmdlist, 1712), 0);
+cptr.stPtr(cptr.add(extcmdlist, 1720), null);
 cptr.st1(cptr.add(extcmdlist, 1728), 92);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1728), 8), __sl182);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1728), 16), __sl183);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1728), 24), dodiscovered);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1728), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1728), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1736), __sl182);
+cptr.stPtr(cptr.add(extcmdlist, 1744), __sl183);
+cptr.stPtr(cptr.add(extcmdlist, 1752), dodiscovered);
+cptr.stI32(cptr.add(extcmdlist, 1760), 137);
+cptr.stPtr(cptr.add(extcmdlist, 1768), null);
 cptr.st1(cptr.add(extcmdlist, 1776), 96);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1776), 8), __sl184);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1776), 16), __sl185);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1776), 24), doclassdisco);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1776), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1776), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1784), __sl184);
+cptr.stPtr(cptr.add(extcmdlist, 1792), __sl185);
+cptr.stPtr(cptr.add(extcmdlist, 1800), doclassdisco);
+cptr.stI32(cptr.add(extcmdlist, 1808), 137);
+cptr.stPtr(cptr.add(extcmdlist, 1816), null);
 cptr.st1(cptr.add(extcmdlist, 1824), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1824), 8), __sl186);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1824), 16), __sl187);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1824), 24), wiz_level_change);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1824), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1824), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1832), __sl186);
+cptr.stPtr(cptr.add(extcmdlist, 1840), __sl187);
+cptr.stPtr(cptr.add(extcmdlist, 1848), wiz_level_change);
+cptr.stI32(cptr.add(extcmdlist, 1856), 7);
+cptr.stPtr(cptr.add(extcmdlist, 1864), null);
 cptr.st1(cptr.add(extcmdlist, 1872), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1872), 8), __sl188);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1872), 16), __sl189);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1872), 24), wiz_light_sources);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1872), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1872), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1880), __sl188);
+cptr.stPtr(cptr.add(extcmdlist, 1888), __sl189);
+cptr.stPtr(cptr.add(extcmdlist, 1896), wiz_light_sources);
+cptr.stI32(cptr.add(extcmdlist, 1904), 7);
+cptr.stPtr(cptr.add(extcmdlist, 1912), null);
 cptr.st1(cptr.add(extcmdlist, 1920), 58);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1920), 8), __sl190);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1920), 16), __sl191);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1920), 24), dolook);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1920), 32), 1);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1920), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1928), __sl190);
+cptr.stPtr(cptr.add(extcmdlist, 1936), __sl191);
+cptr.stPtr(cptr.add(extcmdlist, 1944), dolook);
+cptr.stI32(cptr.add(extcmdlist, 1952), 1);
+cptr.stPtr(cptr.add(extcmdlist, 1960), null);
 cptr.st1(cptr.add(extcmdlist, 1968), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1968), 8), __sl192);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1968), 16), __sl193);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1968), 24), dolookaround);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 1968), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 1968), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2016), uchar((((108) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2016), 8), __sl194);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2016), 16), __sl195);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2016), 24), doloot);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2016), 32), (2 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2016), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 1976), __sl192);
+cptr.stPtr(cptr.add(extcmdlist, 1984), __sl193);
+cptr.stPtr(cptr.add(extcmdlist, 1992), dolookaround);
+cptr.stI32(cptr.add(extcmdlist, 2000), 9);
+cptr.stPtr(cptr.add(extcmdlist, 2008), null);
+cptr.st1(cptr.add(extcmdlist, 2016), 236);
+cptr.stPtr(cptr.add(extcmdlist, 2024), __sl194);
+cptr.stPtr(cptr.add(extcmdlist, 2032), __sl195);
+cptr.stPtr(cptr.add(extcmdlist, 2040), doloot);
+cptr.stI32(cptr.add(extcmdlist, 2048), 130);
+cptr.stPtr(cptr.add(extcmdlist, 2056), null);
 cptr.st1(cptr.add(extcmdlist, 2064), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2064), 8), __sl196);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2064), 16), __sl197);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2064), 24), wiz_migrate_mons);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2064), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2064), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2112), uchar((((109) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2112), 8), __sl198);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2112), 16), __sl199);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2112), 24), domonability);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2112), 32), (1 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2112), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2160), uchar((((110) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2160), 8), __sl200);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2160), 16), __sl201);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2160), 24), docallcmd);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2160), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2160), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2208), uchar((((111) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2208), 8), __sl202);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2208), 16), __sl203);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2208), 24), dosacrifice);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2208), 32), (2 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2208), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2072), __sl196);
+cptr.stPtr(cptr.add(extcmdlist, 2080), __sl197);
+cptr.stPtr(cptr.add(extcmdlist, 2088), wiz_migrate_mons);
+cptr.stI32(cptr.add(extcmdlist, 2096), 7);
+cptr.stPtr(cptr.add(extcmdlist, 2104), null);
+cptr.st1(cptr.add(extcmdlist, 2112), 237);
+cptr.stPtr(cptr.add(extcmdlist, 2120), __sl198);
+cptr.stPtr(cptr.add(extcmdlist, 2128), __sl199);
+cptr.stPtr(cptr.add(extcmdlist, 2136), domonability);
+cptr.stI32(cptr.add(extcmdlist, 2144), 3);
+cptr.stPtr(cptr.add(extcmdlist, 2152), null);
+cptr.st1(cptr.add(extcmdlist, 2160), 238);
+cptr.stPtr(cptr.add(extcmdlist, 2168), __sl200);
+cptr.stPtr(cptr.add(extcmdlist, 2176), __sl201);
+cptr.stPtr(cptr.add(extcmdlist, 2184), docallcmd);
+cptr.stI32(cptr.add(extcmdlist, 2192), 11);
+cptr.stPtr(cptr.add(extcmdlist, 2200), null);
+cptr.st1(cptr.add(extcmdlist, 2208), 239);
+cptr.stPtr(cptr.add(extcmdlist, 2216), __sl202);
+cptr.stPtr(cptr.add(extcmdlist, 2224), __sl203);
+cptr.stPtr(cptr.add(extcmdlist, 2232), dosacrifice);
+cptr.stI32(cptr.add(extcmdlist, 2240), 130);
+cptr.stPtr(cptr.add(extcmdlist, 2248), null);
 cptr.st1(cptr.add(extcmdlist, 2256), 111);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2256), 8), __sl204);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2256), 16), __sl205);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2256), 24), doopen);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2256), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2256), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2264), __sl204);
+cptr.stPtr(cptr.add(extcmdlist, 2272), __sl205);
+cptr.stPtr(cptr.add(extcmdlist, 2280), doopen);
+cptr.stI32(cptr.add(extcmdlist, 2288), 0);
+cptr.stPtr(cptr.add(extcmdlist, 2296), null);
 cptr.st1(cptr.add(extcmdlist, 2304), 79);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2304), 8), __sl206);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2304), 16), __sl207);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2304), 24), doset_simple);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2304), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2304), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2312), __sl206);
+cptr.stPtr(cptr.add(extcmdlist, 2320), __sl207);
+cptr.stPtr(cptr.add(extcmdlist, 2328), doset_simple);
+cptr.stI32(cptr.add(extcmdlist, 2336), 137);
+cptr.stPtr(cptr.add(extcmdlist, 2344), null);
 cptr.st1(cptr.add(extcmdlist, 2352), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2352), 8), __sl208);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2352), 16), __sl209);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2352), 24), doset);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2352), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2352), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2400), uchar((31 & (111))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2400), 8), __sl210);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2400), 16), __sl211);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2400), 24), dooverview);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2400), 32), (1 | 2 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2400), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2360), __sl208);
+cptr.stPtr(cptr.add(extcmdlist, 2368), __sl209);
+cptr.stPtr(cptr.add(extcmdlist, 2376), doset);
+cptr.stI32(cptr.add(extcmdlist, 2384), 137);
+cptr.stPtr(cptr.add(extcmdlist, 2392), null);
+cptr.st1(cptr.add(extcmdlist, 2400), 15);
+cptr.stPtr(cptr.add(extcmdlist, 2408), __sl210);
+cptr.stPtr(cptr.add(extcmdlist, 2416), __sl211);
+cptr.stPtr(cptr.add(extcmdlist, 2424), dooverview);
+cptr.stI32(cptr.add(extcmdlist, 2432), 139);
+cptr.stPtr(cptr.add(extcmdlist, 2440), null);
 cptr.st1(cptr.add(extcmdlist, 2448), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2448), 8), __sl212);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2448), 16), __sl213);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2448), 24), wiz_panic);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2448), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2448), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2456), __sl212);
+cptr.stPtr(cptr.add(extcmdlist, 2464), __sl213);
+cptr.stPtr(cptr.add(extcmdlist, 2472), wiz_panic);
+cptr.stI32(cptr.add(extcmdlist, 2480), 7);
+cptr.stPtr(cptr.add(extcmdlist, 2488), null);
 cptr.st1(cptr.add(extcmdlist, 2496), 112);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2496), 8), __sl214);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2496), 16), __sl215);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2496), 24), dopay);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2496), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2496), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2504), __sl214);
+cptr.stPtr(cptr.add(extcmdlist, 2512), __sl215);
+cptr.stPtr(cptr.add(extcmdlist, 2520), dopay);
+cptr.stI32(cptr.add(extcmdlist, 2528), 128);
+cptr.stPtr(cptr.add(extcmdlist, 2536), null);
 cptr.st1(cptr.add(extcmdlist, 2544), 124);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2544), 8), __sl216);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2544), 16), __sl217);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2544), 24), doperminv);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2544), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2544), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2552), __sl216);
+cptr.stPtr(cptr.add(extcmdlist, 2560), __sl217);
+cptr.stPtr(cptr.add(extcmdlist, 2568), doperminv);
+cptr.stI32(cptr.add(extcmdlist, 2576), 41);
+cptr.stPtr(cptr.add(extcmdlist, 2584), null);
 cptr.st1(cptr.add(extcmdlist, 2592), 44);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2592), 8), __sl218);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2592), 16), __sl219);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2592), 24), dopickup);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2592), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2592), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2600), __sl218);
+cptr.stPtr(cptr.add(extcmdlist, 2608), __sl219);
+cptr.stPtr(cptr.add(extcmdlist, 2616), dopickup);
+cptr.stI32(cptr.add(extcmdlist, 2624), 128);
+cptr.stPtr(cptr.add(extcmdlist, 2632), null);
 cptr.st1(cptr.add(extcmdlist, 2640), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2640), 8), __sl220);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2640), 16), __sl221);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2640), 24), wiz_polyself);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2640), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2640), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2688), uchar((((112) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2688), 8), __sl222);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2688), 16), __sl223);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2688), 24), dopray);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2688), 32), (1 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2688), 40), null);
-cptr.st1(cptr.add(extcmdlist, 2736), uchar((31 & (112))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2736), 8), __sl224);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2736), 16), __sl225);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2736), 24), doprev_message);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2736), 32), (1 | 8 | 4096) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2736), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2648), __sl220);
+cptr.stPtr(cptr.add(extcmdlist, 2656), __sl221);
+cptr.stPtr(cptr.add(extcmdlist, 2664), wiz_polyself);
+cptr.stI32(cptr.add(extcmdlist, 2672), 7);
+cptr.stPtr(cptr.add(extcmdlist, 2680), null);
+cptr.st1(cptr.add(extcmdlist, 2688), 240);
+cptr.stPtr(cptr.add(extcmdlist, 2696), __sl222);
+cptr.stPtr(cptr.add(extcmdlist, 2704), __sl223);
+cptr.stPtr(cptr.add(extcmdlist, 2712), dopray);
+cptr.stI32(cptr.add(extcmdlist, 2720), 3);
+cptr.stPtr(cptr.add(extcmdlist, 2728), null);
+cptr.st1(cptr.add(extcmdlist, 2736), 16);
+cptr.stPtr(cptr.add(extcmdlist, 2744), __sl224);
+cptr.stPtr(cptr.add(extcmdlist, 2752), __sl225);
+cptr.stPtr(cptr.add(extcmdlist, 2760), doprev_message);
+cptr.stI32(cptr.add(extcmdlist, 2768), 4105);
+cptr.stPtr(cptr.add(extcmdlist, 2776), null);
 cptr.st1(cptr.add(extcmdlist, 2784), 80);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2784), 8), __sl226);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2784), 16), __sl227);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2784), 24), doputon);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2784), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2784), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2792), __sl226);
+cptr.stPtr(cptr.add(extcmdlist, 2800), __sl227);
+cptr.stPtr(cptr.add(extcmdlist, 2808), doputon);
+cptr.stI32(cptr.add(extcmdlist, 2816), 0);
+cptr.stPtr(cptr.add(extcmdlist, 2824), null);
 cptr.st1(cptr.add(extcmdlist, 2832), 113);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2832), 8), __sl228);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2832), 16), __sl229);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2832), 24), dodrink);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2832), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2832), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2840), __sl228);
+cptr.stPtr(cptr.add(extcmdlist, 2848), __sl229);
+cptr.stPtr(cptr.add(extcmdlist, 2856), dodrink);
+cptr.stI32(cptr.add(extcmdlist, 2864), 128);
+cptr.stPtr(cptr.add(extcmdlist, 2872), null);
 cptr.st1(cptr.add(extcmdlist, 2880), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2880), 8), __sl230);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2880), 16), __sl231);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2880), 24), done2);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2880), 32), (1 | 2 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2880), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2888), __sl230);
+cptr.stPtr(cptr.add(extcmdlist, 2896), __sl231);
+cptr.stPtr(cptr.add(extcmdlist, 2904), done2);
+cptr.stI32(cptr.add(extcmdlist, 2912), 43);
+cptr.stPtr(cptr.add(extcmdlist, 2920), null);
 cptr.st1(cptr.add(extcmdlist, 2928), 81);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2928), 8), __sl232);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2928), 16), __sl233);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2928), 24), dowieldquiver);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2928), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2928), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2936), __sl232);
+cptr.stPtr(cptr.add(extcmdlist, 2944), __sl233);
+cptr.stPtr(cptr.add(extcmdlist, 2952), dowieldquiver);
+cptr.stI32(cptr.add(extcmdlist, 2960), 0);
+cptr.stPtr(cptr.add(extcmdlist, 2968), null);
 cptr.st1(cptr.add(extcmdlist, 2976), 114);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2976), 8), __sl234);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2976), 16), __sl235);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2976), 24), doread);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 2976), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 2976), 40), null);
-cptr.st1(cptr.add(extcmdlist, 3024), uchar((31 & (114))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3024), 8), __sl236);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3024), 16), __sl237);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3024), 24), doredraw);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3024), 32), (1 | 8 | 4096) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3024), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 2984), __sl234);
+cptr.stPtr(cptr.add(extcmdlist, 2992), __sl235);
+cptr.stPtr(cptr.add(extcmdlist, 3000), doread);
+cptr.stI32(cptr.add(extcmdlist, 3008), 0);
+cptr.stPtr(cptr.add(extcmdlist, 3016), null);
+cptr.st1(cptr.add(extcmdlist, 3024), 18);
+cptr.stPtr(cptr.add(extcmdlist, 3032), __sl236);
+cptr.stPtr(cptr.add(extcmdlist, 3040), __sl237);
+cptr.stPtr(cptr.add(extcmdlist, 3048), doredraw);
+cptr.stI32(cptr.add(extcmdlist, 3056), 4105);
+cptr.stPtr(cptr.add(extcmdlist, 3064), null);
 cptr.st1(cptr.add(extcmdlist, 3072), 82);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3072), 8), __sl238);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3072), 16), __sl239);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3072), 24), doremring);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3072), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3072), 40), null);
-cptr.st1(cptr.add(extcmdlist, 3120), uchar((31 & (97))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3120), 8), __sl240);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3120), 16), __sl241);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3120), 24), do_repeat);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3120), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3120), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3080), __sl238);
+cptr.stPtr(cptr.add(extcmdlist, 3088), __sl239);
+cptr.stPtr(cptr.add(extcmdlist, 3096), doremring);
+cptr.stI32(cptr.add(extcmdlist, 3104), 0);
+cptr.stPtr(cptr.add(extcmdlist, 3112), null);
+cptr.st1(cptr.add(extcmdlist, 3120), 1);
+cptr.stPtr(cptr.add(extcmdlist, 3128), __sl240);
+cptr.stPtr(cptr.add(extcmdlist, 3136), __sl241);
+cptr.stPtr(cptr.add(extcmdlist, 3144), do_repeat);
+cptr.stI32(cptr.add(extcmdlist, 3152), 9);
+cptr.stPtr(cptr.add(extcmdlist, 3160), null);
 cptr.st1(cptr.add(extcmdlist, 3168), 109);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3168), 8), __sl242);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3168), 16), __sl243);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3168), 24), do_reqmenu);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3168), 32), 512);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3168), 40), null);
-cptr.st1(cptr.add(extcmdlist, 3216), uchar((31 & (95))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3216), 8), __sl244);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3216), 16), __sl245);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3216), 24), dotravel_target);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3216), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3216), 40), null);
-cptr.st1(cptr.add(extcmdlist, 3264), uchar((((82) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3264), 8), __sl246);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3264), 16), __sl247);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3264), 24), doride);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3264), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3264), 40), null);
-cptr.st1(cptr.add(extcmdlist, 3312), uchar((((114) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3312), 8), __sl248);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3312), 16), __sl249);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3312), 24), dorub);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3312), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3312), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3176), __sl242);
+cptr.stPtr(cptr.add(extcmdlist, 3184), __sl243);
+cptr.stPtr(cptr.add(extcmdlist, 3192), do_reqmenu);
+cptr.stI32(cptr.add(extcmdlist, 3200), 512);
+cptr.stPtr(cptr.add(extcmdlist, 3208), null);
+cptr.st1(cptr.add(extcmdlist, 3216), 31);
+cptr.stPtr(cptr.add(extcmdlist, 3224), __sl244);
+cptr.stPtr(cptr.add(extcmdlist, 3232), __sl245);
+cptr.stPtr(cptr.add(extcmdlist, 3240), dotravel_target);
+cptr.stI32(cptr.add(extcmdlist, 3248), 0);
+cptr.stPtr(cptr.add(extcmdlist, 3256), null);
+cptr.st1(cptr.add(extcmdlist, 3264), 210);
+cptr.stPtr(cptr.add(extcmdlist, 3272), __sl246);
+cptr.stPtr(cptr.add(extcmdlist, 3280), __sl247);
+cptr.stPtr(cptr.add(extcmdlist, 3288), doride);
+cptr.stI32(cptr.add(extcmdlist, 3296), 2);
+cptr.stPtr(cptr.add(extcmdlist, 3304), null);
+cptr.st1(cptr.add(extcmdlist, 3312), 242);
+cptr.stPtr(cptr.add(extcmdlist, 3320), __sl248);
+cptr.stPtr(cptr.add(extcmdlist, 3328), __sl249);
+cptr.stPtr(cptr.add(extcmdlist, 3336), dorub);
+cptr.stI32(cptr.add(extcmdlist, 3344), 2);
+cptr.stPtr(cptr.add(extcmdlist, 3352), null);
 cptr.st1(cptr.add(extcmdlist, 3360), 71);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3360), 8), __sl250);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3360), 16), __sl251);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3360), 24), do_run);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3360), 32), 512);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3360), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3368), __sl250);
+cptr.stPtr(cptr.add(extcmdlist, 3376), __sl251);
+cptr.stPtr(cptr.add(extcmdlist, 3384), do_run);
+cptr.stI32(cptr.add(extcmdlist, 3392), 512);
+cptr.stPtr(cptr.add(extcmdlist, 3400), null);
 cptr.st1(cptr.add(extcmdlist, 3408), 103);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3408), 8), __sl252);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3408), 16), __sl253);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3408), 24), do_rush);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3408), 32), 512);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3408), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3416), __sl252);
+cptr.stPtr(cptr.add(extcmdlist, 3424), __sl253);
+cptr.stPtr(cptr.add(extcmdlist, 3432), do_rush);
+cptr.stI32(cptr.add(extcmdlist, 3440), 512);
+cptr.stPtr(cptr.add(extcmdlist, 3448), null);
 cptr.st1(cptr.add(extcmdlist, 3456), 83);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3456), 8), __sl254);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3456), 16), __sl255);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3456), 24), dosave);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3456), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3456), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3464), __sl254);
+cptr.stPtr(cptr.add(extcmdlist, 3472), __sl255);
+cptr.stPtr(cptr.add(extcmdlist, 3480), dosave);
+cptr.stI32(cptr.add(extcmdlist, 3488), 41);
+cptr.stPtr(cptr.add(extcmdlist, 3496), null);
 cptr.st1(cptr.add(extcmdlist, 3504), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3504), 8), __sl256);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3504), 16), __sl257);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3504), 24), do_write_config_file);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3504), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3504), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3512), __sl256);
+cptr.stPtr(cptr.add(extcmdlist, 3520), __sl257);
+cptr.stPtr(cptr.add(extcmdlist, 3528), do_write_config_file);
+cptr.stI32(cptr.add(extcmdlist, 3536), 41);
+cptr.stPtr(cptr.add(extcmdlist, 3544), null);
 cptr.st1(cptr.add(extcmdlist, 3552), 115);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3552), 8), __sl258);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3552), 16), __sl259);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3552), 24), dosearch);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3552), 32), (1 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3552), 40), __sl260);
+cptr.stPtr(cptr.add(extcmdlist, 3560), __sl258);
+cptr.stPtr(cptr.add(extcmdlist, 3568), __sl259);
+cptr.stPtr(cptr.add(extcmdlist, 3576), dosearch);
+cptr.stI32(cptr.add(extcmdlist, 3584), 129);
+cptr.stPtr(cptr.add(extcmdlist, 3592), __sl260);
 cptr.st1(cptr.add(extcmdlist, 3600), 42);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3600), 8), __sl261);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3600), 16), __sl262);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3600), 24), doprinuse);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3600), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3600), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3608), __sl261);
+cptr.stPtr(cptr.add(extcmdlist, 3616), __sl262);
+cptr.stPtr(cptr.add(extcmdlist, 3624), doprinuse);
+cptr.stI32(cptr.add(extcmdlist, 3632), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3640), null);
 cptr.st1(cptr.add(extcmdlist, 3648), 34);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3648), 8), __sl263);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3648), 16), __sl264);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3648), 24), dopramulet);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3648), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3648), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3656), __sl263);
+cptr.stPtr(cptr.add(extcmdlist, 3664), __sl264);
+cptr.stPtr(cptr.add(extcmdlist, 3672), dopramulet);
+cptr.stI32(cptr.add(extcmdlist, 3680), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3688), null);
 cptr.st1(cptr.add(extcmdlist, 3696), 91);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3696), 8), __sl265);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3696), 16), __sl266);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3696), 24), doprarm);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3696), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3696), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3704), __sl265);
+cptr.stPtr(cptr.add(extcmdlist, 3712), __sl266);
+cptr.stPtr(cptr.add(extcmdlist, 3720), doprarm);
+cptr.stI32(cptr.add(extcmdlist, 3728), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3736), null);
 cptr.st1(cptr.add(extcmdlist, 3744), 61);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3744), 8), __sl267);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3744), 16), __sl268);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3744), 24), doprring);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3744), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3744), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3752), __sl267);
+cptr.stPtr(cptr.add(extcmdlist, 3760), __sl268);
+cptr.stPtr(cptr.add(extcmdlist, 3768), doprring);
+cptr.stI32(cptr.add(extcmdlist, 3776), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3784), null);
 cptr.st1(cptr.add(extcmdlist, 3792), 40);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3792), 8), __sl269);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3792), 16), __sl270);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3792), 24), doprtool);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3792), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3792), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3800), __sl269);
+cptr.stPtr(cptr.add(extcmdlist, 3808), __sl270);
+cptr.stPtr(cptr.add(extcmdlist, 3816), doprtool);
+cptr.stI32(cptr.add(extcmdlist, 3824), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3832), null);
 cptr.st1(cptr.add(extcmdlist, 3840), 41);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3840), 8), __sl271);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3840), 16), __sl272);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3840), 24), doprwep);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3840), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3840), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3848), __sl271);
+cptr.stPtr(cptr.add(extcmdlist, 3856), __sl272);
+cptr.stPtr(cptr.add(extcmdlist, 3864), doprwep);
+cptr.stI32(cptr.add(extcmdlist, 3872), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3880), null);
 cptr.st1(cptr.add(extcmdlist, 3888), 33);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3888), 8), __sl273);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3888), 16), __sl274);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3888), 24), dosh_core);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3888), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3888), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3896), __sl273);
+cptr.stPtr(cptr.add(extcmdlist, 3904), __sl274);
+cptr.stPtr(cptr.add(extcmdlist, 3912), dosh_core);
+cptr.stI32(cptr.add(extcmdlist, 3920), 41);
+cptr.stPtr(cptr.add(extcmdlist, 3928), null);
 cptr.st1(cptr.add(extcmdlist, 3936), 36);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3936), 8), __sl275);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3936), 16), __sl276);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3936), 24), doprgold);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3936), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3936), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3944), __sl275);
+cptr.stPtr(cptr.add(extcmdlist, 3952), __sl276);
+cptr.stPtr(cptr.add(extcmdlist, 3960), doprgold);
+cptr.stI32(cptr.add(extcmdlist, 3968), 137);
+cptr.stPtr(cptr.add(extcmdlist, 3976), null);
 cptr.st1(cptr.add(extcmdlist, 3984), 43);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3984), 8), __sl277);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3984), 16), __sl278);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3984), 24), dovspell);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 3984), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 3984), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 3992), __sl277);
+cptr.stPtr(cptr.add(extcmdlist, 4000), __sl278);
+cptr.stPtr(cptr.add(extcmdlist, 4008), dovspell);
+cptr.stI32(cptr.add(extcmdlist, 4016), 9);
+cptr.stPtr(cptr.add(extcmdlist, 4024), null);
 cptr.st1(cptr.add(extcmdlist, 4032), 94);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4032), 8), __sl279);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4032), 16), __sl280);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4032), 24), doidtrap);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4032), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4032), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4080), uchar((((115) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4080), 8), __sl281);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4080), 16), __sl282);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4080), 24), dosit);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4080), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4080), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4040), __sl279);
+cptr.stPtr(cptr.add(extcmdlist, 4048), __sl280);
+cptr.stPtr(cptr.add(extcmdlist, 4056), doidtrap);
+cptr.stI32(cptr.add(extcmdlist, 4064), 9);
+cptr.stPtr(cptr.add(extcmdlist, 4072), null);
+cptr.st1(cptr.add(extcmdlist, 4080), 243);
+cptr.stPtr(cptr.add(extcmdlist, 4088), __sl281);
+cptr.stPtr(cptr.add(extcmdlist, 4096), __sl282);
+cptr.stPtr(cptr.add(extcmdlist, 4104), dosit);
+cptr.stI32(cptr.add(extcmdlist, 4112), 2);
+cptr.stPtr(cptr.add(extcmdlist, 4120), null);
 cptr.st1(cptr.add(extcmdlist, 4128), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4128), 8), __sl283);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4128), 16), __sl284);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4128), 24), wiz_show_stats);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4128), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4128), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4176), uchar((31 & (122))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4176), 8), __sl285);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4176), 16), __sl286);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4176), 24), dosuspend_core);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4176), 32), (1 | 8 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4176), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4136), __sl283);
+cptr.stPtr(cptr.add(extcmdlist, 4144), __sl284);
+cptr.stPtr(cptr.add(extcmdlist, 4152), wiz_show_stats);
+cptr.stI32(cptr.add(extcmdlist, 4160), 7);
+cptr.stPtr(cptr.add(extcmdlist, 4168), null);
+cptr.st1(cptr.add(extcmdlist, 4176), 26);
+cptr.stPtr(cptr.add(extcmdlist, 4184), __sl285);
+cptr.stPtr(cptr.add(extcmdlist, 4192), __sl286);
+cptr.stPtr(cptr.add(extcmdlist, 4200), dosuspend_core);
+cptr.stI32(cptr.add(extcmdlist, 4208), 41);
+cptr.stPtr(cptr.add(extcmdlist, 4216), null);
 cptr.st1(cptr.add(extcmdlist, 4224), 120);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4224), 8), __sl287);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4224), 16), __sl288);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4224), 24), doswapweapon);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4224), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4224), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4232), __sl287);
+cptr.stPtr(cptr.add(extcmdlist, 4240), __sl288);
+cptr.stPtr(cptr.add(extcmdlist, 4248), doswapweapon);
+cptr.stI32(cptr.add(extcmdlist, 4256), 0);
+cptr.stPtr(cptr.add(extcmdlist, 4264), null);
 cptr.st1(cptr.add(extcmdlist, 4272), 84);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4272), 8), __sl289);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4272), 16), __sl290);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4272), 24), dotakeoff);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4272), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4272), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4280), __sl289);
+cptr.stPtr(cptr.add(extcmdlist, 4288), __sl290);
+cptr.stPtr(cptr.add(extcmdlist, 4296), dotakeoff);
+cptr.stI32(cptr.add(extcmdlist, 4304), 0);
+cptr.stPtr(cptr.add(extcmdlist, 4312), null);
 cptr.st1(cptr.add(extcmdlist, 4320), 65);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4320), 8), __sl291);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4320), 16), __sl292);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4320), 24), doddoremarm);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4320), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4320), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4368), uchar((31 & (116))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4368), 8), __sl293);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4368), 16), __sl294);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4368), 24), dotelecmd);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4368), 32), (1 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4368), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4328), __sl291);
+cptr.stPtr(cptr.add(extcmdlist, 4336), __sl292);
+cptr.stPtr(cptr.add(extcmdlist, 4344), doddoremarm);
+cptr.stI32(cptr.add(extcmdlist, 4352), 0);
+cptr.stPtr(cptr.add(extcmdlist, 4360), null);
+cptr.st1(cptr.add(extcmdlist, 4368), 20);
+cptr.stPtr(cptr.add(extcmdlist, 4376), __sl293);
+cptr.stPtr(cptr.add(extcmdlist, 4384), __sl294);
+cptr.stPtr(cptr.add(extcmdlist, 4392), dotelecmd);
+cptr.stI32(cptr.add(extcmdlist, 4400), 129);
+cptr.stPtr(cptr.add(extcmdlist, 4408), null);
 cptr.st1(cptr.add(extcmdlist, 4416), 127);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4416), 8), __sl295);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4416), 16), __sl296);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4416), 24), doterrain);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4416), 32), (1 | 8 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4416), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4424), __sl295);
+cptr.stPtr(cptr.add(extcmdlist, 4432), __sl296);
+cptr.stPtr(cptr.add(extcmdlist, 4440), doterrain);
+cptr.stI32(cptr.add(extcmdlist, 4448), 11);
+cptr.stPtr(cptr.add(extcmdlist, 4456), null);
 cptr.st1(cptr.add(extcmdlist, 4464), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4464), 8), __sl297);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4464), 16), __sl298);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4464), 24), dotherecmdmenu);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4464), 32), (2 | 8 | 2048) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4464), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4472), __sl297);
+cptr.stPtr(cptr.add(extcmdlist, 4480), __sl298);
+cptr.stPtr(cptr.add(extcmdlist, 4488), dotherecmdmenu);
+cptr.stI32(cptr.add(extcmdlist, 4496), 2058);
+cptr.stPtr(cptr.add(extcmdlist, 4504), null);
 cptr.st1(cptr.add(extcmdlist, 4512), 116);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4512), 8), __sl299);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4512), 16), __sl300);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4512), 24), dothrow);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4512), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4512), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4520), __sl299);
+cptr.stPtr(cptr.add(extcmdlist, 4528), __sl300);
+cptr.stPtr(cptr.add(extcmdlist, 4536), dothrow);
+cptr.stI32(cptr.add(extcmdlist, 4544), 0);
+cptr.stPtr(cptr.add(extcmdlist, 4552), null);
 cptr.st1(cptr.add(extcmdlist, 4560), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4560), 8), __sl301);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4560), 16), __sl302);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4560), 24), wiz_timeout_queue);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4560), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4560), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4608), uchar((((84) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4608), 8), __sl303);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4608), 16), __sl304);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4608), 24), dotip);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4608), 32), (2 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4608), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4568), __sl301);
+cptr.stPtr(cptr.add(extcmdlist, 4576), __sl302);
+cptr.stPtr(cptr.add(extcmdlist, 4584), wiz_timeout_queue);
+cptr.stI32(cptr.add(extcmdlist, 4592), 7);
+cptr.stPtr(cptr.add(extcmdlist, 4600), null);
+cptr.st1(cptr.add(extcmdlist, 4608), 212);
+cptr.stPtr(cptr.add(extcmdlist, 4616), __sl303);
+cptr.stPtr(cptr.add(extcmdlist, 4624), __sl304);
+cptr.stPtr(cptr.add(extcmdlist, 4632), dotip);
+cptr.stI32(cptr.add(extcmdlist, 4640), 130);
+cptr.stPtr(cptr.add(extcmdlist, 4648), null);
 cptr.st1(cptr.add(extcmdlist, 4656), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4656), 8), __sl305);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4656), 16), __sl306);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4656), 24), dotoggleoption);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4656), 32), (1 | 8 | 16384) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4656), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4664), __sl305);
+cptr.stPtr(cptr.add(extcmdlist, 4672), __sl306);
+cptr.stPtr(cptr.add(extcmdlist, 4680), dotoggleoption);
+cptr.stI32(cptr.add(extcmdlist, 4688), 16393);
+cptr.stPtr(cptr.add(extcmdlist, 4696), null);
 cptr.st1(cptr.add(extcmdlist, 4704), 95);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4704), 8), __sl307);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4704), 16), __sl308);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4704), 24), dotravel);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4704), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4704), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4752), uchar((((116) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4752), 8), __sl309);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4752), 16), __sl310);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4752), 24), doturn);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4752), 32), (1 | 2) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4752), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4712), __sl307);
+cptr.stPtr(cptr.add(extcmdlist, 4720), __sl308);
+cptr.stPtr(cptr.add(extcmdlist, 4728), dotravel);
+cptr.stI32(cptr.add(extcmdlist, 4736), 128);
+cptr.stPtr(cptr.add(extcmdlist, 4744), null);
+cptr.st1(cptr.add(extcmdlist, 4752), 244);
+cptr.stPtr(cptr.add(extcmdlist, 4760), __sl309);
+cptr.stPtr(cptr.add(extcmdlist, 4768), __sl310);
+cptr.stPtr(cptr.add(extcmdlist, 4776), doturn);
+cptr.stI32(cptr.add(extcmdlist, 4784), 3);
+cptr.stPtr(cptr.add(extcmdlist, 4792), null);
 cptr.st1(cptr.add(extcmdlist, 4800), 88);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4800), 8), __sl311);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4800), 16), __sl312);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4800), 24), dotwoweapon);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4800), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4800), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4848), uchar((((117) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4848), 8), __sl313);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4848), 16), __sl314);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4848), 24), dountrap);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4848), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4848), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4808), __sl311);
+cptr.stPtr(cptr.add(extcmdlist, 4816), __sl312);
+cptr.stPtr(cptr.add(extcmdlist, 4824), dotwoweapon);
+cptr.stI32(cptr.add(extcmdlist, 4832), 0);
+cptr.stPtr(cptr.add(extcmdlist, 4840), null);
+cptr.st1(cptr.add(extcmdlist, 4848), 245);
+cptr.stPtr(cptr.add(extcmdlist, 4856), __sl313);
+cptr.stPtr(cptr.add(extcmdlist, 4864), __sl314);
+cptr.stPtr(cptr.add(extcmdlist, 4872), dountrap);
+cptr.stI32(cptr.add(extcmdlist, 4880), 2);
+cptr.stPtr(cptr.add(extcmdlist, 4888), null);
 cptr.st1(cptr.add(extcmdlist, 4896), 60);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4896), 8), __sl315);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4896), 16), __sl316);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4896), 24), doup);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4896), 32), 128);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4896), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4944), uchar((((86) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4944), 8), __sl317);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4944), 16), __sl318);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4944), 24), dovanquished);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4944), 32), (1 | 2 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4944), 40), null);
-cptr.st1(cptr.add(extcmdlist, 4992), uchar((((118) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4992), 8), __sl319);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4992), 16), __sl320);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4992), 24), doextversion);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 4992), 32), (1 | 2 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 4992), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 4904), __sl315);
+cptr.stPtr(cptr.add(extcmdlist, 4912), __sl316);
+cptr.stPtr(cptr.add(extcmdlist, 4920), doup);
+cptr.stI32(cptr.add(extcmdlist, 4928), 128);
+cptr.stPtr(cptr.add(extcmdlist, 4936), null);
+cptr.st1(cptr.add(extcmdlist, 4944), 214);
+cptr.stPtr(cptr.add(extcmdlist, 4952), __sl317);
+cptr.stPtr(cptr.add(extcmdlist, 4960), __sl318);
+cptr.stPtr(cptr.add(extcmdlist, 4968), dovanquished);
+cptr.stI32(cptr.add(extcmdlist, 4976), 139);
+cptr.stPtr(cptr.add(extcmdlist, 4984), null);
+cptr.st1(cptr.add(extcmdlist, 4992), 246);
+cptr.stPtr(cptr.add(extcmdlist, 5000), __sl319);
+cptr.stPtr(cptr.add(extcmdlist, 5008), __sl320);
+cptr.stPtr(cptr.add(extcmdlist, 5016), doextversion);
+cptr.stI32(cptr.add(extcmdlist, 5024), 11);
+cptr.stPtr(cptr.add(extcmdlist, 5032), null);
 cptr.st1(cptr.add(extcmdlist, 5040), 86);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5040), 8), __sl321);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5040), 16), __sl322);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5040), 24), doversion);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5040), 32), (1 | 8 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5040), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5048), __sl321);
+cptr.stPtr(cptr.add(extcmdlist, 5056), __sl322);
+cptr.stPtr(cptr.add(extcmdlist, 5064), doversion);
+cptr.stI32(cptr.add(extcmdlist, 5072), 137);
+cptr.stPtr(cptr.add(extcmdlist, 5080), null);
 cptr.st1(cptr.add(extcmdlist, 5088), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5088), 8), __sl323);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5088), 16), __sl324);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5088), 24), wiz_show_vision);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5088), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5088), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5096), __sl323);
+cptr.stPtr(cptr.add(extcmdlist, 5104), __sl324);
+cptr.stPtr(cptr.add(extcmdlist, 5112), wiz_show_vision);
+cptr.stI32(cptr.add(extcmdlist, 5120), 7);
+cptr.stPtr(cptr.add(extcmdlist, 5128), null);
 cptr.st1(cptr.add(extcmdlist, 5136), 46);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5136), 8), __sl325);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5136), 16), __sl326);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5136), 24), donull);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5136), 32), (1 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5136), 40), __sl327);
+cptr.stPtr(cptr.add(extcmdlist, 5144), __sl325);
+cptr.stPtr(cptr.add(extcmdlist, 5152), __sl326);
+cptr.stPtr(cptr.add(extcmdlist, 5160), donull);
+cptr.stI32(cptr.add(extcmdlist, 5168), 129);
+cptr.stPtr(cptr.add(extcmdlist, 5176), __sl327);
 cptr.st1(cptr.add(extcmdlist, 5184), 87);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5184), 8), __sl328);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5184), 16), __sl329);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5184), 24), dowear);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5184), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5184), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5192), __sl328);
+cptr.stPtr(cptr.add(extcmdlist, 5200), __sl329);
+cptr.stPtr(cptr.add(extcmdlist, 5208), dowear);
+cptr.stI32(cptr.add(extcmdlist, 5216), 0);
+cptr.stPtr(cptr.add(extcmdlist, 5224), null);
 cptr.st1(cptr.add(extcmdlist, 5232), 38);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5232), 8), __sl330);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5232), 16), __sl331);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5232), 24), dowhatdoes);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5232), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5232), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5240), __sl330);
+cptr.stPtr(cptr.add(extcmdlist, 5248), __sl331);
+cptr.stPtr(cptr.add(extcmdlist, 5256), dowhatdoes);
+cptr.stI32(cptr.add(extcmdlist, 5264), 9);
+cptr.stPtr(cptr.add(extcmdlist, 5272), null);
 cptr.st1(cptr.add(extcmdlist, 5280), 47);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5280), 8), __sl332);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5280), 16), __sl333);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5280), 24), dowhatis);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5280), 32), (1 | 8) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5280), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5288), __sl332);
+cptr.stPtr(cptr.add(extcmdlist, 5296), __sl333);
+cptr.stPtr(cptr.add(extcmdlist, 5304), dowhatis);
+cptr.stI32(cptr.add(extcmdlist, 5312), 9);
+cptr.stPtr(cptr.add(extcmdlist, 5320), null);
 cptr.st1(cptr.add(extcmdlist, 5328), 119);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5328), 8), __sl334);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5328), 16), __sl335);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5328), 24), dowield);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5328), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5328), 40), null);
-cptr.st1(cptr.add(extcmdlist, 5376), uchar((((119) - 128) | 0)));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5376), 8), __sl336);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5376), 16), __sl337);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5376), 24), dowipe);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5376), 32), 2);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5376), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5336), __sl334);
+cptr.stPtr(cptr.add(extcmdlist, 5344), __sl335);
+cptr.stPtr(cptr.add(extcmdlist, 5352), dowield);
+cptr.stI32(cptr.add(extcmdlist, 5360), 0);
+cptr.stPtr(cptr.add(extcmdlist, 5368), null);
+cptr.st1(cptr.add(extcmdlist, 5376), 247);
+cptr.stPtr(cptr.add(extcmdlist, 5384), __sl336);
+cptr.stPtr(cptr.add(extcmdlist, 5392), __sl337);
+cptr.stPtr(cptr.add(extcmdlist, 5400), dowipe);
+cptr.stI32(cptr.add(extcmdlist, 5408), 2);
+cptr.stPtr(cptr.add(extcmdlist, 5416), null);
 cptr.st1(cptr.add(extcmdlist, 5424), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5424), 8), __sl338);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5424), 16), __sl339);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5424), 24), doborn);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5424), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5424), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5432), __sl338);
+cptr.stPtr(cptr.add(extcmdlist, 5440), __sl339);
+cptr.stPtr(cptr.add(extcmdlist, 5448), doborn);
+cptr.stI32(cptr.add(extcmdlist, 5456), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5464), null);
 cptr.st1(cptr.add(extcmdlist, 5472), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5472), 8), __sl340);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5472), 16), __sl341);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5472), 24), wiz_debug_cmd_bury);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5472), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5472), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5480), __sl340);
+cptr.stPtr(cptr.add(extcmdlist, 5488), __sl341);
+cptr.stPtr(cptr.add(extcmdlist, 5496), wiz_debug_cmd_bury);
+cptr.stI32(cptr.add(extcmdlist, 5504), 7);
+cptr.stPtr(cptr.add(extcmdlist, 5512), null);
 cptr.st1(cptr.add(extcmdlist, 5520), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5520), 8), __sl342);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5520), 16), __sl343);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5520), 24), dowizcast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5520), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5520), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5528), __sl342);
+cptr.stPtr(cptr.add(extcmdlist, 5536), __sl343);
+cptr.stPtr(cptr.add(extcmdlist, 5544), dowizcast);
+cptr.stI32(cptr.add(extcmdlist, 5552), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5560), null);
 cptr.st1(cptr.add(extcmdlist, 5568), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5568), 8), __sl344);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5568), 16), __sl345);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5568), 24), wiz_custom);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5568), 32), (1 | 4 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5568), 40), null);
-cptr.st1(cptr.add(extcmdlist, 5616), uchar((31 & (101))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5616), 8), __sl346);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5616), 16), __sl347);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5616), 24), wiz_detect);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5616), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5616), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5576), __sl344);
+cptr.stPtr(cptr.add(extcmdlist, 5584), __sl345);
+cptr.stPtr(cptr.add(extcmdlist, 5592), wiz_custom);
+cptr.stI32(cptr.add(extcmdlist, 5600), 37);
+cptr.stPtr(cptr.add(extcmdlist, 5608), null);
+cptr.st1(cptr.add(extcmdlist, 5616), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5624), __sl346);
+cptr.stPtr(cptr.add(extcmdlist, 5632), __sl347);
+cptr.stPtr(cptr.add(extcmdlist, 5640), wiz_detect);
+cptr.stI32(cptr.add(extcmdlist, 5648), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5656), null);
 cptr.st1(cptr.add(extcmdlist, 5664), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5664), 8), __sl348);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5664), 16), __sl349);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5664), 24), wiz_display_macros);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5664), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5664), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5672), __sl348);
+cptr.stPtr(cptr.add(extcmdlist, 5680), __sl349);
+cptr.stPtr(cptr.add(extcmdlist, 5688), wiz_display_macros);
+cptr.stI32(cptr.add(extcmdlist, 5696), 7);
+cptr.stPtr(cptr.add(extcmdlist, 5704), null);
 cptr.st1(cptr.add(extcmdlist, 5712), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5712), 8), __sl350);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5712), 16), __sl351);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5712), 24), wiz_flip_level);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5712), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5712), 40), null);
-cptr.st1(cptr.add(extcmdlist, 5760), uchar((31 & (103))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5760), 8), __sl352);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5760), 16), __sl353);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5760), 24), wiz_genesis);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5760), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5760), 40), null);
-cptr.st1(cptr.add(extcmdlist, 5808), uchar((31 & (105))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5808), 8), __sl354);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5808), 16), __sl355);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5808), 24), wiz_identify);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5808), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5808), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5720), __sl350);
+cptr.stPtr(cptr.add(extcmdlist, 5728), __sl351);
+cptr.stPtr(cptr.add(extcmdlist, 5736), wiz_flip_level);
+cptr.stI32(cptr.add(extcmdlist, 5744), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5752), null);
+cptr.st1(cptr.add(extcmdlist, 5760), 7);
+cptr.stPtr(cptr.add(extcmdlist, 5768), __sl352);
+cptr.stPtr(cptr.add(extcmdlist, 5776), __sl353);
+cptr.stPtr(cptr.add(extcmdlist, 5784), wiz_genesis);
+cptr.stI32(cptr.add(extcmdlist, 5792), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5800), null);
+cptr.st1(cptr.add(extcmdlist, 5808), 9);
+cptr.stPtr(cptr.add(extcmdlist, 5816), __sl354);
+cptr.stPtr(cptr.add(extcmdlist, 5824), __sl355);
+cptr.stPtr(cptr.add(extcmdlist, 5832), wiz_identify);
+cptr.stI32(cptr.add(extcmdlist, 5840), 5);
+cptr.stPtr(cptr.add(extcmdlist, 5848), null);
 cptr.st1(cptr.add(extcmdlist, 5856), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5856), 8), __sl356);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5856), 16), __sl357);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5856), 24), wiz_intrinsic);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5856), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5856), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5864), __sl356);
+cptr.stPtr(cptr.add(extcmdlist, 5872), __sl357);
+cptr.stPtr(cptr.add(extcmdlist, 5880), wiz_intrinsic);
+cptr.stI32(cptr.add(extcmdlist, 5888), 7);
+cptr.stPtr(cptr.add(extcmdlist, 5896), null);
 cptr.st1(cptr.add(extcmdlist, 5904), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5904), 8), __sl358);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5904), 16), __sl359);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5904), 24), wiz_kill);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5904), 32), (1 | 2 | 4 | 128 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5904), 40), null);
-cptr.st1(cptr.add(extcmdlist, 5952), uchar((31 & (118))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5952), 8), __sl360);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5952), 16), __sl361);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5952), 24), wiz_level_tele);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 5952), 32), (1 | 4 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 5952), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 5912), __sl358);
+cptr.stPtr(cptr.add(extcmdlist, 5920), __sl359);
+cptr.stPtr(cptr.add(extcmdlist, 5928), wiz_kill);
+cptr.stI32(cptr.add(extcmdlist, 5936), 167);
+cptr.stPtr(cptr.add(extcmdlist, 5944), null);
+cptr.st1(cptr.add(extcmdlist, 5952), 22);
+cptr.stPtr(cptr.add(extcmdlist, 5960), __sl360);
+cptr.stPtr(cptr.add(extcmdlist, 5968), __sl361);
+cptr.stPtr(cptr.add(extcmdlist, 5976), wiz_level_tele);
+cptr.stI32(cptr.add(extcmdlist, 5984), 133);
+cptr.stPtr(cptr.add(extcmdlist, 5992), null);
 cptr.st1(cptr.add(extcmdlist, 6000), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6000), 8), __sl362);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6000), 16), __sl363);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6000), 24), wiz_load_splua);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6000), 32), (1 | 4 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6000), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6008), __sl362);
+cptr.stPtr(cptr.add(extcmdlist, 6016), __sl363);
+cptr.stPtr(cptr.add(extcmdlist, 6024), wiz_load_splua);
+cptr.stI32(cptr.add(extcmdlist, 6032), 37);
+cptr.stPtr(cptr.add(extcmdlist, 6040), null);
 cptr.st1(cptr.add(extcmdlist, 6048), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6048), 8), __sl364);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6048), 16), __sl365);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6048), 24), wiz_load_lua);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6048), 32), (1 | 4 | 32) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6048), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6056), __sl364);
+cptr.stPtr(cptr.add(extcmdlist, 6064), __sl365);
+cptr.stPtr(cptr.add(extcmdlist, 6072), wiz_load_lua);
+cptr.stI32(cptr.add(extcmdlist, 6080), 37);
+cptr.stPtr(cptr.add(extcmdlist, 6088), null);
 cptr.st1(cptr.add(extcmdlist, 6096), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6096), 8), __sl366);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6096), 16), __sl367);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6096), 24), wiz_objprobs);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6096), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6096), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6104), __sl366);
+cptr.stPtr(cptr.add(extcmdlist, 6112), __sl367);
+cptr.stPtr(cptr.add(extcmdlist, 6120), wiz_objprobs);
+cptr.stI32(cptr.add(extcmdlist, 6128), 5);
+cptr.stPtr(cptr.add(extcmdlist, 6136), null);
 cptr.st1(cptr.add(extcmdlist, 6144), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6144), 8), __sl368);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6144), 16), __sl369);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6144), 24), wiz_makemap);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6144), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6144), 40), null);
-cptr.st1(cptr.add(extcmdlist, 6192), uchar((31 & (102))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6192), 8), __sl370);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6192), 16), __sl371);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6192), 24), wiz_map);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6192), 32), (1 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6192), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6152), __sl368);
+cptr.stPtr(cptr.add(extcmdlist, 6160), __sl369);
+cptr.stPtr(cptr.add(extcmdlist, 6168), wiz_makemap);
+cptr.stI32(cptr.add(extcmdlist, 6176), 5);
+cptr.stPtr(cptr.add(extcmdlist, 6184), null);
+cptr.st1(cptr.add(extcmdlist, 6192), 6);
+cptr.stPtr(cptr.add(extcmdlist, 6200), __sl370);
+cptr.stPtr(cptr.add(extcmdlist, 6208), __sl371);
+cptr.stPtr(cptr.add(extcmdlist, 6216), wiz_map);
+cptr.stI32(cptr.add(extcmdlist, 6224), 5);
+cptr.stPtr(cptr.add(extcmdlist, 6232), null);
 cptr.st1(cptr.add(extcmdlist, 6240), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6240), 8), __sl372);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6240), 16), __sl373);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6240), 24), wiz_mon_diff);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6240), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6240), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6248), __sl372);
+cptr.stPtr(cptr.add(extcmdlist, 6256), __sl373);
+cptr.stPtr(cptr.add(extcmdlist, 6264), wiz_mon_diff);
+cptr.stI32(cptr.add(extcmdlist, 6272), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6280), null);
 cptr.st1(cptr.add(extcmdlist, 6288), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6288), 8), __sl374);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6288), 16), __sl375);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6288), 24), wiz_rumor_check);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6288), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6288), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6296), __sl374);
+cptr.stPtr(cptr.add(extcmdlist, 6304), __sl375);
+cptr.stPtr(cptr.add(extcmdlist, 6312), wiz_rumor_check);
+cptr.stI32(cptr.add(extcmdlist, 6320), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6328), null);
 cptr.st1(cptr.add(extcmdlist, 6336), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6336), 8), __sl376);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6336), 16), __sl377);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6336), 24), wiz_show_seenv);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6336), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6336), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6344), __sl376);
+cptr.stPtr(cptr.add(extcmdlist, 6352), __sl377);
+cptr.stPtr(cptr.add(extcmdlist, 6360), wiz_show_seenv);
+cptr.stI32(cptr.add(extcmdlist, 6368), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6376), null);
 cptr.st1(cptr.add(extcmdlist, 6384), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6384), 8), __sl378);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6384), 16), __sl379);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6384), 24), wiz_show_nhuuid);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6384), 32), (2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6384), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6392), __sl378);
+cptr.stPtr(cptr.add(extcmdlist, 6400), __sl379);
+cptr.stPtr(cptr.add(extcmdlist, 6408), wiz_show_nhuuid);
+cptr.stI32(cptr.add(extcmdlist, 6416), 6);
+cptr.stPtr(cptr.add(extcmdlist, 6424), null);
 cptr.st1(cptr.add(extcmdlist, 6432), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6432), 8), __sl380);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6432), 16), __sl381);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6432), 24), wiz_smell);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6432), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6432), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6440), __sl380);
+cptr.stPtr(cptr.add(extcmdlist, 6448), __sl381);
+cptr.stPtr(cptr.add(extcmdlist, 6456), wiz_smell);
+cptr.stI32(cptr.add(extcmdlist, 6464), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6472), null);
 cptr.st1(cptr.add(extcmdlist, 6480), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6480), 8), __sl382);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6480), 16), __sl383);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6480), 24), wiz_telekinesis);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6480), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6480), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6488), __sl382);
+cptr.stPtr(cptr.add(extcmdlist, 6496), __sl383);
+cptr.stPtr(cptr.add(extcmdlist, 6504), wiz_telekinesis);
+cptr.stI32(cptr.add(extcmdlist, 6512), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6520), null);
 cptr.st1(cptr.add(extcmdlist, 6528), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6528), 8), __sl384);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6528), 16), __sl385);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6528), 24), wiz_where);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6528), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6528), 40), null);
-cptr.st1(cptr.add(extcmdlist, 6576), uchar((31 & (119))));
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6576), 8), __sl386);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6576), 16), __sl387);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6576), 24), wiz_wish);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6576), 32), (1 | 128 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6576), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6536), __sl384);
+cptr.stPtr(cptr.add(extcmdlist, 6544), __sl385);
+cptr.stPtr(cptr.add(extcmdlist, 6552), wiz_where);
+cptr.stI32(cptr.add(extcmdlist, 6560), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6568), null);
+cptr.st1(cptr.add(extcmdlist, 6576), 23);
+cptr.stPtr(cptr.add(extcmdlist, 6584), __sl386);
+cptr.stPtr(cptr.add(extcmdlist, 6592), __sl387);
+cptr.stPtr(cptr.add(extcmdlist, 6600), wiz_wish);
+cptr.stI32(cptr.add(extcmdlist, 6608), 133);
+cptr.stPtr(cptr.add(extcmdlist, 6616), null);
 cptr.st1(cptr.add(extcmdlist, 6624), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6624), 8), __sl388);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6624), 16), __sl389);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6624), 24), wiz_show_wmodes);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6624), 32), (1 | 2 | 4) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6624), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6632), __sl388);
+cptr.stPtr(cptr.add(extcmdlist, 6640), __sl389);
+cptr.stPtr(cptr.add(extcmdlist, 6648), wiz_show_wmodes);
+cptr.stI32(cptr.add(extcmdlist, 6656), 7);
+cptr.stPtr(cptr.add(extcmdlist, 6664), null);
 cptr.st1(cptr.add(extcmdlist, 6672), 122);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6672), 8), __sl390);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6672), 16), __sl391);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6672), 24), dozap);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6672), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6672), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6680), __sl390);
+cptr.stPtr(cptr.add(extcmdlist, 6688), __sl391);
+cptr.stPtr(cptr.add(extcmdlist, 6696), dozap);
+cptr.stI32(cptr.add(extcmdlist, 6704), 0);
+cptr.stPtr(cptr.add(extcmdlist, 6712), null);
 cptr.st1(cptr.add(extcmdlist, 6720), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6720), 8), __sl392);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6720), 16), __sl393);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6720), 24), do_move_west);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6720), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6720), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6728), __sl392);
+cptr.stPtr(cptr.add(extcmdlist, 6736), __sl393);
+cptr.stPtr(cptr.add(extcmdlist, 6744), do_move_west);
+cptr.stI32(cptr.add(extcmdlist, 6752), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 6760), null);
 cptr.st1(cptr.add(extcmdlist, 6768), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6768), 8), __sl394);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6768), 16), __sl395);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6768), 24), do_move_northwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6768), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6768), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6776), __sl394);
+cptr.stPtr(cptr.add(extcmdlist, 6784), __sl395);
+cptr.stPtr(cptr.add(extcmdlist, 6792), do_move_northwest);
+cptr.stI32(cptr.add(extcmdlist, 6800), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 6808), null);
 cptr.st1(cptr.add(extcmdlist, 6816), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6816), 8), __sl396);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6816), 16), __sl397);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6816), 24), do_move_north);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6816), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6816), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6824), __sl396);
+cptr.stPtr(cptr.add(extcmdlist, 6832), __sl397);
+cptr.stPtr(cptr.add(extcmdlist, 6840), do_move_north);
+cptr.stI32(cptr.add(extcmdlist, 6848), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 6856), null);
 cptr.st1(cptr.add(extcmdlist, 6864), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6864), 8), __sl398);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6864), 16), __sl399);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6864), 24), do_move_northeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6864), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6864), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6872), __sl398);
+cptr.stPtr(cptr.add(extcmdlist, 6880), __sl399);
+cptr.stPtr(cptr.add(extcmdlist, 6888), do_move_northeast);
+cptr.stI32(cptr.add(extcmdlist, 6896), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 6904), null);
 cptr.st1(cptr.add(extcmdlist, 6912), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6912), 8), __sl400);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6912), 16), __sl401);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6912), 24), do_move_east);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6912), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6912), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6920), __sl400);
+cptr.stPtr(cptr.add(extcmdlist, 6928), __sl401);
+cptr.stPtr(cptr.add(extcmdlist, 6936), do_move_east);
+cptr.stI32(cptr.add(extcmdlist, 6944), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 6952), null);
 cptr.st1(cptr.add(extcmdlist, 6960), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6960), 8), __sl402);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6960), 16), __sl403);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6960), 24), do_move_southeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 6960), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 6960), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 6968), __sl402);
+cptr.stPtr(cptr.add(extcmdlist, 6976), __sl403);
+cptr.stPtr(cptr.add(extcmdlist, 6984), do_move_southeast);
+cptr.stI32(cptr.add(extcmdlist, 6992), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 7000), null);
 cptr.st1(cptr.add(extcmdlist, 7008), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7008), 8), __sl404);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7008), 16), __sl405);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7008), 24), do_move_south);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7008), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7008), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7016), __sl404);
+cptr.stPtr(cptr.add(extcmdlist, 7024), __sl405);
+cptr.stPtr(cptr.add(extcmdlist, 7032), do_move_south);
+cptr.stI32(cptr.add(extcmdlist, 7040), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 7048), null);
 cptr.st1(cptr.add(extcmdlist, 7056), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7056), 8), __sl406);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7056), 16), __sl407);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7056), 24), do_move_southwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7056), 32), (1024 | (128 | 256)) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7056), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7064), __sl406);
+cptr.stPtr(cptr.add(extcmdlist, 7072), __sl407);
+cptr.stPtr(cptr.add(extcmdlist, 7080), do_move_southwest);
+cptr.stI32(cptr.add(extcmdlist, 7088), 1408);
+cptr.stPtr(cptr.add(extcmdlist, 7096), null);
 cptr.st1(cptr.add(extcmdlist, 7104), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7104), 8), __sl408);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7104), 16), __sl409);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7104), 24), do_rush_west);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7104), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7104), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7112), __sl408);
+cptr.stPtr(cptr.add(extcmdlist, 7120), __sl409);
+cptr.stPtr(cptr.add(extcmdlist, 7128), do_rush_west);
+cptr.stI32(cptr.add(extcmdlist, 7136), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7144), null);
 cptr.st1(cptr.add(extcmdlist, 7152), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7152), 8), __sl410);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7152), 16), __sl411);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7152), 24), do_rush_northwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7152), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7152), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7160), __sl410);
+cptr.stPtr(cptr.add(extcmdlist, 7168), __sl411);
+cptr.stPtr(cptr.add(extcmdlist, 7176), do_rush_northwest);
+cptr.stI32(cptr.add(extcmdlist, 7184), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7192), null);
 cptr.st1(cptr.add(extcmdlist, 7200), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7200), 8), __sl412);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7200), 16), __sl413);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7200), 24), do_rush_north);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7200), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7200), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7208), __sl412);
+cptr.stPtr(cptr.add(extcmdlist, 7216), __sl413);
+cptr.stPtr(cptr.add(extcmdlist, 7224), do_rush_north);
+cptr.stI32(cptr.add(extcmdlist, 7232), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7240), null);
 cptr.st1(cptr.add(extcmdlist, 7248), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7248), 8), __sl414);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7248), 16), __sl415);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7248), 24), do_rush_northeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7248), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7248), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7256), __sl414);
+cptr.stPtr(cptr.add(extcmdlist, 7264), __sl415);
+cptr.stPtr(cptr.add(extcmdlist, 7272), do_rush_northeast);
+cptr.stI32(cptr.add(extcmdlist, 7280), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7288), null);
 cptr.st1(cptr.add(extcmdlist, 7296), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7296), 8), __sl416);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7296), 16), __sl417);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7296), 24), do_rush_east);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7296), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7296), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7304), __sl416);
+cptr.stPtr(cptr.add(extcmdlist, 7312), __sl417);
+cptr.stPtr(cptr.add(extcmdlist, 7320), do_rush_east);
+cptr.stI32(cptr.add(extcmdlist, 7328), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7336), null);
 cptr.st1(cptr.add(extcmdlist, 7344), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7344), 8), __sl418);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7344), 16), __sl419);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7344), 24), do_rush_southeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7344), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7344), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7352), __sl418);
+cptr.stPtr(cptr.add(extcmdlist, 7360), __sl419);
+cptr.stPtr(cptr.add(extcmdlist, 7368), do_rush_southeast);
+cptr.stI32(cptr.add(extcmdlist, 7376), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7384), null);
 cptr.st1(cptr.add(extcmdlist, 7392), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7392), 8), __sl420);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7392), 16), __sl421);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7392), 24), do_rush_south);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7392), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7392), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7400), __sl420);
+cptr.stPtr(cptr.add(extcmdlist, 7408), __sl421);
+cptr.stPtr(cptr.add(extcmdlist, 7416), do_rush_south);
+cptr.stI32(cptr.add(extcmdlist, 7424), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7432), null);
 cptr.st1(cptr.add(extcmdlist, 7440), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7440), 8), __sl422);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7440), 16), __sl423);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7440), 24), do_rush_southwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7440), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7440), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7448), __sl422);
+cptr.stPtr(cptr.add(extcmdlist, 7456), __sl423);
+cptr.stPtr(cptr.add(extcmdlist, 7464), do_rush_southwest);
+cptr.stI32(cptr.add(extcmdlist, 7472), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7480), null);
 cptr.st1(cptr.add(extcmdlist, 7488), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7488), 8), __sl424);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7488), 16), __sl425);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7488), 24), do_run_west);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7488), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7488), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7496), __sl424);
+cptr.stPtr(cptr.add(extcmdlist, 7504), __sl425);
+cptr.stPtr(cptr.add(extcmdlist, 7512), do_run_west);
+cptr.stI32(cptr.add(extcmdlist, 7520), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7528), null);
 cptr.st1(cptr.add(extcmdlist, 7536), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7536), 8), __sl426);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7536), 16), __sl427);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7536), 24), do_run_northwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7536), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7536), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7544), __sl426);
+cptr.stPtr(cptr.add(extcmdlist, 7552), __sl427);
+cptr.stPtr(cptr.add(extcmdlist, 7560), do_run_northwest);
+cptr.stI32(cptr.add(extcmdlist, 7568), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7576), null);
 cptr.st1(cptr.add(extcmdlist, 7584), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7584), 8), __sl428);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7584), 16), __sl429);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7584), 24), do_run_north);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7584), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7584), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7592), __sl428);
+cptr.stPtr(cptr.add(extcmdlist, 7600), __sl429);
+cptr.stPtr(cptr.add(extcmdlist, 7608), do_run_north);
+cptr.stI32(cptr.add(extcmdlist, 7616), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7624), null);
 cptr.st1(cptr.add(extcmdlist, 7632), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7632), 8), __sl430);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7632), 16), __sl431);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7632), 24), do_run_northeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7632), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7632), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7640), __sl430);
+cptr.stPtr(cptr.add(extcmdlist, 7648), __sl431);
+cptr.stPtr(cptr.add(extcmdlist, 7656), do_run_northeast);
+cptr.stI32(cptr.add(extcmdlist, 7664), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7672), null);
 cptr.st1(cptr.add(extcmdlist, 7680), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7680), 8), __sl432);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7680), 16), __sl433);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7680), 24), do_run_east);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7680), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7680), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7688), __sl432);
+cptr.stPtr(cptr.add(extcmdlist, 7696), __sl433);
+cptr.stPtr(cptr.add(extcmdlist, 7704), do_run_east);
+cptr.stI32(cptr.add(extcmdlist, 7712), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7720), null);
 cptr.st1(cptr.add(extcmdlist, 7728), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7728), 8), __sl434);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7728), 16), __sl435);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7728), 24), do_run_southeast);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7728), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7728), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7736), __sl434);
+cptr.stPtr(cptr.add(extcmdlist, 7744), __sl435);
+cptr.stPtr(cptr.add(extcmdlist, 7752), do_run_southeast);
+cptr.stI32(cptr.add(extcmdlist, 7760), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7768), null);
 cptr.st1(cptr.add(extcmdlist, 7776), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7776), 8), __sl436);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7776), 16), __sl437);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7776), 24), do_run_south);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7776), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7776), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7784), __sl436);
+cptr.stPtr(cptr.add(extcmdlist, 7792), __sl437);
+cptr.stPtr(cptr.add(extcmdlist, 7800), do_run_south);
+cptr.stI32(cptr.add(extcmdlist, 7808), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7816), null);
 cptr.st1(cptr.add(extcmdlist, 7824), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7824), 8), __sl438);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7824), 16), __sl439);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7824), 24), do_run_southwest);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7824), 32), (1024 | 128) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7824), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7832), __sl438);
+cptr.stPtr(cptr.add(extcmdlist, 7840), __sl439);
+cptr.stPtr(cptr.add(extcmdlist, 7848), do_run_southwest);
+cptr.stI32(cptr.add(extcmdlist, 7856), 1152);
+cptr.stPtr(cptr.add(extcmdlist, 7864), null);
 cptr.st1(cptr.add(extcmdlist, 7872), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7872), 8), __sl440);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7872), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7872), 24), doclicklook);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7872), 32), (64 | 2048) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7872), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7880), __sl440);
+cptr.stPtr(cptr.add(extcmdlist, 7888), null);
+cptr.stPtr(cptr.add(extcmdlist, 7896), doclicklook);
+cptr.stI32(cptr.add(extcmdlist, 7904), 2112);
+cptr.stPtr(cptr.add(extcmdlist, 7912), null);
 cptr.st1(cptr.add(extcmdlist, 7920), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7920), 8), __sl441);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7920), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7920), 24), domouseaction);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7920), 32), (64 | 2048) >>> 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7920), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7928), __sl441);
+cptr.stPtr(cptr.add(extcmdlist, 7936), null);
+cptr.stPtr(cptr.add(extcmdlist, 7944), domouseaction);
+cptr.stI32(cptr.add(extcmdlist, 7952), 2112);
+cptr.stPtr(cptr.add(extcmdlist, 7960), null);
 cptr.st1(cptr.add(extcmdlist, 7968), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7968), 8), __sl442);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7968), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7968), 24), adjust_split);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 7968), 32), 64);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 7968), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 7976), __sl442);
+cptr.stPtr(cptr.add(extcmdlist, 7984), null);
+cptr.stPtr(cptr.add(extcmdlist, 7992), adjust_split);
+cptr.stI32(cptr.add(extcmdlist, 8000), 64);
+cptr.stPtr(cptr.add(extcmdlist, 8008), null);
 cptr.st1(cptr.add(extcmdlist, 8016), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8016), 8), __sl443);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8016), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8016), 24), dip_into);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 8016), 32), 64);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8016), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 8024), __sl443);
+cptr.stPtr(cptr.add(extcmdlist, 8032), null);
+cptr.stPtr(cptr.add(extcmdlist, 8040), dip_into);
+cptr.stI32(cptr.add(extcmdlist, 8048), 64);
+cptr.stPtr(cptr.add(extcmdlist, 8056), null);
 cptr.st1(cptr.add(extcmdlist, 8064), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8064), 8), __sl444);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8064), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8064), 24), ia_dotakeoff);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 8064), 32), 64);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8064), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 8072), __sl444);
+cptr.stPtr(cptr.add(extcmdlist, 8080), null);
+cptr.stPtr(cptr.add(extcmdlist, 8088), ia_dotakeoff);
+cptr.stI32(cptr.add(extcmdlist, 8096), 64);
+cptr.stPtr(cptr.add(extcmdlist, 8104), null);
 cptr.st1(cptr.add(extcmdlist, 8112), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8112), 8), __sl445);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8112), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8112), 24), remarm_swapwep);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 8112), 32), 64);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8112), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 8120), __sl445);
+cptr.stPtr(cptr.add(extcmdlist, 8128), null);
+cptr.stPtr(cptr.add(extcmdlist, 8136), remarm_swapwep);
+cptr.stI32(cptr.add(extcmdlist, 8144), 64);
+cptr.stPtr(cptr.add(extcmdlist, 8152), null);
 cptr.st1(cptr.add(extcmdlist, 8160), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8160), 8), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8160), 16), null);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8160), 24), donull);
-cptr.stI32(cptr.add(cptr.add(extcmdlist, 8160), 32), 0);
-cptr.stPtr(cptr.add(cptr.add(extcmdlist, 8160), 40), null);
+cptr.stPtr(cptr.add(extcmdlist, 8168), null);
+cptr.stPtr(cptr.add(extcmdlist, 8176), null);
+cptr.stPtr(cptr.add(extcmdlist, 8184), donull);
+cptr.stI32(cptr.add(extcmdlist, 8192), 0);
+cptr.stPtr(cptr.add(extcmdlist, 8200), null);
 
 /** C ref: cmd.c:2070 — int (*[10][3])(void) */
 const move_funcs = (function () { const flat = new Uint8Array(10 * 3 * 8); const a = []; for (let r = 0; r < 10; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
@@ -2971,14 +2971,14 @@ cptr.stPtr(cptr.add(cptr.decay(move_funcs[9]), 16), doup);
 /** C ref: cmd.c:2090 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/cmd.c:2086:14)[3] */
 const misc_keys = cptr.alloc(3 * 24);
 cptr.stI32(cptr.add(misc_keys, 0), 0);
-cptr.stPtr(cptr.add(cptr.add(misc_keys, 0), 8), __sl446);
-cptr.st1(cptr.add(cptr.add(misc_keys, 0), 16), (0));
+cptr.stPtr(cptr.add(misc_keys, 8), __sl446);
+cptr.st1(cptr.add(misc_keys, 16), 0);
 cptr.stI32(cptr.add(misc_keys, 24), 5);
-cptr.stPtr(cptr.add(cptr.add(misc_keys, 24), 8), __sl447);
-cptr.st1(cptr.add(cptr.add(misc_keys, 24), 16), (1));
+cptr.stPtr(cptr.add(misc_keys, 32), __sl447);
+cptr.st1(cptr.add(misc_keys, 40), 1);
 cptr.stI32(cptr.add(misc_keys, 48), 0);
-cptr.stPtr(cptr.add(cptr.add(misc_keys, 48), 8), null);
-cptr.st1(cptr.add(cptr.add(misc_keys, 48), 16), (0));
+cptr.stPtr(cptr.add(misc_keys, 56), null);
+cptr.st1(cptr.add(misc_keys, 64), 0);
 
 /** C ref: cmd.c:2097 — int */
 let extcmdlist_length = (171 - 1) | 0;
@@ -2992,7 +2992,7 @@ export function extcmds_getentry(i) {
 
 /** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr} */
 function cmdbind_get(key) {
-    let bind = cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24));
+    let bind = cptr.ldPtr(cptr.add(gc, 240));
     if (!key)
         return null;
     while (bind) {
@@ -3026,21 +3026,21 @@ function cmdbind_add(key, extcmd, user) {
         cptr.st1(cptr.add(bind, 1), user);
         cptr.stPtr(cptr.add(bind, 8), null);
         cptr.stPtr(cptr.add(bind, 16), extcmd);
-        cptr.stPtr(cptr.add(bind, 24), cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)));
-        cptr.stPtr(cptr.add(cptr.add(gc, 216), 24), bind);
+        cptr.stPtr(cptr.add(bind, 24), cptr.ldPtr(cptr.add(gc, 240)));
+        cptr.stPtr(cptr.add(gc, 240), bind);
     }
 }
 
 /** C ref: cmd.c:2158 — @param {CUInt} key */
 function cmdbind_remove(key) {
-    let bind = cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24));
+    let bind = cptr.ldPtr(cptr.add(gc, 240));
     let prev = null;
     while (bind) {
         if (cptr.ld1u(bind) == key) {
             if (prev)
                 cptr.stPtr(cptr.add(prev, 24), cptr.ldPtr(cptr.add(bind, 24)));
             else
-                cptr.stPtr(cptr.add(cptr.add(gc, 216), 24), cptr.ldPtr(cptr.add(bind, 24)));
+                cptr.stPtr(cptr.add(gc, 240), cptr.ldPtr(cptr.add(bind, 24)));
             if (cptr.ldPtr(cptr.add(bind, 8)))
                 cptr.free(cptr.ldPtr(cptr.add(bind, 8)));
             cptr.free(bind);
@@ -3054,12 +3054,12 @@ function cmdbind_remove(key) {
 /** C ref: cmd.c:2180 */
 export function cmdbind_freeall() {
     let next;
-    while (cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24))) {
-        next = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)), 24));
-        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)), 8)))
-            cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)), 8)));
-        cptr.free(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)));
-        cptr.stPtr(cptr.add(cptr.add(gc, 216), 24), next);
+    while (cptr.ldPtr(cptr.add(gc, 240))) {
+        next = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 240)), 24));
+        if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 240)), 8)))
+            cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 240)), 8)));
+        cptr.free(cptr.ldPtr(cptr.add(gc, 240)));
+        cptr.stPtr(cptr.add(gc, 240), next);
     }
 }
 
@@ -3075,11 +3075,11 @@ function cmdbind_swapkeys(key1, key2) {
 
 /** C ref: cmd.c:2208 @returns {CInt} */
 export function count_bind_keys() {
-    let bind = cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24));
+    let bind = cptr.ldPtr(cptr.add(gc, 240));
     let i;
     let nbinds = 0;
     let keys = new Uint8Array(256);
-    void __builtin___memset_chk(cptr.decay(keys), 0, BigInt.asUintN(64, 1n * 256n), __builtin_object_size(cptr.decay(keys), 0));
+    void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
     while (bind) {
         cptr.st1(cptr.add(cptr.decay(keys), cptr.ld1u(bind), 1), 1);
         if ((cptr.ld1s(cptr.add(bind, 1)) && cptr.ldPtr(cptr.add(bind, 16)) ? 1 : 0) && cptr.ld1u(cptr.ldPtr(cptr.add(bind, 16))) != cptr.ld1u(bind) ? 1 : 0) {
@@ -3095,13 +3095,13 @@ export function count_bind_keys() {
 
 /** C ref: cmd.c:2235 — @param {CPtr} sbuf */
 export function get_changed_key_binds(sbuf) {
-    let win = (-1);
+    let win = -1;
     let i;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(128);
-    let bind = cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24));
+    let bind = cptr.ldPtr(cptr.add(gc, 240));
     let keys = new Uint8Array(256);
-    void __builtin___memset_chk(cptr.decay(keys), 0, BigInt.asUintN(64, 1n * 256n), __builtin_object_size(cptr.decay(keys), 0));
+    void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
     if (!sbuf)
         win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
     while (bind) {
@@ -3129,7 +3129,7 @@ export function get_changed_key_binds(sbuf) {
         }
     }
     if (!sbuf) {
-        (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, (1));
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 1);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     }
 }
@@ -3170,7 +3170,7 @@ function handler_rebind_keys_add(keyfirst) {
     add_menu_str(win, __sl0);
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, 48);
-        if (((cptr.ldI32(cptr.add(ec, 32)) & (1024 | 64 | 16) >>> 0) >>> 0) != 0)
+        if (((cptr.ldI32(cptr.add(ec, 32)) & 1104) >>> 0) != 0)
             continue;
         cptr.stI32(any, ((i + 1) | 0));
         void cptr.sprintf(cptr.decay(buf), __sl456, cptr.ldPtr(cptr.add(ec, 8)), cptr.ldPtr(cptr.add(ec, 16)));
@@ -3202,8 +3202,8 @@ function handler_rebind_keys_add(keyfirst) {
                     void cptr.sprintf(cptr.decay(querybuf), __sl460, cptr.ldPtr(cptr.add(ec, 8)));
                     getlin(cptr.decay(querybuf), cptr.decay(parambuf));
                     void mungspaces(cptr.decay(parambuf));
-                    nh_snprintf(__sl461, 2376, cptr.decay(cmdstr), BigInt.asUintN(64, BigInt(((256 - 1) | 0))), __sl462, cptr.ldPtr(cptr.add(ec, 8)), cptr.decay(parambuf));
-                    cptr.st1(cptr.add(cptr.decay(cmdstr), (256 - 1) | 0, 1), 0);
+                    nh_snprintf(__sl461, 2376, cptr.decay(cmdstr), 255n, __sl462, cptr.ldPtr(cptr.add(ec, 8)), cptr.decay(parambuf));
+                    cptr.st1(cptr.add(cptr.decay(cmdstr), 255, 1), 0);
                 } else {
                     void cptr.strcat(cptr.decay(cmdstr), cptr.ldPtr(cptr.add(ec, 8)));
                 }
@@ -3216,7 +3216,7 @@ function handler_rebind_keys_add(keyfirst) {
                 return;
         }
         prevcmd = cmdbind_get(key);
-        if (bind_key(key, cptr.decay(cmdstr), (1))) {
+        if (bind_key(key, cptr.decay(cmdstr), 1)) {
             if (prevcmd && !cptr.eq(cptr.ldPtr(cptr.add(prevcmd, 16)), ec) ? 1 : 0) {
                 pline(__sl463, key2txt(key, cptr.decay(buf2)), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(prevcmd, 16)), 8)), cptr.decay(cmdstr));
             } else if (!prevcmd) {
@@ -3280,7 +3280,7 @@ export function handler_change_autocompletions() {
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, 48);
-        if (((cptr.ldI32(cptr.add(ec, 32)) & (64 | 16) >>> 0) >>> 0) != 0)
+        if (((cptr.ldI32(cptr.add(ec, 32)) & 80) >>> 0) != 0)
             continue;
         if (cptr.strlen(cptr.ldPtr(cptr.add(ec, 8))) < 2n)
             continue;
@@ -3293,22 +3293,22 @@ export function handler_change_autocompletions() {
     if (n >= 0) {
         let j;
         for (i = 0; i < extcmdlist_length; i++) {
-            let setit = (0);
+            let setit = 0;
             ec = cptr.add(extcmdlist, i, 48);
-            if (((cptr.ldI32(cptr.add(ec, 32)) & (64 | 16) >>> 0) >>> 0) != 0)
+            if (((cptr.ldI32(cptr.add(ec, 32)) & 80) >>> 0) != 0)
                 continue;
             if (cptr.strlen(cptr.ldPtr(cptr.add(ec, 8))) < 2n)
                 continue;
             void cptr.sprintf(cptr.decay(buf), __sl472, cptr.ldPtr(cptr.add(ec, 8)));
             for (j = 0; j < n; ++j) {
                 if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32(cptr.add(picks.v, j, 24)) - 1) | 0), 48))) {
-                    parseautocomplete(cptr.decay(buf), (1));
-                    setit = (1);
+                    parseautocomplete(cptr.decay(buf), 1);
+                    setit = 1;
                     break;
                 }
             }
             if (!setit) {
-                parseautocomplete(cptr.decay(buf), (0));
+                parseautocomplete(cptr.decay(buf), 0);
             }
         }
         if (n > 0)
@@ -3329,7 +3329,7 @@ export function extcmds_match(findstr, ecmflags, matchlist) {
     let exactmatch = schar(((ecmflags & 2) != 0));
     let no1charcmd = schar(((ecmflags & 4) != 0));
     for (i = 0; cptr.ldPtr(cptr.add(cptr.add(extcmdlist, i, 48), 8)); i++) {
-        if ((cptr.ldI32(cptr.add(cptr.add(extcmdlist, i, 48), 32)) & (16 | 64) >>> 0) >>> 0)
+        if ((cptr.ldI32(cptr.add(cptr.add(extcmdlist, i, 48), 32)) & 80) >>> 0)
             continue;
         if (!cptr.ld1s(cptr.add(flags, 10)) && ((cptr.ldI32(cptr.add(cptr.add(extcmdlist, i, 48), 32)) & 4) >>> 0) ? 1 : 0)
             continue;
@@ -3362,8 +3362,8 @@ export function key2extcmddesc(key) {
     let k;
     let i;
     let j;
-    let M_5 = uchar((((53) - 128) | 0));
-    let M_0 = uchar((((48) - 128) | 0));
+    let M_5 = 181;
+    let M_0 = 176;
     let cmdbind;
     cptr.st1(cptr.add(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 1), 0);
     if (movecmd(schar((k = key)), 0))
@@ -3372,13 +3372,13 @@ export function key2extcmddesc(key) {
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl252);
     else if (movecmd(schar((k = key)), 1))
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl250);
-    if (digit(schar(key)) || (cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) && digit(schar((127 & (key)))) ? 1 : 0) ? 1 : 0) {
+    if (digit(schar(key)) || (cptr.ld1s(cptr.add(gc, 220)) && digit(schar((127 & (key)))) ? 1 : 0) ? 1 : 0) {
         cptr.st1(cptr.add(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 1), 0);
-        if (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)))
+        if (!cptr.ld1s(cptr.add(gc, 220)))
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl475);
         else if (key == 53 || key == M_5 ? 1 : 0)
-            void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl476, (!!cptr.ld1s(cptr.add(cptr.add(gc, 216), 5)) ^ (key == M_5)) ? __sl250 : __sl252);
-        else if (key == 48 || (cptr.ld1s(cptr.add(cptr.add(gc, 216), 5)) && key == M_0 ? 1 : 0) ? 1 : 0)
+            void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl476, (!!cptr.ld1s(cptr.add(gc, 221)) ^ (key == M_5)) ? __sl250 : __sl252);
+        else if (key == 48 || (cptr.ld1s(cptr.add(gc, 221)) && key == M_0 ? 1 : 0) ? 1 : 0)
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl477);
         if (cptr.ld1s(cptr.decay(__static_key2extcmddesc_key2cmdbuf)))
             return cptr.decay(__static_key2extcmddesc_key2cmdbuf);
@@ -3387,7 +3387,7 @@ export function key2extcmddesc(key) {
         if (cptr.ld1s(cptr.add(cptr.add(misc_keys, i, 24), 16)) && !cptr.ld1s(cptr.add(iflags, 138)) ? 1 : 0)
             continue;
         j = cptr.ldI32(cptr.add(misc_keys, i, 24));
-        if (key == uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), j, 1))))
+        if (key == uchar(cptr.ld1s(cptr.add(cptr.add(gc, 264), j, 1))))
             return cptr.ldPtr(cptr.add(cptr.add(misc_keys, i, 24), 8));
     }
     if (((cmdbind = cmdbind_get(key)) !== null && cptr.ldPtr(cptr.add(cmdbind, 16)) ? 1 : 0) && (txt = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cmdbind, 16)), 8))) !== null ? 1 : 0) {
@@ -3404,22 +3404,22 @@ export function bind_mousebtn(btn, command) {
     let extcmd;
     if (btn < 1 || btn > 2 ? 1 : 0) {
         config_error_add(__sl482, 2);
-        return (0);
+        return 0;
     }
     btn--;
     if (!strncmpi((command), (__sl459), -1)) {
-        cptr.stPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), btn, 8), null);
-        return (1);
+        cptr.stPtr(cptr.add(cptr.add(gc, 248), btn, 8), null);
+        return 1;
     }
     for (extcmd = extcmdlist; cptr.ldPtr(cptr.add(extcmd, 8)); extcmd = cptr.add(extcmd, 1, 48)) {
         if (strncmpi((command), (cptr.ldPtr(cptr.add(extcmd, 8))), -1))
             continue;
         if (!((cptr.ldI32(cptr.add(extcmd, 32)) & 2048) >>> 0))
             continue;
-        cptr.stPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), btn, 8), extcmd);
-        return (1);
+        cptr.stPtr(cptr.add(cptr.add(gc, 248), btn, 8), extcmd);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:2662 — @param {CUInt} key @param {CPtr} command @param {CInt} user @returns {CInt} */
@@ -3431,11 +3431,11 @@ export function bind_key(key, command, user) {
     let lastp = null;
     if (!strncmpi((command), (__sl459), -1)) {
         cmdbind_remove(key);
-        return (1);
+        return 1;
     }
     len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
     buf = alloc(Number(BigInt.asUintN(32, len)));
-    void __builtin___strncpy_chk(buf, command, BigInt.asUintN(64, len), __builtin_object_size(buf, 2 > 1 ? 1 : 0));
+    void __builtin___strncpy_chk(buf, command, BigInt.asUintN(64, len), __builtin_object_size(buf, 1));
     if (((p = cptr.strchr(buf, 40)) !== null && (lastp = cptr.strrchr(buf, 41)) !== null ? 1 : 0) && (cptr.cmp(lastp, p) > 0) ? 1 : 0) {
         cptr.st1(p, 0);
         cptr.st1(lastp, 0);
@@ -3457,17 +3457,17 @@ export function bind_key(key, command, user) {
                     config_error_add(__sl484);
                 } else {
                     cptr.stPtr(cptr.add(bind, 8), alloc(maxlen >>> 0));
-                    void __builtin___strncpy_chk(cptr.ldPtr(cptr.add(bind, 8)), p, BigInt.asUintN(64, BigInt(maxlen)), __builtin_object_size(cptr.ldPtr(cptr.add(bind, 8)), 2 > 1 ? 1 : 0));
+                    void __builtin___strncpy_chk(cptr.ldPtr(cptr.add(bind, 8)), p, BigInt.asUintN(64, BigInt(maxlen)), __builtin_object_size(cptr.ldPtr(cptr.add(bind, 8)), 1));
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(bind, 8)), (maxlen - 1) | 0), 0);
                 }
             }
         } else if (p && cptr.strlen(p) > 0n ? 1 : 0)
             config_error_add(__sl485, buf);
         cptr.free(buf);
-        return (1);
+        return 1;
     }
     cptr.free(buf);
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:2732 — @param {CUInt} key @param {CPtr} fn @returns {CInt} */
@@ -3478,10 +3478,10 @@ function bind_key_fn(key, fn) {
             continue;
         if (((cptr.ldI32(cptr.add(extcmd, 32)) & 64) >>> 0) != 0)
             continue;
-        cmdbind_add(key, extcmd, (0));
-        return (1);
+        cmdbind_add(key, extcmd, 0);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:2750 */
@@ -3489,23 +3489,23 @@ function commands_init() {
     let extcmd;
     for (extcmd = extcmdlist; cptr.ldPtr(cptr.add(extcmd, 8)); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ld1u(extcmd))
-            cmdbind_add(cptr.ld1u(extcmd), extcmd, (0));
+            cmdbind_add(cptr.ld1u(extcmd), extcmd, 0);
     void bind_mousebtn(1, __sl297);
     void bind_mousebtn(2, __sl440);
-    void bind_key(uchar((31 & (108))), __sl236, (0));
-    void bind_key(104, __sl166, (0));
-    void bind_key(106, __sl178, (0));
-    void bind_key(107, __sl180, (0));
-    void bind_key(108, __sl194, (0));
-    void bind_key(uchar((31 & (110))), __sl116, (0));
-    void bind_key(78, __sl200, (0));
-    void bind_key(117, __sl313, (0));
-    void bind_key(53, __sl250, (0));
-    void bind_key(uchar((((53) - 128) | 0)), __sl252, (0));
-    void bind_key(45, __sl156, (0));
-    void bind_key(uchar((((79) - 128) | 0)), __sl210, (0));
-    void bind_key(uchar((((50) - 128) | 0)), __sl311, (0));
-    void bind_key(uchar((((78) - 128) | 0)), __sl200, (0));
+    void bind_key(12, __sl236, 0);
+    void bind_key(104, __sl166, 0);
+    void bind_key(106, __sl178, 0);
+    void bind_key(107, __sl180, 0);
+    void bind_key(108, __sl194, 0);
+    void bind_key(14, __sl116, 0);
+    void bind_key(78, __sl200, 0);
+    void bind_key(117, __sl313, 0);
+    void bind_key(53, __sl250, 0);
+    void bind_key(181, __sl252, 0);
+    void bind_key(45, __sl156, 0);
+    void bind_key(207, __sl210, 0);
+    void bind_key(178, __sl311, 0);
+    void bind_key(206, __sl200, 0);
 }
 
 /** C ref: cmd.c:2785 — @param {CPtr} extcmd @param {CPtr} skip_keys_used @returns {CInt} */
@@ -3516,9 +3516,9 @@ function keylist_func_has_key(extcmd, skip_keys_used) {
         if (cptr.ld1s(cptr.add(skip_keys_used, i)))
             continue;
         if (((bind = cmdbind_get(uchar(i))) !== null) && (cptr.eq(cptr.ldPtr(cptr.add(bind, 16)), extcmd)) ? 1 : 0)
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:2802 — @param {CInt} datawin @param {CInt} docount @param {CInt} incl_flags @param {CInt} excl_flags @param {CPtr} keys_used @returns {CInt} */
@@ -3550,7 +3550,7 @@ function keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             else
                 void cptr.sprintf(cptr.decay(buf), __sl487, key2txt(key, cptr.decay(buf2)), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 8)), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 16)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, cptr.decay(buf));
-            cptr.st1(cptr.add(keys_used, i), (1));
+            cptr.st1(cptr.add(keys_used, i), 1);
         }
     }
     for (extcmd = extcmdlist; cptr.ldPtr(cptr.add(extcmd, 8)); extcmd = cptr.add(extcmd, 1, 48)) {
@@ -3583,20 +3583,20 @@ export function dokeylist() {
     let pfx_seen = cptr.alloc(256 * 4);
     void __builtin___memset_chk(cptr.decay(keys_used), 0, 256n, __builtin_object_size(cptr.decay(keys_used), 0));
     void __builtin___memset_chk(pfx_seen, 0, 1024n, __builtin_object_size(pfx_seen, 0));
-    key = uchar((31 & (99)));
-    cptr.st1(cptr.add(cptr.decay(keys_used), key, 1), (1));
+    key = 3;
+    cptr.st1(cptr.add(cptr.decay(keys_used), key, 1), 1);
     void cptr.memcpy(cptr.decay(mov_seen), cptr.decay(keys_used), 256n);
-    spkey_gap = (0);
+    spkey_gap = 0;
     for (i = 0; cptr.ldPtr(cptr.add(cptr.add(misc_keys, i, 24), 8)); ++i) {
         if (cptr.ld1s(cptr.add(cptr.add(misc_keys, i, 24), 16)) && !cptr.ld1s(cptr.add(iflags, 138)) ? 1 : 0)
             continue;
         j = cptr.ldI32(cptr.add(misc_keys, i, 24));
-        key = uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), j, 1)));
+        key = uchar(cptr.ld1s(cptr.add(cptr.add(gc, 264), j, 1)));
         if ((key && !cptr.ld1s(cptr.add(cptr.decay(mov_seen), key, 1)) ? 1 : 0) && !cptr.ldI32(cptr.add(pfx_seen, key, 4)) ? 1 : 0) {
-            cptr.st1(cptr.add(cptr.decay(keys_used), key, 1), (1));
+            cptr.st1(cptr.add(cptr.decay(keys_used), key, 1), 1);
             cptr.stI32(cptr.add(pfx_seen, key, 4), j);
         } else
-            spkey_gap = (1);
+            spkey_gap = 1;
     }
     datawin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
@@ -3610,7 +3610,7 @@ export function dokeylist() {
         }
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl492);
-    show_direction_keys(datawin, 46, (0));
+    show_direction_keys(datawin, 46, 0);
     if (!cptr.ld1s(cptr.add(iflags, 138))) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl493);
@@ -3631,13 +3631,13 @@ export function dokeylist() {
         if (cptr.ld1s(cptr.add(cptr.add(misc_keys, i, 24), 16)) && !cptr.ld1s(cptr.add(iflags, 138)) ? 1 : 0)
             continue;
         j = cptr.ldI32(cptr.add(misc_keys, i, 24));
-        key = uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), j, 1)));
+        key = uchar(cptr.ld1s(cptr.add(cptr.add(gc, 264), j, 1)));
         if ((key && !cptr.ld1s(cptr.add(cptr.decay(mov_seen), key, 1)) ? 1 : 0) && (cptr.ldI32(cptr.add(pfx_seen, key, 4)) == j) ? 1 : 0) {
             void cptr.sprintf(cptr.decay(buf), __sl500, key2txt(key, cptr.decay(buf2)), cptr.ldPtr(cptr.add(cptr.add(misc_keys, i, 24), 8)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, cptr.decay(buf));
         }
     }
-    key = uchar((31 & (99)));
+    key = 3;
     void cptr.sprintf(cptr.decay(buf), __sl501, key2txt(key, cptr.decay(buf2)));
     void cptr.strcat(cptr.decay(buf), __sl502);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, cptr.decay(buf));
@@ -3646,7 +3646,7 @@ export function dokeylist() {
             if (cptr.ld1s(cptr.add(cptr.add(misc_keys, i, 24), 16)) && !cptr.ld1s(cptr.add(iflags, 138)) ? 1 : 0)
                 continue;
             j = cptr.ldI32(cptr.add(misc_keys, i, 24));
-            key = uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), j, 1)));
+            key = uchar(cptr.ld1s(cptr.add(cptr.add(gc, 264), j, 1)));
             if (!key || (cptr.ldI32(cptr.add(pfx_seen, key, 4)) != j) ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(buf2), __sl503, spkey_name(j));
                 nh_snprintf(__sl504, 2976, cptr.decay(buf), 256n, __sl505, cptr.decay(buf2), cptr.ldPtr(cptr.add(cptr.add(misc_keys, i, 24), 8)));
@@ -3655,23 +3655,23 @@ export function dokeylist() {
         }
     }
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
-    show_menu_controls(datawin, (1));
-    if (keylist_putcmds(datawin, (1), 8, (4 | 64 | 1024), cptr.decay(keys_used))) {
+    show_menu_controls(datawin, 1);
+    if (keylist_putcmds(datawin, 1, 8, 1092, cptr.decay(keys_used))) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl506);
-        void keylist_putcmds(datawin, (0), 8, (4 | 64 | 1024), cptr.decay(keys_used));
+        void keylist_putcmds(datawin, 0, 8, 1092, cptr.decay(keys_used));
     }
-    if (keylist_putcmds(datawin, (1), 0, 8 | (4 | 64 | 1024), cptr.decay(keys_used))) {
+    if (keylist_putcmds(datawin, 1, 0, 1100, cptr.decay(keys_used))) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl507);
-        void keylist_putcmds(datawin, (0), 0, 8 | (4 | 64 | 1024), cptr.decay(keys_used));
+        void keylist_putcmds(datawin, 0, 0, 1100, cptr.decay(keys_used));
     }
-    if (cptr.ld1s(cptr.add(flags, 10)) && keylist_putcmds(datawin, (1), 4, 64, cptr.decay(keys_used)) ? 1 : 0) {
+    if (cptr.ld1s(cptr.add(flags, 10)) && keylist_putcmds(datawin, 1, 4, 64, cptr.decay(keys_used)) ? 1 : 0) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, __sl508);
-        void keylist_putcmds(datawin, (0), 4, 64, cptr.decay(keys_used));
+        void keylist_putcmds(datawin, 0, 4, 64, cptr.decay(keys_used));
     }
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(datawin, (0));
+    (cptr.ldPtr(cptr.add(windowprocs, 120)))(datawin, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(datawin);
 }
 
@@ -3694,11 +3694,11 @@ export function cmd_from_func(fn) {
     let i;
     let ret = 0;
     let bind;
-    for (bind = cptr.ldPtr(cptr.add(cptr.add(gc, 216), 24)); bind; bind = cptr.ldPtr(cptr.add(bind, 24))) {
+    for (bind = cptr.ldPtr(cptr.add(gc, 240)); bind; bind = cptr.ldPtr(cptr.add(bind, 24))) {
         i = cptr.ld1u(bind);
         if (i == 32)
             continue;
-        if (((i >= 48 && i <= 57 ? 1 : 0) || (i == 45 && fn === do_fight ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) ? 1 : 0)
+        if (((i >= 48 && i <= 57 ? 1 : 0) || (i == 45 && fn === do_fight ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(gc, 220)) ? 1 : 0)
             continue;
         if (cptr.ldPtr(cptr.add(bind, 16)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 24)) === fn ? 1 : 0) {
             if (i >= 32 && i <= 126 ? 1 : 0)
@@ -3778,7 +3778,7 @@ export function cmdname_from_func(fn, outbuf, fullname) {
         } while (cptr.ldPtr(cptr.add(extcmd, 8)));
         copynchars(outbuf, res, len | 0);
         do {
-            if (debugcore(__sl511, (1))) {
+            if (debugcore(__sl511, 1)) {
                 let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                 pline(__sl512, res, outbuf);
                 cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
@@ -3794,92 +3794,92 @@ export function cmdname_from_func(fn, outbuf, fullname) {
 /** C ref: cmd.c:3161 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/cmd.c:3157:8)[29] */
 const spkeys_binds = cptr.alloc(29 * 16);
 cptr.stI32(cptr.add(spkeys_binds, 0), 0);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 0), 4), 27);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 0), 8), null);
+cptr.st1(cptr.add(spkeys_binds, 4), 27);
+cptr.stPtr(cptr.add(spkeys_binds, 8), null);
 cptr.stI32(cptr.add(spkeys_binds, 16), 1);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 16), 4), 46);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 16), 8), __sl513);
+cptr.st1(cptr.add(spkeys_binds, 20), 46);
+cptr.stPtr(cptr.add(spkeys_binds, 24), __sl513);
 cptr.stI32(cptr.add(spkeys_binds, 32), 2);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 32), 4), 115);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 32), 8), __sl514);
+cptr.st1(cptr.add(spkeys_binds, 36), 115);
+cptr.stPtr(cptr.add(spkeys_binds, 40), __sl514);
 cptr.stI32(cptr.add(spkeys_binds, 48), 3);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 48), 4), 63);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 48), 8), __sl515);
+cptr.st1(cptr.add(spkeys_binds, 52), 63);
+cptr.stPtr(cptr.add(spkeys_binds, 56), __sl515);
 cptr.stI32(cptr.add(spkeys_binds, 64), 4);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 64), 4), 95);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 64), 8), __sl516);
+cptr.st1(cptr.add(spkeys_binds, 68), 95);
+cptr.stPtr(cptr.add(spkeys_binds, 72), __sl516);
 cptr.stI32(cptr.add(spkeys_binds, 80), 5);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 80), 4), 110);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 80), 8), __sl517);
+cptr.st1(cptr.add(spkeys_binds, 84), 110);
+cptr.stPtr(cptr.add(spkeys_binds, 88), __sl517);
 cptr.stI32(cptr.add(spkeys_binds, 96), 6);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 96), 4), 64);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 96), 8), __sl518);
+cptr.st1(cptr.add(spkeys_binds, 100), 64);
+cptr.stPtr(cptr.add(spkeys_binds, 104), __sl518);
 cptr.stI32(cptr.add(spkeys_binds, 112), 7);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 112), 4), 46);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 112), 8), __sl519);
+cptr.st1(cptr.add(spkeys_binds, 116), 46);
+cptr.stPtr(cptr.add(spkeys_binds, 120), __sl519);
 cptr.stI32(cptr.add(spkeys_binds, 128), 8);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 128), 4), 44);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 128), 8), __sl520);
+cptr.st1(cptr.add(spkeys_binds, 132), 44);
+cptr.stPtr(cptr.add(spkeys_binds, 136), __sl520);
 cptr.stI32(cptr.add(spkeys_binds, 144), 9);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 144), 4), 59);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 144), 8), __sl521);
+cptr.st1(cptr.add(spkeys_binds, 148), 59);
+cptr.stPtr(cptr.add(spkeys_binds, 152), __sl521);
 cptr.stI32(cptr.add(spkeys_binds, 160), 10);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 160), 4), 58);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 160), 8), __sl522);
+cptr.st1(cptr.add(spkeys_binds, 164), 58);
+cptr.stPtr(cptr.add(spkeys_binds, 168), __sl522);
 cptr.stI32(cptr.add(spkeys_binds, 176), 11);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 176), 4), 36);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 176), 8), __sl523);
+cptr.st1(cptr.add(spkeys_binds, 180), 36);
+cptr.stPtr(cptr.add(spkeys_binds, 184), __sl523);
 cptr.stI32(cptr.add(spkeys_binds, 192), 12);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 192), 4), 35);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 192), 8), __sl524);
+cptr.st1(cptr.add(spkeys_binds, 196), 35);
+cptr.stPtr(cptr.add(spkeys_binds, 200), __sl524);
 cptr.stI32(cptr.add(spkeys_binds, 208), 13);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 208), 4), 109);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 208), 8), __sl525);
+cptr.st1(cptr.add(spkeys_binds, 212), 109);
+cptr.stPtr(cptr.add(spkeys_binds, 216), __sl525);
 cptr.stI32(cptr.add(spkeys_binds, 224), 14);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 224), 4), 77);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 224), 8), __sl526);
+cptr.st1(cptr.add(spkeys_binds, 228), 77);
+cptr.stPtr(cptr.add(spkeys_binds, 232), __sl526);
 cptr.stI32(cptr.add(spkeys_binds, 240), 15);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 240), 4), 111);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 240), 8), __sl527);
+cptr.st1(cptr.add(spkeys_binds, 244), 111);
+cptr.stPtr(cptr.add(spkeys_binds, 248), __sl527);
 cptr.stI32(cptr.add(spkeys_binds, 256), 16);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 256), 4), 79);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 256), 8), __sl528);
+cptr.st1(cptr.add(spkeys_binds, 260), 79);
+cptr.stPtr(cptr.add(spkeys_binds, 264), __sl528);
 cptr.stI32(cptr.add(spkeys_binds, 272), 17);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 272), 4), 100);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 272), 8), __sl529);
+cptr.st1(cptr.add(spkeys_binds, 276), 100);
+cptr.stPtr(cptr.add(spkeys_binds, 280), __sl529);
 cptr.stI32(cptr.add(spkeys_binds, 288), 18);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 288), 4), 68);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 288), 8), __sl530);
+cptr.st1(cptr.add(spkeys_binds, 292), 68);
+cptr.stPtr(cptr.add(spkeys_binds, 296), __sl530);
 cptr.stI32(cptr.add(spkeys_binds, 304), 19);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 304), 4), 120);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 304), 8), __sl531);
+cptr.st1(cptr.add(spkeys_binds, 308), 120);
+cptr.stPtr(cptr.add(spkeys_binds, 312), __sl531);
 cptr.stI32(cptr.add(spkeys_binds, 320), 20);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 320), 4), 88);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 320), 8), __sl532);
+cptr.st1(cptr.add(spkeys_binds, 324), 88);
+cptr.stPtr(cptr.add(spkeys_binds, 328), __sl532);
 cptr.stI32(cptr.add(spkeys_binds, 336), 23);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 336), 4), 122);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 336), 8), __sl533);
+cptr.st1(cptr.add(spkeys_binds, 340), 122);
+cptr.stPtr(cptr.add(spkeys_binds, 344), __sl533);
 cptr.stI32(cptr.add(spkeys_binds, 352), 24);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 352), 4), 90);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 352), 8), __sl534);
+cptr.st1(cptr.add(spkeys_binds, 356), 90);
+cptr.stPtr(cptr.add(spkeys_binds, 360), __sl534);
 cptr.stI32(cptr.add(spkeys_binds, 368), 21);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 368), 4), 97);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 368), 8), __sl535);
+cptr.st1(cptr.add(spkeys_binds, 372), 97);
+cptr.stPtr(cptr.add(spkeys_binds, 376), __sl535);
 cptr.stI32(cptr.add(spkeys_binds, 384), 22);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 384), 4), 65);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 384), 8), __sl536);
+cptr.st1(cptr.add(spkeys_binds, 388), 65);
+cptr.stPtr(cptr.add(spkeys_binds, 392), __sl536);
 cptr.stI32(cptr.add(spkeys_binds, 400), 25);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 400), 4), 63);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 400), 8), __sl537);
+cptr.st1(cptr.add(spkeys_binds, 404), 63);
+cptr.stPtr(cptr.add(spkeys_binds, 408), __sl537);
 cptr.stI32(cptr.add(spkeys_binds, 416), 27);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 416), 4), 34);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 416), 8), __sl538);
+cptr.st1(cptr.add(spkeys_binds, 420), 34);
+cptr.stPtr(cptr.add(spkeys_binds, 424), __sl538);
 cptr.stI32(cptr.add(spkeys_binds, 432), 28);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 432), 4), 42);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 432), 8), __sl539);
+cptr.st1(cptr.add(spkeys_binds, 436), 42);
+cptr.stPtr(cptr.add(spkeys_binds, 440), __sl539);
 cptr.stI32(cptr.add(spkeys_binds, 448), 26);
-cptr.st1(cptr.add(cptr.add(spkeys_binds, 448), 4), 33);
-cptr.stPtr(cptr.add(cptr.add(spkeys_binds, 448), 8), __sl540);
+cptr.st1(cptr.add(spkeys_binds, 452), 33);
+cptr.stPtr(cptr.add(spkeys_binds, 456), __sl540);
 
 /** C ref: cmd.c:3194 — @param {CUInt} key @param {CPtr} command @returns {CInt} */
 export function bind_specialkey(key, command) {
@@ -3887,10 +3887,10 @@ export function bind_specialkey(key, command) {
     for (i = 0; i < 29; i++) {
         if (!cptr.ldPtr(cptr.add(cptr.add(spkeys_binds, i, 16), 8)) || strcmp(command, cptr.ldPtr(cptr.add(cptr.add(spkeys_binds, i, 16), 8))) ? 1 : 0)
             continue;
-        cptr.st1(cptr.add(cptr.add(cptr.add(gc, 216), 48), cptr.ldI32(cptr.add(spkeys_binds, i, 16)), 1), schar(key));
-        return (1);
+        cptr.st1(cptr.add(cptr.add(gc, 264), cptr.ldI32(cptr.add(spkeys_binds, i, 16)), 1), schar(key));
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:3208 — @param {CInt} nhkf @returns {CPtr} */
@@ -3941,14 +3941,14 @@ export function parseautocomplete(autocomplete, condition) {
         if (!strcmp(autocomplete, cptr.ldPtr(cptr.add(efp, 8)))) {
             if (condition == (((cptr.ldI32(cptr.add(efp, 32)) & 2) >>> 0) ? 0 : 1)) {
                 if (((cptr.ldI32(cptr.add(efp, 32)) & 8192) >>> 0))
-                    cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) & ((~8192) >>> 0));
+                    cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) & 4294959103);
                 else
                     cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) | 8192);
             }
             if (condition)
                 cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) | 2);
             else
-                cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) & ((~2) >>> 0));
+                cptr.stI32(cptr.add(efp, 32), cptr.ldI32(cptr.add(efp, 32)) & 4294967293);
             return;
         }
     }
@@ -3985,12 +3985,12 @@ export function lock_mouse_buttons(savebtns) {
     let i;
     if (savebtns) {
         for (i = 0; i < 2; i++) {
-            cptr.stPtr(cptr.add(__static_lock_mouse_buttons_mousebtn, i, 8), cptr.ldPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), i, 8)));
-            cptr.stPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), i, 8), null);
+            cptr.stPtr(cptr.add(__static_lock_mouse_buttons_mousebtn, i, 8), cptr.ldPtr(cptr.add(cptr.add(gc, 248), i, 8)));
+            cptr.stPtr(cptr.add(cptr.add(gc, 248), i, 8), null);
         }
     } else {
         for (i = 0; i < 2; i++)
-            cptr.stPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), i, 8), cptr.ldPtr(cptr.add(__static_lock_mouse_buttons_mousebtn, i, 8)));
+            cptr.stPtr(cptr.add(cptr.add(gc, 248), i, 8), cptr.ldPtr(cptr.add(__static_lock_mouse_buttons_mousebtn, i, 8)));
     }
 }
 
@@ -4001,13 +4001,13 @@ const __static_reset_commands_ndir_phone_layout = cptr.bytes("41236987><"); /** 
 const __static_reset_commands_ylist = cptr.alloc(6 * 4);
 cptr.stI32(cptr.add(__static_reset_commands_ylist, 0), 121);
 cptr.stI32(cptr.add(__static_reset_commands_ylist, 4), 89);
-cptr.stI32(cptr.add(__static_reset_commands_ylist, 8), (31 & (121)));
-cptr.stI32(cptr.add(__static_reset_commands_ylist, 12), (((121) - 128) | 0));
-cptr.stI32(cptr.add(__static_reset_commands_ylist, 16), (((89) - 128) | 0));
-cptr.stI32(cptr.add(__static_reset_commands_ylist, 20), ((((31 & (121))) - 128) | 0)); /** C ref: cmd.c:3350 — int[6] (function-static) */
+cptr.stI32(cptr.add(__static_reset_commands_ylist, 8), 25);
+cptr.stI32(cptr.add(__static_reset_commands_ylist, 12), -7);
+cptr.stI32(cptr.add(__static_reset_commands_ylist, 16), -39);
+cptr.stI32(cptr.add(__static_reset_commands_ylist, 20), -103); /** C ref: cmd.c:3350 — int[6] (function-static) */
 const __static_reset_commands_back_dir_cmd = (function () { const flat = new Uint8Array(8 * 3 * 8); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })(); /** C ref: cmd.c:3353 — struct ext_func_tab *[8][3] (function-static) */
 const __static_reset_commands_back_dir_key = (function () { const flat = new Uint8Array(8 * (3 * 1)); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * (3 * 1), (r + 1) * (3 * 1))); a.buf = flat; return a; })(); /** C ref: cmd.c:3354 — unsigned char[8][3] (function-static) */
-let __static_reset_commands_backed_dir_cmd = (0); /** C ref: cmd.c:3355 — signed char (function-static) */
+let __static_reset_commands_backed_dir_cmd = 0; /** C ref: cmd.c:3355 — signed char (function-static) */
 
 /** C ref: cmd.c:3344 — @param {CInt} initial */
 export function reset_commands(initial) {
@@ -4019,64 +4019,64 @@ export function reset_commands(initial) {
     let mode;
     if (initial) {
         updated = 1;
-        cptr.st1(cptr.add(cptr.add(gc, 216), 4), (0));
-        cptr.st1(cptr.add(cptr.add(gc, 216), 5), cptr.st1(cptr.add(cptr.add(gc, 216), 6), cptr.st1(cptr.add(cptr.add(gc, 216), 7), (0))));
+        cptr.st1(cptr.add(gc, 220), 0);
+        cptr.st1(cptr.add(gc, 221), cptr.st1(cptr.add(gc, 222), cptr.st1(cptr.add(gc, 223), 0)));
         for (i = 0; i < 29; i++)
-            cptr.st1(cptr.add(cptr.add(cptr.add(gc, 216), 48), cptr.ldI32(cptr.add(spkeys_binds, i, 16)), 1), schar(cptr.ld1u(cptr.add(cptr.add(spkeys_binds, i, 16), 4))));
+            cptr.st1(cptr.add(cptr.add(gc, 264), cptr.ldI32(cptr.add(spkeys_binds, i, 16)), 1), schar(cptr.ld1u(cptr.add(cptr.add(spkeys_binds, i, 16), 4))));
         commands_init();
     } else {
         if (__static_reset_commands_backed_dir_cmd) {
-            for (dir = 0; dir < ((10 - 2) | 0); dir++) {
+            for (dir = 0; dir < 8; dir++) {
                 for (mode = 0; mode < 3; mode++) {
-                    cmdbind_add(cptr.ld1u(cptr.add(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, 1)), cptr.ldPtr(cptr.add(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, 8)), (0));
+                    cmdbind_add(cptr.ld1u(cptr.add(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, 1)), cptr.ldPtr(cptr.add(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, 8)), 0);
                 }
             }
         }
         flagtemp = cptr.ld1s(cptr.add(iflags, 138));
-        if (flagtemp != cptr.ld1s(cptr.add(cptr.add(gc, 216), 4))) {
-            cptr.st1(cptr.add(cptr.add(gc, 216), 4), flagtemp);
+        if (flagtemp != cptr.ld1s(cptr.add(gc, 220))) {
+            cptr.st1(cptr.add(gc, 220), flagtemp);
             ++updated;
         }
-        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 1) ? !cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) : 0));
-        if (flagtemp != cptr.ld1s(cptr.add(cptr.add(gc, 216), 7))) {
-            cptr.st1(cptr.add(cptr.add(gc, 216), 7), flagtemp);
+        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 1) ? !cptr.ld1s(cptr.add(gc, 220)) : 0));
+        if (flagtemp != cptr.ld1s(cptr.add(gc, 223))) {
+            cptr.st1(cptr.add(gc, 223), flagtemp);
             ++updated;
             for (i = 0; i < 6; i++) {
                 c = cptr.ldI32(cptr.add(__static_reset_commands_ylist, i, 4)) & 255;
                 cmdbind_swapkeys(uchar(c), uchar(((c + 1) | 0)));
             }
         }
-        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 1) ? cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) : 0));
-        if (flagtemp != cptr.ld1s(cptr.add(cptr.add(gc, 216), 5))) {
-            cptr.st1(cptr.add(cptr.add(gc, 216), 5), flagtemp);
+        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 1) ? cptr.ld1s(cptr.add(gc, 220)) : 0));
+        if (flagtemp != cptr.ld1s(cptr.add(gc, 221))) {
+            cptr.st1(cptr.add(gc, 221), flagtemp);
             ++updated;
-            c = (((48) - 128) | 0) & 255;
-            if (cptr.ld1s(cptr.add(cptr.add(gc, 216), 5)))
-                cmdbind_add(uchar(c), ext_func_tab_from_func(dotypeinv), (0));
+            c = 176;
+            if (cptr.ld1s(cptr.add(gc, 221)))
+                cmdbind_add(uchar(c), ext_func_tab_from_func(dotypeinv), 0);
             else
                 cmdbind_remove(uchar(c));
         }
-        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 2) ? cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) : 0));
-        if (flagtemp != cptr.ld1s(cptr.add(cptr.add(gc, 216), 6))) {
-            cptr.st1(cptr.add(cptr.add(gc, 216), 6), flagtemp);
+        flagtemp = schar(((cptr.ld1u(cptr.add(iflags, 173)) & 2) ? cptr.ld1s(cptr.add(gc, 220)) : 0));
+        if (flagtemp != cptr.ld1s(cptr.add(gc, 222))) {
+            cptr.st1(cptr.add(gc, 222), flagtemp);
             ++updated;
             for (i = 0; i < 3; i++) {
                 c = (49 + i) | 0;
                 cmdbind_swapkeys(uchar(c), uchar(((c + 6) | 0)));
-                c = (((((49) - 128) | 0) & 255) + i) | 0;
+                c = (177 + i) | 0;
                 cmdbind_swapkeys(uchar(c), uchar(((c + 6) | 0)));
             }
         }
     }
     if (updated)
         (cptr.stI32(cptr.add(gc, 216), cptr.ldI32(cptr.add(gc, 216)) + 1)) - (1);
-    cptr.stPtr(cptr.add(cptr.add(gc, 216), 8), !cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) ? (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 7)) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 6)) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
-    cptr.stPtr(cptr.add(cptr.add(gc, 216), 16), !cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) ? cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)) : cptr.decay(__static_reset_commands_sdir));
-    for (dir = 0; dir < ((10 - 2) | 0); dir++) {
+    cptr.stPtr(cptr.add(gc, 224), !cptr.ld1s(cptr.add(gc, 220)) ? (!cptr.ld1s(cptr.add(gc, 223)) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1s(cptr.add(gc, 222)) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
+    cptr.stPtr(cptr.add(gc, 232), !cptr.ld1s(cptr.add(gc, 220)) ? cptr.ldPtr(cptr.add(gc, 224)) : cptr.decay(__static_reset_commands_sdir));
+    for (dir = 0; dir < 8; dir++) {
         for (mode = 0; mode < 3; mode++) {
-            let di = uchar(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), dir)));
+            let di = uchar(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), dir)));
             let bind;
-            if (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 4))) {
+            if (!cptr.ld1s(cptr.add(gc, 220))) {
                 if (mode == 1)
                     di = uchar(highc(schar(di)));
                 else if (mode == 2)
@@ -4095,18 +4095,18 @@ export function reset_commands(initial) {
             cmdbind_remove(di);
         }
     }
-    __static_reset_commands_backed_dir_cmd = (1);
-    for (i = 0; i < ((10 - 2) | 0); i++) {
-        void bind_key_fn(uchar(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), i))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 0, 8)));
-        if (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 4))) {
-            void bind_key_fn(uchar(highc(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), i)))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 1, 8)));
-            void bind_key_fn(uchar((31 & (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), i))))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 2, 8)));
+    __static_reset_commands_backed_dir_cmd = 1;
+    for (i = 0; i < 8; i++) {
+        void bind_key_fn(uchar(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), i))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 0, 8)));
+        if (!cptr.ld1s(cptr.add(gc, 220))) {
+            void bind_key_fn(uchar(highc(cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), i)))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 1, 8)));
+            void bind_key_fn(uchar((31 & (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), i))))), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 2, 8)));
         } else {
-            void bind_key_fn(uchar((((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), i))) - 128) | 0)), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 1, 8)));
+            void bind_key_fn(uchar((((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), i))) - 128) | 0)), cptr.ldPtr(cptr.add(cptr.decay(move_funcs[i]), 1, 8)));
         }
     }
     update_rest_on_space();
-    cptr.st1(cptr.add(cptr.add(gc, 216), 77), cmd_from_func(doextcmd));
+    cptr.st1(cptr.add(gc, 293), cmd_from_func(doextcmd));
 }
 
 let __static_update_rest_on_space_restonspace = cptr.alloc(48); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
@@ -4114,7 +4114,7 @@ cptr.st1(__static_update_rest_on_space_restonspace, 32);
 cptr.stPtr(cptr.add(__static_update_rest_on_space_restonspace, 8), __sl325);
 cptr.stPtr(cptr.add(__static_update_rest_on_space_restonspace, 16), __sl549);
 cptr.stPtr(cptr.add(__static_update_rest_on_space_restonspace, 24), donull);
-cptr.stI32(cptr.add(__static_update_rest_on_space_restonspace, 32), (1 | 128) >>> 0);
+cptr.stI32(cptr.add(__static_update_rest_on_space_restonspace, 32), 129);
 cptr.stPtr(cptr.add(__static_update_rest_on_space_restonspace, 40), __sl327);
 let __static_update_rest_on_space_unrestonspace = null; /** C ref: cmd.c:3493 — struct ext_func_tab * (function-static) */
 
@@ -4123,7 +4123,7 @@ export function update_rest_on_space() {
     let bind = cmdbind_get(32);
     if (bind && !cptr.eq(cptr.ldPtr(cptr.add(bind, 16)), __static_update_rest_on_space_restonspace) ? 1 : 0)
         __static_update_rest_on_space_unrestonspace = cptr.ldPtr(cptr.add(bind, 16));
-    cmdbind_add(32, cptr.ld1s(cptr.add(flags, 35)) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, (0));
+    cmdbind_add(32, cptr.ld1s(cptr.add(flags, 35)) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0);
 }
 
 /** C ref: cmd.c:3509 — @param {CPtr} ec @returns {CInt} */
@@ -4137,7 +4137,7 @@ let __static_randomkey_last_c = 0; /** C ref: cmd.c:3520 — char (function-stat
 /** C ref: cmd.c:3517 @returns {CInt} */
 export function randomkey() {
     let c;
-    if (((__static_randomkey_last_c == (31 & (97)) || __static_randomkey_last_c == (31 & (112)) ? 1 : 0) && cptr.ldI32(cptr.add(program_state, 104)) == 1 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3525, __sl550), rn2(5)) : rn2(5)) ? 1 : 0)
+    if (((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16 ? 1 : 0) && cptr.ldI32(cptr.add(program_state, 104)) == 1 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3525, __sl550), rn2(5)) : rn2(5)) ? 1 : 0)
         return __static_randomkey_last_c;
     switch ((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3528, __sl550), rn2(16)) : rn2(16))) {
         default:
@@ -4150,16 +4150,16 @@ export function randomkey() {
         case 2:
         case 3:
         case 4:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3539, __sl550), rn2((((126 - 32) | 0) + 1) | 0)) : rn2((((126 - 32) | 0) + 1) | 0)) + (32)) | 0));
+        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3539, __sl550), rn2(95)) : rn2(95)) + 32) | 0));
         break;
         case 5:
         c = schar(((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3542, __sl550), rn2(2)) : rn2(2)) ? 9 : 32));
         break;
         case 6:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3545, __sl550), rn2((((122 - 97) | 0) + 1) | 0)) : rn2((((122 - 97) | 0) + 1) | 0)) + (97)) | 0));
+        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3545, __sl550), rn2(26)) : rn2(26)) + 97) | 0));
         break;
         case 7:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3548, __sl550), rn2((((90 - 65) | 0) + 1) | 0)) : rn2((((90 - 65) | 0) + 1) | 0)) + (65)) | 0));
+        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3548, __sl550), rn2(26)) : rn2(26)) + 65) | 0));
         break;
         case 8:
         c = schar(cptr.ld1u(cptr.add(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), 48)));
@@ -4171,13 +4171,13 @@ export function randomkey() {
         case 11:
         case 12:
         {
-            let d = (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3560, __sl550), rn2(((10 - 2) | 0))) : rn2(((10 - 2) | 0)));
+            let d = (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3560, __sl550), rn2(8)) : rn2(8));
             let m = (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3561, __sl550), rn2(7)) : rn2(7)) ? 0 : (!(rng_log_enabled() ? (rng_log_set_caller(__sl511, 3561, __sl550), rn2(3)) : rn2(3)) ? 2 : 1);
             c = cmd_from_dir(d, m);
         }
         break;
         case 13:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3567, __sl550), rn2((((57 - 48) | 0) + 1) | 0)) : rn2((((57 - 48) | 0) + 1) | 0)) + (48)) | 0));
+        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3567, __sl550), rn2(10)) : rn2(10)) + 48) | 0));
         break;
         case 14:
         c = schar((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3571, __sl550), rnd(cptr.ld1s(cptr.add(iflags, 366)) ? 255 : 127)) : rnd(cptr.ld1s(cptr.add(iflags, 366)) ? 255 : 127)));
@@ -4214,14 +4214,14 @@ export function rnd_extcmd_idx() {
 /** C ref: cmd.c:3607 — @param {CInt} reset_cmdq */
 function reset_cmd_vars(reset_cmdq) {
     cptr.stI32(cptr.add(svc, 8), 0);
-    cptr.st1(cptr.add(svc, 75), cptr.st1(cptr.add(svc, 74), (0)));
-    cptr.st1(cptr.add(svc, 78), cptr.st1(cptr.add(svc, 79), (0)));
+    cptr.st1(cptr.add(svc, 75), cptr.st1(cptr.add(svc, 74), 0));
+    cptr.st1(cptr.add(svc, 78), cptr.st1(cptr.add(svc, 79), 0));
     cptr.stI64(cptr.add(gd, 16), 0n);
     cptr.stI64(cptr.add(gm, 8), 0n);
-    cptr.st1(cptr.add(iflags, 135), (0));
+    cptr.st1(cptr.add(iflags, 135), 0);
     cptr.st1(cptr.add(svc, 72), cptr.st1(cptr.add(svc, 73), 0));
     if (cptr.ldPtr(cptr.add(gt, 368))) {
-        selection_free(cptr.ldPtr(cptr.add(gt, 368)), (1));
+        selection_free(cptr.ldPtr(cptr.add(gt, 368)), 1);
         cptr.stPtr(cptr.add(gt, 368), null);
     }
     if (reset_cmdq) {
@@ -4242,9 +4242,9 @@ export function rhack(key) {
         cmdq = null;
         cmdq_ec = null;
         prefix_seen = null;
-        was_m_prefix = (0);
+        was_m_prefix = 0;
         func = dummyfunction;
-        cptr.st1(cptr.add(iflags, 135), (0));
+        cptr.st1(cptr.add(iflags, 135), 0);
         cptr.st1(cptr.add(svc, 75), 0);
         __pc = 1;
         continue;
@@ -4294,12 +4294,12 @@ export function rhack(key) {
         continue;
         }
         case 3: {
-        if ((!key || key == -1 ? 1 : 0) || key == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1)) ? 1 : 0) {
-            if (key == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1)))
+        if ((!key || key == -1 ? 1 : 0) || key == cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1)) ? 1 : 0) {
+            if (key == cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1)))
                 cptr.st1(cptr.add(iflags, 84), cptr.ld1s(cptr.add(iflags, 83)));
             else
                 (cptr.ldPtr(cptr.add(windowprocs, 272)))();
-            reset_cmd_vars((1));
+            reset_cmd_vars(1);
             return;
         }
         cptr.st1(cptr.add(svc, 72), cptr.st1(cptr.add(svc, 73), 0));
@@ -4320,7 +4320,7 @@ export function rhack(key) {
         __pc = 16; continue;
         }
         case 15: {
-        reset_cmd_vars((1));
+        reset_cmd_vars(1);
         res = 0;
         __pc = 14;
         continue;
@@ -4372,13 +4372,13 @@ export function rhack(key) {
         }
         case 21: {
         if ((res & 2) != 0) {
-            reset_cmd_vars((1));
+            reset_cmd_vars(1);
             return;
         }
         prefix_seen = tlist;
         cmdq_ec = null;
         if (func === do_reqmenu)
-            was_m_prefix = (1);
+            was_m_prefix = 1;
         { __pc = 1; continue; }
         __pc = 20;
         continue;
@@ -4386,26 +4386,26 @@ export function rhack(key) {
         case 22: {
         if (!((cptr.ldI32(cptr.add(tlist, 32)) & 1024) >>> 0) && cptr.ldI64(cptr.add(gd, 16)) ? 1 : 0) {
             ;
-        } else if ((((cptr.ldI64(cptr.add(gd, 16)) & BigInt((2 | 1))) != 0n) && !cptr.ld1s(cptr.add(svc, 72)) ? 1 : 0) && !dxdy_moveok() ? 1 : 0) {
+        } else if ((((cptr.ldI64(cptr.add(gd, 16)) & 3n) != 0n) && !cptr.ld1s(cptr.add(svc, 72)) ? 1 : 0) && !dxdy_moveok() ? 1 : 0) {
             You_cant(__sl556);
-            reset_cmd_vars((1));
+            reset_cmd_vars(1);
             return;
         } else if ((cptr.ldI64(cptr.add(gd, 16)) & 1n) != 0n) {
             if (cptr.ldI64(cptr.add(gm, 8)))
-                cptr.st1(cptr.add(svc, 79), (1));
+                cptr.st1(cptr.add(svc, 79), 1);
             domove();
             cptr.st1(cptr.add(svc, 74), 0);
-            cptr.st1(cptr.add(iflags, 135), (0));
+            cptr.st1(cptr.add(iflags, 135), 0);
             return;
         } else if ((cptr.ldI64(cptr.add(gd, 16)) & 2n) != 0n) {
             if (firsttime) {
                 if (!cptr.ldI64(cptr.add(gm, 8)))
-                    cptr.stI64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
+                    cptr.stI64(cptr.add(gm, 8), 80n);
                 cptr.stI32(cptr.add(u, 44), 0);
             }
-            cptr.st1(cptr.add(svc, 79), (1));
+            cptr.st1(cptr.add(svc, 79), 1);
             domove();
-            cptr.st1(cptr.add(iflags, 135), (0));
+            cptr.st1(cptr.add(iflags, 135), 0);
             return;
         }
         __pc = 20;
@@ -4421,13 +4421,13 @@ export function rhack(key) {
         continue;
         }
         case 14: {
-        if ((res & (2 | 4)) != 0) {
-            reset_cmd_vars((1));
-        } else if ((res & (0 | 1)) == 0) {
+        if ((res & 6) != 0) {
+            reset_cmd_vars(1);
+        } else if ((res & 1) == 0) {
             reset_cmd_vars(schar((cptr.ldI64(cptr.add(gm, 8)) < 0n)));
         }
         if ((res & 1) != 0) {
-            cptr.st1(cptr.add(svc, 78), (1));
+            cptr.st1(cptr.add(svc, 78), 1);
             if (func !== dokick) {
                 cptr.stI16(gk, 0), cptr.stI16(cptr.add(gk, 2), 0);
             }
@@ -4437,14 +4437,14 @@ export function rhack(key) {
         continue;
         }
         case 12: {
-        bad_command = (1);
+        bad_command = 1;
         if (bad_command) {
             custompline(4, __sl557, visctrl(schar(key)));
             cmdq_clear(0);
             cmdq_clear(1);
             cptr.st1(cptr.add(iflags, 84), cptr.ld1s(cptr.add(iflags, 83)));
         }
-        cptr.st1(cptr.add(svc, 78), (0));
+        cptr.st1(cptr.add(svc, 78), 0);
         cptr.stI64(cptr.add(gm, 8), 0n);
         return;
         __pc = -1;
@@ -4458,7 +4458,7 @@ export function rhack(key) {
 /** C ref: cmd.c:3847 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function xytodir(x, y) {
     let dd;
-    for (dd = 0; dd < ((10 - 2) | 0); dd++)
+    for (dd = 0; dd < 8; dd++)
         if (x == cptr.ld1s(cptr.add(cptr.decay(xdir), dd, 1)) && y == cptr.ld1s(cptr.add(cptr.decay(ydir), dd, 1)) ? 1 : 0)
             return dd;
     return -1;
@@ -4479,11 +4479,11 @@ export function movecmd(sym, mode) {
     if (bind && cptr.ldPtr(cptr.add(bind, 16)) ? 1 : 0) {
         let fnc = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(bind, 16)), 24));
         if (mode == -1) {
-            for (d = (10 - 1) | 0; d > -1; d--)
+            for (d = 9; d > -1; d--)
                 if ((fnc === cptr.ldPtr(cptr.add(cptr.decay(move_funcs[d]), 0, 8)) || fnc === cptr.ldPtr(cptr.add(cptr.decay(move_funcs[d]), 1, 8)) ? 1 : 0) || fnc === cptr.ldPtr(cptr.add(cptr.decay(move_funcs[d]), 2, 8)) ? 1 : 0)
                     break;
         } else {
-            for (d = (10 - 1) | 0; d > -1; d--)
+            for (d = 9; d > -1; d--)
                 if (fnc === cptr.ldPtr(cptr.add(cptr.decay(move_funcs[d]), mode, 8)))
                     break;
         }
@@ -4547,9 +4547,9 @@ export function getdir(s) {
         case 4: {
         if (cptr.ldI32(cmdq) == 2) {
             if (!cptr.ld1s(cptr.add(cmdq, 7))) {
-                dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), xytodir(cptr.ld1s(cptr.add(cmdq, 5)), cptr.ld1s(cptr.add(cmdq, 6)))));
+                dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), xytodir(cptr.ld1s(cptr.add(cmdq, 5)), cptr.ld1s(cptr.add(cmdq, 6)))));
             } else {
-                dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), (cptr.ld1s(cptr.add(cmdq, 7)) > 0) ? 8 : 9));
+                dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), (cptr.ld1s(cptr.add(cmdq, 7)) > 0) ? 8 : 9));
             }
         } else if (cptr.ldI32(cmdq) == 0) {
             dirsym = cptr.ld1s(cptr.add(cmdq, 4));
@@ -4572,17 +4572,17 @@ export function getdir(s) {
         if (cptr.ldI32(gi) || cptr.ld1s(readchar_queue) ? 1 : 0) {
             dirsym = readchar();
         } else {
-            dirsym = yn_function((s && cptr.ld1s(s) != 94 ? 1 : 0) ? s : __sl559, null, 0, (0));
+            dirsym = yn_function((s && cptr.ld1s(s) != 94 ? 1 : 0) ? s : __sl559, null, 0, 0);
             if (cptr.ld1s(cptr.add(iflags, 15)) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3996, __sl560), rn2(20)) : rn2(20)) ? 1 : 0) {
                 switch ((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3997, __sl560), rn2(20)) : rn2(20))) {
                     case 0:
-                    dirsym = cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3999, __sl560), rn2(2)) : rn2(2)) ? 1 : 0, 1));
+                    dirsym = cptr.ld1s(cptr.add(cptr.add(gc, 264), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3999, __sl560), rn2(2)) : rn2(2)) ? 1 : 0, 1));
                     break;
                     case 1:
-                    dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4002, __sl560), rn2(2)) : rn2(2)) ? 8 : 9));
+                    dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4002, __sl560), rn2(2)) : rn2(2)) ? 8 : 9));
                     break;
                     default:
-                    dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 216), 8)), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4005, __sl560), rn2(((10 - 2) | 0))) : rn2(((10 - 2) | 0)))));
+                    dirsym = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gc, 224)), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4005, __sl560), rn2(8)) : rn2(8))));
                     break;
                 }
             }
@@ -4604,7 +4604,7 @@ export function getdir(s) {
         continue;
         }
         case 2 /* got_dirsym: */: {
-        if (dirsym == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 1, 1)) || dirsym == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 2, 1)) ? 1 : 0) { __pc = 8; continue; }
+        if (dirsym == cptr.ld1s(cptr.add(cptr.add(gc, 264), 1, 1)) || dirsym == cptr.ld1s(cptr.add(cptr.add(gc, 264), 2, 1)) ? 1 : 0) { __pc = 8; continue; }
         __pc = 9; continue;
         }
         case 8: {
@@ -4613,15 +4613,15 @@ export function getdir(s) {
         continue;
         }
         case 9: {
-        if (dirsym == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 4, 1))) { __pc = 11; continue; }
+        if (dirsym == cptr.ld1s(cptr.add(cptr.add(gc, 264), 4, 1))) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
         qbuf = new Uint8Array(128);
         cc = cptr.alloc(4);
-        void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 7, 1))));
+        void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 8, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), 7, 1))));
         cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
-        pos = getpos(cc, (1), cptr.decay(qbuf));
+        pos = getpos(cc, 1, cptr.decay(qbuf));
         if (pos < 0) {
             cptr.stI32(cptr.add(u, 4), cptr.stI32(cptr.add(u, 8), cptr.stI32(cptr.add(u, 12), 0)));
             mod = 0;
@@ -4660,17 +4660,17 @@ export function getdir(s) {
         __pc = 15; continue;
         }
         case 14: {
-        did_help = (0);
+        did_help = 0;
         if (!cptr.strchr(cptr.decay(quitchars), dirsym)) { __pc = 17; continue; }
         __pc = 16; continue;
         }
         case 17: {
-        help_requested = schar((dirsym == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 3, 1))));
+        help_requested = schar((dirsym == cptr.ld1s(cptr.add(cptr.add(gc, 264), 3, 1))));
         if (help_requested || cptr.ld1s(cptr.add(iflags, 178)) ? 1 : 0) { __pc = 19; continue; }
         __pc = 18; continue;
         }
         case 19: {
-        did_help = help_dir(schar(((s && cptr.ld1s(s) == 94 ? 1 : 0) ? dirsym : 0)), uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))), help_requested ? null : __sl563);
+        did_help = help_dir(schar(((s && cptr.ld1s(s) == 94 ? 1 : 0) ? dirsym : 0)), uchar(cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1))), help_requested ? null : __sl563);
         if (help_requested) { __pc = 21; continue; }
         __pc = 20; continue;
         }
@@ -4712,7 +4712,7 @@ export function getdir(s) {
         }
         case 7: {
         if (!cptr.ldI32(cptr.add(u, 12)))
-            confdir((0));
+            confdir(0);
         return 1;
         __pc = -1;
         continue;
@@ -4760,13 +4760,13 @@ function help_dir(sym, spkey, msg) {
     let explain;
     let dothat;
     let prefixhandling;
-    prefixhandling = schar((spkey != cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))));
+    prefixhandling = schar((spkey != cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1))));
     dothat = __sl572;
     cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
     (void (prefixhandling));
     win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
     if (!win)
-        return (0);
+        return 0;
     if (cptr.ld1s(cptr.decay(buf))) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl0);
@@ -4798,8 +4798,8 @@ function help_dir(sym, spkey, msg) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl581);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl582);
         if (!prefixhandling) {
-            let selfi = cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) ? 2 : 1;
-            void cptr.sprintf(cptr.decay(buf), __sl583, visctrl(cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), selfi, 1))));
+            let selfi = cptr.ld1s(cptr.add(gc, 220)) ? 2 : 1;
+            void cptr.sprintf(cptr.decay(buf), __sl583, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), selfi, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
         }
     }
@@ -4807,15 +4807,15 @@ function help_dir(sym, spkey, msg) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl584);
     }
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, (0));
+    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return (1);
+    return 1;
 }
 
 /** C ref: cmd.c:4300 — @param {CInt} force_impairment */
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired() ? 1 : 0) {
-        let kmax = ((cptr.ldI32(cptr.add(u, 1808))) == 116) ? ((((10 - 2) | 0) / 2) | 0) : ((10 - 2) | 0);
+        let kmax = ((cptr.ldI32(cptr.add(u, 1808))) == 116) ? 4 : 8;
         let k = cptr.ld1s(cptr.add(cptr.decay(dirs_ord), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4304, __sl585), rn2(kmax)) : rn2(kmax)), 1));
         cptr.stI32(cptr.add(u, 4), cptr.ld1s(cptr.add(cptr.decay(xdir), k, 1)));
         cptr.stI32(cptr.add(u, 8), cptr.ld1s(cptr.add(cptr.decay(ydir), k, 1)));
@@ -4844,7 +4844,7 @@ export function directionname(dir) {
 
 /** C ref: cmd.c:4326 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function isok(x, y) {
-    return ((x >= 1 && x <= ((80 - 1) | 0) ? 1 : 0) && y >= 0 ? 1 : 0) && y <= ((21 - 1) | 0) ? 1 : 0;
+    return ((x >= 1 && x <= 79 ? 1 : 0) && y >= 0 ? 1 : 0) && y <= 20 ? 1 : 0;
 }
 
 /** C ref: cmd.c:4334 @returns {CInt} */
@@ -4859,14 +4859,14 @@ function dotherecmdmenu() {
     let dir;
     let click;
     let x = cptr.ldI16(cptr.add(gc, 296));
-    let y = cptr.ldI16(cptr.add(cptr.add(gc, 296), 2));
-    cptr.stI32(cptr.add(iflags, 28), 1 | 2);
+    let y = cptr.ldI16(cptr.add(gc, 298));
+    cptr.stI32(cptr.add(iflags, 28), 3);
     if (isok(x, y)) {
         if (x == cptr.ldI16(u) && y == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)
             ch = here_cmd_menu();
         else
             ch = there_cmd_menu(x, y, cptr.ldI32(cptr.add(iflags, 28)));
-        cptr.stI16(cptr.add(gc, 296), cptr.stI16(cptr.add(cptr.add(gc, 296), 2), i16((-1))));
+        cptr.stI16(cptr.add(gc, 296), cptr.stI16(cptr.add(gc, 298), -1));
         cptr.stI32(cptr.add(iflags, 28), 0);
         return (ch && ch != 27 ? 1 : 0) ? 1 : 0;
     }
@@ -4939,11 +4939,11 @@ function there_cmd_menu_self(win, x, y, act) {
     let ttmp;
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
         return K;
-    if ((((typ) == 28) || ((typ) == 30) ? 1 : 0) && can_reach_floor((0)) ? 1 : 0) {
+    if ((((typ) == 28) || ((typ) == 30) ? 1 : 0) && can_reach_floor(0) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(buf), __sl595, cptr.ldPtr(cptr.add(cptr.add(defsyms, ((typ) == 28) ? 37 : 36, 24), 8)));
         mcmd_addmenu(win, 15, cptr.decay(buf)), ++K;
     }
-    if (((typ) == 28) && can_reach_floor((0)) ? 1 : 0)
+    if (((typ) == 28) && can_reach_floor(0) ? 1 : 0)
         mcmd_addmenu(win, 16, __sl596), ++K;
     if (((typ) == 29))
         mcmd_addmenu(win, 17, __sl597), ++K;
@@ -4958,11 +4958,11 @@ function there_cmd_menu_self(win, x, y, act) {
         mcmd_addmenu(win, 19, cptr.decay(buf)), ++K;
     }
     if (cptr.ldPtr(cptr.add(u, 2424))) {
-        void cptr.sprintf(cptr.decay(buf), __sl601, x_monnam(cptr.ldPtr(cptr.add(u, 2424)), 1, null, 8, (0)));
+        void cptr.sprintf(cptr.decay(buf), __sl601, x_monnam(cptr.ldPtr(cptr.add(u, 2424)), 1, null, 8, 0));
         mcmd_addmenu(win, 20, cptr.decay(buf)), ++K;
     }
-    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8)) !== null)) {
-        let otmp = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8));
+    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8)) !== null)) {
+        let otmp = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8));
         void cptr.sprintf(cptr.decay(buf), __sl602, cptr.ldPtr(cptr.add(otmp, 8)) ? __sl603 : doname(otmp));
         mcmd_addmenu(win, 22, cptr.decay(buf)), ++K;
         if ((cptr.ldI16(cptr.add((otmp), 32)) >= 214 && cptr.ldI16(cptr.add((otmp), 32)) <= 220 ? 1 : 0)) {
@@ -5005,7 +5005,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
         let key_or_pick;
         let card;
         let dm = (cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0;
-        if ((dm & (4 | 8))) {
+        if ((dm & 12)) {
             mcmd_addmenu(win, 1, __sl614), ++K;
             key_or_pick = schar((carrying(221) || carrying(222) ? 1 : 0));
             card = schar((carrying(223) !== null));
@@ -5027,13 +5027,13 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
             mcmd_addmenu(win, 8, __sl613), ++K;
         mcmd_addmenu(win, 9, __sl622), ++K;
     }
-    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)) == (((475) + 3448) | 0))
+    if (cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)) == 3923)
         mcmd_addmenu(win, 9, __sl623), ++K;
-    mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)));
+    mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)));
     if (mtmp && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
         mtmp = null;
     if (mtmp && which_armor(mtmp, 1048576n) ? 1 : 0) {
-        let mnam = x_monnam(mtmp, 1, null, 8, (0));
+        let mnam = x_monnam(mtmp, 1, null, 8, 0);
         if (!cptr.ldPtr(cptr.add(u, 2424))) {
             void cptr.sprintf(cptr.decay(buf), __sl624, mnam);
             mcmd_addmenu(win, 10, cptr.decay(buf)), ++K;
@@ -5066,7 +5066,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
 function there_cmd_menu_far(win, x, y, mod) {
     let K = 0;
     if (mod == 1) {
-        if (linedup(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y) < Math.imul(18, 18) ? 1 : 0)
+        if (linedup(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y) < 324 ? 1 : 0)
             mcmd_addmenu(win, 35, __sl634), ++K;
         mcmd_addmenu(win, 36, __sl635), ++K;
     }
@@ -5077,7 +5077,7 @@ function there_cmd_menu_far(win, x, y, mod) {
 function there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
     if (mod == 1 || mod == 2 ? 1 : 0) {
-        if ((!((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) || glyph_at(x, y) != (((((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) || !cptr.ld1s(cptr.add(flags, 169)) ? 1 : 0) ? cptr.ldI32(cptr.add(u, 1808)) : cptr.ldI16(cptr.add(cptr.add(gu, 320), 48))) + (((((((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0))) == 0) ? 0 : 383)) | 0) ? 1 : 0)
+        if ((!((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) || (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) || glyph_at(x, y) != (((((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) || !cptr.ld1s(cptr.add(flags, 169)) ? 1 : 0) ? cptr.ldI32(cptr.add(u, 1808)) : cptr.ldI16(cptr.add(gu, 368))) + (((((((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))) ? 1 : 0))) == 0) ? 0 : 383)) | 0) ? 1 : 0)
             mcmd_addmenu(win, 29, __sl636), ++K;
     }
     return K;
@@ -5100,7 +5100,7 @@ function act_on_act(act, dx, dy) {
     switch (act) {
         case 36:
         cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(u, 16), i16(((cptr.ldI16(u) + dx) | 0))));
-        cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), cptr.stI16(cptr.add(u, 18), i16(((cptr.ldI16(cptr.add(u, 2)) + dy) | 0))));
+        cptr.stI16(cptr.add(iflags, 78), cptr.stI16(cptr.add(u, 18), i16(((cptr.ldI16(cptr.add(u, 2)) + dy) | 0))));
         cmdq_add_ec(0, dotravel_target);
         break;
         case 35:
@@ -5234,7 +5234,7 @@ function act_on_act(act, dx, dy) {
         break;
         case 29:
         cptr.stI16(cptr.add(gc, 296), i16(((cptr.ldI16(u) + dx) | 0)));
-        cptr.stI16(cptr.add(cptr.add(gc, 296), 2), i16(((cptr.ldI16(cptr.add(u, 2)) + dy) | 0)));
+        cptr.stI16(cptr.add(gc, 298), i16(((cptr.ldI16(cptr.add(u, 2)) + dy) | 0)));
         cmdq_add_ec(0, doclicklook);
         break;
         case 31:
@@ -5278,7 +5278,7 @@ function there_cmd_menu(x, y, mod) {
             cmdq_add_ec(0, cptr.ldPtr(cptr.add(cptr.decay(move_funcs[dir]), 0, 8)));
         } else if (cptr.ld1s(cptr.add(flags, 170))) {
             cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(u, 16), x));
-            cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), cptr.stI16(cptr.add(u, 18), y));
+            cptr.stI16(cptr.add(iflags, 78), cptr.stI16(cptr.add(u, 18), y));
             cmdq_add_ec(0, dotravel_target);
         }
         npick = 0;
@@ -5311,9 +5311,9 @@ function here_cmd_menu() {
 /** C ref: cmd.c:4906 — @param {CInt} x @param {CInt} y @param {CInt} mod */
 export function click_to_cmd(x, y, mod) {
     cptr.stI16(cptr.add(gc, 296), x);
-    cptr.stI16(cptr.add(cptr.add(gc, 296), 2), y);
-    if (cptr.ldPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), (mod - 1) | 0, 8)))
-        cmdq_add_ec(0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gc, 216), 32), (mod - 1) | 0, 8)), 24)));
+    cptr.stI16(cptr.add(gc, 298), y);
+    if (cptr.ldPtr(cptr.add(cptr.add(gc, 248), (mod - 1) | 0, 8)))
+        cmdq_add_ec(0, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gc, 248), (mod - 1) | 0, 8)), 24)));
 }
 
 /** C ref: cmd.c:4916 @returns {CInt} */
@@ -5323,13 +5323,13 @@ function domouseaction() {
     let o;
     let dir;
     x = i16(((cptr.ldI16(cptr.add(gc, 296)) - cptr.ldI16(u)) | 0));
-    y = i16(((cptr.ldI16(cptr.add(cptr.add(gc, 296), 2)) - cptr.ldI16(cptr.add(u, 2))) | 0));
+    y = i16(((cptr.ldI16(cptr.add(gc, 298)) - cptr.ldI16(cptr.add(u, 2))) | 0));
     if (cptr.ld1s(cptr.add(flags, 170))) {
         if (Math.abs(x) <= 1 && Math.abs(y) <= 1 ? 1 : 0) {
             x = i16(sgn(x)), y = i16(sgn(y));
         } else {
             cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(u, 16), i16(((cptr.ldI16(u) + x) | 0))));
-            cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), cptr.stI16(cptr.add(u, 18), i16(((cptr.ldI16(cptr.add(u, 2)) + y) | 0))));
+            cptr.stI16(cptr.add(iflags, 78), cptr.stI16(cptr.add(u, 18), i16(((cptr.ldI16(cptr.add(u, 2)) + y) | 0))));
             cmdq_add_ec(0, dotravel_target);
             return 0;
         }
@@ -5346,7 +5346,7 @@ function domouseaction() {
             } else if (On_stairs_dn(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
                 cmdq_add_ec(0, dodown);
                 return 0;
-            } else if ((o = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)))) !== null) {
+            } else if ((o = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)))) !== null) {
                 cmdq_add_ec(0, (cptr.ldI16(cptr.add((o), 32)) >= 214 && cptr.ldI16(cptr.add((o), 32)) <= 220 ? 1 : 0) ? doloot : dopickup);
                 return 0;
             } else {
@@ -5355,7 +5355,7 @@ function domouseaction() {
             }
         }
         dir = xytodir(x, y);
-        if (!(cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), (cptr.ldI16(u) + x) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + y) | 0, 8))) && !test_move(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y, 1) ? 1 : 0) {
+        if (!(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), (cptr.ldI16(u) + x) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + y) | 0, 8))) && !test_move(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), x, y, 1) ? 1 : 0) {
             if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (cptr.ldI16(u) + x) | 0, 756), (cptr.ldI16(cptr.add(u, 2)) + y) | 0, 36), 4))) == 23)) {
                 if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (cptr.ldI16(u) + x) | 0, 756), (cptr.ldI16(cptr.add(u, 2)) + y) | 0, 36), 8)) & 31) | 0) & 8) {
                     cmdq_add_ec(0, dokick);
@@ -5379,9 +5379,9 @@ function domouseaction() {
         else if (y > Math.imul(2, Math.abs(x)))
             x = 0, y = 1;
         else if (x < Math.imul(-2, Math.abs(y)))
-            x = i16((-1)), y = 0;
+            x = -1, y = 0;
         else if (y < Math.imul(-2, Math.abs(x)))
-            x = 0, y = i16((-1));
+            x = 0, y = -1;
         else
             x = i16(sgn(x)), y = i16(sgn(y));
         if (x == 0 && y == 0 ? 1 : 0) {
@@ -5401,8 +5401,8 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let save_input_state = cptr.ldI32(cptr.add(program_state, 104));
     let cnt = 0n;
     let first = inkey ? BigInt(((inkey - 48) | 0)) : 0n;
-    let backspaced = (0);
-    let showzero = (1);
+    let backspaced = 0;
+    let showzero = 1;
     let historicmsg = schar((((gc_flags & 1) >>> 0) != 0));
     let conditionalmsg = schar((((gc_flags & 2) >>> 0) != 0));
     let echoalways = schar((((gc_flags & 4) >>> 0) != 0));
@@ -5417,7 +5417,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
         }
         if (digit(schar(key))) {
             let dgt = BigInt(((key - 48) | 0));
-            cnt = (((cnt) < 9223372036854775807n / 10n || ((cnt) == 9223372036854775807n / 10n && (dgt) <= 9223372036854775807n % 10n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
+            cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
             if (cnt < 0n)
                 cnt = 0n;
             else if (maxcount > 0n && cnt > maxcount ? 1 : 0)
@@ -5426,10 +5426,10 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
         } else if (key == 8 || key == 127 ? 1 : 0) {
             if (!cnt && !echoalways ? 1 : 0)
                 break;
-            showzero = (0);
+            showzero = 0;
             cnt = cnt / 10n;
-            backspaced = (1);
-        } else if (key == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) {
+            backspaced = 1;
+        } else if (key == cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1))) {
             break;
         } else if (!allowchars || cptr.strchr(allowchars, key) ? 1 : 0) {
             cptr.stI64(count, cnt);
@@ -5443,7 +5443,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl639);
             } else {
                 void cptr.sprintf(cptr.decay(qbuf), __sl640, cnt);
-                backspaced = (0);
+                backspaced = 0;
             }
             custompline(4, __sl472, cptr.decay(qbuf));
             (cptr.ldPtr(cptr.add(windowprocs, 208)))();
@@ -5452,7 +5452,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
     if (historicmsg || (conditionalmsg && cptr.ldI64(count) != first ? 1 : 0) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(qbuf), __sl641, cptr.ldI64(count));
         void key2txt(uchar(key), eos(cptr.decay(qbuf)));
-        (cptr.ldPtr(cptr.add(windowprocs, 352)))(cptr.decay(qbuf), (0));
+        (cptr.ldPtr(cptr.add(windowprocs, 352)))(cptr.decay(qbuf), 0);
     }
     return schar(key);
 }
@@ -5461,17 +5461,17 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
 function parse() {
     let foo;
     let bind;
-    cptr.st1(cptr.add(iflags, 92), (1));
+    cptr.st1(cptr.add(iflags, 92), 1);
     cptr.stI64(cptr.add(gc, 328), 0n);
-    cptr.st1(cptr.add(svc, 78), (1));
+    cptr.st1(cptr.add(svc, 78), 1);
     flush_screen(1);
     cptr.stI32(cptr.add(program_state, 104), 1);
-    if (!cptr.ld1s(cptr.add(cptr.add(gc, 216), 4)) || (foo = readchar()) == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 5, 1)) ? 1 : 0) {
+    if (!cptr.ld1s(cptr.add(gc, 220)) || (foo = readchar()) == cptr.ld1s(cptr.add(cptr.add(gc, 264), 5, 1)) ? 1 : 0) {
         cptr.stI32(cptr.add(program_state, 104), 1);
         foo = get_count(null, 0, 32767n, cptr.add(gc, 328), 0);
     }
     cptr.stI64(gl, cptr.ldI64(cptr.add(gc, 328)));
-    if (foo == cptr.ld1s(cptr.add(cptr.add(cptr.add(gc, 216), 48), 0, 1))) {
+    if (foo == cptr.ld1s(cptr.add(cptr.add(gc, 264), 0, 1))) {
         (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
         cptr.stI64(cptr.add(gc, 328), 0n);
         cptr.stI64(gl, 0n);
@@ -5485,7 +5485,7 @@ function parse() {
         (cptr.stI64(cptr.add(gm, 8), cptr.ldI64(cptr.add(gm, 8)) + -1n)) - (-1n);
     cptr.stI32(cptr.add(gc, 316), foo);
     (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
-    cptr.st1(cptr.add(iflags, 92), (0));
+    cptr.st1(cptr.add(iflags, 92), 0);
     return cptr.ldI32(cptr.add(gc, 316));
 }
 
@@ -5502,7 +5502,7 @@ export function hangup(sig_unused) {
 
 /** C ref: cmd.c:5183 */
 export function end_of_input() {
-    if ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 88)))))
+    if ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1880)))))
         cptr.stI32(cptr.add(program_state, 16), 0);
     if (cptr.ldI32(cptr.add(program_state, 16)))
         void dosave0();
@@ -5529,24 +5529,24 @@ function readchar_core(x, y, mod) {
             sym = pgetchar();
         else
             sym = (cptr.ldPtr(cptr.add(windowprocs, 264)))(x, y, mod);
-        if (sym == (-1)) {
+        if (sym == -1) {
             let cnt = 20;
             do {
                 clearerr(__stdinp);
                 sym = pgetchar();
-            } while (--cnt && sym == (-1) ? 1 : 0);
+            } while (--cnt && sym == -1 ? 1 : 0);
         }
-        if (sym == (-1)) {
+        if (sym == -1) {
             hangup(0);
             sym = 27;
         } else if ((sym == 27 && cptr.ld1s(cptr.add(iflags, 125)) ? 1 : 0) && cptr.ldI32(cptr.add(program_state, 104)) != 0 ? 1 : 0) {
             sym = cptr.ld1s(readchar_queue) ? cptr.ld1s(cptr.postinc(() => readchar_queue, (v) => { readchar_queue = v; })) : pgetchar();
-            if (sym == (-1) || sym == 0 ? 1 : 0)
+            if (sym == -1 || sym == 0 ? 1 : 0)
                 sym = 27;
             else if (sym != 27)
                 sym |= 128;
         } else if (sym == 0) {
-            cptr.stI16(cptr.add(gc, 296), cptr.stI16(cptr.add(cptr.add(gc, 296), 2), i16((-1))));
+            cptr.stI16(cptr.add(gc, 296), cptr.stI16(cptr.add(gc, 298), -1));
             click_to_cmd(cptr.ldI16(x), cptr.ldI16(y), cptr.ldI32(mod));
         }
     }
@@ -5576,63 +5576,63 @@ export function readchar_poskey(x, y, mod) {
 function dotravel() {
     let cc = cptr.alloc(4);
     cptr.stI16(cc, cptr.ldI16(cptr.add(iflags, 76)));
-    cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(cptr.add(iflags, 76), 2)));
+    cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(iflags, 78)));
     if (cptr.ldI16(cc) == 0 && cptr.ldI16(cptr.add(cc, 2)) == 0 ? 1 : 0) {
         cptr.stI16(cc, cptr.ldI16(u));
         cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
     }
-    cptr.st1(cptr.add(iflags, 74), (1));
+    cptr.st1(cptr.add(iflags, 74), 1);
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         let gfilt = cptr.ldI32(cptr.add(iflags, 32));
         cptr.stI32(cptr.add(iflags, 32), 1);
         if (!getpos_menu(cc, 4)) {
             cptr.stI32(cptr.add(iflags, 32), gfilt);
-            cptr.st1(cptr.add(iflags, 74), (0));
+            cptr.st1(cptr.add(iflags, 74), 0);
             return 0;
         }
         cptr.stI32(cptr.add(iflags, 32), gfilt);
     } else {
         pline(__sl643);
-        if (getpos(cc, (1), __sl644) < 0) {
-            cptr.st1(cptr.add(iflags, 74), (0));
+        if (getpos(cc, 1, __sl644) < 0) {
+            cptr.st1(cptr.add(iflags, 74), 0);
             return 2;
         }
     }
     cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(u, 16), cptr.ldI16(cc)));
-    cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), cptr.stI16(cptr.add(u, 18), cptr.ldI16(cptr.add(cc, 2))));
+    cptr.stI16(cptr.add(iflags, 78), cptr.stI16(cptr.add(u, 18), cptr.ldI16(cptr.add(cc, 2))));
     return dotravel_target();
 }
 
 /** C ref: cmd.c:5348 @returns {CInt} */
 function dotravel_target() {
-    if (!isok(cptr.ldI16(cptr.add(iflags, 76)), cptr.ldI16(cptr.add(cptr.add(iflags, 76), 2)))) {
+    if (!isok(cptr.ldI16(cptr.add(iflags, 76)), cptr.ldI16(cptr.add(iflags, 78)))) {
         pline(__sl645);
         return 0;
-    } else if (((cptr.ldI16(cptr.add(iflags, 76))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cptr.add(iflags, 76), 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
+    } else if (((cptr.ldI16(cptr.add(iflags, 76))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(iflags, 78))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
         You(__sl646);
-        cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(cptr.add(iflags, 76), 2), 0));
+        cptr.stI16(cptr.add(iflags, 76), cptr.stI16(cptr.add(iflags, 78), 0));
         return 0;
     }
-    cptr.st1(cptr.add(iflags, 74), (0));
+    cptr.st1(cptr.add(iflags, 74), 0);
     cptr.st1(cptr.add(svc, 72), 1);
     cptr.st1(cptr.add(svc, 73), 1);
     cptr.stI32(cptr.add(svc, 8), 8);
     cptr.st1(cptr.add(svc, 75), 1);
     cptr.stI64(cptr.add(gd, 16), cptr.ldI64(cptr.add(gd, 16)) | 2n);
     if (!cptr.ldI64(cptr.add(gm, 8)))
-        cptr.stI64(cptr.add(gm, 8), BigInt(((80) > (21) ? (80) : (21))));
+        cptr.stI64(cptr.add(gm, 8), 80n);
     cptr.stI32(cptr.add(u, 44), 0);
-    cptr.st1(cptr.add(svc, 79), (1));
+    cptr.st1(cptr.add(svc, 79), 1);
     domove();
     return 1;
 }
 
 /** C ref: cmd.c:5381 @returns {CInt} */
 function doclicklook() {
-    if (!isok(cptr.ldI16(cptr.add(gc, 296)), cptr.ldI16(cptr.add(cptr.add(gc, 296), 2))))
+    if (!isok(cptr.ldI16(cptr.add(gc, 296)), cptr.ldI16(cptr.add(gc, 298))))
         return 0;
-    cptr.st1(cptr.add(svc, 78), (0));
-    auto_describe(cptr.ldI16(cptr.add(gc, 296)), cptr.ldI16(cptr.add(cptr.add(gc, 296), 2)));
+    cptr.st1(cptr.add(svc, 78), 0);
+    auto_describe(cptr.ldI16(cptr.add(gc, 296)), cptr.ldI16(cptr.add(gc, 298)));
     return 0;
 }
 
@@ -5684,9 +5684,9 @@ function yn_function_menu(query, resp, def, res) {
         }
         pline(__sl629, query, key2txt(uchar(cptr.ld1s(res)), cptr.decay(keybuf)));
         (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
-        return (1);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cmd.c:5471 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @param {CInt} addcmdq @returns {CInt} */
@@ -5700,8 +5700,8 @@ export function yn_function(query, resp, def, addcmdq) {
     cptr.stI32(cptr.add(iflags, 40), 0);
     if (cptr.strlen(query) >= 128n) {
         paniclog(__sl655, query);
-        void __builtin___strncpy_chk(cptr.decay(qbuf), query, BigInt.asUintN(64, BigInt(((((128 - 1) | 0) - 3) | 0))), __builtin_object_size(cptr.decay(qbuf), 2 > 1 ? 1 : 0));
-        void cptr.strcpy(cptr.add(cptr.decay(qbuf), (((128 - 1) | 0) - 3) | 0, 1), __sl656);
+        void __builtin___strncpy_chk(cptr.decay(qbuf), query, 124n, __builtin_object_size(cptr.decay(qbuf), 1));
+        void cptr.strcpy(cptr.add(cptr.decay(qbuf), 124, 1), __sl656);
         query = cptr.decay(qbuf);
     }
     if (addcmdq && (cmdq = cmdq_pop()) !== null ? 1 : 0) {
@@ -5716,7 +5716,7 @@ export function yn_function(query, resp, def, addcmdq) {
             res.v = cptr.ld1s(cptr.add(cq, 4));
         else
             cmdq_clear(0);
-        addcmdq = (0);
+        addcmdq = 0;
     } else if (((cptr.ld1s(cptr.add(iflags, 15)) && resp ? 1 : 0) && cptr.ld1s(resp) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 5513, __sl657), rn2(20)) : rn2(20)) ? 1 : 0) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
         let ridx = (rng_log_enabled() ? (rng_log_set_caller(__sl511, 5514, __sl657), rn2(ln)) : rn2(ln));
@@ -5769,11 +5769,11 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
         let responsetype = (((cptr.ldI32(cptr.add(flags, 80)) & 1) >>> 0) != 0) ? (accept_q ? __sl662 : __sl663) : (accept_q ? __sl664 : __sl665);
         let k;
         let trylimit = 6;
-        copynchars(cptr.decay(pbuf), prompt, (256 - 1) | 0);
+        copynchars(cptr.decay(pbuf), prompt, 255);
         do {
             k = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n) + cptr.strlen(responsetype)))));
-            if (((Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(pbuf)))) + k) | 0) > ((128 - 1) | 0)) {
-                void cptr.strcpy(cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), ((128 - 1) | 0)), -(k)), -(4)), __sl666);
+            if (((Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(pbuf)))) + k) | 0) > 127) {
+                void cptr.strcpy(cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), 127), -(k)), -(4)), __sl666);
             }
             nh_snprintf(__sl667, 5624, cptr.decay(qbuf), 128n, __sl668, promptprefix, cptr.decay(pbuf), responsetype);
             cptr.st1(cptr.decay(ans), 0);
@@ -5790,9 +5790,9 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
             promptprefix = __sl670;
         } while (((((cptr.ldI32(cptr.add(flags, 80)) & 1) >>> 0) != 0) && strncmpi(cptr.decay((ans)), (__sl671), -1) ? 1 : 0) && --trylimit ? 1 : 0);
     } else if (accept_q) {
-        c = yn_function(prompt, cptr.decay(ynqchars), 110, (0));
+        c = yn_function(prompt, cptr.decay(ynqchars), 110, 0);
     } else {
-        c = yn_function(prompt, cptr.decay(ynchars), 110, (0));
+        c = yn_function(prompt, cptr.decay(ynchars), 110, 0);
     }
     if (c != 121 && (c != 113 || !accept_q ? 1 : 0) ? 1 : 0)
         c = 110;
@@ -5801,7 +5801,7 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
 
 /** C ref: cmd.c:5655 — @param {CInt} be_paranoid @param {CPtr} prompt @returns {CInt} */
 export function paranoid_query(be_paranoid, prompt) {
-    return schar((paranoid_ynq(be_paranoid, prompt, (0)) == 121));
+    return schar((paranoid_ynq(be_paranoid, prompt, 0) == 121));
 }
 
 /** C ref: cmd.c:5662 @returns {CInt} */

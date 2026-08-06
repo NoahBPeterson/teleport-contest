@@ -63,7 +63,7 @@ function roguecorr(x, y, dir) {
     let tox;
     let toy;
     if (dir == 2) {
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & ~2);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & -3);
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             fromx = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             fromy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
@@ -85,7 +85,7 @@ function roguecorr(x, y, dir) {
             return;
         }
         y++;
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & ~1);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & -2);
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             tox = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             toy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
@@ -105,7 +105,7 @@ function roguecorr(x, y, dir) {
         roguejoin(fromx, fromy, tox, toy, 0);
         return;
     } else if (dir == 8) {
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & ~8);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & -9);
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             fromx = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             fromy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
@@ -127,7 +127,7 @@ function roguecorr(x, y, dir) {
             return;
         }
         x++;
-        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & ~4);
+        cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9), cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 9)) & -5);
         if (!cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8))) {
             tox = cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16));
             toy = cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2));
@@ -202,13 +202,13 @@ export function makeroguerooms() {
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32(cptr.add(svn, 44)) || (x < 2 && y < 2 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8), (0));
-                cptr.stI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + (2)) | 0)));
-                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + (2)) | 0)));
+                cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8), 0);
+                cptr.stI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
+                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
             } else {
-                cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8), (1));
-                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl10), rn2(22)) : rn2(22)) + (2)) | 0)));
-                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + (2)) | 0)));
+                cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 8), 1);
+                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
+                cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6), i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl10), rnd((((23 - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) + 1) | 0)) : rnd((((23 - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) + 1) | 0))));
                 cptr.stI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2), i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 234, __sl10), rnd((((((y == 2) ? 5 : 4) - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) + 1) | 0)) : rnd((((((y == 2) ? 5 : 4) - cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) + 1) | 0))));
                 (cptr.stI32(cptr.add(svn, 44), cptr.ldI32(cptr.add(svn, 44)) + 1)) - (1);
@@ -230,7 +230,7 @@ export function makeroguerooms() {
                 lowy = i16(((Math.imul(7, y) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2))) | 0));
                 hix = i16(((((((((1 + Math.imul(26, x)) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16))) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 4))) | 0) - 1) | 0));
                 hiy = i16(((((((Math.imul(7, y) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 2))) | 0) + cptr.ldI16(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 6))) | 0) - 1) | 0));
-                add_room(lowx, lowy, hix, hiy, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl10), rn2(7)) : rn2(7)))), 0, (0));
+                add_room(lowx, lowy, hix, hiy, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl10), rn2(7)) : rn2(7)))), 0, 0);
             }
         }
     for (y = 0; y < 3; y++)
@@ -273,40 +273,40 @@ export function makerogueghost() {
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 306, __sl14), rn2(4)) : rn2(4))) {
-        ghostobj = mksobj_at(293, x, y, (0), (0));
+        ghostobj = mksobj_at(293, x, y, 0, 0);
         cptr.stI64(cptr.add(ghostobj, 40), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
         cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(73, x, y, (0), (0));
+        ghostobj = mksobj_at(73, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl14), rnd(3)) : rnd(3))));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
-        ghostobj = mksobj_at(55, x, y, (0), (0));
+        ghostobj = mksobj_at(55, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 318, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 319, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     }
-    ghostobj = mksobj_at(83, x, y, (0), (0));
+    ghostobj = mksobj_at(83, x, y, 0, 0);
     cptr.st1(cptr.add(ghostobj, 48), 1);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 324, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
-    ghostobj = mksobj_at(18, x, y, (0), (0));
+    ghostobj = mksobj_at(18, x, y, 0, 0);
     cptr.st1(cptr.add(ghostobj, 48), 0);
-    cptr.stI64(cptr.add(ghostobj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + (25)) | 0)));
+    cptr.stI64(cptr.add(ghostobj, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + 25) | 0)));
     cptr.stI32(cptr.add(ghostobj, 36), weight(ghostobj) >>> 0);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 331, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 334, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(132, x, y, (0), (0));
+        ghostobj = mksobj_at(132, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 336, __sl14), rn2(3)) : rn2(3))));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 337, __sl14), rn2(3)) : rn2(3)))
             cptr.stI32(cptr.add(ghostobj, 120), 1);
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 339, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
-        ghostobj = mksobj_at(121, x, y, (0), (0));
+        ghostobj = mksobj_at(121, x, y, 0, 0);
         cptr.st1(cptr.add(ghostobj, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 343, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 344, __sl14), rn2(3)) : rn2(3)))
             cptr.stI32(cptr.add(ghostobj, 120), 1);
@@ -314,7 +314,7 @@ export function makerogueghost() {
             curse(ghostobj);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 349, __sl14), rn2(2)) : rn2(2))) {
-        ghostobj = mksobj_at(212, x, y, (1), (0));
+        ghostobj = mksobj_at(212, x, y, 1, 0);
         cptr.stI32(cptr.add(ghostobj, 80), 1);
     }
 }

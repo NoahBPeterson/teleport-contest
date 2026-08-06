@@ -264,7 +264,7 @@ export function done1(sig_unused) {
 /** C ref: end.c:91 @returns {CInt} */
 export function done2() {
     let abandon_tutorial = 0;
-    if ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 88)))) && yn_function(__sl25, cptr.decay(ynchars), 110, 1) == 121 ? 1 : 0)
+    if ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1880)))) && yn_function(__sl25, cptr.decay(ynchars), 110, 1) == 121 ? 1 : 0)
         abandon_tutorial = 1;
     if (abandon_tutorial || !paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 2) >>> 0) != 0)), __sl26) ? 1 : 0) {
         void signal(2, done1);
@@ -387,11 +387,11 @@ export function done_in_by(mtmp, how) {
     }
     if (cptr.ld1s(cptr.add(mptr, 28)) == 49)
         cptr.stI32(cptr.add(u, 2456), 230);
-    else if (cptr.ld1s(cptr.add(mptr, 28)) == 39 && cptr.ldI16(cptr.add(cptr.add(gu, 320), 50)) != -1 ? 1 : 0)
-        cptr.stI32(cptr.add(u, 2456), cptr.ldI16(cptr.add(cptr.add(gu, 320), 50)));
-    else if (zombie_maker(mtmp) && cptr.ldI16(cptr.add(cptr.add(gu, 320), 52)) != -1 ? 1 : 0)
-        cptr.stI32(cptr.add(u, 2456), cptr.ldI16(cptr.add(cptr.add(gu, 320), 52)));
-    else if (cptr.ld1s(cptr.add(mptr, 28)) == 48 && (cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (260)) ? 1 : 0)
+    else if (cptr.ld1s(cptr.add(mptr, 28)) == 39 && cptr.ldI16(cptr.add(gu, 370)) != -1 ? 1 : 0)
+        cptr.stI32(cptr.add(u, 2456), cptr.ldI16(cptr.add(gu, 370)));
+    else if (zombie_maker(mtmp) && cptr.ldI16(cptr.add(gu, 372)) != -1 ? 1 : 0)
+        cptr.stI32(cptr.add(u, 2456), cptr.ldI16(cptr.add(gu, 372)));
+    else if (cptr.ld1s(cptr.add(mptr, 28)) == 48 && (cptr.ldI16(cptr.add(gu, 368)) == 260) ? 1 : 0)
         cptr.stI32(cptr.add(u, 2456), 226);
     else if (cptr.eq(mptr, cptr.add(mons, 246, 96)))
         cptr.stI32(cptr.add(u, 2456), 246);
@@ -406,13 +406,13 @@ export function done_in_by(mtmp, how) {
 /** C ref: end.c:353 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/end.c:350:14)[2] */
 const death_fixups = cptr.alloc(2 * 24);
 cptr.stI32(cptr.add(death_fixups, 0), 8);
-cptr.stI32(cptr.add(cptr.add(death_fixups, 0), 4), 1);
-cptr.stPtr(cptr.add(cptr.add(death_fixups, 0), 8), __sl52);
-cptr.stPtr(cptr.add(cptr.add(death_fixups, 0), 16), null);
+cptr.stI32(cptr.add(death_fixups, 4), 1);
+cptr.stPtr(cptr.add(death_fixups, 8), __sl52);
+cptr.stPtr(cptr.add(death_fixups, 16), null);
 cptr.stI32(cptr.add(death_fixups, 24), 3);
-cptr.stI32(cptr.add(cptr.add(death_fixups, 24), 4), 0);
-cptr.stPtr(cptr.add(cptr.add(death_fixups, 24), 8), __sl53);
-cptr.stPtr(cptr.add(cptr.add(death_fixups, 24), 16), __sl54);
+cptr.stI32(cptr.add(death_fixups, 28), 0);
+cptr.stPtr(cptr.add(death_fixups, 32), __sl53);
+cptr.stPtr(cptr.add(death_fixups, 40), __sl54);
 
 /** C ref: end.c:367 — @param {CInt} how */
 function fixup_death(how) {
@@ -546,7 +546,7 @@ function disclose(how, taken) {
         ask = should_query_disclose_option(97, defquery);
         c = schar((ask ? yn_function(__sl70, cptr.decay(ynqchars), defquery.v, 1) : defquery.v));
         if (c == 121)
-            enlightenment((1 | 2), (how >= 11) ? 1 : 2);
+            enlightenment(3, (how >= 11) ? 1 : 2);
         if (c == 113)
             (cptr.stI32(cptr.add(program_state, 4), cptr.ldI32(cptr.add(program_state, 4)) + 1)) - (1);
     }
@@ -601,8 +601,8 @@ function savelife(how) {
     }
     cptr.stPtr(cptr.add(gn, 8), __sl74);
     cptr.st1(cptr.add(svc, 78), 0);
-    cptr.stI64(cptr.add(gm, 8), BigInt((-1)));
-    cptr.stPtr(cptr.add(gm, 16), (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (341)) ? __sl75 : __sl76);
+    cptr.stI64(cptr.add(gm, 8), -1n);
+    cptr.stPtr(cptr.add(gm, 16), (cptr.ldI16(cptr.add(gu, 216)) == 341) ? __sl75 : __sl76);
     if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 4 ? 1 : 0)
         reset_utrap(0);
     cptr.st1(disp, 1);
@@ -614,7 +614,7 @@ function savelife(how) {
     if ((cptr.ldI32(cptr.add(u, 1848)) & 1)) {
         expels(cptr.ldPtr(cptr.add(u, 2416)), cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2416)), 8)), 1);
     } else if (cptr.ldPtr(cptr.add(u, 2416))) {
-        if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0)
+        if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && sticks(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0)
             You(__sl77, mon_nam(cptr.ldPtr(cptr.add(u, 2416))));
         else
             pline(__sl78, Monnam(cptr.ldPtr(cptr.add(u, 2416))));
@@ -639,7 +639,7 @@ function get_valuables(list) {
             } else
                 cptr.stI64(cptr.add(cptr.add(ga, 24), i, 16), cptr.ldI64(cptr.add(cptr.add(ga, 24), i, 16)) + cptr.ldI64(cptr.add(obj, 40)));
         } else if (cptr.ld1s(cptr.add(obj, 49)) == 13 && cptr.ldI16(cptr.add(obj, 32)) <= 469 ? 1 : 0) {
-            i = (((cptr.ldI16(cptr.add(obj, 32))) < ((460 + 1) | 0) ? (cptr.ldI16(cptr.add(obj, 32))) : ((460 + 1) | 0)) - 439) | 0;
+            i = (((cptr.ldI16(cptr.add(obj, 32))) < 461 ? (cptr.ldI16(cptr.add(obj, 32))) : 461) - 439) | 0;
             if (!cptr.ldI64(cptr.add(cptr.add(gg, 94200), i, 16))) {
                 cptr.stI64(cptr.add(cptr.add(gg, 94200), i, 16), cptr.ldI64(cptr.add(obj, 40)));
                 cptr.stI32(cptr.add(cptr.add(cptr.add(gg, 94200), i, 16), 8), cptr.ldI16(cptr.add(obj, 32)));
@@ -804,7 +804,7 @@ export function done(how) {
     }
     if (cptr.ldI64(cptr.add(cptr.add(u, 112), 68, 24)) && (how <= 10) ? 1 : 0) {
         pline(__sl83);
-        discover_object((202), 1, 1, 1);
+        discover_object(202, 1, 1, 1);
         Your(__sl84, !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? __sl85 : __sl86);
         if (how == 1)
             You(__sl87);
@@ -841,7 +841,7 @@ export function done(how) {
 function really_done(how) {
     let taken;
     let pbuf = new Uint8Array(256);
-    let endwin = (-1);
+    let endwin = -1;
     let bones_ok;
     let have_windows = cptr.ld1s(cptr.add(iflags, 81));
     let corpse = null;
@@ -863,7 +863,7 @@ function really_done(how) {
     if (cptr.ld1s(cptr.add(cptr.add(u, 2822), 0, 1)) || !cptr.ld1s(cptr.add(flags, 5)) ? 1 : 0) {
         if (cptr.ld1s(cptr.add(u, 2112)))
             record_achievement(13);
-        if (cptr.ld1s(cptr.add(cptr.add(u, 2112), 1)))
+        if (cptr.ld1s(cptr.add(u, 2113)))
             record_achievement(14);
     }
     if (how == 15)
@@ -880,9 +880,9 @@ function really_done(how) {
     if (bones_ok && launch_in_progress() ? 1 : 0)
         force_launch_placement();
     if (how == 11)
-        cptr.stI32(cptr.add(u, 2456), ((-1 - 3) | 0));
+        cptr.stI32(cptr.add(u, 2456), -4);
     else if (how == 5 || how == 6 ? 1 : 0)
-        cptr.stI32(cptr.add(u, 2456), ((-1 - 2) | 0));
+        cptr.stI32(cptr.add(u, 2456), -3);
     else if (how == 8)
         cptr.stI32(cptr.add(u, 2456), -2);
     else if (how == 9 && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), 208, 12), 2)) & 2) ? 1 : 0)
@@ -938,7 +938,7 @@ function really_done(how) {
     if (bones_ok && taken ? 1 : 0)
         finish_paybill();
     if ((bones_ok && cptr.ldI32(cptr.add(u, 2456)) == -1 ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(u, 1808)), 12), 2)) & 16) ? 1 : 0) {
-        let mnum = !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) : cptr.ldI32(cptr.add(u, 1808));
+        let mnum = !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI16(cptr.add(gu, 368)) : cptr.ldI32(cptr.add(u, 1808));
         let was_already_grave = ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) == 31);
         corpse = mk_named_object(265, cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), svp);
         void cptr.sprintf(cptr.decay(pbuf), __sl99, svp);
@@ -980,30 +980,30 @@ function really_done(how) {
     if (have_windows) {
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
         free_pickinv_cache();
-        if (WIN_INVEN.v != (-1)) {
-            (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_INVEN.v), WIN_INVEN.v = (-1);
+        if (WIN_INVEN.v != -1) {
+            (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_INVEN.v), WIN_INVEN.v = -1;
             cptr.st1(cptr.add(iflags, 139), 0);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
-        (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_MAP.v), WIN_MAP.v = (-1);
-        if (WIN_STATUS.v != (-1))
-            (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_STATUS.v), WIN_STATUS.v = (-1);
-        (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_MESSAGE.v), WIN_MESSAGE.v = (-1);
+        (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_MAP.v), WIN_MAP.v = -1;
+        if (WIN_STATUS.v != -1)
+            (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_STATUS.v), WIN_STATUS.v = -1;
+        (cptr.ldPtr(cptr.add(windowprocs, 128)))(WIN_MESSAGE.v), WIN_MESSAGE.v = -1;
         if (!cptr.ldI32(cptr.add(program_state, 4)) || cptr.ld1s(cptr.add(flags, 47)) ? 1 : 0)
             endwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
-        if ((how < 10 && cptr.ld1s(cptr.add(flags, 47)) ? 1 : 0) && endwin != (-1) ? 1 : 0)
+        if ((how < 10 && cptr.ld1s(cptr.add(flags, 47)) ? 1 : 0) && endwin != -1 ? 1 : 0)
             (cptr.ldPtr(cptr.add(windowprocs, 328)))(endwin, how, endtime);
     } else
         cptr.stI32(cptr.add(program_state, 4), 1);
     if ((cptr.ldI32(cptr.add(u, 1944)) & 1)) {
         void cptr.strcat(cptr.add(svk, 16), __sl105);
     } else if (how == 14) {
-        if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 76)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 76)) ? 1 : 0)))
+        if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1868)), 2)) || cptr.ldI16((cptr.add(svd, 1868))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1868)) ? 1 : 0)))
             void cptr.strcat(cptr.add(svk, 16), __sl106);
         else if (carrying(212))
             void cptr.strcat(cptr.add(svk, 16), __sl107);
     }
-    void cptr.sprintf(cptr.decay(pbuf), __sl108, Goodbye(), svp, (how != 15) ? ((cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) : cptr.ldPtr(cptr.add(gu, 8))) : (cptr.ld1s(cptr.add(flags, 13)) ? __sl109 : __sl110));
+    void cptr.sprintf(cptr.decay(pbuf), __sl108, Goodbye(), svp, (how != 15) ? ((cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(gu, 16)) ? 1 : 0) ? cptr.ldPtr(cptr.add(gu, 16)) : cptr.ldPtr(cptr.add(gu, 8))) : (cptr.ld1s(cptr.add(flags, 13)) ? __sl109 : __sl110));
     dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32(cptr.add(program_state, 4)));
     dump_forward_putstr(endwin, 0, __sl44, cptr.ldI32(cptr.add(program_state, 4)));
     if (how == 14 || how == 15 ? 1 : 0) {
@@ -1036,7 +1036,7 @@ function really_done(how) {
             if (Schroedingers_cat) {
                 let mhp;
                 let m_lev = adj_lev(cptr.add(mons, 33, 96));
-                mhp = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 1468, __sl100), d((m_lev), (8))) : d((m_lev), (8)));
+                mhp = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 1468, __sl100), d((m_lev), 8)) : d((m_lev), 8));
                 cptr.stI64(cptr.add(u, 2384), ((cptr.ldI64(cptr.add(u, 2384))) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp)))) ? (BigInt.asIntN(64, (cptr.ldI64(cptr.add(u, 2384))) + BigInt((mhp)))) : 9223372036854775807n));
                 void cptr.strcat(eos(cptr.decay(pbuf)), __sl113);
             }
@@ -1073,14 +1073,14 @@ function really_done(how) {
             }
         }
     } else {
-        if (cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) <= 0 ? 1 : 0) {
-            void cptr.sprintf(cptr.decay(pbuf), __sl121, (cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) < 0) ? __sl122 : cptr.ldPtr(cptr.add(ends, how, 8)));
+        if (cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(u, 26)) <= 0 ? 1 : 0) {
+            void cptr.sprintf(cptr.decay(pbuf), __sl121, (cptr.ldI16(cptr.add(u, 26)) < 0) ? __sl122 : cptr.ldPtr(cptr.add(ends, how, 8)));
         } else {
             let where = cptr.add(svd, cptr.ldI16(cptr.add(u, 24)), 112);
-            if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 76)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 76)) ? 1 : 0)))
+            if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1868)), 2)) || cptr.ldI16((cptr.add(svd, 1868))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1868)) ? 1 : 0)))
                 where = __sl123;
             void cptr.sprintf(cptr.decay(pbuf), __sl124, cptr.ldPtr(cptr.add(ends, how, 8)), where);
-            if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))) && !single_level_branch(cptr.add(u, 24)) ? 1 : 0)
+            if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) && !single_level_branch(cptr.add(u, 24)) ? 1 : 0)
                 void cptr.sprintf(eos(cptr.decay(pbuf)), __sl125, In_quest(cptr.add(u, 24)) ? dunlev(cptr.add(u, 24)) : depth(cptr.add(u, 24)));
         }
         void cptr.sprintf(eos(cptr.decay(pbuf)), __sl126, cptr.ldI64(cptr.add(u, 2384)), (((cptr.ldI64(cptr.add(u, 2384))) == 1n) ? __sl44 : __sl118));
@@ -1093,7 +1093,7 @@ function really_done(how) {
     dump_forward_putstr(endwin, 0, __sl44, cptr.ldI32(cptr.add(program_state, 4)));
     if (!cptr.ldI32(cptr.add(program_state, 4)))
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(endwin, 1);
-    if (endwin != (-1))
+    if (endwin != -1)
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(endwin);
     dump_close_log();
     if (cptr.ldPtr(cptr.add(soundprocs, 32)))
@@ -1241,7 +1241,7 @@ export function dealloc_killer(kptr) {
 /** C ref: end.c:1774 — @param {CPtr} nhfp */
 export function save_killers(nhfp) {
     let kptr;
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         for (kptr = svk; kptr; kptr = cptr.ldPtr(kptr)) {
             sfo_kinfo(nhfp, kptr, __sl134);
         }

@@ -73,7 +73,7 @@ function luaB_print(L) {
         if (i > 1)
             fwrite((__sl0), 1n, 1n, __stdoutp);
         fwrite((s), 1n, (l.v), __stdoutp);
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
     }
     (fwrite((__sl1), 1n, 1n, __stdoutp), fflush(__stdoutp));
     return 0;
@@ -83,7 +83,7 @@ function luaB_print(L) {
 function luaB_warn(L) {
     let n = lua_gettop(L);
     let i;
-    (luaL_checklstring(L, (1), null));
+    (luaL_checklstring(L, 1, null));
     for (i = 2; i <= n; i++)
         (luaL_checklstring(L, (i), null));
     for (i = 1; i < n; i++)
@@ -118,7 +118,7 @@ function b_str2int(s, base, pn) {
 
 /** C ref: lbaselib.c:81 — @param {CPtr} L @returns {CInt} */
 function luaB_tonumber(L) {
-    if ((lua_type(L, (2)) <= 0)) {
+    if ((lua_type(L, 2) <= 0)) {
         if (lua_type(L, 1) == 3) {
             lua_settop(L, 1);
             return 1;
@@ -136,7 +136,7 @@ function luaB_tonumber(L) {
         let base = luaL_checkinteger(L, 2);
         luaL_checktype(L, 1, 4);
         s = lua_tolstring(L, 1, l);
-        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, (2), (__sl3)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 2, (__sl3)) ? 1 : 0));
         if (cptr.eq(b_str2int(s, Number(BigInt.asIntN(32, base)), n), cptr.add(s, l.v))) {
             lua_pushinteger(L, n.v);
             return 1;
@@ -173,7 +173,7 @@ function luaB_getmetatable(L) {
 function luaB_setmetatable(L) {
     let t = lua_type(L, 2);
     luaL_checktype(L, 1, 5);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, (2), (__sl5)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 2, (__sl5)) ? 1 : 0));
     if ((__builtin_expect(BigInt(((luaL_getmetafield(L, 1, __sl4) != 0) != 0)), 0n)))
         return luaL_error(L, __sl6);
     lua_settop(L, 2);
@@ -192,7 +192,7 @@ function luaB_rawequal(L) {
 /** C ref: lbaselib.c:157 — @param {CPtr} L @returns {CInt} */
 function luaB_rawlen(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, (1), (__sl7)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 1, (__sl7)) ? 1 : 0));
     lua_pushinteger(L, BigInt.asIntN(64, lua_rawlen(L, 1)));
     return 1;
 }
@@ -333,7 +333,7 @@ function luaB_collectgarbage(L) {
 /** C ref: lbaselib.c:259 — @param {CPtr} L @returns {CInt} */
 function luaB_type(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t != (-1)) != 0)), 1n)) || luaL_argerror(L, (1), (__sl18)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t != -1) != 0)), 1n)) || luaL_argerror(L, 1, (__sl18)) ? 1 : 0));
     lua_pushstring(L, lua_typename(L, t));
     return 1;
 }
@@ -395,21 +395,21 @@ function load_aux(L, status, envidx) {
         if (envidx != 0) {
             lua_pushvalue(L, envidx);
             if (!lua_setupvalue(L, -2, 1))
-                lua_settop(L, (-(1) - 1) | 0);
+                lua_settop(L, -2);
         }
         return 1;
     } else {
         lua_pushnil(L);
-        lua_rotate(L, (-2), 1);
+        lua_rotate(L, -2, 1);
         return 2;
     }
 }
 
 /** C ref: lbaselib.c:340 — @param {CPtr} L @returns {CInt} */
 function luaB_loadfile(L) {
-    let fname = (luaL_optlstring(L, (1), null, null));
-    let mode = (luaL_optlstring(L, (2), null, null));
-    let env = (!(lua_type(L, (3)) == (-1)) ? 3 : 0);
+    let fname = (luaL_optlstring(L, 1, null, null));
+    let mode = (luaL_optlstring(L, 2, null, null));
+    let env = (!(lua_type(L, 3) == -1) ? 3 : 0);
     let status = luaL_loadfilex(L, fname, mode);
     return load_aux(L, status, env);
 }
@@ -419,14 +419,14 @@ function generic_reader(L, ud, size) {
     void (ud);
     luaL_checkstack(L, 2, __sl20);
     lua_pushvalue(L, 1);
-    lua_callk(L, (0), (1), 0n, null);
-    if ((lua_type(L, (-1)) == 0)) {
-        lua_settop(L, (-(1) - 1) | 0);
+    lua_callk(L, 0, 1, 0n, null);
+    if ((lua_type(L, -1) == 0)) {
+        lua_settop(L, -2);
         cptr.stU64(size, 0n);
         return null;
     } else if ((__builtin_expect(BigInt(((!lua_isstring(L, -1)) != 0)), 0n)))
         luaL_error(L, __sl21);
-    (lua_copy(L, -1, (5)), lua_settop(L, (-(1) - 1) | 0));
+    (lua_copy(L, -1, 5), lua_settop(L, -2));
     return lua_tolstring(L, 5, size);
 }
 
@@ -435,13 +435,13 @@ function luaB_load(L) {
     let status;
     let l = cptr.box(0n);
     let s = lua_tolstring(L, 1, l);
-    let mode = (luaL_optlstring(L, (3), (__sl22), null));
-    let env = (!(lua_type(L, (4)) == (-1)) ? 4 : 0);
+    let mode = (luaL_optlstring(L, 3, (__sl22), null));
+    let env = (!(lua_type(L, 4) == -1) ? 4 : 0);
     if (!cptr.eq(s, (null))) {
-        let chunkname = (luaL_optlstring(L, (2), (s), null));
+        let chunkname = (luaL_optlstring(L, 2, (s), null));
         status = luaL_loadbufferx(L, s, l.v, chunkname, mode);
     } else {
-        let chunkname = (luaL_optlstring(L, (2), (__sl23), null));
+        let chunkname = (luaL_optlstring(L, 2, (__sl23), null));
         luaL_checktype(L, 1, 6);
         lua_settop(L, 5);
         status = lua_load(L, generic_reader, (null), chunkname, mode);
@@ -458,11 +458,11 @@ function dofilecont(L, d1, d2) {
 
 /** C ref: lbaselib.c:415 — @param {CPtr} L @returns {CInt} */
 function luaB_dofile(L) {
-    let fname = (luaL_optlstring(L, (1), null, null));
+    let fname = (luaL_optlstring(L, 1, null, null));
     lua_settop(L, 1);
     if ((__builtin_expect(BigInt(((luaL_loadfilex(L, fname, null) != 0) != 0)), 0n)))
         return lua_error(L);
-    lua_callk(L, 0, (-1), 0n, dofilecont);
+    lua_callk(L, 0, -1, 0n, dofilecont);
     return dofilecont(L, 0, 0n);
 }
 
@@ -472,7 +472,7 @@ function luaB_assert(L) {
         return lua_gettop(L);
     else {
         luaL_checkany(L, 1);
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
         lua_pushstring(L, __sl24);
         lua_settop(L, 1);
         return luaB_error(L);
@@ -482,7 +482,7 @@ function luaB_assert(L) {
 /** C ref: lbaselib.c:438 — @param {CPtr} L @returns {CInt} */
 function luaB_select(L) {
     let n = lua_gettop(L);
-    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, (1), null)) == 35 ? 1 : 0) {
+    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, 1, null)) == 35 ? 1 : 0) {
         lua_pushinteger(L, BigInt(((n - 1) | 0)));
         return 1;
     } else {
@@ -491,7 +491,7 @@ function luaB_select(L) {
             i = BigInt.asIntN(64, BigInt(n) + i);
         else if (i > BigInt(n))
             i = BigInt(n);
-        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) || luaL_argerror(L, (1), (__sl25)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) || luaL_argerror(L, 1, (__sl25)) ? 1 : 0));
         return (n - Number(BigInt.asIntN(32, i))) | 0;
     }
 }
@@ -511,8 +511,8 @@ function luaB_pcall(L) {
     let status;
     luaL_checkany(L, 1);
     lua_pushboolean(L, 1);
-    lua_rotate(L, (1), 1);
-    status = lua_pcallk(L, (lua_gettop(L) - 2) | 0, (-1), 0, 0n, finishpcall);
+    lua_rotate(L, 1, 1);
+    status = lua_pcallk(L, (lua_gettop(L) - 2) | 0, -1, 0, 0n, finishpcall);
     return finishpcall(L, status, 0n);
 }
 
@@ -524,7 +524,7 @@ function luaB_xpcall(L) {
     lua_pushboolean(L, 1);
     lua_pushvalue(L, 1);
     lua_rotate(L, 3, 2);
-    status = lua_pcallk(L, (n - 2) | 0, (-1), 2, 2n, finishpcall);
+    status = lua_pcallk(L, (n - 2) | 0, -1, 2, 2n, finishpcall);
     return finishpcall(L, status, 2n);
 }
 
@@ -538,61 +538,61 @@ function luaB_tostring(L) {
 /** C ref: lbaselib.c:506 — luaL_Reg[26] */
 const base_funcs = cptr.alloc(26 * 16);
 cptr.stPtr(cptr.add(base_funcs, 0), __sl26);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 0), 8), luaB_assert);
+cptr.stPtr(cptr.add(base_funcs, 8), luaB_assert);
 cptr.stPtr(cptr.add(base_funcs, 16), __sl27);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 16), 8), luaB_collectgarbage);
+cptr.stPtr(cptr.add(base_funcs, 24), luaB_collectgarbage);
 cptr.stPtr(cptr.add(base_funcs, 32), __sl28);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 32), 8), luaB_dofile);
+cptr.stPtr(cptr.add(base_funcs, 40), luaB_dofile);
 cptr.stPtr(cptr.add(base_funcs, 48), __sl29);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 48), 8), luaB_error);
+cptr.stPtr(cptr.add(base_funcs, 56), luaB_error);
 cptr.stPtr(cptr.add(base_funcs, 64), __sl30);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 64), 8), luaB_getmetatable);
+cptr.stPtr(cptr.add(base_funcs, 72), luaB_getmetatable);
 cptr.stPtr(cptr.add(base_funcs, 80), __sl31);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 80), 8), luaB_ipairs);
+cptr.stPtr(cptr.add(base_funcs, 88), luaB_ipairs);
 cptr.stPtr(cptr.add(base_funcs, 96), __sl32);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 96), 8), luaB_loadfile);
+cptr.stPtr(cptr.add(base_funcs, 104), luaB_loadfile);
 cptr.stPtr(cptr.add(base_funcs, 112), __sl33);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 112), 8), luaB_load);
+cptr.stPtr(cptr.add(base_funcs, 120), luaB_load);
 cptr.stPtr(cptr.add(base_funcs, 128), __sl34);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 128), 8), luaB_next);
+cptr.stPtr(cptr.add(base_funcs, 136), luaB_next);
 cptr.stPtr(cptr.add(base_funcs, 144), __sl35);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 144), 8), luaB_pairs);
+cptr.stPtr(cptr.add(base_funcs, 152), luaB_pairs);
 cptr.stPtr(cptr.add(base_funcs, 160), __sl36);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 160), 8), luaB_pcall);
+cptr.stPtr(cptr.add(base_funcs, 168), luaB_pcall);
 cptr.stPtr(cptr.add(base_funcs, 176), __sl37);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 176), 8), luaB_print);
+cptr.stPtr(cptr.add(base_funcs, 184), luaB_print);
 cptr.stPtr(cptr.add(base_funcs, 192), __sl38);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 192), 8), luaB_warn);
+cptr.stPtr(cptr.add(base_funcs, 200), luaB_warn);
 cptr.stPtr(cptr.add(base_funcs, 208), __sl39);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 208), 8), luaB_rawequal);
+cptr.stPtr(cptr.add(base_funcs, 216), luaB_rawequal);
 cptr.stPtr(cptr.add(base_funcs, 224), __sl40);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 224), 8), luaB_rawlen);
+cptr.stPtr(cptr.add(base_funcs, 232), luaB_rawlen);
 cptr.stPtr(cptr.add(base_funcs, 240), __sl41);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 240), 8), luaB_rawget);
+cptr.stPtr(cptr.add(base_funcs, 248), luaB_rawget);
 cptr.stPtr(cptr.add(base_funcs, 256), __sl42);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 256), 8), luaB_rawset);
+cptr.stPtr(cptr.add(base_funcs, 264), luaB_rawset);
 cptr.stPtr(cptr.add(base_funcs, 272), __sl43);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 272), 8), luaB_select);
+cptr.stPtr(cptr.add(base_funcs, 280), luaB_select);
 cptr.stPtr(cptr.add(base_funcs, 288), __sl44);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 288), 8), luaB_setmetatable);
+cptr.stPtr(cptr.add(base_funcs, 296), luaB_setmetatable);
 cptr.stPtr(cptr.add(base_funcs, 304), __sl45);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 304), 8), luaB_tonumber);
+cptr.stPtr(cptr.add(base_funcs, 312), luaB_tonumber);
 cptr.stPtr(cptr.add(base_funcs, 320), __sl46);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 320), 8), luaB_tostring);
+cptr.stPtr(cptr.add(base_funcs, 328), luaB_tostring);
 cptr.stPtr(cptr.add(base_funcs, 336), __sl47);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 336), 8), luaB_type);
+cptr.stPtr(cptr.add(base_funcs, 344), luaB_type);
 cptr.stPtr(cptr.add(base_funcs, 352), __sl48);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 352), 8), luaB_xpcall);
+cptr.stPtr(cptr.add(base_funcs, 360), luaB_xpcall);
 cptr.stPtr(cptr.add(base_funcs, 368), __sl49);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 368), 8), null);
+cptr.stPtr(cptr.add(base_funcs, 376), null);
 cptr.stPtr(cptr.add(base_funcs, 384), __sl50);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 384), 8), null);
+cptr.stPtr(cptr.add(base_funcs, 392), null);
 cptr.stPtr(cptr.add(base_funcs, 400), null);
-cptr.stPtr(cptr.add(cptr.add(base_funcs, 400), 8), null);
+cptr.stPtr(cptr.add(base_funcs, 408), null);
 
 /** C ref: lbaselib.c:537 — @param {CPtr} L @returns {CInt} */
 export function luaopen_base(L) {
-    (void lua_rawgeti(L, ((-1000000 - 1000) | 0), 2n));
+    (void lua_rawgeti(L, -1001000, 2n));
     luaL_setfuncs(L, base_funcs, 0);
     lua_pushvalue(L, -1);
     lua_setfield(L, -2, __sl49);

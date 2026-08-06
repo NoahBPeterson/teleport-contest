@@ -75,7 +75,7 @@ function speednum(speed) {
 
 /** C ref: unixtty.c:199 */
 function setctty() {
-    if ((tcsetattr(0, 1, curttyb)) < 0 || 1 < 0 ? 1 : 0) {
+    if ((tcsetattr(0, 1, curttyb)) < 0 || 0 ? 1 : 0) {
         if (!getenv(__sl0))
             perror(__sl1);
     }
@@ -83,7 +83,7 @@ function setctty() {
 
 /** C ref: unixtty.c:214 */
 export function gettty() {
-    if ((tcgetattr(0, inittyb)) < 0 || 1 < 0 ? 1 : 0) {
+    if ((tcgetattr(0, inittyb)) < 0 || 0 ? 1 : 0) {
         if (!getenv(__sl0))
             perror(__sl2);
     }
@@ -100,7 +100,7 @@ export function gettty() {
     intr_char = schar(cptr.ld1u(cptr.add(cptr.add(inittyb, 32), 8, 1)));
     getioctls();
     if (cptr.ldU64(cptr.add(curttyb, 8)) & 4n) {
-        cptr.stU64(cptr.add(curttyb, 8), cptr.ldU64(cptr.add(curttyb, 8)) & BigInt.asUintN(64, BigInt((~4))));
+        cptr.stU64(cptr.add(curttyb, 8), cptr.ldU64(cptr.add(curttyb, 8)) & 18446744073709551611n);
         setctty();
     }
     settty_needed = 1;
@@ -112,7 +112,7 @@ export function settty(s) {
         term_end_screen();
     if (s)
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(s);
-    if ((tcsetattr(0, 1, inittyb)) < 0 || 1 < 0 ? 1 : 0) {
+    if ((tcsetattr(0, 1, inittyb)) < 0 || 0 ? 1 : 0) {
         if (!getenv(__sl0))
             perror(__sl3);
     }
@@ -129,15 +129,15 @@ export function setftty() {
     let cf;
     let change = 0;
     ef = 0;
-    cf = (!(256)) >>> 0;
+    cf = 0;
     cptr.st1(cptr.add(iflags, 127), 1);
     cptr.st1(cptr.add(iflags, 130), 0);
     if (Number(BigInt.asUintN(32, (cptr.ldU64(cptr.add(curttyb, 24)) & 8n))) != ef) {
-        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & BigInt.asUintN(64, BigInt((~8))));
+        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & 18446744073709551607n);
         change++;
     }
     if (Number(BigInt.asUintN(32, (cptr.ldU64(cptr.add(curttyb, 24)) & 256n))) != cf) {
-        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & BigInt.asUintN(64, BigInt((~256))));
+        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & 18446744073709551359n);
         cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) | BigInt(cf >>> 0));
         cptr.st1(cptr.add(cptr.add(curttyb, 32), 16, 1), 1);
         cptr.st1(cptr.add(cptr.add(curttyb, 32), 17, 1), 0);
@@ -150,7 +150,7 @@ export function setftty() {
         change++;
     }
     if (!(cptr.ldU64(cptr.add((inittyb), 16)) & 512n))
-        cptr.stU64(curttyb, cptr.ldU64(curttyb) & BigInt.asUintN(64, BigInt((~32))));
+        cptr.stU64(curttyb, cptr.ldU64(curttyb) & 18446744073709551583n);
     if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) != 3 ? 1 : 0) {
         cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), 3);
         change++;

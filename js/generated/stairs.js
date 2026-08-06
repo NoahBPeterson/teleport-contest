@@ -36,7 +36,7 @@ export function stairway_add(x, y, up, isladder, dest) {
     cptr.stI16(cptr.add(tmp, 2), y);
     cptr.st1(cptr.add(tmp, 8), up);
     cptr.st1(cptr.add(tmp, 9), isladder);
-    cptr.st1(cptr.add(tmp, 10), (0));
+    cptr.st1(cptr.add(tmp, 10), 0);
     assign_level(cptr.add(tmp, 4), dest);
     cptr.stPtr(cptr.add(tmp, 16), cptr.ldPtr(cptr.add(gs, 8)));
     cptr.stPtr(cptr.add(gs, 8), tmp);
@@ -65,7 +65,7 @@ export function stairway_at(x, y) {
 export function stairway_find(fromdlev) {
     let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
-        if (cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(cptr.add(tmp, 4), 2)) == cptr.ldI16(cptr.add(fromdlev, 2)) ? 1 : 0)
+        if (cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(tmp, 6)) == cptr.ldI16(cptr.add(fromdlev, 2)) ? 1 : 0)
             break;
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     }
@@ -76,7 +76,7 @@ export function stairway_find(fromdlev) {
 export function stairway_find_from(fromdlev, isladder) {
     let tmp = cptr.ldPtr(cptr.add(gs, 8));
     while (tmp) {
-        if ((cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(cptr.add(tmp, 4), 2)) == cptr.ldI16(cptr.add(fromdlev, 2)) ? 1 : 0) && cptr.ld1s(cptr.add(tmp, 9)) == isladder ? 1 : 0)
+        if ((cptr.ldI16(cptr.add(tmp, 4)) == cptr.ldI16(fromdlev) && cptr.ldI16(cptr.add(tmp, 6)) == cptr.ldI16(cptr.add(fromdlev, 2)) ? 1 : 0) && cptr.ld1s(cptr.add(tmp, 9)) == isladder ? 1 : 0)
             break;
         tmp = cptr.ldPtr(cptr.add(tmp, 16));
     }
@@ -121,7 +121,7 @@ export function u_on_sstairs(upflag) {
 
 /** C ref: stairs.c:125 */
 export function u_on_upstairs() {
-    let stway = stairway_find_dir((1));
+    let stway = stairway_find_dir(1);
     if (stway)
         u_on_newpos(cptr.ldI16(stway), cptr.ldI16(cptr.add(stway, 2)));
     else
@@ -130,7 +130,7 @@ export function u_on_upstairs() {
 
 /** C ref: stairs.c:137 */
 export function u_on_dnstairs() {
-    let stway = stairway_find_dir((0));
+    let stway = stairway_find_dir(0);
     if (stway)
         u_on_newpos(cptr.ldI16(stway), cptr.ldI16(cptr.add(stway, 2)));
     else
@@ -176,12 +176,12 @@ export function stairs_description(sway, outbuf, stcase) {
     if (!known_branch_stairs(sway)) {
         void cptr.sprintf(outbuf, __sl5, stairs, updown);
         if (cptr.ld1s(cptr.add(sway, 10))) {
-            let specialdepth = schar((cptr.ldI16(tolev) == (cptr.ldI16(cptr.add(cptr.add(svd, 1792), 86))) || single_level_branch(tolev) ? 1 : 0));
+            let specialdepth = schar((cptr.ldI16(tolev) == (cptr.ldI16(cptr.add(svd, 1878))) || single_level_branch(tolev) ? 1 : 0));
             let to_dlev = specialdepth ? dunlev(tolev) : depth(tolev);
             void cptr.sprintf(eos(outbuf), __sl6, to_dlev);
         }
-    } else if ((cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(cptr.add(u, 24), 2)) == 1 ? 1 : 0) && cptr.ld1s(cptr.add(sway, 8)) ? 1 : 0) {
-        void cptr.sprintf(outbuf, __sl7, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl8 : __sl9, stairs, updown, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl10 : ((((on_level(tolev, cptr.add(cptr.add(svd, 1792), 60)) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 68)) ? 1 : 0) || on_level(tolev, cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0) ? __sl11 : __sl12));
+    } else if ((cptr.ldI16(cptr.add(u, 24)) == 0 && cptr.ldI16(cptr.add(u, 26)) == 1 ? 1 : 0) && cptr.ld1s(cptr.add(sway, 8)) ? 1 : 0) {
+        void cptr.sprintf(outbuf, __sl7, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl8 : __sl9, stairs, updown, !(cptr.ldI32(cptr.add(u, 1944)) & 1) ? __sl10 : ((((on_level(tolev, cptr.add(svd, 1852)) || on_level(tolev, cptr.add(svd, 1864)) ? 1 : 0) || on_level(tolev, cptr.add(svd, 1860)) ? 1 : 0) || on_level(tolev, cptr.add(svd, 1856)) ? 1 : 0) ? __sl11 : __sl12));
     } else {
         void cptr.sprintf(outbuf, __sl13, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), 112));
         void strsubst(outbuf, __sl14, __sl15);

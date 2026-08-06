@@ -172,7 +172,7 @@ export function do_light_sources(cs_rows) {
     let ls;
     let row;
     for (ls = cptr.ldPtr(cptr.add(gl, 72)); ls; ls = cptr.ldPtr(ls)) {
-        cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & ~1);
+        cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & -2);
         if (cptr.ldI16(cptr.add(ls, 16)) == 1) {
             if (cptr.ldI16(cptr.add(ls, 12)) == 0 || get_obj_location(cptr.ldPtr(cptr.add(ls, 24)), cptr.add(ls, 8), cptr.add(ls, 10), 0) ? 1 : 0)
                 cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) | 1);
@@ -182,14 +182,14 @@ export function do_light_sources(cs_rows) {
         }
         if (((cptr.ldI16(cptr.add(ls, 8))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(ls, 10))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
             if (at_hero_range >= cptr.ldI16(cptr.add(ls, 12)))
-                cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & ~1);
+                cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & -2);
             else
                 at_hero_range = cptr.ldI16(cptr.add(ls, 12));
         }
         if (cptr.ldI16(cptr.add(ls, 14)) & 1) {
             limits = (cptr.add(circle_data, cptr.ldI16(cptr.add(circle_start, cptr.ldI16(cptr.add(ls, 12)), 2)), 2));
             if ((max_y = i16(((cptr.ldI16(cptr.add(ls, 10)) + cptr.ldI16(cptr.add(ls, 12))) | 0))) >= 21)
-                max_y = i16(((21 - 1) | 0));
+                max_y = 20;
             if ((y = i16(((cptr.ldI16(cptr.add(ls, 10)) - cptr.ldI16(cptr.add(ls, 12))) | 0))) < 0)
                 y = 0;
             for (; y <= max_y; y++) {
@@ -198,7 +198,7 @@ export function do_light_sources(cs_rows) {
                 if ((min_x = i16(((cptr.ldI16(cptr.add(ls, 8)) - offset) | 0))) < 1)
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16(cptr.add(ls, 8)) + offset) | 0))) >= 80)
-                    max_x = i16(((80 - 1) | 0));
+                    max_x = 79;
                 if (((cptr.ldI16(cptr.add(ls, 8))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(ls, 10))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1u(cptr.add(row, x)) & 1)
@@ -239,13 +239,13 @@ export function show_transient_light(obj, x, y) {
         }
     }
     if (obj)
-        place_object(obj, cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)));
+        place_object(obj, cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(gb, 4770)));
     else
         cptr.stI16(cptr.add(ls, 8), x), cptr.stI16(cptr.add(ls, 10), y);
     vision_recalc(0);
     flush_screen(0);
     radius_squared = Math.imul(cptr.ldI16(cptr.add(ls, 12)), cptr.ldI16(cptr.add(ls, 12)));
-    for (mon = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mon; mon = cptr.ldPtr(mon)) {
+    for (mon = cptr.ldPtr(cptr.add(svl, 89056)); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32(cptr.add((mon), 52)) < 1) || ((cptr.ldI32(cptr.add(mon, 188)) & 1) | 0 && !cptr.ldI16(cptr.add(mon, 28)) ? 1 : 0) ? 1 : 0)
             continue;
         if (dist2(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), x, y) <= radius_squared) {
@@ -267,7 +267,7 @@ export function transient_light_cleanup() {
     if (cptr.ld1s(cptr.add(gv, 144)))
         vision_recalc(0);
     mtempcount = 0;
-    for (mon = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mon; mon = cptr.ldPtr(mon)) {
+    for (mon = cptr.ldPtr(cptr.add(svl, 89056)); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32(cptr.add((mon), 52)) < 1))
             continue;
         if ((cptr.ldI32(cptr.add(mon, 204)) & 1)) {
@@ -298,7 +298,7 @@ export function find_mid(nid, fmflags) {
     if (((fmflags & 8) >>> 0) && nid == 1 ? 1 : 0)
         return cptr.add(gy, 8);
     if ((fmflags & 1) >>> 0)
-        for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && cptr.ldI32(cptr.add(mtmp, 16)) == nid ? 1 : 0)
                 return mtmp;
     if ((fmflags & 2) >>> 0)
@@ -318,7 +318,7 @@ function whereis_mon(mon, fmflags) {
     if (((fmflags & 8) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)) ? 1 : 0)
         return 8;
     if ((fmflags & 1) >>> 0)
-        for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
                 return 1;
     if ((fmflags & 2) >>> 0)
@@ -341,10 +341,10 @@ export function save_light_sources(nhfp, range) {
     let curr;
     discard_flashes();
     cptr.st1(cptr.add(gv, 144), 0);
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
-        count.v = maybe_write_ls(nhfp, range, (0));
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
+        count.v = maybe_write_ls(nhfp, range, 0);
         sfo_int(nhfp, count, __sl16);
-        actual = maybe_write_ls(nhfp, range, (1));
+        actual = maybe_write_ls(nhfp, range, 1);
         if (actual != count.v)
             panic(__sl17, count.v, actual, range);
     }
@@ -418,7 +418,7 @@ export function relink_light_sources(ghostly) {
                     if ((cptr.stPtr(cptr.add(ls, 24), find_oid(nid.v))) === null)
                         which = 111;
                 } else {
-                    if ((cptr.stPtr(cptr.add(ls, 24), find_mid(nid.v, (8 | 1 | 2 | 4) >>> 0))) === null)
+                    if ((cptr.stPtr(cptr.add(ls, 24), find_mid(nid.v, 15))) === null)
                         which = 109;
                 }
                 if (which != 0)
@@ -426,7 +426,7 @@ export function relink_light_sources(ghostly) {
             } else {
                 panic(__sl23, cptr.ldI16(cptr.add(ls, 16)));
             }
-            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & ~2);
+            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & -3);
         }
     }
 }
@@ -479,7 +479,7 @@ export function light_sources_sanity_check() {
         } else if (cptr.ldI16(cptr.add(ls, 16)) == 2) {
             mtmp = cptr.ldPtr(cptr.add(ls, 24));
             auint = cptr.ldI32(cptr.add(mtmp, 16));
-            if (!cptr.eq(find_mid(auint, (8 | 1 | 2 | 4) >>> 0), mtmp))
+            if (!cptr.eq(find_mid(auint, 15), mtmp))
                 panic(__sl28, auint);
         } else {
             panic(__sl29, cptr.ldI16(cptr.add(ls, 16)));
@@ -508,7 +508,7 @@ function write_ls(nhfp, ls) {
             } else {
                 let monloc = 0;
                 mtmp = cptr.ldPtr(cptr.add(ls, 24));
-                if ((monloc = whereis_mon(mtmp, (8 | 1 | 2 | 4) >>> 0)) != 0) {
+                if ((monloc = whereis_mon(mtmp, 15)) != 0) {
                     cptr.memcpy(cptr.add(ls, 24), cptr.add(cg, 536), 8);
                     cptr.stI32(cptr.add(ls, 24), cptr.ldI32(cptr.add(mtmp, 16)));
                     if (!cptr.eq(find_mid(cptr.ldI32(cptr.add(ls, 24)), monloc), mtmp)) {
@@ -525,8 +525,8 @@ function write_ls(nhfp, ls) {
             cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) | 2);
             sfo_ls_t(nhfp, ls, __sl20);
             cptr.memcpy(cptr.add(ls, 24), arg_save, 8);
-            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & ~2);
-            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & ~4);
+            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & -3);
+            cptr.stI16(cptr.add(ls, 14), cptr.ldI16(cptr.add(ls, 14)) & -5);
         }
     } else {
         impossible(__sl35, cptr.ldI16(cptr.add(ls, 16)));
@@ -598,7 +598,7 @@ export function obj_split_light_source(src, dest) {
 export function obj_merge_light_sources(src, dest) {
     let ls;
     if (!cptr.eq(src, dest))
-        end_burn(src, (1));
+        end_burn(src, 1);
     for (ls = cptr.ldPtr(cptr.add(gl, 72)); ls; ls = cptr.ldPtr(ls))
         if (cptr.ldI16(cptr.add(ls, 16)) == 1 && cptr.eq(cptr.ldPtr(cptr.add(ls, 24)), dest) ? 1 : 0) {
             cptr.stI16(cptr.add(ls, 12), i16(candle_light_range(dest)));
@@ -673,7 +673,7 @@ export function wiz_light_sources() {
     let buf = new Uint8Array(256);
     let ls;
     win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
-    if (win == (-1))
+    if (win == -1)
         return 0;
     void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
@@ -687,7 +687,7 @@ export function wiz_light_sources() {
         }
     } else
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl51);
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, (0));
+    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     return 0;
 }

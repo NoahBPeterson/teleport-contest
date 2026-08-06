@@ -30,7 +30,7 @@ const __sl14 = cptr.lit("close");
 /** C ref: lcorolib.c:21 — @param {CPtr} L @returns {CPtr} */
 function getco(L) {
     let co = lua_tothread(L, 1);
-    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, (1), (__sl0)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__sl0)) ? 1 : 0));
     return co;
 }
 
@@ -65,7 +65,7 @@ function luaB_coresume(L) {
     r = auxresume(L, co, (lua_gettop(L) - 1) | 0);
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         lua_pushboolean(L, 0);
-        lua_rotate(L, (-2), 1);
+        lua_rotate(L, -2, 1);
         return 2;
     } else {
         lua_pushboolean(L, 1);
@@ -76,7 +76,7 @@ function luaB_coresume(L) {
 
 /** C ref: lcorolib.c:73 — @param {CPtr} L @returns {CInt} */
 function luaB_auxwrap(L) {
-    let co = lua_tothread(L, ((((-1000000 - 1000) | 0) - (1)) | 0));
+    let co = lua_tothread(L, -1001001);
     let r = auxresume(L, co, lua_gettop(L));
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         let stat = lua_status(co);
@@ -87,7 +87,7 @@ function luaB_auxwrap(L) {
         }
         if (stat != 4 && lua_type(L, -1) == 4 ? 1 : 0) {
             luaL_where(L, 1);
-            lua_rotate(L, (-2), 1);
+            lua_rotate(L, -2, 1);
             lua_concat(L, 2);
         }
         return lua_error(L);
@@ -157,7 +157,7 @@ function luaB_costatus(L) {
 
 /** C ref: lcorolib.c:156 — @param {CPtr} L @returns {CInt} */
 function luaB_yieldable(L) {
-    let co = (lua_type(L, (1)) == (-1)) ? L : getco(L);
+    let co = (lua_type(L, 1) == -1) ? L : getco(L);
     lua_pushboolean(L, lua_isyieldable(co));
     return 1;
 }
@@ -195,26 +195,26 @@ function luaB_close(L) {
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
 const co_funcs = cptr.alloc(9 * 16);
 cptr.stPtr(cptr.add(co_funcs, 0), __sl8);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 0), 8), luaB_cocreate);
+cptr.stPtr(cptr.add(co_funcs, 8), luaB_cocreate);
 cptr.stPtr(cptr.add(co_funcs, 16), __sl9);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 16), 8), luaB_coresume);
+cptr.stPtr(cptr.add(co_funcs, 24), luaB_coresume);
 cptr.stPtr(cptr.add(co_funcs, 32), __sl3);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 32), 8), luaB_corunning);
+cptr.stPtr(cptr.add(co_funcs, 40), luaB_corunning);
 cptr.stPtr(cptr.add(co_funcs, 48), __sl10);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 48), 8), luaB_costatus);
+cptr.stPtr(cptr.add(co_funcs, 56), luaB_costatus);
 cptr.stPtr(cptr.add(co_funcs, 64), __sl11);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 64), 8), luaB_cowrap);
+cptr.stPtr(cptr.add(co_funcs, 72), luaB_cowrap);
 cptr.stPtr(cptr.add(co_funcs, 80), __sl12);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 80), 8), luaB_yield);
+cptr.stPtr(cptr.add(co_funcs, 88), luaB_yield);
 cptr.stPtr(cptr.add(co_funcs, 96), __sl13);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 96), 8), luaB_yieldable);
+cptr.stPtr(cptr.add(co_funcs, 104), luaB_yieldable);
 cptr.stPtr(cptr.add(co_funcs, 112), __sl14);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 112), 8), luaB_close);
+cptr.stPtr(cptr.add(co_funcs, 120), luaB_close);
 cptr.stPtr(cptr.add(co_funcs, 128), null);
-cptr.stPtr(cptr.add(cptr.add(co_funcs, 128), 8), null);
+cptr.stPtr(cptr.add(co_funcs, 136), null);
 
 /** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
 export function luaopen_coroutine(L) {
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
     return 1;
 }

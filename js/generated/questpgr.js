@@ -83,13 +83,13 @@ const __sl52 = cptr.lit("qt_montype");
 export function quest_info(typ) {
     switch (typ) {
         case 0:
-        return cptr.ldI16(cptr.add(cptr.add(gu, 8), 224));
+        return cptr.ldI16(cptr.add(gu, 232));
         case 36:
-        return cptr.ldI16(cptr.add(cptr.add(gu, 8), 212));
+        return cptr.ldI16(cptr.add(gu, 220));
         case 37:
-        return cptr.ldI16(cptr.add(cptr.add(gu, 8), 216));
+        return cptr.ldI16(cptr.add(gu, 224));
         case 38:
-        return cptr.ldI16(cptr.add(cptr.add(gu, 8), 214));
+        return cptr.ldI16(cptr.add(gu, 222));
         default:
         impossible(__sl0, typ);
     }
@@ -98,19 +98,19 @@ export function quest_info(typ) {
 
 /** C ref: questpgr.c:50 @returns {CPtr} */
 export function ldrname() {
-    let i = cptr.ldI16(cptr.add(cptr.add(gu, 8), 212));
+    let i = cptr.ldI16(cptr.add(gu, 220));
     void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8)));
     return cptr.add(gn, 87);
 }
 
 /** C ref: questpgr.c:61 @returns {CPtr} */
 function intermed() {
-    return cptr.ldPtr(cptr.add(cptr.add(gu, 8), 200));
+    return cptr.ldPtr(cptr.add(gu, 208));
 }
 
 /** C ref: questpgr.c:67 — @param {CPtr} otmp @returns {CInt} */
 export function is_quest_artifact(otmp) {
-    return schar((cptr.ld1s(cptr.add(otmp, 51)) == cptr.ldI16(cptr.add(cptr.add(gu, 8), 224))));
+    return schar((cptr.ld1s(cptr.add(otmp, 51)) == cptr.ldI16(cptr.add(gu, 232))));
 }
 
 /** C ref: questpgr.c:73 — @param {CPtr} ochain @returns {CPtr} */
@@ -130,18 +130,18 @@ function find_qarti(ochain) {
 export function find_quest_artifact(whichchains) {
     let mtmp;
     let qarti = null;
-    if (((whichchains & (1 << 3) >>> 0) >>> 0) != 0)
+    if (((whichchains & 8) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtr(cptr.add(gi, 8)));
-    if (!qarti && ((whichchains & (1 << 1) >>> 0) >>> 0) != 0 ? 1 : 0)
-        qarti = find_qarti(cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87360)));
-    if (!qarti && ((whichchains & (1 << 4) >>> 0) >>> 0) != 0 ? 1 : 0)
-        for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+    if (!qarti && ((whichchains & 2) >>> 0) != 0 ? 1 : 0)
+        qarti = find_qarti(cptr.ldPtr(cptr.add(svl, 89040)));
+    if (!qarti && ((whichchains & 16) >>> 0) != 0 ? 1 : 0)
+        for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
                 continue;
             if ((qarti = find_qarti(cptr.ldPtr(cptr.add(mtmp, 280)))) !== null)
                 break;
         }
-    if (!qarti && ((whichchains & (1 << 5) >>> 0) >>> 0) != 0 ? 1 : 0) {
+    if (!qarti && ((whichchains & 32) >>> 0) != 0 ? 1 : 0) {
         for (mtmp = cptr.ldPtr(cptr.add(gm, 192)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1))
                 continue;
@@ -151,27 +151,27 @@ export function find_quest_artifact(whichchains) {
         if (!qarti)
             qarti = find_qarti(cptr.ldPtr(cptr.add(gm, 176)));
     }
-    if (!qarti && ((whichchains & (1 << 6) >>> 0) >>> 0) != 0 ? 1 : 0)
-        qarti = find_qarti(cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87368)));
+    if (!qarti && ((whichchains & 64) >>> 0) != 0 ? 1 : 0)
+        qarti = find_qarti(cptr.ldPtr(cptr.add(svl, 89048)));
     return qarti;
 }
 
 /** C ref: questpgr.c:124 @returns {CPtr} */
 function neminame() {
-    let i = cptr.ldI16(cptr.add(cptr.add(gu, 8), 216));
+    let i = cptr.ldI16(cptr.add(gu, 224));
     void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8)));
     return cptr.add(gn, 87);
 }
 
 /** C ref: questpgr.c:134 @returns {CPtr} */
 function guardname() {
-    let i = cptr.ldI16(cptr.add(cptr.add(gu, 8), 214));
+    let i = cptr.ldI16(cptr.add(gu, 222));
     return cptr.ldPtr(cptr.add(cptr.add(mons, i, 96), 2, 8));
 }
 
 /** C ref: questpgr.c:142 @returns {CPtr} */
 function homebase() {
-    return cptr.ldPtr(cptr.add(cptr.add(gu, 8), 192));
+    return cptr.ldPtr(cptr.add(gu, 200));
 }
 
 /** C ref: questpgr.c:150 — @param {CPtr} mon @returns {CInt} */
@@ -179,7 +179,7 @@ export function stinky_nemesis(mon) {
     let mesg = cptr.box(null);
     let res = 0;
     (void (mon));
-    void com_pager_core(cptr.ldPtr(cptr.add(cptr.add(gu, 8), 184)), __sl4, 0, mesg);
+    void com_pager_core(cptr.ldPtr(cptr.add(gu, 192)), __sl4, 0, mesg);
     if (mesg.v) {
         let p;
         void strNsubst(mesg.v, __sl5, __sl6, 0);
@@ -215,13 +215,13 @@ function convert_arg(c) {
         str = svp;
         break;
         case 99:
-        str = (cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) : cptr.ldPtr(cptr.add(gu, 8));
+        str = (cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(gu, 16)) ? 1 : 0) ? cptr.ldPtr(cptr.add(gu, 16)) : cptr.ldPtr(cptr.add(gu, 8));
         break;
         case 114:
-        str = rank_of(cptr.ldI32(cptr.add(u, 48)), (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))), cptr.ld1s(cptr.add(flags, 13)));
+        str = rank_of(cptr.ldI32(cptr.add(u, 48)), (cptr.ldI16(cptr.add(gu, 216))), cptr.ld1s(cptr.add(flags, 13)));
         break;
         case 82:
-        str = rank_of(14, (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208))), cptr.ld1s(cptr.add(flags, 13)));
+        str = rank_of(14, (cptr.ldI16(cptr.add(gu, 216))), cptr.ld1s(cptr.add(flags, 13)));
         break;
         case 115:
         str = (cptr.ld1s(cptr.add(flags, 13))) ? __sl17 : __sl18;
@@ -237,7 +237,7 @@ function convert_arg(c) {
         break;
         case 79:
         case 111:
-        str = the(artiname(cptr.ldI16(cptr.add(cptr.add(gu, 8), 224))));
+        str = the(artiname(cptr.ldI16(cptr.add(gu, 232))));
         if (c == 79) {
             let p = strstri(str, __sl21);
             if (p)
@@ -366,7 +366,7 @@ function convert_line(in_line, out_line) {
             cptr.st1(cptr.postinc(() => cc, (v) => { cc = v; }), cptr.ld1s(c));
             break;
         }
-        if (cptr.cmp(cc, cptr.add(out_line, (256 - 1) | 0)) > 0)
+        if (cptr.cmp(cc, cptr.add(out_line, 255)) > 0)
             panic(__sl29);
     }
     cptr.st1(cc, 0);
@@ -380,7 +380,7 @@ function deliver_by_pline(str) {
     let msgp = str;
     let msgend = eos(str);
     while (cptr.cmp(msgp, msgend) < 0) {
-        copynchars(cptr.decay(in_line), msgp, (256 - 1) | 0);
+        copynchars(cptr.decay(in_line), msgp, 255);
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
         convert_line(cptr.decay(in_line), cptr.decay(out_line));
         pline(__sl30, cptr.decay(out_line));
@@ -395,7 +395,7 @@ function deliver_by_window(msg, how) {
     let msgend = eos(msg);
     let datawin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(how);
     while (cptr.cmp(msgp, msgend) < 0) {
-        copynchars(cptr.decay(in_line), msgp, (256 - 1) | 0);
+        copynchars(cptr.decay(in_line), msgp, 255);
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
         convert_line(cptr.decay(in_line), cptr.decay(out_line));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, cptr.decay(out_line));
@@ -434,7 +434,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     let synopsis = null;
     let fallback_msgid = null;
     let res = 0;
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, 2147483648); cptr.stI32(cptr.add(sbi, 4), Math.imul(Math.imul(1, 1024), 1024) >>> 0); cptr.stI32(cptr.add(sbi, 8), 0); cptr.stI32(cptr.add(sbi, 12), Math.imul(Math.imul(1, 1024), 1024) >>> 0);
+    let sbi = cptr.alloc(16); cptr.stI32(sbi, 2147483648); cptr.stI32(cptr.add(sbi, 4), 1048576); cptr.stI32(cptr.add(sbi, 8), 0); cptr.stI32(cptr.add(sbi, 12), 1048576);
     if (skip_pager(1))
         return 0;
     L = nhl_init(sbi);
@@ -468,7 +468,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     }
     lua_settop(L, 0);
     lua_getglobal(L, __sl34);
-    if (!(lua_type(L, (-1)) == 5)) {
+    if (!(lua_type(L, -1) == 5)) {
         if (showerror)
             impossible(__sl35, __sl32);
         {
@@ -483,7 +483,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
         }
     }
     lua_getfield(L, -1, section);
-    if (!(lua_type(L, (-1)) == 5)) {
+    if (!(lua_type(L, -1) == 5)) {
         if (showerror)
             impossible(__sl36, section, __sl32);
         {
@@ -499,12 +499,12 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     }
     __lbl_tryagain: while (true) {
         lua_getfield(L, -1, fallback_msgid ? fallback_msgid : msgid);
-        if (!(lua_type(L, (-1)) == 5)) {
+        if (!(lua_type(L, -1) == 5)) {
             if (!fallback_msgid) {
                 lua_getfield(L, -3, __sl37);
-                if ((lua_type(L, (-1)) == 5)) {
+                if ((lua_type(L, -1) == 5)) {
                     fallback_msgid = get_table_str_opt(L, msgid, null);
-                    lua_settop(L, (-(2) - 1) | 0);
+                    lua_settop(L, -3);
                     if (fallback_msgid)
                         continue __lbl_tryagain;
                 }
@@ -546,8 +546,8 @@ function com_pager_core(section, msgid, showerror, rawtext) {
         if (!text) {
             let nelems;
             lua_len(L, -1);
-            nelems = Number(BigInt.asIntN(32, lua_tointegerx(L, (-1), null)));
-            lua_settop(L, (-(1) - 1) | 0);
+            nelems = Number(BigInt.asIntN(32, lua_tointegerx(L, -1, null)));
+            lua_settop(L, -2);
             if (nelems < 2) {
                 if (showerror)
                     impossible(__sl44, section, fallback_msgid ? fallback_msgid : msgid, __sl32);
@@ -565,13 +565,13 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             nelems = ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 566, __sl46), rn2(nelems)) : rn2(nelems)) + 1) | 0;
             lua_pushinteger(L, BigInt(nelems));
             lua_gettable(L, -2);
-            text = dupstr((luaL_checklstring(L, (-1), null)));
+            text = dupstr((luaL_checklstring(L, -1, null)));
         }
-        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= BigInt.asUintN(64, BigInt(((256 - 1) | 0))) ? 1 : 0) ? 1 : 0) {
+        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n ? 1 : 0) ? 1 : 0) {
             output = 2;
             if (!synopsis) {
                 let tmpbuf = new Uint8Array(256);
-                void cptr.sprintf(cptr.decay(tmpbuf), __sl47, (((256 - 1) | 0) - 2) | 0, text);
+                void cptr.sprintf(cptr.decay(tmpbuf), __sl47, 253, text);
                 void strNsubst(cptr.decay(tmpbuf), __sl5, __sl6, 0);
                 synopsis = dupstr(cptr.decay(tmpbuf));
             }
@@ -607,7 +607,7 @@ export function com_pager(msgid) {
 
 /** C ref: questpgr.c:630 — @param {CPtr} msgid */
 export function qt_pager(msgid) {
-    if (!com_pager_core(cptr.ldPtr(cptr.add(cptr.add(gu, 8), 184)), msgid, 0, null))
+    if (!com_pager_core(cptr.ldPtr(cptr.add(gu, 192)), msgid, 0, null))
         void com_pager_core(__sl51, msgid, 1, null);
 }
 
@@ -615,15 +615,15 @@ export function qt_pager(msgid) {
 export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
-        qpm = cptr.ldI16(cptr.add(cptr.add(gu, 8), 218));
+        qpm = cptr.ldI16(cptr.add(gu, 226));
         if ((qpm != -1 && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
             return cptr.add(mons, qpm, 96);
-        return mkclass(cptr.ld1s(cptr.add(cptr.add(gu, 8), 222)), 0);
+        return mkclass(cptr.ld1s(cptr.add(gu, 230)), 0);
     }
-    qpm = cptr.ldI16(cptr.add(cptr.add(gu, 8), 220));
+    qpm = cptr.ldI16(cptr.add(gu, 228));
     if ((qpm != -1 && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
         return cptr.add(mons, qpm, 96);
-    return mkclass(cptr.ld1s(cptr.add(cptr.add(gu, 8), 223)), 0);
+    return mkclass(cptr.ld1s(cptr.add(gu, 231)), 0);
 }
 
 /** C ref: questpgr.c:655 */

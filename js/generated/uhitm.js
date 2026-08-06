@@ -551,7 +551,7 @@ function mhitm_mgc_atk_negated(magr, mdef, verbosely) {
     let armpro;
     let negated;
     if (!cptr.eq(magr, cptr.add(gy, 8)) && (cptr.ldI32(cptr.add(magr, 100)) & 1) | 0 ? 1 : 0)
-        return (1);
+        return 1;
     armpro = magic_negation(mdef);
     negated = schar((!((rng_log_enabled() ? (rng_log_set_caller(__sl0, 87, __sl1), rn2(10)) : rn2(10)) >= Math.imul(3, armpro))));
     if (negated) {
@@ -561,14 +561,14 @@ function mhitm_mgc_atk_negated(magr, mdef, verbosely) {
             else if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0)
                 pline_mon(mdef, __sl3, Monnam(mdef));
         }
-        return (1);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: uhitm.c:104 — @param {CPtr} mon @param {CPtr} verb @param {CInt} by_gaze */
 export function dynamic_multi_reason(mon, verb, by_gaze) {
-    let who = x_monnam(mon, 2, null, (1 | 2 | 4 | 8 | 32), (0));
+    let who = x_monnam(mon, 2, null, 47, 0);
     let p = cptr.add(gm, 24);
     void cptr.sprintf(p, __sl4, cptr.ldI32(cptr.add(mon, 16)));
     p = eos(p);
@@ -589,13 +589,13 @@ export function erode_armor(mdef, hurt) {
             case 1:
             target = which_armor(mdef, 2n);
             if (target) {
-                void erode_obj(target, xname(target), hurt, 1 | 4);
+                void erode_obj(target, xname(target), hurt, 5);
                 break;
             }
             if ((target = which_armor(mdef, 1n)) !== null) {
-                void erode_obj(target, xname(target), hurt, 1 | 4);
+                void erode_obj(target, xname(target), hurt, 5);
             } else if ((target = which_armor(mdef, 64n)) !== null) {
-                void erode_obj(target, xname(target), hurt, 1 | 4);
+                void erode_obj(target, xname(target), hurt, 5);
             }
             break;
             case 2:
@@ -621,37 +621,37 @@ export function erode_armor(mdef, hurt) {
 /** C ref: uhitm.c:189 — @param {CPtr} mtmp @param {CPtr} wep @returns {CInt} */
 export function attack_checks(mtmp, wep) {
     let glyph;
-    cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
+    cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & 18446744072904245247n);
     if (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0))
-        return (0);
+        return 0;
     if (cptr.ld1s(cptr.add(svc, 74))) {
-        return (0);
+        return 0;
     }
-    glyph = glyph_at(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)));
-    if (((!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < ((7220 + 6) | 0) ? 1 : 0) ? 1 : 0) && !((glyph) == 1532) ? 1 : 0) && !((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 ? 1 : 0) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) ? 1 : 0) ? 1 : 0) {
+    glyph = glyph_at(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(gb, 4770)));
+    if (((!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < 7226 ? 1 : 0) ? 1 : 0) && !((glyph) == 1532) ? 1 : 0) && !((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 ? 1 : 0) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) ? 1 : 0) ? 1 : 0) {
         pline(__sl9, cptr.ldPtr(cptr.add(c_common_strings, 40)));
-        map_invisible(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)));
+        map_invisible(cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(gb, 4770)));
         if ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) {
             if (((!cptr.ldPtr(cptr.add(u, 2416)) && !(cptr.ldI32(cptr.add(mtmp, 136)) & 1) ? 1 : 0) && dmgtype(cptr.ldPtr(cptr.add(mtmp, 8)), 19) ? 1 : 0) && (dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0)
                 set_ustuck(mtmp);
         }
-        wakeup(mtmp, (1));
-        return (1);
+        wakeup(mtmp, 1);
+        return 1;
     }
-    if ((((cptr.ld1u(cptr.add((mtmp), 64)) & 7) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) && !sensemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < ((7220 + 6) | 0) ? 1 : 0) ? 1 : 0) {
+    if ((((cptr.ld1u(cptr.add((mtmp), 64)) & 7) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) && !sensemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < 7226 ? 1 : 0) ? 1 : 0) {
         if (((glyph) == 1532)) {
             seemimic(mtmp);
-            return (0);
+            return 0;
         }
         stumble_onto_mimic(mtmp);
-        return (1);
+        return 1;
     }
-    if ((((cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 && !canseemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < ((7220 + 6) | 0) ? 1 : 0) ? 1 : 0) && (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 57 ? 1 : 0) ? 1 : 0) {
+    if ((((cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 && !canseemon(mtmp) ? 1 : 0) && !((glyph) >= 7220 && (glyph) < 7226 ? 1 : 0) ? 1 : 0) && (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 128n) != 0n) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 57 ? 1 : 0) ? 1 : 0) {
         cptr.stI32(cptr.add(mtmp, 108), cptr.stI32(cptr.add(mtmp, 144), 0));
         newsym(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
         if (((glyph) == 1532)) {
             seemimic(mtmp);
-            return (0);
+            return 0;
         }
         if (!tp_sensemon(mtmp) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 37, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) ? 1 : 0) ? 1 : 0) {
             let obj;
@@ -663,40 +663,40 @@ export function attack_checks(mtmp, wep) {
                 pline(__sl11, cptr.ld1s(cptr.add(mtmp, 65)) ? __sl12 : __sl13, notseen ? __sl14 : cptr.decay(lmonbuf), notseen ? __sl15 : __sl16);
             else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) || (is_pool(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30))) && !((cptr.ldI32(cptr.add(u, 1852)) & 1)) ? 1 : 0) ? 1 : 0)
                 pline(__sl17);
-            else if ((obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), cptr.ldI16(cptr.add(mtmp, 28)), 168), cptr.ldI16(cptr.add(mtmp, 30)), 8))) !== null)
+            else if ((obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), cptr.ldI16(cptr.add(mtmp, 28)), 168), cptr.ldI16(cptr.add(mtmp, 30)), 8))) !== null)
                 pline(__sl18, notseen ? cptr.ldPtr(cptr.add(c_common_strings, 40)) : an(cptr.decay(lmonbuf)), doname(obj));
-            return (1);
+            return 1;
         }
     }
     if (((cptr.ldI32(cptr.add(mtmp, 108)) & 1) | 0 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) ? 1 : 0) && sensemon(mtmp) ? 1 : 0) {
         cptr.stI32(cptr.add(mtmp, 108), 0);
-        wakeup(mtmp, (1));
+        wakeup(mtmp, 1);
     }
     if ((((cptr.ld1s(cptr.add(flags, 8)) && (cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0 ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) ? 1 : 0) {
         if (is_art(wep, 2)) {
-            cptr.st1(cptr.add(go, 556), (1));
-            return (0);
+            cptr.st1(cptr.add(go, 556), 1);
+            return 0;
         }
         if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0)) {
             let qbuf = new Uint8Array(128);
             void cptr.sprintf(cptr.decay(qbuf), __sl19, mon_nam(mtmp));
             if (!paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 16) >>> 0) != 0)), cptr.decay(qbuf))) {
                 cptr.st1(cptr.add(svc, 78), 0);
-                return (1);
+                return 1;
             }
         }
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: uhitm.c:331 — @param {CPtr} mtmp */
 export function check_caitiff(mtmp) {
-    if (cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) <= -10)
+    if (cptr.ldI32(cptr.add(u, 2176)) <= -10)
         return;
-    if ((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (335)) && cptr.ld1s(cptr.add(u, 2172)) == 1 ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) ? 1 : 0) && (((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) || ((cptr.ldI32(cptr.add(mtmp, 136)) & 1) | 0 && !(cptr.ldI32(cptr.add(mtmp, 132)) & 1) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if ((((cptr.ldI16(cptr.add(gu, 216)) == 335) && cptr.ld1s(cptr.add(u, 2172)) == 1 ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) ? 1 : 0) && (((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) || ((cptr.ldI32(cptr.add(mtmp, 136)) & 1) | 0 && !(cptr.ldI32(cptr.add(mtmp, 132)) & 1) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         You(__sl20);
         adjalign(-1);
-    } else if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && (cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0 ? 1 : 0) {
+    } else if ((cptr.ldI16(cptr.add(gu, 216)) == 340) && (cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0 ? 1 : 0) {
         You(__sl21);
         adjalign(-1);
     }
@@ -717,7 +717,7 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
     let tmp;
     let tmp2;
     cptr.stI32(role_roll_penalty, 0);
-    tmp = (((((((((1 + abon()) | 0) + find_mac(mtmp)) | 0) + cptr.ld1s(cptr.add(u, 2188))) | 0) + (Math.imul(sgn(((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0)), ((((Math.abs(((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0)) + 2) | 0) / 3) | 0)))) | 0) + ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 29))) : (cptr.ldI32(cptr.add(u, 48))))) | 0;
+    tmp = (((((((((1 + abon()) | 0) + find_mac(mtmp)) | 0) + cptr.ld1s(cptr.add(u, 2188))) | 0) + (Math.imul(sgn(((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0)), ((((Math.abs(((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0)) + 2) | 0) / 3) | 0)))) | 0) + ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 29))) : (cptr.ldI32(cptr.add(u, 48))))) | 0;
     if (!((cptr.stI32(attk_count, cptr.ldI32(attk_count) + 1)) - (1))) {
         check_caitiff(mtmp);
     }
@@ -729,13 +729,13 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
         tmp = (tmp + 2) | 0;
     if (!(cptr.ldI32(cptr.add(mtmp, 160)) & 1))
         tmp = (tmp + 4) | 0;
-    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336)) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) {
+    if ((cptr.ldI16(cptr.add(gu, 216)) == 336) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) {
         if (uarm.v)
-            tmp = (tmp - (cptr.stI32(role_roll_penalty, cptr.ldI32(cptr.add(cptr.add(gu, 8), 292))))) | 0;
+            tmp = (tmp - (cptr.stI32(role_roll_penalty, cptr.ldI32(cptr.add(gu, 300))))) | 0;
         else if (!uwep.v && !uarms.v ? 1 : 0)
             tmp = (tmp + ((((cptr.ldI32(cptr.add(u, 48)) / 3) | 0) + 2) | 0)) | 0;
     }
-    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 128n) != 0n) && ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 80)) & 16n) != 0n)) : ((cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (264)))) ? 1 : 0)
+    if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 128n) != 0n) && ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 16n) != 0n)) : ((cptr.ldI16(cptr.add(gu, 368)) == 264))) ? 1 : 0)
         tmp++;
     if ((tmp2 = near_capacity()) != 0)
         tmp = (tmp - (((Math.imul(tmp2, 2)) - 1) | 0)) | 0;
@@ -745,7 +745,7 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
         if (weapon)
             tmp = (tmp + hitval(weapon, mtmp)) | 0;
         tmp = (tmp + weapon_hit_bonus(weapon)) | 0;
-    } else if (aatyp == 3 && ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) || (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336)) ? 1 : 0) ? 1 : 0) {
+    } else if (aatyp == 3 && ((cptr.ldI16(cptr.add(gu, 216)) == 340) || (cptr.ldI16(cptr.add(gu, 216)) == 336) ? 1 : 0) ? 1 : 0) {
         tmp = (tmp + weapon_hit_bonus(null)) | 0;
     }
     return tmp;
@@ -757,7 +757,7 @@ export function force_attack(mtmp, pets_too) {
     let save_Forcefight;
     save_Forcefight = cptr.ld1s(cptr.add(svc, 74));
     if (pets_too || !cptr.ld1s(cptr.add(mtmp, 65)) ? 1 : 0)
-        cptr.st1(cptr.add(svc, 74), (1));
+        cptr.st1(cptr.add(svc, 74), 1);
     attacked = do_attack(mtmp);
     cptr.st1(cptr.add(svc, 74), save_Forcefight);
     return attacked;
@@ -770,12 +770,12 @@ export function do_attack(mtmp) {
         if (is_safemon(mtmp) && !cptr.ld1s(cptr.add(svc, 74)) ? 1 : 0) {
             if (!is_art(uwep.v, 2)) {
                 let foo = schar(((((uball.v !== null) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 474, __sl23), rn2(7)) : rn2(7)) ? 1 : 0) || ((((cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 112, 96))) || (cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 114, 96))) ? 1 : 0) || (cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 330, 96))) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 200)) & 31) | 0 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) < 16) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 8n) != 0n) ? 1 : 0) ? 1 : 0));
-                let inshop = (0);
+                let inshop = 0;
                 let p;
                 if (!foo) {
                     for (p = in_rooms(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)), 14); cptr.ld1s(p); p = cptr.add(p, 1))
                         if (tended_shop(cptr.add(svr, (cptr.ld1s(p) - 3) | 0, 224))) {
-                            inshop = (1);
+                            inshop = 1;
                             break;
                         }
                 }
@@ -785,29 +785,29 @@ export function do_attack(mtmp) {
                         if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 180)) & 1) | 0 ? 1 : 0)
                             return schar((1 | dopay()));
                     if (cptr.ld1s(cptr.add(mtmp, 65)))
-                        monflee(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 497, __sl23), rnd(6)) : rnd(6)), (0), (0));
+                        monflee(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 497, __sl23), rnd(6)) : rnd(6)), 0, 0);
                     void cptr.strcpy(cptr.decay(buf), y_monnam(mtmp));
                     cptr.st1(cptr.add(cptr.decay(buf), 0, 1), highc(cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1))));
                     You(__sl24, cptr.decay(buf));
-                    end_running((1));
-                    return (1);
+                    end_running(1);
+                    return 1;
                 } else if (((cptr.ldI32(cptr.add(mtmp, 156)) & 127) | 0 || ((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 30)) == 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 504, __sl23), rn2(6)) : rn2(6)) ? 1 : 0) ? 1 : 0) {
                     pline(__sl25, Monnam(mtmp));
-                    end_running((1));
-                    return (1);
+                    end_running(1);
+                    return 1;
                 } else
-                    return (0);
+                    return 0;
             }
         }
-        cptr.st1(cptr.add(go, 556), (0));
+        cptr.st1(cptr.add(go, 556), 0);
         cptr.stI16(cptr.add(gb, 4768), i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)));
-        cptr.stI16(cptr.add(cptr.add(gb, 4768), 2), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
-        cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(gb, 4768)) != cptr.ldI16(cptr.add(mtmp, 28)) || cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)) != cptr.ldI16(cptr.add(mtmp, 30)) ? 1 : 0)));
+        cptr.stI16(cptr.add(gb, 4770), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
+        cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(gb, 4768)) != cptr.ldI16(cptr.add(mtmp, 28)) || cptr.ldI16(cptr.add(gb, 4770)) != cptr.ldI16(cptr.add(mtmp, 30)) ? 1 : 0)));
         if (attack_checks(mtmp, uwep.v))
-            return (1);
-        if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && noattacks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) {
+            return 1;
+        if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) && noattacks(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) {
             You(__sl26);
-            cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
+            cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & 18446744072904245247n);
             break __lbl_atk_done;
         }
         if (check_capacity(__sl27) || overexertion() ? 1 : 0)
@@ -815,34 +815,34 @@ export function do_attack(mtmp) {
         if (cptr.ld1s(cptr.add(u, 2816)) && !can_twoweapon() ? 1 : 0)
             untwoweapon();
         if (cptr.ld1s(cptr.add(gu, 1))) {
-            cptr.st1(cptr.add(gu, 1), (0));
+            cptr.st1(cptr.add(gu, 1), 0);
             if (cptr.ld1s(cptr.add(flags, 48))) {
                 if (uwep.v)
                     You(__sl28, yname(uwep.v));
-                else if (!(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0))
-                    You(__sl29, ing_suffix((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336)) ? __sl30 : __sl31), uarmg.v ? __sl32 : __sl33, makeplural(body_part(6)));
+                else if (!(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0))
+                    You(__sl29, ing_suffix((cptr.ldI16(cptr.add(gu, 216)) == 336) ? __sl30 : __sl31), uarmg.v ? __sl32 : __sl33, makeplural(body_part(6)));
             }
         }
-        exercise(0, (1));
+        exercise(0, 1);
         u_wipe_engr(3);
         if ((((((cptr.ld1s(cptr.add(mdat, 28)) == 12 && !(cptr.ldI32(cptr.add(mtmp, 156)) & 127) ? 1 : 0) && !((cptr.ldI32(cptr.add((mtmp), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mtmp), 160)) & 1) ? 1 : 0) ? 1 : 0) && !(cptr.ldI32(cptr.add(mtmp, 164)) & 1) ? 1 : 0) && (cptr.ldI32(cptr.add(mtmp, 112)) & 1) | 0 ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 557, __sl23), rn2(7)) : rn2(7)) ? 1 : 0) && ((m_move(mtmp, 0) == 2 || cptr.ldI16(cptr.add(mtmp, 28)) != ((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0) ? 1 : 0) || cptr.ldI16(cptr.add(mtmp, 30)) != ((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0) ? 1 : 0) ? 1 : 0) {
             You(__sl34);
-            return (0);
+            return 0;
         }
         if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))))
             void hmonas(mtmp);
         else
-            void hitum(mtmp, cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 36));
-        cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~(268435456n | 536870912n))));
+            void hitum(mtmp, cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 36));
+        cptr.stU64(cptr.add(mtmp, 224), cptr.ldU64(cptr.add(mtmp, 224)) & 18446744072904245247n);
     }
     if ((((cptr.ld1s(cptr.add(svc, 74)) && !(cptr.ldI32(cptr.add((mtmp), 52)) < 1) ? 1 : 0) && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0) && !((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 756), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 36))) == 1532) ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mtmp))) ? 1 : 0) ? 1 : 0)
         map_invisible(i16(((cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0)), i16(((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0)));
-    return (1);
+    return 1;
 }
 
 /** C ref: uhitm.c:587 — @param {CPtr} mon @param {CPtr} weapon @param {CPtr} mhit @param {CInt} rollneeded @param {CInt} armorpenalty @param {CPtr} uattk @param {CInt} dieroll @returns {CInt} */
 function known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dieroll) {
-    let malive = (1);
+    let malive = 1;
     let slice_or_chop = schar((weapon && (((cptr.ld1s(cptr.add(weapon, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(weapon, 32)), 120), 68)) >= 1 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(weapon, 32)), 120), 68)) <= 9 ? 1 : 0) || ((cptr.ld1s(cptr.add(weapon, 49)) == 2 || cptr.ld1s(cptr.add(weapon, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(weapon, 32)), 120), 68)) == 3 ? 1 : 0) ? 1 : 0) ? 1 : 0));
     if (cptr.ld1s(cptr.add(go, 556))) {
         if (cptr.ld1s(cptr.add(flags, 48)))
@@ -852,29 +852,29 @@ function known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dieroll
         missum(mon, uattk, schar((((rollneeded + armorpenalty) | 0) > dieroll)));
     } else {
         let oldhp = cptr.ldI32(cptr.add(mon, 52));
-        let oldweaphit = cptr.ldI64(cptr.add(cptr.add(u, 1968), 32));
+        let oldweaphit = cptr.ldI64(cptr.add(u, 2000));
         if (weapon && (cptr.ld1s(cptr.add(weapon, 49)) == 2 || (cptr.ld1s(cptr.add((weapon), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((weapon), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-            (cptr.stI64(cptr.add(cptr.add(u, 1968), 32), cptr.ldI64(cptr.add(cptr.add(u, 1968), 32)) + 1n)) - (1n);
-        cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(mon, 28)) != cptr.ldI16(cptr.add(gb, 4768)) || cptr.ldI16(cptr.add(mon, 30)) != cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)) ? 1 : 0)));
+            (cptr.stI64(cptr.add(u, 2000), cptr.ldI64(cptr.add(u, 2000)) + 1n)) - (1n);
+        cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(mon, 28)) != cptr.ldI16(cptr.add(gb, 4768)) || cptr.ldI16(cptr.add(mon, 30)) != cptr.ldI16(cptr.add(gb, 4770)) ? 1 : 0)));
         malive = hmon(mon, weapon, 0, dieroll);
         if (malive) {
             if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 625, __sl36), rn2(25)) : rn2(25)) && cptr.ldI32(cptr.add(mon, 52)) < ((cptr.ldI32(cptr.add(mon, 56)) / 2) | 0) ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mon))) ? 1 : 0) ? 1 : 0) {
-                monflee(mon, !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 628, __sl36), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 628, __sl36), rnd(100)) : rnd(100)) : 0, (0), (1));
-                if ((cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), mon) && !(cptr.ldI32(cptr.add(u, 1848)) & 1) ? 1 : 0) && !sticks(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0)
+                monflee(mon, !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 628, __sl36), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 628, __sl36), rnd(100)) : rnd(100)) : 0, 0, 1);
+                if ((cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), mon) && !(cptr.ldI32(cptr.add(u, 1848)) & 1) ? 1 : 0) && !sticks(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0)
                     set_ustuck(null);
             }
             if (cptr.ldI32(cptr.add(mon, 52)) == oldhp) {
                 cptr.stI32(mhit, 0);
-                cptr.stI64(cptr.add(cptr.add(u, 1968), 32), oldweaphit);
+                cptr.stI64(cptr.add(u, 2000), oldweaphit);
             }
             if ((cptr.ldI32(cptr.add(mon, 200)) & 31) | 0 && cptr.ldI32(mhit) ? 1 : 0)
-                cutworm(mon, cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), slice_or_chop);
+                cutworm(mon, cptr.ldI16(cptr.add(gb, 4768)), cptr.ldI16(cptr.add(gb, 4770)), slice_or_chop);
         }
     }
     return malive;
 }
 
-let __static_hitum_cleave_clockwise = (0); /** C ref: uhitm.c:660 — signed char (function-static) */
+let __static_hitum_cleave_clockwise = 0; /** C ref: uhitm.c:660 — signed char (function-static) */
 
 /** C ref: uhitm.c:651 — @param {CPtr} target @param {CPtr} uattk @returns {CInt} */
 function hitum_cleave(target, uattk) {
@@ -888,9 +888,9 @@ function hitum_cleave(target, uattk) {
     i = xytodir(cptr.ldI32(cptr.add(u, 4)), cptr.ldI32(cptr.add(u, 8)));
     if (i == -1) {
         impossible(__sl37, cptr.ldI32(cptr.add(u, 4)), cptr.ldI32(cptr.add(u, 8)), cptr.ldI32(cptr.add(u, 12)));
-        return (1);
+        return 1;
     }
-    i = __static_hitum_cleave_clockwise ? ((((i) + 6) | 0) % ((10 - 2) | 0)) : ((((i) + 2) | 0) % ((10 - 2) | 0));
+    i = __static_hitum_cleave_clockwise ? ((((i) + 6) | 0) % 8) : ((((i) + 2) | 0) % 8);
     umort = cptr.ldI32(cptr.add(u, 2452));
     cptr.memcpy(save_bhitpos, cptr.add(gb, 4768), 4);
     save_notonhead = cptr.ld1s(cptr.add(gn, 86));
@@ -903,11 +903,11 @@ function hitum_cleave(target, uattk) {
         let mhit = cptr.box(0);
         let attknum = cptr.box(0);
         let armorpenalty = cptr.box(0);
-        i = __static_hitum_cleave_clockwise ? ((((i) + 1) | 0) % ((10 - 2) | 0)) : ((((i) + 7) | 0) % ((10 - 2) | 0));
+        i = __static_hitum_cleave_clockwise ? ((((i) + 1) | 0) % 8) : ((((i) + 7) | 0) % 8);
         tx = (x + cptr.ld1s(cptr.add(cptr.decay(xdir), i, 1))) | 0, ty = (y + cptr.ld1s(cptr.add(cptr.decay(ydir), i, 1))) | 0;
         if (!isok(i16(tx), i16(ty)))
             continue;
-        mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), tx, 168), ty, 8)));
+        mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), tx, 168), ty, 8)));
         if (!mtmp) {
             if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), tx, 756), ty, 36))) == 1532))
                 void unmap_invisible(i16(tx), i16(ty));
@@ -917,7 +917,7 @@ function hitum_cleave(target, uattk) {
         mon_maybe_unparalyze(mtmp);
         dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 709, __sl38), rnd(20)) : rnd(20));
         mhit.v = (tmp > dieroll);
-        cptr.stI16(cptr.add(gb, 4768), i16(tx)), cptr.stI16(cptr.add(cptr.add(gb, 4768), 2), i16(ty));
+        cptr.stI16(cptr.add(gb, 4768), i16(tx)), cptr.stI16(cptr.add(gb, 4770), i16(ty));
         cptr.st1(cptr.add(gn, 86), schar((cptr.ldI16(cptr.add(mtmp, 28)) != tx || cptr.ldI16(cptr.add(mtmp, 30)) != ty ? 1 : 0)));
         void known_hitum(mtmp, uwep.v, mhit, tmp, armorpenalty.v, uattk, dieroll);
         void passive(mtmp, uwep.v, schar(mhit.v), schar((!(cptr.ldI32(cptr.add((mtmp), 52)) < 1))), 254, schar((!uwep.v)));
@@ -935,13 +935,13 @@ function double_punch() {
     let skl_lvl = (cptr.ldI16(cptr.add(cptr.add(u, 2588), 35, 6)));
     if ((!uwep.v && !uarms.v ? 1 : 0) && skl_lvl > 2 ? 1 : 0)
         return schar((((skl_lvl - 2) | 0) > (rng_log_enabled() ? (rng_log_set_caller(__sl0, 752, __sl39), rn2(5)) : rn2(5))));
-    return (0);
+    return 0;
 }
 
 /** C ref: uhitm.c:758 — @param {CPtr} mon @param {CPtr} uattk @returns {CInt} */
 function hitum(mon, uattk) {
     let malive;
-    let wep_was_destroyed = (0);
+    let wep_was_destroyed = 0;
     let wepbefore = uwep.v;
     let secondwep = cptr.ld1s(cptr.add(u, 2816)) ? uswapwep.v : null;
     let tmp;
@@ -960,12 +960,12 @@ function hitum(mon, uattk) {
     dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 780, __sl40), rnd(20)) : rnd(20));
     mhit.v = (tmp > dieroll || (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0);
     if (tmp > dieroll)
-        exercise(3, (1));
+        exercise(3, 1);
     malive = known_hitum(mon, uwep.v, mhit, tmp, armorpenalty.v, uattk, dieroll);
     if (wepbefore && !uwep.v ? 1 : 0)
-        wep_was_destroyed = (1);
+        wep_was_destroyed = 1;
     void passive(mon, uwep.v, schar(mhit.v), malive, 254, wep_was_destroyed);
-    if (cptr.ldI32(cptr.add(gt, 444)) && !((((cptr.ld1s(cptr.add(go, 556)) || cptr.ldI64(cptr.add(gm, 8)) < 0n ? 1 : 0) || cptr.ldI32(cptr.add(u, 2452)) > oldumort ? 1 : 0) || !malive ? 1 : 0) || !cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8))), mon) ? 1 : 0) ? 1 : 0) {
+    if (cptr.ldI32(cptr.add(gt, 444)) && !((((cptr.ld1s(cptr.add(go, 556)) || cptr.ldI64(cptr.add(gm, 8)) < 0n ? 1 : 0) || cptr.ldI32(cptr.add(u, 2452)) > oldumort ? 1 : 0) || !malive ? 1 : 0) || !cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8))), mon) ? 1 : 0) ? 1 : 0) {
         cptr.stI32(cptr.add(gt, 444), 2);
         tmp = find_roll_to_hit(mon, cptr.ld1u(uattk), uswapwep.v, attknum, armorpenalty);
         mon_maybe_unparalyze(mon);
@@ -988,7 +988,7 @@ export function hmon(mon, obj, thrown, dieroll) {
     if ((cptr.ldI32(cptr.add(mon, 192)) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 829, __sl41), rn2(2)) : rn2(2)) ? 1 : 0)
         ghod_hitsu(mon);
     if (anger_guards)
-        void angry_guards(schar((!!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0))));
+        void angry_guards(schar((!!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0))));
     return result;
 }
 
@@ -999,15 +999,15 @@ function hmon_hitmon_barehands(hmd, mon) {
     if (cptr.eq(cptr.ldPtr(cptr.add(hmd, 16)), cptr.add(mons, 288, 96))) {
         cptr.stI32(hmd, 0);
     } else {
-        cptr.stI32(hmd, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 847, __sl42), rnd(!((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) || (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336)) ? 1 : 0) ? 2 : 4)) : rnd(!((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) || (cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (336)) ? 1 : 0) ? 2 : 4)));
-        cptr.st1(cptr.add(hmd, 24), (1));
+        cptr.stI32(hmd, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 847, __sl42), rnd(!((cptr.ldI16(cptr.add(gu, 216)) == 340) || (cptr.ldI16(cptr.add(gu, 216)) == 336) ? 1 : 0) ? 2 : 4)) : rnd(!((cptr.ldI16(cptr.add(gu, 216)) == 340) || (cptr.ldI16(cptr.add(gu, 216)) == 336) ? 1 : 0) ? 2 : 4)));
+        cptr.st1(cptr.add(hmd, 24), 1);
         cptr.st1(cptr.add(hmd, 25), schar((cptr.ldI32(hmd) > 1)));
     }
     spcdmgflg = uarmg.v ? 16n : (((cptr.ldI32(cptr.add(hmd, 8)) == 0 || cptr.ldI32(cptr.add(hmd, 8)) == 1 ? 1 : 0) ? 262144n : 0n) | ((cptr.ldI32(cptr.add(hmd, 8)) == 0 || cptr.ldI32(cptr.add(hmd, 8)) == 2 ? 1 : 0) ? 131072n : 0n));
     cptr.stI32(hmd, (cptr.ldI32(hmd) + special_dmgval(cptr.add(gy, 8), mon, spcdmgflg, silverhit)) | 0);
     switch (cptr.ldI32(cptr.add(hmd, 8))) {
         case 0:
-        cptr.stI32(cptr.add(hmd, 28), (silverhit.v & (262144n | 131072n)) ? 1 : 0);
+        cptr.stI32(cptr.add(hmd, 28), (silverhit.v & 393216n) ? 1 : 0);
         break;
         case 1:
         cptr.stI32(cptr.add(hmd, 28), (silverhit.v & 262144n) ? 1 : 0);
@@ -1020,7 +1020,7 @@ function hmon_hitmon_barehands(hmd, mon) {
         break;
     }
     if (cptr.ldI32(cptr.add(hmd, 28)) > 0)
-        cptr.st1(cptr.add(hmd, 32), (1));
+        cptr.st1(cptr.add(hmd, 32), 1);
 }
 
 /** C ref: uhitm.c:885 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
@@ -1030,10 +1030,10 @@ function hmon_hitmon_weapon_ranged(hmd, mon, obj) {
     else
         cptr.stI32(hmd, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 895, __sl43), rnd(2)) : rnd(2)));
     if (cptr.ldI32(cptr.add(hmd, 36)) == 14 && mon_hates_silver(mon) ? 1 : 0) {
-        cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), (1)));
+        cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), 1));
         cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 899, __sl43), rnd((cptr.ldI32(hmd)) ? 20 : 10)) : rnd((cptr.ldI32(hmd)) ? 20 : 10))) | 0);
     }
-    if (((!cptr.ldI32(cptr.add(hmd, 4)) && cptr.eq(obj, uwep.v) ? 1 : 0) && cptr.ldI16(cptr.add(obj, 32)) == 26 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 902, __sl43), rnl(4)) : rnl(4)) == ((4 - 1) | 0) ? 1 : 0) {
+    if (((!cptr.ldI32(cptr.add(hmd, 4)) && cptr.eq(obj, uwep.v) ? 1 : 0) && cptr.ldI16(cptr.add(obj, 32)) == 26 ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 902, __sl43), rnl(4)) : rnl(4)) == 3 ? 1 : 0) {
         let more_than_1 = schar((cptr.ldI64(cptr.add(obj, 40)) > 1n));
         pline(__sl44, mon_nam(mon), more_than_1 ? __sl45 : __sl6, yname(obj));
         if (!more_than_1)
@@ -1041,7 +1041,7 @@ function hmon_hitmon_weapon_ranged(hmd, mon, obj) {
         useup(obj);
         if (!more_than_1)
             obj = null;
-        cptr.st1(cptr.add(hmd, 44), (1));
+        cptr.st1(cptr.add(hmd, 44), 1);
         if (!cptr.eq(cptr.ldPtr(cptr.add(hmd, 16)), cptr.add(mons, 288, 96)))
             (cptr.stI32(hmd, cptr.ldI32(hmd) + 1)) - (1);
     }
@@ -1058,18 +1058,18 @@ const __static_hmon_hitmon_weapon_melee_from_your_blow = cptr.bytes(" from the f
 function hmon_hitmon_weapon_melee(hmd, mon, obj) {
     let wtype;
     let monwep;
-    cptr.st1(cptr.add(hmd, 24), (1));
+    cptr.st1(cptr.add(hmd, 24), 1);
     cptr.stI32(hmd, dmgval(obj, mon));
     cptr.st1(cptr.add(hmd, 25), schar((cptr.ldI32(hmd) > 1)));
-    if ((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (334)) && cptr.ld1s(cptr.add(hmd, 47)) ? 1 : 0) && cptr.ld1s(cptr.add(obj, 49)) == 2 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 2 ? 1 : 0)
-        cptr.stI32(hmd, (cptr.ldI32(hmd) + ((3) < ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24))), 12), 1)) / 6) | 0) ? (3) : ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24))), 12), 1)) / 6) | 0))) | 0);
+    if ((((cptr.ldI16(cptr.add(gu, 216)) == 334) && cptr.ld1s(cptr.add(hmd, 47)) ? 1 : 0) && cptr.ld1s(cptr.add(obj, 49)) == 2 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 2 ? 1 : 0)
+        cptr.stI32(hmd, (cptr.ldI32(hmd) + (3 < ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24))), 12), 1)) / 6) | 0) ? 3 : ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 24))), 12), 1)) / 6) | 0))) | 0);
     if (((!cptr.ld1s(cptr.add(hmd, 25)) || cptr.eq(mon, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0) || (cptr.ld1s(cptr.add(hmd, 47)) && is_art(obj, 4) ? 1 : 0) ? 1 : 0) {
         ;
-    } else if ((((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (339)) && backstabbable(mon) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && cptr.ld1s(cptr.add(hmd, 47)) ? 1 : 0) {
+    } else if ((((cptr.ldI16(cptr.add(gu, 216)) == 339) && backstabbable(mon) ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && cptr.ld1s(cptr.add(hmd, 47)) ? 1 : 0) {
         You(__sl46, mon_nam(mon));
         cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 964, __sl47), rnd(cptr.ldI32(cptr.add(u, 48)))) : rnd(cptr.ldI32(cptr.add(u, 48))))) | 0);
-        cptr.st1(cptr.add(hmd, 44), (1));
-    } else if (((((cptr.ldI32(cptr.add(hmd, 12)) == 2 && cptr.eq(obj, uwep.v) ? 1 : 0) && cptr.ld1s(cptr.add(obj, 49)) == 2 ? 1 : 0) && (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) & 1) | 0 ? 1 : 0) || (((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && cptr.ldI16(cptr.add(obj, 32)) == 56 ? 1 : 0) && !uarms.v ? 1 : 0) ? 1 : 0) ? 1 : 0) && ((wtype = uwep_skill_type()) != 0 && (cptr.ldI16(cptr.add(cptr.add(u, 2588), wtype, 6))) >= 3 ? 1 : 0) ? 1 : 0) && (((monwep = (cptr.ldPtr(cptr.add((mon), 288)))) !== null && !(((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((monwep), 32)), 120), 64)) & 31) | 0) <= 7 || cptr.ldI16(cptr.add((monwep), 32)) == 78 ? 1 : 0) ? 1 : 0) && !obj_resists(monwep, (50 + Math.imul(15, (((((cptr.ldI32(cptr.add((obj), 112)) & 3) | 0) > ((cptr.ldI32(cptr.add((obj), 116)) & 3) | 0) ? (cptr.ldI32(cptr.add((obj), 112)) & 3) | 0 : (cptr.ldI32(cptr.add((obj), 116)) & 3) | 0) - (((cptr.ldI32(cptr.add((monwep), 112)) & 3) | 0) > ((cptr.ldI32(cptr.add((monwep), 116)) & 3) | 0) ? (cptr.ldI32(cptr.add((monwep), 112)) & 3) | 0 : (cptr.ldI32(cptr.add((monwep), 116)) & 3) | 0)) | 0))) | 0, 100) ? 1 : 0) ? 1 : 0) {
+        cptr.st1(cptr.add(hmd, 44), 1);
+    } else if (((((cptr.ldI32(cptr.add(hmd, 12)) == 2 && cptr.eq(obj, uwep.v) ? 1 : 0) && cptr.ld1s(cptr.add(obj, 49)) == 2 ? 1 : 0) && (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) & 1) | 0 ? 1 : 0) || (((cptr.ldI16(cptr.add(gu, 216)) == 340) && cptr.ldI16(cptr.add(obj, 32)) == 56 ? 1 : 0) && !uarms.v ? 1 : 0) ? 1 : 0) ? 1 : 0) && ((wtype = uwep_skill_type()) != 0 && (cptr.ldI16(cptr.add(cptr.add(u, 2588), wtype, 6))) >= 3 ? 1 : 0) ? 1 : 0) && (((monwep = (cptr.ldPtr(cptr.add((mon), 288)))) !== null && !(((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((monwep), 32)), 120), 64)) & 31) | 0) <= 7 || cptr.ldI16(cptr.add((monwep), 32)) == 78 ? 1 : 0) ? 1 : 0) && !obj_resists(monwep, (50 + Math.imul(15, (((((cptr.ldI32(cptr.add((obj), 112)) & 3) | 0) > ((cptr.ldI32(cptr.add((obj), 116)) & 3) | 0) ? (cptr.ldI32(cptr.add((obj), 112)) & 3) | 0 : (cptr.ldI32(cptr.add((obj), 116)) & 3) | 0) - (((cptr.ldI32(cptr.add((monwep), 112)) & 3) | 0) > ((cptr.ldI32(cptr.add((monwep), 116)) & 3) | 0) ? (cptr.ldI32(cptr.add((monwep), 112)) & 3) | 0 : (cptr.ldI32(cptr.add((monwep), 116)) & 3) | 0)) | 0))) | 0, 100) ? 1 : 0) ? 1 : 0) {
         let buf = new Uint8Array(256);
         setmnotwielded(mon, monwep);
         cptr.stI16(cptr.add(mon, 304), 1);
@@ -1077,50 +1077,50 @@ function hmon_hitmon_weapon_melee(hmd, mon, obj) {
             void cptr.strcpy(cptr.decay(buf), Yobjnam2(monwep, __sl48));
         else
             void cptr.sprintf(cptr.decay(buf), __sl49, s_suffix(Monnam(mon)), (((cptr.ldI64(cptr.add(monwep, 40))) == 1n) ? __sl6 : __sl50), otense(monwep, __sl48));
-        cptr.st1(cptr.add(cptr.decay(buf), BigInt.asUintN(64, 256n - 30n), 1), 0);
+        cptr.st1(cptr.add(cptr.decay(buf), 226n, 1), 0);
         pline(__sl51, cptr.decay(buf), cptr.decay(__static_hmon_hitmon_weapon_melee_from_your_blow));
         m_useupall(mon, monwep);
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1009, __sl47), rn2(4)) : rn2(4))) {
-            monflee(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1010, __sl47), d((2), (3))) : d((2), (3))), (1), (1));
+            monflee(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1010, __sl47), d(2, 3)) : d(2, 3)), 1, 1);
         }
-        cptr.st1(cptr.add(hmd, 44), (1));
+        cptr.st1(cptr.add(hmd, 44), 1);
     }
     if (cptr.ld1s(cptr.add(obj, 51)) && artifact_hit(cptr.add(gy, 8), mon, obj, hmd, cptr.ldI32(cptr.add(hmd, 12))) ? 1 : 0) {
         if ((cptr.ldI32(cptr.add((mon), 52)) < 1)) {
-            cptr.st1(cptr.add(hmd, 56), (1));
-            cptr.st1(cptr.add(hmd, 57), (0));
+            cptr.st1(cptr.add(hmd, 56), 1);
+            cptr.st1(cptr.add(hmd, 57), 0);
             return;
         }
         if (cptr.ldI32(hmd) == 0) {
-            cptr.st1(cptr.add(hmd, 56), (1));
-            cptr.st1(cptr.add(hmd, 57), (1));
+            cptr.st1(cptr.add(hmd, 56), 1);
+            cptr.st1(cptr.add(hmd, 57), 1);
             return;
         }
-        cptr.st1(cptr.add(hmd, 44), (1));
+        cptr.st1(cptr.add(hmd, 44), 1);
     }
     if (cptr.ldI32(cptr.add(hmd, 36)) == 14 && mon_hates_silver(mon) ? 1 : 0) {
-        cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), (1)));
+        cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), 1));
     }
     if ((artifact_light(obj) && (cptr.ldI32(cptr.add(obj, 76)) & 1) | 0 ? 1 : 0) && mon_hates_light(mon) ? 1 : 0)
-        cptr.st1(cptr.add(hmd, 34), (1));
+        cptr.st1(cptr.add(hmd, 34), 1);
     if ((((cptr.ldPtr(cptr.add(u, 2424)) && !cptr.ldI32(cptr.add(hmd, 4)) ? 1 : 0) && cptr.ldI32(hmd) > 0 ? 1 : 0) && weapon_type(obj) == 19 ? 1 : 0) && !cptr.eq(mon, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) {
         cptr.stI32(cptr.add(hmd, 40), joust(mon, obj));
         if (cptr.ldI32(cptr.add(hmd, 40)))
-            cptr.st1(cptr.add(hmd, 25), (1));
+            cptr.st1(cptr.add(hmd, 25), 1);
     }
     if (cptr.ldI32(cptr.add(hmd, 4)) == 1 && ((((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         if (((((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) && ((uwep.v) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) == -cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) ? 1 : 0) ? 1 : 0)) {
-            if (((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340)) && cptr.ldI16(cptr.add(obj, 32)) == 22 ? 1 : 0) && cptr.ldI16(cptr.add(uwep.v, 32)) == 86 ? 1 : 0)
+            if (((cptr.ldI16(cptr.add(gu, 216)) == 340) && cptr.ldI16(cptr.add(obj, 32)) == 22 ? 1 : 0) && cptr.ldI16(cptr.add(uwep.v, 32)) == 86 ? 1 : 0)
                 (cptr.stI32(hmd, cptr.ldI32(hmd) + 1)) - (1);
-            else if (((cptr.ldI16(cptr.add(cptr.add(gu, 320), 48)) == (264)) && cptr.ldI16(cptr.add(obj, 32)) == 19 ? 1 : 0) && cptr.ldI16(cptr.add(uwep.v, 32)) == 84 ? 1 : 0)
+            else if (((cptr.ldI16(cptr.add(gu, 368)) == 264) && cptr.ldI16(cptr.add(obj, 32)) == 19 ? 1 : 0) && cptr.ldI16(cptr.add(uwep.v, 32)) == 84 ? 1 : 0)
                 (cptr.stI32(hmd, cptr.ldI32(hmd) + 1)) - (1);
             cptr.st1(cptr.add(hmd, 25), schar((cptr.ldI32(hmd) > 0)));
         }
         if ((cptr.ldI32(cptr.add(obj, 132)) & 1) | 0 && (((cptr.ld1s(cptr.add(obj, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0) ? 1 : 0)
-            cptr.st1(cptr.add(hmd, 48), (1));
+            cptr.st1(cptr.add(hmd, 48), 1);
     }
     if (permapoisoned(obj) && cptr.ldI32(cptr.add(hmd, 12)) <= 5 ? 1 : 0)
-        cptr.st1(cptr.add(hmd, 48), (1));
+        cptr.st1(cptr.add(hmd, 48), 1);
 }
 
 /** C ref: uhitm.c:1070 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
@@ -1143,11 +1143,11 @@ function hmon_hitmon_potion(hmd, mon, obj) {
     freeinv(obj);
     potionhit(mon, obj, cptr.ld1s(cptr.add(hmd, 47)) ? 0 : 1);
     if ((cptr.ldI32(cptr.add((mon), 52)) < 1)) {
-        cptr.st1(cptr.add(hmd, 56), (1));
-        cptr.st1(cptr.add(hmd, 57), (0));
+        cptr.st1(cptr.add(hmd, 56), 1);
+        cptr.st1(cptr.add(hmd, 57), 0);
         return;
     }
-    cptr.st1(cptr.add(hmd, 44), (1));
+    cptr.st1(cptr.add(hmd, 44), 1);
     cptr.stPtr(cptr.add(hmd, 16), cptr.ldPtr(cptr.add(mon, 8)));
     cptr.stI32(hmd, (cptr.eq(cptr.ldPtr(cptr.add(hmd, 16)), cptr.add(mons, 288, 96))) ? 0 : 1);
 }
@@ -1163,12 +1163,12 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
         case 230:
         if (breaktest(obj)) {
             You(__sl52, ysimple_name(obj));
-            change_luck(schar((-2)));
+            change_luck(-2);
             useup(obj);
             obj = null;
-            cptr.st1(cptr.add(hmd, 46), (0));
-            cptr.st1(cptr.add(hmd, 45), (0));
-            cptr.st1(cptr.add(hmd, 44), (1));
+            cptr.st1(cptr.add(hmd, 46), 0);
+            cptr.st1(cptr.add(hmd, 45), 0);
+            cptr.st1(cptr.add(hmd, 44), 1);
         }
         cptr.stI32(hmd, 1);
         break;
@@ -1176,20 +1176,20 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
         You(__sl53, ysimple_name(obj));
         release_camera_demon(obj, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
         useup(obj);
-        cptr.st1(cptr.add(hmd, 56), (1));
-        cptr.st1(cptr.add(hmd, 57), (1));
+        cptr.st1(cptr.add(hmd, 56), 1);
+        cptr.st1(cptr.add(hmd, 57), 1);
         return;
         case 265:
         if ((cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 10, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 9, 96)) ? 1 : 0)) {
             cptr.stI32(hmd, 1);
-            cptr.st1(cptr.add(hmd, 44), (1));
+            cptr.st1(cptr.add(hmd, 44), 1);
             You(__sl54, mon_nam(mon), corpse_xname(obj, null, ((cptr.ldI32(cptr.add(obj, 84)) & 1) | 0 ? 4 : 8) >>> 0));
             observe_object(obj);
-            if (!munstone(mon, (1)))
-                minstapetrify(mon, (1));
+            if (!munstone(mon, 1))
+                minstapetrify(mon, 1);
             if (Resists_Elem(mon, 8))
                 break;
-            cptr.st1(cptr.add(hmd, 56), (1));
+            cptr.st1(cptr.add(hmd, 56), 1);
             cptr.st1(cptr.add(hmd, 57), schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1))));
             return;
         }
@@ -1199,15 +1199,15 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
         {
             let cnt = cptr.ldI64(cptr.add(obj, 40));
             cptr.stI32(hmd, 1);
-            cptr.st1(cptr.add(hmd, 45), (0));
-            cptr.st1(cptr.add(hmd, 44), (1));
+            cptr.st1(cptr.add(hmd, 45), 0);
+            cptr.st1(cptr.add(hmd, 44), 1);
             if (cptr.eq(obj, uwep.v))
-                cptr.st1(cptr.add(gu, 1), (1));
+                cptr.st1(cptr.add(gu, 1), 1);
             if (cptr.ld1s(cptr.add(obj, 48)) && ((cptr.ldI32(cptr.add(obj, 168))) >= 0 && (cptr.ldI32(cptr.add(obj, 168))) < 383 ? 1 : 0) ? 1 : 0) {
                 if (cptr.ldI64(cptr.add(obj, 40)) < 5n)
                     change_luck(Number(BigInt.asIntN(8, (-(cptr.ldI64(cptr.add(obj, 40)))))));
                 else
-                    change_luck(schar((-5)));
+                    change_luck(-5);
             }
             if (((cptr.ldI32(cptr.add(obj, 168))) >= 0 && (cptr.ldI32(cptr.add(obj, 168))) < 383 ? 1 : 0) && (cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 10, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 9, 96)) ? 1 : 0) ? 1 : 0) {
                 pline(__sl55, mon_nam(mon), (cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 ? __sl56 : (cnt > 1n ? __sl57 : __sl58), (cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 ? cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), 2, 8)) : __sl59, (((cnt) == 1n) ? __sl6 : __sl50));
@@ -1219,18 +1219,18 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                         useupall(obj);
                     obj = null;
                 } while (0);
-                if (!munstone(mon, (1)))
-                    minstapetrify(mon, (1));
+                if (!munstone(mon, 1))
+                    minstapetrify(mon, 1);
                 if (Resists_Elem(mon, 8))
                     break;
-                cptr.st1(cptr.add(hmd, 56), (1));
+                cptr.st1(cptr.add(hmd, 56), 1);
                 cptr.st1(cptr.add(hmd, 57), schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1))));
                 return;
             } else {
                 let mnum = cptr.ldI32(cptr.add(obj, 168));
                 let eggp = (((mnum) >= 0 && (mnum) < 383 ? 1 : 0) && (cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 ? 1 : 0) ? the(cptr.ldPtr(cptr.add(cptr.add(mons, mnum, 96), 2, 8))) : ((cnt > 1n) ? __sl57 : __sl60);
                 You(__sl61, mon_nam(mon), eggp, (((cnt) == 1n) ? __sl6 : __sl50));
-                if ((cptr.eq((cptr.ldPtr(cptr.add(hmd, 16))), cptr.add(mons, 10, 96)) || cptr.eq((cptr.ldPtr(cptr.add(hmd, 16))), cptr.add(mons, 9, 96)) ? 1 : 0) && !((BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add((obj), 184)))) > BigInt((Math.imul(2, 200)))) ? 1 : 0) {
+                if ((cptr.eq((cptr.ldPtr(cptr.add(hmd, 16))), cptr.add(mons, 10, 96)) || cptr.eq((cptr.ldPtr(cptr.add(hmd, 16))), cptr.add(mons, 9, 96)) ? 1 : 0) && !((BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) - cptr.ldI64(cptr.add((obj), 184)))) > 400n) ? 1 : 0) {
                     pline_The(__sl62, (((cnt) == 1n) ? __sl6 : __sl50), (cnt == 1n) ? __sl63 : __sl64);
                     if (cptr.ldI16(cptr.add(obj, 54)))
                         obj_stop_timers(obj);
@@ -1250,8 +1250,8 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                             useupall(obj);
                         obj = null;
                     } while (0);
-                    explode(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), -11, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1246, __sl65), d((3), (6))) : d((3), (6))), 0, 5);
-                    cptr.st1(cptr.add(hmd, 56), (1));
+                    explode(cptr.ldI16(cptr.add(mon, 28)), cptr.ldI16(cptr.add(mon, 30)), -11, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1246, __sl65), d(3, 6)) : d(3, 6)), 0, 5);
+                    cptr.st1(cptr.add(hmd, 56), 1);
                     cptr.st1(cptr.add(hmd, 57), schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1))));
                     return;
                 } else {
@@ -1263,14 +1263,14 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                             useupall(obj);
                         obj = null;
                     } while (0);
-                    exercise(2, (0));
+                    exercise(2, 0);
                 }
             }
             break;
         }
         case 284:
         if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(hmd, 16))), 80)) & 2n) != 0n) || ((cptr.ldI16(cptr.add((mon), 22)) == 226 || cptr.ldI16(cptr.add((mon), 22)) == 227 ? 1 : 0) || cptr.ldI16(cptr.add((mon), 22)) == 228 ? 1 : 0) ? 1 : 0) {
-            monflee(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1261, __sl65), d((2), (4))) : d((2), (4))), (0), (1));
+            monflee(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1261, __sl65), d(2, 4)) : d(2, 4)), 0, 1);
         }
         cptr.stI32(hmd, 1);
         break;
@@ -1291,16 +1291,16 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                     whom = cptr.strcat(cptr.strcat(s_suffix(whom), __sl70), mbodypart(mon, 2));
                 pline(__sl71, what, vtense(what, __sl72), whom);
             }
-            setmangry(mon, (1));
+            setmangry(mon, 1);
             cptr.stI32(cptr.add(mon, 112), 0);
-            cptr.stI32(hmd, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1295, __sl65), rn2(25)) : rn2(25)) + (21)) | 0));
+            cptr.stI32(hmd, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1295, __sl65), rn2(25)) : rn2(25)) + 21) | 0));
             if (((((cptr.ldI32(cptr.add(mon, 148)) & 127) | 0) + cptr.ldI32(hmd)) | 0) > 127)
                 cptr.stI32(cptr.add(mon, 148), 127);
             else
                 cptr.stI32(cptr.add(mon, 148), (cptr.ldI32(cptr.add(mon, 148)) + cptr.ldI32(hmd)) | 0);
         } else {
             pline(cptr.ldI16(cptr.add(obj, 32)) == 287 ? __sl66 : __sl67);
-            setmangry(mon, (1));
+            setmangry(mon, 1);
         }
         {
             let more_than_1 = schar((cptr.ldI64(cptr.add(obj, 40)) > 1n));
@@ -1311,8 +1311,8 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
             if (!more_than_1)
                 obj = null;
         }
-        cptr.st1(cptr.add(hmd, 44), (1));
-        cptr.st1(cptr.add(hmd, 45), (0));
+        cptr.st1(cptr.add(hmd, 44), 1);
+        cptr.st1(cptr.add(hmd, 45), 0);
         cptr.stI32(hmd, 0);
         break;
         case 480:
@@ -1332,13 +1332,13 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
             if (!more_than_1)
                 obj = null;
         }
-        cptr.st1(cptr.add(hmd, 44), (1));
-        cptr.st1(cptr.add(hmd, 45), (0));
+        cptr.st1(cptr.add(hmd, 44), 1);
+        cptr.st1(cptr.add(hmd, 45), 0);
         break;
         default:
         if ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 3 || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 5 ? 1 : 0) && cptr.ld1s(cptr.add(obj, 49)) != 10 ? 1 : 0) {
             cptr.stI32(hmd, 0);
-            cptr.st1(cptr.add(hmd, 45), (0));
+            cptr.st1(cptr.add(hmd, 45), 0);
             break;
         }
         cptr.stI32(hmd, u32div(((cptr.ldI32(cptr.add(obj, 36)) + 99) >>> 0), 100) | 0);
@@ -1353,7 +1353,7 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
         }
         if (cptr.ldI32(cptr.add(hmd, 36)) == 14 && mon_hates_silver(mon) ? 1 : 0) {
             cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1377, __sl65), rnd(20)) : rnd(20))) | 0);
-            cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), (1)));
+            cptr.st1(cptr.add(hmd, 32), cptr.st1(cptr.add(hmd, 33), 1));
         }
         if ((cptr.ldI32(cptr.add(obj, 60)) & 1) | 0 && mon_hates_blessings(mon) ? 1 : 0)
             cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1381, __sl65), rnd(4)) : rnd(4))) | 0);
@@ -1367,9 +1367,9 @@ function hmon_hitmon_do_hit(hmd, mon, obj) {
     } else {
         if (((cptr.ldI32(cptr.add(hmd, 4)) == 1 || cptr.ldI32(cptr.add(hmd, 4)) == 2 ? 1 : 0) && ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 64)) & 31) | 0) == 20 || (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 64)) & 31) | 0) == 21) ? 1 : 0) && cptr.ld1s(cptr.add((obj), 49)) != 4 ? 1 : 0) ? 1 : 0) && (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(hmd, 16))), 72)) & 8n) != 0n) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(hmd, 16))), 72)) & 1048576n) != 0n) ? 1 : 0) ? 1 : 0) {
             hit(mshot_xname(obj), mon, __sl75);
-            wakeup(mon, (1));
-            cptr.st1(cptr.add(hmd, 56), (1));
-            cptr.st1(cptr.add(hmd, 57), (1));
+            wakeup(mon, 1);
+            cptr.st1(cptr.add(hmd, 56), 1);
+            cptr.st1(cptr.add(hmd, 57), 1);
             return;
         }
         if (!(artifact_light(obj) && (cptr.ldI32(cptr.add(obj, 76)) & 1) | 0 ? 1 : 0))
@@ -1431,33 +1431,33 @@ function hmon_hitmon_poison(hmd, mon, obj) {
     let nopoison = ((10 - (u32div(cptr.ldI32(cptr.add(obj, 36)), 10))) >>> 0) | 0;
     if (nopoison < 2)
         nopoison = 2;
-    if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (340))) {
+    if ((cptr.ldI16(cptr.add(gu, 216)) == 340)) {
         You(__sl76);
         adjalign(-sgn(cptr.ld1s(cptr.add(u, 2172))));
-    } else if (cptr.ld1s(cptr.add(u, 2172)) == 1 && cptr.ldI32(cptr.add(cptr.add(u, 2172), 4)) > -10 ? 1 : 0) {
+    } else if (cptr.ld1s(cptr.add(u, 2172)) == 1 && cptr.ldI32(cptr.add(u, 2176)) > -10 ? 1 : 0) {
         You_feel(__sl77);
         adjalign(-1);
     }
     if (!permapoisoned(obj) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1526, __sl78), rn2(nopoison)) : rn2(nopoison)) ? 1 : 0) {
         cptr.stI32(cptr.add(obj, 132), 0);
-        cptr.st1(cptr.add(hmd, 49), (1));
+        cptr.st1(cptr.add(hmd, 49), 1);
     }
     if (Resists_Elem(mon, 6))
-        cptr.st1(cptr.add(hmd, 50), (1));
+        cptr.st1(cptr.add(hmd, 50), 1);
     else if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1534, __sl78), rn2(10)) : rn2(10)))
         cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1535, __sl78), rnd(6)) : rnd(6))) | 0);
     else
-        cptr.st1(cptr.add(hmd, 51), (1));
+        cptr.st1(cptr.add(hmd, 51), 1);
 }
 
 /** C ref: uhitm.c:1541 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
 function hmon_hitmon_jousting(hmd, mon, obj) {
-    cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1546, __sl79), d((2), ((cptr.eq(obj, uwep.v)) ? 10 : 2))) : d((2), ((cptr.eq(obj, uwep.v)) ? 10 : 2)))) | 0);
+    cptr.stI32(hmd, (cptr.ldI32(hmd) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1546, __sl79), d(2, ((cptr.eq(obj, uwep.v)) ? 10 : 2))) : d(2, ((cptr.eq(obj, uwep.v)) ? 10 : 2)))) | 0);
     You(__sl80, mon_nam(mon), canseemon(mon) ? exclam(cptr.ldI32(hmd)) : __sl81);
-    if (cptr.ldI64(cptr.add(cptr.add(u, 1968), 32)) <= 1n)
+    if (cptr.ldI64(cptr.add(u, 2000)) <= 1n)
         first_weapon_hit(obj);
     if (cptr.ldI32(cptr.add(hmd, 40)) < 0) {
-        set_twoweap((0));
+        set_twoweap(0);
         if (cptr.eq(obj, uwep.v))
             uwepgone();
         pline(__sl82, Yname2(obj));
@@ -1465,8 +1465,8 @@ function hmon_hitmon_jousting(hmd, mon, obj) {
         obj = null;
     }
     if (mhurtle_to_doom(mon, cptr.ldI32(hmd), cptr.add(hmd, 16)))
-        cptr.st1(cptr.add(hmd, 52), (1));
-    cptr.st1(cptr.add(hmd, 44), (1));
+        cptr.st1(cptr.add(hmd, 52), 1);
+    cptr.st1(cptr.add(hmd, 44), 1);
 }
 
 /** C ref: uhitm.c:1570 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
@@ -1475,8 +1475,8 @@ function hmon_hitmon_stagger(hmd, mon, obj) {
         if ((canseemon(mon) || sensemon(mon) ? 1 : 0))
             pline(__sl84, Monnam(mon), makeplural(stagger(cptr.ldPtr(cptr.add(mon, 8)), __sl85)));
         if (mhurtle_to_doom(mon, cptr.ldI32(hmd), cptr.add(hmd, 16)))
-            cptr.st1(cptr.add(hmd, 52), (1));
-        cptr.st1(cptr.add(hmd, 44), (1));
+            cptr.st1(cptr.add(hmd, 52), 1);
+        cptr.st1(cptr.add(hmd, 44), 1);
     }
 }
 
@@ -1485,7 +1485,7 @@ function hmon_hitmon_pet(hmd, mon, obj) {
     if (cptr.ld1s(cptr.add(mon, 65)) && cptr.ldI32(hmd) > 0 ? 1 : 0) {
         abuse_dog(mon);
         if (cptr.ld1s(cptr.add(mon, 65)) && !cptr.ld1s(cptr.add(hmd, 54)) ? 1 : 0)
-            monflee(mon, Math.imul(10, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1599, __sl86), rnd(cptr.ldI32(hmd))) : rnd(cptr.ldI32(hmd)))), (0), (0));
+            monflee(mon, Math.imul(10, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1599, __sl86), rnd(cptr.ldI32(hmd))) : rnd(cptr.ldI32(hmd)))), 0, 0);
     }
 }
 
@@ -1499,7 +1499,7 @@ function hmon_hitmon_splitmon(hmd, mon, obj) {
             if (cptr.ld1s(cptr.add(u, 2816)) && cptr.ld1s(cptr.add(flags, 48)) ? 1 : 0)
                 void cptr.sprintf(cptr.decay(withwhat), __sl87, yname(obj));
             pline(__sl88, Monnam(mon), cptr.decay(withwhat));
-            cptr.st1(cptr.add(hmd, 44), (1));
+            cptr.st1(cptr.add(hmd, 44), 1);
             void mintrap(mclone, 0);
         }
     }
@@ -1507,13 +1507,13 @@ function hmon_hitmon_splitmon(hmd, mon, obj) {
 
 /** C ref: uhitm.c:1637 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
 function hmon_hitmon_msg_hit(hmd, mon, obj) {
-    if (!cptr.ld1s(cptr.add(hmd, 44)) && (!cptr.ld1s(cptr.add(hmd, 54)) || ((cptr.ldI32(cptr.add(hmd, 4)) && cptr.ldI32(cptr.add(gm, 152)) > 1 ? 1 : 0) && cptr.ldI16(cptr.add(cptr.add(gm, 152), 8)) == cptr.ldI16(cptr.add(obj, 32)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if (!cptr.ld1s(cptr.add(hmd, 44)) && (!cptr.ld1s(cptr.add(hmd, 54)) || ((cptr.ldI32(cptr.add(hmd, 4)) && cptr.ldI32(cptr.add(gm, 152)) > 1 ? 1 : 0) && cptr.ldI16(cptr.add(gm, 160)) == cptr.ldI16(cptr.add(obj, 32)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         if (cptr.ldI32(cptr.add(hmd, 4)))
             hit(mshot_xname(obj), mon, exclam(cptr.ldI32(hmd)));
         else if (!cptr.ld1s(cptr.add(flags, 48)))
             You(__sl89);
         else
-            You(__sl90, (obj && ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 1 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 477 ? 1 : 0) ? 1 : 0) ? __sl31 : ((obj && (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 26 || (cptr.ldI16(cptr.add((obj), 32)) == 234 && cptr.ld1s(cptr.add((obj), 48)) > 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? __sl91 : ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (332)) ? __sl92 : __sl93)), mon_nam(mon), canseemon(mon) ? exclam(cptr.ldI32(hmd)) : __sl81);
+            You(__sl90, (obj && ((cptr.ld1s(cptr.add(obj, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 1 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 477 ? 1 : 0) ? 1 : 0) ? __sl31 : ((obj && (cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 26 || (cptr.ldI16(cptr.add((obj), 32)) == 234 && cptr.ld1s(cptr.add((obj), 48)) > 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? __sl91 : ((cptr.ldI16(cptr.add(gu, 216)) == 332) ? __sl92 : __sl93)), mon_nam(mon), canseemon(mon) ? exclam(cptr.ldI32(hmd)) : __sl81);
     }
 }
 
@@ -1530,7 +1530,7 @@ function hmon_hitmon_msg_silver(hmd, mon, obj) {
         else if (cptr.ld1s(cptr.add(hmd, 33)) && cptr.ld1s(cptr.add(cptr.add(hmd, 58), 0, 1)) ? 1 : 0) {
             nh_snprintf(__sl96, 1682, cptr.decay(silverobjbuf), 256n, __sl97, strstri(cptr.add(hmd, 58), __sl98) ? __sl6 : __sl99, cptr.add(hmd, 58), vtense(cptr.add(hmd, 58), __sl100));
             void strNsubst(cptr.decay(silverobjbuf), __sl101, __sl102, 0);
-            __builtin___strncat_chk(cptr.decay(silverobjbuf), __sl103, BigInt.asUintN(64, 256n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(silverobjbuf)) + 1n))), __builtin_object_size(cptr.decay(silverobjbuf), 2 > 1 ? 1 : 0));
+            __builtin___strncat_chk(cptr.decay(silverobjbuf), __sl103, BigInt.asUintN(64, 256n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(silverobjbuf)) + 1n))), __builtin_object_size(cptr.decay(silverobjbuf), 1));
             fmt = cptr.decay(silverobjbuf);
         } else
             fmt = __sl104;
@@ -1567,34 +1567,34 @@ function hmon_hitmon_msg_lightobj(hmd, mon, obj) {
 /** C ref: uhitm.c:1754 — @param {CPtr} mon @param {CPtr} obj @param {CInt} thrown @param {CInt} dieroll @returns {CInt} */
 function hmon_hitmon(mon, obj, thrown, dieroll) {
     let hmd = cptr.alloc(320);
-    let maybe_knockback = (0);
+    let maybe_knockback = 0;
     cptr.stI32(hmd, 0);
     cptr.stI32(cptr.add(hmd, 4), thrown);
     cptr.stI32(cptr.add(hmd, 8), thrown ? 0 : cptr.ldI32(cptr.add(gt, 444)));
     cptr.stI32(cptr.add(hmd, 12), dieroll);
     cptr.stPtr(cptr.add(hmd, 16), cptr.ldPtr(cptr.add(mon, 8)));
-    cptr.st1(cptr.add(hmd, 24), (0));
-    cptr.st1(cptr.add(hmd, 25), (0));
+    cptr.st1(cptr.add(hmd, 24), 0);
+    cptr.st1(cptr.add(hmd, 25), 0);
     cptr.stI32(cptr.add(hmd, 28), 0);
-    cptr.st1(cptr.add(hmd, 32), (0));
-    cptr.st1(cptr.add(hmd, 33), (0));
-    cptr.st1(cptr.add(hmd, 34), (0));
+    cptr.st1(cptr.add(hmd, 32), 0);
+    cptr.st1(cptr.add(hmd, 33), 0);
+    cptr.st1(cptr.add(hmd, 34), 0);
     cptr.stI32(cptr.add(hmd, 36), obj ? (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0 : 0);
     cptr.stI32(cptr.add(hmd, 40), 0);
-    cptr.st1(cptr.add(hmd, 44), (0));
-    cptr.st1(cptr.add(hmd, 45), (1));
+    cptr.st1(cptr.add(hmd, 44), 0);
+    cptr.st1(cptr.add(hmd, 45), 1);
     cptr.st1(cptr.add(hmd, 46), schar(((!uwep.v && !uarm.v ? 1 : 0) && !uarms.v ? 1 : 0)));
     cptr.st1(cptr.add(hmd, 47), schar((thrown == 0 || (thrown == 3 && ((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && ((cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 16 || cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 19 ? 1 : 0) || is_art(uwep.v, 19) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)));
-    cptr.st1(cptr.add(hmd, 48), (0));
-    cptr.st1(cptr.add(hmd, 49), (0));
-    cptr.st1(cptr.add(hmd, 50), (0));
-    cptr.st1(cptr.add(hmd, 51), (0));
-    cptr.st1(cptr.add(hmd, 52), (0));
-    cptr.st1(cptr.add(hmd, 53), (0));
-    cptr.st1(cptr.add(hmd, 54), (0));
-    cptr.st1(cptr.add(hmd, 55), (0));
-    cptr.st1(cptr.add(hmd, 56), (0));
-    cptr.st1(cptr.add(hmd, 57), (0));
+    cptr.st1(cptr.add(hmd, 48), 0);
+    cptr.st1(cptr.add(hmd, 49), 0);
+    cptr.st1(cptr.add(hmd, 50), 0);
+    cptr.st1(cptr.add(hmd, 51), 0);
+    cptr.st1(cptr.add(hmd, 52), 0);
+    cptr.st1(cptr.add(hmd, 53), 0);
+    cptr.st1(cptr.add(hmd, 54), 0);
+    cptr.st1(cptr.add(hmd, 55), 0);
+    cptr.st1(cptr.add(hmd, 56), 0);
+    cptr.st1(cptr.add(hmd, 57), 0);
     cptr.st1(cptr.add(cptr.add(hmd, 58), 0, 1), 0);
     hmon_hitmon_do_hit(hmd, mon, obj);
     if (cptr.ld1s(cptr.add(hmd, 56)))
@@ -1607,33 +1607,33 @@ function hmon_hitmon(mon, obj, thrown, dieroll) {
         let mon_is_shade = schar((cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))));
         cptr.stI32(hmd, (cptr.ld1s(cptr.add(hmd, 45)) && !mon_is_shade ? 1 : 0) ? 1 : 0);
         if (((mon_is_shade && !cptr.ld1s(cptr.add(hmd, 44)) ? 1 : 0) && thrown != 1 ? 1 : 0) && thrown != 2 ? 1 : 0)
-            cptr.st1(cptr.add(hmd, 44), shade_miss(cptr.add(gy, 8), mon, obj, (0), (1)));
+            cptr.st1(cptr.add(hmd, 44), shade_miss(cptr.add(gy, 8), mon, obj, 0, 1));
     }
     if (cptr.ldI32(cptr.add(hmd, 40))) {
         hmon_hitmon_jousting(hmd, mon, obj);
     } else if ((((cptr.ld1s(cptr.add(hmd, 46)) && cptr.ldI32(hmd) > 1 ? 1 : 0) && !thrown ? 1 : 0) && !obj ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) {
         hmon_hitmon_stagger(hmd, mon, obj);
     } else if (((((!cptr.ld1s(cptr.add(hmd, 46)) && cptr.ldI32(hmd) > 1 ? 1 : 0) && !thrown ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && !cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0) && uwep.v ? 1 : 0) {
-        maybe_knockback = (1);
+        maybe_knockback = 1;
     }
     if (!cptr.ld1s(cptr.add(hmd, 52))) {
-        if ((((((obj && (cptr.eq(obj, uwep.v) || (cptr.eq(obj, uswapwep.v) && cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (cptr.ld1s(cptr.add(obj, 49)) == 2 || (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && (thrown == 0 || thrown == 3 ? 1 : 0) ? 1 : 0) && !cptr.ldI32(cptr.add(hmd, 40)) ? 1 : 0) && cptr.ldI32(hmd) > 0 ? 1 : 0) && cptr.ldI64(cptr.add(cptr.add(u, 1968), 32)) <= 1n ? 1 : 0)
+        if ((((((obj && (cptr.eq(obj, uwep.v) || (cptr.eq(obj, uswapwep.v) && cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (cptr.ld1s(cptr.add(obj, 49)) == 2 || (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && (thrown == 0 || thrown == 3 ? 1 : 0) ? 1 : 0) && !cptr.ldI32(cptr.add(hmd, 40)) ? 1 : 0) && cptr.ldI32(hmd) > 0 ? 1 : 0) && cptr.ldI64(cptr.add(u, 2000)) <= 1n ? 1 : 0)
             first_weapon_hit(obj);
         cptr.stI32(cptr.add(mon, 52), (cptr.ldI32(cptr.add(mon, 52)) - cptr.ldI32(hmd)) | 0);
     }
     if (cptr.ldI32(cptr.add(mon, 52)) > cptr.ldI32(cptr.add(mon, 56)))
         cptr.stI32(cptr.add(mon, 52), cptr.ldI32(cptr.add(mon, 56)));
     if (cptr.ldI16(cptr.add(mon, 28)) == 0) {
-        cptr.st1(cptr.add(hmd, 53), (1));
+        cptr.st1(cptr.add(hmd, 53), 1);
     }
     if ((cptr.ldI32(cptr.add((mon), 52)) < 1))
-        cptr.st1(cptr.add(hmd, 54), (1));
+        cptr.st1(cptr.add(hmd, 54), 1);
     hmon_hitmon_pet(hmd, mon, obj);
     hmon_hitmon_splitmon(hmd, mon, obj);
     hmon_hitmon_msg_hit(hmd, mon, obj);
     if (cptr.ld1s(cptr.add(hmd, 55))) {
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl109, __sl110, 1873, __sl111) : void 0);
-        dry_a_towel(obj, -1, (1));
+        dry_a_towel(obj, -1, 1);
     }
     if (cptr.ld1s(cptr.add(hmd, 32)))
         hmon_hitmon_msg_silver(hmd, mon, obj);
@@ -1649,13 +1649,13 @@ function hmon_hitmon(mon, obj, thrown, dieroll) {
         pline_The(__sl113);
         if (!cptr.ld1s(cptr.add(hmd, 52)))
             xkilled(mon, 1);
-        cptr.st1(cptr.add(hmd, 54), (1));
+        cptr.st1(cptr.add(hmd, 54), 1);
     } else if (cptr.ld1s(cptr.add(hmd, 54))) {
         if (!cptr.ld1s(cptr.add(hmd, 52))) {
             if (((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 28)) == 46 && (obj) ? 1 : 0) && cptr.ld1s(cptr.add((obj), 51)) == 17 ? 1 : 0))
-                cptr.st1(cptr.add(gm, 230), (1));
+                cptr.st1(cptr.add(gm, 230), 1);
             killed(mon);
-            cptr.st1(cptr.add(gm, 230), (0));
+            cptr.st1(cptr.add(gm, 230), 0);
         }
     } else if (cptr.ldI32(cptr.add(u, 1768)) && cptr.ld1s(cptr.add(hmd, 47)) ? 1 : 0) {
         nohandglow(mon);
@@ -1669,10 +1669,10 @@ function hmon_hitmon(mon, obj, thrown, dieroll) {
         Your(__sl115, cptr.add(hmd, 58), vtense(cptr.add(hmd, 58), __sl116));
     if (!cptr.ld1s(cptr.add(hmd, 54)) && !cptr.ld1s(cptr.add(hmd, 53)) ? 1 : 0) {
         let hitflags = cptr.box(1);
-        wakeup(mon, (1));
-        if (maybe_knockback && mhitm_knockback(cptr.add(gy, 8), mon, cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 36), hitflags, (1)) ? 1 : 0) {
+        wakeup(mon, 1);
+        if (maybe_knockback && mhitm_knockback(cptr.add(gy, 8), mon, cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 36), hitflags, 1) ? 1 : 0) {
             if ((hitflags.v & 2) != 0)
-                cptr.st1(cptr.add(hmd, 54), (1));
+                cptr.st1(cptr.add(hmd, 54), 1);
         }
     }
     return schar((cptr.ld1s(cptr.add(hmd, 54)) ? 0 : 1));
@@ -1684,9 +1684,9 @@ function mhurtle_to_doom(mon, tmp, mptr) {
         mhurtle(mon, cptr.ldI32(cptr.add(u, 4)), cptr.ldI32(cptr.add(u, 8)), 1);
         cptr.stPtr(mptr, cptr.ldPtr(cptr.add(mon, 8)));
         if ((cptr.ldI32(cptr.add((mon), 52)) < 1))
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: uhitm.c:1963 — @param {CPtr} weapon */
@@ -1708,10 +1708,10 @@ function first_weapon_hit(weapon) {
 /** C ref: uhitm.c:1992 — @param {CPtr} obj @returns {CInt} */
 function shade_aware(obj) {
     if (!obj)
-        return (0);
+        return 0;
     if (((((cptr.ldI16(cptr.add(obj, 32)) == 475 || cptr.ldI16(cptr.add(obj, 32)) == 477 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 478 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 230 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == 284 ? 1 : 0) || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 64)) & 31) | 0) == 14 ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 const __static_shade_miss_harmlessly_thru = cptr.bytes(" harmlessly through "); /** C ref: uhitm.c:2033 — char[21] (function-static) */
@@ -1724,7 +1724,7 @@ export function shade_miss(magr, mdef, obj, thrown, verbose) {
     let youagr = schar((cptr.eq(magr, cptr.add(gy, 8))));
     let youdef = schar((cptr.eq(mdef, cptr.add(gy, 8))));
     if (!cptr.eq(cptr.ldPtr(cptr.add(mdef, 8)), cptr.add(mons, 288, 96)) || (obj && dmgval(obj, mdef) ? 1 : 0) ? 1 : 0)
-        return (0);
+        return 0;
     if (verbose && (((youdef || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mdef, 30)), 8)), cptr.ldI16(cptr.add(mdef, 28)))) & 2) != 0) ? 1 : 0) || sensemon(mdef) ? 1 : 0) || (cptr.eq(magr, cptr.add(gy, 8)) && (dist2((cptr.ldI16(cptr.add((mdef), 28))), (cptr.ldI16(cptr.add((mdef), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         what = (!obj || shade_aware(obj) ? 1 : 0) ? __sl120 : cxname(obj);
         target = youdef ? __sl121 : mon_nam(mdef);
@@ -1739,7 +1739,7 @@ export function shade_miss(magr, mdef, obj, thrown, verbose) {
     }
     if (!youdef)
         cptr.stI32(cptr.add(mdef, 144), 0);
-    return (1);
+    return 1;
 }
 
 /** C ref: uhitm.c:2056 — @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
@@ -1760,9 +1760,9 @@ function m_slips_free(mdef, mattk) {
             pline_The(__sl132);
             cptr.stI32(cptr.add(obj, 140), 0);
         }
-        return (1);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: uhitm.c:2098 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
@@ -1781,7 +1781,7 @@ function joust(mon, obj) {
     if (skill_rating == 0)
         skill_rating = 1;
     if ((joust_dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2122, __sl133), rn2(5)) : rn2(5))) < skill_rating) {
-        if (((joust_dieroll == 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2123, __sl133), rnl(50)) : rnl(50)) == ((50 - 1) | 0) ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 1048576n) != 0n) ? 1 : 0) && !obj_resists(obj, 0, 100) ? 1 : 0)
+        if (((joust_dieroll == 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2123, __sl133), rnl(50)) : rnl(50)) == 49 ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 1048576n) != 0n) ? 1 : 0) && !obj_resists(obj, 0, 100) ? 1 : 0)
             return -1;
         return 1;
     }
@@ -1795,18 +1795,18 @@ function demonpet() {
     let dtmp;
     pline(__sl134);
     i = !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2140, __sl135), rn2(6)) : rn2(6)) ? ndemon(cptr.ld1s(cptr.add(u, 2172))) : -1;
-    pm = i != -1 ? cptr.add(mons, i, 96) : cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8));
+    pm = i != -1 ? cptr.add(mons, i, 96) : cptr.ldPtr(cptr.add(gy, 16));
     if ((dtmp = makemon(pm, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0)) !== null)
-        void tamedog(dtmp, null, (0));
-    exercise(2, (1));
+        void tamedog(dtmp, null, 0);
+    exercise(2, 1);
 }
 
 /** C ref: uhitm.c:2148 — @param {CPtr} otmp @returns {CInt} */
 function theft_petrifies(otmp) {
     if (((uarmg.v || cptr.ldI16(cptr.add(otmp, 32)) != 265 ? 1 : 0) || !(cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), cptr.add(mons, 10, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), cptr.add(mons, 9, 96)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) ? 1 : 0)
-        return (0);
+        return 0;
     instapetrify(corpse_xname(otmp, __sl136, 8));
-    return (1);
+    return 1;
 }
 
 /** C ref: uhitm.c:2174 — @param {CPtr} mdef @param {CPtr} mattk */
@@ -1837,7 +1837,7 @@ function steal_it(mdef, mattk) {
     gold = findgold(cptr.ldPtr(cptr.add(mdef, 280)));
     if (ustealo) {
         let heshe = new Uint8Array(20);
-        if (gender(mdef) == ((cptr.ldI32(cptr.add(u, 1860)) & 1) | 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 14 ? 1 : 0)
+        if (gender(mdef) == ((cptr.ldI32(cptr.add(u, 1860)) & 1) | 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == 14 ? 1 : 0)
             You(__sl138, mon_nam(mdef), upstart(cptr.strcpy(cptr.decay(heshe), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mdef, 2), 48), 8))))), !gold ? __sl6 : __sl139, (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mdef, 2), 48), 24))));
         else
             You(__sl140, mon_nam(mdef), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mdef, 2), 48), 8))), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mdef, 2), 48), 24))));
@@ -1852,7 +1852,7 @@ function steal_it(mdef, mattk) {
         unwornmask = cptr.ldI64(cptr.add(otmp, 192));
         if (cptr.ld1s(cptr.add(otmp, 51)) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0)
             find_artifact(otmp);
-        extract_from_minvent(mdef, otmp, (1), (0));
+        extract_from_minvent(mdef, otmp, 1, 0);
         if (cptr.eq(otmp, ustealo))
             pline(__sl141, Monnam(mdef), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mdef, 2), 48), 24))));
         otmp = hold_another_object(otmp, __sl142, doname(otmp), __sl143);
@@ -1861,9 +1861,9 @@ function steal_it(mdef, mattk) {
         if (theft_petrifies(otmp))
             break;
         if (unwornmask & 256n) {
-            possibly_unwield(mdef, (0));
+            possibly_unwield(mdef, 0);
         } else if (unwornmask & 16n) {
-            mselftouch(mdef, null, (1));
+            mselftouch(mdef, null, 1);
             if ((cptr.ldI32(cptr.add((mdef), 52)) < 1))
                 break;
         }
@@ -1907,15 +1907,15 @@ export function mhitm_ad_rust(magr, mattk, mdef, mhm) {
             monkilled(mdef, null, 24);
             if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), 0);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
             cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         }
         erode_armor(mdef, 1);
-        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         cptr.stI32(mhm, 0);
     }
 }
@@ -1934,7 +1934,7 @@ export function mhitm_ad_corr(magr, mattk, mdef, mhm) {
         if ((cptr.ldI32(cptr.add(magr, 100)) & 1))
             return;
         erode_armor(mdef, 3);
-        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         cptr.stI32(mhm, 0);
     }
 }
@@ -1967,31 +1967,31 @@ export function mhitm_ad_dcay(magr, mattk, mdef, mhm) {
                 pline_mon(mdef, __sl144, Monnam(mdef), !mlifesaver(mdef) ? __sl145 : __sl146);
             monkilled(mdef, null, 34);
             if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 cptr.stI32(cptr.add(mhm, 4), 0);
                 return;
             }
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
             return;
         }
         erode_armor(mdef, 2);
-        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         cptr.stI32(mhm, 0);
     }
 }
 
 /** C ref: uhitm.c:2418 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_dren(magr, mattk, mdef, mhm) {
-    let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+    let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
     if (cptr.eq(magr, cptr.add(gy, 8))) {
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2426, __sl149), rn2(4)) : rn2(4)) ? 1 : 0)
-            xdrainenergym(mdef, (1));
+            xdrainenergym(mdef, 1);
         cptr.stI32(mhm, 0);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2432, __sl149), rn2(4)) : rn2(4)) ? 1 : 0)
-            drain_en(cptr.ldI32(mhm), (0));
+            drain_en(cptr.ldI32(mhm), 0);
         cptr.stI32(mhm, 0);
     } else {
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2437, __sl149), rn2(4)) : rn2(4)) ? 1 : 0)
@@ -2003,8 +2003,8 @@ export function mhitm_ad_dren(magr, mattk, mdef, mhm) {
 /** C ref: uhitm.c:2445 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_drli(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2451, __sl150), rn2(3)) : rn2(3)) && !(resists_drli(mdef) || defended(mdef, 15) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
-            cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2453, __sl150), d((2), (6))) : d((2), (6))));
+        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2451, __sl150), rn2(3)) : rn2(3)) && !(resists_drli(mdef) || defended(mdef, 15) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
+            cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2453, __sl150), d(2, 6)) : d(2, 6)));
             pline(__sl151, Monnam(mdef));
             if (((cptr.ldI32(cptr.add(mdef, 56)) - cptr.ldI32(mhm)) | 0) > cptr.ld1u(cptr.add(mdef, 26))) {
                 cptr.stI32(cptr.add(mdef, 56), (cptr.ldI32(cptr.add(mdef, 56)) - cptr.ldI32(mhm)) | 0);
@@ -2022,14 +2022,14 @@ export function mhitm_ad_drli(magr, mattk, mdef, mhm) {
         }
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2482, __sl150), rn2(3)) : rn2(3)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 9, 24)) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2482, __sl150), rn2(3)) : rn2(3)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 9, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 9, 24)) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             losexp(__sl155);
         }
     } else {
         let is_death = schar((cptr.ld1u(cptr.add(mattk, 1)) == 37));
-        if (is_death || ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2495, __sl150), rn2(3)) : rn2(3)) && !(resists_drli(mdef) || defended(mdef, 15) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) ? 1 : 0) {
+        if (is_death || ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2495, __sl150), rn2(3)) : rn2(3)) && !(resists_drli(mdef) || defended(mdef, 15) ? 1 : 0) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) ? 1 : 0) {
             if (!is_death)
-                cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2498, __sl150), d((2), (6))) : d((2), (6))));
+                cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2498, __sl150), d(2, 6)) : d(2, 6)));
             if (cptr.ld1s(cptr.add(gv, 80)) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0)
                 pline_mon(mdef, __sl151, Monnam(mdef));
             if (((cptr.ldI32(cptr.add(mdef, 56)) - cptr.ldI32(mhm)) | 0) > cptr.ld1u(cptr.add(mdef, 26))) {
@@ -2051,7 +2051,7 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
     let pd = cptr.ldPtr(cptr.add(mdef, 8));
     let orig_dmg = cptr.ldI32(mhm);
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2062,7 +2062,7 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
                 pline(__sl152, Monnam(mdef), !mlifesaver(mdef) ? __sl157 : __sl158);
             else
                 You(__sl159, (cptr.eq(pd, cptr.add(mons, 250, 96))) ? __sl160 : ((cptr.eq(pd, cptr.add(mons, 249, 96))) ? __sl161 : __sl6));
-            xkilled(mdef, 1 | 2);
+            xkilled(mdef, 3);
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2077,7 +2077,7 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
         ignite_items(cptr.ldPtr(cptr.add(mdef, 280)));
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if (!mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (!mhitm_mgc_atk_negated(magr, mdef, 1)) {
             pline(__sl163, on_fire(pd, mattk));
             if ((cptr.eq((pd), cptr.add(mons, 250, 96)) || cptr.eq((pd), cptr.add(mons, 249, 96)) ? 1 : 0)) {
                 You(__sl164);
@@ -2100,7 +2100,7 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
             cptr.stI32(mhm, 0);
         }
     } else {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2112,11 +2112,11 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
             monkilled(mdef, null, 2);
             if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), 0);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
             cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         }
         if (Resists_Elem(mdef, 1) || defended(mdef, 2) ? 1 : 0) {
@@ -2135,7 +2135,7 @@ export function mhitm_ad_fire(magr, mattk, mdef, mhm) {
 export function mhitm_ad_cold(magr, mattk, mdef, mhm) {
     let orig_dmg = cptr.ldI32(mhm);
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2151,7 +2151,7 @@ export function mhitm_ad_cold(magr, mattk, mdef, mhm) {
         cptr.stI32(mhm, (cptr.ldI32(mhm) + destroy_items(mdef, 3, orig_dmg)) | 0);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if (!mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (!mhitm_mgc_atk_negated(magr, mdef, 1)) {
             pline(__sl170);
             if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 2, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 2, 24)) ? 1 : 0)) {
                 pline_The(__sl171);
@@ -2165,7 +2165,7 @@ export function mhitm_ad_cold(magr, mattk, mdef, mhm) {
         } else
             cptr.stI32(mhm, 0);
     } else {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2186,7 +2186,7 @@ export function mhitm_ad_cold(magr, mattk, mdef, mhm) {
 export function mhitm_ad_elec(magr, mattk, mdef, mhm) {
     let orig_dmg = cptr.ldI32(mhm);
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2202,7 +2202,7 @@ export function mhitm_ad_elec(magr, mattk, mdef, mhm) {
         cptr.stI32(mhm, (cptr.ldI32(mhm) + destroy_items(mdef, 6, orig_dmg)) | 0);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if (!mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (!mhitm_mgc_atk_negated(magr, mdef, 1)) {
             You(__sl176);
             if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 5, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 5, 24)) ? 1 : 0)) {
                 pline_The(__sl177);
@@ -2216,7 +2216,7 @@ export function mhitm_ad_elec(magr, mattk, mdef, mhm) {
         } else
             cptr.stI32(mhm, 0);
     } else {
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             cptr.stI32(mhm, 0);
             return;
         }
@@ -2247,7 +2247,7 @@ export function mhitm_ad_acid(magr, mattk, mdef, mhm) {
                 cptr.stI32(mhm, 0);
             } else {
                 pline(__sl183, hliquid(__sl182));
-                exercise(0, (0));
+                exercise(0, 0);
                 monstunseesu(128n);
             }
         else
@@ -2280,7 +2280,7 @@ export function mhitm_ad_sgld(magr, mattk, mdef, mhm) {
         let mongold = findgold(cptr.ldPtr(cptr.add(mdef, 280)));
         if (mongold) {
             obj_extract_self(mongold);
-            if (merge_choice(cptr.ldPtr(cptr.add(gi, 8)), mongold) || inv_cnt((0)) < 52 ? 1 : 0) {
+            if (merge_choice(cptr.ldPtr(cptr.add(gi, 8)), mongold) || inv_cnt(0) < 52 ? 1 : 0) {
                 addinv(mongold);
                 Your(__sl187);
             } else {
@@ -2288,7 +2288,7 @@ export function mhitm_ad_sgld(magr, mattk, mdef, mhm) {
                 dropy(mongold);
             }
         }
-        exercise(3, (1));
+        exercise(3, 1);
         cptr.stI32(mhm, 0);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
@@ -2308,7 +2308,7 @@ export function mhitm_ad_sgld(magr, mattk, mdef, mhm) {
             obj_extract_self(gold);
             add_to_minv(magr, gold);
         }
-        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+        cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         void cptr.strcpy(cptr.decay(buf), Monnam(magr));
         if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0) {
             pline(__sl189, cptr.decay(buf), mon_nam(mdef));
@@ -2328,13 +2328,13 @@ export function mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
         if (cptr.ldI32(mhm) <= 0)
             cptr.stI32(mhm, 1);
-        if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             pline(__sl191, Monnam(mdef));
         } else {
             let nambuf = new Uint8Array(256);
             let u_saw_mon = schar((canseemon(mdef) || ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mdef))) ? 1 : 0) ? 1 : 0));
             void cptr.strcpy(cptr.decay(nambuf), Monnam(mdef));
-            if ((u_teleport_mon(mdef, (0)) && u_saw_mon ? 1 : 0) && !(canseemon(mdef) || ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mdef))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if ((u_teleport_mon(mdef, 0) && u_saw_mon ? 1 : 0) && !(canseemon(mdef) || ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), (mdef))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 pline(__sl190, cptr.decay(nambuf));
             if (cptr.ldI32(mhm) >= cptr.ldI32(cptr.add(mdef, 52))) {
                 if (cptr.ldI32(cptr.add(mdef, 52)) == 1)
@@ -2345,7 +2345,7 @@ export function mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         let tmphp;
         hitmsg(magr, mattk);
-        if (mhitm_mgc_atk_negated(magr, mdef, (0))) {
+        if (mhitm_mgc_atk_negated(magr, mdef, 0)) {
             You(__sl192);
         } else {
             if (cptr.ld1s(cptr.add(flags, 48)))
@@ -2367,7 +2367,7 @@ export function mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
     } else {
         if (((cptr.ldI32(cptr.add(magr, 100)) & 1) | 0 || cptr.ldI32(mhm) >= cptr.ldI32(cptr.add(mdef, 52)) ? 1 : 0) || tele_restrict(mdef) ? 1 : 0) {
             ;
-        } else if (mhitm_mgc_atk_negated(magr, mdef, (1))) {
+        } else if (mhitm_mgc_atk_negated(magr, mdef, 1)) {
             if (cptr.ld1s(cptr.add(gv, 80)))
                 pline_mon(mdef, __sl191, Monnam(mdef));
         } else {
@@ -2375,7 +2375,7 @@ export function mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
             let wasseen = schar((canseemon(mdef) || sensemon(mdef) ? 1 : 0));
             if (cptr.ld1s(cptr.add(gv, 80)) && wasseen ? 1 : 0)
                 void cptr.strcpy(cptr.decay(mdef_Monnam), Monnam(mdef));
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
             void rloc(mdef, 4);
             if (((cptr.ld1s(cptr.add(gv, 80)) && wasseen ? 1 : 0) && !(canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0) && !cptr.eq(mdef, cptr.ldPtr(cptr.add(u, 2424))) ? 1 : 0)
                 pline(__sl190, cptr.decay(mdef_Monnam));
@@ -2405,7 +2405,7 @@ export function mhitm_ad_blnd(magr, mattk, mdef, mhm) {
         if (can_blnd(magr, mdef, cptr.ld1u(mattk), null)) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline(__sl196, Monnam(magr));
-            make_blinded(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) + BigInt(cptr.ldI32(mhm))), (0));
+            make_blinded(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) & 16777215n) + BigInt(cptr.ldI32(mhm))), 0);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 Your(__sl197, cptr.ldPtr(cptr.add(c_common_strings, 72)));
         }
@@ -2425,7 +2425,7 @@ export function mhitm_ad_blnd(magr, mattk, mdef, mhm) {
                 rnd_tmp = 127;
             cptr.stI32(cptr.add(mdef, 148), rnd_tmp);
             cptr.stI32(cptr.add(mdef, 112), 0);
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         }
         if (mhm)
             cptr.stI32(mhm, 0);
@@ -2453,7 +2453,7 @@ export function mhitm_ad_curs(magr, mattk, mdef, mhm) {
         if (!night() && cptr.eq(pa, cptr.add(mons, 40, 96)) ? 1 : 0)
             return;
         if (!(cptr.ldI32(cptr.add(magr, 100)) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3042, __sl202), rn2(10)) : rn2(10)) ? 1 : 0) {
-            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) {
+            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0)) {
                 ;
                 if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
                     You_hear(__sl205);
@@ -2473,7 +2473,7 @@ export function mhitm_ad_curs(magr, mattk, mdef, mhm) {
             return;
         if (!(cptr.ldI32(cptr.add(magr, 100)) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3063, __sl202), rn2(10)) : rn2(10)) ? 1 : 0) {
             cptr.stI32(cptr.add(mdef, 100), 1);
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
             if (((cptr.ldU64(cptr.add((pd), 80)) & 4n) != 0n) && cptr.ld1s(cptr.add(pd, 28)) != 53 ? 1 : 0)
                 were_change(mdef);
             if (cptr.eq(pd, cptr.add(mons, 256, 96))) {
@@ -2484,16 +2484,16 @@ export function mhitm_ad_curs(magr, mattk, mdef, mhm) {
                 mondied(mdef);
                 if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                     cptr.stI32(cptr.add(mhm, 4), 0);
-                    cptr.st1(cptr.add(mhm, 8), (1));
+                    cptr.st1(cptr.add(mhm, 8), 1);
                     return;
                 } else if (cptr.ld1s(cptr.add(mdef, 65)) && !cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0) {
                     You(cptr.decay(brief_feeling), __sl209);
                 }
                 cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
-            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) {
+            if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0)) {
                 if (!cptr.ld1s(cptr.add(gv, 80)))
                     You_hear(__sl205);
                 else if (canseemon(magr))
@@ -2511,7 +2511,7 @@ function mhitm_really_poison(magr, mattk, mdef, mhm) {
         if ((cptr.ld1s(cptr.add(gv, 80)) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0) && (canseemon(magr) || sensemon(magr) ? 1 : 0) ? 1 : 0)
             pline_The(__sl112, mon_nam(mdef));
     } else {
-        cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3115, __sl211), rn2(10)) : rn2(10)) + (6)) | 0)) | 0);
+        cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3115, __sl211), rn2(10)) : rn2(10)) + 6) | 0)) | 0);
         if ((cptr.ldI32(mhm) >= cptr.ldI32(cptr.add(mdef, 52)) && cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0)
             pline_The(__sl113);
     }
@@ -2519,7 +2519,7 @@ function mhitm_really_poison(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3122 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_drst(magr, mattk, mdef, mhm) {
-    let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+    let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
     let pa = cptr.ldPtr(cptr.add(magr, 8));
     if (cptr.eq(magr, cptr.add(gy, 8))) {
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3131, __sl212), rn2(8)) : rn2(8)) ? 1 : 0) {
@@ -2531,7 +2531,7 @@ export function mhitm_ad_drst(magr, mattk, mdef, mhm) {
                     Your(__sl113);
                     cptr.stI32(mhm, cptr.ldI32(cptr.add(mdef, 52)));
                 } else
-                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3140, __sl212), rn2(10)) : rn2(10)) + (6)) | 0)) | 0);
+                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3140, __sl212), rn2(10)) : rn2(10)) + 6) | 0)) | 0);
             }
         }
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
@@ -2551,7 +2551,7 @@ export function mhitm_ad_drst(magr, mattk, mdef, mhm) {
         hitmsg(magr, mattk);
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3154, __sl212), rn2(8)) : rn2(8)) ? 1 : 0) {
             void cptr.sprintf(cptr.decay(buf), __sl214, s_suffix(Monnam(magr)), mpoisons_subj(magr, mattk));
-            poisoned(cptr.decay(buf), ptmp, pmname(pa, Mgender(magr)), 30, (0));
+            poisoned(cptr.decay(buf), ptmp, pmname(pa, Mgender(magr)), 30, 0);
         }
     } else {
         if (!negated && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3161, __sl212), rn2(8)) : rn2(8)) ? 1 : 0) {
@@ -2569,7 +2569,7 @@ export function mhitm_ad_drin(magr, mattk, mdef, mhm) {
         let helmet;
         if (cptr.ld1s(cptr.add(gn, 86)) || !((cptr.ldU64(cptr.add((pd), 72)) & 32768n) == 0n) ? 1 : 0) {
             pline(__sl215, Monnam(mdef));
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
             cptr.stI32(mhm, 0);
             if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 63, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 63, 24)) ? 1 : 0) && cptr.eq(pd, cptr.add(mons, 208, 96)) ? 1 : 0) {
                 if (!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 22, 24), 16))) {
@@ -2587,14 +2587,14 @@ export function mhitm_ad_drin(magr, mattk, mdef, mhm) {
         }
         amu = which_armor(mdef, 65536n);
         lifsav = schar((amu && cptr.ldI16(cptr.add(amu, 32)) == 202 ? 1 : 0));
-        void eat_brains(cptr.add(gy, 8), mdef, (1), mhm);
+        void eat_brains(cptr.add(gy, 8), mdef, 1, mhm);
         if (lifsav && !which_armor(mdef, 65536n) ? 1 : 0)
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
         if (defends(32, uwep.v) || !((cptr.ldU64(cptr.add((pd), 72)) & 32768n) == 0n) ? 1 : 0) {
             You(__sl219);
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
             return;
         }
         if (u_slip_free(magr, mattk))
@@ -2609,20 +2609,20 @@ export function mhitm_ad_drin(magr, mattk, mdef, mhm) {
         cptr.stI32(mhm, 0);
         if (!uarmh.v || cptr.ldI16(cptr.add(uarmh.v, 32)) != 94 ? 1 : 0) {
             let oldmort = cptr.ldI32(cptr.add(u, 2452));
-            let mhitu = eat_brains(magr, mdef, (1), null);
+            let mhitu = eat_brains(magr, mdef, 1, null);
             if (cptr.ldI32(cptr.add(u, 2452)) > oldmort)
-                cptr.st1(cptr.add(gs, 944), (1));
+                cptr.st1(cptr.add(gs, 944), 1);
             if (mhitu == 0)
                 return;
         }
         void adjattrib(1, -(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3263, __sl217), rnd(2)) : rnd(2)), 0);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3264, __sl217), rn2(5)) : rn2(5))) {
             losespells();
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
         }
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3268, __sl217), rn2(5)) : rn2(5))) {
             drain_weapon_skill((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3269, __sl217), rnd(2)) : rnd(2)));
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
         }
     } else {
         let buf = new Uint8Array(256);
@@ -2630,7 +2630,7 @@ export function mhitm_ad_drin(magr, mattk, mdef, mhm) {
             if (cptr.ld1s(cptr.add(gv, 80)) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0)
                 pline_mon(mdef, __sl215, Monnam(mdef));
             cptr.stI32(mhm, 0);
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
             return;
         }
         if ((cptr.ldI64(cptr.add(mdef, 296)) & 4n) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3286, __sl217), rn2(8)) : rn2(8)) ? 1 : 0) {
@@ -2644,13 +2644,13 @@ export function mhitm_ad_drin(magr, mattk, mdef, mhm) {
         lifsav = schar((amu && cptr.ldI16(cptr.add(amu, 32)) == 202 ? 1 : 0));
         cptr.stI32(cptr.add(mhm, 4), eat_brains(magr, mdef, cptr.ld1s(cptr.add(gv, 80)), mhm));
         if (lifsav && !which_armor(mdef, 65536n) ? 1 : 0)
-            cptr.st1(cptr.add(gs, 944), (1));
+            cptr.st1(cptr.add(gs, 944), 1);
     }
 }
 
 /** C ref: uhitm.c:3306 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_stck(magr, mattk, mdef, mhm) {
-    let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+    let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
     let pd = cptr.ldPtr(cptr.add(mdef, 8));
     let barbs = schar((cptr.eq(cptr.ldPtr(cptr.add(magr, 8)), cptr.add(mons, 293, 96))));
     if (cptr.eq(magr, cptr.add(gy, 8))) {
@@ -2714,8 +2714,8 @@ export function mhitm_ad_wrap(magr, mattk, mdef, mhm) {
                     urgent_pline(__sl233, Some_Monnam(magr), coil ? __sl234 : __sl235);
                 }
             } else if (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), magr)) {
-                if (((is_pool(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30))) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 51, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 2n) != 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 1024n) != 0n) ? 1 : 0) ? 1 : 0) {
-                    let moat = schar(((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(magr, 28)), 756), cptr.ldI16(cptr.add(magr, 30)), 36), 4)) != 16) && !is_waterwall(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30))) ? 1 : 0) && !(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 12)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 12))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 12)) ? 1 : 0)) ? 1 : 0) && !(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0));
+                if (((is_pool(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30))) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 51, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 51, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 2n) != 0n) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 1024n) != 0n) ? 1 : 0) ? 1 : 0) {
+                    let moat = schar(((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(magr, 28)), 756), cptr.ldI16(cptr.add(magr, 30)), 36), 4)) != 16) && !is_waterwall(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30))) ? 1 : 0) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1804)), 2)) || cptr.ldI16((cptr.add(svd, 1804))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1804)) ? 1 : 0)) ? 1 : 0) && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0));
                     urgent_pline(__sl236, Monnam(magr));
                     cptr.stI32(cptr.add(svk, 12), 0);
                     void cptr.sprintf(cptr.add(svk, 16), __sl237, moat ? __sl238 : __sl239, an(pmname(cptr.ldPtr(cptr.add(magr, 8)), Mgender(magr))));
@@ -2746,14 +2746,14 @@ export function mhitm_ad_wrap(magr, mattk, mdef, mhm) {
 /** C ref: uhitm.c:3431 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_plys(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3437, __sl244), rn2(3)) : rn2(3)) && cptr.ldI32(mhm) < cptr.ldI32(cptr.add(mdef, 52)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if ((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3437, __sl244), rn2(3)) : rn2(3)) && cptr.ldI32(mhm) < cptr.ldI32(cptr.add(mdef, 52)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline(__sl245, Monnam(mdef));
             paralyze_monst(mdef, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3441, __sl244), rnd(10)) : rnd(10)));
         }
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if ((cptr.ldI64(cptr.add(gm, 8)) >= 0n && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3446, __sl244), rn2(3)) : rn2(3)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if ((cptr.ldI64(cptr.add(gm, 8)) >= 0n && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3446, __sl244), rn2(3)) : rn2(3)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             if (cptr.ldI64(cptr.add(cptr.add(u, 112), 66, 24))) {
                 You(__sl246);
             } else {
@@ -2763,12 +2763,12 @@ export function mhitm_ad_plys(magr, mattk, mdef, mhm) {
                     You(__sl248, mon_nam(magr));
                 cptr.stPtr(cptr.add(gn, 8), cptr.ldPtr(cptr.add(c_common_strings, 56)));
                 nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3456, __sl244), rnd(10)) : rnd(10)));
-                dynamic_multi_reason(magr, __sl249, (0));
-                exercise(3, (0));
+                dynamic_multi_reason(magr, __sl249, 0);
+                exercise(3, 0);
             }
         }
     } else {
-        if (((cptr.ldI32(cptr.add(mdef, 160)) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3465, __sl244), rn2(3)) : rn2(3)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if (((cptr.ldI32(cptr.add(mdef, 160)) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3465, __sl244), rn2(3)) : rn2(3)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             if (cptr.ld1s(cptr.add(gv, 80)) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0) {
                 let buf = new Uint8Array(256);
                 void cptr.strcpy(cptr.decay(buf), Monnam(mdef));
@@ -2782,20 +2782,20 @@ export function mhitm_ad_plys(magr, mattk, mdef, mhm) {
 /** C ref: uhitm.c:3479 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_slee(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if ((!(cptr.ldI32(cptr.add(mdef, 144)) & 1) && !mhitm_mgc_atk_negated(magr, mdef, (0)) ? 1 : 0) && sleep_monst(mdef, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3487, __sl251), rnd(10)) : rnd(10)), -1) ? 1 : 0) {
+        if ((!(cptr.ldI32(cptr.add(mdef, 144)) & 1) && !mhitm_mgc_atk_negated(magr, mdef, 0) ? 1 : 0) && sleep_monst(mdef, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3487, __sl251), rnd(10)) : rnd(10)), -1) ? 1 : 0) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline(__sl252, Monnam(mdef));
             slept_monst(mdef);
         }
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if ((cptr.ldI64(cptr.add(gm, 8)) >= 0n && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3495, __sl251), rn2(5)) : rn2(5)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if ((cptr.ldI64(cptr.add(gm, 8)) >= 0n && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3495, __sl251), rn2(5)) : rn2(5)) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 3, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 3, 24)) ? 1 : 0)) {
                 monstseesu(8n);
                 return;
             }
             monstunseesu(8n);
-            fall_asleep(-(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3502, __sl251), rnd(10)) : rnd(10)), (1));
+            fall_asleep(-(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3502, __sl251), rnd(10)) : rnd(10)), 1);
             if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 You(__sl253);
             else
@@ -2808,7 +2808,7 @@ export function mhitm_ad_slee(magr, mattk, mdef, mhm) {
                 void cptr.strcpy(cptr.decay(buf), Monnam(mdef));
                 pline(__sl255, cptr.decay(buf), mon_nam(magr));
             }
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
             slept_monst(mdef);
         }
     }
@@ -2816,20 +2816,20 @@ export function mhitm_ad_slee(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3526 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_slim(magr, mattk, mdef, mhm) {
-    let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+    let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
     let pd = cptr.ldPtr(cptr.add(mdef, 8));
     if (cptr.eq(magr, cptr.add(gy, 8))) {
         if (negated)
             return;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3537, __sl256), rn2(4)) : rn2(4)) && !((cptr.eq((pd), cptr.add(mons, 208, 96)) || (((cptr.eq((pd), cptr.add(mons, 111, 96)) || cptr.eq((pd), cptr.add(mons, 30, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 155, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 329, 96)) ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add((pd), 28)) == 54) ? 1 : 0) ? 1 : 0) {
-            if (!munslime(mdef, (1)) && !(cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) {
+            if (!munslime(mdef, 1) && !(cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) {
                 You(__sl257, mon_nam(mdef));
                 if (newcham(mdef, cptr.add(mons, 208, 96), 0))
                     pd = cptr.ldPtr(cptr.add(mdef, 8));
             }
             if ((cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), 2);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
             cptr.stI32(mhm, 0);
@@ -2857,13 +2857,13 @@ export function mhitm_ad_slim(magr, mattk, mdef, mhm) {
         if (negated)
             return;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3579, __sl256), rn2(4)) : rn2(4)) && !((cptr.eq((pd), cptr.add(mons, 208, 96)) || (((cptr.eq((pd), cptr.add(mons, 111, 96)) || cptr.eq((pd), cptr.add(mons, 30, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 155, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 329, 96)) ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add((pd), 28)) == 54) ? 1 : 0) ? 1 : 0) {
-            if (!munslime(mdef, (0)) && !(cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) {
+            if (!munslime(mdef, 0) && !(cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) {
                 let ncflags = 0;
                 if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0)
                     ncflags |= 1;
                 if (newcham(mdef, cptr.add(mons, 208, 96), ncflags))
                     pd = cptr.ldPtr(cptr.add(mdef, 8));
-                cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+                cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
                 cptr.stI32(cptr.add(mhm, 4), 1);
             }
             if ((cptr.ldI32(cptr.add((magr), 52)) < 1))
@@ -2880,7 +2880,7 @@ export function mhitm_ad_slim(magr, mattk, mdef, mhm) {
 export function mhitm_ad_ench(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
-        let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+        let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
         hitmsg(magr, mattk);
         if (!negated) {
             let obj = some_armor(mdef);
@@ -2902,7 +2902,7 @@ export function mhitm_ad_ench(magr, mattk, mdef, mhm) {
                     break;
                 }
             }
-            if (obj && drain_item(obj, (0)) ? 1 : 0) {
+            if (obj && drain_item(obj, 0) ? 1 : 0) {
                 pline(__sl264, Yobjnam2(obj, __sl265));
             }
         }
@@ -2912,7 +2912,7 @@ export function mhitm_ad_ench(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3652 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_slow(magr, mattk, mdef, mhm) {
-    let negated = mhitm_mgc_atk_negated(magr, mdef, (0));
+    let negated = mhitm_mgc_atk_negated(magr, mdef, 0);
     if (defended(mdef, 13))
         return;
     if (cptr.eq(magr, cptr.add(gy, 8))) {
@@ -2930,7 +2930,7 @@ export function mhitm_ad_slow(magr, mattk, mdef, mhm) {
         if (!negated && ((cptr.ldI32(cptr.add(mdef, 116)) & 3) | 0) != 1 ? 1 : 0) {
             let oldspeed = (cptr.ldI32(cptr.add(mdef, 116)) & 3);
             mon_adjust_speed(mdef, -1, null);
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
             if (((cptr.ldI32(cptr.add(mdef, 116)) & 3) != oldspeed && cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0) && (canseemon(mdef) || sensemon(mdef) ? 1 : 0) ? 1 : 0)
                 pline_mon(mdef, __sl266, Monnam(mdef));
         }
@@ -2953,7 +2953,7 @@ export function mhitm_ad_conf(magr, mattk, mdef, mhm) {
                 You(__sl270);
             else
                 You(__sl271);
-            make_confused(BigInt.asIntN(64, cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) + BigInt(cptr.ldI32(mhm))), (0));
+            make_confused(BigInt.asIntN(64, cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 14, 24), 16)) + BigInt(cptr.ldI32(mhm))), 0);
         }
         cptr.stI32(mhm, 0);
     } else {
@@ -2961,14 +2961,14 @@ export function mhitm_ad_conf(magr, mattk, mdef, mhm) {
             if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0)
                 pline_mon(mdef, __sl268, Monnam(mdef));
             cptr.stI32(cptr.add(mdef, 164), 1);
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         }
     }
 }
 
 /** C ref: uhitm.c:3729 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_poly(magr, mattk, mdef, mhm) {
-    let negated = schar((mhitm_mgc_atk_negated(magr, mdef, (0)) || cptr.ldI32(cptr.add(magr, 80)) ? 1 : 0));
+    let negated = schar((mhitm_mgc_atk_negated(magr, mdef, 0) || cptr.ldI32(cptr.add(magr, 80)) ? 1 : 0));
     if (cptr.eq(magr, cptr.add(gy, 8))) {
         if (!uwep.v && cptr.ldI32(mhm) < cptr.ldI32(cptr.add(mdef, 52)) ? 1 : 0) {
             if (negated) {
@@ -2978,7 +2978,7 @@ export function mhitm_ad_poly(magr, mattk, mdef, mhm) {
                 if ((cptr.ldI32(cptr.add((mdef), 52)) < 1))
                     cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 2);
                 cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 1);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
             }
         }
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
@@ -2990,7 +2990,7 @@ export function mhitm_ad_poly(magr, mattk, mdef, mhm) {
             } else {
                 cptr.stI32(mhm, mon_poly(magr, cptr.add(gy, 8), cptr.ldI32(mhm)));
                 cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 1);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
             }
         }
     } else {
@@ -2999,7 +2999,7 @@ export function mhitm_ad_poly(magr, mattk, mdef, mhm) {
             if ((cptr.ldI32(cptr.add((mdef), 52)) < 1))
                 cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 2);
             cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 1);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
         }
     }
 }
@@ -3014,9 +3014,9 @@ export function mhitm_ad_famn(magr, mattk, mdef, mhm) {
             { __go_mhitm_famn = true; break __skip_mhitm_famn; }
         } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
             pline_mon(magr, __sl274, Monnam(magr));
-            exercise(4, (0));
+            exercise(4, 0);
             if (!is_fainted())
-                morehungry((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3795, __sl275), rn2(40)) : rn2(40)) + (40)) | 0));
+                morehungry((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 3795, __sl275), rn2(40)) : rn2(40)) + 40) | 0));
         } else {
             __go_mhitm_famn = true; break __skip_mhitm_famn;
         }
@@ -3142,7 +3142,7 @@ export function mhitm_ad_halu(magr, mattk, mdef, mhm) {
             if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0)
                 pline_mon(mdef, __sl282, Monnam(mdef), (cptr.ldI32(cptr.add(mdef, 164)) & 1) | 0 ? __sl283 : __sl6);
             cptr.stI32(cptr.add(mdef, 164), 1);
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
         }
         cptr.stI32(mhm, 0);
     }
@@ -3150,7 +3150,7 @@ export function mhitm_ad_halu(magr, mattk, mdef, mhm) {
 
 /** C ref: uhitm.c:3924 — @param {CPtr} mtmp @returns {CInt} */
 export function do_stone_u(mtmp) {
-    if ((!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 18, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) ? 1 : 0) && !(poly_when_stoned(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) && polymon(257) ? 1 : 0) ? 1 : 0) {
+    if ((!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 18, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) ? 1 : 0) && !(poly_when_stoned(cptr.ldPtr(cptr.add(gy, 16))) && polymon(257) ? 1 : 0) ? 1 : 0) {
         let kformat = 0;
         let kname = pmname(cptr.ldPtr(cptr.add(mtmp, 8)), Mgender(mtmp));
         if (cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & 4096) {
@@ -3167,17 +3167,17 @@ export function do_stone_u(mtmp) {
 /** C ref: uhitm.c:3945 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function do_stone_mon(magr, mattk, mdef, mhm) {
     let pd = cptr.ldPtr(cptr.add(mdef, 8));
-    if (munstone(mdef, (0)))
+    if (munstone(mdef, 0))
         {
             if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), 0);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             } else if (cptr.ld1s(cptr.add(mdef, 65)) && !cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0) {
                 You(cptr.decay(brief_feeling), __sl284);
             }
             cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         }
     if (poly_when_stoned(pd)) {
@@ -3191,13 +3191,13 @@ export function do_stone_mon(magr, mattk, mdef, mhm) {
         monstone(mdef);
         if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
             cptr.stI32(cptr.add(mhm, 4), 0);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         } else if (cptr.ld1s(cptr.add(mdef, 65)) && !cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0) {
             You(cptr.decay(brief_feeling), __sl284);
         }
         cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-        cptr.st1(cptr.add(mhm, 8), (1));
+        cptr.st1(cptr.add(mhm, 8), 1);
         return;
     }
     cptr.stI32(mhm, (cptr.ld1u(cptr.add(mattk, 1)) == 18 ? 0 : 1));
@@ -3239,7 +3239,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                     cptr.stI32(cptr.add(mhm, 4), cptr.ldI32(cptr.add(mhm, 4)) | 1);
                 }
             } else if (cptr.eq(cptr.ldPtr(cptr.add(u, 2416)), magr)) {
-                exercise(0, (0));
+                exercise(0, 0);
                 You(__sl289, (cptr.eq(pa, cptr.add(mons, 251, 96))) ? __sl290 : __sl291);
             }
         } else {
@@ -3261,7 +3261,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                 }
                 cptr.stI32(mhm, (cptr.ldI32(mhm) + dmgval(otmp, mdef)) | 0);
                 if ((marmg = which_armor(magr, 16n)) !== null && cptr.ldI16(cptr.add(marmg, 32)) == 161 ? 1 : 0)
-                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 4064, __sl287), rn2(4)) : rn2(4)) + (3)) | 0)) | 0);
+                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 4064, __sl287), rn2(4)) : rn2(4)) + 3) | 0)) | 0);
                 if (cptr.ldI32(mhm) <= 0)
                     cptr.stI32(mhm, 1);
                 if (!cptr.ld1s(cptr.add(otmp, 51)) || !artifact_hit(magr, mdef, otmp, mhm, cptr.ldI32(cptr.add(gm, 216))) ? 1 : 0) {
@@ -3270,9 +3270,9 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                 }
                 if (!cptr.ldI32(mhm))
                     return;
-                if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0) {
+                if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) ? 1 : 0) {
                     pline_The(__sl293);
-                    exercise(4, (0));
+                    exercise(4, 0);
                 }
                 tmp = cptr.ldI32(mhm);
                 if (cptr.ld1s(cptr.add(u, 2190)) < 0)
@@ -3283,9 +3283,9 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                     tmp = (((tmp + 1) | 0) / 2) | 0;
                 if ((((cptr.ldI32(cptr.add(u, 1812)) - tmp) | 0) > 1 && (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) & 31) | 0) == 11 || ((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 64)) & 31) | 0) == 12 ? 1 : 0) ? 1 : 0) && (cptr.ldI32(cptr.add(u, 1808)) == 209 || cptr.ldI32(cptr.add(u, 1808)) == 207 ? 1 : 0) ? 1 : 0) {
                     if (tmp > 1)
-                        exercise(0, (0));
+                        exercise(0, 0);
                     cptr.stI32(cptr.add(u, 1812), (cptr.ldI32(cptr.add(u, 1812)) - tmp) | 0);
-                    cptr.st1(disp, (1));
+                    cptr.st1(disp, 1);
                     cptr.stI32(mhm, 0);
                     if (cloneu())
                         You(__sl294, mon_nam(magr));
@@ -3294,7 +3294,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                 if (was_poisoned && cptr.ldI32(cptr.add(gm, 216)) <= 5 ? 1 : 0) {
                     let buf = new Uint8Array(256);
                     void cptr.sprintf(cptr.decay(buf), __sl214, s_suffix(Monnam(magr)), mpoisons_subj(magr, mattk));
-                    poisoned(cptr.decay(buf), 0, pmname(cptr.ldPtr(cptr.add(magr, 8)), Mgender(magr)), 10, (0));
+                    poisoned(cptr.decay(buf), 0, pmname(cptr.ldPtr(cptr.add(magr, 8)), Mgender(magr)), 10, 0);
                 }
             } else if ((cptr.ld1u(mattk) != 5 || cptr.ldI32(mhm) != 0 ? 1 : 0) || !cptr.eq(magr, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) {
                 hitmsg(magr, mattk);
@@ -3306,7 +3306,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
         let vis = schar((canseemon(magr) && canseemon(mdef) ? 1 : 0));
         if (cptr.ld1u(mattk) != 254 && cptr.ld1u(mattk) != 1 ? 1 : 0)
             mwep = null;
-        if (shade_miss(magr, mdef, mwep, (0), vis)) {
+        if (shade_miss(magr, mdef, mwep, 0, vis)) {
             cptr.stI32(mhm, 0);
         } else if (cptr.ld1u(mattk) == 3 && ((cptr.ldU64(cptr.add((pd), 72)) & 2097152n) != 0n) ? 1 : 0) {
             cptr.stI32(mhm, 0);
@@ -3319,7 +3319,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
             }
             cptr.stI32(mhm, (cptr.ldI32(mhm) + dmgval(mwep, mdef)) | 0);
             if ((marmg = which_armor(magr, 16n)) !== null && cptr.ldI16(cptr.add(marmg, 32)) == 161 ? 1 : 0)
-                cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 4155, __sl287), rn2(4)) : rn2(4)) + (3)) | 0)) | 0);
+                cptr.stI32(mhm, (cptr.ldI32(mhm) + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 4155, __sl287), rn2(4)) : rn2(4)) + 3) | 0)) | 0);
             if (cptr.ldI32(mhm) < 1)
                 cptr.stI32(mhm, 1);
             if (cptr.ld1s(cptr.add(mwep, 51))) {
@@ -3330,7 +3330,7 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                 }
                 if ((cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                     cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-                    cptr.st1(cptr.add(mhm, 8), (1));
+                    cptr.st1(cptr.add(mhm, 8), 1);
                     return;
                 }
             }
@@ -3349,21 +3349,21 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
 /** C ref: uhitm.c:4203 — @param {CPtr} magr @param {CPtr} mattk @param {CPtr} mdef @param {CPtr} mhm */
 export function mhitm_ad_ston(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, 8))) {
-        if (!munstone(mdef, (1)))
-            minstapetrify(mdef, (1));
+        if (!munstone(mdef, 1))
+            minstapetrify(mdef, 1);
         cptr.stI32(mhm, 0);
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4215, __sl296), rn2(3)) : rn2(3))) {
             if ((cptr.ldI32(cptr.add(magr, 100)) & 1)) {
-                if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0))
+                if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0))
                     You_hear(__sl297, mon_nam(magr));
             } else {
                 if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0) ? 1 : 0) {
                     ;
                     You_hear(__sl298);
                     pline(__sl299, Monnam(magr));
-                } else if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0)) {
+                } else if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0)) {
                     You_hear(__sl300, s_suffix(mon_nam(magr)));
                 } else if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0)) {
                     pline(__sl301, Monnam(magr));
@@ -3371,7 +3371,7 @@ export function mhitm_ad_ston(magr, mattk, mdef, mhm) {
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4245, __sl296), rn2(10)) : rn2(10)) || cptr.ldI32(cptr.add(flags, 64)) == 0 ? 1 : 0) {
                     if (do_stone_u(magr)) {
                         cptr.stI32(cptr.add(mhm, 4), 1);
-                        cptr.st1(cptr.add(mhm, 8), (1));
+                        cptr.st1(cptr.add(mhm, 8), 1);
                         return;
                     }
                 }
@@ -3395,9 +3395,9 @@ export function mhitm_ad_were(magr, mattk, mdef, mhm) {
             return;
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
-        if ((((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4279, __sl302), rn2(4)) : rn2(4)) && cptr.ldI32(cptr.add(u, 1836)) == -1 ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) && !defends(29, uwep.v) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, (1)) ? 1 : 0) {
+        if ((((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4279, __sl302), rn2(4)) : rn2(4)) && cptr.ldI32(cptr.add(u, 1836)) == -1 ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 60, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 60, 24)) ? 1 : 0) ? 1 : 0) && !defends(29, uwep.v) ? 1 : 0) && !mhitm_mgc_atk_negated(magr, mdef, 1) ? 1 : 0) {
             urgent_pline(__sl303);
-            exercise(4, (0));
+            exercise(4, 0);
             set_ulycn((cptr.ldI32(cptr.add((pa), 24))));
             retouch_equipment(2);
         }
@@ -3421,55 +3421,55 @@ export function mhitm_ad_heal(magr, mattk, mdef, mhm) {
             return;
         }
         if (((((((!(uwep.v && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !uarmu.v ? 1 : 0) && !uarm.v ? 1 : 0) && !uarmc.v ? 1 : 0) && !uarms.v ? 1 : 0) && !uarmg.v ? 1 : 0) && !uarmf.v ? 1 : 0) && !uarmh.v ? 1 : 0) {
-            let goaway = (0);
+            let goaway = 0;
             pline_mon(magr, __sl304, Monnam(magr));
             if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
                 cptr.stI32(cptr.add(u, 1812), (cptr.ldI32(cptr.add(u, 1812)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4324, __sl305), rnd(7)) : rnd(7))) | 0);
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4325, __sl305), rn2(7)) : rn2(7))) {
                     (cptr.stI32(cptr.add(u, 1816), cptr.ldI32(cptr.add(u, 1816)) + 1)) - (1);
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4328, __sl305), rn2(13)) : rn2(13)))
-                        goaway = (1);
+                        goaway = 1;
                 }
                 if (cptr.ldI32(cptr.add(u, 1812)) > cptr.ldI32(cptr.add(u, 1816)))
                     cptr.stI32(cptr.add(u, 1812), cptr.ldI32(cptr.add(u, 1816)));
             } else {
                 cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4334, __sl305), rnd(7)) : rnd(7))) | 0);
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4335, __sl305), rn2(7)) : rn2(7))) {
-                    if (cptr.ldI32(cptr.add(u, 2200)) < ((Math.imul(5, cptr.ldI32(cptr.add(u, 48))) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4337, __sl305), d((Math.imul(2, cptr.ldI32(cptr.add(u, 48)))), (10))) : d((Math.imul(2, cptr.ldI32(cptr.add(u, 48)))), (10)))) | 0)) {
+                    if (cptr.ldI32(cptr.add(u, 2200)) < ((Math.imul(5, cptr.ldI32(cptr.add(u, 48))) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4337, __sl305), d((Math.imul(2, cptr.ldI32(cptr.add(u, 48)))), 10)) : d((Math.imul(2, cptr.ldI32(cptr.add(u, 48)))), 10))) | 0)) {
                         (cptr.stI32(cptr.add(u, 2200), cptr.ldI32(cptr.add(u, 2200)) + 1)) - (1);
                         if (cptr.ldI32(cptr.add(u, 2200)) > cptr.ldI32(cptr.add(u, 2204)))
                             cptr.stI32(cptr.add(u, 2204), cptr.ldI32(cptr.add(u, 2200)));
                     }
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4342, __sl305), rn2(13)) : rn2(13)))
-                        goaway = (1);
+                        goaway = 1;
                 }
                 if (cptr.ldI32(cptr.add(u, 2196)) > cptr.ldI32(cptr.add(u, 2200)))
                     cptr.stI32(cptr.add(u, 2196), cptr.ldI32(cptr.add(u, 2200)));
             }
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4348, __sl305), rn2(3)) : rn2(3)))
-                exercise(0, (1));
+                exercise(0, 1);
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4350, __sl305), rn2(3)) : rn2(3)))
-                exercise(4, (1));
+                exercise(4, 1);
             if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 17, 24), 16)))
-                make_sick(0n, null, (0), 3);
-            cptr.st1(disp, (1));
+                make_sick(0n, null, 0, 3);
+            cptr.st1(disp, 1);
             if (goaway) {
                 mongone(magr);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 cptr.stI32(cptr.add(mhm, 4), 2);
                 return;
             } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4360, __sl305), rn2(33)) : rn2(33))) {
                 if (!tele_restrict(magr))
                     void rloc(magr, 2);
-                monflee(magr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4363, __sl305), d((3), (6))) : d((3), (6))), (1), (0));
-                cptr.st1(cptr.add(mhm, 8), (1));
-                cptr.stI32(cptr.add(mhm, 4), 1 | 2);
+                monflee(magr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4363, __sl305), d(3, 6)) : d(3, 6)), 1, 0);
+                cptr.st1(cptr.add(mhm, 8), 1);
+                cptr.stI32(cptr.add(mhm, 4), 3);
                 return;
             }
             cptr.stI32(mhm, 0);
         } else {
-            if ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (334))) {
-                if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && !(cptr.ldI64(cptr.add(svm, 8)) % 5n) ? 1 : 0) {
+            if ((cptr.ldI16(cptr.add(gu, 216)) == 334)) {
+                if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && !(cptr.ldI64(cptr.add(svm, 8)) % 5n) ? 1 : 0) {
                     ;
                     verbalize(__sl306);
                 }
@@ -3497,7 +3497,7 @@ export function mhitm_ad_stun(magr, mattk, mdef, mhm) {
     } else if (cptr.eq(mdef, cptr.add(gy, 8))) {
         hitmsg(magr, mattk);
         if (!(cptr.ldI32(cptr.add(magr, 100)) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4406, __sl308), rn2(4)) : rn2(4)) ? 1 : 0) {
-            make_stunned(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & 16777215n) + BigInt(cptr.ldI32(mhm))), (1));
+            make_stunned(BigInt.asIntN(64, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) & 16777215n) + BigInt(cptr.ldI32(mhm))), 1);
             cptr.stI32(mhm, (cptr.ldI32(mhm) / 2) | 0);
         }
     } else {
@@ -3543,8 +3543,8 @@ export function mhitm_ad_legs(magr, mattk, mdef, mhm) {
             } else
                 pline(__sl317, Monst_name, sidestr, leg);
             set_wounded_legs(side, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4475, __sl309), rnd((60 - (acurr(3))) | 0)) : rnd((60 - (acurr(3))) | 0)));
-            exercise(0, (0));
-            exercise(3, (0));
+            exercise(0, 0);
+            exercise(3, 0);
         }
     } else {
         if ((cptr.ldI32(cptr.add(magr, 100)) & 1)) {
@@ -3573,27 +3573,27 @@ export function mhitm_ad_dgst(magr, mattk, mdef, mhm) {
             mondied(magr);
             if (!(cptr.ldI32(cptr.add((magr), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), 0);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             } else if (cptr.ld1s(cptr.add(magr, 65)) && !cptr.ld1s(cptr.add(gv, 80)) ? 1 : 0)
                 You(cptr.decay(brief_feeling), __sl321);
             cptr.stI32(cptr.add(mhm, 4), 4);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         }
-        if (cptr.ld1s(cptr.add(flags, 48)) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? 1 : 0) {
+        if (cptr.ld1s(cptr.add(flags, 48)) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) ? 1 : 0) {
             ;
             verbalize(__sl322);
         }
-        wake_nearto(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30)), Math.imul(2, 2));
+        wake_nearto(cptr.ldI16(cptr.add(magr, 28)), cptr.ldI16(cptr.add(magr, 30)), 4);
         cptr.stI32(mhm, cptr.ldI32(cptr.add(mdef, 52)));
         if ((obj = mlifesaver(mdef)) !== null)
             m_useup(mdef, obj);
-        if (!corpse_chance(mdef, magr, (1)) || (cptr.ldI32(cptr.add((magr), 52)) < 1) ? 1 : 0)
+        if (!corpse_chance(mdef, magr, 1) || (cptr.ldI32(cptr.add((magr), 52)) < 1) ? 1 : 0)
             return;
         num = (cptr.ldI32(cptr.add((pd), 24)));
         if ((cptr.ld1s(cptr.add(magr, 65)) && !(cptr.ldI32(cptr.add(magr, 184)) & 1) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), num, 12), 2)) & 16) ? 1 : 0) {
-            let virtualcorpse = mksobj(265, (0), (0));
+            let virtualcorpse = mksobj(265, 0, 0);
             let nutrit;
             set_corpsenm(virtualcorpse, num);
             nutrit = dog_nutrition(magr, virtualcorpse);
@@ -3655,12 +3655,12 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
             hitmsg(magr, mattk);
             if ((cptr.ldI32(cptr.add(magr, 100)) & 1))
                 return;
-        } else if (dmgtype(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 22) || dmgtype(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 35) ? 1 : 0) {
-            pline_mon(magr, __sl324, Monnam(magr), ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) ? __sl325 : (cptr.ldPtr(cptr.add(magr, 280)) ? __sl326 : __sl327));
+        } else if (dmgtype(cptr.ldPtr(cptr.add(gy, 16)), 22) || dmgtype(cptr.ldPtr(cptr.add(gy, 16)), 35) ? 1 : 0) {
+            pline_mon(magr, __sl324, Monnam(magr), ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) ? __sl325 : (cptr.ldPtr(cptr.add(magr, 280)) ? __sl326 : __sl327));
             if (!tele_restrict(magr))
                 void rloc(magr, 2);
             cptr.stI32(cptr.add(mhm, 4), 8);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         } else if ((cptr.ldI32(cptr.add(magr, 100)) & 1)) {
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
@@ -3669,7 +3669,7 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
                 if (!tele_restrict(magr))
                     void rloc(magr, 2);
                 cptr.stI32(cptr.add(mhm, 4), 8);
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
             return;
@@ -3678,7 +3678,7 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
         switch (steal(magr, cptr.decay(buf))) {
             case -1:
             cptr.stI32(cptr.add(mhm, 4), 4);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
             case 0:
             return;
@@ -3689,9 +3689,9 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
                 if (canseemon(magr))
                     pline_mon(magr, __sl335, Monnam(magr), locomotion(cptr.ldPtr(cptr.add(magr, 8)), __sl336), cptr.decay(buf));
             }
-            monflee(magr, 0, (0), (0));
+            monflee(magr, 0, 0, 0);
             cptr.stI32(cptr.add(mhm, 4), 8);
-            cptr.st1(cptr.add(mhm, 8), (1));
+            cptr.st1(cptr.add(mhm, 8), 1);
             return;
         }
     } else {
@@ -3705,10 +3705,10 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
             let buf = new Uint8Array(256);
             let onambuf = new Uint8Array(256);
             let mdefnambuf = new Uint8Array(256);
-            void cptr.strcpy(cptr.decay(mdefnambuf), x_monnam(mdef, 1, null, 0, (0)));
+            void cptr.strcpy(cptr.decay(mdefnambuf), x_monnam(mdef, 1, null, 0, 0));
             if (cptr.eq(cptr.ldPtr(cptr.add(u, 2424)), mdef) && cptr.eq(obj, which_armor(mdef, 1048576n)) ? 1 : 0)
                 dismount_steed(4);
-            extract_from_minvent(mdef, obj, (1), (0));
+            extract_from_minvent(mdef, obj, 1, 0);
             if (cptr.ld1s(cptr.add(gv, 80)))
                 void cptr.strcpy(cptr.decay(onambuf), doname(obj));
             void add_to_minv(magr, obj);
@@ -3716,12 +3716,12 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
             if (cptr.ld1s(cptr.add(gv, 80)) && canseemon(mdef) ? 1 : 0) {
                 pline(__sl337, cptr.decay(buf), cptr.decay(onambuf), cptr.decay(mdefnambuf));
             }
-            possibly_unwield(mdef, (0));
-            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
-            mselftouch(mdef, null, (0));
+            possibly_unwield(mdef, 0);
+            cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
+            mselftouch(mdef, null, 0);
             if ((cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                 cptr.stI32(cptr.add(mhm, 4), (2 | (grow_up(magr, mdef) ? 0 : 4)));
-                cptr.st1(cptr.add(mhm, 8), (1));
+                cptr.st1(cptr.add(mhm, 8), 1);
                 return;
             }
             if (cptr.ld1s(cptr.add(pa, 28)) == 14 && !tele_restrict(magr) ? 1 : 0) {
@@ -3747,7 +3747,7 @@ export function mhitm_ad_ssex(magr, mattk, mdef, mhm) {
             if (could_seduce(magr, mdef, mattk) == 1 && !(cptr.ldI32(cptr.add(magr, 100)) & 1) ? 1 : 0)
                 if (doseduce(magr)) {
                     cptr.stI32(cptr.add(mhm, 4), 8);
-                    cptr.st1(cptr.add(mhm, 8), (1));
+                    cptr.st1(cptr.add(mhm, 8), 1);
                     return;
                 }
             return;
@@ -3897,15 +3897,15 @@ export function damageum(mdef, mattk, specialdmg) {
     cptr.stI32(cptr.add(mhm, 4), 0);
     cptr.st1(cptr.add(mhm, 9), 0);
     cptr.stI32(cptr.add(mhm, 12), specialdmg);
-    cptr.st1(cptr.add(mhm, 8), (0));
-    if ((((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 80)) & 256n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4848, __sl338), rn2(13)) : rn2(13)) ? 1 : 0) && !uwep.v ? 1 : 0) && cptr.ldI32(cptr.add(u, 1808)) != 290 ? 1 : 0) && cptr.ldI32(cptr.add(u, 1808)) != 302 ? 1 : 0) {
+    cptr.st1(cptr.add(mhm, 8), 0);
+    if ((((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 256n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 4848, __sl338), rn2(13)) : rn2(13)) ? 1 : 0) && !uwep.v ? 1 : 0) && cptr.ldI32(cptr.add(u, 1808)) != 290 ? 1 : 0) && cptr.ldI32(cptr.add(u, 1808)) != 302 ? 1 : 0) {
         demonpet();
         return 0;
     }
     mhitm_adtyping(cptr.add(gy, 8), mattk, mdef, mhm);
     if (cptr.ld1s(cptr.add(mhm, 8)))
         return cptr.ldI32(cptr.add(mhm, 4));
-    cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & BigInt.asUintN(64, BigInt.asIntN(64, ~536870912n)));
+    cptr.stU64(cptr.add(mdef, 224), cptr.ldU64(cptr.add(mdef, 224)) & 18446744073172680703n);
     cptr.stI32(cptr.add(mdef, 52), (cptr.ldI32(cptr.add(mdef, 52)) - cptr.ldI32(mhm)) | 0);
     if ((cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
         if (cptr.ld1u(mattk) == 254 || cptr.ld1u(mattk) == 1 ? 1 : 0)
@@ -3921,7 +3921,7 @@ export function damageum(mdef, mattk, specialdmg) {
         } else if (cptr.ldI32(mhm)) {
             killed(mdef);
         }
-        cptr.st1(cptr.add(gm, 230), (0));
+        cptr.st1(cptr.add(gm, 230), 0);
         return 2;
     }
     return 1;
@@ -3934,7 +3934,7 @@ export function explum(mdef, mattk) {
         case 11:
         if (mdef && !resists_blnd(mdef) ? 1 : 0) {
             pline(__sl342, Monnam(mdef));
-            cptr.stI32(cptr.add(mdef, 148), (((((cptr.ldI32(cptr.add(mdef, 148)) & 127) | 0) + tmp) | 0) < (127) ? ((((cptr.ldI32(cptr.add(mdef, 148)) & 127) | 0) + tmp) | 0) : (127)) >>> 0);
+            cptr.stI32(cptr.add(mdef, 148), (((((cptr.ldI32(cptr.add(mdef, 148)) & 127) | 0) + tmp) | 0) < 127 ? ((((cptr.ldI32(cptr.add(mdef, 148)) & 127) | 0) + tmp) | 0) : 127) >>> 0);
             cptr.stI32(cptr.add(mdef, 112), 0);
         }
         break;
@@ -3947,7 +3947,7 @@ export function explum(mdef, mattk) {
         case 3:
         case 2:
         case 6:
-        explode(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (((cptr.ld1u(cptr.add(mattk, 1)) - 1) | 0) + 20) | 0, tmp, schar(((18 + 2) | 0)), adtyp_to_expltype(cptr.ld1u(cptr.add(mattk, 1))));
+        explode(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), (((cptr.ld1u(cptr.add(mattk, 1)) - 1) | 0) + 20) | 0, tmp, 20, adtyp_to_expltype(cptr.ld1u(cptr.add(mattk, 1))));
         if (mdef && (cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) {
             return 2;
         }
@@ -3955,17 +3955,17 @@ export function explum(mdef, mattk) {
         default:
         break;
     }
-    wake_nearto(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), Math.imul(7, 7));
+    wake_nearto(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 49);
     return 1;
 }
 
 /** C ref: uhitm.c:4931 — @param {CPtr} mdef */
 function start_engulf(mdef) {
-    let u_digest = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 26, 11) !== null));
-    let u_enfold = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28, 11) !== null));
+    let u_digest = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(gy, 16))), 26, 11) !== null));
+    let u_enfold = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(gy, 16))), 28, 11) !== null));
     if (!(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0)) {
         map_location(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 1);
-        tmp_at(i16((-5)), i16(((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(383)) : (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add((cptr.add(gy, 8)), 8))), 24)))) + ((((cptr.ldI32(cptr.add((cptr.add(gy, 8)), 84)) & 1) | 0) == 0) ? 0 : 383)) | 0)));
+        tmp_at(-5, i16(((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 23, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 24, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 24, 24)) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(383)) : (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add((cptr.add(gy, 8)), 8))), 24)))) + ((((cptr.ldI32(cptr.add((cptr.add(gy, 8)), 84)) & 1) | 0) == 0) ? 0 : 383)) | 0)));
         tmp_at(cptr.ldI16(cptr.add(mdef, 28)), cptr.ldI16(cptr.add(mdef, 30)));
     }
     You(__sl344, u_digest ? __sl345 : (u_enfold ? __sl346 : __sl347), mon_nam(mdef), u_digest ? __sl348 : __sl6);
@@ -3976,7 +3976,7 @@ function start_engulf(mdef) {
 /** C ref: uhitm.c:4949 */
 function end_engulf() {
     if (!(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 40, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 40, 24), 8)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0)) {
-        tmp_at(i16((-7)), 0);
+        tmp_at(-7, 0);
         newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     }
 }
@@ -3988,22 +3988,22 @@ function gulpum(mdef, mattk) {
     let tmp;
     let dam = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 4962, __sl349), d((cptr.ld1u(cptr.add(mattk, 2))), (cptr.ld1u(cptr.add(mattk, 3))))) : d((cptr.ld1u(cptr.add(mattk, 2))), (cptr.ld1u(cptr.add(mattk, 3)))));
     let fatal_gulp;
-    let u_digest = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 26, 11) !== null));
-    let u_enfold = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28, 11) !== null));
+    let u_digest = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(gy, 16))), 26, 11) !== null));
+    let u_enfold = schar((dmgtype_fromattack((cptr.ldPtr(cptr.add(gy, 16))), 28, 11) !== null));
     let otmp;
     let pd = cptr.ldPtr(cptr.add(mdef, 8));
     let expel_verb = u_digest ? __sl350 : (u_enfold ? __sl351 : __sl352);
     if (!engulf_target(cptr.add(gy, 8), mdef))
         return 0;
     if (!(u_digest && cptr.ldI32(cptr.add(u, 104)) >= 1500 ? 1 : 0) && !(cptr.ldI32(cptr.add(u, 1848)) & 1) ? 1 : 0) {
-        if (!(((cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 111, 96)) || cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 30, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 155, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), cptr.add(mons, 329, 96)) ? 1 : 0)) {
+        if (!(((cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, 111, 96)) || cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, 30, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, 155, 96)) ? 1 : 0) || cptr.eq((cptr.ldPtr(cptr.add(gy, 16))), cptr.add(mons, 329, 96)) ? 1 : 0)) {
             for (otmp = cptr.ldPtr(cptr.add(mdef, 280)); otmp; otmp = cptr.ldPtr(otmp))
                 void snuff_lit(otmp);
         }
         if (((cptr.ldI16(cptr.add((mdef), 22)) == 226 || cptr.ldI16(cptr.add((mdef), 22)) == 227 ? 1 : 0) || cptr.ldI16(cptr.add((mdef), 22)) == 228 ? 1 : 0) && newcham(mdef, cptr.add(mons, cptr.ldI16(cptr.add(mdef, 22)), 96), 0) ? 1 : 0) {
             You(__sl353, u_digest ? __sl345 : (u_enfold ? __sl346 : __sl347), expel_verb);
             if ((canseemon(mdef) || sensemon(mdef) ? 1 : 0)) {
-                pline(__sl354, x_monnam(mdef, 2, null, (32 | 1 | 2), (0)));
+                pline(__sl354, x_monnam(mdef, 2, null, 35, 0));
             } else {
                 map_invisible(cptr.ldI16(cptr.add(mdef, 28)), cptr.ldI16(cptr.add(mdef, 30)));
             }
@@ -4038,14 +4038,14 @@ function gulpum(mdef, mattk) {
                 }
                 if ((otmp = mlifesaver(mdef)) !== null)
                     m_useup(mdef, otmp);
-                newuhs((0));
+                newuhs(0);
                 cptr.stPtr(cptr.add(gm, 208), cptr.add(gy, 8));
-                xkilled(mdef, 0 | 2);
+                xkilled(mdef, 2);
                 if (!(cptr.ldI32(cptr.add((mdef), 52)) < 1)) {
                     You(__sl361, body_part(18));
                 } else {
                     tmp = ((1 + (cptr.ldI32(cptr.add(pd, 60)) >>> 8)) >>> 0) | 0;
-                    if (corpse_chance(mdef, cptr.add(gy, 8), (1)) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((pd), 24))), 12), 2)) & 16) ? 1 : 0) {
+                    if (corpse_chance(mdef, cptr.add(gy, 8), 1) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), (cptr.ldI32(cptr.add((pd), 24))), 12), 2)) & 16) ? 1 : 0) {
                         cptr.stI32(cptr.add(u, 104), (cptr.ldI32(cptr.add(u, 104)) + ((((cptr.ldU16(cptr.add(pd, 64)) + 1) | 0) / 2) | 0)) | 0);
                     } else {
                         tmp = 0;
@@ -4068,20 +4068,20 @@ function gulpum(mdef, mattk) {
                             make_slimed(5n, null);
                         }
                     } else
-                        exercise(4, (1));
+                        exercise(4, 1);
                 }
                 cptr.stPtr(cptr.add(gm, 208), null);
                 end_engulf();
                 return 2;
                 case 0:
-                if (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), cptr.add(mons, 106, 96))) {
+                if (cptr.eq(cptr.ldPtr(cptr.add(gy, 16)), cptr.add(mons, 106, 96))) {
                     pline(__sl366, Monnam(mdef));
                     if ((((cptr.ldU64(cptr.add((pd), 72)) & 1024n) != 0n) || ((cptr.ldU64(cptr.add((pd), 72)) & 512n) != 0n) ? 1 : 0) && !(((cptr.eq((pd), cptr.add(mons, 111, 96)) || cptr.eq((pd), cptr.add(mons, 30, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 155, 96)) ? 1 : 0) || cptr.eq((pd), cptr.add(mons, 329, 96)) ? 1 : 0) ? 1 : 0) {
                         dam = 0;
                         pline(__sl367, Monnam(mdef));
                     }
                 } else {
-                    pline(__sl156, Monnam(mdef), (dmgtype_fromattack((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 28, 11) !== null) ? __sl368 : __sl369);
+                    pline(__sl156, Monnam(mdef), (dmgtype_fromattack((cptr.ldPtr(cptr.add(gy, 16))), 28, 11) !== null) ? __sl368 : __sl369);
                 }
                 break;
                 case 8:
@@ -4138,7 +4138,7 @@ function gulpum(mdef, mattk) {
                 break;
                 case 16:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 5175, __sl349), rn2(4)) : rn2(4)))
-                    xdrainenergym(mdef, (1));
+                    xdrainenergym(mdef, 1);
                 dam = 0;
                 break;
             }
@@ -4150,7 +4150,7 @@ function gulpum(mdef, mattk) {
                     return 2;
             }
             You(__sl152, expel_verb, mon_nam(mdef));
-            if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 54, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 54, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 262144n) != 0n) ? 1 : 0) && u_digest ? 1 : 0) {
+            if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 54, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 54, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 262144n) != 0n) ? 1 : 0) && u_digest ? 1 : 0) {
                 pline(__sl379, s_suffix(mon_nam(mdef)));
             }
         }
@@ -4169,22 +4169,22 @@ export function missum(mdef, mattk, wouldhavehit) {
     else
         You(__sl383);
     if (!((cptr.ldI32(cptr.add((mdef), 144)) & 1) | 0 || !(cptr.ldI32(cptr.add((mdef), 160)) & 1) ? 1 : 0))
-        wakeup(mdef, (1));
+        wakeup(mdef, 1);
 }
 
 /** C ref: uhitm.c:5218 — @param {CPtr} mtmp @returns {CInt} */
 export function m_is_steadfast(mtmp) {
     let is_u = schar((cptr.eq(mtmp, cptr.add(gy, 8))));
     let otmp = is_u ? uwep.v : (cptr.ldPtr(cptr.add((mtmp), 288)));
-    if (((is_u ? ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) ? 1 : 0) : (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n) || (cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 5 || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 25 ? 1 : 0) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)) ? 1 : 0) || ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) && !is_pool(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) ? 1 : 0)
-        return (0);
+    if (((is_u ? ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 49, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 49, 24), 8)) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 48, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 48, 24), 8)) ? 1 : 0) ? 1 : 0) : (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 1n) != 0n) || (cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 5 || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == 25 ? 1 : 0) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(svd, 1864)), 2)) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) ? 1 : 0) || ((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) && !is_pool(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) ? 1 : 0)
+        return 0;
     if (is_art(otmp, 15))
-        return (1);
+        return 1;
     if (m_carrying(mtmp, 471))
-        return (1);
+        return 1;
     if ((cptr.ldPtr(cptr.add(u, 2424)) && cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2424))) ? 1 : 0) && carrying(471) ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 /** C ref: uhitm.c:5247 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @param {CPtr} hitflags @param {CInt} weapon_used @returns {CInt} */
@@ -4201,49 +4201,49 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
     let chance = 6;
     let u_agr = schar((cptr.eq(magr, cptr.add(gy, 8))));
     let u_def = schar((cptr.eq(mdef, cptr.add(gy, 8))));
-    let was_u = (0);
-    let dismount = (0);
+    let was_u = 0;
+    let dismount = 0;
     let wep = weapon_used ? (u_agr ? uwep.v : (cptr.ldPtr(cptr.add((magr), 288)))) : null;
     if (wep && is_art(wep, 16) ? 1 : 0)
         chance = 2;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 5269, __sl384), rn2(chance)) : rn2(chance)))
-        return (0);
+        return 0;
     if (!((cptr.ld1u(cptr.add(mattk, 1)) == 0) && (((cptr.ld1u(mattk) == 1 || cptr.ld1u(mattk) == 3 ? 1 : 0) || cptr.ld1u(mattk) == 4 ? 1 : 0) || cptr.ld1u(mattk) == 254 ? 1 : 0) ? 1 : 0))
-        return (0);
+        return 0;
     if ((attacktype(cptr.ldPtr(cptr.add(magr, 8)), 11) || attacktype(cptr.ldPtr(cptr.add(magr, 8)), 7) ? 1 : 0) || sticks(cptr.ldPtr(cptr.add(magr, 8))) ? 1 : 0)
-        return (0);
+        return 0;
     defx = i16((u_def ? cptr.ldI16(u) : cptr.ldI16(cptr.add(mdef, 28))));
     defy = i16((u_def ? cptr.ldI16(cptr.add(u, 2)) : cptr.ldI16(cptr.add(mdef, 30))));
     dx = i16(sgn((defx - (u_agr ? cptr.ldI16(u) : cptr.ldI16(cptr.add(magr, 28)))) | 0));
     dy = i16(sgn((defy - (u_agr ? cptr.ldI16(cptr.add(u, 2)) : cptr.ldI16(cptr.add(magr, 30)))) | 0));
     if (u_def) {
         if (!test_move(defx, defy, dx, dy, 1))
-            return (0);
+            return 0;
     } else {
         if (!isok(i16(((defx + dx) | 0)), i16(((defy + dy) | 0))))
-            return (0);
+            return 0;
         if ((((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), defx, 756), defy, 36), 4))) == 23) && ((defx - cptr.ldI16(cptr.add(magr, 28))) | 0 && (defy - cptr.ldI16(cptr.add(magr, 30))) | 0 ? 1 : 0) ? 1 : 0) && !doorless_door(defx, defy) ? 1 : 0)
-            return (0);
+            return 0;
     }
     if (u_def && cptr.ldPtr(cptr.add(u, 2424)) ? 1 : 0) {
         if ((otmp = which_armor(cptr.ldPtr(cptr.add(u, 2424)), 1048576n)) !== null && (cptr.ldI32(cptr.add(otmp, 56)) & 1) | 0 ? 1 : 0) {
             mdef = cptr.ldPtr(cptr.add(u, 2424));
-            was_u = (1);
-            u_def = (0);
+            was_u = 1;
+            u_def = 0;
         } else {
-            dismount = (1);
+            dismount = 1;
         }
     }
     if ((!u_agr && (cptr.ldI32(cptr.add((magr), 52)) < 1) ? 1 : 0) || (!u_def && (cptr.ldI32(cptr.add((mdef), 52)) < 1) ? 1 : 0) ? 1 : 0)
-        return (0);
+        return 0;
     if (!(cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(magr, 8)), 67)) > ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(mdef, 8)), 67)) + 1) | 0)))
-        return (0);
+        return 0;
     if (wep && ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 64)) & 31) | 0) <= 7 || cptr.ldI16(cptr.add((wep), 32)) == 78 ? 1 : 0) || !((cptr.ld1s(cptr.add((wep), 49)) == 2 || (cptr.ld1s(cptr.add((wep), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) && ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 60)) & 7) | 0) & 4) != 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        return (0);
+        return 0;
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(magr, 8))), 72)) & 1048576n) != 0n))
-        return (0);
+        return 0;
     if ((u_agr || u_def ? 1 : 0) && !(cptr.ldI32(hitflags) & 1) ? 1 : 0)
-        return (0);
+        return 0;
     if (m_is_steadfast(mdef)) {
         if (u_def || (cptr.ldPtr(cptr.add(u, 2424)) && cptr.eq(mdef, cptr.ldPtr(cptr.add(u, 2424))) ? 1 : 0) ? 1 : 0) {
             cptr.st1(cptr.add(cptr.decay(mdefbuf), 0, 1), 0);
@@ -4253,7 +4253,7 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
         } else if (canseemon(mdef)) {
             pline(__sl387, Monnam(mdef));
         }
-        return (0);
+        return 0;
     }
     knockedhow = dismount ? __sl388 : (will_hurtle(mdef, i16(((defx + dx) | 0)), i16(((defy + dy) | 0))) ? __sl389 : __sl390);
     if (u_def || canseemon(mdef) ? 1 : 0) {
@@ -4273,12 +4273,12 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
             cptr.stI32(cptr.add(u, 8), dy);
             dismount_steed(3);
         } else {
-            hurtle(dx, dy, knockdistance, (0));
+            hurtle(dx, dy, knockdistance, 0);
             cptr.stI32(hitflags, cptr.ldI32(hitflags) | 1);
         }
         set_apparxy(magr);
         if (!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 5397, __sl384), rn2(4)) : rn2(4)) ? 1 : 0)
-            make_stunned(BigInt(((knockdistance + 1) | 0)), (1));
+            make_stunned(BigInt(((knockdistance + 1) | 0)), 1);
     } else {
         mhurtle(mdef, dx, dy, knockdistance);
         if (!u_agr)
@@ -4296,7 +4296,7 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
         if ((cptr.ldI32(cptr.add((magr), 52)) < 1))
             cptr.stI32(hitflags, cptr.ldI32(hitflags) | 4);
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: uhitm.c:5424 — @param {CPtr} mon @returns {CInt} */
@@ -4307,9 +4307,9 @@ function hmonas(mon) {
         switch (__pc) {
         case 0: {
         alt_attk = cptr.alloc(4);
-        altwep = (0);
-        weapon_used = (0);
-        odd_claw = (1);
+        altwep = 0;
+        weapon_used = 0;
+        odd_claw = 1;
         sum = cptr.alloc(6 * 4);
         dhit.v = 0;
         attknum.v = 0;
@@ -4326,7 +4326,7 @@ function hmonas(mon) {
         }
         multi_claw = (multi_claw > 1);
         cptr.stI32(cptr.add(gt, 444), 0);
-        cptr.st1(cptr.add(gs, 944), (0));
+        cptr.st1(cptr.add(gs, 944), 0);
         i = 0;
         __pc = 4; continue;
         }
@@ -4335,7 +4335,7 @@ function hmonas(mon) {
         __pc = 5; continue;
         }
         case 5: {
-        if (i > 0 && (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), cptr.ldI16(cptr.add(gb, 4768)), 168), cptr.ldI16(cptr.add(cptr.add(gb, 4768), 2)), 8))), mon) || (cptr.ldI32(cptr.add((mon), 52)) < 1) ? 1 : 0) ? 1 : 0) { __pc = 8; continue; }
+        if (i > 0 && (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(cptr.add(gb, 4768)), 168), cptr.ldI16(cptr.add(gb, 4770)), 8))), mon) || (cptr.ldI32(cptr.add((mon), 52)) < 1) ? 1 : 0) ? 1 : 0) { __pc = 8; continue; }
         __pc = 7; continue;
         }
         case 8: {
@@ -4390,9 +4390,9 @@ function hmonas(mon) {
         continue;
         }
         case 31: {
-        weapon_used = (1);
+        weapon_used = 1;
         originalweapon = (altwep && uswapwep.v ? 1 : 0) ? uswapwep : uwep;
-        if (((((((((uswapwep.v && uwep.v ? 1 : 0) && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) && !uarms.v ? 1 : 0) && !cptr.ld1s(cptr.add(uswapwep.v, 51)) ? 1 : 0) && (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uswapwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= 20 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= 22 ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) && !(((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        if (((((((((uswapwep.v && uwep.v ? 1 : 0) && (cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) && !uarms.v ? 1 : 0) && !cptr.ld1s(cptr.add(uswapwep.v, 51)) ? 1 : 0) && (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || (cptr.ld1s(cptr.add((uswapwep.v), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= 20 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= 22 ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uswapwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) && !(((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 64)) & 31) | 0) == 14 && (cptr.ldI32(cptr.add(u, 1836)) >= 0 || hates_silver(cptr.ldPtr(cptr.add(gy, 16))) ? 1 : 0) ? 1 : 0) ? 1 : 0)
             altwep = schar((!altwep));
         weapon = cptr.ldPtr(originalweapon);
         if (!weapon)
@@ -4420,7 +4420,7 @@ function hmonas(mon) {
         continue;
         }
         case 33: {
-        if (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 8))), mon)) { __pc = 37; continue; }
+        if (!cptr.eq((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), (cptr.ldI16(u) + cptr.ldI32(cptr.add(u, 4))) | 0, 168), (cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 8))) | 0, 8))), mon)) { __pc = 37; continue; }
         __pc = 36; continue;
         }
         case 37: {
@@ -4437,7 +4437,7 @@ function hmonas(mon) {
         continue;
         }
         case 14: {
-        if ((uwep.v && !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0) ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 39; continue; }
+        if ((uwep.v && !(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0) ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 39; continue; }
         __pc = 38; continue;
         }
         case 39: {
@@ -4452,7 +4452,7 @@ function hmonas(mon) {
         continue;
         }
         case 15: {
-        if ((uwep.v && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 38 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 41; continue; }
+        if ((uwep.v && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == 38 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 41; continue; }
         __pc = 40; continue;
         }
         case 41: {
@@ -4515,7 +4515,7 @@ function hmonas(mon) {
         continue;
         }
         case 47: {
-        wakeup(mon, (1));
+        wakeup(mon, 1);
         specialdmg = 0;
         switch (cptr.ld1u(mattk)) {
             case 1:
@@ -4608,16 +4608,16 @@ function hmonas(mon) {
         }
         case 54: {
         dhit.v = 1;
-        wakeup(mon, (1));
-        specialdmg = special_dmgval(cptr.add(gy, 8), mon, byhand ? (16n | 131072n | 262144n) : (2n | 1n | 64n), silverhit);
+        wakeup(mon, 1);
+        specialdmg = special_dmgval(cptr.add(gy, 8), mon, byhand ? 393232n : 67n, silverhit);
         if (unconcerned) {
             if (!cptr.eq(mattk, alt_attk)) {
                 cptr.memcpy(alt_attk, mattk, 4);
                 mattk = alt_attk;
             }
             cptr.st1(cptr.add(mattk, 2), cptr.st1(cptr.add(mattk, 3), 1));
-            if ((specialdmg || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || cptr.ldI32(cptr.add(mon, 52)) <= ((1 + ((cptr.ld1s(cptr.add(u, 2189))) > (1) ? (cptr.ld1s(cptr.add(u, 2189))) : (1))) | 0) ? 1 : 0)
-                unconcerned = (0);
+            if ((specialdmg || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 72)) & 65536n) != 0n) ? 1 : 0) || cptr.ldI32(cptr.add(mon, 52)) <= ((1 + ((cptr.ld1s(cptr.add(u, 2189))) > 1 ? (cptr.ld1s(cptr.add(u, 2189))) : 1)) | 0) ? 1 : 0)
+                unconcerned = 0;
         }
         if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) { __pc = 57; continue; }
         __pc = 56; continue;
@@ -4666,7 +4666,7 @@ function hmonas(mon) {
         }
         case 22: {
         dhit.v = -1;
-        wakeup(mon, (1));
+        wakeup(mon, 1);
         You(__sl421);
         cptr.stI32(cptr.add(sum, i, 4), explum(mon, mattk));
         { __pc = 11; continue; }
@@ -4677,7 +4677,7 @@ function hmonas(mon) {
         tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
         mon_maybe_unparalyze(mon);
         if ((dhit.v = (tmp > (rng_log_enabled() ? (rng_log_set_caller(__sl0, 5773, __sl399), rnd((20 + i) | 0)) : rnd((20 + i) | 0))))) {
-            wakeup(mon, (1));
+            wakeup(mon, 1);
             if (cptr.eq(cptr.ldPtr(cptr.add(mon, 8)), cptr.add(mons, 288, 96))) {
                 Your(__sl422, mon_nam(mon));
             } else if (failed_grab(cptr.add(gy, 8), mon, mattk)) {
@@ -4690,14 +4690,14 @@ function hmonas(mon) {
                 }
             }
         } else {
-            missum(mon, mattk, (0));
+            missum(mon, mattk, 0);
         }
         { __pc = 11; continue; }
         __pc = 24;
         continue;
         }
         case 24: {
-        if (((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 11 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 15 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8)), 28)) == 33 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 61; continue; }
+        if (((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == 11 || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == 15 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == 33 ? 1 : 0) && !weapon_used ? 1 : 0) { __pc = 61; continue; }
         __pc = 60; continue;
         }
         case 61: {
@@ -4745,9 +4745,9 @@ function hmonas(mon) {
             rehumanize();
         }
         if (cptr.ldI32(cptr.add(sum, i, 4)) == 2) {
-            void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), (0));
+            void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), 0);
         } else {
-            void passive(mon, weapon, schar((cptr.ldI32(cptr.add(sum, i, 4)) != 0)), 1, cptr.ld1u(mattk), (0));
+            void passive(mon, weapon, schar((cptr.ldI32(cptr.add(sum, i, 4)) != 0)), 1, cptr.ld1u(mattk), 0);
         }
         if (mhitm_knockback(cptr.add(gy, 8), mon, mattk, cptr.add(sum, i, 4), weapon_used)) { __pc = 63; continue; }
         __pc = 62; continue;
@@ -4808,7 +4808,7 @@ function hmonas(mon) {
         continue;
         }
         case 3: {
-        cptr.st1(cptr.add(gv, 80), (0));
+        cptr.st1(cptr.add(gv, 80), 0);
         cptr.stI32(cptr.add(gt, 444), 0);
         return schar((!(cptr.ldI32(cptr.add((mon), 52)) < 1)));
         __pc = -1;
@@ -4843,7 +4843,7 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
         if ((mhitb && !(cptr.ldI32(cptr.add(mon, 100)) & 1) ? 1 : 0) && weapon ? 1 : 0) {
             if (aatyp == 3) {
                 if (uarmf.v && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 5898, __sl425), rn2(6)) : rn2(6)) ? 1 : 0)
-                    void erode_obj(uarmf.v, xname(uarmf.v), 0, 1 | 4);
+                    void erode_obj(uarmf.v, xname(uarmf.v), 0, 5);
             } else if (((aatyp == 254 || aatyp == 1 ? 1 : 0) || aatyp == 255 ? 1 : 0) || aatyp == 5 ? 1 : 0)
                 passive_obj(mon, weapon, cptr.add(cptr.add(ptr, 36), i, 4));
         }
@@ -4866,19 +4866,19 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
         if (mhitb && weapon ? 1 : 0) {
             if (aatyp == 3) {
                 if (uarmf.v && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 5925, __sl425), rn2(6)) : rn2(6)) ? 1 : 0)
-                    void erode_obj(uarmf.v, xname(uarmf.v), 3, 1 | 4);
+                    void erode_obj(uarmf.v, xname(uarmf.v), 3, 5);
             } else if (((aatyp == 254 || aatyp == 1 ? 1 : 0) || aatyp == 255 ? 1 : 0) || aatyp == 5 ? 1 : 0)
                 passive_obj(mon, weapon, cptr.add(cptr.add(ptr, 36), i, 4));
         }
-        exercise(0, (0));
+        exercise(0, 0);
         break;
         case 18:
         if (mhitb) {
             let protector = attk_protection(aatyp);
             if (aatyp == 255)
                 protector = 16n;
-            if ((((protector == 0n || (((protector == 16n && !uarmg.v ? 1 : 0) && !uwep.v ? 1 : 0) && !wep_was_destroyed ? 1 : 0) ? 1 : 0) || (protector == 32n && !uarmf.v ? 1 : 0) ? 1 : 0) || (protector == 4n && !uarmh.v ? 1 : 0) ? 1 : 0) || (protector == (2n | 16n) && (!uarmc.v || !uarmg.v ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) && !(poly_when_stoned(cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))) && polymon(257) ? 1 : 0) ? 1 : 0) {
+            if ((((protector == 0n || (((protector == 16n && !uarmg.v ? 1 : 0) && !uwep.v ? 1 : 0) && !wep_was_destroyed ? 1 : 0) ? 1 : 0) || (protector == 32n && !uarmf.v ? 1 : 0) ? 1 : 0) || (protector == 4n && !uarmh.v ? 1 : 0) ? 1 : 0) || (protector == 18n && (!uarmc.v || !uarmg.v ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+                if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) && !(poly_when_stoned(cptr.ldPtr(cptr.add(gy, 16))) && polymon(257) ? 1 : 0) ? 1 : 0) {
                     done_in_by(mon, 8);
                     return 2;
                 }
@@ -4889,7 +4889,7 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
         if ((mhitb && !(cptr.ldI32(cptr.add(mon, 100)) & 1) ? 1 : 0) && weapon ? 1 : 0) {
             if (aatyp == 3) {
                 if (uarmf.v)
-                    void erode_obj(uarmf.v, xname(uarmf.v), 1, 1 | 4);
+                    void erode_obj(uarmf.v, xname(uarmf.v), 1, 5);
             } else if (((aatyp == 254 || aatyp == 1 ? 1 : 0) || aatyp == 255 ? 1 : 0) || aatyp == 5 ? 1 : 0)
                 passive_obj(mon, weapon, cptr.add(cptr.add(ptr, 36), i, 4));
         }
@@ -4898,7 +4898,7 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
         if ((mhitb && !(cptr.ldI32(cptr.add(mon, 100)) & 1) ? 1 : 0) && weapon ? 1 : 0) {
             if (aatyp == 3) {
                 if (uarmf.v)
-                    void erode_obj(uarmf.v, xname(uarmf.v), 3, 1 | 4);
+                    void erode_obj(uarmf.v, xname(uarmf.v), 3, 5);
             } else if (((aatyp == 254 || aatyp == 1 ? 1 : 0) || aatyp == 255 ? 1 : 0) || aatyp == 5 ? 1 : 0)
                 passive_obj(mon, weapon, cptr.add(cptr.add(ptr, 36), i, 4));
         }
@@ -4947,13 +4947,13 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
                     } else {
                         You(__sl436, s_suffix(mon_nam(mon)));
                         nomul(((acurr(2)) > 12 || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6042, __sl425), rn2(4)) : rn2(4)) ? 1 : 0) ? -tmp : -127);
-                        dynamic_multi_reason(mon, __sl437, (1));
+                        dynamic_multi_reason(mon, __sl437, 1);
                         cptr.stPtr(cptr.add(gn, 8), null);
                     }
                 } else {
                     pline(__sl438, Adjmonnam(mon, __sl439));
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 6051, __sl425), rn2(500)) : rn2(500)))
-                        change_luck(schar((-1)));
+                        change_luck(-1);
                 }
             } else if (cptr.ldI64(cptr.add(cptr.add(u, 112), 66, 24))) {
                 You(__sl246);
@@ -4961,8 +4961,8 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
                 You(__sl248, mon_nam(mon));
                 cptr.stPtr(cptr.add(gn, 8), cptr.ldPtr(cptr.add(c_common_strings, 56)));
                 nomul(-tmp);
-                dynamic_multi_reason(mon, __sl437, (0));
-                exercise(3, (0));
+                dynamic_multi_reason(mon, __sl437, 0);
+                exercise(3, 0);
             }
             break;
             case 3:
@@ -4984,7 +4984,7 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
             break;
             case 12:
             if (!cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 13, 24), 16)))
-                make_stunned(BigInt(tmp), (1));
+                make_stunned(BigInt(tmp), 1);
             break;
             case 2:
             if (monnear(mon, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) {
@@ -5062,7 +5062,7 @@ export function passive_obj(mon, obj, mattk) {
         break;
         case 41:
         if (!(cptr.ldI32(cptr.add(mon, 100)) & 1)) {
-            if ((drain_item(obj, (1)) && (cptr.ld1s(cptr.add((obj), 52)) == 3) ? 1 : 0) && ((cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 || cptr.ld1s(cptr.add(obj, 49)) == 3 ? 1 : 0) ? 1 : 0) {
+            if ((drain_item(obj, 1) && (cptr.ld1s(cptr.add((obj), 52)) == 3) ? 1 : 0) && ((cptr.ldI32(cptr.add(obj, 80)) & 1) | 0 || cptr.ld1s(cptr.add(obj, 49)) == 3 ? 1 : 0) ? 1 : 0) {
                 pline(__sl264, Yobjnam2(obj, __sl265));
             }
             break;
@@ -5094,11 +5094,11 @@ export function that_is_a_mimic(mtmp, mimic_flags) {
         let x = cptr.ldI16(cptr.add(mtmp, 28));
         let y = cptr.ldI16(cptr.add(mtmp, 30));
         let glyph = glyph_at(x, y);
-        if (((glyph) >= 3929 && (glyph) < ((4083 + ((((87 - 78) | 0) + 1) | 0)) | 0) ? 1 : 0)) {
+        if (((glyph) >= 3929 && (glyph) < 4093 ? 1 : 0)) {
             let sym = glyph_to_cmap(glyph);
             if ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 || ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2 && sym == 73 ? 1 : 0) ? 1 : 0)
                 nh_snprintf(__sl448, 6227, cptr.decay(fmtbuf), 256n, __sl449, cptr.ldPtr(cptr.add(cptr.add(defsyms, sym, 24), 8)));
-        } else if (((((((glyph) == 3448 || ((glyph) >= ((((3448 + 18) | 0) - 1) | 0) && (glyph) < ((3448 + 481) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > ((((7992 + 18) | 0) - 1) | 0) && (glyph) < ((7992 + 481) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < ((((3448 + 18) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > 7992 && (glyph) < ((((7992 + 18) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < ((7226 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < ((8856 + 383) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < ((7609 + 383) | 0)) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < ((9239 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < ((2299 + 383) | 0)) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < ((8473 + 383) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+        } else if (((((((glyph) == 3448 || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == 7992 || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > 3448 && (glyph) < 3465 ? 1 : 0) || ((glyph) > 7992 && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= 7226) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= 8856) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 7609) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= 9239) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= 2299) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= 8473) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
             let fakeobj;
             let otmp_name;
             let otmp = cptr.box(null);
@@ -5109,9 +5109,9 @@ export function that_is_a_mimic(mtmp, mimic_flags) {
                 cptr.st1(cptr.add(otmp.v, 52), 0);
                 dealloc_obj(otmp.v);
             }
-        } else if (((((((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) || ((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) || ((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) || ((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) || ((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+        } else if (((((((glyph) >= 0 && (glyph) < 383 ? 1 : 0) || ((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) || ((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) || ((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) || ((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
             let mtmp_name;
-            let mndx = (((glyph) >= 383 && (glyph) < ((383 + 383) | 0) ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < ((0 + 383) | 0) ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < ((1149 + 383) | 0) ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < ((766 + 383) | 0) ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < ((1916 + 383) | 0) ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < ((1533 + 383) | 0) ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < ((3065 + 383) | 0) ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < ((2682 + 383) | 0) ? 1 : 0) ? (((glyph) - 2682) | 0) : 383))))))));
+            let mndx = (((glyph) >= 383 && (glyph) < 766 ? 1 : 0) ? (((glyph) - 383) | 0) : (((glyph) >= 0 && (glyph) < 383 ? 1 : 0) ? (((glyph) - 0) | 0) : (((glyph) >= 1149 && (glyph) < 1532 ? 1 : 0) ? (((glyph) - 1149) | 0) : (((glyph) >= 766 && (glyph) < 1149 ? 1 : 0) ? (((glyph) - 766) | 0) : (((glyph) >= 1916 && (glyph) < 2299 ? 1 : 0) ? (((glyph) - 1916) | 0) : (((glyph) >= 1533 && (glyph) < 1916 ? 1 : 0) ? (((glyph) - 1533) | 0) : (((glyph) >= 3065 && (glyph) < 3448 ? 1 : 0) ? (((glyph) - 3065) | 0) : (((glyph) >= 2682 && (glyph) < 3065 ? 1 : 0) ? (((glyph) - 2682) | 0) : 383))))))));
             (__builtin_expect(BigInt((!(mndx >= 0 && mndx <= 382 ? 1 : 0))), 0n) ? __assert_rtn(__sl448, __sl110, 6247, __sl455) : void 0);
             mtmp_name = pmname(cptr.add(mons, mndx, 96), Mgender(mtmp));
             nh_snprintf(__sl448, 6250, cptr.decay(fmtbuf), 256n, __sl456, mtmp_name);
@@ -5119,9 +5119,9 @@ export function that_is_a_mimic(mtmp, mimic_flags) {
         if ((cptr.ldI32(cptr.add(mtmp, 88)) & 1) | 0 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0)
             what = cptr.decay(__static_that_is_a_mimic_generic);
         else if ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 3)
-            what = x_monnam(mtmp, 2, (null), 31, (1));
+            what = x_monnam(mtmp, 2, (null), 31, 1);
         else if ((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 28)) == 13 && ((cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 2 || (cptr.ld1u(cptr.add((mtmp), 64)) & 7) == 1 ? 1 : 0) ? 1 : 0) && ((cptr.ldI32(cptr.add(mtmp, 144)) & 1) | 0 || (cptr.ldI32(cptr.add(mtmp, 156)) & 127) | 0 ? 1 : 0) ? 1 : 0)
-            what = x_monnam(mtmp, 2, __sl457, 0, (0));
+            what = x_monnam(mtmp, 2, __sl457, 0, 0);
         else
             what = a_monnam(mtmp);
     }
@@ -5138,7 +5138,7 @@ export function stumble_onto_mimic(mtmp) {
     that_is_a_mimic(mtmp, 1);
     if (((!cptr.ldPtr(cptr.add(u, 2416)) && !(cptr.ldI32(cptr.add(mtmp, 136)) & 1) ? 1 : 0) && dmgtype(cptr.ldPtr(cptr.add(mtmp, 8)), 19) ? 1 : 0) && (dist2((cptr.ldI16(cptr.add((mtmp), 28))), (cptr.ldI16(cptr.add((mtmp), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 2) ? 1 : 0)
         set_ustuck(mtmp);
-    wakeup(mtmp, (0));
+    wakeup(mtmp, 0);
     if (!(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) && !((cptr.ldI32(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(mtmp, 28)), 756), cptr.ldI16(cptr.add(mtmp, 30)), 36))) == 1532) ? 1 : 0)
         map_invisible(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)));
 }
@@ -5192,9 +5192,9 @@ export function flash_hits_mon(mtmp, otmp) {
         let whatbuf = new Uint8Array(256);
         let oldglyph = glyph_at(mx, my);
         mhidden_description(mtmp, 4, cptr.decay(whatbuf));
-        wakeup(mtmp, (0));
+        wakeup(mtmp, 0);
         if (glyph_at(mx, my) != oldglyph) {
-            pline(__sl463, cptr.decay(whatbuf), x_monnam(mtmp, cptr.ld1s(cptr.add(mtmp, 65)) ? 3 : 2, null, 0, (0)), cptr.ld1s(cptr.add(mtmp, 65)) ? 46 : 33);
+            pline(__sl463, cptr.decay(whatbuf), x_monnam(mtmp, cptr.ld1s(cptr.add(mtmp, 65)) ? 3 : 2, null, 0, 0), cptr.ld1s(cptr.add(mtmp, 65)) ? 46 : 33);
             res = 1;
         }
     }
@@ -5212,14 +5212,14 @@ export function flash_hits_mon(mtmp, otmp) {
                 res = 1;
             }
             if (cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, 40, 96))) {
-                amt = (cptr.ldI16(cptr.add(otmp, 32)) == 410) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6392, __sl466), d(((1 + cptr.ld1s(cptr.add(otmp, 48))) | 0), (4))) : d(((1 + cptr.ld1s(cptr.add(otmp, 48))) | 0), (4))) : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6393, __sl466), rnd(((cptr.ldI32(cptr.add(mtmp, 52))) < (4) ? (cptr.ldI32(cptr.add(mtmp, 52))) : (4)))) : rnd(((cptr.ldI32(cptr.add(mtmp, 52))) < (4) ? (cptr.ldI32(cptr.add(mtmp, 52))) : (4))));
+                amt = (cptr.ldI16(cptr.add(otmp, 32)) == 410) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6392, __sl466), d(((1 + cptr.ld1s(cptr.add(otmp, 48))) | 0), 4)) : d(((1 + cptr.ld1s(cptr.add(otmp, 48))) | 0), 4)) : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6393, __sl466), rnd(((cptr.ldI32(cptr.add(mtmp, 52))) < 4 ? (cptr.ldI32(cptr.add(mtmp, 52))) : 4))) : rnd(((cptr.ldI32(cptr.add(mtmp, 52))) < 4 ? (cptr.ldI32(cptr.add(mtmp, 52))) : 4)));
                 light_hits_gremlin(mtmp, amt);
             }
             if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
                 if (!cptr.ld1s(cptr.add(svc, 77)))
-                    setmangry(mtmp, (1));
+                    setmangry(mtmp, 1);
                 if ((tmp < 9 && !(cptr.ldI32(cptr.add(mtmp, 180)) & 1) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6399, __sl466), rn2(4)) : rn2(4)) ? 1 : 0)
-                    monflee(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6400, __sl466), rn2(4)) : rn2(4)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6400, __sl466), rnd(100)) : rnd(100)) : 0, (0), (1));
+                    monflee(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6400, __sl466), rn2(4)) : rn2(4)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6400, __sl466), rnd(100)) : rnd(100)) : 0, 0, 1);
                 cptr.stI32(cptr.add(mtmp, 112), 0);
                 cptr.stI32(cptr.add(mtmp, 148), ((tmp < 3) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 6402, __sl466), rnd((1 + ((50 / tmp) | 0)) | 0)) : rnd((1 + ((50 / tmp) | 0)) | 0))) >>> 0);
             }
@@ -5237,7 +5237,7 @@ export function flash_hits_mon(mtmp, otmp) {
     }
     if (res) {
         if (!(cptr.ldI32(cptr.add(lev, 16)) & 1))
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
         res &= 1;
     }
     return res;
@@ -5245,7 +5245,7 @@ export function flash_hits_mon(mtmp, otmp) {
 
 /** C ref: uhitm.c:6425 — @param {CPtr} mon @param {CInt} dmg */
 export function light_hits_gremlin(mon, dmg) {
-    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 90 ? 1 : 0) {
+    if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= 90 ? 1 : 0) {
         pline_mon(mon, __sl152, Monnam(mon), (dmg > ((cptr.ldI32(cptr.add(mon, 52)) / 2) | 0)) ? __sl469 : __sl470);
     } else if (canseemon(mon)) {
         pline_mon(mon, __sl471, Monnam(mon));

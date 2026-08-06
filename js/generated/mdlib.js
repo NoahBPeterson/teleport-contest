@@ -150,7 +150,7 @@ cptr.stPtr(cptr.add(artifact_names, 264), __sl33);
 cptr.stPtr(cptr.add(artifact_names, 272), null);
 
 /** C ref: mdlib.c:56 — signed char */
-let date_via_env = (0);
+let date_via_env = 0;
 
 /** C ref: mdlib.c:95 — int */
 let idxopttext = 0;
@@ -176,35 +176,35 @@ const opt_indent = cptr.bytes("    ");
 /** C ref: mdlib.c:112 — struct win_information[2] */
 const window_opts = cptr.alloc(2 * 24);
 cptr.stPtr(cptr.add(window_opts, 0), __sl34);
-cptr.stPtr(cptr.add(cptr.add(window_opts, 0), 8), __sl35);
-cptr.st1(cptr.add(cptr.add(window_opts, 0), 16), (1));
+cptr.stPtr(cptr.add(window_opts, 8), __sl35);
+cptr.st1(cptr.add(window_opts, 16), 1);
 cptr.stPtr(cptr.add(window_opts, 24), null);
-cptr.stPtr(cptr.add(cptr.add(window_opts, 24), 8), null);
-cptr.st1(cptr.add(cptr.add(window_opts, 24), 16), (0));
+cptr.stPtr(cptr.add(window_opts, 32), null);
+cptr.st1(cptr.add(window_opts, 40), 0);
 
 /** C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5) */
 
 /** C ref: mdlib.c:184 — struct soundlib_information[2] */
 const soundlib_opts = cptr.alloc(2 * 32);
 cptr.stI32(cptr.add(soundlib_opts, 0), 0);
-cptr.stPtr(cptr.add(cptr.add(soundlib_opts, 0), 8), __sl36);
-cptr.stPtr(cptr.add(cptr.add(soundlib_opts, 0), 16), __sl0);
-cptr.st1(cptr.add(cptr.add(soundlib_opts, 0), 24), (0));
+cptr.stPtr(cptr.add(soundlib_opts, 8), __sl36);
+cptr.stPtr(cptr.add(soundlib_opts, 16), __sl0);
+cptr.st1(cptr.add(soundlib_opts, 24), 0);
 cptr.stI32(cptr.add(soundlib_opts, 32), 0);
-cptr.stPtr(cptr.add(cptr.add(soundlib_opts, 32), 8), null);
-cptr.stPtr(cptr.add(cptr.add(soundlib_opts, 32), 16), null);
-cptr.st1(cptr.add(cptr.add(soundlib_opts, 32), 24), (0));
+cptr.stPtr(cptr.add(soundlib_opts, 40), null);
+cptr.stPtr(cptr.add(soundlib_opts, 48), null);
+cptr.st1(cptr.add(soundlib_opts, 56), 0);
 
 /** C ref: mdlib.c:236 @returns {CLongLong} */
 export function md_ignored_features() {
-    return (0n | (1n << 19n) | (1n << 30n));
+    return 1074266112n;
 }
 
 /** C ref: mdlib.c:248 */
 function make_version() {
     let i;
-    cptr.stU64(version, (5n << 24n) | (0n << 16n) | (0n << 8n) | (0n));
-    cptr.stU64(cptr.add(version, 8), BigInt.asUintN(64, (0n | (1n << 6n) | (1n << 17n) | (1n << 18n))));
+    cptr.stU64(version, 83886080n);
+    cptr.stU64(cptr.add(version, 8), 393280n);
     for (i = 1; cptr.ldPtr(cptr.add(artifact_names, i, 8)); i++)
         continue;
     cptr.stU64(cptr.add(version, 16), BigInt.asUintN(64, BigInt(((i - 1) | 0))));
@@ -285,7 +285,7 @@ function count_and_validate_winopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1(cptr.add(cptr.add(window_opts, i, 24), 16), (1));
+        cptr.st1(cptr.add(cptr.add(window_opts, i, 24), 16), 1);
     }
     return cnt;
 }
@@ -296,7 +296,7 @@ function count_and_validate_soundlibopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1(cptr.add(cptr.add(soundlib_opts, i, 32), 24), (1));
+        cptr.st1(cptr.add(cptr.add(soundlib_opts, i, 32), 24), 1);
     }
     return cnt;
 }
@@ -308,7 +308,7 @@ function opt_out_words(str, length_p) {
         word = cptr.strchr(str, 32);
         if (word)
             cptr.st1(word, 0);
-        if (((cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0) > ((80 - 5) | 0)) {
+        if (((cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0) > 75) {
             (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
             void cptr.sprintf(cptr.decay(optbuf), __sl75, cptr.decay(opt_indent)), cptr.stI32(length_p, Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent)))));
         } else {
@@ -352,7 +352,7 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __sl78);
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
     cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
-    length.v = (80 + 1) | 0;
+    length.v = 81;
     void cptr.strcat(cptr.strcpy(cptr.decay(buf), datamodel(0)), __sl79);
     opt_out_words(cptr.decay(buf), length);
     for (i = 0; i < 26; i++) {
@@ -366,7 +366,7 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __sl81, (winsyscnt > 1) ? __sl82 : __sl0);
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
     cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
-    length.v = (80 + 1) | 0;
+    length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         if (!cptr.ld1s(cptr.add(cptr.add(window_opts, i, 24), 16)))
             continue;
@@ -389,7 +389,7 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __sl88, (soundlibcnt > 1) ? __sl82 : __sl0);
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
     cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
-    length.v = (80 + 1) | 0;
+    length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         let soundlib;
         if (!cptr.ld1s(cptr.add(cptr.add(soundlib_opts, i, 32), 24)))

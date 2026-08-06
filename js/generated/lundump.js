@@ -51,7 +51,7 @@ function loadBlock(S, b, size) {
 /** C ref: lundump.c:61 — @param {CPtr} S @returns {*} */
 function loadByte(S) {
     let b = (((cptr.stU64((cptr.ldPtr(cptr.add(S, 8))), cptr.ldU64((cptr.ldPtr(cptr.add(S, 8)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(S, 8))));
-    if (b == (-1))
+    if (b == -1)
         error(S, __sl1);
     return (uchar(((b))));
 }
@@ -72,7 +72,7 @@ function loadUnsigned(S, limit) {
 
 /** C ref: lundump.c:83 — @param {CPtr} S @returns {*} */
 function loadSize(S) {
-    return loadUnsigned(S, ((BigInt.asUintN(64, ~0n))));
+    return loadUnsigned(S, 18446744073709551615n);
 }
 
 /** C ref: lundump.c:88 — @param {CPtr} S @returns {CInt} */
@@ -83,14 +83,14 @@ function loadInt(S) {
 /** C ref: lundump.c:93 — @param {CPtr} S @returns {*} */
 function loadNumber(S) {
     let x = cptr.box(0);
-    loadBlock(S, x, BigInt.asUintN(64, 1n * 8n));
+    loadBlock(S, x, 8n);
     return x.v;
 }
 
 /** C ref: lundump.c:100 — @param {CPtr} S @returns {*} */
 function loadInteger(S) {
     let x = cptr.box(0n);
-    loadBlock(S, x, BigInt.asUintN(64, 1n * 8n));
+    loadBlock(S, x, 8n);
     return x.v;
 }
 
@@ -111,7 +111,7 @@ function loadStringN(S, p) {
             let io = (((cptr.ldPtr(cptr.add(L, 16)))));
             let x_ = (ts);
             cptr.stPtr(((io)), ((((x_)))));
-            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | (1 << 6))))));
+            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
             (void L, (void 0));
         }
         ;
@@ -119,7 +119,7 @@ function loadStringN(S, p) {
         loadBlock(S, (cptr.add((ts), 24)), BigInt.asUintN(64, (size) * 1n));
         cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
     }
-    ((((cptr.ld1u(cptr.add((p), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((ts), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void ((0))));
+    ((((cptr.ld1u(cptr.add((p), 9))) & 32) && ((cptr.ld1u(cptr.add((ts), 9))) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
     return ts;
 }
 
@@ -134,7 +134,7 @@ function loadString(S, p) {
 /** C ref: lundump.c:144 — @param {CPtr} S @param {CPtr} f */
 function loadCode(S, f) {
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 64), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (4n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0)))));
+    cptr.stPtr(cptr.add(f, 64), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0)))));
     cptr.stI32(cptr.add(f, 24), n);
     loadBlock(S, cptr.ldPtr(cptr.add(f, 64)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n));
 }
@@ -143,46 +143,46 @@ function loadCode(S, f) {
 function loadConstants(S, f) {
     let i;
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 56), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (16n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stPtr(cptr.add(f, 56), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32(cptr.add(f, 20), n);
     for (i = 0; i < n; i++)
-        (cptr.st1(cptr.add((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)), 8), uchar((((0) | ((0) << 4))))));
+        (cptr.st1(cptr.add((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)), 8), 0));
     for (i = 0; i < n; i++) {
         let o = cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16);
         let t = loadByte(S);
         switch (t) {
-            case ((0) | ((0) << 4)):
-            (cptr.st1(cptr.add((o), 8), uchar((((0) | ((0) << 4))))));
+            case 0:
+            (cptr.st1(cptr.add((o), 8), 0));
             break;
-            case ((1) | ((0) << 4)):
-            (cptr.st1(cptr.add((o), 8), uchar((((1) | ((0) << 4))))));
+            case 1:
+            (cptr.st1(cptr.add((o), 8), 1));
             break;
-            case ((1) | ((1) << 4)):
-            (cptr.st1(cptr.add((o), 8), uchar((((1) | ((1) << 4))))));
+            case 17:
+            (cptr.st1(cptr.add((o), 8), 17));
             break;
-            case ((3) | ((1) << 4)):
+            case 19:
             {
                 let io = (o);
                 cptr.stF64(((io)), (loadNumber(S)));
-                (cptr.st1(cptr.add((io), 8), uchar((((3) | ((1) << 4))))));
+                (cptr.st1(cptr.add((io), 8), 19));
             }
             ;
             break;
-            case ((3) | ((0) << 4)):
+            case 3:
             {
                 let io = (o);
                 cptr.stI64(((io)), (loadInteger(S)));
-                (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
+                (cptr.st1(cptr.add((io), 8), 3));
             }
             ;
             break;
-            case ((4) | ((0) << 4)):
-            case ((4) | ((1) << 4)):
+            case 4:
+            case 20:
             {
                 let io = (o);
                 let x_ = (loadString(S, f));
                 cptr.stPtr(((io)), ((((x_)))));
-                (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | (1 << 6))))));
+                (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
                 (void cptr.ldPtr(S), (void 0));
             }
             ;
@@ -197,13 +197,13 @@ function loadConstants(S, f) {
 function loadProtos(S, f) {
     let i;
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 72), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (8n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
+    cptr.stPtr(cptr.add(f, 72), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
     cptr.stI32(cptr.add(f, 32), n);
     for (i = 0; i < n; i++)
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8), null);
     for (i = 0; i < n; i++) {
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8), luaF_newproto(cptr.ldPtr(S)));
-        ((((cptr.ld1u(cptr.add((f), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))))))) : (void ((0))));
+        ((((cptr.ld1u(cptr.add((f), 9))) & 32) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))), 9))) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))))))) : (void 0));
         loadFunction(S, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8)), cptr.ldPtr(cptr.add(f, 112)));
     }
 }
@@ -213,7 +213,7 @@ function loadUpvalues(S, f) {
     let i;
     let n;
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 80), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (16n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stPtr(cptr.add(f, 80), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32(cptr.add(f, 16), n);
     for (i = 0; i < n; i++)
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), null);
@@ -229,18 +229,18 @@ function loadDebug(S, f) {
     let i;
     let n;
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 88), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (1n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n), 0)))));
+    cptr.stPtr(cptr.add(f, 88), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n), 0)))));
     cptr.stI32(cptr.add(f, 28), n);
     loadBlock(S, cptr.ldPtr(cptr.add(f, 88)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 96), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (8n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
+    cptr.stPtr(cptr.add(f, 96), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
     cptr.stI32(cptr.add(f, 40), n);
     for (i = 0; i < n; i++) {
         cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), loadInt(S));
         cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), 4), loadInt(S));
     }
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 104), (((4n >= 8n && BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((n)))))) + 1n) > ((BigInt.asUintN(64, ~0n))) / (16n) ? 1 : 0) ? luaM_toobig(cptr.ldPtr(S)) : (void ((0)))), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stPtr(cptr.add(f, 104), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32(cptr.add(f, 36), n);
     for (i = 0; i < n; i++)
         cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), null);
@@ -291,7 +291,7 @@ function fchecksize(S, size, tname) {
 /** C ref: lundump.c:292 — @param {CPtr} S */
 function checkHeader(S) {
     checkliteral(S, cptr.add(__sl5, 1, 1), __sl6);
-    if (loadByte(S) != (((Math.imul(((504 / 100) | 0), 16)) + 504 % 100) | 0))
+    if (loadByte(S) != 84)
         error(S, __sl7);
     if (loadByte(S) != 0)
         error(S, __sl8);
@@ -323,13 +323,13 @@ export function luaU_undump(L, Z, name) {
         let io = (((cptr.ldPtr(cptr.add(L, 16)))));
         let x_ = (cl);
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1(cptr.add((io), 8), uchar((((((6) | ((0) << 4))) | (1 << 6))))));
+        (cptr.st1(cptr.add((io), 8), 70));
         (void L, (void 0));
     }
     ;
     luaD_inctop(L);
     cptr.stPtr(cptr.add(cl, 24), luaF_newproto(L));
-    ((((cptr.ld1u(cptr.add((cl), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtr(cptr.add(cl, 24))))))) : (void ((0))));
+    ((((cptr.ld1u(cptr.add((cl), 9))) & 32) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtr(cptr.add(cl, 24))))))) : (void 0));
     loadFunction(S, cptr.ldPtr(cptr.add(cl, 24)), null);
     (void 0);
     ;

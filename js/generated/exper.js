@@ -50,7 +50,7 @@ export function newuexp(lev) {
 
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
 function enermod(en) {
-    switch ((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)))) {
+    switch ((cptr.ldI16(cptr.add(gu, 216)))) {
         case 337:
         case 343:
         return (Math.imul(2, en));
@@ -71,19 +71,19 @@ export function newpw() {
     let enrnd;
     let enfix;
     if (cptr.ldI32(cptr.add(u, 48)) == 0) {
-        en = (cptr.ldI16(cptr.add(cptr.add(gu, 8), 264)) + cptr.ldI16(cptr.add(cptr.add(gu, 320), 98))) | 0;
-        if (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2)) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2)))) : rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 2))))) | 0;
-        if (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2)) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2)))) : rnd(cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 2))))) | 0;
+        en = (cptr.ldI16(cptr.add(gu, 272)) + cptr.ldI16(cptr.add(gu, 418))) | 0;
+        if (cptr.ldI16(cptr.add(gu, 274)) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16(cptr.add(gu, 274)))) : rnd(cptr.ldI16(cptr.add(gu, 274))))) | 0;
+        if (cptr.ldI16(cptr.add(gu, 420)) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16(cptr.add(gu, 420)))) : rnd(cptr.ldI16(cptr.add(gu, 420))))) | 0;
     } else {
         enrnd = ((acurr(2)) / 2) | 0;
-        if (cptr.ldI32(cptr.add(u, 48)) < cptr.ldI16(cptr.add(cptr.add(gu, 8), 276))) {
-            enrnd = (enrnd + ((cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 6)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 6))) | 0)) | 0;
-            enfix = (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 4)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 4))) | 0;
+        if (cptr.ldI32(cptr.add(u, 48)) < cptr.ldI16(cptr.add(gu, 284))) {
+            enrnd = (enrnd + ((cptr.ldI16(cptr.add(gu, 278)) + cptr.ldI16(cptr.add(gu, 424))) | 0)) | 0;
+            enfix = (cptr.ldI16(cptr.add(gu, 276)) + cptr.ldI16(cptr.add(gu, 422))) | 0;
         } else {
-            enrnd = (enrnd + ((cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 10)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 10))) | 0)) | 0;
-            enfix = (cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 8), 264), 8)) + cptr.ldI16(cptr.add(cptr.add(cptr.add(gu, 320), 98), 8))) | 0;
+            enrnd = (enrnd + ((cptr.ldI16(cptr.add(gu, 282)) + cptr.ldI16(cptr.add(gu, 428))) | 0)) | 0;
+            enfix = (cptr.ldI16(cptr.add(gu, 280)) + cptr.ldI16(cptr.add(gu, 426))) | 0;
         }
         en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 64, __sl1), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
     }
@@ -93,7 +93,7 @@ export function newpw() {
         cptr.stI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2), i16(en));
     } else {
         let lim = schar(((4 - ((cptr.ldI32(cptr.add(u, 2212)) / 200) | 0)) | 0));
-        lim = schar(((lim) > (1) ? (lim) : (1)));
+        lim = schar(((lim) > 1 ? (lim) : 1));
         if (en > lim)
             en = lim;
     }
@@ -110,7 +110,7 @@ export function experience(mtmp, nk) {
     if ((i = find_mac(mtmp)) < 3)
         tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
     if (cptr.ld1s(cptr.add(ptr, 30)) > 12)
-        tmp = (tmp + ((cptr.ld1s(cptr.add(ptr, 30)) > ((Math.imul(3, 12) / 2) | 0)) ? 5 : 3)) | 0;
+        tmp = (tmp + ((cptr.ld1s(cptr.add(ptr, 30)) > 18) ? 5 : 3)) | 0;
     for (i = 0; i < 6; i++) {
         tmp2 = cptr.ld1u(cptr.add(cptr.add(ptr, 36), i, 4));
         if (tmp2 > 4) {
@@ -132,7 +132,7 @@ export function experience(mtmp, nk) {
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
         if ((Math.imul(cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 3)), cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 2)))) > 23)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
-        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
+        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == 57 ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 52, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 52, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64(cptr.add((ptr), 80)) & 33554432n) != 0n))
@@ -166,15 +166,15 @@ export function more_experienced(exper, rexp) {
     if (newexp != oldexp) {
         cptr.stI64(cptr.add(u, 2376), newexp);
         if (cptr.ld1s(cptr.add(flags, 38)))
-            cptr.st1(disp, (1));
+            cptr.st1(disp, 1);
         if (!cptr.ld1s(disp) && exp_percent_changing() ? 1 : 0)
-            cptr.st1(disp, (1));
+            cptr.st1(disp, 1);
     }
     if (newrexp != oldrexp) {
         cptr.stI64(cptr.add(u, 2384), newrexp);
     }
-    if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)) == (343)) ? 1000 : 2000)))
-        cptr.st1(cptr.add(flags, 5), (0));
+    if (cptr.ldI64(cptr.add(u, 2384)) >= BigInt(((cptr.ldI16(cptr.add(gu, 216)) == 343) ? 1000 : 2000)))
+        cptr.st1(cptr.add(flags, 5), 0);
 }
 
 /** C ref: exper.c:207 — @param {CPtr} drainer */
@@ -211,9 +211,9 @@ export function losexp(drainer) {
     num = cptr.ldI16(cptr.add(cptr.add(u, 2220), cptr.ldI32(cptr.add(u, 48)), 2));
     cptr.stI32(cptr.add(u, 2200), (cptr.ldI32(cptr.add(u, 2200)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2200)) < uhpmin)
-        setuhpmax(uhpmin, (1));
+        setuhpmax(uhpmin, 1);
     if (cptr.ldI32(cptr.add(u, 2200)) > olduhpmax)
-        setuhpmax(olduhpmax, (1));
+        setuhpmax(olduhpmax, 1);
     cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) - num) | 0);
     if (cptr.ldI32(cptr.add(u, 2196)) < 1)
         cptr.stI32(cptr.add(u, 2196), 1);
@@ -237,13 +237,13 @@ export function losexp(drainer) {
         if (cptr.ldI32(cptr.add(u, 1812)) <= 0)
             rehumanize();
     }
-    cptr.st1(disp, (1));
+    cptr.st1(disp, 1);
 }
 
 /** C ref: exper.c:300 */
 export function newexplevel() {
     if (cptr.ldI32(cptr.add(u, 48)) < 30 && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))) ? 1 : 0)
-        pluslvl((1));
+        pluslvl(1);
 }
 
 /** C ref: exper.c:307 — @param {CInt} incr */
@@ -255,11 +255,11 @@ export function pluslvl(incr) {
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         hpinc = monhp_per_lvl(cptr.add(gy, 8));
         cptr.stI32(cptr.add(u, 1812), (cptr.ldI32(cptr.add(u, 1812)) + hpinc) | 0);
-        setuhpmax(cptr.ldI32(cptr.add(u, 1816)), (0));
+        setuhpmax(cptr.ldI32(cptr.add(u, 1816)), 0);
     }
     hpinc = newhp();
     cptr.stI32(cptr.add(u, 2196), (cptr.ldI32(cptr.add(u, 2196)) + hpinc) | 0);
-    setuhpmax((cptr.ldI32(cptr.add(u, 2200)) + hpinc) | 0, (1));
+    setuhpmax((cptr.ldI32(cptr.add(u, 2200)) + hpinc) | 0, 1);
     eninc = newpw();
     cptr.stI32(cptr.add(u, 2212), (cptr.ldI32(cptr.add(u, 2212)) + eninc) | 0);
     if (cptr.ldI32(cptr.add(u, 2212)) > cptr.ldI32(cptr.add(u, 2216)))
@@ -291,7 +291,7 @@ export function pluslvl(incr) {
         if (cptr.ldI32(cptr.add(u, 48)) > cptr.ldI32(cptr.add(u, 56)))
             cptr.stI32(cptr.add(u, 56), cptr.ldI32(cptr.add(u, 48)));
     }
-    cptr.st1(disp, (1));
+    cptr.st1(disp, 1);
 }
 
 /** C ref: exper.c:378 — @param {CInt} gaining @returns {CLongLong} */

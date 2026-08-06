@@ -141,7 +141,7 @@ export function time_from_yyyymmddhhmmss(buf) {
             cptr.stI32(t, atoi(cptr.decay(s)));
             timeresult = mktime(t);
         }
-        if (timeresult == BigInt((-1)))
+        if (timeresult == -1n)
             ;
         else
             return timeresult;

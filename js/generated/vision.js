@@ -3,7 +3,7 @@
 // Input sha256: 88578aa26076563be5f41a0cda0710149eb13b22ee08b53a116f51c0068ead31
 // Transpiler: tools/c2js c2js emit v1+batch
 
-import { i16, schar, uchar } from '../cmachine.js';
+import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
@@ -226,8 +226,8 @@ const right_ptrs = (function () { const flat = new Uint8Array(21 * 80 * 2); cons
 /** C ref: vision.c:105 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function get_viz_clear(x, y) {
     if (isok(i16(x), i16(y)) && !cptr.ld1s(cptr.add(cptr.decay(viz_clear[y]), x, 1)) ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 /** C ref: vision.c:121 */
@@ -251,18 +251,18 @@ export function does_block(x, y, lev) {
     let obj;
     let mon;
     if (cptr.ldI32(cptr.add(gs, 1416)) == 0) {
-        cptr.stI32(cptr.add(gs, 1416), (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl0, (0)) ? 1 : 0) ? 1 : -1);
+        cptr.stI32(cptr.add(gs, 1416), (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl0, 0) ? 1 : 0) ? 1 : -1);
     }
-    if ((((cptr.ld1s(cptr.add(lev, 4))) < 16) || cptr.ld1s(cptr.add(lev, 4)) == 13 ? 1 : 0) || (((cptr.ld1s(cptr.add(lev, 4))) == 23) && (((cptr.ldI32(cptr.add(lev, 8)) & 31) | 0) & (4 | 8 | 16)) ? 1 : 0) ? 1 : 0)
+    if ((((cptr.ld1s(cptr.add(lev, 4))) < 16) || cptr.ld1s(cptr.add(lev, 4)) == 13 ? 1 : 0) || (((cptr.ld1s(cptr.add(lev, 4))) == 23) && (((cptr.ldI32(cptr.add(lev, 8)) & 31) | 0) & 28) ? 1 : 0) ? 1 : 0)
         return 1;
     if (cptr.ldI32(cptr.add(gs, 1416)) != 1) {
         if (((cptr.ld1s(cptr.add(lev, 4)) == 36 || ((cptr.ld1s(cptr.add(lev, 4))) == 18) ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == 21 ? 1 : 0) || (((cptr.ldI32(cptr.add(u, 1852)) & 1)) | 0 && is_moat(i16(x), i16(y)) ? 1 : 0) ? 1 : 0)
             return 1;
     }
-    for (obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 60480), x, 168), y, 8)); obj; obj = cptr.ldPtr(cptr.add(obj, 8)))
+    for (obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8)); obj; obj = cptr.ldPtr(cptr.add(obj, 8)))
         if (cptr.ldI16(cptr.add(obj, 32)) == 475)
             return 1;
-    if (((mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)))) && (!(cptr.ldI32(cptr.add(mon, 88)) & 1) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ld1u(cptr.add((mon), 64)) & 7) == 2 && cptr.ldI32(cptr.add((mon), 60)) == 475 ? 1 : 0) || ((cptr.ld1u(cptr.add((mon), 64)) & 7) == 1 && (((cptr.ldI32(cptr.add((mon), 60)) == 16 || cptr.ldI32(cptr.add((mon), 60)) == 15 ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) < 12 ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) == 18 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (((mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) && (!(cptr.ldI32(cptr.add(mon, 88)) & 1) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 29, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 29, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ld1u(cptr.add((mon), 64)) & 7) == 2 && cptr.ldI32(cptr.add((mon), 60)) == 475 ? 1 : 0) || ((cptr.ld1u(cptr.add((mon), 64)) & 7) == 1 && (((cptr.ldI32(cptr.add((mon), 60)) == 16 || cptr.ldI32(cptr.add((mon), 60)) == 15 ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) < 12 ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) == 18 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
         return 1;
     if (cptr.ldI32(cptr.add(gs, 1416)) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -313,11 +313,11 @@ export function vision_reset() {
             dig_left--;
         for (; i < 80; i++) {
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[y]), i, 2), i16(dig_left));
-            cptr.stI16(cptr.add(cptr.decay(right_ptrs[y]), i, 2), i16(((80 - 1) | 0)));
+            cptr.stI16(cptr.add(cptr.decay(right_ptrs[y]), i, 2), 79);
             cptr.st1(cptr.add(cptr.decay(viz_clear[y]), i, 1), schar((!block)));
         }
     }
-    cptr.st1(cptr.add(iflags, 82), (1));
+    cptr.st1(cptr.add(iflags, 82), 1);
     cptr.st1(cptr.add(gv, 144), 1);
 }
 
@@ -337,9 +337,9 @@ function get_unused_cs(rows, rmin, rmax) {
     }
     nrmin = cptr.ldPtr(rmin);
     nrmax = cptr.ldPtr(rmax);
-    void __builtin___memset_chk(cptr.ldPtr(cptr.ldPtr(rows)), 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Math.imul(21, 80))) * 1n), __builtin_object_size(cptr.ldPtr(cptr.ldPtr(rows)), 0));
+    void __builtin___memset_chk(cptr.ldPtr(cptr.ldPtr(rows)), 0, 1680n, __builtin_object_size(cptr.ldPtr(cptr.ldPtr(rows)), 0));
     for (row = 0; row < 21; row++) {
-        cptr.stI16(cptr.postinc(() => nrmin, (v) => { nrmin = v; }, 2), i16(((80 - 1) | 0)));
+        cptr.stI16(cptr.postinc(() => nrmin, (v) => { nrmin = v; }, 2), 79);
         cptr.stI16(cptr.postinc(() => nrmax, (v) => { nrmax = v; }, 2), 1);
     }
 }
@@ -362,25 +362,25 @@ function rogue_vision(next, rmin, rmax) {
             cptr.stI16(cptr.add(rmax, zy, 2), i16((stop = (cptr.ldI16(cptr.add(cptr.add(svr, rnum, 224), 2)) + 1) | 0)));
             for (zx = start; zx <= stop; zx++) {
                 if (cptr.ld1s(cptr.add(cptr.add(svr, rnum, 224), 10))) {
-                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), uchar((1 | 2)));
-                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zx, 756), zy, 36), 5), (255));
+                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), 3);
+                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zx, 756), zy, 36), 5), 255);
                 } else
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), 1);
             }
         }
     }
     in_door = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 4)) == 23;
-    ylo = (((cptr.ldI16(cptr.add(u, 2)) - 1) | 0) > (0) ? ((cptr.ldI16(cptr.add(u, 2)) - 1) | 0) : (0));
-    yhi = (((cptr.ldI16(cptr.add(u, 2)) + 1) | 0) < ((21 - 1) | 0) ? ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0) : ((21 - 1) | 0));
-    xlo = (((cptr.ldI16(u) - 1) | 0) > (1) ? ((cptr.ldI16(u) - 1) | 0) : (1));
-    xhi = (((cptr.ldI16(u) + 1) | 0) < ((80 - 1) | 0) ? ((cptr.ldI16(u) + 1) | 0) : ((80 - 1) | 0));
+    ylo = (((cptr.ldI16(cptr.add(u, 2)) - 1) | 0) > 0 ? ((cptr.ldI16(cptr.add(u, 2)) - 1) | 0) : 0);
+    yhi = (((cptr.ldI16(cptr.add(u, 2)) + 1) | 0) < 20 ? ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0) : 20);
+    xlo = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
+    xhi = (((cptr.ldI16(u) + 1) | 0) < 79 ? ((cptr.ldI16(u) + 1) | 0) : 79);
     for (zy = ylo; zy <= yhi; zy++) {
         if (xlo < cptr.ldI16(cptr.add(rmin, zy, 2)))
             cptr.stI16(cptr.add(rmin, zy, 2), i16(xlo));
         if (xhi > cptr.ldI16(cptr.add(rmax, zy, 2)))
             cptr.stI16(cptr.add(rmax, zy, 2), i16(xhi));
         for (zx = xlo; zx <= xhi; zx++) {
-            cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), uchar((1 | 2)));
+            cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), 3);
             if (in_door && (zx == cptr.ldI16(u) || zy == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
                 newsym(i16(zx), i16(zy));
         }
@@ -428,21 +428,21 @@ export function vision_recalc(control) {
                         newsym(i16(col), i16(row));
             }
             break __lbl_skip;
-        } else if ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 8)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 8))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 8)) ? 1 : 0))) {
+        } else if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1800)), 2)) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0))) {
             rogue_vision(next_array.v, next_rmin.v, next_rmax.v);
         } else {
             let lo_col;
             let has_night_vision = 1;
-            if (((cptr.ldI32(cptr.add(u, 1852)) & 1)) | 0 && !(((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) ? 1 : 0) {
+            if (((cptr.ldI32(cptr.add(u, 1852)) & 1)) | 0 && !(((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0) {
                 has_night_vision = 0;
-                lo_col = (((cptr.ldI16(u) - 1) | 0) > (1) ? ((cptr.ldI16(u) - 1) | 0) : (1));
+                lo_col = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
                 for (row = (cptr.ldI16(cptr.add(u, 2)) - 1) | 0; row <= ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0); row++)
                     for (col = lo_col; col <= ((cptr.ldI16(u) + 1) | 0); col++) {
                         if (!isok(i16(col), i16(row)) || !is_pool(i16(col), i16(row)) ? 1 : 0)
                             continue;
                         cptr.stI16(cptr.add(next_rmin.v, row, 2), i16(((cptr.ldI16(cptr.add(next_rmin.v, row, 2))) < (col) ? (cptr.ldI16(cptr.add(next_rmin.v, row, 2))) : (col))));
                         cptr.stI16(cptr.add(next_rmax.v, row, 2), i16(((cptr.ldI16(cptr.add(next_rmax.v, row, 2))) > (col) ? (cptr.ldI16(cptr.add(next_rmax.v, row, 2))) : (col))));
-                        cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, row, 8)), col), uchar((2 | 1)));
+                        cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, row, 8)), col), 3);
                     }
             } else if (cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == 2 ? 1 : 0) {
                 for (row = (cptr.ldI16(cptr.add(u, 2)) - 1) | 0; row <= ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0); row++) {
@@ -450,11 +450,11 @@ export function vision_recalc(control) {
                         continue;
                     if (row >= 21)
                         break;
-                    cptr.stI16(cptr.add(next_rmin.v, row, 2), i16(((1) > ((cptr.ldI16(u) - 1) | 0) ? (1) : ((cptr.ldI16(u) - 1) | 0))));
-                    cptr.stI16(cptr.add(next_rmax.v, row, 2), i16((((80 - 1) | 0) < ((cptr.ldI16(u) + 1) | 0) ? ((80 - 1) | 0) : ((cptr.ldI16(u) + 1) | 0))));
+                    cptr.stI16(cptr.add(next_rmin.v, row, 2), i16((1 > ((cptr.ldI16(u) - 1) | 0) ? 1 : ((cptr.ldI16(u) - 1) | 0))));
+                    cptr.stI16(cptr.add(next_rmax.v, row, 2), i16((79 < ((cptr.ldI16(u) + 1) | 0) ? 79 : ((cptr.ldI16(u) + 1) | 0))));
                     next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
                     for (col = cptr.ldI16(cptr.add(next_rmin.v, row, 2)); col <= cptr.ldI16(cptr.add(next_rmax.v, row, 2)); col++)
-                        cptr.st1(cptr.add(next_row, col), uchar((2 | 1)));
+                        cptr.st1(cptr.add(next_row, col), 3);
                 }
             } else
                 view_from(cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null);
@@ -468,13 +468,13 @@ export function vision_recalc(control) {
                             break;
                         dy = (((cptr.ldI16(cptr.add(u, 2)) - row) | 0) < 0 ? -((cptr.ldI16(cptr.add(u, 2)) - row) | 0) : ((cptr.ldI16(cptr.add(u, 2)) - row) | 0));
                         next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
-                        start = ((1) > ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? (1) : ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
-                        stop = (((80 - 1) | 0) < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? ((80 - 1) | 0) : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
+                        start = (1 > ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 1 : ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
+                        stop = (79 < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
                         for (col = start; col <= stop; col++) {
                             let old_row_val = schar(cptr.ld1u(cptr.add(next_row, col)));
                             cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
                             oldseenv = cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 5));
-                            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 5), (255));
+                            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 5), 255);
                             if (!(old_row_val & 2) || oldseenv != 255 ? 1 : 0)
                                 newsym(i16(col), i16(row));
                         }
@@ -483,7 +483,7 @@ export function vision_recalc(control) {
                     }
                 } else {
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | 2);
-                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), (255));
+                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), 255);
                     cptr.stI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) < (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                     cptr.stI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) > (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                 }
@@ -491,7 +491,7 @@ export function vision_recalc(control) {
             if (has_night_vision && cptr.ldI32(cptr.add(u, 1780)) < cptr.ldI32(cptr.add(u, 1776)) ? 1 : 0) {
                 if (!cptr.ldI32(cptr.add(u, 1776))) {
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | 2);
-                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), (255));
+                    cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), 255);
                     cptr.stI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) < (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                     cptr.stI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) > (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                 } else if (cptr.ldI32(cptr.add(u, 1776)) > 0) {
@@ -503,8 +503,8 @@ export function vision_recalc(control) {
                             break;
                         dy = (((cptr.ldI16(cptr.add(u, 2)) - row) | 0) < 0 ? -((cptr.ldI16(cptr.add(u, 2)) - row) | 0) : ((cptr.ldI16(cptr.add(u, 2)) - row) | 0));
                         next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
-                        start = ((1) > ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? (1) : ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
-                        stop = (((80 - 1) | 0) < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? ((80 - 1) | 0) : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
+                        start = (1 > ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 1 : ((cptr.ldI16(u) - cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
+                        stop = (79 < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
                         for (col = start; col <= stop; col++)
                             if (cptr.ld1u(cptr.add(next_row, col)))
                                 cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
@@ -576,13 +576,13 @@ export function vision_recalc(control) {
         newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     cptr.stPtr(cptr.add(gv, 128), next_rmin.v);
     cptr.stPtr(cptr.add(gv, 136), next_rmax.v);
-    notice_all_mons((1));
+    notice_all_mons(1);
 }
 
 /** C ref: vision.c:865 — @param {CInt} x @param {CInt} y */
 export function block_point(x, y) {
     if (cptr.ldI32(cptr.add(gs, 1416)) == 0) {
-        cptr.stI32(cptr.add(gs, 1416), (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl0, (0)) ? 1 : 0) ? 1 : -1);
+        cptr.stI32(cptr.add(gs, 1416), (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl0, 0) ? 1 : 0) ? 1 : -1);
     }
     if (cptr.ldI32(cptr.add(gs, 1416)) == 1) {
         if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)))
@@ -622,13 +622,13 @@ function dig_point(row, col) {
             for (i = 1; i <= cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), 1, 2)); i++)
                 cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), 1);
         }
-    } else if (col == ((80 - 1) | 0)) {
-        if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (80 - 2) | 0, 1))) {
-            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 1) | 0, 2), cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 2) | 0, 2)));
+    } else if (col == 79) {
+        if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), 78, 1))) {
+            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), 79, 2), cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), 78, 2)));
         } else {
-            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 1) | 0, 2), i16(((80 - 2) | 0)));
-            for (i = cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 2) | 0, 2)); i < ((80 - 1) | 0); i++)
-                cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), i, 2), i16(((80 - 2) | 0)));
+            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), 79, 2), 78);
+            for (i = cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), 78, 2)); i < 79; i++)
+                cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), i, 2), 78);
         }
     } else if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (col - 1) | 0, 1)) && cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) ? 1 : 0) {
         for (i = cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2)); i <= col; i++) {
@@ -683,13 +683,13 @@ function fill_point(row, col) {
             for (i = 1; i <= cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), 1, 2)); i++)
                 cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), 0);
         }
-    } else if (col == ((80 - 1) | 0)) {
-        if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (80 - 2) | 0, 1))) {
-            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 1) | 0, 2), i16(((80 - 1) | 0)));
+    } else if (col == 79) {
+        if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), 78, 1))) {
+            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), 79, 2), 79);
         } else {
-            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 1) | 0, 2), cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 2) | 0, 2)));
-            for (i = cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 2) | 0, 2)); i < ((80 - 1) | 0); i++)
-                cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), i, 2), i16(((80 - 1) | 0)));
+            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), 79, 2), cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), 78, 2)));
+            for (i = cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), 78, 2)); i < 79; i++)
+                cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), i, 2), 79);
         }
     } else if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (col - 1) | 0, 1)) && cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) ? 1 : 0) {
         for (i = (cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2)) + 1) | 0; i <= col; i++)
@@ -698,8 +698,8 @@ function fill_point(row, col) {
             cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), 0, 2), i16(col));
         for (i = col; i < cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)); i++)
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), i16(col));
-        if (cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)) == ((80 - 1) | 0))
-            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), (80 - 1) | 0, 2), i16(col));
+        if (cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)) == 79)
+            cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), 79, 2), i16(col));
     } else if (cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), (col - 1) | 0, 1))) {
         for (i = col; i <= cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)); i++)
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), i16(col));
@@ -713,7 +713,7 @@ function fill_point(row, col) {
             cptr.stI16(cptr.add(cptr.decay(right_ptrs[row]), i, 2), i16(col));
         for (i = (col + 1) | 0; i < cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)); i++)
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), i16(col));
-        if (cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)) == ((80 - 1) | 0))
+        if (cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2)) == 79)
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), i, 2), i16(col));
         cptr.stI16(cptr.add(cptr.decay(left_ptrs[row]), col, 2), cptr.ldI16(cptr.add(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2)));
     } else {
@@ -968,13 +968,13 @@ function right_side(row, left, right_mark, limits) {
     }
     if (limits) {
         lim_max = (start_col + cptr.ldI16(limits)) | 0;
-        if (lim_max > ((80 - 1) | 0))
-            lim_max = (80 - 1) | 0;
+        if (lim_max > 79)
+            lim_max = 79;
         if (right_mark > lim_max)
             right_mark = lim_max;
         limits = cptr.add(limits, 1, 2);
     } else
-        lim_max = (80 - 1) | 0;
+        lim_max = 79;
     while (left <= right_mark) {
         right_edge = cptr.ldI16(cptr.add(cptr.decay(right_ptrs[row]), left, 2));
         if (right_edge > lim_max)
@@ -1229,7 +1229,7 @@ function right_side(row, left, right_mark, limits) {
         } else
             right = right_edge;
         if (left <= right) {
-            if (((left == right && left == start_col ? 1 : 0) && start_col < ((80 - 1) | 0) ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, row, 8)), (start_col + 1) | 0)) ? 1 : 0)
+            if (((left == right && left == start_col ? 1 : 0) && start_col < 79 ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, row, 8)), (start_col + 1) | 0)) ? 1 : 0)
                 right = (start_col + 1) | 0;
             if (right > lim_max)
                 right = lim_max;
@@ -1593,7 +1593,7 @@ function view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, 
         right = cptr.ldI16(cptr.add(cptr.decay(right_ptrs[srow]), scol, 2));
     } else {
         left = (!scol) ? 0 : (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, srow, 8)), (scol - 1) | 0)) ? cptr.ldI16(cptr.add(cptr.decay(left_ptrs[srow]), (scol - 1) | 0, 2)) : (scol - 1) | 0);
-        right = (scol == ((80 - 1) | 0)) ? (80 - 1) | 0 : (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, srow, 8)), (scol + 1) | 0)) ? cptr.ldI16(cptr.add(cptr.decay(right_ptrs[srow]), (scol + 1) | 0, 2)) : (scol + 1) | 0);
+        right = (scol == 79) ? 79 : (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, srow, 8)), (scol + 1) | 0)) ? cptr.ldI16(cptr.add(cptr.decay(right_ptrs[srow]), (scol + 1) | 0, 2)) : (scol + 1) | 0);
     }
     if (range) {
         if (range > 15 || range < 1 ? 1 : 0)
@@ -1620,14 +1620,14 @@ function view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, 
     }
     if ((nrow = (srow + 1) | 0) < 21) {
         step.v = 1;
-        if (scol < ((80 - 1) | 0))
+        if (scol < 79)
             right_side(nrow, scol, right, limits);
         if (scol)
             left_side(nrow, left, scol, limits);
     }
     if ((nrow = (srow - 1) | 0) >= 0) {
         step.v = -1;
-        if (scol < ((80 - 1) | 0))
+        if (scol < 79)
             right_side(nrow, scol, right, limits);
         if (scol)
             left_side(nrow, left, scol, limits);
@@ -1647,14 +1647,14 @@ export function do_clear_area(scol, srow, range, func, arg) {
         let offset;
         let limits;
         let override_vision;
-        override_vision = schar((detecting(func) && ((((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 64)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 64))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 64)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(cptr.add(svd, 1792), 72)), 2)) || cptr.ldI16((cptr.add(cptr.add(svd, 1792), 72))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(cptr.add(svd, 1792), 72)) ? 1 : 0)) ? 1 : 0) ? 1 : 0));
+        override_vision = schar((detecting(func) && ((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(svd, 1864)), 2)) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) ? 1 : 0) ? 1 : 0));
         if (range > 15 || range < 1 ? 1 : 0)
             panic(__sl9, range);
         if (cptr.ld1s(cptr.add(gv, 144)))
             vision_recalc(0);
         limits = (cptr.add(circle_data, cptr.ldI16(cptr.add(circle_start, range, 2)), 2));
         if ((max_y = ((srow + range) | 0)) >= 21)
-            max_y = (21 - 1) | 0;
+            max_y = 20;
         if ((y = ((srow - range) | 0)) < 0)
             y = 0;
         for (; y <= max_y; y++) {
@@ -1662,7 +1662,7 @@ export function do_clear_area(scol, srow, range, func, arg) {
             if ((min_x = ((scol - offset) | 0)) < 1)
                 min_x = 1;
             if ((max_x = ((scol + offset) | 0)) >= 80)
-                max_x = (80 - 1) | 0;
+                max_x = 79;
             for (x = min_x; x <= max_x; x++)
                 if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 1) != 0) || override_vision ? 1 : 0)
                     (func)(i16(x), i16(y), arg);
@@ -1687,7 +1687,7 @@ export function howmonseen(mon) {
         how_seen |= 16;
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 37, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 37, 24)) ? 1 : 0))
         how_seen |= 32;
-    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) ? 1 : 0) && (((cptr.ldU64(cptr.add(svc, 552)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n || (cptr.ldU64(cptr.add(cptr.add(svc, 552), 8)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n ? 1 : 0) || (cptr.ldPtr(cptr.add(cptr.add(svc, 552), 16)) && (cptr.eq(cptr.ldPtr(cptr.add(cptr.add(svc, 552), 16)), cptr.ldPtr(cptr.add((mon), 8)))) ? 1 : 0) ? 1 : 0) ? 1 : 0))
+    if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 32, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 32, 24)) ? 1 : 0) && (((cptr.ldU64(cptr.add(svc, 552)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n || (cptr.ldU64(cptr.add(svc, 560)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n ? 1 : 0) || (cptr.ldPtr(cptr.add(svc, 568)) && (cptr.eq(cptr.ldPtr(cptr.add(svc, 568)), cptr.ldPtr(cptr.add((mon), 8)))) ? 1 : 0) ? 1 : 0) ? 1 : 0))
         how_seen |= 64;
     return how_seen;
 }

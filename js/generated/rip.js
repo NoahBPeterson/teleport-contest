@@ -70,12 +70,12 @@ export function genl_outrip(tmpwin, how, when) {
     cptr.stPtr(cptr.add(dp, x, 8), null);
     void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
     center(6, cptr.decay(buf));
-    cash = ((cptr.ldI64(cptr.add(gd, 8))) > (0n) ? (cptr.ldI64(cptr.add(gd, 8))) : (0n));
+    cash = ((cptr.ldI64(cptr.add(gd, 8))) > 0n ? (cptr.ldI64(cptr.add(gd, 8))) : 0n);
     if (cash > 999999999n)
         cash = 999999999n;
     void cptr.sprintf(cptr.decay(buf), __sl11, cash);
     center(7, cptr.decay(buf));
-    formatkiller(cptr.decay(buf), 256, how, (0));
+    formatkiller(cptr.decay(buf), 256, how, 0);
     for (line = 8, dpx = cptr.decay(buf); line < 12; line++) {
         let tmpchar;
         let i;

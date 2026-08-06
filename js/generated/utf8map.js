@@ -66,7 +66,7 @@ export function free_all_glyphmap_u() {
     }
     for (y = 0; y < 21; ++y) {
         for (x = 0; x < 80; ++x) {
-            cptr.stPtr(cptr.add(cptr.add(cptr.add(cptr.add(cptr.add(gg, y, 4480), x, 56), 8), 16), 24), null);
+            cptr.stPtr(cptr.add(cptr.add(cptr.add(gg, y, 4480), x, 56), 48), null);
         }
     }
 }
@@ -89,14 +89,14 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)), 8)) ? 1 : 0) {
-                        let ucp = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphinfo, 16), 24)), 8));
+                    if (cptr.ldPtr(cptr.add(glyphinfo, 40)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)) ? 1 : 0) {
+                        let ucp = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8));
                         while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0)
                             cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
                         if (retflags)
                             cptr.stI32(retflags, 1);
                     } else {
-                        so = cptr.ldI32(cptr.add(cptr.add(cptr.add(glyphinfo, 16), 4), 4));
+                        so = cptr.ldI32(cptr.add(glyphinfo, 24));
                         cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.add(gs, 680), so, 1))));
                         if (retflags)
                             cptr.stI32(retflags, 0);
@@ -135,13 +135,13 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
-                if (cptr.ldPtr(cptr.add(cptr.add(details, 8), 8)))
-                    cptr.free(cptr.ldPtr(cptr.add(cptr.add(details, 8), 8)));
+                if (cptr.ldPtr(cptr.add(details, 16)))
+                    cptr.free(cptr.ldPtr(cptr.add(details, 16)));
                 if (utf32ch) {
-                    cptr.stPtr(cptr.add(cptr.add(details, 8), 8), dupstr(utf8str));
+                    cptr.stPtr(cptr.add(details, 16), dupstr(utf8str));
                     cptr.stI32(cptr.add(details, 8), utf32ch);
                 } else {
-                    cptr.stPtr(cptr.add(cptr.add(details, 8), 8), null);
+                    cptr.stPtr(cptr.add(details, 16), null);
                     cptr.stI32(cptr.add(details, 8), 0);
                 }
                 return 1;
@@ -152,9 +152,9 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
     newdetails = alloc(32);
     cptr.stI32(newdetails, glyphidx);
     if (utf8str && cptr.ld1u(utf8str) ? 1 : 0) {
-        cptr.stPtr(cptr.add(cptr.add(newdetails, 8), 8), dupstr(utf8str));
+        cptr.stPtr(cptr.add(newdetails, 16), dupstr(utf8str));
     } else {
-        cptr.stPtr(cptr.add(cptr.add(newdetails, 8), 8), null);
+        cptr.stPtr(cptr.add(newdetails, 16), null);
     }
     cptr.stI32(cptr.add(newdetails, 8), utf32ch);
     cptr.stPtr(cptr.add(newdetails, 24), null);

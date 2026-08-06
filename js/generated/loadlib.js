@@ -81,9 +81,9 @@ function lsys_sym(L, lib, sym) {
 /** C ref: loadlib.c:276 — @param {CPtr} L @returns {CInt} */
 function noenv(L) {
     let b;
-    lua_getfield(L, ((-1000000 - 1000) | 0), __sl1);
+    lua_getfield(L, -1001000, __sl1);
     b = lua_toboolean(L, -1);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     return b;
 }
 
@@ -115,27 +115,27 @@ function setpath(L, fieldname, envname, dft) {
     }
     (void 0);
     lua_setfield(L, -3, fieldname);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
 }
 
 /** C ref: loadlib.c:326 — @param {CPtr} L @param {CPtr} path @returns {CPtr} */
 function checkclib(L, path) {
     let plib;
-    lua_getfield(L, ((-1000000 - 1000) | 0), CLIBS);
+    lua_getfield(L, -1001000, CLIBS);
     lua_getfield(L, -1, path);
     plib = lua_touserdata(L, -1);
-    lua_settop(L, (-(2) - 1) | 0);
+    lua_settop(L, -3);
     return plib;
 }
 
 /** C ref: loadlib.c:340 — @param {CPtr} L @param {CPtr} path @param {CPtr} plib */
 function addtoclib(L, path, plib) {
-    lua_getfield(L, ((-1000000 - 1000) | 0), CLIBS);
+    lua_getfield(L, -1001000, CLIBS);
     lua_pushlightuserdata(L, plib);
     lua_pushvalue(L, -1);
     lua_setfield(L, -3, path);
     lua_rawseti(L, -2, BigInt.asIntN(64, luaL_len(L, -2) + 1n));
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
 }
 
 /** C ref: loadlib.c:354 — @param {CPtr} L @returns {CInt} */
@@ -144,7 +144,7 @@ function gctm(L) {
     for (; n >= 1n; n--) {
         lua_rawgeti(L, 1, n);
         lsys_unloadlib(lua_touserdata(L, -1));
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
     }
     return 0;
 }
@@ -172,14 +172,14 @@ function lookforfunc(L, path, sym) {
 
 /** C ref: loadlib.c:402 — @param {CPtr} L @returns {CInt} */
 function ll_loadlib(L) {
-    let path = (luaL_checklstring(L, (1), null));
-    let init = (luaL_checklstring(L, (2), null));
+    let path = (luaL_checklstring(L, 1, null));
+    let init = (luaL_checklstring(L, 2, null));
     let stat = lookforfunc(L, path, init);
     if ((__builtin_expect(BigInt(((stat == 0) != 0)), 1n)))
         return 1;
     else {
         lua_pushnil(L);
-        lua_rotate(L, (-2), 1);
+        lua_rotate(L, -2, 1);
         lua_pushstring(L, (stat == 1) ? __sl6 : __sl7);
         return 3;
     }
@@ -240,18 +240,18 @@ function searchpath(L, name, path, sep, dirsep) {
             return lua_pushstring(L, filename);
     }
     luaL_pushresult(buff);
-    pusherrornotfound(L, lua_tolstring(L, (-1), null));
+    pusherrornotfound(L, lua_tolstring(L, -1, null));
     return null;
 }
 
 /** C ref: loadlib.c:499 — @param {CPtr} L @returns {CInt} */
 function ll_searchpath(L) {
-    let f = searchpath(L, (luaL_checklstring(L, (1), null)), (luaL_checklstring(L, (2), null)), (luaL_optlstring(L, (3), (__sl13), null)), (luaL_optlstring(L, (4), (__sl14), null)));
+    let f = searchpath(L, (luaL_checklstring(L, 1, null)), (luaL_checklstring(L, 2, null)), (luaL_optlstring(L, 3, (__sl13), null)), (luaL_optlstring(L, 4, (__sl14), null)));
     if (!cptr.eq(f, (null)))
         return 1;
     else {
         lua_pushnil(L);
-        lua_rotate(L, (-2), 1);
+        lua_rotate(L, -2, 1);
         return 2;
     }
 }
@@ -259,8 +259,8 @@ function ll_searchpath(L) {
 /** C ref: loadlib.c:513 — @param {CPtr} L @param {CPtr} name @param {CPtr} pname @param {CPtr} dirsep @returns {CPtr} */
 function findfile(L, name, pname, dirsep) {
     let path;
-    lua_getfield(L, ((((-1000000 - 1000) | 0) - (1)) | 0), pname);
-    path = lua_tolstring(L, (-1), null);
+    lua_getfield(L, -1001001, pname);
+    path = lua_tolstring(L, -1, null);
     if ((__builtin_expect(BigInt(((cptr.eq(path, (null))) != 0)), 0n)))
         luaL_error(L, __sl15, pname);
     return searchpath(L, name, path, __sl13, dirsep);
@@ -272,13 +272,13 @@ function checkload(L, stat, filename) {
         lua_pushstring(L, filename);
         return 2;
     } else
-        return luaL_error(L, __sl16, lua_tolstring(L, (1), null), filename, lua_tolstring(L, (-1), null));
+        return luaL_error(L, __sl16, lua_tolstring(L, 1, null), filename, lua_tolstring(L, -1, null));
 }
 
 /** C ref: loadlib.c:536 — @param {CPtr} L @returns {CInt} */
 function searcher_Lua(L) {
     let filename;
-    let name = (luaL_checklstring(L, (1), null));
+    let name = (luaL_checklstring(L, 1, null));
     filename = findfile(L, name, __sl17, __sl14);
     if (cptr.eq(filename, (null)))
         return 1;
@@ -306,7 +306,7 @@ function loadfunc(L, filename, modname) {
 
 /** C ref: loadlib.c:571 — @param {CPtr} L @returns {CInt} */
 function searcher_C(L) {
-    let name = (luaL_checklstring(L, (1), null));
+    let name = (luaL_checklstring(L, 1, null));
     let filename = findfile(L, name, __sl21, __sl14);
     if (cptr.eq(filename, (null)))
         return 1;
@@ -316,13 +316,13 @@ function searcher_C(L) {
 /** C ref: loadlib.c:579 — @param {CPtr} L @returns {CInt} */
 function searcher_Croot(L) {
     let filename;
-    let name = (luaL_checklstring(L, (1), null));
+    let name = (luaL_checklstring(L, 1, null));
     let p = cptr.strchr(name, 46);
     let stat;
     if (cptr.eq(p, (null)))
         return 0;
     lua_pushlstring(L, name, BigInt.asUintN(64, cptr.diff(p, name)));
-    filename = findfile(L, lua_tolstring(L, (-1), null), __sl21, __sl14);
+    filename = findfile(L, lua_tolstring(L, -1, null), __sl21, __sl14);
     if (cptr.eq(filename, (null)))
         return 1;
     if ((stat = loadfunc(L, filename, name)) != 0) {
@@ -339,8 +339,8 @@ function searcher_Croot(L) {
 
 /** C ref: loadlib.c:601 — @param {CPtr} L @returns {CInt} */
 function searcher_preload(L) {
-    let name = (luaL_checklstring(L, (1), null));
-    lua_getfield(L, ((-1000000 - 1000) | 0), __sl23);
+    let name = (luaL_checklstring(L, 1, null));
+    lua_getfield(L, -1001000, __sl23);
     if (lua_getfield(L, -1, name) == 0) {
         lua_pushfstring(L, __sl24, name);
         return 1;
@@ -354,26 +354,26 @@ function searcher_preload(L) {
 function findloader(L, name) {
     let i;
     let msg = cptr.alloc(1056);
-    if ((__builtin_expect(BigInt(((lua_getfield(L, ((((-1000000 - 1000) | 0) - (1)) | 0), __sl26) != 5) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((lua_getfield(L, -1001001, __sl26) != 5) != 0)), 0n)))
         luaL_error(L, __sl27);
     luaL_buffinit(L, msg);
     for (i = 1; ; i++) {
         luaL_addstring(msg, __sl28);
         if ((__builtin_expect(BigInt(((lua_rawgeti(L, 3, BigInt(i)) == 0) != 0)), 0n))) {
-            lua_settop(L, (-(1) - 1) | 0);
+            lua_settop(L, -2);
             (cptr.stU64(cptr.add((msg), 16), cptr.ldU64(cptr.add((msg), 16)) - 2n));
             luaL_pushresult(msg);
-            luaL_error(L, __sl29, name, lua_tolstring(L, (-1), null));
+            luaL_error(L, __sl29, name, lua_tolstring(L, -1, null));
         }
         lua_pushstring(L, name);
-        lua_callk(L, (1), (2), 0n, null);
-        if ((lua_type(L, (-2)) == 6))
+        lua_callk(L, 1, 2, 0n, null);
+        if ((lua_type(L, -2) == 6))
             return;
         else if (lua_isstring(L, -2)) {
-            lua_settop(L, (-(1) - 1) | 0);
+            lua_settop(L, -2);
             luaL_addvalue(msg);
         } else {
-            lua_settop(L, (-(2) - 1) | 0);
+            lua_settop(L, -3);
             (cptr.stU64(cptr.add((msg), 16), cptr.ldU64(cptr.add((msg), 16)) - 2n));
         }
     }
@@ -381,22 +381,22 @@ function findloader(L, name) {
 
 /** C ref: loadlib.c:648 — @param {CPtr} L @returns {CInt} */
 function ll_require(L) {
-    let name = (luaL_checklstring(L, (1), null));
+    let name = (luaL_checklstring(L, 1, null));
     lua_settop(L, 1);
-    lua_getfield(L, ((-1000000 - 1000) | 0), __sl30);
+    lua_getfield(L, -1001000, __sl30);
     lua_getfield(L, 2, name);
     if (lua_toboolean(L, -1))
         return 1;
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     findloader(L, name);
     lua_rotate(L, -2, 1);
     lua_pushvalue(L, 1);
     lua_pushvalue(L, -3);
-    lua_callk(L, (2), (1), 0n, null);
-    if (!(lua_type(L, (-1)) == 0))
+    lua_callk(L, 2, 1, 0n, null);
+    if (!(lua_type(L, -1) == 0))
         lua_setfield(L, 2, name);
     else
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
     if (lua_getfield(L, 2, name) == 0) {
         lua_pushboolean(L, 1);
         lua_copy(L, -1, -2);
@@ -409,28 +409,28 @@ function ll_require(L) {
 /** C ref: loadlib.c:682 — luaL_Reg[8] */
 const pk_funcs = cptr.alloc(8 * 16);
 cptr.stPtr(cptr.add(pk_funcs, 0), __sl31);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 0), 8), ll_loadlib);
+cptr.stPtr(cptr.add(pk_funcs, 8), ll_loadlib);
 cptr.stPtr(cptr.add(pk_funcs, 16), __sl32);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 16), 8), ll_searchpath);
+cptr.stPtr(cptr.add(pk_funcs, 24), ll_searchpath);
 cptr.stPtr(cptr.add(pk_funcs, 32), __sl33);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 32), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 40), null);
 cptr.stPtr(cptr.add(pk_funcs, 48), __sl21);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 48), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 56), null);
 cptr.stPtr(cptr.add(pk_funcs, 64), __sl17);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 64), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 72), null);
 cptr.stPtr(cptr.add(pk_funcs, 80), __sl26);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 80), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 88), null);
 cptr.stPtr(cptr.add(pk_funcs, 96), __sl34);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 96), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 104), null);
 cptr.stPtr(cptr.add(pk_funcs, 112), null);
-cptr.stPtr(cptr.add(cptr.add(pk_funcs, 112), 8), null);
+cptr.stPtr(cptr.add(pk_funcs, 120), null);
 
 /** C ref: loadlib.c:695 — luaL_Reg[2] */
 const ll_funcs = cptr.alloc(2 * 16);
 cptr.stPtr(cptr.add(ll_funcs, 0), __sl35);
-cptr.stPtr(cptr.add(cptr.add(ll_funcs, 0), 8), ll_require);
+cptr.stPtr(cptr.add(ll_funcs, 8), ll_require);
 cptr.stPtr(cptr.add(ll_funcs, 16), null);
-cptr.stPtr(cptr.add(cptr.add(ll_funcs, 16), 8), null);
+cptr.stPtr(cptr.add(ll_funcs, 24), null);
 
 const __static_createsearcherstable_searchers = cptr.alloc(5 * 8);
 cptr.stPtr(cptr.add(__static_createsearcherstable_searchers, 0), searcher_preload);
@@ -453,7 +453,7 @@ function createsearcherstable(L) {
 
 /** C ref: loadlib.c:726 — @param {CPtr} L */
 function createclibstable(L) {
-    luaL_getsubtable(L, ((-1000000 - 1000) | 0), CLIBS);
+    luaL_getsubtable(L, -1001000, CLIBS);
     lua_createtable(L, 0, 1);
     lua_pushcclosure(L, (gctm), 0);
     lua_setfield(L, -2, __sl36);
@@ -463,19 +463,19 @@ function createclibstable(L) {
 /** C ref: loadlib.c:735 — @param {CPtr} L @returns {CInt} */
 export function luaopen_package(L) {
     createclibstable(L);
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n)))), luaL_setfuncs(L, pk_funcs, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n)))), luaL_setfuncs(L, pk_funcs, 0));
     createsearcherstable(L);
     setpath(L, __sl17, __sl37, __sl38);
     setpath(L, __sl21, __sl39, __sl40);
     lua_pushstring(L, __sl41);
     lua_setfield(L, -2, __sl42);
-    luaL_getsubtable(L, ((-1000000 - 1000) | 0), __sl30);
+    luaL_getsubtable(L, -1001000, __sl30);
     lua_setfield(L, -2, __sl34);
-    luaL_getsubtable(L, ((-1000000 - 1000) | 0), __sl23);
+    luaL_getsubtable(L, -1001000, __sl23);
     lua_setfield(L, -2, __sl33);
-    (void lua_rawgeti(L, ((-1000000 - 1000) | 0), 2n));
+    (void lua_rawgeti(L, -1001000, 2n));
     lua_pushvalue(L, -2);
     luaL_setfuncs(L, ll_funcs, 1);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     return 1;
 }

@@ -98,13 +98,13 @@ function putmesg(line) {
 export function set_msg_dir(dir) {
     dirtocoord(cptr.add(a11y, 2), dir);
     cptr.stI16(cptr.add(a11y, 2), cptr.ldI16(cptr.add(a11y, 2)) + cptr.ldI16(u));
-    cptr.stI16(cptr.add(cptr.add(a11y, 2), 2), cptr.ldI16(cptr.add(cptr.add(a11y, 2), 2)) + cptr.ldI16(cptr.add(u, 2)));
+    cptr.stI16(cptr.add(a11y, 4), cptr.ldI16(cptr.add(a11y, 4)) + cptr.ldI16(cptr.add(u, 2)));
 }
 
 /** C ref: pline.c:93 — @param {CInt} x @param {CInt} y */
 export function set_msg_xy(x, y) {
     cptr.stI16(cptr.add(a11y, 2), x);
-    cptr.stI16(cptr.add(cptr.add(a11y, 2), 2), y);
+    cptr.stI16(cptr.add(a11y, 4), y);
 }
 
 /** C ref: pline.c:104 — @param {CPtr} line */
@@ -156,7 +156,7 @@ function vpline(line, the_args) {
     let a11y_mesgxy = cptr.alloc(4);
     __lbl_pline_done: {
         cptr.memcpy(a11y_mesgxy, cptr.add(a11y, 2), 4);
-        cptr.stI16(cptr.add(a11y, 2), cptr.stI16(cptr.add(cptr.add(a11y, 2), 2), 0));
+        cptr.stI16(cptr.add(a11y, 2), cptr.stI16(cptr.add(a11y, 4), 0));
         if (!line || !cptr.ld1s(line) ? 1 : 0)
             return;
         if (cptr.ldI32(cptr.add(program_state, 8)))
@@ -185,16 +185,16 @@ function vpline(line, the_args) {
             ln = cptr.vsnprintf(cptr.decay(pbuf), 1280n, line, the_args);
             line = cptr.decay(pbuf);
         }
-        if (ln > ((1280 - 1) | 0))
+        if (ln > 1279)
             panic(__sl2, ln);
-        if (ln > ((256 - 1) | 0)) {
+        if (ln > 255) {
             if (!cptr.eq(line, cptr.decay(pbuf)))
-                void __builtin___strncpy_chk(cptr.decay(pbuf), line, BigInt.asUintN(64, BigInt(((256 - 1) | 0))), __builtin_object_size(cptr.decay(pbuf), 2 > 1 ? 1 : 0));
-            cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 6) | 0, 1), cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 5) | 0, 1), cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 4) | 0, 1), 46)));
-            cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 3) | 0, 1), cptr.ld1s(cptr.add(line, (ln - 3) | 0)));
-            cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 2) | 0, 1), cptr.ld1s(cptr.add(line, (ln - 2) | 0)));
-            cptr.st1(cptr.add(cptr.decay(pbuf), (((256 - 1) | 0) - 1) | 0, 1), cptr.ld1s(cptr.add(line, (ln - 1) | 0)));
-            cptr.st1(cptr.add(cptr.decay(pbuf), (256 - 1) | 0, 1), 0);
+                void __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
+            cptr.st1(cptr.add(cptr.decay(pbuf), 249, 1), cptr.st1(cptr.add(cptr.decay(pbuf), 250, 1), cptr.st1(cptr.add(cptr.decay(pbuf), 251, 1), 46)));
+            cptr.st1(cptr.add(cptr.decay(pbuf), 252, 1), cptr.ld1s(cptr.add(line, (ln - 3) | 0)));
+            cptr.st1(cptr.add(cptr.decay(pbuf), 253, 1), cptr.ld1s(cptr.add(line, (ln - 2) | 0)));
+            cptr.st1(cptr.add(cptr.decay(pbuf), 254, 1), cptr.ld1s(cptr.add(line, (ln - 1) | 0)));
+            cptr.st1(cptr.add(cptr.decay(pbuf), 255, 1), 0);
             line = cptr.decay(pbuf);
         }
         msgtyp = 0;
@@ -222,9 +222,9 @@ function vpline(line, the_args) {
         putmesg(line);
         execplinehandler(line);
         cptr.stI32(cptr.add(iflags, 40), 0);
-        void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 2 > 1 ? 1 : 0)), cptr.st1(cptr.add(cptr.add(gp, 244), (256 - 1) | 0, 1), 0);
+        void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 1)), cptr.st1(cptr.add(cptr.add(gp, 244), 255, 1), 0);
         if (msgtyp == 3)
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
     }
     --__static_vpline_in_pline;
 }
@@ -339,7 +339,7 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(cptr.add(u, 2112), 2)) ? 1 : 0) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
+    if ((((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 16, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 16, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && !(cptr.ldI64(cptr.add(gm, 8)) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
         return;
     the_args = cptr.vaList(__va);
     if (((cptr.ldI32(cptr.add(u, 1852)) & 1)))
@@ -378,7 +378,7 @@ export function verbalize(line, ...__va) {
     void cptr.strcat(tmp, line);
     void cptr.strcat(tmp, __sl16);
     vpline(tmp, the_args);
-    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) & ((~16) >>> 0));
+    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) & 4294967279);
     the_args = null;
 }
 
@@ -428,10 +428,10 @@ function vraw_printf(line, the_args) {
         void cptr.vsnprintf(cptr.decay(pbuf), 1280n, line, the_args);
         line = cptr.decay(pbuf);
     }
-    if (Number(BigInt.asIntN(32, cptr.strlen(line))) > ((256 - 1) | 0)) {
+    if (Number(BigInt.asIntN(32, cptr.strlen(line))) > 255) {
         if (!cptr.eq(line, cptr.decay(pbuf)))
-            line = __builtin___strncpy_chk(cptr.decay(pbuf), line, BigInt.asUintN(64, BigInt(((256 - 1) | 0))), __builtin_object_size(cptr.decay(pbuf), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.decay(pbuf), (256 - 1) | 0, 1), 0);
+            line = __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
+        cptr.st1(cptr.add(cptr.decay(pbuf), 255, 1), 0);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 240)))(line);
     execplinehandler(line);
@@ -450,7 +450,7 @@ export function impossible(s, ...__va) {
     cptr.stI32(cptr.add(program_state, 48), 1);
     void cptr.vsnprintf(cptr.decay(pbuf), 1280n, s, the_args);
     the_args = null;
-    cptr.st1(cptr.add(cptr.decay(pbuf), (256 - 1) | 0, 1), 0);
+    cptr.st1(cptr.add(cptr.decay(pbuf), 255, 1), 0);
     paniclog(__sl20, cptr.decay(pbuf));
     if (cptr.ld1s(cptr.add(iflags, 15)) == 1)
         panic(__sl21, cptr.decay(pbuf));
@@ -470,7 +470,7 @@ export function impossible(s, ...__va) {
         pline(__sl26, cptr.ldPtr(sysopt));
     }
     if (cptr.ldPtr(cptr.add(sysopt, 144))) {
-        let report = schar((121 == yn_function(__sl27, cptr.decay(ynchars), 110, (0))));
+        let report = schar((121 == yn_function(__sl27, cptr.decay(ynchars), 110, 0)));
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl28);
         if (report) {
             submit_web_report(1, __sl29, cptr.decay(pbuf));
@@ -480,7 +480,7 @@ export function impossible(s, ...__va) {
 }
 
 /** C ref: pline.c:638 — signed char */
-let use_pline_handler = (1);
+let use_pline_handler = 1;
 
 /** C ref: pline.c:641 — @param {CPtr} line */
 function execplinehandler(line) {
@@ -504,7 +504,7 @@ function execplinehandler(line) {
         waitpid(f, status, 0);
     } else if (f == -1) {
         perror(null);
-        use_pline_handler = (0);
+        use_pline_handler = 0;
         pline(__sl21, __sl31);
     }
 }
