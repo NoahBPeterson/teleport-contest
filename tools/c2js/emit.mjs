@@ -300,6 +300,46 @@ function splitTopLevelArgs(s) {
   return out;
 }
 
+// ------------------------------------------------- fused offset accessors ----
+//
+// The dominant shape in generated code is `cptr.ldX(cptr.add(base, K))` and
+// `cptr.stX(cptr.add(base, K), v)` — ~113k sites, and `cptr.add` alone was
+// 14.7% of a session's CPU plus most of its GC, because every one of those
+// sites allocates a throw-away `{buf, off}`. TurboFan's escape analysis only
+// deletes that allocation when *both* the add and the accessor inline into the
+// caller, which mostly does not happen inside NetHack's very large generated
+// functions.
+//
+// Fusing the pair into one call (`cptr.ldI32o(base, K)`) removes the
+// intermediate object at the source level, so it cannot survive to run time no
+// matter what the optimizer decides. `cptr.js` guarantees each `Xo` is
+// behaviorally identical to `X(add(...))` for every input — the exotic operands
+// (boxes, function designators, BigInt indices) fall through to the literal
+// composition there.
+//
+// Argument order: loads `ldXo(p, n[, sz])`, stores `stXo(p, n, v[, sz])` —
+// i.e. the add's arguments first, then what the accessor added, then the
+// element-size scale from the 3-argument `cptr.add` form.
+const FUSED_LOADS = new Set(['ld1s', 'ld1u', 'ldI16', 'ldU16', 'ldI32', 'ldI64', 'ldU64', 'ldPtr', 'ldF64']);
+const FUSED_STORES = new Set(['st1', 'stI16', 'stI32', 'stI64', 'stU64', 'stPtr', 'stF64']);
+
+/** cptr.ldI32(cptr.add(p, K)) -> cptr.ldI32o(p, K); null when not applicable */
+function fuseOffsetAccess(name, args) {
+  const isStore = FUSED_STORES.has(name);
+  if (!isStore && !FUSED_LOADS.has(name)) return null;
+  if (args.length !== (isStore ? 2 : 1)) return null;
+  const loc = String(args[0]);
+  if (!loc.startsWith('cptr.add(') || !loc.endsWith(')')) return null;
+  // splitTopLevelArgs returns null unless the trailing ')' is the one that
+  // closes this call, so a code string like `cptr.add(a, b) + x` is rejected.
+  const a = splitTopLevelArgs(loc.slice('cptr.add('.length, -1));
+  if (!a || a.length < 2 || a.length > 3) return null;
+  const parts = [a[0].trim(), a[1].trim()];
+  if (isStore) parts.push(String(args[1]));
+  if (a.length === 3) parts.push(a[2].trim());
+  return `cptr.${name}o(${parts.join(', ')})`;
+}
+
 /** cptr.add(cptr.add(p, A), B) -> cptr.add(p, A+B); null when not applicable */
 function mergeConstAdd(baseCode, offCode) {
   if (!/^-?\d+$/.test(String(offCode).trim())) return null;
@@ -521,6 +561,10 @@ export class Emitter {
       const merged = mergeConstAdd(args[0], args[1]);
       if (merged) return merged;
     }
+    // Fuse the address computation into the load/store itself (see
+    // fuseOffsetAccess): one call and no intermediate CPtr per field access.
+    const fused = fuseOffsetAccess(name, args);
+    if (fused) return fused;
     return `cptr.${name}(${args.join(', ')})`;
   }
 
