@@ -49,11 +49,11 @@
 //     nhl_loadlua() wraps the chunk in.
 
 import * as cptr from '../cptr.js';
-import { luaL_newstate } from '../generated/lauxlib.js';
+import { luaL_newstate, luaL_ref, luaL_unref } from '../generated/lauxlib.js';
 import {
     lua_callk, lua_createtable, lua_getfield, lua_getglobal, lua_gettop,
     lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil,
-    lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rawseti, lua_setfield,
+    lua_pushnumber, lua_pushstring, lua_rawgeti, lua_rawseti, lua_setfield,
     lua_settop, lua_tointegerx, lua_tolstring, lua_type,
 } from '../generated/lapi.js';
 import { l_register_des } from '../generated/sp_lev.js';
@@ -153,13 +153,20 @@ function push(v) {
 }
 
 /**
- * A value that lives on the Lua side (a selection / obj userdata handed back by
- * a binding). Kept as an absolute stack index inside the current port frame:
- * the port body runs as one C call, so the frame is stable for its lifetime.
+ * A value that lives on the Lua side — the selection or obj userdata a binding
+ * handed back. Held by a registry reference (luaL_ref), not a stack index: a
+ * `contents` callback runs in its own C call frame, so a stack slot taken in
+ * the outer script body would be unaddressable inside it. `LUA_REGISTRYINDEX`
+ * is -1001000 in Lua 5.4.
  */
+const LUA_REGISTRYINDEX = -1001000;
+
 export class LuaValue {
-    constructor(index) { this.index = index; }
-    push() { lua_pushvalue(state(), this.index); }
+    /** Takes the value at the top of the stack and pops it. */
+    constructor() { this.ref = luaL_ref(state(), LUA_REGISTRYINDEX); }
+    push() { lua_rawgeti(state(), LUA_REGISTRYINDEX, BigInt(this.ref)); }
+    /** Release the reference so the value can be collected. */
+    free() { luaL_unref(state(), LUA_REGISTRYINDEX, this.ref); this.ref = -1; }
 }
 
 /**
@@ -210,7 +217,7 @@ function callTable(tbl, name, args) {
     lua_settop(Lp, base);
 }
 
-/** Same, but keeps one result and returns it as a LuaValue handle. */
+/** Same, but keeps the one result and returns it as a LuaValue handle. */
 function callTable1(tbl, name, args) {
     const Lp = state();
     const base = lua_gettop(Lp);
@@ -218,10 +225,9 @@ function callTable1(tbl, name, args) {
     lua_getfield(Lp, -1, cstr(name));
     for (const a of args) push(a);
     lua_callk(Lp, args.length, 1, 0n, null);
-    // stack: base+1 = tbl, base+2 = result -> compact to base+1
-    lua_pushvalue(Lp, -1);
-    lua_settop(Lp, base + 1);
-    return new LuaValue(base + 1);
+    const v = new LuaValue();   // pops the result into the registry
+    lua_settop(Lp, base);       // drop the table
+    return v;
 }
 
 // The 34 entries of sp_lev.c's nhl_functions[], i.e. the whole des DSL.

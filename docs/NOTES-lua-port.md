@@ -345,10 +345,10 @@ level content, most of which the player never sees.
 Both configurations, full 69-session corpus
 (`SESSION_REPLAY_TIMEOUT_MS=300000 node frozen/ps_test_runner.mjs sessions/ sessions-extra/`):
 
-| Configuration | Result |
-|---|---|
-| (a) registry inert — `C2JS_LUA_PORT=0` | **69/69** |
-| (b) `oracle.lua` ported and live (default) | **69/69** |
+| Configuration | Result | Speed |
+|---|---|---|
+| (a) registry inert — `C2JS_LUA_PORT=0` | **69/69** | 1071 + 0.89/turn (R² 0.701) |
+| (b) `oracle.lua` ported and live (default) | **69/69** | 1034 + 0.83/turn (R² 0.723) |
 
 `gen9996-marathon-dlvl10` is the session that reaches the Oracle level; it scores
 `RNG 54924/54924, Screen 17829/17829` in both configurations, i.e. the port is
