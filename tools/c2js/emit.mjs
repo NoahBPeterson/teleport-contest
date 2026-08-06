@@ -145,6 +145,144 @@ function operand(e, parentPrec, side) {
   return e;
 }
 
+// ---------------------------------------------------- constant folding ----
+//
+// Macro-heavy C expands to expressions that are compile-time constant but
+// were emitted verbatim: display.c's glyph macros expand to hundreds of
+// characters of provably dead ternary per use, evaluated on every call.
+// Folding them here is both the hot-path win and the readability win.
+//
+// The rule that keeps parity absolute: a fold is taken only when the value
+// C computes and the value the emitter's own generated JS would compute at
+// runtime AGREE.  Where the two could differ — negating/complementing an
+// unsigned 32-bit value (the emitter leaves it negative), a 64-bit shift
+// that overflows its width (BigInt << does not wrap), an integral->boolean
+// cast of something other than 0/1 (the emitter passes the value through) —
+// the fold is refused and the original code is emitted unchanged.
+
+// C2JS_FOLD_VERIFY=1 turns every fold into an audited fold: see verifyFold().
+const FOLD_VERIFY = !!process.env.C2JS_FOLD_VERIFY;
+const FOLD_AUDIT = { checked: 0, bad: [], skipped: [] };
+if (FOLD_VERIFY) {
+  process.on('exit', () => {
+    process.stderr.write(`fold audit: ${FOLD_AUDIT.checked} folds evaluated, ${FOLD_AUDIT.bad.length} mismatched, ${FOLD_AUDIT.skipped.length} unevaluable\n`);
+    for (const b of FOLD_AUDIT.bad.slice(0, 40)) process.stderr.write(`  MISMATCH ${b}\n`);
+    for (const s of [...new Set(FOLD_AUDIT.skipped)].slice(0, 10)) process.stderr.write(`  skip ${s}\n`);
+  });
+}
+
+/** two's-complement wrap of a BigInt to the C integer type t */
+function wrapTo(v, t) {
+  return t.signed ? BigInt.asIntN(t.bits, v) : BigInt.asUintN(t.bits, v);
+}
+
+/** true for a sizeof/alignof node, through parens and casts */
+function isSizeofNode(n) {
+  let x = n;
+  while (x && (x.kind === 'ParenExpr' || x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr')) x = x.inner?.[0];
+  return !!x && x.kind === 'UnaryExprOrTypeTraitExpr';
+}
+
+/** the value C computes for `l op r` at type t, or null if not foldable */
+function cArith(op, l, r, t) {
+  const a = l.v, b = r.v;
+  switch (op) {
+    case '+': return wrapTo(a + b, t);
+    case '-': return wrapTo(a - b, t);
+    case '*': return wrapTo(a * b, t);
+    case '/': return b === 0n ? null : wrapTo(a / b, t); // BigInt / truncates toward zero, like C
+    case '%': return b === 0n ? null : wrapTo(a % b, t); // BigInt % takes the dividend's sign, like C
+    case '<<': return b < 0n || b >= BigInt(t.bits) ? null : wrapTo(a << b, t);
+    case '>>': return b < 0n || b >= BigInt(t.bits) ? null : wrapTo(a >> b, t);
+    case '&': return wrapTo(a & b, t);
+    case '|': return wrapTo(a | b, t);
+    case '^': return wrapTo(a ^ b, t);
+    default: return null;
+  }
+}
+
+/** the value the emitted JS computes for `l op r` at type t, or null */
+function jsArith(op, l, r, t) {
+  if (t.bits === 64) {
+    const a = l.v, b = t.bits === 64 && (op === '<<' || op === '>>') ? wrapTo(r.v, t) : r.v;
+    // 64-bit operands must already be BigInt-typed in the emitted code
+    if (l.t.bits !== 64) return null;
+    if (r.t.bits !== 64 && !(op === '<<' || op === '>>')) return null;
+    switch (op) {
+      // coerceArith(): + - * are wrapped with asIntN/asUintN; the rest are raw
+      case '+': return wrapTo(a + b, t);
+      case '-': return wrapTo(a - b, t);
+      case '*': return wrapTo(a * b, t);
+      case '/': return b === 0n ? null : a / b;
+      case '%': return b === 0n ? null : a % b;
+      case '<<': return a << b;
+      case '>>': return b < 0n ? null : a >> b;
+      case '&': return a & b;
+      case '|': return a | b;
+      case '^': return a ^ b;
+      default: return null;
+    }
+  }
+  if (t.bits !== 32) return null; // C promotes; a narrower binary result is not a shape we emit
+  // 32-bit operands are plain JS numbers in the emitted code
+  if (l.t.bits === 64 || r.t.bits === 64) return null;
+  const a = Number(l.v), b = Number(r.v);
+  const S = t.signed;
+  switch (op) {
+    case '+': return BigInt(S ? (a + b) | 0 : (a + b) >>> 0);
+    case '-': return BigInt(S ? (a - b) | 0 : (a - b) >>> 0);
+    case '*': return BigInt(S ? Math.imul(a, b) : Math.imul(a, b) >>> 0);
+    case '/':
+      if (b === 0) return null;
+      return BigInt(S ? (a / b) | 0 : ((a >>> 0) - ((a >>> 0) % (b >>> 0))) / (b >>> 0) >>> 0); // u32div
+    case '%':
+      if (b === 0) return null;
+      return BigInt(S ? a % b : (a >>> 0) % (b >>> 0)); // u32mod
+    case '<<': return BigInt(S ? a << b : (a << b) >>> 0);
+    case '>>': return BigInt(S ? a >> b : a >>> b);
+    case '&': return BigInt(S ? a & b : (a & b) >>> 0);
+    case '|': return BigInt(S ? a | b : (a | b) >>> 0);
+    case '^': return BigInt(S ? a ^ b : (a ^ b) >>> 0);
+    default: return null;
+  }
+}
+
+/**
+ * Split a JS argument list at top-level commas. Returns null when the text
+ * is not a single balanced group (i.e. the enclosing call closes early), so
+ * callers can only ever act on a genuinely complete argument list.
+ */
+function splitTopLevelArgs(s) {
+  const out = [];
+  let depth = 0, start = 0, quote = null;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (quote) {
+      if (ch === '\\') i++;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === '`') { quote = ch; continue; }
+    if (ch === '(' || ch === '[' || ch === '{') depth++;
+    else if (ch === ')' || ch === ']' || ch === '}') { depth--; if (depth < 0) return null; }
+    else if (ch === ',' && depth === 0) { out.push(s.slice(start, i)); start = i + 1; }
+  }
+  if (depth !== 0 || quote) return null;
+  out.push(s.slice(start));
+  return out;
+}
+
+/** cptr.add(cptr.add(p, A), B) -> cptr.add(p, A+B); null when not applicable */
+function mergeConstAdd(baseCode, offCode) {
+  if (!/^-?\d+$/.test(String(offCode).trim())) return null;
+  if (!baseCode.startsWith('cptr.add(') || !baseCode.endsWith(')')) return null;
+  const args = splitTopLevelArgs(baseCode.slice('cptr.add('.length, -1));
+  if (!args || args.length !== 2) return null; // scaled 3-arg form: not constant
+  if (!/^-?\d+$/.test(args[1].trim())) return null;
+  const sum = Number(args[1].trim()) + Number(String(offCode).trim());
+  return `cptr.add(${args[0]}, ${sum})`;
+}
+
 // JS strict-mode reserved words get a $ suffix when used as identifiers
 const JS_RESERVED = new Set(('in let class const var function delete typeof new yield await enum static implements interface package private protected public arguments eval this super export import extends finally catch instanceof void with debugger default do else if for while switch case break continue return try throw').split(' '));
 export function jsName(name) { return JS_RESERVED.has(name) ? name + '$' : name; }
@@ -156,7 +294,7 @@ const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrch
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 3;
+export const EMIT_VERSION = 4;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -310,7 +448,19 @@ export class Emitter {
     throw new Error(`sizeAlign: unsupported field type "${q}"`);
   }
 
-  cptrCall(name, ...args) { this.usesCptr = true; return `cptr.${name}(${args.join(', ')})`; }
+  cptrCall(name, ...args) {
+    this.usesCptr = true;
+    // Constant address arithmetic: a member of a member (u.uz.dnum, a struct
+    // field inside a struct field) emits cptr.add(cptr.add(p, 8), 4).  Both
+    // offsets are compile-time constants and cptr.add is pure offset
+    // arithmetic on an immutable CPtr, so the chain collapses to one call and
+    // one allocation — which is a third of all cptr.add sites.
+    if (name === 'add' && args.length === 2) {
+      const merged = mergeConstAdd(args[0], args[1]);
+      if (merged) return merged;
+    }
+    return `cptr.${name}(${args.join(', ')})`;
+  }
 
   cref(n) {
     const off = n.loc?.offset ?? n.range?.begin?.offset;
@@ -390,10 +540,196 @@ export class Emitter {
     return e.prec < ctxPrec ? `(${e.code})` : e.code;
   }
 
+  // ----- constant folding -----
+
+  /**
+   * Compile-time integer value of an expression, as {v: BigInt, t: type},
+   * or null when the expression is not a foldable integer constant (see the
+   * "constant folding" note above for the agreement rule).
+   *
+   * Pure: it walks the AST directly instead of emitting, so folding never
+   * perturbs the emitter's bookkeeping (interned strings, cross-file refs,
+   * offsetof site ordering).  Node kinds carrying such bookkeeping — string
+   * literals, offsetof, calls, variable references — simply do not fold.
+   */
+  foldConst(n) {
+    if (!n || !n.kind) return null;
+    if (!this._foldMemo) this._foldMemo = new WeakMap();
+    if (this._foldMemo.has(n)) return this._foldMemo.get(n);
+    let r = null;
+    try { r = this.foldConstUncached(n); } catch { r = null; }
+    // invariant: a folded value is always in range for its own type
+    if (r && !(typeof r.v === 'bigint' && r.t?.cls === 'int' && wrapTo(r.v, r.t) === r.v)) r = null;
+    this._foldMemo.set(n, r);
+    return r;
+  }
+
+  foldConstUncached(n) {
+    const intType = () => { const t = nodeType(n); return t.cls === 'int' ? t : null; };
+    switch (n.kind) {
+      case 'IntegerLiteral': {
+        const t = intType();
+        return t ? { v: BigInt(n.value), t } : null;
+      }
+      case 'CharacterLiteral':
+        return { v: BigInt(n.value), t: intType() || { cls: 'int', bits: 32, signed: true } };
+      case 'ParenExpr':
+        return this.foldConst(n.inner?.[0]);
+      case 'ConstantExpr':
+        return this.foldConst(n.inner?.[0]);
+      case 'DeclRefExpr': {
+        // header enum constants inline as literals (expr_DeclRefExpr emits the
+        // plain decimal value, so the emitted type is int-shaped)
+        const name = n.name || n.referencedDecl?.name;
+        if (n.referencedDecl?.kind !== 'EnumConstantDecl' || !this.enumValues?.has(name)) return null;
+        const raw = String(this.enumValues.get(name));
+        if (!/^-?\d+$/.test(raw)) return null;
+        return { v: BigInt(raw), t: { cls: 'int', bits: 32, signed: true } };
+      }
+      case 'UnaryExprOrTypeTraitExpr': {
+        if (n.name && n.name !== 'sizeof') return null; // alignof/vec_step: not modelled
+        const t = intType();
+        if (!t) return null;
+        let arg = n.inner?.[0];
+        while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
+        const q = arg ? desugar(arg.type) : desugar(n.argType);
+        return { v: BigInt(this.sizeofType(q)), t };
+      }
+      case 'CStyleCastExpr':
+      case 'ImplicitCastExpr': {
+        // the SIZE() idiom must keep reaching matchSizeIdiom()
+        if (n.kind === 'CStyleCastExpr' && this.matchSizeIdiom(n)) return null;
+        const inner = this.foldConst(n.inner?.[0]);
+        if (!inner) return null;
+        const t = intType();
+        switch (n.castKind) {
+          case 'IntegralCast':
+          case 'IntegralConversion':
+            return t ? { v: wrapTo(inner.v, t), t } : null;
+          case 'NoOp':
+          case 'BitCast': { // pass-through in the emitter: value unchanged
+            const tt = t || inner.t;
+            return tt.cls === 'int' && wrapTo(inner.v, tt) === inner.v ? { v: inner.v, t: tt } : null;
+          }
+          case 'IntegralToBoolean':
+            // the emitter passes the value through; C would normalize to 0/1
+            return t && (inner.v === 0n || inner.v === 1n) ? { v: inner.v, t } : null;
+          default:
+            return null;
+        }
+      }
+      case 'UnaryOperator': {
+        if (n.opcode === '__extension__') return this.foldConst(n.inner?.[0]);
+        const t = intType();
+        if (!t) return null;
+        const e = this.foldConst(n.inner?.[0]);
+        if (!e) return null;
+        switch (n.opcode) {
+          case '+':
+            return wrapTo(e.v, t) === e.v ? { v: e.v, t } : null;
+          case '-': { // JS unary - does not wrap; fold only where C does not either
+            const v = -e.v;
+            return wrapTo(v, t) === v ? { v, t } : null;
+          }
+          case '~': {
+            if (e.t.bits === 64) { // the emitter masks 64-bit ~ to the operand width
+              const v = wrapTo(~e.v, e.t);
+              return wrapTo(v, t) === v ? { v, t } : null;
+            }
+            // JS ~ is exactly 32-bit two's complement; on an unsigned result the
+            // emitter would leave the value negative, so only signed int folds
+            if (!(t.bits === 32 && t.signed && e.t.bits <= 32)) return null;
+            return { v: ~e.v, t };
+          }
+          case '!':
+            return { v: e.v === 0n ? 1n : 0n, t };
+          default:
+            return null;
+        }
+      }
+      case 'ConditionalOperator': {
+        const c = this.foldConst(n.inner?.[0]);
+        if (!c) return null;
+        return this.foldConst(n.inner?.[c.v !== 0n ? 1 : 2]);
+      }
+      case 'BinaryOperator': {
+        const op = n.opcode;
+        const [ln, rn] = n.inner || [];
+        if (!ln || !rn) return null;
+        // NetHack's SIZE(): sizeof(a)/sizeof(a[0]) is emitted as a.length,
+        // which stays authoritative (a partly-initialized array is shorter)
+        if (op === '/' && isSizeofNode(ln) && isSizeofNode(rn)) return null;
+        if (parseType(desugar(ln.type)).cls !== 'int' || parseType(desugar(rn.type)).cls !== 'int') return null;
+        const t = intType();
+        if (!t) return null;
+        if (op === '&&' || op === '||') {
+          const l = this.foldConst(ln);
+          if (!l) return null;
+          // C (and JS) short-circuit: a decisive left operand answers alone
+          if (op === '&&' ? l.v === 0n : l.v !== 0n) return { v: op === '&&' ? 0n : 1n, t };
+          const r = this.foldConst(rn);
+          return r ? { v: r.v !== 0n ? 1n : 0n, t } : null;
+        }
+        const l = this.foldConst(ln);
+        if (!l) return null;
+        const r = this.foldConst(rn);
+        if (!r) return null;
+        if (['==', '!=', '<', '>', '<=', '>='].includes(op)) {
+          if (l.t.bits !== r.t.bits) return null; // mixed number/BigInt comparison: leave it alone
+          const b = { '==': l.v === r.v, '!=': l.v !== r.v, '<': l.v < r.v, '>': l.v > r.v, '<=': l.v <= r.v, '>=': l.v >= r.v }[op];
+          return { v: b ? 1n : 0n, t };
+        }
+        const cv = cArith(op, l, r, t);
+        const jv = jsArith(op, l, r, t);
+        return cv !== null && jv !== null && cv === jv ? { v: cv, t } : null;
+      }
+      default:
+        return null;
+    }
+  }
+
+  /** build-time audit: the unfolded emission must evaluate to the folded value */
+  verifyFold(n, c) {
+    const fn = this['expr_' + n.kind];
+    if (!fn) return;
+    let code;
+    try { code = fn.call(this, n, {}).code; } catch (e) { FOLD_AUDIT.skipped.push(String(e.message)); return; }
+    let got;
+    try {
+      // eslint-disable-next-line no-new-func
+      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', `return (${code});`)(
+        (a, b) => { a >>>= 0; b >>>= 0; return ((a - (a % b)) / b) >>> 0; },
+        (a, b) => (a >>> 0) % (b >>> 0),
+        (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF);
+    } catch (e) { FOLD_AUDIT.skipped.push(`eval: ${e.message} :: ${code}`); return; }
+    const want = c.t.bits === 64 ? c.v : Number(c.v);
+    const same = typeof got === 'bigint' ? got === BigInt(want) : Number(got) === Number(want);
+    FOLD_AUDIT.checked++;
+    if (!same) FOLD_AUDIT.bad.push(`${this.cref(n)}: ${code} => ${got}, folded ${want}`);
+  }
+
+  /** emitted descriptor for a folded {v, t} */
+  constExpr(c) {
+    if (c.t.bits === 64) return { code: `${c.v}n`, prec: c.v < 0n ? PREC.unary : PREC.atom, const: String(c.v), rep: 'val' };
+    const num = Number(c.v);
+    return { code: String(num), prec: num < 0 ? PREC.unary : PREC.atom, const: String(num), rep: 'val' };
+  }
+
   // ----- expressions -----
 
   emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
+    if (!opts.stmtPos) {
+      const c = this.foldConst(n);
+      if (c) {
+        // C2JS_FOLD_VERIFY=1: emit the expression the old way too and run it,
+        // proving the fold reproduces the generated code's own runtime value.
+        // A folded expression is closed (literals and arithmetic only), so it
+        // evaluates standalone. Build-time audit only; off by default.
+        if (FOLD_VERIFY) this.verifyFold(n, c);
+        return this.constExpr(c);
+      }
+    }
     const fn = this['expr_' + n.kind];
     if (!fn) throw new Error(`emitExpr: unsupported node kind ${n.kind} (${this.cref(n)})`);
     return fn.call(this, n, opts);
@@ -1089,6 +1425,14 @@ export class Emitter {
 
     if (op === '&&' || op === '||') {
       const p = BIN_PREC[op];
+      // a constant left operand either decides the result on its own (C does
+      // not evaluate the right operand at all) or drops out of it entirely
+      const lf = this.foldConst(n.inner[0]);
+      if (lf) {
+        const decisive = op === '&&' ? lf.v === 0n : lf.v !== 0n;
+        if (decisive) return { code: op === '&&' ? '0' : '1', prec: PREC.atom, const: op === '&&' ? '0' : '1', rep: 'val' };
+        return { code: `${operand(r0, PREC.cond, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
+      }
       // C11 6.5.13/14: the result is int 0 or 1 — JS would yield the raw
       // operand (breaks narrow casts/stores of the result, e.g. boolean())
       return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
@@ -1273,6 +1617,13 @@ export class Emitter {
     const c = this.emitExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);
+    // Constant condition: C evaluates only the live arm, so the dead arm's
+    // code is dropped (display.c's glyph macros expand to hundreds of dead
+    // characters per use).  Both arms are still emitted, then one discarded,
+    // so the emitter's bookkeeping stays exactly as it was; the result keeps
+    // the then-arm's rep, as the unconditional form does.
+    const cf = this.foldConst(n.inner[0]);
+    if (cf) return { ...(cf.v !== 0n ? a : b), rep: a.rep };
     // the condition position follows C's logical-OR-expression grammar: a
     // same-precedence (ternary/assignment) condition must be parenthesized —
     // 'right' side forces that for ?:, which is right-associative

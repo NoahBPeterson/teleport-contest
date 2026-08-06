@@ -122,7 +122,7 @@ function save(ls, c) {
     let b = cptr.ldPtr(cptr.add(ls, 72));
     if (BigInt.asUintN(64, (cptr.ldU64(cptr.add((b), 8))) + 1n) > (cptr.ldU64(cptr.add((b), 16)))) {
         let newsize;
-        if ((cptr.ldU64(cptr.add((b), 16))) >= (8n < 8n ? ((BigInt.asUintN(64, ~0n))) : 9223372036854775807n) / 2n)
+        if ((cptr.ldU64(cptr.add((b), 16))) >= 4611686018427387903n)
             lexerror(ls, __sl37, 0);
         newsize = BigInt.asUintN(64, (cptr.ldU64(cptr.add((b), 16))) * 2n);
         (cptr.stPtr((b), (((luaM_saferealloc_(cptr.ldPtr(cptr.add(ls, 56)), (cptr.ldPtr((b))), BigInt.asUintN(64, (cptr.ldU64(cptr.add((b), 16))) * 1n), BigInt.asUintN(64, (newsize) * 1n)))))), cptr.stU64(cptr.add((b), 16), newsize));
@@ -135,7 +135,7 @@ export function luaX_init(L) {
     let i;
     let e = (luaS_newlstr(L, __sl38, BigInt.asUintN(64, (5n / 1n) - 1n)));
     luaC_fix(L, ((((e)))));
-    for (i = 0; i < (((((((277 - ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) | 0) + 1) | 0)))); i++) {
+    for (i = 0; i < 22; i++) {
         let ts = luaS_new(L, cptr.ldPtr(cptr.add(luaX_tokens, i, 8)));
         luaC_fix(L, ((((ts)))));
         cptr.st1(cptr.add(ts, 10), (uchar((((i + 1) | 0)))));
@@ -144,13 +144,13 @@ export function luaX_init(L) {
 
 /** C ref: llex.c:82 — @param {CPtr} ls @param {CInt} token @returns {CPtr} */
 export function luaX_token2str(ls, token) {
-    if (token < ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) {
-        if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((token) + 1) | 0, 1)) & ((1 << (2)))))
+    if (token < 256) {
+        if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((token) + 1) | 0, 1)) & 4))
             return luaO_pushfstring(cptr.ldPtr(cptr.add(ls, 56)), __sl39, token);
         else
             return luaO_pushfstring(cptr.ldPtr(cptr.add(ls, 56)), __sl40, token);
     } else {
-        let s = cptr.ldPtr(cptr.add(luaX_tokens, (token - ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) | 0, 8));
+        let s = cptr.ldPtr(cptr.add(luaX_tokens, (token - 256) | 0, 8));
         if (token < 288)
             return luaO_pushfstring(cptr.ldPtr(cptr.add(ls, 56)), __sl41, s);
         else
@@ -190,7 +190,7 @@ export function luaX_newstring(ls, str, l) {
     let L = cptr.ldPtr(cptr.add(ls, 56));
     let ts = luaS_newlstr(L, str, l);
     let o = luaH_getstr(cptr.ldPtr(cptr.add(ls, 80)), ts);
-    if (!(((((cptr.ld1u(cptr.add(((o)), 8)))) & 15)) == (0)))
+    if (!(((((cptr.ld1u(cptr.add(((o)), 8)))) & 15)) == 0))
         ts = ((((((cptr.ldPtr((cptr.add(((((o)))), 16)))))))));
     else {
         let stv = ((cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16)));
@@ -198,7 +198,7 @@ export function luaX_newstring(ls, str, l) {
             let io = (stv);
             let x_ = (ts);
             cptr.stPtr(((io)), ((((x_)))));
-            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | (1 << 6))))));
+            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
             (void L, (void 0));
         }
         ;
@@ -241,7 +241,7 @@ export function luaX_setinput(L, ls, z, source, firstchar) {
     cptr.stI32(cptr.add(ls, 8), 1);
     cptr.stPtr(cptr.add(ls, 96), source);
     cptr.stPtr(cptr.add(ls, 104), (luaS_newlstr(L, __sl38, BigInt.asUintN(64, (5n / 1n) - 1n))));
-    (cptr.stPtr((cptr.ldPtr(cptr.add(ls, 72))), (((luaM_saferealloc_(cptr.ldPtr(cptr.add(ls, 56)), (cptr.ldPtr((cptr.ldPtr(cptr.add(ls, 72))))), BigInt.asUintN(64, (cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 16))) * 1n), BigInt.asUintN(64, 32n * 1n)))))), cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 16), 32n));
+    (cptr.stPtr((cptr.ldPtr(cptr.add(ls, 72))), (((luaM_saferealloc_(cptr.ldPtr(cptr.add(ls, 56)), (cptr.ldPtr((cptr.ldPtr(cptr.add(ls, 72))))), BigInt.asUintN(64, (cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 16))) * 1n), 32n))))), cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 16), 32n));
 }
 
 /** C ref: llex.c:191 — @param {CPtr} ls @param {CInt} c @returns {CInt} */
@@ -275,17 +275,17 @@ function read_numeral(ls, seminfo) {
     for (; ; ) {
         if (check_next2(ls, expo))
             check_next2(ls, __sl47);
-        else if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (4)))) || cptr.ldI32(ls) == 46 ? 1 : 0)
+        else if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 16) || cptr.ldI32(ls) == 46 ? 1 : 0)
             (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
         else
             break;
     }
-    if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (0)))))
+    if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 1))
         (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
     save(ls, 0);
     if (luaO_str2num((cptr.ldPtr((cptr.ldPtr(cptr.add(ls, 72))))), obj) == 0n)
         lexerror(ls, __sl48, 289);
-    if (((cptr.ld1u(cptr.add(((obj)), 8))) == (((3) | ((0) << 4))))) {
+    if (((cptr.ld1u(cptr.add(((obj)), 8))) == 3)) {
         cptr.stI64(seminfo, (cptr.ldI64(((obj)))));
         return 290;
     } else {
@@ -317,7 +317,7 @@ function read_long_string(ls, seminfo, sep) {
             inclinenumber(ls);
         for (; ; ) {
             switch (cptr.ldI32(ls)) {
-                case (-1):
+                case -1:
                 {
                     let what = (seminfo ? __sl49 : __sl50);
                     let msg = luaO_pushfstring(cptr.ldPtr(cptr.add(ls, 56)), __sl51, what, line);
@@ -358,7 +358,7 @@ function read_long_string(ls, seminfo, sep) {
 /** C ref: llex.c:319 — @param {CPtr} ls @param {CInt} c @param {CPtr} msg */
 function esccheck(ls, c, msg) {
     if (!c) {
-        if (cptr.ldI32(ls) != (-1))
+        if (cptr.ldI32(ls) != -1)
             (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
         lexerror(ls, msg, 292);
     }
@@ -367,7 +367,7 @@ function esccheck(ls, c, msg) {
 /** C ref: llex.c:328 — @param {CPtr} ls @returns {CInt} */
 function gethexa(ls) {
     (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
-    esccheck(ls, (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (4)))), __sl52);
+    esccheck(ls, (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 16), __sl52);
     return luaO_hexavalue(cptr.ldI32(ls));
 }
 
@@ -386,9 +386,9 @@ function readutf8esc(ls) {
     (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
     esccheck(ls, cptr.ldI32(ls) == 123, __sl53);
     r = BigInt.asUintN(64, BigInt(gethexa(ls)));
-    while ((void (((save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))))))), (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (4))))) {
+    while ((void (((save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))))))), (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 16)) {
         i++;
-        esccheck(ls, r <= BigInt((2147483647 >>> 4) >>> 0), __sl54);
+        esccheck(ls, r <= 134217727n, __sl54);
         r = BigInt.asUintN(64, (r << 4n) + BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ldI32(ls)))));
     }
     esccheck(ls, cptr.ldI32(ls) == 125, __sl55);
@@ -409,11 +409,11 @@ function utf8esc(ls) {
 function readdecesc(ls) {
     let i;
     let r = 0;
-    for (i = 0; i < 3 && (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (1)))) ? 1 : 0; i++) {
+    for (i = 0; i < 3 && (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 2) ? 1 : 0; i++) {
         r = (((Math.imul(10, r) + cptr.ldI32(ls)) | 0) - 48) | 0;
         (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
     }
-    esccheck(ls, r <= ((Math.imul(127, 2) + 1) | 0), __sl56);
+    esccheck(ls, r <= 255, __sl56);
     (cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 8), cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 8)) - BigInt.asUintN(64, BigInt((i)))));
     return r;
 }
@@ -423,7 +423,7 @@ function read_string(ls, del, seminfo) {
     (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
     while (cptr.ldI32(ls) != del) {
         switch (cptr.ldI32(ls)) {
-            case (-1):
+            case -1:
             lexerror(ls, __sl57, 288);
             break;
             case 10:
@@ -475,13 +475,13 @@ function read_string(ls, del, seminfo) {
                         case 39:
                         c = cptr.ldI32(ls);
                         break __lbl_read_save;
-                        case (-1):
+                        case -1:
                         break __lbl_no_save;
                         case 122:
                         {
                             (cptr.stU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 8), cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 8)) - 1n));
                             (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64))))));
-                            while ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (3))))) {
+                            while ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 8)) {
                                 if ((cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13 ? 1 : 0))
                                     inclinenumber(ls);
                                 else
@@ -491,7 +491,7 @@ function read_string(ls, del, seminfo) {
                         }
                         default:
                         {
-                            esccheck(ls, (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (1)))), __sl58);
+                            esccheck(ls, (cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 2), __sl58);
                             c = readdecesc(ls);
                             break __lbl_only_save;
                         }
@@ -546,7 +546,7 @@ function llex(ls, seminfo) {
                         break;
                     }
                 }
-                while (!(cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13 ? 1 : 0) && cptr.ldI32(ls) != (-1) ? 1 : 0)
+                while (!(cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13 ? 1 : 0) && cptr.ldI32(ls) != -1 ? 1 : 0)
                     (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64))))));
                 break;
             }
@@ -626,7 +626,7 @@ function llex(ls, seminfo) {
                         return 280;
                     else
                         return 279;
-                } else if (!(cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (1)))))
+                } else if (!(cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 2))
                     return 46;
                 else
                     return read_numeral(ls, seminfo);
@@ -644,21 +644,21 @@ function llex(ls, seminfo) {
             {
                 return read_numeral(ls, seminfo);
             }
-            case (-1):
+            case -1:
             {
                 return 288;
             }
             default:
             {
-                if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & ((1 << (0))))) {
+                if ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 1)) {
                     let ts;
                     do {
                         (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtr(cptr.add(ls, 64))), cptr.ldU64((cptr.ldPtr(cptr.add(ls, 64)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(ls, 64))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(ls, 64)))))));
-                    } while ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & (((1 << (0)) | (1 << (1))))));
+                    } while ((cptr.ld1u(cptr.add(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1)) & 3));
                     ts = luaX_newstring(ls, (cptr.ldPtr((cptr.ldPtr(cptr.add(ls, 72))))), (cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(ls, 72))), 8))));
                     cptr.stPtr(seminfo, ts);
-                    if ((cptr.ld1u(cptr.add((ts), 8)) == ((4) | ((0) << 4)) && cptr.ld1u(cptr.add((ts), 10)) > 0 ? 1 : 0))
-                        return (((cptr.ld1u(cptr.add(ts, 10)) - 1) | 0) + ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) | 0;
+                    if ((cptr.ld1u(cptr.add((ts), 8)) == 4 && cptr.ld1u(cptr.add((ts), 10)) > 0 ? 1 : 0))
+                        return (((cptr.ld1u(cptr.add(ts, 10)) - 1) | 0) + 256) | 0;
                     else {
                         return 291;
                     }
@@ -679,12 +679,12 @@ export function luaX_next(ls) {
         cptr.memcpy(cptr.add(ls, 16), cptr.add(ls, 32), 16);
         cptr.stI32(cptr.add(ls, 32), 288);
     } else
-        cptr.stI32(cptr.add(ls, 16), llex(ls, cptr.add(cptr.add(ls, 16), 8)));
+        cptr.stI32(cptr.add(ls, 16), llex(ls, cptr.add(ls, 24)));
 }
 
 /** C ref: llex.c:576 — @param {CPtr} ls @returns {CInt} */
 export function luaX_lookahead(ls) {
     (void 0);
-    cptr.stI32(cptr.add(ls, 32), llex(ls, cptr.add(cptr.add(ls, 32), 8)));
+    cptr.stI32(cptr.add(ls, 32), llex(ls, cptr.add(ls, 40)));
     return cptr.ldI32(cptr.add(ls, 32));
 }

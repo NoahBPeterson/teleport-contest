@@ -15,7 +15,7 @@ export function luaZ_fill(z) {
     buff = cptr.ldPtr(cptr.add(z, 16))(L, cptr.ldPtr(cptr.add(z, 24)), size);
     (void 0);
     if (cptr.eq(buff, (null)) || size.v == 0n ? 1 : 0)
-        return (-1);
+        return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));
     cptr.stPtr(cptr.add(z, 8), buff);
     return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); })))))));
@@ -35,7 +35,7 @@ export function luaZ_read(z, b, n) {
     while (n) {
         let m;
         if (cptr.ldU64(z) == 0n) {
-            if (luaZ_fill(z) == (-1))
+            if (luaZ_fill(z) == -1)
                 return n;
             else {
                 (cptr.stU64(z, cptr.ldU64(z) + 1n)) - (1n);

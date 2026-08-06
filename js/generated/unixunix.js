@@ -53,7 +53,7 @@ function veryold(fd) {
     if (fstat(fd, buf))
         return 0;
     void time(date);
-    if (BigInt.asIntN(64, date.v - cptr.ldI64(cptr.add(buf, 48))) < BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, 3n * 24n) * 60n) * 60n)) {
+    if (BigInt.asIntN(64, date.v - cptr.ldI64(cptr.add(buf, 48))) < 259200n) {
         let lockedpid = cptr.box(0);
         if (BigInt.asUintN(64, cptr.read(fd, lockedpid, 4n)) != 4n)
             return 0;
@@ -66,7 +66,7 @@ function veryold(fd) {
 function eraseoldlocks() {
     let i;
     cptr.stI32(cptr.add(program_state, 12), 0);
-    for (i = 1; i <= ((Math.imul(16, 32) + 1) | 0); i++) {
+    for (i = 1; i <= 513; i++) {
         set_levelfile_name(cptr.add(gl, 16), i);
         void unlink(fqname(cptr.add(gl, 16), 1, 0));
     }
@@ -132,15 +132,15 @@ export function getlock() {
                 break __lbl_gotlock;
             unlock_file(__sl3);
             if (cptr.ld1s(cptr.add(iflags, 81))) {
-                c = yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, (1));
+                c = yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1);
             } else {
                 void raw_printf(__sl9, cptr.decay(__static_getlock_destroy_old_game_prompt));
                 void fflush(__stdoutp);
-                if ((c = getchar()) != (-1)) {
+                if ((c = getchar()) != -1) {
                     let tmp;
                     void putchar(c);
                     void fflush(__stdoutp);
-                    while ((tmp = getchar()) != 10 && tmp != (-1) ? 1 : 0)
+                    while ((tmp = getchar()) != 10 && tmp != -1 ? 1 : 0)
                         ;
                 }
             }
@@ -179,13 +179,13 @@ export function ask_about_panic_save() {
     pline(__sl14);
     pline(__sl15);
     if (cptr.ld1s(cptr.add(iflags, 81))) {
-        c = yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __sl16, 110, (0));
+        c = yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __sl16, 110, 0);
     } else {
         raw_printf(__sl17, cptr.decay(__static_ask_about_panic_save_Instead_prompt));
         void fflush(__stdoutp);
         do {
             c = getchar();
-            if ((c == (-1) || c == 27 ? 1 : 0) || c == 0 ? 1 : 0)
+            if ((c == -1 || c == 27 ? 1 : 0) || c == 0 ? 1 : 0)
                 break;
             c = lowc(schar(c));
         } while (!cptr.strchr(__sl18, c));
@@ -257,7 +257,7 @@ export function child(wt) {
 export function file_exists(path) {
     let sb = cptr.alloc(144);
     if (stat(path, sb)) {
-        return (0);
+        return 0;
     }
-    return (1);
+    return 1;
 }

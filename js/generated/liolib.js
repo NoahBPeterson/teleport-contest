@@ -129,8 +129,8 @@ function f_close(L) {
 
 /** C ref: liolib.c:228 — @param {CPtr} L @returns {CInt} */
 function io_close(L) {
-    if ((lua_type(L, (1)) == (-1)))
-        lua_getfield(L, ((-1000000 - 1000) | 0), (__sl8));
+    if ((lua_type(L, 1) == -1))
+        lua_getfield(L, -1001000, (__sl8));
     return f_close(L);
 }
 
@@ -167,11 +167,11 @@ function opencheck(L, fname, mode) {
 
 /** C ref: liolib.c:269 — @param {CPtr} L @returns {CInt} */
 function io_open(L) {
-    let filename = (luaL_checklstring(L, (1), null));
-    let mode = (luaL_optlstring(L, (2), (__sl10), null));
+    let filename = (luaL_checklstring(L, 1, null));
+    let mode = (luaL_optlstring(L, 2, (__sl10), null));
     let p = newfile(L);
     let md = mode;
-    (void ((__builtin_expect(BigInt(((l_checkmode(md)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl11)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((l_checkmode(md)) != 0)), 1n)) || luaL_argerror(L, 2, (__sl11)) ? 1 : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, fopen(filename, mode));
     return (cptr.eq(cptr.ldPtr(p), (null))) ? luaL_fileresult(L, 0, filename) : 1;
@@ -186,10 +186,10 @@ function io_pclose(L) {
 
 /** C ref: liolib.c:291 — @param {CPtr} L @returns {CInt} */
 function io_popen(L) {
-    let filename = (luaL_checklstring(L, (1), null));
-    let mode = (luaL_optlstring(L, (2), (__sl10), null));
+    let filename = (luaL_checklstring(L, 1, null));
+    let mode = (luaL_optlstring(L, 2, (__sl10), null));
     let p = newprefile(L);
-    (void ((__builtin_expect(BigInt(((((cptr.ld1s(cptr.add(mode, 0)) == 114 || cptr.ld1s(cptr.add(mode, 0)) == 119 ? 1 : 0) && cptr.ld1s(cptr.add(mode, 1)) == 0 ? 1 : 0)) != 0)), 1n)) || luaL_argerror(L, (2), (__sl11)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((((cptr.ld1s(cptr.add(mode, 0)) == 114 || cptr.ld1s(cptr.add(mode, 0)) == 119 ? 1 : 0) && cptr.ld1s(cptr.add(mode, 1)) == 0 ? 1 : 0)) != 0)), 1n)) || luaL_argerror(L, 2, (__sl11)) ? 1 : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, (fflush(null), popen(filename, mode)));
     cptr.stPtr(cptr.add(p, 8), io_pclose);
@@ -207,7 +207,7 @@ function io_tmpfile(L) {
 /** C ref: liolib.c:311 — @param {CPtr} L @param {CPtr} findex @returns {CPtr} */
 function getiofile(L, findex) {
     let p;
-    lua_getfield(L, ((-1000000 - 1000) | 0), findex);
+    lua_getfield(L, -1001000, findex);
     p = lua_touserdata(L, -1);
     if ((__builtin_expect(BigInt((((cptr.ldPtr(cptr.add((p), 8)) === (null))) != 0)), 0n)))
         luaL_error(L, __sl12, cptr.add(findex, (BigInt.asUintN(64, 5n / 1n - 1n))));
@@ -216,17 +216,17 @@ function getiofile(L, findex) {
 
 /** C ref: liolib.c:321 — @param {CPtr} L @param {CPtr} f @param {CPtr} mode @returns {CInt} */
 function g_iofile(L, f, mode) {
-    if (!(lua_type(L, (1)) <= 0)) {
-        let filename = lua_tolstring(L, (1), null);
+    if (!(lua_type(L, 1) <= 0)) {
+        let filename = lua_tolstring(L, 1, null);
         if (filename)
             opencheck(L, filename, mode);
         else {
             tofile(L);
             lua_pushvalue(L, 1);
         }
-        lua_setfield(L, ((-1000000 - 1000) | 0), f);
+        lua_setfield(L, -1001000, f);
     }
-    lua_getfield(L, ((-1000000 - 1000) | 0), f);
+    lua_getfield(L, -1001000, f);
     return 1;
 }
 
@@ -243,7 +243,7 @@ function io_output(L) {
 /** C ref: liolib.c:366 — @param {CPtr} L @param {CInt} toclose */
 function aux_lines(L, toclose) {
     let n = (lua_gettop(L) - 1) | 0;
-    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || luaL_argerror(L, ((250 + 2) | 0), (__sl15)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || luaL_argerror(L, 252, (__sl15)) ? 1 : 0));
     lua_pushvalue(L, 1);
     lua_pushinteger(L, BigInt(n));
     lua_pushboolean(L, toclose);
@@ -261,17 +261,17 @@ function f_lines(L) {
 /** C ref: liolib.c:389 — @param {CPtr} L @returns {CInt} */
 function io_lines(L) {
     let toclose;
-    if ((lua_type(L, (1)) == (-1)))
+    if ((lua_type(L, 1) == -1))
         lua_pushnil(L);
-    if ((lua_type(L, (1)) == 0)) {
-        lua_getfield(L, ((-1000000 - 1000) | 0), (__sl13));
-        (lua_copy(L, -1, (1)), lua_settop(L, (-(1) - 1) | 0));
+    if ((lua_type(L, 1) == 0)) {
+        lua_getfield(L, -1001000, (__sl13));
+        (lua_copy(L, -1, 1), lua_settop(L, -2));
         tofile(L);
         toclose = 0;
     } else {
-        let filename = (luaL_checklstring(L, (1), null));
+        let filename = (luaL_checklstring(L, 1, null));
         opencheck(L, filename, __sl10);
-        (lua_copy(L, -1, (1)), lua_settop(L, (-(1) - 1) | 0));
+        (lua_copy(L, -1, 1), lua_settop(L, -2));
         toclose = 1;
     }
     aux_lines(L, toclose);
@@ -360,7 +360,7 @@ function test_eof(L, f) {
     let c = getc(f);
     ungetc(c, f);
     lua_pushstring(L, __sl21);
-    return (c != (-1));
+    return (c != -1);
 }
 
 /** C ref: liolib.c:522 — @param {CPtr} L @param {CPtr} f @param {CInt} chop @returns {CInt} */
@@ -369,14 +369,14 @@ function read_line(L, f, chop) {
     let c;
     luaL_buffinit(L, b);
     do {
-        let buff = luaL_prepbuffsize(b, BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))));
+        let buff = luaL_prepbuffsize(b, 1024n);
         let i = 0;
         flockfile(f);
-        while ((i < (Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))) && (c = (cptr.stI32(cptr.add((f), 8), cptr.ldI32(cptr.add((f), 8)) + -1) < 0 ? __srget(f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((f)), (v) => { cptr.stPtr((f), v); }))))) != (-1) ? 1 : 0) && c != 10 ? 1 : 0)
+        while ((i < 1024 && (c = (cptr.stI32(cptr.add((f), 8), cptr.ldI32(cptr.add((f), 8)) + -1) < 0 ? __srget(f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((f)), (v) => { cptr.stPtr((f), v); }))))) != -1 ? 1 : 0) && c != 10 ? 1 : 0)
             cptr.st1(cptr.add(buff, i++), schar(c));
         funlockfile(f);
         (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + BigInt.asUintN(64, BigInt((i)))));
-    } while (c != (-1) && c != 10 ? 1 : 0);
+    } while (c != -1 && c != 10 ? 1 : 0);
     if (!chop && c == 10 ? 1 : 0)
         (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), schar((c)))));
     luaL_pushresult(b);
@@ -389,10 +389,10 @@ function read_all(L, f) {
     let b = cptr.alloc(1056);
     luaL_buffinit(L, b);
     do {
-        let p = luaL_prepbuffsize(b, BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))));
-        nr = fread(p, 1n, BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))), f);
+        let p = luaL_prepbuffsize(b, 1024n);
+        nr = fread(p, 1n, 1024n, f);
         (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + (nr)));
-    } while (nr == BigInt.asUintN(64, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n))))))));
+    } while (nr == 1024n);
     luaL_pushresult(b);
 }
 
@@ -453,7 +453,7 @@ function g_read(L, f, first) {
     if (ferror(f))
         return luaL_fileresult(L, 0, null);
     if (!success) {
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
         lua_pushnil(L);
     }
     return (n - first) | 0;
@@ -471,15 +471,15 @@ function f_read(L) {
 
 /** C ref: liolib.c:633 — @param {CPtr} L @returns {CInt} */
 function io_readline(L) {
-    let p = lua_touserdata(L, ((((-1000000 - 1000) | 0) - (1)) | 0));
+    let p = lua_touserdata(L, -1001001);
     let i;
-    let n = Number(BigInt.asIntN(32, lua_tointegerx(L, (((((-1000000 - 1000) | 0) - (2)) | 0)), null)));
+    let n = Number(BigInt.asIntN(32, lua_tointegerx(L, -1001002, null)));
     if ((cptr.ldPtr(cptr.add((p), 8)) === (null)))
         return luaL_error(L, __sl23);
     lua_settop(L, 1);
     luaL_checkstack(L, n, __sl15);
     for (i = 1; i <= n; i++)
-        lua_pushvalue(L, ((((-1000000 - 1000) | 0) - ((3 + i) | 0)) | 0));
+        lua_pushvalue(L, ((-1001000 - ((3 + i) | 0)) | 0));
     n = g_read(L, cptr.ldPtr(p), 2);
     (void 0);
     if (lua_toboolean(L, -n))
@@ -488,9 +488,9 @@ function io_readline(L) {
         if (n > 1) {
             return luaL_error(L, __sl24, lua_tolstring(L, ((-n + 1) | 0), null));
         }
-        if (lua_toboolean(L, ((((-1000000 - 1000) | 0) - (3)) | 0))) {
+        if (lua_toboolean(L, -1001003)) {
             lua_settop(L, 0);
-            lua_pushvalue(L, ((((-1000000 - 1000) | 0) - (1)) | 0));
+            lua_pushvalue(L, -1001001);
             aux_close(L);
         }
         return 0;
@@ -546,7 +546,7 @@ function f_seek(L) {
     let op = luaL_checkoption(L, 2, __sl27, __static_f_seek_modenames);
     let p3 = luaL_optinteger(L, 3, 0n);
     let offset = p3;
-    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) || luaL_argerror(L, (3), (__sl28)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) || luaL_argerror(L, 3, (__sl28)) ? 1 : 0));
     cptr.stI32(__error(), 0);
     op = fseeko(f, offset, cptr.ldI32(cptr.add(__static_f_seek_mode, op, 4)));
     if ((__builtin_expect(BigInt(((op) != 0)), 0n)))
@@ -571,7 +571,7 @@ cptr.stPtr(cptr.add(__static_f_setvbuf_modenames, 24), null); /** C ref: liolib.
 function f_setvbuf(L) {
     let f = tofile(L);
     let op = luaL_checkoption(L, 2, null, __static_f_setvbuf_modenames);
-    let sz = luaL_optinteger(L, 3, BigInt((Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 16n * 8n) * 8n)))))));
+    let sz = luaL_optinteger(L, 3, 1024n);
     let res;
     cptr.stI32(__error(), 0);
     res = setvbuf(f, null, cptr.ldI32(cptr.add(__static_f_setvbuf_mode, op, 4)), BigInt.asUintN(64, sz));
@@ -595,61 +595,61 @@ function f_flush(L) {
 /** C ref: liolib.c:754 — luaL_Reg[12] */
 const iolib = cptr.alloc(12 * 16);
 cptr.stPtr(cptr.add(iolib, 0), __sl34);
-cptr.stPtr(cptr.add(cptr.add(iolib, 0), 8), io_close);
+cptr.stPtr(cptr.add(iolib, 8), io_close);
 cptr.stPtr(cptr.add(iolib, 16), __sl35);
-cptr.stPtr(cptr.add(cptr.add(iolib, 16), 8), io_flush);
+cptr.stPtr(cptr.add(iolib, 24), io_flush);
 cptr.stPtr(cptr.add(iolib, 32), __sl36);
-cptr.stPtr(cptr.add(cptr.add(iolib, 32), 8), io_input);
+cptr.stPtr(cptr.add(iolib, 40), io_input);
 cptr.stPtr(cptr.add(iolib, 48), __sl37);
-cptr.stPtr(cptr.add(cptr.add(iolib, 48), 8), io_lines);
+cptr.stPtr(cptr.add(iolib, 56), io_lines);
 cptr.stPtr(cptr.add(iolib, 64), __sl38);
-cptr.stPtr(cptr.add(cptr.add(iolib, 64), 8), io_open);
+cptr.stPtr(cptr.add(iolib, 72), io_open);
 cptr.stPtr(cptr.add(iolib, 80), __sl39);
-cptr.stPtr(cptr.add(cptr.add(iolib, 80), 8), io_output);
+cptr.stPtr(cptr.add(iolib, 88), io_output);
 cptr.stPtr(cptr.add(iolib, 96), __sl40);
-cptr.stPtr(cptr.add(cptr.add(iolib, 96), 8), io_popen);
+cptr.stPtr(cptr.add(iolib, 104), io_popen);
 cptr.stPtr(cptr.add(iolib, 112), __sl41);
-cptr.stPtr(cptr.add(cptr.add(iolib, 112), 8), io_read);
+cptr.stPtr(cptr.add(iolib, 120), io_read);
 cptr.stPtr(cptr.add(iolib, 128), __sl42);
-cptr.stPtr(cptr.add(cptr.add(iolib, 128), 8), io_tmpfile);
+cptr.stPtr(cptr.add(iolib, 136), io_tmpfile);
 cptr.stPtr(cptr.add(iolib, 144), __sl43);
-cptr.stPtr(cptr.add(cptr.add(iolib, 144), 8), io_type);
+cptr.stPtr(cptr.add(iolib, 152), io_type);
 cptr.stPtr(cptr.add(iolib, 160), __sl44);
-cptr.stPtr(cptr.add(cptr.add(iolib, 160), 8), io_write);
+cptr.stPtr(cptr.add(iolib, 168), io_write);
 cptr.stPtr(cptr.add(iolib, 176), null);
-cptr.stPtr(cptr.add(cptr.add(iolib, 176), 8), null);
+cptr.stPtr(cptr.add(iolib, 184), null);
 
 /** C ref: liolib.c:773 — luaL_Reg[8] */
 const meth = cptr.alloc(8 * 16);
 cptr.stPtr(cptr.add(meth, 0), __sl41);
-cptr.stPtr(cptr.add(cptr.add(meth, 0), 8), f_read);
+cptr.stPtr(cptr.add(meth, 8), f_read);
 cptr.stPtr(cptr.add(meth, 16), __sl44);
-cptr.stPtr(cptr.add(cptr.add(meth, 16), 8), f_write);
+cptr.stPtr(cptr.add(meth, 24), f_write);
 cptr.stPtr(cptr.add(meth, 32), __sl37);
-cptr.stPtr(cptr.add(cptr.add(meth, 32), 8), f_lines);
+cptr.stPtr(cptr.add(meth, 40), f_lines);
 cptr.stPtr(cptr.add(meth, 48), __sl35);
-cptr.stPtr(cptr.add(cptr.add(meth, 48), 8), f_flush);
+cptr.stPtr(cptr.add(meth, 56), f_flush);
 cptr.stPtr(cptr.add(meth, 64), __sl45);
-cptr.stPtr(cptr.add(cptr.add(meth, 64), 8), f_seek);
+cptr.stPtr(cptr.add(meth, 72), f_seek);
 cptr.stPtr(cptr.add(meth, 80), __sl34);
-cptr.stPtr(cptr.add(cptr.add(meth, 80), 8), f_close);
+cptr.stPtr(cptr.add(meth, 88), f_close);
 cptr.stPtr(cptr.add(meth, 96), __sl46);
-cptr.stPtr(cptr.add(cptr.add(meth, 96), 8), f_setvbuf);
+cptr.stPtr(cptr.add(meth, 104), f_setvbuf);
 cptr.stPtr(cptr.add(meth, 112), null);
-cptr.stPtr(cptr.add(cptr.add(meth, 112), 8), null);
+cptr.stPtr(cptr.add(meth, 120), null);
 
 /** C ref: liolib.c:788 — luaL_Reg[5] */
 const metameth = cptr.alloc(5 * 16);
 cptr.stPtr(cptr.add(metameth, 0), __sl47);
-cptr.stPtr(cptr.add(cptr.add(metameth, 0), 8), null);
+cptr.stPtr(cptr.add(metameth, 8), null);
 cptr.stPtr(cptr.add(metameth, 16), __sl48);
-cptr.stPtr(cptr.add(cptr.add(metameth, 16), 8), f_gc);
+cptr.stPtr(cptr.add(metameth, 24), f_gc);
 cptr.stPtr(cptr.add(metameth, 32), __sl49);
-cptr.stPtr(cptr.add(cptr.add(metameth, 32), 8), f_gc);
+cptr.stPtr(cptr.add(metameth, 40), f_gc);
 cptr.stPtr(cptr.add(metameth, 48), __sl50);
-cptr.stPtr(cptr.add(cptr.add(metameth, 48), 8), f_tostring);
+cptr.stPtr(cptr.add(metameth, 56), f_tostring);
 cptr.stPtr(cptr.add(metameth, 64), null);
-cptr.stPtr(cptr.add(cptr.add(metameth, 64), 8), null);
+cptr.stPtr(cptr.add(metameth, 72), null);
 
 /** C ref: liolib.c:797 — @param {CPtr} L */
 function createmeta(L) {
@@ -658,7 +658,7 @@ function createmeta(L) {
     lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n))));
     luaL_setfuncs(L, meth, 0);
     lua_setfield(L, -2, __sl47);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
 }
 
 /** C ref: liolib.c:810 — @param {CPtr} L @returns {CInt} */
@@ -677,14 +677,14 @@ function createstdfile(L, f, k, fname) {
     cptr.stPtr(cptr.add(p, 8), io_noclose);
     if (!cptr.eq(k, (null))) {
         lua_pushvalue(L, -1);
-        lua_setfield(L, ((-1000000 - 1000) | 0), k);
+        lua_setfield(L, -1001000, k);
     }
     lua_setfield(L, -2, fname);
 }
 
 /** C ref: liolib.c:832 — @param {CPtr} L @returns {CInt} */
 export function luaopen_io(L) {
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, iolib, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, iolib, 0));
     createmeta(L);
     createstdfile(L, __stdinp, (__sl13), __sl52);
     createstdfile(L, __stdoutp, (__sl8), __sl53);

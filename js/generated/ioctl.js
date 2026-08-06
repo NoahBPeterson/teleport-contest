@@ -20,11 +20,11 @@ export let termio = cptr.alloc(72);
 /** C ref: ioctl.c:96 */
 export function getwindowsz() {
     let ttsz = cptr.alloc(8);
-    if (ioctl(fileno(__stdinp), BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, (1073741824n | ((8n & 8191n) << 16n) | BigInt.asUintN(64, BigInt((((116)) << 8))) | 104n))))), ttsz) != -1) {
+    if (ioctl(fileno(__stdinp), 1074295912n, ttsz) != -1) {
         if (cptr.ldU16(ttsz))
-            cptr.stI32(cptr.add(cptr.add(gt, 336), 16), cptr.ldU16(ttsz));
+            cptr.stI32(cptr.add(gt, 352), cptr.ldU16(ttsz));
         if (cptr.ldU16(cptr.add(ttsz, 2)))
-            cptr.stI32(cptr.add(cptr.add(gt, 336), 20), cptr.ldU16(cptr.add(ttsz, 2)));
+            cptr.stI32(cptr.add(gt, 356), cptr.ldU16(cptr.add(ttsz, 2)));
     }
 }
 
@@ -53,5 +53,5 @@ export function dosuspend() {
     } else {
         pline(__sl1);
     }
-    return (0);
+    return 0;
 }

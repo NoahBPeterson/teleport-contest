@@ -41,11 +41,11 @@ function init_fill(bg_typ, fg_typ) {
     let y;
     let limit;
     let count;
-    limit = BigInt((((Math.imul(Math.imul(((80 - 2) | 0), ((21 - 1) | 0)), 2)) / 5) | 0));
+    limit = 624n;
     count = 0n;
     while (count < limit) {
-        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 45, __sl1), rn2((((80 - 2) | 0) - 1) | 0)) : rn2((((80 - 2) | 0) - 1) | 0)) + (2)) | 0));
-        y = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 46, __sl1), rnd((((21 - 1) | 0) - 1) | 0)) : rnd((((21 - 1) | 0) - 1) | 0)));
+        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 45, __sl1), rn2(77)) : rn2(77)) + 2) | 0));
+        y = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 46, __sl1), rnd(19)) : rnd(19)));
         if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ) {
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), fg_typ);
             count++;
@@ -55,7 +55,7 @@ function init_fill(bg_typ, fg_typ) {
 
 /** C ref: mkmap.c:55 — @param {CInt} col @param {CInt} row @param {CInt} bg_typ @returns {CInt} */
 function get_map(col, row, bg_typ) {
-    if (((col <= 0 || row < 0 ? 1 : 0) || col > ((80 - 2) | 0) ? 1 : 0) || row >= ((21 - 1) | 0) ? 1 : 0)
+    if (((col <= 0 || row < 0 ? 1 : 0) || col > 78 ? 1 : 0) || row >= 20 ? 1 : 0)
         return bg_typ;
     return cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 4));
 }
@@ -85,8 +85,8 @@ function pass_one(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
-    for (x = 2; x <= ((80 - 2) | 0); x++)
-        for (y = 1; y < ((21 - 1) | 0); y++) {
+    for (x = 2; x <= 78; x++)
+        for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
                 if (get_map(i16(((x + cptr.ldI32(cptr.add(dirs, Math.imul(dr, 2), 4))) | 0)), i16(((y + cptr.ldI32(cptr.add(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4))) | 0)), bg_typ) == fg_typ)
                     count++;
@@ -114,19 +114,19 @@ function pass_two(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
-    for (x = 2; x <= ((80 - 2) | 0); x++)
-        for (y = 1; y < ((21 - 1) | 0); y++) {
+    for (x = 2; x <= 78; x++)
+        for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
                 if (get_map(i16(((x + cptr.ldI32(cptr.add(dirs, Math.imul(dr, 2), 4))) | 0)), i16(((y + cptr.ldI32(cptr.add(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4))) | 0)), bg_typ) == fg_typ)
                     count++;
             if (count == 5)
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x))), bg_typ);
+                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x))), bg_typ);
             else
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x))), get_map(x, y, bg_typ));
+                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
         }
-    for (x = 2; x <= ((80 - 2) | 0); x++)
-        for (y = 1; y < ((21 - 1) | 0); y++)
-            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), cptr.ld1s((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x)))));
+    for (x = 2; x <= 78; x++)
+        for (y = 1; y < 20; y++)
+            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), cptr.ld1s((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x)))));
 }
 
 /** C ref: mkmap.c:124 — @param {CInt} bg_typ @param {CInt} fg_typ */
@@ -135,19 +135,19 @@ function pass_three(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
-    for (x = 2; x <= ((80 - 2) | 0); x++)
-        for (y = 1; y < ((21 - 1) | 0); y++) {
+    for (x = 2; x <= 78; x++)
+        for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
                 if (get_map(i16(((x + cptr.ldI32(cptr.add(dirs, Math.imul(dr, 2), 4))) | 0)), i16(((y + cptr.ldI32(cptr.add(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4))) | 0)), bg_typ) == fg_typ)
                     count++;
             if (count < 3)
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x))), bg_typ);
+                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x))), bg_typ);
             else
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x))), get_map(x, y, bg_typ));
+                cptr.st1((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
         }
-    for (x = 2; x <= ((80 - 2) | 0); x++)
-        for (y = 1; y < ((21 - 1) | 0); y++)
-            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), cptr.ld1s((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), ((((80 - 2) | 0) + 1) | 0)))), (x)))));
+    for (x = 2; x <= 78; x++)
+        for (y = 1; y < 20; y++)
+            cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), cptr.ld1s((cptr.add(cptr.add(cptr.ldPtr(cptr.add(gn, 72)), (Math.imul((y), 79))), (x)))));
 }
 
 /** C ref: mkmap.c:153 — @param {CInt} sx @param {CInt} sy @param {CInt} rmno @param {CInt} lit @param {CInt} anyroom */
@@ -162,7 +162,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
         cptr.stI16(cptr.add(gm, 222), sx);
     if (sy < cptr.ldI16(cptr.add(gm, 226)))
         cptr.stI16(cptr.add(gm, 226), sy);
-    for (i = sx; i <= ((80 - 2) | 0) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), sy, 36), 4)) == fg_typ ? 1 : 0; i++) {
+    for (i = sx; i <= 78 && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), sy, 36), 4)) == fg_typ ? 1 : 0; i++) {
         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), sy, 36), 24), rmno >>> 0);
         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), i, 756), sy, 36), 16), lit);
         if (anyroom) {
@@ -229,7 +229,7 @@ function join_map_cleanup() {
         for (y = 0; y < 21; y++)
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), 0);
     cptr.stI32(cptr.add(svn, 44), cptr.stI32(cptr.add(gn, 16), 0));
-    cptr.stI16(cptr.add(cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224), 2), cptr.stI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224), 2), i16((-1))));
+    cptr.stI16(cptr.add(cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224), 2), cptr.stI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224), 2), -1));
 }
 
 /** C ref: mkmap.c:258 — @param {CInt} bg_typ @param {CInt} fg_typ */
@@ -243,17 +243,17 @@ function join_map(bg_typ, fg_typ) {
     let sm = cptr.alloc(4);
     let em = cptr.alloc(4);
     __lbl_joinm: {
-        for (x = 2; x <= ((80 - 2) | 0); x++)
-            for (y = 1; y < ((21 - 1) | 0); y++) {
+        for (x = 2; x <= 78; x++)
+            for (y = 1; y < 20; y++) {
                 if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) | 0) == 0 ? 1 : 0) {
                     cptr.stI16(cptr.add(gm, 222), cptr.stI16(cptr.add(gm, 224), x));
                     cptr.stI16(cptr.add(gm, 226), cptr.stI16(cptr.add(gm, 228), y));
                     cptr.stI32(cptr.add(gn, 80), 0);
-                    flood_fill_rm(x, y, (cptr.ldI32(cptr.add(svn, 44)) + 3) | 0, (0), (0));
+                    flood_fill_rm(x, y, (cptr.ldI32(cptr.add(svn, 44)) + 3) | 0, 0, 0);
                     if (cptr.ldI32(cptr.add(gn, 80)) > 3) {
-                        add_room(cptr.ldI16(cptr.add(gm, 222)), cptr.ldI16(cptr.add(gm, 226)), cptr.ldI16(cptr.add(gm, 224)), cptr.ldI16(cptr.add(gm, 228)), (0), 0, (1));
-                        cptr.st1(cptr.add(cptr.add(svr, (cptr.ldI32(cptr.add(svn, 44)) - 1) | 0, 224), 21), (1));
-                        if (cptr.ldI32(cptr.add(svn, 44)) >= (Math.imul(40, 2)))
+                        add_room(cptr.ldI16(cptr.add(gm, 222)), cptr.ldI16(cptr.add(gm, 226)), cptr.ldI16(cptr.add(gm, 224)), cptr.ldI16(cptr.add(gm, 228)), 0, 0, 1);
+                        cptr.st1(cptr.add(cptr.add(svr, (cptr.ldI32(cptr.add(svn, 44)) - 1) | 0, 224), 21), 1);
+                        if (cptr.ldI32(cptr.add(svn, 44)) >= 80)
                             break __lbl_joinm;
                     } else {
                         for (sx = cptr.ldI16(cptr.add(gm, 222)); sx <= cptr.ldI16(cptr.add(gm, 224)); sx++)
@@ -274,7 +274,7 @@ function join_map(bg_typ, fg_typ) {
             cptr.stI16(em, i16(((cptr.ldI16(croom2) + ((((cptr.ldI16(cptr.add(croom2, 2)) - cptr.ldI16(croom2)) | 0) / 2) | 0)) | 0)));
             cptr.stI16(cptr.add(em, 2), i16(((cptr.ldI16(cptr.add(croom2, 4)) + ((((cptr.ldI16(cptr.add(croom2, 6)) - cptr.ldI16(cptr.add(croom2, 4))) | 0) / 2) | 0)) | 0)));
         }
-        void dig_corridor(sm, em, null, (0), fg_typ, bg_typ);
+        void dig_corridor(sm, em, null, 0, fg_typ, bg_typ);
         if (cptr.ldI16(croom2) > cptr.ldI16(cptr.add(croom, 2)) || ((cptr.ldI16(cptr.add(croom2, 4)) > cptr.ldI16(cptr.add(croom, 6)) || cptr.ldI16(cptr.add(croom2, 6)) < cptr.ldI16(cptr.add(croom, 4)) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 322, __sl3), rn2(3)) : rn2(3)) ? 1 : 0) ? 1 : 0) {
             croom = croom2;
         }
@@ -288,7 +288,7 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     let x;
     let y;
     if (walled)
-        wallify_map(1, 0, i16(((80 - 1) | 0)), i16(((21 - 1) | 0)));
+        wallify_map(1, 0, 79, 20);
     if (lit) {
         for (x = 1; x < 80; x++)
             for (y = 0; y < 21; y++)
@@ -340,7 +340,7 @@ function remove_room(roomno) {
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), roomno);
             }
     }
-    cptr.stI16(cptr.add(maxroom, 2), i16((-1)));
+    cptr.stI16(cptr.add(maxroom, 2), -1);
 }
 
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
@@ -360,7 +360,7 @@ export function mkmap(init_lev) {
     let walled = cptr.ldI16(cptr.add(init_lev, 26));
     let i;
     lit = i16(litstate_rnd(lit));
-    cptr.stPtr(cptr.add(gn, 72), alloc(Math.imul(((((80 - 2) | 0) + 1) | 0), ((21 - 1) | 0)) >>> 0));
+    cptr.stPtr(cptr.add(gn, 72), alloc(1580));
     init_map(bg_typ);
     init_fill(bg_typ, fg_typ);
     for (i = 0; i < 1; i++)
@@ -374,8 +374,8 @@ export function mkmap(init_lev) {
         join_map(bg_typ, fg_typ);
     finish_map(fg_typ, bg_typ, schar(lit), schar(walled), cptr.ld1s(cptr.add(init_lev, 28)));
     if (walled && join ? 1 : 0) {
-        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 68), 0);
-        cptr.stI32(cptr.add(cptr.add(cptr.add(svl, 1680), 87400), 72), 1);
+        cptr.stI32(cptr.add(svl, 89148), 0);
+        cptr.stI32(cptr.add(svl, 89152), 1);
     }
     cptr.free(cptr.ldPtr(cptr.add(gn, 72)));
 }

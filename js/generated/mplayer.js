@@ -153,13 +153,13 @@ function dev_name() {
     let mtmp;
     let match;
     do {
-        match = (0);
+        match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
-        for (mtmp = cptr.ldPtr(cptr.add(cptr.add(svl, 1680), 87376)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+        for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
                 continue;
             if (!cptr.strncmp(cptr.ldPtr(cptr.add(developers, i, 8)), ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) : __sl39, cptr.strlen(cptr.ldPtr(cptr.add(developers, i, 8))))) {
-                match = (1);
+                match = 1;
                 break;
             }
         }
@@ -194,7 +194,7 @@ function mk_mplayer_armor(mon, typ) {
     let obj;
     if (typ == 0)
         return;
-    obj = mksobj(typ, (0), (0));
+    obj = mksobj(typ, 0, 0);
     cptr.stI32(cptr.add(obj, 112), cptr.stI32(cptr.add(obj, 116), 0));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 103, __sl47), rn2(3)) : rn2(3)))
         cptr.stI32(cptr.add(obj, 120), 1);
@@ -202,7 +202,7 @@ function mk_mplayer_armor(mon, typ) {
         curse(obj);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 107, __sl47), rn2(3)) : rn2(3)))
         bless(obj);
-    cptr.st1(cptr.add(obj, 48), schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + (4)) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
+    cptr.st1(cptr.add(obj, 48), schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
     void mpickobj(mon, obj);
 }
 
@@ -212,10 +212,10 @@ export function mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!((cptr.cmp((ptr), cptr.add(mons, 331, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, 343, 96)) <= 0) ? 1 : 0))
         return (null);
-    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8)) !== null))
-        void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), 73920), x, 168), y, 8))), (1 | 4) >>> 0);
-    if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(cptr.add(svd, 1792), 76)))))
-        special = (0);
+    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)) !== null))
+        void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8))), 5);
+    if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))))
+        special = 0;
     if ((mtmp = makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n))))) !== null) {
         let weapon;
         let armor;
@@ -224,8 +224,8 @@ export function mk_mplayer(ptr, x, y, special) {
         let shield;
         let quan;
         let otmp;
-        cptr.st1(cptr.add(mtmp, 26), uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + (15)) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
-        cptr.stI32(cptr.add(mtmp, 52), cptr.stI32(cptr.add(mtmp, 56), ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1u(cptr.add(mtmp, 26))), (10))) : d((cptr.ld1u(cptr.add(mtmp, 26))), (10))) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
+        cptr.st1(cptr.add(mtmp, 26), uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
+        cptr.stI32(cptr.add(mtmp, 52), cptr.stI32(cptr.add(mtmp, 56), ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1u(cptr.add(mtmp, 26))), 10)) : d((cptr.ld1u(cptr.add(mtmp, 26))), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = christen_monst(mtmp, cptr.decay(nam));
@@ -333,15 +333,15 @@ export function mk_mplayer(ptr, x, y, special) {
             break;
         }
         if (weapon != 0) {
-            otmp = mksobj(weapon, (1), (0));
+            otmp = mksobj(weapon, 1, 0);
             cptr.stI32(cptr.add(otmp, 112), cptr.stI32(cptr.add(otmp, 116), 0));
-            cptr.st1(cptr.add(otmp, 48), schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + (4)) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
+            cptr.st1(cptr.add(otmp, 48), schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 260, __sl48), rn2(3)) : rn2(3)))
                 cptr.stI32(cptr.add(otmp, 120), 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
                 cptr.stI32(cptr.add(otmp, 140), 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
-                otmp = mk_artifact(otmp, schar((-128)), 99, (0));
+                otmp = mk_artifact(otmp, -128, 99, 0);
             if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) & 1) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
                 cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == 17 ? 1 : 0) ? 4 : 8))));
             cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
@@ -362,14 +362,14 @@ export function mk_mplayer(ptr, x, y, special) {
                 mk_mplayer_armor(mtmp, i16(rnd_class(159, 162)));
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 290, __sl48), rn2(8)) : rn2(8)))
                 mk_mplayer_armor(mtmp, i16(rnd_class(163, 172)));
-            m_dowear(mtmp, (1));
+            m_dowear(mtmp, 1);
             quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(3)) : rn2(3)) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 295, __sl48), rn2(16)) : rn2(16));
             while (quan--)
                 void mongets(mtmp, rnd_class(439, 460));
             mkmonmoney(mtmp, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 300, __sl48), rn2(1000)) : rn2(1000))));
             quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 301, __sl48), rn2(10)) : rn2(10));
             while (quan--)
-                void mpickobj(mtmp, mkobj(0, (0)));
+                void mpickobj(mtmp, mkobj(0, 0));
         }
         quan = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 305, __sl48), rnd(3)) : rnd(3));
         while (quan--)
@@ -393,11 +393,11 @@ export function create_mplayers(num, special) {
     cptr.memcpy(fakemon, cptr.add(cg, 216), 320);
     while (num) {
         let tryct = 0;
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2((((343 - 331) | 0) + 1) | 0)) : rn2((((343 - 331) | 0) + 1) | 0)) + (331)) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(13)) : rn2(13)) + 331) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, 96));
         do {
-            x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2((80 - 4) | 0)) : rn2((80 - 4) | 0)) + (2)) | 0);
-            y = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 343, __sl50), rnd((21 - 2) | 0)) : rnd((21 - 2) | 0));
+            x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2(76)) : rn2(76)) + 2) | 0);
+            y = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 343, __sl50), rnd(19)) : rnd(19));
         } while (!goodpos(i16(x), i16(y), fakemon, 0) && tryct++ <= 50 ? 1 : 0);
         if (tryct > 50)
             return;
@@ -420,5 +420,5 @@ export function mplayer_talk(mtmp) {
     if ((cptr.ldI32(cptr.add(mtmp, 168)) & 1))
         return;
     ;
-    verbalize(__sl51, cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, cptr.ldI16(cptr.add(cptr.add(gu, 8), 208)), 96)) ? cptr.ldPtr(cptr.add(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8)) : cptr.ldPtr(cptr.add(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));
+    verbalize(__sl51, cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, cptr.ldI16(cptr.add(gu, 216)), 96)) ? cptr.ldPtr(cptr.add(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8)) : cptr.ldPtr(cptr.add(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));
 }

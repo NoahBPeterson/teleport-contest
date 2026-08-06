@@ -20,17 +20,17 @@ const __sl0 = cptr.lit("__gc");
 /** C ref: lgc.c:125 — @param {CPtr} o @returns {CPtr} */
 function getgclist(o) {
     switch (cptr.ld1u(cptr.add(o, 8))) {
-        case ((5) | ((0) << 4)):
+        case 5:
         return cptr.add((((((o))))), 48);
-        case ((6) | ((0) << 4)):
+        case 6:
         return cptr.add((((((o))))), 16);
-        case ((6) | ((2) << 4)):
+        case 38:
         return cptr.add((((((o))))), 16);
-        case ((8) | ((0) << 4)):
+        case 8:
         return cptr.add((((((o))))), 72);
-        case ((((9 + 1) | 0)) | ((0) << 4)):
+        case 10:
         return cptr.add((((((o))))), 120);
-        case ((7) | ((0) << 4)):
+        case 7:
         {
             let u = (((((o)))));
             (void 0);
@@ -47,14 +47,14 @@ function linkgclist_(o, pnext, list) {
     (void 0);
     cptr.stPtr(pnext, cptr.ldPtr(list));
     cptr.stPtr(list, o);
-    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & (uchar(((~(((1 << (5)) | ((1 << (3)) | (1 << (4)))))))))));
+    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & 199));
 }
 
 /** C ref: lgc.c:171 — @param {CPtr} n */
 function clearkey(n) {
     (void 0);
-    if (((cptr.ld1u(cptr.add((n), 9))) & (1 << 6)))
-        (cptr.st1(cptr.add((n), 9), uchar(((9 + 2) | 0))));
+    if (((cptr.ld1u(cptr.add((n), 9))) & 64))
+        (cptr.st1(cptr.add((n), 9), 11));
 }
 
 /** C ref: lgc.c:185 — @param {CPtr} g @param {CPtr} o @returns {CInt} */
@@ -63,13 +63,13 @@ function iscleared(g, o) {
         return 0;
     else if (((cptr.ld1u(cptr.add(o, 8))) & 15) == 4) {
         {
-            if (((cptr.ld1u(cptr.add((o), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((o), 9))) & 24))
                 reallymarkobject(g, ((((o)))));
         }
         ;
         return 0;
     } else
-        return ((cptr.ld1u(cptr.add((o), 9))) & (((1 << (3)) | (1 << (4)))));
+        return ((cptr.ld1u(cptr.add((o), 9))) & 24);
 }
 
 /** C ref: lgc.c:208 — @param {CPtr} L @param {CPtr} o @param {CPtr} v */
@@ -80,12 +80,12 @@ export function luaC_barrier_(L, o, v) {
         reallymarkobject(g, v);
         if (((cptr.ld1u(cptr.add((o), 9)) & 7) > 1)) {
             (void 0);
-            (cptr.st1(cptr.add((v), 9), (uchar((((cptr.ld1u(cptr.add((v), 9)) & (~7)) | 2))))));
+            (cptr.st1(cptr.add((v), 9), (uchar((((cptr.ld1u(cptr.add((v), 9)) & -8) | 2))))));
         }
     } else {
         (void 0);
         if (cptr.ld1u(cptr.add(g, 102)) == 0)
-            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & ~((1 << (5)) | ((1 << (3)) | (1 << (4))))) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))))))))));
+            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & -57) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))))))))));
     }
 }
 
@@ -95,19 +95,19 @@ export function luaC_barrierback_(L, o) {
     (void 0);
     (void 0);
     if ((cptr.ld1u(cptr.add((o), 9)) & 7) == 6)
-        (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & (uchar(((~(((1 << (5)) | ((1 << (3)) | (1 << (4)))))))))));
+        (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & 199));
     else
         linkgclist_(((((o)))), getgclist(o), cptr.add(g, 144));
     if (((cptr.ld1u(cptr.add((o), 9)) & 7) > 1))
-        (cptr.st1(cptr.add((o), 9), (uchar((((cptr.ld1u(cptr.add((o), 9)) & (~7)) | 5))))));
+        (cptr.st1(cptr.add((o), 9), (uchar((((cptr.ld1u(cptr.add((o), 9)) & -8) | 5))))));
 }
 
 /** C ref: lgc.c:243 — @param {CPtr} L @param {CPtr} o */
 export function luaC_fix(L, o) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     (void 0);
-    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & (uchar(((~(((1 << (5)) | ((1 << (3)) | (1 << (4)))))))))));
-    (cptr.st1(cptr.add((o), 9), (uchar((((cptr.ld1u(cptr.add((o), 9)) & (~7)) | 4))))));
+    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & 199));
+    (cptr.st1(cptr.add((o), 9), (uchar((((cptr.ld1u(cptr.add((o), 9)) & -8) | 4))))));
     cptr.stPtr(cptr.add(g, 112), cptr.ldPtr(o));
     cptr.stPtr(o, cptr.ldPtr(cptr.add(g, 184)));
     cptr.stPtr(cptr.add(g, 184), o);
@@ -118,7 +118,7 @@ export function luaC_newobjdt(L, tt, sz, offset) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     let p = (((luaM_malloc_(L, (sz), ((tt) & 15)))));
     let o = ((cptr.add(p, offset)));
-    cptr.st1(cptr.add(o, 9), (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4))))))));
+    cptr.st1(cptr.add(o, 9), (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24)))));
     cptr.st1(cptr.add(o, 8), uchar(tt));
     cptr.stPtr(o, cptr.ldPtr(cptr.add(g, 112)));
     cptr.stPtr(cptr.add(g, 112), o);
@@ -133,48 +133,48 @@ export function luaC_newobj(L, tt, sz) {
 /** C ref: lgc.c:297 — @param {CPtr} g @param {CPtr} o */
 function reallymarkobject(g, o) {
     switch (cptr.ld1u(cptr.add(o, 8))) {
-        case ((4) | ((0) << 4)):
-        case ((4) | ((1) << 4)):
+        case 4:
+        case 20:
         {
-            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & ~((1 << (3)) | (1 << (4)))) | (1 << (5))))))));
+            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & -25) | 32))))));
             break;
         }
-        case ((9) | ((0) << 4)):
+        case 9:
         {
             let uv = (((((o)))));
             if ((!cptr.eq(cptr.ldPtr(cptr.add((uv), 16)), cptr.add((uv), 24))))
-                (cptr.st1(cptr.add(uv, 9), cptr.ld1u(cptr.add(uv, 9)) & (uchar(((~(((1 << (5)) | ((1 << (3)) | (1 << (4)))))))))));
+                (cptr.st1(cptr.add(uv, 9), cptr.ld1u(cptr.add(uv, 9)) & 199));
             else
-                (cptr.st1(cptr.add(uv, 9), (uchar((((cptr.ld1u(cptr.add(uv, 9)) & ~((1 << (3)) | (1 << (4)))) | (1 << (5))))))));
+                (cptr.st1(cptr.add(uv, 9), (uchar((((cptr.ld1u(cptr.add(uv, 9)) & -25) | 32))))));
             {
                 (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-                if ((((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(uv, 16))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+                if ((((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(uv, 16))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16))))))), 9))) & 24) ? 1 : 0))
                     reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16)))))));
             }
             ;
             break;
         }
-        case ((7) | ((0) << 4)):
+        case 7:
         {
             let u = (((((o)))));
             if (cptr.ldU16(cptr.add(u, 10)) == 0) {
                 {
                     if (cptr.ldPtr(cptr.add(u, 24))) {
-                        if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(u, 24))), 9))) & (((1 << (3)) | (1 << (4))))))
+                        if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(u, 24))), 9))) & 24))
                             reallymarkobject(g, ((((cptr.ldPtr(cptr.add(u, 24)))))));
                     }
                     ;
                 }
                 ;
-                (cptr.st1(cptr.add(u, 9), (uchar((((cptr.ld1u(cptr.add(u, 9)) & ~((1 << (3)) | (1 << (4)))) | (1 << (5))))))));
+                (cptr.st1(cptr.add(u, 9), (uchar((((cptr.ld1u(cptr.add(u, 9)) & -25) | 32))))));
                 break;
             }
         }
-        case ((6) | ((0) << 4)):
-        case ((6) | ((2) << 4)):
-        case ((5) | ((0) << 4)):
-        case ((8) | ((0) << 4)):
-        case ((((9 + 1) | 0)) | ((0) << 4)):
+        case 6:
+        case 38:
+        case 5:
+        case 8:
+        case 10:
         {
             linkgclist_(((((o)))), getgclist(o), cptr.add(g, 136));
             break;
@@ -190,7 +190,7 @@ function markmt(g) {
     let i;
     for (i = 0; i < 9; i++) {
         if (cptr.ldPtr(cptr.add(cptr.add(g, 480), i, 8))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(g, 480), i, 8))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(g, 480), i, 8))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(cptr.add(g, 480), i, 8)))))));
         }
         ;
@@ -205,7 +205,7 @@ function markbeingfnz(g) {
     for (o = cptr.ldPtr(cptr.add(g, 176)); !cptr.eq(o, (null)); o = cptr.ldPtr(o)) {
         count++;
         {
-            if (((cptr.ld1u(cptr.add((o), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((o), 9))) & 24))
                 reallymarkobject(g, ((((o)))));
         }
         ;
@@ -220,7 +220,7 @@ function remarkupvals(g) {
     let work = 0;
     while (!cptr.eq((thread = cptr.ldPtr(p)), (null))) {
         work++;
-        if (!((cptr.ld1u(cptr.add((thread), 9))) & (((1 << (3)) | (1 << (4))))) && !cptr.eq(cptr.ldPtr(cptr.add(thread, 56)), (null)) ? 1 : 0)
+        if (!((cptr.ld1u(cptr.add((thread), 9))) & 24) && !cptr.eq(cptr.ldPtr(cptr.add(thread, 56)), (null)) ? 1 : 0)
             p = cptr.add(thread, 80);
         else {
             let uv;
@@ -230,11 +230,11 @@ function remarkupvals(g) {
             for (uv = cptr.ldPtr(cptr.add(thread, 56)); !cptr.eq(uv, (null)); uv = cptr.ldPtr(cptr.add(uv, 24))) {
                 (void 0);
                 work++;
-                if (!((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4)))))) {
+                if (!((cptr.ld1u(cptr.add((uv), 9))) & 24)) {
                     (void 0);
                     {
                         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-                        if ((((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(uv, 16))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+                        if ((((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(uv, 16))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16))))))), 9))) & 24) ? 1 : 0))
                             reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtr(cptr.add(uv, 16)))))));
                     }
                     ;
@@ -255,13 +255,13 @@ function cleargraylists(g) {
 function restartcollection(g) {
     cleargraylists(g);
     {
-        if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(g, 264))), 9))) & (((1 << (3)) | (1 << (4))))))
+        if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(g, 264))), 9))) & 24))
             reallymarkobject(g, ((((cptr.ldPtr(cptr.add(g, 264)))))));
     }
     ;
     {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(g, 64)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(g, 64)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(g, 64)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(g, 64)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, 64))))));
     }
     ;
@@ -275,7 +275,7 @@ function genlink(g, o) {
     if ((cptr.ld1u(cptr.add((o), 9)) & 7) == 5) {
         linkgclist_(((((o)))), getgclist(o), cptr.add(g, 144));
     } else if ((cptr.ld1u(cptr.add((o), 9)) & 7) == 6)
-        (cptr.st1(cptr.add((o), 9), cptr.ld1u(cptr.add((o), 9)) ^ ((6) ^ (4))));
+        (cptr.st1(cptr.add((o), 9), cptr.ld1u(cptr.add((o), 9)) ^ 2));
 }
 
 /** C ref: lgc.c:446 — @param {CPtr} g @param {CPtr} h */
@@ -284,16 +284,16 @@ function traverseweakvalue(g, h) {
     let limit = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1u(cptr.add((h), 11)))))))))), 24));
     let hasclears = (cptr.ldI32(cptr.add(h, 12)) > 0);
     for (n = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0)))
+        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0))
             clearkey(n);
         else {
             (void 0);
             {
-                if (((cptr.ld1u(cptr.add((n), 9))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr((cptr.add((n), 16))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0)
+                if (((cptr.ld1u(cptr.add((n), 9))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr((cptr.add((n), 16))))), 9))) & 24) ? 1 : 0)
                     reallymarkobject(g, (cptr.ldPtr((cptr.add((n), 16)))));
             }
             ;
-            if (!hasclears && iscleared(g, (((cptr.ld1u(cptr.add((((n))), 8))) & (1 << 6)) ? (cptr.ldPtr(((((n)))))) : null)) ? 1 : 0)
+            if (!hasclears && iscleared(g, (((cptr.ld1u(cptr.add((((n))), 8))) & 64) ? (cptr.ldPtr(((((n)))))) : null)) ? 1 : 0)
                 hasclears = 1;
         }
     }
@@ -312,20 +312,20 @@ function traverseephemeron(g, h, inv) {
     let asize = luaH_realasize(h);
     let nsize = ((1 << (cptr.ld1u(cptr.add((h), 11))))) >>> 0;
     for (i = 0; i < asize; i++) {
-        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0)) {
+        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)))))), 9))) & 24) ? 1 : 0)) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16))))));
         }
     }
     for (i = 0; i < nsize; i++) {
         let n = inv ? (cptr.add(cptr.ldPtr(cptr.add((h), 24)), (((nsize - 1) >>> 0) - i) >>> 0, 24)) : (cptr.add(cptr.ldPtr(cptr.add((h), 24)), i, 24));
-        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0)))
+        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0))
             clearkey(n);
-        else if (iscleared(g, (((cptr.ld1u(cptr.add((n), 9))) & (1 << 6)) ? (cptr.ldPtr((cptr.add((n), 16)))) : null))) {
+        else if (iscleared(g, (((cptr.ld1u(cptr.add((n), 9))) & 64) ? (cptr.ldPtr((cptr.add((n), 16)))) : null))) {
             hasclears = 1;
-            if ((((cptr.ld1u(cptr.add((((n))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+            if ((((cptr.ld1u(cptr.add((((n))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & 24) ? 1 : 0))
                 hasww = 1;
-        } else if ((((cptr.ld1u(cptr.add((((n))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0)) {
+        } else if ((((cptr.ld1u(cptr.add((((n))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & 24) ? 1 : 0)) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((((n)))))));
         }
@@ -349,23 +349,23 @@ function traversestrongtable(g, h) {
     let asize = luaH_realasize(h);
     for (i = 0; i < asize; i++) {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16))))));
     }
     ;
     for (n = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0)))
+        if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0))
             clearkey(n);
         else {
             (void 0);
             {
-                if (((cptr.ld1u(cptr.add((n), 9))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr((cptr.add((n), 16))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0)
+                if (((cptr.ld1u(cptr.add((n), 9))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr((cptr.add((n), 16))))), 9))) & 24) ? 1 : 0)
                     reallymarkobject(g, (cptr.ldPtr((cptr.add((n), 16)))));
             }
             ;
             {
                 (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-                if ((((cptr.ld1u(cptr.add((((n))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+                if ((((cptr.ld1u(cptr.add((((n))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((n))))))), 9))) & 24) ? 1 : 0))
                     reallymarkobject(g, (cptr.ldPtr(((((n)))))));
             }
             ;
@@ -378,17 +378,17 @@ function traversestrongtable(g, h) {
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
-    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (3)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), 3, cptr.ldPtr(cptr.add(cptr.add((g), 280), 3, 8)))));
+    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & 8) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), 3, cptr.ldPtr(cptr.add(cptr.add((g), 280), 3, 8)))));
     let smode;
     {
         if (cptr.ldPtr(cptr.add(h, 40))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(h, 40)))))));
         }
         ;
     }
     ;
-    if ((mode && ((cptr.ld1u(cptr.add(((mode)), 8))) == (((((4) | ((0) << 4))) | (1 << 6)))) ? 1 : 0) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), 24)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), 24)), 118)))), (weakkey || weakvalue ? 1 : 0)) ? 1 : 0) {
+    if ((mode && ((cptr.ld1u(cptr.add(((mode)), 8))) == 68) ? 1 : 0) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), 24)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), 24)), 118)))), (weakkey || weakvalue ? 1 : 0)) ? 1 : 0) {
         if (!weakkey)
             traverseweakvalue(g, h);
         else if (!weakvalue)
@@ -405,7 +405,7 @@ function traverseudata(g, u) {
     let i;
     {
         if (cptr.ldPtr(cptr.add(u, 24))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(u, 24))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(u, 24))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(u, 24)))))));
         }
         ;
@@ -413,7 +413,7 @@ function traverseudata(g, u) {
     ;
     for (i = 0; i < cptr.ldU16(cptr.add(u, 10)); i++) {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.add(u, 40), i, 16)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.add(u, 40), i, 16)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16))))));
     }
     ;
@@ -426,7 +426,7 @@ function traverseproto(g, f) {
     let i;
     {
         if (cptr.ldPtr(cptr.add(f, 112))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(f, 112))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(f, 112))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(f, 112)))))));
         }
         ;
@@ -434,13 +434,13 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32(cptr.add(f, 20)); i++) {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16))))));
     }
     ;
     for (i = 0; i < cptr.ldI32(cptr.add(f, 16)); i++) {
         if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16)))))));
         }
         ;
@@ -448,7 +448,7 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32(cptr.add(f, 32)); i++) {
         if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8)))))));
         }
         ;
@@ -456,7 +456,7 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32(cptr.add(f, 36)); i++) {
         if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16)))))));
         }
         ;
@@ -470,7 +470,7 @@ function traverseCclosure(g, cl) {
     let i;
     for (i = 0; i < cptr.ld1u(cptr.add(cl, 10)); i++) {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.add(cl, 32), i, 16)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(cptr.add(cl, 32), i, 16)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16))))));
     }
     ;
@@ -482,7 +482,7 @@ function traverseLclosure(g, cl) {
     let i;
     {
         if (cptr.ldPtr(cptr.add(cl, 24))) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & 24))
                 reallymarkobject(g, ((((cptr.ldPtr(cptr.add(cl, 24)))))));
         }
         ;
@@ -492,7 +492,7 @@ function traverseLclosure(g, cl) {
         let uv = cptr.ldPtr(cptr.add(cptr.add(cl, 32), i, 8));
         {
             if (uv) {
-                if (((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4))))))
+                if (((cptr.ld1u(cptr.add((uv), 9))) & 24))
                     reallymarkobject(g, ((((uv)))));
             }
             ;
@@ -513,12 +513,12 @@ function traversethread(g, th) {
     (void 0);
     for (; cptr.cmp(o, cptr.ldPtr(cptr.add(th, 16))) < 0; o = cptr.add(o, 1, 16)) {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((((o))), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((o))))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((((o))), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((o))))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((((o)))))));
     }
     ;
     for (uv = cptr.ldPtr(cptr.add(th, 56)); !cptr.eq(uv, (null)); uv = cptr.ldPtr(cptr.add(uv, 24))) {
-        if (((cptr.ld1u(cptr.add((uv), 9))) & (((1 << (3)) | (1 << (4))))))
+        if (((cptr.ld1u(cptr.add((uv), 9))) & 24))
             reallymarkobject(g, ((((uv)))));
     }
     ;
@@ -526,7 +526,7 @@ function traversethread(g, th) {
         if (!cptr.ld1u(cptr.add(g, 107)))
             luaD_shrinkstack(th);
         for (o = cptr.ldPtr(cptr.add(th, 16)); cptr.cmp(o, cptr.add(cptr.ldPtr(cptr.add(th, 40)), 5, 16)) < 0; o = cptr.add(o, 1, 16))
-            (cptr.st1(cptr.add((((o))), 8), uchar((((0) | ((0) << 4))))));
+            (cptr.st1(cptr.add((((o))), 8), 0));
         if (!(!cptr.eq(cptr.ldPtr(cptr.add(th, 80)), th)) && !cptr.eq(cptr.ldPtr(cptr.add(th, 56)), (null)) ? 1 : 0) {
             cptr.stPtr(cptr.add(th, 80), cptr.ldPtr(cptr.add(g, 248)));
             cptr.stPtr(cptr.add(g, 248), th);
@@ -538,20 +538,20 @@ function traversethread(g, th) {
 /** C ref: lgc.c:660 — @param {CPtr} g @returns {*} */
 function propagatemark(g) {
     let o = cptr.ldPtr(cptr.add(g, 136));
-    ((cptr.st1(cptr.add((o), 9), cptr.ld1u(cptr.add((o), 9)) | ((1 << (5))))));
+    ((cptr.st1(cptr.add((o), 9), cptr.ld1u(cptr.add((o), 9)) | 32)));
     cptr.stPtr(cptr.add(g, 136), cptr.ldPtr(getgclist(o)));
     switch (cptr.ld1u(cptr.add(o, 8))) {
-        case ((5) | ((0) << 4)):
+        case 5:
         return traversetable(g, (((((o))))));
-        case ((7) | ((0) << 4)):
+        case 7:
         return BigInt.asUintN(64, BigInt(traverseudata(g, (((((o))))))));
-        case ((6) | ((0) << 4)):
+        case 6:
         return BigInt.asUintN(64, BigInt(traverseLclosure(g, (((((o))))))));
-        case ((6) | ((2) << 4)):
+        case 38:
         return BigInt.asUintN(64, BigInt(traverseCclosure(g, (((((o))))))));
-        case ((((9 + 1) | 0)) | ((0) << 4)):
+        case 10:
         return BigInt.asUintN(64, BigInt(traverseproto(g, (((((o))))))));
-        case ((8) | ((0) << 4)):
+        case 8:
         return BigInt.asUintN(64, BigInt(traversethread(g, (((((o))))))));
         default:
         (void 0);
@@ -579,7 +579,7 @@ function convergeephemerons(g) {
         while (!cptr.eq((w = next), (null))) {
             let h = (((((w)))));
             next = cptr.ldPtr(cptr.add(h, 48));
-            ((cptr.st1(cptr.add((h), 9), cptr.ld1u(cptr.add((h), 9)) | ((1 << (5))))));
+            ((cptr.st1(cptr.add((h), 9), cptr.ld1u(cptr.add((h), 9)) | 32)));
             if (traverseephemeron(g, h, dir)) {
                 propagateall(g);
                 changed = 1;
@@ -596,9 +596,9 @@ function clearbykeys(g, l) {
         let limit = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1u(cptr.add((h), 11)))))))))), 24));
         let n;
         for (n = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-            if (iscleared(g, (((cptr.ld1u(cptr.add((n), 9))) & (1 << 6)) ? (cptr.ldPtr((cptr.add((n), 16)))) : null)))
-                (cptr.st1(cptr.add((((n))), 8), uchar((((0) | ((1) << 4))))));
-            if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0)))
+            if (iscleared(g, (((cptr.ld1u(cptr.add((n), 9))) & 64) ? (cptr.ldPtr((cptr.add((n), 16)))) : null)))
+                (cptr.st1(cptr.add((((n))), 8), 16));
+            if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0))
                 clearkey(n);
         }
     }
@@ -614,13 +614,13 @@ function clearbyvalues(g, l, f) {
         let asize = luaH_realasize(h);
         for (i = 0; i < asize; i++) {
             let o = cptr.add(cptr.ldPtr(cptr.add(h, 16)), i, 16);
-            if (iscleared(g, (((cptr.ld1u(cptr.add((o), 8))) & (1 << 6)) ? (cptr.ldPtr(((o)))) : null)))
-                (cptr.st1(cptr.add((o), 8), uchar((((0) | ((1) << 4))))));
+            if (iscleared(g, (((cptr.ld1u(cptr.add((o), 8))) & 64) ? (cptr.ldPtr(((o)))) : null)))
+                (cptr.st1(cptr.add((o), 8), 16));
         }
         for (n = (cptr.add(cptr.ldPtr(cptr.add((h), 24)), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-            if (iscleared(g, (((cptr.ld1u(cptr.add((((n))), 8))) & (1 << 6)) ? (cptr.ldPtr(((((n)))))) : null)))
-                (cptr.st1(cptr.add((((n))), 8), uchar((((0) | ((1) << 4))))));
-            if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0)))
+            if (iscleared(g, (((cptr.ld1u(cptr.add((((n))), 8))) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
+                (cptr.st1(cptr.add((((n))), 8), 16));
+            if ((((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0))
                 clearkey(n);
         }
     }
@@ -636,44 +636,44 @@ function freeupval(L, uv) {
 /** C ref: lgc.c:772 — @param {CPtr} L @param {CPtr} o */
 function freeobj(L, o) {
     switch (cptr.ld1u(cptr.add(o, 8))) {
-        case ((((9 + 1) | 0)) | ((0) << 4)):
+        case 10:
         luaF_freeproto(L, (((((o))))));
         break;
-        case ((9) | ((0) << 4)):
+        case 9:
         freeupval(L, (((((o))))));
         break;
-        case ((6) | ((0) << 4)):
+        case 6:
         {
             let cl = (((((o)))));
-            luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul((8), (cptr.ld1u(cptr.add(cl, 10))))) | 0)))));
+            luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(8, (cptr.ld1u(cptr.add(cl, 10))))) | 0)))));
             break;
         }
-        case ((6) | ((2) << 4)):
+        case 38:
         {
             let cl = (((((o)))));
-            luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul((16), (cptr.ld1u(cptr.add(cl, 10))))) | 0)))));
+            luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(16, (cptr.ld1u(cptr.add(cl, 10))))) | 0)))));
             break;
         }
-        case ((5) | ((0) << 4)):
+        case 5:
         luaH_free(L, (((((o))))));
         break;
-        case ((8) | ((0) << 4)):
+        case 8:
         luaE_freethread(L, (((((o))))));
         break;
-        case ((7) | ((0) << 4)):
+        case 7:
         {
             let u = (((((o)))));
             luaM_free_(L, (o), ((BigInt.asUintN(64, ((cptr.ldU16(cptr.add(u, 10))) == 0 ? 24n : BigInt.asUintN(64, 24n + (BigInt.asUintN(64, 16n * BigInt((cptr.ldU16(cptr.add(u, 10))) >>> 0))))) + (cptr.ldU64(cptr.add(u, 16)))))));
             break;
         }
-        case ((4) | ((0) << 4)):
+        case 4:
         {
             let ts = (((((o)))));
             luaS_remove(L, ts);
             luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((cptr.ld1u(cptr.add(ts, 11))) + 1) | 0))) * 1n)))));
             break;
         }
-        case ((4) | ((1) << 4)):
+        case 20:
         {
             let ts = (((((o)))));
             luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (cptr.ldU64(cptr.add(ts, 16))) + 1n)) * 1n)))));
@@ -687,9 +687,9 @@ function freeobj(L, o) {
 /** C ref: lgc.c:824 — @param {CPtr} L @param {CPtr} p @param {CInt} countin @param {CPtr} countout @returns {CPtr} */
 function sweeplist(L, p, countin, countout) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    let ow = (cptr.ld1u(cptr.add((g), 100)) ^ ((1 << (3)) | (1 << (4))));
+    let ow = (cptr.ld1u(cptr.add((g), 100)) ^ 24);
     let i;
-    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))));
+    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))));
     for (i = 0; !cptr.eq(cptr.ldPtr(p), (null)) && i < countin ? 1 : 0; i++) {
         let curr = cptr.ldPtr(p);
         let marked = cptr.ld1u(cptr.add(curr, 9));
@@ -697,7 +697,7 @@ function sweeplist(L, p, countin, countout) {
             cptr.stPtr(p, cptr.ldPtr(curr));
             freeobj(L, curr);
         } else {
-            cptr.st1(cptr.add(curr, 9), (uchar((((marked & ~(((1 << (5)) | ((1 << (3)) | (1 << (4)))) | 7)) | white)))));
+            cptr.st1(cptr.add(curr, 9), (uchar((((marked & -64) | white)))));
             p = curr;
         }
     }
@@ -718,9 +718,9 @@ function sweeptolive(L, p) {
 /** C ref: lgc.c:871 — @param {CPtr} L @param {CPtr} g */
 function checkSizes(L, g) {
     if (!cptr.ld1u(cptr.add(g, 107))) {
-        if (cptr.ldI32(cptr.add(cptr.add(g, 48), 8)) < ((cptr.ldI32(cptr.add(cptr.add(g, 48), 12)) / 4) | 0)) {
+        if (cptr.ldI32(cptr.add(g, 56)) < ((cptr.ldI32(cptr.add(g, 60)) / 4) | 0)) {
             let olddebt = cptr.ldI64(cptr.add(g, 24));
-            luaS_resize(L, (cptr.ldI32(cptr.add(cptr.add(g, 48), 12)) / 2) | 0);
+            luaS_resize(L, (cptr.ldI32(cptr.add(g, 60)) / 2) | 0);
             cptr.stU64(cptr.add(g, 32), cptr.ldU64(cptr.add(g, 32)) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64(cptr.add(g, 24)) - olddebt)));
         }
     }
@@ -733,9 +733,9 @@ function udata2finalize(g) {
     cptr.stPtr(cptr.add(g, 176), cptr.ldPtr(o));
     cptr.stPtr(o, cptr.ldPtr(cptr.add(g, 112)));
     cptr.stPtr(cptr.add(g, 112), o);
-    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & (uchar(((~((1 << (6)))))))));
+    (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) & 191));
     if ((3 <= cptr.ld1u(cptr.add((g), 101)) && cptr.ld1u(cptr.add((g), 101)) <= 6 ? 1 : 0))
-        (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & ~((1 << (5)) | ((1 << (3)) | (1 << (4))))) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))))))))));
+        (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & -57) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))))))))));
     else if ((cptr.ld1u(cptr.add((o), 9)) & 7) == 3)
         cptr.stPtr(cptr.add(g, 216), o);
     return o;
@@ -757,11 +757,11 @@ function GCTM(L) {
         let io = (v);
         let i_g = (udata2finalize(g));
         cptr.stPtr(((io)), i_g);
-        (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(i_g, 8))) | (1 << 6))))));
+        (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(i_g, 8))) | 64)))));
     }
     ;
     tm = luaT_gettmbyobj(L, v, 2);
-    if (!(((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == (0))) {
+    if (!(((((cptr.ld1u(cptr.add(((tm)), 8)))) & 15)) == 0)) {
         let status;
         let oldah = cptr.ld1u(cptr.add(L, 11));
         let oldgcstp = cptr.ld1u(cptr.add(g, 106));
@@ -785,9 +785,9 @@ function GCTM(L) {
             (void 0);
         }
         ;
-        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62), cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62)) | (1 << 7));
+        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62), cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62)) | 128);
         status = luaD_pcall(L, dothecall, (null), (cptr.diff((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(2), 16)))), (((cptr.ldPtr(cptr.add(L, 48))))))), 0n);
-        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62), cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62)) & ~(1 << 7));
+        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62), cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(L, 32)), 62)) & -129);
         cptr.st1(cptr.add(L, 11), oldah);
         cptr.st1(cptr.add(g, 106), uchar(oldgcstp));
         if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
@@ -827,7 +827,7 @@ function separatetobefnz(g, all) {
     let lastnext = findlast(cptr.add(g, 176));
     while (!cptr.eq((curr = cptr.ldPtr(p)), cptr.ldPtr(cptr.add(g, 232)))) {
         (void 0);
-        if (!(((cptr.ld1u(cptr.add((curr), 9))) & (((1 << (3)) | (1 << (4))))) || all ? 1 : 0))
+        if (!(((cptr.ld1u(cptr.add((curr), 9))) & 24) || all ? 1 : 0))
             p = curr;
         else {
             if (cptr.eq(curr, cptr.ldPtr(cptr.add(g, 224))))
@@ -857,12 +857,12 @@ function correctpointers(g, o) {
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    if ((((cptr.ld1u(cptr.add((o), 9))) & ((1 << (6)))) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & ((1 << (2)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, 2, cptr.ldPtr(cptr.add(cptr.add((g), 280), 2, 8))))), (null)) ? 1 : 0) || (cptr.ld1u(cptr.add(g, 106)) & 4) ? 1 : 0)
+    if ((((cptr.ld1u(cptr.add((o), 9))) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & 4) >>> 0) ? null : luaT_gettm(mt, 2, cptr.ldPtr(cptr.add(cptr.add((g), 280), 2, 8))))), (null)) ? 1 : 0) || (cptr.ld1u(cptr.add(g, 106)) & 4) ? 1 : 0)
         return;
     else {
         let p;
         if ((3 <= cptr.ld1u(cptr.add((g), 101)) && cptr.ld1u(cptr.add((g), 101)) <= 6 ? 1 : 0)) {
-            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & ~((1 << (5)) | ((1 << (3)) | (1 << (4))))) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))))))))));
+            (cptr.st1(cptr.add(o, 9), (uchar((((cptr.ld1u(cptr.add(o, 9)) & -57) | (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))))))))));
             if (cptr.eq(cptr.ldPtr(cptr.add(g, 120)), o))
                 cptr.stPtr(cptr.add(g, 120), sweeptolive(L, cptr.ldPtr(cptr.add(g, 120))));
         } else
@@ -872,7 +872,7 @@ export function luaC_checkfinalizer(L, o, mt) {
         cptr.stPtr(p, cptr.ldPtr(o));
         cptr.stPtr(o, cptr.ldPtr(cptr.add(g, 128)));
         cptr.stPtr(cptr.add(g, 128), o);
-        (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) | ((1 << (6)))));
+        (cptr.st1(cptr.add(o, 9), cptr.ld1u(cptr.add(o, 9)) | 64));
     }
 }
 
@@ -883,7 +883,7 @@ function setpause(g) {
     let pause = (Math.imul((cptr.ld1u(cptr.add(g, 108))), 4));
     let estimate = BigInt.asIntN(64, (cptr.ldU64(cptr.add(g, 32)) / 100n));
     (void 0);
-    threshold = (BigInt(pause) < (BigInt.asIntN(64, (((BigInt.asUintN(64, ~0n))) >> 1n))) / estimate) ? BigInt.asIntN(64, estimate * BigInt(pause)) : (BigInt.asIntN(64, (((BigInt.asUintN(64, ~0n))) >> 1n)));
+    threshold = (BigInt(pause) < 9223372036854775807n / estimate) ? BigInt.asIntN(64, estimate * BigInt(pause)) : 9223372036854775807n;
     debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add((g), 16)) + cptr.ldI64(cptr.add((g), 24)))))) - BigInt.asUintN(64, threshold)));
     if (debt > 0n)
         debt = 0n;
@@ -895,19 +895,19 @@ function sweep2old(L, p) {
     let curr;
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     while (!cptr.eq((curr = cptr.ldPtr(p)), (null))) {
-        if (((cptr.ld1u(cptr.add((curr), 9))) & (((1 << (3)) | (1 << (4)))))) {
+        if (((cptr.ld1u(cptr.add((curr), 9))) & 24)) {
             (void 0);
             cptr.stPtr(p, cptr.ldPtr(curr));
             freeobj(L, curr);
         } else {
-            (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & (~7)) | 4))))));
-            if (cptr.ld1u(cptr.add(curr, 8)) == ((8) | ((0) << 4))) {
+            (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & -8) | 4))))));
+            if (cptr.ld1u(cptr.add(curr, 8)) == 8) {
                 let th = (((((curr)))));
                 linkgclist_(((((th)))), cptr.add((th), 72), cptr.add(g, 144));
-            } else if (cptr.ld1u(cptr.add(curr, 8)) == ((9) | ((0) << 4)) && (!cptr.eq(cptr.ldPtr(cptr.add(((((((curr)))))), 16)), cptr.add(((((((curr)))))), 24))) ? 1 : 0)
-                (cptr.st1(cptr.add(curr, 9), cptr.ld1u(cptr.add(curr, 9)) & (uchar(((~(((1 << (5)) | ((1 << (3)) | (1 << (4)))))))))));
+            } else if (cptr.ld1u(cptr.add(curr, 8)) == 9 && (!cptr.eq(cptr.ldPtr(cptr.add(((((((curr)))))), 16)), cptr.add(((((((curr)))))), 24))) ? 1 : 0)
+                (cptr.st1(cptr.add(curr, 9), cptr.ld1u(cptr.add(curr, 9)) & 199));
             else
-                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | ((1 << (5))))));
+                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | 32)));
             p = curr;
         }
     }
@@ -917,19 +917,19 @@ const __static_sweepgen_nextage = [1, 3, 3, 4, 4, 5, 6]; /** C ref: lgc.c:1117 �
 
 /** C ref: lgc.c:1115 — @param {CPtr} L @param {CPtr} g @param {CPtr} p @param {CPtr} limit @param {CPtr} pfirstold1 @returns {CPtr} */
 function sweepgen(L, g, p, limit, pfirstold1) {
-    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))));
+    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))));
     let curr;
     while (!cptr.eq((curr = cptr.ldPtr(p)), limit)) {
-        if (((cptr.ld1u(cptr.add((curr), 9))) & (((1 << (3)) | (1 << (4)))))) {
+        if (((cptr.ld1u(cptr.add((curr), 9))) & 24)) {
             (void 0);
             cptr.stPtr(p, cptr.ldPtr(curr));
             freeobj(L, curr);
         } else {
             if ((cptr.ld1u(cptr.add((curr), 9)) & 7) == 0) {
-                let marked = cptr.ld1u(cptr.add(curr, 9)) & ~(((1 << (5)) | ((1 << (3)) | (1 << (4)))) | 7);
+                let marked = cptr.ld1u(cptr.add(curr, 9)) & -64;
                 cptr.st1(cptr.add(curr, 9), (uchar(((marked | 1 | white)))));
             } else {
-                (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & (~7)) | cptr.ld1u(cptr.add(cptr.decay(__static_sweepgen_nextage), (cptr.ld1u(cptr.add((curr), 9)) & 7), 1))))))));
+                (cptr.st1(cptr.add((curr), 9), (uchar((((cptr.ld1u(cptr.add((curr), 9)) & -8) | cptr.ld1u(cptr.add(cptr.decay(__static_sweepgen_nextage), (cptr.ld1u(cptr.add((curr), 9)) & 7), 1))))))));
                 if ((cptr.ld1u(cptr.add((curr), 9)) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)) ? 1 : 0)
                     cptr.stPtr(pfirstold1, curr);
             }
@@ -941,9 +941,9 @@ function sweepgen(L, g, p, limit, pfirstold1) {
 
 /** C ref: lgc.c:1156 — @param {CPtr} g @param {CPtr} p */
 function whitelist(g, p) {
-    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & ((1 << (3)) | (1 << (4)))))));
+    let white = (uchar(((cptr.ld1u(cptr.add((g), 100)) & 24))));
     for (; !cptr.eq(p, (null)); p = cptr.ldPtr(p))
-        cptr.st1(cptr.add(p, 9), (uchar((((cptr.ld1u(cptr.add(p, 9)) & ~(((1 << (5)) | ((1 << (3)) | (1 << (4)))) | 7)) | white)))));
+        cptr.st1(cptr.add(p, 9), (uchar((((cptr.ld1u(cptr.add(p, 9)) & -64) | white)))));
 }
 
 /** C ref: lgc.c:1172 — @param {CPtr} p @returns {CPtr} */
@@ -953,21 +953,21 @@ function correctgraylist(p) {
         let next = getgclist(curr);
         __lbl_remain: {
         __lbl_remove: {
-            if (((cptr.ld1u(cptr.add((curr), 9))) & (((1 << (3)) | (1 << (4))))))
+            if (((cptr.ld1u(cptr.add((curr), 9))) & 24))
                 break __lbl_remove;
             else if ((cptr.ld1u(cptr.add((curr), 9)) & 7) == 5) {
                 (void 0);
-                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | ((1 << (5))))));
-                (cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) ^ ((5) ^ (6))));
+                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | 32)));
+                (cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) ^ 3));
                 break __lbl_remain;
-            } else if (cptr.ld1u(cptr.add(curr, 8)) == ((8) | ((0) << 4))) {
+            } else if (cptr.ld1u(cptr.add(curr, 8)) == 8) {
                 (void 0);
                 break __lbl_remain;
             } else {
                 (void 0);
                 if ((cptr.ld1u(cptr.add((curr), 9)) & 7) == 6)
-                    (cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) ^ ((6) ^ (4))));
-                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | ((1 << (5))))));
+                    (cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) ^ 2));
+                ((cptr.st1(cptr.add((curr), 9), cptr.ld1u(cptr.add((curr), 9)) | 32)));
                 break __lbl_remove;
             }
         }
@@ -1000,8 +1000,8 @@ function markold(g, from, to) {
     for (p = from; !cptr.eq(p, to); p = cptr.ldPtr(p)) {
         if ((cptr.ld1u(cptr.add((p), 9)) & 7) == 3) {
             (void 0);
-            (cptr.st1(cptr.add((p), 9), cptr.ld1u(cptr.add((p), 9)) ^ ((3) ^ (4))));
-            if (((cptr.ld1u(cptr.add((p), 9))) & ((1 << (5)))))
+            (cptr.st1(cptr.add((p), 9), cptr.ld1u(cptr.add((p), 9)) ^ 7));
+            if (((cptr.ld1u(cptr.add((p), 9))) & 32))
                 reallymarkobject(g, p);
         }
     }
@@ -1068,8 +1068,8 @@ function setminordebt(g) {
 /** C ref: lgc.c:1329 — @param {CPtr} L @param {CPtr} g @returns {*} */
 function entergen(L, g) {
     let numobjs;
-    luaC_runtilstate(L, (1 << (8)));
-    luaC_runtilstate(L, (1 << (0)));
+    luaC_runtilstate(L, 256);
+    luaC_runtilstate(L, 1);
     numobjs = atomic(L);
     atomic2gen(L, g);
     setminordebt(g);
@@ -1112,7 +1112,7 @@ function stepgenfull(L, g) {
     let lastatomic = cptr.ldU64(cptr.add(g, 40));
     if (cptr.ld1u(cptr.add(g, 102)) == 1)
         enterinc(g);
-    luaC_runtilstate(L, (1 << (0)));
+    luaC_runtilstate(L, 1);
     newatomic = atomic(L);
     if (newatomic < BigInt.asUintN(64, lastatomic + (lastatomic >> 3n))) {
         atomic2gen(L, g);
@@ -1120,7 +1120,7 @@ function stepgenfull(L, g) {
     } else {
         cptr.stU64(cptr.add(g, 32), (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add((g), 16)) + cptr.ldI64(cptr.add((g), 24)))))));
         entersweep(L);
-        luaC_runtilstate(L, (1 << (8)));
+        luaC_runtilstate(L, 256);
         setpause(g);
         cptr.stU64(cptr.add(g, 40), newatomic);
     }
@@ -1193,13 +1193,13 @@ function atomic(L) {
     (void 0);
     cptr.st1(cptr.add(g, 101), 2);
     {
-        if (((cptr.ld1u(cptr.add((L), 9))) & (((1 << (3)) | (1 << (4))))))
+        if (((cptr.ld1u(cptr.add((L), 9))) & 24))
             reallymarkobject(g, ((((L)))));
     }
     ;
     {
         (void cptr.ldPtr(cptr.add(g, 264)), (void 0));
-        if ((((cptr.ld1u(cptr.add((cptr.add(g, 64)), 8))) & (1 << 6)) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(g, 64)))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0))
+        if ((((cptr.ld1u(cptr.add((cptr.add(g, 64)), 8))) & 64) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((cptr.add(g, 64)))))), 9))) & 24) ? 1 : 0))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, 64))))));
     }
     ;
@@ -1223,7 +1223,7 @@ function atomic(L) {
     clearbyvalues(g, cptr.ldPtr(cptr.add(g, 152)), origweak);
     clearbyvalues(g, cptr.ldPtr(cptr.add(g, 168)), origall);
     luaS_clearcache(g);
-    cptr.st1(cptr.add(g, 100), (uchar((((cptr.ld1u(cptr.add((g), 100)) ^ ((1 << (3)) | (1 << (4)))))))));
+    cptr.st1(cptr.add(g, 100), (uchar((((cptr.ld1u(cptr.add((g), 100)) ^ 24))))));
     (void 0);
     return work;
 }
@@ -1325,7 +1325,7 @@ export function luaC_runtilstate(L, statesmask) {
 function incstep(L, g) {
     let stepmul = ((Math.imul((cptr.ld1u(cptr.add(g, 109))), 4)) | 1);
     let debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.ldI64(cptr.add(g, 24))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))));
-    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1u(cptr.add(g, 110)) >>> 0) <= (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 8n) - 2n))) ? BigInt.asUintN(64, (BigInt.asUintN(64, ((1n) << BigInt(cptr.ld1u(cptr.add(g, 110))))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : BigInt.asUintN(64, (BigInt.asIntN(64, (((BigInt.asUintN(64, ~0n))) >> 1n))))));
+    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1u(cptr.add(g, 110)) >>> 0) <= 62n) ? BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(cptr.ld1u(cptr.add(g, 110))))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : 9223372036854775807n));
     do {
         let work = singlestep(L);
         debt -= BigInt.asIntN(64, work);
@@ -1342,7 +1342,7 @@ function incstep(L, g) {
 export function luaC_step(L) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
     if (!(cptr.ld1u(cptr.add((g), 106)) == 0))
-        luaE_setdebt(g, BigInt((-2000)));
+        luaE_setdebt(g, -2000n);
     else {
         if ((cptr.ld1u(cptr.add(g, 102)) == 1 || cptr.ldU64(cptr.add(g, 40)) != 0n ? 1 : 0))
             genstep(L, g);
@@ -1355,12 +1355,12 @@ export function luaC_step(L) {
 function fullinc(L, g) {
     if ((cptr.ld1u(cptr.add((g), 101)) <= 2))
         entersweep(L);
-    luaC_runtilstate(L, (1 << (8)));
-    luaC_runtilstate(L, (1 << (0)));
+    luaC_runtilstate(L, 256);
+    luaC_runtilstate(L, 1);
     cptr.st1(cptr.add(g, 101), 1);
-    luaC_runtilstate(L, (1 << (7)));
+    luaC_runtilstate(L, 128);
     (void 0);
-    luaC_runtilstate(L, (1 << (8)));
+    luaC_runtilstate(L, 256);
     setpause(g);
 }
 

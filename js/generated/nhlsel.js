@@ -95,7 +95,7 @@ export function l_selection_check(L, index) {
 function l_selection_gc(L) {
     let sel = l_selection_check(L, 1);
     if (sel)
-        selection_free(sel, (0));
+        selection_free(sel, 0);
     return 0;
 }
 
@@ -103,18 +103,18 @@ function l_selection_gc(L) {
 function l_selection_push_new(L) {
     let tmp = selection_new();
     let sel = lua_newuserdatauv(L, 32n, 1);
-    (lua_getfield(L, ((-1000000 - 1000) | 0), (__sl0)));
+    (lua_getfield(L, -1001000, (__sl0)));
     lua_setmetatable(L, -2);
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtr(cptr.add(sel, 24), dupstr(cptr.ldPtr(cptr.add(tmp, 24))));
-    selection_free(tmp, (1));
+    selection_free(tmp, 1);
     return sel;
 }
 
 /** C ref: nhlsel.c:112 — @param {CPtr} L @param {CPtr} tmp */
 export function l_selection_push_copy(L, tmp) {
     let sel = lua_newuserdatauv(L, 32n, 1);
-    (lua_getfield(L, ((-1000000 - 1000) | 0), (__sl0)));
+    (lua_getfield(L, -1001000, (__sl0)));
     lua_setmetatable(L, -2);
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtr(cptr.add(sel, 24), dupstr(cptr.ldPtr(cptr.add(tmp, 24))));
@@ -142,8 +142,8 @@ function l_selection_clone(L) {
 /** C ref: nhlsel.c:159 — @param {CPtr} L @returns {CInt} */
 function l_selection_setpoint(L) {
     let sel = null;
-    let x = cptr.box(i16((-1)));
-    let y = cptr.box(i16((-1)));
+    let x = cptr.box(-1);
+    let y = cptr.box(-1);
     let val = 1;
     let argc = lua_gettop(L);
     let crd = 0n;
@@ -154,7 +154,7 @@ function l_selection_setpoint(L) {
     } else if (argc == 2) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
-        lua_settop(L, (-(2) - 1) | 0);
+        lua_settop(L, -3);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
     } else {
@@ -168,7 +168,7 @@ function l_selection_setpoint(L) {
         return 0;
     }
     if (x.v == -1 && y.v == -1 ? 1 : 0)
-        crd = (16777216n | 0n);
+        crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
     get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
@@ -203,7 +203,7 @@ function l_selection_getpoint(L) {
     let iy = cptr.box(0n);
     let val;
     let crd;
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
     if (!nhl_get_xy_params(L, ix, iy)) {
         nhl_error(L, __sl3);
         return 0;
@@ -211,7 +211,7 @@ function l_selection_getpoint(L) {
     x.v = Number(BigInt.asIntN(16, ix.v));
     y.v = Number(BigInt.asIntN(16, iy.v));
     if (x.v == -1 && y.v == -1 ? 1 : 0)
-        crd = (16777216n | 0n);
+        crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
     get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
@@ -235,7 +235,7 @@ function l_selection_not(L) {
         void l_selection_clone(L);
         sel2 = l_selection_check(L, 2);
         selection_not(sel2);
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
     }
     return 1;
 }
@@ -254,8 +254,8 @@ function l_selection_and(L) {
             let val = (selection_getpoint(i16(x), i16(y), sela) & selection_getpoint(i16(x), i16(y), selb));
             selection_setpoint(i16(x), i16(y), selr, val);
         }
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
@@ -274,8 +274,8 @@ function l_selection_or(L) {
             selection_setpoint(i16(x), i16(y), selr, val);
         }
     cptr.memcpy(cptr.add(selr, 10), rect, 8);
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
@@ -294,8 +294,8 @@ function l_selection_xor(L) {
             selection_setpoint(i16(x), i16(y), selr, val);
         }
     selection_recalc_bounds(selr);
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
@@ -316,8 +316,8 @@ function l_selection_sub(L) {
             selection_setpoint(i16(x), i16(y), selr, val);
         }
     selection_recalc_bounds(selr);
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-    (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
@@ -330,7 +330,7 @@ function l_selection_filter_percent(L) {
     tmp = selection_filter_percent(sel, p);
     lua_settop(L, (-(argc) - 1) | 0);
     l_selection_push_copy(L, tmp);
-    selection_free(tmp, (1));
+    selection_free(tmp, 1);
     return 1;
 }
 
@@ -338,8 +338,8 @@ function l_selection_filter_percent(L) {
 function l_selection_rndcoord(L) {
     let sel = l_selection_check(L, 1);
     let removeit = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
-    let x = cptr.box(i16((-1)));
-    let y = cptr.box(i16((-1)));
+    let x = cptr.box(-1);
+    let y = cptr.box(-1);
     selection_rndcoord(sel, x, y, schar(removeit));
     if (!(x.v == -1 && y.v == -1 ? 1 : 0)) {
         update_croom();
@@ -369,7 +369,7 @@ function l_selection_room(L) {
     }
     sel = selection_from_mkroom(croom);
     l_selection_push_copy(L, sel);
-    selection_free(sel, (1));
+    selection_free(sel, 1);
     return 1;
 }
 
@@ -397,21 +397,21 @@ function params_sel_2coords(L, sel, x1, y1, x2, y2) {
         cptr.stI16(x2, Number(BigInt.asIntN(16, luaL_checkinteger(L, 3))));
         cptr.stI16(y2, Number(BigInt.asIntN(16, luaL_checkinteger(L, 4))));
         cptr.stPtr(sel, l_selection_check(L, 5));
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-        (lua_rotate(L, (1), -1), lua_settop(L, (-(1) - 1) | 0));
-        return (1);
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
+        (lua_rotate(L, 1, -1), lua_settop(L, -2));
+        return 1;
     } else if (argc == 5) {
         cptr.stPtr(sel, l_selection_check(L, 1));
         cptr.stI16(x1, Number(BigInt.asIntN(16, luaL_checkinteger(L, 2))));
         cptr.stI16(y1, Number(BigInt.asIntN(16, luaL_checkinteger(L, 3))));
         cptr.stI16(x2, Number(BigInt.asIntN(16, luaL_checkinteger(L, 4))));
         cptr.stI16(y2, Number(BigInt.asIntN(16, luaL_checkinteger(L, 5))));
-        lua_settop(L, (-(4) - 1) | 0);
-        return (1);
+        lua_settop(L, -5);
+        return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: nhlsel.c:509 — @param {CPtr} L @returns {CInt} */
@@ -494,14 +494,14 @@ function l_selection_randline(L) {
         x2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 4)));
         y2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 5)));
         roughness = Number(BigInt.asIntN(32, luaL_checkinteger(L, 6)));
-        lua_settop(L, (-(5) - 1) | 0);
+        lua_settop(L, -6);
     } else if (argc == 5 && lua_type(L, 1) == 3 ? 1 : 0) {
         x1.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y1.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         x2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
         y2.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 4)));
         roughness = Number(BigInt.asIntN(32, luaL_checkinteger(L, 5)));
-        lua_settop(L, (-(5) - 1) | 0);
+        lua_settop(L, -6);
         void l_selection_new(L);
         void l_selection_check(L, 1);
     }
@@ -522,7 +522,7 @@ cptr.stPtr(cptr.add(__static_l_selection_grow_growdirs, 32), __sl17);
 cptr.stPtr(cptr.add(__static_l_selection_grow_growdirs, 40), __sl18);
 cptr.stPtr(cptr.add(__static_l_selection_grow_growdirs, 48), null); /** C ref: nhlsel.c:633 — char *[7] (function-static) */
 const __static_l_selection_grow_growdirs2i = cptr.alloc(7 * 4);
-cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 0), (1 | 2 | 4 | 8));
+cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 0), 15);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 4), -1);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 8), 1);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 12), 8);
@@ -538,7 +538,7 @@ function l_selection_grow(L) {
     void l_selection_check(L, 1);
     dir = cptr.ldI32(cptr.add(__static_l_selection_grow_growdirs2i, luaL_checkoption(L, 2, __sl13, __static_l_selection_grow_growdirs), 4));
     if (argc == 2)
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
     void l_selection_clone(L);
     sel = l_selection_check(L, 2);
     selection_do_grow(sel, dir);
@@ -549,16 +549,16 @@ function l_selection_grow(L) {
 function l_selection_filter_mapchar(L) {
     let argc = lua_gettop(L);
     let sel = l_selection_check(L, 1);
-    let mapchr = dupstr((luaL_checklstring(L, (2), null)));
+    let mapchr = dupstr((luaL_checklstring(L, 2, null)));
     let typ = i16(check_mapchr(mapchr));
-    let lit = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, BigInt((-2)))));
+    let lit = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, -2n)));
     let tmp;
     if (typ == 127)
         nhl_error(L, __sl19);
     tmp = selection_filter_mapchar(sel, typ, lit);
     lua_settop(L, (-(argc) - 1) | 0);
     l_selection_push_copy(L, tmp);
-    selection_free(tmp, (1));
+    selection_free(tmp, 1);
     if (mapchr)
         cptr.free(mapchr);
     return 1;
@@ -573,8 +573,8 @@ function l_selection_match(L) {
     let y;
     if (argc == 1) {
         let err;
-        let mapstr = dupstr((luaL_checklstring(L, (1), null)));
-        lua_settop(L, (-(1) - 1) | 0);
+        let mapstr = dupstr((luaL_checklstring(L, 1, null)));
+        lua_settop(L, -2);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
         mf.v = mapfrag_fromstr(mapstr);
@@ -599,7 +599,7 @@ function l_selection_flood(L) {
     let sel = null;
     let x = cptr.box(0);
     let y = cptr.box(0);
-    let diagonals = (0);
+    let diagonals = 0;
     if (argc == 2 || argc == 3 ? 1 : 0) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
@@ -631,7 +631,7 @@ function l_selection_circle(L) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
-        lua_settop(L, (-(3) - 1) | 0);
+        lua_settop(L, -4);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
         filled = 0;
@@ -640,7 +640,7 @@ function l_selection_circle(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
         filled = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
-        lua_settop(L, (-(4) - 1) | 0);
+        lua_settop(L, -5);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
     } else if (argc == 4 || argc == 5 ? 1 : 0) {
@@ -672,7 +672,7 @@ function l_selection_ellipse(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r1 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
         r2 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
-        lua_settop(L, (-(4) - 1) | 0);
+        lua_settop(L, -5);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
         filled = 0;
@@ -682,7 +682,7 @@ function l_selection_ellipse(L) {
         r1 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
         r2 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
         filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 5, 0n)));
-        lua_settop(L, (-(5) - 1) | 0);
+        lua_settop(L, -6);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
     } else if (argc == 5 || argc == 6 ? 1 : 0) {
@@ -716,8 +716,8 @@ function l_selection_gradient(L) {
     let sel = null;
     let x = cptr.box(0);
     let y = cptr.box(0);
-    let x2 = cptr.box(i16((-1)));
-    let y2 = cptr.box(i16((-1)));
+    let x2 = cptr.box(-1);
+    let y2 = cptr.box(-1);
     let mindist = 0;
     let maxdist = 0;
     let type = 0n;
@@ -732,7 +732,7 @@ function l_selection_gradient(L) {
         cvt_to_abscoord(x2, y2);
         maxdist = i16(get_table_int(L, __sl25));
         mindist = i16(get_table_int_opt(L, __sl26, 0));
-        lua_settop(L, (-(1) - 1) | 0);
+        lua_settop(L, -2);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
     } else {
@@ -759,7 +759,7 @@ function l_selection_iterate(L) {
             sel = l_selection_check(L, 1);
             selection_getbounds(sel, rect);
             for (y = cptr.ldI16(cptr.add(rect, 2)); y <= cptr.ldI16(cptr.add(rect, 6)); y++) {
-                for (x = ((1) > (cptr.ldI16(rect)) ? (1) : (cptr.ldI16(rect))); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
+                for (x = (1 > (cptr.ldI16(rect)) ? 1 : (cptr.ldI16(rect))); x <= cptr.ldI16(cptr.add(rect, 4)); x++)
                     if (selection_getpoint(i16(x), i16(y), sel)) {
                         let tmpx = cptr.box(i16(x));
                         let tmpy = cptr.box(i16(y));
@@ -797,87 +797,87 @@ function l_selection_size_description(L) {
 /** C ref: nhlsel.c:981 — struct luaL_Reg[25] */
 const l_selection_methods = cptr.alloc(25 * 16);
 cptr.stPtr(cptr.add(l_selection_methods, 0), __sl30);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 0), 8), l_selection_new);
+cptr.stPtr(cptr.add(l_selection_methods, 8), l_selection_new);
 cptr.stPtr(cptr.add(l_selection_methods, 16), __sl31);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 16), 8), l_selection_clone);
+cptr.stPtr(cptr.add(l_selection_methods, 24), l_selection_clone);
 cptr.stPtr(cptr.add(l_selection_methods, 32), __sl32);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 32), 8), l_selection_getpoint);
+cptr.stPtr(cptr.add(l_selection_methods, 40), l_selection_getpoint);
 cptr.stPtr(cptr.add(l_selection_methods, 48), __sl33);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 48), 8), l_selection_setpoint);
+cptr.stPtr(cptr.add(l_selection_methods, 56), l_selection_setpoint);
 cptr.stPtr(cptr.add(l_selection_methods, 64), __sl34);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 64), 8), l_selection_numpoints);
+cptr.stPtr(cptr.add(l_selection_methods, 72), l_selection_numpoints);
 cptr.stPtr(cptr.add(l_selection_methods, 80), __sl35);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 80), 8), l_selection_not);
+cptr.stPtr(cptr.add(l_selection_methods, 88), l_selection_not);
 cptr.stPtr(cptr.add(l_selection_methods, 96), __sl36);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 96), 8), l_selection_filter_percent);
+cptr.stPtr(cptr.add(l_selection_methods, 104), l_selection_filter_percent);
 cptr.stPtr(cptr.add(l_selection_methods, 112), __sl37);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 112), 8), l_selection_rndcoord);
+cptr.stPtr(cptr.add(l_selection_methods, 120), l_selection_rndcoord);
 cptr.stPtr(cptr.add(l_selection_methods, 128), __sl38);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 128), 8), l_selection_line);
+cptr.stPtr(cptr.add(l_selection_methods, 136), l_selection_line);
 cptr.stPtr(cptr.add(l_selection_methods, 144), __sl39);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 144), 8), l_selection_randline);
+cptr.stPtr(cptr.add(l_selection_methods, 152), l_selection_randline);
 cptr.stPtr(cptr.add(l_selection_methods, 160), __sl40);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 160), 8), l_selection_rect);
+cptr.stPtr(cptr.add(l_selection_methods, 168), l_selection_rect);
 cptr.stPtr(cptr.add(l_selection_methods, 176), __sl41);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 176), 8), l_selection_fillrect);
+cptr.stPtr(cptr.add(l_selection_methods, 184), l_selection_fillrect);
 cptr.stPtr(cptr.add(l_selection_methods, 192), __sl42);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 192), 8), l_selection_fillrect);
+cptr.stPtr(cptr.add(l_selection_methods, 200), l_selection_fillrect);
 cptr.stPtr(cptr.add(l_selection_methods, 208), __sl43);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 208), 8), l_selection_grow);
+cptr.stPtr(cptr.add(l_selection_methods, 216), l_selection_grow);
 cptr.stPtr(cptr.add(l_selection_methods, 224), __sl44);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 224), 8), l_selection_filter_mapchar);
+cptr.stPtr(cptr.add(l_selection_methods, 232), l_selection_filter_mapchar);
 cptr.stPtr(cptr.add(l_selection_methods, 240), __sl45);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 240), 8), l_selection_match);
+cptr.stPtr(cptr.add(l_selection_methods, 248), l_selection_match);
 cptr.stPtr(cptr.add(l_selection_methods, 256), __sl46);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 256), 8), l_selection_flood);
+cptr.stPtr(cptr.add(l_selection_methods, 264), l_selection_flood);
 cptr.stPtr(cptr.add(l_selection_methods, 272), __sl47);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 272), 8), l_selection_circle);
+cptr.stPtr(cptr.add(l_selection_methods, 280), l_selection_circle);
 cptr.stPtr(cptr.add(l_selection_methods, 288), __sl48);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 288), 8), l_selection_ellipse);
+cptr.stPtr(cptr.add(l_selection_methods, 296), l_selection_ellipse);
 cptr.stPtr(cptr.add(l_selection_methods, 304), __sl49);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 304), 8), l_selection_gradient);
+cptr.stPtr(cptr.add(l_selection_methods, 312), l_selection_gradient);
 cptr.stPtr(cptr.add(l_selection_methods, 320), __sl50);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 320), 8), l_selection_iterate);
+cptr.stPtr(cptr.add(l_selection_methods, 328), l_selection_iterate);
 cptr.stPtr(cptr.add(l_selection_methods, 336), __sl51);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 336), 8), l_selection_getbounds);
+cptr.stPtr(cptr.add(l_selection_methods, 344), l_selection_getbounds);
 cptr.stPtr(cptr.add(l_selection_methods, 352), __sl52);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 352), 8), l_selection_room);
+cptr.stPtr(cptr.add(l_selection_methods, 360), l_selection_room);
 cptr.stPtr(cptr.add(l_selection_methods, 368), __sl53);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 368), 8), l_selection_size_description);
+cptr.stPtr(cptr.add(l_selection_methods, 376), l_selection_size_description);
 cptr.stPtr(cptr.add(l_selection_methods, 384), null);
-cptr.stPtr(cptr.add(cptr.add(l_selection_methods, 384), 8), null);
+cptr.stPtr(cptr.add(l_selection_methods, 392), null);
 
 /** C ref: nhlsel.c:1009 — luaL_Reg[9] */
 const l_selection_meta = cptr.alloc(9 * 16);
 cptr.stPtr(cptr.add(l_selection_meta, 0), __sl54);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 0), 8), l_selection_gc);
+cptr.stPtr(cptr.add(l_selection_meta, 8), l_selection_gc);
 cptr.stPtr(cptr.add(l_selection_meta, 16), __sl55);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 16), 8), l_selection_not);
+cptr.stPtr(cptr.add(l_selection_meta, 24), l_selection_not);
 cptr.stPtr(cptr.add(l_selection_meta, 32), __sl56);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 32), 8), l_selection_and);
+cptr.stPtr(cptr.add(l_selection_meta, 40), l_selection_and);
 cptr.stPtr(cptr.add(l_selection_meta, 48), __sl57);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 48), 8), l_selection_or);
+cptr.stPtr(cptr.add(l_selection_meta, 56), l_selection_or);
 cptr.stPtr(cptr.add(l_selection_meta, 64), __sl58);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 64), 8), l_selection_xor);
+cptr.stPtr(cptr.add(l_selection_meta, 72), l_selection_xor);
 cptr.stPtr(cptr.add(l_selection_meta, 80), __sl59);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 80), 8), l_selection_not);
+cptr.stPtr(cptr.add(l_selection_meta, 88), l_selection_not);
 cptr.stPtr(cptr.add(l_selection_meta, 96), __sl60);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 96), 8), l_selection_or);
+cptr.stPtr(cptr.add(l_selection_meta, 104), l_selection_or);
 cptr.stPtr(cptr.add(l_selection_meta, 112), __sl61);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 112), 8), l_selection_sub);
+cptr.stPtr(cptr.add(l_selection_meta, 120), l_selection_sub);
 cptr.stPtr(cptr.add(l_selection_meta, 128), null);
-cptr.stPtr(cptr.add(cptr.add(l_selection_meta, 128), 8), null);
+cptr.stPtr(cptr.add(l_selection_meta, 136), null);
 
 /** C ref: nhlsel.c:1025 — @param {CPtr} L @returns {CInt} */
 export function l_selection_register(L) {
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n)))), luaL_setfuncs(L, l_selection_methods, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n)))), luaL_setfuncs(L, l_selection_methods, 0));
     luaL_newmetatable(L, __sl0);
     luaL_setfuncs(L, l_selection_meta, 0);
     lua_pushvalue(L, -2);
     lua_setfield(L, -2, __sl62);
-    (luaL_checkversion_(L, 504, (BigInt.asUintN(64, BigInt.asUintN(64, 8n * 16n) + 8n))), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, l_selection_meta, 0));
+    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, l_selection_meta, 0));
     lua_setfield(L, -2, __sl63);
-    lua_settop(L, (-(1) - 1) | 0);
+    lua_settop(L, -2);
     lua_setglobal(L, __sl0);
     return 0;
 }

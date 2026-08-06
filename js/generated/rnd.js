@@ -121,7 +121,7 @@ const __sl17 = cptr.lit("rnz");
 let rng_logfile = null;
 
 /** C ref: rnd.c:31 — signed char */
-let rng_log_disp = (0);
+let rng_log_disp = 0;
 
 /** C ref: rnd.c:32 — int */
 let rng_call_count = 0;
@@ -189,11 +189,11 @@ export const DISP = 1;
 /** C ref: rnd.c:114 — struct rnglist_t[2] */
 const rnglist = cptr.alloc(2 * 4144);
 cptr.stPtr(cptr.add(rnglist, 0), rn2);
-cptr.st1(cptr.add(cptr.add(rnglist, 0), 8), (0));
-cptr.stI32(cptr.add(cptr.add(rnglist, 0), 16), 0);
+cptr.st1(cptr.add(rnglist, 8), 0);
+cptr.stI32(cptr.add(rnglist, 16), 0);
 cptr.stPtr(cptr.add(rnglist, 4144), rn2_on_display_rng);
-cptr.st1(cptr.add(cptr.add(rnglist, 4144), 8), (0));
-cptr.stI32(cptr.add(cptr.add(rnglist, 4144), 16), 0);
+cptr.st1(cptr.add(rnglist, 4152), 0);
+cptr.stI32(cptr.add(rnglist, 4160), 0);
 
 /** C ref: rnd.c:120 — @param {CPtr} fn @returns {CInt} */
 function whichrng(fn) {

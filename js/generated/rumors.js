@@ -182,7 +182,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
             exercise(2, schar((adjtruth > 0)));
     } else {
         couldnt_open_file(__sl0);
-        cptr.stI64(cptr.add(gt, 400), BigInt((-1)));
+        cptr.stI64(cptr.add(gt, 400), -1n);
     }
     if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0) {
         let src = cptr.add(rumor_buf, marklen);
@@ -201,7 +201,7 @@ export function rumor_check() {
     let __go_no_rumors = false;
     __skip_no_rumors: {
         let rumors;
-        tmpwin.v = (-1);
+        tmpwin.v = -1;
         let endp;
         let line = new Uint8Array(256);
         let xbuf = new Uint8Array(256);
@@ -255,18 +255,18 @@ export function rumor_check() {
             __go_no_rumors = true; break __skip_no_rumors;
         } else {
             couldnt_open_file(__sl0);
-            cptr.stI64(cptr.add(gt, 400), BigInt((-1)));
+            cptr.stI64(cptr.add(gt, 400), -1n);
         }
     }
     if (__go_no_rumors) {
         pline(__sl15);
-        (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
     }
     others_check(__sl16, __sl17, tmpwin);
     others_check(__sl18, __sl19, tmpwin);
     others_check(__sl20, __sl21, tmpwin);
-    if (tmpwin.v != (-1)) {
-        (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin.v, (1));
+    if (tmpwin.v != -1) {
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin.v, 1);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin.v);
     }
 }
@@ -284,9 +284,9 @@ function others_check(ftype, fname, winptr) {
     fh = fopen(fname, __sl1);
     if (fh) {
         __lbl_closeit: {
-            if (tmpwin == (-1)) {
+            if (tmpwin == -1) {
                 cptr.stI32(winptr, tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5));
-                if (tmpwin == (-1)) {
+                if (tmpwin == -1) {
                     impossible(cptr.decay(__static_others_check_errfmt), fname, __sl22);
                     break __lbl_closeit;
                 }
@@ -378,7 +378,7 @@ function get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     }
     if ((newl = cptr.strchr(buf, 10)) !== null)
         cptr.st1(newl, 0);
-    xbufp = (cptr.strlen(buf) <= BigInt.asUintN(64, 256n - 1n)) ? cptr.add(cptr.decay(xbuf), 0, 1) : alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0);
+    xbufp = (cptr.strlen(buf) <= 255n) ? cptr.add(cptr.decay(xbuf), 0, 1) : alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0);
     void cptr.strcpy(buf, xcrypt(buf, xbufp));
     if (!cptr.eq(xbufp, cptr.add(cptr.decay(xbuf), 0, 1)))
         cptr.free(xbufp);
@@ -463,7 +463,7 @@ function init_oracles(fp) {
 /** C ref: rumors.c:598 — @param {CPtr} nhfp */
 export function save_oracles(nhfp) {
     let i;
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         sfo_unsigned(nhfp, svo, __sl44);
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
@@ -534,7 +534,7 @@ export function outoracle(special, delphi) {
                     cptr.st1(endp, 0);
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             }
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, 1);
             (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
         }
         void fclose(oracles);
@@ -565,7 +565,7 @@ export function doconsult(oracl) {
         return 0;
     }
     void cptr.sprintf(cptr.decay(qbuf), __sl55, minor_cost, currency(BigInt(minor_cost)));
-    switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1))) {
+    switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
         default:
         case 113:
         return 0;
@@ -580,27 +580,27 @@ export function doconsult(oracl) {
         if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32(cptr.add(go, 552)) < 0 ? 1 : 0) ? 1 : 0)
             return 0;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, currency(BigInt(major_cost)));
-        if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, (1)) != 121)
+        if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
             return 0;
         u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
         break;
     }
     money2mon(oracl, BigInt(u_pay));
-    cptr.st1(disp, (1));
-    if (!(cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) && !(cptr.ldI32(cptr.add(u, 1884)) & 1) ? 1 : 0)
+    cptr.st1(disp, 1);
+    if (!(cptr.ldI32(cptr.add(u, 1888)) & 1) && !(cptr.ldI32(cptr.add(u, 1884)) & 1) ? 1 : 0)
         record_achievement(19);
     add_xpts = 0;
     if (u_pay == minor_cost) {
         outrumor(1, 0);
         if (!(cptr.ldI32(cptr.add(u, 1884)) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) | 0 ? 25 : 10)) | 0;
+            add_xpts = (u_pay / ((cptr.ldI32(cptr.add(u, 1888)) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(u, 1884), 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
-        outoracle(cheapskate, (1));
-        if (!cheapskate && !(cptr.ldI32(cptr.add(cptr.add(u, 1884), 4)) & 1) ? 1 : 0)
+        outoracle(cheapskate, 1);
+        if (!cheapskate && !(cptr.ldI32(cptr.add(u, 1888)) & 1) ? 1 : 0)
             add_xpts = (u_pay / ((cptr.ldI32(cptr.add(u, 1884)) & 1) | 0 ? 25 : 10)) | 0;
-        cptr.stI32(cptr.add(cptr.add(u, 1884), 4), 1);
+        cptr.stI32(cptr.add(u, 1888), 1);
         exercise(2, schar((!cheapskate)));
     }
     if (add_xpts) {
@@ -626,7 +626,7 @@ export function CapitalMon(word) {
     let wln;
     let nln;
     if ((!word || !cptr.ld1s(word) ? 1 : 0) || cptr.ld1s(word) == lowc(cptr.ld1s(word)) ? 1 : 0)
-        return (0);
+        return 0;
     if (!CapMons)
         init_CapMons();
     (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__sl59, __sl60, 803, __sl61) : void 0);
@@ -637,9 +637,9 @@ export function CapitalMon(word) {
         if (wln < nln)
             continue;
         if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && ((!cptr.ld1s(cptr.add(word, nln)) || cptr.ld1s(cptr.add(word, nln)) == 32 ? 1 : 0) || cptr.ld1s(cptr.add(word, nln)) == 39 ? 1 : 0) ? 1 : 0)
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: rumors.c:829 */
@@ -700,7 +700,7 @@ function init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl62, (0)) ? 1 : 0) {
+    if (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl62, 0) ? 1 : 0) {
         let buf = new Uint8Array(256);
         let i;
         let tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
@@ -709,7 +709,7 @@ function init_CapMons() {
             void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtr(cptr.add(CapMons, i, 8)));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
         }
-        (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, (1));
+        (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, 1);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     }
     return;

@@ -169,20 +169,20 @@ export function status_version(buf, bufsz, indent) {
     let showname = schar((((vflags & 2) >>> 0) != 0));
     let showbranch = schar((((vflags & 4) >>> 0) != 0));
     if (showname) {
-        name = nh_basename(cptr.ldPtr(gh), (0));
+        name = nh_basename(cptr.ldPtr(gh), 0);
         if (!name || !cptr.ld1s(name) ? 1 : 0)
-            showname = (0);
+            showname = 0;
     }
     if (showbranch) {
         altname = cptr.ldPtr(cptr.add(nomakedefs, 24));
         if (!altname || !cptr.ld1s(altname) ? 1 : 0)
-            showbranch = (0);
+            showbranch = 0;
     }
     if (showname && showbranch ? 1 : 0) {
         if (!strncmpi(name, altname, Number(BigInt.asIntN(32, cptr.strlen(name)))))
-            showname = (0);
+            showname = 0;
     } else if (!showname && !showbranch ? 1 : 0) {
-        shownum = (1);
+        shownum = 1;
     }
     cptr.st1(buf, 0);
     indentation = indent ? __sl10 : __sl7;
@@ -217,11 +217,11 @@ export function doextversion() {
     let buf = new Uint8Array(256);
     let p = null;
     let win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
-    let use_dlb = (1);
-    let done_rt = (0);
-    let done_dlb = (0);
+    let use_dlb = 1;
+    let done_rt = 0;
+    let done_dlb = 0;
     let prolog;
-    use_dlb = (0);
+    use_dlb = 0;
     void getversionstring(cptr.decay(buf), 256n);
     if (cptr.strlen(cptr.decay(buf)) >= 80n)
         p = cptr.strrchr(cptr.decay(buf), 40);
@@ -240,23 +240,23 @@ export function doextversion() {
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl7);
             void cptr.sprintf(cptr.decay(buf), __sl14, __sl12);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
-            done_dlb = (1);
+            done_dlb = 1;
         }
     }
-    prolog = (1);
+    prolog = 1;
     for (; ; ) {
         if (use_dlb && !done_dlb ? 1 : 0) {
             if (!fgets(cptr.decay(buf), 256, f)) {
-                done_dlb = (1);
+                done_dlb = 1;
                 continue;
             }
         } else if (!done_rt) {
             if (!(rtbuf = do_runtime_info(rtcontext))) {
-                done_rt = (1);
+                done_rt = 1;
                 continue;
             }
-            void __builtin___strncpy_chk(cptr.decay(buf), rtbuf, BigInt.asUintN(64, BigInt(((256 - 1) | 0))), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-            cptr.st1(cptr.add(cptr.decay(buf), (256 - 1) | 0, 1), 0);
+            void __builtin___strncpy_chk(cptr.decay(buf), rtbuf, 255n, __builtin_object_size(cptr.decay(buf), 1));
+            cptr.st1(cptr.add(cptr.decay(buf), 255, 1), 0);
         } else {
             break;
         }
@@ -265,7 +265,7 @@ export function doextversion() {
             void tabexpand(cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32 ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl7);
-            prolog = (0);
+            prolog = 0;
         }
         if (prolog || !cptr.ld1s(cptr.decay(buf)) ? 1 : 0)
             continue;
@@ -276,7 +276,7 @@ export function doextversion() {
     }
     if (use_dlb)
         void fclose(f);
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, (0));
+    (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     return 0;
 }
@@ -308,11 +308,11 @@ export function early_version_info(pastebuf) {
 /** C ref: version.c:326 — struct rt_opt[3] */
 const rt_opts = cptr.alloc(3 * 16);
 cptr.stPtr(cptr.add(rt_opts, 0), __sl18);
-cptr.stPtr(cptr.add(cptr.add(rt_opts, 0), 8), cptr.decay(regex_id));
+cptr.stPtr(cptr.add(rt_opts, 8), cptr.decay(regex_id));
 cptr.stPtr(cptr.add(rt_opts, 16), __sl19);
-cptr.stPtr(cptr.add(cptr.add(rt_opts, 16), 8), cptr.add(gl, 552));
+cptr.stPtr(cptr.add(rt_opts, 24), cptr.add(gl, 552));
 cptr.stPtr(cptr.add(rt_opts, 32), __sl20);
-cptr.stPtr(cptr.add(cptr.add(rt_opts, 32), 8), cptr.add(gl, 572));
+cptr.stPtr(cptr.add(rt_opts, 40), cptr.add(gl, 572));
 
 /** C ref: version.c:339 — @param {CPtr} buf */
 function insert_rtoption(buf) {
@@ -329,27 +329,27 @@ function insert_rtoption(buf) {
 /** C ref: version.c:374 — @param {CPtr} version_data @param {CPtr} filename @param {CInt} complain @param {CLongLong} utdflags @returns {CInt} */
 export function check_version(version_data, filename, complain, utdflags) {
     if (!filename) {
-        complain = (0);
+        complain = 0;
     }
-    if ((cptr.ldU64(cptr.add(version_data, 8)) & (1n << 30n)) != 0n) {
-        cptr.st1(cptr.add(gc, 578), (1));
-        cptr.stU64(cptr.add(version_data, 8), cptr.ldU64(cptr.add(version_data, 8)) & BigInt.asUintN(64, ~((1n << 30n))));
+    if ((cptr.ldU64(cptr.add(version_data, 8)) & 1073741824n) != 0n) {
+        cptr.st1(cptr.add(gc, 578), 1);
+        cptr.stU64(cptr.add(version_data, 8), cptr.ldU64(cptr.add(version_data, 8)) & 18446744072635809791n);
     }
     if (cptr.ldU64(version_data) != cptr.ldU64(cptr.add(nomakedefs, 56))) {
         if (complain) {
             pline(__sl21, filename);
-            if (WIN_MESSAGE.v != (-1))
-                (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
+            if (WIN_MESSAGE.v != -1)
+                (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
         }
-        return (0);
+        return 0;
     } else if ((cptr.ldU64(cptr.add(version_data, 8)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(nomakedefs, 72)))) != (cptr.ldU64(cptr.add(nomakedefs, 64)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(nomakedefs, 72)))) || ((utdflags & 4n) == 0n && cptr.ldU64(cptr.add(version_data, 16)) != cptr.ldU64(cptr.add(nomakedefs, 80)) ? 1 : 0) ? 1 : 0) {
         if (complain) {
             pline(__sl22, filename);
-            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, (1));
+            (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
         }
-        return (0);
+        return 0;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: version.c:431 — @param {CPtr} str @returns {CLongLong} */
@@ -381,12 +381,12 @@ export function get_feature_notice_ver(str) {
     ver_maj = atoi(cptr.ldPtr(cptr.add(istr, 0, 8)));
     ver_min = atoi(cptr.ldPtr(cptr.add(istr, 1, 8)));
     patch = atoi(cptr.ldPtr(cptr.add(istr, 2, 8)));
-    return ((BigInt.asUintN(64, BigInt(ver_maj)) << 24n) | (BigInt.asUintN(64, BigInt(ver_min)) << 16n) | (BigInt.asUintN(64, BigInt(patch)) << 8n) | (0n));
+    return ((BigInt.asUintN(64, BigInt(ver_maj)) << 24n) | (BigInt.asUintN(64, BigInt(ver_min)) << 16n) | (BigInt.asUintN(64, BigInt(patch)) << 8n) | 0n);
 }
 
 /** C ref: version.c:464 @returns {CLongLong} */
 export function get_current_feature_ver() {
-    return ((5n << 24n) | (0n << 16n) | (0n << 8n) | (0n));
+    return 83886080n;
 }
 
 /** C ref: version.c:471 — @param {CInt} indx @returns {CPtr} */
@@ -435,165 +435,165 @@ export function store_version(nhfp) {
 /** C ref: version.c:546 — struct critical_sizes_with_names[80] */
 export const critical_sizes = cptr.alloc(80 * 16);
 cptr.st1(cptr.add(critical_sizes, 0), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 0), 8), __sl31);
+cptr.stPtr(cptr.add(critical_sizes, 8), __sl31);
 cptr.st1(cptr.add(critical_sizes, 16), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 16), 8), __sl32);
+cptr.stPtr(cptr.add(critical_sizes, 24), __sl32);
 cptr.st1(cptr.add(critical_sizes, 32), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 32), 8), __sl33);
+cptr.stPtr(cptr.add(critical_sizes, 40), __sl33);
 cptr.st1(cptr.add(critical_sizes, 48), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 48), 8), __sl34);
+cptr.stPtr(cptr.add(critical_sizes, 56), __sl34);
 cptr.st1(cptr.add(critical_sizes, 64), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 64), 8), __sl35);
+cptr.stPtr(cptr.add(critical_sizes, 72), __sl35);
 cptr.st1(cptr.add(critical_sizes, 80), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 80), 8), __sl36);
+cptr.stPtr(cptr.add(critical_sizes, 88), __sl36);
 cptr.st1(cptr.add(critical_sizes, 96), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 96), 8), __sl37);
+cptr.stPtr(cptr.add(critical_sizes, 104), __sl37);
 cptr.st1(cptr.add(critical_sizes, 112), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 112), 8), __sl38);
+cptr.stPtr(cptr.add(critical_sizes, 120), __sl38);
 cptr.st1(cptr.add(critical_sizes, 128), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 128), 8), __sl39);
+cptr.stPtr(cptr.add(critical_sizes, 136), __sl39);
 cptr.st1(cptr.add(critical_sizes, 144), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 144), 8), __sl40);
+cptr.stPtr(cptr.add(critical_sizes, 152), __sl40);
 cptr.st1(cptr.add(critical_sizes, 160), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 160), 8), __sl41);
+cptr.stPtr(cptr.add(critical_sizes, 168), __sl41);
 cptr.st1(cptr.add(critical_sizes, 176), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 176), 8), __sl42);
+cptr.stPtr(cptr.add(critical_sizes, 184), __sl42);
 cptr.st1(cptr.add(critical_sizes, 192), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 192), 8), __sl43);
+cptr.stPtr(cptr.add(critical_sizes, 200), __sl43);
 cptr.st1(cptr.add(critical_sizes, 208), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 208), 8), __sl44);
+cptr.stPtr(cptr.add(critical_sizes, 216), __sl44);
 cptr.st1(cptr.add(critical_sizes, 224), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 224), 8), __sl45);
+cptr.stPtr(cptr.add(critical_sizes, 232), __sl45);
 cptr.st1(cptr.add(critical_sizes, 240), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 240), 8), __sl46);
+cptr.stPtr(cptr.add(critical_sizes, 248), __sl46);
 cptr.st1(cptr.add(critical_sizes, 256), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 256), 8), __sl47);
+cptr.stPtr(cptr.add(critical_sizes, 264), __sl47);
 cptr.st1(cptr.add(critical_sizes, 272), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 272), 8), __sl48);
+cptr.stPtr(cptr.add(critical_sizes, 280), __sl48);
 cptr.st1(cptr.add(critical_sizes, 288), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 288), 8), __sl49);
+cptr.stPtr(cptr.add(critical_sizes, 296), __sl49);
 cptr.st1(cptr.add(critical_sizes, 304), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 304), 8), __sl50);
+cptr.stPtr(cptr.add(critical_sizes, 312), __sl50);
 cptr.st1(cptr.add(critical_sizes, 320), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 320), 8), __sl51);
+cptr.stPtr(cptr.add(critical_sizes, 328), __sl51);
 cptr.st1(cptr.add(critical_sizes, 336), 2);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 336), 8), __sl52);
+cptr.stPtr(cptr.add(critical_sizes, 344), __sl52);
 cptr.st1(cptr.add(critical_sizes, 352), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 352), 8), __sl53);
+cptr.stPtr(cptr.add(critical_sizes, 360), __sl53);
 cptr.st1(cptr.add(critical_sizes, 368), 36);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 368), 8), __sl54);
+cptr.stPtr(cptr.add(critical_sizes, 376), __sl54);
 cptr.st1(cptr.add(critical_sizes, 384), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 384), 8), __sl55);
+cptr.stPtr(cptr.add(critical_sizes, 392), __sl55);
 cptr.st1(cptr.add(critical_sizes, 400), 32);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 400), 8), __sl56);
+cptr.stPtr(cptr.add(critical_sizes, 408), __sl56);
 cptr.st1(cptr.add(critical_sizes, 416), 40);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 416), 8), __sl57);
+cptr.stPtr(cptr.add(critical_sizes, 424), __sl57);
 cptr.st1(cptr.add(critical_sizes, 432), 184);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 432), 8), __sl58);
+cptr.stPtr(cptr.add(critical_sizes, 440), __sl58);
 cptr.st1(cptr.add(critical_sizes, 448), 208);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 448), 8), __sl59);
+cptr.stPtr(cptr.add(critical_sizes, 456), __sl59);
 cptr.st1(cptr.add(critical_sizes, 464), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 464), 8), __sl60);
+cptr.stPtr(cptr.add(critical_sizes, 472), __sl60);
 cptr.st1(cptr.add(critical_sizes, 480), 32);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 480), 8), __sl61);
+cptr.stPtr(cptr.add(critical_sizes, 488), __sl61);
 cptr.st1(cptr.add(critical_sizes, 496), 16);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 496), 8), __sl62);
+cptr.stPtr(cptr.add(critical_sizes, 504), __sl62);
 cptr.st1(cptr.add(critical_sizes, 512), 114);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 512), 8), __sl63);
+cptr.stPtr(cptr.add(critical_sizes, 520), __sl63);
 cptr.st1(cptr.add(critical_sizes, 528), 112);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 528), 8), __sl64);
+cptr.stPtr(cptr.add(critical_sizes, 536), __sl64);
 cptr.st1(cptr.add(critical_sizes, 544), 4);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 544), 8), __sl65);
+cptr.stPtr(cptr.add(critical_sizes, 552), __sl65);
 cptr.st1(cptr.add(critical_sizes, 560), 36);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 560), 8), __sl66);
+cptr.stPtr(cptr.add(critical_sizes, 568), __sl66);
 cptr.st1(cptr.add(critical_sizes, 576), 64);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 576), 8), __sl67);
+cptr.stPtr(cptr.add(critical_sizes, 584), __sl67);
 cptr.st1(cptr.add(critical_sizes, 592), 140);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 592), 8), __sl68);
+cptr.stPtr(cptr.add(critical_sizes, 600), __sl68);
 cptr.st1(cptr.add(critical_sizes, 608), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 608), 8), __sl69);
+cptr.stPtr(cptr.add(critical_sizes, 616), __sl69);
 cptr.st1(cptr.add(critical_sizes, 624), 80);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 624), 8), __sl70);
+cptr.stPtr(cptr.add(critical_sizes, 632), __sl70);
 cptr.st1(cptr.add(critical_sizes, 640), 56);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 640), 8), __sl71);
+cptr.stPtr(cptr.add(critical_sizes, 648), __sl71);
 cptr.st1(cptr.add(critical_sizes, 656), 96);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 656), 8), __sl72);
+cptr.stPtr(cptr.add(critical_sizes, 664), __sl72);
 cptr.st1(cptr.add(critical_sizes, 672), 48);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 672), 8), __sl73);
+cptr.stPtr(cptr.add(critical_sizes, 680), __sl73);
 cptr.st1(cptr.add(critical_sizes, 688), 208);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 688), 8), __sl74);
+cptr.stPtr(cptr.add(critical_sizes, 696), __sl74);
 cptr.st1(cptr.add(critical_sizes, 704), 48);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 704), 8), __sl75);
+cptr.stPtr(cptr.add(critical_sizes, 712), __sl75);
 cptr.st1(cptr.add(critical_sizes, 720), 32);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 720), 8), __sl76);
+cptr.stPtr(cptr.add(critical_sizes, 728), __sl76);
 cptr.st1(cptr.add(critical_sizes, 736), 16);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 736), 8), __sl77);
+cptr.stPtr(cptr.add(critical_sizes, 744), __sl77);
 cptr.st1(cptr.add(critical_sizes, 752), 128);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 752), 8), __sl78);
+cptr.stPtr(cptr.add(critical_sizes, 760), __sl78);
 cptr.st1(cptr.add(critical_sizes, 768), 32);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 768), 8), __sl79);
+cptr.stPtr(cptr.add(critical_sizes, 776), __sl79);
 cptr.st1(cptr.add(critical_sizes, 784), 1);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 784), 8), __sl80);
+cptr.stPtr(cptr.add(critical_sizes, 792), __sl80);
 cptr.st1(cptr.add(critical_sizes, 800), 52);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 800), 8), __sl81);
+cptr.stPtr(cptr.add(critical_sizes, 808), __sl81);
 cptr.st1(cptr.add(critical_sizes, 816), 64);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 816), 8), __sl82);
+cptr.stPtr(cptr.add(critical_sizes, 824), __sl82);
 cptr.st1(cptr.add(critical_sizes, 832), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 832), 8), __sl83);
+cptr.stPtr(cptr.add(critical_sizes, 840), __sl83);
 cptr.st1(cptr.add(critical_sizes, 848), 64);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 848), 8), __sl84);
+cptr.stPtr(cptr.add(critical_sizes, 856), __sl84);
 cptr.st1(cptr.add(critical_sizes, 864), 224);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 864), 8), __sl85);
+cptr.stPtr(cptr.add(critical_sizes, 872), __sl85);
 cptr.st1(cptr.add(critical_sizes, 880), 64);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 880), 8), __sl86);
+cptr.stPtr(cptr.add(critical_sizes, 888), __sl86);
 cptr.st1(cptr.add(critical_sizes, 896), 12);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 896), 8), __sl87);
+cptr.stPtr(cptr.add(critical_sizes, 904), __sl87);
 cptr.st1(cptr.add(critical_sizes, 912), 216);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 912), 8), __sl88);
+cptr.stPtr(cptr.add(critical_sizes, 920), __sl88);
 cptr.st1(cptr.add(critical_sizes, 928), 120);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 928), 8), __sl89);
+cptr.stPtr(cptr.add(critical_sizes, 936), __sl89);
 cptr.st1(cptr.add(critical_sizes, 944), 32);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 944), 8), __sl90);
+cptr.stPtr(cptr.add(critical_sizes, 952), __sl90);
 cptr.st1(cptr.add(critical_sizes, 960), 88);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 960), 8), __sl91);
+cptr.stPtr(cptr.add(critical_sizes, 968), __sl91);
 cptr.st1(cptr.add(critical_sizes, 976), 36);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 976), 8), __sl92);
+cptr.stPtr(cptr.add(critical_sizes, 984), __sl92);
 cptr.st1(cptr.add(critical_sizes, 992), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 992), 8), __sl93);
+cptr.stPtr(cptr.add(critical_sizes, 1000), __sl93);
 cptr.st1(cptr.add(critical_sizes, 1008), 24);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1008), 8), __sl94);
+cptr.stPtr(cptr.add(critical_sizes, 1016), __sl94);
 cptr.st1(cptr.add(critical_sizes, 1024), 56);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1024), 8), __sl95);
+cptr.stPtr(cptr.add(critical_sizes, 1032), __sl95);
 cptr.st1(cptr.add(critical_sizes, 1040), 40);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1040), 8), __sl96);
+cptr.stPtr(cptr.add(critical_sizes, 1048), __sl96);
 cptr.st1(cptr.add(critical_sizes, 1056), 24);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1056), 8), __sl97);
+cptr.stPtr(cptr.add(critical_sizes, 1064), __sl97);
 cptr.st1(cptr.add(critical_sizes, 1072), 8);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1072), 8), __sl98);
-cptr.st1(cptr.add(critical_sizes, 1088), Number(BigInt.asUintN(8, ((2864n & 255n)))));
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1088), 8), __sl99);
-cptr.st1(cptr.add(critical_sizes, 1104), Number(BigInt.asUintN(8, ((2864n & 65280n) >> 8n))));
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1104), 8), __sl100);
+cptr.stPtr(cptr.add(critical_sizes, 1080), __sl98);
+cptr.st1(cptr.add(critical_sizes, 1088), 48);
+cptr.stPtr(cptr.add(critical_sizes, 1096), __sl99);
+cptr.st1(cptr.add(critical_sizes, 1104), 11);
+cptr.stPtr(cptr.add(critical_sizes, 1112), __sl100);
 cptr.st1(cptr.add(critical_sizes, 1120), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1120), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1128), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1136), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1136), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1144), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1152), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1152), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1160), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1168), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1168), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1176), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1184), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1184), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1192), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1200), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1200), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1208), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1216), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1216), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1224), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1232), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1232), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1240), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1248), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1248), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1256), __sl7);
 cptr.st1(cptr.add(critical_sizes, 1264), 0);
-cptr.stPtr(cptr.add(cptr.add(critical_sizes, 1264), 8), __sl7);
+cptr.stPtr(cptr.add(critical_sizes, 1272), __sl7);
 
 /** C ref: version.c:666 — unsigned char[80] */
 export const cscbuf = new Uint8Array(80);
@@ -699,7 +699,7 @@ export function validate(nhfp, name, without_waitsynch_perfile) {
     if (without_waitsynch_perfile)
         utdflags |= 16n;
     if (cptr.ld1s(cptr.add(nhfp, 33)))
-        utdflags |= BigInt.asUintN(64, BigInt((2 | 4)));
+        utdflags |= 6n;
     validsf = uptodate(nhfp, name, utdflags);
     return validsf;
 }

@@ -159,10 +159,10 @@ const __sl129 = cptr.lit("sysconf");
 const __sl130 = cptr.lit("Unable to open SYSCF_FILE.\n");
 
 /** C ref: cfgfiles.c:113 — signed char */
-let ignore_errors_on_unmatched = (0);
+let ignore_errors_on_unmatched = 0;
 
 /** C ref: cfgfiles.c:114 — signed char */
-let ignore_statement_errors = (0);
+let ignore_statement_errors = 0;
 
 /** C ref: cfgfiles.c:126 — char * */
 let default_configfile = __sl0;
@@ -188,7 +188,7 @@ export function do_write_config_file() {
         pline(__sl1);
         return 0;
     }
-    if (cptr.ldU64(cptr.add(flags, 72)) < ((3n << 24n) | (7n << 16n) | (0n << 8n) | (0n))) {
+    if (cptr.ldU64(cptr.add(flags, 72)) < 50790400n) {
         pline(__sl2);
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
         pline(__sl3);
@@ -196,8 +196,8 @@ export function do_write_config_file() {
         pline(__sl4);
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
     }
-    void cptr.sprintf(cptr.decay(tmp), __sl5, Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 256n - 28n) - 2n)))), cptr.decay(configfile));
-    if (!paranoid_query((1), cptr.decay(tmp)))
+    void cptr.sprintf(cptr.decay(tmp), __sl5, 226, cptr.decay(configfile));
+    if (!paranoid_query(1, cptr.decay(tmp)))
         return 0;
     fp = fopen(cptr.decay(configfile), __sl6);
     if (fp) {
@@ -218,8 +218,8 @@ export function do_write_config_file() {
 
 /** C ref: cfgfiles.c:216 — @param {CPtr} fname */
 export function set_configfile_name(fname) {
-    void __builtin___strncpy_chk(cptr.decay(configfile), fname, BigInt.asUintN(64, 256n - 1n), __builtin_object_size(cptr.decay(configfile), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(configfile), BigInt.asUintN(64, 256n - 1n), 1), 0);
+    void __builtin___strncpy_chk(cptr.decay(configfile), fname, 255n, __builtin_object_size(cptr.decay(configfile), 1));
+    cptr.st1(cptr.add(cptr.decay(configfile), 255n, 1), 0);
 }
 
 /** C ref: cfgfiles.c:223 — @param {CPtr} filename @param {CInt} src @returns {CPtr} */
@@ -287,7 +287,7 @@ function fopen_config_file(filename, src) {
 function get_uchars(bufp, list, modlist, size, name) {
     let num = 0;
     let count = 0;
-    let havenum = (0);
+    let havenum = 0;
     while (1) {
         switch (cptr.ld1s(bufp)) {
             case 32:
@@ -299,7 +299,7 @@ function get_uchars(bufp, list, modlist, size, name) {
                     cptr.st1(cptr.add(list, count), uchar(num));
                 count++;
                 num = 0;
-                havenum = (0);
+                havenum = 0;
             }
             if (count == size || !cptr.ld1s(bufp) ? 1 : 0)
                 return count;
@@ -315,7 +315,7 @@ function get_uchars(bufp, list, modlist, size, name) {
             case 55:
             case 56:
             case 57:
-            havenum = (1);
+            havenum = 1;
             num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
             bufp = cptr.add(bufp, 1);
             break;
@@ -408,12 +408,12 @@ function handle_config_section(buf) {
             cptr.free(cptr.ldPtr(cptr.add(gc, 448))), cptr.stPtr(cptr.add(gc, 448), null);
         if (!cptr.ldPtr(cptr.add(gc, 440))) {
             config_error_add(__sl22, sect);
-            return (1);
+            return 1;
         }
         if (cptr.ld1s(sect)) {
             cptr.stPtr(cptr.add(gc, 448), dupstr(sect));
             do {
-                if (debugcore(__sl20, (1))) {
+                if (debugcore(__sl20, 1)) {
                     let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                     pline(__sl23, cptr.ldPtr(cptr.add(gc, 448)));
                     cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
@@ -422,22 +422,22 @@ function handle_config_section(buf) {
         } else {
             free_config_sections();
             do {
-                if (debugcore(__sl20, (1))) {
+                if (debugcore(__sl20, 1)) {
                     let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
                     pline(__sl24);
                     cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
                 }
             } while (0);
         }
-        return (1);
+        return 1;
     }
     if (cptr.ldPtr(cptr.add(gc, 448))) {
         if (!cptr.ldPtr(cptr.add(gc, 440)))
-            return (1);
+            return 1;
         if (strcmp(cptr.ldPtr(cptr.add(gc, 448)), cptr.ldPtr(cptr.add(gc, 440))))
-            return (1);
+            return 1;
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: cfgfiles.c:588 — @param {CPtr} buf @returns {CPtr} */
@@ -455,13 +455,13 @@ function find_optparam(buf) {
 function cnf_line_OPTIONS(origbuf) {
     let bufp = find_optparam(origbuf);
     bufp = cptr.add(bufp, 1);
-    return parseoptions(bufp, (1), (1));
+    return parseoptions(bufp, 1, 1);
 }
 
 /** C ref: cfgfiles.c:612 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_AUTOPICKUP_EXCEPTION(bufp) {
     add_autopickup_exception(bufp);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:619 — @param {CPtr} bufp @returns {CInt} */
@@ -471,8 +471,8 @@ function cnf_line_BINDINGS(bufp) {
 
 /** C ref: cfgfiles.c:625 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_AUTOCOMPLETE(bufp) {
-    parseautocomplete(bufp, (1));
-    return (1);
+    parseautocomplete(bufp, 1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:632 — @param {CPtr} bufp @returns {CInt} */
@@ -483,61 +483,61 @@ function cnf_line_MSGTYPE(bufp) {
 /** C ref: cfgfiles.c:638 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_HACKDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:653 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_LEVELDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:673 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_SAVEDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:695 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_BONESDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:706 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_DATADIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:717 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_SCOREDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:728 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_LOCKDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:739 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_CONFIGDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:750 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_TROUBLEDIR(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:761 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_NAME(bufp) {
-    void __builtin___strncpy_chk(svp, bufp, BigInt.asUintN(64, BigInt(((32 - 1) | 0))), __builtin_object_size(svp, 2 > 1 ? 1 : 0));
-    return (1);
+    void __builtin___strncpy_chk(svp, bufp, 31n, __builtin_object_size(svp, 1));
+    return 1;
 }
 
 /** C ref: cfgfiles.c:768 — @param {CPtr} bufp @returns {CInt} */
@@ -545,19 +545,19 @@ function cnf_line_ROLE(bufp) {
     let len;
     if ((len = str2role(bufp)) >= 0)
         cptr.stI32(cptr.add(flags, 144), len);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:778 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_dogname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gd, 60), bufp, BigInt.asUintN(64, BigInt(((63 - 1) | 0))), __builtin_object_size(cptr.add(gd, 60), 2 > 1 ? 1 : 0));
-    return (1);
+    void __builtin___strncpy_chk(cptr.add(gd, 60), bufp, 62n, __builtin_object_size(cptr.add(gd, 60), 1));
+    return 1;
 }
 
 /** C ref: cfgfiles.c:785 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_catname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gc, 344), bufp, BigInt.asUintN(64, BigInt(((63 - 1) | 0))), __builtin_object_size(cptr.add(gc, 344), 2 > 1 ? 1 : 0));
-    return (1);
+    void __builtin___strncpy_chk(cptr.add(gc, 344), bufp, 62n, __builtin_object_size(cptr.add(gc, 344), 1));
+    return 1;
 }
 
 /** C ref: cfgfiles.c:795 — @param {CPtr} bufp @returns {CInt} */
@@ -570,7 +570,7 @@ function cnf_line_WIZARDS(bufp) {
             cptr.free(cptr.ldPtr(cptr.add(sysopt, 24)));
         cptr.stPtr(cptr.add(sysopt, 24), build_english_list(cptr.ldPtr(cptr.add(sysopt, 16))));
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:812 — @param {CPtr} bufp @returns {CInt} */
@@ -578,7 +578,7 @@ function cnf_line_SHELLERS(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 40)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 40)));
     cptr.stPtr(cptr.add(sysopt, 40), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:821 — @param {CPtr} bufp @returns {CInt} */
@@ -586,7 +586,7 @@ function cnf_line_MSGHANDLER(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 64)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 64)));
     cptr.stPtr(cptr.add(sysopt, 64), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:830 — @param {CPtr} bufp @returns {CInt} */
@@ -594,7 +594,7 @@ function cnf_line_EXPLORERS(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 32)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 32)));
     cptr.stPtr(cptr.add(sysopt, 32), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:839 — @param {CPtr} bufp @returns {CInt} */
@@ -604,13 +604,13 @@ function cnf_line_DEBUGFILES(bufp) {
             cptr.free(cptr.ldPtr(cptr.add(sysopt, 56)));
         cptr.stPtr(cptr.add(sysopt, 56), dupstr(bufp));
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:852 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_DUMPLOGFILE(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:865 — @param {CPtr} bufp @returns {CInt} */
@@ -618,14 +618,14 @@ function cnf_line_GENERICUSERS(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 48)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 48)));
     cptr.stPtr(cptr.add(sysopt, 48), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:874 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_BONES_POOLS(bufp) {
     let n = atoi(bufp);
-    cptr.stI32(cptr.add(sysopt, 92), (n <= 0) ? 0 : ((n) < (10) ? (n) : (10)));
-    return (1);
+    cptr.stI32(cptr.add(sysopt, 92), (n <= 0) ? 0 : ((n) < 10 ? (n) : 10));
+    return 1;
 }
 
 /** C ref: cfgfiles.c:888 — @param {CPtr} bufp @returns {CInt} */
@@ -633,7 +633,7 @@ function cnf_line_SUPPORT(bufp) {
     if (cptr.ldPtr(sysopt))
         cptr.free(cptr.ldPtr(sysopt));
     cptr.stPtr(sysopt, dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:897 — @param {CPtr} bufp @returns {CInt} */
@@ -641,21 +641,21 @@ function cnf_line_RECOVER(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 8)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 8)));
     cptr.stPtr(cptr.add(sysopt, 8), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:906 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_CHECK_SAVE_UID(bufp) {
     let n = atoi(bufp);
     cptr.stI32(cptr.add(sysopt, 84), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:915 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_CHECK_PLNAME(bufp) {
     let n = atoi(bufp);
     cptr.stI32(cptr.add(sysopt, 88), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:924 — @param {CPtr} bufp @returns {CInt} */
@@ -669,14 +669,14 @@ function cnf_line_SEDUCE(bufp) {
     }
     cptr.stI32(cptr.add(sysopt, 80), n);
     sysopt_seduce_set(cptr.ldI32(cptr.add(sysopt, 80)));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:946 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_HIDEUSAGE(bufp) {
     let n = !!atoi(bufp);
     cptr.stI32(cptr.add(sysopt, 180), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:955 — @param {CPtr} bufp @returns {CInt} */
@@ -687,7 +687,7 @@ function cnf_line_MAXPLAYERS(bufp) {
         n = 5;
     }
     cptr.stI32(cptr.add(sysopt, 76), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:969 — @param {CPtr} bufp @returns {CInt} */
@@ -698,7 +698,7 @@ function cnf_line_PERSMAX(bufp) {
         n = 0;
     }
     cptr.stI32(cptr.add(sysopt, 104), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:982 — @param {CPtr} bufp @returns {CInt} */
@@ -709,7 +709,7 @@ function cnf_line_PERS_IS_UID(bufp) {
         n = 0;
     }
     cptr.stI32(cptr.add(sysopt, 108), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:995 — @param {CPtr} bufp @returns {CInt} */
@@ -720,7 +720,7 @@ function cnf_line_ENTRYMAX(bufp) {
         n = 10;
     }
     cptr.stI32(cptr.add(sysopt, 112), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1008 — @param {CPtr} bufp @returns {CInt} */
@@ -731,7 +731,7 @@ function cnf_line_POINTSMIN(bufp) {
         n = 100;
     }
     cptr.stI32(cptr.add(sysopt, 116), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1021 — @param {CPtr} bufp @returns {CInt} */
@@ -742,7 +742,7 @@ function cnf_line_MAX_STATUENAME_RANK(bufp) {
         n = 10;
     }
     cptr.stI32(cptr.add(sysopt, 120), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1035 — @param {CPtr} bufp @returns {CInt} */
@@ -753,7 +753,7 @@ function cnf_line_LIVELOG(bufp) {
         return 0;
     }
     cptr.stI64(cptr.add(sysopt, 96), L);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1052 — @param {CPtr} bufp @returns {CInt} */
@@ -764,7 +764,7 @@ function cnf_line_PANICTRACE_LIBC(bufp) {
         n = 0;
     }
     cptr.stI32(cptr.add(sysopt, 156), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1067 — @param {CPtr} bufp @returns {CInt} */
@@ -775,31 +775,31 @@ function cnf_line_PANICTRACE_GDB(bufp) {
         n = 0;
     }
     cptr.stI32(cptr.add(sysopt, 152), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1082 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_GDBPATH(bufp) {
     if (!file_exists(bufp)) {
         config_error_add(__sl36);
-        return (0);
+        return 0;
     }
     if (cptr.ldPtr(cptr.add(sysopt, 128)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 128)));
     cptr.stPtr(cptr.add(sysopt, 128), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1097 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_GREPPATH(bufp) {
     if (!file_exists(bufp)) {
         config_error_add(__sl37);
-        return (0);
+        return 0;
     }
     if (cptr.ldPtr(cptr.add(sysopt, 136)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 136)));
     cptr.stPtr(cptr.add(sysopt, 136), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1112 — @param {CPtr} bufp @returns {CInt} */
@@ -807,7 +807,7 @@ function cnf_line_CRASHREPORTURL(bufp) {
     if (cptr.ldPtr(cptr.add(sysopt, 144)))
         cptr.free(cptr.ldPtr(cptr.add(sysopt, 144)));
     cptr.stPtr(cptr.add(sysopt, 144), dupstr(bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1121 — @param {CPtr} bufp @returns {CInt} */
@@ -818,20 +818,20 @@ function cnf_line_ACCESSIBILITY(bufp) {
         n = 0;
     }
     cptr.stI32(cptr.add(sysopt, 176), n);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1134 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PORTABLE_DEVICE_PATHS(bufp) {
     (void (bufp));
     config_error_add(__sl39);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1156 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_BOULDER(bufp) {
-    void get_uchars(bufp, cptr.add(cptr.add(go, 88), (2 + (((((((((0) + 105) | 0) + 18) | 0) + 61) | 0) + 6) | 0)) | 0, 1), (1), 1, __sl40);
-    return (1);
+    void get_uchars(bufp, cptr.add(cptr.add(go, 88), 192, 1), 1, 1, __sl40);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1164 — @param {CPtr} bufp @returns {CInt} */
@@ -841,66 +841,66 @@ function cnf_line_MENUCOLOR(bufp) {
 
 /** C ref: cfgfiles.c:1170 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_HILITE_STATUS(bufp) {
-    return parse_status_hl1(bufp, (1));
+    return parse_status_hl1(bufp, 1);
 }
 
 /** C ref: cfgfiles.c:1181 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_WARNINGS(bufp) {
     let translate = new Uint8Array(105);
-    void get_uchars(bufp, cptr.decay(translate), (0), 6, __sl41);
+    void get_uchars(bufp, cptr.decay(translate), 0, 6, __sl41);
     assign_warnings(cptr.decay(translate));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1191 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_ROGUESYMBOLS(bufp) {
     if (parsesymbols(bufp, 1)) {
         switch_symbols(1);
-        return (1);
+        return 1;
     }
     config_error_add(__sl42, bufp);
-    return (0);
+    return 0;
 }
 
 /** C ref: cfgfiles.c:1202 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_SYMBOLS(bufp) {
     if (parsesymbols(bufp, 0)) {
         switch_symbols(1);
-        return (1);
+        return 1;
     }
     if (!config_unmatched_ignored())
         config_error_add(__sl43, bufp);
-    return (0);
+    return 0;
 }
 
 /** C ref: cfgfiles.c:1214 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_WIZKIT(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gw, 23), bufp, BigInt.asUintN(64, BigInt(((128 - 1) | 0))), __builtin_object_size(cptr.add(gw, 23), 2 > 1 ? 1 : 0));
-    return (1);
+    void __builtin___strncpy_chk(cptr.add(gw, 23), bufp, 127n, __builtin_object_size(cptr.add(gw, 23), 1));
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1239 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_QT_TILEWIDTH(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1253 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_QT_TILEHEIGHT(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1267 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_QT_FONTSIZE(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1281 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_QT_COMPACT(bufp) {
     (void (bufp));
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1294 — typedef config_line_stmt_func (type alias only, no runtime output) */
@@ -910,300 +910,300 @@ function cnf_line_QT_COMPACT(bufp) {
 /** C ref: cfgfiles.c:1309 — struct match_config_line_stmt[59] */
 const config_line_stmt = cptr.alloc(59 * 24);
 cptr.stPtr(cptr.add(config_line_stmt, 0), __sl44);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 0), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 0), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 0), 13), (1));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 0), 16), cnf_line_OPTIONS);
+cptr.stI32(cptr.add(config_line_stmt, 8), 4);
+cptr.st1(cptr.add(config_line_stmt, 12), 0);
+cptr.st1(cptr.add(config_line_stmt, 13), 1);
+cptr.stPtr(cptr.add(config_line_stmt, 16), cnf_line_OPTIONS);
 cptr.stPtr(cptr.add(config_line_stmt, 24), __sl45);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 24), 8), 5);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 24), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 24), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 24), 16), cnf_line_AUTOPICKUP_EXCEPTION);
+cptr.stI32(cptr.add(config_line_stmt, 32), 5);
+cptr.st1(cptr.add(config_line_stmt, 36), 0);
+cptr.st1(cptr.add(config_line_stmt, 37), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 40), cnf_line_AUTOPICKUP_EXCEPTION);
 cptr.stPtr(cptr.add(config_line_stmt, 48), __sl46);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 48), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 48), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 48), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 48), 16), cnf_line_BINDINGS);
+cptr.stI32(cptr.add(config_line_stmt, 56), 4);
+cptr.st1(cptr.add(config_line_stmt, 60), 0);
+cptr.st1(cptr.add(config_line_stmt, 61), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 64), cnf_line_BINDINGS);
 cptr.stPtr(cptr.add(config_line_stmt, 72), __sl47);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 72), 8), 5);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 72), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 72), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 72), 16), cnf_line_AUTOCOMPLETE);
+cptr.stI32(cptr.add(config_line_stmt, 80), 5);
+cptr.st1(cptr.add(config_line_stmt, 84), 0);
+cptr.st1(cptr.add(config_line_stmt, 85), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 88), cnf_line_AUTOCOMPLETE);
 cptr.stPtr(cptr.add(config_line_stmt, 96), __sl48);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 96), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 96), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 96), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 96), 16), cnf_line_MSGTYPE);
+cptr.stI32(cptr.add(config_line_stmt, 104), 7);
+cptr.st1(cptr.add(config_line_stmt, 108), 0);
+cptr.st1(cptr.add(config_line_stmt, 109), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 112), cnf_line_MSGTYPE);
 cptr.stPtr(cptr.add(config_line_stmt, 120), __sl49);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 120), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 120), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 120), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 120), 16), cnf_line_HACKDIR);
+cptr.stI32(cptr.add(config_line_stmt, 128), 4);
+cptr.st1(cptr.add(config_line_stmt, 132), 0);
+cptr.st1(cptr.add(config_line_stmt, 133), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 136), cnf_line_HACKDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 144), __sl50);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 144), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 144), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 144), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 144), 16), cnf_line_LEVELDIR);
+cptr.stI32(cptr.add(config_line_stmt, 152), 4);
+cptr.st1(cptr.add(config_line_stmt, 156), 0);
+cptr.st1(cptr.add(config_line_stmt, 157), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 160), cnf_line_LEVELDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 168), __sl51);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 168), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 168), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 168), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 168), 16), cnf_line_LEVELDIR);
+cptr.stI32(cptr.add(config_line_stmt, 176), 4);
+cptr.st1(cptr.add(config_line_stmt, 180), 0);
+cptr.st1(cptr.add(config_line_stmt, 181), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 184), cnf_line_LEVELDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 192), __sl52);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 192), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 192), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 192), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 192), 16), cnf_line_SAVEDIR);
+cptr.stI32(cptr.add(config_line_stmt, 200), 4);
+cptr.st1(cptr.add(config_line_stmt, 204), 0);
+cptr.st1(cptr.add(config_line_stmt, 205), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 208), cnf_line_SAVEDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 216), __sl53);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 216), 8), 5);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 216), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 216), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 216), 16), cnf_line_BONESDIR);
+cptr.stI32(cptr.add(config_line_stmt, 224), 5);
+cptr.st1(cptr.add(config_line_stmt, 228), 0);
+cptr.st1(cptr.add(config_line_stmt, 229), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 232), cnf_line_BONESDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 240), __sl54);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 240), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 240), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 240), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 240), 16), cnf_line_DATADIR);
+cptr.stI32(cptr.add(config_line_stmt, 248), 4);
+cptr.st1(cptr.add(config_line_stmt, 252), 0);
+cptr.st1(cptr.add(config_line_stmt, 253), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 256), cnf_line_DATADIR);
 cptr.stPtr(cptr.add(config_line_stmt, 264), __sl55);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 264), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 264), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 264), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 264), 16), cnf_line_SCOREDIR);
+cptr.stI32(cptr.add(config_line_stmt, 272), 4);
+cptr.st1(cptr.add(config_line_stmt, 276), 0);
+cptr.st1(cptr.add(config_line_stmt, 277), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 280), cnf_line_SCOREDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 288), __sl56);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 288), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 288), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 288), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 288), 16), cnf_line_LOCKDIR);
+cptr.stI32(cptr.add(config_line_stmt, 296), 4);
+cptr.st1(cptr.add(config_line_stmt, 300), 0);
+cptr.st1(cptr.add(config_line_stmt, 301), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 304), cnf_line_LOCKDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 312), __sl57);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 312), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 312), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 312), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 312), 16), cnf_line_CONFIGDIR);
+cptr.stI32(cptr.add(config_line_stmt, 320), 4);
+cptr.st1(cptr.add(config_line_stmt, 324), 0);
+cptr.st1(cptr.add(config_line_stmt, 325), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 328), cnf_line_CONFIGDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 336), __sl58);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 336), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 336), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 336), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 336), 16), cnf_line_TROUBLEDIR);
+cptr.stI32(cptr.add(config_line_stmt, 344), 4);
+cptr.st1(cptr.add(config_line_stmt, 348), 0);
+cptr.st1(cptr.add(config_line_stmt, 349), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 352), cnf_line_TROUBLEDIR);
 cptr.stPtr(cptr.add(config_line_stmt, 360), __sl59);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 360), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 360), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 360), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 360), 16), cnf_line_NAME);
+cptr.stI32(cptr.add(config_line_stmt, 368), 4);
+cptr.st1(cptr.add(config_line_stmt, 372), 0);
+cptr.st1(cptr.add(config_line_stmt, 373), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 376), cnf_line_NAME);
 cptr.stPtr(cptr.add(config_line_stmt, 384), __sl60);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 384), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 384), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 384), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 384), 16), cnf_line_ROLE);
+cptr.stI32(cptr.add(config_line_stmt, 392), 4);
+cptr.st1(cptr.add(config_line_stmt, 396), 0);
+cptr.st1(cptr.add(config_line_stmt, 397), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 400), cnf_line_ROLE);
 cptr.stPtr(cptr.add(config_line_stmt, 408), __sl61);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 408), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 408), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 408), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 408), 16), cnf_line_ROLE);
+cptr.stI32(cptr.add(config_line_stmt, 416), 4);
+cptr.st1(cptr.add(config_line_stmt, 420), 0);
+cptr.st1(cptr.add(config_line_stmt, 421), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 424), cnf_line_ROLE);
 cptr.stPtr(cptr.add(config_line_stmt, 432), __sl62);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 432), 8), 3);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 432), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 432), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 432), 16), cnf_line_dogname);
+cptr.stI32(cptr.add(config_line_stmt, 440), 3);
+cptr.st1(cptr.add(config_line_stmt, 444), 0);
+cptr.st1(cptr.add(config_line_stmt, 445), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 448), cnf_line_dogname);
 cptr.stPtr(cptr.add(config_line_stmt, 456), __sl63);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 456), 8), 3);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 456), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 456), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 456), 16), cnf_line_catname);
+cptr.stI32(cptr.add(config_line_stmt, 464), 3);
+cptr.st1(cptr.add(config_line_stmt, 468), 0);
+cptr.st1(cptr.add(config_line_stmt, 469), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 472), cnf_line_catname);
 cptr.stPtr(cptr.add(config_line_stmt, 480), __sl64);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 480), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 480), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 480), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 480), 16), cnf_line_WIZARDS);
+cptr.stI32(cptr.add(config_line_stmt, 488), 7);
+cptr.st1(cptr.add(config_line_stmt, 492), 1);
+cptr.st1(cptr.add(config_line_stmt, 493), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 496), cnf_line_WIZARDS);
 cptr.stPtr(cptr.add(config_line_stmt, 504), __sl65);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 504), 8), 8);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 504), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 504), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 504), 16), cnf_line_SHELLERS);
+cptr.stI32(cptr.add(config_line_stmt, 512), 8);
+cptr.st1(cptr.add(config_line_stmt, 516), 1);
+cptr.st1(cptr.add(config_line_stmt, 517), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 520), cnf_line_SHELLERS);
 cptr.stPtr(cptr.add(config_line_stmt, 528), __sl66);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 528), 8), 9);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 528), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 528), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 528), 16), cnf_line_MSGHANDLER);
+cptr.stI32(cptr.add(config_line_stmt, 536), 9);
+cptr.st1(cptr.add(config_line_stmt, 540), 1);
+cptr.st1(cptr.add(config_line_stmt, 541), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 544), cnf_line_MSGHANDLER);
 cptr.stPtr(cptr.add(config_line_stmt, 552), __sl67);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 552), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 552), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 552), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 552), 16), cnf_line_EXPLORERS);
+cptr.stI32(cptr.add(config_line_stmt, 560), 7);
+cptr.st1(cptr.add(config_line_stmt, 564), 1);
+cptr.st1(cptr.add(config_line_stmt, 565), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 568), cnf_line_EXPLORERS);
 cptr.stPtr(cptr.add(config_line_stmt, 576), __sl68);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 576), 8), 5);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 576), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 576), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 576), 16), cnf_line_DEBUGFILES);
+cptr.stI32(cptr.add(config_line_stmt, 584), 5);
+cptr.st1(cptr.add(config_line_stmt, 588), 1);
+cptr.st1(cptr.add(config_line_stmt, 589), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 592), cnf_line_DEBUGFILES);
 cptr.stPtr(cptr.add(config_line_stmt, 600), __sl69);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 600), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 600), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 600), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 600), 16), cnf_line_DUMPLOGFILE);
+cptr.stI32(cptr.add(config_line_stmt, 608), 7);
+cptr.st1(cptr.add(config_line_stmt, 612), 1);
+cptr.st1(cptr.add(config_line_stmt, 613), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 616), cnf_line_DUMPLOGFILE);
 cptr.stPtr(cptr.add(config_line_stmt, 624), __sl70);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 624), 8), 12);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 624), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 624), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 624), 16), cnf_line_GENERICUSERS);
+cptr.stI32(cptr.add(config_line_stmt, 632), 12);
+cptr.st1(cptr.add(config_line_stmt, 636), 1);
+cptr.st1(cptr.add(config_line_stmt, 637), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 640), cnf_line_GENERICUSERS);
 cptr.stPtr(cptr.add(config_line_stmt, 648), __sl71);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 648), 8), 10);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 648), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 648), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 648), 16), cnf_line_BONES_POOLS);
+cptr.stI32(cptr.add(config_line_stmt, 656), 10);
+cptr.st1(cptr.add(config_line_stmt, 660), 1);
+cptr.st1(cptr.add(config_line_stmt, 661), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 664), cnf_line_BONES_POOLS);
 cptr.stPtr(cptr.add(config_line_stmt, 672), __sl72);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 672), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 672), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 672), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 672), 16), cnf_line_SUPPORT);
+cptr.stI32(cptr.add(config_line_stmt, 680), 7);
+cptr.st1(cptr.add(config_line_stmt, 684), 1);
+cptr.st1(cptr.add(config_line_stmt, 685), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 688), cnf_line_SUPPORT);
 cptr.stPtr(cptr.add(config_line_stmt, 696), __sl73);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 696), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 696), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 696), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 696), 16), cnf_line_RECOVER);
+cptr.stI32(cptr.add(config_line_stmt, 704), 7);
+cptr.st1(cptr.add(config_line_stmt, 708), 1);
+cptr.st1(cptr.add(config_line_stmt, 709), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 712), cnf_line_RECOVER);
 cptr.stPtr(cptr.add(config_line_stmt, 720), __sl74);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 720), 8), 14);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 720), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 720), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 720), 16), cnf_line_CHECK_SAVE_UID);
+cptr.stI32(cptr.add(config_line_stmt, 728), 14);
+cptr.st1(cptr.add(config_line_stmt, 732), 1);
+cptr.st1(cptr.add(config_line_stmt, 733), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 736), cnf_line_CHECK_SAVE_UID);
 cptr.stPtr(cptr.add(config_line_stmt, 744), __sl75);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 744), 8), 12);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 744), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 744), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 744), 16), cnf_line_CHECK_PLNAME);
+cptr.stI32(cptr.add(config_line_stmt, 752), 12);
+cptr.st1(cptr.add(config_line_stmt, 756), 1);
+cptr.st1(cptr.add(config_line_stmt, 757), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 760), cnf_line_CHECK_PLNAME);
 cptr.stPtr(cptr.add(config_line_stmt, 768), __sl76);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 768), 8), 6);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 768), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 768), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 768), 16), cnf_line_SEDUCE);
+cptr.stI32(cptr.add(config_line_stmt, 776), 6);
+cptr.st1(cptr.add(config_line_stmt, 780), 1);
+cptr.st1(cptr.add(config_line_stmt, 781), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 784), cnf_line_SEDUCE);
 cptr.stPtr(cptr.add(config_line_stmt, 792), __sl77);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 792), 8), 9);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 792), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 792), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 792), 16), cnf_line_HIDEUSAGE);
+cptr.stI32(cptr.add(config_line_stmt, 800), 9);
+cptr.st1(cptr.add(config_line_stmt, 804), 1);
+cptr.st1(cptr.add(config_line_stmt, 805), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 808), cnf_line_HIDEUSAGE);
 cptr.stPtr(cptr.add(config_line_stmt, 816), __sl78);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 816), 8), 10);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 816), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 816), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 816), 16), cnf_line_MAXPLAYERS);
+cptr.stI32(cptr.add(config_line_stmt, 824), 10);
+cptr.st1(cptr.add(config_line_stmt, 828), 1);
+cptr.st1(cptr.add(config_line_stmt, 829), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 832), cnf_line_MAXPLAYERS);
 cptr.stPtr(cptr.add(config_line_stmt, 840), __sl79);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 840), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 840), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 840), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 840), 16), cnf_line_PERSMAX);
+cptr.stI32(cptr.add(config_line_stmt, 848), 7);
+cptr.st1(cptr.add(config_line_stmt, 852), 1);
+cptr.st1(cptr.add(config_line_stmt, 853), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 856), cnf_line_PERSMAX);
 cptr.stPtr(cptr.add(config_line_stmt, 864), __sl80);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 864), 8), 11);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 864), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 864), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 864), 16), cnf_line_PERS_IS_UID);
+cptr.stI32(cptr.add(config_line_stmt, 872), 11);
+cptr.st1(cptr.add(config_line_stmt, 876), 1);
+cptr.st1(cptr.add(config_line_stmt, 877), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 880), cnf_line_PERS_IS_UID);
 cptr.stPtr(cptr.add(config_line_stmt, 888), __sl81);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 888), 8), 8);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 888), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 888), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 888), 16), cnf_line_ENTRYMAX);
+cptr.stI32(cptr.add(config_line_stmt, 896), 8);
+cptr.st1(cptr.add(config_line_stmt, 900), 1);
+cptr.st1(cptr.add(config_line_stmt, 901), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 904), cnf_line_ENTRYMAX);
 cptr.stPtr(cptr.add(config_line_stmt, 912), __sl82);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 912), 8), 9);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 912), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 912), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 912), 16), cnf_line_POINTSMIN);
+cptr.stI32(cptr.add(config_line_stmt, 920), 9);
+cptr.st1(cptr.add(config_line_stmt, 924), 1);
+cptr.st1(cptr.add(config_line_stmt, 925), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 928), cnf_line_POINTSMIN);
 cptr.stPtr(cptr.add(config_line_stmt, 936), __sl83);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 936), 8), 10);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 936), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 936), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 936), 16), cnf_line_MAX_STATUENAME_RANK);
+cptr.stI32(cptr.add(config_line_stmt, 944), 10);
+cptr.st1(cptr.add(config_line_stmt, 948), 1);
+cptr.st1(cptr.add(config_line_stmt, 949), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 952), cnf_line_MAX_STATUENAME_RANK);
 cptr.stPtr(cptr.add(config_line_stmt, 960), __sl84);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 960), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 960), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 960), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 960), 16), cnf_line_LIVELOG);
+cptr.stI32(cptr.add(config_line_stmt, 968), 7);
+cptr.st1(cptr.add(config_line_stmt, 972), 1);
+cptr.st1(cptr.add(config_line_stmt, 973), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 976), cnf_line_LIVELOG);
 cptr.stPtr(cptr.add(config_line_stmt, 984), __sl85);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 984), 8), 15);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 984), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 984), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 984), 16), cnf_line_PANICTRACE_LIBC);
+cptr.stI32(cptr.add(config_line_stmt, 992), 15);
+cptr.st1(cptr.add(config_line_stmt, 996), 1);
+cptr.st1(cptr.add(config_line_stmt, 997), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1000), cnf_line_PANICTRACE_LIBC);
 cptr.stPtr(cptr.add(config_line_stmt, 1008), __sl86);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1008), 8), 14);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1008), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1008), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1008), 16), cnf_line_PANICTRACE_GDB);
+cptr.stI32(cptr.add(config_line_stmt, 1016), 14);
+cptr.st1(cptr.add(config_line_stmt, 1020), 1);
+cptr.st1(cptr.add(config_line_stmt, 1021), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1024), cnf_line_PANICTRACE_GDB);
 cptr.stPtr(cptr.add(config_line_stmt, 1032), __sl87);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1032), 8), 13);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1032), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1032), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1032), 16), cnf_line_CRASHREPORTURL);
+cptr.stI32(cptr.add(config_line_stmt, 1040), 13);
+cptr.st1(cptr.add(config_line_stmt, 1044), 1);
+cptr.st1(cptr.add(config_line_stmt, 1045), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1048), cnf_line_CRASHREPORTURL);
 cptr.stPtr(cptr.add(config_line_stmt, 1056), __sl88);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1056), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1056), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1056), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1056), 16), cnf_line_GDBPATH);
+cptr.stI32(cptr.add(config_line_stmt, 1064), 7);
+cptr.st1(cptr.add(config_line_stmt, 1068), 1);
+cptr.st1(cptr.add(config_line_stmt, 1069), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1072), cnf_line_GDBPATH);
 cptr.stPtr(cptr.add(config_line_stmt, 1080), __sl89);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1080), 8), 7);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1080), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1080), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1080), 16), cnf_line_GREPPATH);
+cptr.stI32(cptr.add(config_line_stmt, 1088), 7);
+cptr.st1(cptr.add(config_line_stmt, 1092), 1);
+cptr.st1(cptr.add(config_line_stmt, 1093), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1096), cnf_line_GREPPATH);
 cptr.stPtr(cptr.add(config_line_stmt, 1104), __sl90);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1104), 8), 13);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1104), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1104), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1104), 16), cnf_line_ACCESSIBILITY);
+cptr.stI32(cptr.add(config_line_stmt, 1112), 13);
+cptr.st1(cptr.add(config_line_stmt, 1116), 1);
+cptr.st1(cptr.add(config_line_stmt, 1117), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1120), cnf_line_ACCESSIBILITY);
 cptr.stPtr(cptr.add(config_line_stmt, 1128), __sl91);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1128), 8), 8);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1128), 12), (1));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1128), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1128), 16), cnf_line_PORTABLE_DEVICE_PATHS);
+cptr.stI32(cptr.add(config_line_stmt, 1136), 8);
+cptr.st1(cptr.add(config_line_stmt, 1140), 1);
+cptr.st1(cptr.add(config_line_stmt, 1141), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1144), cnf_line_PORTABLE_DEVICE_PATHS);
 cptr.stPtr(cptr.add(config_line_stmt, 1152), __sl40);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1152), 8), 3);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1152), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1152), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1152), 16), cnf_line_BOULDER);
+cptr.stI32(cptr.add(config_line_stmt, 1160), 3);
+cptr.st1(cptr.add(config_line_stmt, 1164), 0);
+cptr.st1(cptr.add(config_line_stmt, 1165), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1168), cnf_line_BOULDER);
 cptr.stPtr(cptr.add(config_line_stmt, 1176), __sl92);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1176), 8), 9);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1176), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1176), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1176), 16), cnf_line_MENUCOLOR);
+cptr.stI32(cptr.add(config_line_stmt, 1184), 9);
+cptr.st1(cptr.add(config_line_stmt, 1188), 0);
+cptr.st1(cptr.add(config_line_stmt, 1189), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1192), cnf_line_MENUCOLOR);
 cptr.stPtr(cptr.add(config_line_stmt, 1200), __sl93);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1200), 8), 6);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1200), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1200), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1200), 16), cnf_line_HILITE_STATUS);
+cptr.stI32(cptr.add(config_line_stmt, 1208), 6);
+cptr.st1(cptr.add(config_line_stmt, 1212), 0);
+cptr.st1(cptr.add(config_line_stmt, 1213), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1216), cnf_line_HILITE_STATUS);
 cptr.stPtr(cptr.add(config_line_stmt, 1224), __sl41);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1224), 8), 5);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1224), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1224), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1224), 16), cnf_line_WARNINGS);
+cptr.stI32(cptr.add(config_line_stmt, 1232), 5);
+cptr.st1(cptr.add(config_line_stmt, 1236), 0);
+cptr.st1(cptr.add(config_line_stmt, 1237), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1240), cnf_line_WARNINGS);
 cptr.stPtr(cptr.add(config_line_stmt, 1248), __sl94);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1248), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1248), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1248), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1248), 16), cnf_line_ROGUESYMBOLS);
+cptr.stI32(cptr.add(config_line_stmt, 1256), 4);
+cptr.st1(cptr.add(config_line_stmt, 1260), 0);
+cptr.st1(cptr.add(config_line_stmt, 1261), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1264), cnf_line_ROGUESYMBOLS);
 cptr.stPtr(cptr.add(config_line_stmt, 1272), __sl95);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1272), 8), 4);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1272), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1272), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1272), 16), cnf_line_SYMBOLS);
+cptr.stI32(cptr.add(config_line_stmt, 1280), 4);
+cptr.st1(cptr.add(config_line_stmt, 1284), 0);
+cptr.st1(cptr.add(config_line_stmt, 1285), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1288), cnf_line_SYMBOLS);
 cptr.stPtr(cptr.add(config_line_stmt, 1296), __sl96);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1296), 8), 6);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1296), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1296), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1296), 16), cnf_line_WIZKIT);
+cptr.stI32(cptr.add(config_line_stmt, 1304), 6);
+cptr.st1(cptr.add(config_line_stmt, 1308), 0);
+cptr.st1(cptr.add(config_line_stmt, 1309), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1312), cnf_line_WIZKIT);
 cptr.stPtr(cptr.add(config_line_stmt, 1320), __sl97);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1320), 8), 12);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1320), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1320), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1320), 16), cnf_line_QT_TILEWIDTH);
+cptr.stI32(cptr.add(config_line_stmt, 1328), 12);
+cptr.st1(cptr.add(config_line_stmt, 1332), 0);
+cptr.st1(cptr.add(config_line_stmt, 1333), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1336), cnf_line_QT_TILEWIDTH);
 cptr.stPtr(cptr.add(config_line_stmt, 1344), __sl98);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1344), 8), 13);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1344), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1344), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1344), 16), cnf_line_QT_TILEHEIGHT);
+cptr.stI32(cptr.add(config_line_stmt, 1352), 13);
+cptr.st1(cptr.add(config_line_stmt, 1356), 0);
+cptr.st1(cptr.add(config_line_stmt, 1357), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1360), cnf_line_QT_TILEHEIGHT);
 cptr.stPtr(cptr.add(config_line_stmt, 1368), __sl99);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1368), 8), 11);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1368), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1368), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1368), 16), cnf_line_QT_FONTSIZE);
+cptr.stI32(cptr.add(config_line_stmt, 1376), 11);
+cptr.st1(cptr.add(config_line_stmt, 1380), 0);
+cptr.st1(cptr.add(config_line_stmt, 1381), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1384), cnf_line_QT_FONTSIZE);
 cptr.stPtr(cptr.add(config_line_stmt, 1392), __sl100);
-cptr.stI32(cptr.add(cptr.add(config_line_stmt, 1392), 8), 10);
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1392), 12), (0));
-cptr.st1(cptr.add(cptr.add(config_line_stmt, 1392), 13), (0));
-cptr.stPtr(cptr.add(cptr.add(config_line_stmt, 1392), 16), cnf_line_QT_COMPACT);
+cptr.stI32(cptr.add(config_line_stmt, 1400), 10);
+cptr.st1(cptr.add(config_line_stmt, 1404), 0);
+cptr.st1(cptr.add(config_line_stmt, 1405), 0);
+cptr.stPtr(cptr.add(config_line_stmt, 1408), cnf_line_QT_COMPACT);
 
 /** C ref: cfgfiles.c:1386 — boolean[59] */
 const disregarded_config_lines = new Uint8Array(59);
@@ -1217,14 +1217,14 @@ export function parse_config_line(origbuf) {
     let i;
     while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9 ? 1 : 0)
         origbuf = cptr.add(origbuf, 1);
-    void __builtin___strncpy_chk(cptr.decay(buf), origbuf, BigInt.asUintN(64, 1024n - 1n), __builtin_object_size(cptr.decay(buf), 2 > 1 ? 1 : 0));
-    cptr.st1(cptr.add(cptr.decay(buf), BigInt.asUintN(64, 1024n - 1n), 1), 0);
+    void __builtin___strncpy_chk(cptr.decay(buf), origbuf, 1023n, __builtin_object_size(cptr.decay(buf), 1));
+    cptr.st1(cptr.add(cptr.decay(buf), 1023n, 1), 0);
     mungspaces(cptr.decay(buf));
     bufp = find_optparam(cptr.decay(buf));
     if (!bufp) {
         if (!ignore_statement_errors)
             config_error_add(__sl101);
-        return (0);
+        return 0;
     }
     bufp = cptr.add(bufp, 1);
     if (cptr.ld1s(bufp) == 32)
@@ -1232,7 +1232,7 @@ export function parse_config_line(origbuf) {
     for (i = 0; i < 59; i++) {
         if (cptr.ld1s(cptr.add(cptr.add(config_line_stmt, i, 24), 12)) && !in_sysconf ? 1 : 0)
             continue;
-        if (match_optname(cptr.decay(buf), cptr.ldPtr(cptr.add(config_line_stmt, i, 24)), cptr.ldI32(cptr.add(cptr.add(config_line_stmt, i, 24), 8)), (1))) {
+        if (match_optname(cptr.decay(buf), cptr.ldPtr(cptr.add(config_line_stmt, i, 24)), cptr.ldI32(cptr.add(cptr.add(config_line_stmt, i, 24), 8)), 1)) {
             let parm = cptr.ld1s(cptr.add(cptr.add(config_line_stmt, i, 24), 13)) ? origbuf : bufp;
             if (!cptr.ld1s(cptr.add(cptr.decay(disregarded_config_lines), i, 1)))
                 return cptr.ldPtr(cptr.add(cptr.add(config_line_stmt, i, 24), 16))(parm);
@@ -1240,7 +1240,7 @@ export function parse_config_line(origbuf) {
     }
     if (!ignore_errors_on_unmatched)
         config_error_add(__sl102);
-    return (0);
+    return 0;
 }
 
 /** C ref: cfgfiles.c:1449 — struct _config_error_errmsg { line_num, errormsg, next } (memory model v0.5) */
@@ -1258,13 +1258,13 @@ export function config_error_init(from_file, sourcename, secure) {
     let tmp = alloc(1304);
     cptr.stI32(tmp, 0);
     cptr.stI32(cptr.add(tmp, 4), 0);
-    cptr.st1(cptr.add(tmp, 8), (0));
+    cptr.st1(cptr.add(tmp, 8), 0);
     cptr.st1(cptr.add(tmp, 9), from_file);
     cptr.st1(cptr.add(tmp, 10), secure);
     cptr.st1(cptr.add(cptr.add(tmp, 11), 0, 1), 0);
     if (sourcename && cptr.ld1s(cptr.add(sourcename, 0)) ? 1 : 0) {
-        void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, BigInt.asUintN(64, 256n - 1n), __builtin_object_size(cptr.add(tmp, 1035), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.add(tmp, 1035), BigInt.asUintN(64, 256n - 1n), 1), 0);
+        void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, 255n, __builtin_object_size(cptr.add(tmp, 1035), 1));
+        cptr.st1(cptr.add(cptr.add(tmp, 1035), 255n, 1), 0);
     } else
         cptr.st1(cptr.add(cptr.add(tmp, 1035), 0, 1), 0);
     cptr.stPtr(cptr.add(tmp, 1296), config_error_data);
@@ -1276,17 +1276,17 @@ export function config_error_init(from_file, sourcename, secure) {
 function config_error_nextline(line) {
     let ced = config_error_data;
     if (!ced)
-        return (0);
+        return 0;
     if (cptr.ldI32(cptr.add(ced, 4)) && cptr.ld1s(cptr.add(ced, 10)) ? 1 : 0)
-        return (0);
+        return 0;
     (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
-    cptr.st1(cptr.add(ced, 8), (0));
+    cptr.st1(cptr.add(ced, 8), 0);
     if (line && cptr.ld1s(cptr.add(line, 0)) ? 1 : 0) {
-        void __builtin___strncpy_chk(cptr.add(ced, 11), line, BigInt.asUintN(64, 1024n - 1n), __builtin_object_size(cptr.add(ced, 11), 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(cptr.add(ced, 11), BigInt.asUintN(64, 1024n - 1n), 1), 0);
+        void __builtin___strncpy_chk(cptr.add(ced, 11), line, 1023n, __builtin_object_size(cptr.add(ced, 11), 1));
+        cptr.st1(cptr.add(cptr.add(ced, 11), 1023n, 1), 0);
     } else
         cptr.st1(cptr.add(cptr.add(ced, 11), 0, 1), 0);
-    return (1);
+    return 1;
 }
 
 /** C ref: cfgfiles.c:1516 — @param {CPtr} L @returns {CInt} */
@@ -1335,7 +1335,7 @@ export function config_erradd(buf) {
     (cptr.stI32(cptr.add(config_error_data, 4), cptr.ldI32(cptr.add(config_error_data, 4)) + 1)) - (1);
     if (!cptr.ld1s(cptr.add(config_error_data, 8)) && !cptr.ld1s(cptr.add(config_error_data, 10)) ? 1 : 0) {
         pline(__sl110, cptr.add(config_error_data, 11));
-        cptr.st1(cptr.add(config_error_data, 8), (1));
+        cptr.st1(cptr.add(config_error_data, 8), 1);
     }
     if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1s(cptr.add(config_error_data, 10)) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(lineno), __sl111, cptr.ldI32(config_error_data));
@@ -1369,9 +1369,9 @@ export function config_error_done() {
 /** C ref: cfgfiles.c:1624 — @param {CPtr} filename @param {CInt} src @returns {CInt} */
 export function read_config_file(filename, src) {
     let fp;
-    let rv = (1);
+    let rv = 1;
     if (!(fp = fopen_config_file(filename, src)))
-        return (0);
+        return 0;
     reset_duplicate_opt_detection();
     free_config_sections();
     cptr.stI32(cptr.add(iflags, 52), src);
@@ -1388,12 +1388,12 @@ export function read_config_file(filename, src) {
 function cnf_parser_init(parser) {
     cptr.stI32(cptr.add(parser, 12), 1);
     cptr.stPtr(cptr.add(parser, 16), cptr.stPtr(cptr.add(parser, 24), null));
-    cptr.st1(cptr.add(parser, 32), (0));
-    cptr.st1(cptr.add(parser, 33), (0));
-    cptr.stI32(cptr.add(parser, 8), Math.imul(4, 256) >>> 0);
+    cptr.st1(cptr.add(parser, 32), 0);
+    cptr.st1(cptr.add(parser, 33), 0);
+    cptr.stI32(cptr.add(parser, 8), 1024);
     cptr.stPtr(parser, alloc(cptr.ldI32(cptr.add(parser, 8))));
-    cptr.st1(cptr.add(parser, 34), (0));
-    cptr.st1(cptr.add(parser, 35), (0));
+    cptr.st1(cptr.add(parser, 34), 0);
+    cptr.st1(cptr.add(parser, 35), 0);
     __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32(cptr.add(parser, 8)) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
 }
 
@@ -1408,19 +1408,19 @@ function cnf_parser_done(parser) {
 
 /** C ref: cfgfiles.c:1693 — @param {CPtr} p @param {CPtr} proc */
 function parse_conf_buf(p, proc) {
-    cptr.st1(cptr.add(p, 34), (0));
-    cptr.st1(cptr.add(p, 35), (0));
+    cptr.st1(cptr.add(p, 34), 0);
+    cptr.st1(cptr.add(p, 35), 0);
     cptr.stPtr(cptr.add(p, 16), cptr.strchr(cptr.ldPtr(p), 10));
     if (cptr.ld1s(cptr.add(p, 32))) {
         if (cptr.ldPtr(cptr.add(p, 16)))
-            cptr.st1(cptr.add(p, 32), (0));
+            cptr.st1(cptr.add(p, 32), 0);
     } else {
         if (!cptr.ldPtr(cptr.add(p, 16))) {
             if (cptr.strlen(cptr.ldPtr(p)) < BigInt(((cptr.ldI32(cptr.add(p, 8)) - 2) >>> 0) >>> 0)) {
                 cptr.stPtr(cptr.add(p, 16), eos(cptr.ldPtr(p)));
             } else {
                 config_error_add(__sl120);
-                cptr.st1(cptr.add(p, 32), (1));
+                cptr.st1(cptr.add(p, 32), 1);
             }
         } else {
             cptr.st1(cptr.ldPtr(cptr.add(p, 16)), 0);
@@ -1428,8 +1428,8 @@ function parse_conf_buf(p, proc) {
         if (cptr.ldPtr(cptr.add(p, 16))) {
             let tmpbuf = null;
             let len;
-            let ignoreline = (0);
-            let oldline = (0);
+            let ignoreline = 0;
+            let oldline = 0;
             cptr.st1(cptr.add(p, 33), schar((cptr.cmp(cptr.predec(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 92 ? 1 : 0)));
             if (cptr.ld1s(cptr.add(p, 33)))
                 cptr.st1(cptr.ldPtr(cptr.add(p, 16)), 0);
@@ -1439,16 +1439,16 @@ function parse_conf_buf(p, proc) {
                 cptr.stI32(cptr.add(p, 12), 0);
                 if (cptr.ldPtr(cptr.add(p, 24)))
                     cptr.free(cptr.ldPtr(cptr.add(p, 24))), cptr.stPtr(cptr.add(p, 24), null);
-                cptr.st1(cptr.add(p, 35), (1));
+                cptr.st1(cptr.add(p, 35), 1);
                 return;
             }
             cptr.stPtr(cptr.add(p, 16), cptr.ldPtr(p));
             while (cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 32 || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 9 ? 1 : 0)
                 cptr.preinc(() => cptr.ldPtr(cptr.add(p, 16)), (v) => { cptr.stPtr(cptr.add(p, 16), v); });
             if (!cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) || cptr.ld1s(cptr.ldPtr(cptr.add(p, 16))) == 35 ? 1 : 0)
-                ignoreline = (1);
+                ignoreline = 1;
             if (cptr.ldPtr(cptr.add(p, 24)))
-                oldline = (1);
+                oldline = 1;
             if (!ignoreline) {
                 len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(p, 16))))) + 1) | 0;
                 if (cptr.ldPtr(cptr.add(p, 24)))
@@ -1469,7 +1469,7 @@ function parse_conf_buf(p, proc) {
                 cptr.free(cptr.ldPtr(cptr.add(p, 24))), cptr.stPtr(cptr.add(p, 24), null);
                 return;
             }
-            if (match_optname(cptr.ldPtr(cptr.add(p, 24)), __sl122, 6, (1))) {
+            if (match_optname(cptr.ldPtr(cptr.add(p, 24)), __sl122, 6, 1)) {
                 let section;
                 let bufp = find_optparam(cptr.ldPtr(cptr.add(p, 24)));
                 if (!bufp) {
@@ -1504,7 +1504,7 @@ export function parse_conf_str(str, proc) {
     let parser = cptr.alloc(40);
     cnf_parser_init(parser);
     free_config_sections();
-    config_error_init((0), __sl125, (0));
+    config_error_init(0, __sl125, 0);
     while (str && cptr.ld1s(str) ? 1 : 0) {
         len = 0n;
         while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32(cptr.add(parser, 8)) - 1) >>> 0) >>> 0) ? 1 : 0) {
@@ -1554,7 +1554,7 @@ function vconfig_error_add(str, the_args) {
     let buf = new Uint8Array(1280);
     vlen = cptr.vsnprintf(cptr.decay(buf), 1280n, str, the_args);
     (void (vlen));
-    cptr.st1(cptr.add(cptr.decay(buf), (256 - 1) | 0, 1), 0);
+    cptr.st1(cptr.add(cptr.decay(buf), 255, 1), 0);
     config_erradd(cptr.decay(buf));
 }
 
@@ -1589,19 +1589,19 @@ export function rcfile() {
         xtraopts = opts;
     }
     cptr.stI32(cptr.add(go, 520), 3);
-    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= ((256 / 2) | 0) ? 1 : 0) {
-        config_error_init((1), namesrc, (0));
+    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128 ? 1 : 0) {
+        config_error_init(1, namesrc, 0);
         config_error_add(__sl128, nameval);
         config_error_done();
         nameval = (namesrc = null);
     }
-    config_error_init((1), nameval, schar((nameval ? 1 : 0)));
+    config_error_init(1, nameval, schar((nameval ? 1 : 0)));
     void read_config_file(nameval, 1);
     config_error_done();
     if (xtraopts) {
         cptr.stI32(cptr.add(go, 520), 4);
-        config_error_init((0), envname, (0));
-        void parseoptions(xtraopts, (1), (0));
+        config_error_init(0, envname, 0);
+        void parseoptions(xtraopts, 1, 0);
         config_error_done();
     }
     if (cptr.ldPtr(cptr.add(gc, 432)))
@@ -1616,21 +1616,21 @@ export function rcfile_interface_options() {
     heed_this_option(0);
     heed_this_option(166);
     set_ignore_errors_on_unmatched();
-    ignore_statement_errors = (1);
+    ignore_statement_errors = 1;
     rcfile();
     heed_all_config_statements();
     heed_all_options();
     disregard_this_option(0);
     disregard_this_option(166);
     clear_ignore_errors_on_unmatched();
-    ignore_statement_errors = (0);
+    ignore_statement_errors = 0;
 }
 
 /** C ref: cfgfiles.c:1979 */
 export function heed_all_config_statements() {
     let i;
     for (i = 0; i < disregarded_config_lines.length; i++) {
-        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), i, 1), (0));
+        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), i, 1), 0);
     }
 }
 
@@ -1638,37 +1638,37 @@ export function heed_all_config_statements() {
 export function disregard_all_config_statements() {
     let i;
     for (i = 0; i < disregarded_config_lines.length; i++) {
-        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), i, 1), (1));
+        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), i, 1), 1);
     }
 }
 
 /** C ref: cfgfiles.c:1997 — @param {CInt} statement_idx */
 export function heed_this_config_statement(statement_idx) {
     if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
-        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), (0));
+        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), 0);
 }
 
 /** C ref: cfgfiles.c:2003 — @param {CInt} statement_idx */
 export function disregard_this_config_statement(statement_idx) {
     if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
-        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), (1));
+        cptr.st1(cptr.add(cptr.decay(disregarded_config_lines), statement_idx, 1), 1);
 }
 
 /** C ref: cfgfiles.c:2010 */
 export function clear_ignore_errors_on_unmatched() {
-    ignore_errors_on_unmatched = (0);
+    ignore_errors_on_unmatched = 0;
 }
 
 /** C ref: cfgfiles.c:2015 */
 export function set_ignore_errors_on_unmatched() {
-    ignore_errors_on_unmatched = (1);
+    ignore_errors_on_unmatched = 1;
 }
 
 /** C ref: cfgfiles.c:2020 @returns {CInt} */
 export function config_unmatched_ignored() {
     if (ignore_errors_on_unmatched)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }
 
 /** C ref: cfgfiles.c:2031 */

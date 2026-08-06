@@ -98,8 +98,8 @@ export function sfi_arti_info(nhfp, d_arti_info, myname) {
         (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8)))(nhfp, d_arti_info, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
         (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8)))(nhfp, d_arti_info, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
@@ -117,11 +117,11 @@ export function sfo_nhrect(nhfp, d_nhrect, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_nhrect));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 8)))(nhfp, d_nhrect, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 16)))(nhfp, d_nhrect, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 8)))(nhfp, d_nhrect, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 16)))(nhfp, d_nhrect, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -129,12 +129,12 @@ export function sfo_nhrect(nhfp, d_nhrect, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
 export function sfi_nhrect(nhfp, d_nhrect, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 8)))(nhfp, d_nhrect, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 16)))(nhfp, d_nhrect, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 8)))(nhfp, d_nhrect, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 16)))(nhfp, d_nhrect, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -151,11 +151,11 @@ export function sfo_branch(nhfp, d_branch, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_branch));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 16)))(nhfp, d_branch, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 24)))(nhfp, d_branch, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 16)))(nhfp, d_branch, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 24)))(nhfp, d_branch, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -163,12 +163,12 @@ export function sfo_branch(nhfp, d_branch, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
 export function sfi_branch(nhfp, d_branch, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 16)))(nhfp, d_branch, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 24)))(nhfp, d_branch, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 16)))(nhfp, d_branch, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 24)))(nhfp, d_branch, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -185,11 +185,11 @@ export function sfo_bubble(nhfp, d_bubble, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 40n, 1, complex_dump(d_bubble));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 24)))(nhfp, d_bubble, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 32)))(nhfp, d_bubble, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 24)))(nhfp, d_bubble, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 32)))(nhfp, d_bubble, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -197,12 +197,12 @@ export function sfo_bubble(nhfp, d_bubble, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
 export function sfi_bubble(nhfp, d_bubble, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 24)))(nhfp, d_bubble, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 32)))(nhfp, d_bubble, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 24)))(nhfp, d_bubble, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 32)))(nhfp, d_bubble, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -219,11 +219,11 @@ export function sfo_cemetery(nhfp, d_cemetery, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 184n, 1, complex_dump(d_cemetery));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 32)))(nhfp, d_cemetery, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 40)))(nhfp, d_cemetery, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 32)))(nhfp, d_cemetery, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 40)))(nhfp, d_cemetery, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -231,12 +231,12 @@ export function sfo_cemetery(nhfp, d_cemetery, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
 export function sfi_cemetery(nhfp, d_cemetery, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 32)))(nhfp, d_cemetery, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 40)))(nhfp, d_cemetery, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 32)))(nhfp, d_cemetery, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 40)))(nhfp, d_cemetery, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -253,11 +253,11 @@ export function sfo_context_info(nhfp, d_context_info, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 720n, 1, complex_dump(d_context_info));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 40)))(nhfp, d_context_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 48)))(nhfp, d_context_info, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 40)))(nhfp, d_context_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 48)))(nhfp, d_context_info, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -265,12 +265,12 @@ export function sfo_context_info(nhfp, d_context_info, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
 export function sfi_context_info(nhfp, d_context_info, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 40)))(nhfp, d_context_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 48)))(nhfp, d_context_info, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 40)))(nhfp, d_context_info, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 48)))(nhfp, d_context_info, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -287,11 +287,11 @@ export function sfo_nhcoord(nhfp, d_nhcoord, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, complex_dump(d_nhcoord));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 48)))(nhfp, d_nhcoord, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 56)))(nhfp, d_nhcoord, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 48)))(nhfp, d_nhcoord, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 56)))(nhfp, d_nhcoord, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -299,12 +299,12 @@ export function sfo_nhcoord(nhfp, d_nhcoord, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
 export function sfi_nhcoord(nhfp, d_nhcoord, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 48)))(nhfp, d_nhcoord, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 56)))(nhfp, d_nhcoord, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 48)))(nhfp, d_nhcoord, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 56)))(nhfp, d_nhcoord, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -321,11 +321,11 @@ export function sfo_damage(nhfp, d_damage, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_damage));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 56)))(nhfp, d_damage, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 64)))(nhfp, d_damage, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 56)))(nhfp, d_damage, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 64)))(nhfp, d_damage, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -333,12 +333,12 @@ export function sfo_damage(nhfp, d_damage, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
 export function sfi_damage(nhfp, d_damage, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 56)))(nhfp, d_damage, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 64)))(nhfp, d_damage, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 56)))(nhfp, d_damage, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 64)))(nhfp, d_damage, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -355,11 +355,11 @@ export function sfo_dest_area(nhfp, d_dest_area, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 16n, 1, complex_dump(d_dest_area));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 64)))(nhfp, d_dest_area, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 72)))(nhfp, d_dest_area, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 64)))(nhfp, d_dest_area, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 72)))(nhfp, d_dest_area, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -367,12 +367,12 @@ export function sfo_dest_area(nhfp, d_dest_area, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
 export function sfi_dest_area(nhfp, d_dest_area, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 64)))(nhfp, d_dest_area, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 72)))(nhfp, d_dest_area, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 64)))(nhfp, d_dest_area, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 72)))(nhfp, d_dest_area, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -389,11 +389,11 @@ export function sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 114n, 1, complex_dump(d_dgn_topology));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 72)))(nhfp, d_dgn_topology, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 80)))(nhfp, d_dgn_topology, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 72)))(nhfp, d_dgn_topology, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 80)))(nhfp, d_dgn_topology, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -401,12 +401,12 @@ export function sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
 export function sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 72)))(nhfp, d_dgn_topology, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 80)))(nhfp, d_dgn_topology, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 72)))(nhfp, d_dgn_topology, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 80)))(nhfp, d_dgn_topology, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -423,11 +423,11 @@ export function sfo_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 112n, 1, complex_dump(d_dungeon));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 80)))(nhfp, d_dungeon, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 88)))(nhfp, d_dungeon, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 80)))(nhfp, d_dungeon, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 88)))(nhfp, d_dungeon, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -435,12 +435,12 @@ export function sfo_dungeon(nhfp, d_dungeon, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
 export function sfi_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 80)))(nhfp, d_dungeon, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 88)))(nhfp, d_dungeon, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 80)))(nhfp, d_dungeon, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 88)))(nhfp, d_dungeon, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -457,11 +457,11 @@ export function sfo_d_level(nhfp, d_d_level, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, complex_dump(d_d_level));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 88)))(nhfp, d_d_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 96)))(nhfp, d_d_level, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 88)))(nhfp, d_d_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 96)))(nhfp, d_d_level, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -469,12 +469,12 @@ export function sfo_d_level(nhfp, d_d_level, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
 export function sfi_d_level(nhfp, d_d_level, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 88)))(nhfp, d_d_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 96)))(nhfp, d_d_level, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 88)))(nhfp, d_d_level, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 96)))(nhfp, d_d_level, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -491,11 +491,11 @@ export function sfo_ebones(nhfp, d_ebones, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 36n, 1, complex_dump(d_ebones));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 96)))(nhfp, d_ebones, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 104)))(nhfp, d_ebones, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 96)))(nhfp, d_ebones, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 104)))(nhfp, d_ebones, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -503,12 +503,12 @@ export function sfo_ebones(nhfp, d_ebones, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
 export function sfi_ebones(nhfp, d_ebones, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 96)))(nhfp, d_ebones, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 104)))(nhfp, d_ebones, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 96)))(nhfp, d_ebones, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 104)))(nhfp, d_ebones, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -525,11 +525,11 @@ export function sfo_edog(nhfp, d_edog, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 64n, 1, complex_dump(d_edog));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 104)))(nhfp, d_edog, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 112)))(nhfp, d_edog, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 104)))(nhfp, d_edog, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 112)))(nhfp, d_edog, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -537,12 +537,12 @@ export function sfo_edog(nhfp, d_edog, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
 export function sfi_edog(nhfp, d_edog, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 104)))(nhfp, d_edog, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 112)))(nhfp, d_edog, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 104)))(nhfp, d_edog, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 112)))(nhfp, d_edog, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -559,11 +559,11 @@ export function sfo_egd(nhfp, d_egd, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 652n, 1, complex_dump(d_egd));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 112)))(nhfp, d_egd, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 120)))(nhfp, d_egd, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 112)))(nhfp, d_egd, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 120)))(nhfp, d_egd, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -571,12 +571,12 @@ export function sfo_egd(nhfp, d_egd, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
 export function sfi_egd(nhfp, d_egd, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 112)))(nhfp, d_egd, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 120)))(nhfp, d_egd, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 112)))(nhfp, d_egd, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 120)))(nhfp, d_egd, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -593,11 +593,11 @@ export function sfo_emin(nhfp, d_emin, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_emin));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 120)))(nhfp, d_emin, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 128)))(nhfp, d_emin, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 120)))(nhfp, d_emin, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 128)))(nhfp, d_emin, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -605,12 +605,12 @@ export function sfo_emin(nhfp, d_emin, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
 export function sfi_emin(nhfp, d_emin, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 120)))(nhfp, d_emin, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 128)))(nhfp, d_emin, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 120)))(nhfp, d_emin, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 128)))(nhfp, d_emin, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -627,11 +627,11 @@ export function sfo_engr(nhfp, d_engr, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 80n, 1, complex_dump(d_engr));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 128)))(nhfp, d_engr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 136)))(nhfp, d_engr, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 128)))(nhfp, d_engr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 136)))(nhfp, d_engr, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -639,12 +639,12 @@ export function sfo_engr(nhfp, d_engr, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
 export function sfi_engr(nhfp, d_engr, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 128)))(nhfp, d_engr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 136)))(nhfp, d_engr, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 128)))(nhfp, d_engr, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 136)))(nhfp, d_engr, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -661,11 +661,11 @@ export function sfo_epri(nhfp, d_epri, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 56n, 1, complex_dump(d_epri));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 136)))(nhfp, d_epri, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 144)))(nhfp, d_epri, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 136)))(nhfp, d_epri, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 144)))(nhfp, d_epri, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -673,12 +673,12 @@ export function sfo_epri(nhfp, d_epri, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
 export function sfi_epri(nhfp, d_epri, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 136)))(nhfp, d_epri, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 144)))(nhfp, d_epri, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 136)))(nhfp, d_epri, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 144)))(nhfp, d_epri, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -695,11 +695,11 @@ export function sfo_eshk(nhfp, d_eshk, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4960n, 1, complex_dump(d_eshk));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 144)))(nhfp, d_eshk, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 152)))(nhfp, d_eshk, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 144)))(nhfp, d_eshk, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 152)))(nhfp, d_eshk, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -707,12 +707,12 @@ export function sfo_eshk(nhfp, d_eshk, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
 export function sfi_eshk(nhfp, d_eshk, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 144)))(nhfp, d_eshk, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 152)))(nhfp, d_eshk, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 144)))(nhfp, d_eshk, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 152)))(nhfp, d_eshk, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -729,11 +729,11 @@ export function sfo_fe(nhfp, d_fe, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 48n, 1, complex_dump(d_fe));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 152)))(nhfp, d_fe, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 160)))(nhfp, d_fe, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 152)))(nhfp, d_fe, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 160)))(nhfp, d_fe, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -741,12 +741,12 @@ export function sfo_fe(nhfp, d_fe, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
 export function sfi_fe(nhfp, d_fe, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 152)))(nhfp, d_fe, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 160)))(nhfp, d_fe, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 152)))(nhfp, d_fe, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 160)))(nhfp, d_fe, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -763,11 +763,11 @@ export function sfo_flag(nhfp, d_flag, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 208n, 1, complex_dump(d_flag));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 160)))(nhfp, d_flag, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 168)))(nhfp, d_flag, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 160)))(nhfp, d_flag, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 168)))(nhfp, d_flag, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -775,12 +775,12 @@ export function sfo_flag(nhfp, d_flag, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
 export function sfi_flag(nhfp, d_flag, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 160)))(nhfp, d_flag, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 168)))(nhfp, d_flag, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 160)))(nhfp, d_flag, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 168)))(nhfp, d_flag, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -797,11 +797,11 @@ export function sfo_fruit(nhfp, d_fruit, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 48n, 1, complex_dump(d_fruit));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 168)))(nhfp, d_fruit, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 176)))(nhfp, d_fruit, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 168)))(nhfp, d_fruit, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 176)))(nhfp, d_fruit, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -809,12 +809,12 @@ export function sfo_fruit(nhfp, d_fruit, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
 export function sfi_fruit(nhfp, d_fruit, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 168)))(nhfp, d_fruit, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 176)))(nhfp, d_fruit, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 168)))(nhfp, d_fruit, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 176)))(nhfp, d_fruit, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -831,11 +831,11 @@ export function sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_gamelog_line));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 176)))(nhfp, d_gamelog_line, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 184)))(nhfp, d_gamelog_line, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 176)))(nhfp, d_gamelog_line, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 184)))(nhfp, d_gamelog_line, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -843,12 +843,12 @@ export function sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
 export function sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 176)))(nhfp, d_gamelog_line, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 184)))(nhfp, d_gamelog_line, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 176)))(nhfp, d_gamelog_line, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 184)))(nhfp, d_gamelog_line, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -865,11 +865,11 @@ export function sfo_kinfo(nhfp, d_kinfo, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 272n, 1, complex_dump(d_kinfo));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 184)))(nhfp, d_kinfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 192)))(nhfp, d_kinfo, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 184)))(nhfp, d_kinfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 192)))(nhfp, d_kinfo, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -877,12 +877,12 @@ export function sfo_kinfo(nhfp, d_kinfo, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
 export function sfi_kinfo(nhfp, d_kinfo, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 184)))(nhfp, d_kinfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 192)))(nhfp, d_kinfo, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 184)))(nhfp, d_kinfo, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 192)))(nhfp, d_kinfo, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -899,11 +899,11 @@ export function sfo_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 128n, 1, complex_dump(d_levelflags));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 192)))(nhfp, d_levelflags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 200)))(nhfp, d_levelflags, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 192)))(nhfp, d_levelflags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 200)))(nhfp, d_levelflags, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -911,12 +911,12 @@ export function sfo_levelflags(nhfp, d_levelflags, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
 export function sfi_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 192)))(nhfp, d_levelflags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 200)))(nhfp, d_levelflags, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 192)))(nhfp, d_levelflags, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 200)))(nhfp, d_levelflags, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -933,11 +933,11 @@ export function sfo_ls_t(nhfp, d_ls_t, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_ls_t));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 200)))(nhfp, d_ls_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 208)))(nhfp, d_ls_t, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 200)))(nhfp, d_ls_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 208)))(nhfp, d_ls_t, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -945,12 +945,12 @@ export function sfo_ls_t(nhfp, d_ls_t, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
 export function sfi_ls_t(nhfp, d_ls_t, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 200)))(nhfp, d_ls_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 208)))(nhfp, d_ls_t, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 200)))(nhfp, d_ls_t, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 208)))(nhfp, d_ls_t, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -967,11 +967,11 @@ export function sfo_linfo(nhfp, d_linfo, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, complex_dump(d_linfo));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 208)))(nhfp, d_linfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 216)))(nhfp, d_linfo, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 208)))(nhfp, d_linfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 216)))(nhfp, d_linfo, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -979,12 +979,12 @@ export function sfo_linfo(nhfp, d_linfo, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
 export function sfi_linfo(nhfp, d_linfo, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 208)))(nhfp, d_linfo, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 216)))(nhfp, d_linfo, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 208)))(nhfp, d_linfo, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 216)))(nhfp, d_linfo, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1001,11 +1001,11 @@ export function sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 52n, 1, complex_dump(d_mapseen_feat));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 216)))(nhfp, d_mapseen_feat, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 224)))(nhfp, d_mapseen_feat, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 216)))(nhfp, d_mapseen_feat, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 224)))(nhfp, d_mapseen_feat, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1013,12 +1013,12 @@ export function sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
 export function sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 216)))(nhfp, d_mapseen_feat, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 224)))(nhfp, d_mapseen_feat, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 216)))(nhfp, d_mapseen_feat, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 224)))(nhfp, d_mapseen_feat, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1035,11 +1035,11 @@ export function sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 64n, 1, complex_dump(d_mapseen_flags));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 224)))(nhfp, d_mapseen_flags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 232)))(nhfp, d_mapseen_flags, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 224)))(nhfp, d_mapseen_flags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 232)))(nhfp, d_mapseen_flags, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1047,12 +1047,12 @@ export function sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
 export function sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 224)))(nhfp, d_mapseen_flags, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 232)))(nhfp, d_mapseen_flags, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 224)))(nhfp, d_mapseen_flags, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 232)))(nhfp, d_mapseen_flags, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1069,11 +1069,11 @@ export function sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_mapseen_rooms));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 232)))(nhfp, d_mapseen_rooms, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 240)))(nhfp, d_mapseen_rooms, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 232)))(nhfp, d_mapseen_rooms, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 240)))(nhfp, d_mapseen_rooms, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1081,12 +1081,12 @@ export function sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
 export function sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 232)))(nhfp, d_mapseen_rooms, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 240)))(nhfp, d_mapseen_rooms, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 232)))(nhfp, d_mapseen_rooms, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 240)))(nhfp, d_mapseen_rooms, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1103,11 +1103,11 @@ export function sfo_mkroom(nhfp, d_mkroom, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 224n, 1, complex_dump(d_mkroom));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 240)))(nhfp, d_mkroom, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 248)))(nhfp, d_mkroom, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 240)))(nhfp, d_mkroom, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 248)))(nhfp, d_mkroom, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1115,12 +1115,12 @@ export function sfo_mkroom(nhfp, d_mkroom, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
 export function sfi_mkroom(nhfp, d_mkroom, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 240)))(nhfp, d_mkroom, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 248)))(nhfp, d_mkroom, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 240)))(nhfp, d_mkroom, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 248)))(nhfp, d_mkroom, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1137,11 +1137,11 @@ export function sfo_monst(nhfp, d_monst, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 320n, 1, complex_dump(d_monst));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 248)))(nhfp, d_monst, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 256)))(nhfp, d_monst, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 248)))(nhfp, d_monst, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 256)))(nhfp, d_monst, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1149,12 +1149,12 @@ export function sfo_monst(nhfp, d_monst, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
 export function sfi_monst(nhfp, d_monst, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 248)))(nhfp, d_monst, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 256)))(nhfp, d_monst, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 248)))(nhfp, d_monst, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 256)))(nhfp, d_monst, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1171,11 +1171,11 @@ export function sfo_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 12n, 1, complex_dump(d_mvitals));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 256)))(nhfp, d_mvitals, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 264)))(nhfp, d_mvitals, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 256)))(nhfp, d_mvitals, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 264)))(nhfp, d_mvitals, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1183,12 +1183,12 @@ export function sfo_mvitals(nhfp, d_mvitals, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
 export function sfi_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 256)))(nhfp, d_mvitals, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 264)))(nhfp, d_mvitals, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 256)))(nhfp, d_mvitals, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 264)))(nhfp, d_mvitals, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1205,11 +1205,11 @@ export function sfo_obj(nhfp, d_obj, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 216n, 1, complex_dump(d_obj));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 264)))(nhfp, d_obj, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 272)))(nhfp, d_obj, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 264)))(nhfp, d_obj, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 272)))(nhfp, d_obj, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1217,12 +1217,12 @@ export function sfo_obj(nhfp, d_obj, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
 export function sfi_obj(nhfp, d_obj, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 264)))(nhfp, d_obj, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 272)))(nhfp, d_obj, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 264)))(nhfp, d_obj, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 272)))(nhfp, d_obj, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1239,11 +1239,11 @@ export function sfo_objclass(nhfp, d_objclass, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 272)))(nhfp, d_objclass, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 280)))(nhfp, d_objclass, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 272)))(nhfp, d_objclass, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 280)))(nhfp, d_objclass, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1251,12 +1251,12 @@ export function sfo_objclass(nhfp, d_objclass, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
 export function sfi_objclass(nhfp, d_objclass, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 272)))(nhfp, d_objclass, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 280)))(nhfp, d_objclass, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 272)))(nhfp, d_objclass, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 280)))(nhfp, d_objclass, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1273,11 +1273,11 @@ export function sfo_q_score(nhfp, d_q_score, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 88n, 1, complex_dump(d_q_score));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 280)))(nhfp, d_q_score, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 288)))(nhfp, d_q_score, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 280)))(nhfp, d_q_score, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 288)))(nhfp, d_q_score, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1285,12 +1285,12 @@ export function sfo_q_score(nhfp, d_q_score, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
 export function sfi_q_score(nhfp, d_q_score, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 280)))(nhfp, d_q_score, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 288)))(nhfp, d_q_score, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 280)))(nhfp, d_q_score, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 288)))(nhfp, d_q_score, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1307,11 +1307,11 @@ export function sfo_rm(nhfp, d_rm, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 36n, 1, complex_dump(d_rm));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 288)))(nhfp, d_rm, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 296)))(nhfp, d_rm, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 288)))(nhfp, d_rm, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 296)))(nhfp, d_rm, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1319,12 +1319,12 @@ export function sfo_rm(nhfp, d_rm, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
 export function sfi_rm(nhfp, d_rm, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 288)))(nhfp, d_rm, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 296)))(nhfp, d_rm, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 288)))(nhfp, d_rm, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 296)))(nhfp, d_rm, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1341,11 +1341,11 @@ export function sfo_spell(nhfp, d_spell, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_spell));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 296)))(nhfp, d_spell, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 304)))(nhfp, d_spell, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 296)))(nhfp, d_spell, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 304)))(nhfp, d_spell, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1353,12 +1353,12 @@ export function sfo_spell(nhfp, d_spell, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
 export function sfi_spell(nhfp, d_spell, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 296)))(nhfp, d_spell, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 304)))(nhfp, d_spell, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 296)))(nhfp, d_spell, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 304)))(nhfp, d_spell, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1375,11 +1375,11 @@ export function sfo_stairway(nhfp, d_stairway, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 24n, 1, complex_dump(d_stairway));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 304)))(nhfp, d_stairway, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 312)))(nhfp, d_stairway, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 304)))(nhfp, d_stairway, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 312)))(nhfp, d_stairway, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1387,12 +1387,12 @@ export function sfo_stairway(nhfp, d_stairway, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
 export function sfi_stairway(nhfp, d_stairway, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 304)))(nhfp, d_stairway, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 312)))(nhfp, d_stairway, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 304)))(nhfp, d_stairway, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 312)))(nhfp, d_stairway, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1409,11 +1409,11 @@ export function sfo_s_level(nhfp, d_s_level, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 56n, 1, complex_dump(d_s_level));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 312)))(nhfp, d_s_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 320)))(nhfp, d_s_level, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 312)))(nhfp, d_s_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 320)))(nhfp, d_s_level, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1421,12 +1421,12 @@ export function sfo_s_level(nhfp, d_s_level, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
 export function sfi_s_level(nhfp, d_s_level, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 312)))(nhfp, d_s_level, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 320)))(nhfp, d_s_level, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 312)))(nhfp, d_s_level, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 320)))(nhfp, d_s_level, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1443,11 +1443,11 @@ export function sfo_trap(nhfp, d_trap, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 40n, 1, complex_dump(d_trap));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 320)))(nhfp, d_trap, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 328)))(nhfp, d_trap, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 320)))(nhfp, d_trap, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 328)))(nhfp, d_trap, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1455,12 +1455,12 @@ export function sfo_trap(nhfp, d_trap, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
 export function sfi_trap(nhfp, d_trap, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 320)))(nhfp, d_trap, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 328)))(nhfp, d_trap, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 320)))(nhfp, d_trap, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 328)))(nhfp, d_trap, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1477,11 +1477,11 @@ export function sfo_you(nhfp, d_you, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 336)))(nhfp, d_you, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 344)))(nhfp, d_you, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 336)))(nhfp, d_you, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 344)))(nhfp, d_you, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1489,12 +1489,12 @@ export function sfo_you(nhfp, d_you, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
 export function sfi_you(nhfp, d_you, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 336)))(nhfp, d_you, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 344)))(nhfp, d_you, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 336)))(nhfp, d_you, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 344)))(nhfp, d_you, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1511,11 +1511,11 @@ export function sfo_any(nhfp, d_any, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_any));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 344)))(nhfp, d_any, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 352)))(nhfp, d_any, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 344)))(nhfp, d_any, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 352)))(nhfp, d_any, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1523,12 +1523,12 @@ export function sfo_any(nhfp, d_any, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
 export function sfi_any(nhfp, d_any, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 344)))(nhfp, d_any, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 352)))(nhfp, d_any, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 344)))(nhfp, d_any, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 352)))(nhfp, d_any, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1545,11 +1545,11 @@ export function sfo_aligntyp(nhfp, d_aligntyp, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_aligntyp(d_aligntyp));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 352)))(nhfp, d_aligntyp, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 360)))(nhfp, d_aligntyp, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 352)))(nhfp, d_aligntyp, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 360)))(nhfp, d_aligntyp, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1557,12 +1557,12 @@ export function sfo_aligntyp(nhfp, d_aligntyp, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
 export function sfi_aligntyp(nhfp, d_aligntyp, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 352)))(nhfp, d_aligntyp, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 360)))(nhfp, d_aligntyp, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 352)))(nhfp, d_aligntyp, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 360)))(nhfp, d_aligntyp, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1579,11 +1579,11 @@ export function sfo_boolean(nhfp, d_boolean, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_boolean(d_boolean));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 360)))(nhfp, d_boolean, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 368)))(nhfp, d_boolean, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 360)))(nhfp, d_boolean, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 368)))(nhfp, d_boolean, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1591,12 +1591,12 @@ export function sfo_boolean(nhfp, d_boolean, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
 export function sfi_boolean(nhfp, d_boolean, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 360)))(nhfp, d_boolean, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 368)))(nhfp, d_boolean, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 360)))(nhfp, d_boolean, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 368)))(nhfp, d_boolean, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1613,11 +1613,11 @@ export function sfo_coordxy(nhfp, d_coordxy, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_coordxy));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 368)))(nhfp, d_coordxy, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 376)))(nhfp, d_coordxy, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 368)))(nhfp, d_coordxy, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 376)))(nhfp, d_coordxy, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1625,12 +1625,12 @@ export function sfo_coordxy(nhfp, d_coordxy, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
 export function sfi_coordxy(nhfp, d_coordxy, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 368)))(nhfp, d_coordxy, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 376)))(nhfp, d_coordxy, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 368)))(nhfp, d_coordxy, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 376)))(nhfp, d_coordxy, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1647,11 +1647,11 @@ export function sfo_int(nhfp, d_int, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int(d_int));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 384)))(nhfp, d_int, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 392)))(nhfp, d_int, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 384)))(nhfp, d_int, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 392)))(nhfp, d_int, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1659,12 +1659,12 @@ export function sfo_int(nhfp, d_int, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
 export function sfi_int(nhfp, d_int, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 384)))(nhfp, d_int, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 392)))(nhfp, d_int, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 384)))(nhfp, d_int, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 392)))(nhfp, d_int, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1681,11 +1681,11 @@ export function sfo_int16(nhfp, d_int16, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_int16));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 392)))(nhfp, d_int16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 400)))(nhfp, d_int16, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 392)))(nhfp, d_int16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 400)))(nhfp, d_int16, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1693,12 +1693,12 @@ export function sfo_int16(nhfp, d_int16, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
 export function sfi_int16(nhfp, d_int16, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 392)))(nhfp, d_int16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 400)))(nhfp, d_int16, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 392)))(nhfp, d_int16, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 400)))(nhfp, d_int16, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1715,11 +1715,11 @@ export function sfo_int32(nhfp, d_int32, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int32(d_int32));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 400)))(nhfp, d_int32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 408)))(nhfp, d_int32, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 400)))(nhfp, d_int32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 408)))(nhfp, d_int32, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1727,12 +1727,12 @@ export function sfo_int32(nhfp, d_int32, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
 export function sfi_int32(nhfp, d_int32, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 400)))(nhfp, d_int32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 408)))(nhfp, d_int32, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 400)))(nhfp, d_int32, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 408)))(nhfp, d_int32, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1749,11 +1749,11 @@ export function sfo_int64(nhfp, d_int64, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_int64(d_int64));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 408)))(nhfp, d_int64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 416)))(nhfp, d_int64, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 408)))(nhfp, d_int64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 416)))(nhfp, d_int64, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1761,12 +1761,12 @@ export function sfo_int64(nhfp, d_int64, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
 export function sfi_int64(nhfp, d_int64, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 408)))(nhfp, d_int64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 416)))(nhfp, d_int64, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 408)))(nhfp, d_int64, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 416)))(nhfp, d_int64, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1783,11 +1783,11 @@ export function sfo_long(nhfp, d_long, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_long(d_long));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 416)))(nhfp, d_long, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 424)))(nhfp, d_long, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 416)))(nhfp, d_long, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 424)))(nhfp, d_long, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1795,12 +1795,12 @@ export function sfo_long(nhfp, d_long, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
 export function sfi_long(nhfp, d_long, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 416)))(nhfp, d_long, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 424)))(nhfp, d_long, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 416)))(nhfp, d_long, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 424)))(nhfp, d_long, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1817,11 +1817,11 @@ export function sfo_schar(nhfp, d_schar, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_schar(d_schar));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 424)))(nhfp, d_schar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 432)))(nhfp, d_schar, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 424)))(nhfp, d_schar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 432)))(nhfp, d_schar, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1829,12 +1829,12 @@ export function sfo_schar(nhfp, d_schar, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
 export function sfi_schar(nhfp, d_schar, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 424)))(nhfp, d_schar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 432)))(nhfp, d_schar, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 424)))(nhfp, d_schar, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 432)))(nhfp, d_schar, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1851,11 +1851,11 @@ export function sfo_short(nhfp, d_short, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_short(d_short));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 432)))(nhfp, d_short, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 440)))(nhfp, d_short, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 432)))(nhfp, d_short, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 440)))(nhfp, d_short, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1863,12 +1863,12 @@ export function sfo_short(nhfp, d_short, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
 export function sfi_short(nhfp, d_short, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 432)))(nhfp, d_short, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 440)))(nhfp, d_short, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 432)))(nhfp, d_short, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 440)))(nhfp, d_short, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1885,11 +1885,11 @@ export function sfo_size_t(nhfp, d_size_t, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_size_t(d_size_t));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 440)))(nhfp, d_size_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 448)))(nhfp, d_size_t, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 440)))(nhfp, d_size_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 448)))(nhfp, d_size_t, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1897,12 +1897,12 @@ export function sfo_size_t(nhfp, d_size_t, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
 export function sfi_size_t(nhfp, d_size_t, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 440)))(nhfp, d_size_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 448)))(nhfp, d_size_t, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 440)))(nhfp, d_size_t, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 448)))(nhfp, d_size_t, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1919,11 +1919,11 @@ export function sfo_time_t(nhfp, d_time_t, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_time_t(d_time_t));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 448)))(nhfp, d_time_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 456)))(nhfp, d_time_t, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 448)))(nhfp, d_time_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 456)))(nhfp, d_time_t, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1931,12 +1931,12 @@ export function sfo_time_t(nhfp, d_time_t, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
 export function sfi_time_t(nhfp, d_time_t, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 448)))(nhfp, d_time_t, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 456)))(nhfp, d_time_t, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 448)))(nhfp, d_time_t, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 456)))(nhfp, d_time_t, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1953,11 +1953,11 @@ export function sfo_uchar(nhfp, d_uchar, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_uchar(d_uchar));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 456)))(nhfp, d_uchar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 464)))(nhfp, d_uchar, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 456)))(nhfp, d_uchar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 464)))(nhfp, d_uchar, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1965,12 +1965,12 @@ export function sfo_uchar(nhfp, d_uchar, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
 export function sfi_uchar(nhfp, d_uchar, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 456)))(nhfp, d_uchar, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 464)))(nhfp, d_uchar, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 456)))(nhfp, d_uchar, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 464)))(nhfp, d_uchar, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -1987,11 +1987,11 @@ export function sfo_uint16(nhfp, d_uint16, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_uint16(d_uint16));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 464)))(nhfp, d_uint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 472)))(nhfp, d_uint16, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 464)))(nhfp, d_uint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 472)))(nhfp, d_uint16, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -1999,12 +1999,12 @@ export function sfo_uint16(nhfp, d_uint16, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
 export function sfi_uint16(nhfp, d_uint16, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 464)))(nhfp, d_uint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 472)))(nhfp, d_uint16, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 464)))(nhfp, d_uint16, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 472)))(nhfp, d_uint16, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2021,11 +2021,11 @@ export function sfo_uint32(nhfp, d_uint32, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, sfvalue_uint32(d_uint32));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 472)))(nhfp, d_uint32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 480)))(nhfp, d_uint32, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 472)))(nhfp, d_uint32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 480)))(nhfp, d_uint32, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2033,12 +2033,12 @@ export function sfo_uint32(nhfp, d_uint32, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
 export function sfi_uint32(nhfp, d_uint32, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 472)))(nhfp, d_uint32, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 480)))(nhfp, d_uint32, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 472)))(nhfp, d_uint32, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 480)))(nhfp, d_uint32, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2055,11 +2055,11 @@ export function sfo_uint64(nhfp, d_uint64, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_uint64(d_uint64));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 480)))(nhfp, d_uint64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 488)))(nhfp, d_uint64, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 480)))(nhfp, d_uint64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 488)))(nhfp, d_uint64, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2067,12 +2067,12 @@ export function sfo_uint64(nhfp, d_uint64, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
 export function sfi_uint64(nhfp, d_uint64, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 480)))(nhfp, d_uint64, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 488)))(nhfp, d_uint64, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 480)))(nhfp, d_uint64, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 488)))(nhfp, d_uint64, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2089,11 +2089,11 @@ export function sfo_ulong(nhfp, d_ulong, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_ulong(d_ulong));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 488)))(nhfp, d_ulong, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 496)))(nhfp, d_ulong, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 488)))(nhfp, d_ulong, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 496)))(nhfp, d_ulong, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2101,12 +2101,12 @@ export function sfo_ulong(nhfp, d_ulong, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
 export function sfi_ulong(nhfp, d_ulong, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 488)))(nhfp, d_ulong, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 496)))(nhfp, d_ulong, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 488)))(nhfp, d_ulong, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 496)))(nhfp, d_ulong, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2123,11 +2123,11 @@ export function sfo_unsigned(nhfp, d_unsigned, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 4n, 1, sfvalue_unsigned(d_unsigned));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 496)))(nhfp, d_unsigned, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 504)))(nhfp, d_unsigned, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 496)))(nhfp, d_unsigned, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 504)))(nhfp, d_unsigned, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2135,12 +2135,12 @@ export function sfo_unsigned(nhfp, d_unsigned, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
 export function sfi_unsigned(nhfp, d_unsigned, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 496)))(nhfp, d_unsigned, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 504)))(nhfp, d_unsigned, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 496)))(nhfp, d_unsigned, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 504)))(nhfp, d_unsigned, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2157,11 +2157,11 @@ export function sfo_ushort(nhfp, d_ushort, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_ushort(d_ushort));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 504)))(nhfp, d_ushort, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 512)))(nhfp, d_ushort, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 504)))(nhfp, d_ushort, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 512)))(nhfp, d_ushort, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2169,12 +2169,12 @@ export function sfo_ushort(nhfp, d_ushort, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
 export function sfi_ushort(nhfp, d_ushort, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 504)))(nhfp, d_ushort, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 512)))(nhfp, d_ushort, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 504)))(nhfp, d_ushort, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 512)))(nhfp, d_ushort, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2191,11 +2191,11 @@ export function sfo_xint16(nhfp, d_xint16, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 2n, 1, sfvalue_xint16(d_xint16));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 512)))(nhfp, d_xint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 520)))(nhfp, d_xint16, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 512)))(nhfp, d_xint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 520)))(nhfp, d_xint16, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2203,12 +2203,12 @@ export function sfo_xint16(nhfp, d_xint16, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
 export function sfi_xint16(nhfp, d_xint16, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 512)))(nhfp, d_xint16, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 520)))(nhfp, d_xint16, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 512)))(nhfp, d_xint16, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 520)))(nhfp, d_xint16, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2225,11 +2225,11 @@ export function sfo_xint8(nhfp, d_xint8, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_xint8(d_xint8));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 520)))(nhfp, d_xint8, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 528)))(nhfp, d_xint8, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 520)))(nhfp, d_xint8, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 528)))(nhfp, d_xint8, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2237,12 +2237,12 @@ export function sfo_xint8(nhfp, d_xint8, myname) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
 export function sfi_xint8(nhfp, d_xint8, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 520)))(nhfp, d_xint8, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 528)))(nhfp, d_xint8, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 520)))(nhfp, d_xint8, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 528)))(nhfp, d_xint8, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2259,11 +2259,11 @@ export function sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 536)))(nhfp, d_bitfield, myname, bfsz);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 544)))(nhfp, d_bitfield, myname, bfsz);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 536)))(nhfp, d_bitfield, myname, bfsz);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 544)))(nhfp, d_bitfield, myname, bfsz);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
     if (cptr.ldPtr(cptr.add(nhfp, 56)) && !cptr.ld1s(cptr.add(nhfp, 35)) ? 1 : 0)
@@ -2273,12 +2273,12 @@ export function sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bfsz */
 export function sfi_bitfield(nhfp, d_bitfield, myname, bfsz) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 536)))(nhfp, d_bitfield, myname, bfsz);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 544)))(nhfp, d_bitfield, myname, bfsz);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 536)))(nhfp, d_bitfield, myname, bfsz);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 544)))(nhfp, d_bitfield, myname, bfsz);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2295,11 +2295,11 @@ export function sfo_char(nhfp, d_char, myname, cnt) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 1n, cnt, sfvalue_char(d_char, cnt));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 528)))(nhfp, d_char, myname, cnt);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 536)))(nhfp, d_char, myname, cnt);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 528)))(nhfp, d_char, myname, cnt);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 536)))(nhfp, d_char, myname, cnt);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2307,12 +2307,12 @@ export function sfo_char(nhfp, d_char, myname, cnt) {
 /** C ref: sfbase.c:265 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function sfi_char(nhfp, d_char, myname, cnt) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 528)))(nhfp, d_char, myname, cnt);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 536)))(nhfp, d_char, myname, cnt);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 528)))(nhfp, d_char, myname, cnt);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 536)))(nhfp, d_char, myname, cnt);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2329,11 +2329,11 @@ export function sfo_genericptr(nhfp, d_genericptr, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 8n, 1, sfvalue_genericptr(d_genericptr));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 376)))(nhfp, d_genericptr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 384)))(nhfp, d_genericptr, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 376)))(nhfp, d_genericptr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 384)))(nhfp, d_genericptr, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2341,12 +2341,12 @@ export function sfo_genericptr(nhfp, d_genericptr, myname) {
 /** C ref: sfbase.c:306 — @param {CPtr} nhfp @param {CPtr} d_genericptr @param {CPtr} myname */
 export function sfi_genericptr(nhfp, d_genericptr, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 376)))(nhfp, d_genericptr, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 384)))(nhfp, d_genericptr, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 376)))(nhfp, d_genericptr, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 384)))(nhfp, d_genericptr, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
@@ -2363,11 +2363,11 @@ export function sfo_version_info(nhfp, d_version_info, myname) {
     if (cptr.ldPtr(cptr.add(nhfp, 56)))
         sf_log(nhfp, myname, 24n, 1, complex_dump(d_version_info));
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 328)))(nhfp, d_version_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 336)))(nhfp, d_version_info, myname);
     } else {
         let save_fplog = cptr.ldPtr(cptr.add(nhfp, 56));
         cptr.stPtr(cptr.add(nhfp, 56), null);
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 328)))(nhfp, d_version_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfoflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 336)))(nhfp, d_version_info, myname);
         cptr.stPtr(cptr.add(nhfp, 56), save_fplog);
     }
 }
@@ -2375,17 +2375,17 @@ export function sfo_version_info(nhfp, d_version_info, myname) {
 /** C ref: sfbase.c:348 — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
 export function sfi_version_info(nhfp, d_version_info, myname) {
     if (cptr.ld1s(cptr.add(nhfp, 32))) {
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 328)))(nhfp, d_version_info, myname);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 336)))(nhfp, d_version_info, myname);
     } else {
         let save_mode = cptr.ldI32(cptr.add(nhfp, 4));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & ~(8 | 16));
-        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | (16 << 1));
-        (cptr.ldPtr(cptr.add(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 8), 328)))(nhfp, d_version_info, myname);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) & -25);
+        cptr.stI32(cptr.add(nhfp, 4), cptr.ldI32(cptr.add(nhfp, 4)) | 32);
+        (cptr.ldPtr(cptr.add(cptr.add(sfiflprocs, cptr.ldI32(cptr.add(nhfp, 12)), 552), 336)))(nhfp, d_version_info, myname);
         cptr.stI32(cptr.add(nhfp, 4), save_mode);
     }
     if (!cptr.ld1s(cptr.add(nhfp, 35))) {
         if ((((cptr.ldI32(cptr.add(nhfp, 4)) & 8) != 0) || ((cptr.ldI32(cptr.add(nhfp, 4)) & 16) != 0) ? 1 : 0) && cptr.ldPtr(cptr.add(nhfp, 80)) ? 1 : 0) {
-            cptr.stU64(cptr.add(d_version_info, 8), cptr.ldU64(cptr.add(d_version_info, 8)) | (1n << 30n));
+            cptr.stU64(cptr.add(d_version_info, 8), cptr.ldU64(cptr.add(d_version_info, 8)) | 1073741824n);
             sfo_version_info(cptr.ldPtr(cptr.add(nhfp, 80)), d_version_info, myname);
         }
         if (cptr.ldPtr(cptr.add(nhfp, 56)))
@@ -2397,7 +2397,7 @@ export function sfi_version_info(nhfp, d_version_info, myname) {
 export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
     let fp = cptr.ldPtr(cptr.add(nhfp, 56));
     let iocount;
-    let dolog = schar(((cptr.ldI32(cptr.add(nhfp, 4)) & (16 << 1)) == 0));
+    let dolog = schar(((cptr.ldI32(cptr.add(nhfp, 4)) & 32) == 0));
     if (fp && dolog ? 1 : 0) {
         iocount = ((cptr.ldI32(cptr.add(nhfp, 4)) & 2) == 0) ? cptr.add(nhfp, 16) : cptr.add(nhfp, 24);
         void fprintf(fp, __sl0, cptr.ldI64(iocount), t1, sz, cnt, txtvalue);
@@ -2412,10 +2412,10 @@ export function sfvalue_char(a, n) {
     let i;
     let cp;
     cp = cptr.add(cptr.decay(__static_sfvalue_char_buf), 0, 1);
-    if (n < Number(BigInt.asIntN(32, (BigInt.asUintN(64, 120n - 1n)))))
+    if (n < 119)
         cptr.st1(cptr.add(cptr.decay(__static_sfvalue_char_buf), n, 1), 0);
     else
-        cptr.st1(cptr.add(cptr.decay(__static_sfvalue_char_buf), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 120n - 1n)))), 1), 0);
+        cptr.st1(cptr.add(cptr.decay(__static_sfvalue_char_buf), 119, 1), 0);
     for (i = 0; i < n; ++i, cp = cptr.add(cp, 1), a = cptr.add(a, 1))
         cptr.st1(cp, cptr.ld1s(a));
     cptr.st1(cp, 0);

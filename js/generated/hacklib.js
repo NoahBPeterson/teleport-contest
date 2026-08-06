@@ -109,7 +109,7 @@ export function letter(c) {
 
 /** C ref: hacklib.c:140 — @param {CInt} c @returns {CInt} */
 export function highc(c) {
-    return schar(((97 <= c && c <= 122 ? 1 : 0) ? (c & ~32) : c));
+    return schar(((97 <= c && c <= 122 ? 1 : 0) ? (c & -33) : c));
 }
 
 /** C ref: hacklib.c:147 — @param {CInt} c @returns {CInt} */
@@ -131,7 +131,7 @@ export function ucase(s) {
     let p;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (97 <= cptr.ld1s(p) && cptr.ld1s(p) <= 122 ? 1 : 0)
-            cptr.st1(p, cptr.ld1s(p) & ~32);
+            cptr.st1(p, cptr.ld1s(p) & -33);
     return s;
 }
 
@@ -145,15 +145,15 @@ export function upstart(s) {
 /** C ref: hacklib.c:187 — @param {CPtr} s @returns {CPtr} */
 export function upwords(s) {
     let p;
-    let space = (1);
+    let space = 1;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (cptr.ld1s(p) == 32) {
-            space = (1);
+            space = 1;
         } else if (space && letter(cptr.ld1s(p)) ? 1 : 0) {
             cptr.st1(p, highc(cptr.ld1s(p)));
-            space = (0);
+            space = 0;
         } else {
-            space = (0);
+            space = 0;
         }
     return s;
 }
@@ -163,7 +163,7 @@ export function mungspaces(bp) {
     let c;
     let p;
     let p2;
-    let was_space = (1);
+    let was_space = 1;
     for (p = (p2 = bp); (c = cptr.ld1s(p)) != 0; p = cptr.add(p, 1)) {
         if (c == 10)
             break;
@@ -224,14 +224,14 @@ export function str_start_is(str, chkstr, caseblind) {
         if (!cptr.ld1s(str))
             return schar((cptr.ld1s(chkstr) == 0));
         else if (!cptr.ld1s(chkstr))
-            return (1);
+            return 1;
         t1 = schar((caseblind ? lowc(cptr.ld1s(str)) : cptr.ld1s(str)));
         t2 = schar((caseblind ? lowc(cptr.ld1s(chkstr)) : cptr.ld1s(chkstr)));
         str = cptr.add(str, 1), chkstr = cptr.add(chkstr, 1);
         if (t1 != t2)
-            return (0);
+            return 0;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: hacklib.c:305 — @param {CPtr} str @param {CPtr} chkstr @returns {CInt} */
@@ -239,7 +239,7 @@ export function str_end_is(str, chkstr) {
     let clen = Number(BigInt.asIntN(32, cptr.strlen(chkstr)));
     if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= clen)
         return schar((!cptr.strncmp(cptr.add(eos(str), -(clen)), chkstr, BigInt.asUintN(64, BigInt(clen)))));
-    return (0);
+    return 0;
 }
 
 /** C ref: hacklib.c:316 — @param {CPtr} str @returns {CInt} */
@@ -285,10 +285,10 @@ export function copynchars(dst, src, n) {
 export function chrcasecpy(oc, nc) {
     if (97 <= oc && oc <= 122 ? 1 : 0) {
         if (65 <= nc && nc <= 90 ? 1 : 0)
-            nc = (nc + ((97 - 65) | 0)) | 0;
+            nc = (nc + 32) | 0;
     } else if (65 <= oc && oc <= 90 ? 1 : 0) {
         if (97 <= nc && nc <= 122 ? 1 : 0)
-            nc = (nc + ((65 - 97) | 0)) | 0;
+            nc = (nc + -32) | 0;
     }
     return schar(nc);
 }
@@ -362,7 +362,7 @@ export function xcrypt(str, buf) {
     let bitmask;
     for (bitmask = 1, p = str, q = buf; cptr.ld1s(p); q = cptr.add(q, 1)) {
         cptr.st1(q, cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; })));
-        if (cptr.ld1s(q) & (32 | 64))
+        if (cptr.ld1s(q) & 96)
             cptr.st1(q, cptr.ld1s(q) ^ bitmask);
         if ((bitmask <<= 1) >= 32)
             bitmask = 1;
@@ -375,8 +375,8 @@ export function xcrypt(str, buf) {
 export function onlyspace(s) {
     for (; cptr.ld1s(s); s = cptr.add(s, 1))
         if (cptr.ld1s(s) != 32 && cptr.ld1s(s) != 9 ? 1 : 0)
-            return (0);
-    return (1);
+            return 0;
+    return 1;
 }
 
 /** C ref: hacklib.c:493 — @param {CPtr} sbuf @returns {CPtr} */
@@ -397,7 +397,7 @@ export function tabexpand(sbuf) {
             ++idx;
         }
         if (idx >= 256) {
-            bp = cptr.add(cptr.decay(buf), (256 - 1) | 0, 1);
+            bp = cptr.add(cptr.decay(buf), 255, 1);
             break;
         }
     }
@@ -423,7 +423,7 @@ export function visctrl(c) {
         cptr.st1(cptr.add(ccc, i++), schar((c | 64)));
     } else if (c == 127) {
         cptr.st1(cptr.add(ccc, i++), 94);
-        cptr.st1(cptr.add(ccc, i++), schar((c & ~64)));
+        cptr.st1(cptr.add(ccc, i++), schar((c & -65)));
     } else {
         cptr.st1(cptr.add(ccc, i++), c);
     }
@@ -435,7 +435,7 @@ export function visctrl(c) {
 export function stripchars(bp, stuff_to_strip, orig) {
     let i = 0;
     let s = bp;
-    while (cptr.ld1s(orig) && i < ((256 - 1) | 0) ? 1 : 0) {
+    while (cptr.ld1s(orig) && i < 255 ? 1 : 0) {
         if (!cptr.strchr(stuff_to_strip, cptr.ld1s(orig))) {
             cptr.st1(cptr.postinc(() => s, (v) => { s = v; }), cptr.ld1s(orig));
             i++;
@@ -479,9 +479,9 @@ export function strNsubst(inoutbuf, orig, replacement, n) {
     let len = Number(BigInt.asUintN(32, cptr.strlen(orig)));
     let ocount = 0;
     let rcount = 0;
-    for (bp = inoutbuf, op = cptr.decay(workbuf); cptr.ld1s(bp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; ) {
+    for (bp = inoutbuf, op = cptr.decay(workbuf); cptr.ld1s(bp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0 ? 1 : 0; ) {
         if ((!len || !cptr.strncmp(bp, orig, BigInt(len >>> 0)) ? 1 : 0) && (++ocount == n || n == 0 ? 1 : 0) ? 1 : 0) {
-            for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; )
+            for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0 ? 1 : 0; )
                 cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
             ++rcount;
             if (len) {
@@ -492,7 +492,7 @@ export function strNsubst(inoutbuf, orig, replacement, n) {
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => bp, (v) => { bp = v; })));
     }
     if (!len && n == ((ocount + 1) | 0) ? 1 : 0) {
-        for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), (256 - 1) | 0, 1)) < 0 ? 1 : 0; )
+        for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0 ? 1 : 0; )
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
         ++rcount;
     }
@@ -604,9 +604,9 @@ export function strstri(str, sub) {
     for (i = 0; i < 32; i++)
         cptr.st1(cptr.add(cptr.decay(tstr), i, 1), cptr.st1(cptr.add(cptr.decay(tsub), i, 1), 0));
     for (k = 0, s1 = str; cptr.ld1s(s1); k++)
-        cptr.postinc1(cptr.add(cptr.decay(tstr), cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & ((32 - 1) | 0), 1));
+        cptr.postinc1(cptr.add(cptr.decay(tstr), cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & 31, 1));
     for (s2 = sub; cptr.ld1s(s2); --k)
-        cptr.postinc1(cptr.add(cptr.decay(tsub), cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })) & ((32 - 1) | 0), 1));
+        cptr.postinc1(cptr.add(cptr.decay(tsub), cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })) & 31, 1));
     if (k < 0)
         return null;
     for (i = 0; i < 32; i++)
@@ -716,50 +716,50 @@ export function copy_bytes(ifd, ofd) {
         if (nfrom >= 0n && nfrom <= 1024n ? 1 : 0)
             nto = cptr.write(ofd, cptr.decay(buf), BigInt.asUintN(64, nfrom));
         if (nto != nfrom || nfrom < 0n ? 1 : 0)
-            return (0);
+            return 0;
     } while (nfrom == 1024n);
-    return (1);
+    return 1;
 }
 
 /** C ref: hacklib.c:1029 — struct datamodel_information { sz, datamodel, dmplatform } (memory model v0.5) */
 
 /** C ref: hacklib.c:1035 — struct datamodel_information[5] */
 const dm = cptr.alloc(5 * 40);
-cptr.stI32(cptr.add(cptr.add(dm, 0), 0), 2);
-cptr.stI32(cptr.add(cptr.add(dm, 0), 4), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 0), 8), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 0), 12), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 0), 16), 8);
-cptr.stPtr(cptr.add(cptr.add(dm, 0), 24), __sl18);
-cptr.stPtr(cptr.add(cptr.add(dm, 0), 32), __sl18);
-cptr.stI32(cptr.add(cptr.add(dm, 40), 0), 2);
-cptr.stI32(cptr.add(cptr.add(dm, 40), 4), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 40), 8), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 40), 12), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 40), 16), 4);
-cptr.stPtr(cptr.add(cptr.add(dm, 40), 24), __sl19);
-cptr.stPtr(cptr.add(cptr.add(dm, 40), 32), __sl20);
-cptr.stI32(cptr.add(cptr.add(dm, 80), 0), 2);
-cptr.stI32(cptr.add(cptr.add(dm, 80), 4), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 80), 8), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 80), 12), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 80), 16), 8);
-cptr.stPtr(cptr.add(cptr.add(dm, 80), 24), __sl21);
-cptr.stPtr(cptr.add(cptr.add(dm, 80), 32), __sl22);
-cptr.stI32(cptr.add(cptr.add(dm, 120), 0), 2);
-cptr.stI32(cptr.add(cptr.add(dm, 120), 4), 4);
-cptr.stI32(cptr.add(cptr.add(dm, 120), 8), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 120), 12), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 120), 16), 8);
-cptr.stPtr(cptr.add(cptr.add(dm, 120), 24), __sl23);
-cptr.stPtr(cptr.add(cptr.add(dm, 120), 32), __sl24);
-cptr.stI32(cptr.add(cptr.add(dm, 160), 0), 2);
-cptr.stI32(cptr.add(cptr.add(dm, 160), 4), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 160), 8), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 160), 12), 8);
-cptr.stI32(cptr.add(cptr.add(dm, 160), 16), 8);
-cptr.stPtr(cptr.add(cptr.add(dm, 160), 24), __sl25);
-cptr.stPtr(cptr.add(cptr.add(dm, 160), 32), __sl26);
+cptr.stI32(cptr.add(dm, 0), 2);
+cptr.stI32(cptr.add(dm, 4), 4);
+cptr.stI32(cptr.add(dm, 8), 8);
+cptr.stI32(cptr.add(dm, 12), 8);
+cptr.stI32(cptr.add(dm, 16), 8);
+cptr.stPtr(cptr.add(dm, 24), __sl18);
+cptr.stPtr(cptr.add(dm, 32), __sl18);
+cptr.stI32(cptr.add(dm, 40), 2);
+cptr.stI32(cptr.add(dm, 44), 4);
+cptr.stI32(cptr.add(dm, 48), 4);
+cptr.stI32(cptr.add(dm, 52), 8);
+cptr.stI32(cptr.add(dm, 56), 4);
+cptr.stPtr(cptr.add(dm, 64), __sl19);
+cptr.stPtr(cptr.add(dm, 72), __sl20);
+cptr.stI32(cptr.add(dm, 80), 2);
+cptr.stI32(cptr.add(dm, 84), 4);
+cptr.stI32(cptr.add(dm, 88), 4);
+cptr.stI32(cptr.add(dm, 92), 8);
+cptr.stI32(cptr.add(dm, 96), 8);
+cptr.stPtr(cptr.add(dm, 104), __sl21);
+cptr.stPtr(cptr.add(dm, 112), __sl22);
+cptr.stI32(cptr.add(dm, 120), 2);
+cptr.stI32(cptr.add(dm, 124), 4);
+cptr.stI32(cptr.add(dm, 128), 8);
+cptr.stI32(cptr.add(dm, 132), 8);
+cptr.stI32(cptr.add(dm, 136), 8);
+cptr.stPtr(cptr.add(dm, 144), __sl23);
+cptr.stPtr(cptr.add(dm, 152), __sl24);
+cptr.stI32(cptr.add(dm, 160), 2);
+cptr.stI32(cptr.add(dm, 164), 8);
+cptr.stI32(cptr.add(dm, 168), 8);
+cptr.stI32(cptr.add(dm, 172), 8);
+cptr.stI32(cptr.add(dm, 176), 8);
+cptr.stPtr(cptr.add(dm, 184), __sl25);
+cptr.stPtr(cptr.add(dm, 192), __sl26);
 
 let __static_datamodel_unknown = __sl27; /** C ref: hacklib.c:1049 — char * (function-static) */
 

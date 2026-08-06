@@ -3,7 +3,7 @@
 // Input sha256: 816c57e507cf128fc7f5313c7f0c50a2183c9101764a9494704ec425bbef55a2
 // Transpiler: tools/c2js c2js emit v1+batch
 
-import { u32mod, uchar } from '../cmachine.js';
+import { u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import { windowprocs } from './windows.js';
 import { ARGV0, gc, gs } from './decl.js';
@@ -88,8 +88,8 @@ export function crashreport_init(argc, argv) {
         let in$ = cptr.box(0);
         cptr.stPtr(in$, ctxp);
         let cnt = 16;
-        if (cnt >= ((40 / 2) | 0))
-            cnt = uchar(((((40 / 2) | 0) - 1) | 0));
+        if (cnt >= 20)
+            cnt = 19;
         while (cnt) {
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.add(cptr.decay(__static_crashreport_init_hexdigits), (cptr.ld1u(in$.v) >> 4) & 15, 1)));
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.add(cptr.decay(__static_crashreport_init_hexdigits), cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15, 1)));
@@ -129,7 +129,7 @@ export function swr_add_uricoded(in$, out, remaining, markp) {
                 if (markp)
                     cptr.stPtr(out, markp), cptr.stI32(remaining, 0);
                 cptr.st1(cptr.ldPtr(out), 0);
-                return (1);
+                return 1;
             } else {
                 let chr = new Uint8Array(40);
                 let x;
@@ -147,11 +147,11 @@ export function swr_add_uricoded(in$, out, remaining, markp) {
             if (markp)
                 cptr.stPtr(out, markp), cptr.stI32(remaining, 0);
             cptr.st1(cptr.ldPtr(out), 0);
-            return (1);
+            return 1;
         }
         cptr.st1(cptr.ldPtr(out), 0);
     }
-    return (0);
+    return 0;
 }
 
 /** C ref: report.c:283 — char[8192] */
@@ -172,12 +172,12 @@ let mark = null;
 /** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
 export function submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32(cptr.add(gc, 424)) < 0 || cptr.ldI32(cptr.add(gc, 424)) > 8192 ? 1 : 0) ? 8192 : ((8192) < (cptr.ldI32(cptr.add(gc, 424))) ? (8192) : (cptr.ldI32(cptr.add(gc, 424))));
+        urem.v = (cptr.ldI32(cptr.add(gc, 424)) < 0 || cptr.ldI32(cptr.add(gc, 424)) > 8192 ? 1 : 0) ? 8192 : (8192 < (cptr.ldI32(cptr.add(gc, 424))) ? 8192 : (cptr.ldI32(cptr.add(gc, 424))));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;
         if (!cptr.ldPtr(cptr.add(sysopt, 144)))
-            return (0);
+            return 0;
         utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(sysopt, 144)))));
         mark = uend.v;
         if (utmp >= urem.v)
@@ -290,10 +290,10 @@ export function submit_web_report(cos, msg, why) {
             count = backtrace(bt, 20);
             info = backtrace_symbols(bt, count);
             for (x = 0; x < count; x++) {
-                copynchars(cptr.decay(temp), cptr.ldPtr(cptr.add(info, x, 8)), (((200 - 1) | 0) - 1) | 0);
+                copynchars(cptr.decay(temp), cptr.ldPtr(cptr.add(info, x, 8)), 198);
                 void strsubst(cptr.decay(temp), __sl12, __sl13);
                 void strsubst(cptr.decay(temp), __sl12, __sl13);
-                void __builtin___strncat_chk(cptr.decay(temp), __sl10, BigInt.asUintN(64, 200n - 1n), __builtin_object_size(cptr.decay(temp), 2 > 1 ? 1 : 0));
+                void __builtin___strncat_chk(cptr.decay(temp), __sl10, 199n, __builtin_object_size(cptr.decay(temp), 1));
                 if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
                     break __lbl_full;
                 ;
@@ -330,7 +330,7 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
-        void cptr.sprintf(cptr.decay(temp), __sl16, (((count + countpp) | 0) < (30) ? ((count + countpp) | 0) : (30)));
+        void cptr.sprintf(cptr.decay(temp), __sl16, (((count + countpp) | 0) < 30 ? ((count + countpp) | 0) : 30));
         if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
             break __lbl_full;
         ;
@@ -341,7 +341,7 @@ export function submit_web_report(cos, msg, why) {
     if (pid == 0) {
         let err = new Uint8Array(400);
         void execve(__sl17, xargv, environ);
-        void cptr.sprintf(cptr.decay(err), __sl18, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 400n - 28n)))), strerror((cptr.ldI32(__error()))));
+        void cptr.sprintf(cptr.decay(err), __sl18, 372, strerror((cptr.ldI32(__error()))));
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(cptr.decay(err));
         exit(1);
     } else {
@@ -349,10 +349,10 @@ export function submit_web_report(cos, msg, why) {
         cptr.stI32(__error(), 0);
         void waitpid(pid, status, 0);
         if (status.v) {
-            return (0);
+            return 0;
         }
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: report.c:461 @returns {CInt} */
@@ -374,12 +374,12 @@ export function NH_panictrace_libc() {
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
-        copynchars(cptr.decay(buf), cptr.ldPtr(cptr.add(info, x, 8)), (256 - 1) | 0);
+        copynchars(cptr.decay(buf), cptr.ldPtr(cptr.add(info, x, 8)), 255);
         void strsubst(cptr.decay(buf), __sl12, __sl13);
         void strsubst(cptr.decay(buf), __sl12, __sl13);
         raw_printf(__sl23, BigInt.asUintN(64, BigInt(x)), cptr.decay(buf));
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: report.c:529 @returns {CInt} */
@@ -389,9 +389,9 @@ export function NH_panictrace_gdb() {
     let buf = new Uint8Array(256);
     let gdb;
     if (cptr.eq(gdbpath, (null)) || cptr.ld1s(cptr.add(gdbpath, 0)) == 0 ? 1 : 0)
-        return (0);
+        return 0;
     if (cptr.eq(greppath, (null)) || cptr.ld1s(cptr.add(greppath, 0)) == 0 ? 1 : 0)
-        return (0);
+        return 0;
     nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __sl26);
     if (gdb) {
@@ -400,9 +400,9 @@ export function NH_panictrace_gdb() {
         void fflush(gdb);
         sleep(4);
         void pclose(gdb);
-        return (1);
+        return 1;
     } else {
-        return (0);
+        return 0;
     }
 }
 
@@ -428,7 +428,7 @@ export function get_saved_pline(lineno) {
 /** C ref: report.c:600 — @param {CInt} sig_unused */
 export function panictrace_handler(sig_unused) {
     let f2;
-    f2 = Number(BigInt.asIntN(32, cptr.write(2, __sl28, BigInt.asUintN(64, 19n - 1n))));
+    f2 = Number(BigInt.asIntN(32, cptr.write(2, __sl28, 18n)));
     (void (f2));
     NH_abort(null);
 }

@@ -24,10 +24,10 @@ export function regex_init() {
 /** C ref: posixregex.c:66 — @param {CPtr} s @param {CPtr} re @returns {CInt} */
 export function regex_compile(s, re) {
     if (!re)
-        return (0);
-    if ((cptr.stI32(cptr.add(re, 32), regcomp(re, s, 1 | 4))))
-        return (0);
-    return (1);
+        return 0;
+    if ((cptr.stI32(cptr.add(re, 32), regcomp(re, s, 5))))
+        return 0;
+    return 1;
 }
 
 /** C ref: posixregex.c:76 — @param {CPtr} re @param {CPtr} errbuf @returns {CPtr} */
@@ -49,13 +49,13 @@ export function regex_error_desc(re, errbuf) {
 export function regex_match(s, re) {
     let result;
     if (!re || !s ? 1 : 0)
-        return (0);
+        return 0;
     if ((result = regexec(re, s, 0n, null, 0))) {
         if (result != 1)
             cptr.stI32(cptr.add(re, 32), result);
-        return (0);
+        return 0;
     }
-    return (1);
+    return 1;
 }
 
 /** C ref: posixregex.c:108 — @param {CPtr} re */

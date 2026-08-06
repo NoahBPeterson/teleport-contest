@@ -26,7 +26,7 @@ function dumpBlock(D, b, size) {
 /** C ref: ldump.c:53 — @param {CPtr} D @param {CInt} y */
 function dumpByte(D, y) {
     let x = cptr.box(uchar(y));
-    dumpBlock(D, x, BigInt.asUintN(64, 1n * 1n));
+    dumpBlock(D, x, 1n);
 }
 
 /** C ref: ldump.c:65 — @param {CPtr} D @param {CLongLong} x */
@@ -34,11 +34,11 @@ function dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
     do {
-        cptr.st1(cptr.add(cptr.decay(buff), BigInt.asUintN(64, ((BigInt.asUintN(64, BigInt.asUintN(64, 8n * 8n) + 6n)) / 7n) - BigInt.asUintN(64, BigInt((++n)))), 1), Number(BigInt.asUintN(8, (x & 127n))));
+        cptr.st1(cptr.add(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), 1), Number(BigInt.asUintN(8, (x & 127n))));
         x >>= 7n;
     } while (x != 0n);
-    cptr.st1(cptr.add(cptr.decay(buff), BigInt.asUintN(64, ((BigInt.asUintN(64, BigInt.asUintN(64, 8n * 8n) + 6n)) / 7n) - 1n), 1), cptr.ld1u(cptr.add(cptr.decay(buff), BigInt.asUintN(64, ((BigInt.asUintN(64, BigInt.asUintN(64, 8n * 8n) + 6n)) / 7n) - 1n), 1)) | 128);
-    dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), ((BigInt.asUintN(64, BigInt.asUintN(64, 8n * 8n) + 6n)) / 7n)), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
+    cptr.st1(cptr.add(cptr.decay(buff), 9n, 1), cptr.ld1u(cptr.add(cptr.decay(buff), 9n, 1)) | 128);
+    dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
 }
 
 /** C ref: ldump.c:77 — @param {CPtr} D @param {CInt} x */
@@ -49,13 +49,13 @@ function dumpInt(D, x) {
 /** C ref: ldump.c:82 — @param {CPtr} D @param {CDouble} x */
 function dumpNumber(D, x) {
     x = cptr.box(x);
-    dumpBlock(D, x, BigInt.asUintN(64, 1n * 8n));
+    dumpBlock(D, x, 8n);
 }
 
 /** C ref: ldump.c:87 — @param {CPtr} D @param {CLongLong} x */
 function dumpInteger(D, x) {
     x = cptr.box(x);
-    dumpBlock(D, x, BigInt.asUintN(64, 1n * 8n));
+    dumpBlock(D, x, 8n);
 }
 
 /** C ref: ldump.c:92 — @param {CPtr} D @param {CPtr} s */
@@ -86,14 +86,14 @@ function dumpConstants(D, f) {
         let tt = (((cptr.ld1u(cptr.add((o), 8)))) & 63);
         dumpByte(D, tt);
         switch (tt) {
-            case ((3) | ((1) << 4)):
+            case 19:
             dumpNumber(D, (cptr.ldF64(((o)))));
             break;
-            case ((3) | ((0) << 4)):
+            case 3:
             dumpInteger(D, (cptr.ldI64(((o)))));
             break;
-            case ((4) | ((0) << 4)):
-            case ((4) | ((1) << 4)):
+            case 4:
+            case 20:
             dumpString(D, ((((((cptr.ldPtr(((o))))))))));
             break;
             default:
@@ -169,10 +169,10 @@ function dumpFunction(D, f, psource) {
 
 /** C ref: ldump.c:201 — @param {CPtr} D */
 function dumpHeader(D) {
-    dumpBlock(D, __sl0, BigInt.asUintN(64, 5n - 1n));
-    dumpByte(D, (((Math.imul(((504 / 100) | 0), 16)) + 504 % 100) | 0));
+    dumpBlock(D, __sl0, 4n);
+    dumpByte(D, 84);
     dumpByte(D, 0);
-    dumpBlock(D, __sl1, BigInt.asUintN(64, 7n - 1n));
+    dumpBlock(D, __sl1, 6n);
     dumpByte(D, 4);
     dumpByte(D, 8);
     dumpByte(D, 8);

@@ -23,15 +23,15 @@ const __sl3 = cptr.lit("table index is NaN");
 /** C ref: ltable.c:93 — union Node */
 let dummynode_ = cptr.box(cptr.alloc(24));
 cptr.stPtr(dummynode_.v, null);
-cptr.st1(cptr.add(dummynode_.v, 8), uchar(((0) | ((1) << 4))));
-cptr.st1(cptr.add(dummynode_.v, 9), uchar(((0) | ((0) << 4))));
+cptr.st1(cptr.add(dummynode_.v, 8), 16);
+cptr.st1(cptr.add(dummynode_.v, 9), 0);
 cptr.stI32(cptr.add(dummynode_.v, 12), 0);
 cptr.stPtr(cptr.add(dummynode_.v, 16), null);
 
 /** C ref: ltable.c:99 — struct TValue */
 let absentkey = cptr.box(cptr.alloc(16));
 cptr.stPtr(absentkey.v, null);
-cptr.st1(cptr.add(absentkey.v, 8), uchar(((0) | ((2) << 4))));
+cptr.st1(cptr.add(absentkey.v, 8), 32);
 
 /** C ref: ltable.c:108 — @param {CPtr} t @param {CLongLong} i @returns {CPtr} */
 function hashint(t, i) {
@@ -46,57 +46,57 @@ function hashint(t, i) {
 function l_hashfloat(n) {
     let i = cptr.box(0);
     let ni = cptr.box(0n);
-    n = frexp(n, i) * -(((((-2147483647 - 1) | 0))));
-    if (!(((n) >= Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) && (n) < -Number(((BigInt.asIntN(64, -9223372036854775807n - 1n)))) ? 1 : 0) && (cptr.stI64((ni), BigInt.asIntN(64, BigInt(Math.trunc((n))))), 1) ? 1 : 0)) {
+    n = frexp(n, i) * -(-2147483648);
+    if (!(((n) >= Number((-9223372036854775808n)) && (n) < -Number((-9223372036854775808n)) ? 1 : 0) && (cptr.stI64((ni), BigInt.asIntN(64, BigInt(Math.trunc((n))))), 1) ? 1 : 0)) {
         (void 0);
         return 0;
     } else {
         let u = ((((i.v)) >>> 0) + (Number(BigInt.asUintN(32, ((ni.v)))))) >>> 0;
-        return (((u <= (2147483647) ? u : ~u)) | 0);
+        return (((u <= 2147483647 ? u : ~u)) | 0);
     }
 }
 
 /** C ref: ltable.c:151 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
 function mainpositionTV(t, key) {
     switch ((((cptr.ld1u(cptr.add((key), 8)))) & 63)) {
-        case ((3) | ((0) << 4)):
+        case 3:
         {
             let i = (cptr.ldI64(((key))));
             return hashint(t, i);
         }
-        case ((3) | ((1) << 4)):
+        case 19:
         {
             let n = (cptr.ldF64(((key))));
             return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), ((l_hashfloat(n)) % (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1)), 24)));
         }
-        case ((4) | ((0) << 4)):
+        case 4:
         {
             let ts = ((((((cptr.ldPtr(((key)))))))));
             return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (((((((((cptr.ldI32(cptr.add((ts), 12)))) & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
         }
-        case ((4) | ((1) << 4)):
+        case 20:
         {
             let ts = ((((((cptr.ldPtr(((key)))))))));
             return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (((((((((luaS_hashlongstr(ts))) & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
         }
-        case ((1) | ((0) << 4)):
-        return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), ((((((((0)) & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0))))))), 24)));
-        case ((1) | ((1) << 4)):
-        return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), ((((((((1)) & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0))))))), 24)));
-        case ((2) | ((0) << 4)):
+        case 1:
+        return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), ((((((0 & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0))))))), 24)));
+        case 17:
+        return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), ((((((1 & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0))))))), 24)));
+        case 2:
         {
             let p = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((p)) & BigInt((((Math.imul(2147483647, 2) >>> 0) + 1) >>> 0) >>> 0)))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((p)) & 4294967295n))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
         }
-        case ((6) | ((1) << 4)):
+        case 22:
         {
             let f = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((f)) & BigInt((((Math.imul(2147483647, 2) >>> 0) + 1) >>> 0) >>> 0)))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((f)) & 4294967295n))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
         }
         default:
         {
             let o = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((o)) & BigInt((((Math.imul(2147483647, 2) >>> 0) + 1) >>> 0) >>> 0)))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((o)) & 4294967295n))))), (((((1 << (cptr.ld1u(cptr.add((t), 11))))) - 1) | 0) | 1) >>> 0)), 24)));
         }
     }
 }
@@ -117,22 +117,22 @@ function mainpositionfromnode(t, nd) {
 
 /** C ref: ltable.c:216 — @param {CPtr} k1 @param {CPtr} n2 @param {CInt} deadok @returns {CInt} */
 function equalkey(k1, n2, deadok) {
-    if (((cptr.ld1u(cptr.add((k1), 8))) != (cptr.ld1u(cptr.add((n2), 9)))) && !((deadok && ((cptr.ld1u(cptr.add((n2), 9))) == ((9 + 2) | 0)) ? 1 : 0) && ((cptr.ld1u(cptr.add((k1), 8))) & (1 << 6)) ? 1 : 0) ? 1 : 0)
+    if (((cptr.ld1u(cptr.add((k1), 8))) != (cptr.ld1u(cptr.add((n2), 9)))) && !((deadok && ((cptr.ld1u(cptr.add((n2), 9))) == 11) ? 1 : 0) && ((cptr.ld1u(cptr.add((k1), 8))) & 64) ? 1 : 0) ? 1 : 0)
         return 0;
     switch ((cptr.ld1u(cptr.add((n2), 9)))) {
-        case ((0) | ((0) << 4)):
-        case ((1) | ((0) << 4)):
-        case ((1) | ((1) << 4)):
+        case 0:
+        case 1:
+        case 17:
         return 1;
-        case ((3) | ((0) << 4)):
+        case 3:
         return ((cptr.ldI64(((k1)))) == (cptr.ldI64((cptr.add((n2), 16)))));
-        case ((3) | ((1) << 4)):
+        case 19:
         return (((cptr.ldF64(((k1))))) == ((cptr.ldF64(((cptr.add((n2), 16)))))));
-        case ((2) | ((0) << 4)):
+        case 2:
         return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), 16))))));
-        case ((6) | ((1) << 4)):
+        case 22:
         return (cptr.ldPtr(((k1)))) === (cptr.ldPtr(((cptr.add((n2), 16)))));
-        case ((((4) | ((1) << 4))) | (1 << 6)):
+        case 84:
         return luaS_eqlngstr(((((((cptr.ldPtr(((k1))))))))), ((((((cptr.ldPtr((cptr.add((n2), 16))))))))));
         default:
         return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), 16))))));
@@ -141,7 +141,7 @@ function equalkey(k1, n2, deadok) {
 
 /** C ref: ltable.c:250 — @param {CPtr} t @returns {CUInt} */
 export function luaH_realasize(t) {
-    if (((!(cptr.ld1u(cptr.add((t), 10)) & (1 << 7))) || ((((cptr.ldI32(cptr.add((t), 12))) & (((cptr.ldI32(cptr.add((t), 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0))
+    if (((!(cptr.ld1u(cptr.add((t), 10)) & 128)) || ((((cptr.ldI32(cptr.add((t), 12))) & (((cptr.ldI32(cptr.add((t), 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0))
         return cptr.ldI32(cptr.add(t, 12));
     else {
         let size = cptr.ldI32(cptr.add(t, 12));
@@ -158,13 +158,13 @@ export function luaH_realasize(t) {
 
 /** C ref: ltable.c:278 — @param {CPtr} t @returns {CInt} */
 function ispow2realasize(t) {
-    return (!(!(cptr.ld1u(cptr.add((t), 10)) & (1 << 7))) || ((((cptr.ldI32(cptr.add(t, 12))) & (((cptr.ldI32(cptr.add(t, 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0);
+    return (!(!(cptr.ld1u(cptr.add((t), 10)) & 128)) || ((((cptr.ldI32(cptr.add(t, 12))) & (((cptr.ldI32(cptr.add(t, 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0);
 }
 
 /** C ref: ltable.c:283 — @param {CPtr} t @returns {CUInt} */
 function setlimittosize(t) {
     cptr.stI32(cptr.add(t, 12), luaH_realasize(t));
-    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & (uchar(((~(1 << 7)))))));
+    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & 127));
     return cptr.ldI32(cptr.add(t, 12));
 }
 
@@ -185,7 +185,7 @@ function getgeneric(t, key, deadok) {
 
 /** C ref: ltable.c:318 — @param {CLongLong} k @returns {CUInt} */
 function arrayindex(k) {
-    if (BigInt.asUintN(64, (BigInt.asUintN(64, (k))) - 1n) < BigInt((((BigInt((((1 << (Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n))))))) >>> 0)) >>> 0)) <= ((BigInt.asUintN(64, ~0n))) / 16n) ? ((1 << (Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n))))))) >>> 0) : (Number(BigInt.asUintN(32, (((((BigInt.asUintN(64, ~0n))) / 16n))))))) >>> 0))
+    if (BigInt.asUintN(64, (BigInt.asUintN(64, (k))) - 1n) < 2147483648n)
         return (Number(BigInt.asUintN(32, ((k)))));
     else
         return 0;
@@ -194,14 +194,14 @@ function arrayindex(k) {
 /** C ref: ltable.c:331 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CUInt} asize @returns {CUInt} */
 function findindex(L, t, key, asize) {
     let i;
-    if ((((((cptr.ld1u(cptr.add(((key)), 8)))) & 15)) == (0)))
+    if ((((((cptr.ld1u(cptr.add(((key)), 8)))) & 15)) == 0))
         return 0;
-    i = ((cptr.ld1u(cptr.add(((key)), 8))) == (((3) | ((0) << 4)))) ? arrayindex((cptr.ldI64(((key))))) : 0;
+    i = ((cptr.ld1u(cptr.add(((key)), 8))) == 3) ? arrayindex((cptr.ldI64(((key))))) : 0;
     if ((i - 1) >>> 0 < asize)
         return i;
     else {
         let n = getgeneric(t, key, 1);
-        if ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((n)), 8))) == (((0) | ((2) << 4))))) != 0)), 0n)))
+        if ((__builtin_expect(BigInt(((((cptr.ld1u(cptr.add(((n)), 8))) == 32)) != 0)), 0n)))
             luaG_runerror(L, __sl0);
         i = (Number(BigInt.asIntN(32, ((cptr.diff((((n))), (cptr.add(cptr.ldPtr(cptr.add((t), 24)), 0, 24))) / 24n))))) >>> 0;
         return (((i + 1) >>> 0) + asize) >>> 0;
@@ -213,11 +213,11 @@ export function luaH_next(L, t, key) {
     let asize = luaH_realasize(t);
     let i = findindex(L, t, ((key)), asize);
     for (; i < asize; i++) {
-        if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16))), 8)))) & 15)) == (0))) {
+        if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16))), 8)))) & 15)) == 0)) {
             {
                 let io = (((key)));
                 cptr.stI64(((io)), BigInt(((i + 1) >>> 0) >>> 0));
-                (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
+                (cptr.st1(cptr.add((io), 8), 3));
             }
             ;
             {
@@ -233,7 +233,7 @@ export function luaH_next(L, t, key) {
         }
     }
     for (i = (i - asize) | 0; (((i)) | 0) < ((1 << (cptr.ld1u(cptr.add((t), 11))))); i++) {
-        if (!(((((cptr.ld1u(cptr.add((((((cptr.add(cptr.ldPtr(cptr.add((t), 24)), i, 24)))))), 8)))) & 15)) == (0))) {
+        if (!(((((cptr.ld1u(cptr.add((((((cptr.add(cptr.ldPtr(cptr.add((t), 24)), i, 24)))))), 8)))) & 15)) == 0)) {
             let n = (cptr.add(cptr.ldPtr(cptr.add((t), 24)), i, 24));
             {
                 let io_ = (((key)));
@@ -300,7 +300,7 @@ function numusearray(t, nums) {
     let ause = 0;
     let i = 1;
     let asize = (cptr.ldI32(cptr.add(t, 12)));
-    for (lg = 0, ttlg = 1; lg <= (Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n)))))); lg++, ttlg = Math.imul(ttlg, 2)) {
+    for (lg = 0, ttlg = 1; lg <= 31; lg++, ttlg = Math.imul(ttlg, 2)) {
         let lc = 0;
         let lim = ttlg;
         if (lim > asize) {
@@ -309,7 +309,7 @@ function numusearray(t, nums) {
                 break;
         }
         for (; i <= lim; i++) {
-            if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (i - 1) >>> 0, 16))), 8)))) & 15)) == (0)))
+            if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (i - 1) >>> 0, 16))), 8)))) & 15)) == 0))
                 lc++;
         }
         cptr.stI32(cptr.add(nums, lg, 4), (cptr.ldI32(cptr.add(nums, lg, 4)) + lc) | 0);
@@ -325,8 +325,8 @@ function numusehash(t, nums, pna) {
     let i = ((1 << (cptr.ld1u(cptr.add((t), 11)))));
     while (i--) {
         let n = cptr.add(cptr.ldPtr(cptr.add(t, 24)), i, 24);
-        if (!(((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == (0))) {
-            if (((cptr.ld1u(cptr.add((n), 9))) == ((3) | ((0) << 4))))
+        if (!(((((cptr.ld1u(cptr.add(((((n)))), 8)))) & 15)) == 0)) {
+            if (((cptr.ld1u(cptr.add((n), 9))) == 3))
                 ause = (ause + countint((cptr.ldI64((cptr.add((n), 16)))), nums)) | 0;
             totaluse++;
         }
@@ -344,7 +344,7 @@ function setnodevector(L, t, size) {
     } else {
         let i;
         let lsize = luaO_ceillog2(size);
-        if (lsize > (((Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n)))))) - 1) | 0) || ((1 << lsize) >>> 0) > (((BigInt((((1 << (((Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n)))))) - 1) | 0)) >>> 0)) >>> 0)) <= ((BigInt.asUintN(64, ~0n))) / 24n) ? ((1 << (((Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n)))))) - 1) | 0)) >>> 0) : (Number(BigInt.asUintN(32, (((((BigInt.asUintN(64, ~0n))) / 24n))))))) ? 1 : 0)
+        if (lsize > 30 || ((1 << lsize) >>> 0) > 1073741824 ? 1 : 0)
             luaG_runerror(L, __sl1);
         size = (1 << (lsize)) >>> 0;
         cptr.stPtr(cptr.add(t, 24), ((luaM_malloc_(L, BigInt.asUintN(64, BigInt((size) >>> 0) * 24n), 0))));
@@ -352,7 +352,7 @@ function setnodevector(L, t, size) {
             let n = (cptr.add(cptr.ldPtr(cptr.add((t), 24)), i, 24));
             cptr.stI32(cptr.add((n), 12), 0);
             (cptr.st1(cptr.add((n), 9), 0));
-            (cptr.st1(cptr.add((((n))), 8), uchar((((0) | ((1) << 4))))));
+            (cptr.st1(cptr.add((((n))), 8), 16));
         }
         cptr.st1(cptr.add(t, 11), (uchar(((lsize)))));
         cptr.stPtr(cptr.add(t, 32), (cptr.add(cptr.ldPtr(cptr.add((t), 24)), size, 24)));
@@ -365,7 +365,7 @@ function reinsert(L, ot, t) {
     let size = ((1 << (cptr.ld1u(cptr.add((ot), 11)))));
     for (j = 0; j < size; j++) {
         let old = (cptr.add(cptr.ldPtr(cptr.add((ot), 24)), j, 24));
-        if (!(((((cptr.ld1u(cptr.add(((((old)))), 8)))) & 15)) == (0))) {
+        if (!(((((cptr.ld1u(cptr.add(((((old)))), 8)))) & 15)) == 0)) {
             let k = cptr.alloc(16);
             {
                 let io_ = (k);
@@ -404,7 +404,7 @@ export function luaH_resize(L, t, newasize, nhsize) {
         cptr.stI32(cptr.add(t, 12), newasize);
         exchangehashpart(t, newt);
         for (i = newasize; i < oldasize; i++) {
-            if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16))), 8)))) & 15)) == (0)))
+            if (!(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16))), 8)))) & 15)) == 0))
                 luaH_setint(L, t, BigInt(((i + 1) >>> 0) >>> 0), cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16));
         }
         cptr.stI32(cptr.add(t, 12), oldasize);
@@ -419,7 +419,7 @@ export function luaH_resize(L, t, newasize, nhsize) {
     cptr.stPtr(cptr.add(t, 16), newarray);
     cptr.stI32(cptr.add(t, 12), newasize);
     for (i = oldasize; i < newasize; i++)
-        (cptr.st1(cptr.add((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16)), 8), uchar((((0) | ((1) << 4))))));
+        (cptr.st1(cptr.add((cptr.add(cptr.ldPtr(cptr.add(t, 16)), i, 16)), 8), 16));
     reinsert(L, newt, t);
     freehash(L, newt);
 }
@@ -437,13 +437,13 @@ function rehash(L, t, ek) {
     let nums = cptr.alloc(32 * 4);
     let i;
     let totaluse;
-    for (i = 0; i <= (Number(BigInt.asIntN(32, ((BigInt.asUintN(64, BigInt.asUintN(64, 4n * 8n) - 1n)))))); i++)
+    for (i = 0; i <= 31; i++)
         cptr.stI32(cptr.add(nums, i, 4), 0);
     setlimittosize(t);
     na.v = numusearray(t, nums);
     totaluse = na.v | 0;
     totaluse = (totaluse + numusehash(t, nums, na)) | 0;
-    if (((cptr.ld1u(cptr.add(((ek)), 8))) == (((3) | ((0) << 4)))))
+    if (((cptr.ld1u(cptr.add(((ek)), 8))) == 3))
         na.v = (na.v + (countint((cptr.ldI64(((ek)))), nums) >>> 0)) | 0;
     totaluse++;
     asize = computesizes(nums, na);
@@ -452,10 +452,10 @@ function rehash(L, t, ek) {
 
 /** C ref: ltable.c:626 — @param {CPtr} L @returns {CPtr} */
 export function luaH_new(L) {
-    let o = luaC_newobj(L, ((5) | ((0) << 4)), 56n);
+    let o = luaC_newobj(L, 5, 56n);
     let t = (((((o)))));
     cptr.stPtr(cptr.add(t, 40), null);
-    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << ((5 + 1) | 0)) >>> 0)))))));
+    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << 6) >>> 0)))))));
     cptr.stPtr(cptr.add(t, 16), null);
     cptr.stI32(cptr.add(t, 12), 0);
     setnodevector(L, t, 0);
@@ -485,26 +485,26 @@ function getfreepos(t) {
 function luaH_newkey(L, t, key, value) {
     let mp;
     let aux = cptr.alloc(16);
-    if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((key)), 8)))) & 15)) == (0))) != 0)), 0n)))
+    if ((__builtin_expect(BigInt((((((((cptr.ld1u(cptr.add(((key)), 8)))) & 15)) == 0)) != 0)), 0n)))
         luaG_runerror(L, __sl2);
-    else if (((cptr.ld1u(cptr.add(((key)), 8))) == (((3) | ((1) << 4))))) {
+    else if (((cptr.ld1u(cptr.add(((key)), 8))) == 19)) {
         let f = (cptr.ldF64(((key))));
         let k = cptr.box(0n);
         if (luaV_flttointeger(f, k, 0)) {
             {
                 let io = (aux);
                 cptr.stI64(((io)), (k.v));
-                (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
+                (cptr.st1(cptr.add((io), 8), 3));
             }
             ;
             key = aux;
         } else if ((__builtin_expect(BigInt((((!(((f)) == ((f))))) != 0)), 0n)))
             luaG_runerror(L, __sl3);
     }
-    if ((((((cptr.ld1u(cptr.add(((value)), 8)))) & 15)) == (0)))
+    if ((((((cptr.ld1u(cptr.add(((value)), 8)))) & 15)) == 0))
         return;
     mp = mainpositionTV(t, key);
-    if (!(((((cptr.ld1u(cptr.add(((((mp)))), 8)))) & 15)) == (0)) || (cptr.eq(cptr.ldPtr(cptr.add((t), 32)), (null))) ? 1 : 0) {
+    if (!(((((cptr.ld1u(cptr.add(((((mp)))), 8)))) & 15)) == 0) || (cptr.eq(cptr.ldPtr(cptr.add((t), 32)), (null))) ? 1 : 0) {
         let othern;
         let f = getfreepos(t);
         if (cptr.eq(f, (null))) {
@@ -523,7 +523,7 @@ function luaH_newkey(L, t, key, value) {
                 cptr.stI32(cptr.add((f), 12), (cptr.ldI32(cptr.add((f), 12)) + (Number(BigInt.asIntN(32, ((cptr.diff(mp, f) / 24n)))))) | 0);
                 cptr.stI32(cptr.add((mp), 12), 0);
             }
-            (cptr.st1(cptr.add((((mp))), 8), uchar((((0) | ((1) << 4))))));
+            (cptr.st1(cptr.add((((mp))), 8), 16));
         } else {
             if ((cptr.ldI32(cptr.add((mp), 12))) != 0)
                 cptr.stI32(cptr.add((f), 12), (Number(BigInt.asIntN(32, ((cptr.diff((cptr.add(mp, (cptr.ldI32(cptr.add((mp), 12))), 24)), f) / 24n))))));
@@ -541,7 +541,7 @@ function luaH_newkey(L, t, key, value) {
         (void L, (void 0));
     }
     ;
-    (((cptr.ld1u(cptr.add((key), 8))) & (1 << 6)) ? ((((cptr.ld1u(cptr.add((((((t))))), 9))) & ((1 << (5)))) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((key))))), 9))) & (((1 << (3)) | (1 << (4))))) ? 1 : 0) ? luaC_barrierback_(L, ((((t))))) : (void ((0)))) : (void ((0))));
+    (((cptr.ld1u(cptr.add((key), 8))) & 64) ? ((((cptr.ld1u(cptr.add((((((t))))), 9))) & 32) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((key))))), 9))) & 24) ? 1 : 0) ? luaC_barrierback_(L, ((((t))))) : (void 0)) : (void 0));
     (void 0);
     {
         let io1 = (((mp)));
@@ -559,13 +559,13 @@ export function luaH_getint(t, key) {
     let alimit = BigInt(cptr.ldI32(cptr.add(t, 12)) >>> 0);
     if (BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n) < alimit)
         return cptr.add(cptr.ldPtr(cptr.add(t, 16)), BigInt.asIntN(64, key - 1n), 16);
-    else if (!(!(cptr.ld1u(cptr.add((t), 10)) & (1 << 7))) && (((BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n)) & BigInt.asUintN(64, ~(BigInt.asUintN(64, alimit - 1n)))) < alimit) ? 1 : 0) {
+    else if (!(!(cptr.ld1u(cptr.add((t), 10)) & 128)) && (((BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n)) & BigInt.asUintN(64, ~(BigInt.asUintN(64, alimit - 1n)))) < alimit) ? 1 : 0) {
         cptr.stI32(cptr.add(t, 12), (Number(BigInt.asUintN(32, ((key))))));
         return cptr.add(cptr.ldPtr(cptr.add(t, 16)), BigInt.asIntN(64, key - 1n), 16);
     } else {
         let n = hashint(t, key);
         for (; ; ) {
-            if (((cptr.ld1u(cptr.add((n), 9))) == ((3) | ((0) << 4))) && (cptr.ldI64((cptr.add((n), 16)))) == key ? 1 : 0)
+            if (((cptr.ld1u(cptr.add((n), 9))) == 3) && (cptr.ldI64((cptr.add((n), 16)))) == key ? 1 : 0)
                 return ((n));
             else {
                 let nx = (cptr.ldI32(cptr.add((n), 12)));
@@ -583,7 +583,7 @@ export function luaH_getshortstr(t, key) {
     let n = ((cptr.add(cptr.ldPtr(cptr.add((t), 24)), (((((((((cptr.ldI32(cptr.add((key), 12)))) & (((((1 << (cptr.ld1u(cptr.add((t), 11)))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
     (void 0);
     for (; ; ) {
-        if (((cptr.ld1u(cptr.add((n), 9))) == ((((4) | ((0) << 4))) | (1 << 6))) && (cptr.eq((((((((cptr.ldPtr((cptr.add((n), 16)))))))))), (key))) ? 1 : 0)
+        if (((cptr.ld1u(cptr.add((n), 9))) == 68) && (cptr.eq((((((((cptr.ldPtr((cptr.add((n), 16)))))))))), (key))) ? 1 : 0)
             return ((n));
         else {
             let nx = (cptr.ldI32(cptr.add((n), 12)));
@@ -596,7 +596,7 @@ export function luaH_getshortstr(t, key) {
 
 /** C ref: ltable.c:789 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
 export function luaH_getstr(t, key) {
-    if (cptr.ld1u(cptr.add(key, 8)) == ((4) | ((0) << 4)))
+    if (cptr.ld1u(cptr.add(key, 8)) == 4)
         return luaH_getshortstr(t, key);
     else {
         let ko = cptr.alloc(16);
@@ -604,7 +604,7 @@ export function luaH_getstr(t, key) {
             let io = (ko);
             let x_ = (key);
             cptr.stPtr(((io)), ((((x_)))));
-            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | (1 << 6))))));
+            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
             (void (((null))), (void 0));
         }
         ;
@@ -615,13 +615,13 @@ export function luaH_getstr(t, key) {
 /** C ref: ltable.c:803 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
 export function luaH_get(t, key) {
     switch ((((cptr.ld1u(cptr.add((key), 8)))) & 63)) {
-        case ((4) | ((0) << 4)):
+        case 4:
         return luaH_getshortstr(t, ((((((cptr.ldPtr(((key))))))))));
-        case ((3) | ((0) << 4)):
+        case 3:
         return luaH_getint(t, (cptr.ldI64(((key)))));
-        case ((0) | ((0) << 4)):
+        case 0:
         return absentkey.v;
-        case ((3) | ((1) << 4)):
+        case 19:
         {
             let k = cptr.box(0n);
             if (luaV_flttointeger((cptr.ldF64(((key)))), k, 0))
@@ -634,7 +634,7 @@ export function luaH_get(t, key) {
 
 /** C ref: ltable.c:826 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} slot @param {CPtr} value */
 export function luaH_finishset(L, t, key, slot, value) {
-    if (((cptr.ld1u(cptr.add(((slot)), 8))) == (((0) | ((2) << 4)))))
+    if (((cptr.ld1u(cptr.add(((slot)), 8))) == 32))
         luaH_newkey(L, t, key, value);
     else {
         let io1 = (((slot)));
@@ -656,12 +656,12 @@ export function luaH_set(L, t, key, value) {
 /** C ref: ltable.c:845 — @param {CPtr} L @param {CPtr} t @param {CLongLong} key @param {CPtr} value */
 export function luaH_setint(L, t, key, value) {
     let p = luaH_getint(t, key);
-    if (((cptr.ld1u(cptr.add(((p)), 8))) == (((0) | ((2) << 4))))) {
+    if (((cptr.ld1u(cptr.add(((p)), 8))) == 32)) {
         let k = cptr.alloc(16);
         {
             let io = (k);
             cptr.stI64(((io)), (key));
-            (cptr.st1(cptr.add((io), 8), uchar((((3) | ((0) << 4))))));
+            (cptr.st1(cptr.add((io), 8), 3));
         }
         ;
         luaH_newkey(L, t, k, value);
@@ -683,19 +683,19 @@ function hash_search(t, j) {
         j++;
     do {
         i = j;
-        if (j <= (9223372036854775807n) / 2n)
+        if (j <= 4611686018427387903n)
             j *= 2n;
         else {
             j = 9223372036854775807n;
-            if ((((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, j)))), 8)))) & 15)) == (0)))
+            if ((((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, j)))), 8)))) & 15)) == 0))
                 break;
             else
                 return j;
         }
-    } while (!(((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, j)))), 8)))) & 15)) == (0)));
+    } while (!(((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, j)))), 8)))) & 15)) == 0));
     while (BigInt.asUintN(64, j - i) > 1n) {
         let m = (BigInt.asUintN(64, i + j)) / 2n;
-        if ((((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, m)))), 8)))) & 15)) == (0)))
+        if ((((((cptr.ld1u(cptr.add(((luaH_getint(t, BigInt.asIntN(64, m)))), 8)))) & 15)) == 0))
             j = m;
         else
             i = m;
@@ -707,7 +707,7 @@ function hash_search(t, j) {
 function binsearch(array, i, j) {
     while ((j - i) >>> 0 > 1) {
         let m = u32div(((i + j) >>> 0), 2);
-        if ((((((cptr.ld1u(cptr.add(((cptr.add(array, (m - 1) >>> 0, 16))), 8)))) & 15)) == (0)))
+        if ((((((cptr.ld1u(cptr.add(((cptr.add(array, (m - 1) >>> 0, 16))), 8)))) & 15)) == 0))
             j = m;
         else
             i = m;
@@ -718,34 +718,34 @@ function binsearch(array, i, j) {
 /** C ref: ltable.c:938 — @param {CPtr} t @returns {*} */
 export function luaH_getn(t) {
     let limit = cptr.ldI32(cptr.add(t, 12));
-    if (limit > 0 && (((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 1) >>> 0, 16))), 8)))) & 15)) == (0)) ? 1 : 0) {
-        if (limit >= 2 && !(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 2) >>> 0, 16))), 8)))) & 15)) == (0)) ? 1 : 0) {
+    if (limit > 0 && (((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 1) >>> 0, 16))), 8)))) & 15)) == 0) ? 1 : 0) {
+        if (limit >= 2 && !(((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 2) >>> 0, 16))), 8)))) & 15)) == 0) ? 1 : 0) {
             if (ispow2realasize(t) && !(((((limit - 1) >>> 0) & ((((limit - 1) >>> 0) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0) {
                 cptr.stI32(cptr.add(t, 12), (limit - 1) >>> 0);
-                (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) | (1 << 7)));
+                (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) | 128));
             }
             return BigInt(((limit - 1) >>> 0) >>> 0);
         } else {
             let boundary = binsearch(cptr.ldPtr(cptr.add(t, 16)), 0, limit);
             if (ispow2realasize(t) && boundary > u32div(luaH_realasize(t), 2) ? 1 : 0) {
                 cptr.stI32(cptr.add(t, 12), boundary);
-                (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) | (1 << 7)));
+                (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) | 128));
             }
             return BigInt(boundary >>> 0);
         }
     }
-    if (!((!(cptr.ld1u(cptr.add((t), 10)) & (1 << 7))) || ((((cptr.ldI32(cptr.add((t), 12))) & (((cptr.ldI32(cptr.add((t), 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0)) {
-        if ((((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), limit, 16))), 8)))) & 15)) == (0)))
+    if (!((!(cptr.ld1u(cptr.add((t), 10)) & 128)) || ((((cptr.ldI32(cptr.add((t), 12))) & (((cptr.ldI32(cptr.add((t), 12))) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0)) {
+        if ((((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), limit, 16))), 8)))) & 15)) == 0))
             return BigInt(limit >>> 0);
         limit = luaH_realasize(t);
-        if ((((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 1) >>> 0, 16))), 8)))) & 15)) == (0))) {
+        if ((((((cptr.ld1u(cptr.add(((cptr.add(cptr.ldPtr(cptr.add(t, 16)), (limit - 1) >>> 0, 16))), 8)))) & 15)) == 0)) {
             let boundary = binsearch(cptr.ldPtr(cptr.add(t, 16)), cptr.ldI32(cptr.add(t, 12)), limit);
             cptr.stI32(cptr.add(t, 12), boundary);
             return BigInt(boundary >>> 0);
         }
     }
     (void 0);
-    if ((cptr.eq(cptr.ldPtr(cptr.add((t), 32)), (null))) || (((((cptr.ld1u(cptr.add(((luaH_getint(t, (BigInt(((limit + 1) >>> 0) >>> 0))))), 8)))) & 15)) == (0)) ? 1 : 0)
+    if ((cptr.eq(cptr.ldPtr(cptr.add((t), 32)), (null))) || (((((cptr.ld1u(cptr.add(((luaH_getint(t, (BigInt(((limit + 1) >>> 0) >>> 0))))), 8)))) & 15)) == 0) ? 1 : 0)
         return BigInt(limit >>> 0);
     else
         return hash_search(t, BigInt(limit >>> 0));

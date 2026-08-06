@@ -172,34 +172,34 @@ export function setuwep(obj) {
         return;
     setworn(obj, 256n);
     if (cptr.eq(uwep.v, obj) && ((uwep.v && cptr.ld1s(cptr.add(uwep.v, 51)) == 16 ? 1 : 0) || (olduwep && cptr.ld1s(cptr.add(olduwep, 51)) == 16 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        cptr.st1(disp, (1));
+        cptr.st1(disp, 1);
     if ((cptr.eq(uwep.v, obj) && artifact_light(olduwep) ? 1 : 0) && (cptr.ldI32(cptr.add(olduwep, 76)) & 1) | 0 ? 1 : 0) {
-        end_burn(olduwep, (0));
+        end_burn(olduwep, 0);
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
             pline(__sl0, Tobjnam(olduwep, __sl1));
     }
     if (cptr.eq(uwep.v, obj) && (is_art(uwep.v, 16) || is_art(olduwep, 16) ? 1 : 0) ? 1 : 0)
-        cptr.st1(disp, (1));
+        cptr.st1(disp, 1);
     if (obj) {
         cptr.st1(cptr.add(gu, 1), schar(((cptr.ld1s(cptr.add(obj, 49)) == 2) ? ((((cptr.ld1s(cptr.add(obj, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= 20 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= 22 ? 1 : 0) || (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 13 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) || ((((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && ((cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 16 || cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) == 19 ? 1 : 0) || is_art(obj, 19) ? 1 : 0) ? 1 : 0) && !cptr.ldPtr(cptr.add(u, 2424)) ? 1 : 0) && !is_art(obj, 19) ? 1 : 0) ? 1 : 0 : (!(cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) && !(cptr.ldI16(cptr.add((obj), 32)) == 234 && cptr.ld1s(cptr.add((obj), 48)) > 0 ? 1 : 0) ? 1 : 0))));
     } else
-        cptr.st1(cptr.add(gu, 1), (1));
+        cptr.st1(cptr.add(gu, 1), 1);
 }
 
 /** C ref: wield.c:138 — @param {CPtr} obj @returns {CInt} */
 function cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
     if (((uarmg.v || cptr.ldI16(cptr.add(obj, 32)) != 265 ? 1 : 0) || !(cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 10, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, 9, 96)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 8, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 8, 24)) ? 1 : 0) ? 1 : 0)
-        return (0);
+        return 0;
     You(__sl2, corpse_xname(obj, null, 4), makeplural(body_part(6)));
     void cptr.sprintf(cptr.decay(kbuf), __sl3, killer_xname(obj));
     instapetrify(cptr.decay(kbuf));
-    return (1);
+    return 1;
 }
 
 /** C ref: wield.c:158 @returns {CPtr} */
 export function empty_handed() {
-    return uarmg.v ? __sl4 : (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 131072n) != 0n) ? __sl5 : __sl6);
+    return uarmg.v ? __sl4 : (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 131072n) != 0n) ? __sl5 : __sl6);
 }
 
 /** C ref: wield.c:169 — @param {CPtr} wep @returns {CInt} */
@@ -220,7 +220,7 @@ function ready_weapon(wep) {
     } else if (uarms.v && ((cptr.ld1s(cptr.add(wep.v, 49)) == 2 || cptr.ld1s(cptr.add(wep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) {
         You(__sl9, ((cptr.ld1s(cptr.add(wep.v, 49)) == 2 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 68)) >= 5 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 68)) <= 9 ? 1 : 0) ? __sl10 : (cptr.ldI16(cptr.add(wep.v, 32)) == 45 ? __sl11 : __sl12));
         res = 4;
-    } else if (!retouch_object(wep, (0))) {
+    } else if (!retouch_object(wep, 0)) {
         res = 1;
     } else {
         res = 1;
@@ -250,7 +250,7 @@ function ready_weapon(wep) {
             res |= arti_speak(wep.v);
         }
         if (artifact_light(wep.v) && !(cptr.ldI32(cptr.add(wep.v, 76)) & 1) ? 1 : 0) {
-            begin_burn(wep.v, (0));
+            begin_burn(wep.v, 0);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline(__sl23, Tobjnam(wep.v, __sl24), arti_light_description(wep.v));
         }
@@ -262,7 +262,7 @@ function ready_weapon(wep) {
         }
     }
     if ((had_wep != (uwep.v !== null)) && cptr.ld1s(cptr.add(cptr.add(condtests, 0, 24), 20)) ? 1 : 0)
-        cptr.st1(disp, (1));
+        cptr.st1(disp, 1);
     return res;
 }
 
@@ -320,32 +320,32 @@ export function dowield() {
     let result;
     __lbl_wielding: {
         cptr.stI64(cptr.add(gm, 8), 0n);
-        if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
+        if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
             pline(__sl26);
             return 4;
         }
         clear_splitobjs();
-        if (!(wep = getobj(__sl27, wield_ok, (2 | 1) >>> 0))) {
+        if (!(wep = getobj(__sl27, wield_ok, 3))) {
             return 2;
         } else if (cptr.eq(wep, uwep.v)) {
             You(__sl28);
             if ((cptr.ld1s(cptr.add((wep), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 68)) != 0 ? 1 : 0) || (cptr.ldI16(cptr.add((wep), 32)) == 234 && cptr.ld1s(cptr.add((wep), 48)) > 0 ? 1 : 0) ? 1 : 0)
-                cptr.st1(cptr.add(gu, 1), (0));
+                cptr.st1(cptr.add(gu, 1), 0);
             return 4;
         } else if (welded(uwep.v)) {
             weldmsg(uwep.v);
             reset_remarm();
-            if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(cptr.add(svc, 600), 4)) ? 1 : 0)
+            if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(svc, 604)) ? 1 : 0)
                 unsplitobj(wep);
             return 4;
-        } else if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(cptr.add(svc, 600), 4)) ? 1 : 0) {
+        } else if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(svc, 604)) ? 1 : 0) {
             if (uwep.v && cptr.ldI32(cptr.add(uwep.v, 24)) == cptr.ldI32(cptr.add(svc, 600)) ? 1 : 0) {
                 unsplitobj(wep);
                 wep = uwep.v;
                 {
                     You(__sl28);
                     if ((cptr.ld1s(cptr.add((wep), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 68)) != 0 ? 1 : 0) || (cptr.ldI16(cptr.add((wep), 32)) == 234 && cptr.ld1s(cptr.add((wep), 48)) > 0 ? 1 : 0) ? 1 : 0)
-                        cptr.st1(cptr.add(gu, 1), (0));
+                        cptr.st1(cptr.add(gu, 1), 0);
                     return 4;
                 }
             }
@@ -357,9 +357,9 @@ export function dowield() {
         } else if (cptr.eq(wep, uswapwep.v)) {
             return doswapweapon();
         } else if (cptr.eq(wep, uquiver.v)) {
-            if ((cptr.ldI64(cptr.add(uquiver.v, 40)) > 1n && inv_cnt((0)) < 52 ? 1 : 0) && splittable(uquiver.v) ? 1 : 0) {
+            if ((cptr.ldI64(cptr.add(uquiver.v, 40)) > 1n && inv_cnt(0) < 52 ? 1 : 0) && splittable(uquiver.v) ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl29, cptr.ldI64(cptr.add(uquiver.v, 40)), simpleonames(uquiver.v));
-                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1))) {
+                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return 0;
                     case 121:
@@ -374,13 +374,13 @@ export function dowield() {
                 let use_plural = schar(((cptr.ldI64(cptr.add((uquiver.v), 40)) != 1n || (cptr.ld1s(cptr.add((uquiver.v), 51)) == 26 && !undiscovered_artifact(26) ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cptr.add((uquiver.v), 32)) == 232 || (cptr.ld1s(cptr.add(uquiver.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uquiver.v, 32)), 120), 68)) == 3 ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(uquiver.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uquiver.v, 32)), 120), 68)) == 4 ? 1 : 0) ? 1 : 0) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl31, !use_plural ? __sl32 : __sl33, !use_plural ? __sl34 : __sl35);
             }
-            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1)) != 121) {
+            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uquiver.v);
                 pline(__sl36, cptr.decay(qbuf), simpleonames(uquiver.v), otense(uquiver.v, __sl37));
                 return 0;
             }
             setuqwep(null);
-        } else if (cptr.ldI64(cptr.add(wep, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n) | 1048576n)) {
+        } else if (cptr.ldI64(cptr.add(wep, 192)) & 2031743n) {
             You(__sl38);
             return 4;
         }
@@ -399,7 +399,7 @@ export function doswapweapon() {
     let oldswap;
     let result = 0;
     cptr.stI64(cptr.add(gm, 8), 0n);
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
         pline(__sl26);
         return 4;
     }
@@ -435,7 +435,7 @@ export function doquiver_core(verb) {
     let qbuf = new Uint8Array(128);
     let newquiver;
     let res;
-    let was_uwep = (0);
+    let was_uwep = 0;
     let was_twoweap = cptr.ld1s(cptr.add(u, 2816));
     __lbl_quivering: {
         cptr.stI64(cptr.add(gm, 8), 0n);
@@ -444,7 +444,7 @@ export function doquiver_core(verb) {
             return 0;
         }
         clear_splitobjs();
-        newquiver = getobj(verb, ready_ok, (2 | 1) >>> 0);
+        newquiver = getobj(verb, ready_ok, 3);
         if (!newquiver) {
             return 2;
         } else if (cptr.eq(newquiver, hands_obj)) {
@@ -455,7 +455,7 @@ export function doquiver_core(verb) {
                 You(__sl43);
             }
             return 0;
-        } else if (cptr.ldI32(cptr.add(newquiver, 24)) == cptr.ldI32(cptr.add(cptr.add(svc, 600), 4))) {
+        } else if (cptr.ldI32(cptr.add(newquiver, 24)) == cptr.ldI32(cptr.add(svc, 604))) {
             if (uquiver.v && cptr.ldI32(cptr.add(uquiver.v, 24)) == cptr.ldI32(cptr.add(svc, 600)) ? 1 : 0) {
                 unsplitobj(newquiver);
                 {
@@ -471,7 +471,7 @@ export function doquiver_core(verb) {
         } else if (cptr.eq(newquiver, uquiver.v)) {
             pline(__sl44);
             return 0;
-        } else if (cptr.ldI64(cptr.add(newquiver, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n) | 1048576n)) {
+        } else if (cptr.ldI64(cptr.add(newquiver, 192)) & 2031743n) {
             You(__sl46, verb);
             return 0;
         } else if (cptr.eq(newquiver, uwep.v)) {
@@ -481,9 +481,9 @@ export function doquiver_core(verb) {
                 reset_remarm();
                 return weld_res ? 1 : 0;
             }
-            if ((cptr.ldI64(cptr.add(uwep.v, 40)) > 1n && inv_cnt((0)) < 52 ? 1 : 0) && splittable(uwep.v) ? 1 : 0) {
+            if ((cptr.ldI64(cptr.add(uwep.v, 40)) > 1n && inv_cnt(0) < 52 ? 1 : 0) && splittable(uwep.v) ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl47, cptr.ldI64(cptr.add(uwep.v, 40)), simpleonames(uwep.v), BigInt.asIntN(64, cptr.ldI64(cptr.add(uwep.v, 40)) - 1n));
-                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1))) {
+                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return 0;
                     case 121:
@@ -498,18 +498,18 @@ export function doquiver_core(verb) {
                 let use_plural = schar(((cptr.ldI64(cptr.add((uwep.v), 40)) != 1n || (cptr.ld1s(cptr.add((uwep.v), 51)) == 26 && !undiscovered_artifact(26) ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cptr.add((uwep.v), 32)) == 232 || (cptr.ld1s(cptr.add(uwep.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 3 ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(uwep.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) == 4 ? 1 : 0) ? 1 : 0) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl49, !use_plural ? __sl32 : __sl33, !use_plural ? __sl34 : __sl35);
             }
-            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1)) != 121) {
+            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uwep.v);
                 pline(__sl50, cptr.decay(qbuf), simpleonames(uwep.v), otense(uwep.v, __sl37));
                 return 0;
             }
             setuwep(null);
             untwoweapon();
-            was_uwep = (1);
+            was_uwep = 1;
         } else if (cptr.eq(newquiver, uswapwep.v)) {
-            if ((cptr.ldI64(cptr.add(uswapwep.v, 40)) > 1n && inv_cnt((0)) < 52 ? 1 : 0) && splittable(uswapwep.v) ? 1 : 0) {
+            if ((cptr.ldI64(cptr.add(uswapwep.v, 40)) > 1n && inv_cnt(0) < 52 ? 1 : 0) && splittable(uswapwep.v) ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl51, cptr.ld1s(cptr.add(u, 2816)) ? __sl52 : __sl53, cptr.ldI64(cptr.add(uswapwep.v, 40)), simpleonames(uswapwep.v), BigInt.asIntN(64, cptr.ldI64(cptr.add(uswapwep.v, 40)) - 1n));
-                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1))) {
+                switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return 0;
                     case 121:
@@ -524,7 +524,7 @@ export function doquiver_core(verb) {
                 let use_plural = schar(((cptr.ldI64(cptr.add((uswapwep.v), 40)) != 1n || (cptr.ld1s(cptr.add((uswapwep.v), 51)) == 26 && !undiscovered_artifact(26) ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cptr.add((uswapwep.v), 32)) == 232 || (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) == 3 ? 1 : 0) ? 1 : 0) || (cptr.ld1s(cptr.add(uswapwep.v, 49)) == 3 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) == 4 ? 1 : 0) ? 1 : 0) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl54, !use_plural ? __sl55 : __sl56, cptr.ld1s(cptr.add(u, 2816)) ? __sl57 : __sl58, !use_plural ? __sl34 : __sl35);
             }
-            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, (1)) != 121) {
+            if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uswapwep.v);
                 pline(__sl59, cptr.decay(qbuf), simpleonames(uswapwep.v), otense(uswapwep.v, __sl37), cptr.ld1s(cptr.add(u, 2816)) ? __sl60 : __sl61);
                 return 0;
@@ -556,14 +556,14 @@ export function wield_tool(obj, verb) {
     let what;
     let more_than_1;
     if (uwep.v && cptr.eq(obj, uwep.v) ? 1 : 0)
-        return (1);
+        return 1;
     if (!verb)
         verb = __sl27;
     what = xname(obj);
     more_than_1 = schar(((cptr.ldI64(cptr.add(obj, 40)) > 1n || strstri(what, __sl64) !== null ? 1 : 0) || strstri(what, __sl65) !== null ? 1 : 0));
-    if (cptr.ldI64(cptr.add(obj, 192)) & ((1n | 2n | 4n | 8n | 16n | 32n | 64n) | ((131072n | 262144n) | 65536n | 524288n))) {
+    if (cptr.ldI64(cptr.add(obj, 192)) & 983167n) {
         You_cant(__sl66, verb, yname(obj), more_than_1 ? __sl35 : __sl34);
-        return (0);
+        return 0;
     }
     if (uwep.v && welded(uwep.v) ? 1 : 0) {
         if (cptr.ld1s(cptr.add(flags, 48))) {
@@ -571,27 +571,27 @@ export function wield_tool(obj, verb) {
             if (((cptr.ld1s(cptr.add(uwep.v, 49)) == 2 || cptr.ld1s(cptr.add(uwep.v, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0))
                 hand = makeplural(hand);
             if (strstri(what, __sl64) !== null)
-                more_than_1 = (0);
+                more_than_1 = 0;
             pline(__sl67, hand, verb, more_than_1 ? __sl33 : __sl32, xname(obj));
         } else {
             You_cant(__sl68);
         }
-        return (0);
+        return 0;
     }
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 67)) < 1) ? 1 : 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
         You_cant(__sl69, more_than_1 ? __sl35 : __sl34);
-        return (0);
+        return 0;
     }
     if (uarms.v && ((cptr.ld1s(cptr.add(obj, 49)) == 2 || cptr.ld1s(cptr.add(obj, 49)) == 6 ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) {
         You(__sl70, verb, (cptr.ld1s(cptr.add(obj, 49)) == 2) ? __sl12 : __sl71);
-        return (0);
+        return 0;
     }
     if (cptr.eq(uquiver.v, obj))
         setuqwep(null);
     if (cptr.eq(uswapwep.v, obj)) {
         void doswapweapon();
         if (cptr.eq(uswapwep.v, obj))
-            return (0);
+            return 0;
     } else {
         let oldwep = uwep.v;
         if (((cptr.ldI32(cptr.add((obj), 56)) & 1) | 0 && ((((cptr.ld1s(cptr.add((obj), 49)) == 2 || (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 477 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 478 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 239 ? 1 : 0) ? 1 : 0)) {
@@ -604,22 +604,22 @@ export function wield_tool(obj, verb) {
             setuswapwep(oldwep);
     }
     if (uwep.v && !cptr.eq(uwep.v, obj) ? 1 : 0)
-        return (0);
+        return 0;
     if (cptr.ld1s(cptr.add(u, 2816)))
         untwoweapon();
     if (cptr.ld1s(cptr.add(obj, 49)) != 2)
-        cptr.st1(cptr.add(gu, 1), (1));
-    return (1);
+        cptr.st1(cptr.add(gu, 1), 1);
+    return 1;
 }
 
 /** C ref: wield.c:761 @returns {CInt} */
 export function can_twoweapon() {
     let otmp;
-    if (!((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(cptr.add(gy, 8), 8))), 36), 2, 4)) == 254)) | 0) > 1)) {
+    if (!((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 2, 4)) == 254)) | 0) > 1)) {
         if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))))
             You_cant(__sl73);
         else
-            pline(__sl74, makeplural((cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.add(gu, 8), 8)) : cptr.ldPtr(cptr.add(gu, 8))));
+            pline(__sl74, makeplural((cptr.ld1s(cptr.add(flags, 13)) && cptr.ldPtr(cptr.add(gu, 16)) ? 1 : 0) ? cptr.ldPtr(cptr.add(gu, 16)) : cptr.ldPtr(cptr.add(gu, 8))));
     } else if (!uwep.v || !uswapwep.v ? 1 : 0) {
         let hand_s = body_part(6);
         if (!uwep.v && !uswapwep.v ? 1 : 0)
@@ -665,7 +665,7 @@ export function set_twoweap(on_off) {
     if (on_off != cptr.ld1s(cptr.add(u, 2816))) {
         cptr.st1(cptr.add(u, 2816), on_off);
         if (cptr.ld1s(cptr.add(flags, 49)))
-            cptr.st1(disp, (1));
+            cptr.st1(disp, 1);
     }
 }
 
@@ -673,13 +673,13 @@ export function set_twoweap(on_off) {
 export function dotwoweapon() {
     if (cptr.ld1s(cptr.add(u, 2816))) {
         You(__sl96);
-        set_twoweap((0));
+        set_twoweap(0);
         update_inventory();
         return 0;
     }
     if (can_twoweapon()) {
         You(__sl97);
-        set_twoweap((1));
+        set_twoweap(1);
         update_inventory();
         return ((rng_log_enabled() ? (rng_log_set_caller(__sl98, 861, __sl99), rnd(20)) : rnd(20)) > (acurr(3))) ? 1 : 0;
     }
@@ -690,12 +690,12 @@ export function dotwoweapon() {
 export function uwepgone() {
     if (uwep.v) {
         if (artifact_light(uwep.v) && (cptr.ldI32(cptr.add(uwep.v, 76)) & 1) | 0 ? 1 : 0) {
-            end_burn(uwep.v, (0));
+            end_burn(uwep.v, 0);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), 15, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), 15, 24), 8)) ? 1 : 0))
                 pline(__sl0, Tobjnam(uwep.v, __sl1));
         }
         setworn(null, 256n);
-        cptr.st1(cptr.add(gu, 1), (1));
+        cptr.st1(cptr.add(gu, 1), 1);
         update_inventory();
     }
 }
@@ -720,7 +720,7 @@ export function uqwepgone() {
 export function untwoweapon() {
     if (cptr.ld1s(cptr.add(u, 2816))) {
         You(__sl22, cptr.decay(can_no_longer_twoweap));
-        set_twoweap((0));
+        set_twoweap(0);
         update_inventory();
     }
     return;
@@ -767,7 +767,7 @@ export function chwepon(otmp, amount) {
         if ((cptr.ldI32(cptr.add(uwep.v, 64)) & 1))
             alter_cost(uwep.v, 0n);
         if (otyp != 0)
-            discover_object((otyp), (1), (1), (1));
+            discover_object((otyp), 1, 1, 1);
         if (multiple)
             encumber_msg();
         return 1;
@@ -782,7 +782,7 @@ export function chwepon(otmp, amount) {
             cptr.stI32(cptr.add(uwep.v, 36), weight(uwep.v) >>> 0);
         }
         if (otyp != 0 && (cptr.ldI32(cptr.add(otmp, 88)) & 1) | 0 ? 1 : 0)
-            discover_object((otyp), (1), (1), (1));
+            discover_object((otyp), 1, 1, 1);
         if (multiple)
             encumber_msg();
         return 1;
@@ -806,7 +806,7 @@ export function chwepon(otmp, amount) {
         xtime = (Math.imul(amount, amount) == 1) ? __sl116 : __sl117;
         pline(__sl118, Yobjnam2(uwep.v, amount == 0 ? __sl114 : __sl101), color, xtime);
         if ((otyp != 0 && (cptr.ldI32(cptr.add(uwep.v, 80)) & 1) | 0 ? 1 : 0) && (amount > 0 || (amount < 0 && (cptr.ldI32(cptr.add(otmp, 88)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-            discover_object((otyp), (1), (1), (1));
+            discover_object((otyp), 1, 1, 1);
     }
     if (amount < 0)
         costly_alteration(uwep.v, 5);
@@ -849,6 +849,6 @@ export function weldmsg(obj) {
 /** C ref: wield.c:1078 — @param {CPtr} obj @returns {CInt} */
 export function mwelded(obj) {
     if ((obj && (cptr.ldI64(cptr.add(obj, 192)) & 256n) ? 1 : 0) && ((cptr.ldI32(cptr.add((obj), 56)) & 1) | 0 && ((((cptr.ld1s(cptr.add((obj), 49)) == 2 || (cptr.ld1s(cptr.add((obj), 49)) == 6 && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 68)) != 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 477 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 478 ? 1 : 0) || cptr.ldI16(cptr.add((obj), 32)) == 239 ? 1 : 0) ? 1 : 0) ? 1 : 0)
-        return (1);
-    return (0);
+        return 1;
+    return 0;
 }

@@ -72,9 +72,9 @@ export let windowprocs = cptr.alloc(416);
 /** C ref: windows.c:98 — struct win_choices[2] */
 const winchoices = cptr.alloc(2 * 16);
 cptr.stPtr(cptr.add(winchoices, 0), tty_procs);
-cptr.stPtr(cptr.add(cptr.add(winchoices, 0), 8), win_tty_init);
+cptr.stPtr(cptr.add(winchoices, 8), win_tty_init);
 cptr.stPtr(cptr.add(winchoices, 16), null);
-cptr.stPtr(cptr.add(cptr.add(winchoices, 16), 8), null);
+cptr.stPtr(cptr.add(winchoices, 24), null);
 
 /** C ref: windows.c:193 @returns {CInt} */
 export function genl_can_suspend_no() {
@@ -154,8 +154,8 @@ export function choose_windows(s) {
     }
     if (cptr.strlen(s) >= 50n) {
         tmps = alloc(50);
-        void __builtin___strncpy_chk(tmps, s, BigInt.asUintN(64, BigInt(((50 - 1) | 0))), __builtin_object_size(tmps, 2 > 1 ? 1 : 0));
-        cptr.st1(cptr.add(tmps, (50 - 1) | 0), 0);
+        void __builtin___strncpy_chk(tmps, s, 49n, __builtin_object_size(tmps, 1));
+        cptr.st1(cptr.add(tmps, 49), 0);
         s = tmps;
     }
     if (!cptr.ldPtr(cptr.add(winchoices, 1, 16))) {
@@ -209,22 +209,22 @@ cptr.stPtr(hup_procs, __sl8);
 cptr.stI32(cptr.add(hup_procs, 8), 9);
 cptr.stU64(cptr.add(hup_procs, 16), 0n);
 cptr.stU64(cptr.add(hup_procs, 24), 0n);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 0), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 1), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 2), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 3), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 4), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 5), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 6), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 7), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 8), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 9), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 10), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 11), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 12), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 13), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 14), 0);
-cptr.st1(cptr.add(cptr.add(hup_procs, 32), 15), 0);
+cptr.st1(cptr.add(hup_procs, 32), 0);
+cptr.st1(cptr.add(hup_procs, 33), 0);
+cptr.st1(cptr.add(hup_procs, 34), 0);
+cptr.st1(cptr.add(hup_procs, 35), 0);
+cptr.st1(cptr.add(hup_procs, 36), 0);
+cptr.st1(cptr.add(hup_procs, 37), 0);
+cptr.st1(cptr.add(hup_procs, 38), 0);
+cptr.st1(cptr.add(hup_procs, 39), 0);
+cptr.st1(cptr.add(hup_procs, 40), 0);
+cptr.st1(cptr.add(hup_procs, 41), 0);
+cptr.st1(cptr.add(hup_procs, 42), 0);
+cptr.st1(cptr.add(hup_procs, 43), 0);
+cptr.st1(cptr.add(hup_procs, 44), 0);
+cptr.st1(cptr.add(hup_procs, 45), 0);
+cptr.st1(cptr.add(hup_procs, 46), 0);
+cptr.st1(cptr.add(hup_procs, 47), 0);
 cptr.stPtr(cptr.add(hup_procs, 48), hup_init_nhwindows);
 cptr.stPtr(cptr.add(hup_procs, 56), hup_void_ndecl);
 cptr.stPtr(cptr.add(hup_procs, 64), hup_void_ndecl);
@@ -327,7 +327,7 @@ function hup_init_nhwindows(argc_p, argv) {
 
 /** C ref: windows.c:697 — @param {CInt} type @returns {*} */
 function hup_create_nhwindow(type) {
-    return (-1);
+    return -1;
 }
 
 /** C ref: windows.c:704 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
@@ -684,7 +684,7 @@ function dump_putstr(win, attr, str) {
 
 /** C ref: windows.c:1293 — @param {CInt} type @returns {*} */
 function dump_create_nhwindow(type) {
-    return (-1);
+    return -1;
 }
 
 /** C ref: windows.c:1300 — @param {CInt} win */
@@ -771,7 +771,7 @@ export function glyph2ttychar(glyph) {
 export function glyph2symidx(glyph) {
     let glyphinfo = cptr.alloc(48);
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32(cptr.add(cptr.add(cptr.add(glyphinfo, 16), 4), 4));
+    return cptr.ldI32(cptr.add(glyphinfo, 24));
 }
 
 const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 — char[20] (function-static) */
@@ -827,7 +827,7 @@ export function decode_mixed(buf, str) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    so = cptr.ldI32(cptr.add(cptr.add(cptr.add(glyphinfo, 16), 4), 4));
+                    so = cptr.ldI32(cptr.add(glyphinfo, 24));
                     cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.add(gs, 680), so, 1))));
                     continue;
                 } else {
@@ -1007,15 +1007,15 @@ cptr.stI32(cptr.add(zerowri, 20), 0);
 cptr.stI32(cptr.add(zerowri, 24), 0);
 cptr.stI32(cptr.add(zerowri, 28), 0);
 cptr.stI32(cptr.add(zerowri, 32), 0);
-cptr.stI32(cptr.add(cptr.add(zerowri, 32), 4), 0);
-cptr.stI32(cptr.add(cptr.add(zerowri, 32), 8), 8);
-cptr.stI32(cptr.add(cptr.add(cptr.add(zerowri, 32), 8), 4), 0);
+cptr.stI32(cptr.add(zerowri, 36), 0);
+cptr.stI32(cptr.add(zerowri, 40), 8);
+cptr.stI32(cptr.add(zerowri, 44), 0);
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr} style */
 export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
-    cptr.stI32(cptr.add(cptr.add(wri, 32), 8), cptr.ldI32(style));
-    cptr.stI32(cptr.add(cptr.add(cptr.add(wri, 32), 8), 4), cptr.ldI32(cptr.add(style, 4)));
+    cptr.stI32(cptr.add(wri, 40), cptr.ldI32(style));
+    cptr.stI32(cptr.add(wri, 44), cptr.ldI32(cptr.add(style, 4)));
     void (cptr.ldPtr(cptr.add(windowprocs, 408)))(window, 3, wri);
     cptr.st1(cptr.add(go, 528), 0);
 }
@@ -1045,7 +1045,7 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
 /** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr} buf */
 export function add_menu_heading(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, 536), 8);
-    let attr = cptr.ldI32(cptr.add(cptr.add(iflags, 112), 4));
+    let attr = cptr.ldI32(cptr.add(iflags, 116));
     let color = cptr.ldI32(cptr.add(iflags, 112));
     if (cptr.ldI32(program_state))
         attr = 0, color = 8;

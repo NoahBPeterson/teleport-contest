@@ -51,7 +51,7 @@ export function gettrack(x, y) {
     cnt = utcnt.v;
     for (tc = cptr.add(utrack, utpnt.v, 4); cnt--; ) {
         if (cptr.eq(tc, utrack))
-            tc = cptr.add(utrack, (100 - 1) | 0, 4);
+            tc = cptr.add(utrack, 99, 4);
         else
             tc = cptr.add(tc, -1, 4);
         ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16(cptr.add(tc, 2)));
@@ -66,13 +66,13 @@ export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
         if (cptr.ldI16(cptr.add(utrack, i, 4)) == x && cptr.ldI16(cptr.add(cptr.add(utrack, i, 4), 2)) == y ? 1 : 0)
-            return (1);
-    return (0);
+            return 1;
+    return 0;
 }
 
 /** C ref: track.c:76 — @param {CPtr} nhfp */
 export function save_track(nhfp) {
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & (1 | 2))) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         let i;
         sfo_int(nhfp, utcnt, __sl0);
         sfo_int(nhfp, utpnt, __sl1);
