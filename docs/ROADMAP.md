@@ -12,7 +12,7 @@ Status legend: ✅ done · 🔄 in progress · 📋 planned · ⚠️ blocked/ex
 | 1.3 | Sandbox-legal architecture | ✅ | In-memory VFS, vendored data (js/data-nethackdir), Worker-realm segment isolation, strict-score gate |
 | 1.4 | Browser playability | 🔄 | Judge check = Chromium, 5 ms/move, fails on ANY console line. Shipped: probe-verified transport ladder (sab → worker-XHR → SharedWorker-XHR → O(n) replay), every rung silent, 0.6–3.0 ms/move on all fast rungs (docs/NOTES-transport-ladder.md); fallback amortized O(n) and browser-correct. Await crawl verdict. |
 | 1.5 | Animation frames (supplemental) | ✅ | 1,483/1,483 public locally; await crawl for held-out 2,959 |
-| 1.6 | Speed (category-best target) | 🔄 | 3027+8.7 → ~835+3.5 locally (BigInt rewrite −43%, folding −8% bytes). Next: boot time (module instantiation ~400 ms), per-move toward 2.0 class. |
+| 1.6 | Speed (category-best target) | 🔄 | Stage 1 (fused cptr accessors, docs/NOTES-speed-stage1.md): slope −12.5%, startup −11%, source −1.27 MB, cptr.add CPU 11.6%→4.3%. Stage 2 queued: fuse scaled+const offsets (6,647 uprops sites), aligned arena views prototype. Stage 3 (linear-memory heap) parked pending stage-2 numbers. |
 
 ### Quality / Phase-2 hedges (land BEFORE the freeze — free in baseline)
 | # | Task | Status | Notes |
