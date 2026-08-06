@@ -10,7 +10,7 @@ Status legend: ✅ done · 🔄 in progress · 📋 planned · ⚠️ blocked/ex
 | 1.1 | Public corpus parity (44/44) | ✅ | Judge-confirmed 11,405/11,405; PRNG+screens 100% |
 | 1.2 | Held-out parity (43/44) | ⚠️ | 1 screen short of 11,265. Suspected $HOME-path class (issue #16); unfixable locally unless upstream re-records or documents env. Nudge #16 with held-out data. |
 | 1.3 | Sandbox-legal architecture | ✅ | In-memory VFS, vendored data (js/data-nethackdir), Worker-realm segment isolation, strict-score gate |
-| 1.4 | Browser playability | 🔄 | Shipped: resident engine, SAB + SW-XHR transports, 1.7–5.1 ms/move. Await crawl verdict; XHR sits on 5 ms threshold; if judged on aggregate runner, boot time (1.26 s) is the lever. |
+| 1.4 | Browser playability | 🔄 | Judge check = Chromium, 5 ms/move, fails on ANY console line. Shipped: probe-verified transport ladder (sab → worker-XHR → SharedWorker-XHR → O(n) replay), every rung silent, 0.6–3.0 ms/move on all fast rungs (docs/NOTES-transport-ladder.md); fallback amortized O(n) and browser-correct. Await crawl verdict. |
 | 1.5 | Animation frames (supplemental) | ✅ | 1,483/1,483 public locally; await crawl for held-out 2,959 |
 | 1.6 | Speed (category-best target) | 🔄 | 3027+8.7 → ~835+3.5 locally (BigInt rewrite −43%, folding −8% bytes). Next: boot time (module instantiation ~400 ms), per-move toward 2.0 class. |
 
