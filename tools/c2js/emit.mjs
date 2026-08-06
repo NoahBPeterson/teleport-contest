@@ -323,21 +323,78 @@ function splitTopLevelArgs(s) {
 const FUSED_LOADS = new Set(['ld1s', 'ld1u', 'ldI16', 'ldU16', 'ldI32', 'ldI64', 'ldU64', 'ldPtr', 'ldF64']);
 const FUSED_STORES = new Set(['st1', 'stI16', 'stI32', 'stI64', 'stU64', 'stPtr', 'stF64']);
 
-/** cptr.ldI32(cptr.add(p, K)) -> cptr.ldI32o(p, K); null when not applicable */
-function fuseOffsetAccess(name, args) {
+// Stage 2: an address with *two* components — an array subscript and a field
+// offset — is what survived stage 1 with one `cptr.add` still in it:
+//
+//     cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16)
+//
+// The `o2` forms take the whole thing (`cptr.ldI64o2(u, NHC.FAST, 24, 128)`);
+// the `o3` forms take the two-subscript shape `levl[x][y].field`. Only the
+// accessors a doubly-subscripted C array actually reaches have an `o3` — the
+// rest keep one explicit `cptr.add` and use `o2`, which is still one address
+// object fewer than before.
+const FUSED_O3 = new Set(['ld1s', 'ld1u', 'ldI16', 'ldI32', 'ldPtr', 'st1', 'stI32', 'stPtr']);
+
+const INT_LITERAL = /^-?\d+$/;
+
+/**
+ * Decompose a `cptr.add` chain into a base, its scaled terms in source order,
+ * and the sum of its constant displacements. `sz === null` marks the
+ * two-argument `cptr.add(p, n)` form, whose scale is 1.
+ *
+ * Constant folding here is exact: every displacement is an integer literal and
+ * their sum is nowhere near 2^53. Term *order* is preserved, which is what
+ * keeps evaluation order identical — the rewritten call evaluates the base,
+ * then each subscript, left to right, exactly as the nested calls did.
+ */
+function decomposeAddress(code) {
+  const terms = [];
+  let k = 0, expr = String(code).trim();
+  while (expr.startsWith('cptr.add(') && expr.endsWith(')')) {
+    // splitTopLevelArgs returns null unless the trailing ')' is the one that
+    // closes this call, so a code string like `cptr.add(a, b) + f(x)` stops here.
+    const a = splitTopLevelArgs(expr.slice('cptr.add('.length, -1));
+    if (!a || a.length < 2 || a.length > 3) break;
+    const idx = a[1].trim();
+    if (a.length === 2 && INT_LITERAL.test(idx)) k += Number(idx);
+    else terms.push([idx, a.length === 3 ? a[2].trim() : null]);
+    expr = a[0].trim();
+  }
+  terms.reverse();
+  return { base: expr, terms, k };
+}
+
+/** cptr.ldI32(cptr.add(p, K)) -> cptr.ldI32o(p, K); null when not applicable.
+ * Exported so the differential fuzzer can drive the rewrite directly. */
+export function fuseOffsetAccess(name, args) {
   const isStore = FUSED_STORES.has(name);
   if (!isStore && !FUSED_LOADS.has(name)) return null;
   if (args.length !== (isStore ? 2 : 1)) return null;
-  const loc = String(args[0]);
+  const loc = String(args[0]).trim();
   if (!loc.startsWith('cptr.add(') || !loc.endsWith(')')) return null;
-  // splitTopLevelArgs returns null unless the trailing ')' is the one that
-  // closes this call, so a code string like `cptr.add(a, b) + x` is rejected.
-  const a = splitTopLevelArgs(loc.slice('cptr.add('.length, -1));
-  if (!a || a.length < 2 || a.length > 3) return null;
-  const parts = [a[0].trim(), a[1].trim()];
-  if (isStore) parts.push(String(args[1]));
-  if (a.length === 3) parts.push(a[2].trim());
-  return `cptr.${name}o(${parts.join(', ')})`;
+  const dec = decomposeAddress(loc);
+  const { terms, k } = dec;
+  let base = dec.base;
+  if (base === loc) return null;                       // not a well-formed chain
+  const val = isStore ? [String(args[1])] : [];
+  // Put back the leading subscripts the fused form cannot take. `o` holds one
+  // component, `o2` two, `o3` three; anything deeper (C has none, but the
+  // rewrite must be total) re-emits as an explicit `cptr.add`.
+  const keep = FUSED_O3.has(name) ? 2 : 1;
+  while (terms.length > keep) {
+    const [i, sz] = terms.shift();
+    base = `cptr.add(${base}, ${i}${sz === null ? '' : `, ${sz}`})`;
+  }
+  // scale of a two-argument add: `n * 1` is `n` for every number, and the
+  // slow path coerces identically, so the explicit 1 is not a semantic change.
+  const scale = (t) => (t[1] === null ? '1' : t[1]);
+  if (terms.length === 0) return `cptr.${name}o(${[base, String(k), ...val].join(', ')})`;
+  if (terms.length === 1) {
+    const [i, sz] = terms[0];
+    if (k === 0) return `cptr.${name}o(${[base, i, ...val, ...(sz === null ? [] : [sz])].join(', ')})`;
+    return `cptr.${name}o2(${[base, i, scale(terms[0]), String(k), ...val].join(', ')})`;
+  }
+  return `cptr.${name}o3(${[base, terms[0][0], scale(terms[0]), terms[1][0], scale(terms[1]), String(k), ...val].join(', ')})`;
 }
 
 /** cptr.add(cptr.add(p, A), B) -> cptr.add(p, A+B); null when not applicable */
@@ -387,7 +444,7 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 7;
+export const EMIT_VERSION = 8;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths }) {
