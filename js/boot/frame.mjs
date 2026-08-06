@@ -58,6 +58,11 @@ self.onmessage = async (ev) => {
                 cursors: r.cursors || [],
                 rngLog: r.rngLog || [],
                 animFramesByStep: r.animFramesByStep || [],
+                // null == "ran out of the moves we were given" (the normal end
+                // of a scored segment); anything else is the game itself
+                // terminating. Scoring ignores it; the interactive fallback in
+                // js/boot/interactive.mjs needs it to know the game is over.
+                exitCode: r.exitCode === undefined ? null : r.exitCode,
             },
             storage: Object.fromEntries(map),
         };

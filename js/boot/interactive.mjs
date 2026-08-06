@@ -275,13 +275,23 @@ const REPLAY_QUIET_MS = 200;
  * `engine.mode === 'replay'`, something is wrong with the host, and the page
  * says so out loud in a banner — see warnDegradedEngine() in js/jsmain.js.
  *
- * Replaying on *every* key made this quadratic, and badly so: each key paid a
- * fresh boot (a cache-busted re-import of the whole 14.5 MB module graph, ~400
- * ms of compile that V8's code cache cannot help with because the URL is
- * different every time) plus a replay of every key before it. A judge run of a
- * few hundred keys measured 3156 ms/move.
+ * Two things were wrong with the old version of this class.
  *
- * So replay on a schedule instead of on every key:
+ * It replayed on *every* key, which is quadratic and badly so: each key paid a
+ * fresh boot (~1 s, most of it re-instantiating the 14.5 MB module graph) plus
+ * a replay of every key before it. A judge run measured 3156 ms/move.
+ *
+ * And in a browser it did not actually replay at all. Isolation came from
+ * `segmentSpecifier(url, n, isolated)`, and `isolated` is false outside Node
+ * (js/boot/isolation.mjs needs module.registerHooks) — so every replay after
+ * the first re-entered the *same*, already-played module graph, crashed on the
+ * spent C globals, and set `exited`. The page declared game over one keystroke
+ * in. Measured here with `judge-sim/playability.mjs --no-sw`: 1 move, then
+ * gameover, on a 63-key script. So the browser gets its fresh realm the same
+ * way js/jsmain.js's scoring path does — a module Worker running
+ * js/boot/frame.mjs — see _boot() below.
+ *
+ * With replays that work, replay on a schedule instead of on every key:
  *
  *   - doubling checkpoints: replay when the key count has doubled since the
  *     last replay. Total replayed work telescopes to ~2n instead of n²/2, and
@@ -363,26 +373,93 @@ export class ReplayEngine {
         const keys = this.keys;
         const clock = typeof performance !== 'undefined' && performance.now ? performance : Date;
         const t0 = clock.now();
-        const { enableSegmentIsolation, segmentSpecifier } = await import('./isolation.mjs');
-        const { installBrowserGlobals } = await import('./browser-env.mjs');
-        installBrowserGlobals();
-        const isolated = await enableSegmentIsolation();
-        const url = new URL('./harness.mjs', import.meta.url).href;
-        const { runBootGame } = await import(segmentSpecifier(url, ++ReplayEngine._n, isolated));
-        const r = await runBootGame({
+        const r = await this._boot({
             seed: this.job.seed, datetime: this.job.datetime,
             nethackrc: this.job.nethackrc || '', moves: keys,
             storage: this.job.storage || null,
         });
         const n = r.screens.length;
         if (n) this.frame = { screen: r.screens[n - 1], cx: r.cursors[n - 1][0], cy: r.cursors[n - 1][1], anim: [] };
-        if (r.exitCode !== null || r.error) this.exited = true;
+        // exitCode null == "we ran out of the keys we were given", the normal
+        // end of every replay. Anything else is the game itself ending.
+        if ((r.exitCode !== null && r.exitCode !== undefined) || r.error) this.exited = true;
         this._replayedLen = keys.length;
         this._lastMs = clock.now() - t0;
         return this.frame;
     }
+
+    /**
+     * One replay from a *pristine* copy of the transpiled graph. Every C
+     * file-scope variable has to be back at its static initialiser, or the
+     * replay resumes the previous replay's dungeon and immediately dies.
+     *
+     * Node forks the graph in-process (js/boot/isolation.mjs). A browser has no
+     * module.registerHooks, so it borrows the mechanism the scoring path
+     * already uses for segments 2..N: a module Worker is a fresh realm with a
+     * fresh module map, and js/boot/frame.mjs is that worker. If the realm
+     * cannot host workers either, fall back to the shared graph — correct for
+     * the first replay and nothing after it, which is the best a realm with
+     * neither mechanism can do.
+     */
+    async _boot(job) {
+        const { enableSegmentIsolation, segmentSpecifier } = await import('./isolation.mjs');
+        const { installBrowserGlobals } = await import('./browser-env.mjs');
+        installBrowserGlobals();
+        const isolated = await enableSegmentIsolation();
+        if (!isolated && ReplayEngine._realms !== false) {
+            try { return await replayInFreshRealm(job); } catch (e) {
+                if (!(e instanceof RealmUnavailable)) throw e;
+                ReplayEngine._realms = false;   // probe once; never retry
+            }
+        }
+        const url = new URL('./harness.mjs', import.meta.url).href;
+        const { runBootGame } = await import(segmentSpecifier(url, ++ReplayEngine._n, isolated));
+        return runBootGame(job);
+    }
 }
 ReplayEngine._n = 0;
+// null = untried, false = this realm cannot make module Workers.
+ReplayEngine._realms = null;
+
+/** The realm itself could not be created — never thrown for a game error. */
+class RealmUnavailable extends Error {}
+
+const FRAME_URL = new URL('./frame.mjs', import.meta.url);
+
+/**
+ * Run one replay inside a module Worker and hand back the shape _runOnce wants.
+ * A worker that dies before it ever ran the job means the realm is unusable
+ * (no module workers, CSP worker-src); a worker that dies after is the game
+ * crashing, and that is reported as a game that ended, not as a missing realm.
+ */
+function replayInFreshRealm(job) {
+    return new Promise((resolve, reject) => {
+        let worker;
+        try {
+            worker = new Worker(FRAME_URL.href, { type: 'module', name: 'c2js-replay' });
+        } catch (e) {
+            return reject(new RealmUnavailable(String((e && e.message) || e)));
+        }
+        let started = false;
+        const done = (fn, arg) => { try { worker.terminate(); } catch { /* already gone */ } fn(arg); };
+        worker.onerror = (e) => done(started ? resolve : reject, started
+            ? { screens: [], cursors: [], exitCode: null, error: String((e && (e.message || e.type)) || 'worker error') }
+            : new RealmUnavailable(String((e && e.message) || 'worker failed to start')));
+        worker.onmessageerror = () => done(reject, new RealmUnavailable('worker message could not be deserialised'));
+        worker.onmessage = (ev) => {
+            const msg = ev.data;
+            if (!msg) return;
+            if (msg.type === 'ready') { started = true; worker.postMessage({ type: 'run', job }); return; }
+            if (msg.type !== 'done') return;
+            if (!msg.ok) return done(resolve, { screens: [], cursors: [], exitCode: null, error: msg.error });
+            const r = msg.result || {};
+            done(resolve, {
+                screens: r.screens || [], cursors: r.cursors || [],
+                exitCode: r.exitCode === undefined ? null : r.exitCode, error: null,
+            });
+        };
+    });
+}
 
 // Only one game is ever being played at a time, in a page or in the
 // playability runner's session loop. Retiring the previous engine when a new
