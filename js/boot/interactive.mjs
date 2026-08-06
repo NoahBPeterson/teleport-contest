@@ -101,6 +101,16 @@ async function ensureKeyService() {
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Thrown when the *realm* cannot host a blocking engine — no Worker
+ * constructor, no SharedArrayBuffer and no service worker, or a service worker
+ * that turns out not to be intercepting us. Never thrown for a game error:
+ * degrading to prefix replay because NetHack crashed would turn a visible bug
+ * into three hundred seconds of silence. (Same distinction jsmain.js draws
+ * with RealmUnavailable on the scoring path.)
+ */
+export class TransportUnavailable extends Error {}
+
 export class InteractiveEngine {
     constructor(job) {
         this.job = job;                 // { seed, datetime, nethackrc, storage }
@@ -126,11 +136,17 @@ export class InteractiveEngine {
         const useSab = IS_NODE || (typeof SharedArrayBuffer === 'function' && globalThis.crossOriginIsolated);
         if (!useSab) {
             this._sw = await ensureKeyService();
-            if (!this._sw) throw new Error('no blocking-input transport available');
+            if (!this._sw) {
+                throw new TransportUnavailable('no SharedArrayBuffer (page is not crossOriginIsolated) and no service worker');
+            }
         }
         this.mode = useSab ? 'sab' : 'xhr';
 
-        this._port = await Port.spawn();
+        try {
+            this._port = await Port.spawn();
+        } catch (e) {
+            throw new TransportUnavailable('no Worker: ' + String((e && e.message) || e));
+        }
         this._port.onError((e) => this._settle({ type: 'exit', code: null, error: String(e && e.message || e) }));
         this._port.onMessage((m) => this._onMessage(m));
 
@@ -164,7 +180,11 @@ export class InteractiveEngine {
         // in engine-worker.mjs) — surface it so startEngine() can degrade.
         await this._next();
         if (this.exited && !this.frame) {
-            throw new Error((this.exitInfo && this.exitInfo.error) || 'engine exited before its first frame');
+            const why = (this.exitInfo && this.exitInfo.error) || 'engine exited before its first frame';
+            // Only the transport probe's own verdict counts as "this realm
+            // can't host us". A crash inside the game is a crash and must be
+            // reported as one.
+            throw /^no-blocking-transport/.test(why) ? new TransportUnavailable(why) : new Error(why);
         }
         return this.frame;
     }
@@ -235,10 +255,21 @@ export class InteractiveEngine {
 // ---------------------------------------------------------------------------
 
 /**
- * Last-resort engine for realms with no worker and no service worker: replay
- * the whole key prefix on every keystroke.  Correct, and quadratic — a
- * keystroke costs a full boot (~1.2 s) plus the replay of everything before
- * it.  Only ever used after InteractiveEngine.start() has failed.
+ * Last-resort engine for a realm that cannot host a blocking thread: replay
+ * the whole key prefix on every keystroke.
+ *
+ * This is the naive architecture the rest of this file exists to avoid, and it
+ * is quadratic: keystroke i costs a fresh boot (~1.25 s) plus a replay of the
+ * i keys before it (~2.5 ms each), so 200 keys is about five minutes of CPU.
+ * It is not a fallback in the sense of "slightly worse" — it is a different,
+ * bad architecture, kept only because a realm with no Worker at all should
+ * still show a working game rather than a dead terminal.
+ *
+ * Every environment measured takes a resident path instead: Node
+ * (worker_threads + SharedArrayBuffer), a crossOriginIsolated page (SAB), and
+ * plain GitHub-Pages-style hosting (service worker). If you ever see
+ * `engine.mode === 'replay'`, something is wrong with the host, and the page
+ * says so out loud in a banner — see warnDegradedEngine() in js/jsmain.js.
  */
 export class ReplayEngine {
     constructor(job) {
@@ -293,6 +324,11 @@ export async function startEngine(job, onDegraded) {
         return eng;
     } catch (e) {
         try { eng.destroy(); } catch { /* nothing to clean up */ }
+        // A game that crashed on boot is a bug, and it gets reported as one.
+        // Only a realm that cannot host a blocking thread earns the quadratic
+        // replay engine — otherwise a one-line NetHack crash would present as
+        // a mysteriously unplayable page.
+        if (!(e instanceof TransportUnavailable)) throw e;
         if (onDegraded) onDegraded(String((e && e.message) || e));
         const fallback = new ReplayEngine(job);
         await fallback.start();
