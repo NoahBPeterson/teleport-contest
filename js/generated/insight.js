@@ -2430,7 +2430,7 @@ function show_achievements(final) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(cptr.decay(buf), __sl589, rank_of(rank_to_xlev((absidx - (((NHC.ACH_RNK1 - 1) | 0))) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
+            void cptr.sprintf(cptr.decay(buf), __sl589, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
             enlght_line(cptr.decay((You_)), final ? (__sl0) : cptr.decay((have)), cptr.decay(((buf))), (__sl0));
             break;
             default:
@@ -2467,7 +2467,7 @@ export function record_achievement(achidx) {
     if (cptr.ldI32(program_state))
         return;
     if (absidx >= NHC.ACH_RNK1 && absidx <= NHC.ACH_RNK8 ? 1 : 0) {
-        livelog_printf(cptr.ldI64(cptr.add(achieve_msg, absidx, 16)), __sl592, rank_of(rank_to_xlev((absidx - (((NHC.ACH_RNK1 - 1) | 0))) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32(cptr.add(u, 48)));
+        livelog_printf(cptr.ldI64(cptr.add(achieve_msg, absidx, 16)), __sl592, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32(cptr.add(u, 48)));
     } else if (achidx == NHC.ACH_SOKO_PRIZE || achidx == NHC.ACH_MINE_PRIZE ? 1 : 0) {
         let otyp = i16(((achidx == NHC.ACH_SOKO_PRIZE) ? cptr.ldI16(cptr.add(svc, 686)) : cptr.ldI16(cptr.add(svc, 684))));
         livelog_printf(cptr.ldI64(cptr.add(achieve_msg, achidx, 16)), __sl159, cptr.ldPtr(cptr.add(cptr.add(achieve_msg, achidx, 16), 8)), (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))));

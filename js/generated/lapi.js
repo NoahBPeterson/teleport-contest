@@ -1182,7 +1182,7 @@ function aux_rawset(L, idx, key, n) {
     (void L, (void 0));
     t = gettable(L, idx);
     luaH_set(L, t, key, ((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
-    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & ~(~((~0 << (((NHC.TM_EQ + 1) | 0))) >>> 0))));
+    (cptr.st1(cptr.add((t), 10), cptr.ld1u(cptr.add((t), 10)) & ~(~((~0 << ((NHC.TM_EQ + 1) | 0)) >>> 0))));
     (((cptr.ld1u(cptr.add((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)))), 8))) & 64) ? ((((cptr.ld1u(cptr.add((((((t))))), 9))) & 32) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)))))))), 9))) & 24) ? 1 : 0) ? luaC_barrierback_(L, ((((t))))) : (void 0)) : (void 0));
     cptr.stPtr(cptr.add(L, 16), cptr.sub(cptr.ldPtr(cptr.add(L, 16)), n, 16));
     (void 0);

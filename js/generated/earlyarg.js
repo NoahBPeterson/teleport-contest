@@ -1493,7 +1493,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 opt_terminate();
             } else {
                 oldargc = argc.v;
-                arg = lopt(arg, ((NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent)), __sl13, origarg, argc, argv);
+                arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent), __sl13, origarg, argc, argv);
                 if (!arg)
                     error(__sl14);
                 if (cptr.ld1s(arg) != 101) {
@@ -1515,7 +1515,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             if (!strcmp(arg, __sl17))
                 arg = (__sl18);
             else
-                arg = lopt(arg, ((NHC.ArgValRequired | NHC.ArgErrComplain)), __sl19, origarg, argc, argv);
+                arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgErrComplain), __sl19, origarg, argc, argv);
             if (arg) {
                 cptr.stPtr(cptr.add(gc, 432), dupstr(arg));
                 if (oldargc == argc.v)
@@ -1531,7 +1531,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 config_error_done();
                 return;
             }
-            if (lopt(arg, (((NHC.ArgValDisallowed | NHC.ArgErrComplain)) | ((cptr.ld1s(cptr.add(origarg, 1)) != 45) ? NHC.ArgNamOneLetter : 0)), __sl20, origarg, argc, argv)) {
+            if (lopt(arg, ((NHC.ArgValDisallowed | NHC.ArgErrComplain) | ((cptr.ld1s(cptr.add(origarg, 1)) != 45) ? NHC.ArgNamOneLetter : 0)), __sl20, origarg, argc, argv)) {
                 scores_only((argc.v + 1) | 0, cptr.add(argv.v, -(1), 8), cptr.ldPtr(hackdir_p));
             }
             break;
@@ -1545,7 +1545,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             }
             break;
             case 119:
-            arg = lopt(arg, ((NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain)), __sl22, origarg, argc, argv);
+            arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain), __sl22, origarg, argc, argv);
             if (cptr.ldPtr(cptr.add(gc, 472)))
                 cptr.free(cptr.ldPtr(cptr.add(gc, 472)));
             cptr.stPtr(cptr.add(gc, 472), arg ? dupstr(arg) : null);

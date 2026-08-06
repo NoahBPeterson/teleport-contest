@@ -6685,7 +6685,7 @@ function optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val ? 1 : 0) {
         cptr.st1(cptr.add(opts, 0), 0);
-        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + ((((0) + NHC.MAXPCHARS) | 0))) | 0, 1)));
+        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1)));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;

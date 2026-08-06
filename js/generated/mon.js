@@ -1671,7 +1671,7 @@ export function mfndpos(mon, data, flag) {
     let poisongas_ok;
     let in_poisongas;
     let gas_reg;
-    let gas_glyph = 4091;
+    let gas_glyph = (((((NHC.S_poisoncloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0);
     x = cptr.ldI16(cptr.add(mon, 28));
     y = cptr.ldI16(cptr.add(mon, 30));
     nowtyp = uchar(cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)));

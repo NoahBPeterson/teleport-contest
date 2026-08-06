@@ -926,7 +926,7 @@ function cast_chain_lightning() {
         return;
     }
     tmp_at(-1, i16(zapdir_to_glyph(0, 1, cptr.ldI32(cptr.add(clq, 808)))));
-    for (let dir = 0; dir < (((NHC.N_DIRS_Z - 2) | 0)); dir++) {
+    for (let dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
         let zap = cptr.alloc(8); cptr.st1(zap, uchar(dir)); cptr.stI16(cptr.add(zap, 2), cptr.ldI16(u)); cptr.stI16(cptr.add(zap, 4), cptr.ldI16(cptr.add(u, 2))); cptr.st1(cptr.add(zap, 6), 2);
         propagate_chain_lightning(clq, zap);
     }
@@ -966,9 +966,9 @@ function cast_chain_lightning() {
                 cptr.st1(cptr.add(zap, 6), 0);
             else if (cptr.ldI32(cptr.add(u, 2208)) > 0)
                 (cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2208)) + -1)) - (-1);
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % (((NHC.N_DIRS_Z - 2) | 0)))));
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % ((NHC.N_DIRS_Z - 2) | 0))));
             propagate_chain_lightning(clq, zap);
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % (((NHC.N_DIRS_Z - 2) | 0)))));
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % ((NHC.N_DIRS_Z - 2) | 0))));
             propagate_chain_lightning(clq, zap);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 320)))();
@@ -1332,7 +1332,7 @@ function display_spell_target_positions(on_off) {
     let dy;
     let dist = 10;
     if (on_off) {
-        tmp_at(-1, 4092);
+        tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));

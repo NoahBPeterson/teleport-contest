@@ -218,7 +218,7 @@ export function luaV_finishget(L, t, key, val, slot) {
                 luaG_typeerror(L, t, __sl4);
         } else {
             (void 0);
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), 10)) & (((1 << (NHC.TM_INDEX)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40)), NHC.TM_INDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_INDEX, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40))), 10)) & ((1 << (NHC.TM_INDEX)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t))))))))), 40)), NHC.TM_INDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_INDEX, 8)))));
             if (cptr.eq(tm, (null))) {
                 (cptr.st1(cptr.add((((val))), 8), 0));
                 return;
@@ -253,7 +253,7 @@ export function luaV_finishset(L, t, key, val, slot) {
         if (!cptr.eq(slot, (null))) {
             let h = ((((((cptr.ldPtr(((t)))))))));
             (void 0);
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & (((1 << (NHC.TM_NEWINDEX)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_NEWINDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_NEWINDEX, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (NHC.TM_NEWINDEX)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_NEWINDEX, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_NEWINDEX, 8)))));
             if (cptr.eq(tm, (null))) {
                 {
                     let io = (((cptr.ldPtr(cptr.add(L, 16)))));
@@ -266,7 +266,7 @@ export function luaV_finishset(L, t, key, val, slot) {
                 cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
                 luaH_finishset(L, h, key, slot, val);
                 cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
-                (cptr.st1(cptr.add((h), 10), cptr.ld1u(cptr.add((h), 10)) & ~(~((~0 << (((NHC.TM_EQ + 1) | 0))) >>> 0))));
+                (cptr.st1(cptr.add((h), 10), cptr.ld1u(cptr.add((h), 10)) & ~(~((~0 << ((NHC.TM_EQ + 1) | 0)) >>> 0))));
                 (((cptr.ld1u(cptr.add((val), 8))) & 64) ? ((((cptr.ld1u(cptr.add((((((h))))), 9))) & 32) && ((cptr.ld1u(cptr.add(((cptr.ldPtr(((val))))), 9))) & 24) ? 1 : 0) ? luaC_barrierback_(L, ((((h))))) : (void 0)) : (void 0));
                 return;
             }
@@ -484,9 +484,9 @@ export function luaV_equalobj(L, t1, t2) {
                 return 1;
             else if (cptr.eq(L, (null)))
                 return 0;
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), 10)) & (((1 << (NHC.TM_EQ)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24))), 10)) & ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 24)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
             if (cptr.eq(tm, (null)))
-                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), 10)) & (((1 << (NHC.TM_EQ)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
+                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24))), 10)) & ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 24)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
             break;
         }
         case 5:
@@ -495,9 +495,9 @@ export function luaV_equalobj(L, t1, t2) {
                 return 1;
             else if (cptr.eq(L, (null)))
                 return 0;
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), 10)) & (((1 << (NHC.TM_EQ)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40))), 10)) & ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t1))))))))), 40)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
             if (cptr.eq(tm, (null)))
-                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), 10)) & (((1 << (NHC.TM_EQ)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
+                tm = (cptr.eq((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40))), 10)) & ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((t2))))))))), 40)), NHC.TM_EQ, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_EQ, 8)))));
             break;
         }
         default:
@@ -583,7 +583,7 @@ export function luaV_objlen(L, ra, rb) {
         case 5:
         {
             let h = ((((((cptr.ldPtr(((rb)))))))));
-            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & (((1 << (NHC.TM_LEN)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_LEN, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_LEN, 8)))));
+            tm = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & ((1 << (NHC.TM_LEN)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_LEN, cptr.ldPtr(cptr.add(cptr.add(((cptr.ldPtr(cptr.add(L, 24)))), 280), NHC.TM_LEN, 8)))));
             if (tm)
                 break;
             {

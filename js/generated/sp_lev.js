@@ -715,7 +715,7 @@ function flip_visuals(flp, minx, miny, maxx, maxy) {
                 }
                 cptr.st1(cptr.add(lev, 5), uchar(seenv));
             }
-            if ((((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0) && ((cptr.ldI32(lev)) >= NHC.GLYPH_CMAP_STONE_OFF && (cptr.ldI32(lev)) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) ? 1 : 0)
+            if ((((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0) && ((cptr.ldI32(lev)) >= NHC.GLYPH_CMAP_STONE_OFF && (cptr.ldI32(lev)) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0) ? 1 : 0) ? 1 : 0)
                 cptr.stI32(lev, back_to_glyph(i16(x), i16(y)));
         }
     }

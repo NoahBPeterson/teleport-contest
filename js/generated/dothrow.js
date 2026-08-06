@@ -753,7 +753,7 @@ export function hurtle_step(arg, x, y) {
         let glyph = glyph_at(x, y);
         cptr.stI32(cptr.add(mon, 108), 0);
         mnam = x_monnam(mon, 2, null, (((cptr.ldPtr(cptr.add((mon), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mon), 312)))) ? 1 : 0) ? 8 : 0) | 64), 0);
-        if (!((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < (((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < (((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < (((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < (((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < (((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < (((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0)
+        if (!((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0)
             You(__sl47, mnam, (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mon, 3), 48), 16))));
         else
             You(__sl48, mnam);
@@ -1107,7 +1107,7 @@ function toss_up(obj, hitsroof) {
         if (cptr.ld1s(cptr.add(obj, 51)) && !harmless ? 1 : 0)
             artimsg = artifact_hit(null, cptr.add(gy, 8), obj, dmg, (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1354, __sl78), rn2(18)) : rn2(18)) + 2) | 0));
         if (!dmg.v) {
-            dmg.v = ((((cptr.ldI32(cptr.add(obj, 36)) | 0) + (((NHC.WT_TO_DMG - 1) | 0))) | 0) / NHC.WT_TO_DMG) | 0;
+            dmg.v = ((((cptr.ldI32(cptr.add(obj, 36)) | 0) + ((NHC.WT_TO_DMG - 1) | 0)) | 0) / NHC.WT_TO_DMG) | 0;
             dmg.v = (dmg.v <= 1) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1358, __sl78), rnd(dmg.v)) : rnd(dmg.v));
             if (dmg.v > 6)
                 dmg.v = 6;

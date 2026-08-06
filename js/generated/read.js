@@ -1268,7 +1268,7 @@ function display_stinking_cloud_positions(on_off) {
     let dy;
     let dist = 6;
     if (on_off) {
-        tmp_at(-1, 4092);
+        tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));

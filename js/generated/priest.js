@@ -279,15 +279,15 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let px = 0;
     let py = 0;
     let i;
-    let si = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl4), rn2((((NHC.N_DIRS_Z - 2) | 0)))) : rn2((((NHC.N_DIRS_Z - 2) | 0))));
+    let si = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl4), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
     let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, 96);
-    for (i = 0; i < (((NHC.N_DIRS_Z - 2) | 0)); i++) {
-        px = (sx + cptr.ld1s(cptr.add(cptr.decay(xdir), (((((i + si) | 0) + (((NHC.N_DIRS_Z - 2) | 0))) | 0) % (((NHC.N_DIRS_Z - 2) | 0))), 1))) | 0;
-        py = (sy + cptr.ld1s(cptr.add(cptr.decay(ydir), (((((i + si) | 0) + (((NHC.N_DIRS_Z - 2) | 0))) | 0) % (((NHC.N_DIRS_Z - 2) | 0))), 1))) | 0;
+    for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
+        px = (sx + cptr.ld1s(cptr.add(cptr.decay(xdir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1))) | 0;
+        py = (sy + cptr.ld1s(cptr.add(cptr.decay(ydir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1))) | 0;
         if (pm_good_location(i16(px), i16(py), prim))
             break;
     }
-    if (i == (((NHC.N_DIRS_Z - 2) | 0)))
+    if (i == ((NHC.N_DIRS_Z - 2) | 0))
         px = sx, py = sy;
     if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), px, 168), py, 8)) !== null))
         void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), px, 168), py, 8))), 4);
@@ -308,7 +308,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
             void mongets(priest, NHC.AMULET_OF_YENDOR);
         }
         for (cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 265, __sl4), rn2(3)) : rn2(3)) + 2) | 0); cnt > 0; --cnt) {
-            void mpickobj(priest, mkobj((((0 - NHC.SPBOOK_CLASS) | 0)), 0));
+            void mpickobj(priest, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 269, __sl4), rn2(2)) : rn2(2)) && (otmp = which_armor(priest, 2n)) !== null ? 1 : 0) {
             if (p_coaligned(priest))

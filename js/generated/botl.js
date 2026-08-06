@@ -590,7 +590,7 @@ export function do_statusline2() {
     void describe_level(cptr.decay(__static_do_statusline2_dloc), 1);
     if ((money = money_cnt(cptr.ldPtr(cptr.add(gi, 8)))) < 0n)
         money = 0n;
-    void cptr.sprintf(eos(cptr.decay(__static_do_statusline2_dloc)), __sl19, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0))), ((money) < 999999n ? (money) : 999999n));
+    void cptr.sprintf(eos(cptr.decay(__static_do_statusline2_dloc)), __sl19, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0)), ((money) < 999999n ? (money) : 999999n));
     dln = cptr.strlen(cptr.decay(__static_do_statusline2_dloc));
     dx = BigInt.asUintN(64, BigInt((strstri(cptr.decay(__static_do_statusline2_dloc), __sl21) ? 9 : 0)));
     hp = (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1812)) : cptr.ldI32(cptr.add(u, 2196));
@@ -1801,7 +1801,7 @@ function bot_via_windowport() {
         money = 0n;
     cptr.stI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 40), money);
     cptr.stI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32), ((money) < 999999n ? (money) : 999999n));
-    void cptr.sprintf(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 48)), __sl276, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0))), cptr.ldI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32)));
+    void cptr.sprintf(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 48)), __sl276, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0)), cptr.ldI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32)));
     cptr.st1(cptr.add(gv, NHC.BL_GOLD, 1), 1);
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ENE, 88), 40), cptr.ldI32(cptr.add(u, 2208)));
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ENE, 88), 32), ((cptr.ldI32(cptr.add(u, 2208))) < 9999 ? (cptr.ldI32(cptr.add(u, 2208))) : 9999));

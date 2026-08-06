@@ -1140,7 +1140,7 @@ export function nh_timeout() {
                     nomul(-2);
                     cptr.stPtr(cptr.add(gm, 16), __sl39);
                     cptr.stPtr(cptr.add(gn, 8), __sl144);
-                    if ((inv_weight() > ((Math.imul(NHC.WT_NOISY_INV, -1))))) {
+                    if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1)))) {
                         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.DEAF, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0))
                             You(__sl164);
                         wake_nearby(0);

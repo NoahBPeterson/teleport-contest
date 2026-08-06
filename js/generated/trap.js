@@ -3530,7 +3530,7 @@ function find_random_launch_coord(ttmp, cc) {
     if (((cptr.ldI32(cptr.add(ttmp, 20)) & 31) | 0) == NHC.ROLLING_BOULDER_TRAP)
         mindist = 2;
     distance = (((rng_log_enabled() ? (rng_log_set_caller(__sl11, 3626, __sl314), rn2(5)) : rn2(5)) + 4) | 0);
-    tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 3627, __sl314), rn2((((NHC.N_DIRS_Z - 2) | 0)))) : rn2((((NHC.N_DIRS_Z - 2) | 0))));
+    tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 3627, __sl314), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
     while (distance >= mindist) {
         dx = i16(cptr.ld1s(cptr.add(cptr.decay(xdir), tmp, 1)));
         dy = i16(cptr.ld1s(cptr.add(cptr.decay(ydir), tmp, 1)));
@@ -4478,15 +4478,15 @@ export function rnd_nextto_goodpos(x, y, mtmp) {
     let ny;
     let k;
     let dirs = cptr.alloc(8 * 2);
-    for (i = 0; i < (((NHC.N_DIRS_Z - 2) | 0)); ++i)
+    for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); ++i)
         cptr.stI16(cptr.add(dirs, i, 2), i16(i));
-    for (i = (((NHC.N_DIRS_Z - 2) | 0)); i > 0; --i) {
+    for (i = ((NHC.N_DIRS_Z - 2) | 0); i > 0; --i) {
         j = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 4956, __sl441), rn2(i)) : rn2(i));
         k = cptr.ldI16(cptr.add(dirs, j, 2));
         cptr.stI16(cptr.add(dirs, j, 2), cptr.ldI16(cptr.add(dirs, (i - 1) | 0, 2)));
         cptr.stI16(cptr.add(dirs, (i - 1) | 0, 2), k);
     }
-    for (i = 0; i < (((NHC.N_DIRS_Z - 2) | 0)); ++i) {
+    for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); ++i) {
         nx = i16(((cptr.ldI16(x) + cptr.ld1s(cptr.add(cptr.decay(xdir), cptr.ldI16(cptr.add(dirs, i, 2)), 1))) | 0));
         ny = i16(((cptr.ldI16(y) + cptr.ld1s(cptr.add(cptr.decay(ydir), cptr.ldI16(cptr.add(dirs, i, 2)), 1))) | 0));
         if (is_u ? crawl_destination(nx, ny) : goodpos(nx, ny, mtmp, 0)) {
@@ -5683,7 +5683,7 @@ export function conjoined_pits(trap2, trap1, u_entering_trap2) {
     dy = i16(sgn((cptr.ldI16(cptr.add(trap2, 10)) - cptr.ldI16(cptr.add(trap1, 10))) | 0));
     diridx = xytodir(dx, dy);
     if (diridx != NHC.DIR_ERR) {
-        adjidx = ((((diridx) + 4) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
+        adjidx = ((((diridx) + 4) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
         if ((cptr.ld1u(cptr.add(trap1, 36)) & (1 << diridx)) && (cptr.ld1u(cptr.add(trap2, 36)) & (1 << adjidx)) ? 1 : 0)
             return 1;
     }
@@ -5698,12 +5698,12 @@ function clear_conjoined_pits(trap) {
     let y;
     let t;
     if (trap && ((((cptr.ldI32(cptr.add(trap, 20)) & 31)) | 0) == NHC.PIT || (((cptr.ldI32(cptr.add(trap, 20)) & 31)) | 0) == NHC.SPIKED_PIT ? 1 : 0) ? 1 : 0) {
-        for (diridx = 0; diridx < (((NHC.N_DIRS_Z - 2) | 0)); ++diridx) {
+        for (diridx = 0; diridx < ((NHC.N_DIRS_Z - 2) | 0); ++diridx) {
             if (cptr.ld1u(cptr.add(trap, 36)) & (1 << diridx)) {
                 x = i16(((cptr.ldI16(cptr.add(trap, 8)) + cptr.ld1s(cptr.add(cptr.decay(xdir), diridx, 1))) | 0));
                 y = i16(((cptr.ldI16(cptr.add(trap, 10)) + cptr.ld1s(cptr.add(cptr.decay(ydir), diridx, 1))) | 0));
                 if ((isok(x, y) && (t = t_at(x, y)) !== null ? 1 : 0) && ((((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == NHC.PIT || (((cptr.ldI32(cptr.add(t, 20)) & 31)) | 0) == NHC.SPIKED_PIT ? 1 : 0) ? 1 : 0) {
-                    adjidx = ((((diridx) + 4) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
+                    adjidx = ((((diridx) + 4) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
                     cptr.st1(cptr.add(t, 36), cptr.ld1u(cptr.add(t, 36)) & ~(1 << adjidx));
                 }
                 cptr.st1(cptr.add(trap, 36), cptr.ld1u(cptr.add(trap, 36)) & ~(1 << diridx));

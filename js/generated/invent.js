@@ -4005,7 +4005,7 @@ function doorganize_core(obj) {
         cptr.st1(cptr.add(cptr.decay(lets), ix++, 1), let$++);
     for (let$ = 65; let$ <= 90; )
         cptr.st1(cptr.add(cptr.decay(lets), ix++, 1), let$++);
-    cptr.st1(cptr.add(cptr.decay(lets), (((1 + NHC.invlet_basic) | 0)), 1), 32);
+    cptr.st1(cptr.add(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 1), 32);
     cptr.st1(cptr.add(cptr.decay(lets), 54n, 1), 0);
     if (!cptr.ld1s(cptr.add(flags, 22)) && (ix = inv_cnt(0)) < NHC.invlet_basic ? 1 : 0)
         cptr.st1(cptr.add(cptr.decay(lets), (ix + (splitting.v ? 1 : 2)) | 0, 1), 0);
@@ -4017,7 +4017,7 @@ function doorganize_core(obj) {
             else if (let$ >= 65 && let$ <= 90 ? 1 : 0)
                 cptr.st1(cptr.add(cptr.decay(lets), (((((1 + let$) | 0) - 65) | 0) + 26) | 0, 1), 32);
             else if (let$ == 35)
-                cptr.st1(cptr.add(cptr.decay(lets), (((1 + NHC.invlet_basic) | 0)), 1), 35);
+                cptr.st1(cptr.add(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 1), 35);
         }
     for (ix = (cur = 0); cptr.ld1s(cptr.add(cptr.decay(lets), ix, 1)); ix++)
         if (cptr.ld1s(cptr.add(cptr.decay(lets), ix, 1)) != 32 && cur++ < ix ? 1 : 0)

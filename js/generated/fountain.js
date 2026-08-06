@@ -315,7 +315,7 @@ export function dryup(x, y, isyou) {
         }
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0)) {
             let glyph = glyph_at(x, y);
-            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) || glyph_to_cmap(glyph) != NHC.S_cloud ? 1 : 0)
+            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0) ? 1 : 0) || glyph_to_cmap(glyph) != NHC.S_cloud ? 1 : 0)
                 pline_The(__sl30);
         }
         set_levltyp(x, y, NHC.ROOM);

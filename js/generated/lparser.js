@@ -1648,7 +1648,7 @@ function retstat(ls) {
         if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG ? 1 : 0)) {
             luaK_setreturns(fs, e, -1);
             if ((cptr.ldI32(e) == NHC.VCALL && nret == 1 ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(fs, 24)), 19)) ? 1 : 0) {
-                (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4)))) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | ((((((69) << 0) >>> 0)) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0)));
+                (cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr((fs)), 64)), cptr.ldI32(cptr.add((e), 8)), 4)))) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((69) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0)));
                 (void 0);
             }
             nret = -1;

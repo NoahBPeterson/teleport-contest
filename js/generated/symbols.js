@@ -280,11 +280,11 @@ export function init_showsyms() {
     for (i = 0; i < NHC.MAXPCHARS; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + 0) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1(cptr.add(cptr.add(gs, 680), (i + ((((0) + NHC.MAXPCHARS) | 0))) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1(cptr.add(cptr.add(gs, 680), (i + ((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0))) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(cptr.add(gs, 680), (i + ((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0))) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + 190) | 0, 1), get_othersym(i, NHC.PRIMARYSET));
 }
@@ -334,11 +334,11 @@ export function init_primary_symbols() {
     for (i = 0; i < NHC.MAXPCHARS; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + 0) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1(cptr.add(cptr.add(gp, 29), (i + ((((0) + NHC.MAXPCHARS) | 0))) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1(cptr.add(cptr.add(gp, 29), (i + ((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0))) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(cptr.add(gp, 29), (i + ((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0))) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + 190) | 0, 1), get_othersym(i, NHC.PRIMARYSET));
     clear_symsetentry(NHC.PRIMARYSET, 0);
@@ -352,11 +352,11 @@ export function init_rogue_symbols() {
     cptr.st1(cptr.add(gr, NHC.S_vodoor, 1), cptr.st1(cptr.add(gr, NHC.S_hodoor, 1), cptr.st1(cptr.add(gr, NHC.S_ndoor, 1), 43)));
     cptr.st1(cptr.add(gr, NHC.S_upstair, 1), cptr.st1(cptr.add(gr, NHC.S_dnstair, 1), 37));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1(cptr.add(gr, (i + ((((0) + NHC.MAXPCHARS) | 0))) | 0, 1), cptr.ld1u(cptr.add(cptr.decay(def_r_oc_syms), i, 1)));
+        cptr.st1(cptr.add(gr, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), cptr.ld1u(cptr.add(cptr.decay(def_r_oc_syms), i, 1)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1(cptr.add(gr, (i + ((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0))) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
+        cptr.st1(cptr.add(gr, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
     for (i = 0; i < 6; i++)
-        cptr.st1(cptr.add(gr, (i + ((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0))) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
+        cptr.st1(cptr.add(gr, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(gr, (i + 190) | 0, 1), get_othersym(i, NHC.ROGUESET));
     clear_symsetentry(NHC.ROGUESET, 0);
@@ -1595,7 +1595,7 @@ export function do_symset(rogueflag) {
             assign_graphics(NHC.ROGUESET);
     } else if (!rogueflag)
         assign_graphics(NHC.PRIMARYSET);
-    apply_customizations(rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET, ((NHC.do_custom_symbols | NHC.do_custom_colors)));
+    apply_customizations(rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET, (NHC.do_custom_symbols | NHC.do_custom_colors));
     (cptr.ldPtr(cptr.add(windowprocs, 336)))(__sl235);
     return 1;
 }

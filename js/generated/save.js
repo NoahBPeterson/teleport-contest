@@ -362,7 +362,7 @@ function savegamestate(nhfp) {
     save_dungeon(nhfp, schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 3))), schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 4))));
     savelevchn(nhfp);
     sfo_q_score(nhfp, svq, __sl26);
-    for (i = 0; i < (((NHC.MAXSPELL + 1) | 0)); ++i) {
+    for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
         sfo_spell(nhfp, cptr.add(svs, i, 8), __sl27);
     }
     save_artifacts(nhfp);

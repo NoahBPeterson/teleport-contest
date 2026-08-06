@@ -332,7 +332,7 @@ export function savenames(nhfp) {
     let i;
     let len = cptr.box(0);
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
-        for (i = 0; i < (((NHC.MAXOCLASSES + 2) | 0)); ++i) {
+        for (i = 0; i < ((NHC.MAXOCLASSES + 2) | 0); ++i) {
             sfo_int(nhfp, cptr.add(cptr.add(svb, 16), i, 4), __sl16);
         }
         for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
@@ -360,7 +360,7 @@ export function savenames(nhfp) {
 export function restnames(nhfp) {
     let i;
     let len = cptr.box(0);
-    for (i = 0; i < (((NHC.MAXOCLASSES + 2) | 0)); ++i) {
+    for (i = 0; i < ((NHC.MAXOCLASSES + 2) | 0); ++i) {
         sfi_int(nhfp, cptr.add(cptr.add(svb, 16), i, 4), __sl16);
         ;
     }

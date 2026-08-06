@@ -1060,7 +1060,7 @@ function give_spell() {
     let spe_let;
     let spe_knowledge;
     let trycnt = (cptr.ldI32(cptr.add(u, 48)) + 1) | 0;
-    otmp = mkobj((((0 - NHC.SPBOOK_CLASS) | 0)), 1);
+    otmp = mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 1);
     while (--trycnt > 0) {
         if (cptr.ldI16(cptr.add(otmp, 32)) != NHC.SPE_BLANK_PAPER) {
             if (known_spell(cptr.ldI16(cptr.add(otmp, 32))) <= NHC.spe_Unknown && !(cptr.ldI16(cptr.add(cptr.add(u, 2588), spell_skilltype(cptr.ldI16(cptr.add(otmp, 32))), 6)) == NHC.P_ISRESTRICTED) ? 1 : 0)

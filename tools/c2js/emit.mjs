@@ -160,6 +160,34 @@ function operand(e, parentPrec, side) {
 // cast of something other than 0/1 (the emitter passes the value through) —
 // the fold is refused and the original code is emitted unchanged.
 
+// Budget for a symbolic (unfolded) constant expression: unfolding undoes a
+// hot-path optimization, so only shapes small enough to be readable AND cheap
+// keep their spelling.  C2JS_SYM_STATS=1 reports what the budget turned away.
+const SYM_MAX_LEAVES = Number(process.env.C2JS_SYM_LEAVES || 4);
+const SYM_MAX_CHARS = Number(process.env.C2JS_SYM_CHARS || 120);
+const SYM_LEAF_GUARD = 64; // walk cap, so an unbounded expression cannot be scanned forever
+const SYM_STATS = { unfit: 0, leaves: 0, chars: 0, named: 0, namedViaArm: 0, symbolic: 0, symbolicViaArm: 0, rejected: 0 };
+if (process.env.C2JS_SYM_STATS) {
+  process.on('exit', () => process.stderr.write(
+    `named constants: ${SYM_STATS.named} named (${SYM_STATS.namedViaArm} via a macro's selected arm), `
+    + `${SYM_STATS.symbolic} symbolic (${SYM_STATS.symbolicViaArm} via arm), ${SYM_STATS.rejected} refused by the equality audit\n`
+    + `symbolic budget: ${SYM_STATS.unfit} not all-const, ${SYM_STATS.leaves} refused on leaves (>${SYM_MAX_LEAVES}), ${SYM_STATS.chars} on length (>${SYM_MAX_CHARS})\n`));
+}
+
+/** drop a fully-enclosing paren pair (macro bodies bring their own) */
+function stripOuterParens(code) {
+  while (code.length > 1 && code[0] === '(' && code[code.length - 1] === ')') {
+    let depth = 0, encloses = true;
+    for (let i = 0; i < code.length; i++) {
+      if (code[i] === '(') depth++;
+      else if (code[i] === ')' && --depth === 0 && i !== code.length - 1) { encloses = false; break; }
+    }
+    if (!encloses) return code;
+    code = code.slice(1, -1);
+  }
+  return code;
+}
+
 // C2JS_FOLD_VERIFY=1 turns every fold into an audited fold: see verifyFold().
 const FOLD_VERIFY = !!process.env.C2JS_FOLD_VERIFY;
 const FOLD_AUDIT = { checked: 0, bad: [], skipped: [] };
@@ -307,7 +335,7 @@ export const CONST_MODULE = './nhconst.js';
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 6;
+export const EMIT_VERSION = 7;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -740,18 +768,57 @@ export class Emitter {
   namedConst(n, c) {
     if (!this.constNames.size) return null;
     if (c.t.bits === 64) return null; // constExpr would emit `123n`; NHC.X is a Number
-    let x = n;
-    while (x && (x.kind === 'ParenExpr' || x.kind === 'ConstantExpr'
-      || ((x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr') && (x.inner || []).length === 1))) {
-      if (x.kind === 'CStyleCastExpr' && this.matchSizeIdiom(x)) return null;
-      x = x.inner[0];
+    let x = n, viaArm = false;
+    for (let guard = 0; x && guard < 256; guard++) {
+      if (x.kind === 'ParenExpr' || x.kind === 'ConstantExpr'
+        || ((x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr') && (x.inner || []).length === 1)) {
+        if (x.kind === 'CStyleCastExpr' && this.matchSizeIdiom(x)) return null;
+        x = x.inner[0];
+        continue;
+      }
+      // roadmap 1.9, macro provenance: a constant conditional is the shape
+      // NetHack's glyph macros expand to, and C picks one arm at compile time.
+      // Descend into the arm C picks — the same arm expr_ConditionalOperator
+      // already emits.  This finds a name by *identity*, not by value lookup.
+      const arm = this.constArm(x);
+      if (arm === x) break;
+      x = arm;
+      viaArm = true;
     }
     if (!x || x.kind !== 'DeclRefExpr' || x.referencedDecl?.kind !== 'EnumConstantDecl') return null;
     const name = x.name || x.referencedDecl?.name;
     if (!name || !this.constNames.has(name) || !this.enumValues.has(name)) return null;
-    // a narrowing cast may have changed the value (`(char) BIG_ENUM`)
-    if (BigInt(this.enumValues.get(name)) !== c.v) return null;
+    // Every named emission is equality-audited: the constant nhconst.js binds
+    // must be exactly the value C folds to.  A narrowing cast can break that
+    // (`(char) BIG_ENUM`), and so could a mis-peeled conditional arm — either
+    // way the site falls back to the literal rather than carrying a wrong name.
+    if (BigInt(this.enumValues.get(name)) !== c.v) { SYM_STATS.rejected++; return null; }
+    SYM_STATS.named++;
+    if (viaArm) SYM_STATS.namedViaArm++;
     return name;
+  }
+
+  /**
+   * The arm of a compile-time-decided ConditionalOperator, or the node itself.
+   *
+   * `cmap_to_glyph(cmap_idx)` and friends (include/display.h) are conditional
+   * chains resolved entirely by the preprocessor's arguments, so the value a
+   * call folds to was *written* in one arm as a symbolic form —
+   * `GLYPH_CMAP_STONE_OFF`, `(cmap_idx - S_digbeam) + GLYPH_CMAP_C_OFF`.
+   * Peeling to that arm recovers the spelling instead of guessing a name
+   * from the value (3929 is both GLYPH_CMAP_OFF and GLYPH_CMAP_STONE_OFF —
+   * a value table could not tell them apart, and a wrong name on a right
+   * value is worse than a bare number).
+   *
+   * Value safety is not assumed: callers re-check the result against the
+   * value C folds to, so peeling a truncating cast or a mistyped arm only
+   * makes them fall back to the literal.
+   */
+  constArm(n) {
+    if (!n || n.kind !== 'ConditionalOperator') return n;
+    const c = this.foldConst(n.inner?.[0]);
+    if (!c) return n;
+    return n.inner[c.v !== 0n ? 1 : 2] || n;
   }
 
   /** `NHC.NAME` descriptor; keeps `const` so downstream folds still see a value */
@@ -773,14 +840,18 @@ export class Emitter {
   symbolicConst(n, c) {
     if (!this.constNames.size || this.symbolic) return null;
     if (c.t.bits === 64) return null; // mixing NHC numbers into BigInt arithmetic
-    const scan = this.constLeaves(n, { leaves: 0, named: 0 });
-    if (!scan || !scan.named || scan.leaves < 2 || scan.leaves > 4) return null;
+    const scan = this.constLeaves(n, { leaves: 0, named: 0, viaArm: false });
+    if (!scan || !scan.named || scan.leaves < 2) { SYM_STATS.unfit++; return null; }
+    if (scan.leaves > SYM_MAX_LEAVES) { SYM_STATS.leaves++; return null; }
     const fn = this['expr_' + n.kind];
     if (!fn) return null;
     let code;
     this.symbolic = true;
     try { code = fn.call(this, n, {}).code; } catch { return null; } finally { this.symbolic = false; }
-    if (code.length > 120) return null;
+    // macro bodies are written with their own parens, so the re-emission is
+    // usually already wrapped; a second layer would only add noise
+    code = stripOuterParens(code);
+    if (code.length > SYM_MAX_CHARS) { SYM_STATS.chars++; return null; }
     // same guarantee as C2JS_FOLD_VERIFY, applied unconditionally here: the
     // symbolic form must evaluate to the value C computes
     let got;
@@ -792,7 +863,9 @@ export class Emitter {
         (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF,
         (this._constObj ||= Object.fromEntries(this.enumValues)));
     } catch { return null; }
-    if (typeof got !== 'number' || Number(got) !== Number(c.v)) return null;
+    if (typeof got !== 'number' || Number(got) !== Number(c.v)) { SYM_STATS.rejected++; return null; }
+    SYM_STATS.symbolic++;
+    if (scan.viaArm) SYM_STATS.symbolicViaArm++;
     this.usesConsts = true;
     return `(${code})`;
   }
@@ -804,7 +877,7 @@ export class Emitter {
    * Returns the accumulator, or null when a leaf disqualifies the node.
    */
   constLeaves(n, acc) {
-    if (!n || !n.kind || acc.leaves > 4) return null;
+    if (!n || !n.kind || acc.leaves > SYM_LEAF_GUARD) return null;
     switch (n.kind) {
       case 'ParenExpr':
       case 'ConstantExpr':
@@ -815,8 +888,19 @@ export class Emitter {
         return (n.inner || []).length === 1 ? this.constLeaves(n.inner[0], acc) : null;
       case 'UnaryOperator':
         return this.constLeaves(n.inner?.[0], acc);
-      case 'BinaryOperator':
       case 'ConditionalOperator': {
+        // a compile-time-decided conditional contributes only the arm C picks:
+        // the condition and the dead arm are gone from the emission, so their
+        // leaves must not count against the budget (this is what lets the
+        // glyph macros, ~20 leaves as written, qualify at their real size)
+        const arm = this.constArm(n);
+        if (arm !== n) { acc.viaArm = true; return this.constLeaves(arm, acc); }
+        for (const k of (n.inner || []).filter((x) => x && x.kind)) {
+          if (!this.constLeaves(k, acc)) return null;
+        }
+        return acc;
+      }
+      case 'BinaryOperator': {
         for (const k of (n.inner || []).filter((x) => x && x.kind)) {
           if (!this.constLeaves(k, acc)) return null;
         }
@@ -825,14 +909,14 @@ export class Emitter {
       case 'IntegerLiteral':
       case 'CharacterLiteral':
         acc.leaves++;
-        return acc.leaves > 4 ? null : acc;
+        return acc.leaves > SYM_LEAF_GUARD ? null : acc;
       case 'DeclRefExpr': {
         if (n.referencedDecl?.kind !== 'EnumConstantDecl') return null;
         const name = n.name || n.referencedDecl?.name;
         if (!name || !this.enumValues.has(name)) return null;
         acc.leaves++;
         if (this.constNames.has(name)) acc.named++;
-        return acc.leaves > 4 ? null : acc;
+        return acc.leaves > SYM_LEAF_GUARD ? null : acc;
       }
       default:
         return null;
@@ -1752,6 +1836,15 @@ export class Emitter {
   }
 
   expr_ConditionalOperator(n) {
+    // Symbolic re-emission (Phase B, and roadmap 1.9's macro tier): a
+    // compile-time-decided conditional is re-emitted as its live arm alone.
+    // The normal path below emits both arms first for bookkeeping symmetry;
+    // here that would register the dead arm's string literals and imports in
+    // a file whose output never contains them.
+    if (this.symbolic) {
+      const cs = this.foldConst(n.inner[0]);
+      if (cs) return this.emitExpr(n.inner[cs.v !== 0n ? 1 : 2]);
+    }
     const c = this.emitExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);
