@@ -136,7 +136,7 @@ export function luaX_init(L) {
     let i;
     let e = (luaS_newlstr(L, __sl38, BigInt.asUintN(64, (5n / 1n) - 1n)));
     luaC_fix(L, ((((e)))));
-    for (i = 0; i < 22; i++) {
+    for (i = 0; i < ((((NHC.TK_WHILE - ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) | 0) + 1) | 0); i++) {
         let ts = luaS_new(L, cptr.ldPtr(cptr.add(luaX_tokens, i, 8)));
         luaC_fix(L, ((((ts)))));
         cptr.st1(cptr.add(ts, 10), (uchar((((i + 1) | 0)))));

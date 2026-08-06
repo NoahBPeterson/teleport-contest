@@ -991,7 +991,7 @@ export function see_traps() {
     let glyph;
     for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap)) {
         glyph = cptr.ldI32(cptr.add(cptr.add(cptr.add(gg, cptr.ldI16(cptr.add(trap, 10)), 4480), cptr.ldI16(cptr.add(trap, 8)), 56), 8));
-        if (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) && (glyph) < 4051 ? 1 : 0))
+        if (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) && (glyph) < (((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) + ((NHC.TRAPNUM - 1) | 0)) | 0) ? 1 : 0))
             newsym(cptr.ldI16(cptr.add(trap, 8)), cptr.ldI16(cptr.add(trap, 10)));
     }
 }
@@ -1016,7 +1016,7 @@ cptr.stI32(cptr.add(nul_glyphinfo.v, 4), 32);
 cptr.stI32(cptr.add(nul_glyphinfo.v, 8), 8);
 cptr.stI32(cptr.add(nul_glyphinfo.v, 16), 2048);
 cptr.stI32(cptr.add(nul_glyphinfo.v, 20), 8);
-cptr.stI32(cptr.add(nul_glyphinfo.v, 24), 191);
+cptr.stI32(cptr.add(nul_glyphinfo.v, 24), ((NHC.SYM_UNEXPLORED + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
 cptr.stI32(cptr.add(nul_glyphinfo.v, 28), 0);
 cptr.stI16(cptr.add(nul_glyphinfo.v, 32), 0);
 cptr.stI16(cptr.add(nul_glyphinfo.v, 34), 0);
@@ -1139,7 +1139,7 @@ export function reglyph_darkroom() {
     if (cptr.ld1s(cptr.add(flags, 9)) && cptr.ld1s(cptr.add(iflags, 184)) ? 1 : 0)
         cptr.st1(cptr.add(cptr.add(gs, 680), NHC.S_darkroom, 1), cptr.ld1u(cptr.add(cptr.add(gs, 680), NHC.S_room, 1)));
     else
-        cptr.st1(cptr.add(cptr.add(gs, 680), NHC.S_darkroom, 1), cptr.ld1u(cptr.add(cptr.add(gs, 680), 190, 1)));
+        cptr.st1(cptr.add(cptr.add(gs, 680), NHC.S_darkroom, 1), cptr.ld1u(cptr.add(cptr.add(gs, 680), ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1)));
 }
 
 /** C ref: display.c:1863 — @param {CInt} x @param {CInt} y */
@@ -1729,11 +1729,11 @@ export function reset_glyphmap(trigger) {
         let gmap = cptr.add(glyphmap, glyph, 32);
         cptr.stI32(gmap, 0);
         if ((offset = ((glyph - NHC.GLYPH_NOTHING_OFF) | 0)) >= 0) {
-            cptr.stI32(cptr.add(gmap, 8), 190);
+            cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             color = 8;
             cptr.stI32(gmap, cptr.ldI32(gmap) | 1024);
         } else if ((offset = ((glyph - NHC.GLYPH_UNEXPLORED_OFF) | 0)) >= 0) {
-            cptr.stI32(cptr.add(gmap, 8), 191);
+            cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_UNEXPLORED + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             color = 8;
             cptr.stI32(gmap, cptr.ldI32(gmap) | 2048);
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0)) >= 0) {
@@ -1760,7 +1760,7 @@ export function reset_glyphmap(trigger) {
         } else if ((offset = ((glyph - NHC.GLYPH_OBJ_PILETOP_OFF) | 0)) >= 0) {
             cptr.stI32(cptr.add(gmap, 8), (cptr.ld1s(cptr.add(cptr.add(objects, offset, 120), 70)) + (((0) + NHC.MAXPCHARS) | 0)) | 0);
             if (offset == NHC.BOULDER)
-                cptr.stI32(cptr.add(gmap, 8), 192);
+                cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             if (has_rogue_color) {
                 switch (cptr.ld1s(cptr.add(cptr.add(objects, offset, 120), 70))) {
                     case NHC.COIN_CLASS:
@@ -1904,7 +1904,7 @@ export function reset_glyphmap(trigger) {
         } else if ((offset = ((glyph - NHC.GLYPH_OBJ_OFF) | 0)) >= 0) {
             cptr.stI32(cptr.add(gmap, 8), (cptr.ld1s(cptr.add(cptr.add(objects, offset, 120), 70)) + (((0) + NHC.MAXPCHARS) | 0)) | 0);
             if (offset == NHC.BOULDER)
-                cptr.stI32(cptr.add(gmap, 8), 192);
+                cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             if (has_rogue_color) {
                 switch (cptr.ld1s(cptr.add(cptr.add(objects, offset, 120), 70))) {
                     case NHC.COIN_CLASS:
@@ -1955,7 +1955,7 @@ export function reset_glyphmap(trigger) {
                 color = cptr.ld1s(cptr.add(iflags, 184)) ? cptr.ld1u(cptr.add(cptr.add(mons, offset, 96), 91)) : 8;
             cptr.stI32(gmap, cptr.ldI32(gmap) | 4104);
         } else if ((offset = ((glyph - NHC.GLYPH_INVIS_OFF) | 0)) >= 0) {
-            cptr.stI32(cptr.add(gmap, 8), 193);
+            cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_INVISIBLE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             if (has_rogue_color)
                 color = 8;
             else
@@ -1993,9 +1993,9 @@ export function reset_glyphmap(trigger) {
             cptr.stI32(gmap, cptr.ldI32(gmap) | 4096);
         }
         if (cptr.ldI32(cptr.add(sysopt, 176)) == 1 && ((cptr.ldI32(gmap) & 16) >>> 0) != 0 ? 1 : 0) {
-            let pet_override = ((cptr.ldI64(cptr.add(gg, 94984)) & 2n) ? cptr.ld1u(cptr.add(cptr.add(go, 284), 194, 1)) : cptr.ld1u(cptr.add(cptr.add(go, 88), 194, 1)));
+            let pet_override = ((cptr.ldI64(cptr.add(gg, 94984)) & 2n) ? cptr.ld1u(cptr.add(cptr.add(go, 284), ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1)) : cptr.ld1u(cptr.add(cptr.add(go, 88), ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1)));
             if (cptr.ld1u(cptr.add(cptr.add(gs, 680), pet_override, 1)) != 32)
-                cptr.stI32(cptr.add(gmap, 8), 194);
+                cptr.stI32(cptr.add(gmap, 8), ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
         }
         if ((!has_color(color) || ((cptr.ldI64(cptr.add(gg, 94984)) & 2n) && !has_rogue_color ? 1 : 0) ? 1 : 0) || !cptr.ld1s(cptr.add(iflags, 184)) ? 1 : 0)
             color = 8;

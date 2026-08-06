@@ -6672,12 +6672,12 @@ function optfn_boulder(optidx, req, negated, opts, op) {
         } else if (clash) {
             config_error_add(__sl569, visctrl(cptr.ld1s(cptr.add(opts, 0))), (clash == 1) ? __sl570 : __sl571);
         } else {
-            cptr.st1(cptr.add(cptr.add(go, 88), 192, 1), uchar(cptr.ld1s(cptr.add(opts, 0))));
-            cptr.st1(cptr.add(cptr.add(go, 284), 192, 1), uchar(cptr.ld1s(cptr.add(opts, 0))));
+            cptr.st1(cptr.add(cptr.add(go, 88), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), uchar(cptr.ld1s(cptr.add(opts, 0))));
+            cptr.st1(cptr.add(cptr.add(go, 284), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), uchar(cptr.ld1s(cptr.add(opts, 0))));
             if (!cptr.ld1s(cptr.add(go, 524))) {
                 let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16(cptr.add((cptr.add(svd, 1800)), 2)) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0)) ? NHC.ROGUESET : NHC.PRIMARYSET);
                 if (sym)
-                    cptr.st1(cptr.add(cptr.add(gs, 680), 192, 1), sym);
+                    cptr.st1(cptr.add(cptr.add(gs, 680), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), sym);
                 cptr.st1(cptr.add(go, 526), 1);
             }
         }
@@ -6685,7 +6685,7 @@ function optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val ? 1 : 0) {
         cptr.st1(cptr.add(opts, 0), 0);
-        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1)));
+        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1)));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -10799,7 +10799,7 @@ export function initoptions_finish() {
     cptr.stPtr(cptr.add(obj_descr, NHC.SLIME_MOLD, 16), __sl139);
     sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16(cptr.add((cptr.add(svd, 1800)), 2)) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0)) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
-        cptr.st1(cptr.add(cptr.add(gs, 680), 192, 1), sym);
+        cptr.st1(cptr.add(cptr.add(gs, 680), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), sym);
     reglyph_darkroom();
     reset_glyphmap(NHC.gm_optionchange);
     if (cptr.ldI64(cptr.add(iflags, 152)) && !wc2_supported(__sl351) ? 1 : 0) {

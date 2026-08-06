@@ -278,7 +278,7 @@ export function glyph_to_cmap(glyph) {
         return (((glyph - NHC.GLYPH_CMAP_A_OFF) | 0) + NHC.S_ndoor) | 0;
     else if (((glyph) >= NHC.GLYPH_ALTAR_OFF && (glyph) < ((5 + NHC.GLYPH_ALTAR_OFF) | 0) ? 1 : 0))
         return NHC.S_altar;
-    else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < 4051) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)) ? 1 : 0))
         return (((glyph - NHC.GLYPH_CMAP_B_OFF) | 0) + NHC.S_grave) | 0;
     else if (((glyph) >= NHC.GLYPH_CMAP_C_OFF && (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) ? 1 : 0))
         return (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
@@ -902,7 +902,7 @@ function parse_id(id, findwhat) {
                             buf3 = __sl43;
                             skip_base = 1;
                         }
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < 4051) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)) ? 1 : 0)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_B_OFF) | 0) + NHC.S_grave) | 0;
                     } else if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0) ? 1 : 0)) {
                         j = ((glyph - NHC.GLYPH_ZAP_OFF) | 0);

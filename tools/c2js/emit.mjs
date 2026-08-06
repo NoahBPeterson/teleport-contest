@@ -163,7 +163,7 @@ function operand(e, parentPrec, side) {
 // Budget for a symbolic (unfolded) constant expression: unfolding undoes a
 // hot-path optimization, so only shapes small enough to be readable AND cheap
 // keep their spelling.  C2JS_SYM_STATS=1 reports what the budget turned away.
-const SYM_MAX_LEAVES = Number(process.env.C2JS_SYM_LEAVES || 4);
+const SYM_MAX_LEAVES = Number(process.env.C2JS_SYM_LEAVES || 6);
 const SYM_MAX_CHARS = Number(process.env.C2JS_SYM_CHARS || 120);
 const SYM_LEAF_GUARD = 64; // walk cap, so an unbounded expression cannot be scanned forever
 const SYM_STATS = { unfit: 0, leaves: 0, chars: 0, named: 0, namedViaArm: 0, symbolic: 0, symbolicViaArm: 0, rejected: 0 };

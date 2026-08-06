@@ -831,7 +831,7 @@ function cnf_line_PORTABLE_DEVICE_PATHS(bufp) {
 
 /** C ref: cfgfiles.c:1156 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_BOULDER(bufp) {
-    void get_uchars(bufp, cptr.add(cptr.add(go, 88), 192, 1), 1, 1, __sl40);
+    void get_uchars(bufp, cptr.add(cptr.add(go, 88), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), 1, 1, __sl40);
     return 1;
 }
 
