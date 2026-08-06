@@ -581,6 +581,346 @@ export function stF64o(p, n, v, sz) {
   return stF64(add(p, n, sz), v);
 }
 
+// ------------------------------------- fused scaled-index accessors (o2/o3) ----
+//
+// Stage 1 fused *one* address component into the access. The chain that
+// survived is the one C writes most often — an array subscript *and* a field
+// offset, two components, so one `cptr.add` was left over:
+//
+//     cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16)
+//
+// which is `u.uprops[FAST].intrinsic`, i.e. every intrinsic test NetHack
+// makes — 6,647 sites of that shape alone, and 13,873 across all accessors.
+// `o2` takes the whole address; `o3` takes the two-subscript form
+// (`levl[x][y]`, `blstats[i][fld]`), which is the rest of them.
+//
+// THE CONTRACT, kept by construction exactly as the `o` forms keep theirs:
+//
+//     ldXo2(p, i, sz, off)            === ldXo(add(p, i, sz), off)
+//     stXo2(p, i, sz, off, v)         === stXo(add(p, i, sz), off, v)
+//     ldXo3(p, i, sz, j, sz2, off)    === ldXo2(add(p, i, sz), j, sz2, off)
+//     stXo3(p, i, sz, j, sz2, off, v) === stXo2(add(p, i, sz), j, sz2, off, v)
+//
+// for *every* input, because on the slow path the body literally is that
+// composition. Boxes, function designators, the integer-bit-pattern pointers
+// `ldPtr` returns for NetHack's `anything` union, plain-Array storage,
+// out-of-range offsets and the cases that throw all take it and therefore
+// cannot diverge even in principle.
+//
+// The fast path's offset arithmetic is `add`'s, applied twice in `add`'s own
+// left-to-right order — `((p.off + i * sz) + j * sz2) + off` — which is exact:
+// every term is an integer far inside 2^53.
+//
+// The `typeof i === 'number'` guard is what makes this safe to emit without
+// proving anything in the emitter. A C subscript is almost always a JS number,
+// but a `long` subscript is a BigInt, and an emitted `i * 24` on a BigInt
+// throws where `add`'s `Number(i) * 24` quietly coerces. The guard checks it
+// here and hands those to the composition. `typeof off === 'number'` is the
+// same story for the constant (the emitter only ever passes an integer
+// literal, but the contract must hold for anything).
+//
+// Argument order: the address components in the order `add` would have
+// consumed them, then the stored value last.
+
+/** ld1so(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ld1so2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number')
+    return (b[(sz === undefined ? p.off + i : p.off + i * sz) + off] << 24) >> 24;
+  return ld1so(add(p, i, sz), off);
+}
+
+/** ld1uo(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ld1uo2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number')
+    return b[(sz === undefined ? p.off + i : p.off + i * sz) + off];
+  return ld1uo(add(p, i, sz), off);
+}
+
+/** st1o(add(p, i, sz), off, v) @param {CPtr} p */
+export function st1o2(p, i, sz, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    b[(sz === undefined ? p.off + i : p.off + i * sz) + off] = (typeof v === 'number' ? v : Number(v)) & 0xFF;
+    return v;
+  }
+  return st1o(add(p, i, sz), off, v);
+}
+
+/** ldI16o(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ldI16o2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    return ((b[o] | (b[o + 1] << 8)) << 16) >> 16;
+  }
+  return ldI16o(add(p, i, sz), off);
+}
+
+/** ldU16o(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ldU16o2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    return b[o] | (b[o + 1] << 8);
+  }
+  return ldU16o(add(p, i, sz), off);
+}
+
+/** stI16o(add(p, i, sz), off, v) @param {CPtr} p */
+export function stI16o2(p, i, sz, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off, x = v & 0xFFFF;
+    b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF;
+    return v;
+  }
+  return stI16o(add(p, i, sz), off, v);
+}
+
+/** ldI32o(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ldI32o2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
+  }
+  return ldI32o(add(p, i, sz), off);
+}
+
+/** stI32o(add(p, i, sz), off, v) @param {CPtr} p */
+export function stI32o2(p, i, sz, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off, x = v | 0;
+    b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
+    return v;
+  }
+  return stI32o(add(p, i, sz), off, v);
+}
+
+/** ldU64o(add(p, i, sz), off) @param {CPtr} p @returns {bigint} */
+export function ldU64o2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    if (o + 8 > b.length) __oob64(b, o);
+    const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+    const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+    return hi === 0 ? BigInt(lo) : (BigInt(hi) << 32n) | BigInt(lo);
+  }
+  return ldU64o(add(p, i, sz), off);
+}
+
+/** ldI64o(add(p, i, sz), off) @param {CPtr} p @returns {bigint} */
+export function ldI64o2(p, i, sz, off) {
+  // ldI64o is exactly asIntN(ldU64o), boxes included, so one delegation covers
+  // both arms of the contract.
+  return BigInt.asIntN(64, ldU64o2(p, i, sz, off));
+}
+
+/** stU64o(add(p, i, sz), off, v) @param {CPtr} p */
+export function stU64o2(p, i, sz, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    let lo, hi;
+    if (typeof v === 'number' && v >= 0 && Number.isInteger(v)) {
+      lo = v >>> 0;
+      hi = Math.floor(v / 4294967296) >>> 0;
+    } else {
+      const x = BigInt.asUintN(64, BigInt(v));
+      lo = Number(x & 0xFFFFFFFFn);
+      hi = Number(x >> 32n);
+    }
+    b[o] = lo & 0xFF; b[o + 1] = (lo >>> 8) & 0xFF; b[o + 2] = (lo >>> 16) & 0xFF; b[o + 3] = (lo >>> 24) & 0xFF;
+    b[o + 4] = hi & 0xFF; b[o + 5] = (hi >>> 8) & 0xFF; b[o + 6] = (hi >>> 16) & 0xFF; b[o + 7] = (hi >>> 24) & 0xFF;
+    return v;
+  }
+  return stU64o(add(p, i, sz), off, v);
+}
+
+/** stI64o(add(p, i, sz), off, v) @param {CPtr} p */
+export function stI64o2(p, i, sz, off, v) {
+  // stI64o differs from stU64o only in the box arm, which the fallback covers.
+  if (p.buf !== undefined) return stU64o2(p, i, sz, off, v);
+  return stI64o(add(p, i, sz), off, v);
+}
+
+/** ldPtro(add(p, i, sz), off) @param {CPtr} p @returns {CPtr|null} */
+export function ldPtro2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    if (o + 8 > b.length) __oob64(b, o);
+    const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+    const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+    if (lo === 0 && hi === 0) return null;
+    if (hi >= 0x100) {
+      const v = __ptrRegistry[(hi - 0x100) * 4294967296 + lo];
+      if (v !== undefined) return v;
+    }
+    return __intPtr(lo, hi);
+  }
+  return ldPtro(add(p, i, sz), off);
+}
+
+/** stPtro(add(p, i, sz), off, v) @param {CPtr} p */
+export function stPtro2(p, i, sz, off, v) {
+  if (p.buf !== undefined) {
+    let id;
+    if (v === null || v === undefined) id = 0n;
+    else {
+      id = __PTR_ID_BASE + BigInt(__ptrRegistry.length);
+      __ptrRegistry.push(v);
+    }
+    stU64o2(p, i, sz, off, id);
+    return v;
+  }
+  return stPtro(add(p, i, sz), off, v);
+}
+
+/** ldF64o(add(p, i, sz), off) @param {CPtr} p @returns {number} */
+export function ldF64o2(p, i, sz, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    return new DataView(b.buffer, b.byteOffset + o, 8).getFloat64(0, true);
+  }
+  return ldF64o(add(p, i, sz), off);
+}
+
+/** stF64o(add(p, i, sz), off, v) @param {CPtr} p */
+export function stF64o2(p, i, sz, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + off;
+    new DataView(b.buffer, b.byteOffset + o, 8).setFloat64(0, Number(v), true);
+    return v;
+  }
+  return stF64o(add(p, i, sz), off, v);
+}
+
+// The two-subscript forms. Only the eight accessors that a doubly-subscripted
+// C array actually reaches get one (`levl[x][y]` is `struct rm`: char, uchar,
+// short, int and pointer fields, read and written) — 2,193 of the 2,213
+// two-subscript sites. The other eight fall back to `o2` with one explicit
+// `cptr.add`, which is still one address object fewer than before.
+
+/** ld1so2(add(p, i, sz), j, sz2, off) @param {CPtr} p @returns {number} */
+export function ld1so3(p, i, sz, j, sz2, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number')
+    return (b[(sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off] << 24) >> 24;
+  return ld1so2(add(p, i, sz), j, sz2, off);
+}
+
+/** ld1uo2(add(p, i, sz), j, sz2, off) @param {CPtr} p @returns {number} */
+export function ld1uo3(p, i, sz, j, sz2, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number')
+    return b[(sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off];
+  return ld1uo2(add(p, i, sz), j, sz2, off);
+}
+
+/** st1o2(add(p, i, sz), j, sz2, off, v) @param {CPtr} p */
+export function st1o3(p, i, sz, j, sz2, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    b[(sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off] = (typeof v === 'number' ? v : Number(v)) & 0xFF;
+    return v;
+  }
+  return st1o2(add(p, i, sz), j, sz2, off, v);
+}
+
+/** ldI16o2(add(p, i, sz), j, sz2, off) @param {CPtr} p @returns {number} */
+export function ldI16o3(p, i, sz, j, sz2, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off;
+    return ((b[o] | (b[o + 1] << 8)) << 16) >> 16;
+  }
+  return ldI16o2(add(p, i, sz), j, sz2, off);
+}
+
+/** ldI32o2(add(p, i, sz), j, sz2, off) @param {CPtr} p @returns {number} */
+export function ldI32o3(p, i, sz, j, sz2, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off;
+    return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
+  }
+  return ldI32o2(add(p, i, sz), j, sz2, off);
+}
+
+/** stI32o2(add(p, i, sz), j, sz2, off, v) @param {CPtr} p */
+export function stI32o3(p, i, sz, j, sz2, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off, x = v | 0;
+    b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
+    return v;
+  }
+  return stI32o2(add(p, i, sz), j, sz2, off, v);
+}
+
+/** ldPtro2(add(p, i, sz), j, sz2, off) @param {CPtr} p @returns {CPtr|null} */
+export function ldPtro3(p, i, sz, j, sz2, off) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off;
+    if (o + 8 > b.length) __oob64(b, o);
+    const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+    const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+    if (lo === 0 && hi === 0) return null;
+    if (hi >= 0x100) {
+      const v = __ptrRegistry[(hi - 0x100) * 4294967296 + lo];
+      if (v !== undefined) return v;
+    }
+    return __intPtr(lo, hi);
+  }
+  return ldPtro2(add(p, i, sz), j, sz2, off);
+}
+
+/** stPtro2(add(p, i, sz), j, sz2, off, v) @param {CPtr} p */
+export function stPtro3(p, i, sz, j, sz2, off, v) {
+  if (p.buf !== undefined) {
+    let id;
+    if (v === null || v === undefined) id = 0n;
+    else {
+      id = __PTR_ID_BASE + BigInt(__ptrRegistry.length);
+      __ptrRegistry.push(v);
+    }
+    stU64o3(p, i, sz, j, sz2, off, id);
+    return v;
+  }
+  return stPtro2(add(p, i, sz), j, sz2, off, v);
+}
+
+/** stU64o2(add(p, i, sz), j, sz2, off, v). Not emitted (a `long levl[x][y]`
+ * field does not exist); it is how stPtro3 lands its eight bytes, exactly as
+ * stPtro2 uses stU64o2. */
+function stU64o3(p, i, sz, j, sz2, off, v) {
+  const b = p.buf;
+  if (b !== undefined && typeof i === 'number' && typeof j === 'number' && typeof off === 'number') {
+    const o = (sz === undefined ? p.off + i : p.off + i * sz) + (sz2 === undefined ? j : j * sz2) + off;
+    let lo, hi;
+    if (typeof v === 'number' && v >= 0 && Number.isInteger(v)) {
+      lo = v >>> 0;
+      hi = Math.floor(v / 4294967296) >>> 0;
+    } else {
+      const x = BigInt.asUintN(64, BigInt(v));
+      lo = Number(x & 0xFFFFFFFFn);
+      hi = Number(x >> 32n);
+    }
+    b[o] = lo & 0xFF; b[o + 1] = (lo >>> 8) & 0xFF; b[o + 2] = (lo >>> 16) & 0xFF; b[o + 3] = (lo >>> 24) & 0xFF;
+    b[o + 4] = hi & 0xFF; b[o + 5] = (hi >>> 8) & 0xFF; b[o + 6] = (hi >>> 16) & 0xFF; b[o + 7] = (hi >>> 24) & 0xFF;
+    return v;
+  }
+  return stU64o2(add(p, i, sz), j, sz2, off, v);
+}
+
 // ------------------------------------------------------------ libc string ----
 
 /** @param {CPtr} p @returns {bigint} size_t */
