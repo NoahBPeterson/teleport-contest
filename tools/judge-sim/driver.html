@@ -19,6 +19,15 @@ const log = (s) => { out.textContent += '\n' + s; console.log('[driver] ' + s); 
 const params = new URLSearchParams(location.search);
 const sessionName = params.get('session') || 'seed8000-tourist-starter.session.json';
 
+// ?noworker=1 simulates a judge page whose CSP (or engine) denies module
+// Workers, to check that jsmain degrades to the shared graph instead of
+// throwing. Expected outcome: segment 1 still byte-exact, later segments wrong
+// but *reported*, never an exception.
+if (params.get('noworker') === '1') {
+    delete globalThis.Worker;
+    Object.defineProperty(globalThis, 'Worker', { get() { throw new Error('blocked by test'); }, configurable: true });
+}
+
 async function sha256(text) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');

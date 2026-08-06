@@ -56,7 +56,8 @@ catch { server.kill(); throw new Error('node-ref produced no JSON: ' + (nodeRun.
 
 // ---- 3. real headless Chrome --------------------------------------------
 process.stderr.write(`\n=== Headless Chrome: ${session} ===\n`);
-const url = `http://127.0.0.1:${PORT}/__sim/driver.html?session=${encodeURIComponent(session)}`;
+const url = `http://127.0.0.1:${PORT}/__sim/driver.html?session=${encodeURIComponent(session)}`
+    + (args.includes('--noworker') ? '&noworker=1' : '');
 const chrome = spawn(CHROME, [
     '--headless=new',
     '--disable-gpu',
