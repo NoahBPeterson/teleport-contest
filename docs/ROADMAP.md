@@ -18,7 +18,7 @@ Status legend: ✅ done · 🔄 in progress · 📋 planned · ⚠️ blocked/ex
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | 1.7 | Constant folding (emit-time) | ✅ | 301,692 folds, 0 mismatch, self-auditing |
-| 1.8 | Named constants — enum tier | 📋 | AST has names; emit generated const modules + named refs. Next agent. |
+| 1.8 | Named constants — enum tier | ✅ | js/generated/nhconst.js: 3153 constants, 0 conflicts, `NHC.` namespace refs. Phase B (symbolic small all-enum exprs) shipped. docs/NOTES-named-constants.md |
 | 1.9 | Named constants — macro provenance tier | 📋 | cmap_to_glyph family first; fold to named form, audit like 1.7. Biggest Phase-2 diff hedge. |
 | 1.10 | Lua→JS script port | 📋 | User-mandated post-parity/pre-freeze. Transpiled Lua 5.4.8 interpreter stays as differential oracle per script. Large. |
 | 1.11 | Readability: de-box mega-globals, layout accessors | 📋 | After 1.8/1.9; corpus is the referee |
