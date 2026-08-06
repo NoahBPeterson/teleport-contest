@@ -106,6 +106,19 @@ const notFound = reqs.filter(r => r.status === 404 && r.kind !== 'BROWSER-UA');
 process.stderr.write(`\n=== Request log ===\n  ${reqs.length} requests, ${blocked.length} out-of-scope, ${notFound.length} 404s\n`);
 for (const r of [...blocked, ...notFound]) process.stderr.write(`    ${r.kind} ${r.status} ${r.path}\n`);
 
+// The judge's browser check fails on console output, so make it visible here.
+// Chrome's --enable-logging=stderr writes page console messages as
+// "...:INFO:CONSOLE:<line>] "<text>", source: ..." (every severity lands on
+// INFO, so match the tag, not the level). Chrome's own infrastructure chatter —
+// DNS, extension loader, cookie store — is not the page's and is dropped; so is
+// the page's own [bench] result line, which only exists in ?bench= runs.
+const consoleLines = chromeErr.split('\n')
+    .filter(l => /:CONSOLE[:(]/.test(l))
+    .filter(l => !l.includes('"[bench] '));
+fs.writeFileSync(path.join(work, 'chrome-stderr.log'), chromeErr);   // --keep to inspect
+process.stderr.write(`\n=== Browser console ===\n  ${consoleLines.length} error/warning/console line(s)\n`);
+for (const l of consoleLines.slice(0, 20)) process.stderr.write('    ' + l.trim() + '\n');
+
 if (timedOut) {
     process.stderr.write('\nFAIL: the page never reported. Chrome stderr tail:\n' + chromeErr.slice(-4000) + '\n');
     process.exit(1);
