@@ -51,10 +51,11 @@
 import * as cptr from '../cptr.js';
 import { luaL_newstate, luaL_ref, luaL_unref } from '../generated/lauxlib.js';
 import {
-    lua_callk, lua_createtable, lua_getfield, lua_getglobal, lua_gettop,
-    lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil,
-    lua_pushnumber, lua_pushstring, lua_rawgeti, lua_rawseti, lua_setfield,
-    lua_settop, lua_tointegerx, lua_tolstring, lua_type,
+    lua_callk, lua_checkstack, lua_createtable, lua_getfield, lua_getglobal,
+    lua_gettop, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger,
+    lua_pushnil, lua_pushnumber, lua_pushstring, lua_rawgeti, lua_rawseti,
+    lua_setfield, lua_setglobal, lua_settop, lua_tointegerx, lua_tolstring,
+    lua_type,
 } from '../generated/lapi.js';
 import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
@@ -121,9 +122,13 @@ export function resetBridge() { L = null; }
  *            in JS key-insertion order = Lua source order
  * function-> lua_pushcclosure over a JS callback (see wrapCallback)
  * null    -> lua_pushnil
+ *
+ * `Lp` selects the state. Level-script ports leave it out and get the
+ * port-owned one; the read-back ports (dungeon.lua, quest.lua) pass the
+ * interpreter's, because their table has to be visible to a later
+ * lua_getglobal() from C. See pushValue() / setGlobal() below.
  */
-function push(v) {
-    const Lp = state();
+function push(v, Lp = state()) {
     if (v === null || v === undefined) { lua_pushnil(Lp); return; }
     switch (typeof v) {
         case 'boolean': lua_pushboolean(Lp, v ? 1 : 0); return;
@@ -140,16 +145,53 @@ function push(v) {
     if (Array.isArray(v)) {
         // OP_NEWTABLE's size hints come from the constructor's shape; match them.
         lua_createtable(Lp, v.length, 0);
-        for (let i = 0; i < v.length; i++) { push(v[i]); lua_rawseti(Lp, -2, BigInt(i + 1)); }
+        for (let i = 0; i < v.length; i++) { push(v[i], Lp); lua_rawseti(Lp, -2, BigInt(i + 1)); }
         return;
     }
     if (typeof v === 'object') {
         const keys = Object.keys(v);
         lua_createtable(Lp, 0, keys.length);
-        for (const k of keys) { push(v[k]); lua_setfield(Lp, -2, cstr(k)); }
+        for (const k of keys) { push(v[k], Lp); lua_setfield(Lp, -2, cstr(k)); }
         return;
     }
     throw new Error(`lua-port: cannot marshal ${typeof v}`);
+}
+
+/** push(), for callers outside this module. @param {object} Lp @param {*} v */
+export function pushValue(Lp, v) { push(v, Lp); }
+
+/**
+ * `<name> = <value>` in the globals of state `Lp` — the whole of what a
+ * pure-data script such as dungeon.lua or quest.lua does.
+ *
+ * This is the read-back port's counterpart to callTable(): the same
+ * lua_createtable / lua_setfield / lua_rawseti sequence the VM's OP_NEWTABLE /
+ * OP_SETFIELD / OP_SETLIST would have emitted for the file's one table
+ * constructor, followed by the OP_SETTABUP that assigns it to the global.
+ *
+ * The size hints matter here in a way they did not for the des DSL. C walks
+ * the `dungeon` global with lua_next (dungeon.c:1278), and lua_next visits the
+ * array part in ascending index order before the hash part — so the port's
+ * table must put the same entries in the array part that the parser's would.
+ * Passing narr = array length / nrec = key count to lua_createtable is exactly
+ * what luaK_settablesize() encodes into OP_NEWTABLE, so the layouts agree by
+ * construction rather than by luck.
+ *
+ * @param {object} Lp   the lua_State to define the global in
+ * @param {string} name the global's name
+ * @param {*} value     JS value; objects/arrays become Lua tables
+ */
+export function setGlobal(Lp, name, value) {
+    const base = lua_gettop(Lp);
+    // Nesting is shallow (quest.lua is 4 deep, dungeon.lua 3) but the C stack
+    // must have room for the whole chain plus the value being set.
+    if (!lua_checkstack(Lp, 16)) throw new Error('lua-port: lua_checkstack failed');
+    try {
+        push(value, Lp);
+        lua_setglobal(Lp, cstr(name));
+    } finally {
+        lua_settop(Lp, base);
+    }
 }
 
 /**
@@ -324,10 +366,29 @@ export const api = Object.freeze({
  * @param {(api: object) => void} body  the ported script
  */
 export function runPortedScript(name, body) {
-    const Lp = state();
+    runProtected(state(), name, () => body(api));
+}
+
+/**
+ * Run `body` inside a lua_pcallk on state `Lp`, the way nhl_loadlua() runs a
+ * chunk inside nhl_pcall_handle().
+ *
+ * Two things need the protection. A luaL_error() raised by a C binding
+ * longjmps, and in this transpile a longjmp is a JS exception thrown through
+ * whatever frames are in between — it has to be caught by a Lua frame, not by
+ * the harness. And the sandbox nhl_init() installs is memory-limited
+ * (nhl_alloc returns NULL past nud->memlimit), so an over-large marshalling
+ * raises LUA_ERRMEM rather than corrupting anything. A JS-level throw is
+ * stashed and re-thrown once the Lua stack has been unwound.
+ *
+ * @param {object} Lp
+ * @param {string} name  for the error message
+ * @param {() => void} body
+ */
+export function runProtected(Lp, name, body) {
     const base = lua_gettop(Lp);
     let thrown = null;
-    lua_pushcclosure(Lp, () => { try { body(api); } catch (e) { thrown = e; } return 0; }, 0);
+    lua_pushcclosure(Lp, () => { try { body(); } catch (e) { thrown = e; } return 0; }, 0);
     const rc = lua_pcallk(Lp, 0, 0, 0, 0n, null);
     if (thrown) { lua_settop(Lp, base); throw thrown; }
     if (rc !== 0) {

@@ -43,8 +43,9 @@
 export const SEG_KEY = 'c2jsseg';
 
 // Modules that are pure immutable data and must stay shared: duplicating the
-// 2.2 MB vendored playground per segment would be pointless parse + heap.
-const SHARED = /\/data\/nethackdir\//;
+// 2.2 MB vendored playground -- or the 132 KB of quest prose the Lua-script
+// ports carry (js/lua-js/data/) -- per segment would be pointless parse + heap.
+const SHARED = /\/data\/nethackdir\/|\/lua-js\/data\//;
 
 function resolve(specifier, context, nextResolve) {
     const result = nextResolve(specifier, context);
