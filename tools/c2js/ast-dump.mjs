@@ -59,7 +59,17 @@ export function dumpAst(file, { force = false } = {}) {
   const errPath = path.join(AST_DIR, `${name}.err.log`);
   fs.mkdirSync(AST_DIR, { recursive: true });
 
-  if (!force && fs.existsSync(outPath) && fs.statSync(outPath).mtimeMs >= fs.statSync(abs).mtimeMs) {
+  // Sidecar records the absolute source path this AST was dumped from. A
+  // worktree checkout running a gate suite dumps its OWN path into the shared
+  // cache; when that worktree is later deleted, ir.mjs's realpath
+  // canonicalization can no longer map the dead path back and build.mjs
+  // silently emits empty modules (this has bitten three times). A path
+  // mismatch therefore forces a re-dump from the current checkout. ASTs
+  // predating the sidecar are accepted as-is (grandfathered) to avoid a
+  // full 7 GB re-dump of the healthy TU cache.
+  const srcPath = outPath + '.src';
+  const sidecarOk = !fs.existsSync(srcPath) || fs.readFileSync(srcPath, 'utf8').trim() === abs;
+  if (!force && sidecarOk && fs.existsSync(outPath) && fs.statSync(outPath).mtimeMs >= fs.statSync(abs).mtimeMs) {
     return Promise.resolve({ astPath: outPath, skipped: true, stderr: '' });
   }
 
@@ -79,6 +89,7 @@ export function dumpAst(file, { force = false } = {}) {
       out.close(() => {
         if (code === 0) {
           fs.renameSync(tmpPath, outPath);
+          fs.writeFileSync(srcPath, abs + '\n');
           fs.rmSync(errPath, { force: true });
           resolve({ astPath: outPath, skipped: false, stderr });
         } else {
