@@ -10,8 +10,9 @@ equivalent.
 This note is the architecture decision, the traps analysis, the proof-of-concept
 result, the cookbook for porting script #2, and the staged plan for the rest.
 
-Status: **PoC landed.** `oracle.lua` is ported and live; the corpus passes with
-the port enabled and with it disabled.
+Status: **PoC + S1 landed.** `oracle.lua`, `dungeon.lua` and `quest.lua` are
+ported and live — 3 of 131 files, 23 % of the corpus by bytes. The corpus
+passes with the ports enabled and with them disabled.
 
 ---
 
@@ -340,27 +341,288 @@ level content, most of which the player never sees.
 
 ---
 
-## 6. Corpus regression
+## 6. Stage S1: the read-back scripts — `dungeon.lua`, `quest.lua`
 
-Both configurations, full 69-session corpus
+**Landed.** Both are ported. Together they are 21.7 % of the .lua corpus by
+bytes and contain zero executable statements — and, unlike every level script,
+neither of them calls a single C binding. Their entire product is a Lua table
+that the game reads back afterwards:
+
+| Script | Loaded by | Reads it back with | Lifetime of the state |
+|---|---|---|---|
+| `dungeon.lua` | `init_dungeons()` (dungeon.c:1221) | `lua_getglobal("dungeon")` + `lua_len` + **`lua_next`** (dungeon.c:1254–1278) | its own `nhl_init()`, `nhl_done()` at the end of the function |
+| `quest.lua` | `com_pager_core()` (questpgr.c:494) | `lua_getglobal("questtext")` + `lua_getfield` × 3 + `lua_len`/`lua_gettable` (questpgr.c:501–560) | its own `nhl_init()`, `nhl_done()` **per delivered message** |
+
+Both run in **every** game, which was the pleasant surprise of this stage — see
+§6.6.
+
+### 6.1 The trap was not the one we were watching for
+
+§3(a) flagged Lua table traversal order as the hazard for anything read back
+with `lua_next`. It is a real hazard, and it is *not* the thing that stops a
+naive port. The thing that stops it is one level lower:
+
+> **A table built in the port's own `lua_State` is invisible to the game.**
+
+Candidate A′ works for a level script precisely because the script's effects
+leave through C bindings that key off NetHack's globals, so it does not matter
+which state marshalled the arguments. For a read-back script it matters
+absolutely: `init_dungeons()` calls `lua_getglobal` on **its own** `L`, a local
+variable in transpiled C, created by its own `nhl_init()` call. Nothing global
+holds it — `gl.luacore` is nhcore.lua's state, not this one — and `nhl_loadlua`
+cannot be wrapped for the same reasons §4 gives. The port that ran `oracle.lua`
+would have left the interpreter's `dungeon` global undefined and panicked with
+`"dungeon is not a lua table"`.
+
+The way out is that Lua allocates a state as *one block through the embedder's
+allocator*, and this embedder's allocator is ours:
+
+```
+lua_newstate → nhl_alloc (nhlua.c:3132) → re_alloc (alloc.c:85) → realloc → js/boot/harness.mjs
+```
+
+`js/lua-js/interp-state.mjs` watches for a fresh allocation of exactly
+`sizeof(LG)` (1,624 bytes; `js/generated/lstate.js:346`) and confirms the
+candidate structurally, using the two fields `lua_newstate()` fills in and never
+changes: `g->mainthread` must point back at `l + LUA_EXTRASPACE`, and
+`g->frealloc` must be a function. A self-referential pointer at a fixed offset
+is not something an unrelated 1,624-byte allocation produces by accident, so
+the check is structural rather than statistical. This is the same kind of
+knowledge `levelFingerprint()` already uses to read `levl[x][y].typ` out of
+`svl`: struct offsets taken from the transpiler's own output, reading memory
+the game owns, with nothing in `js/generated` touched.
+
+Discovery is then verified once more before use — `stateIsFresh()` requires
+that the global the script is about to define does not exist yet — and a
+failure **throws**. There is deliberately no fallback to the interpreter: a
+silent fallback is exactly the failure mode that would let a broken port pass
+the corpus.
+
+The new bridge primitive on top of it is `setGlobal(L, name, value)`
+(`js/lua-js/bridge.mjs`), which emits the same
+`lua_createtable`/`lua_setfield`/`lua_rawseti`/`lua_setglobal` sequence the VM's
+`OP_NEWTABLE`/`OP_SETFIELD`/`OP_SETLIST`/`OP_SETTABUP` would have emitted for
+the file's one table constructor.
+
+### 6.2 Traversal order, measured
+
+With the state problem solved, the traversal question became answerable
+empirically rather than by argument. `C2JS_LUA_READBACK=dump` fingerprints the
+finished table two ways at once (`js/lua-js/readback.mjs`): a **canonical**
+content hash (integer keys ascending, then string keys sorted) and a **raw
+`lua_next` order** hash. The answer splits cleanly:
+
+* **`dungeon.lua` — order matters, and it matches exactly.** The `dungeon`
+  global is a pure sequence of nine entries, so `lua_next` walks the array part
+  in ascending index order, and `lua_createtable(narr, 0)` reproduces the
+  parser's layout by construction. Measured: content `e01af569`, order
+  `51ed75a5`, key sequence `1,2,3,4,5,6,7,8,9`, on both sides — with the *same*
+  hash seed (`3606532568`), because `dungeon.lua` loads early enough in
+  `newgame()` that the allocation history up to that point is identical.
+* **`quest.lua` — order differs, and cannot be otherwise.** `questtext`'s top
+  level is 15 string keys, which live in the hash part, and where a string key
+  lands in the node vector depends on `g->seed`, which `luai_makeseed()`
+  (`js/generated/lstate.js:34`) derives from `time()` and from pointer values.
+  The port and the interpreter allocate different amounts, so they get
+  different seeds and different orders.
+
+That second point needed proof, not assertion, and the quest probe supplies it
+in a single run: `com_pager_core()` builds a *fresh* `nhl_init()` state for
+every message, so one probe run loads the identical `quest.lua` eight times and
+the **interpreter alone** produces eight different traversal orders —
+
+```
+5041e48d  Kni,msg_fallbacks,Cav,Ran,Tou,Mon,Bar,common,Arc,Rog,Wiz,Sam,Val,Pri,Hea
+578b8b7   common,Wiz,Cav,Val,Sam,Tou,Hea,Rog,Pri,Mon,msg_fallbacks,Bar,Kni,Arc,Ran
+a7d74df7  Sam,Ran,common,Wiz,Cav,Val,Hea,Tou,Mon,Rog,msg_fallbacks,Pri,Kni,Bar,Arc
+313e0b36  common,Val,Wiz,Kni,Sam,msg_fallbacks,Tou,Rog,Pri,Mon,Bar,Ran,Arc,Cav,Hea
+1f5ee51e  common,Cav,Arc,Hea,Wiz,Val,Bar,Tou,Pri,Sam,Kni,Ran,msg_fallbacks,Mon,Rog
+27a88562  msg_fallbacks,Ran,Mon,Wiz,Arc,Val,Pri,Tou,Kni,Sam,Rog,Hea,Cav,Bar,common
+b64c4e59  Tou,Wiz,Cav,Val,Bar,Rog,Sam,Ran,common,Pri,Mon,Kni,msg_fallbacks,Hea,Arc
+c22cceb0  Rog,Sam,Pri,Wiz,msg_fallbacks,common,Mon,Cav,Arc,Ran,Kni,Val,Tou,Hea,Bar
+```
+
+— while the content hash is `3ee3deb7` on all sixteen dumps, interpreter and
+port alike. Hash-part traversal order is a property of the state, not of the
+data; nothing in NetHack can depend on it, and indeed nothing does. `lua_next`
+appears exactly twice in the whole non-Lua C source, and the only one that
+touches a script-built table is `dungeon.c:1278` — the array-part case.
+`com_pager_core()` reads `questtext` only by `lua_getfield` and by integer
+index.
+
+So the oracle requires the canonical hash to match everywhere, and the raw
+order to match for the table C actually walks.
+
+### 6.3 Lifetime — shorter than expected, for both
+
+The stage brief expected `dungeon.lua`'s table to be one-shot and `quest.lua`'s
+to have to survive for mid-game message lookups. Reading `com_pager_core()`
+settles it: **`quest.lua` is one-shot too, once per message.** Every single
+quest or `common` message re-runs `nhl_init()`, re-reads all 132 KB, and calls
+`nhl_done()` before returning; nothing persists between deliveries. The probe
+run's eight loads for eight messages is that fact on the record.
+
+The consequence for the port is that it owns no state and no lifetime at all.
+It writes one global into a state somebody else made and somebody else will
+close, exactly as the chunk would have, and the JS data module (which *is*
+long-lived, and shared across replay segments — `js/boot/isolation.mjs`'s
+`SHARED`) is pure immutable data that is never handed to Lua as an object, only
+walked to emit pushes.
+
+Two things follow that are worth writing down for S6:
+
+* The port marshals ~1,500 table entries into a Lua state that `nhl_init()`
+  created with a **1 MB sandbox memory cap** (`nhl_sandbox_info`, and
+  `nhl_alloc` returns NULL past `nud->memlimit`). It fits, with room, because
+  the port allocates strictly less than the interpreter did: the interpreter
+  pays for the source buffer and the compiled `Proto` with its ~3,000 string
+  constants *as well as* the table. But this is why `setGlobal` runs inside
+  `runProtected()` — a `LUA_ERRMEM` has to be caught by a Lua frame, not thrown
+  through JS.
+* Re-running the whole marshalling per message is what the interpreter does
+  too, so it is parity-neutral. A lazy `__index` table would be much faster and
+  is *probably* unobservable (every read is `lua_getfield`), but "probably" is
+  not the standard here and speed is not the constraint.
+
+### 6.4 Ordering at the seam
+
+§4's interception runs the port at `fclose`, which for these two scripts is
+what makes the ordering trivially right: the file has been read, the state
+exists and has been fully initialised by `nhl_init()`, the global is set, and
+only then does `nhl_loadlua()` compile the (empty) stub and `init_dungeons()` /
+`com_pager_core()` start reading. The reordering §4 describes — the parse
+moving after the port's work — is if anything *more* obviously harmless here,
+since the port's work is a table assignment rather than a sequence of `des.*`
+calls.
+
+`stateIsFresh()` checks the invariant directly: at the moment the port runs,
+the global it is about to define must still be absent.
+
+### 6.5 The generator
+
+132 KB of quest prose is not hand-transcribed.
+`tools/lua-port-gen/lua2js.mjs` parses the declarative subset those two files
+use — comments, string/number/boolean/nil literals, long strings, and table
+constructors with record, bracketed and positional fields — and emits
+`js/lua-js/data/{dungeon,quest}.mjs` as nested JS literals in source order.
+Anything outside that subset is a hard error, so a 5.1 `quest.lua` that grows a
+function call fails loudly instead of being silently mistranslated. Multi-line
+strings become template literals so the prose stays diffable against the .lua.
+
+Neither file contains a table with both positional and keyed fields, which is
+what lets the emitted JS be plain arrays and plain objects: array ⇒ array part,
+object ⇒ hash part, and `setGlobal` can derive `lua_createtable`'s `narr`/`nrec`
+from the shape. `test/lua-port-data.test.mjs` enforces both halves of that on
+every run — it re-parses the .lua and requires the committed module to be the
+same value with the **same key order**, and rejects any integer key in a record
+table.
+
+### 6.6 Reachability: both scripts are exercised by every recorded session
+
+This was expected to be the weak point of S1 (§10 is about exactly this) and it
+turned out not to be one.
+
+* `init_dungeons()` runs at every `newgame()`, so `dungeon.lua` is loaded by all
+  69 corpus sessions.
+* `newgame()` ends with `com_pager("legacy")` when `flags.legacy` is set, which
+  is the default (allmain.c:832) — so **`quest.lua` is loaded by all 69 sessions
+  too**, and the text it returns is put on the screen. In the trace, a
+  chargen-only session shows `dungeon.lua@rng202, quest.lua@rng3193`.
+
+Neither port consumes any RNG (`rng draws inside port: [0,0]`), which is right:
+the parse never did either, and every draw `init_dungeons()` spends — one
+`rn2(100)` per dungeon for the `chance` roll, then `place_level()`'s recursion
+— is C-side and unchanged.
+
+What the corpus does *not* reach is `quest.lua`'s 13 role sections; a normal
+game only ever reads `common.legacy`. `C2JS_LUA_QUESTPROBE=1` covers that gap
+synthetically: once the game is up, the registry delivers five role-specific
+messages through `qt_pager()` and two `common` ones through `com_pager()`, and
+the oracle compares the **raw terminal byte stream**. That last detail matters
+— a `--More--`-paged quest window is drawn and dismissed inside a single key
+wait, so it never lands on an input-boundary screen at all, and comparing the
+sampled screens would have proved nothing.
+
+Honest summary of the evidence status:
+
+| Path | Evidence |
+|---|---|
+| `dungeon.lua` → `init_dungeons()` | real play, all 69 sessions |
+| `quest.lua` → `common.legacy` | real play, all 69 sessions |
+| `quest.lua` → 13 role sections, 28 msgids | synthetic (`C2JS_LUA_QUESTPROBE`), 7 roles |
+| every string in `questtext`, every field in `dungeon` | the read-back dump, exhaustive |
+
+### 6.7 Oracle results
+
+`node tools/lua-oracle.mjs --readback --questprobe <session>`:
+
+```
+PASS  seed0077-rogue-chargen.session.json
+      rng     interpreter=3242 port=3242 firstDiff=-1
+      screens interpreter=33 port=33 firstDiff=-1
+      ported-script loads: dungeon.lua@rng202, quest.lua@rng3193
+      rng draws inside port: [0,0]
+      level typ fingerprint: interpreter=0,4ac51dab port=0,4ac51dab MATCH
+      read-back table:     MATCH (269/1527×8 values hashed; lua_next order over the walked table MATCH)
+        [0] dungeon.lua:dungeon:e01af569:269
+        [1] quest.lua:questtext:3ee3deb7:1527
+      quest-text delivery: MATCH (8 quest.lua loads, 23882 terminal bytes, firstDiff=-1)
+```
+
+Seven roles — Healer, Samurai, Knight, Wizard, Tourist, Caveman, Rogue — all
+`PASS` on all five checks.
+
+### 6.8 Negative controls
+
+Three, because three different checks had to be shown capable of failing.
+
+1. **Content, invisible to play.** One character changed in the Wizard
+   section's `firsttime` text — a string the rogue session never displays.
+   `rng 3242/3242 firstDiff=-1`, `screens 33/33 firstDiff=-1`, level
+   fingerprint `MATCH`; caught only by the read-back hash
+   (`3ee3deb7` → `2094187e`). This is the §5 statue control's exact analogue,
+   and it is why the read-back dump exists.
+2. **Order.** Swapping the last two entries of the `dungeon` sequence moves the
+   raw order hash (`51ed75a5` → `239ce7bf`) while the top-level key sequence is
+   still `1,…,9` and the seed is identical on both sides. Reordering a sequence
+   necessarily changes its contents too, so the content hash catches this one
+   as well; what the control establishes is that the order check fires and that
+   the printed key list on its own would not have.
+3. **Delivered text.** One letter changed in the Rogue's home-town name:
+   RNG log identical (`rngFirstDiff=-1`), terminal stream diverges at byte
+   8697. The delivery path is genuinely under test.
+
+---
+
+## 7. Corpus regression
+
+Full 69-session corpus
 (`SESSION_REPLAY_TIMEOUT_MS=300000 node frozen/ps_test_runner.mjs sessions/ sessions-extra/`):
 
 | Configuration | Result | Speed |
 |---|---|---|
-| (a) registry inert — `C2JS_LUA_PORT=0` | **69/69** | 1071 + 0.89/turn (R² 0.701) |
-| (b) `oracle.lua` ported and live (default) | **69/69** | 1034 + 0.83/turn (R² 0.723) |
+| registry inert — `C2JS_LUA_PORT=0` | **69/69** | 1013 + 0.84/turn (R² 0.723) |
+| all three ports live (default), run 1 | **69/69** | 995 + 0.88/turn (R² 0.734) |
+| all three ports live (default), run 2 | **69/69** | 990 + 0.83/turn (R² 0.728) |
+| all three ports live (default), run 3 | **69/69** | 993 + 0.82/turn (R² 0.728) |
 
-`gen9996-marathon-dlvl10` is the session that reaches the Oracle level; it scores
-`RNG 54924/54924, Screen 17829/17829` in both configurations, i.e. the port is
+Every session exercises `dungeon.lua` and `quest.lua`; `gen9996-marathon-dlvl10`
+also reaches the Oracle level and so exercises all three. It scores
+`RNG 54924/54924, Screen 17829/17829` in every configuration, i.e. the ports are
 byte-exact against the **C recorder**, not merely against the JS interpreter.
 
 Other gates: `tools/c2js/test-rnd.mjs`, `test-hacklib.mjs`, `test-setjmp.mjs`,
-`test-union.mjs` PASS; `node --test test/*.test.mjs` 4/4 (includes posix-ere);
-judge-sim `run.mjs seed8000` PASS.
+`test-union.mjs` PASS; `node --test test/*.test.mjs` 5/5 (posix-ere and the new
+`lua-port-data` transcription check); judge-sim
+`run.mjs seed8000-tourist-starter.session.json` PASS (0 mismatches, 0
+out-of-scope requests); `playability.mjs --keys=hjklhjkl` engages the `xhr`
+engine with `console_entries: []` — and its top line is
+`It is written in the Book of Odin:`, which is `questtext.common.legacy`
+arriving from the JS port through a real browser.
 
 ---
 
-## 7. Cookbook — porting script #2
+## 8. Cookbook — porting script #2
 
 1. **Read the Lua.** `nethack-c/recorder/dat/<name>.lua`.
 2. **Write `js/lua-js/scripts/<name>.mjs`** exporting a default function taking
@@ -402,20 +664,64 @@ judge-sim `run.mjs seed8000` PASS.
 * A JS `throw` inside a port body must not cross a Lua C frame; `runPortedScript`
   stashes and re-throws after the pcall.
 
+### Cookbook — a *read-back* script
+
+Different recipe, because the port builds a value instead of issuing calls. Use
+it when the script's whole body is `<global> = { … }` and C reads that global
+afterwards. Two are done (`dungeon.lua`, `quest.lua`); the remaining
+candidates are `nhcore.lua` and `nhlib.lua` in S6, which are read back *and*
+executable, so they need both recipes at once.
+
+1. **Find every read.** Grep the C for `lua_getglobal` on the name, then for
+   `lua_next` / `lua_getfield` / `lua_len` / `lua_gettable` around it. What you
+   are looking for is a single question: *does anything walk the table with
+   `lua_next`?* If yes, that table's array/hash split is observable and the
+   port must reproduce it; if no, only the contents are.
+2. **Find the lifetime.** Which function calls `nhl_init()`, and where is the
+   matching `nhl_done()`? For both S1 scripts the answer was "the same function,
+   a few lines later" — quest.lua's state does not survive the message it was
+   loaded for. Do not assume a long-lived table without checking.
+3. **Generate the data.**
+   `node tools/lua-port-gen/lua2js.mjs <in.lua> <global> js/lua-js/data/<x>.mjs`,
+   then `--check` the same command line. Add the file to
+   `test/lua-port-data.test.mjs`'s `CASES` so the transcription stays checked.
+4. **Write the driver** — `js/lua-js/scripts/<x>.mjs`, which is three lines:
+   import the data, export `globalName`, and `setGlobal(globalName, data)`.
+5. **Register it in `READBACK`**, not `PORTS`. The registry then hands the port
+   a `setGlobal` bound to the interpreter's state and runs it inside
+   `runProtected()`.
+6. **Prove it** with `node tools/lua-oracle.mjs --readback <session>`. The
+   read-back dump is the check that matters; RNG and screens will happily agree
+   on a table with the wrong text in it.
+7. **Add a delivery probe** if the corpus only reaches part of the table.
+   `C2JS_LUA_QUESTPROBE` is the pattern: drive the real C consumer for inputs no
+   session produces, and compare the *terminal byte stream*, not the sampled
+   screens.
+
+Gotchas specific to this shape:
+
+* The port's own `lua_State` is the wrong state. Use `interpState()`.
+* Never fall back silently when the state is not found — throw.
+* The interpreter's state is memory-capped (1 MB sandbox). Marshalling runs
+  inside `runProtected()` so `LUA_ERRMEM` unwinds through Lua, not through JS.
+* Do not compare raw `lua_next` order over a hash part. It is seeded per state
+  and differs run to run *for the interpreter as well*; §6.2 has the eight-way
+  demonstration.
+
 ---
 
-## 8. Staged plan for the remaining 130 scripts
+## 9. Staged plan for the remaining 130 scripts
 
 Ordered by risk-adjusted value. "Legs" = agent sessions, roughly.
 
 | Stage | Scripts | Count | Why here | Legs |
 |---|---|---|---|---|
-| **S1** *pure-data* | `quest.lua`, `dungeon.lua` | 2 | 21.7 % of the corpus by bytes, zero executable statements. But **not** through the des bridge: both are read by `lua_getfield`/`lua_next` walks from `init_dungeons()` and `com_pager()` against a table the chunk leaves in the globals, so the port has to *build the global table*, not issue calls. Needs one new bridge primitive (`setGlobalTable`) and, for `dungeon.lua`, replication of the array-part traversal order. Distinct mechanism, so do it early and alone. | 2 |
+| **S1** *pure-data* ✅ | `quest.lua`, `dungeon.lua` | 2 | **Landed — see §6.** Cost 1 leg, not 2. The new primitive turned out to be `interpState()` + `setGlobal()`, not a `setGlobalTable` on the port's own state: the table has to live in the interpreter's `lua_State`, which had to be recovered from the allocator. Traversal order was reproduced exactly where C observes it (`dungeon`'s array part) and shown to be seed-derived and unobservable where it is not (`questtext`'s hash part). Both scripts turn out to load in *every* game, so the corpus is real-play evidence for both. | 2 |
 | **S2** *T0 level scripts* | 49 remaining T0 files: `soko1-1 … soko4-2`, `air/fire/water/earth`, `baalz`, `tower3`, `tut-2`, all quest `*-goal/-loca/-fil*` | 49 | Mechanical transliteration, no RNG, no closures. The bulk of the file count for the least risk. Batch 8–12 per leg. Reachability is the constraint, not correctness: Sokoban, the Planes and the quest branches need recorded sessions that get there — budget a leg for session recording first. | 6 |
 | **S3** *T1 + closure-only T2* | `castle`, `juiblex`, `sanctum`, `*-strt`, `minend-1/3`, `fakewiz1/2`, `wizard2`, the 10 `*-fil{a,b}` | 28 | Adds `shuffle` over literal tables and single closures. Both already exercised by the PoC and the bridge. | 4 |
 | **S4** *T2 with real logic* | `minetn-*`, `medusa-*`, `bigrm-*`, `astral`, `knox`, `valley`, `orcus`, `Wiz-loca`, `minefill`, `tower1/2`, `wizard1/3`, `asmodeus`, `Kni-strt`, `Tou-goal/loca`, `Val-*`, `Bar-strt`, `Mon-strt`, `Pri-strt`, `soko1-1/2`, `oracle` ✅ | 30 | Loops, `percent`, selection algebra. First real use of `selection.*` handles through the bridge — `LuaValue` exists but is only smoke-tested; expect a leg of bridge work for selection operators (`|`, `&`, `~`) and `:iterate(closure)`. Mines levels are corpus-reachable, which makes this the best-tested stage after S2. | 6 |
 | **S5** *tutorial* | `tut-1`, plus the tutorial half of `nhlib` | 2 | The only string-pattern code in the corpus (`s:match("^^([A-Z])$")`) and the only place `nh.eckey` interpolation matters. Self-contained and never reached in normal play, so low risk and low value — do it late, or not at all before the freeze. | 1 |
-| **S6** *the libraries* | `nhlib.lua`, `nhcore.lua` | 2 | The hard ones, and the ones that change the load-time RNG contract. Porting `nhlib` moves the `align` shuffle into JS and requires the bridge to own per-state library state; porting `nhcore` requires reproducing `pairs()` order over a string-keyed table and `_G[k]` dispatch. **Only worth doing if S1–S4 land comfortably before the freeze**; the interpreter running two small library files costs nothing in the Phase-1 baseline. | 3 |
+| **S6** *the libraries* | `nhlib.lua`, `nhcore.lua` | 2 | The hard ones, and the ones that change the load-time RNG contract. Porting `nhlib` moves the `align` shuffle into JS and requires the bridge to own per-state library state; porting `nhcore` requires reproducing `pairs()` order over a string-keyed table and `_G[k]` dispatch — and §6.2 now says what that costs: `pairs()` order over a hash part is a function of `g->seed`, which the port cannot control, so a `nhcore` port has to make the dispatch order independent of it (or the current interpreter behaviour has to be shown independent of it first). Both are read-back *and* executable, so they need §8's two recipes at once. **Only worth doing if S1–S4 land comfortably before the freeze**; the interpreter running two small library files costs nothing in the Phase-1 baseline. | 3 |
 | **S7** *themed rooms* | `themerms.lua`, `hellfill.lua` | 2 | 46 KB, 122 functions, frequency-weighted reservoir sampling, deferred post-process callbacks, and the *only* long-lived level-gen state (`gl.luathemes[dnum]`, cached per branch and never closed). `themerms` runs on essentially every ordinary level, so a mistake here is a corpus-wide failure rather than a one-level one — but that also means the corpus tests it hardest. Highest value in a Phase-2 diff (themed rooms are the most likely thing to change in 5.1) and highest risk. | 4 |
 
 Total ≈ 26 agent-legs. S1–S4 (109 scripts, ~78 % of the file count) is ≈ 18 and
@@ -423,7 +729,7 @@ is the sensible pre-freeze target; S6/S7 only if that lands early.
 
 ---
 
-## 9. Biggest risk to full coverage
+## 10. Biggest risk to full coverage
 
 **Reachability, not correctness.** The bridge is proved and the oracle is sharp,
 but an oracle only reports on levels a session actually generates. Of the 131
