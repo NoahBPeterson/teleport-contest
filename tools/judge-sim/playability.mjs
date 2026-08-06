@@ -5,17 +5,39 @@
 // keydown events, one at a time, timed from dispatch to painted frame.
 //
 //   node tools/judge-sim/playability.mjs [--coi] [--no-sw] [--keys=hjkl...]
+//                                        [--inert-sw] [--sw-deny-dedicated]
+//                                        [--transport=worker|sharedworker|replay]
 //                                        [--seed=N] [--timeout=ms] [--keep]
 //
 // --no-sw additionally 404s js/sw.js, which leaves the page with no blocking
 // transport at all and forces the ReplayEngine fallback. That is the path the
 // judge's browser took, and the only way to measure it here.
 //
+// --transport=<rung> narrows the ladder in js/boot/interactive.mjs to one rung
+// (see transportOverride() there). It can only ever *remove* rungs, so it
+// cannot make a run pass that would not have passed anyway; it exists so each
+// rung can be measured on its own.
+//
 // --coi serves COOP/COEP so the page is crossOriginIsolated and the engine
 // blocks on Atomics.wait over a SharedArrayBuffer. Without it the server
 // behaves like GitHub Pages (no COOP/COEP, no SharedArrayBuffer) and the
 // engine has to get its keys through the service worker in js/sw.js — that is
 // the configuration mazesofmenace.ai actually serves, so it is the default.
+//
+// Console output is collected two ways, because they see different things:
+//
+//   --enable-logging=stderr   what Chrome's own logger prints: console API
+//                             calls and uncaught exceptions, page only.
+//   CDP (Log + Runtime)       what a DevTools-protocol harness sees: the
+//                             above *plus* network-level entries — a 404 on a
+//                             subresource, a failed service-worker
+//                             registration, a CSP violation — and it sees them
+//                             in workers and service workers too, not just the
+//                             page.
+//
+// The judge drives Chromium over CDP, so the second list is the one that
+// decides whether "fails on any console output" fires. Everything this repo
+// does on the transport ladder has to keep it empty.
 //
 // Chrome is located at the macOS default; override with CHROME=/path/to/chrome.
 
@@ -38,8 +60,21 @@ const coi = args.includes('--coi');
 // (no SAB without --coi, and no service worker if its script 404s). Test-only:
 // it measures the degraded path, which is the one the judge's browser hit.
 const noSw = args.includes('--no-sw');
+// --inert-sw serves a service worker that registers but intercepts nothing —
+// the failure mode the ladder in js/boot/interactive.mjs is built around, and
+// the only way to reproduce "the probe says no" without a browser that gets
+// worker control wrong. See tools/judge-sim/server.mjs.
+const inertSw = args.includes('--inert-sw');
+// --sw-deny-dedicated stages the browser difference the ladder exists for: the
+// service worker answers the interception probe truthfully for a SharedWorker
+// and falsely for a dedicated worker, so rung 2 fails and rung 3 has to catch
+// the game. See tools/judge-sim/server.mjs.
+const denyDedicated = args.includes('--sw-deny-dedicated');
+const transport = opt('transport', '');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
+// DevTools endpoint, kept clear of the range PORT is drawn from.
+const DPORT = PORT + 1000;
 
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'playability-'));
 const logFile = path.join(work, 'requests.jsonl');
@@ -49,7 +84,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
-    ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : [])],
+    ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []), ...(denyDedicated ? ['--sw-deny-dedicated'] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
 
 let up = false;
@@ -71,10 +106,15 @@ const DEFAULT_RC = [
 const q = new URLSearchParams({ bench: '/__sim/result', seed: opt('seed', '8000'), rc: opt('rc', DEFAULT_RC) });
 const keys = opt('keys', '');
 if (keys) q.set('keys', keys);
+if (transport) q.set('transport', transport);
 q.set('bmoves', opt('moves', '240'));
 const url = `http://127.0.0.1:${PORT}/?${q}`;
 
 process.stderr.write(`\n=== Headless Chrome: ${url} (COI ${coi ? 'on' : 'off'}) ===\n`);
+// Start on about:blank and navigate over CDP instead of passing the URL on the
+// command line: the Log/Runtime domains have to be enabled before the page runs
+// a line of script, or the very first console entry — the one most likely to be
+// the interesting one — is missed.
 const chrome = spawn(CHROME, [
     '--headless=new',
     '--disable-gpu',
@@ -83,16 +123,122 @@ const chrome = spawn(CHROME, [
     `--user-data-dir=${chromeProfile}`,
     '--enable-logging=stderr',
     '--v=0',
-    url,
+    `--remote-debugging-port=${DPORT}`,
+    'about:blank',
 ], { stdio: ['ignore', 'pipe', 'pipe'] });
 
 let chromeErr = '';
 chrome.stderr.on('data', d => { chromeErr += d; });
 chrome.stdout.on('data', d => { chromeErr += d; });
 
+// --- CDP: console capture across every target -------------------------------
+//
+// One WebSocket to the *browser* endpoint, with flattened auto-attach turned on
+// at every level: the page attaches to the browser session, its dedicated
+// workers attach to the page session, and shared/service workers attach to the
+// browser session. Each new session gets Log + Runtime enabled and its own
+// auto-attach before it is released from the debugger pause, so nothing starts
+// running unobserved.
+async function cdpConnect(port) {
+    let info = null;
+    for (let i = 0; i < 200 && !info; i++) {
+        try { info = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json(); }
+        catch { await sleep(50); }
+    }
+    if (!info) throw new Error('devtools endpoint never came up');
+    const ws = new WebSocket(info.webSocketDebuggerUrl);
+    await new Promise((res, rej) => {
+        ws.addEventListener('open', res, { once: true });
+        ws.addEventListener('error', rej, { once: true });
+    });
+
+    let nextId = 0;
+    const pending = new Map();
+    const targets = new Map();      // sessionId -> targetInfo
+    const entries = [];
+    let pageSid = null;
+    let onPage = null;
+    const whenPage = new Promise((res) => { onPage = res; });
+
+    const call = (method, params = {}, sessionId) => new Promise((res, rej) => {
+        const id = ++nextId;
+        pending.set(id, { res, rej });
+        ws.send(JSON.stringify(sessionId ? { id, method, params, sessionId } : { id, method, params }));
+    });
+
+    const argText = (args) => (args || [])
+        .map(a => (a.value !== undefined ? String(a.value) : (a.description || a.unserializableValue || a.type)))
+        .join(' ');
+
+    ws.addEventListener('message', (ev) => {
+        let m;
+        try { m = JSON.parse(ev.data); } catch { return; }
+        if (m.id !== undefined) {
+            const p = pending.get(m.id);
+            pending.delete(m.id);
+            if (p) (m.error ? p.rej(new Error(m.error.message)) : p.res(m.result));
+            return;
+        }
+        if (m.method === 'Target.attachedToTarget') {
+            const sid = m.params.sessionId;
+            targets.set(sid, m.params.targetInfo);
+            if (m.params.targetInfo.type === 'page' && !pageSid) { pageSid = sid; onPage(sid); }
+            if (process.env.NHDEBUG) process.stderr.write(`[cdp] attached ${m.params.targetInfo.type} ${m.params.targetInfo.url}\n`);
+            // Queue all four without awaiting. A target paused on start is
+            // released by the last one, and awaiting the earlier replies would
+            // leave it paused forever if any of them never answers — which is
+            // exactly what a worker paused before its Runtime is up does.
+            // Commands on one session are processed in the order they are sent,
+            // so the enables still take effect before the target runs.
+            for (const [method, params] of [
+                ['Log.enable', {}],
+                ['Runtime.enable', {}],
+                ['Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true }],
+                ['Runtime.runIfWaitingForDebugger', {}],
+            ]) call(method, params, sid).catch(() => { /* target gone, or not that kind of target */ });
+            return;
+        }
+        // targetInfo.url is the URL at *attach* time (about:blank for the page
+        // we navigate ourselves), so only the type is worth reporting; each
+        // entry carries its own URL.
+        const t = targets.get(m.sessionId);
+        const where = t ? t.type : 'browser';
+        // Log.entryAdded repeats console API calls with source 'console-api';
+        // Runtime.consoleAPICalled already has those, with the arguments.
+        if (m.method === 'Log.entryAdded' && m.params.entry.source !== 'console-api') {
+            const e = m.params.entry;
+            entries.push({ where, kind: `log/${e.source}/${e.level}`, text: e.text + (e.url ? ` <${e.url}>` : '') });
+        } else if (m.method === 'Runtime.consoleAPICalled') {
+            entries.push({ where, kind: 'console.' + m.params.type, text: argText(m.params.args) });
+        } else if (m.method === 'Runtime.exceptionThrown') {
+            const d = m.params.exceptionDetails;
+            entries.push({ where, kind: 'exception', text: (d.text || '') + ' ' + ((d.exception && d.exception.description) || '') });
+        }
+    });
+
+    await call('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });
+    return { call, entries, whenPage, close: () => { try { ws.close(); } catch { /* already closed */ } } };
+}
+
+let dev = null;
+try {
+    dev = await cdpConnect(DPORT);
+    const sid = await dev.whenPage;
+    await dev.call('Page.navigate', { url }, sid);
+} catch (e) {
+    process.stderr.write(`\nFAIL: could not drive Chrome over CDP: ${e && e.message}\n`);
+    chrome.kill(); server.kill('SIGINT');
+    process.exit(1);
+}
+
 const deadline = Date.now() + timeoutMs;
 while (!fs.existsSync(resultFile) && Date.now() < deadline) await sleep(200);
 const timedOut = !fs.existsSync(resultFile);
+// Give any last-gasp console entry (a rejected promise settling as the page
+// finishes, a worker tearing down) a chance to arrive before we stop listening.
+await sleep(300);
+const cdpEntries = dev.entries.filter(e => !(e.kind === 'console.log' && e.text.startsWith('[bench] ')));
+dev.close();
 chrome.kill();
 await sleep(200);
 server.kill('SIGINT');
@@ -116,8 +262,12 @@ const consoleLines = chromeErr.split('\n')
     .filter(l => /:CONSOLE[:(]/.test(l))
     .filter(l => !l.includes('"[bench] '));
 fs.writeFileSync(path.join(work, 'chrome-stderr.log'), chromeErr);   // --keep to inspect
-process.stderr.write(`\n=== Browser console ===\n  ${consoleLines.length} error/warning/console line(s)\n`);
+process.stderr.write(`\n=== Browser console (Chrome stderr) ===\n  ${consoleLines.length} error/warning/console line(s)\n`);
 for (const l of consoleLines.slice(0, 20)) process.stderr.write('    ' + l.trim() + '\n');
+
+// The list that actually decides the judge's playability verdict.
+process.stderr.write(`\n=== Browser console (CDP: Log + Runtime, all targets) ===\n  ${cdpEntries.length} entr${cdpEntries.length === 1 ? 'y' : 'ies'}\n`);
+for (const e of cdpEntries.slice(0, 30)) process.stderr.write(`    [${e.where}] ${e.kind}: ${e.text}\n`);
 
 if (timedOut) {
     process.stderr.write('\nFAIL: the page never reported. Chrome stderr tail:\n' + chromeErr.slice(-4000) + '\n');
@@ -134,7 +284,11 @@ process.stderr.write(`  top line         : ${JSON.stringify(report.top_line)}\n`
 process.stderr.write(`  status line      : ${JSON.stringify(report.status_line)}\n`);
 
 process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
-process.stdout.write(JSON.stringify({ ...report, coi, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
+process.stdout.write(JSON.stringify({
+    ...report, coi, transport: transport || null,
+    out_of_scope: blocked.map(r => r.path),
+    console_entries: cdpEntries,
+}, null, 2) + '\n');
 if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
 else process.stderr.write(`(artifacts kept in ${work})\n`);
 process.exit(report.moves > 0 && !blocked.length ? 0 : 1);

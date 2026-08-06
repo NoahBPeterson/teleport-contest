@@ -59,6 +59,48 @@ const COI = args.includes('--coi');
 // always serves js/sw.js — and the only way to measure the fallback path
 // without touching the transport selection itself.
 const NO_SW = args.includes('--no-sw');
+
+// --inert-sw: serve a service worker that registers and activates normally but
+// intercepts nothing. This is the failure the transport ladder in
+// js/boot/interactive.mjs exists for, and the one a 404 does *not* reproduce:
+// navigator.serviceWorker.register() resolves, reg.active is set, everything the
+// page can see says the transport is there — and the engine's synchronous XHR
+// goes straight to the network, where nobody is waiting to answer it. Whether a
+// worker is a controlled client is a per-engine detail we cannot make Chrome
+// get wrong on demand, so we make the service worker sit it out instead; the
+// realm sees exactly what an uncontrolled client sees.
+const INERT_SW = args.includes('--inert-sw');
+const INERT_SW_JS = `// judge-sim --inert-sw: registers, activates, intercepts nothing.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+`;
+
+// --sw-deny-dedicated: serve the real js/sw.js with its probe answer made
+// conditional on the client type — a dedicated worker is told "not
+// intercepted", a SharedWorker is told the truth.
+//
+// This is the browser difference the ladder was built for, staged. Chromium
+// controls dedicated workers by their own script URL and there is no flag that
+// makes it stop, so the service worker declines instead; the engine worker's
+// realm sees precisely what an uncontrolled client sees — its request going to
+// the network and coming back with sw.js's own bytes. With rung 2 failing that
+// way, rung 3 has to be what picks the game up.
+const DENY_DEDICATED = args.includes('--sw-deny-dedicated');
+const PROBE_LINE = '    if (url.searchParams.has(PROBE_PARAM)) return e.respondWith(plain(PROBE_ALIVE));';
+const PROBE_LINE_DENIED = `    if (url.searchParams.has(PROBE_PARAM)) return e.respondWith(
+        self.clients.get(e.clientId).then((c) => (c && c.type === 'worker')
+            ? fetch(e.request)              // judge-sim: as if this client were uncontrolled
+            : plain(PROBE_ALIVE)));`;
+
+function denyDedicatedSw() {
+    const src = fs.readFileSync(path.join(ROOT, 'js/sw.js'), 'utf8');
+    if (!src.includes(PROBE_LINE)) {
+        // Loud on purpose: a silently-unpatched service worker would make this
+        // switch test the opposite of what it claims to.
+        throw new Error('--sw-deny-dedicated: js/sw.js no longer contains the probe line to patch');
+    }
+    return src.replace(PROBE_LINE, PROBE_LINE_DENIED);
+}
 const COI_HEADERS = COI ? {
     'cross-origin-opener-policy': 'same-origin',
     'cross-origin-embedder-policy': 'require-corp',
@@ -86,7 +128,9 @@ function record(entry) {
 
 function classify(pathname) {
     // Chrome asks for this on its own for any top-level document; it is not part
-    // of anyone's module graph, and the real mirror 404s it just as harmlessly.
+    // of anyone's module graph. It is answered rather than 404'd — see the
+    // handler — because a 404 puts a line in the browser console, and the whole
+    // point of the console tally is that a zero there means zero.
     if (pathname === '/favicon.ico') return 'BROWSER-UA';
     if (pathname.startsWith('/__sim/')) return 'HARNESS';
     if (SERVED_FILES.includes(pathname)) return 'IN-SCOPE';
@@ -132,7 +176,16 @@ const server = http.createServer(async (req, res) => {
 
     const finish = (status) => record({ t: Date.now(), method: req.method, path: pathname, kind, status });
 
-    if (kind === 'BLOCKED' || kind === 'BROWSER-UA') {
+    // The origin that hosts the mirror has a favicon; only this stand-in, which
+    // serves the fork at the origin root, would 404 it. A 404 here is a console
+    // line that the real judge run does not have, so answer it empty.
+    if (kind === 'BROWSER-UA') {
+        finish(204);
+        res.writeHead(204, COI_HEADERS);
+        return res.end();
+    }
+
+    if (kind === 'BLOCKED') {
         finish(404);
         return send(res, 404, 'Not Found (mirror serves js/** and frozen/** only)\n', 'text/plain');
     }
@@ -165,9 +218,27 @@ const server = http.createServer(async (req, res) => {
         return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
     }
 
-    if (NO_SW && pathname === '/js/sw.js') {
-        finish(404);
-        return send(res, 404, 'Not Found (--no-sw)\n', 'text/plain');
+    if (pathname === '/js/sw.js') {
+        if (NO_SW) {
+            finish(404);
+            return send(res, 404, 'Not Found (--no-sw)\n', 'text/plain');
+        }
+        if (INERT_SW) {
+            finish(200);
+            return send(res, 200, INERT_SW_JS, MIME['.js']);
+        }
+        if (DENY_DEDICATED) {
+            finish(200);
+            return send(res, 200, denyDedicatedSw(), MIME['.js']);
+        }
+    }
+
+    // snapshot.json is written by the mirror's publisher, not by the fork, so it
+    // is not in this tree. index.html reads it for the owner name; 404ing it
+    // works but costs a console line the real run does not have.
+    if (pathname === '/snapshot.json' && !fs.existsSync(path.join(ROOT, 'snapshot.json'))) {
+        finish(200);
+        return send(res, 200, JSON.stringify({ owner: 'judge-sim', fork: 'judge-sim/nethack' }), MIME['.json']);
     }
 
     // IN-SCOPE: plain static file out of js/ or frozen/, no directory escapes.
