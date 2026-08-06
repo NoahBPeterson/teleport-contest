@@ -77,7 +77,14 @@ export function decay(buf) {
 }
 
 /** Pointer arithmetic: p + n elements of size sz (default 1 = byte). @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
-export function add(p, n, sz = 1) { const off = p.off + Number(n) * sz; if (Number.isNaN(off)) throw new Error(`cptr.add NaN (n=${String(n)} sz=${sz})`); return { buf: p.buf, off }; } // TEMP NaN tripwire
+export function add(p, n, sz = 1) {
+  // Hottest function in the port (13% of a session). `typeof n === 'number'`
+  // keeps the common case off the generic ToNumber path, and `off !== off` is
+  // the NaN tripwire without a call. Semantics unchanged.
+  const off = p.off + (typeof n === 'number' ? n : Number(n)) * sz;
+  if (off !== off) throw new Error(`cptr.add NaN (n=${String(n)} sz=${sz})`); // TEMP NaN tripwire
+  return { buf: p.buf, off };
+}
 
 /** Pointer subtraction: p - n elements of size sz. @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
 export function sub(p, n, sz = 1) { return { buf: p.buf, off: p.off - Number(n) * sz }; }
@@ -118,7 +125,12 @@ export function ld1s(p) { if (p.isBox) return (p.v << 24) >> 24; return (p.buf[p
 export function ld1u(p) { if (p.isBox) return p.v & 0xFF; return p.buf[p.off]; }
 
 /** *p = v for 1-byte pointees; store truncates mod 256 like C. @param {CPtr} p @param {number|bigint} v */
-export function st1(p, v) { if (p.isBox) { p.v = Number(v) & 0xFF; return v; } p.buf[p.off] = Number(v) & 0xFF; return v; }
+export function st1(p, v) {
+  const x = (typeof v === 'number' ? v : Number(v)) & 0xFF;
+  if (p.isBox) { p.v = x; return v; }
+  p.buf[p.off] = x;
+  return v;
+}
 
 /** 32-bit int load, little-endian. @param {CPtr} p @returns {number} */
 export function ldI32(p) {
@@ -157,22 +169,41 @@ export function stI16(p, v) {
   return v;
 }
 
+// 64-bit access is the single hottest thing in the port: every struct field
+// that is a pointer, a size_t or a long goes through here, and the obvious
+// byte-at-a-time BigInt loop cost 24% of a session's CPU (1.3 s of 7.2 s on
+// seed0360, plus most of the GC time — 16 intermediate BigInts per load).
+// Splitting into two 32-bit halves with plain integer arithmetic and only
+// building BigInts at the boundary keeps the identical value semantics
+// (little-endian, mod 2^64) with 1-3 BigInt ops instead of 16.
+
 /** 64-bit load, little-endian, as BigInt (C int64/uint64/size_t). @param {CPtr} p @returns {bigint} */
-export function ldU64(p) { 
+export function ldU64(p) {
   if (p.isBox) return BigInt.asUintN(64, BigInt(p.v));
   const b = p.buf, o = p.off;
   if (o + 8 > b.length) throw new Error(`ldU64 OOB: buflen=${b.length} off=${o}`); // TEMP debug aid
-  let v = 0n;
-  for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]);
-  return v;
+  const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+  const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+  return hi === 0 ? BigInt(lo) : (BigInt(hi) << 32n) | BigInt(lo);
 }
 
 /** 64-bit store into an unsigned 64-bit location, little-endian. @param {CPtr} p @param {bigint|number} v */
 export function stU64(p, v) {
   if (p.isBox) { p.v = BigInt.asUintN(64, BigInt(v)); return v; }
   const b = p.buf, o = p.off;
-  let x = BigInt(v);
-  for (let i = 0; i < 8; i++) { b[o + i] = Number(x & 0xFFn); x >>= 8n; }
+  let lo, hi;
+  // Fast path: a non-negative JS integer. (A non-integer number reaches
+  // BigInt(v) below and throws, exactly as it did before.)
+  if (typeof v === 'number' && v >= 0 && Number.isInteger(v)) {
+    lo = v >>> 0;
+    hi = Math.floor(v / 4294967296) >>> 0;
+  } else {
+    const x = BigInt.asUintN(64, BigInt(v));
+    lo = Number(x & 0xFFFFFFFFn);
+    hi = Number(x >> 32n);
+  }
+  b[o] = lo & 0xFF; b[o + 1] = (lo >>> 8) & 0xFF; b[o + 2] = (lo >>> 16) & 0xFF; b[o + 3] = (lo >>> 24) & 0xFF;
+  b[o + 4] = hi & 0xFF; b[o + 5] = (hi >>> 8) & 0xFF; b[o + 6] = (hi >>> 16) & 0xFF; b[o + 7] = (hi >>> 24) & 0xFF;
   return v;
 }
 
@@ -268,12 +299,21 @@ export function stPtr(p, v) {
 /** load a CPtr previously stored via stPtr. @param {CPtr} p @returns {CPtr|null} */
 export function ldPtr(p) {
   if (p.isBox) return p.v === undefined ? null : p.v;
-  const id = ldU64(p);
-  if (id === 0n) return null;
-  if (id >= __PTR_ID_BASE) {
-    const v = __ptrRegistry[Number(id - __PTR_ID_BASE)];
+  const b = p.buf, o = p.off;
+  if (o + 8 > b.length) throw new Error(`ldU64 OOB: buflen=${b.length} off=${o}`);
+  // Same two-halves trick as ldU64, but a stored pointer never needs a BigInt
+  // at all: __PTR_ID_BASE is 2^40, so a registry id is exactly "hi >= 0x100"
+  // and its index is recoverable in double arithmetic (the registry is nowhere
+  // near 2^53 entries). Only the rare integer-bit-pattern-as-pointer case
+  // (NetHack's `anything` union) falls back to building the BigInt key.
+  const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+  const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+  if (lo === 0 && hi === 0) return null;
+  if (hi >= 0x100) {
+    const v = __ptrRegistry[(hi - 0x100) * 4294967296 + lo];
     if (v !== undefined) return v;
   }
+  const id = hi === 0 ? BigInt(lo) : (BigInt(hi) << 32n) | BigInt(lo);
   let ip = __intPtrs.get(id);
   if (ip === undefined) { ip = { intBits: id, buf: undefined, off: 0 }; __intPtrs.set(id, ip); }
   return ip;
