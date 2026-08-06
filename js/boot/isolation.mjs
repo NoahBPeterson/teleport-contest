@@ -29,13 +29,15 @@
 // (unlike module.register, which spins up a worker), so it is legal under
 // `--permission` with no extra allowances.
 //
-// BROWSERS. There is no node:module there; the same trick is expressible as an
-// import map (map `/js/generated/` to a per-segment prefix served by a service
-// worker) or by hosting each segment in a fresh iframe realm. Until that exists,
-// enableSegmentIsolation() reports false and runSegment falls back to a shared
-// graph — correct for single-segment sessions, which is 40 of the 44 public
-// ones. Nothing in this file is imported eagerly by the browser: the node:module
-// specifier is computed, so a bundler will not try to resolve it.
+// BROWSERS. There is no node:module there, so enableSegmentIsolation() reports
+// false and this file does nothing. The browser gets its isolation a level up
+// instead: js/jsmain.js runs segments 2..N inside a module Worker
+// (js/boot/frame.mjs), which is a fresh realm with a fresh module map — same
+// guarantee, different mechanism. Segment 1 runs in the page's own realm, which
+// is pristine anyway. Nothing in this file is imported eagerly by the browser:
+// the node:module specifier is computed, so a bundler will not try to resolve
+// it, and js/boot/browser-env.mjs deliberately leaves process.versions.node
+// unset so the shimmed `process` cannot fool the check below.
 
 /** Query key stamped onto per-segment module URLs. */
 export const SEG_KEY = 'c2jsseg';

@@ -1,0 +1,168 @@
+// server.mjs — a local stand-in for the contest mirror (mazesofmenace.ai/play/<user>/).
+//
+// The mirror serves ONLY js/** and frozen/** out of the fork tree. Everything
+// else — sessions/, docs/, tools/, the old top-level data/ — is a 404 there. A
+// module graph that reaches outside those two directories loads fine on a
+// developer's disk and dies in the browser with
+//   "error loading dynamically imported module: .../data/nethackdir/index.mjs"
+// which is exactly how a 0/0 judge round happens.
+//
+// So this server enforces the mirror's shape and *logs every request*:
+//
+//   IN-SCOPE  /js/**, /frozen/**       — the only paths the real mirror answers
+//   HARNESS   /__sim/**               — the judge's own driver page + session
+//                                        JSON; on the real judge this comes
+//                                        from their side of the fence, never
+//                                        from our tree, so it is accounted
+//                                        separately and must never be reached
+//                                        from a module import
+//   BLOCKED   anything else            — 404, same as the mirror
+//
+// Usage: node tools/judge-sim/server.mjs [--port 8917] [--log requests.jsonl]
+
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '../..');
+
+const args = process.argv.slice(2);
+function flag(name, dflt) {
+    const i = args.indexOf(name);
+    return i >= 0 && args[i + 1] ? args[i + 1] : dflt;
+}
+const PORT = Number(flag('--port', '8917'));
+const LOG = flag('--log', '');
+const RESULT_FILE = flag('--result', '');
+
+// Exactly what the mirror publishes.
+const SERVED_ROOTS = ['js', 'frozen'];
+
+const MIME = {
+    '.js': 'text/javascript; charset=utf-8',
+    '.mjs': 'text/javascript; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.txt': 'text/plain; charset=utf-8',
+    '.map': 'application/json; charset=utf-8',
+};
+
+const requests = [];
+let logStream = null;
+if (LOG) logStream = fs.createWriteStream(path.resolve(ROOT, LOG), { flags: 'w' });
+
+function record(entry) {
+    requests.push(entry);
+    if (logStream) logStream.write(JSON.stringify(entry) + '\n');
+}
+
+function classify(pathname) {
+    // Chrome asks for this on its own for any top-level document; it is not part
+    // of anyone's module graph, and the real mirror 404s it just as harmlessly.
+    if (pathname === '/favicon.ico') return 'BROWSER-UA';
+    if (pathname.startsWith('/__sim/')) return 'HARNESS';
+    const seg = pathname.split('/').filter(Boolean)[0];
+    return SERVED_ROOTS.includes(seg) ? 'IN-SCOPE' : 'BLOCKED';
+}
+
+function send(res, status, body, type, extra = {}) {
+    res.writeHead(status, {
+        'content-type': type,
+        'content-length': Buffer.byteLength(body),
+        // No caching: every reload must re-fetch, so the request log is a true
+        // record of what the module graph pulled.
+        'cache-control': 'no-store',
+        ...extra,
+    });
+    res.end(body);
+}
+
+// /__sim/session/<name> — normalized session segments, computed here with the
+// judge's own frozen/session_loader.mjs so the browser sees byte-identical
+// replay input to what Node's ps_test_runner builds.
+async function serveSession(name) {
+    const { normalizeSession } = await import(new URL('../../frozen/session_loader.mjs', import.meta.url).href);
+    for (const dir of ['sessions', 'sessions-extra', 'sessions-landmine']) {
+        const p = path.join(ROOT, dir, name);
+        if (fs.existsSync(p)) {
+            const raw = JSON.parse(fs.readFileSync(p, 'utf8'));
+            const segments = normalizeSession(raw).segments.map(s => ({
+                seed: s.seed, datetime: s.datetime, nethackrc: s.nethackrc, moves: s.moves,
+            }));
+            return JSON.stringify({ name, segments });
+        }
+    }
+    return null;
+}
+
+const server = http.createServer(async (req, res) => {
+    const url = new URL(req.url, 'http://localhost');
+    const pathname = decodeURIComponent(url.pathname);
+    const kind = classify(pathname);
+
+    const finish = (status) => record({ t: Date.now(), method: req.method, path: pathname, kind, status });
+
+    if (kind === 'BLOCKED' || kind === 'BROWSER-UA') {
+        finish(404);
+        return send(res, 404, 'Not Found (mirror serves js/** and frozen/** only)\n', 'text/plain');
+    }
+
+    if (kind === 'HARNESS') {
+        // The page posts its finished result back here: headless Chrome's
+        // console/DOM capture is timing-dependent, an HTTP POST is not.
+        if (pathname === '/__sim/result' && req.method === 'POST') {
+            const chunks = [];
+            for await (const c of req) chunks.push(c);
+            const body = Buffer.concat(chunks).toString('utf8');
+            if (RESULT_FILE) fs.writeFileSync(path.resolve(ROOT, RESULT_FILE), body);
+            process.stderr.write('[judge-sim] result received (' + body.length + ' bytes)\n');
+            finish(200);
+            return send(res, 200, 'ok\n', 'text/plain');
+        }
+        if (pathname.startsWith('/__sim/session/')) {
+            const body = await serveSession(pathname.slice('/__sim/session/'.length));
+            if (!body) { finish(404); return send(res, 404, 'no such session\n', 'text/plain'); }
+            finish(200);
+            return send(res, 200, body, MIME['.json']);
+        }
+        const rel = pathname.slice('/__sim/'.length) || 'driver.html';
+        const file = path.join(HERE, rel);
+        if (!file.startsWith(HERE) || !fs.existsSync(file)) {
+            finish(404);
+            return send(res, 404, 'no such harness file\n', 'text/plain');
+        }
+        finish(200);
+        return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
+    }
+
+    // IN-SCOPE: plain static file out of js/ or frozen/, no directory escapes.
+    const file = path.join(ROOT, pathname);
+    const okRoot = SERVED_ROOTS.some(r => file.startsWith(path.join(ROOT, r) + path.sep));
+    if (!okRoot || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+        finish(404);
+        return send(res, 404, 'Not Found\n', 'text/plain');
+    }
+    finish(200);
+    return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
+});
+
+server.listen(PORT, '127.0.0.1', () => {
+    process.stderr.write(`[judge-sim] http://127.0.0.1:${PORT}/  (serving ${SERVED_ROOTS.map(r => '/' + r + '/**').join(' ')} + /__sim/**)\n`);
+});
+
+// Print a request summary on shutdown so a one-shot run leaves evidence behind.
+function summarize() {
+    const by = {};
+    for (const r of requests) by[r.kind] = (by[r.kind] || 0) + 1;
+    const blocked = requests.filter(r => r.kind === 'BLOCKED');
+    process.stderr.write(`[judge-sim] requests: ${requests.length} total ${JSON.stringify(by)}\n`);
+    if (blocked.length) {
+        process.stderr.write('[judge-sim] OUT-OF-SCOPE requests (would 404 on the mirror):\n');
+        for (const r of blocked) process.stderr.write(`    ${r.path}\n`);
+    }
+}
+process.on('SIGINT', () => { summarize(); process.exit(0); });
+process.on('SIGTERM', () => { summarize(); process.exit(0); });

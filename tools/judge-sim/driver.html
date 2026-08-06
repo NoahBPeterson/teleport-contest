@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>judge-sim</title>
+<pre id="out">starting…</pre>
+<script type="module">
+// driver.html — stands in for the judge's browser harness.
+//
+// It does exactly what frozen/ps_test_runner.mjs does, minus the comparator:
+// import js/jsmain.js, build ONE Web-Storage-shaped handle for the session,
+// call runSegment(input) once per segment, and collect the outputs. Instead of
+// scoring here (the comparator lives in a Node-only file) it SHA-256s the raw
+// per-segment output and posts the digests back. If the digests equal the ones
+// Node produces for the same session, the browser's answers are byte-identical
+// to Node's, so the browser's score is Node's score.
+
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log('[driver] ' + s); };
+
+const params = new URLSearchParams(location.search);
+const sessionName = params.get('session') || 'seed8000-tourist-starter.session.json';
+
+async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Same digest recipe as tools/judge-sim/node-ref.mjs — keep the two in step.
+async function digestSegment(game) {
+    const screens = game.getScreens?.() || [];
+    const cursors = game.getCursors?.() || [];
+    const rng = game.getRngLog?.() || [];
+    const anim = game.getAnimationFramesByStep?.() || [];
+    return {
+        screens: screens.length,
+        cursors: cursors.length,
+        rng: rng.length,
+        animSteps: anim.length,
+        screensSha: await sha256(JSON.stringify(screens)),
+        cursorsSha: await sha256(JSON.stringify(cursors)),
+        rngSha: await sha256(JSON.stringify(rng)),
+        rngHead: rng.slice(0, 3),
+        rngTail: rng.slice(-3),
+    };
+}
+
+const report = { session: sessionName, ua: navigator.userAgent, segments: [], error: null };
+
+try {
+    const t0 = performance.now();
+    const { runSegment } = await import('/js/jsmain.js');
+    report.importMs = +(performance.now() - t0).toFixed(1);
+    log('imported /js/jsmain.js in ' + report.importMs + ' ms');
+
+    const sess = await (await fetch('/__sim/session/' + sessionName)).json();
+    log('session ' + sess.name + ': ' + sess.segments.length + ' segment(s)');
+
+    // One shared Web-Storage-shaped Map per session — identical to the judge's.
+    const storage = new Map();
+    const storageHandle = {
+        getItem(k) { return storage.has(k) ? storage.get(k) : null; },
+        setItem(k, v) { storage.set(k, String(v)); },
+        removeItem(k) { storage.delete(k); },
+        get length() { return storage.size; },
+        key(i) { let n = 0; for (const k of storage.keys()) { if (n === i) return k; n++; } return null; },
+    };
+
+    for (let i = 0; i < sess.segments.length; i++) {
+        const seg = sess.segments[i];
+        const t = performance.now();
+        const game = await runSegment({
+            seed: seg.seed, datetime: seg.datetime, nethackrc: seg.nethackrc,
+            moves: seg.moves, storage: storageHandle,
+        });
+        const d = await digestSegment(game);
+        d.ms = +(performance.now() - t).toFixed(1);
+        report.segments.push(d);
+        log(`segment ${i + 1}/${sess.segments.length}: screens=${d.screens} rng=${d.rng} (${d.ms} ms)`);
+    }
+    report.ok = true;
+} catch (e) {
+    report.ok = false;
+    report.error = String((e && e.stack) || e);
+    log('ERROR ' + report.error);
+}
+
+document.title = report.ok ? 'DONE' : 'FAILED';
+await fetch('/__sim/result', { method: 'POST', body: JSON.stringify(report, null, 2) });
+log('posted result');
+</script>
