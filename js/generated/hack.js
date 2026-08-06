@@ -457,7 +457,7 @@ function could_move_onto_boulder(sx, sy) {
         return schar(((!cptr.ldI32(cptr.add(u, 4)) || !cptr.ldI32(cptr.add(u, 8)) ? 1 : 0) || !(((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), sy, 36), 4))) < NHC.POOL) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), cptr.ldI16(cptr.add(u, 2)), 36), 4))) < NHC.POOL) ? 1 : 0) ? 1 : 0));
     if ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1))
         return 1;
-    return schar((!cptr.ldPtr(cptr.add(gi, 8)) || inv_weight() <= -850 ? 1 : 0));
+    return schar((!cptr.ldPtr(cptr.add(gi, 8)) || inv_weight() <= ((Math.imul(NHC.WT_SQUEEZABLE_INV, -1))) ? 1 : 0));
 }
 
 /** C ref: hack.c:166 — @param {CInt} sx @param {CInt} sy @param {CInt} rx @param {CInt} ry @param {CPtr} otmp @param {CInt} costly */
@@ -575,7 +575,7 @@ function moverock_core(sx, sy) {
     let costly;
     let firstboulder = 1;
     while ((otmp = sobj_at(NHC.BOULDER, sx, sy)) !== null) {
-        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) && (((((glyph_at(sx, sy)) >= NHC.GLYPH_BODY_OFF) && ((glyph_at(sx, sy)) < 2682) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph_at(sx, sy)) < 8856) ? 1 : 0) ? 1 : 0) ? NHC.CORPSE : ((((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph_at(sx, sy)) < 7609) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph_at(sx, sy)) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph_at(sx, sy)) < 7992) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph_at(sx, sy)) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? NHC.STATUE : ((((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_OFF && (glyph_at(sx, sy)) < 3465 ? 1 : 0) || ((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph_at(sx, sy)) < 8009 ? 1 : 0) ? 1 : 0) ? (((glyph_at(sx, sy)) - (((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph_at(sx, sy)) < 8009 ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : ((((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_OFF || ((glyph_at(sx, sy)) >= 3465 && (glyph_at(sx, sy)) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph_at(sx, sy)) > 8009 && (glyph_at(sx, sy)) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph_at(sx, sy)) - (((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph_at(sx, sy)) > 8009 && (glyph_at(sx, sy)) < 8473 ? 1 : 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) != NHC.BOULDER ? 1 : 0) {
+        if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) && (((((glyph_at(sx, sy)) >= NHC.GLYPH_BODY_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) ? NHC.CORPSE : ((((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) || ((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph_at(sx, sy)) < (((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? NHC.STATUE : ((((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_OFF && (glyph_at(sx, sy)) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph_at(sx, sy)) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? (((glyph_at(sx, sy)) - (((glyph_at(sx, sy)) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph_at(sx, sy)) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : ((((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_OFF || ((glyph_at(sx, sy)) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph_at(sx, sy)) < (((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0) ? 1 : 0) || ((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph_at(sx, sy)) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph_at(sx, sy)) < (((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph_at(sx, sy)) - (((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph_at(sx, sy)) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph_at(sx, sy)) < (((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) != NHC.BOULDER ? 1 : 0) {
             pline(__sl18);
             map_object(otmp, 1);
             nomul(0);
@@ -1013,7 +1013,7 @@ export function test_move(ux, uy, dx, dy, mode) {
                 } else if (cptr.ld1s(cptr.add(flags, 26))) {
                     let buf = new Uint8Array(256);
                     let glyph = back_to_glyph(x, y);
-                    let sym = ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) ? glyph_to_cmap(glyph) : -1;
+                    let sym = ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) ? glyph_to_cmap(glyph) : -1;
                     if (sym == NHC.S_stone)
                         void cptr.strcpy(cptr.decay(buf), __sl94);
                     else if (sym >= 0)
@@ -1202,7 +1202,7 @@ function findtravelpath(mode) {
                         let dir;
                         let x = cptr.ldI16(cptr.add(cptr.decay(travelstepx[set]), i, 2));
                         let y = cptr.ldI16(cptr.add(cptr.decay(travelstepy[set]), i, 2));
-                        let dirmax = ((cptr.ldI32(cptr.add(u, 1808))) == NHC.PM_GRID_BUG) ? 4 : 8;
+                        let dirmax = ((cptr.ldI32(cptr.add(u, 1808))) == NHC.PM_GRID_BUG) ? 4 : (((NHC.N_DIRS_Z - 2) | 0));
                         let alreadyrepeated = 0;
                         for (dir = 0; dir < dirmax; ++dir) {
                             let nx = i16(((x + cptr.ld1s(cptr.add(cptr.decay(xdir), cptr.ld1s(cptr.add(cptr.decay(dirs_ord), dir, 1)), 1))) | 0));
@@ -1247,7 +1247,7 @@ function findtravelpath(mode) {
                         }
                     }
                     if (cptr.ld1s(cptr.add(iflags, 80))) {
-                        tmp_at(-2, 7221);
+                        tmp_at(-2, (i16((((1) + NHC.GLYPH_WARNING_OFF) | 0))));
                         for (i = 0; i < nn; ++i) {
                             tmp_at(cptr.ldI16(cptr.add(cptr.decay(travelstepx[(1 - set) | 0]), i, 2)), cptr.ldI16(cptr.add(cptr.decay(travelstepy[(1 - set) | 0]), i, 2)));
                         }
@@ -1303,7 +1303,7 @@ function findtravelpath(mode) {
                         break __lbl_found;
                     }
                     if (cptr.ld1s(cptr.add(iflags, 80))) {
-                        tmp_at(-2, 7222);
+                        tmp_at(-2, (i16((((2) + NHC.GLYPH_WARNING_OFF) | 0))));
                         tmp_at(i16(px), i16(py));
                         (cptr.ldPtr(cptr.add(windowprocs, 320)))();
                         if (cptr.ldI32(cptr.add(flags, 172)) == NHC.RUN_CRAWL) {
@@ -1342,7 +1342,7 @@ export function is_valid_travelpt(x, y) {
     let glyph = glyph_at(x, y);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
         return 1;
-    if (((isok(x, y) && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) ? 1 : 0) && NHC.S_stone == glyph_to_cmap(glyph) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 5)) ? 1 : 0)
+    if (((isok(x, y) && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) ? 1 : 0) && NHC.S_stone == glyph_to_cmap(glyph) ? 1 : 0) && !cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 5)) ? 1 : 0)
         return 0;
     cptr.stI16(cptr.add(u, 16), x);
     cptr.stI16(cptr.add(u, 18), y);
@@ -1635,7 +1635,7 @@ function swim_move_danger(x, y) {
 
 /** C ref: hack.c:1925 — @param {CPtr} mtmp @param {CInt} glyph @returns {CInt} */
 function domove_bump_mon(mtmp, glyph) {
-    if ((cptr.ld1s(cptr.add(svc, 75)) && !cptr.ld1s(cptr.add(svc, 72)) ? 1 : 0) && (((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || ((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) || ((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < 7226 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if ((cptr.ld1s(cptr.add(svc, 75)) && !cptr.ld1s(cptr.add(svc, 72)) ? 1 : 0) && (((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || ((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) || ((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < (((NHC.GLYPH_WARNING_OFF + 6) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         if (((cptr.ld1u(cptr.add((mtmp), 64)) & 7) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24)) ? 1 : 0) ? 1 : 0) && !sensemon(mtmp) ? 1 : 0)
             stumble_onto_mimic(mtmp);
         else if ((cptr.ldI32(cptr.add(mtmp, 168)) & 1) | 0 && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
@@ -1824,9 +1824,9 @@ function domove_fight_empty(x, y) {
             }
             if (!((cptr.ldI32(cptr.add(u, 1852)) & 1))) {
                 boulder = sobj_at(NHC.BOULDER, x, y);
-                if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) && ((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < 383 ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < 1149 ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < 3065 ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < 1916 ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+                if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) && ((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < (((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < (((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < (((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < (((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < (((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < (((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                     boulder = sobj_at(NHC.STATUE, x, y);
-                if ((((cptr.ld1s(cptr.add(svc, 74)) && uwep.v ? 1 : 0) && dig_typ(uwep.v, x, y) ? 1 : 0) && !((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) && !((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < 383 ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < 766 ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < 1149 ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < 1532 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < 3065 ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < 3448 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < 1916 ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < 2299 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+                if ((((cptr.ld1s(cptr.add(svc, 74)) && uwep.v ? 1 : 0) && dig_typ(uwep.v, x, y) ? 1 : 0) && !((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) && !((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < (((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < (((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < (((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < (((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < (((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < (((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < (((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
                     void use_pick_axe2(uwep.v);
                     return 1;
                 }
@@ -2005,7 +2005,7 @@ function avoid_trap_andor_region(x, y) {
         }
     }
     if ((((((((((cptr.ldI32(cptr.add(flags, 80)) & 2048) >>> 0) != 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STUNNED, 24), 16)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.CONFUSION, 24), 16)) ? 1 : 0) && (!cptr.ld1s(cptr.add(svc, 75)) || cptr.ldI32(cptr.add(svc, 8)) ? 1 : 0) ? 1 : 0) && (trap = t_at(x, y)) !== null ? 1 : 0) && (cptr.ldI32(cptr.add(trap, 24)) & 1) | 0 ? 1 : 0) && test_move(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), i16(cptr.ldI32(cptr.add(u, 4))), i16(cptr.ldI32(cptr.add(u, 8))), 1) ? 1 : 0) && (immune_to_trap(cptr.add(gy, 8), (cptr.ldI32(cptr.add(trap, 20)) & 31)) != NHC.TRAP_CLEARLY_IMMUNE || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-        let traptype = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl35, 2565, __sl206), rnd(25)) : rnd(25)) : (cptr.ldI32(cptr.add(trap, 20)) & 31) | 0);
+        let traptype = ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl35, 2565, __sl206), rnd(((NHC.TRAPNUM - 1) | 0))) : rnd(((NHC.TRAPNUM - 1) | 0))) : (cptr.ldI32(cptr.add(trap, 20)) & 31) | 0);
         let into = into_vs_onto(traptype);
         nh_snprintf(__sl206, 2570, cptr.decay(qbuf), 128n, __sl210, u_locomotion(__sl20), into ? __sl211 : __sl212, cptr.ldPtr(cptr.add(cptr.add(defsyms, ((((NHC.S_arrow_trap + (traptype)) | 0) - 1) | 0), 24), 8)));
         if (!paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 1) >>> 0) != 0)), cptr.decay(qbuf))) {
@@ -2230,7 +2230,7 @@ function domove_core() {
     }
     if (mtmp) {
         if (displaceu.v) {
-            let noticed_it = schar((((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || ((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) || ((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < 7226 ? 1 : 0) ? 1 : 0));
+            let noticed_it = schar((((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || ((glyph) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) || ((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < (((NHC.GLYPH_WARNING_OFF + 6) | 0)) ? 1 : 0) ? 1 : 0));
             cptr.stPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8), null);
             place_monster(mtmp, cptr.ldI16(cptr.add(u, 20)), cptr.ldI16(cptr.add(u, 22)));
             newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -2258,7 +2258,7 @@ function domove_core() {
             if ((((cptr.ld1s(cptr.add(tmpr, 4))) == NHC.DOOR) || ((cptr.ld1s(cptr.add(tmpr, 4))) < NHC.POOL) ? 1 : 0) || ((cptr.ld1s(cptr.add(tmpr, 4))) >= NHC.STAIRS && (cptr.ld1s(cptr.add(tmpr, 4))) <= NHC.ALTAR ? 1 : 0) ? 1 : 0)
                 nomul(0);
     }
-    if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8)) ? 1 : 0) && !(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.FLYING, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 8)) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 8)) ? 1 : 0) ? 1 : 0) && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 60)) >= 400 ? 1 : 0)
+    if (((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8)) ? 1 : 0) && !(((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.FLYING, 24)) ? 1 : 0) || (cptr.ldPtr(cptr.add(u, 2424)) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(u, 2424)), 8))), 72)) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 8)) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 8)) ? 1 : 0) ? 1 : 0) && cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 60)) >= (((NHC.WT_ELF / 2) | 0) >>> 0) ? 1 : 0)
         disturb_buried_zombies(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     if (((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 128n) != 0n) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 28)) == NHC.S_EEL ? 1 : 0) || cptr.ldI32(cptr.add(u, 4)) ? 1 : 0) || cptr.ldI32(cptr.add(u, 8)) ? 1 : 0)
         void hideunder(cptr.add(gy, 8));

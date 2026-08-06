@@ -518,7 +518,7 @@ export function mkobj(oclass, artif) {
             continue;
         oclass = cptr.ld1s(cptr.add(iprobs, 4));
     }
-    if (oclass == -10) {
+    if (oclass == (((0 - NHC.SPBOOK_CLASS) | 0))) {
         i = rnd_class(cptr.ldI32(cptr.add(cptr.add(svb, 16), NHC.SPBOOK_CLASS, 4)), NHC.SPE_BLANK_PAPER);
         oclass = NHC.SPBOOK_CLASS;
     } else {
@@ -619,7 +619,7 @@ export function rndmonnum_adj(minadj, maxadj) {
         return (cptr.ldI32(cptr.add((ptr), 24)));
     excludeflags = u16((4608 | (In_hell(cptr.add(u, 24)) ? 2048 : 1024)));
     do {
-        i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 409, __sl5), rn2(330)) : rn2(330)) + NHC.LOW_PM) | 0);
+        i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 409, __sl5), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
         ptr = cptr.add(mons, i, 96);
     } while ((cptr.ldU16(cptr.add(ptr, 34)) & excludeflags) != 0);
     return i;
@@ -1195,7 +1195,7 @@ function mksobj_init(obj, artif) {
         if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.STATUE) {
             cptr.stI32(cptr.add(otmp, 168), rndmonnum());
             if (!(cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 67)) < 1) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1155, __sl41), rn2((((level_difficulty() / 2) | 0) + 10) | 0)) : rn2((((level_difficulty() / 2) | 0) + 10) | 0)) > 10 ? 1 : 0)
-                void add_to_container(otmp, mkobj(-10, 0));
+                void add_to_container(otmp, mkobj((((0 - NHC.SPBOOK_CLASS) | 0)), 0));
         }
         break;
         case NHC.COIN_CLASS:
@@ -1873,7 +1873,7 @@ export function mk_tt_object(objtype, x, y) {
     initialize_it = schar((objtype != NHC.STATUE));
     otmp = mksobj_at(objtype, x, y, initialize_it, 0);
     if (!tt_oname(otmp)) {
-        let pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2241, __sl73), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
+        let pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2241, __sl73), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
         set_corpsenm(otmp, pm);
     }
     return otmp;

@@ -162,7 +162,7 @@ function good_rm_wall_doorpos(x, y, dir, room) {
 function finddpos_shift(x, y, dir, aroom) {
     let dx;
     let dy;
-    dir = ((((dir) + 4) | 0) % 8);
+    dir = ((((dir) + 4) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
     dx = i16(cptr.ld1s(cptr.add(cptr.decay(xdir), dir, 1)));
     dy = i16(cptr.ld1s(cptr.add(cptr.decay(ydir), dir, 1)));
     if (good_rm_wall_doorpos(cptr.ldI16(x), cptr.ldI16(y), dir, aroom))
@@ -875,9 +875,9 @@ cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 12), NHC.GEM_CLAS
 cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 16), NHC.SCROLL_CLASS);
 cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 20), NHC.POTION_CLASS);
 cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 24), NHC.RING_CLASS);
-cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 28), -10);
-cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 32), -10);
-cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 36), -10); /** C ref: mklev.c:1087 — int[10] (function-static) */
+cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 28), (((0 - NHC.SPBOOK_CLASS) | 0)));
+cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 32), (((0 - NHC.SPBOOK_CLASS) | 0)));
+cptr.stI32(cptr.add(__static_fill_ordinary_room_extra_classes, 36), (((0 - NHC.SPBOOK_CLASS) | 0))); /** C ref: mklev.c:1087 — int[10] (function-static) */
 
 /** C ref: mklev.c:939 — @param {CPtr} croom @param {CInt} bonus_items */
 function fill_ordinary_room(croom, bonus_items) {
@@ -956,7 +956,7 @@ function fill_ordinary_room(croom, bonus_items) {
                 if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1086, __sl21), rn2(3)) : rn2(3))) {
                     let oclass = cptr.ldI32(cptr.add(__static_fill_ordinary_room_extra_classes, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1099, __sl21), rn2(10)) : rn2(10)), 4));
                     otmp = mkobj(oclass, 0);
-                    if (oclass == -10) {
+                    if (oclass == (((0 - NHC.SPBOOK_CLASS) | 0))) {
                         let pass;
                         let maxpass = (depth(cptr.add(u, 24)) > 2) ? 2 : 3;
                         for (pass = 1; pass <= maxpass; ++pass) {
@@ -1543,7 +1543,7 @@ function mktrap_victim(ttmp) {
         break;
     }
     if (victim_mnum == NHC.PM_HUMAN && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1930, __sl45), rn2(25)) : rn2(25)) ? 1 : 0)
-        victim_mnum = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1931, __sl45), rn2(12)) : rn2(12)) + NHC.PM_ARCHEOLOGIST) | 0);
+        victim_mnum = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1931, __sl45), rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0))) : rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
     otmp = mkcorpstat(NHC.CORPSE, null, cptr.add(mons, victim_mnum, 96), x, y, 8);
     cptr.stI64(cptr.add(otmp, 184), cptr.ldI64(cptr.add(otmp, 184)) - 51n);
 }
@@ -1551,7 +1551,7 @@ function mktrap_victim(ttmp) {
 /** C ref: mklev.c:1938 — @param {CUInt} mktrapflags @returns {CInt} */
 function traptype_rnd(mktrapflags) {
     let lvl = level_difficulty();
-    let kind = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1941, __sl47), rnd(25)) : rnd(25));
+    let kind = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1941, __sl47), rnd(((NHC.TRAPNUM - 1) | 0))) : rnd(((NHC.TRAPNUM - 1) | 0)));
     switch (kind) {
         case NHC.TRAPPED_DOOR:
         case NHC.TRAPPED_CHEST:

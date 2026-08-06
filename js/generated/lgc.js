@@ -379,7 +379,7 @@ function traversestrongtable(g, h) {
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
-    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & 8) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_MODE, cptr.ldPtr(cptr.add(cptr.add((g), 280), NHC.TM_MODE, 8)))));
+    let mode = (cptr.eq((cptr.ldPtr(cptr.add(h, 40))), (null)) ? null : (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(h, 40))), 10)) & (((1 << (NHC.TM_MODE)) >>> 0))) >>> 0) ? null : luaT_gettm(cptr.ldPtr(cptr.add(h, 40)), NHC.TM_MODE, cptr.ldPtr(cptr.add(cptr.add((g), 280), NHC.TM_MODE, 8)))));
     let smode;
     {
         if (cptr.ldPtr(cptr.add(h, 40))) {
@@ -858,7 +858,7 @@ function correctpointers(g, o) {
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtr(cptr.add(L, 24)));
-    if ((((cptr.ld1u(cptr.add((o), 9))) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & 4) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtr(cptr.add(cptr.add((g), 280), NHC.TM_GC, 8))))), (null)) ? 1 : 0) || (cptr.ld1u(cptr.add(g, 106)) & 4) ? 1 : 0)
+    if ((((cptr.ld1u(cptr.add((o), 9))) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1u(cptr.add((mt), 10)) & (((1 << (NHC.TM_GC)) >>> 0))) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtr(cptr.add(cptr.add((g), 280), NHC.TM_GC, 8))))), (null)) ? 1 : 0) || (cptr.ld1u(cptr.add(g, 106)) & 4) ? 1 : 0)
         return;
     else {
         let p;

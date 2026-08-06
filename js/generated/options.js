@@ -2109,7 +2109,7 @@ cptr.st1(cptr.add(allopt_init, 4987), 0);
 cptr.stPtr(cptr.add(allopt_init, 4992), __sl102);
 cptr.stI32(cptr.add(allopt_init, 5000), NHC.OptS_Advanced);
 cptr.stI32(cptr.add(allopt_init, 5004), 0);
-cptr.stI32(cptr.add(allopt_init, 5008), 50);
+cptr.stI32(cptr.add(allopt_init, 5008), ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0));
 cptr.stI32(cptr.add(allopt_init, 5012), NHC.opt_dungeon);
 cptr.stI32(cptr.add(allopt_init, 5016), NHC.set_in_config);
 cptr.stI32(cptr.add(allopt_init, 5020), NHC.CompOpt);
@@ -2131,7 +2131,7 @@ cptr.st1(cptr.add(allopt_init, 5091), 0);
 cptr.stPtr(cptr.add(allopt_init, 5096), __sl104);
 cptr.stI32(cptr.add(allopt_init, 5104), NHC.OptS_Advanced);
 cptr.stI32(cptr.add(allopt_init, 5108), 0);
-cptr.stI32(cptr.add(allopt_init, 5112), 32);
+cptr.stI32(cptr.add(allopt_init, 5112), ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0));
 cptr.stI32(cptr.add(allopt_init, 5116), NHC.opt_effects);
 cptr.stI32(cptr.add(allopt_init, 5120), NHC.set_in_config);
 cptr.stI32(cptr.add(allopt_init, 5124), NHC.CompOpt);
@@ -5255,7 +5255,7 @@ cptr.st1(cptr.add(allopt_init, 19859), 0);
 cptr.stPtr(cptr.add(allopt_init, 19864), __sl384);
 cptr.stI32(cptr.add(allopt_init, 19872), NHC.OptS_Advanced);
 cptr.stI32(cptr.add(allopt_init, 19876), 0);
-cptr.stI32(cptr.add(allopt_init, 19880), 26);
+cptr.stI32(cptr.add(allopt_init, 19880), ((((NHC.TRAPNUM - 1) | 0) + 1) | 0));
 cptr.stI32(cptr.add(allopt_init, 19884), NHC.opt_traps);
 cptr.stI32(cptr.add(allopt_init, 19888), NHC.set_in_config);
 cptr.stI32(cptr.add(allopt_init, 19892), NHC.CompOpt);
@@ -6381,7 +6381,7 @@ function getoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
     if (ophase == NHC.num_opt_phases) {
         let phase;
-        for (phase = 6; phase >= 0; --phase)
+        for (phase = ((NHC.num_opt_phases - 1) | 0); phase >= 0; --phase)
             if (cptr.ldPtr(cptr.add(cptr.decay(roleoptvals[roleoptindx]), phase, 8))) {
                 ophase = phase;
                 break;
@@ -6685,7 +6685,7 @@ function optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val ? 1 : 0) {
         cptr.st1(cptr.add(opts, 0), 0);
-        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + 105) | 0, 1)));
+        void cptr.sprintf(opts, __sl572, cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) ? cptr.ld1u(cptr.add(cptr.add(go, 88), 192, 1)) : cptr.ld1u(cptr.add(cptr.add(gs, 680), (cptr.ld1s(cptr.add(cptr.add(objects, NHC.BOULDER, 120), 70)) + ((((0) + NHC.MAXPCHARS) | 0))) | 0, 1)));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -10130,11 +10130,11 @@ function handler_whatis_filter() {
     tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
-    cptr.st1(any, 1);
+    cptr.st1(any, (schar(((NHC.GFILTER_NONE + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, 0, clr, __sl772, (gfilt == NHC.GFILTER_NONE) ? 1 : 0);
-    cptr.st1(any, 2);
+    cptr.st1(any, (schar(((NHC.GFILTER_VIEW + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, 0, clr, __sl773, (gfilt == NHC.GFILTER_VIEW) ? 1 : 0);
-    cptr.st1(any, 3);
+    cptr.st1(any, (schar(((NHC.GFILTER_AREA + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, 0, clr, __sl774, (gfilt == NHC.GFILTER_AREA) ? 1 : 0);
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl775);
     if ((pick_cnt = select_menu(tmpwin, 1, window_pick)) > 0) {
@@ -10813,7 +10813,7 @@ export function initoptions_finish() {
         cptr.st1(cptr.add(iflags, 186), 0), cptr.st1(cptr.add(iflags, 187), 1);
     if (glyphid_cache_status())
         free_glyphid_cache();
-    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), 3);
+    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), (NHC.do_custom_symbols | NHC.do_custom_colors));
     cptr.st1(cptr.add(go, 524), 0);
     return;
 }
@@ -10879,7 +10879,7 @@ function change_inv_order(op) {
     for (sp = cptr.add(flags, 99); cptr.ld1s(sp); sp = cptr.add(sp, 1))
         if (!cptr.strchr(cptr.decay(buf), cptr.ld1s(sp)))
             void strkitten(cptr.add(cptr.decay(buf), num++, 1), cptr.ld1s(sp));
-    cptr.st1(cptr.add(cptr.decay(buf), 17, 1), 0);
+    cptr.st1(cptr.add(cptr.decay(buf), ((NHC.MAXOCLASSES - 1) | 0), 1), 0);
     void cptr.strcpy(cptr.add(flags, 99), cptr.decay(buf));
     return retval;
 }
@@ -11262,7 +11262,7 @@ function parse_role_opt(optidx, negated, fullname, opts, opp) {
 function get_cnf_role_opt(optidx) {
     let phase;
     let op = null;
-    for (phase = 6; phase >= 0 && !op ? 1 : 0; --phase) {
+    for (phase = ((NHC.num_opt_phases - 1) | 0); phase >= 0 && !op ? 1 : 0; --phase) {
         if ((phase == NHC.cmdline_opt || phase == NHC.environ_opt ? 1 : 0) || phase == NHC.builtin_opt ? 1 : 0)
             continue;
         op = getoptstr(optidx, phase);

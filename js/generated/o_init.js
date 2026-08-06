@@ -111,8 +111,8 @@ function setgemprobs(dlev) {
         (cptr.ldPtr(cptr.add(windowprocs, 216)))();
     }
     for (j = first; j <= NHC.LAST_REAL_GEM; j++)
-        cptr.stI16(cptr.add(cptr.add(objects, j, 120), 74), i16(((((((171 + j) | 0) - first) | 0) / ((461 - first) | 0)) | 0)));
-    for (j = cptr.ldI32(cptr.add(cptr.add(svb, 16), NHC.GEM_CLASS, 4)); j < cptr.ldI32(cptr.add(cptr.add(svb, 16), 14, 4)); j++)
+        cptr.stI16(cptr.add(cptr.add(objects, j, 120), 74), i16(((((((171 + j) | 0) - first) | 0) / ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0)));
+    for (j = cptr.ldI32(cptr.add(cptr.add(svb, 16), NHC.GEM_CLASS, 4)); j < cptr.ldI32(cptr.add(cptr.add(svb, 16), ((NHC.GEM_CLASS + 1) | 0), 4)); j++)
         sum = (sum + cptr.ldI16(cptr.add(cptr.add(objects, j, 120), 74))) | 0;
     cptr.stI16(cptr.add(cptr.add(go, 484), NHC.GEM_CLASS, 2), i16(sum));
 }
@@ -206,8 +206,8 @@ export function init_objects() {
         first = last;
         prevoclass = oclass;
     }
-    cptr.stI32(cptr.add(cptr.add(svb, 16), NHC.MAXOCLASSES, 4), cptr.stI32(cptr.add(cptr.add(svb, 16), 19, 4), NHC.NUM_OBJECTS));
-    for (last = 17; last >= 0; --last)
+    cptr.stI32(cptr.add(cptr.add(svb, 16), NHC.MAXOCLASSES, 4), cptr.stI32(cptr.add(cptr.add(svb, 16), ((NHC.MAXOCLASSES + 1) | 0), 4), NHC.NUM_OBJECTS));
+    for (last = ((NHC.MAXOCLASSES - 1) | 0); last >= 0; --last)
         if (!cptr.ldI32(cptr.add(cptr.add(svb, 16), last, 4)))
             cptr.stI32(cptr.add(cptr.add(svb, 16), last, 4), cptr.ldI32(cptr.add(cptr.add(svb, 16), (last + 1) | 0, 4)));
     for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
@@ -263,7 +263,7 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
         break;
         case NHC.POTION_CLASS:
         cptr.stI32(lo_p, cptr.ldI32(cptr.add(cptr.add(svb, 16), NHC.POTION_CLASS, 4)));
-        cptr.stI32(hi_p, 321);
+        cptr.stI32(hi_p, ((NHC.POT_WATER - 1) | 0));
         break;
         case NHC.AMULET_CLASS:
         case NHC.SCROLL_CLASS:
@@ -332,7 +332,7 @@ export function savenames(nhfp) {
     let i;
     let len = cptr.box(0);
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
-        for (i = 0; i < 20; ++i) {
+        for (i = 0; i < (((NHC.MAXOCLASSES + 2) | 0)); ++i) {
             sfo_int(nhfp, cptr.add(cptr.add(svb, 16), i, 4), __sl16);
         }
         for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
@@ -360,7 +360,7 @@ export function savenames(nhfp) {
 export function restnames(nhfp) {
     let i;
     let len = cptr.box(0);
-    for (i = 0; i < 20; ++i) {
+    for (i = 0; i < (((NHC.MAXOCLASSES + 2) | 0)); ++i) {
         sfi_int(nhfp, cptr.add(cptr.add(svb, 16), i, 4), __sl16);
         ;
     }

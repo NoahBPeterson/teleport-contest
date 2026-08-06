@@ -2430,7 +2430,7 @@ function show_achievements(final) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(cptr.decay(buf), __sl589, rank_of(rank_to_xlev((absidx - 22) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
+            void cptr.sprintf(cptr.decay(buf), __sl589, rank_of(rank_to_xlev((absidx - (((NHC.ACH_RNK1 - 1) | 0))) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
             enlght_line(cptr.decay((You_)), final ? (__sl0) : cptr.decay((have)), cptr.decay(((buf))), (__sl0));
             break;
             default:
@@ -2467,7 +2467,7 @@ export function record_achievement(achidx) {
     if (cptr.ldI32(program_state))
         return;
     if (absidx >= NHC.ACH_RNK1 && absidx <= NHC.ACH_RNK8 ? 1 : 0) {
-        livelog_printf(cptr.ldI64(cptr.add(achieve_msg, absidx, 16)), __sl592, rank_of(rank_to_xlev((absidx - 22) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32(cptr.add(u, 48)));
+        livelog_printf(cptr.ldI64(cptr.add(achieve_msg, absidx, 16)), __sl592, rank_of(rank_to_xlev((absidx - (((NHC.ACH_RNK1 - 1) | 0))) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32(cptr.add(u, 48)));
     } else if (achidx == NHC.ACH_SOKO_PRIZE || achidx == NHC.ACH_MINE_PRIZE ? 1 : 0) {
         let otyp = i16(((achidx == NHC.ACH_SOKO_PRIZE) ? cptr.ldI16(cptr.add(svc, 686)) : cptr.ldI16(cptr.add(svc, 684))));
         livelog_printf(cptr.ldI64(cptr.add(achieve_msg, achidx, 16)), __sl159, cptr.ldPtr(cptr.add(cptr.add(achieve_msg, achidx, 16), 8)), (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))));
@@ -2631,9 +2631,9 @@ function vanqsort_cmp(vptr1, vptr2) {
         mcls2 = cptr.ld1s(cptr.add(cptr.add(mons, indx2, 96), 28));
         if (mcls1 > NHC.S_ZOMBIE && mcls2 > NHC.S_ZOMBIE ? 1 : 0) {
             if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls1)) !== null)
-                mcls1 = schar(((53 + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
+                mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
             if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls2)) !== null)
-                mcls2 = schar(((53 + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
+                mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
         }
         res = (mcls1 - mcls2) | 0;
         if (res == 0) {

@@ -2591,7 +2591,7 @@ function take_off() {
 function better_not_take_that_off(otmp) {
     let corpse = carrying_stoning_corpse();
     let buf = new Uint8Array(256);
-    if (corpse && !u_safe_from_fatal_corpse(corpse, 6) ? 1 : 0) {
+    if (corpse && !u_safe_from_fatal_corpse(corpse, (NHC.st_corpse | NHC.st_petrifies)) ? 1 : 0) {
         nh_snprintf(__sl193, 3006, cptr.decay(buf), 256n, __sl194, gloves_simple_name(otmp), obj_pmname(corpse));
         return schar((paranoid_ynq(1, cptr.decay(buf), 0) != 121));
     }

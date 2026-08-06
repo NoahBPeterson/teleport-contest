@@ -527,7 +527,7 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
         switch (__pc) {
         case 0: {
         which = cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 69));
-        altwhich = ((cptr.ldI16(cptr.add((obj), 32)) == NHC.ALCHEMY_SMOCK) ? ((13 - cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 69))) | 0) : 0);
+        altwhich = ((cptr.ldI16(cptr.add((obj), 32)) == NHC.ALCHEMY_SMOCK) ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) - cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((obj), 32)), 120), 69))) | 0) : 0);
         unseen = !canseemon(mon);
         if (!which && !altwhich ? 1 : 0) { __pc = 4; continue; }
         __pc = 3; continue;
@@ -604,7 +604,7 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
                         continue;
                     if (cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 69)) == which)
                         break;
-                    if (((cptr.ldI16(cptr.add((otmp), 32)) == NHC.ALCHEMY_SMOCK) ? ((13 - cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 69))) | 0) : 0) == which)
+                    if (((cptr.ldI16(cptr.add((otmp), 32)) == NHC.ALCHEMY_SMOCK) ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) - cptr.ld1u(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 69))) | 0) : 0) == which)
                         break;
                 }
                 if (!otmp)

@@ -213,7 +213,7 @@ function m_initweap(mtmp) {
                 case NHC.PM_SOLDIER:
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 192, __sl3), rn2(3)) : rn2(3))) {
                     do {
-                        w1 = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 197, __sl3), rn2(12)) : rn2(12)) + NHC.PARTISAN) | 0);
+                        w1 = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 197, __sl3), rn2(((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0))) : rn2(((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0))) + NHC.PARTISAN) | 0);
                     } while (cptr.ld1s(cptr.add(cptr.add(objects, w1, 120), 68)) != NHC.P_POLEARMS);
                     w2 = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 199, __sl3), rn2(2)) : rn2(2)) ? NHC.DAGGER : NHC.KNIFE;
                 } else
@@ -707,7 +707,7 @@ function m_initinv(mtmp) {
                 void mongets(mtmp, NHC.WAN_DIGGING);
         } else if (((cptr.ldU64(cptr.add((ptr), 80)) & 8192n) != 0n)) {
             for (cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 743, __sl7), rn2(((cptr.ld1u(cptr.add(mtmp, 26)) / 2) | 0))) : rn2(((cptr.ld1u(cptr.add(mtmp, 26)) / 2) | 0))); cnt; cnt--) {
-                otmp = mksobj(rnd_class(NHC.DILITHIUM_CRYSTAL, 469), 0, 0);
+                otmp = mksobj(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), 0, 0);
                 cptr.stI64(cptr.add(otmp, 40), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 746, __sl7), rn2(2)) : rn2(2)) + 3) | 0)));
                 cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
                 void mpickobj(mtmp, otmp);
@@ -1518,7 +1518,7 @@ export function dump_mongen() {
         mlet = cptr.ld1s(cptr.add(def_monsyms, cptr.ld1s(cptr.add(cptr.add(mons, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 96), 28)), 24));
         if (prev_mlet && prev_mlet != mlet ? 1 : 0)
             (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl23);
-        nh_snprintf(__sl31, 1851, cptr.decay(nmbuf), 80n, __sl32, cptr.ldPtr(cptr.add(cptr.add(monsdump, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 16), 8)), (i == 329) ? __sl23 : __sl33);
+        nh_snprintf(__sl31, 1851, cptr.decay(nmbuf), 80n, __sl32, cptr.ldPtr(cptr.add(cptr.add(monsdump, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 16), 8)), (i == ((NHC.SPECIAL_PM - 1) | 0)) ? __sl23 : __sl33);
         raw_printf(__sl34, -nmwidth, cptr.decay(nmbuf), (i == (cptr.ldI32(cptr.add(mongen_order, i, 4)))) ? 32 : 46, i, (cptr.ldI32(cptr.add(mongen_order, i, 4))), mlet, cptr.ld1u(cptr.add(cptr.add(mons, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 96), 90)), (cptr.ldU16(cptr.add(cptr.add(mons, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 96), 34)) & 7), cptr.ld1s(cptr.add(cptr.decay(mclass_maxf), cptr.ld1s(cptr.add(cptr.add(mons, (cptr.ldI32(cptr.add(mongen_order, i, 4))), 96), 28)), 1)), (special == 4608) ? __sl35 : ((special == 512) ? __sl36 : ((special == 4096) ? __sl37 : __sl23)));
         prev_mlet = mlet;
     }
@@ -1979,7 +1979,7 @@ export function set_mimic_sym(mtmp) {
         let mndx = rndmonnum();
         let nocorpse_ndx = (cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mndx, 12), 2)) & 16) != 0;
         if (appear == NHC.CORPSE && nocorpse_ndx ? 1 : 0)
-            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2522, __sl56), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
+            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2522, __sl56), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
         else if ((appear == NHC.EGG && !can_be_hatched(mndx) ? 1 : 0) || (appear == NHC.TIN && nocorpse_ndx ? 1 : 0) ? 1 : 0)
             mndx = NHC.NON_PM;
         newmcorpsenm(mtmp);

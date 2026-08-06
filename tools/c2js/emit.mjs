@@ -307,7 +307,7 @@ export const CONST_MODULE = './nhconst.js';
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 5;
+export const EMIT_VERSION = 6;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -318,6 +318,7 @@ export class Emitter {
     // empty in single-file mode, where enum constants stay file-local
     this.constNames = constNames instanceof Set ? constNames : new Set(constNames || []);
     this.usesConsts = false;
+    this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
@@ -759,6 +760,85 @@ export class Emitter {
     return { code: `${CONST_NS}.${name}`, prec: PREC.atom, const: String(value), rep: 'val' };
   }
 
+  /**
+   * Phase B: a small compound constant expression built only from enum
+   * constants and integer literals keeps its symbolic form — `(NHC.ROLL |
+   * NHC.LAUNCH_KNOWN)` rather than `129` — with explicit parens so it is
+   * safe in every context the folded literal was safe in.
+   *
+   * Returns the parenthesized code, or null.  Bounded on purpose: the fold
+   * is a hot-path optimization (display.c's glyph macros), so only shapes
+   * small enough to be readable AND cheap are unfolded.
+   */
+  symbolicConst(n, c) {
+    if (!this.constNames.size || this.symbolic) return null;
+    if (c.t.bits === 64) return null; // mixing NHC numbers into BigInt arithmetic
+    const scan = this.constLeaves(n, { leaves: 0, named: 0 });
+    if (!scan || !scan.named || scan.leaves < 2 || scan.leaves > 4) return null;
+    const fn = this['expr_' + n.kind];
+    if (!fn) return null;
+    let code;
+    this.symbolic = true;
+    try { code = fn.call(this, n, {}).code; } catch { return null; } finally { this.symbolic = false; }
+    if (code.length > 120) return null;
+    // same guarantee as C2JS_FOLD_VERIFY, applied unconditionally here: the
+    // symbolic form must evaluate to the value C computes
+    let got;
+    try {
+      // eslint-disable-next-line no-new-func
+      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, `return (${code});`)(
+        (a, b) => { a >>>= 0; b >>>= 0; return ((a - (a % b)) / b) >>> 0; },
+        (a, b) => (a >>> 0) % (b >>> 0),
+        (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF,
+        (this._constObj ||= Object.fromEntries(this.enumValues)));
+    } catch { return null; }
+    if (typeof got !== 'number' || Number(got) !== Number(c.v)) return null;
+    this.usesConsts = true;
+    return `(${code})`;
+  }
+
+  /**
+   * Count the leaves of a constant expression, refusing anything that is not
+   * an integer/character literal or an enum constant reference (sizeof,
+   * offsetof and the SIZE() idiom carry layout meaning that must stay folded).
+   * Returns the accumulator, or null when a leaf disqualifies the node.
+   */
+  constLeaves(n, acc) {
+    if (!n || !n.kind || acc.leaves > 4) return null;
+    switch (n.kind) {
+      case 'ParenExpr':
+      case 'ConstantExpr':
+        return this.constLeaves(n.inner?.[0], acc);
+      case 'ImplicitCastExpr':
+      case 'CStyleCastExpr':
+        if (n.kind === 'CStyleCastExpr' && this.matchSizeIdiom(n)) return null;
+        return (n.inner || []).length === 1 ? this.constLeaves(n.inner[0], acc) : null;
+      case 'UnaryOperator':
+        return this.constLeaves(n.inner?.[0], acc);
+      case 'BinaryOperator':
+      case 'ConditionalOperator': {
+        for (const k of (n.inner || []).filter((x) => x && x.kind)) {
+          if (!this.constLeaves(k, acc)) return null;
+        }
+        return acc;
+      }
+      case 'IntegerLiteral':
+      case 'CharacterLiteral':
+        acc.leaves++;
+        return acc.leaves > 4 ? null : acc;
+      case 'DeclRefExpr': {
+        if (n.referencedDecl?.kind !== 'EnumConstantDecl') return null;
+        const name = n.name || n.referencedDecl?.name;
+        if (!name || !this.enumValues.has(name)) return null;
+        acc.leaves++;
+        if (this.constNames.has(name)) acc.named++;
+        return acc.leaves > 4 ? null : acc;
+      }
+      default:
+        return null;
+    }
+  }
+
   /** emitted descriptor for a folded {v, t} */
   constExpr(c) {
     if (c.t.bits === 64) return { code: `${c.v}n`, prec: c.v < 0n ? PREC.unary : PREC.atom, const: String(c.v), rep: 'val' };
@@ -770,7 +850,7 @@ export class Emitter {
 
   emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
-    if (!opts.stmtPos) {
+    if (!opts.stmtPos && !this.symbolic) {
       const c = this.foldConst(n);
       if (c) {
         // C2JS_FOLD_VERIFY=1: emit the expression the old way too and run it,
@@ -781,6 +861,8 @@ export class Emitter {
         // a fold that is exactly one enum constant keeps its name
         const nm = this.namedConst(n, c);
         if (nm) return this.constRefExpr(nm, Number(c.v));
+        const sym = this.symbolicConst(n, c);
+        if (sym) return { code: sym, prec: PREC.atom, const: String(Number(c.v)), rep: 'val' };
         return this.constExpr(c);
       }
     }

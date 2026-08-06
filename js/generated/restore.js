@@ -614,7 +614,7 @@ function restgamestate(nhfp) {
     restlevchn(nhfp);
     cptr.stI64(cptr.add(gh, 8), cptr.ldI64(cptr.add(svm, 8)) << 3n);
     sfi_q_score(nhfp, svq, __sl54);
-    for (i = 0; i < 43; ++i) {
+    for (i = 0; i < (((NHC.MAXSPELL + 1) | 0)); ++i) {
         sfi_spell(nhfp, cptr.add(svs, i, 8), __sl55);
     }
     restore_artifacts(nhfp);

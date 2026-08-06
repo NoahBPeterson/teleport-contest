@@ -473,10 +473,10 @@ function landing_spot(spot, reason, forceit) {
         best_j = j;
         cptr.stI16(cptr.add(cptr.decay(try$), 0, 4), i16(cptr.ldI32(cptr.add(u, 4)))), cptr.stI16(cptr.add(cptr.add(cptr.decay(try$), 0, 4), 2), i16(cptr.ldI32(cptr.add(u, 8))));
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl12, 480, __sl56), rn2(2)) : rn2(2));
-        clockwise_j = ((((j) + 1) | 0) % 8);
+        clockwise_j = ((((j) + 1) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
         dirtocoord(cc, clockwise_j);
         cptr.stI16(cptr.add(cptr.decay(try$), (1 + i) | 0, 4), cptr.ldI16(cc)), cptr.stI16(cptr.add(cptr.add(cptr.decay(try$), (1 + i) | 0, 4), 2), cptr.ldI16(cptr.add(cc, 2)));
-        counterclk_j = ((((j) + 7) | 0) % 8);
+        counterclk_j = ((((j) + 7) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
         dirtocoord(cc, counterclk_j);
         cptr.stI16(cptr.add(cptr.decay(try$), (2 - i) | 0, 4), cptr.ldI16(cc)), cptr.stI16(cptr.add(cptr.add(cptr.decay(try$), (2 - i) | 0, 4), 2), cptr.ldI16(cptr.add(cc, 2)));
         n = 3;
@@ -490,7 +490,7 @@ function landing_spot(spot, reason, forceit) {
     } else {
         best_j = (clockwise_j = (counterclk_j = -1));
     }
-    for (j = 0; j < 8; ++j) {
+    for (j = 0; j < (((NHC.N_DIRS_Z - 2) | 0)); ++j) {
         if ((j == best_j || j == clockwise_j ? 1 : 0) || j == counterclk_j ? 1 : 0)
             continue;
         if ((reason == NHC.DISMOUNT_POLY && ((cptr.ldI32(cptr.add(u, 1808))) == NHC.PM_GRID_BUG) ? 1 : 0) && (j % 1) != 0 ? 1 : 0)

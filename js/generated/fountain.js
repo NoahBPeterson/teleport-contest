@@ -276,7 +276,7 @@ function dofindgem() {
         You(__sl20);
     else
         You_feel(__sl21);
-    void mksobj_at(rnd_class(NHC.DILITHIUM_CRYSTAL, 469), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0, 0);
+    void mksobj_at(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0, 0);
     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 8)) | 1);
     ;
     newsym(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
@@ -315,7 +315,7 @@ export function dryup(x, y, isyou) {
         }
         if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0)) {
             let glyph = glyph_at(x, y);
-            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < 4093 ? 1 : 0) || glyph_to_cmap(glyph) != NHC.S_cloud ? 1 : 0)
+            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) || glyph_to_cmap(glyph) != NHC.S_cloud ? 1 : 0)
                 pline_The(__sl30);
         }
         set_levltyp(x, y, NHC.ROOM);

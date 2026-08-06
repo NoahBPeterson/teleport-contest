@@ -715,7 +715,7 @@ function flip_visuals(flp, minx, miny, maxx, maxy) {
                 }
                 cptr.st1(cptr.add(lev, 5), uchar(seenv));
             }
-            if ((((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0) && ((cptr.ldI32(lev)) >= NHC.GLYPH_CMAP_STONE_OFF && (cptr.ldI32(lev)) < 4093 ? 1 : 0) ? 1 : 0)
+            if ((((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0) && ((cptr.ldI32(lev)) >= NHC.GLYPH_CMAP_STONE_OFF && (cptr.ldI32(lev)) < (((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? 1 : 0) ? 1 : 0)
                 cptr.stI32(lev, back_to_glyph(i16(x), i16(y)));
         }
     }
@@ -1292,7 +1292,7 @@ function rnddoor() {
 function rndtrap() {
     let rtrap;
     do {
-        rtrap = (rng_log_enabled() ? (rng_log_set_caller(__sl4, 1164, __sl8), rnd(25)) : rnd(25));
+        rtrap = (rng_log_enabled() ? (rng_log_set_caller(__sl4, 1164, __sl8), rnd(((NHC.TRAPNUM - 1) | 0))) : rnd(((NHC.TRAPNUM - 1) | 0)));
         switch (rtrap) {
             case NHC.HOLE:
             case NHC.VIBRATING_SQUARE:
@@ -2169,7 +2169,7 @@ function create_object(o, croom) {
         break;
     }
     if (cptr.ldI32(cptr.add(o, 8)) != NHC.NON_PM) {
-        if (cptr.ldI32(cptr.add(o, 8)) == -2)
+        if (cptr.ldI32(cptr.add(o, 8)) == ((NHC.NON_PM - 1) | 0))
             set_corpsenm(otmp, rndmonnum());
         else
             set_corpsenm(otmp, cptr.ldI32(cptr.add(o, 8)));

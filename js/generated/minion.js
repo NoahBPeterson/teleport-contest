@@ -379,7 +379,7 @@ export function dprince(atyp) {
     let tryct;
     let pm;
     for (tryct = !(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 20 : 0; tryct > 0; --tryct) {
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 396, __sl31), rn2(6)) : rn2(6)) + NHC.PM_ORCUS) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 396, __sl31), rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) : rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) + NHC.PM_ORCUS) | 0);
         if (!(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), pm, 12), 2)) & 3) && (atyp == -128 || sgn(cptr.ld1s(cptr.add(cptr.add(mons, pm, 96), 33))) == sgn(atyp) ? 1 : 0) ? 1 : 0)
             return pm;
     }
@@ -391,7 +391,7 @@ export function dlord(atyp) {
     let tryct;
     let pm;
     for (tryct = !(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 20 : 0; tryct > 0; --tryct) {
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 410, __sl32), rn2(2)) : rn2(2)) + NHC.PM_JUIBLEX) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 410, __sl32), rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) : rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) + NHC.PM_JUIBLEX) | 0);
         if (!(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), pm, 12), 2)) & 3) && (atyp == -128 || sgn(cptr.ld1s(cptr.add(cptr.add(mons, pm, 96), 33))) == sgn(atyp) ? 1 : 0) ? 1 : 0)
             return pm;
     }

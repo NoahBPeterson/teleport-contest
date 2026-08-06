@@ -2460,7 +2460,7 @@ export function recalc_mapseen() {
         if ((cptr.ldI32(cptr.add(cptr.add(mptr, 148), i, 8)) & 1)) {
             if (cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)) >= NHC.SHOPBASE) {
                 if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(mptr, 148), i, 8), 4)) & 1))
-                    cptr.stI32(cptr.add(mptr, 68), 13);
+                    cptr.stI32(cptr.add(mptr, 68), (((NHC.SHOPBASE - 1) | 0) >>> 0));
                 else if (!(cptr.ldI32(cptr.add(mptr, 56)) & 3))
                     cptr.stI32(cptr.add(mptr, 68), cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)));
                 else if ((cptr.ldI32(cptr.add(mptr, 68)) & 31) != cptr.ld1s(cptr.add(cptr.add(svr, i, 224), 8)))

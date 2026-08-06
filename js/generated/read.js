@@ -1364,7 +1364,7 @@ function seffect_enchant_armor(sobjp) {
         let old_light = artifact_light(otmp) ? arti_light_radius(otmp) : 0;
         pline(__sl230, Yname2(otmp));
         setworn(null, 1n);
-        cptr.stI16(cptr.add(otmp, 32), cptr.ldI16(cptr.add(otmp, 32)) + -10);
+        cptr.stI16(cptr.add(otmp, 32), cptr.ldI16(cptr.add(otmp, 32)) + ((NHC.GRAY_DRAGON_SCALE_MAIL - NHC.GRAY_DRAGON_SCALES) | 0));
         cptr.stI32(cptr.add(otmp, 76), 0);
         if (sblessed) {
             cptr.postinc1(cptr.add(otmp, 48));

@@ -640,7 +640,7 @@ function get_valuables(list) {
             } else
                 cptr.stI64(cptr.add(cptr.add(ga, 24), i, 16), cptr.ldI64(cptr.add(cptr.add(ga, 24), i, 16)) + cptr.ldI64(cptr.add(obj, 40)));
         } else if (cptr.ld1s(cptr.add(obj, 49)) == NHC.GEM_CLASS && cptr.ldI16(cptr.add(obj, 32)) <= NHC.LAST_GLASS_GEM ? 1 : 0) {
-            i = (((cptr.ldI16(cptr.add(obj, 32))) < 461 ? (cptr.ldI16(cptr.add(obj, 32))) : 461) - NHC.FIRST_REAL_GEM) | 0;
+            i = (((cptr.ldI16(cptr.add(obj, 32))) < (((NHC.LAST_REAL_GEM + 1) | 0)) ? (cptr.ldI16(cptr.add(obj, 32))) : (((NHC.LAST_REAL_GEM + 1) | 0))) - NHC.FIRST_REAL_GEM) | 0;
             if (!cptr.ldI64(cptr.add(cptr.add(gg, 94200), i, 16))) {
                 cptr.stI64(cptr.add(cptr.add(gg, 94200), i, 16), cptr.ldI64(cptr.add(obj, 40)));
                 cptr.stI32(cptr.add(cptr.add(cptr.add(gg, 94200), i, 16), 8), cptr.ldI16(cptr.add(obj, 32)));
@@ -881,9 +881,9 @@ function really_done(how) {
     if (bones_ok && launch_in_progress() ? 1 : 0)
         force_launch_placement();
     if (how == NHC.PANICKED)
-        cptr.stI32(cptr.add(u, 2456), -4);
+        cptr.stI32(cptr.add(u, 2456), (((NHC.NON_PM - 3) | 0)));
     else if (how == NHC.BURNING || how == NHC.DISSOLVED ? 1 : 0)
-        cptr.stI32(cptr.add(u, 2456), -3);
+        cptr.stI32(cptr.add(u, 2456), (((NHC.NON_PM - 2) | 0)));
     else if (how == NHC.STONING)
         cptr.stI32(cptr.add(u, 2456), NHC.LEAVESTATUE);
     else if (how == NHC.TURNED_SLIME && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), NHC.PM_GREEN_SLIME, 12), 2)) & 2) ? 1 : 0)

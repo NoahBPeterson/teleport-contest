@@ -3514,7 +3514,7 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
         hi = (cptr.ldI32(cptr.add(cptr.add(svb, 16), (uchar(oclass) + 1) | 0, 4)) - 1) | 0;
     } else {
         lo = NHC.MAXOCLASSES;
-        hi = 480;
+        hi = ((NHC.NUM_OBJECTS - 1) | 0);
     }
     for (i = lo; i <= hi; ++i) {
         if ((zn = (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))) === null)
@@ -3563,7 +3563,7 @@ function wizterrainwish(d) {
     let y = cptr.ldI16(cptr.add(u, 2));
     let bp = cptr.ldPtr(cptr.add(d, 8));
     let p;
-    for (trap = 1; trap < NHC.TRAPNUM; trap++) {
+    for (trap = ((NHC.NO_TRAP + 1) | 0); trap < NHC.TRAPNUM; trap++) {
         let t;
         let tname;
         tname = trapname(trap, 1);
@@ -4082,7 +4082,7 @@ function readobjnam_postparse1(d) {
     if (((((!strncmpi((cptr.ldPtr(cptr.add(d, 8))), (__sl632), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtr(cptr.add(d, 8)), i), -(5))), cptr.ldPtr(cptr.add(d, 8))) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtr(cptr.add(d, 8)), i), -(5)))), (__sl633), -1) ? 1 : 0) ? 1 : 0) || !strncmpi((cptr.ldPtr(cptr.add(d, 8))), (__sl653), -1) ? 1 : 0) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtr(cptr.add(d, 8)), i), -(6))), cptr.ldPtr(cptr.add(d, 8))) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtr(cptr.add(d, 8)), i), -(6)))), (__sl654), -1) ? 1 : 0) ? 1 : 0) || (cptr.stPtr(cptr.add(d, 64), strstri(cptr.ldPtr(cptr.add(d, 8)), __sl655))) !== null ? 1 : 0) || (cptr.stPtr(cptr.add(d, 64), strstri(cptr.ldPtr(cptr.add(d, 8)), __sl656))) !== null ? 1 : 0) {
         cptr.stI32(cptr.add(d, 152), name_to_mon(!cptr.ldPtr(cptr.add(d, 64)) ? cptr.ldPtr(cptr.add(d, 8)) : (cptr.add(strstri(cptr.ldPtr(cptr.add(d, 64)), __sl34), 4)), null));
         if (cptr.ldI32(cptr.add(d, 152)) == NHC.NON_PM)
-            cptr.stI32(cptr.add(d, 152), (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 4354, __sl657), rn2(3)) : rn2(3)) + NHC.PM_GRAY_OOZE) | 0));
+            cptr.stI32(cptr.add(d, 152), (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 4354, __sl657), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
         if (cptr.ldI32(cptr.add(d, 72)) < 2 && strstri(cptr.ldPtr(cptr.add(d, 8)), __sl653) ? 1 : 0)
             cptr.stI32(cptr.add(d, 72), 2);
         void cptr.sprintf(cptr.add(d, 225), __sl658, cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(d, 152)), 96), NHC.NEUTRAL, 8)));

@@ -1169,7 +1169,7 @@ export function init_artifacts() {
 /** C ref: artifact.c:119 — @param {CPtr} nhfp */
 export function save_artifacts(nhfp) {
     let i;
-    for (i = 0; i < 34; ++i)
+    for (i = 0; i < (((NHC.NROFARTIFACTS + 1) | 0)); ++i)
         sfo_arti_info(nhfp, cptr.add(artiexist, i, 36), __sl34);
     for (i = 0; i < NHC.NROFARTIFACTS; ++i)
         sfo_xint16(nhfp, cptr.add(artidisco, i, 2), __sl35);
@@ -1178,7 +1178,7 @@ export function save_artifacts(nhfp) {
 /** C ref: artifact.c:133 — @param {CPtr} nhfp */
 export function restore_artifacts(nhfp) {
     let i;
-    for (i = 0; i < 34; ++i)
+    for (i = 0; i < (((NHC.NROFARTIFACTS + 1) | 0)); ++i)
         sfi_arti_info(nhfp, cptr.add(artiexist, i, 36), __sl34);
     for (i = 0; i < NHC.NROFARTIFACTS; ++i)
         sfi_short(nhfp, cptr.add(artidisco, i, 2), __sl35);
@@ -1486,7 +1486,7 @@ export function defends(adtyp, otmp) {
     if (((cptr.ldI16(cptr.add((otmp), 32)) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16(cptr.add((otmp), 32)) <= NHC.YELLOW_DRAGON_SCALES ? 1 : 0) || (cptr.ldI16(cptr.add((otmp), 32)) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16(cptr.add((otmp), 32)) <= NHC.YELLOW_DRAGON_SCALE_MAIL ? 1 : 0) ? 1 : 0)) {
         let otyp = cptr.ldI16(cptr.add(otmp, 32));
         if ((cptr.ldI16(cptr.add((otmp), 32)) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16(cptr.add((otmp), 32)) <= NHC.YELLOW_DRAGON_SCALE_MAIL ? 1 : 0))
-            otyp = (otyp + 10) | 0;
+            otyp = (otyp + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)) | 0;
         switch (adtyp) {
             case 1:
             return schar((otyp == NHC.GRAY_DRAGON_SCALES));
@@ -2994,7 +2994,7 @@ function count_surround_traps(x, y) {
             if (!isok(dx, dy))
                 continue;
             glyph = glyph_at(dx, dy);
-            if (((glyph) >= 4026 && (glyph) < 4051 ? 1 : 0))
+            if (((glyph) >= ((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0))) && (glyph) < 4051 ? 1 : 0))
                 continue;
             if (t_at(dx, dy)) {
                 ++ret;

@@ -152,7 +152,7 @@ function mkshop() {
                 if (cptr.ld1s(ep) == 103 || cptr.ld1s(ep) == 71 ? 1 : 0)
                     i = 0;
                 else if (cptr.ld1s(ep) == 118 || cptr.ld1s(ep) == 86 ? 1 : 0)
-                    i = 10;
+                    i = ((NHC.FODDERSHOP - NHC.SHOPBASE) | 0);
                 else
                     i = -1;
             }

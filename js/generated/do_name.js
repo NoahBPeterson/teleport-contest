@@ -527,7 +527,7 @@ function do_mgivenname() {
         mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cx, 168), cy, 8)));
     if (!mtmp && (cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 ? 1 : 0) {
         let glyph = glyph_at(i16(cx), i16(cy));
-        if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < 7157 ? 1 : 0)) {
+        if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))) ? 1 : 0)) {
             mtmp = cptr.ldPtr(cptr.add(u, 2416));
             do_swallow = 1;
         }
@@ -832,7 +832,7 @@ function namefloorobj() {
         obj.v = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)));
     } else {
         glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
-        if (((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= 3465 && (glyph) < 3929 ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > 8009 && (glyph) < 8473 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < 3465 ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < 8009 ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < 7609) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < 9239) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < 7992) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < 9622) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < 2682) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < 8856) ? 1 : 0) ? 1 : 0) ? 1 : 0))
+        if (((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < (((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < (((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < (((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < (((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < (((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0) ? 1 : 0) ? 1 : 0))
             fakeobj = object_from_map(glyph, cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)), obj);
     }
     if (!obj.v) {
@@ -1293,7 +1293,7 @@ export function rndmonnam(code) {
     if (code)
         cptr.st1(code, 0);
     do {
-        name = (rn2_on_display_rng(430) + NHC.LOW_PM) | 0;
+        name = (rn2_on_display_rng(((((NHC.SPECIAL_PM + 100) | 0) - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0;
     } while (name < NHC.SPECIAL_PM && (((cptr.ldU64(cptr.add((cptr.add(mons, name, 96)), 80)) & 524288n) != 0n) || (cptr.ldU16(cptr.add(cptr.add(mons, name, 96), 34)) & 512) ? 1 : 0) ? 1 : 0);
     if (name >= NHC.SPECIAL_PM) {
         mnam = bogusmon(cptr.decay(__static_rndmonnam_buf), code);

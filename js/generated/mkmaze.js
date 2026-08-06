@@ -690,11 +690,11 @@ function stolen_booty() {
     cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 823, __sl15), rnd(3)) : rnd(3));
     for (i = 0; i < cnt; ++i)
         migr_booty_item(NHC.SKELETON_KEY, gang);
-    otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 826, __sl15), rn2(4)) : rn2(4)) + NHC.LEATHER_GLOVES) | 0);
+    otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 826, __sl15), rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) : rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) + NHC.LEATHER_GLOVES) | 0);
     migr_booty_item(otyp, gang);
     cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 828, __sl15), rnd(10)) : rnd(10));
     for (i = 0; i < cnt; ++i) {
-        otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 831, __sl15), rn2(33)) : rn2(33)) + NHC.TRIPE_RATION) | 0);
+        otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 831, __sl15), rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) : rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) + NHC.TRIPE_RATION) | 0);
         if ((((otyp != NHC.LEMBAS_WAFER && ((cptr.ldI16(cptr.add(cptr.add(objects, otyp, 120), 74)) != 0 || otyp == NHC.C_RATION ? 1 : 0) || otyp == NHC.K_RATION ? 1 : 0) ? 1 : 0) && otyp != NHC.CORPSE ? 1 : 0) && otyp != NHC.EGG ? 1 : 0) && otyp != NHC.TIN ? 1 : 0)
             migr_booty_item(otyp, gang);
     }
@@ -718,7 +718,7 @@ function stolen_booty() {
     cnt = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 877, __sl15), rn2(10)) : rn2(10)) + 5) | 0;
     for (i = 0; i < cnt; ++i) {
         let mtyp;
-        mtyp = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 881, __sl15), rn2(5)) : rn2(5)) + NHC.PM_ORC) | 0;
+        mtyp = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 881, __sl15), rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) : rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) + NHC.PM_ORC) | 0;
         mtmp = makemon(cptr.add(mons, mtyp, 96), 0, 0, 64);
         if (mtmp) {
             shiny_orc_stuff(mtmp);
@@ -1288,7 +1288,7 @@ export function fumaroles() {
 let hero_bubble = null;
 
 let __static_movebubbles_water_pos = cptr.alloc(36); /** C ref: mkmaze.c:1541 — struct rm (function-static) */
-cptr.stI32(__static_movebubbles_water_pos, 4025);
+cptr.stI32(__static_movebubbles_water_pos, ((((((NHC.S_water) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)));
 cptr.st1(cptr.add(__static_movebubbles_water_pos, 4), NHC.WATER);
 cptr.st1(cptr.add(__static_movebubbles_water_pos, 5), 0);
 cptr.stI32(cptr.add(__static_movebubbles_water_pos, 8), 0);
@@ -1299,7 +1299,7 @@ cptr.stI32(cptr.add(__static_movebubbles_water_pos, 24), 0);
 cptr.stI32(cptr.add(__static_movebubbles_water_pos, 28), 0);
 cptr.stI32(cptr.add(__static_movebubbles_water_pos, 32), 0);
 let __static_movebubbles_air_pos = cptr.alloc(36); /** C ref: mkmaze.c:1543 — struct rm (function-static) */
-cptr.stI32(__static_movebubbles_air_pos, 4024);
+cptr.stI32(__static_movebubbles_air_pos, ((((((NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)));
 cptr.st1(cptr.add(__static_movebubbles_air_pos, 4), NHC.AIR);
 cptr.st1(cptr.add(__static_movebubbles_air_pos, 5), 0);
 cptr.stI32(cptr.add(__static_movebubbles_air_pos, 8), 0);
@@ -1540,7 +1540,7 @@ function setup_waterlevel() {
     cptr.stI32(cptr.add(svx, 4), ((cptr.ldI32(cptr.add(svx, 4))) < 78 ? (cptr.ldI32(cptr.add(svx, 4))) : 78));
     cptr.stI32(cptr.add(svy, 4), 20);
     cptr.stI32(cptr.add(svy, 4), ((cptr.ldI32(cptr.add(svy, 4))) < 20 ? (cptr.ldI32(cptr.add(svy, 4))) : 20));
-    glyph = ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) <= NHC.S_trwall) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16(cptr.add((cptr.add(svd, 1894)), 2)) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1874)))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) < NHC.S_altar) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) == NHC.S_altar) ? 4008 : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) < 74) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) <= NHC.S_goodpos) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+    glyph = ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) <= NHC.S_trwall) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16(cptr.add((cptr.add(svd, 1894)), 2)) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16(cptr.add(svd, 1874)))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) < NHC.S_altar) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) == NHC.S_altar) ? 4008 : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : ((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) <= NHC.S_goodpos) ? ((((((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.S_water : NHC.S_air) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
     typ = (((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? NHC.WATER : NHC.AIR;
     for (x = 1; x <= 79; x++)
         for (y = 0; y <= 20; y++) {

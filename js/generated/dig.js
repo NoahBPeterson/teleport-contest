@@ -970,7 +970,7 @@ export function dighole(pit_only, by_magic, cc) {
     if ((ttmp && (((((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.MAGIC_PORTAL || (((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.VIBRATING_SQUARE ? 1 : 0) || nohole ? 1 : 0) ? 1 : 0) || ((((old_typ) < NHC.POOL) && old_typ != NHC.SDOOR ? 1 : 0) && (((cptr.ldI32(cptr.add(lev, 8)) & 31) | 0) & 8) != 0 ? 1 : 0) ? 1 : 0) {
         pline_The(__sl79, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? __sl80 : __sl49);
     } else if (ttmp && (((((((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.TELEP_TRAP || (((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.LEVEL_TELEP ? 1 : 0) || (((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.MAGIC_TRAP ? 1 : 0) || (((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.ANTI_MAGIC ? 1 : 0) || (((cptr.ldI32(cptr.add(ttmp, 20)) & 31)) | 0) == NHC.POLY_TRAP ? 1 : 0) ? 1 : 0) {
-        explode(dig_x, dig_y, 0, (20 + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 919, __sl81), d(3, 6)) : d(3, 6))) | 0, 21, NHC.EXPL_MAGICAL);
+        explode(dig_x, dig_y, 0, (20 + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 919, __sl81), d(3, 6)) : d(3, 6))) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL);
         deltrap(ttmp);
         newsym(dig_x, dig_y);
     } else if (is_pool_or_lava(dig_x, dig_y)) {
@@ -1238,7 +1238,7 @@ export function use_pick_axe2(obj) {
             } else if (((((cptr.ldI32(cptr.add(u, 60)) && cptr.ldI32(cptr.add(u, 64)) == NHC.TT_PIT ? 1 : 0) && trap ? 1 : 0) && (trap_with_u = t_at(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) ? 1 : 0) && ((((cptr.ldI32(cptr.add(trap, 20)) & 31)) | 0) == NHC.PIT || (((cptr.ldI32(cptr.add(trap, 20)) & 31)) | 0) == NHC.SPIKED_PIT ? 1 : 0) ? 1 : 0) && !conjoined_pits(trap, trap_with_u, 0) ? 1 : 0) {
                 let idx = xytodir(cptr.ldI32(cptr.add(u, 4)), cptr.ldI32(cptr.add(u, 8)));
                 if (idx != NHC.DIR_ERR) {
-                    let adjidx = ((((idx) + 4) | 0) % 8);
+                    let adjidx = ((((idx) + 4) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
                     cptr.st1(cptr.add(trap_with_u, 36), cptr.ld1u(cptr.add(trap_with_u, 36)) | (1 << idx));
                     cptr.st1(cptr.add(trap, 36), cptr.ld1u(cptr.add(trap, 36)) | (1 << adjidx));
                     You(__sl125);
@@ -1531,7 +1531,7 @@ export function zap_dig() {
                     }
                 }
                 if (adjpit && ((((cptr.ldI32(cptr.add(adjpit, 20)) & 31)) | 0) == NHC.PIT || (((cptr.ldI32(cptr.add(adjpit, 20)) & 31)) | 0) == NHC.SPIKED_PIT ? 1 : 0) ? 1 : 0) {
-                    let adjidx = ((((diridx) + 4) | 0) % 8);
+                    let adjidx = ((((diridx) + 4) | 0) % (((NHC.N_DIRS_Z - 2) | 0)));
                     cptr.st1(cptr.add(trap_with_u, 36), cptr.ld1u(cptr.add(trap_with_u, 36)) | (1 << diridx));
                     cptr.st1(cptr.add(adjpit, 36), cptr.ld1u(cptr.add(adjpit, 36)) | (1 << adjidx));
                     flow_x = zx;
@@ -1693,7 +1693,7 @@ function pit_flow(trap, filltyp) {
         cptr.memcpy(t, trap, 40);
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(t, 8)), 756), cptr.ldI16(cptr.add(t, 10)), 36), 4), filltyp), cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cptr.add(t, 8)), 756), cptr.ldI16(cptr.add(t, 10)), 36), 8), 0);
         liquid_flow(cptr.ldI16(cptr.add(t, 8)), cptr.ldI16(cptr.add(t, 10)), filltyp, trap, ((cptr.ldI16(cptr.add(t, 8))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(t, 10))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? __sl182 : null);
-        for (idx = 0; idx < 8; ++idx) {
+        for (idx = 0; idx < (((NHC.N_DIRS_Z - 2) | 0)); ++idx) {
             if (cptr.ld1u(cptr.add(t, 36)) & (1 << idx)) {
                 let x;
                 let y;

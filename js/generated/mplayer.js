@@ -394,7 +394,7 @@ export function create_mplayers(num, special) {
     cptr.memcpy(fakemon, cptr.add(cg, 216), 320);
     while (num) {
         let tryct = 0;
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, 96));
         do {
             x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2(76)) : rn2(76)) + 2) | 0);

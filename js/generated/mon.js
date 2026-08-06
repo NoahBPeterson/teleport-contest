@@ -3666,13 +3666,13 @@ export function select_newcham_form(mon) {
         } else if ((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5169, __sl237), rn2(3)) : rn2(3))) {
             mndx = tt_doppel(mon);
         } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl52, 5171, __sl237), rn2(3)) : rn2(3))) {
-            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5172, __sl237), rn2(14)) : rn2(14)) + NHC.PM_STUDENT) | 0);
+            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5172, __sl237), rn2(((((NHC.PM_APPRENTICE - NHC.PM_STUDENT) | 0) + 1) | 0))) : rn2(((((NHC.PM_APPRENTICE - NHC.PM_STUDENT) | 0) + 1) | 0))) + NHC.PM_STUDENT) | 0);
             if (mndx == cptr.ldI16(cptr.add(gu, 222)))
                 mndx = NHC.NON_PM;
         } else {
             tryct = 5;
             do {
-                mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5179, __sl237), rn2(330)) : rn2(330)) + NHC.LOW_PM) | 0);
+                mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5179, __sl237), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
                 if (((cptr.ldU64(cptr.add((cptr.add(mons, mndx, 96)), 72)) & 131072n) != 0n) && ((cptr.ldU64(cptr.add((cptr.add(mons, mndx, 96)), 80)) & 1n) == 0n) ? 1 : 0)
                     break;
             } while (--tryct > 0);
@@ -3704,7 +3704,7 @@ export function select_newcham_form(mon) {
     if (mndx == NHC.NON_PM) {
         tryct = 50;
         do {
-            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5217, __sl237), rn2(330)) : rn2(330)) + NHC.LOW_PM) | 0);
+            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__sl52, 5217, __sl237), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
         } while ((--tryct > 0 && !validspecmon(mon, mndx) ? 1 : 0) && ((tryct > 40 && (((cptr.ldI16(cptr.add((cptr.add(svd, 1800)), 2)) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0)) ? 1 : 0) && !cptr.isupper((cptr.ld1s(cptr.add(def_monsyms, cptr.ld1s(cptr.add((cptr.add(mons, mndx, 96)), 28)), 24)))) ? 1 : 0) ? 1 : 0);
     }
     return mndx;

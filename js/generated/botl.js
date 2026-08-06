@@ -522,7 +522,7 @@ export function get_strength_str() {
 
 /** C ref: botl.c:40 */
 export function check_gold_symbol() {
-    let goldch = cptr.ld1u(cptr.add(cptr.add(gs, 680), 117, 1));
+    let goldch = cptr.ld1u(cptr.add(cptr.add(gs, 680), ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0), 1));
     cptr.st1(cptr.add(iflags, 4), schar((goldch <= 32)));
 }
 
@@ -590,7 +590,7 @@ export function do_statusline2() {
     void describe_level(cptr.decay(__static_do_statusline2_dloc), 1);
     if ((money = money_cnt(cptr.ldPtr(cptr.add(gi, 8)))) < 0n)
         money = 0n;
-    void cptr.sprintf(eos(cptr.decay(__static_do_statusline2_dloc)), __sl19, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(3886), ((money) < 999999n ? (money) : 999999n));
+    void cptr.sprintf(eos(cptr.decay(__static_do_statusline2_dloc)), __sl19, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0))), ((money) < 999999n ? (money) : 999999n));
     dln = cptr.strlen(cptr.decay(__static_do_statusline2_dloc));
     dx = BigInt.asUintN(64, BigInt((strstri(cptr.decay(__static_do_statusline2_dloc), __sl21) ? 9 : 0)));
     hp = (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1812)) : cptr.ldI32(cptr.add(u, 2196));
@@ -1801,7 +1801,7 @@ function bot_via_windowport() {
         money = 0n;
     cptr.stI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 40), money);
     cptr.stI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32), ((money) < 999999n ? (money) : 999999n));
-    void cptr.sprintf(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 48)), __sl276, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(3886), cptr.ldI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32)));
+    void cptr.sprintf(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 48)), __sl276, (cptr.ld1s(cptr.add(iflags, 91)) || cptr.ld1s(cptr.add(iflags, 4)) ? 1 : 0) ? __sl20 : encglyph(((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0))), cptr.ldI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88), 32)));
     cptr.st1(cptr.add(gv, NHC.BL_GOLD, 1), 1);
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ENE, 88), 40), cptr.ldI32(cptr.add(u, 2208)));
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ENE, 88), 32), ((cptr.ldI32(cptr.add(u, 2208))) < 9999 ? (cptr.ldI32(cptr.add(u, 2208))) : 9999));
@@ -2137,10 +2137,10 @@ function eval_notify_windowport_field(fld, valsetlist, idx) {
     } else {
         pc = 0;
     }
-    if (fld == NHC.BL_GOLD && (cptr.ldI32(cptr.add(svc, 24)) != __static_eval_notify_windowport_field_oldrndencode || cptr.ld1u(cptr.add(cptr.add(gs, 680), 117, 1)) != __static_eval_notify_windowport_field_oldgoldsym ? 1 : 0) ? 1 : 0) {
+    if (fld == NHC.BL_GOLD && (cptr.ldI32(cptr.add(svc, 24)) != __static_eval_notify_windowport_field_oldrndencode || cptr.ld1u(cptr.add(cptr.add(gs, 680), ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0), 1)) != __static_eval_notify_windowport_field_oldgoldsym ? 1 : 0) ? 1 : 0) {
         cptr.st1(gu, 1);
         __static_eval_notify_windowport_field_oldrndencode = cptr.ldI32(cptr.add(svc, 24));
-        __static_eval_notify_windowport_field_oldgoldsym = cptr.ld1u(cptr.add(cptr.add(gs, 680), 117, 1));
+        __static_eval_notify_windowport_field_oldgoldsym = cptr.ld1u(cptr.add(cptr.add(gs, 680), ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0), 1));
     }
     reset = 0;
     if (cptr.ld1s(gu)) {
@@ -3122,13 +3122,13 @@ function parse_status_hl2(s, from_configfile) {
             else
                 up = 1;
             changed = 1;
-        } else if (fld == NHC.BL_CAP && is_fld_arrayvalues(cptr.add(s, sidx, 128), enc_stat, NHC.SLT_ENCUMBER, 6, kidx) ? 1 : 0) {
+        } else if (fld == NHC.BL_CAP && is_fld_arrayvalues(cptr.add(s, sidx, 128), enc_stat, NHC.SLT_ENCUMBER, ((NHC.OVERLOADED + 1) | 0), kidx) ? 1 : 0) {
             txt = cptr.ldPtr(cptr.add(enc_stat, kidx.v, 8));
             txtval = 1;
         } else if (fld == NHC.BL_ALIGN && is_fld_arrayvalues(cptr.add(s, sidx, 128), __static_parse_status_hl2_aligntxt, 0, 3, kidx) ? 1 : 0) {
             txt = cptr.ldPtr(cptr.add(__static_parse_status_hl2_aligntxt, kidx.v, 8));
             txtval = 1;
-        } else if (fld == NHC.BL_HUNGER && is_fld_arrayvalues(cptr.add(s, sidx, 128), __static_parse_status_hl2_hutxt, NHC.SATIATED, 7, kidx) ? 1 : 0) {
+        } else if (fld == NHC.BL_HUNGER && is_fld_arrayvalues(cptr.add(s, sidx, 128), __static_parse_status_hl2_hutxt, NHC.SATIATED, ((NHC.STARVED + 1) | 0), kidx) ? 1 : 0) {
             txt = cptr.ldPtr(cptr.add(hu_stat, kidx.v, 8));
             txtval = 1;
         } else if (!strncmpi((cptr.add(s, sidx, 128)), (__sl332), -1)) {
@@ -3828,12 +3828,12 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
         else
             void cptr.sprintf(cptr.decay(buf), __sl402);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, 11);
+        cptr.stI32(any, ((10 + NHC.LT_VALUE) | 0));
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
         if (str) {
             void cptr.sprintf(cptr.decay(buf), __sl403, str, (fld == NHC.BL_AC) ? __sl404 : __sl405);
             cptr.memcpy(any, cptr.add(cg, 536), 8);
-            cptr.stI32(any, 12);
+            cptr.stI32(any, ((10 + NHC.LE_VALUE) | 0));
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
         }
     }
@@ -3842,13 +3842,13 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
     else
         void cptr.sprintf(cptr.decay(buf), __sl407);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
-    cptr.stI32(any, 10);
+    cptr.stI32(any, ((10 + NHC.EQ_VALUE) | 0));
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
     if (gtok) {
         if (str) {
             void cptr.sprintf(cptr.decay(buf), __sl403, str, (fld == NHC.BL_AC) ? __sl408 : __sl409);
             cptr.memcpy(any, cptr.add(cg, 536), 8);
-            cptr.stI32(any, 13);
+            cptr.stI32(any, ((10 + NHC.GE_VALUE) | 0));
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
         }
         if (str)
@@ -3856,7 +3856,7 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
         else
             void cptr.sprintf(cptr.decay(buf), __sl412);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, 14);
+        cptr.stI32(any, ((10 + NHC.GT_VALUE) | 0));
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
     }
     void cptr.sprintf(cptr.decay(buf), __sl413, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
@@ -4039,7 +4039,7 @@ function status_hilite_menu_add(origfld) {
                     let qry_buf = new Uint8Array(256);
                     void cptr.sprintf(cptr.decay(qry_buf), __sl437, (((fld == NHC.BL_CAP || fld == NHC.BL_ALIGN ? 1 : 0) || fld == NHC.BL_HUNGER ? 1 : 0) || fld == NHC.BL_TITLE ? 1 : 0) ? __sl438 : __sl439, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                     if (fld == NHC.BL_CAP) {
-                        let rv = query_arrayvalue(cptr.decay(qry_buf), enc_stat, NHC.SLT_ENCUMBER, 6);
+                        let rv = query_arrayvalue(cptr.decay(qry_buf), enc_stat, NHC.SLT_ENCUMBER, ((NHC.OVERLOADED + 1) | 0));
                         if (rv < NHC.SLT_ENCUMBER)
                             continue __lbl_choose_behavior;
                         cptr.stI32(cptr.add(hilite, 108), NHC.TXT_VALUE);
@@ -4051,7 +4051,7 @@ function status_hilite_menu_add(origfld) {
                         cptr.stI32(cptr.add(hilite, 108), NHC.TXT_VALUE);
                         void cptr.strcpy(cptr.add(hilite, 28), cptr.ldPtr(cptr.add(__static_status_hilite_menu_add_aligntxt, rv, 8)));
                     } else if (fld == NHC.BL_HUNGER) {
-                        let rv = query_arrayvalue(cptr.decay(qry_buf), __static_status_hilite_menu_add_hutxt, NHC.SATIATED, 7);
+                        let rv = query_arrayvalue(cptr.decay(qry_buf), __static_status_hilite_menu_add_hutxt, NHC.SATIATED, ((NHC.STARVED + 1) | 0));
                         if (rv < NHC.SATIATED)
                             continue __lbl_choose_behavior;
                         cptr.stI32(cptr.add(hilite, 108), NHC.TXT_VALUE);

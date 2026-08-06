@@ -926,7 +926,7 @@ function cast_chain_lightning() {
         return;
     }
     tmp_at(-1, i16(zapdir_to_glyph(0, 1, cptr.ldI32(cptr.add(clq, 808)))));
-    for (let dir = 0; dir < 8; dir++) {
+    for (let dir = 0; dir < (((NHC.N_DIRS_Z - 2) | 0)); dir++) {
         let zap = cptr.alloc(8); cptr.st1(zap, uchar(dir)); cptr.stI16(cptr.add(zap, 2), cptr.ldI16(u)); cptr.stI16(cptr.add(zap, 4), cptr.ldI16(cptr.add(u, 2))); cptr.st1(cptr.add(zap, 6), 2);
         propagate_chain_lightning(clq, zap);
     }
@@ -966,9 +966,9 @@ function cast_chain_lightning() {
                 cptr.st1(cptr.add(zap, 6), 0);
             else if (cptr.ldI32(cptr.add(u, 2208)) > 0)
                 (cptr.stI32(cptr.add(u, 2208), cptr.ldI32(cptr.add(u, 2208)) + -1)) - (-1);
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % 8)));
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % (((NHC.N_DIRS_Z - 2) | 0)))));
             propagate_chain_lightning(clq, zap);
-            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % 8)));
+            cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % (((NHC.N_DIRS_Z - 2) | 0)))));
             propagate_chain_lightning(clq, zap);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 320)))();
@@ -1676,7 +1676,7 @@ function dospellmenu(prompt, splaction, spell_no) {
         if (cptr.ldI16(cptr.add(svs, 1, 8)) == 0) {
             how = 0;
         } else {
-            cptr.stI32(any, 43);
+            cptr.stI32(any, (((NHC.MAXSPELL) + 1) | 0));
             add_menu(tmpwin, nul_glyphinfo.v, any, 43, 0, 0, clr, __sl162, 0);
         }
     }

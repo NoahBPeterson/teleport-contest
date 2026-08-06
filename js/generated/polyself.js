@@ -1074,7 +1074,7 @@ export function polyself(psflags) {
                 void cptr.strcpy(cptr.decay(buf), simpleonames(uarm.v));
                 strsubst(cptr.decay(buf), __sl30, __sl31);
                 Your(__sl32, cptr.decay(buf));
-                cptr.stI16(cptr.add(uarm.v, 32), cptr.ldI16(cptr.add(uarm.v, 32)) + 10);
+                cptr.stI16(cptr.add(uarm.v, 32), cptr.ldI16(cptr.add(uarm.v, 32)) + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0));
                 observe_object(uarm.v);
                 cptr.st1(disp, 1);
             }
@@ -1151,7 +1151,7 @@ export function polyself(psflags) {
         if (mntmp.v < NHC.LOW_PM) {
             tryct = 200;
             do {
-                mntmp.v = (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 702, __sl19), rn2(330)) : rn2(330)) + NHC.LOW_PM) | 0);
+                mntmp.v = (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 702, __sl19), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
                 if (((cptr.ldU64(cptr.add((cptr.add(mons, mntmp.v, 96)), 80)) & 1n) == 0n) && !(((cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_ORC, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_GIANT, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_ELF, 96)) ? 1 : 0) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_HUMAN, 96)) ? 1 : 0) ? 1 : 0)
                     break;
             } while (--tryct > 0);

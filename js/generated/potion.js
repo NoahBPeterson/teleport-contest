@@ -1310,7 +1310,7 @@ function peffect_polymorph(otmp) {
         if (!(cptr.ldI32(cptr.add(otmp, 60)) & 1) || (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0)
             polyself(NHC.POLY_NOFLAGS);
         else {
-            polyself(9);
+            polyself((NHC.POLY_CONTROLLED | NHC.POLY_LOW_CTRL));
             if (cptr.ldI32(cptr.add(u, 1820)) && cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)) ? 1 : 0)
                 cptr.stI32(cptr.add(u, 1820), ((cptr.ldI32(cptr.add(u, 1820))) < (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1327, __sl161), rn2(15)) : rn2(15)) + 10) | 0) ? (cptr.ldI32(cptr.add(u, 1820))) : (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1327, __sl161), rn2(15)) : rn2(15)) + 10) | 0)));
         }

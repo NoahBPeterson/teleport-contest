@@ -456,7 +456,7 @@ export function luaH_new(L) {
     let o = luaC_newobj(L, 5, 56n);
     let t = (((((o)))));
     cptr.stPtr(cptr.add(t, 40), null);
-    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << 6) >>> 0)))))));
+    cptr.st1(cptr.add(t, 10), (uchar((((~((~0 << (((NHC.TM_EQ + 1) | 0))) >>> 0)))))));
     cptr.stPtr(cptr.add(t, 16), null);
     cptr.stI32(cptr.add(t, 12), 0);
     setnodevector(L, t, 0);

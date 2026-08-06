@@ -997,7 +997,7 @@ cptr.st1(cptr.add(shtypes, 1136), NHC.FOOD_CLASS);
 cptr.stI32(cptr.add(shtypes, 1140), 2);
 cptr.st1(cptr.add(shtypes, 1144), 1);
 cptr.stI32(cptr.add(shtypes, 1148), 70);
-cptr.stI32(cptr.add(shtypes, 1152), 19);
+cptr.stI32(cptr.add(shtypes, 1152), (((NHC.MAXOCLASSES + 1) | 0)));
 cptr.stI32(cptr.add(shtypes, 1156), 20);
 cptr.stI32(cptr.add(shtypes, 1160), -319);
 cptr.stI32(cptr.add(shtypes, 1164), 4);
@@ -1129,7 +1129,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
     if ((((rng_log_enabled() ? (rng_log_set_caller(__sl369, 470, __sl372), rn2(100)) : rn2(100)) < depth(cptr.add(u, 24)) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx, 168), sy, 8)) !== null) ? 1 : 0) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null ? 1 : 0) && (mtmp = makemon(ptr, i16(sx), i16(sy), 0)) !== null ? 1 : 0) {
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
-        if (atype == 19)
+        if (atype == (((NHC.MAXOCLASSES + 1) | 0)))
             mkveggy_at(sx, sy);
         else if (atype < 0)
             void mksobj_at(-atype, i16(sx), i16(sy), 1, 1);
@@ -1386,7 +1386,7 @@ export function saleable(shkp, obj) {
     if (cptr.ld1s(cptr.add(shp, 16)) == NHC.RANDOM_CLASS)
         return 1;
     for (i = 0; i < Number(BigInt.asIntN(32, (72n / 8n))) && cptr.ldI32(cptr.add(cptr.add(shp, 28), i, 8)) ? 1 : 0; i++) {
-        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(shp, 28), i, 8), 4)) == 19) {
+        if (cptr.ldI32(cptr.add(cptr.add(cptr.add(shp, 28), i, 8), 4)) == (((NHC.MAXOCLASSES + 1) | 0))) {
             if (veggy_item(obj, 0))
                 return 1;
         } else if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(shp, 28), i, 8), 4)) < 0) ? cptr.ldI32(cptr.add(cptr.add(cptr.add(shp, 28), i, 8), 4)) == -cptr.ldI16(cptr.add(obj, 32)) : cptr.ldI32(cptr.add(cptr.add(cptr.add(shp, 28), i, 8), 4)) == cptr.ld1s(cptr.add(obj, 49)))

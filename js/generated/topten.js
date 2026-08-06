@@ -554,7 +554,7 @@ function encode_extended_achievements(buf) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(cptr.decay(rnkbuf), __sl62, rank_of(rank_to_xlev((absidx - 22) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
+            void cptr.sprintf(cptr.decay(rnkbuf), __sl62, rank_of(rank_to_xlev((absidx - (((NHC.ACH_RNK1 - 1) | 0))) | 0), (cptr.ldI16(cptr.add(gu, 216))), schar(((achidx < 0) ? 1 : 0))));
             strNsubst(cptr.decay(rnkbuf), __sl63, __sl19, 0);
             achievement = lcase(cptr.decay(rnkbuf));
             break;
@@ -1172,7 +1172,7 @@ export function tt_doppel(mon) {
     let tt = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1446, __sl168), rn2(13)) : rn2(13)) ? get_rnd_toptenentry() : null;
     let ret;
     if (!tt)
-        ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(13)) : rn2(13)) + NHC.PM_ARCHEOLOGIST) | 0);
+        ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1s(cptr.add(cptr.add(tt, 84), 0, 1)) == 70)
             cptr.stI32(cptr.add(mon, 84), 1);

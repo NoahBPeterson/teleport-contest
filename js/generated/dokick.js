@@ -1002,7 +1002,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             if (i > 6)
                 i = 6;
             while (i--)
-                void mksobj_at(rnd_class(NHC.DILITHIUM_CRYSTAL, 469), x, y, 0, 1);
+                void mksobj_at(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), x, y, 0, 1);
             if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0))
                 You(__sl117, cptr.ldPtr(cptr.add(c_common_strings, 40)));
             else {
