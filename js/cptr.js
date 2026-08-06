@@ -374,6 +374,213 @@ function __intPtr(lo, hi) {
   return ip;
 }
 
+// ------------------------------------------------- fused offset accessors ----
+//
+// `cptr.ldX(cptr.add(p, K))` / `cptr.stX(cptr.add(p, K), v)` is what almost
+// every C field access and array subscript emits — ~113k sites — and each one
+// allocated a throw-away `{buf, off}` for the address. `add` was 14.7% of a
+// session's CPU with most of the GC behind it: escape analysis can delete that
+// allocation, but only when the add *and* the accessor both inline into the
+// caller, which mostly does not happen inside NetHack's very large generated
+// functions. Fusing the pair at emission (tools/c2js/emit.mjs, fuseOffsetAccess)
+// removes the object from the source, so no optimizer decision can bring it
+// back.
+//
+// THE CONTRACT, which every one of these functions keeps by construction:
+//
+//     ldXo(p, n, sz)     === ldX(add(p, n, sz))
+//     stXo(p, n, v, sz)  === stX(add(p, n, sz), v)
+//
+// for *every* input. The fast path is only entered for a plain buffer-backed
+// CPtr with a numeric index — its offset arithmetic is copied from `add`
+// verbatim (`sz === undefined ? off + n : off + n * sz`) and its access is
+// copied from the corresponding accessor's non-box body. Everything else —
+// boxes, function designators, the integer-bit-pattern pointers `ldPtr` hands
+// back for NetHack's `anything` union, BigInt indices — falls through to the
+// literal composition, so those cases cannot diverge even in principle
+// (including where the composition throws: `add` drops `isBox`, so a box with
+// a non-zero offset is a TypeError before and after).
+//
+// A box has no `.buf`, so `p.buf !== undefined` is the whole guard.
+
+/** ld1s(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ld1so(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') return (b[sz === undefined ? p.off + n : p.off + n * sz] << 24) >> 24;
+  return ld1s(add(p, n, sz));
+}
+
+/** ld1u(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ld1uo(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') return b[sz === undefined ? p.off + n : p.off + n * sz];
+  return ld1u(add(p, n, sz));
+}
+
+/** st1(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {number|bigint} v @param {number} [sz] */
+export function st1o(p, n, v, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    b[sz === undefined ? p.off + n : p.off + n * sz] = (typeof v === 'number' ? v : Number(v)) & 0xFF;
+    return v;
+  }
+  return st1(add(p, n, sz), v);
+}
+
+/** ldI16(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ldI16o(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    return ((b[o] | (b[o + 1] << 8)) << 16) >> 16;
+  }
+  return ldI16(add(p, n, sz));
+}
+
+/** ldU16(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ldU16o(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    return b[o] | (b[o + 1] << 8);
+  }
+  return ldU16(add(p, n, sz));
+}
+
+/** stI16(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {number} v @param {number} [sz] */
+export function stI16o(p, n, v, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz, x = v & 0xFFFF;
+    b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF;
+    return v;
+  }
+  return stI16(add(p, n, sz), v);
+}
+
+/** ldI32(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ldI32o(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24));
+  }
+  return ldI32(add(p, n, sz));
+}
+
+/** stI32(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {number} v @param {number} [sz] */
+export function stI32o(p, n, v, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz, x = v | 0;
+    b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
+    return v;
+  }
+  return stI32(add(p, n, sz), v);
+}
+
+/** ldU64(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {bigint} */
+export function ldU64o(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    if (o + 8 > b.length) __oob64(b, o);
+    const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+    const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+    return hi === 0 ? BigInt(lo) : (BigInt(hi) << 32n) | BigInt(lo);
+  }
+  return ldU64(add(p, n, sz));
+}
+
+/** ldI64(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {bigint} */
+export function ldI64o(p, n, sz) {
+  // ldI64 is exactly asIntN(ldU64), boxes included, so one delegation covers
+  // both paths of the contract.
+  return BigInt.asIntN(64, ldU64o(p, n, sz));
+}
+
+/** stU64(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {bigint|number} v @param {number} [sz] */
+export function stU64o(p, n, v, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    let lo, hi;
+    if (typeof v === 'number' && v >= 0 && Number.isInteger(v)) {
+      lo = v >>> 0;
+      hi = Math.floor(v / 4294967296) >>> 0;
+    } else {
+      const x = BigInt.asUintN(64, BigInt(v));
+      lo = Number(x & 0xFFFFFFFFn);
+      hi = Number(x >> 32n);
+    }
+    b[o] = lo & 0xFF; b[o + 1] = (lo >>> 8) & 0xFF; b[o + 2] = (lo >>> 16) & 0xFF; b[o + 3] = (lo >>> 24) & 0xFF;
+    b[o + 4] = hi & 0xFF; b[o + 5] = (hi >>> 8) & 0xFF; b[o + 6] = (hi >>> 16) & 0xFF; b[o + 7] = (hi >>> 24) & 0xFF;
+    return v;
+  }
+  return stU64(add(p, n, sz), v);
+}
+
+/** stI64(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {bigint|number} v @param {number} [sz] */
+export function stI64o(p, n, v, sz) {
+  // stI64 differs from stU64 only in the box arm, which the fallback covers.
+  if (p.buf !== undefined) return stU64o(p, n, v, sz);
+  return stI64(add(p, n, sz), v);
+}
+
+/** ldPtr(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {CPtr|null} */
+export function ldPtro(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    if (o + 8 > b.length) __oob64(b, o);
+    const lo = (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+    const hi = (b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24)) >>> 0;
+    if (lo === 0 && hi === 0) return null;
+    if (hi >= 0x100) {
+      const v = __ptrRegistry[(hi - 0x100) * 4294967296 + lo];
+      if (v !== undefined) return v;
+    }
+    return __intPtr(lo, hi);
+  }
+  return ldPtr(add(p, n, sz));
+}
+
+/** stPtr(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {CPtr|null} v @param {number} [sz] */
+export function stPtro(p, n, v, sz) {
+  if (p.buf !== undefined) {
+    let id;
+    if (v === null || v === undefined) id = 0n;
+    else {
+      id = __PTR_ID_BASE + BigInt(__ptrRegistry.length);
+      __ptrRegistry.push(v);
+    }
+    stU64o(p, n, id, sz);
+    return v;
+  }
+  return stPtr(add(p, n, sz), v);
+}
+
+/** ldF64(add(p, n, sz)) @param {CPtr} p @param {number} n @param {number} [sz] @returns {number} */
+export function ldF64o(p, n, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    return new DataView(b.buffer, b.byteOffset + o, 8).getFloat64(0, true);
+  }
+  return ldF64(add(p, n, sz));
+}
+
+/** stF64(add(p, n, sz), v) @param {CPtr} p @param {number} n @param {number} v @param {number} [sz] */
+export function stF64o(p, n, v, sz) {
+  const b = p.buf;
+  if (b !== undefined && typeof n === 'number') {
+    const o = sz === undefined ? p.off + n : p.off + n * sz;
+    new DataView(b.buffer, b.byteOffset + o, 8).setFloat64(0, Number(v), true);
+    return v;
+  }
+  return stF64(add(p, n, sz), v);
+}
+
 // ------------------------------------------------------------ libc string ----
 
 /** @param {CPtr} p @returns {bigint} size_t */
