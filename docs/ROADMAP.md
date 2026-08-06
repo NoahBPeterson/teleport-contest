@@ -19,7 +19,7 @@ Status legend: ✅ done · 🔄 in progress · 📋 planned · ⚠️ blocked/ex
 |---|------|--------|-------|
 | 1.7 | Constant folding (emit-time) | ✅ | 301,692 folds, 0 mismatch, self-auditing |
 | 1.8 | Named constants — enum tier | ✅ | js/generated/nhconst.js: 3153 constants, 0 conflicts, `NHC.` namespace refs. Phase B (symbolic small all-enum exprs) shipped. docs/NOTES-named-constants.md |
-| 1.9 | Named constants — macro provenance tier | 📋 | cmap_to_glyph family first; fold to named form, audit like 1.7. Biggest Phase-2 diff hedge. |
+| 1.9 | Named constants — macro provenance tier | ✅ | Glyph macros named through the conditional arm C selects (3929 → `NHC.GLYPH_CMAP_STONE_OFF`); js/generated/nhmacro.js: 798 object-like `#define`s named by spelling location, 12,970 sites, `NHM.` namespace refs, agrees with `clang -E -dM` on all 798. docs/NOTES-named-constants.md |
 | 1.10 | Lua→JS script port | 📋 | User-mandated post-parity/pre-freeze. Transpiled Lua 5.4.8 interpreter stays as differential oracle per script. Large. |
 | 1.11 | Readability: de-box mega-globals, layout accessors | 📋 | After 1.8/1.9; corpus is the referee |
 | 1.12 | Delete js/legacy/, strip debug tripwires (cptr NaN guard etc.) | 📋 | Before tag; dead weight in baseline is fine, in diff is not |
