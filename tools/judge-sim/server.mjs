@@ -52,6 +52,13 @@ const SERVED_FILES = ['/', '/index.html', '/snapshot.json'];
 // default here matches the real mirror and exercises the service-worker
 // input path instead.
 const COI = args.includes('--coi');
+
+// --no-sw: 404 the service worker script, so the page cannot get the
+// service-worker input transport and (without COI) falls back to
+// js/boot/interactive.mjs's ReplayEngine. Test-only switch — the real mirror
+// always serves js/sw.js — and the only way to measure the fallback path
+// without touching the transport selection itself.
+const NO_SW = args.includes('--no-sw');
 const COI_HEADERS = COI ? {
     'cross-origin-opener-policy': 'same-origin',
     'cross-origin-embedder-policy': 'require-corp',
@@ -156,6 +163,11 @@ const server = http.createServer(async (req, res) => {
         }
         finish(200);
         return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
+    }
+
+    if (NO_SW && pathname === '/js/sw.js') {
+        finish(404);
+        return send(res, 404, 'Not Found (--no-sw)\n', 'text/plain');
     }
 
     // IN-SCOPE: plain static file out of js/ or frozen/, no directory escapes.

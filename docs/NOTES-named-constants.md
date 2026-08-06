@@ -377,15 +377,26 @@ Run after `node tools/c2js/build.mjs --all --force && git checkout js/generated/
 |---|---|---|---|---|
 | corpus | 69/69 | 69/69 | 69/69 | 69/69 |
 | per-move | 1.0368 ms | 1.0368 ms | 1.04 ms | 1.03 ms |
-| corpus wall clock | 182.6 s | — | — | 157.5 s |
+| corpus wall clock | 182.6 s | — | — | 157.5 s (see the A/B below) |
 | js/generated | 14,528,806 B | 14,531,821 B | 14,538,291 B | 14,721,427 B |
 | fold audit | 301,692 / 0 bad | 301,692 / 0 bad | — | 301,692 / 0 bad |
 
-Total size cost **+192,621 B (+1.3%)**, of which nhmacro.js is 24,884 B. No speed
-cost: three corpus runs of the final tree came in at 1.03, 1.08 and 1.27
-ms/move — the 1.27 is machine contention, and 1.03 is both the median-of-best
-and below the b002b16 baseline. Module namespace loads are immutable bindings,
-which V8 folds; `for (x = 1; x < NHM.COLNO; x++)` costs nothing measurable.
+Total size cost **+192,621 B (+1.3%)**, of which nhmacro.js is 24,884 B.
+
+No speed cost. Run-to-run spread on this machine is wide enough (1.03–1.27
+ms/move across five runs of the same tree) that a single number proves
+nothing, so the final comparison is an interleaved A/B — `git checkout
+b002b16 -- js/generated`, two runs, `git checkout HEAD -- js/generated`, two
+runs, back to back:
+
+| | run 1 | run 2 | mean |
+|---|---|---|---|
+| b002b16 | 1.09 | 1.06 | **1.075** |
+| HEAD | 0.94 | 1.04 | **0.99** |
+
+Both 69/69. HEAD is at or under the baseline. Module namespace loads are
+immutable bindings, which V8 folds; `for (x = 1; x < NHM.COLNO; x++)` costs
+nothing measurable.
 
 `node tools/strict-score.mjs` still fails on
 `FORBIDDEN in js/boot/interactive.mjs: import('node:worker_threads')`, as it did

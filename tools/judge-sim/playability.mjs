@@ -4,8 +4,12 @@
 // takes: mirror-shaped server, real headless Chrome, real index.html, real
 // keydown events, one at a time, timed from dispatch to painted frame.
 //
-//   node tools/judge-sim/playability.mjs [--coi] [--keys=hjkl...] [--seed=N]
-//                                        [--timeout=ms] [--keep]
+//   node tools/judge-sim/playability.mjs [--coi] [--no-sw] [--keys=hjkl...]
+//                                        [--seed=N] [--timeout=ms] [--keep]
+//
+// --no-sw additionally 404s js/sw.js, which leaves the page with no blocking
+// transport at all and forces the ReplayEngine fallback. That is the path the
+// judge's browser took, and the only way to measure it here.
 //
 // --coi serves COOP/COEP so the page is crossOriginIsolated and the engine
 // blocks on Atomics.wait over a SharedArrayBuffer. Without it the server
@@ -30,6 +34,10 @@ const opt = (name, dflt) => {
     return a ? a.slice(name.length + 3) : dflt;
 };
 const coi = args.includes('--coi');
+// --no-sw forces the page onto js/boot/interactive.mjs's ReplayEngine fallback
+// (no SAB without --coi, and no service worker if its script 404s). Test-only:
+// it measures the degraded path, which is the one the judge's browser hit.
+const noSw = args.includes('--no-sw');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
 
@@ -41,7 +49,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
-    ...(coi ? ['--coi'] : [])],
+    ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
 
 let up = false;
