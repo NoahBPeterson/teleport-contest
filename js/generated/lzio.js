@@ -9,25 +9,25 @@ import * as cptr from '../cptr.js';
 /** C ref: lzio.c:23 — @param {CPtr} z @returns {CInt} */
 export function luaZ_fill(z) {
     let size = cptr.box(0n);
-    let L = cptr.ldPtr(cptr.add(z, 32));
+    let L = cptr.ldPtro(z, 32);
     let buff;
     (void 0);
-    buff = cptr.ldPtr(cptr.add(z, 16))(L, cptr.ldPtr(cptr.add(z, 24)), size);
+    buff = cptr.ldPtro(z, 16)(L, cptr.ldPtro(z, 24), size);
     (void 0);
     if (cptr.eq(buff, (null)) || size.v == 0n ? 1 : 0)
         return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));
-    cptr.stPtr(cptr.add(z, 8), buff);
-    return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); })))))));
+    cptr.stPtro(z, 8, buff);
+    return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtro(z, 8), (v) => { cptr.stPtro(z, 8, v); })))))));
 }
 
 /** C ref: lzio.c:38 — @param {CPtr} L @param {CPtr} z @param {CPtr} reader @param {CPtr} data */
 export function luaZ_init(L, z, reader, data) {
-    cptr.stPtr(cptr.add(z, 32), L);
-    cptr.stPtr(cptr.add(z, 16), reader);
-    cptr.stPtr(cptr.add(z, 24), data);
+    cptr.stPtro(z, 32, L);
+    cptr.stPtro(z, 16, reader);
+    cptr.stPtro(z, 24, data);
     cptr.stU64(z, 0n);
-    cptr.stPtr(cptr.add(z, 8), null);
+    cptr.stPtro(z, 8, null);
 }
 
 /** C ref: lzio.c:48 — @param {CPtr} z @param {CPtr} b @param {CLongLong} n @returns {*} */
@@ -39,13 +39,13 @@ export function luaZ_read(z, b, n) {
                 return n;
             else {
                 (cptr.stU64(z, cptr.ldU64(z) + 1n)) - (1n);
-                cptr.postdec(() => cptr.ldPtr(cptr.add(z, 8)), (v) => { cptr.stPtr(cptr.add(z, 8), v); });
+                cptr.postdec(() => cptr.ldPtro(z, 8), (v) => { cptr.stPtro(z, 8, v); });
             }
         }
         m = (n <= cptr.ldU64(z)) ? n : cptr.ldU64(z);
-        cptr.memcpy(b, cptr.ldPtr(cptr.add(z, 8)), m);
+        cptr.memcpy(b, cptr.ldPtro(z, 8), m);
         cptr.stU64(z, cptr.ldU64(z) - m);
-        cptr.stPtr(cptr.add(z, 8), cptr.add(cptr.ldPtr(cptr.add(z, 8)), m));
+        cptr.stPtro(z, 8, cptr.add(cptr.ldPtro(z, 8), m));
         b = cptr.add(b, m);
         n -= m;
     }

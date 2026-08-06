@@ -226,32 +226,32 @@ function pushmode(L, oldmode) {
 }
 
 const __static_luaB_collectgarbage_opts = cptr.alloc(11 * 8);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 0), __sl11);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 8), __sl12);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 16), __sl10);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 24), __sl13);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 32), __sl14);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 40), __sl15);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 48), __sl16);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 56), __sl17);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 64), __sl9);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 72), __sl8);
-cptr.stPtr(cptr.add(__static_luaB_collectgarbage_opts, 80), null); /** C ref: lbaselib.c:200 — char *[11] (function-static) */
+cptr.stPtro(__static_luaB_collectgarbage_opts, 0, __sl11);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 8, __sl12);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 16, __sl10);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 24, __sl13);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 32, __sl14);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 40, __sl15);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 48, __sl16);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 56, __sl17);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 64, __sl9);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 72, __sl8);
+cptr.stPtro(__static_luaB_collectgarbage_opts, 80, null); /** C ref: lbaselib.c:200 — char *[11] (function-static) */
 const __static_luaB_collectgarbage_optsnum = cptr.alloc(10 * 4);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 0), 0);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 4), 1);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 8), 2);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 12), 3);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 16), 5);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 20), 6);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 24), 7);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 28), 9);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 32), 10);
-cptr.stI32(cptr.add(__static_luaB_collectgarbage_optsnum, 36), 11); /** C ref: lbaselib.c:203 — int[10] (function-static) */
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 0, 0);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 4, 1);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 8, 2);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 12, 3);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 16, 5);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 20, 6);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 24, 7);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 28, 9);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 32, 10);
+cptr.stI32o(__static_luaB_collectgarbage_optsnum, 36, 11); /** C ref: lbaselib.c:203 — int[10] (function-static) */
 
 /** C ref: lbaselib.c:199 — @param {CPtr} L @returns {CInt} */
 function luaB_collectgarbage(L) {
-    let o = cptr.ldI32(cptr.add(__static_luaB_collectgarbage_optsnum, luaL_checkoption(L, 1, __sl10, __static_luaB_collectgarbage_opts), 4));
+    let o = cptr.ldI32o(__static_luaB_collectgarbage_optsnum, luaL_checkoption(L, 1, __sl10, __static_luaB_collectgarbage_opts), 4);
     switch (o) {
         case 3:
         {
@@ -537,58 +537,58 @@ function luaB_tostring(L) {
 
 /** C ref: lbaselib.c:506 — luaL_Reg[26] */
 const base_funcs = cptr.alloc(26 * 16);
-cptr.stPtr(cptr.add(base_funcs, 0), __sl26);
-cptr.stPtr(cptr.add(base_funcs, 8), luaB_assert);
-cptr.stPtr(cptr.add(base_funcs, 16), __sl27);
-cptr.stPtr(cptr.add(base_funcs, 24), luaB_collectgarbage);
-cptr.stPtr(cptr.add(base_funcs, 32), __sl28);
-cptr.stPtr(cptr.add(base_funcs, 40), luaB_dofile);
-cptr.stPtr(cptr.add(base_funcs, 48), __sl29);
-cptr.stPtr(cptr.add(base_funcs, 56), luaB_error);
-cptr.stPtr(cptr.add(base_funcs, 64), __sl30);
-cptr.stPtr(cptr.add(base_funcs, 72), luaB_getmetatable);
-cptr.stPtr(cptr.add(base_funcs, 80), __sl31);
-cptr.stPtr(cptr.add(base_funcs, 88), luaB_ipairs);
-cptr.stPtr(cptr.add(base_funcs, 96), __sl32);
-cptr.stPtr(cptr.add(base_funcs, 104), luaB_loadfile);
-cptr.stPtr(cptr.add(base_funcs, 112), __sl33);
-cptr.stPtr(cptr.add(base_funcs, 120), luaB_load);
-cptr.stPtr(cptr.add(base_funcs, 128), __sl34);
-cptr.stPtr(cptr.add(base_funcs, 136), luaB_next);
-cptr.stPtr(cptr.add(base_funcs, 144), __sl35);
-cptr.stPtr(cptr.add(base_funcs, 152), luaB_pairs);
-cptr.stPtr(cptr.add(base_funcs, 160), __sl36);
-cptr.stPtr(cptr.add(base_funcs, 168), luaB_pcall);
-cptr.stPtr(cptr.add(base_funcs, 176), __sl37);
-cptr.stPtr(cptr.add(base_funcs, 184), luaB_print);
-cptr.stPtr(cptr.add(base_funcs, 192), __sl38);
-cptr.stPtr(cptr.add(base_funcs, 200), luaB_warn);
-cptr.stPtr(cptr.add(base_funcs, 208), __sl39);
-cptr.stPtr(cptr.add(base_funcs, 216), luaB_rawequal);
-cptr.stPtr(cptr.add(base_funcs, 224), __sl40);
-cptr.stPtr(cptr.add(base_funcs, 232), luaB_rawlen);
-cptr.stPtr(cptr.add(base_funcs, 240), __sl41);
-cptr.stPtr(cptr.add(base_funcs, 248), luaB_rawget);
-cptr.stPtr(cptr.add(base_funcs, 256), __sl42);
-cptr.stPtr(cptr.add(base_funcs, 264), luaB_rawset);
-cptr.stPtr(cptr.add(base_funcs, 272), __sl43);
-cptr.stPtr(cptr.add(base_funcs, 280), luaB_select);
-cptr.stPtr(cptr.add(base_funcs, 288), __sl44);
-cptr.stPtr(cptr.add(base_funcs, 296), luaB_setmetatable);
-cptr.stPtr(cptr.add(base_funcs, 304), __sl45);
-cptr.stPtr(cptr.add(base_funcs, 312), luaB_tonumber);
-cptr.stPtr(cptr.add(base_funcs, 320), __sl46);
-cptr.stPtr(cptr.add(base_funcs, 328), luaB_tostring);
-cptr.stPtr(cptr.add(base_funcs, 336), __sl47);
-cptr.stPtr(cptr.add(base_funcs, 344), luaB_type);
-cptr.stPtr(cptr.add(base_funcs, 352), __sl48);
-cptr.stPtr(cptr.add(base_funcs, 360), luaB_xpcall);
-cptr.stPtr(cptr.add(base_funcs, 368), __sl49);
-cptr.stPtr(cptr.add(base_funcs, 376), null);
-cptr.stPtr(cptr.add(base_funcs, 384), __sl50);
-cptr.stPtr(cptr.add(base_funcs, 392), null);
-cptr.stPtr(cptr.add(base_funcs, 400), null);
-cptr.stPtr(cptr.add(base_funcs, 408), null);
+cptr.stPtro(base_funcs, 0, __sl26);
+cptr.stPtro(base_funcs, 8, luaB_assert);
+cptr.stPtro(base_funcs, 16, __sl27);
+cptr.stPtro(base_funcs, 24, luaB_collectgarbage);
+cptr.stPtro(base_funcs, 32, __sl28);
+cptr.stPtro(base_funcs, 40, luaB_dofile);
+cptr.stPtro(base_funcs, 48, __sl29);
+cptr.stPtro(base_funcs, 56, luaB_error);
+cptr.stPtro(base_funcs, 64, __sl30);
+cptr.stPtro(base_funcs, 72, luaB_getmetatable);
+cptr.stPtro(base_funcs, 80, __sl31);
+cptr.stPtro(base_funcs, 88, luaB_ipairs);
+cptr.stPtro(base_funcs, 96, __sl32);
+cptr.stPtro(base_funcs, 104, luaB_loadfile);
+cptr.stPtro(base_funcs, 112, __sl33);
+cptr.stPtro(base_funcs, 120, luaB_load);
+cptr.stPtro(base_funcs, 128, __sl34);
+cptr.stPtro(base_funcs, 136, luaB_next);
+cptr.stPtro(base_funcs, 144, __sl35);
+cptr.stPtro(base_funcs, 152, luaB_pairs);
+cptr.stPtro(base_funcs, 160, __sl36);
+cptr.stPtro(base_funcs, 168, luaB_pcall);
+cptr.stPtro(base_funcs, 176, __sl37);
+cptr.stPtro(base_funcs, 184, luaB_print);
+cptr.stPtro(base_funcs, 192, __sl38);
+cptr.stPtro(base_funcs, 200, luaB_warn);
+cptr.stPtro(base_funcs, 208, __sl39);
+cptr.stPtro(base_funcs, 216, luaB_rawequal);
+cptr.stPtro(base_funcs, 224, __sl40);
+cptr.stPtro(base_funcs, 232, luaB_rawlen);
+cptr.stPtro(base_funcs, 240, __sl41);
+cptr.stPtro(base_funcs, 248, luaB_rawget);
+cptr.stPtro(base_funcs, 256, __sl42);
+cptr.stPtro(base_funcs, 264, luaB_rawset);
+cptr.stPtro(base_funcs, 272, __sl43);
+cptr.stPtro(base_funcs, 280, luaB_select);
+cptr.stPtro(base_funcs, 288, __sl44);
+cptr.stPtro(base_funcs, 296, luaB_setmetatable);
+cptr.stPtro(base_funcs, 304, __sl45);
+cptr.stPtro(base_funcs, 312, luaB_tonumber);
+cptr.stPtro(base_funcs, 320, __sl46);
+cptr.stPtro(base_funcs, 328, luaB_tostring);
+cptr.stPtro(base_funcs, 336, __sl47);
+cptr.stPtro(base_funcs, 344, luaB_type);
+cptr.stPtro(base_funcs, 352, __sl48);
+cptr.stPtro(base_funcs, 360, luaB_xpcall);
+cptr.stPtro(base_funcs, 368, __sl49);
+cptr.stPtro(base_funcs, 376, null);
+cptr.stPtro(base_funcs, 384, __sl50);
+cptr.stPtro(base_funcs, 392, null);
+cptr.stPtro(base_funcs, 400, null);
+cptr.stPtro(base_funcs, 408, null);
 
 /** C ref: lbaselib.c:537 — @param {CPtr} L @returns {CInt} */
 export function luaopen_base(L) {

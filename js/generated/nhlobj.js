@@ -152,20 +152,20 @@ function l_obj_gc(L) {
     let obj;
     let otmp;
     let lo = l_obj_check(L, 1);
-    if (lo && (obj = cptr.ldPtr(cptr.add(lo, 8))) !== null ? 1 : 0) {
-        if (cptr.ldI32(cptr.add(obj, 200)) > 0)
-            (cptr.stI32(cptr.add(obj, 200), cptr.ldI32(cptr.add(obj, 200)) + -1)) - (-1);
-        if (!cptr.ldI32(cptr.add(obj, 200)) && (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_FREE || cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0) {
-            if ((cptr.ldPtr(cptr.add((obj), 16)) !== null)) {
-                while ((otmp = cptr.ldPtr(cptr.add(obj, 16))) !== null) {
+    if (lo && (obj = cptr.ldPtro(lo, 8)) !== null ? 1 : 0) {
+        if (cptr.ldI32o(obj, 200) > 0)
+            (cptr.stI32o(obj, 200, cptr.ldI32o(obj, 200) + -1)) - (-1);
+        if (!cptr.ldI32o(obj, 200) && (cptr.ld1so(obj, 52) == NHM.OBJ_FREE || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0) {
+            if ((cptr.ldPtro((obj), 16) !== null)) {
+                while ((otmp = cptr.ldPtro(obj, 16)) !== null) {
                     obj_extract_self(otmp);
                     dealloc_obj(otmp);
                 }
             }
-            cptr.st1(cptr.add(obj, 52), NHM.OBJ_FREE);
+            cptr.st1o(obj, 52, NHM.OBJ_FREE);
             dealloc_obj(obj), obj = null;
         }
-        cptr.stPtr(cptr.add(lo, 8), null);
+        cptr.stPtro(lo, 8, null);
     }
     return 0;
 }
@@ -176,9 +176,9 @@ function l_obj_push(L, otmp) {
     (lua_getfield(L, -1001000, (__sl0)));
     lua_setmetatable(L, -2);
     cptr.stI32(lo, 0);
-    cptr.stPtr(cptr.add(lo, 8), otmp);
+    cptr.stPtro(lo, 8, otmp);
     if (otmp)
-        (cptr.stI32(cptr.add(otmp, 200), cptr.ldI32(cptr.add(otmp, 200)) + 1)) - (1);
+        (cptr.stI32o(otmp, 200, cptr.ldI32o(otmp, 200) + 1)) - (1);
     return lo;
 }
 
@@ -190,10 +190,10 @@ export function nhl_push_obj(L, otmp) {
 /** C ref: nhlobj.c:97 — @param {CPtr} L @returns {CInt} */
 function l_obj_getcontents(L) {
     let lo = l_obj_check(L, 1);
-    let obj = cptr.ldPtr(cptr.add(lo, 8));
+    let obj = cptr.ldPtro(lo, 8);
     if (!obj)
         nhl_error(L, __sl2);
-    void l_obj_push(L, cptr.ldPtr(cptr.add(obj, 16)));
+    void l_obj_push(L, cptr.ldPtro(obj, 16));
     return 1;
 }
 
@@ -203,16 +203,16 @@ function l_obj_add_to_container(L) {
     let lo = l_obj_check(L, 2);
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) || !(((lobox) && cptr.ldPtr(cptr.add((lobox), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lobox), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0)
+    if (!(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) || !(((lobox) && cptr.ldPtro((lobox), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lobox), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0)
         return 0;
-    refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
-    obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
-    otmp = add_to_container(cptr.ldPtr(cptr.add(lobox, 8)), cptr.ldPtr(cptr.add(lo, 8)));
-    if (!cptr.eq(otmp, cptr.ldPtr(cptr.add(lo, 8)))) {
-        cptr.stPtr(cptr.add(lo, 8), otmp);
-        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + (refs >>> 0)) | 0);
+    refs = cptr.ldI32o(cptr.ldPtro(lo, 8), 200) | 0;
+    obj_extract_self(cptr.ldPtro(lo, 8));
+    otmp = add_to_container(cptr.ldPtro(lobox, 8), cptr.ldPtro(lo, 8));
+    if (!cptr.eq(otmp, cptr.ldPtro(lo, 8))) {
+        cptr.stPtro(lo, 8, otmp);
+        cptr.stI32o(cptr.ldPtro(lo, 8), 200, (cptr.ldI32o(cptr.ldPtro(lo, 8), 200) + (refs >>> 0)) | 0);
     }
-    cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lobox, 8)), 36), weight(cptr.ldPtr(cptr.add(lobox, 8))) >>> 0);
+    cptr.stI32o(cptr.ldPtro(lobox, 8), 36, weight(cptr.ldPtro(lobox, 8)) >>> 0);
     return 0;
 }
 
@@ -221,14 +221,14 @@ export function nhl_obj_u_giveobj(L) {
     let lo = l_obj_check(L, 1);
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_INVENT ? 1 : 0)
+    if (!(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) || cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_INVENT ? 1 : 0)
         return 0;
-    refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
-    obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
-    otmp = addinv(cptr.ldPtr(cptr.add(lo, 8)));
-    if (!cptr.eq(otmp, cptr.ldPtr(cptr.add(lo, 8)))) {
-        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200), (cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) + (refs >>> 0)) | 0);
-        cptr.stPtr(cptr.add(lo, 8), otmp);
+    refs = cptr.ldI32o(cptr.ldPtro(lo, 8), 200) | 0;
+    obj_extract_self(cptr.ldPtro(lo, 8));
+    otmp = addinv(cptr.ldPtro(lo, 8));
+    if (!cptr.eq(otmp, cptr.ldPtro(lo, 8))) {
+        cptr.stI32o(cptr.ldPtro(lo, 8), 200, (cptr.ldI32o(cptr.ldPtro(lo, 8), 200) + (refs >>> 0)) | 0);
+        cptr.stPtro(lo, 8, otmp);
     }
     return 0;
 }
@@ -246,8 +246,8 @@ function l_obj_objects_to_table(L) {
         otyp = Number(BigInt.asIntN(32, luaL_checkinteger(L, 1)));
     } else if (lua_type(L, 1) == 7) {
         let lo = l_obj_check(L, 1);
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
-            otyp = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 32));
+        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
+            otyp = cptr.ldI16o(cptr.ldPtro(lo, 8), 32);
     }
     lua_settop(L, -2);
     if (otyp == -1) {
@@ -256,109 +256,109 @@ function l_obj_objects_to_table(L) {
     }
     o = cptr.add(objects, otyp, 120);
     lua_createtable(L, 0, 0);
-    if ((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))))
-        nhl_add_table_entry_str(L, __sl4, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))));
-    if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, otyp, 120)), 2)), 16), 8))))
-        nhl_add_table_entry_str(L, __sl5, (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, otyp, 120)), 2)), 16), 8))));
-    if (cptr.ldPtr(cptr.add(o, 8)))
-        nhl_add_table_entry_str(L, __sl6, cptr.ldPtr(cptr.add(o, 8)));
-    nhl_add_table_entry_int(L, __sl7, BigInt((cptr.ldI32(cptr.add(o, 16)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl8, BigInt((cptr.ldI32(cptr.add(o, 20)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl9, BigInt((cptr.ldI32(cptr.add(o, 24)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl10, BigInt((cptr.ldI32(cptr.add(o, 28)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl11, BigInt((cptr.ldI32(cptr.add(o, 32)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl12, BigInt((cptr.ldI32(cptr.add(o, 36)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl13, BigInt((cptr.ldI32(cptr.add(o, 40)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl14, BigInt((cptr.ldI32(cptr.add(o, 44)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl15, BigInt((cptr.ldI32(cptr.add(o, 48)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl16, BigInt((cptr.ldI32(cptr.add(o, 52)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl17, BigInt((cptr.ldI32(cptr.add(o, 60)) & 7) >>> 0));
-    nhl_add_table_entry_str(L, __sl18, cptr.ldPtr(cptr.add(materialnm, (cptr.ldI32(cptr.add(o, 64)) & 31), 8)));
-    nhl_add_table_entry_int(L, __sl19, BigInt(cptr.ld1u(cptr.add(o, 69)) >>> 0));
-    nhl_add_table_entry_char(L, __sl20, cptr.ld1s(cptr.add(def_oc_syms, uchar(cptr.ld1s(cptr.add(o, 70))), 24)));
-    nhl_add_table_entry_int(L, __sl21, BigInt(cptr.ld1s(cptr.add(o, 71))));
-    nhl_add_table_entry_int(L, __sl22, BigInt(cptr.ld1u(cptr.add(o, 72)) >>> 0));
-    nhl_add_table_entry_int(L, __sl23, BigInt(cptr.ldI16(cptr.add(o, 74))));
-    nhl_add_table_entry_int(L, __sl24, BigInt(cptr.ldI32(cptr.add(o, 76)) >>> 0));
-    nhl_add_table_entry_int(L, __sl25, BigInt(cptr.ldI16(cptr.add(o, 80))));
-    nhl_add_table_entry_int(L, __sl26, BigInt(cptr.ld1s(cptr.add(o, 82))));
-    nhl_add_table_entry_int(L, __sl27, BigInt(cptr.ld1s(cptr.add(o, 83))));
-    nhl_add_table_entry_int(L, __sl28, BigInt(cptr.ldU16(cptr.add(o, 86)) >>> 0));
+    if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)))
+        nhl_add_table_entry_str(L, __sl4, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)));
+    if ((cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16), 8)))
+        nhl_add_table_entry_str(L, __sl5, (cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16), 8)));
+    if (cptr.ldPtro(o, 8))
+        nhl_add_table_entry_str(L, __sl6, cptr.ldPtro(o, 8));
+    nhl_add_table_entry_int(L, __sl7, BigInt((cptr.ldI32o(o, 16) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl8, BigInt((cptr.ldI32o(o, 20) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl9, BigInt((cptr.ldI32o(o, 24) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl10, BigInt((cptr.ldI32o(o, 28) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl11, BigInt((cptr.ldI32o(o, 32) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl12, BigInt((cptr.ldI32o(o, 36) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl13, BigInt((cptr.ldI32o(o, 40) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl14, BigInt((cptr.ldI32o(o, 44) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl15, BigInt((cptr.ldI32o(o, 48) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl16, BigInt((cptr.ldI32o(o, 52) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl17, BigInt((cptr.ldI32o(o, 60) & 7) >>> 0));
+    nhl_add_table_entry_str(L, __sl18, cptr.ldPtro(materialnm, (cptr.ldI32o(o, 64) & 31), 8));
+    nhl_add_table_entry_int(L, __sl19, BigInt(cptr.ld1uo(o, 69) >>> 0));
+    nhl_add_table_entry_char(L, __sl20, cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(o, 70)), 24));
+    nhl_add_table_entry_int(L, __sl21, BigInt(cptr.ld1so(o, 71)));
+    nhl_add_table_entry_int(L, __sl22, BigInt(cptr.ld1uo(o, 72) >>> 0));
+    nhl_add_table_entry_int(L, __sl23, BigInt(cptr.ldI16o(o, 74)));
+    nhl_add_table_entry_int(L, __sl24, BigInt(cptr.ldI32o(o, 76) >>> 0));
+    nhl_add_table_entry_int(L, __sl25, BigInt(cptr.ldI16o(o, 80)));
+    nhl_add_table_entry_int(L, __sl26, BigInt(cptr.ld1so(o, 82)));
+    nhl_add_table_entry_int(L, __sl27, BigInt(cptr.ld1so(o, 83)));
+    nhl_add_table_entry_int(L, __sl28, BigInt(cptr.ldU16o(o, 86) >>> 0));
     return 1;
 }
 
 /** C ref: nhlobj.c:247 — @param {CPtr} L @returns {CInt} */
 function l_obj_to_table(L) {
     let lo = l_obj_check(L, 1);
-    let obj = cptr.ldPtr(cptr.add(lo, 8));
+    let obj = cptr.ldPtro(lo, 8);
     lua_createtable(L, 0, 0);
-    if (!obj || cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_LUAFREE ? 1 : 0) {
+    if (!obj || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE ? 1 : 0) {
         nhl_add_table_entry_int(L, __sl29, 1n);
         return 1;
     }
-    nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtr(cptr.add((obj), 16)) !== null)));
-    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16(cptr.add((obj), 32)) >= NHC.LARGE_BOX && cptr.ldI16(cptr.add((obj), 32)) <= NHC.BAG_OF_TRICKS ? 1 : 0)));
-    nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32(cptr.add(obj, 24)) >>> 0));
-    nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16(cptr.add(obj, 28))));
-    nhl_add_table_entry_int(L, __sl34, BigInt(cptr.ldI16(cptr.add(obj, 30))));
-    nhl_add_table_entry_int(L, __sl35, BigInt(cptr.ldI16(cptr.add(obj, 32))));
-    if ((cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120))), 16))))
-        nhl_add_table_entry_str(L, __sl36, (cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120))), 16))));
-    if ((cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))))
-        nhl_add_table_entry_str(L, __sl37, (cptr.ldPtr(cptr.add(cptr.add(obj_descr, cptr.ldI16(cptr.add((cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120)), 2)), 16), 8))));
-    nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI32(cptr.add(obj, 36)) >>> 0));
-    nhl_add_table_entry_int(L, __sl39, cptr.ldI64(cptr.add(obj, 40)));
-    nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1s(cptr.add(obj, 48))));
-    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE)
-        nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_HISTORIC) != 0)));
-    if (cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) {
-        nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_MALE) != 0)));
-        nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_FEMALE) != 0)));
+    nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtro((obj), 16) !== null)));
+    nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16o((obj), 32) >= NHC.LARGE_BOX && cptr.ldI16o((obj), 32) <= NHC.BAG_OF_TRICKS ? 1 : 0)));
+    nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32o(obj, 24) >>> 0));
+    nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16o(obj, 28)));
+    nhl_add_table_entry_int(L, __sl34, BigInt(cptr.ldI16o(obj, 30)));
+    nhl_add_table_entry_int(L, __sl35, BigInt(cptr.ldI16o(obj, 32)));
+    if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, 32), 120))), 16)))
+        nhl_add_table_entry_str(L, __sl36, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, 32), 120))), 16)));
+    if ((cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16), 8)))
+        nhl_add_table_entry_str(L, __sl37, (cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16), 8)));
+    nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI32o(obj, 36) >>> 0));
+    nhl_add_table_entry_int(L, __sl39, cptr.ldI64o(obj, 40));
+    nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1so(obj, 48)));
+    if (cptr.ldI16o(obj, 32) == NHC.STATUE)
+        nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_HISTORIC) != 0)));
+    if (cptr.ldI16o(obj, 32) == NHC.CORPSE || cptr.ldI16o(obj, 32) == NHC.STATUE ? 1 : 0) {
+        nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_MALE) != 0)));
+        nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_FEMALE) != 0)));
     }
-    nhl_add_table_entry_char(L, __sl44, cptr.ld1s(cptr.add(def_oc_syms, uchar(cptr.ld1s(cptr.add(obj, 49))), 24)));
-    nhl_add_table_entry_char(L, __sl45, cptr.ld1s(cptr.add(obj, 50)));
-    nhl_add_table_entry_int(L, __sl46, BigInt(cptr.ld1s(cptr.add(obj, 52))));
-    nhl_add_table_entry_int(L, __sl47, BigInt((cptr.ldI32(cptr.add(obj, 56)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl48, BigInt((cptr.ldI32(cptr.add(obj, 60)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl49, BigInt((cptr.ldI32(cptr.add(obj, 64)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl50, BigInt((cptr.ldI32(cptr.add(obj, 68)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl51, BigInt((cptr.ldI32(cptr.add(obj, 80)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl52, BigInt((cptr.ldI32(cptr.add(obj, 84)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl53, BigInt((cptr.ldI32(cptr.add(obj, 88)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32(cptr.add(obj, 92)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl55, BigInt((cptr.ldI32(cptr.add(obj, 104)) & 1) >>> 0));
-    if (cptr.ld1s(cptr.add(obj, 49)) == NHC.POTION_CLASS)
-        nhl_add_table_entry_int(L, __sl56, BigInt((cptr.ldI32(cptr.add(obj, 112)) & 3) >>> 0));
+    nhl_add_table_entry_char(L, __sl44, cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(obj, 49)), 24));
+    nhl_add_table_entry_char(L, __sl45, cptr.ld1so(obj, 50));
+    nhl_add_table_entry_int(L, __sl46, BigInt(cptr.ld1so(obj, 52)));
+    nhl_add_table_entry_int(L, __sl47, BigInt((cptr.ldI32o(obj, 56) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl48, BigInt((cptr.ldI32o(obj, 60) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl49, BigInt((cptr.ldI32o(obj, 64) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl50, BigInt((cptr.ldI32o(obj, 68) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl51, BigInt((cptr.ldI32o(obj, 80) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl52, BigInt((cptr.ldI32o(obj, 84) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl53, BigInt((cptr.ldI32o(obj, 88) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32o(obj, 92) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl55, BigInt((cptr.ldI32o(obj, 104) & 1) >>> 0));
+    if (cptr.ld1so(obj, 49) == NHC.POTION_CLASS)
+        nhl_add_table_entry_int(L, __sl56, BigInt((cptr.ldI32o(obj, 112) & 3) >>> 0));
     else
-        nhl_add_table_entry_int(L, __sl57, BigInt((cptr.ldI32(cptr.add(obj, 112)) & 3) >>> 0));
-    nhl_add_table_entry_int(L, __sl58, BigInt((cptr.ldI32(cptr.add(obj, 116)) & 3) >>> 0));
-    nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32(cptr.add(obj, 120)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32(cptr.add(obj, 124)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32(cptr.add(obj, 128)) & 1) >>> 0));
-    if ((((cptr.ld1s(cptr.add(obj, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) >= -24 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(obj, 32)), 120), 68)) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
-        nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32(cptr.add(obj, 132)) & 1) >>> 0));
+        nhl_add_table_entry_int(L, __sl57, BigInt((cptr.ldI32o(obj, 112) & 3) >>> 0));
+    nhl_add_table_entry_int(L, __sl58, BigInt((cptr.ldI32o(obj, 116) & 3) >>> 0));
+    nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32o(obj, 120) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32o(obj, 124) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32o(obj, 128) & 1) >>> 0));
+    if ((((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(obj, 32), 120), 68) >= -24 ? 1 : 0) && cptr.ld1so(cptr.add(objects, cptr.ldI16o(obj, 32), 120), 68) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
+        nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0));
     else
-        nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32(cptr.add(obj, 132)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl64, BigInt((cptr.ldI32(cptr.add(obj, 72)) & 7) >>> 0));
-    nhl_add_table_entry_int(L, __sl65, BigInt((cptr.ldI32(cptr.add(obj, 76)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl66, BigInt((cptr.ldI32(cptr.add(obj, 136)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl67, BigInt((cptr.ldI32(cptr.add(obj, 140)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl68, BigInt((cptr.ldI32(cptr.add(obj, 108)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl69, BigInt((cptr.ldI32(cptr.add(obj, 160)) & 7) >>> 0));
-    nhl_add_table_entry_int(L, __sl70, BigInt((cptr.ldI32(cptr.add(obj, 144)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl71, BigInt((cptr.ldI32(cptr.add(obj, 148)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl72, BigInt((cptr.ldI32(cptr.add(obj, 96)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl73, BigInt((cptr.ldI32(cptr.add(obj, 100)) & 1) >>> 0));
-    nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32(cptr.add(obj, 168))));
-    if (cptr.ldI32(cptr.add(obj, 168)) != NHC.NON_PM && ((((cptr.ldI16(cptr.add(obj, 32)) == NHC.TIN || cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.EGG ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.FIGURINE ? 1 : 0) || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) ? 1 : 0)
-        nhl_add_table_entry_str(L, __sl75, cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), NHC.NEUTRAL, 8)));
-    nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32(cptr.add(obj, 172))));
-    nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32(cptr.add(obj, 176)) >>> 0));
-    nhl_add_table_entry_int(L, __sl78, cptr.ldI64(cptr.add(obj, 184)));
-    nhl_add_table_entry_int(L, __sl79, cptr.ldI64(cptr.add(obj, 192)));
-    nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))) ? 1 : 0)));
-    if ((cptr.ldPtr(cptr.add((obj), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))) ? 1 : 0))
-        nhl_add_table_entry_str(L, __sl81, (cptr.ldPtr(cptr.ldPtr(cptr.add((obj), 208)))));
+        nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl64, BigInt((cptr.ldI32o(obj, 72) & 7) >>> 0));
+    nhl_add_table_entry_int(L, __sl65, BigInt((cptr.ldI32o(obj, 76) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl66, BigInt((cptr.ldI32o(obj, 136) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl67, BigInt((cptr.ldI32o(obj, 140) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl68, BigInt((cptr.ldI32o(obj, 108) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl69, BigInt((cptr.ldI32o(obj, 160) & 7) >>> 0));
+    nhl_add_table_entry_int(L, __sl70, BigInt((cptr.ldI32o(obj, 144) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl71, BigInt((cptr.ldI32o(obj, 148) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl72, BigInt((cptr.ldI32o(obj, 96) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl73, BigInt((cptr.ldI32o(obj, 100) & 1) >>> 0));
+    nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32o(obj, 168)));
+    if (cptr.ldI32o(obj, 168) != NHC.NON_PM && ((((cptr.ldI16o(obj, 32) == NHC.TIN || cptr.ldI16o(obj, 32) == NHC.CORPSE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.EGG ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.FIGURINE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.STATUE ? 1 : 0) ? 1 : 0)
+        nhl_add_table_entry_str(L, __sl75, cptr.ldPtro(cptr.add(mons, cptr.ldI32o(obj, 168), 96), NHC.NEUTRAL, 8));
+    nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32o(obj, 172)));
+    nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32o(obj, 176) >>> 0));
+    nhl_add_table_entry_int(L, __sl78, cptr.ldI64o(obj, 184));
+    nhl_add_table_entry_int(L, __sl79, cptr.ldI64o(obj, 192));
+    nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208))) ? 1 : 0)));
+    if ((cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208))) ? 1 : 0))
+        nhl_add_table_entry_str(L, __sl81, (cptr.ldPtr(cptr.ldPtro((obj), 208))));
     return 1;
 }
 
@@ -404,7 +404,7 @@ function l_obj_at(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         cvt_to_abscoord(x, y);
         lua_settop(L, -3);
-        void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x.v, 168), y.v, 8)));
+        void l_obj_push(L, cptr.ldPtro(cptr.add(cptr.add(svl, 62160), x.v, 168), y.v, 8));
         return 1;
     } else
         nhl_error(L, __sl84);
@@ -423,9 +423,9 @@ function l_obj_placeobj(L) {
     y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
     cvt_to_abscoord(x, y);
     lua_settop(L, -4);
-    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0)) {
-        obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
-        place_object(cptr.ldPtr(cptr.add(lo, 8)), x.v, y.v);
+    if ((((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0)) {
+        obj_extract_self(cptr.ldPtro(lo, 8));
+        place_object(cptr.ldPtro(lo, 8), x.v, y.v);
         newsym(x.v, y.v);
     }
     return 0;
@@ -435,14 +435,14 @@ function l_obj_placeobj(L) {
 function l_obj_nextobj(L) {
     let argc = lua_gettop(L);
     if (argc == 0) {
-        void l_obj_push(L, cptr.ldPtr(cptr.add(svl, 89040)));
+        void l_obj_push(L, cptr.ldPtro(svl, 89040));
     } else {
         let lo = l_obj_check(L, 1);
         let use_nexthere = 0;
         if (argc == 2)
             use_nexthere = schar(lua_toboolean(L, 2));
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
-            void l_obj_push(L, (use_nexthere && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_FLOOR ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)) : cptr.ldPtr(cptr.ldPtr(cptr.add(lo, 8))));
+        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
+            void l_obj_push(L, (use_nexthere && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_FLOOR ? 1 : 0) ? cptr.ldPtro(cptr.ldPtro(lo, 8), 8) : cptr.ldPtr(cptr.ldPtro(lo, 8)));
     }
     return 1;
 }
@@ -450,8 +450,8 @@ function l_obj_nextobj(L) {
 /** C ref: nhlobj.c:469 — @param {CPtr} L @returns {CInt} */
 function l_obj_container(L) {
     let lo = l_obj_check(L, 1);
-    if ((lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_CONTAINED ? 1 : 0)
-        void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)));
+    if ((lo && cptr.ldPtro(lo, 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_CONTAINED ? 1 : 0)
+        void l_obj_push(L, cptr.ldPtro(cptr.ldPtro(lo, 8), 8));
     else
         void l_obj_push(L, null);
     return 1;
@@ -460,7 +460,7 @@ function l_obj_container(L) {
 /** C ref: nhlobj.c:483 — @param {CPtr} L @returns {CInt} */
 function l_obj_isnull(L) {
     let lo = l_obj_check(L, 1);
-    lua_pushboolean(L, !(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0));
+    lua_pushboolean(L, !(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0));
     return 1;
 }
 
@@ -470,8 +470,8 @@ function l_obj_timer_has(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
-            lua_pushboolean(L, obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype));
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+            lua_pushboolean(L, obj_has_timer(cptr.ldPtro(lo, 8), timertype));
             return 1;
         } else {
             lua_pushboolean(L, 0);
@@ -488,8 +488,8 @@ function l_obj_timer_peek(L) {
     if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
-            lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+            lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8))));
             return 1;
         } else {
             lua_pushinteger(L, 0n);
@@ -505,14 +505,14 @@ function l_obj_timer_stop(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
         let lo = l_obj_check(L, 1);
-        if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
-            obj_stop_timers(cptr.ldPtr(cptr.add(lo, 8)));
+        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
+            obj_stop_timers(cptr.ldPtro(lo, 8));
         return 0;
     } else if (argc == 2) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) {
-            lua_pushinteger(L, stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8)))));
+        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+            lua_pushinteger(L, stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8))));
             return 1;
         } else {
             lua_pushinteger(L, 0n);
@@ -530,10 +530,10 @@ function l_obj_timer_start(L) {
         let lo = l_obj_check(L, 1);
         let timertype = nhl_get_timertype(L, 2);
         let when = luaL_checkinteger(L, 3);
-        if (((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && when > 0n ? 1 : 0) {
-            if (obj_has_timer(cptr.ldPtr(cptr.add(lo, 8)), timertype))
-                stop_timer(timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
-            start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtr(cptr.add(lo, 8))));
+        if (((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) && when > 0n ? 1 : 0) {
+            if (obj_has_timer(cptr.ldPtro(lo, 8), timertype))
+                stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8)));
+            start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtro(lo, 8)));
         }
     } else
         nhl_error(L, __sl89);
@@ -548,18 +548,18 @@ function l_obj_bury(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     if (argc == 1) {
-        x.v = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28));
-        y.v = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 30));
+        x.v = cptr.ldI16o(cptr.ldPtro(lo, 8), 28);
+        y.v = cptr.ldI16o(cptr.ldPtro(lo, 8), 30);
     } else if (argc == 3) {
         x.v = Number(BigInt.asIntN(16, lua_tointegerx(L, 2, null)));
         y.v = Number(BigInt.asIntN(16, lua_tointegerx(L, 3, null)));
         cvt_to_abscoord(x, y);
     } else
         nhl_error(L, __sl90);
-    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
-        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28), x.v);
-        cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 30), y.v);
-        void bury_an_obj(cptr.ldPtr(cptr.add(lo, 8)), dealloced);
+    if ((((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
+        cptr.stI16o(cptr.ldPtro(lo, 8), 28, x.v);
+        cptr.stI16o(cptr.ldPtro(lo, 8), 30, y.v);
+        void bury_an_obj(cptr.ldPtro(lo, 8), dealloced);
     }
     lua_pushboolean(L, dealloced.v);
     return 1;
@@ -567,45 +567,45 @@ function l_obj_bury(L) {
 
 /** C ref: nhlobj.c:629 — struct luaL_Reg[16] */
 const l_obj_methods = cptr.alloc(16 * 16);
-cptr.stPtr(cptr.add(l_obj_methods, 0), __sl91);
-cptr.stPtr(cptr.add(l_obj_methods, 8), l_obj_new_readobjnam);
-cptr.stPtr(cptr.add(l_obj_methods, 16), __sl92);
-cptr.stPtr(cptr.add(l_obj_methods, 24), l_obj_isnull);
-cptr.stPtr(cptr.add(l_obj_methods, 32), __sl93);
-cptr.stPtr(cptr.add(l_obj_methods, 40), l_obj_at);
-cptr.stPtr(cptr.add(l_obj_methods, 48), __sl94);
-cptr.stPtr(cptr.add(l_obj_methods, 56), l_obj_nextobj);
-cptr.stPtr(cptr.add(l_obj_methods, 64), __sl95);
-cptr.stPtr(cptr.add(l_obj_methods, 72), l_obj_to_table);
-cptr.stPtr(cptr.add(l_obj_methods, 80), __sl20);
-cptr.stPtr(cptr.add(l_obj_methods, 88), l_obj_objects_to_table);
-cptr.stPtr(cptr.add(l_obj_methods, 96), __sl96);
-cptr.stPtr(cptr.add(l_obj_methods, 104), l_obj_placeobj);
-cptr.stPtr(cptr.add(l_obj_methods, 112), __sl97);
-cptr.stPtr(cptr.add(l_obj_methods, 120), l_obj_container);
-cptr.stPtr(cptr.add(l_obj_methods, 128), __sl98);
-cptr.stPtr(cptr.add(l_obj_methods, 136), l_obj_getcontents);
-cptr.stPtr(cptr.add(l_obj_methods, 144), __sl99);
-cptr.stPtr(cptr.add(l_obj_methods, 152), l_obj_add_to_container);
-cptr.stPtr(cptr.add(l_obj_methods, 160), __sl100);
-cptr.stPtr(cptr.add(l_obj_methods, 168), l_obj_timer_has);
-cptr.stPtr(cptr.add(l_obj_methods, 176), __sl101);
-cptr.stPtr(cptr.add(l_obj_methods, 184), l_obj_timer_peek);
-cptr.stPtr(cptr.add(l_obj_methods, 192), __sl102);
-cptr.stPtr(cptr.add(l_obj_methods, 200), l_obj_timer_stop);
-cptr.stPtr(cptr.add(l_obj_methods, 208), __sl103);
-cptr.stPtr(cptr.add(l_obj_methods, 216), l_obj_timer_start);
-cptr.stPtr(cptr.add(l_obj_methods, 224), __sl104);
-cptr.stPtr(cptr.add(l_obj_methods, 232), l_obj_bury);
-cptr.stPtr(cptr.add(l_obj_methods, 240), null);
-cptr.stPtr(cptr.add(l_obj_methods, 248), null);
+cptr.stPtro(l_obj_methods, 0, __sl91);
+cptr.stPtro(l_obj_methods, 8, l_obj_new_readobjnam);
+cptr.stPtro(l_obj_methods, 16, __sl92);
+cptr.stPtro(l_obj_methods, 24, l_obj_isnull);
+cptr.stPtro(l_obj_methods, 32, __sl93);
+cptr.stPtro(l_obj_methods, 40, l_obj_at);
+cptr.stPtro(l_obj_methods, 48, __sl94);
+cptr.stPtro(l_obj_methods, 56, l_obj_nextobj);
+cptr.stPtro(l_obj_methods, 64, __sl95);
+cptr.stPtro(l_obj_methods, 72, l_obj_to_table);
+cptr.stPtro(l_obj_methods, 80, __sl20);
+cptr.stPtro(l_obj_methods, 88, l_obj_objects_to_table);
+cptr.stPtro(l_obj_methods, 96, __sl96);
+cptr.stPtro(l_obj_methods, 104, l_obj_placeobj);
+cptr.stPtro(l_obj_methods, 112, __sl97);
+cptr.stPtro(l_obj_methods, 120, l_obj_container);
+cptr.stPtro(l_obj_methods, 128, __sl98);
+cptr.stPtro(l_obj_methods, 136, l_obj_getcontents);
+cptr.stPtro(l_obj_methods, 144, __sl99);
+cptr.stPtro(l_obj_methods, 152, l_obj_add_to_container);
+cptr.stPtro(l_obj_methods, 160, __sl100);
+cptr.stPtro(l_obj_methods, 168, l_obj_timer_has);
+cptr.stPtro(l_obj_methods, 176, __sl101);
+cptr.stPtro(l_obj_methods, 184, l_obj_timer_peek);
+cptr.stPtro(l_obj_methods, 192, __sl102);
+cptr.stPtro(l_obj_methods, 200, l_obj_timer_stop);
+cptr.stPtro(l_obj_methods, 208, __sl103);
+cptr.stPtro(l_obj_methods, 216, l_obj_timer_start);
+cptr.stPtro(l_obj_methods, 224, __sl104);
+cptr.stPtro(l_obj_methods, 232, l_obj_bury);
+cptr.stPtro(l_obj_methods, 240, null);
+cptr.stPtro(l_obj_methods, 248, null);
 
 /** C ref: nhlobj.c:648 — luaL_Reg[2] */
 const l_obj_meta = cptr.alloc(2 * 16);
-cptr.stPtr(cptr.add(l_obj_meta, 0), __sl105);
-cptr.stPtr(cptr.add(l_obj_meta, 8), l_obj_gc);
-cptr.stPtr(cptr.add(l_obj_meta, 16), null);
-cptr.stPtr(cptr.add(l_obj_meta, 24), null);
+cptr.stPtro(l_obj_meta, 0, __sl105);
+cptr.stPtro(l_obj_meta, 8, l_obj_gc);
+cptr.stPtro(l_obj_meta, 16, null);
+cptr.stPtro(l_obj_meta, 24, null);
 
 /** C ref: nhlobj.c:654 — @param {CPtr} L @returns {CInt} */
 export function l_obj_register(L) {

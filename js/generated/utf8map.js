@@ -23,7 +23,7 @@ export function unicode_val(cp) {
     let dcount;
     if (cp && cptr.ld1s(cp) ? 1 : 0) {
         cval = (dcount = 0);
-        if ((((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117 ? 1 : 0) && cptr.ld1s(cptr.add(cp, 1)) == 43 ? 1 : 0) && cptr.ld1s(cptr.add(cp, 2)) ? 1 : 0) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cptr.add(cp, 2)))) !== null ? 1 : 0) {
+        if ((((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117 ? 1 : 0) && cptr.ld1so(cp, 1) == 43 ? 1 : 0) && cptr.ld1so(cp, 2) ? 1 : 0) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null ? 1 : 0) {
             cp = cptr.add(cp, 2);
             do {
                 cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
@@ -38,16 +38,16 @@ export function set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
     if (!tmpgm || !utf32ch ? 1 : 0)
         return 0;
-    if (cptr.ldPtr(cptr.add(gmap, 24)) === null) {
-        cptr.stPtr(cptr.add(gmap, 24), alloc(16));
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gmap, 24)), 8), null);
+    if (cptr.ldPtro(gmap, 24) === null) {
+        cptr.stPtro(gmap, 24, alloc(16));
+        cptr.stPtro(cptr.ldPtro(gmap, 24), 8, null);
     }
-    if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gmap, 24)), 8)) !== null) {
-        cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gmap, 24)), 8)));
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gmap, 24)), 8), null);
+    if (cptr.ldPtro(cptr.ldPtro(gmap, 24), 8) !== null) {
+        cptr.free(cptr.ldPtro(cptr.ldPtro(gmap, 24), 8));
+        cptr.stPtro(cptr.ldPtro(gmap, 24), 8, null);
     }
-    cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gmap, 24)), 8), dupstr(utf8str));
-    cptr.stI32(cptr.ldPtr(cptr.add(gmap, 24)), utf32ch);
+    cptr.stPtro(cptr.ldPtro(gmap, 24), 8, dupstr(utf8str));
+    cptr.stI32(cptr.ldPtro(gmap, 24), utf32ch);
     return 1;
 }
 
@@ -57,18 +57,18 @@ export function free_all_glyphmap_u() {
     let x;
     let y;
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24))) {
-            if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8))) {
-                cptr.free(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8)));
-                cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)), 8), null);
+        if (cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24)) {
+            if (cptr.ldPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8)) {
+                cptr.free(cptr.ldPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8));
+                cptr.stPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8, null);
             }
-            cptr.free(cptr.ldPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24)));
-            cptr.stPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24), null);
+            cptr.free(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24));
+            cptr.stPtro(cptr.add(glyphmap, glyph, 32), 24, null);
         }
     }
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
-            cptr.stPtr(cptr.add(cptr.add(cptr.add(gg, y, 4480), x, 56), 48), null);
+            cptr.stPtro(cptr.add(cptr.add(gg, y, 4480), x, 56), 48, null);
         }
     }
 }
@@ -91,15 +91,15 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtr(cptr.add(glyphinfo, 40)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)) ? 1 : 0) {
-                        let ucp = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8));
+                    if (cptr.ldPtro(glyphinfo, 40) && cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8) ? 1 : 0) {
+                        let ucp = cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8);
                         while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0)
                             cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
                         if (retflags)
                             cptr.stI32(retflags, 1);
                     } else {
-                        so = cptr.ldI32(cptr.add(glyphinfo, 24));
-                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.add(gs, 680), so, 1))));
+                        so = cptr.ldI32o(glyphinfo, 24);
+                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo(cptr.add(gs, 680), so, 1)));
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }
@@ -127,51 +127,51 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
     let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), NHC.custom_ureps, 32);
     let details;
     let newdetails = null;
-    if (!cptr.ldPtr(cptr.add(gdc, 16))) {
+    if (!cptr.ldPtro(gdc, 16)) {
         cptr.stPtr(gdc, dupstr(customization_name));
-        cptr.stI32(cptr.add(gdc, 12), NHC.custom_ureps);
-        cptr.stPtr(cptr.add(gdc, 16), null);
-        cptr.stPtr(cptr.add(gdc, 24), null);
+        cptr.stI32o(gdc, 12, NHC.custom_ureps);
+        cptr.stPtro(gdc, 16, null);
+        cptr.stPtro(gdc, 24, null);
     }
     details = find_matching_customization(customization_name, NHC.custom_ureps, which_set);
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
-                if (cptr.ldPtr(cptr.add(details, 16)))
-                    cptr.free(cptr.ldPtr(cptr.add(details, 16)));
+                if (cptr.ldPtro(details, 16))
+                    cptr.free(cptr.ldPtro(details, 16));
                 if (utf32ch) {
-                    cptr.stPtr(cptr.add(details, 16), dupstr(utf8str));
-                    cptr.stI32(cptr.add(details, 8), utf32ch);
+                    cptr.stPtro(details, 16, dupstr(utf8str));
+                    cptr.stI32o(details, 8, utf32ch);
                 } else {
-                    cptr.stPtr(cptr.add(details, 16), null);
-                    cptr.stI32(cptr.add(details, 8), 0);
+                    cptr.stPtro(details, 16, null);
+                    cptr.stI32o(details, 8, 0);
                 }
                 return 1;
             }
-            details = cptr.ldPtr(cptr.add(details, 24));
+            details = cptr.ldPtro(details, 24);
         }
     }
     newdetails = alloc(32);
     cptr.stI32(newdetails, glyphidx);
     if (utf8str && cptr.ld1u(utf8str) ? 1 : 0) {
-        cptr.stPtr(cptr.add(newdetails, 16), dupstr(utf8str));
+        cptr.stPtro(newdetails, 16, dupstr(utf8str));
     } else {
-        cptr.stPtr(cptr.add(newdetails, 16), null);
+        cptr.stPtro(newdetails, 16, null);
     }
-    cptr.stI32(cptr.add(newdetails, 8), utf32ch);
-    cptr.stPtr(cptr.add(newdetails, 24), null);
-    if (cptr.eq(cptr.ldPtr(cptr.add(gdc, 16)), (null))) {
-        cptr.stPtr(cptr.add(gdc, 16), newdetails);
+    cptr.stI32o(newdetails, 8, utf32ch);
+    cptr.stPtro(newdetails, 24, null);
+    if (cptr.eq(cptr.ldPtro(gdc, 16), (null))) {
+        cptr.stPtro(gdc, 16, newdetails);
     } else {
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(gdc, 24)), 24), newdetails);
+        cptr.stPtro(cptr.ldPtro(gdc, 24), 24, newdetails);
     }
-    cptr.stPtr(cptr.add(gdc, 24), newdetails);
-    (cptr.stI32(cptr.add(gdc, 8), cptr.ldI32(cptr.add(gdc, 8)) + 1)) - (1);
+    cptr.stPtro(gdc, 24, newdetails);
+    (cptr.stI32o(gdc, 8, cptr.ldI32o(gdc, 8) + 1)) - (1);
     return 1;
 }
 
 /** C ref: utf8map.c:211 */
 export function reset_customsymbols() {
     free_all_glyphmap_u();
-    apply_customizations(cptr.ldI32(cptr.add(gc, 428)), NHC.do_custom_symbols);
+    apply_customizations(cptr.ldI32o(gc, 428), NHC.do_custom_symbols);
 }

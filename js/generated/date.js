@@ -38,17 +38,17 @@ let nomakedefs_populated = 0;
 /** C ref: date.c:25 — struct nomakedefs_s */
 export let nomakedefs = cptr.alloc(96);
 cptr.stPtr(nomakedefs, __sl0);
-cptr.stPtr(cptr.add(nomakedefs, 8), __sl1);
-cptr.stPtr(cptr.add(nomakedefs, 16), null);
-cptr.stPtr(cptr.add(nomakedefs, 24), null);
-cptr.stPtr(cptr.add(nomakedefs, 32), null);
-cptr.stPtr(cptr.add(nomakedefs, 40), __sl2);
-cptr.stPtr(cptr.add(nomakedefs, 48), __sl3);
-cptr.stU64(cptr.add(nomakedefs, 56), 16842752n);
-cptr.stU64(cptr.add(nomakedefs, 64), 0n);
-cptr.stU64(cptr.add(nomakedefs, 72), 0n);
-cptr.stU64(cptr.add(nomakedefs, 80), 0n);
-cptr.stU64(cptr.add(nomakedefs, 88), 554476737n);
+cptr.stPtro(nomakedefs, 8, __sl1);
+cptr.stPtro(nomakedefs, 16, null);
+cptr.stPtro(nomakedefs, 24, null);
+cptr.stPtro(nomakedefs, 32, null);
+cptr.stPtro(nomakedefs, 40, __sl2);
+cptr.stPtro(nomakedefs, 48, __sl3);
+cptr.stU64o(nomakedefs, 56, 16842752n);
+cptr.stU64o(nomakedefs, 64, 0n);
+cptr.stU64o(nomakedefs, 72, 0n);
+cptr.stU64o(nomakedefs, 80, 0n);
+cptr.stU64o(nomakedefs, 88, 554476737n);
 
 /** C ref: date.c:52 — @param {CPtr} version */
 export function populate_nomakedefs(version) {
@@ -56,65 +56,65 @@ export function populate_nomakedefs(version) {
     let tmpbuf1 = new Uint8Array(256);
     let tmpbuf2 = new Uint8Array(256);
     let strp;
-    let mth = cptr.alloc(12 * 8); cptr.stPtr(cptr.add(mth, 0), __sl4); cptr.stPtr(cptr.add(mth, 8), __sl5); cptr.stPtr(cptr.add(mth, 16), __sl6); cptr.stPtr(cptr.add(mth, 24), __sl7); cptr.stPtr(cptr.add(mth, 32), __sl8); cptr.stPtr(cptr.add(mth, 40), __sl9); cptr.stPtr(cptr.add(mth, 48), __sl10); cptr.stPtr(cptr.add(mth, 56), __sl11); cptr.stPtr(cptr.add(mth, 64), __sl12); cptr.stPtr(cptr.add(mth, 72), __sl13); cptr.stPtr(cptr.add(mth, 80), __sl14); cptr.stPtr(cptr.add(mth, 88), __sl15);
+    let mth = cptr.alloc(12 * 8); cptr.stPtro(mth, 0, __sl4); cptr.stPtro(mth, 8, __sl5); cptr.stPtro(mth, 16, __sl6); cptr.stPtro(mth, 24, __sl7); cptr.stPtro(mth, 32, __sl8); cptr.stPtro(mth, 40, __sl9); cptr.stPtro(mth, 48, __sl10); cptr.stPtro(mth, 56, __sl11); cptr.stPtro(mth, 64, __sl12); cptr.stPtro(mth, 72, __sl13); cptr.stPtro(mth, 80, __sl14); cptr.stPtro(mth, 88, __sl15);
     let t = cptr.alloc(56); cptr.stI32(t, 0);
     let timeresult;
     nh_snprintf(__sl16, 90, cptr.decay(tmpbuf1), 256n, __sl17, getenv(__sl18) ? __sl19 : __sl20);
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
         do {
             for (i = 0; i < 4; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 7) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32(cptr.add(t, 20), (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
+        cptr.stI32o(t, 20, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
         do {
             for (i = 0; i < 3; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 0) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
         for (i = 0; i < 12; ++i)
-            if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtr(cptr.add(mth, i, 8)))) {
-                cptr.stI32(cptr.add(t, 16), i);
+            if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtro(mth, i, 8))) {
+                cptr.stI32o(t, 16, i);
                 break;
             }
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 4) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 4) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
         strp = cptr.decay(tmpbuf2);
         if (cptr.ld1s(strp) == 32)
             strp = cptr.add(strp, 1);
-        cptr.stI32(cptr.add(t, 12), atoi(strp));
+        cptr.stI32o(t, 12, atoi(strp));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 12) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32(cptr.add(t, 8), atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, 8, atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 15) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32(cptr.add(t, 4), atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, 4, atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
-                cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), cptr.ld1s(cptr.add(cptr.decay(tmpbuf1), (i + 18) | 0, 1)));
-            cptr.st1(cptr.add(cptr.decay(tmpbuf2), i, 1), 0);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1), 1);
+            cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
         cptr.stI32(t, atoi(cptr.decay(tmpbuf2)));
         timeresult = mktime(t);
-        cptr.stU64(cptr.add(nomakedefs, 88), BigInt.asUintN(64, timeresult));
+        cptr.stU64o(nomakedefs, 88, BigInt.asUintN(64, timeresult));
         cptr.stPtr(nomakedefs, dupstr(cptr.decay(tmpbuf1)));
     }
-    cptr.stU64(cptr.add(nomakedefs, 56), cptr.ldU64(version));
-    cptr.stU64(cptr.add(nomakedefs, 64), cptr.ldU64(cptr.add(version, 8)));
-    cptr.stU64(cptr.add(nomakedefs, 72), md_ignored_features());
-    cptr.stU64(cptr.add(nomakedefs, 80), cptr.ldU64(cptr.add(version, 16)));
-    cptr.stPtr(cptr.add(nomakedefs, 40), dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __sl21)));
-    cptr.stPtr(cptr.add(nomakedefs, 48), dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
-    cptr.stPtr(cptr.add(nomakedefs, 8), dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
+    cptr.stU64o(nomakedefs, 56, cptr.ldU64(version));
+    cptr.stU64o(nomakedefs, 64, cptr.ldU64o(version, 8));
+    cptr.stU64o(nomakedefs, 72, md_ignored_features());
+    cptr.stU64o(nomakedefs, 80, cptr.ldU64o(version, 16));
+    cptr.stPtro(nomakedefs, 40, dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __sl21)));
+    cptr.stPtro(nomakedefs, 48, dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
+    cptr.stPtro(nomakedefs, 8, dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
     nomakedefs_populated = 1;
     return;
 }
@@ -125,12 +125,12 @@ export function free_nomakedefs() {
         return;
     if (cptr.ldPtr(nomakedefs))
         cptr.free(cptr.ldPtr(nomakedefs)), cptr.stPtr(nomakedefs, null);
-    if (cptr.ldPtr(cptr.add(nomakedefs, 40)))
-        cptr.free(cptr.ldPtr(cptr.add(nomakedefs, 40))), cptr.stPtr(cptr.add(nomakedefs, 40), null);
-    if (cptr.ldPtr(cptr.add(nomakedefs, 48)))
-        cptr.free(cptr.ldPtr(cptr.add(nomakedefs, 48))), cptr.stPtr(cptr.add(nomakedefs, 48), null);
-    if (cptr.ldPtr(cptr.add(nomakedefs, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(nomakedefs, 8))), cptr.stPtr(cptr.add(nomakedefs, 8), null);
+    if (cptr.ldPtro(nomakedefs, 40))
+        cptr.free(cptr.ldPtro(nomakedefs, 40)), cptr.stPtro(nomakedefs, 40, null);
+    if (cptr.ldPtro(nomakedefs, 48))
+        cptr.free(cptr.ldPtro(nomakedefs, 48)), cptr.stPtro(nomakedefs, 48, null);
+    if (cptr.ldPtro(nomakedefs, 8))
+        cptr.free(cptr.ldPtro(nomakedefs, 8)), cptr.stPtro(nomakedefs, 8, null);
     nomakedefs_populated = 0;
     return;
 }

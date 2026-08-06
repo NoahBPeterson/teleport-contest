@@ -115,41 +115,41 @@ const __sl100 = cptr.lit("     included in all copies or substantial portions of
 
 /** C ref: mdlib.c:10 — char *[35] */
 const artifact_names = cptr.alloc(35 * 8);
-cptr.stPtr(cptr.add(artifact_names, 0), __sl0);
-cptr.stPtr(cptr.add(artifact_names, 8), __sl1);
-cptr.stPtr(cptr.add(artifact_names, 16), __sl2);
-cptr.stPtr(cptr.add(artifact_names, 24), __sl3);
-cptr.stPtr(cptr.add(artifact_names, 32), __sl4);
-cptr.stPtr(cptr.add(artifact_names, 40), __sl5);
-cptr.stPtr(cptr.add(artifact_names, 48), __sl6);
-cptr.stPtr(cptr.add(artifact_names, 56), __sl7);
-cptr.stPtr(cptr.add(artifact_names, 64), __sl8);
-cptr.stPtr(cptr.add(artifact_names, 72), __sl9);
-cptr.stPtr(cptr.add(artifact_names, 80), __sl10);
-cptr.stPtr(cptr.add(artifact_names, 88), __sl11);
-cptr.stPtr(cptr.add(artifact_names, 96), __sl12);
-cptr.stPtr(cptr.add(artifact_names, 104), __sl13);
-cptr.stPtr(cptr.add(artifact_names, 112), __sl14);
-cptr.stPtr(cptr.add(artifact_names, 120), __sl15);
-cptr.stPtr(cptr.add(artifact_names, 128), __sl16);
-cptr.stPtr(cptr.add(artifact_names, 136), __sl17);
-cptr.stPtr(cptr.add(artifact_names, 144), __sl18);
-cptr.stPtr(cptr.add(artifact_names, 152), __sl19);
-cptr.stPtr(cptr.add(artifact_names, 160), __sl20);
-cptr.stPtr(cptr.add(artifact_names, 168), __sl21);
-cptr.stPtr(cptr.add(artifact_names, 176), __sl22);
-cptr.stPtr(cptr.add(artifact_names, 184), __sl23);
-cptr.stPtr(cptr.add(artifact_names, 192), __sl24);
-cptr.stPtr(cptr.add(artifact_names, 200), __sl25);
-cptr.stPtr(cptr.add(artifact_names, 208), __sl26);
-cptr.stPtr(cptr.add(artifact_names, 216), __sl27);
-cptr.stPtr(cptr.add(artifact_names, 224), __sl28);
-cptr.stPtr(cptr.add(artifact_names, 232), __sl29);
-cptr.stPtr(cptr.add(artifact_names, 240), __sl30);
-cptr.stPtr(cptr.add(artifact_names, 248), __sl31);
-cptr.stPtr(cptr.add(artifact_names, 256), __sl32);
-cptr.stPtr(cptr.add(artifact_names, 264), __sl33);
-cptr.stPtr(cptr.add(artifact_names, 272), null);
+cptr.stPtro(artifact_names, 0, __sl0);
+cptr.stPtro(artifact_names, 8, __sl1);
+cptr.stPtro(artifact_names, 16, __sl2);
+cptr.stPtro(artifact_names, 24, __sl3);
+cptr.stPtro(artifact_names, 32, __sl4);
+cptr.stPtro(artifact_names, 40, __sl5);
+cptr.stPtro(artifact_names, 48, __sl6);
+cptr.stPtro(artifact_names, 56, __sl7);
+cptr.stPtro(artifact_names, 64, __sl8);
+cptr.stPtro(artifact_names, 72, __sl9);
+cptr.stPtro(artifact_names, 80, __sl10);
+cptr.stPtro(artifact_names, 88, __sl11);
+cptr.stPtro(artifact_names, 96, __sl12);
+cptr.stPtro(artifact_names, 104, __sl13);
+cptr.stPtro(artifact_names, 112, __sl14);
+cptr.stPtro(artifact_names, 120, __sl15);
+cptr.stPtro(artifact_names, 128, __sl16);
+cptr.stPtro(artifact_names, 136, __sl17);
+cptr.stPtro(artifact_names, 144, __sl18);
+cptr.stPtro(artifact_names, 152, __sl19);
+cptr.stPtro(artifact_names, 160, __sl20);
+cptr.stPtro(artifact_names, 168, __sl21);
+cptr.stPtro(artifact_names, 176, __sl22);
+cptr.stPtro(artifact_names, 184, __sl23);
+cptr.stPtro(artifact_names, 192, __sl24);
+cptr.stPtro(artifact_names, 200, __sl25);
+cptr.stPtro(artifact_names, 208, __sl26);
+cptr.stPtro(artifact_names, 216, __sl27);
+cptr.stPtro(artifact_names, 224, __sl28);
+cptr.stPtro(artifact_names, 232, __sl29);
+cptr.stPtro(artifact_names, 240, __sl30);
+cptr.stPtro(artifact_names, 248, __sl31);
+cptr.stPtro(artifact_names, 256, __sl32);
+cptr.stPtro(artifact_names, 264, __sl33);
+cptr.stPtro(artifact_names, 272, null);
 
 /** C ref: mdlib.c:56 — signed char */
 let date_via_env = 0;
@@ -162,7 +162,7 @@ let done_runtime_opt_init_once = 0;
 
 /** C ref: mdlib.c:97 — char *[60] */
 const opttext = cptr.alloc(60 * 8);
-cptr.stPtr(cptr.add(opttext, 0), null);
+cptr.stPtro(opttext, 0, null);
 
 /** C ref: mdlib.c:102 — char[256] */
 const optbuf = new Uint8Array(256);
@@ -177,25 +177,25 @@ const opt_indent = cptr.bytes("    ");
 
 /** C ref: mdlib.c:112 — struct win_information[2] */
 const window_opts = cptr.alloc(2 * 24);
-cptr.stPtr(cptr.add(window_opts, 0), __sl34);
-cptr.stPtr(cptr.add(window_opts, 8), __sl35);
-cptr.st1(cptr.add(window_opts, 16), 1);
-cptr.stPtr(cptr.add(window_opts, 24), null);
-cptr.stPtr(cptr.add(window_opts, 32), null);
-cptr.st1(cptr.add(window_opts, 40), 0);
+cptr.stPtro(window_opts, 0, __sl34);
+cptr.stPtro(window_opts, 8, __sl35);
+cptr.st1o(window_opts, 16, 1);
+cptr.stPtro(window_opts, 24, null);
+cptr.stPtro(window_opts, 32, null);
+cptr.st1o(window_opts, 40, 0);
 
 /** C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5) */
 
 /** C ref: mdlib.c:184 — struct soundlib_information[2] */
 const soundlib_opts = cptr.alloc(2 * 32);
-cptr.stI32(cptr.add(soundlib_opts, 0), NHC.soundlib_nosound);
-cptr.stPtr(cptr.add(soundlib_opts, 8), __sl36);
-cptr.stPtr(cptr.add(soundlib_opts, 16), __sl0);
-cptr.st1(cptr.add(soundlib_opts, 24), 0);
-cptr.stI32(cptr.add(soundlib_opts, 32), 0);
-cptr.stPtr(cptr.add(soundlib_opts, 40), null);
-cptr.stPtr(cptr.add(soundlib_opts, 48), null);
-cptr.st1(cptr.add(soundlib_opts, 56), 0);
+cptr.stI32o(soundlib_opts, 0, NHC.soundlib_nosound);
+cptr.stPtro(soundlib_opts, 8, __sl36);
+cptr.stPtro(soundlib_opts, 16, __sl0);
+cptr.st1o(soundlib_opts, 24, 0);
+cptr.stI32o(soundlib_opts, 32, 0);
+cptr.stPtro(soundlib_opts, 40, null);
+cptr.stPtro(soundlib_opts, 48, null);
+cptr.st1o(soundlib_opts, 56, 0);
 
 /** C ref: mdlib.c:236 @returns {CLongLong} */
 export function md_ignored_features() {
@@ -206,14 +206,14 @@ export function md_ignored_features() {
 function make_version() {
     let i;
     cptr.stU64(version, 83886080n);
-    cptr.stU64(cptr.add(version, 8), 393280n);
-    for (i = 1; cptr.ldPtr(cptr.add(artifact_names, i, 8)); i++)
+    cptr.stU64o(version, 8, 393280n);
+    for (i = 1; cptr.ldPtro(artifact_names, i, 8); i++)
         continue;
-    cptr.stU64(cptr.add(version, 16), BigInt.asUintN(64, BigInt(((i - 1) | 0))));
+    cptr.stU64o(version, 16, BigInt.asUintN(64, BigInt(((i - 1) | 0))));
     i = NHC.NUM_OBJECTS;
-    cptr.stU64(cptr.add(version, 16), (cptr.ldU64(cptr.add(version, 16)) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(version, 16, (cptr.ldU64o(version, 16) << 12n) | BigInt.asUintN(64, BigInt(i)));
     i = NHC.NUMMONS;
-    cptr.stU64(cptr.add(version, 16), (cptr.ldU64(cptr.add(version, 16)) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(version, 16, (cptr.ldU64o(version, 16) << 12n) | BigInt.asUintN(64, BigInt(i)));
     return;
 }
 
@@ -228,8 +228,8 @@ export function version_id_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
     let statusbuf = new Uint8Array(64);
-    cptr.st1(cptr.add(cptr.decay(statusbuf), 0, 1), 0);
-    cptr.st1(cptr.add(cptr.decay(subbuf), 0, 1), 0);
+    cptr.st1o(cptr.decay(statusbuf), 0, 0, 1);
+    cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
     nh_snprintf(__sl38, 342, outbuf, bufsz, __sl39, __sl40, cptr.decay(subbuf), mdlib_version_string(cptr.decay(versbuf), __sl41), cptr.decay(statusbuf), date_via_env ? __sl42 : __sl43, build_date);
     return outbuf;
 }
@@ -238,7 +238,7 @@ export function version_id_string(outbuf, bufsz, build_date) {
 export function bannerc_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
-    cptr.st1(cptr.add(cptr.decay(subbuf), 0, 1), 0);
+    cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
     nh_snprintf(__sl44, 368, outbuf, bufsz, __sl45, mdlib_version_string(cptr.decay(versbuf), __sl41), __sl40, cptr.decay(subbuf), date_via_env ? __sl46 : __sl47, build_date);
     return outbuf;
 }
@@ -254,32 +254,32 @@ function build_savebones_compat_string() {
 
 /** C ref: mdlib.c:417 — char *[26] */
 const build_opts = cptr.alloc(26 * 8);
-cptr.stPtr(cptr.add(build_opts, 0), __sl50);
-cptr.stPtr(cptr.add(build_opts, 8), __sl51);
-cptr.stPtr(cptr.add(build_opts, 16), __sl52);
-cptr.stPtr(cptr.add(build_opts, 24), __sl53);
-cptr.stPtr(cptr.add(build_opts, 32), __sl54);
-cptr.stPtr(cptr.add(build_opts, 40), __sl55);
-cptr.stPtr(cptr.add(build_opts, 48), __sl56);
-cptr.stPtr(cptr.add(build_opts, 56), __sl57);
-cptr.stPtr(cptr.add(build_opts, 64), __sl58);
-cptr.stPtr(cptr.add(build_opts, 72), __sl59);
-cptr.stPtr(cptr.add(build_opts, 80), __sl60);
-cptr.stPtr(cptr.add(build_opts, 88), __sl61);
-cptr.stPtr(cptr.add(build_opts, 96), __sl62);
-cptr.stPtr(cptr.add(build_opts, 104), __sl63);
-cptr.stPtr(cptr.add(build_opts, 112), __sl64);
-cptr.stPtr(cptr.add(build_opts, 120), __sl65);
-cptr.stPtr(cptr.add(build_opts, 128), __sl66);
-cptr.stPtr(cptr.add(build_opts, 136), __sl67);
-cptr.stPtr(cptr.add(build_opts, 144), __sl68);
-cptr.stPtr(cptr.add(build_opts, 152), __sl69);
-cptr.stPtr(cptr.add(build_opts, 160), __sl70);
-cptr.stPtr(cptr.add(build_opts, 168), __sl71);
-cptr.stPtr(cptr.add(build_opts, 176), __sl72);
-cptr.stPtr(cptr.add(build_opts, 184), __sl73);
-cptr.stPtr(cptr.add(build_opts, 192), cptr.decay(save_bones_compat_buf));
-cptr.stPtr(cptr.add(build_opts, 200), __sl74);
+cptr.stPtro(build_opts, 0, __sl50);
+cptr.stPtro(build_opts, 8, __sl51);
+cptr.stPtro(build_opts, 16, __sl52);
+cptr.stPtro(build_opts, 24, __sl53);
+cptr.stPtro(build_opts, 32, __sl54);
+cptr.stPtro(build_opts, 40, __sl55);
+cptr.stPtro(build_opts, 48, __sl56);
+cptr.stPtro(build_opts, 56, __sl57);
+cptr.stPtro(build_opts, 64, __sl58);
+cptr.stPtro(build_opts, 72, __sl59);
+cptr.stPtro(build_opts, 80, __sl60);
+cptr.stPtro(build_opts, 88, __sl61);
+cptr.stPtro(build_opts, 96, __sl62);
+cptr.stPtro(build_opts, 104, __sl63);
+cptr.stPtro(build_opts, 112, __sl64);
+cptr.stPtro(build_opts, 120, __sl65);
+cptr.stPtro(build_opts, 128, __sl66);
+cptr.stPtro(build_opts, 136, __sl67);
+cptr.stPtro(build_opts, 144, __sl68);
+cptr.stPtro(build_opts, 152, __sl69);
+cptr.stPtro(build_opts, 160, __sl70);
+cptr.stPtro(build_opts, 168, __sl71);
+cptr.stPtro(build_opts, 176, __sl72);
+cptr.stPtro(build_opts, 184, __sl73);
+cptr.stPtro(build_opts, 192, cptr.decay(save_bones_compat_buf));
+cptr.stPtro(build_opts, 200, __sl74);
 
 /** C ref: mdlib.c:602 @returns {CInt} */
 function count_and_validate_winopts() {
@@ -287,7 +287,7 @@ function count_and_validate_winopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1(cptr.add(cptr.add(window_opts, i, 24), 16), 1);
+        cptr.st1o(cptr.add(window_opts, i, 24), 16, 1);
     }
     return cnt;
 }
@@ -298,7 +298,7 @@ function count_and_validate_soundlibopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1(cptr.add(cptr.add(soundlib_opts, i, 32), 24), 1);
+        cptr.st1o(cptr.add(soundlib_opts, i, 32), 24, 1);
     }
     return cnt;
 }
@@ -311,7 +311,7 @@ function opt_out_words(str, length_p) {
         if (word)
             cptr.st1(word, 0);
         if (((cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0) > 75) {
-            (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
+            (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
             void cptr.sprintf(cptr.decay(optbuf), __sl75, cptr.decay(opt_indent)), cptr.stI32(length_p, Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent)))));
         } else {
             void cptr.sprintf(eos(cptr.decay(optbuf)), __sl76), (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - (1);
@@ -322,21 +322,21 @@ function opt_out_words(str, length_p) {
 }
 
 const __static_build_options_lua_info = cptr.alloc(15 * 8);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 0), __sl0);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 8), __sl90);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 16), __sl0);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 24), __sl91);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 32), __sl0);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 40), (__sl92));
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 48), __sl93);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 56), __sl94);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 64), __sl95);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 72), __sl96);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 80), __sl97);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 88), __sl98);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 96), __sl99);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 104), __sl100);
-cptr.stPtr(cptr.add(__static_build_options_lua_info, 112), null); /** C ref: mdlib.c:800 — char *[15] (function-static) */
+cptr.stPtro(__static_build_options_lua_info, 0, __sl0);
+cptr.stPtro(__static_build_options_lua_info, 8, __sl90);
+cptr.stPtro(__static_build_options_lua_info, 16, __sl0);
+cptr.stPtro(__static_build_options_lua_info, 24, __sl91);
+cptr.stPtro(__static_build_options_lua_info, 32, __sl0);
+cptr.stPtro(__static_build_options_lua_info, 40, (__sl92));
+cptr.stPtro(__static_build_options_lua_info, 48, __sl93);
+cptr.stPtro(__static_build_options_lua_info, 56, __sl94);
+cptr.stPtro(__static_build_options_lua_info, 64, __sl95);
+cptr.stPtro(__static_build_options_lua_info, 72, __sl96);
+cptr.stPtro(__static_build_options_lua_info, 80, __sl97);
+cptr.stPtro(__static_build_options_lua_info, 88, __sl98);
+cptr.stPtro(__static_build_options_lua_info, 96, __sl99);
+cptr.stPtro(__static_build_options_lua_info, 104, __sl100);
+cptr.stPtro(__static_build_options_lua_info, 112, null); /** C ref: mdlib.c:800 — char *[15] (function-static) */
 
 /** C ref: mdlib.c:669 */
 function build_options() {
@@ -348,33 +348,33 @@ function build_options() {
     let defwinsys = __sl34;
     let soundlibcnt;
     build_savebones_compat_string();
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     void cptr.sprintf(cptr.decay(optbuf), __sl77, cptr.decay(opt_indent), NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL, __sl0);
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     void cptr.sprintf(cptr.decay(optbuf), __sl78);
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;
     void cptr.strcat(cptr.strcpy(cptr.decay(buf), datamodel(0)), __sl79);
     opt_out_words(cptr.decay(buf), length);
     for (i = 0; i < 26; i++) {
-        void cptr.strcat(cptr.strcpy(cptr.decay(buf), cptr.ldPtr(cptr.add(build_opts, i, 8))), (i < ((26 - 1) | 0)) ? __sl80 : __sl41);
+        void cptr.strcat(cptr.strcpy(cptr.decay(buf), cptr.ldPtro(build_opts, i, 8)), (i < ((26 - 1) | 0)) ? __sl80 : __sl41);
         opt_out_words(cptr.decay(buf), length);
     }
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     winsyscnt = count_and_validate_winopts();
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     void cptr.sprintf(cptr.decay(optbuf), __sl81, (winsyscnt > 1) ? __sl82 : __sl0);
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
-        if (!cptr.ld1s(cptr.add(cptr.add(window_opts, i, 24), 16)))
+        if (!cptr.ld1so(cptr.add(window_opts, i, 24), 16))
             continue;
-        void cptr.sprintf(cptr.decay(buf), __sl83, cptr.ldPtr(cptr.add(window_opts, i, 24)));
-        if (strcmp(cptr.ldPtr(cptr.add(cptr.add(window_opts, i, 24), 8)), cptr.ldPtr(cptr.add(window_opts, i, 24))))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl84, cptr.ldPtr(cptr.add(cptr.add(window_opts, i, 24), 8)));
+        void cptr.sprintf(cptr.decay(buf), __sl83, cptr.ldPtro(window_opts, i, 24));
+        if (strcmp(cptr.ldPtro(cptr.add(window_opts, i, 24), 8), cptr.ldPtro(window_opts, i, 24)))
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl84, cptr.ldPtro(cptr.add(window_opts, i, 24), 8));
         void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __sl41 : ((winsyscnt == 2 && cnt == 0 ? 1 : 0) ? __sl85 : ((cnt == ((winsyscnt - 2) | 0)) ? __sl86 : __sl80)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;
@@ -384,19 +384,19 @@ function build_options() {
         opt_out_words(cptr.decay(buf), length);
     }
     cnt = 0;
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     soundlibcnt = count_and_validate_soundlibopts();
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     void cptr.sprintf(cptr.decay(optbuf), __sl88, (soundlibcnt > 1) ? __sl82 : __sl0);
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         let soundlib;
-        if (!cptr.ld1s(cptr.add(cptr.add(soundlib_opts, i, 32), 24)))
+        if (!cptr.ld1so(cptr.add(soundlib_opts, i, 32), 24))
             continue;
-        soundlib = cptr.ldPtr(cptr.add(cptr.add(soundlib_opts, i, 32), 8));
+        soundlib = cptr.ldPtro(cptr.add(soundlib_opts, i, 32), 8);
         if (!cptr.strncmp(soundlib, __sl89, 9n))
             soundlib = cptr.add(soundlib, 9);
         void cptr.sprintf(cptr.decay(buf), __sl83, soundlib);
@@ -404,14 +404,14 @@ function build_options() {
         opt_out_words(cptr.decay(buf), length);
         cnt++;
     }
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    cptr.st1(cptr.add(cptr.decay(optbuf), 0, 1), 0);
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
+    cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     {
-        for (i = 0; cptr.ldPtr(cptr.add(__static_build_options_lua_info, i, 8)); ++i) {
-            (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.ldPtr(cptr.add(__static_build_options_lua_info, i, 8))))) : null));
+        for (i = 0; cptr.ldPtro(__static_build_options_lua_info, i, 8); ++i) {
+            (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8)), 8)) : null));
         }
     }
-    (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(__sl0))) : null));
+    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(__sl0), 8)) : null));
     return;
 }
 
@@ -434,7 +434,7 @@ export function do_runtime_info(rtcontext) {
         runtime_info_init();
     if (idxopttext && rtcontext ? 1 : 0)
         if (cptr.ldI32(rtcontext) >= 0 && cptr.ldI32(rtcontext) < 60 ? 1 : 0) {
-            retval = cptr.ldPtr(cptr.add(opttext, cptr.ldI32(rtcontext), 8));
+            retval = cptr.ldPtro(opttext, cptr.ldI32(rtcontext), 8);
             cptr.stI32(rtcontext, (cptr.ldI32(rtcontext) + 1) | 0);
         }
     return retval;
@@ -444,7 +444,7 @@ export function do_runtime_info(rtcontext) {
 export function release_runtime_info() {
     while (idxopttext > 0) {
         --idxopttext;
-        cptr.free(cptr.ldPtr(cptr.add(opttext, idxopttext, 8))), cptr.stPtr(cptr.add(opttext, idxopttext, 8), null);
+        cptr.free(cptr.ldPtro(opttext, idxopttext, 8)), cptr.stPtro(opttext, idxopttext, null, 8);
     }
     done_runtime_opt_init_once = 0;
     free_nomakedefs();

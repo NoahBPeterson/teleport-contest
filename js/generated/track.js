@@ -34,14 +34,14 @@ export function initrack() {
 
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16(cptr.add(uleft.v, 32)) == NHC.RIN_STEALTH ? 1 : 0) || (uright.v && cptr.ldI16(cptr.add(uright.v, 32)) == NHC.RIN_STEALTH ? 1 : 0) ? 1 : 0)
+    if ((uleft.v && cptr.ldI16o(uleft.v, 32) == NHC.RIN_STEALTH ? 1 : 0) || (uright.v && cptr.ldI16o(uright.v, 32) == NHC.RIN_STEALTH ? 1 : 0) ? 1 : 0)
         return;
     if (utcnt.v < 100)
         utcnt.v++;
     if (utpnt.v == 100)
         utpnt.v = 0;
-    cptr.stI16(cptr.add(utrack, utpnt.v, 4), cptr.ldI16(u));
-    cptr.stI16(cptr.add(cptr.add(utrack, utpnt.v, 4), 2), cptr.ldI16(cptr.add(u, 2)));
+    cptr.stI16o(utrack, utpnt.v, cptr.ldI16(u), 4);
+    cptr.stI16o(cptr.add(utrack, utpnt.v, 4), 2, cptr.ldI16o(u, 2));
     utpnt.v++;
 }
 
@@ -56,7 +56,7 @@ export function gettrack(x, y) {
             tc = cptr.add(utrack, 99, 4);
         else
             tc = cptr.add(tc, -1, 4);
-        ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16(cptr.add(tc, 2)));
+        ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16o(tc, 2));
         if (ndist <= 1)
             return (ndist ? tc : null);
     }
@@ -67,14 +67,14 @@ export function gettrack(x, y) {
 export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16(cptr.add(utrack, i, 4)) == x && cptr.ldI16(cptr.add(cptr.add(utrack, i, 4), 2)) == y ? 1 : 0)
+        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o(cptr.add(utrack, i, 4), 2) == y ? 1 : 0)
             return 1;
     return 0;
 }
 
 /** C ref: track.c:76 — @param {CPtr} nhfp */
 export function save_track(nhfp) {
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
+    if ((cptr.ldI32o((nhfp), 4) & 3)) {
         let i;
         sfo_int(nhfp, utcnt, __sl0);
         sfo_int(nhfp, utpnt, __sl1);
@@ -82,7 +82,7 @@ export function save_track(nhfp) {
             sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2);
         }
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
+    if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING))
         initrack();
 }
 

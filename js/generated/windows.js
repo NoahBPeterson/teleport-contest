@@ -73,10 +73,10 @@ export let windowprocs = cptr.alloc(416);
 
 /** C ref: windows.c:98 — struct win_choices[2] */
 const winchoices = cptr.alloc(2 * 16);
-cptr.stPtr(cptr.add(winchoices, 0), tty_procs);
-cptr.stPtr(cptr.add(winchoices, 8), win_tty_init);
-cptr.stPtr(cptr.add(winchoices, 16), null);
-cptr.stPtr(cptr.add(winchoices, 24), null);
+cptr.stPtro(winchoices, 0, tty_procs);
+cptr.stPtro(winchoices, 8, win_tty_init);
+cptr.stPtro(winchoices, 16, null);
+cptr.stPtro(winchoices, 24, null);
 
 /** C ref: windows.c:193 @returns {CInt} */
 export function genl_can_suspend_no() {
@@ -92,7 +92,7 @@ export function genl_can_suspend_yes() {
 function def_raw_print(s) {
     puts(s);
     if (cptr.ld1s(s))
-        (cptr.stI32(cptr.add(iflags, 60), cptr.ldI32(cptr.add(iflags, 60)) + 1)) - (1);
+        (cptr.stI32o(iflags, 60, cptr.ldI32o(iflags, 60) + 1)) - (1);
 }
 
 /** C ref: windows.c:215 */
@@ -104,7 +104,7 @@ function def_wait_synch() {
 export function check_tty_wincap(wincap) {
     let wc = win_choices_find(__sl0);
     if (wc)
-        return schar(((cptr.ldU64(cptr.add(cptr.ldPtr(wc), 16)) & wincap) == wincap));
+        return schar(((cptr.ldU64o(cptr.ldPtr(wc), 16) & wincap) == wincap));
     return 0;
 }
 
@@ -112,15 +112,15 @@ export function check_tty_wincap(wincap) {
 export function check_tty_wincap2(wincap2) {
     let wc = win_choices_find(__sl0);
     if (wc)
-        return schar(((cptr.ldU64(cptr.add(cptr.ldPtr(wc), 24)) & wincap2) == wincap2));
+        return schar(((cptr.ldU64o(cptr.ldPtr(wc), 24) & wincap2) == wincap2));
     return 0;
 }
 
 /** C ref: windows.c:253 — @param {CPtr} s @returns {CPtr} */
 function win_choices_find(s) {
     let i;
-    for (i = 0; cptr.ldPtr(cptr.add(winchoices, i, 16)); i++) {
-        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16)))), -1)) {
+    for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
+        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1)) {
             return cptr.add(winchoices, i, 16);
         }
     }
@@ -131,54 +131,54 @@ function win_choices_find(s) {
 export function choose_windows(s) {
     let i;
     let tmps = null;
-    for (i = 0; cptr.ldPtr(cptr.add(winchoices, i, 16)); i++) {
-        if (43 == cptr.ld1s(cptr.add(cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16))), 0)))
+    for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
+        if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
             continue;
-        if (45 == cptr.ld1s(cptr.add(cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16))), 0)))
+        if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
             continue;
-        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16)))), -1)) {
-            cptr.memcpy(windowprocs, cptr.ldPtr(cptr.add(winchoices, i, 16)), 416);
-            if (cptr.ldPtr(cptr.add(gl, 544)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gl, 544)), 8)) ? 1 : 0)
-                (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gl, 544)), 8)))(NHM.WININIT_UNDO);
-            if (cptr.ldPtr(cptr.add(cptr.add(winchoices, i, 16), 8)))
-                (cptr.ldPtr(cptr.add(cptr.add(winchoices, i, 16), 8)))(NHM.WININIT);
-            cptr.stPtr(cptr.add(gl, 544), cptr.add(winchoices, i, 16));
+        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1)) {
+            cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, 16), 416);
+            if (cptr.ldPtro(gl, 544) && cptr.ldPtro(cptr.ldPtro(gl, 544), 8) ? 1 : 0)
+                (cptr.ldPtro(cptr.ldPtro(gl, 544), 8))(NHM.WININIT_UNDO);
+            if (cptr.ldPtro(cptr.add(winchoices, i, 16), 8))
+                (cptr.ldPtro(cptr.add(winchoices, i, 16), 8))(NHM.WININIT);
+            cptr.stPtro(gl, 544, cptr.add(winchoices, i, 16));
             return;
         }
     }
-    if (!cptr.ldPtr(cptr.add(windowprocs, 240)))
-        cptr.stPtr(cptr.add(windowprocs, 240), def_raw_print);
-    if (!cptr.ldPtr(cptr.add(windowprocs, 216)))
-        cptr.stPtr(cptr.add(windowprocs, 216), def_wait_synch);
-    if (!cptr.ldPtr(cptr.add(winchoices, 0, 16))) {
+    if (!cptr.ldPtro(windowprocs, 240))
+        cptr.stPtro(windowprocs, 240, def_raw_print);
+    if (!cptr.ldPtro(windowprocs, 216))
+        cptr.stPtro(windowprocs, 216, def_wait_synch);
+    if (!cptr.ldPtro(winchoices, 0, 16)) {
         raw_printf(__sl1);
         nh_terminate(1);
     }
     if (cptr.strlen(s) >= 50n) {
         tmps = alloc(50);
         void __builtin___strncpy_chk(tmps, s, 49n, __builtin_object_size(tmps, 1));
-        cptr.st1(cptr.add(tmps, 49), 0);
+        cptr.st1o(tmps, 49, 0);
         s = tmps;
     }
-    if (!cptr.ldPtr(cptr.add(winchoices, 1, 16))) {
-        config_error_add(__sl2, s, cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, 0, 16))));
+    if (!cptr.ldPtro(winchoices, 1, 16)) {
+        config_error_add(__sl2, s, cptr.ldPtr(cptr.ldPtro(winchoices, 0, 16)));
     } else {
         let buf = new Uint8Array(256);
         let first = 1;
-        cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
-        for (i = 0; cptr.ldPtr(cptr.add(winchoices, i, 16)); i++) {
-            if (43 == cptr.ld1s(cptr.add(cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16))), 0)))
+        cptr.st1o(cptr.decay(buf), 0, 0, 1);
+        for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
+            if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
                 continue;
-            if (45 == cptr.ld1s(cptr.add(cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16))), 0)))
+            if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
                 continue;
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl3, first ? __sl4 : __sl5, cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16))));
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl3, first ? __sl4 : __sl5, cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)));
             first = 0;
         }
         config_error_add(__sl6, s, cptr.decay(buf));
     }
     if (tmps)
         cptr.free(tmps);
-    if (cptr.ldPtr(cptr.add(windowprocs, 240)) === def_raw_print)
+    if (cptr.ldPtro(windowprocs, 240) === def_raw_print)
         nh_terminate(0);
 }
 
@@ -208,71 +208,71 @@ export function genl_putmsghistory(msg, is_restoring) {
 /** C ref: windows.c:562 — struct window_procs */
 let hup_procs = cptr.alloc(416);
 cptr.stPtr(hup_procs, __sl8);
-cptr.stI32(cptr.add(hup_procs, 8), NHC.wp_hup);
-cptr.stU64(cptr.add(hup_procs, 16), 0n);
-cptr.stU64(cptr.add(hup_procs, 24), 0n);
-cptr.st1(cptr.add(hup_procs, 32), 0);
-cptr.st1(cptr.add(hup_procs, 33), 0);
-cptr.st1(cptr.add(hup_procs, 34), 0);
-cptr.st1(cptr.add(hup_procs, 35), 0);
-cptr.st1(cptr.add(hup_procs, 36), 0);
-cptr.st1(cptr.add(hup_procs, 37), 0);
-cptr.st1(cptr.add(hup_procs, 38), 0);
-cptr.st1(cptr.add(hup_procs, 39), 0);
-cptr.st1(cptr.add(hup_procs, 40), 0);
-cptr.st1(cptr.add(hup_procs, 41), 0);
-cptr.st1(cptr.add(hup_procs, 42), 0);
-cptr.st1(cptr.add(hup_procs, 43), 0);
-cptr.st1(cptr.add(hup_procs, 44), 0);
-cptr.st1(cptr.add(hup_procs, 45), 0);
-cptr.st1(cptr.add(hup_procs, 46), 0);
-cptr.st1(cptr.add(hup_procs, 47), 0);
-cptr.stPtr(cptr.add(hup_procs, 48), hup_init_nhwindows);
-cptr.stPtr(cptr.add(hup_procs, 56), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 64), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 72), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 80), hup_exit_nhwindows);
-cptr.stPtr(cptr.add(hup_procs, 88), hup_void_fdecl_constchar_p);
-cptr.stPtr(cptr.add(hup_procs, 96), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 104), hup_create_nhwindow);
-cptr.stPtr(cptr.add(hup_procs, 112), hup_void_fdecl_winid);
-cptr.stPtr(cptr.add(hup_procs, 120), hup_display_nhwindow);
-cptr.stPtr(cptr.add(hup_procs, 128), hup_void_fdecl_winid);
-cptr.stPtr(cptr.add(hup_procs, 136), hup_curs);
-cptr.stPtr(cptr.add(hup_procs, 144), hup_putstr);
-cptr.stPtr(cptr.add(hup_procs, 152), hup_putstr);
-cptr.stPtr(cptr.add(hup_procs, 160), hup_display_file);
-cptr.stPtr(cptr.add(hup_procs, 168), hup_void_fdecl_winid_ulong);
-cptr.stPtr(cptr.add(hup_procs, 176), hup_add_menu);
-cptr.stPtr(cptr.add(hup_procs, 184), hup_end_menu);
-cptr.stPtr(cptr.add(hup_procs, 192), hup_select_menu);
-cptr.stPtr(cptr.add(hup_procs, 200), genl_message_menu);
-cptr.stPtr(cptr.add(hup_procs, 208), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 216), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 224), hup_cliparound);
-cptr.stPtr(cptr.add(hup_procs, 232), hup_print_glyph);
-cptr.stPtr(cptr.add(hup_procs, 240), hup_void_fdecl_constchar_p);
-cptr.stPtr(cptr.add(hup_procs, 248), hup_void_fdecl_constchar_p);
-cptr.stPtr(cptr.add(hup_procs, 256), hup_nhgetch);
-cptr.stPtr(cptr.add(hup_procs, 264), hup_nh_poskey);
-cptr.stPtr(cptr.add(hup_procs, 272), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 280), hup_int_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 288), hup_yn_function);
-cptr.stPtr(cptr.add(hup_procs, 296), hup_getlin);
-cptr.stPtr(cptr.add(hup_procs, 304), hup_int_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 312), hup_void_fdecl_int);
-cptr.stPtr(cptr.add(hup_procs, 320), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 328), hup_outrip);
-cptr.stPtr(cptr.add(hup_procs, 336), genl_preference_update);
-cptr.stPtr(cptr.add(hup_procs, 344), genl_getmsghistory);
-cptr.stPtr(cptr.add(hup_procs, 352), genl_putmsghistory);
-cptr.stPtr(cptr.add(hup_procs, 360), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 368), hup_void_ndecl);
-cptr.stPtr(cptr.add(hup_procs, 376), genl_status_enablefield);
-cptr.stPtr(cptr.add(hup_procs, 384), hup_status_update);
-cptr.stPtr(cptr.add(hup_procs, 392), genl_can_suspend_no);
-cptr.stPtr(cptr.add(hup_procs, 400), hup_void_fdecl_int);
-cptr.stPtr(cptr.add(hup_procs, 408), hup_ctrl_nhwindow);
+cptr.stI32o(hup_procs, 8, NHC.wp_hup);
+cptr.stU64o(hup_procs, 16, 0n);
+cptr.stU64o(hup_procs, 24, 0n);
+cptr.st1o(hup_procs, 32, 0);
+cptr.st1o(hup_procs, 33, 0);
+cptr.st1o(hup_procs, 34, 0);
+cptr.st1o(hup_procs, 35, 0);
+cptr.st1o(hup_procs, 36, 0);
+cptr.st1o(hup_procs, 37, 0);
+cptr.st1o(hup_procs, 38, 0);
+cptr.st1o(hup_procs, 39, 0);
+cptr.st1o(hup_procs, 40, 0);
+cptr.st1o(hup_procs, 41, 0);
+cptr.st1o(hup_procs, 42, 0);
+cptr.st1o(hup_procs, 43, 0);
+cptr.st1o(hup_procs, 44, 0);
+cptr.st1o(hup_procs, 45, 0);
+cptr.st1o(hup_procs, 46, 0);
+cptr.st1o(hup_procs, 47, 0);
+cptr.stPtro(hup_procs, 48, hup_init_nhwindows);
+cptr.stPtro(hup_procs, 56, hup_void_ndecl);
+cptr.stPtro(hup_procs, 64, hup_void_ndecl);
+cptr.stPtro(hup_procs, 72, hup_void_ndecl);
+cptr.stPtro(hup_procs, 80, hup_exit_nhwindows);
+cptr.stPtro(hup_procs, 88, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, 96, hup_void_ndecl);
+cptr.stPtro(hup_procs, 104, hup_create_nhwindow);
+cptr.stPtro(hup_procs, 112, hup_void_fdecl_winid);
+cptr.stPtro(hup_procs, 120, hup_display_nhwindow);
+cptr.stPtro(hup_procs, 128, hup_void_fdecl_winid);
+cptr.stPtro(hup_procs, 136, hup_curs);
+cptr.stPtro(hup_procs, 144, hup_putstr);
+cptr.stPtro(hup_procs, 152, hup_putstr);
+cptr.stPtro(hup_procs, 160, hup_display_file);
+cptr.stPtro(hup_procs, 168, hup_void_fdecl_winid_ulong);
+cptr.stPtro(hup_procs, 176, hup_add_menu);
+cptr.stPtro(hup_procs, 184, hup_end_menu);
+cptr.stPtro(hup_procs, 192, hup_select_menu);
+cptr.stPtro(hup_procs, 200, genl_message_menu);
+cptr.stPtro(hup_procs, 208, hup_void_ndecl);
+cptr.stPtro(hup_procs, 216, hup_void_ndecl);
+cptr.stPtro(hup_procs, 224, hup_cliparound);
+cptr.stPtro(hup_procs, 232, hup_print_glyph);
+cptr.stPtro(hup_procs, 240, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, 248, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, 256, hup_nhgetch);
+cptr.stPtro(hup_procs, 264, hup_nh_poskey);
+cptr.stPtro(hup_procs, 272, hup_void_ndecl);
+cptr.stPtro(hup_procs, 280, hup_int_ndecl);
+cptr.stPtro(hup_procs, 288, hup_yn_function);
+cptr.stPtro(hup_procs, 296, hup_getlin);
+cptr.stPtro(hup_procs, 304, hup_int_ndecl);
+cptr.stPtro(hup_procs, 312, hup_void_fdecl_int);
+cptr.stPtro(hup_procs, 320, hup_void_ndecl);
+cptr.stPtro(hup_procs, 328, hup_outrip);
+cptr.stPtro(hup_procs, 336, genl_preference_update);
+cptr.stPtro(hup_procs, 344, genl_getmsghistory);
+cptr.stPtro(hup_procs, 352, genl_putmsghistory);
+cptr.stPtro(hup_procs, 360, hup_void_ndecl);
+cptr.stPtro(hup_procs, 368, hup_void_ndecl);
+cptr.stPtro(hup_procs, 376, genl_status_enablefield);
+cptr.stPtro(hup_procs, 384, hup_status_update);
+cptr.stPtro(hup_procs, 392, genl_can_suspend_no);
+cptr.stPtro(hup_procs, 400, hup_void_fdecl_int);
+cptr.stPtro(hup_procs, 408, hup_ctrl_nhwindow);
 
 /** C ref: windows.c:611 — void (*)( char *) */
 let previnterface_exit_nhwindows = null;
@@ -280,14 +280,14 @@ let previnterface_exit_nhwindows = null;
 /** C ref: windows.c:615 */
 export function nhwindows_hangup() {
     let previnterface_getmsghistory = null;
-    cptr.st1(cptr.add(iflags, 125), 0);
-    if (cptr.ld1s(cptr.add(iflags, 81)) && cptr.ldPtr(cptr.add(windowprocs, 80)) !== hup_exit_nhwindows ? 1 : 0)
-        previnterface_exit_nhwindows = cptr.ldPtr(cptr.add(windowprocs, 80));
-    if (cptr.ldPtr(cptr.add(windowprocs, 344)) !== cptr.ldPtr(cptr.add(hup_procs, 344)))
-        previnterface_getmsghistory = cptr.ldPtr(cptr.add(windowprocs, 344));
+    cptr.st1o(iflags, 125, 0);
+    if (cptr.ld1so(iflags, 81) && cptr.ldPtro(windowprocs, 80) !== hup_exit_nhwindows ? 1 : 0)
+        previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, 80);
+    if (cptr.ldPtro(windowprocs, 344) !== cptr.ldPtro(hup_procs, 344))
+        previnterface_getmsghistory = cptr.ldPtro(windowprocs, 344);
     cptr.memcpy(windowprocs, hup_procs, 416);
     if (previnterface_getmsghistory)
-        cptr.stPtr(cptr.add(windowprocs, 344), previnterface_getmsghistory);
+        cptr.stPtro(windowprocs, 344, previnterface_getmsghistory);
 }
 
 /** C ref: windows.c:643 — @param {CPtr} lastgasp */
@@ -297,7 +297,7 @@ function hup_exit_nhwindows(lastgasp) {
         (previnterface_exit_nhwindows)(lastgasp);
         previnterface_exit_nhwindows = null;
     }
-    cptr.st1(cptr.add(iflags, 81), 0);
+    cptr.st1o(iflags, 81, 0);
 }
 
 /** C ref: windows.c:657 @returns {CInt} */
@@ -324,7 +324,7 @@ function hup_getlin(prompt, outbuf) {
 
 /** C ref: windows.c:690 — @param {CPtr} argc_p @param {CPtr} argv */
 function hup_init_nhwindows(argc_p, argv) {
-    cptr.st1(cptr.add(iflags, 81), 1);
+    cptr.st1o(iflags, 81, 1);
 }
 
 /** C ref: windows.c:697 — @param {CInt} type @returns {*} */
@@ -438,107 +438,107 @@ export const status_activefields = new Uint8Array(27);
 export function genl_status_init() {
     let i;
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        cptr.stPtr(cptr.add(status_vals, i, 8), alloc(NHM.MAXCO));
-        cptr.st1(cptr.ldPtr(cptr.add(status_vals, i, 8)), 0);
-        cptr.st1(cptr.add(cptr.decay(status_activefields), i, 1), 0);
-        cptr.stPtr(cptr.add(status_fieldfmt, i, 8), null);
+        cptr.stPtro(status_vals, i, alloc(NHM.MAXCO), 8);
+        cptr.st1(cptr.ldPtro(status_vals, i, 8), 0);
+        cptr.st1o(cptr.decay(status_activefields), i, 0, 1);
+        cptr.stPtro(status_fieldfmt, i, null, 8);
     }
-    WIN_STATUS.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_STATUS);
-    (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_STATUS.v, 0);
+    WIN_STATUS.v = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_STATUS);
+    (cptr.ldPtro(windowprocs, 120))(WIN_STATUS.v, 0);
 }
 
 /** C ref: windows.c:909 */
 export function genl_status_finish() {
     let i;
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        if (cptr.ldPtr(cptr.add(status_vals, i, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(status_vals, i, 8))), cptr.stPtr(cptr.add(status_vals, i, 8), null);
+        if (cptr.ldPtro(status_vals, i, 8))
+            cptr.free(cptr.ldPtro(status_vals, i, 8)), cptr.stPtro(status_vals, i, null, 8);
     }
 }
 
 /** C ref: windows.c:922 — @param {CInt} fieldidx @param {CPtr} nm @param {CPtr} fmt @param {CInt} enable */
 export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
-    cptr.stPtr(cptr.add(status_fieldfmt, fieldidx, 8), fmt);
-    cptr.stPtr(cptr.add(status_fieldnm, fieldidx, 8), nm);
-    cptr.st1(cptr.add(cptr.decay(status_activefields), fieldidx, 1), enable);
+    cptr.stPtro(status_fieldfmt, fieldidx, fmt, 8);
+    cptr.stPtro(status_fieldnm, fieldidx, nm, 8);
+    cptr.st1o(cptr.decay(status_activefields), fieldidx, enable, 1);
 }
 
 const __static_genl_status_update_fieldorder = (function () { const flat = new Uint8Array(5 * 15 * 4); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * 15 * 4, (r + 1) * 15 * 4)); a.buf = flat; return a; })();
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 0), NHC.BL_TITLE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 4), NHC.BL_STR);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 8), NHC.BL_DX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 12), NHC.BL_CO);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 16), NHC.BL_IN);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 20), NHC.BL_WI);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 24), NHC.BL_CH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 28), NHC.BL_ALIGN);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 32), NHC.BL_SCORE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 36), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 40), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 44), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 48), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 52), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), 56), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 0), NHC.BL_LEVELDESC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 4), NHC.BL_GOLD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 8), NHC.BL_HP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 12), NHC.BL_HPMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 16), NHC.BL_ENE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 20), NHC.BL_ENEMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 24), NHC.BL_AC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 28), NHC.BL_XP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 32), NHC.BL_EXP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 36), NHC.BL_HD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 40), NHC.BL_TIME);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 44), NHC.BL_HUNGER);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 48), NHC.BL_CAP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 52), NHC.BL_CONDITION);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[1]), 56), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 0), NHC.BL_LEVELDESC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 4), NHC.BL_GOLD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 8), NHC.BL_HP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 12), NHC.BL_HPMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 16), NHC.BL_ENE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 20), NHC.BL_ENEMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 24), NHC.BL_AC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 28), NHC.BL_XP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 32), NHC.BL_EXP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 36), NHC.BL_HD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 40), NHC.BL_HUNGER);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 44), NHC.BL_CAP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 48), NHC.BL_CONDITION);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 52), NHC.BL_TIME);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[2]), 56), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 0), NHC.BL_LEVELDESC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 4), NHC.BL_GOLD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 8), NHC.BL_HP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 12), NHC.BL_HPMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 16), NHC.BL_ENE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 20), NHC.BL_ENEMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 24), NHC.BL_AC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 28), NHC.BL_HUNGER);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 32), NHC.BL_CAP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 36), NHC.BL_CONDITION);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 40), NHC.BL_XP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 44), NHC.BL_EXP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 48), NHC.BL_HD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 52), NHC.BL_TIME);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[3]), 56), NHC.BL_FLUSH);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 0), NHC.BL_HP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 4), NHC.BL_HPMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 8), NHC.BL_ENE);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 12), NHC.BL_ENEMAX);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 16), NHC.BL_AC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 20), NHC.BL_HUNGER);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 24), NHC.BL_CAP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 28), NHC.BL_CONDITION);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 32), NHC.BL_LEVELDESC);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 36), NHC.BL_GOLD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 40), NHC.BL_XP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 44), NHC.BL_EXP);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 48), NHC.BL_HD);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 52), NHC.BL_TIME);
-cptr.stI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[4]), 56), NHC.BL_FLUSH); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 0, NHC.BL_TITLE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 4, NHC.BL_STR);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 8, NHC.BL_DX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 12, NHC.BL_CO);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 16, NHC.BL_IN);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 20, NHC.BL_WI);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 24, NHC.BL_CH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 28, NHC.BL_ALIGN);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 32, NHC.BL_SCORE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 36, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 40, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 44, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 48, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 52, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 56, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 0, NHC.BL_LEVELDESC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 4, NHC.BL_GOLD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 8, NHC.BL_HP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 12, NHC.BL_HPMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 16, NHC.BL_ENE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 20, NHC.BL_ENEMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 24, NHC.BL_AC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 28, NHC.BL_XP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 32, NHC.BL_EXP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 36, NHC.BL_HD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 40, NHC.BL_TIME);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 44, NHC.BL_HUNGER);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 48, NHC.BL_CAP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 52, NHC.BL_CONDITION);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[1]), 56, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 0, NHC.BL_LEVELDESC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 4, NHC.BL_GOLD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 8, NHC.BL_HP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 12, NHC.BL_HPMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 16, NHC.BL_ENE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 20, NHC.BL_ENEMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 24, NHC.BL_AC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 28, NHC.BL_XP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 32, NHC.BL_EXP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 36, NHC.BL_HD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 40, NHC.BL_HUNGER);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 44, NHC.BL_CAP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 48, NHC.BL_CONDITION);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 52, NHC.BL_TIME);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[2]), 56, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 0, NHC.BL_LEVELDESC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 4, NHC.BL_GOLD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 8, NHC.BL_HP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 12, NHC.BL_HPMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 16, NHC.BL_ENE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 20, NHC.BL_ENEMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 24, NHC.BL_AC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 28, NHC.BL_HUNGER);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 32, NHC.BL_CAP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 36, NHC.BL_CONDITION);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 40, NHC.BL_XP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 44, NHC.BL_EXP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 48, NHC.BL_HD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 52, NHC.BL_TIME);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[3]), 56, NHC.BL_FLUSH);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 0, NHC.BL_HP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 4, NHC.BL_HPMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 8, NHC.BL_ENE);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 12, NHC.BL_ENEMAX);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 16, NHC.BL_AC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 20, NHC.BL_HUNGER);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 24, NHC.BL_CAP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 28, NHC.BL_CONDITION);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 32, NHC.BL_LEVELDESC);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 36, NHC.BL_GOLD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 40, NHC.BL_XP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 44, NHC.BL_EXP);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 48, NHC.BL_HD);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 52, NHC.BL_TIME);
+cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 56, NHC.BL_FLUSH); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
 
 /** C ref: windows.c:937 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr} colormasks */
 export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
@@ -554,14 +554,14 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     let fieldlist;
     let nb;
     let text = ptr;
-    cptr.stU64(cptr.add(windowprocs, 24), cptr.ldU64(cptr.add(windowprocs, 24)) | 128n);
+    cptr.stU64o(windowprocs, 24, cptr.ldU64o(windowprocs, 24) | 128n);
     if (idx >= 0) {
-        if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
+        if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
             return;
         switch (idx) {
             case NHC.BL_CONDITION:
             cond = condptr ? cptr.ldI64(condptr) : 0n;
-            nb = cptr.ldPtr(cptr.add(status_vals, idx, 8));
+            nb = cptr.ldPtro(status_vals, idx, 8);
             cptr.st1(nb, 0);
             if (cond & 1048576n)
                 void cptr.strcpy(nb = eos(nb), __sl10);
@@ -591,7 +591,7 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                 void cptr.strcpy(nb = eos(nb), __sl22);
             break;
             default:
-            void cptr.sprintf(cptr.ldPtr(cptr.add(status_vals, idx, 8)), cptr.ldPtr(cptr.add(status_fieldfmt, idx, 8)) ? cptr.ldPtr(cptr.add(status_fieldfmt, idx, 8)) : __sl7, text ? text : __sl4);
+            void cptr.sprintf(cptr.ldPtro(status_vals, idx, 8), cptr.ldPtro(status_fieldfmt, idx, 8) ? cptr.ldPtro(status_fieldfmt, idx, 8) : __sl7, text ? text : __sl4);
             break;
         }
         return;
@@ -600,18 +600,18 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         return;
     nb = cptr.decay(newbot1);
     cptr.st1(nb, 0);
-    for (i = 0; (idx1 = cptr.ldI32(cptr.add(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4))) != NHC.BL_FLUSH; ++i) {
-        if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx1, 1)))
-            void cptr.strcpy(nb = eos(nb), cptr.ldPtr(cptr.add(status_vals, idx1, 8)));
+    for (i = 0; (idx1 = cptr.ldI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4)) != NHC.BL_FLUSH; ++i) {
+        if (cptr.ld1so(cptr.decay(status_activefields), idx1, 1))
+            void cptr.strcpy(nb = eos(nb), cptr.ldPtro(status_vals, idx1, 8));
     }
-    lndelta = ((cptr.ld1s(cptr.add(cptr.decay(status_activefields), NHC.BL_GOLD, 1)) && cptr.strstr(cptr.ldPtr(cptr.add(status_vals, NHC.BL_GOLD, 8)), __sl23) ? 1 : 0) ? 9 : 0) >>> 0;
+    lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) && cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __sl23) ? 1 : 0) ? 9 : 0) >>> 0;
     for (pass = 1; pass <= 4; pass++) {
         fieldlist = cptr.decay(__static_genl_status_update_fieldorder[pass]);
         nb = cptr.decay(newbot2);
         cptr.st1(nb, 0);
-        for (i = 0; (idx2 = cptr.ldI32(cptr.add(fieldlist, i, 4))) != NHC.BL_FLUSH; ++i) {
-            if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx2, 1))) {
-                let val = cptr.ldPtr(cptr.add(status_vals, idx2, 8));
+        for (i = 0; (idx2 = cptr.ldI32o(fieldlist, i, 4)) != NHC.BL_FLUSH; ++i) {
+            if (cptr.ld1so(cptr.decay(status_activefields), idx2, 1)) {
+                let val = cptr.ldPtro(status_vals, idx2, 8);
                 switch (idx2) {
                     case NHC.BL_HP:
                     case NHC.BL_XP:
@@ -645,10 +645,10 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
             break;
         }
     }
-    (cptr.ldPtr(cptr.add(windowprocs, 136)))(WIN_STATUS.v, 1, 0);
-    (cptr.ldPtr(cptr.add(windowprocs, 144)))(WIN_STATUS.v, 0, cptr.decay(newbot1));
-    (cptr.ldPtr(cptr.add(windowprocs, 136)))(WIN_STATUS.v, 1, 1);
-    (cptr.ldPtr(cptr.add(windowprocs, 152)))(WIN_STATUS.v, 0, cptr.decay(newbot2));
+    (cptr.ldPtro(windowprocs, 136))(WIN_STATUS.v, 1, 0);
+    (cptr.ldPtro(windowprocs, 144))(WIN_STATUS.v, 0, cptr.decay(newbot1));
+    (cptr.ldPtro(windowprocs, 136))(WIN_STATUS.v, 1, 1);
+    (cptr.ldPtro(windowprocs, 152))(WIN_STATUS.v, 0, cptr.decay(newbot2));
 }
 
 /** C ref: windows.c:1119 — struct window_procs */
@@ -675,7 +675,7 @@ export function dump_forward_putstr(win, attr, str, no_forward) {
     if (dumplog_file)
         fprintf(dumplog_file, __sl25, str);
     if (!no_forward)
-        (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, attr, str);
+        (cptr.ldPtro(windowprocs, 144))(win, attr, str);
 }
 
 /** C ref: windows.c:1286 — @param {CInt} win @param {CInt} attr @param {CPtr} str */
@@ -739,48 +739,48 @@ function dump_select_menu(win, how, item) {
 export function dump_redirect(onoff_flag) {
     if (dumplog_file) {
         if (onoff_flag) {
-            cptr.stPtr(cptr.add(windowprocs, 104), dump_create_nhwindow);
-            cptr.stPtr(cptr.add(windowprocs, 112), dump_clear_nhwindow);
-            cptr.stPtr(cptr.add(windowprocs, 120), dump_display_nhwindow);
-            cptr.stPtr(cptr.add(windowprocs, 128), dump_destroy_nhwindow);
-            cptr.stPtr(cptr.add(windowprocs, 168), dump_start_menu);
-            cptr.stPtr(cptr.add(windowprocs, 176), dump_add_menu);
-            cptr.stPtr(cptr.add(windowprocs, 184), dump_end_menu);
-            cptr.stPtr(cptr.add(windowprocs, 192), dump_select_menu);
-            cptr.stPtr(cptr.add(windowprocs, 144), dump_putstr);
+            cptr.stPtro(windowprocs, 104, dump_create_nhwindow);
+            cptr.stPtro(windowprocs, 112, dump_clear_nhwindow);
+            cptr.stPtro(windowprocs, 120, dump_display_nhwindow);
+            cptr.stPtro(windowprocs, 128, dump_destroy_nhwindow);
+            cptr.stPtro(windowprocs, 168, dump_start_menu);
+            cptr.stPtro(windowprocs, 176, dump_add_menu);
+            cptr.stPtro(windowprocs, 184, dump_end_menu);
+            cptr.stPtro(windowprocs, 192, dump_select_menu);
+            cptr.stPtro(windowprocs, 144, dump_putstr);
         } else {
             cptr.memcpy(windowprocs, dumplog_windowprocs_backup, 416);
         }
-        cptr.st1(cptr.add(iflags, 91), onoff_flag);
+        cptr.st1o(iflags, 91, onoff_flag);
     } else {
-        cptr.st1(cptr.add(iflags, 91), 0);
+        cptr.st1o(iflags, 91, 0);
     }
 }
 
 /** C ref: windows.c:1397 — @param {CInt} color @returns {CInt} */
 export function has_color(color) {
-    return (((cptr.ld1s(cptr.add(iflags, 184)) && cptr.ldPtr(windowprocs) ? 1 : 0) && (cptr.ldU64(cptr.add(windowprocs, 16)) & 1n) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(windowprocs, 32), color, 1)) ? 1 : 0);
+    return (((cptr.ld1so(iflags, 184) && cptr.ldPtr(windowprocs) ? 1 : 0) && (cptr.ldU64o(windowprocs, 16) & 1n) ? 1 : 0) && cptr.ld1so(cptr.add(windowprocs, 32), color, 1) ? 1 : 0);
 }
 
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
 export function glyph2ttychar(glyph) {
     let glyphinfo = cptr.alloc(48);
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32(cptr.add(glyphinfo, 4));
+    return cptr.ldI32o(glyphinfo, 4);
 }
 
 /** C ref: windows.c:1419 — @param {CInt} glyph @returns {CInt} */
 export function glyph2symidx(glyph) {
     let glyphinfo = cptr.alloc(48);
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32(cptr.add(glyphinfo, 24));
+    return cptr.ldI32o(glyphinfo, 24);
 }
 
 const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 — char[20] (function-static) */
 
 /** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr} */
 export function encglyph(glyph) {
-    void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __sl29, cptr.ldI32(cptr.add(svc, 24)), glyph);
+    void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __sl29, cptr.ldI32o(svc, 24), glyph);
     return cptr.decay(__static_encglyph_encbuf);
 }
 
@@ -797,7 +797,7 @@ export function decode_glyph(str, glyph_ptr) {
         } else
             break;
     }
-    if (rndchk == cptr.ldI32(cptr.add(svc, 24))) {
+    if (rndchk == cptr.ldI32o(svc, 24)) {
         cptr.stI32(glyph_ptr, dcount = 0);
         for (; cptr.ld1s(str) && ++dcount <= 4 ? 1 : 0; str = cptr.add(str, 1)) {
             if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
@@ -829,8 +829,8 @@ export function decode_mixed(buf, str) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    so = cptr.ldI32(cptr.add(glyphinfo, 24));
-                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.add(cptr.add(gs, 680), so, 1))));
+                    so = cptr.ldI32o(glyphinfo, 24);
+                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo(cptr.add(gs, 680), so, 1)));
                     continue;
                 } else {
                     str = save_str;
@@ -852,7 +852,7 @@ export function decode_mixed(buf, str) {
 /** C ref: windows.c:1528 — @param {CInt} window @param {CInt} attr @param {CPtr} str */
 export function genl_putmixed(window, attr, str) {
     let buf = new Uint8Array(256);
-    (cptr.ldPtr(cptr.add(windowprocs, 144)))(window, attr, decode_mixed(cptr.decay(buf), str));
+    (cptr.ldPtro(windowprocs, 144))(window, attr, decode_mixed(cptr.decay(buf), str));
 }
 
 /** C ref: windows.c:1539 — @param {CPtr} fname @param {CInt} complain */
@@ -876,9 +876,9 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
     let skipinvert = schar((((itemflags & NHM.MENU_ITEMFLAGS_SKIPINVERT) >>> 0) != 0));
     if (!skipinvert)
         return 1;
-    if (cptr.ldI32(cptr.add(iflags, 104)) == 2) {
+    if (cptr.ldI32o(iflags, 104) == 2) {
         return 0;
-    } else if (cptr.ldI32(cptr.add(iflags, 104)) == 1) {
+    } else if (cptr.ldI32o(iflags, 104) == 1) {
         return schar((is_selected ? 1 : 0));
     }
     return 1;
@@ -918,8 +918,8 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
         return 0;
     next_accelerator = 97;
     cptr.memcpy(any, cptr.add(cg, 536), 8);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
-    (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
+    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, 168))(win, 0n);
     while (cptr.ld1s(class_list)) {
         let idx;
         selected = 0;
@@ -929,7 +929,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 61 ? 1 : 0)) {
                 panic(__sl32, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtr(cptr.add(cptr.add(def_monsyms, idx, 24), 16));
+            text = cptr.ldPtro(cptr.add(def_monsyms, idx, 24), 16);
             accelerator = cptr.ld1s(class_list);
             void cptr.sprintf(cptr.decay(buf), __sl7, text);
             break;
@@ -938,7 +938,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 18 ? 1 : 0)) {
                 panic(__sl33, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtr(cptr.add(cptr.add(def_oc_syms, idx, 24), 16));
+            text = cptr.ldPtro(cptr.add(def_oc_syms, idx, 24), 16);
             accelerator = next_accelerator;
             void cptr.sprintf(cptr.decay(buf), __sl34, cptr.ld1s(class_list), text);
             break;
@@ -970,22 +970,22 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
         add_menu(win, nul_glyphinfo.v, any, 65, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT);
         if (!strcmp(prompt, __sl37)) {
             add_menu_str(win, __sl38);
-            add_menu_str(win, cptr.ld1s(cptr.add(flags, 30)) ? __sl39 : __sl40);
+            add_menu_str(win, cptr.ld1so(flags, 30) ? __sl39 : __sl40);
         }
     }
-    (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, prompt);
+    (cptr.ldPtro(windowprocs, 184))(win, prompt);
     n = select_menu(win, way ? NHM.PICK_ANY : NHM.PICK_ONE, pick_list);
-    (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
+    (cptr.ldPtro(windowprocs, 128))(win);
     if (n > 0) {
         if (category == 1) {
             for (i = 0; i < n; ++i)
-                if (cptr.ldI32(cptr.add(pick_list.v, i, 24)) == 32) {
-                    cptr.stI32(cptr.add(pick_list.v, 0, 24), 32);
+                if (cptr.ldI32o(pick_list.v, i, 24) == 32) {
+                    cptr.stI32o(pick_list.v, 0, 32, 24);
                     n = 1;
                 }
         }
         for (i = 0; i < n; ++i)
-            cptr.st1(cptr.postinc(() => class_select, (v) => { class_select = v; }), schar(cptr.ldI32(cptr.add(pick_list.v, i, 24))));
+            cptr.st1(cptr.postinc(() => class_select, (v) => { class_select = v; }), schar(cptr.ldI32o(pick_list.v, i, 24)));
         cptr.free(pick_list.v);
         ret = n;
     } else if (n == -1) {
@@ -1001,25 +1001,25 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
 /** C ref: windows.c:1765 — struct win_request_info_t */
 export let zerowri = cptr.alloc(48);
 cptr.stI64(zerowri, 0n);
-cptr.st1(cptr.add(zerowri, 8), 0);
-cptr.st1(cptr.add(zerowri, 9), 0);
-cptr.stI32(cptr.add(zerowri, 12), 0);
-cptr.stI32(cptr.add(zerowri, 16), 0);
-cptr.stI32(cptr.add(zerowri, 20), 0);
-cptr.stI32(cptr.add(zerowri, 24), 0);
-cptr.stI32(cptr.add(zerowri, 28), 0);
-cptr.stI32(cptr.add(zerowri, 32), 0);
-cptr.stI32(cptr.add(zerowri, 36), 0);
-cptr.stI32(cptr.add(zerowri, 40), NHM.NO_COLOR);
-cptr.stI32(cptr.add(zerowri, 44), NHM.ATR_NONE);
+cptr.st1o(zerowri, 8, 0);
+cptr.st1o(zerowri, 9, 0);
+cptr.stI32o(zerowri, 12, 0);
+cptr.stI32o(zerowri, 16, 0);
+cptr.stI32o(zerowri, 20, 0);
+cptr.stI32o(zerowri, 24, 0);
+cptr.stI32o(zerowri, 28, 0);
+cptr.stI32o(zerowri, 32, 0);
+cptr.stI32o(zerowri, 36, 0);
+cptr.stI32o(zerowri, 40, NHM.NO_COLOR);
+cptr.stI32o(zerowri, 44, NHM.ATR_NONE);
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr} style */
 export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
-    cptr.stI32(cptr.add(wri, 40), cptr.ldI32(style));
-    cptr.stI32(cptr.add(wri, 44), cptr.ldI32(cptr.add(style, 4)));
-    void (cptr.ldPtr(cptr.add(windowprocs, 408)))(window, NHC.set_menu_promptstyle, wri);
-    cptr.st1(cptr.add(go, 528), 0);
+    cptr.stI32o(wri, 40, cptr.ldI32(style));
+    cptr.stI32o(wri, 44, cptr.ldI32o(style, 4));
+    void (cptr.ldPtro(windowprocs, 408))(window, NHC.set_menu_promptstyle, wri);
+    cptr.st1o(go, 528, 0);
 }
 
 /** C ref: windows.c:1785 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr} str @param {CUInt} itemflags */
@@ -1029,26 +1029,26 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
     if (!str) {
         do {
             if (debugcore(__sl41, 1)) {
-                let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
+                let save_plnmsg = cptr.ldI32o(iflags, 40);
                 pline(__sl42);
-                cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
+                cptr.stI32o(iflags, 40, save_plnmsg);
             }
         } while (0);
         return;
     }
-    if (cptr.ld1s(cptr.add(iflags, 149))) {
+    if (cptr.ld1so(iflags, 149)) {
         if (((itemflags & NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS) >>> 0) == 0)
             void get_menu_coloring(str, color, attr);
     }
     itemflags &= ~NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS;
-    (cptr.ldPtr(cptr.add(windowprocs, 176)))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
+    (cptr.ldPtro(windowprocs, 176))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
 }
 
 /** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr} buf */
 export function add_menu_heading(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, 536), 8);
-    let attr = cptr.ldI32(cptr.add(iflags, 116));
-    let color = cptr.ldI32(cptr.add(iflags, 112));
+    let attr = cptr.ldI32o(iflags, 116);
+    let color = cptr.ldI32o(iflags, 112);
     if (cptr.ldI32(program_state))
         attr = NHM.ATR_NONE, color = NHM.NO_COLOR;
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
@@ -1063,11 +1063,11 @@ export function add_menu_str(tmpwin, buf) {
 /** C ref: windows.c:1841 — @param {CPtr} str @param {CPtr} color @param {CPtr} attr @returns {CInt} */
 function get_menu_coloring(str, color, attr) {
     let tmpmc;
-    if (cptr.ld1s(cptr.add(iflags, 149)))
-        for (tmpmc = cptr.ldPtr(cptr.add(gm, 168)); tmpmc; tmpmc = cptr.ldPtr(cptr.add(tmpmc, 24)))
+    if (cptr.ld1so(iflags, 149))
+        for (tmpmc = cptr.ldPtro(gm, 168); tmpmc; tmpmc = cptr.ldPtro(tmpmc, 24))
             if (regex_match(str, cptr.ldPtr(tmpmc))) {
-                cptr.stI32(color, cptr.ldI32(cptr.add(tmpmc, 16)));
-                cptr.stI32(attr, cptr.ldI32(cptr.add(tmpmc, 20)));
+                cptr.stI32(color, cptr.ldI32o(tmpmc, 16));
+                cptr.stI32(attr, cptr.ldI32o(tmpmc, 20));
                 return 1;
             }
     return 0;
@@ -1076,25 +1076,25 @@ function get_menu_coloring(str, color, attr) {
 /** C ref: windows.c:1856 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
 export function select_menu(window, how, menu_list) {
     let reslt;
-    let old_bot_disabled = cptr.ld1s(cptr.add(gb, 4864));
-    cptr.st1(cptr.add(gb, 4864), 1);
-    reslt = (cptr.ldPtr(cptr.add(windowprocs, 192)))(window, how, menu_list);
-    cptr.st1(cptr.add(gb, 4864), old_bot_disabled);
+    let old_bot_disabled = cptr.ld1so(gb, 4864);
+    cptr.st1o(gb, 4864, 1);
+    reslt = (cptr.ldPtro(windowprocs, 192))(window, how, menu_list);
+    cptr.st1o(gb, 4864, old_bot_disabled);
     return reslt;
 }
 
 /** C ref: windows.c:1868 — @param {CPtr} query @param {CPtr} bufp */
 export function getlin(query, bufp) {
-    let old_bot_disabled = cptr.ld1s(cptr.add(gb, 4864));
+    let old_bot_disabled = cptr.ld1so(gb, 4864);
     let obufp = bufp;
     let got_cmdq = 0;
     let cmdq = null;
     while ((cmdq = cmdq_pop()) !== null) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             got_cmdq = 1;
-            cptr.st1(bufp, schar(((cptr.ld1s(cptr.add(cmdq, 4)) != 10) ? cptr.ld1s(cptr.add(cmdq, 4)) : 0)));
+            cptr.st1(bufp, schar(((cptr.ld1so(cmdq, 4) != 10) ? cptr.ld1so(cmdq, 4) : 0)));
             bufp = cptr.add(bufp, 1);
-            if (cptr.ld1s(cptr.add(cmdq, 4)) == 10)
+            if (cptr.ld1so(cmdq, 4) == 10)
                 break;
         } else {
             break;
@@ -1109,9 +1109,9 @@ export function getlin(query, bufp) {
         pline(__sl43, query, obufp);
         return;
     }
-    cptr.stI32(cptr.add(program_state, 72), 1);
-    cptr.st1(cptr.add(gb, 4864), 1);
-    (cptr.ldPtr(cptr.add(windowprocs, 296)))(query, bufp);
-    cptr.st1(cptr.add(gb, 4864), old_bot_disabled);
-    cptr.stI32(cptr.add(program_state, 72), 0);
+    cptr.stI32o(program_state, 72, 1);
+    cptr.st1o(gb, 4864, 1);
+    (cptr.ldPtro(windowprocs, 296))(query, bufp);
+    cptr.st1o(gb, 4864, old_bot_disabled);
+    cptr.stI32o(program_state, 72, 0);
 }

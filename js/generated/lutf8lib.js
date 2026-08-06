@@ -39,29 +39,29 @@ function u_posrelat(pos, len) {
 }
 
 const __static_utf8_decode_limits = cptr.alloc(6 * 8);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 0), ~0);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 8), 128);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 16), 2048);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 24), 65536);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 32), 2097152);
-cptr.stU64(cptr.add(__static_utf8_decode_limits, 40), 67108864); /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
+cptr.stU64o(__static_utf8_decode_limits, 0, ~0);
+cptr.stU64o(__static_utf8_decode_limits, 8, 128);
+cptr.stU64o(__static_utf8_decode_limits, 16, 2048);
+cptr.stU64o(__static_utf8_decode_limits, 24, 65536);
+cptr.stU64o(__static_utf8_decode_limits, 32, 2097152);
+cptr.stU64o(__static_utf8_decode_limits, 40, 67108864); /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
 
 /** C ref: lutf8lib.c:61 — @param {CPtr} s @param {CPtr} val @param {CInt} strict @returns {CPtr} */
 function utf8_decode(s, val, strict) {
-    let c = uchar(cptr.ld1s(cptr.add(s, 0)));
+    let c = uchar(cptr.ld1so(s, 0));
     let res = 0;
     if (c < 128)
         res = c;
     else {
         let count = 0;
         for (; (c & 64) >>> 0; c <<= 1) {
-            let cc = uchar(cptr.ld1s(cptr.add(s, ++count)));
+            let cc = uchar(cptr.ld1so(s, ++count));
             if (!((((cc) & 192) >>> 0) == 128))
                 return null;
             res = (((res << 6) >>> 0) | ((cc & 63) >>> 0)) >>> 0;
         }
         res |= ((((c & 127) >>> 0) << (Math.imul(count, 5))) >>> 0);
-        if ((count > 5 || res > 2147483647 ? 1 : 0) || res < cptr.ldU64(cptr.add(__static_utf8_decode_limits, count, 8)) ? 1 : 0)
+        if ((count > 5 || res > 2147483647 ? 1 : 0) || res < cptr.ldU64o(__static_utf8_decode_limits, count, 8) ? 1 : 0)
             return null;
         s = cptr.add(s, count);
     }
@@ -236,20 +236,20 @@ function iter_codes(L) {
 
 /** C ref: lutf8lib.c:273 — luaL_Reg[7] */
 const funcs = cptr.alloc(7 * 16);
-cptr.stPtr(cptr.add(funcs, 0), __sl9);
-cptr.stPtr(cptr.add(funcs, 8), byteoffset);
-cptr.stPtr(cptr.add(funcs, 16), __sl10);
-cptr.stPtr(cptr.add(funcs, 24), codepoint);
-cptr.stPtr(cptr.add(funcs, 32), __sl11);
-cptr.stPtr(cptr.add(funcs, 40), utfchar);
-cptr.stPtr(cptr.add(funcs, 48), __sl12);
-cptr.stPtr(cptr.add(funcs, 56), utflen);
-cptr.stPtr(cptr.add(funcs, 64), __sl13);
-cptr.stPtr(cptr.add(funcs, 72), iter_codes);
-cptr.stPtr(cptr.add(funcs, 80), __sl14);
-cptr.stPtr(cptr.add(funcs, 88), null);
-cptr.stPtr(cptr.add(funcs, 96), null);
-cptr.stPtr(cptr.add(funcs, 104), null);
+cptr.stPtro(funcs, 0, __sl9);
+cptr.stPtro(funcs, 8, byteoffset);
+cptr.stPtro(funcs, 16, __sl10);
+cptr.stPtro(funcs, 24, codepoint);
+cptr.stPtro(funcs, 32, __sl11);
+cptr.stPtro(funcs, 40, utfchar);
+cptr.stPtro(funcs, 48, __sl12);
+cptr.stPtro(funcs, 56, utflen);
+cptr.stPtro(funcs, 64, __sl13);
+cptr.stPtro(funcs, 72, iter_codes);
+cptr.stPtro(funcs, 80, __sl14);
+cptr.stPtro(funcs, 88, null);
+cptr.stPtro(funcs, 96, null);
+cptr.stPtro(funcs, 104, null);
 
 /** C ref: lutf8lib.c:285 — @param {CPtr} L @returns {CInt} */
 export function luaopen_utf8(L) {

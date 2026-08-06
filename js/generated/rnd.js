@@ -189,18 +189,18 @@ export const DISP = 1;
 
 /** C ref: rnd.c:114 — struct rnglist_t[2] */
 const rnglist = cptr.alloc(2 * 4144);
-cptr.stPtr(cptr.add(rnglist, 0), rn2);
-cptr.st1(cptr.add(rnglist, 8), 0);
-cptr.stI32(cptr.add(rnglist, 16), 0);
-cptr.stPtr(cptr.add(rnglist, 4144), rn2_on_display_rng);
-cptr.st1(cptr.add(rnglist, 4152), 0);
-cptr.stI32(cptr.add(rnglist, 4160), 0);
+cptr.stPtro(rnglist, 0, rn2);
+cptr.st1o(rnglist, 8, 0);
+cptr.stI32o(rnglist, 16, 0);
+cptr.stPtro(rnglist, 4144, rn2_on_display_rng);
+cptr.st1o(rnglist, 4152, 0);
+cptr.stI32o(rnglist, 4160, 0);
 
 /** C ref: rnd.c:120 — @param {CPtr} fn @returns {CInt} */
 function whichrng(fn) {
     let i;
     for (i = 0; i < 2; ++i)
-        if (cptr.ldPtr(cptr.add(rnglist, i, 4144)) === fn)
+        if (cptr.ldPtro(rnglist, i, 4144) === fn)
             return i;
     return -1;
 }
@@ -213,20 +213,20 @@ export function init_isaac64(seed, fn) {
     if (rngindx < 0)
         panic(__sl6);
     for (i = 0; BigInt(i >>> 0) < 8n; i++) {
-        cptr.st1(cptr.add(cptr.decay(new_rng_state), i, 1), Number(BigInt.asUintN(8, (seed & 255n))));
+        cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
         seed >>= 8n;
     }
-    cptr.stPtr(cptr.add(cptr.add(rnglist, rngindx, 4144), 16), isaac64_init(new_rng_state));
+    cptr.stPtro(cptr.add(rnglist, rngindx, 4144), 16, isaac64_init(new_rng_state));
 }
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, NHC.CORE, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro(cptr.add(rnglist, NHC.CORE, 4144), 16)) % BigInt.asUintN(64, BigInt(x)))));
 }
 
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtr(cptr.add(cptr.add(rnglist, NHC.DISP, 4144), 16))) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro(cptr.add(rnglist, NHC.DISP, 4144), 16)) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp ? 1 : 0) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);
@@ -258,7 +258,7 @@ export function rn2(x) {
 export function rnl(x) {
     let i;
     let adjustment;
-    adjustment = ((cptr.ld1s(cptr.add(u, 2186)) + cptr.ld1s(cptr.add(u, 2187))) | 0);
+    adjustment = ((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0);
     if (x <= 15) {
         adjustment = Math.imul((((Math.abs(adjustment) + 1) | 0) / 3) | 0, sgn(adjustment));
     }
@@ -313,7 +313,7 @@ export function d(n, x) {
 export function rne(x) {
     let tmp;
     let utmp;
-    utmp = (cptr.ldI32(cptr.add(u, 48)) < 15) ? 5 : (cptr.ldI32(cptr.add(u, 48)) / 3) | 0;
+    utmp = (cptr.ldI32o(u, 48) < 15) ? 5 : (cptr.ldI32o(u, 48) / 3) | 0;
     tmp = 1;
     while (tmp < utmp && !rn2(x) ? 1 : 0)
         tmp++;
@@ -370,8 +370,8 @@ export function shuffle_int_array(indices, count) {
     for (i = (count - 1) | 0; i > 0; i--) {
         if ((iswap = rn2((i + 1) | 0)) == i)
             continue;
-        temp = cptr.ldI32(cptr.add(indices, i, 4));
-        cptr.stI32(cptr.add(indices, i, 4), cptr.ldI32(cptr.add(indices, iswap, 4)));
-        cptr.stI32(cptr.add(indices, iswap, 4), temp);
+        temp = cptr.ldI32o(indices, i, 4);
+        cptr.stI32o(indices, i, cptr.ldI32o(indices, iswap, 4), 4);
+        cptr.stI32o(indices, iswap, temp, 4);
     }
 }

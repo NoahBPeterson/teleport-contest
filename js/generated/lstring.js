@@ -15,43 +15,43 @@ const __sl0 = cptr.lit("not enough memory");
 
 /** C ref: lstring.c:34 — @param {CPtr} a @param {CPtr} b @returns {CInt} */
 export function luaS_eqlngstr(a, b) {
-    let len = cptr.ldU64(cptr.add(a, 16));
+    let len = cptr.ldU64o(a, 16);
     (void 0);
-    return (cptr.eq(a, b)) || ((len == cptr.ldU64(cptr.add(b, 16))) && (memcmp((cptr.add((a), 24)), (cptr.add((b), 24)), len) == 0) ? 1 : 0) ? 1 : 0;
+    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, 16)) && (memcmp((cptr.add((a), 24)), (cptr.add((b), 24)), len) == 0) ? 1 : 0) ? 1 : 0;
 }
 
 /** C ref: lstring.c:43 — @param {CPtr} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
 export function luaS_hash(str, l, seed) {
     let h = (seed ^ (Number(BigInt.asUintN(32, ((l)))))) >>> 0;
     for (; l > 0n; l--)
-        h ^= ((((((h << 5) >>> 0) + (h >>> 2)) >>> 0) + (uchar(((cptr.ld1s(cptr.add(str, BigInt.asUintN(64, l - 1n)))))))) >>> 0);
+        h ^= ((((((h << 5) >>> 0) + (h >>> 2)) >>> 0) + (uchar(((cptr.ld1so(str, BigInt.asUintN(64, l - 1n))))))) >>> 0);
     return h;
 }
 
 /** C ref: lstring.c:51 — @param {CPtr} ts @returns {CUInt} */
 export function luaS_hashlongstr(ts) {
     (void 0);
-    if (cptr.ld1u(cptr.add(ts, 10)) == 0) {
-        let len = cptr.ldU64(cptr.add(ts, 16));
-        cptr.stI32(cptr.add(ts, 12), luaS_hash((cptr.add((ts), 24)), len, cptr.ldI32(cptr.add(ts, 12))));
-        cptr.st1(cptr.add(ts, 10), 1);
+    if (cptr.ld1uo(ts, 10) == 0) {
+        let len = cptr.ldU64o(ts, 16);
+        cptr.stI32o(ts, 12, luaS_hash((cptr.add((ts), 24)), len, cptr.ldI32o(ts, 12)));
+        cptr.st1o(ts, 10, 1);
     }
-    return cptr.ldI32(cptr.add(ts, 12));
+    return cptr.ldI32o(ts, 12);
 }
 
 /** C ref: lstring.c:62 — @param {CPtr} vect @param {CInt} osize @param {CInt} nsize */
 function tablerehash(vect, osize, nsize) {
     let i;
     for (i = osize; i < nsize; i++)
-        cptr.stPtr(cptr.add(vect, i, 8), null);
+        cptr.stPtro(vect, i, null, 8);
     for (i = 0; i < osize; i++) {
-        let p = cptr.ldPtr(cptr.add(vect, i, 8));
-        cptr.stPtr(cptr.add(vect, i, 8), null);
+        let p = cptr.ldPtro(vect, i, 8);
+        cptr.stPtro(vect, i, null, 8);
         while (p) {
-            let hnext = cptr.ldPtr(cptr.add(p, 16));
-            let h = ((((((((cptr.ldI32(cptr.add(p, 12))) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;
-            cptr.stPtr(cptr.add(p, 16), cptr.ldPtr(cptr.add(vect, h, 8)));
-            cptr.stPtr(cptr.add(vect, h, 8), p);
+            let hnext = cptr.ldPtro(p, 16);
+            let h = ((((((((cptr.ldI32o(p, 12)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;
+            cptr.stPtro(p, 16, cptr.ldPtro(vect, h, 8));
+            cptr.stPtro(vect, h, p, 8);
             p = hnext;
         }
     }
@@ -59,8 +59,8 @@ function tablerehash(vect, osize, nsize) {
 
 /** C ref: lstring.c:85 — @param {CPtr} L @param {CInt} nsize */
 export function luaS_resize(L, nsize) {
-    let tb = cptr.add((cptr.ldPtr(cptr.add(L, 24))), 48);
-    let osize = cptr.ldI32(cptr.add(tb, 12));
+    let tb = cptr.add((cptr.ldPtro(L, 24)), 48);
+    let osize = cptr.ldI32o(tb, 12);
     let newvect;
     if (nsize < osize)
         tablerehash(cptr.ldPtr(tb), osize, nsize);
@@ -70,7 +70,7 @@ export function luaS_resize(L, nsize) {
             tablerehash(cptr.ldPtr(tb), nsize, osize);
     } else {
         cptr.stPtr(tb, newvect);
-        cptr.stI32(cptr.add(tb, 12), nsize);
+        cptr.stI32o(tb, 12, nsize);
         if (nsize > osize)
             tablerehash(newvect, osize, nsize);
     }
@@ -82,25 +82,25 @@ export function luaS_clearcache(g) {
     let j;
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++) {
-            if (((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8))), 9))) & 24))
-                cptr.stPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8), cptr.ldPtr(cptr.add(g, 272)));
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.add(cptr.add(g, 552), i, 16), j, 8)), 9)) & 24))
+                cptr.stPtro(cptr.add(cptr.add(g, 552), i, 16), j, cptr.ldPtro(g, 272), 8);
         }
 }
 
 /** C ref: lstring.c:123 — @param {CPtr} L */
 export function luaS_init(L) {
-    let g = (cptr.ldPtr(cptr.add(L, 24)));
+    let g = (cptr.ldPtro(L, 24));
     let i;
     let j;
-    let tb = cptr.add((cptr.ldPtr(cptr.add(L, 24))), 48);
+    let tb = cptr.add((cptr.ldPtro(L, 24)), 48);
     cptr.stPtr(tb, ((luaM_malloc_(L, 1024n, 0))));
     tablerehash(cptr.ldPtr(tb), 0, 128);
-    cptr.stI32(cptr.add(tb, 12), 128);
-    cptr.stPtr(cptr.add(g, 272), (luaS_newlstr(L, __sl0, BigInt.asUintN(64, (18n / 1n) - 1n))));
-    luaC_fix(L, ((((cptr.ldPtr(cptr.add(g, 272)))))));
+    cptr.stI32o(tb, 12, 128);
+    cptr.stPtro(g, 272, (luaS_newlstr(L, __sl0, BigInt.asUintN(64, (18n / 1n) - 1n))));
+    luaC_fix(L, ((((cptr.ldPtro(g, 272))))));
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)
-            cptr.stPtr(cptr.add(cptr.add(cptr.add(g, 552), i, 16), j, 8), cptr.ldPtr(cptr.add(g, 272)));
+            cptr.stPtro(cptr.add(cptr.add(g, 552), i, 16), j, cptr.ldPtro(g, 272), 8);
 }
 
 /** C ref: lstring.c:143 — @param {CPtr} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr} */
@@ -111,66 +111,66 @@ function createstrobj(L, l, tag, h) {
     totalsize = (BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (l) + 1n)) * 1n)));
     o = luaC_newobj(L, tag, totalsize);
     ts = (((((o)))));
-    cptr.stI32(cptr.add(ts, 12), h);
-    cptr.st1(cptr.add(ts, 10), 0);
-    cptr.st1(cptr.add((cptr.add((ts), 24)), l, 1), 0);
+    cptr.stI32o(ts, 12, h);
+    cptr.st1o(ts, 10, 0);
+    cptr.st1o((cptr.add((ts), 24)), l, 0, 1);
     return ts;
 }
 
 /** C ref: lstring.c:157 — @param {CPtr} L @param {CLongLong} l @returns {CPtr} */
 export function luaS_createlngstrobj(L, l) {
-    let ts = createstrobj(L, l, 20, cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 96)));
-    cptr.stU64(cptr.add(ts, 16), l);
-    cptr.st1(cptr.add(ts, 11), 255);
+    let ts = createstrobj(L, l, 20, cptr.ldI32o((cptr.ldPtro(L, 24)), 96));
+    cptr.stU64o(ts, 16, l);
+    cptr.st1o(ts, 11, 255);
     return ts;
 }
 
 /** C ref: lstring.c:165 — @param {CPtr} L @param {CPtr} ts */
 export function luaS_remove(L, ts) {
-    let tb = cptr.add((cptr.ldPtr(cptr.add(L, 24))), 48);
-    let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32(cptr.add(ts, 12))) & (((cptr.ldI32(cptr.add(tb, 12))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+    let tb = cptr.add((cptr.ldPtro(L, 24)), 48);
+    let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32o(ts, 12)) & (((cptr.ldI32o(tb, 12)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     while (!cptr.eq(cptr.ldPtr(p), ts))
         p = cptr.add((cptr.ldPtr(p)), 16);
-    cptr.stPtr(p, cptr.ldPtr(cptr.add((cptr.ldPtr(p)), 16)));
-    (cptr.stI32(cptr.add(tb, 8), cptr.ldI32(cptr.add(tb, 8)) + -1)) - (-1);
+    cptr.stPtr(p, cptr.ldPtro((cptr.ldPtr(p)), 16));
+    (cptr.stI32o(tb, 8, cptr.ldI32o(tb, 8) + -1)) - (-1);
 }
 
 /** C ref: lstring.c:175 — @param {CPtr} L @param {CPtr} tb */
 function growstrtab(L, tb) {
-    if ((__builtin_expect(BigInt(((cptr.ldI32(cptr.add(tb, 8)) == 2147483647) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.ldI32o(tb, 8) == 2147483647) != 0)), 0n))) {
         luaC_fullgc(L, 1);
-        if (cptr.ldI32(cptr.add(tb, 8)) == 2147483647)
+        if (cptr.ldI32o(tb, 8) == 2147483647)
             luaD_throw(L, 4);
     }
-    if (cptr.ldI32(cptr.add(tb, 12)) <= 1073741823)
-        luaS_resize(L, Math.imul(cptr.ldI32(cptr.add(tb, 12)), 2));
+    if (cptr.ldI32o(tb, 12) <= 1073741823)
+        luaS_resize(L, Math.imul(cptr.ldI32o(tb, 12), 2));
 }
 
 /** C ref: lstring.c:189 — @param {CPtr} L @param {CPtr} str @param {CLongLong} l @returns {CPtr} */
 function internshrstr(L, str, l) {
     let ts;
-    let g = (cptr.ldPtr(cptr.add(L, 24)));
+    let g = (cptr.ldPtro(L, 24));
     let tb = cptr.add(g, 48);
-    let h = luaS_hash(str, l, cptr.ldI32(cptr.add(g, 96)));
-    let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32(cptr.add(tb, 12))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+    let h = luaS_hash(str, l, cptr.ldI32o(g, 96));
+    let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, 12)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     (void 0);
-    for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtr(cptr.add(ts, 16))) {
-        if (l == BigInt(cptr.ld1u(cptr.add(ts, 11)) >>> 0) && (memcmp(str, (cptr.add((ts), 24)), BigInt.asUintN(64, l * 1n)) == 0) ? 1 : 0) {
-            if (((cptr.ld1u(cptr.add((ts), 9))) & ((cptr.ld1u(cptr.add((g), 100)) ^ 24))))
-                (cptr.st1(cptr.add((ts), 9), cptr.ld1u(cptr.add((ts), 9)) ^ 24));
+    for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, 16)) {
+        if (l == BigInt(cptr.ld1uo(ts, 11) >>> 0) && (memcmp(str, (cptr.add((ts), 24)), BigInt.asUintN(64, l * 1n)) == 0) ? 1 : 0) {
+            if (((cptr.ld1uo((ts), 9)) & ((cptr.ld1uo((g), 100) ^ 24))))
+                (cptr.st1o((ts), 9, cptr.ld1uo((ts), 9) ^ 24));
             return ts;
         }
     }
-    if (cptr.ldI32(cptr.add(tb, 8)) >= cptr.ldI32(cptr.add(tb, 12))) {
+    if (cptr.ldI32o(tb, 8) >= cptr.ldI32o(tb, 12)) {
         growstrtab(L, tb);
-        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32(cptr.add(tb, 12))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, 12)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     }
     ts = createstrobj(L, l, 4, h);
-    cptr.st1(cptr.add(ts, 11), (Number(BigInt.asUintN(8, ((l))))));
+    cptr.st1o(ts, 11, (Number(BigInt.asUintN(8, ((l))))));
     cptr.memcpy((cptr.add((ts), 24)), str, BigInt.asUintN(64, l * 1n));
-    cptr.stPtr(cptr.add(ts, 16), cptr.ldPtr(list));
+    cptr.stPtro(ts, 16, cptr.ldPtr(list));
     cptr.stPtr(list, ts);
-    (cptr.stI32(cptr.add(tb, 8), cptr.ldI32(cptr.add(tb, 8)) + 1)) - (1);
+    (cptr.stI32o(tb, 8, cptr.ldI32o(tb, 8) + 1)) - (1);
     return ts;
 }
 
@@ -192,15 +192,15 @@ export function luaS_newlstr(L, str, l) {
 export function luaS_new(L, str) {
     let i = u32mod((Number(BigInt.asUintN(32, (cptr.addr((str)) & 4294967295n)))), 53);
     let j;
-    let p = cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 552), i, 16);
+    let p = cptr.add(cptr.add((cptr.ldPtro(L, 24)), 552), i, 16);
     for (j = 0; j < 2; j++) {
-        if (strcmp(str, (cptr.add((cptr.ldPtr(cptr.add(p, j, 8))), 24))) == 0)
-            return cptr.ldPtr(cptr.add(p, j, 8));
+        if (strcmp(str, (cptr.add((cptr.ldPtro(p, j, 8)), 24))) == 0)
+            return cptr.ldPtro(p, j, 8);
     }
     for (j = 1; j > 0; j--)
-        cptr.stPtr(cptr.add(p, j, 8), cptr.ldPtr(cptr.add(p, (j - 1) | 0, 8)));
-    cptr.stPtr(cptr.add(p, 0, 8), luaS_newlstr(L, str, cptr.strlen(str)));
-    return cptr.ldPtr(cptr.add(p, 0, 8));
+        cptr.stPtro(p, j, cptr.ldPtro(p, (j - 1) | 0, 8), 8);
+    cptr.stPtro(p, 0, luaS_newlstr(L, str, cptr.strlen(str)), 8);
+    return cptr.ldPtro(p, 0, 8);
 }
 
 /** C ref: lstring.c:259 — @param {CPtr} L @param {CLongLong} s @param {CInt} nuvalue @returns {CPtr} */
@@ -212,10 +212,10 @@ export function luaS_newudata(L, s, nuvalue) {
         luaM_toobig(L);
     o = luaC_newobj(L, 7, (BigInt.asUintN(64, ((nuvalue) == 0 ? 32n : BigInt.asUintN(64, 40n + (BigInt.asUintN(64, 16n * BigInt.asUintN(64, BigInt((nuvalue))))))) + (s))));
     u = (((((o)))));
-    cptr.stU64(cptr.add(u, 16), s);
-    cptr.stI16(cptr.add(u, 10), u16(nuvalue));
-    cptr.stPtr(cptr.add(u, 24), null);
+    cptr.stU64o(u, 16, s);
+    cptr.stI16o(u, 10, u16(nuvalue));
+    cptr.stPtro(u, 24, null);
     for (i = 0; i < nuvalue; i++)
-        (cptr.st1(cptr.add((cptr.add(cptr.add(u, 40), i, 16)), 8), 0));
+        (cptr.st1o((cptr.add(cptr.add(u, 40), i, 16)), 8, 0));
     return u;
 }

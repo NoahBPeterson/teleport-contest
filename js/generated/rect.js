@@ -34,9 +34,9 @@ export function init_rect() {
             panic(__sl0);
     }
     rect_cnt = 1;
-    cptr.stI16(cptr.add(rect, 0, 8), cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 2), 0));
-    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 4), 79);
-    cptr.stI16(cptr.add(cptr.add(rect, 0, 8), 6), 20);
+    cptr.stI16o(rect, 0, cptr.stI16o(cptr.add(rect, 0, 8), 2, 0), 8);
+    cptr.stI16o(cptr.add(rect, 0, 8), 4, 79);
+    cptr.stI16o(cptr.add(rect, 0, 8), 6, 20);
 }
 
 /** C ref: rect.c:45 */
@@ -56,11 +56,11 @@ export function get_rect_ind(r) {
     let hy;
     let i;
     lx = cptr.ldI16(r);
-    ly = cptr.ldI16(cptr.add(r, 2));
-    hx = cptr.ldI16(cptr.add(r, 4));
-    hy = cptr.ldI16(cptr.add(r, 6));
+    ly = cptr.ldI16o(r, 2);
+    hx = cptr.ldI16o(r, 4);
+    hy = cptr.ldI16o(r, 6);
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (((lx == cptr.ldI16(rectp) && ly == cptr.ldI16(cptr.add(rectp, 2)) ? 1 : 0) && hx == cptr.ldI16(cptr.add(rectp, 4)) ? 1 : 0) && hy == cptr.ldI16(cptr.add(rectp, 6)) ? 1 : 0)
+        if (((lx == cptr.ldI16(rectp) && ly == cptr.ldI16o(rectp, 2) ? 1 : 0) && hx == cptr.ldI16o(rectp, 4) ? 1 : 0) && hy == cptr.ldI16o(rectp, 6) ? 1 : 0)
             return i;
     return -1;
 }
@@ -74,11 +74,11 @@ export function get_rect(r) {
     let hy;
     let i;
     lx = cptr.ldI16(r);
-    ly = cptr.ldI16(cptr.add(r, 2));
-    hx = cptr.ldI16(cptr.add(r, 4));
-    hy = cptr.ldI16(cptr.add(r, 6));
+    ly = cptr.ldI16o(r, 2);
+    hx = cptr.ldI16o(r, 4);
+    hy = cptr.ldI16o(r, 6);
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (((lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16(cptr.add(rectp, 2)) ? 1 : 0) && hx <= cptr.ldI16(cptr.add(rectp, 4)) ? 1 : 0) && hy <= cptr.ldI16(cptr.add(rectp, 6)) ? 1 : 0)
+        if (((lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16o(rectp, 2) ? 1 : 0) && hx <= cptr.ldI16o(rectp, 4) ? 1 : 0) && hy <= cptr.ldI16o(rectp, 6) ? 1 : 0)
             return rectp;
     return null;
 }
@@ -90,13 +90,13 @@ export function rnd_rect() {
 
 /** C ref: rect.c:116 — @param {CPtr} r1 @param {CPtr} r2 @param {CPtr} r3 @returns {CInt} */
 function intersect(r1, r2, r3) {
-    if (((cptr.ldI16(r2) > cptr.ldI16(cptr.add(r1, 4)) || cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 6)) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 4)) < cptr.ldI16(r1) ? 1 : 0) || cptr.ldI16(cptr.add(r2, 6)) < cptr.ldI16(cptr.add(r1, 2)) ? 1 : 0)
+    if (((cptr.ldI16(r2) > cptr.ldI16o(r1, 4) || cptr.ldI16o(r2, 2) > cptr.ldI16o(r1, 6) ? 1 : 0) || cptr.ldI16o(r2, 4) < cptr.ldI16(r1) ? 1 : 0) || cptr.ldI16o(r2, 6) < cptr.ldI16o(r1, 2) ? 1 : 0)
         return 0;
     cptr.stI16(r3, i16((cptr.ldI16(r2) > cptr.ldI16(r1) ? cptr.ldI16(r2) : cptr.ldI16(r1))));
-    cptr.stI16(cptr.add(r3, 2), i16((cptr.ldI16(cptr.add(r2, 2)) > cptr.ldI16(cptr.add(r1, 2)) ? cptr.ldI16(cptr.add(r2, 2)) : cptr.ldI16(cptr.add(r1, 2)))));
-    cptr.stI16(cptr.add(r3, 4), i16((cptr.ldI16(cptr.add(r2, 4)) > cptr.ldI16(cptr.add(r1, 4)) ? cptr.ldI16(cptr.add(r1, 4)) : cptr.ldI16(cptr.add(r2, 4)))));
-    cptr.stI16(cptr.add(r3, 6), i16((cptr.ldI16(cptr.add(r2, 6)) > cptr.ldI16(cptr.add(r1, 6)) ? cptr.ldI16(cptr.add(r1, 6)) : cptr.ldI16(cptr.add(r2, 6)))));
-    if (cptr.ldI16(r3) > cptr.ldI16(cptr.add(r3, 4)) || cptr.ldI16(cptr.add(r3, 2)) > cptr.ldI16(cptr.add(r3, 6)) ? 1 : 0)
+    cptr.stI16o(r3, 2, i16((cptr.ldI16o(r2, 2) > cptr.ldI16o(r1, 2) ? cptr.ldI16o(r2, 2) : cptr.ldI16o(r1, 2))));
+    cptr.stI16o(r3, 4, i16((cptr.ldI16o(r2, 4) > cptr.ldI16o(r1, 4) ? cptr.ldI16o(r1, 4) : cptr.ldI16o(r2, 4))));
+    cptr.stI16o(r3, 6, i16((cptr.ldI16o(r2, 6) > cptr.ldI16o(r1, 6) ? cptr.ldI16o(r1, 6) : cptr.ldI16o(r2, 6))));
+    if (cptr.ldI16(r3) > cptr.ldI16o(r3, 4) || cptr.ldI16o(r3, 2) > cptr.ldI16o(r3, 6) ? 1 : 0)
         return 0;
     return 1;
 }
@@ -106,9 +106,9 @@ export function rect_bounds(r1, r2, r3) {
     r1 = cptr.dup(r1, 8); // by-value struct param
     r2 = cptr.dup(r2, 8); // by-value struct param
     cptr.stI16(r3, i16(((cptr.ldI16(r1)) < (cptr.ldI16(r2)) ? (cptr.ldI16(r1)) : (cptr.ldI16(r2)))));
-    cptr.stI16(cptr.add(r3, 2), i16(((cptr.ldI16(cptr.add(r1, 2))) < (cptr.ldI16(cptr.add(r2, 2))) ? (cptr.ldI16(cptr.add(r1, 2))) : (cptr.ldI16(cptr.add(r2, 2))))));
-    cptr.stI16(cptr.add(r3, 4), i16(((cptr.ldI16(cptr.add(r1, 4))) > (cptr.ldI16(cptr.add(r2, 4))) ? (cptr.ldI16(cptr.add(r1, 4))) : (cptr.ldI16(cptr.add(r2, 4))))));
-    cptr.stI16(cptr.add(r3, 6), i16(((cptr.ldI16(cptr.add(r1, 6))) > (cptr.ldI16(cptr.add(r2, 6))) ? (cptr.ldI16(cptr.add(r1, 6))) : (cptr.ldI16(cptr.add(r2, 6))))));
+    cptr.stI16o(r3, 2, i16(((cptr.ldI16o(r1, 2)) < (cptr.ldI16o(r2, 2)) ? (cptr.ldI16o(r1, 2)) : (cptr.ldI16o(r2, 2)))));
+    cptr.stI16o(r3, 4, i16(((cptr.ldI16o(r1, 4)) > (cptr.ldI16o(r2, 4)) ? (cptr.ldI16o(r1, 4)) : (cptr.ldI16o(r2, 4)))));
+    cptr.stI16o(r3, 6, i16(((cptr.ldI16o(r1, 6)) > (cptr.ldI16o(r2, 6)) ? (cptr.ldI16o(r1, 6)) : (cptr.ldI16o(r2, 6)))));
 }
 
 /** C ref: rect.c:147 — @param {CPtr} r */
@@ -141,24 +141,24 @@ export function split_rects(r1, r2) {
     for (i = (rect_cnt - 1) | 0; i >= 0; i--)
         if (intersect(cptr.add(rect, i, 8), r2, r))
             split_rects(cptr.add(rect, i, 8), r);
-    if (((((cptr.ldI16(cptr.add(r2, 2)) - cptr.ldI16(cptr.add(old_r, 2))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 6)) < 20 ? 6 : 4) + 4) | 0)) {
+    if (((((cptr.ldI16o(r2, 2) - cptr.ldI16o(old_r, 2)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, 6) < 20 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
-        cptr.stI16(cptr.add(r, 6), i16(((cptr.ldI16(cptr.add(r2, 2)) - 2) | 0)));
+        cptr.stI16o(r, 6, i16(((cptr.ldI16o(r2, 2) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 4)) < 79 ? 8 : 5) + 4) | 0)) {
+    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, 4) < 79 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
-        cptr.stI16(cptr.add(r, 4), i16(((cptr.ldI16(r2) - 2) | 0)));
+        cptr.stI16o(r, 4, i16(((cptr.ldI16(r2) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(cptr.add(old_r, 6)) - cptr.ldI16(cptr.add(r2, 6))) | 0) - 1) | 0) > (((cptr.ldI16(cptr.add(old_r, 2)) > 0 ? 6 : 4) + 4) | 0)) {
+    if (((((cptr.ldI16o(old_r, 6) - cptr.ldI16o(r2, 6)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, 2) > 0 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
-        cptr.stI16(cptr.add(r, 2), i16(((cptr.ldI16(cptr.add(r2, 6)) + 2) | 0)));
+        cptr.stI16o(r, 2, i16(((cptr.ldI16o(r2, 6) + 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(cptr.add(old_r, 4)) - cptr.ldI16(cptr.add(r2, 4))) | 0) - 1) | 0) > (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
+    if (((((cptr.ldI16o(old_r, 4) - cptr.ldI16o(r2, 4)) | 0) - 1) | 0) > (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
-        cptr.stI16(r, i16(((cptr.ldI16(cptr.add(r2, 4)) + 2) | 0)));
+        cptr.stI16(r, i16(((cptr.ldI16o(r2, 4) + 2) | 0)));
         add_rect(r);
     }
 }

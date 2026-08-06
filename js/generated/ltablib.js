@@ -194,7 +194,7 @@ function l_randomizePivot() {
     cptr.memcpy(buff, c, BigInt.asUintN(64, (8n / 4n) * 4n));
     cptr.memcpy(cptr.add(buff, (8n / 4n), 4), t, BigInt.asUintN(64, (8n / 4n) * 4n));
     for (i = 0; BigInt(i >>> 0) < (16n / 4n); i++)
-        rnd = (rnd + cptr.ldI32(cptr.add(buff, i, 4))) | 0;
+        rnd = (rnd + cptr.ldI32o(buff, i, 4)) | 0;
     return rnd;
 }
 
@@ -317,22 +317,22 @@ function sort(L) {
 
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
 const tab_funcs = cptr.alloc(8 * 16);
-cptr.stPtr(cptr.add(tab_funcs, 0), __sl13);
-cptr.stPtr(cptr.add(tab_funcs, 8), tconcat);
-cptr.stPtr(cptr.add(tab_funcs, 16), __sl14);
-cptr.stPtr(cptr.add(tab_funcs, 24), tinsert);
-cptr.stPtr(cptr.add(tab_funcs, 32), __sl15);
-cptr.stPtr(cptr.add(tab_funcs, 40), tpack);
-cptr.stPtr(cptr.add(tab_funcs, 48), __sl16);
-cptr.stPtr(cptr.add(tab_funcs, 56), tunpack);
-cptr.stPtr(cptr.add(tab_funcs, 64), __sl17);
-cptr.stPtr(cptr.add(tab_funcs, 72), tremove);
-cptr.stPtr(cptr.add(tab_funcs, 80), __sl18);
-cptr.stPtr(cptr.add(tab_funcs, 88), tmove);
-cptr.stPtr(cptr.add(tab_funcs, 96), __sl19);
-cptr.stPtr(cptr.add(tab_funcs, 104), sort);
-cptr.stPtr(cptr.add(tab_funcs, 112), null);
-cptr.stPtr(cptr.add(tab_funcs, 120), null);
+cptr.stPtro(tab_funcs, 0, __sl13);
+cptr.stPtro(tab_funcs, 8, tconcat);
+cptr.stPtro(tab_funcs, 16, __sl14);
+cptr.stPtro(tab_funcs, 24, tinsert);
+cptr.stPtro(tab_funcs, 32, __sl15);
+cptr.stPtro(tab_funcs, 40, tpack);
+cptr.stPtro(tab_funcs, 48, __sl16);
+cptr.stPtro(tab_funcs, 56, tunpack);
+cptr.stPtro(tab_funcs, 64, __sl17);
+cptr.stPtro(tab_funcs, 72, tremove);
+cptr.stPtro(tab_funcs, 80, __sl18);
+cptr.stPtro(tab_funcs, 88, tmove);
+cptr.stPtro(tab_funcs, 96, __sl19);
+cptr.stPtro(tab_funcs, 104, sort);
+cptr.stPtro(tab_funcs, 112, null);
+cptr.stPtro(tab_funcs, 120, null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {

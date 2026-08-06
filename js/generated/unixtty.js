@@ -90,19 +90,19 @@ export function gettty() {
             perror(__sl2);
     }
     if (getenv(__sl0)) {
-        cptr.st1(cptr.add(cptr.add(inittyb, 32), 3, 1), 127);
-        cptr.st1(cptr.add(cptr.add(inittyb, 32), 5, 1), 21);
-        cptr.st1(cptr.add(cptr.add(inittyb, 32), 8, 1), 3);
+        cptr.st1o(cptr.add(inittyb, 32), 3, 127, 1);
+        cptr.st1o(cptr.add(inittyb, 32), 5, 21, 1);
+        cptr.st1o(cptr.add(inittyb, 32), 8, 3, 1);
     }
     cptr.memcpy(curttyb, inittyb, 72);
     cptr.memcpy(curttyb, inittyb, 72);
     ospeed.v = i16((speednum(cfgetospeed(inittyb))));
-    erase_char = schar(cptr.ld1u(cptr.add(cptr.add(inittyb, 32), 3, 1)));
-    kill_char = schar(cptr.ld1u(cptr.add(cptr.add(inittyb, 32), 5, 1)));
-    intr_char = schar(cptr.ld1u(cptr.add(cptr.add(inittyb, 32), 8, 1)));
+    erase_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 3, 1));
+    kill_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 5, 1));
+    intr_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 8, 1));
     getioctls();
-    if (cptr.ldU64(cptr.add(curttyb, 8)) & 4n) {
-        cptr.stU64(cptr.add(curttyb, 8), cptr.ldU64(cptr.add(curttyb, 8)) & 18446744073709551611n);
+    if (cptr.ldU64o(curttyb, 8) & 4n) {
+        cptr.stU64o(curttyb, 8, cptr.ldU64o(curttyb, 8) & 18446744073709551611n);
         setctty();
     }
     settty_needed = 1;
@@ -110,16 +110,16 @@ export function gettty() {
 
 /** C ref: unixtty.c:247 — @param {CPtr} s */
 export function settty(s) {
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty))
+    if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty))
         term_end_screen();
     if (s)
-        (cptr.ldPtr(cptr.add(windowprocs, 240)))(s);
+        (cptr.ldPtro(windowprocs, 240))(s);
     if ((tcsetattr(0, 1, inittyb)) < 0 || 0 ? 1 : 0) {
         if (!getenv(__sl0))
             perror(__sl3);
     }
-    cptr.st1(cptr.add(iflags, 130), schar(((cptr.ldU64(cptr.add(inittyb, 24)) & 8n) ? NHM.ON : NHM.OFF)));
-    cptr.st1(cptr.add(iflags, 127), schar(((!(cptr.ldU64(cptr.add(inittyb, 24)) & 256n)) ? NHM.ON : NHM.OFF)));
+    cptr.st1o(iflags, 130, schar(((cptr.ldU64o(inittyb, 24) & 8n) ? NHM.ON : NHM.OFF)));
+    cptr.st1o(iflags, 127, schar(((!(cptr.ldU64o(inittyb, 24) & 256n)) ? NHM.ON : NHM.OFF)));
     cptr.stU64(curttyb, cptr.ldU64(curttyb) | 32n);
     setioctls();
     settty_needed = 0;
@@ -132,49 +132,49 @@ export function setftty() {
     let change = 0;
     ef = 0;
     cf = 0;
-    cptr.st1(cptr.add(iflags, 127), NHM.ON);
-    cptr.st1(cptr.add(iflags, 130), NHM.OFF);
-    if (Number(BigInt.asUintN(32, (cptr.ldU64(cptr.add(curttyb, 24)) & 8n))) != ef) {
-        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & 18446744073709551607n);
+    cptr.st1o(iflags, 127, NHM.ON);
+    cptr.st1o(iflags, 130, NHM.OFF);
+    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, 24) & 8n))) != ef) {
+        cptr.stU64o(curttyb, 24, cptr.ldU64o(curttyb, 24) & 18446744073709551607n);
         change++;
     }
-    if (Number(BigInt.asUintN(32, (cptr.ldU64(cptr.add(curttyb, 24)) & 256n))) != cf) {
-        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & 18446744073709551359n);
-        cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) | BigInt(cf >>> 0));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 16, 1), 1);
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 17, 1), 0);
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 10, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 11, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 6, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 15, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 4, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 14, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, 24) & 256n))) != cf) {
+        cptr.stU64o(curttyb, 24, cptr.ldU64o(curttyb, 24) & 18446744073709551359n);
+        cptr.stU64o(curttyb, 24, cptr.ldU64o(curttyb, 24) | BigInt(cf >>> 0));
+        cptr.st1o(cptr.add(curttyb, 32), 16, 1, 1);
+        cptr.st1o(cptr.add(curttyb, 32), 17, 0, 1);
+        cptr.st1o(cptr.add(curttyb, 32), 10, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o(cptr.add(curttyb, 32), 11, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o(cptr.add(curttyb, 32), 6, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o(cptr.add(curttyb, 32), 15, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o(cptr.add(curttyb, 32), 4, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o(cptr.add(curttyb, 32), 14, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
         change++;
     }
-    if (!(cptr.ldU64(cptr.add((inittyb), 16)) & 512n))
+    if (!(cptr.ldU64o((inittyb), 16) & 512n))
         cptr.stU64(curttyb, cptr.ldU64(curttyb) & 18446744073709551583n);
-    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) != 3 ? 1 : 0) {
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), 3);
+    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) != 3 ? 1 : 0) {
+        cptr.st1o(cptr.add(curttyb, 32), 8, 3, 1);
         change++;
     }
     if (change)
         setctty();
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty))
+    if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty))
         term_start_screen();
 }
 
 /** C ref: unixtty.c:338 */
 export function intron() {
-    if (((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) != 3 ? 1 : 0) {
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), 3);
+    if (((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) != 3 ? 1 : 0) {
+        cptr.st1o(cptr.add(curttyb, 32), 8, 3, 1);
         setctty();
     }
 }
 
 /** C ref: unixtty.c:350 */
 export function introff() {
-    if ((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty) && BigInt(cptr.ld1u(cptr.add(cptr.add(curttyb, 32), 8, 1)) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
-        cptr.st1(cptr.add(cptr.add(curttyb, 32), 8, 1), Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+    if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
+        cptr.st1o(cptr.add(curttyb, 32), 8, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
         setctty();
     }
 }
@@ -183,8 +183,8 @@ export function introff() {
 export function error(s, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    if (cptr.ld1s(cptr.add(iflags, 81)))
-        (cptr.ldPtr(cptr.add(windowprocs, 80)))(null);
+    if (cptr.ld1so(iflags, 81))
+        (cptr.ldPtro(windowprocs, 80))(null);
     if (settty_needed)
         settty(null);
     void vprintf(s, the_args);

@@ -185,7 +185,7 @@ let errorJmp = null;
 /** C ref: setjmp_gate.c:122 — @param {CInt} errcode */
 function l_throw(errcode) {
     if (errorJmp) {
-        cptr.stI32(cptr.add(errorJmp, 192), errcode);
+        cptr.stI32o(errorJmp, 192, errcode);
         cjmp.longjmp((errorJmp), 1);
     } else {
         cptr.printf(__sl15, errcode);
@@ -204,8 +204,8 @@ function risky_d(arg) {
 function runprotected(f, arg) {
     let lj = cptr.alloc(208);
     let result = -1;
-    cptr.stI32(cptr.add(lj, 192), 0);
-    cptr.stPtr(cptr.add(lj, 200), errorJmp);
+    cptr.stI32o(lj, 192, 0);
+    cptr.stPtro(lj, 200, errorJmp);
     errorJmp = lj;
     {
         const __sj5 = cjmp.idOf((lj));
@@ -215,9 +215,9 @@ function runprotected(f, arg) {
                 result = f(arg);
             }
             ;
-            errorJmp = cptr.ldPtr(cptr.add(lj, 200));
-            cptr.printf(__sl17, cptr.ldI32(cptr.add(lj, 192)), result);
-            return cptr.ldI32(cptr.add(lj, 192));
+            errorJmp = cptr.ldPtro(lj, 200);
+            cptr.printf(__sl17, cptr.ldI32o(lj, 192), result);
+            return cptr.ldI32o(lj, 192);
         } catch (__e5) {
             if (!cjmp.matches(__e5, __sj5)) throw __e5;
             __sv5 = cjmp.jbval(__e5);
@@ -225,9 +225,9 @@ function runprotected(f, arg) {
                 result = f(arg);
             }
             ;
-            errorJmp = cptr.ldPtr(cptr.add(lj, 200));
-            cptr.printf(__sl17, cptr.ldI32(cptr.add(lj, 192)), result);
-            return cptr.ldI32(cptr.add(lj, 192));
+            errorJmp = cptr.ldPtro(lj, 200);
+            cptr.printf(__sl17, cptr.ldI32o(lj, 192), result);
+            return cptr.ldI32o(lj, 192);
         }
     }
 }

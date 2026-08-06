@@ -122,15 +122,15 @@ function setboolfield(L, key, value) {
 
 /** C ref: loslib.c:232 — @param {CPtr} L @param {CPtr} stm */
 function setallfields(L, stm) {
-    setfield(L, __sl2, cptr.ldI32(cptr.add(stm, 20)), 1900);
-    setfield(L, __sl3, cptr.ldI32(cptr.add(stm, 16)), 1);
-    setfield(L, __sl4, cptr.ldI32(cptr.add(stm, 12)), 0);
-    setfield(L, __sl5, cptr.ldI32(cptr.add(stm, 8)), 0);
-    setfield(L, __sl6, cptr.ldI32(cptr.add(stm, 4)), 0);
+    setfield(L, __sl2, cptr.ldI32o(stm, 20), 1900);
+    setfield(L, __sl3, cptr.ldI32o(stm, 16), 1);
+    setfield(L, __sl4, cptr.ldI32o(stm, 12), 0);
+    setfield(L, __sl5, cptr.ldI32o(stm, 8), 0);
+    setfield(L, __sl6, cptr.ldI32o(stm, 4), 0);
     setfield(L, __sl7, cptr.ldI32(stm), 0);
-    setfield(L, __sl8, cptr.ldI32(cptr.add(stm, 28)), 1);
-    setfield(L, __sl9, cptr.ldI32(cptr.add(stm, 24)), 1);
-    setboolfield(L, __sl10, cptr.ldI32(cptr.add(stm, 32)));
+    setfield(L, __sl8, cptr.ldI32o(stm, 28), 1);
+    setfield(L, __sl9, cptr.ldI32o(stm, 24), 1);
+    setboolfield(L, __sl10, cptr.ldI32o(stm, 32));
 }
 
 /** C ref: loslib.c:245 — @param {CPtr} L @param {CPtr} key @returns {CInt} */
@@ -170,7 +170,7 @@ function checkoption(L, conv, convlen, buff) {
             oplen++;
         else if (memcmp(conv, option, BigInt.asUintN(64, BigInt(oplen))) == 0) {
             cptr.memcpy(buff, conv, BigInt.asUintN(64, BigInt(oplen)));
-            cptr.st1(cptr.add(buff, oplen), 0);
+            cptr.st1o(buff, oplen, 0);
             return cptr.add(conv, oplen);
         }
     }
@@ -206,18 +206,18 @@ function os_date(L) {
     } else {
         let cc = new Uint8Array(4);
         let b = cptr.alloc(1056);
-        cptr.st1(cptr.add(cptr.decay(cc), 0, 1), 37);
+        cptr.st1o(cptr.decay(cc), 0, 37, 1);
         luaL_buffinit(L, b);
         while (cptr.cmp(s, se) < 0) {
             if (cptr.ld1s(s) != 37)
-                (void (cptr.ldU64(cptr.add((b), 16)) < cptr.ldU64(cptr.add((b), 8)) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1(cptr.add(cptr.ldPtr((b)), (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + 1n)) - (1n)), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
+                (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
             else {
                 let reslen;
                 let buff = luaL_prepbuffsize(b, 250n);
                 s = cptr.add(s, 1);
                 s = checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1));
                 reslen = strftime(buff, 250n, cptr.decay(cc), stm);
-                (cptr.stU64(cptr.add((b), 16), cptr.ldU64(cptr.add((b), 16)) + (reslen)));
+                (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + (reslen)));
             }
         }
         luaL_pushresult(b);
@@ -234,13 +234,13 @@ function os_time(L) {
         let ts = cptr.alloc(56);
         luaL_checktype(L, 1, 5);
         lua_settop(L, 1);
-        cptr.stI32(cptr.add(ts, 20), getfield(L, __sl2, -1, 1900));
-        cptr.stI32(cptr.add(ts, 16), getfield(L, __sl3, -1, 1));
-        cptr.stI32(cptr.add(ts, 12), getfield(L, __sl4, -1, 0));
-        cptr.stI32(cptr.add(ts, 8), getfield(L, __sl5, 12, 0));
-        cptr.stI32(cptr.add(ts, 4), getfield(L, __sl6, 0, 0));
+        cptr.stI32o(ts, 20, getfield(L, __sl2, -1, 1900));
+        cptr.stI32o(ts, 16, getfield(L, __sl3, -1, 1));
+        cptr.stI32o(ts, 12, getfield(L, __sl4, -1, 0));
+        cptr.stI32o(ts, 8, getfield(L, __sl5, 12, 0));
+        cptr.stI32o(ts, 4, getfield(L, __sl6, 0, 0));
         cptr.stI32(ts, getfield(L, __sl7, 0, 0));
-        cptr.stI32(cptr.add(ts, 32), getboolfield(L, __sl10));
+        cptr.stI32o(ts, 32, getboolfield(L, __sl10));
         t = mktime(ts);
         setallfields(L, ts);
     }
@@ -259,26 +259,26 @@ function os_difftime(L) {
 }
 
 const __static_os_setlocale_cat = cptr.alloc(6 * 4);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 0), 0);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 4), 1);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 8), 2);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 12), 3);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 16), 4);
-cptr.stI32(cptr.add(__static_os_setlocale_cat, 20), 5); /** C ref: loslib.c:383 — int[6] (function-static) */
+cptr.stI32o(__static_os_setlocale_cat, 0, 0);
+cptr.stI32o(__static_os_setlocale_cat, 4, 1);
+cptr.stI32o(__static_os_setlocale_cat, 8, 2);
+cptr.stI32o(__static_os_setlocale_cat, 12, 3);
+cptr.stI32o(__static_os_setlocale_cat, 16, 4);
+cptr.stI32o(__static_os_setlocale_cat, 20, 5); /** C ref: loslib.c:383 — int[6] (function-static) */
 const __static_os_setlocale_catnames = cptr.alloc(7 * 8);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 0), __sl21);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 8), __sl22);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 16), __sl23);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 24), __sl24);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 32), __sl25);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 40), __sl26);
-cptr.stPtr(cptr.add(__static_os_setlocale_catnames, 48), null); /** C ref: loslib.c:385 — char *[7] (function-static) */
+cptr.stPtro(__static_os_setlocale_catnames, 0, __sl21);
+cptr.stPtro(__static_os_setlocale_catnames, 8, __sl22);
+cptr.stPtro(__static_os_setlocale_catnames, 16, __sl23);
+cptr.stPtro(__static_os_setlocale_catnames, 24, __sl24);
+cptr.stPtro(__static_os_setlocale_catnames, 32, __sl25);
+cptr.stPtro(__static_os_setlocale_catnames, 40, __sl26);
+cptr.stPtro(__static_os_setlocale_catnames, 48, null); /** C ref: loslib.c:385 — char *[7] (function-static) */
 
 /** C ref: loslib.c:382 — @param {CPtr} L @returns {CInt} */
 function os_setlocale(L) {
     let l = (luaL_optlstring(L, 1, null, null));
     let op = luaL_checkoption(L, 2, __sl21, __static_os_setlocale_catnames);
-    lua_pushstring(L, setlocale(cptr.ldI32(cptr.add(__static_os_setlocale_cat, op, 4)), l));
+    lua_pushstring(L, setlocale(cptr.ldI32o(__static_os_setlocale_cat, op, 4), l));
     return 1;
 }
 
@@ -298,30 +298,30 @@ function os_exit(L) {
 
 /** C ref: loslib.c:407 — luaL_Reg[12] */
 const syslib = cptr.alloc(12 * 16);
-cptr.stPtr(cptr.add(syslib, 0), __sl27);
-cptr.stPtr(cptr.add(syslib, 8), os_clock);
-cptr.stPtr(cptr.add(syslib, 16), __sl28);
-cptr.stPtr(cptr.add(syslib, 24), os_date);
-cptr.stPtr(cptr.add(syslib, 32), __sl29);
-cptr.stPtr(cptr.add(syslib, 40), os_difftime);
-cptr.stPtr(cptr.add(syslib, 48), __sl30);
-cptr.stPtr(cptr.add(syslib, 56), os_execute);
-cptr.stPtr(cptr.add(syslib, 64), __sl31);
-cptr.stPtr(cptr.add(syslib, 72), os_exit);
-cptr.stPtr(cptr.add(syslib, 80), __sl32);
-cptr.stPtr(cptr.add(syslib, 88), os_getenv);
-cptr.stPtr(cptr.add(syslib, 96), __sl33);
-cptr.stPtr(cptr.add(syslib, 104), os_remove);
-cptr.stPtr(cptr.add(syslib, 112), __sl34);
-cptr.stPtr(cptr.add(syslib, 120), os_rename);
-cptr.stPtr(cptr.add(syslib, 128), __sl35);
-cptr.stPtr(cptr.add(syslib, 136), os_setlocale);
-cptr.stPtr(cptr.add(syslib, 144), __sl26);
-cptr.stPtr(cptr.add(syslib, 152), os_time);
-cptr.stPtr(cptr.add(syslib, 160), __sl36);
-cptr.stPtr(cptr.add(syslib, 168), os_tmpname);
-cptr.stPtr(cptr.add(syslib, 176), null);
-cptr.stPtr(cptr.add(syslib, 184), null);
+cptr.stPtro(syslib, 0, __sl27);
+cptr.stPtro(syslib, 8, os_clock);
+cptr.stPtro(syslib, 16, __sl28);
+cptr.stPtro(syslib, 24, os_date);
+cptr.stPtro(syslib, 32, __sl29);
+cptr.stPtro(syslib, 40, os_difftime);
+cptr.stPtro(syslib, 48, __sl30);
+cptr.stPtro(syslib, 56, os_execute);
+cptr.stPtro(syslib, 64, __sl31);
+cptr.stPtro(syslib, 72, os_exit);
+cptr.stPtro(syslib, 80, __sl32);
+cptr.stPtro(syslib, 88, os_getenv);
+cptr.stPtro(syslib, 96, __sl33);
+cptr.stPtro(syslib, 104, os_remove);
+cptr.stPtro(syslib, 112, __sl34);
+cptr.stPtro(syslib, 120, os_rename);
+cptr.stPtro(syslib, 128, __sl35);
+cptr.stPtro(syslib, 136, os_setlocale);
+cptr.stPtro(syslib, 144, __sl26);
+cptr.stPtro(syslib, 152, os_time);
+cptr.stPtro(syslib, 160, __sl36);
+cptr.stPtro(syslib, 168, os_tmpname);
+cptr.stPtro(syslib, 176, null);
+cptr.stPtro(syslib, 184, null);
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_os(L) {

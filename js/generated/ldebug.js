@@ -55,34 +55,34 @@ const strupval = cptr.bytes("upvalue");
 /** C ref: ldebug.c:44 — @param {CPtr} ci @returns {CInt} */
 function currentpc(ci) {
     (void 0);
-    return (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtr(cptr.add(ci, 32))), cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24))), 64))) / 4n))))) - 1) | 0);
+    return (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, 32)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), 64)) / 4n))))) - 1) | 0);
 }
 
 /** C ref: ldebug.c:63 — @param {CPtr} f @param {CInt} pc @param {CPtr} basepc @returns {CInt} */
 function getbaseline(f, pc, basepc) {
-    if (cptr.ldI32(cptr.add(f, 40)) == 0 || pc < cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), 0, 8)) ? 1 : 0) {
+    if (cptr.ldI32o(f, 40) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, 96), 0, 8) ? 1 : 0) {
         cptr.stI32(basepc, -1);
-        return cptr.ldI32(cptr.add(f, 44));
+        return cptr.ldI32o(f, 44);
     } else {
         let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;
         (void 0);
-        while (((i + 1) | 0) < cptr.ldI32(cptr.add(f, 40)) && pc >= cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), (i + 1) | 0, 8)) ? 1 : 0)
+        while (((i + 1) | 0) < cptr.ldI32o(f, 40) && pc >= cptr.ldI32o(cptr.ldPtro(f, 96), (i + 1) | 0, 8) ? 1 : 0)
             i++;
-        cptr.stI32(basepc, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8)));
-        return cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), 4));
+        cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
+        return cptr.ldI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4);
     }
 }
 
 /** C ref: ldebug.c:86 — @param {CPtr} f @param {CInt} pc @returns {CInt} */
 export function luaG_getfuncline(f, pc) {
-    if (cptr.eq(cptr.ldPtr(cptr.add(f, 88)), (null)))
+    if (cptr.eq(cptr.ldPtro(f, 88), (null)))
         return -1;
     else {
         let basepc = cptr.box(0);
         let baseline = getbaseline(f, pc, basepc);
         while (basepc.v++ < pc) {
             (void 0);
-            baseline = (baseline + cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(f, 88)), basepc.v))) | 0;
+            baseline = (baseline + cptr.ld1uo(cptr.ldPtro(f, 88), basepc.v)) | 0;
         }
         return baseline;
     }
@@ -90,14 +90,14 @@ export function luaG_getfuncline(f, pc) {
 
 /** C ref: ldebug.c:101 — @param {CPtr} ci @returns {CInt} */
 function getcurrentline(ci) {
-    return luaG_getfuncline(cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), currentpc(ci));
+    return luaG_getfuncline(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24), currentpc(ci));
 }
 
 /** C ref: ldebug.c:117 — @param {CPtr} ci */
 function settraps(ci) {
-    for (; !cptr.eq(ci, (null)); ci = cptr.ldPtr(cptr.add(ci, 16)))
-        if ((!(cptr.ldU16(cptr.add((ci), 62)) & 2)))
-            cptr.stI32(cptr.add(ci, 40), 1);
+    for (; !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, 16))
+        if ((!(cptr.ldU16o((ci), 62) & 2)))
+            cptr.stI32o(ci, 40, 1);
 }
 
 /** C ref: ldebug.c:134 — @param {CPtr} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
@@ -106,27 +106,27 @@ export function lua_sethook(L, func, mask, count) {
         mask = 0;
         func = null;
     }
-    cptr.stPtr(cptr.add(L, 160), func);
-    cptr.stI32(cptr.add(L, 184), count);
-    (cptr.stI32(cptr.add(L, 188), cptr.ldI32(cptr.add(L, 184))));
-    cptr.stI32(cptr.add(L, 192), (uchar(((mask)))));
+    cptr.stPtro(L, 160, func);
+    cptr.stI32o(L, 184, count);
+    (cptr.stI32o(L, 188, cptr.ldI32o(L, 184)));
+    cptr.stI32o(L, 192, (uchar(((mask)))));
     if (mask)
-        settraps(cptr.ldPtr(cptr.add(L, 32)));
+        settraps(cptr.ldPtro(L, 32));
 }
 
 /** C ref: ldebug.c:148 — @param {CPtr} L @returns {*} */
 export function lua_gethook(L) {
-    return cptr.ldPtr(cptr.add(L, 160));
+    return cptr.ldPtro(L, 160);
 }
 
 /** C ref: ldebug.c:153 — @param {CPtr} L @returns {CInt} */
 export function lua_gethookmask(L) {
-    return cptr.ldI32(cptr.add(L, 192));
+    return cptr.ldI32o(L, 192);
 }
 
 /** C ref: ldebug.c:158 — @param {CPtr} L @returns {CInt} */
 export function lua_gethookcount(L) {
-    return cptr.ldI32(cptr.add(L, 184));
+    return cptr.ldI32o(L, 184);
 }
 
 /** C ref: ldebug.c:163 — @param {CPtr} L @param {CInt} level @param {CPtr} ar @returns {CInt} */
@@ -136,11 +136,11 @@ export function lua_getstack(L, level, ar) {
     if (level < 0)
         return 0;
     (void 0);
-    for (ci = cptr.ldPtr(cptr.add(L, 32)); level > 0 && !cptr.eq(ci, cptr.add(L, 96)) ? 1 : 0; ci = cptr.ldPtr(cptr.add(ci, 16)))
+    for (ci = cptr.ldPtro(L, 32); level > 0 && !cptr.eq(ci, cptr.add(L, 96)) ? 1 : 0; ci = cptr.ldPtro(ci, 16))
         level--;
     if (level == 0 && !cptr.eq(ci, cptr.add(L, 96)) ? 1 : 0) {
         status = 1;
-        cptr.stPtr(cptr.add(ar, 128), ci);
+        cptr.stPtro(ar, 128, ci);
     } else
         status = 0;
     (void 0);
@@ -149,7 +149,7 @@ export function lua_getstack(L, level, ar) {
 
 /** C ref: ldebug.c:180 — @param {CPtr} p @param {CInt} uv @returns {CPtr} */
 function upvalname(p, uv) {
-    let s = (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(p, 80)), uv, 16)));
+    let s = (cptr.ldPtro(cptr.ldPtro(p, 80), uv, 16));
     if (cptr.eq(s, (null)))
         return __sl0;
     else
@@ -158,8 +158,8 @@ function upvalname(p, uv) {
 
 /** C ref: ldebug.c:187 — @param {CPtr} ci @param {CInt} n @param {CPtr} pos @returns {CPtr} */
 function findvararg(ci, n, pos) {
-    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((cptr.ldPtr(ci)))))))))))), 24)), 11))) {
-        let nextra = cptr.ldI32(cptr.add(ci, 44));
+    if (cptr.ld1uo(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.ldPtr(ci)))))))))))), 24), 11)) {
+        let nextra = cptr.ldI32o(ci, 44);
         if (n >= -nextra) {
             cptr.stPtr(pos, cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), -(((n + 1) | 0)), 16));
             return __sl1;
@@ -172,16 +172,16 @@ function findvararg(ci, n, pos) {
 export function luaG_findlocal(L, ci, n, pos) {
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
     let name = null;
-    if ((!(cptr.ldU16(cptr.add((ci), 62)) & 2))) {
+    if ((!(cptr.ldU16o((ci), 62) & 2))) {
         if (n < 0)
             return findvararg(ci, n, pos);
         else
-            name = luaF_getlocalname(cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), n, currentpc(ci));
+            name = luaF_getlocalname(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24), n, currentpc(ci));
     }
     if (cptr.eq(name, (null))) {
-        let limit = (cptr.eq(ci, cptr.ldPtr(cptr.add(L, 32)))) ? cptr.ldPtr(cptr.add(L, 16)) : cptr.ldPtr(cptr.ldPtr(cptr.add(ci, 24)));
+        let limit = (cptr.eq(ci, cptr.ldPtro(L, 32))) ? cptr.ldPtro(L, 16) : cptr.ldPtr(cptr.ldPtro(ci, 24));
         if (cptr.diff(limit, base) / 16n >= BigInt(n) && n > 0 ? 1 : 0) {
-            name = (!(cptr.ldU16(cptr.add((ci), 62)) & 2)) ? __sl2 : __sl3;
+            name = (!(cptr.ldU16o((ci), 62) & 2)) ? __sl2 : __sl3;
         } else
             return null;
     }
@@ -195,25 +195,25 @@ export function lua_getlocal(L, ar, n) {
     let name;
     (void 0);
     if (cptr.eq(ar, (null))) {
-        if (!((cptr.ld1u(cptr.add(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))))), 8))) == 70))
+        if (!((cptr.ld1uo(((((cptr.add(cptr.ldPtro(L, 16), -(1), 16))))), 8)) == 70))
             name = null;
         else
-            name = luaF_getlocalname(cptr.ldPtr(cptr.add(((((((cptr.ldPtr(((((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)))))))))))), 24)), n, 0);
+            name = luaF_getlocalname(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, 16), -(1), 16)))))))))))), 24), n, 0);
     } else {
         let pos = cptr.box(null);
-        name = luaG_findlocal(L, cptr.ldPtr(cptr.add(ar, 128)), n, pos);
+        name = luaG_findlocal(L, cptr.ldPtro(ar, 128), n, pos);
         if (name) {
             {
-                let io1 = (((cptr.ldPtr(cptr.add(L, 16)))));
+                let io1 = (((cptr.ldPtro(L, 16))));
                 let io2 = (((pos.v)));
                 cptr.memcpy(io1, io2, 8);
-                (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+                (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
                 (void L, (void 0));
                 (void 0);
             }
             ;
             {
-                cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+                cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
                 (void L, (void 0));
             }
             ;
@@ -228,18 +228,18 @@ export function lua_setlocal(L, ar, n) {
     let pos = cptr.box(null);
     let name;
     (void 0);
-    name = luaG_findlocal(L, cptr.ldPtr(cptr.add(ar, 128)), n, pos);
+    name = luaG_findlocal(L, cptr.ldPtro(ar, 128), n, pos);
     if (name) {
         {
             let io1 = (((pos.v)));
-            let io2 = (((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
+            let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
             (void L, (void 0));
             (void 0);
         }
         ;
-        cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
     }
     (void 0);
     return name;
@@ -247,74 +247,74 @@ export function lua_setlocal(L, ar, n) {
 
 /** C ref: ldebug.c:259 — @param {CPtr} ar @param {CPtr} cl */
 function funcinfo(ar, cl) {
-    if (!(!cptr.eq((cl), (null)) && cptr.ld1u(cptr.add((cl), 8)) == 6 ? 1 : 0)) {
-        cptr.stPtr(cptr.add(ar, 32), __sl4);
-        cptr.stU64(cptr.add(ar, 40), (BigInt.asUintN(64, 5n / 1n - 1n)));
-        cptr.stI32(cptr.add(ar, 52), -1);
-        cptr.stI32(cptr.add(ar, 56), -1);
-        cptr.stPtr(cptr.add(ar, 24), __sl5);
+    if (!(!cptr.eq((cl), (null)) && cptr.ld1uo((cl), 8) == 6 ? 1 : 0)) {
+        cptr.stPtro(ar, 32, __sl4);
+        cptr.stU64o(ar, 40, (BigInt.asUintN(64, 5n / 1n - 1n)));
+        cptr.stI32o(ar, 52, -1);
+        cptr.stI32o(ar, 56, -1);
+        cptr.stPtro(ar, 24, __sl5);
     } else {
-        let p = cptr.ldPtr(cptr.add(cl, 24));
-        if (cptr.ldPtr(cptr.add(p, 112))) {
-            cptr.stPtr(cptr.add(ar, 32), (cptr.add((cptr.ldPtr(cptr.add(p, 112))), 24)));
-            cptr.stU64(cptr.add(ar, 40), (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(p, 112))), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(p, 112))), 11)) >>> 0) : cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(p, 112))), 16))));
+        let p = cptr.ldPtro(cl, 24);
+        if (cptr.ldPtro(p, 112)) {
+            cptr.stPtro(ar, 32, (cptr.add((cptr.ldPtro(p, 112)), 24)));
+            cptr.stU64o(ar, 40, (cptr.ld1uo((cptr.ldPtro(p, 112)), 11) != 255 ? BigInt(cptr.ld1uo((cptr.ldPtro(p, 112)), 11) >>> 0) : cptr.ldU64o((cptr.ldPtro(p, 112)), 16)));
         } else {
-            cptr.stPtr(cptr.add(ar, 32), __sl6);
-            cptr.stU64(cptr.add(ar, 40), (BigInt.asUintN(64, 3n / 1n - 1n)));
+            cptr.stPtro(ar, 32, __sl6);
+            cptr.stU64o(ar, 40, (BigInt.asUintN(64, 3n / 1n - 1n)));
         }
-        cptr.stI32(cptr.add(ar, 52), cptr.ldI32(cptr.add(p, 44)));
-        cptr.stI32(cptr.add(ar, 56), cptr.ldI32(cptr.add(p, 48)));
-        cptr.stPtr(cptr.add(ar, 24), (cptr.ldI32(cptr.add(ar, 52)) == 0) ? __sl7 : __sl8);
+        cptr.stI32o(ar, 52, cptr.ldI32o(p, 44));
+        cptr.stI32o(ar, 56, cptr.ldI32o(p, 48));
+        cptr.stPtro(ar, 24, (cptr.ldI32o(ar, 52) == 0) ? __sl7 : __sl8);
     }
-    luaO_chunkid(cptr.add(ar, 68), cptr.ldPtr(cptr.add(ar, 32)), cptr.ldU64(cptr.add(ar, 40)));
+    luaO_chunkid(cptr.add(ar, 68), cptr.ldPtro(ar, 32), cptr.ldU64o(ar, 40));
 }
 
 /** C ref: ldebug.c:285 — @param {CPtr} p @param {CInt} currentline @param {CInt} pc @returns {CInt} */
 function nextline(p, currentline, pc) {
-    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(p, 88)), pc)) != -128)
-        return (currentline + cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(p, 88)), pc))) | 0;
+    if (cptr.ld1uo(cptr.ldPtro(p, 88), pc) != -128)
+        return (currentline + cptr.ld1uo(cptr.ldPtro(p, 88), pc)) | 0;
     else
         return luaG_getfuncline(p, pc);
 }
 
 /** C ref: ldebug.c:293 — @param {CPtr} L @param {CPtr} f */
 function collectvalidlines(L, f) {
-    if (!(!cptr.eq((f), (null)) && cptr.ld1u(cptr.add((f), 8)) == 6 ? 1 : 0)) {
-        (cptr.st1(cptr.add((((cptr.ldPtr(cptr.add(L, 16))))), 8), 0));
+    if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6 ? 1 : 0)) {
+        (cptr.st1o((((cptr.ldPtro(L, 16)))), 8, 0));
         {
-            cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+            cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
             (void L, (void 0));
         }
         ;
     } else {
-        let p = cptr.ldPtr(cptr.add(f, 24));
-        let currentline = cptr.ldI32(cptr.add(p, 44));
+        let p = cptr.ldPtro(f, 24);
+        let currentline = cptr.ldI32o(p, 44);
         let t = luaH_new(L);
         {
-            let io = (((cptr.ldPtr(cptr.add(L, 16)))));
+            let io = (((cptr.ldPtro(L, 16))));
             let x_ = (t);
             cptr.stPtr(((io)), ((((x_)))));
-            (cptr.st1(cptr.add((io), 8), 69));
+            (cptr.st1o((io), 8, 69));
             (void L, (void 0));
         }
         ;
         {
-            cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+            cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
             (void L, (void 0));
         }
         ;
-        if (!cptr.eq(cptr.ldPtr(cptr.add(p, 88)), (null))) {
+        if (!cptr.eq(cptr.ldPtro(p, 88), (null))) {
             let i;
             let v = cptr.alloc(16);
-            (cptr.st1(cptr.add((v), 8), 17));
-            if (!cptr.ld1u(cptr.add(p, 11)))
+            (cptr.st1o((v), 8, 17));
+            if (!cptr.ld1uo(p, 11))
                 i = 0;
             else {
                 (void 0);
                 currentline = nextline(p, currentline, 0);
                 i = 1;
             }
-            for (; i < cptr.ldI32(cptr.add(p, 28)); i++) {
+            for (; i < cptr.ldI32o(p, 28); i++) {
                 currentline = nextline(p, currentline, i);
                 luaH_setint(L, t, BigInt(currentline), v);
             }
@@ -324,8 +324,8 @@ function collectvalidlines(L, f) {
 
 /** C ref: ldebug.c:324 — @param {CPtr} L @param {CPtr} ci @param {CPtr} name @returns {CPtr} */
 function getfuncname(L, ci, name) {
-    if (!cptr.eq(ci, (null)) && !(cptr.ldU16(cptr.add(ci, 62)) & 32) ? 1 : 0)
-        return funcnamefromcall(L, cptr.ldPtr(cptr.add(ci, 16)), name);
+    if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, 62) & 32) ? 1 : 0)
+        return funcnamefromcall(L, cptr.ldPtro(ci, 16), name);
     else
         return null;
 }
@@ -342,42 +342,42 @@ function auxgetinfo(L, what, ar, f, ci) {
             }
             case 108:
             {
-                cptr.stI32(cptr.add(ar, 48), (ci && (!(cptr.ldU16(cptr.add((ci), 62)) & 2)) ? 1 : 0) ? getcurrentline(ci) : -1);
+                cptr.stI32o(ar, 48, (ci && (!(cptr.ldU16o((ci), 62) & 2)) ? 1 : 0) ? getcurrentline(ci) : -1);
                 break;
             }
             case 117:
             {
-                cptr.st1(cptr.add(ar, 60), uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1u(cptr.add(f, 10)))));
-                if (!(!cptr.eq((f), (null)) && cptr.ld1u(cptr.add((f), 8)) == 6 ? 1 : 0)) {
-                    cptr.st1(cptr.add(ar, 62), 1);
-                    cptr.st1(cptr.add(ar, 61), 0);
+                cptr.st1o(ar, 60, uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, 10))));
+                if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6 ? 1 : 0)) {
+                    cptr.st1o(ar, 62, 1);
+                    cptr.st1o(ar, 61, 0);
                 } else {
-                    cptr.st1(cptr.add(ar, 62), schar(cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(f, 24)), 11))));
-                    cptr.st1(cptr.add(ar, 61), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(f, 24)), 10)));
+                    cptr.st1o(ar, 62, schar(cptr.ld1uo(cptr.ldPtro(f, 24), 11)));
+                    cptr.st1o(ar, 61, cptr.ld1uo(cptr.ldPtro(f, 24), 10));
                 }
                 break;
             }
             case 116:
             {
-                cptr.st1(cptr.add(ar, 63), schar(((ci) ? cptr.ldU16(cptr.add(ci, 62)) & 32 : 0)));
+                cptr.st1o(ar, 63, schar(((ci) ? cptr.ldU16o(ci, 62) & 32 : 0)));
                 break;
             }
             case 110:
             {
-                cptr.stPtr(cptr.add(ar, 16), getfuncname(L, ci, cptr.add(ar, 8)));
-                if (cptr.eq(cptr.ldPtr(cptr.add(ar, 16)), (null))) {
-                    cptr.stPtr(cptr.add(ar, 16), __sl9);
-                    cptr.stPtr(cptr.add(ar, 8), null);
+                cptr.stPtro(ar, 16, getfuncname(L, ci, cptr.add(ar, 8)));
+                if (cptr.eq(cptr.ldPtro(ar, 16), (null))) {
+                    cptr.stPtro(ar, 16, __sl9);
+                    cptr.stPtro(ar, 8, null);
                 }
                 break;
             }
             case 114:
             {
-                if (cptr.eq(ci, (null)) || !(cptr.ldU16(cptr.add(ci, 62)) & 256) ? 1 : 0)
-                    cptr.stI16(cptr.add(ar, 64), cptr.stI16(cptr.add(ar, 66), 0));
+                if (cptr.eq(ci, (null)) || !(cptr.ldU16o(ci, 62) & 256) ? 1 : 0)
+                    cptr.stI16o(ar, 64, cptr.stI16o(ar, 66, 0));
                 else {
-                    cptr.stI16(cptr.add(ar, 64), cptr.ldU16(cptr.add(ci, 56)));
-                    cptr.stI16(cptr.add(ar, 66), cptr.ldU16(cptr.add(ci, 58)));
+                    cptr.stI16o(ar, 64, cptr.ldU16o(ci, 56));
+                    cptr.stI16o(ar, 66, cptr.ldU16o(ci, 58));
                 }
                 break;
             }
@@ -400,29 +400,29 @@ export function lua_getinfo(L, what, ar) {
     (void 0);
     if (cptr.ld1s(what) == 62) {
         ci = null;
-        func = ((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16)));
+        func = ((cptr.add(cptr.ldPtro(L, 16), -(1), 16)));
         (void L, (void 0));
         what = cptr.add(what, 1);
-        cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
     } else {
-        ci = cptr.ldPtr(cptr.add(ar, 128));
+        ci = cptr.ldPtro(ar, 128);
         func = ((cptr.ldPtr(ci)));
         (void 0);
     }
-    cl = (((cptr.ld1u(cptr.add(((func)), 8))) == 70) || ((cptr.ld1u(cptr.add(((func)), 8))) == 102) ? 1 : 0) ? ((((((cptr.ldPtr(((func))))))))) : null;
+    cl = (((cptr.ld1uo(((func)), 8)) == 70) || ((cptr.ld1uo(((func)), 8)) == 102) ? 1 : 0) ? ((((((cptr.ldPtr(((func))))))))) : null;
     status = auxgetinfo(L, what, ar, cl, ci);
     if (cptr.strchr(what, 102)) {
         {
-            let io1 = (((cptr.ldPtr(cptr.add(L, 16)))));
+            let io1 = (((cptr.ldPtro(L, 16))));
             let io2 = (func);
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
             (void L, (void 0));
             (void 0);
         }
         ;
         {
-            cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+            cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
             (void L, (void 0));
         }
         ;
@@ -446,10 +446,10 @@ function findsetreg(p, lastpc, reg) {
     let pc;
     let setreg = -1;
     let jmptarget = 0;
-    if ((cptr.ld1u(cptr.add(cptr.decay(luaP_opmodes), ((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), lastpc, 4))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1)) & 128))
+    if ((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32o(cptr.ldPtro(p, 64), lastpc, 4)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 128))
         lastpc--;
     for (pc = 0; pc < lastpc; pc++) {
-        let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), pc, 4));
+        let i = cptr.ldI32o(cptr.ldPtro(p, 64), pc, 4);
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         let a = (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
         let change;
@@ -481,7 +481,7 @@ function findsetreg(p, lastpc, reg) {
                 break;
             }
             default:
-            change = ((cptr.ld1u(cptr.add(cptr.decay(luaP_opmodes), op, 1)) & 8) && reg == a ? 1 : 0);
+            change = ((cptr.ld1uo(cptr.decay(luaP_opmodes), op, 1) & 8) && reg == a ? 1 : 0);
             break;
         }
         if (change)
@@ -492,8 +492,8 @@ function findsetreg(p, lastpc, reg) {
 
 /** C ref: ldebug.c:485 — @param {CPtr} p @param {CInt} index @param {CPtr} name @returns {CPtr} */
 function kname(p, index, name) {
-    let kvalue = cptr.add(cptr.ldPtr(cptr.add(p, 56)), index, 16);
-    if ((((((cptr.ld1u(cptr.add(((kvalue)), 8)))) & 15)) == 4)) {
+    let kvalue = cptr.add(cptr.ldPtro(p, 56), index, 16);
+    if ((((((cptr.ld1uo(((kvalue)), 8))) & 15)) == 4)) {
         cptr.stPtr(name, (cptr.add((((((((cptr.ldPtr(((kvalue)))))))))), 24)));
         return __sl10;
     } else {
@@ -510,7 +510,7 @@ function basicgetobjname(p, ppc, reg, name) {
         return cptr.decay(strlocal);
     cptr.stI32(ppc, pc = findsetreg(p, pc, reg));
     if (pc != -1) {
-        let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), pc, 4));
+        let i = cptr.ldI32o(cptr.ldPtro(p, 64), pc, 4);
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_MOVE:
@@ -528,7 +528,7 @@ function basicgetobjname(p, ppc, reg, name) {
             case NHC.OP_LOADK:
             return kname(p, ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
             case NHC.OP_LOADKX:
-            return kname(p, ((((((((cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), (pc + 1) | 0, 4))) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
+            return kname(p, ((((((((cptr.ldI32o(cptr.ldPtro(p, 64), (pc + 1) | 0, 4)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
             default:
             break;
         }
@@ -575,7 +575,7 @@ function getobjname(p, lastpc, reg, name) {
     if (!cptr.eq(kind, (null)))
         return kind;
     else if (lastpc.v != -1) {
-        let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), lastpc.v, 4));
+        let i = cptr.ldI32o(cptr.ldPtro(p, 64), lastpc.v, 4);
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_GETTABUP:
@@ -616,7 +616,7 @@ function getobjname(p, lastpc, reg, name) {
 /** C ref: ldebug.c:620 — @param {CPtr} L @param {CPtr} p @param {CInt} pc @param {CPtr} name @returns {CPtr} */
 function funcnamefromcode(L, p, pc, name) {
     let tm = 0;
-    let i = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(p, 64)), pc, 4));
+    let i = cptr.ldI32o(cptr.ldPtro(p, 64), pc, 4);
     switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
         case NHC.OP_CALL:
         case NHC.OP_TAILCALL:
@@ -678,20 +678,20 @@ function funcnamefromcode(L, p, pc, name) {
         default:
         return null;
     }
-    cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtr(cptr.add(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 280), tm, 8))), 24)), 2));
+    cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 280), tm, 8)), 24)), 2));
     return __sl17;
 }
 
 /** C ref: ldebug.c:664 — @param {CPtr} L @param {CPtr} ci @param {CPtr} name @returns {CPtr} */
 function funcnamefromcall(L, ci, name) {
-    if (cptr.ldU16(cptr.add(ci, 62)) & 8) {
+    if (cptr.ldU16o(ci, 62) & 8) {
         cptr.stPtr(name, __sl0);
         return __sl18;
-    } else if (cptr.ldU16(cptr.add(ci, 62)) & 128) {
+    } else if (cptr.ldU16o(ci, 62) & 128) {
         cptr.stPtr(name, __sl19);
         return __sl17;
-    } else if ((!(cptr.ldU16(cptr.add((ci), 62)) & 2)))
-        return funcnamefromcode(L, cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), currentpc(ci), name);
+    } else if ((!(cptr.ldU16o((ci), 62) & 2)))
+        return funcnamefromcode(L, cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24), currentpc(ci), name);
     else
         return null;
 }
@@ -700,7 +700,7 @@ function funcnamefromcall(L, ci, name) {
 function instack(ci, o) {
     let pos;
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
-    for (pos = 0; cptr.cmp(cptr.add(base, pos, 16), cptr.ldPtr(cptr.add(ci, 8))) < 0; pos++) {
+    for (pos = 0; cptr.cmp(cptr.add(base, pos, 16), cptr.ldPtro(ci, 8)) < 0; pos++) {
         if (cptr.eq(o, ((cptr.add(base, pos, 16)))))
             return pos;
     }
@@ -711,9 +711,9 @@ function instack(ci, o) {
 function getupvalname(ci, o, name) {
     let c = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
     let i;
-    for (i = 0; i < cptr.ld1u(cptr.add(c, 10)); i++) {
-        if (cptr.eq(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.add(c, 32), i, 8)), 16)), o)) {
-            cptr.stPtr(name, upvalname(cptr.ldPtr(cptr.add(c, 24)), i));
+    for (i = 0; i < cptr.ld1uo(c, 10); i++) {
+        if (cptr.eq(cptr.ldPtro(cptr.ldPtro(cptr.add(c, 32), i, 8), 16), o)) {
+            cptr.stPtr(name, upvalname(cptr.ldPtro(c, 24), i));
             return cptr.decay(strupval);
         }
     }
@@ -730,15 +730,15 @@ function formatvarinfo(L, kind, name) {
 
 /** C ref: ldebug.c:732 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */
 function varinfo(L, o) {
-    let ci = cptr.ldPtr(cptr.add(L, 32));
+    let ci = cptr.ldPtro(L, 32);
     let name = cptr.box(null);
     let kind = null;
-    if ((!(cptr.ldU16(cptr.add((ci), 62)) & 2))) {
+    if ((!(cptr.ldU16o((ci), 62) & 2))) {
         kind = getupvalname(ci, o, name);
         if (!kind) {
             let reg = instack(ci, o);
             if (reg >= 0)
-                kind = getobjname(cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), currentpc(ci), reg, name);
+                kind = getobjname(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24), currentpc(ci), reg, name);
         }
     }
     return formatvarinfo(L, kind, name.v);
@@ -757,7 +757,7 @@ export function luaG_typeerror(L, o, op) {
 
 /** C ref: ldebug.c:772 — @param {CPtr} L @param {CPtr} o */
 export function luaG_callerror(L, o) {
-    let ci = cptr.ldPtr(cptr.add(L, 32));
+    let ci = cptr.ldPtro(L, 32);
     let name = cptr.box(null);
     let kind = funcnamefromcall(L, ci, name);
     let extra = kind ? formatvarinfo(L, kind, name.v) : varinfo(L, o);
@@ -771,14 +771,14 @@ export function luaG_forerror(L, o, what) {
 
 /** C ref: ldebug.c:787 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
 export function luaG_concaterror(L, p1, p2) {
-    if ((((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == 4) || (((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == 3) ? 1 : 0)
+    if ((((((cptr.ld1uo(((p1)), 8))) & 15)) == 4) || (((((cptr.ld1uo(((p1)), 8))) & 15)) == 3) ? 1 : 0)
         p1 = p2;
     luaG_typeerror(L, p1, __sl24);
 }
 
 /** C ref: ldebug.c:793 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} msg */
 export function luaG_opinterror(L, p1, p2, msg) {
-    if (!(((((cptr.ld1u(cptr.add(((p1)), 8)))) & 15)) == 3))
+    if (!(((((cptr.ld1uo(((p1)), 8))) & 15)) == 3))
         p2 = p1;
     luaG_typeerror(L, p2, msg);
 }
@@ -805,50 +805,50 @@ export function luaG_ordererror(L, p1, p2) {
 export function luaG_addinfo(L, msg, src, line) {
     let buff = new Uint8Array(60);
     if (src)
-        luaO_chunkid(cptr.decay(buff), (cptr.add((src), 24)), (cptr.ld1u(cptr.add((src), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((src), 11)) >>> 0) : cptr.ldU64(cptr.add((src), 16))));
+        luaO_chunkid(cptr.decay(buff), (cptr.add((src), 24)), (cptr.ld1uo((src), 11) != 255 ? BigInt(cptr.ld1uo((src), 11) >>> 0) : cptr.ldU64o((src), 16)));
     else {
-        cptr.st1(cptr.add(cptr.decay(buff), 0, 1), 63);
-        cptr.st1(cptr.add(cptr.decay(buff), 1, 1), 0);
+        cptr.st1o(cptr.decay(buff), 0, 63, 1);
+        cptr.st1o(cptr.decay(buff), 1, 0, 1);
     }
     return luaO_pushfstring(L, __sl28, cptr.decay(buff), line, msg);
 }
 
 /** C ref: ldebug.c:835 — @param {CPtr} L */
 export function luaG_errormsg(L) {
-    if (cptr.ldI64(cptr.add(L, 168)) != 0n) {
-        let errfunc = ((cptr.add((((cptr.ldPtr(cptr.add(L, 48))))), (cptr.ldI64(cptr.add(L, 168))))));
+    if (cptr.ldI64o(L, 168) != 0n) {
+        let errfunc = ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64o(L, 168)))));
         (void 0);
         {
-            let io1 = (((cptr.ldPtr(cptr.add(L, 16)))));
-            let io2 = (((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
+            let io1 = (((cptr.ldPtro(L, 16))));
+            let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
             (void L, (void 0));
             (void 0);
         }
         ;
         {
-            let io1 = (((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
+            let io1 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
             let io2 = (((errfunc)));
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
             (void L, (void 0));
             (void 0);
         }
         ;
-        cptr.postinc(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
-        luaD_callnoyield(L, cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(2), 16), 1);
+        cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
+        luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, 16), -(2), 16), 1);
     }
     luaD_throw(L, 2);
 }
 
 /** C ref: ldebug.c:848 — @param {CPtr} L @param {CPtr} fmt */
 export function luaG_runerror(L, fmt, ...__va) {
-    let ci = cptr.ldPtr(cptr.add(L, 32));
+    let ci = cptr.ldPtro(L, 32);
     let msg;
     let argp;
     {
-        if (cptr.ldI64(cptr.add((cptr.ldPtr(cptr.add(L, 24))), 24)) > 0n) {
+        if (cptr.ldI64o((cptr.ldPtro(L, 24)), 24) > 0n) {
             void 0;
             luaC_step(L);
             void 0;
@@ -860,31 +860,31 @@ export function luaG_runerror(L, fmt, ...__va) {
     argp = cptr.vaList(__va);
     msg = luaO_pushvfstring(L, fmt, argp);
     argp = null;
-    if ((!(cptr.ldU16(cptr.add((ci), 62)) & 2))) {
-        luaG_addinfo(L, msg, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), 112)), getcurrentline(ci));
+    if ((!(cptr.ldU16o((ci), 62) & 2))) {
+        luaG_addinfo(L, msg, cptr.ldPtro(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24), 112), getcurrentline(ci));
         {
-            let io1 = (((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(2), 16))));
-            let io2 = (((cptr.add(cptr.ldPtr(cptr.add(L, 16)), -(1), 16))));
+            let io1 = (((cptr.add(cptr.ldPtro(L, 16), -(2), 16))));
+            let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1(cptr.add((io1), 8), (cptr.ld1u(cptr.add(io2, 8)))));
+            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
             (void L, (void 0));
             (void 0);
         }
         ;
-        cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
     }
     luaG_errormsg(L);
 }
 
 /** C ref: ldebug.c:873 — @param {CPtr} p @param {CInt} oldpc @param {CInt} newpc @returns {CInt} */
 function changedline(p, oldpc, newpc) {
-    if (cptr.eq(cptr.ldPtr(cptr.add(p, 88)), (null)))
+    if (cptr.eq(cptr.ldPtro(p, 88), (null)))
         return 0;
     if (((newpc - oldpc) | 0) < 64) {
         let delta = 0;
         let pc = oldpc;
         for (; ; ) {
-            let lineinfo = cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(p, 88)), ++pc));
+            let lineinfo = cptr.ld1uo(cptr.ldPtro(p, 88), ++pc);
             if (lineinfo == -128)
                 break;
             delta = (delta + lineinfo) | 0;
@@ -897,13 +897,13 @@ function changedline(p, oldpc, newpc) {
 
 /** C ref: ldebug.c:902 — @param {CPtr} L @returns {CInt} */
 export function luaG_tracecall(L) {
-    let ci = cptr.ldPtr(cptr.add(L, 32));
-    let p = cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24));
-    cptr.stI32(cptr.add(ci, 40), 1);
-    if (cptr.eq(cptr.ldPtr(cptr.add(ci, 32)), cptr.ldPtr(cptr.add(p, 64)))) {
-        if (cptr.ld1u(cptr.add(p, 11)))
+    let ci = cptr.ldPtro(L, 32);
+    let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24);
+    cptr.stI32o(ci, 40, 1);
+    if (cptr.eq(cptr.ldPtro(ci, 32), cptr.ldPtro(p, 64))) {
+        if (cptr.ld1uo(p, 11))
             return 0;
-        else if (!(cptr.ldU16(cptr.add(ci, 62)) & 64))
+        else if (!(cptr.ldU16o(ci, 62) & 64))
             luaD_hookcall(L, ci);
     }
     return 1;
@@ -911,42 +911,42 @@ export function luaG_tracecall(L) {
 
 /** C ref: ldebug.c:928 — @param {CPtr} L @param {CPtr} pc @returns {CInt} */
 export function luaG_traceexec(L, pc) {
-    let ci = cptr.ldPtr(cptr.add(L, 32));
-    let mask = uchar(cptr.ldI32(cptr.add(L, 192)));
-    let p = cptr.ldPtr(cptr.add((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24));
+    let ci = cptr.ldPtro(L, 32);
+    let mask = uchar(cptr.ldI32o(L, 192));
+    let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24);
     let counthook;
     if (!(mask & 12)) {
-        cptr.stI32(cptr.add(ci, 40), 0);
+        cptr.stI32o(ci, 40, 0);
         return 0;
     }
     pc = cptr.add(pc, 1, 4);
-    cptr.stPtr(cptr.add(ci, 32), pc);
-    counthook = (mask & 8) && (cptr.stI32(cptr.add(L, 188), cptr.ldI32(cptr.add(L, 188)) + -1) == 0) ? 1 : 0;
+    cptr.stPtro(ci, 32, pc);
+    counthook = (mask & 8) && (cptr.stI32o(L, 188, cptr.ldI32o(L, 188) + -1) == 0) ? 1 : 0;
     if (counthook)
-        (cptr.stI32(cptr.add(L, 188), cptr.ldI32(cptr.add(L, 184))));
+        (cptr.stI32o(L, 188, cptr.ldI32o(L, 184)));
     else if (!(mask & 4))
         return 1;
-    if (cptr.ldU16(cptr.add(ci, 62)) & 64) {
-        cptr.stI16(cptr.add(ci, 62), cptr.ldU16(cptr.add(ci, 62)) & -65);
+    if (cptr.ldU16o(ci, 62) & 64) {
+        cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) & -65);
         return 1;
     }
-    if (!((cptr.ld1u(cptr.add(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtr(cptr.add(ci, 32)), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1)) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtr(cptr.add(ci, 32)), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0 ? 1 : 0))
-        cptr.stPtr(cptr.add(L, 16), cptr.ldPtr(cptr.add(ci, 8)));
+    if (!((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0 ? 1 : 0))
+        cptr.stPtro(L, 16, cptr.ldPtro(ci, 8));
     if (counthook)
         luaD_hook(L, 3, -1, 0, 0);
     if (mask & 4) {
-        let oldpc = (cptr.ldI32(cptr.add(L, 180)) < cptr.ldI32(cptr.add(p, 24))) ? cptr.ldI32(cptr.add(L, 180)) : 0;
-        let npci = (((Number(BigInt.asIntN(32, ((cptr.diff((pc), cptr.ldPtr(cptr.add((p), 64))) / 4n))))) - 1) | 0);
+        let oldpc = (cptr.ldI32o(L, 180) < cptr.ldI32o(p, 24)) ? cptr.ldI32o(L, 180) : 0;
+        let npci = (((Number(BigInt.asIntN(32, ((cptr.diff((pc), cptr.ldPtro((p), 64)) / 4n))))) - 1) | 0);
         if (npci <= oldpc || changedline(p, oldpc, npci) ? 1 : 0) {
             let newline = luaG_getfuncline(p, npci);
             luaD_hook(L, 2, newline, 0, 0);
         }
-        cptr.stI32(cptr.add(L, 180), npci);
+        cptr.stI32o(L, 180, npci);
     }
-    if (cptr.ld1u(cptr.add(L, 10)) == 1) {
+    if (cptr.ld1uo(L, 10) == 1) {
         if (counthook)
-            cptr.stI32(cptr.add(L, 188), 1);
-        cptr.stI16(cptr.add(ci, 62), cptr.ldU16(cptr.add(ci, 62)) | 64);
+            cptr.stI32o(L, 188, 1);
+        cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) | 64);
         luaD_throw(L, 1);
     }
     return 1;

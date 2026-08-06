@@ -14,29 +14,29 @@ const __sl0 = cptr.lit("%s:%d string too long");
 
 /** C ref: strutil.c:9 — @param {CPtr} strbuf */
 export function strbuf_init(strbuf) {
-    cptr.stPtr(cptr.add(strbuf, 8), null);
+    cptr.stPtro(strbuf, 8, null);
     cptr.stI32(strbuf, 0);
 }
 
 /** C ref: strutil.c:17 — @param {CPtr} strbuf @param {CPtr} str */
 export function strbuf_append(strbuf, str) {
     let len = (Number(BigInt.asIntN(32, cptr.strlen(str))) + 1) | 0;
-    strbuf_reserve(strbuf, (len + (cptr.ldPtr(cptr.add(strbuf, 8)) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(strbuf, 8))))) : 0)) | 0);
-    void cptr.strcat(cptr.ldPtr(cptr.add(strbuf, 8)), str);
+    strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, 8) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, 8)))) : 0)) | 0);
+    void cptr.strcat(cptr.ldPtro(strbuf, 8), str);
 }
 
 /** C ref: strutil.c:28 — @param {CPtr} strbuf @param {CInt} len */
 export function strbuf_reserve(strbuf, len) {
-    if (cptr.eq(cptr.ldPtr(cptr.add(strbuf, 8)), (null))) {
-        cptr.stPtr(cptr.add(strbuf, 8), cptr.add(strbuf, 16));
-        cptr.st1(cptr.add(cptr.ldPtr(cptr.add(strbuf, 8)), 0), 0);
+    if (cptr.eq(cptr.ldPtro(strbuf, 8), (null))) {
+        cptr.stPtro(strbuf, 8, cptr.add(strbuf, 16));
+        cptr.st1o(cptr.ldPtro(strbuf, 8), 0, 0);
         cptr.stI32(strbuf, 256);
     }
     if (len > cptr.ldI32(strbuf)) {
-        let oldbuf = cptr.ldPtr(cptr.add(strbuf, 8));
+        let oldbuf = cptr.ldPtro(strbuf, 8);
         cptr.stI32(strbuf, (len + 256) | 0);
-        cptr.stPtr(cptr.add(strbuf, 8), alloc(cptr.ldI32(strbuf) >>> 0));
-        void cptr.strcpy(cptr.ldPtr(cptr.add(strbuf, 8)), oldbuf);
+        cptr.stPtro(strbuf, 8, alloc(cptr.ldI32(strbuf) >>> 0));
+        void cptr.strcpy(cptr.ldPtro(strbuf, 8), oldbuf);
         if (!cptr.eq(oldbuf, cptr.add(strbuf, 16)))
             cptr.free(oldbuf);
     }
@@ -44,24 +44,24 @@ export function strbuf_reserve(strbuf, len) {
 
 /** C ref: strutil.c:49 — @param {CPtr} strbuf */
 export function strbuf_empty(strbuf) {
-    if (!cptr.eq(cptr.ldPtr(cptr.add(strbuf, 8)), (null)) && !cptr.eq(cptr.ldPtr(cptr.add(strbuf, 8)), cptr.add(strbuf, 16)) ? 1 : 0)
-        cptr.free(cptr.ldPtr(cptr.add(strbuf, 8)));
+    if (!cptr.eq(cptr.ldPtro(strbuf, 8), (null)) && !cptr.eq(cptr.ldPtro(strbuf, 8), cptr.add(strbuf, 16)) ? 1 : 0)
+        cptr.free(cptr.ldPtro(strbuf, 8));
     strbuf_init(strbuf);
 }
 
 /** C ref: strutil.c:58 — @param {CPtr} strbuf */
 export function strbuf_nl_to_crlf(strbuf) {
-    if (cptr.ldPtr(cptr.add(strbuf, 8))) {
-        let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(strbuf, 8)))));
+    if (cptr.ldPtro(strbuf, 8)) {
+        let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, 8))));
         let count = 0;
-        let cp = cptr.ldPtr(cptr.add(strbuf, 8));
+        let cp = cptr.ldPtro(strbuf, 8);
         while (cptr.ld1s(cp))
             if (cptr.ld1s(cptr.postinc(() => cp, (v) => { cp = v; })) == 10)
                 count++;
         if (count) {
             strbuf_reserve(strbuf, (((len + count) | 0) + 1) | 0);
-            for (cp = cptr.add(cptr.add(cptr.ldPtr(cptr.add(strbuf, 8)), len), count); count; cp = cptr.add(cp, -1))
-                if ((cptr.st1(cp, cptr.ld1s(cptr.add(cp, -count)))) == 10) {
+            for (cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, 8), len), count); count; cp = cptr.add(cp, -1))
+                if ((cptr.st1(cp, cptr.ld1so(cp, -count))) == 10) {
                     cptr.st1(cptr.predec(() => cp, (v) => { cp = v; }), 13);
                     --count;
                 }

@@ -168,7 +168,7 @@ function db_getinfo(L) {
     let L1 = getthread(L, arg);
     let options = (luaL_optlstring(L, ((arg.v + 2) | 0), (__sl3), null));
     checkstack(L, L1, 3);
-    (void ((__builtin_expect(BigInt(((cptr.ld1s(cptr.add(options, 0)) != 62) != 0)), 1n)) || luaL_argerror(L, ((arg.v + 2) | 0), (__sl4)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) || luaL_argerror(L, ((arg.v + 2) | 0), (__sl4)) ? 1 : 0));
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
         options = lua_pushfstring(L, __sl5, options);
         lua_pushvalue(L, (arg.v + 1) | 0);
@@ -183,30 +183,30 @@ function db_getinfo(L) {
         return luaL_argerror(L, (arg.v + 2) | 0, __sl6);
     lua_createtable(L, 0, 0);
     if (cptr.strchr(options, 83)) {
-        lua_pushlstring(L, cptr.ldPtr(cptr.add(ar, 32)), cptr.ldU64(cptr.add(ar, 40)));
+        lua_pushlstring(L, cptr.ldPtro(ar, 32), cptr.ldU64o(ar, 40));
         lua_setfield(L, -2, __sl7);
         settabss(L, __sl8, cptr.add(ar, 68));
-        settabsi(L, __sl9, cptr.ldI32(cptr.add(ar, 52)));
-        settabsi(L, __sl10, cptr.ldI32(cptr.add(ar, 56)));
-        settabss(L, __sl11, cptr.ldPtr(cptr.add(ar, 24)));
+        settabsi(L, __sl9, cptr.ldI32o(ar, 52));
+        settabsi(L, __sl10, cptr.ldI32o(ar, 56));
+        settabss(L, __sl11, cptr.ldPtro(ar, 24));
     }
     if (cptr.strchr(options, 108))
-        settabsi(L, __sl12, cptr.ldI32(cptr.add(ar, 48)));
+        settabsi(L, __sl12, cptr.ldI32o(ar, 48));
     if (cptr.strchr(options, 117)) {
-        settabsi(L, __sl13, cptr.ld1u(cptr.add(ar, 60)));
-        settabsi(L, __sl14, cptr.ld1u(cptr.add(ar, 61)));
-        settabsb(L, __sl15, cptr.ld1s(cptr.add(ar, 62)));
+        settabsi(L, __sl13, cptr.ld1uo(ar, 60));
+        settabsi(L, __sl14, cptr.ld1uo(ar, 61));
+        settabsb(L, __sl15, cptr.ld1so(ar, 62));
     }
     if (cptr.strchr(options, 110)) {
-        settabss(L, __sl16, cptr.ldPtr(cptr.add(ar, 8)));
-        settabss(L, __sl17, cptr.ldPtr(cptr.add(ar, 16)));
+        settabss(L, __sl16, cptr.ldPtro(ar, 8));
+        settabss(L, __sl17, cptr.ldPtro(ar, 16));
     }
     if (cptr.strchr(options, 114)) {
-        settabsi(L, __sl18, cptr.ldU16(cptr.add(ar, 64)));
-        settabsi(L, __sl19, cptr.ldU16(cptr.add(ar, 66)));
+        settabsi(L, __sl18, cptr.ldU16o(ar, 64));
+        settabsi(L, __sl19, cptr.ldU16o(ar, 66));
     }
     if (cptr.strchr(options, 116))
-        settabsb(L, __sl20, cptr.ld1s(cptr.add(ar, 63)));
+        settabsb(L, __sl20, cptr.ld1so(ar, 63));
     if (cptr.strchr(options, 76))
         treatstackoption(L, L1, __sl21);
     if (cptr.strchr(options, 102))
@@ -324,20 +324,20 @@ function db_upvaluejoin(L) {
 }
 
 const __static_hookf_hooknames = cptr.alloc(5 * 8);
-cptr.stPtr(cptr.add(__static_hookf_hooknames, 0), __sl26);
-cptr.stPtr(cptr.add(__static_hookf_hooknames, 8), __sl27);
-cptr.stPtr(cptr.add(__static_hookf_hooknames, 16), __sl28);
-cptr.stPtr(cptr.add(__static_hookf_hooknames, 24), __sl29);
-cptr.stPtr(cptr.add(__static_hookf_hooknames, 32), __sl30); /** C ref: ldblib.c:324 — char *[5] (function-static) */
+cptr.stPtro(__static_hookf_hooknames, 0, __sl26);
+cptr.stPtro(__static_hookf_hooknames, 8, __sl27);
+cptr.stPtro(__static_hookf_hooknames, 16, __sl28);
+cptr.stPtro(__static_hookf_hooknames, 24, __sl29);
+cptr.stPtro(__static_hookf_hooknames, 32, __sl30); /** C ref: ldblib.c:324 — char *[5] (function-static) */
 
 /** C ref: ldblib.c:323 — @param {CPtr} L @param {CPtr} ar */
 function hookf(L, ar) {
     lua_getfield(L, -1001000, HOOKKEY);
     lua_pushthread(L);
     if (lua_rawget(L, -2) == 6) {
-        lua_pushstring(L, cptr.ldPtr(cptr.add(__static_hookf_hooknames, cptr.ldI32(ar), 8)));
-        if (cptr.ldI32(cptr.add(ar, 48)) >= 0)
-            lua_pushinteger(L, BigInt(cptr.ldI32(cptr.add(ar, 48))));
+        lua_pushstring(L, cptr.ldPtro(__static_hookf_hooknames, cptr.ldI32(ar), 8));
+        if (cptr.ldI32o(ar, 48) >= 0)
+            lua_pushinteger(L, BigInt(cptr.ldI32o(ar, 48)));
         else
             lua_pushnil(L);
         (void 0);
@@ -363,12 +363,12 @@ function makemask(smask, count) {
 function unmakemask(mask, smask) {
     let i = 0;
     if (mask & 1)
-        cptr.st1(cptr.add(smask, i++), 99);
+        cptr.st1o(smask, i++, 99);
     if (mask & 2)
-        cptr.st1(cptr.add(smask, i++), 114);
+        cptr.st1o(smask, i++, 114);
     if (mask & 4)
-        cptr.st1(cptr.add(smask, i++), 108);
-    cptr.st1(cptr.add(smask, i), 0);
+        cptr.st1o(smask, i++, 108);
+    cptr.st1o(smask, i, 0);
     return smask;
 }
 
@@ -468,42 +468,42 @@ function db_setcstacklimit(L) {
 
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
 const dblib = cptr.alloc(18 * 16);
-cptr.stPtr(cptr.add(dblib, 0), __sl39);
-cptr.stPtr(cptr.add(dblib, 8), db_debug);
-cptr.stPtr(cptr.add(dblib, 16), __sl40);
-cptr.stPtr(cptr.add(dblib, 24), db_getuservalue);
-cptr.stPtr(cptr.add(dblib, 32), __sl41);
-cptr.stPtr(cptr.add(dblib, 40), db_gethook);
-cptr.stPtr(cptr.add(dblib, 48), __sl42);
-cptr.stPtr(cptr.add(dblib, 56), db_getinfo);
-cptr.stPtr(cptr.add(dblib, 64), __sl43);
-cptr.stPtr(cptr.add(dblib, 72), db_getlocal);
-cptr.stPtr(cptr.add(dblib, 80), __sl44);
-cptr.stPtr(cptr.add(dblib, 88), db_getregistry);
-cptr.stPtr(cptr.add(dblib, 96), __sl45);
-cptr.stPtr(cptr.add(dblib, 104), db_getmetatable);
-cptr.stPtr(cptr.add(dblib, 112), __sl46);
-cptr.stPtr(cptr.add(dblib, 120), db_getupvalue);
-cptr.stPtr(cptr.add(dblib, 128), __sl47);
-cptr.stPtr(cptr.add(dblib, 136), db_upvaluejoin);
-cptr.stPtr(cptr.add(dblib, 144), __sl48);
-cptr.stPtr(cptr.add(dblib, 152), db_upvalueid);
-cptr.stPtr(cptr.add(dblib, 160), __sl49);
-cptr.stPtr(cptr.add(dblib, 168), db_setuservalue);
-cptr.stPtr(cptr.add(dblib, 176), __sl50);
-cptr.stPtr(cptr.add(dblib, 184), db_sethook);
-cptr.stPtr(cptr.add(dblib, 192), __sl51);
-cptr.stPtr(cptr.add(dblib, 200), db_setlocal);
-cptr.stPtr(cptr.add(dblib, 208), __sl52);
-cptr.stPtr(cptr.add(dblib, 216), db_setmetatable);
-cptr.stPtr(cptr.add(dblib, 224), __sl53);
-cptr.stPtr(cptr.add(dblib, 232), db_setupvalue);
-cptr.stPtr(cptr.add(dblib, 240), __sl54);
-cptr.stPtr(cptr.add(dblib, 248), db_traceback);
-cptr.stPtr(cptr.add(dblib, 256), __sl55);
-cptr.stPtr(cptr.add(dblib, 264), db_setcstacklimit);
-cptr.stPtr(cptr.add(dblib, 272), null);
-cptr.stPtr(cptr.add(dblib, 280), null);
+cptr.stPtro(dblib, 0, __sl39);
+cptr.stPtro(dblib, 8, db_debug);
+cptr.stPtro(dblib, 16, __sl40);
+cptr.stPtro(dblib, 24, db_getuservalue);
+cptr.stPtro(dblib, 32, __sl41);
+cptr.stPtro(dblib, 40, db_gethook);
+cptr.stPtro(dblib, 48, __sl42);
+cptr.stPtro(dblib, 56, db_getinfo);
+cptr.stPtro(dblib, 64, __sl43);
+cptr.stPtro(dblib, 72, db_getlocal);
+cptr.stPtro(dblib, 80, __sl44);
+cptr.stPtro(dblib, 88, db_getregistry);
+cptr.stPtro(dblib, 96, __sl45);
+cptr.stPtro(dblib, 104, db_getmetatable);
+cptr.stPtro(dblib, 112, __sl46);
+cptr.stPtro(dblib, 120, db_getupvalue);
+cptr.stPtro(dblib, 128, __sl47);
+cptr.stPtro(dblib, 136, db_upvaluejoin);
+cptr.stPtro(dblib, 144, __sl48);
+cptr.stPtro(dblib, 152, db_upvalueid);
+cptr.stPtro(dblib, 160, __sl49);
+cptr.stPtro(dblib, 168, db_setuservalue);
+cptr.stPtro(dblib, 176, __sl50);
+cptr.stPtro(dblib, 184, db_sethook);
+cptr.stPtro(dblib, 192, __sl51);
+cptr.stPtro(dblib, 200, db_setlocal);
+cptr.stPtro(dblib, 208, __sl52);
+cptr.stPtro(dblib, 216, db_setmetatable);
+cptr.stPtro(dblib, 224, __sl53);
+cptr.stPtro(dblib, 232, db_setupvalue);
+cptr.stPtro(dblib, 240, __sl54);
+cptr.stPtro(dblib, 248, db_traceback);
+cptr.stPtro(dblib, 256, __sl55);
+cptr.stPtro(dblib, 264, db_setcstacklimit);
+cptr.stPtro(dblib, 272, null);
+cptr.stPtro(dblib, 280, null);
 
 /** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
 export function luaopen_debug(L) {

@@ -56,7 +56,7 @@ export function crashreport_init(argc, argv) {
     __lbl_skip: {
         if (__static_crashreport_init_once++)
             return;
-        let binfile = cptr.ldPtr(cptr.add(argv, 0, 8));
+        let binfile = cptr.ldPtro(argv, 0, 8);
         ;
         ;
         let tmp = new Uint8Array(16);
@@ -92,8 +92,8 @@ export function crashreport_init(argc, argv) {
         if (cnt >= 20)
             cnt = 19;
         while (cnt) {
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.add(cptr.decay(__static_crashreport_init_hexdigits), (cptr.ld1u(in$.v) >> 4) & 15, 1)));
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.add(cptr.decay(__static_crashreport_init_hexdigits), cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15, 1)));
+            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), (cptr.ld1u(in$.v) >> 4) & 15, 1));
+            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15, 1));
             --cnt;
         }
         cptr.st1(p, 0);
@@ -110,7 +110,7 @@ export function crashreport_init(argc, argv) {
 /** C ref: report.c:189 */
 export function crashreport_bidshow() {
     {
-        (cptr.ldPtr(cptr.add(windowprocs, 240)))(cptr.decay(bid));
+        (cptr.ldPtro(windowprocs, 240))(cptr.decay(bid));
     }
 }
 
@@ -173,17 +173,17 @@ let mark = null;
 /** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
 export function submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32(cptr.add(gc, 424)) < 0 || cptr.ldI32(cptr.add(gc, 424)) > 8192 ? 1 : 0) ? 8192 : (8192 < (cptr.ldI32(cptr.add(gc, 424))) ? 8192 : (cptr.ldI32(cptr.add(gc, 424))));
+        urem.v = (cptr.ldI32o(gc, 424) < 0 || cptr.ldI32o(gc, 424) > 8192 ? 1 : 0) ? 8192 : (8192 < (cptr.ldI32o(gc, 424)) ? 8192 : (cptr.ldI32o(gc, 424)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;
-        if (!cptr.ldPtr(cptr.add(sysopt, 144)))
+        if (!cptr.ldPtro(sysopt, 144))
             return 0;
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(sysopt, 144)))));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, 144))));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, cptr.ldPtr(cptr.add(sysopt, 144)), BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, 144), BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -225,7 +225,7 @@ export function submit_web_report(cos, msg, why) {
         if (swr_add_uricoded(getversionstring(cptr.decay(temp2), 200n), uend, urem, mark))
             break __lbl_full;
         ;
-        if (cptr.ldPtr(cptr.add(gc, 416))) {
+        if (cptr.ldPtro(gc, 416)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl7)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -235,11 +235,11 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if (swr_add_uricoded(cptr.ldPtr(cptr.add(gc, 416)), uend, urem, mark))
+            if (swr_add_uricoded(cptr.ldPtro(gc, 416), uend, urem, mark))
                 break __lbl_full;
             ;
         }
-        if (cptr.ldPtr(cptr.add(gc, 408))) {
+        if (cptr.ldPtro(gc, 408)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl8)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -249,7 +249,7 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if (swr_add_uricoded(cptr.ldPtr(cptr.add(gc, 408)), uend, urem, mark))
+            if (swr_add_uricoded(cptr.ldPtro(gc, 408), uend, urem, mark))
                 break __lbl_full;
             ;
         }
@@ -291,7 +291,7 @@ export function submit_web_report(cos, msg, why) {
             count = backtrace(bt, 20);
             info = backtrace_symbols(bt, count);
             for (x = 0; x < count; x++) {
-                copynchars(cptr.decay(temp), cptr.ldPtr(cptr.add(info, x, 8)), 198);
+                copynchars(cptr.decay(temp), cptr.ldPtro(info, x, 8), 198);
                 void strsubst(cptr.decay(temp), __sl12, __sl13);
                 void strsubst(cptr.decay(temp), __sl12, __sl13);
                 void __builtin___strncat_chk(cptr.decay(temp), __sl10, 199n, __builtin_object_size(cptr.decay(temp), 1));
@@ -337,13 +337,13 @@ export function submit_web_report(cos, msg, why) {
         ;
     }
     ;
-    let xargv = cptr.alloc(3 * 8); cptr.stPtr(cptr.add(xargv, 0), __sl17); cptr.stPtr(cptr.add(xargv, 8), cptr.decay(url)); cptr.stPtr(cptr.add(xargv, 16), null);
+    let xargv = cptr.alloc(3 * 8); cptr.stPtro(xargv, 0, __sl17); cptr.stPtro(xargv, 8, cptr.decay(url)); cptr.stPtro(xargv, 16, null);
     let pid = fork();
     if (pid == 0) {
         let err = new Uint8Array(400);
         void execve(__sl17, xargv, environ);
         void cptr.sprintf(cptr.decay(err), __sl18, 372, strerror((cptr.ldI32(__error()))));
-        (cptr.ldPtr(cptr.add(windowprocs, 240)))(cptr.decay(err));
+        (cptr.ldPtro(windowprocs, 240))(cptr.decay(err));
         exit(1);
     } else {
         let status = cptr.box(0);
@@ -359,7 +359,7 @@ export function submit_web_report(cos, msg, why) {
 /** C ref: report.c:461 @returns {CInt} */
 export function dobugreport() {
     if (!submit_web_report(2, null, __sl19)) {
-        pline(__sl20, (cptr.ldPtr(cptr.add(sysopt, 144)) && cptr.ld1s(cptr.ldPtr(cptr.add(sysopt, 144))) ? 1 : 0) ? cptr.ldPtr(cptr.add(sysopt, 144)) : __sl21);
+        pline(__sl20, (cptr.ldPtro(sysopt, 144) && cptr.ld1s(cptr.ldPtro(sysopt, 144)) ? 1 : 0) ? cptr.ldPtro(sysopt, 144) : __sl21);
     }
     return NHM.ECMD_OK;
 }
@@ -371,11 +371,11 @@ export function NH_panictrace_libc() {
     let x;
     let info;
     let buf = new Uint8Array(256);
-    (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl22);
+    (cptr.ldPtro(windowprocs, 240))(__sl22);
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
-        copynchars(cptr.decay(buf), cptr.ldPtr(cptr.add(info, x, 8)), 255);
+        copynchars(cptr.decay(buf), cptr.ldPtro(info, x, 8), 255);
         void strsubst(cptr.decay(buf), __sl12, __sl13);
         void strsubst(cptr.decay(buf), __sl12, __sl13);
         raw_printf(__sl23, BigInt.asUintN(64, BigInt(x)), cptr.decay(buf));
@@ -385,18 +385,18 @@ export function NH_panictrace_libc() {
 
 /** C ref: report.c:529 @returns {CInt} */
 export function NH_panictrace_gdb() {
-    let gdbpath = cptr.ldPtr(cptr.add(sysopt, 128));
-    let greppath = cptr.ldPtr(cptr.add(sysopt, 136));
+    let gdbpath = cptr.ldPtro(sysopt, 128);
+    let greppath = cptr.ldPtro(sysopt, 136);
     let buf = new Uint8Array(256);
     let gdb;
-    if (cptr.eq(gdbpath, (null)) || cptr.ld1s(cptr.add(gdbpath, 0)) == 0 ? 1 : 0)
+    if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0 ? 1 : 0)
         return 0;
-    if (cptr.eq(greppath, (null)) || cptr.ld1s(cptr.add(greppath, 0)) == 0 ? 1 : 0)
+    if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0 ? 1 : 0)
         return 0;
     nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __sl26);
     if (gdb) {
-        (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl22);
+        (cptr.ldPtro(windowprocs, 240))(__sl22);
         void fprintf(gdb, __sl27);
         void fflush(gdb);
         sleep(4);
@@ -413,13 +413,13 @@ export function get_saved_pline(lineno) {
     let limit = NHM.DUMPLOG_MSG_COUNT;
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
-    p = u32mod(((cptr.ldI32(cptr.add(gs, 980)) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
+    p = u32mod(((cptr.ldI32o(gs, 980) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
     while (limit--) {
-        if (cptr.ldPtr(cptr.add(cptr.add(gs, 984), p, 8))) {
+        if (cptr.ldPtro(cptr.add(gs, 984), p, 8)) {
             if (lineno--) {
                 p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
-                return cptr.ldPtr(cptr.add(cptr.add(gs, 984), p, 8));
+                return cptr.ldPtro(cptr.add(gs, 984), p, 8);
             }
         }
     }

@@ -35,7 +35,7 @@ function getlt() {
 
 /** C ref: calendar.c:55 @returns {CInt} */
 export function getyear() {
-    return ((1900 + cptr.ldI32(cptr.add(getlt(), 20))) | 0);
+    return ((1900 + cptr.ldI32o(getlt(), 20)) | 0);
 }
 
 /** C ref: calendar.c:62 — @param {CLongLong} date @returns {CLongLong} */
@@ -47,12 +47,12 @@ export function yyyymmdd(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    if (cptr.ldI32(cptr.add(lt, 20)) < 70)
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n);
+    if (cptr.ldI32o(lt, 20) < 70)
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 20)) + 2000n);
     else
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n);
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32(cptr.add(lt, 16)) + 1) | 0)));
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32(cptr.add(lt, 12))));
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 20)) + 1900n);
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, 16) + 1) | 0)));
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, 12)));
     return datenum;
 }
 
@@ -65,7 +65,7 @@ export function hhmmss(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 8))) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 4))) * 100n)) + BigInt(cptr.ldI32(lt)));
+    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 8)) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 4)) * 100n)) + BigInt(cptr.ldI32(lt)));
     return timenum;
 }
 
@@ -80,11 +80,11 @@ export function yyyymmddhhmmss(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    if (cptr.ldI32(cptr.add(lt, 20)) < 70)
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 2000n);
+    if (cptr.ldI32o(lt, 20) < 70)
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 20)) + 2000n);
     else
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32(cptr.add(lt, 20))) + 1900n);
-    nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32(cptr.add(lt, 16)) + 1) | 0, cptr.ldI32(cptr.add(lt, 12)), cptr.ldI32(cptr.add(lt, 8)), cptr.ldI32(cptr.add(lt, 4)), cptr.ldI32(lt));
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, 20)) + 1900n);
+    nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32o(lt, 16) + 1) | 0, cptr.ldI32o(lt, 12), cptr.ldI32o(lt, 8), cptr.ldI32o(lt, 4), cptr.ldI32(lt));
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
 
@@ -133,11 +133,11 @@ export function time_from_yyyymmddhhmmss(buf) {
         lt = localtime(now);
         if (lt) {
             cptr.memcpy(t, lt, 56);
-            cptr.stI32(cptr.add(t, 20), (atoi(cptr.decay(y)) - 1900) | 0);
-            cptr.stI32(cptr.add(t, 16), (atoi(cptr.decay(mo)) - 1) | 0);
-            cptr.stI32(cptr.add(t, 12), atoi(cptr.decay(md)));
-            cptr.stI32(cptr.add(t, 8), atoi(cptr.decay(h)));
-            cptr.stI32(cptr.add(t, 4), atoi(cptr.decay(mi)));
+            cptr.stI32o(t, 20, (atoi(cptr.decay(y)) - 1900) | 0);
+            cptr.stI32o(t, 16, (atoi(cptr.decay(mo)) - 1) | 0);
+            cptr.stI32o(t, 12, atoi(cptr.decay(md)));
+            cptr.stI32o(t, 8, atoi(cptr.decay(h)));
+            cptr.stI32o(t, 4, atoi(cptr.decay(mi)));
             cptr.stI32(t, atoi(cptr.decay(s)));
             timeresult = mktime(t);
         }
@@ -155,8 +155,8 @@ export function phase_of_the_moon() {
     let epact;
     let diy;
     let goldn;
-    diy = cptr.ldI32(cptr.add(lt, 28));
-    goldn = ((cptr.ldI32(cptr.add(lt, 20)) % 19) + 1) | 0;
+    diy = cptr.ldI32o(lt, 28);
+    goldn = ((cptr.ldI32o(lt, 20) % 19) + 1) | 0;
     epact = ((Math.imul(11, goldn) + 18) | 0) % 30;
     if ((epact == 25 && goldn > 11 ? 1 : 0) || epact == 24 ? 1 : 0)
         epact++;
@@ -166,16 +166,16 @@ export function phase_of_the_moon() {
 /** C ref: calendar.c:215 @returns {CInt} */
 export function friday_13th() {
     let lt = getlt();
-    return schar((cptr.ldI32(cptr.add(lt, 24)) == 5 && cptr.ldI32(cptr.add(lt, 12)) == 13 ? 1 : 0));
+    return schar((cptr.ldI32o(lt, 24) == 5 && cptr.ldI32o(lt, 12) == 13 ? 1 : 0));
 }
 
 /** C ref: calendar.c:224 @returns {CInt} */
 export function night() {
-    let hour = cptr.ldI32(cptr.add(getlt(), 8));
+    let hour = cptr.ldI32o(getlt(), 8);
     return (hour < 6 || hour > 21 ? 1 : 0);
 }
 
 /** C ref: calendar.c:232 @returns {CInt} */
 export function midnight() {
-    return (cptr.ldI32(cptr.add(getlt(), 8)) == 0);
+    return (cptr.ldI32o(getlt(), 8) == 0);
 }

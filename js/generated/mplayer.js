@@ -87,64 +87,64 @@ const __sl58 = cptr.lit("Here is what I have to say!");
 
 /** C ref: mplayer.c:17 — char *[58] */
 const developers = cptr.alloc(58 * 8);
-cptr.stPtr(cptr.add(developers, 0), __sl0);
-cptr.stPtr(cptr.add(developers, 8), __sl1);
-cptr.stPtr(cptr.add(developers, 16), __sl2);
-cptr.stPtr(cptr.add(developers, 24), __sl3);
-cptr.stPtr(cptr.add(developers, 32), __sl4);
-cptr.stPtr(cptr.add(developers, 40), __sl5);
-cptr.stPtr(cptr.add(developers, 48), __sl6);
-cptr.stPtr(cptr.add(developers, 56), __sl7);
-cptr.stPtr(cptr.add(developers, 64), __sl8);
-cptr.stPtr(cptr.add(developers, 72), __sl9);
-cptr.stPtr(cptr.add(developers, 80), __sl10);
-cptr.stPtr(cptr.add(developers, 88), __sl11);
-cptr.stPtr(cptr.add(developers, 96), __sl12);
-cptr.stPtr(cptr.add(developers, 104), __sl13);
-cptr.stPtr(cptr.add(developers, 112), __sl14);
-cptr.stPtr(cptr.add(developers, 120), __sl15);
-cptr.stPtr(cptr.add(developers, 128), __sl16);
-cptr.stPtr(cptr.add(developers, 136), __sl17);
-cptr.stPtr(cptr.add(developers, 144), __sl18);
-cptr.stPtr(cptr.add(developers, 152), __sl19);
-cptr.stPtr(cptr.add(developers, 160), __sl20);
-cptr.stPtr(cptr.add(developers, 168), __sl4);
-cptr.stPtr(cptr.add(developers, 176), __sl21);
-cptr.stPtr(cptr.add(developers, 184), __sl8);
-cptr.stPtr(cptr.add(developers, 192), __sl9);
-cptr.stPtr(cptr.add(developers, 200), __sl10);
-cptr.stPtr(cptr.add(developers, 208), __sl11);
-cptr.stPtr(cptr.add(developers, 216), __sl15);
-cptr.stPtr(cptr.add(developers, 224), __sl22);
-cptr.stPtr(cptr.add(developers, 232), __sl17);
-cptr.stPtr(cptr.add(developers, 240), __sl18);
-cptr.stPtr(cptr.add(developers, 248), __sl23);
-cptr.stPtr(cptr.add(developers, 256), __sl24);
-cptr.stPtr(cptr.add(developers, 264), __sl25);
-cptr.stPtr(cptr.add(developers, 272), __sl26);
-cptr.stPtr(cptr.add(developers, 280), __sl27);
-cptr.stPtr(cptr.add(developers, 288), __sl11);
-cptr.stPtr(cptr.add(developers, 296), __sl28);
-cptr.stPtr(cptr.add(developers, 304), __sl29);
-cptr.stPtr(cptr.add(developers, 312), __sl24);
-cptr.stPtr(cptr.add(developers, 320), __sl30);
-cptr.stPtr(cptr.add(developers, 328), __sl2);
-cptr.stPtr(cptr.add(developers, 336), __sl31);
-cptr.stPtr(cptr.add(developers, 344), __sl32);
-cptr.stPtr(cptr.add(developers, 352), __sl9);
-cptr.stPtr(cptr.add(developers, 360), __sl33);
-cptr.stPtr(cptr.add(developers, 368), __sl4);
-cptr.stPtr(cptr.add(developers, 376), __sl34);
-cptr.stPtr(cptr.add(developers, 384), __sl19);
-cptr.stPtr(cptr.add(developers, 392), __sl0);
-cptr.stPtr(cptr.add(developers, 400), __sl35);
-cptr.stPtr(cptr.add(developers, 408), __sl10);
-cptr.stPtr(cptr.add(developers, 416), __sl36);
-cptr.stPtr(cptr.add(developers, 424), __sl37);
-cptr.stPtr(cptr.add(developers, 432), __sl18);
-cptr.stPtr(cptr.add(developers, 440), __sl38);
-cptr.stPtr(cptr.add(developers, 448), __sl13);
-cptr.stPtr(cptr.add(developers, 456), __sl39);
+cptr.stPtro(developers, 0, __sl0);
+cptr.stPtro(developers, 8, __sl1);
+cptr.stPtro(developers, 16, __sl2);
+cptr.stPtro(developers, 24, __sl3);
+cptr.stPtro(developers, 32, __sl4);
+cptr.stPtro(developers, 40, __sl5);
+cptr.stPtro(developers, 48, __sl6);
+cptr.stPtro(developers, 56, __sl7);
+cptr.stPtro(developers, 64, __sl8);
+cptr.stPtro(developers, 72, __sl9);
+cptr.stPtro(developers, 80, __sl10);
+cptr.stPtro(developers, 88, __sl11);
+cptr.stPtro(developers, 96, __sl12);
+cptr.stPtro(developers, 104, __sl13);
+cptr.stPtro(developers, 112, __sl14);
+cptr.stPtro(developers, 120, __sl15);
+cptr.stPtro(developers, 128, __sl16);
+cptr.stPtro(developers, 136, __sl17);
+cptr.stPtro(developers, 144, __sl18);
+cptr.stPtro(developers, 152, __sl19);
+cptr.stPtro(developers, 160, __sl20);
+cptr.stPtro(developers, 168, __sl4);
+cptr.stPtro(developers, 176, __sl21);
+cptr.stPtro(developers, 184, __sl8);
+cptr.stPtro(developers, 192, __sl9);
+cptr.stPtro(developers, 200, __sl10);
+cptr.stPtro(developers, 208, __sl11);
+cptr.stPtro(developers, 216, __sl15);
+cptr.stPtro(developers, 224, __sl22);
+cptr.stPtro(developers, 232, __sl17);
+cptr.stPtro(developers, 240, __sl18);
+cptr.stPtro(developers, 248, __sl23);
+cptr.stPtro(developers, 256, __sl24);
+cptr.stPtro(developers, 264, __sl25);
+cptr.stPtro(developers, 272, __sl26);
+cptr.stPtro(developers, 280, __sl27);
+cptr.stPtro(developers, 288, __sl11);
+cptr.stPtro(developers, 296, __sl28);
+cptr.stPtro(developers, 304, __sl29);
+cptr.stPtro(developers, 312, __sl24);
+cptr.stPtro(developers, 320, __sl30);
+cptr.stPtro(developers, 328, __sl2);
+cptr.stPtro(developers, 336, __sl31);
+cptr.stPtro(developers, 344, __sl32);
+cptr.stPtro(developers, 352, __sl9);
+cptr.stPtro(developers, 360, __sl33);
+cptr.stPtro(developers, 368, __sl4);
+cptr.stPtro(developers, 376, __sl34);
+cptr.stPtro(developers, 384, __sl19);
+cptr.stPtro(developers, 392, __sl0);
+cptr.stPtro(developers, 400, __sl35);
+cptr.stPtro(developers, 408, __sl10);
+cptr.stPtro(developers, 416, __sl36);
+cptr.stPtro(developers, 424, __sl37);
+cptr.stPtro(developers, 432, __sl18);
+cptr.stPtro(developers, 440, __sl38);
+cptr.stPtro(developers, 448, __sl13);
+cptr.stPtro(developers, 456, __sl39);
 
 /** C ref: mplayer.c:44 @returns {CPtr} */
 function dev_name() {
@@ -156,10 +156,10 @@ function dev_name() {
     do {
         match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
-        for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
+        for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            if (!((cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtr(cptr.add(developers, i, 8)), ((cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) : __sl39, cptr.strlen(cptr.ldPtr(cptr.add(developers, i, 8))))) {
+            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), 312) && (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
                 match = 1;
                 break;
             }
@@ -168,12 +168,12 @@ function dev_name() {
     } while (match && m < 100 ? 1 : 0);
     if (match)
         return null;
-    return (cptr.ldPtr(cptr.add(developers, i, 8)));
+    return (cptr.ldPtro(developers, i, 8));
 }
 
 /** C ref: mplayer.c:72 — @param {CPtr} mtmp @param {CPtr} nam */
 function get_mplname(mtmp, nam) {
-    let fmlkind = schar(((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 131072n) != 0n));
+    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 131072n) != 0n));
     let devnam;
     devnam = dev_name();
     if (!devnam)
@@ -183,11 +183,11 @@ function get_mplname(mtmp, nam) {
     else
         void cptr.strcpy(nam, devnam);
     if (fmlkind || !strcmp(nam, __sl6) ? 1 : 0)
-        cptr.stI32(cptr.add(mtmp, 84), 1);
+        cptr.stI32o(mtmp, 84, 1);
     else
-        cptr.stI32(cptr.add(mtmp, 84), 0);
+        cptr.stI32o(mtmp, 84, 0);
     void cptr.strcat(nam, __sl46);
-    void cptr.strcat(nam, rank_of(cptr.ld1u(cptr.add(mtmp, 26)), (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24))), schar((cptr.ldI32(cptr.add(mtmp, 84)) & 1))));
+    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, 26), (cptr.ldI32o((cptr.ldPtro(mtmp, 8)), 24)), schar((cptr.ldI32o(mtmp, 84) & 1))));
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
@@ -196,14 +196,14 @@ function mk_mplayer_armor(mon, typ) {
     if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = mksobj(typ, 0, 0);
-    cptr.stI32(cptr.add(obj, 112), cptr.stI32(cptr.add(obj, 116), 0));
+    cptr.stI32o(obj, 112, cptr.stI32o(obj, 116, 0));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 103, __sl47), rn2(3)) : rn2(3)))
-        cptr.stI32(cptr.add(obj, 120), 1);
+        cptr.stI32o(obj, 120, 1);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 105, __sl47), rn2(3)) : rn2(3)))
         curse(obj);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 107, __sl47), rn2(3)) : rn2(3)))
         bless(obj);
-    cptr.st1(cptr.add(obj, 48), schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
+    cptr.st1o(obj, 48, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
     void mpickobj(mon, obj);
 }
 
@@ -213,8 +213,8 @@ export function mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
         return (null);
-    if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)) !== null))
-        void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8))), 5);
+    if ((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8) !== null))
+        void rloc((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)), 5);
     if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))))
         special = 0;
     if ((mtmp = makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n))))) !== null) {
@@ -225,21 +225,21 @@ export function mk_mplayer(ptr, x, y, special) {
         let shield;
         let quan;
         let otmp;
-        cptr.st1(cptr.add(mtmp, 26), uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
-        cptr.stI32(cptr.add(mtmp, 52), cptr.stI32(cptr.add(mtmp, 56), ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1u(cptr.add(mtmp, 26))), 10)) : d((cptr.ld1u(cptr.add(mtmp, 26))), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
+        cptr.st1o(mtmp, 26, uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
+        cptr.stI32o(mtmp, 52, cptr.stI32o(mtmp, 56, ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1uo(mtmp, 26)), 10)) : d((cptr.ld1uo(mtmp, 26)), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = christen_monst(mtmp, cptr.decay(nam));
             void mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR);
         }
-        cptr.stI32(cptr.add(mtmp, 168), 0);
+        cptr.stI32o(mtmp, 168, 0);
         set_malign(mtmp);
         weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 150, __sl48), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
         armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
         cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
         helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
         shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
-        switch ((cptr.ldI32(cptr.add((ptr), 24)))) {
+        switch ((cptr.ldI32o((ptr), 24))) {
             case NHC.PM_ARCHEOLOGIST:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 161, __sl48), rn2(2)) : rn2(2)))
                 weapon = NHC.BULLWHIP;
@@ -335,19 +335,19 @@ export function mk_mplayer(ptr, x, y, special) {
         }
         if (weapon != NHC.STRANGE_OBJECT) {
             otmp = mksobj(weapon, 1, 0);
-            cptr.stI32(cptr.add(otmp, 112), cptr.stI32(cptr.add(otmp, 116), 0));
-            cptr.st1(cptr.add(otmp, 48), schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
+            cptr.stI32o(otmp, 112, cptr.stI32o(otmp, 116, 0));
+            cptr.st1o(otmp, 48, schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 260, __sl48), rn2(3)) : rn2(3)))
-                cptr.stI32(cptr.add(otmp, 120), 1);
+                cptr.stI32o(otmp, 120, 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
-                cptr.stI32(cptr.add(otmp, 140), 1);
+                cptr.stI32o(otmp, 140, 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
                 otmp = mk_artifact(otmp, -128, 99, 0);
-            if (((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 20)) & 1) | 0 && !cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
-                cptr.stI64(cptr.add(otmp, 40), cptr.ldI64(cptr.add(otmp, 40)) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1s(cptr.add(otmp, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1s(cptr.add(otmp, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 68)) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
-            cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
+            if (((cptr.ldI32o(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 20) & 1) | 0 && !cptr.ld1so(otmp, 51) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
+                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
+            cptr.stI32o(otmp, 36, weight(otmp) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
-                cptr.st1(cptr.add(otmp, 48), schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
+                cptr.st1o(otmp, 48, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
             void mpickobj(mtmp, otmp);
         }
         if (special) {
@@ -408,18 +408,18 @@ export function create_mplayers(num, special) {
 }
 
 const __static_mplayer_talk_same_class_msg = cptr.alloc(3 * 8);
-cptr.stPtr(cptr.add(__static_mplayer_talk_same_class_msg, 0), __sl53);
-cptr.stPtr(cptr.add(__static_mplayer_talk_same_class_msg, 8), __sl54);
-cptr.stPtr(cptr.add(__static_mplayer_talk_same_class_msg, 16), __sl55); /** C ref: mplayer.c:359 — char *[3] (function-static) */
+cptr.stPtro(__static_mplayer_talk_same_class_msg, 0, __sl53);
+cptr.stPtro(__static_mplayer_talk_same_class_msg, 8, __sl54);
+cptr.stPtro(__static_mplayer_talk_same_class_msg, 16, __sl55); /** C ref: mplayer.c:359 — char *[3] (function-static) */
 const __static_mplayer_talk_other_class_msg = cptr.alloc(3 * 8);
-cptr.stPtr(cptr.add(__static_mplayer_talk_other_class_msg, 0), __sl56);
-cptr.stPtr(cptr.add(__static_mplayer_talk_other_class_msg, 8), __sl57);
-cptr.stPtr(cptr.add(__static_mplayer_talk_other_class_msg, 16), __sl58); /** C ref: mplayer.c:364 — char *[3] (function-static) */
+cptr.stPtro(__static_mplayer_talk_other_class_msg, 0, __sl56);
+cptr.stPtro(__static_mplayer_talk_other_class_msg, 8, __sl57);
+cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __sl58); /** C ref: mplayer.c:364 — char *[3] (function-static) */
 
 /** C ref: mplayer.c:356 — @param {CPtr} mtmp */
 export function mplayer_talk(mtmp) {
-    if ((cptr.ldI32(cptr.add(mtmp, 168)) & 1))
+    if ((cptr.ldI32o(mtmp, 168) & 1))
         return;
     ;
-    verbalize(__sl51, cptr.eq(cptr.ldPtr(cptr.add(mtmp, 8)), cptr.add(mons, cptr.ldI16(cptr.add(gu, 216)), 96)) ? cptr.ldPtr(cptr.add(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8)) : cptr.ldPtr(cptr.add(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));
+    verbalize(__sl51, cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, cptr.ldI16o(gu, 216), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8));
 }

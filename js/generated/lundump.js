@@ -38,19 +38,19 @@ const __sl16 = cptr.lit("binary string");
 
 /** C ref: lundump.c:40 — @param {CPtr} S @param {CPtr} why */
 function error(S, why) {
-    luaO_pushfstring(cptr.ldPtr(S), __sl0, cptr.ldPtr(cptr.add(S, 16)), why);
+    luaO_pushfstring(cptr.ldPtr(S), __sl0, cptr.ldPtro(S, 16), why);
     luaD_throw(cptr.ldPtr(S), 3);
 }
 
 /** C ref: lundump.c:52 — @param {CPtr} S @param {CPtr} b @param {CLongLong} size */
 function loadBlock(S, b, size) {
-    if (luaZ_read(cptr.ldPtr(cptr.add(S, 8)), b, size) != 0n)
+    if (luaZ_read(cptr.ldPtro(S, 8), b, size) != 0n)
         error(S, __sl1);
 }
 
 /** C ref: lundump.c:61 — @param {CPtr} S @returns {*} */
 function loadByte(S) {
-    let b = (((cptr.stU64((cptr.ldPtr(cptr.add(S, 8))), cptr.ldU64((cptr.ldPtr(cptr.add(S, 8)))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8)), (v) => { cptr.stPtr(cptr.add((cptr.ldPtr(cptr.add(S, 8))), 8), v); })))))) : luaZ_fill(cptr.ldPtr(cptr.add(S, 8))));
+    let b = (((cptr.stU64((cptr.ldPtro(S, 8)), cptr.ldU64((cptr.ldPtro(S, 8))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(S, 8)), 8), (v) => { cptr.stPtro((cptr.ldPtro(S, 8)), 8, v); })))))) : luaZ_fill(cptr.ldPtro(S, 8)));
     if (b == -1)
         error(S, __sl1);
     return (uchar(((b))));
@@ -108,18 +108,18 @@ function loadStringN(S, p) {
     } else {
         ts = luaS_createlngstrobj(L, size);
         {
-            let io = (((cptr.ldPtr(cptr.add(L, 16)))));
+            let io = (((cptr.ldPtro(L, 16))));
             let x_ = (ts);
             cptr.stPtr(((io)), ((((x_)))));
-            (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
+            (cptr.st1o((io), 8, uchar((((cptr.ld1uo(x_, 8)) | 64)))));
             (void L, (void 0));
         }
         ;
         luaD_inctop(L);
         loadBlock(S, (cptr.add((ts), 24)), BigInt.asUintN(64, (size) * 1n));
-        cptr.postdec(() => cptr.ldPtr(cptr.add(L, 16)), (v) => { cptr.stPtr(cptr.add(L, 16), v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
     }
-    ((((cptr.ld1u(cptr.add((p), 9))) & 32) && ((cptr.ld1u(cptr.add((ts), 9))) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
+    ((((cptr.ld1uo((p), 9)) & 32) && ((cptr.ld1uo((ts), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
     return ts;
 }
 
@@ -134,37 +134,37 @@ function loadString(S, p) {
 /** C ref: lundump.c:144 — @param {CPtr} S @param {CPtr} f */
 function loadCode(S, f) {
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 64), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0)))));
-    cptr.stI32(cptr.add(f, 24), n);
-    loadBlock(S, cptr.ldPtr(cptr.add(f, 64)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n));
+    cptr.stPtro(f, 64, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0)))));
+    cptr.stI32o(f, 24, n);
+    loadBlock(S, cptr.ldPtro(f, 64), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n));
 }
 
 /** C ref: lundump.c:155 — @param {CPtr} S @param {CPtr} f */
 function loadConstants(S, f) {
     let i;
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 56), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
-    cptr.stI32(cptr.add(f, 20), n);
+    cptr.stPtro(f, 56, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stI32o(f, 20, n);
     for (i = 0; i < n; i++)
-        (cptr.st1(cptr.add((cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16)), 8), 0));
+        (cptr.st1o((cptr.add(cptr.ldPtro(f, 56), i, 16)), 8, 0));
     for (i = 0; i < n; i++) {
-        let o = cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16);
+        let o = cptr.add(cptr.ldPtro(f, 56), i, 16);
         let t = loadByte(S);
         switch (t) {
             case 0:
-            (cptr.st1(cptr.add((o), 8), 0));
+            (cptr.st1o((o), 8, 0));
             break;
             case 1:
-            (cptr.st1(cptr.add((o), 8), 1));
+            (cptr.st1o((o), 8, 1));
             break;
             case 17:
-            (cptr.st1(cptr.add((o), 8), 17));
+            (cptr.st1o((o), 8, 17));
             break;
             case 19:
             {
                 let io = (o);
                 cptr.stF64(((io)), (loadNumber(S)));
-                (cptr.st1(cptr.add((io), 8), 19));
+                (cptr.st1o((io), 8, 19));
             }
             ;
             break;
@@ -172,7 +172,7 @@ function loadConstants(S, f) {
             {
                 let io = (o);
                 cptr.stI64(((io)), (loadInteger(S)));
-                (cptr.st1(cptr.add((io), 8), 3));
+                (cptr.st1o((io), 8, 3));
             }
             ;
             break;
@@ -182,7 +182,7 @@ function loadConstants(S, f) {
                 let io = (o);
                 let x_ = (loadString(S, f));
                 cptr.stPtr(((io)), ((((x_)))));
-                (cptr.st1(cptr.add((io), 8), uchar((((cptr.ld1u(cptr.add(x_, 8))) | 64)))));
+                (cptr.st1o((io), 8, uchar((((cptr.ld1uo(x_, 8)) | 64)))));
                 (void cptr.ldPtr(S), (void 0));
             }
             ;
@@ -197,14 +197,14 @@ function loadConstants(S, f) {
 function loadProtos(S, f) {
     let i;
     let n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 72), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
-    cptr.stI32(cptr.add(f, 32), n);
+    cptr.stPtro(f, 72, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
+    cptr.stI32o(f, 32, n);
     for (i = 0; i < n; i++)
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8), null);
+        cptr.stPtro(cptr.ldPtro(f, 72), i, null, 8);
     for (i = 0; i < n; i++) {
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8), luaF_newproto(cptr.ldPtr(S)));
-        ((((cptr.ld1u(cptr.add((f), 9))) & 32) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))), 9))) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8))))))) : (void 0));
-        loadFunction(S, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8)), cptr.ldPtr(cptr.add(f, 112)));
+        cptr.stPtro(cptr.ldPtro(f, 72), i, luaF_newproto(cptr.ldPtr(S)), 8);
+        ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)))))) : (void 0));
+        loadFunction(S, cptr.ldPtro(cptr.ldPtro(f, 72), i, 8), cptr.ldPtro(f, 112));
     }
 }
 
@@ -213,14 +213,14 @@ function loadUpvalues(S, f) {
     let i;
     let n;
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 80), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
-    cptr.stI32(cptr.add(f, 16), n);
+    cptr.stPtro(f, 80, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stI32o(f, 16, n);
     for (i = 0; i < n; i++)
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), null);
+        cptr.stPtro(cptr.ldPtro(f, 80), i, null, 16);
     for (i = 0; i < n; i++) {
-        cptr.st1(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 8), loadByte(S));
-        cptr.st1(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 9), loadByte(S));
-        cptr.st1(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 10), loadByte(S));
+        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 8, loadByte(S));
+        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 9, loadByte(S));
+        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 10, loadByte(S));
     }
 }
 
@@ -229,43 +229,43 @@ function loadDebug(S, f) {
     let i;
     let n;
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 88), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n), 0)))));
-    cptr.stI32(cptr.add(f, 28), n);
-    loadBlock(S, cptr.ldPtr(cptr.add(f, 88)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
+    cptr.stPtro(f, 88, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n), 0)))));
+    cptr.stI32o(f, 28, n);
+    loadBlock(S, cptr.ldPtro(f, 88), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 96), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
-    cptr.stI32(cptr.add(f, 40), n);
+    cptr.stPtro(f, 96, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
+    cptr.stI32o(f, 40, n);
     for (i = 0; i < n; i++) {
-        cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), loadInt(S));
-        cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), 4), loadInt(S));
+        cptr.stI32o(cptr.ldPtro(f, 96), i, loadInt(S), 8);
+        cptr.stI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4, loadInt(S));
     }
     n = loadInt(S);
-    cptr.stPtr(cptr.add(f, 104), (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
-    cptr.stI32(cptr.add(f, 36), n);
+    cptr.stPtro(f, 104, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
+    cptr.stI32o(f, 36, n);
     for (i = 0; i < n; i++)
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), null);
+        cptr.stPtro(cptr.ldPtro(f, 104), i, null, 16);
     for (i = 0; i < n; i++) {
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), loadStringN(S, f));
-        cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 8), loadInt(S));
-        cptr.stI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 12), loadInt(S));
+        cptr.stPtro(cptr.ldPtro(f, 104), i, loadStringN(S, f), 16);
+        cptr.stI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 8, loadInt(S));
+        cptr.stI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 12, loadInt(S));
     }
     n = loadInt(S);
     if (n != 0)
-        n = cptr.ldI32(cptr.add(f, 16));
+        n = cptr.ldI32o(f, 16);
     for (i = 0; i < n; i++)
-        cptr.stPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), loadStringN(S, f));
+        cptr.stPtro(cptr.ldPtro(f, 80), i, loadStringN(S, f), 16);
 }
 
 /** C ref: lundump.c:258 — @param {CPtr} S @param {CPtr} f @param {CPtr} psource */
 function loadFunction(S, f, psource) {
-    cptr.stPtr(cptr.add(f, 112), loadStringN(S, f));
-    if (cptr.eq(cptr.ldPtr(cptr.add(f, 112)), (null)))
-        cptr.stPtr(cptr.add(f, 112), psource);
-    cptr.stI32(cptr.add(f, 44), loadInt(S));
-    cptr.stI32(cptr.add(f, 48), loadInt(S));
-    cptr.st1(cptr.add(f, 10), loadByte(S));
-    cptr.st1(cptr.add(f, 11), loadByte(S));
-    cptr.st1(cptr.add(f, 12), loadByte(S));
+    cptr.stPtro(f, 112, loadStringN(S, f));
+    if (cptr.eq(cptr.ldPtro(f, 112), (null)))
+        cptr.stPtro(f, 112, psource);
+    cptr.stI32o(f, 44, loadInt(S));
+    cptr.stI32o(f, 48, loadInt(S));
+    cptr.st1o(f, 10, loadByte(S));
+    cptr.st1o(f, 11, loadByte(S));
+    cptr.st1o(f, 12, loadByte(S));
     loadCode(S, f);
     loadConstants(S, f);
     loadUpvalues(S, f);
@@ -310,27 +310,27 @@ export function luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);
     let cl;
     if (cptr.ld1s(name) == 64 || cptr.ld1s(name) == 61 ? 1 : 0)
-        cptr.stPtr(cptr.add(S, 16), cptr.add(name, 1));
-    else if (cptr.ld1s(name) == cptr.ld1s(cptr.add(__sl5, 0, 1)))
-        cptr.stPtr(cptr.add(S, 16), __sl16);
+        cptr.stPtro(S, 16, cptr.add(name, 1));
+    else if (cptr.ld1s(name) == cptr.ld1so(__sl5, 0, 1))
+        cptr.stPtro(S, 16, __sl16);
     else
-        cptr.stPtr(cptr.add(S, 16), name);
+        cptr.stPtro(S, 16, name);
     cptr.stPtr(S, L);
-    cptr.stPtr(cptr.add(S, 8), Z);
+    cptr.stPtro(S, 8, Z);
     checkHeader(S);
     cl = luaF_newLclosure(L, loadByte(S));
     {
-        let io = (((cptr.ldPtr(cptr.add(L, 16)))));
+        let io = (((cptr.ldPtro(L, 16))));
         let x_ = (cl);
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1(cptr.add((io), 8), 70));
+        (cptr.st1o((io), 8, 70));
         (void L, (void 0));
     }
     ;
     luaD_inctop(L);
-    cptr.stPtr(cptr.add(cl, 24), luaF_newproto(L));
-    ((((cptr.ld1u(cptr.add((cl), 9))) & 32) && ((cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(cl, 24))), 9))) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtr(cptr.add(cl, 24))))))) : (void 0));
-    loadFunction(S, cptr.ldPtr(cptr.add(cl, 24)), null);
+    cptr.stPtro(cl, 24, luaF_newproto(L));
+    ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, 24)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, 24)))))) : (void 0));
+    loadFunction(S, cptr.ldPtro(cl, 24), null);
     (void 0);
     ;
     return cl;

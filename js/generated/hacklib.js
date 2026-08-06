@@ -86,13 +86,13 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
         return;
     }
     for (i = 0n; i < nmemb; ++i)
-        cptr.stU64(cptr.add(order, i, 8), i);
+        cptr.stU64o(order, i, i, 8);
     nh_qsort_base = bytes;
     nh_qsort_size = size;
     nh_qsort_cmp_fn = compar;
     cptr.qsort(order, nmemb, 8n, nh_qsort_idx_cmp);
     for (i = 0n; i < nmemb; ++i)
-        void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64(cptr.add(order, i, 8)) * size)))), size);
+        void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64o(order, i, 8) * size)))), size);
     void cptr.memcpy(bytes, tmp, BigInt.asUintN(64, nmemb * size));
     cptr.free(tmp);
     cptr.free(order);
@@ -335,7 +335,7 @@ export function ing_suffix(s) {
     let p;
     void cptr.strcpy(cptr.decay(__static_ing_suffix_buf), s);
     p = eos(cptr.decay(__static_ing_suffix_buf));
-    cptr.st1(cptr.add(cptr.decay(onoff), 0, 1), cptr.st1(p, cptr.st1((cptr.add(p, 1)), 0)));
+    cptr.st1o(cptr.decay(onoff), 0, cptr.st1(p, cptr.st1((cptr.add(p, 1)), 0)), 1);
     if (((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !strncmpi((cptr.add(p, -(3))), (__sl6), -1) ? 1 : 0) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 4, 1)) >= 0 && !strncmpi((cptr.add(p, -(4))), (__sl7), -1) ? 1 : 0) ? 1 : 0) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 5, 1)) >= 0 && !strncmpi((cptr.add(p, -(5))), (__sl8), -1) ? 1 : 0) ? 1 : 0) {
         p = cptr.strrchr(cptr.decay(__static_ing_suffix_buf), 32);
         void cptr.strcpy(cptr.decay(onoff), p);
@@ -351,7 +351,7 @@ export function ing_suffix(s) {
     } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 1, 1)) >= 0 && cptr.ld1s((cptr.add(p, -(1)))) == 101 ? 1 : 0)
         cptr.st1((cptr.add(p, -(1))), 0);
     void cptr.strcat(cptr.decay(__static_ing_suffix_buf), __sl11);
-    if (cptr.ld1s(cptr.add(cptr.decay(onoff), 0, 1)))
+    if (cptr.ld1so(cptr.decay(onoff), 0, 1))
         void cptr.strcat(cptr.decay(__static_ing_suffix_buf), cptr.decay(onoff));
     return cptr.decay(__static_ing_suffix_buf);
 }
@@ -415,20 +415,20 @@ export function visctrl(c) {
     let ccc = cptr.decay(__static_visctrl_visctrl_bufs[__static_visctrl_nbuf]);
     __static_visctrl_nbuf = ((__static_visctrl_nbuf + 1) | 0) % 5;
     if (uchar(c) & 128) {
-        cptr.st1(cptr.add(ccc, i++), 77);
-        cptr.st1(cptr.add(ccc, i++), 45);
+        cptr.st1o(ccc, i++, 77);
+        cptr.st1o(ccc, i++, 45);
     }
     c = schar(c & 127);
     if (c < 32) {
-        cptr.st1(cptr.add(ccc, i++), 94);
-        cptr.st1(cptr.add(ccc, i++), schar((c | 64)));
+        cptr.st1o(ccc, i++, 94);
+        cptr.st1o(ccc, i++, schar((c | 64)));
     } else if (c == 127) {
-        cptr.st1(cptr.add(ccc, i++), 94);
-        cptr.st1(cptr.add(ccc, i++), schar((c & -65)));
+        cptr.st1o(ccc, i++, 94);
+        cptr.st1o(ccc, i++, schar((c & -65)));
     } else {
-        cptr.st1(cptr.add(ccc, i++), c);
+        cptr.st1o(ccc, i++, c);
     }
-    cptr.st1(cptr.add(ccc, i), 0);
+    cptr.st1o(ccc, i, 0);
     return ccc;
 }
 
@@ -512,7 +512,7 @@ export function findword(list, word, wordlen, ignorecase) {
             p = cptr.add(p, 1);
         if (!cptr.ld1s(p))
             break;
-        if ((ignorecase ? !strncmpi(p, word, wordlen) : !cptr.strncmp(p, word, BigInt.asUintN(64, BigInt(wordlen)))) && (cptr.ld1s(cptr.add(p, wordlen)) == 0 || cptr.ld1s(cptr.add(p, wordlen)) == 32 ? 1 : 0) ? 1 : 0)
+        if ((ignorecase ? !strncmpi(p, word, wordlen) : !cptr.strncmp(p, word, BigInt.asUintN(64, BigInt(wordlen)))) && (cptr.ld1so(p, wordlen) == 0 || cptr.ld1so(p, wordlen) == 32 ? 1 : 0) ? 1 : 0)
             return p;
         p = cptr.strchr(cptr.add(p, 1), 32);
     }
@@ -603,7 +603,7 @@ export function strstri(str, sub) {
     if (!cptr.ld1s(sub))
         return str;
     for (i = 0; i < 32; i++)
-        cptr.st1(cptr.add(cptr.decay(tstr), i, 1), cptr.st1(cptr.add(cptr.decay(tsub), i, 1), 0));
+        cptr.st1o(cptr.decay(tstr), i, cptr.st1o(cptr.decay(tsub), i, 0, 1), 1);
     for (k = 0, s1 = str; cptr.ld1s(s1); k++)
         cptr.postinc1(cptr.add(cptr.decay(tstr), cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & 31, 1));
     for (s2 = sub; cptr.ld1s(s2); --k)
@@ -611,7 +611,7 @@ export function strstri(str, sub) {
     if (k < 0)
         return null;
     for (i = 0; i < 32; i++)
-        if (cptr.ld1s(cptr.add(cptr.decay(tsub), i, 1)) > cptr.ld1s(cptr.add(cptr.decay(tstr), i, 1)))
+        if (cptr.ld1so(cptr.decay(tsub), i, 1) > cptr.ld1so(cptr.decay(tstr), i, 1))
             return null;
     for (i = 0; i <= k; i++) {
         s1 = cptr.add(str, i);
@@ -656,7 +656,7 @@ export function nh_snprintf(func, line, str, size, fmt, ...__va) {
     n = cptr.vsnprintf(str, size, fmt, ap);
     ap = null;
     if (n < 0 || BigInt.asUintN(64, BigInt(n)) >= size ? 1 : 0) {
-        cptr.st1(cptr.add(str, BigInt.asUintN(64, size - 1n)), 0);
+        cptr.st1o(str, BigInt.asUintN(64, size - 1n), 0);
     }
 }
 
@@ -726,41 +726,41 @@ export function copy_bytes(ifd, ofd) {
 
 /** C ref: hacklib.c:1035 — struct datamodel_information[5] */
 const dm = cptr.alloc(5 * 40);
-cptr.stI32(cptr.add(dm, 0), 2);
-cptr.stI32(cptr.add(dm, 4), 4);
-cptr.stI32(cptr.add(dm, 8), 8);
-cptr.stI32(cptr.add(dm, 12), 8);
-cptr.stI32(cptr.add(dm, 16), 8);
-cptr.stPtr(cptr.add(dm, 24), __sl18);
-cptr.stPtr(cptr.add(dm, 32), __sl18);
-cptr.stI32(cptr.add(dm, 40), 2);
-cptr.stI32(cptr.add(dm, 44), 4);
-cptr.stI32(cptr.add(dm, 48), 4);
-cptr.stI32(cptr.add(dm, 52), 8);
-cptr.stI32(cptr.add(dm, 56), 4);
-cptr.stPtr(cptr.add(dm, 64), __sl19);
-cptr.stPtr(cptr.add(dm, 72), __sl20);
-cptr.stI32(cptr.add(dm, 80), 2);
-cptr.stI32(cptr.add(dm, 84), 4);
-cptr.stI32(cptr.add(dm, 88), 4);
-cptr.stI32(cptr.add(dm, 92), 8);
-cptr.stI32(cptr.add(dm, 96), 8);
-cptr.stPtr(cptr.add(dm, 104), __sl21);
-cptr.stPtr(cptr.add(dm, 112), __sl22);
-cptr.stI32(cptr.add(dm, 120), 2);
-cptr.stI32(cptr.add(dm, 124), 4);
-cptr.stI32(cptr.add(dm, 128), 8);
-cptr.stI32(cptr.add(dm, 132), 8);
-cptr.stI32(cptr.add(dm, 136), 8);
-cptr.stPtr(cptr.add(dm, 144), __sl23);
-cptr.stPtr(cptr.add(dm, 152), __sl24);
-cptr.stI32(cptr.add(dm, 160), 2);
-cptr.stI32(cptr.add(dm, 164), 8);
-cptr.stI32(cptr.add(dm, 168), 8);
-cptr.stI32(cptr.add(dm, 172), 8);
-cptr.stI32(cptr.add(dm, 176), 8);
-cptr.stPtr(cptr.add(dm, 184), __sl25);
-cptr.stPtr(cptr.add(dm, 192), __sl26);
+cptr.stI32o(dm, 0, 2);
+cptr.stI32o(dm, 4, 4);
+cptr.stI32o(dm, 8, 8);
+cptr.stI32o(dm, 12, 8);
+cptr.stI32o(dm, 16, 8);
+cptr.stPtro(dm, 24, __sl18);
+cptr.stPtro(dm, 32, __sl18);
+cptr.stI32o(dm, 40, 2);
+cptr.stI32o(dm, 44, 4);
+cptr.stI32o(dm, 48, 4);
+cptr.stI32o(dm, 52, 8);
+cptr.stI32o(dm, 56, 4);
+cptr.stPtro(dm, 64, __sl19);
+cptr.stPtro(dm, 72, __sl20);
+cptr.stI32o(dm, 80, 2);
+cptr.stI32o(dm, 84, 4);
+cptr.stI32o(dm, 88, 4);
+cptr.stI32o(dm, 92, 8);
+cptr.stI32o(dm, 96, 8);
+cptr.stPtro(dm, 104, __sl21);
+cptr.stPtro(dm, 112, __sl22);
+cptr.stI32o(dm, 120, 2);
+cptr.stI32o(dm, 124, 4);
+cptr.stI32o(dm, 128, 8);
+cptr.stI32o(dm, 132, 8);
+cptr.stI32o(dm, 136, 8);
+cptr.stPtro(dm, 144, __sl23);
+cptr.stPtro(dm, 152, __sl24);
+cptr.stI32o(dm, 160, 2);
+cptr.stI32o(dm, 164, 8);
+cptr.stI32o(dm, 168, 8);
+cptr.stI32o(dm, 172, 8);
+cptr.stI32o(dm, 176, 8);
+cptr.stPtro(dm, 184, __sl25);
+cptr.stPtro(dm, 192, __sl26);
 
 let __static_datamodel_unknown = __sl27; /** C ref: hacklib.c:1049 — char * (function-static) */
 
@@ -772,11 +772,11 @@ export function datamodel(retidx) {
     for (i = 1; i < 5; ++i) {
         matchcount = 0;
         for (j = 0; j < 5; ++j) {
-            if (cptr.ldI32(cptr.add(cptr.add(dm, 0, 40), j, 4)) == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), j, 4)))
+            if (cptr.ldI32o(cptr.add(dm, 0, 40), j, 4) == cptr.ldI32o(cptr.add(dm, i, 40), j, 4))
                 ++matchcount;
         }
         if (matchcount == 5)
-            return (retidx == 0) ? cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 24)) : cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 32));
+            return (retidx == 0) ? cptr.ldPtro(cptr.add(dm, i, 40), 24) : cptr.ldPtro(cptr.add(dm, i, 40), 32);
     }
     return __static_datamodel_unknown;
 }
@@ -787,8 +787,8 @@ let __static_what_datamodel_is_this_unknown = __sl27; /** C ref: hacklib.c:1068 
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
     for (i = 1; i < 5; ++i) {
-        if ((((szshort == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 0, 4)) && szint == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 1, 4)) ? 1 : 0) && szlong == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 2, 4)) ? 1 : 0) && szll == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 3, 4)) ? 1 : 0) && szptr == cptr.ldI32(cptr.add(cptr.add(dm, i, 40), 4, 4)) ? 1 : 0)
-            return (retidx == 0) ? cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 24)) : cptr.ldPtr(cptr.add(cptr.add(dm, i, 40), 32));
+        if ((((szshort == cptr.ldI32o(cptr.add(dm, i, 40), 0, 4) && szint == cptr.ldI32o(cptr.add(dm, i, 40), 1, 4) ? 1 : 0) && szlong == cptr.ldI32o(cptr.add(dm, i, 40), 2, 4) ? 1 : 0) && szll == cptr.ldI32o(cptr.add(dm, i, 40), 3, 4) ? 1 : 0) && szptr == cptr.ldI32o(cptr.add(dm, i, 40), 4, 4) ? 1 : 0)
+            return (retidx == 0) ? cptr.ldPtro(cptr.add(dm, i, 40), 24) : cptr.ldPtro(cptr.add(dm, i, 40), 32);
     }
     return __static_what_datamodel_is_this_unknown;
 }

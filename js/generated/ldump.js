@@ -16,9 +16,9 @@ const __sl1 = cptr.lit("\x19\x93\r\n\x1a\n");
 
 /** C ref: ldump.c:41 — @param {CPtr} D @param {CPtr} b @param {CLongLong} size */
 function dumpBlock(D, b, size) {
-    if (cptr.ldI32(cptr.add(D, 28)) == 0 && size > 0n ? 1 : 0) {
+    if (cptr.ldI32o(D, 28) == 0 && size > 0n ? 1 : 0) {
         (void 0);
-        cptr.stI32(cptr.add(D, 28), (cptr.ldPtr(cptr.add(D, 8)))(cptr.ldPtr(D), b, size, cptr.ldPtr(cptr.add(D, 16))));
+        cptr.stI32o(D, 28, (cptr.ldPtro(D, 8))(cptr.ldPtr(D), b, size, cptr.ldPtro(D, 16)));
         (void 0);
     }
 }
@@ -34,10 +34,10 @@ function dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
     do {
-        cptr.st1(cptr.add(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), 1), Number(BigInt.asUintN(8, (x & 127n))));
+        cptr.st1o(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), Number(BigInt.asUintN(8, (x & 127n))), 1);
         x >>= 7n;
     } while (x != 0n);
-    cptr.st1(cptr.add(cptr.decay(buff), 9n, 1), cptr.ld1u(cptr.add(cptr.decay(buff), 9n, 1)) | 128);
+    cptr.st1o(cptr.decay(buff), 9n, cptr.ld1uo(cptr.decay(buff), 9n, 1) | 128, 1);
     dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
 }
 
@@ -63,7 +63,7 @@ function dumpString(D, s) {
     if (cptr.eq(s, (null)))
         dumpSize(D, 0n);
     else {
-        let size = (cptr.ld1u(cptr.add((s), 11)) != 255 ? BigInt(cptr.ld1u(cptr.add((s), 11)) >>> 0) : cptr.ldU64(cptr.add((s), 16)));
+        let size = (cptr.ld1uo((s), 11) != 255 ? BigInt(cptr.ld1uo((s), 11) >>> 0) : cptr.ldU64o((s), 16));
         let str = (cptr.add((s), 24));
         dumpSize(D, BigInt.asUintN(64, size + 1n));
         dumpBlock(D, str, BigInt.asUintN(64, (size) * 1n));
@@ -72,18 +72,18 @@ function dumpString(D, s) {
 
 /** C ref: ldump.c:104 — @param {CPtr} D @param {CPtr} f */
 function dumpCode(D, f) {
-    dumpInt(D, cptr.ldI32(cptr.add(f, 24)));
-    dumpBlock(D, cptr.ldPtr(cptr.add(f, 64)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32(cptr.add(f, 24))))) * 4n));
+    dumpInt(D, cptr.ldI32o(f, 24));
+    dumpBlock(D, cptr.ldPtro(f, 64), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, 24)))) * 4n));
 }
 
 /** C ref: ldump.c:112 — @param {CPtr} D @param {CPtr} f */
 function dumpConstants(D, f) {
     let i;
-    let n = cptr.ldI32(cptr.add(f, 20));
+    let n = cptr.ldI32o(f, 20);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        let o = cptr.add(cptr.ldPtr(cptr.add(f, 56)), i, 16);
-        let tt = (((cptr.ld1u(cptr.add((o), 8)))) & 63);
+        let o = cptr.add(cptr.ldPtro(f, 56), i, 16);
+        let tt = (((cptr.ld1uo((o), 8))) & 63);
         dumpByte(D, tt);
         switch (tt) {
             case 19:
@@ -105,21 +105,21 @@ function dumpConstants(D, f) {
 /** C ref: ldump.c:138 — @param {CPtr} D @param {CPtr} f */
 function dumpProtos(D, f) {
     let i;
-    let n = cptr.ldI32(cptr.add(f, 32));
+    let n = cptr.ldI32o(f, 32);
     dumpInt(D, n);
     for (i = 0; i < n; i++)
-        dumpFunction(D, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 72)), i, 8)), cptr.ldPtr(cptr.add(f, 112)));
+        dumpFunction(D, cptr.ldPtro(cptr.ldPtro(f, 72), i, 8), cptr.ldPtro(f, 112));
 }
 
 /** C ref: ldump.c:147 — @param {CPtr} D @param {CPtr} f */
 function dumpUpvalues(D, f) {
     let i;
-    let n = cptr.ldI32(cptr.add(f, 16));
+    let n = cptr.ldI32o(f, 16);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        dumpByte(D, cptr.ld1u(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 8)));
-        dumpByte(D, cptr.ld1u(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 9)));
-        dumpByte(D, cptr.ld1u(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16), 10)));
+        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 8));
+        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 9));
+        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 10));
     }
 }
 
@@ -127,39 +127,39 @@ function dumpUpvalues(D, f) {
 function dumpDebug(D, f) {
     let i;
     let n;
-    n = (cptr.ldI32(cptr.add(D, 24))) ? 0 : cptr.ldI32(cptr.add(f, 28));
+    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 28);
     dumpInt(D, n);
-    dumpBlock(D, cptr.ldPtr(cptr.add(f, 88)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
-    n = (cptr.ldI32(cptr.add(D, 24))) ? 0 : cptr.ldI32(cptr.add(f, 40));
-    dumpInt(D, n);
-    for (i = 0; i < n; i++) {
-        dumpInt(D, cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8)));
-        dumpInt(D, cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 96)), i, 8), 4)));
-    }
-    n = (cptr.ldI32(cptr.add(D, 24))) ? 0 : cptr.ldI32(cptr.add(f, 36));
+    dumpBlock(D, cptr.ldPtro(f, 88), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
+    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 40);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        dumpString(D, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16)));
-        dumpInt(D, cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 8)));
-        dumpInt(D, cptr.ldI32(cptr.add(cptr.add(cptr.ldPtr(cptr.add(f, 104)), i, 16), 12)));
+        dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
+        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4));
     }
-    n = (cptr.ldI32(cptr.add(D, 24))) ? 0 : cptr.ldI32(cptr.add(f, 16));
+    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 36);
+    dumpInt(D, n);
+    for (i = 0; i < n; i++) {
+        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, 104), i, 16));
+        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 8));
+        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 12));
+    }
+    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 16);
     dumpInt(D, n);
     for (i = 0; i < n; i++)
-        dumpString(D, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(f, 80)), i, 16)));
+        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, 80), i, 16));
 }
 
 /** C ref: ldump.c:183 — @param {CPtr} D @param {CPtr} f @param {CPtr} psource */
 function dumpFunction(D, f, psource) {
-    if (cptr.ldI32(cptr.add(D, 24)) || cptr.eq(cptr.ldPtr(cptr.add(f, 112)), psource) ? 1 : 0)
+    if (cptr.ldI32o(D, 24) || cptr.eq(cptr.ldPtro(f, 112), psource) ? 1 : 0)
         dumpString(D, null);
     else
-        dumpString(D, cptr.ldPtr(cptr.add(f, 112)));
-    dumpInt(D, cptr.ldI32(cptr.add(f, 44)));
-    dumpInt(D, cptr.ldI32(cptr.add(f, 48)));
-    dumpByte(D, cptr.ld1u(cptr.add(f, 10)));
-    dumpByte(D, cptr.ld1u(cptr.add(f, 11)));
-    dumpByte(D, cptr.ld1u(cptr.add(f, 12)));
+        dumpString(D, cptr.ldPtro(f, 112));
+    dumpInt(D, cptr.ldI32o(f, 44));
+    dumpInt(D, cptr.ldI32o(f, 48));
+    dumpByte(D, cptr.ld1uo(f, 10));
+    dumpByte(D, cptr.ld1uo(f, 11));
+    dumpByte(D, cptr.ld1uo(f, 12));
     dumpCode(D, f);
     dumpConstants(D, f);
     dumpUpvalues(D, f);
@@ -184,12 +184,12 @@ function dumpHeader(D) {
 export function luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);
     cptr.stPtr(D, L);
-    cptr.stPtr(cptr.add(D, 8), w);
-    cptr.stPtr(cptr.add(D, 16), data);
-    cptr.stI32(cptr.add(D, 24), strip);
-    cptr.stI32(cptr.add(D, 28), 0);
+    cptr.stPtro(D, 8, w);
+    cptr.stPtro(D, 16, data);
+    cptr.stI32o(D, 24, strip);
+    cptr.stI32o(D, 28, 0);
     dumpHeader(D);
-    dumpByte(D, cptr.ldI32(cptr.add(f, 16)));
+    dumpByte(D, cptr.ldI32o(f, 16));
     dumpFunction(D, f, null);
-    return cptr.ldI32(cptr.add(D, 28));
+    return cptr.ldI32o(D, 28);
 }

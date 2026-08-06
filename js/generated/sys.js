@@ -23,47 +23,47 @@ export let sysopt = cptr.alloc(184);
 export function sys_early_init() {
     let p;
     cptr.stPtr(sysopt, null);
-    cptr.stPtr(cptr.add(sysopt, 8), null);
-    cptr.stPtr(cptr.add(sysopt, 16), null);
+    cptr.stPtro(sysopt, 8, null);
+    cptr.stPtro(sysopt, 16, null);
     if ((p = getenv(__sl0)) !== null) {
-        if (cptr.ldPtr(cptr.add(sysopt, 56)))
-            cptr.free(cptr.ldPtr(cptr.add(sysopt, 56)));
-        cptr.stPtr(cptr.add(sysopt, 56), dupstr(p));
-        cptr.stI32(cptr.add(sysopt, 72), 1);
+        if (cptr.ldPtro(sysopt, 56))
+            cptr.free(cptr.ldPtro(sysopt, 56));
+        cptr.stPtro(sysopt, 56, dupstr(p));
+        cptr.stI32o(sysopt, 72, 1);
     } else {
-        cptr.stPtr(cptr.add(sysopt, 56), null);
-        cptr.stI32(cptr.add(sysopt, 72), 0);
+        cptr.stPtro(sysopt, 56, null);
+        cptr.stI32o(sysopt, 72, 0);
     }
-    cptr.stPtr(cptr.add(sysopt, 40), null);
-    cptr.stPtr(cptr.add(sysopt, 32), null);
-    cptr.stPtr(cptr.add(sysopt, 48), null);
-    cptr.stPtr(cptr.add(sysopt, 64), null);
-    cptr.stI32(cptr.add(sysopt, 76), 0);
-    cptr.stI32(cptr.add(sysopt, 92), 0);
-    cptr.stI64(cptr.add(sysopt, 96), 0n);
-    cptr.stI32(cptr.add(sysopt, 104), NHM.PERSMAX);
-    cptr.stI32(cptr.add(sysopt, 112), NHM.ENTRYMAX);
-    cptr.stI32(cptr.add(sysopt, 116), 1);
-    cptr.stI32(cptr.add(sysopt, 108), 1);
-    cptr.stI32(cptr.add(sysopt, 120), 10);
-    if (cptr.ldI32(cptr.add(sysopt, 108)) != 0 && cptr.ldI32(cptr.add(sysopt, 108)) != 1 ? 1 : 0)
+    cptr.stPtro(sysopt, 40, null);
+    cptr.stPtro(sysopt, 32, null);
+    cptr.stPtro(sysopt, 48, null);
+    cptr.stPtro(sysopt, 64, null);
+    cptr.stI32o(sysopt, 76, 0);
+    cptr.stI32o(sysopt, 92, 0);
+    cptr.stI64o(sysopt, 96, 0n);
+    cptr.stI32o(sysopt, 104, NHM.PERSMAX);
+    cptr.stI32o(sysopt, 112, NHM.ENTRYMAX);
+    cptr.stI32o(sysopt, 116, 1);
+    cptr.stI32o(sysopt, 108, 1);
+    cptr.stI32o(sysopt, 120, 10);
+    if (cptr.ldI32o(sysopt, 108) != 0 && cptr.ldI32o(sysopt, 108) != 1 ? 1 : 0)
         panic(__sl1);
-    if (cptr.ldPtr(cptr.add(sysopt, 128)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 128)));
-    cptr.stPtr(cptr.add(sysopt, 128), dupstr(__sl2));
-    if (cptr.ldPtr(cptr.add(sysopt, 136)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 136)));
-    cptr.stPtr(cptr.add(sysopt, 136), dupstr(__sl3));
-    cptr.stI32(cptr.add(sysopt, 152), 0);
-    cptr.stI32(cptr.add(sysopt, 156), 0);
-    cptr.stPtr(cptr.add(sysopt, 144), null);
-    cptr.stI32(cptr.add(sysopt, 84), 1);
-    cptr.stI32(cptr.add(sysopt, 88), 0);
-    cptr.stI32(cptr.add(sysopt, 80), 1);
-    sysopt_seduce_set(cptr.ldI32(cptr.add(sysopt, 80)));
-    cptr.stI32(cptr.add(cptr.add(sysopt, 160), 0, 4), cptr.stI32(cptr.add(cptr.add(sysopt, 168), 0, 4), NHC.historical));
-    cptr.stI32(cptr.add(sysopt, 176), 0);
-    cptr.stI32(cptr.add(sysopt, 180), 0);
+    if (cptr.ldPtro(sysopt, 128))
+        cptr.free(cptr.ldPtro(sysopt, 128));
+    cptr.stPtro(sysopt, 128, dupstr(__sl2));
+    if (cptr.ldPtro(sysopt, 136))
+        cptr.free(cptr.ldPtro(sysopt, 136));
+    cptr.stPtro(sysopt, 136, dupstr(__sl3));
+    cptr.stI32o(sysopt, 152, 0);
+    cptr.stI32o(sysopt, 156, 0);
+    cptr.stPtro(sysopt, 144, null);
+    cptr.stI32o(sysopt, 84, 1);
+    cptr.stI32o(sysopt, 88, 0);
+    cptr.stI32o(sysopt, 80, 1);
+    sysopt_seduce_set(cptr.ldI32o(sysopt, 80));
+    cptr.stI32o(cptr.add(sysopt, 160), 0, cptr.stI32o(cptr.add(sysopt, 168), 0, NHC.historical, 4), 4);
+    cptr.stI32o(sysopt, 176, 0);
+    cptr.stI32o(sysopt, 180, 0);
     return;
 }
 
@@ -71,31 +71,31 @@ export function sys_early_init() {
 export function sysopt_release() {
     if (cptr.ldPtr(sysopt))
         cptr.free(cptr.ldPtr(sysopt)), cptr.stPtr(sysopt, null);
-    if (cptr.ldPtr(cptr.add(sysopt, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 8))), cptr.stPtr(cptr.add(sysopt, 8), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 16)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 16))), cptr.stPtr(cptr.add(sysopt, 16), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 32)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 32))), cptr.stPtr(cptr.add(sysopt, 32), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 40)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 40))), cptr.stPtr(cptr.add(sysopt, 40), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 56)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 56))), cptr.stPtr(cptr.add(sysopt, 56), null);
-    cptr.stI32(cptr.add(sysopt, 72), 0);
-    if (cptr.ldPtr(cptr.add(sysopt, 64)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 64))), cptr.stPtr(cptr.add(sysopt, 64), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 48)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 48))), cptr.stPtr(cptr.add(sysopt, 48), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 128)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 128))), cptr.stPtr(cptr.add(sysopt, 128), null);
-    if (cptr.ldPtr(cptr.add(sysopt, 136)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 136))), cptr.stPtr(cptr.add(sysopt, 136), null);
-    if (cptr.ldPtr(cptr.add(gc, 408)))
-        cptr.free(cptr.ldPtr(cptr.add(gc, 408))), cptr.stPtr(cptr.add(gc, 408), (null));
-    if (cptr.ldPtr(cptr.add(gc, 416)))
-        cptr.free(cptr.ldPtr(cptr.add(gc, 416))), cptr.stPtr(cptr.add(gc, 416), (null));
-    if (cptr.ldPtr(cptr.add(sysopt, 24)))
-        cptr.free(cptr.ldPtr(cptr.add(sysopt, 24))), cptr.stPtr(cptr.add(sysopt, 24), null);
+    if (cptr.ldPtro(sysopt, 8))
+        cptr.free(cptr.ldPtro(sysopt, 8)), cptr.stPtro(sysopt, 8, null);
+    if (cptr.ldPtro(sysopt, 16))
+        cptr.free(cptr.ldPtro(sysopt, 16)), cptr.stPtro(sysopt, 16, null);
+    if (cptr.ldPtro(sysopt, 32))
+        cptr.free(cptr.ldPtro(sysopt, 32)), cptr.stPtro(sysopt, 32, null);
+    if (cptr.ldPtro(sysopt, 40))
+        cptr.free(cptr.ldPtro(sysopt, 40)), cptr.stPtro(sysopt, 40, null);
+    if (cptr.ldPtro(sysopt, 56))
+        cptr.free(cptr.ldPtro(sysopt, 56)), cptr.stPtro(sysopt, 56, null);
+    cptr.stI32o(sysopt, 72, 0);
+    if (cptr.ldPtro(sysopt, 64))
+        cptr.free(cptr.ldPtro(sysopt, 64)), cptr.stPtro(sysopt, 64, null);
+    if (cptr.ldPtro(sysopt, 48))
+        cptr.free(cptr.ldPtro(sysopt, 48)), cptr.stPtro(sysopt, 48, null);
+    if (cptr.ldPtro(sysopt, 128))
+        cptr.free(cptr.ldPtro(sysopt, 128)), cptr.stPtro(sysopt, 128, null);
+    if (cptr.ldPtro(sysopt, 136))
+        cptr.free(cptr.ldPtro(sysopt, 136)), cptr.stPtro(sysopt, 136, null);
+    if (cptr.ldPtro(gc, 408))
+        cptr.free(cptr.ldPtro(gc, 408)), cptr.stPtro(gc, 408, (null));
+    if (cptr.ldPtro(gc, 416))
+        cptr.free(cptr.ldPtro(gc, 416)), cptr.stPtro(gc, 416, (null));
+    if (cptr.ldPtro(sysopt, 24))
+        cptr.free(cptr.ldPtro(sysopt, 24)), cptr.stPtro(sysopt, 24, null);
     return;
 }
 
