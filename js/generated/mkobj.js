@@ -6,6 +6,7 @@
 import { i16, schar, u16, u32div, u32mod, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { c_common_strings, cg, flags, gb, gc, gi, gk, gm, go, gt, gu, gv, gz, hands_obj, iflags, program_state, svb, svc, svd, svl, svm, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { can_be_hatched, copy_mextra, dead_species, dealloc_mextra, maybe_unhide_at, undead_to_corpse, zombie_form } from './mon.js';
@@ -617,7 +618,7 @@ export function rndmonnum_adj(minadj, maxadj) {
     ptr = rndmonst_adj(minadj, maxadj);
     if (ptr)
         return (cptr.ldI32(cptr.add((ptr), 24)));
-    excludeflags = u16((4608 | (In_hell(cptr.add(u, 24)) ? 2048 : 1024)));
+    excludeflags = u16((4608 | (In_hell(cptr.add(u, 24)) ? NHM.G_NOHELL : NHM.G_HELL)));
     do {
         i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 409, __sl5), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
         ptr = cptr.add(mons, i, 96);
@@ -632,7 +633,7 @@ export function copy_oextra(obj2, obj1) {
     if (!cptr.ldPtr(cptr.add(obj2, 208)))
         cptr.stPtr(cptr.add(obj2, 208), newoextra());
     if ((cptr.ldPtr(cptr.add((obj1), 208)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((obj1), 208)))) ? 1 : 0))
-        oname(obj2, (cptr.ldPtr(cptr.ldPtr(cptr.add((obj1), 208)))), 512);
+        oname(obj2, (cptr.ldPtr(cptr.ldPtr(cptr.add((obj1), 208)))), NHM.ONAME_SKIP_INVUPD);
     if ((cptr.ldPtr(cptr.add((obj1), 208)) && (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((obj1), 208)), 8))) ? 1 : 0)) {
         if (!(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((obj2), 208)), 8))))
             newomonst(obj2);
@@ -674,10 +675,10 @@ export function splitobj(obj, num) {
     cptr.stI32(cptr.add(svc, 600), cptr.ldI32(cptr.add(obj, 24)));
     cptr.stI32(cptr.add(svc, 604), cptr.ldI32(cptr.add(otmp, 24)));
     cptr.stPtr(obj, otmp);
-    if (cptr.ld1s(cptr.add(obj, 52)) == 1)
+    if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_FLOOR)
         cptr.stPtr(cptr.add(obj, 8), otmp);
-    if (cptr.ld1s(cptr.add(otmp, 52)) == 8)
-        cptr.st1(cptr.add(otmp, 52), 0);
+    if (cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_LUAFREE)
+        cptr.st1(cptr.add(otmp, 52), NHM.OBJ_FREE);
     if ((cptr.ldI32(cptr.add(obj, 64)) & 1))
         splitbill(obj, otmp);
     copy_oextra(otmp, obj);
@@ -724,20 +725,20 @@ export function unsplitobj(obj) {
     let ochild = cptr.box(null);
     let list = null;
     switch (cptr.ld1s(cptr.add(obj, 52))) {
-        case 0:
-        case 1:
-        case 7:
-        case 5:
-        case 6:
+        case NHM.OBJ_FREE:
+        case NHM.OBJ_FLOOR:
+        case NHM.OBJ_ONBILL:
+        case NHM.OBJ_MIGRATING:
+        case NHM.OBJ_BURIED:
         default:
         return null;
-        case 3:
+        case NHM.OBJ_INVENT:
         list = cptr.ldPtr(cptr.add(gi, 8));
         break;
-        case 4:
+        case NHM.OBJ_MINVENT:
         list = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 280));
         break;
-        case 2:
+        case NHM.OBJ_CONTAINED:
         list = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 16));
         break;
     }
@@ -777,26 +778,26 @@ export function clear_splitobjs() {
 export function replace_object(obj, otmp) {
     cptr.st1(cptr.add(otmp, 52), cptr.ld1s(cptr.add(obj, 52)));
     switch (cptr.ld1s(cptr.add(obj, 52))) {
-        case 0:
+        case NHM.OBJ_FREE:
         break;
-        case 3:
+        case NHM.OBJ_INVENT:
         cptr.stPtr(otmp, cptr.ldPtr(obj));
         cptr.stPtr(obj, otmp);
         extract_nobj(obj, cptr.add(gi, 8));
         break;
-        case 2:
+        case NHM.OBJ_CONTAINED:
         cptr.stPtr(otmp, cptr.ldPtr(obj));
         cptr.stPtr(cptr.add(otmp, 8), cptr.ldPtr(cptr.add(obj, 8)));
         cptr.stPtr(obj, otmp);
         extract_nobj(obj, cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 16));
         break;
-        case 4:
+        case NHM.OBJ_MINVENT:
         cptr.stPtr(otmp, cptr.ldPtr(obj));
         cptr.stPtr(cptr.add(otmp, 8), cptr.ldPtr(cptr.add(obj, 8)));
         cptr.stPtr(obj, otmp);
         extract_nobj(obj, cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 280));
         break;
-        case 1:
+        case NHM.OBJ_FLOOR:
         cptr.stPtr(otmp, cptr.ldPtr(obj));
         cptr.stPtr(cptr.add(otmp, 8), cptr.ldPtr(cptr.add(obj, 8)));
         cptr.stI16(cptr.add(otmp, 28), cptr.ldI16(cptr.add(obj, 28)));
@@ -816,7 +817,7 @@ export function replace_object(obj, otmp) {
 export function unknwn_contnr_contents(obj) {
     let result = null;
     let parent;
-    while (cptr.ld1s(cptr.add(obj, 52)) == 2) {
+    while (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_CONTAINED) {
         parent = cptr.ldPtr(cptr.add(obj, 8));
         if (!(cptr.ldI32(cptr.add(parent, 96)) & 1))
             result = parent;
@@ -836,7 +837,7 @@ export function bill_dummy_object(otmp) {
     dummy = alloc(216);
     cptr.memcpy(dummy, otmp, 216);
     cptr.stPtr(cptr.add(dummy, 208), null);
-    cptr.st1(cptr.add(dummy, 52), 0);
+    cptr.st1(cptr.add(dummy, 52), NHM.OBJ_FREE);
     cptr.stI32(cptr.add(dummy, 24), nextoid(otmp, dummy));
     cptr.stI16(cptr.add(dummy, 54), 0);
     copy_oextra(dummy, otmp);
@@ -846,9 +847,9 @@ export function bill_dummy_object(otmp) {
         cptr.stI32(cptr.add(dummy, 76), 0);
     cptr.stI64(cptr.add(dummy, 192), 0n);
     addtobill(dummy, 0, 1, 1);
-    if (cost && cptr.ld1s(cptr.add(dummy, 52)) != 9 ? 1 : 0)
+    if (cost && cptr.ld1s(cptr.add(dummy, 52)) != NHM.OBJ_DELETED ? 1 : 0)
         alter_cost(dummy, -cost);
-    cptr.stI32(cptr.add(otmp, 68), ((cptr.ld1s(cptr.add(otmp, 52)) == 1 || cptr.ld1s(cptr.add(otmp, 52)) == 2 ? 1 : 0) ? 1 : 0) >>> 0);
+    cptr.stI32(cptr.add(otmp, 68), ((cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_FLOOR || cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_CONTAINED ? 1 : 0) ? 1 : 0) >>> 0);
     cptr.stI32(cptr.add(otmp, 64), 0);
     return;
 }
@@ -891,11 +892,11 @@ export function costly_alteration(obj, alter_type) {
     }
     ox.v = (oy.v = 0);
     objroom = 0;
-    if ((cptr.ld1s(cptr.add((obj), 52)) == 3) || cptr.ld1s(cptr.add(obj, 52)) == 0 ? 1 : 0) {
+    if ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) || cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_FREE ? 1 : 0) {
         if (!(cptr.ldI32(cptr.add(obj, 64)) & 1))
             return;
     } else {
-        if (!get_obj_location(obj, ox, oy, 1))
+        if (!get_obj_location(obj, ox, oy, NHM.CONTAINED_TOO))
             ox.v = cptr.ldI16(u), oy.v = cptr.ldI16(cptr.add(u, 2));
         if (!costly_spot(ox.v, oy.v))
             return;
@@ -909,8 +910,8 @@ export function costly_alteration(obj, alter_type) {
         those = __sl37, them = __sl38;
     learn_bknown = schar((alter_type == NHC.COST_UNCURS || alter_type == NHC.COST_UNBLSS ? 1 : 0));
     switch (cptr.ld1s(cptr.add(obj, 52))) {
-        case 0:
-        case 3:
+        case NHM.OBJ_FREE:
+        case NHM.OBJ_INVENT:
         if (learn_bknown)
             set_bknown(obj, 1);
         if (shkp.v) {
@@ -919,7 +920,7 @@ export function costly_alteration(obj, alter_type) {
         verbalize(__sl39, cptr.ldPtr(cptr.add(alteration_verbs, alter_type, 8)), those, simpleonames(obj), them);
         bill_dummy_object(obj);
         break;
-        case 1:
+        case NHM.OBJ_FLOOR:
         if (learn_bknown)
             cptr.stI32(cptr.add(obj, 88), 1);
         if (costly_spot(cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) && objroom == cptr.ld1s(cptr.add(u, 83)) ? 1 : 0) {
@@ -987,7 +988,7 @@ function mksobj_init(obj, artif) {
             tryct = 50;
             do
                 cptr.stI32(cptr.add(otmp, 168), undead_to_corpse(rndmonnum()));
-            while ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(otmp, 168)), 12), 2)) & 16) && (--tryct > 0) ? 1 : 0);
+            while ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), cptr.ldI32(cptr.add(otmp, 168)), 12), 2)) & NHM.G_NOCORPSE) && (--tryct > 0) ? 1 : 0);
             if (tryct == 0) {
                 cptr.stI32(cptr.add(otmp, 168), NHC.PM_HUMAN);
             }
@@ -1010,7 +1011,7 @@ function mksobj_init(obj, artif) {
             else
                 for (tryct = 200; tryct > 0; --tryct) {
                     mndx = undead_to_corpse(rndmonnum());
-                    if (cptr.ldU16(cptr.add(cptr.add(mons, mndx, 96), 64)) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mndx, 12), 2)) & 16) ? 1 : 0) {
+                    if (cptr.ldU16(cptr.add(cptr.add(mons, mndx, 96), 64)) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), mndx, 12), 2)) & NHM.G_NOCORPSE) ? 1 : 0) {
                         cptr.stI32(cptr.add(otmp, 168), mndx);
                         set_tin_variety(otmp, -2);
                         break;
@@ -1170,7 +1171,7 @@ function mksobj_init(obj, artif) {
         else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.WAN_STASIS)
             cptr.st1(cptr.add(otmp, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1121, __sl41), rn2(4)) : rn2(4)) + 3) | 0)));
         else
-            cptr.st1(cptr.add(otmp, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1124, __sl41), rn2(5)) : rn2(5)) + ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 60)) & 7) | 0) == 1) ? 11 : 4)) | 0)));
+            cptr.st1(cptr.add(otmp, 48), schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1124, __sl41), rn2(5)) : rn2(5)) + ((((cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 60)) & 7) | 0) == NHM.NODIR) ? 11 : 4)) | 0)));
         blessorcurse(otmp, 17);
         cptr.stI32(cptr.add(otmp, 72), 0);
         break;
@@ -1194,7 +1195,7 @@ function mksobj_init(obj, artif) {
         case NHC.ROCK_CLASS:
         if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.STATUE) {
             cptr.stI32(cptr.add(otmp, 168), rndmonnum());
-            if (!(cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 67)) < 1) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1155, __sl41), rn2((((level_difficulty() / 2) | 0) + 10) | 0)) : rn2((((level_difficulty() / 2) | 0) + 10) | 0)) > 10 ? 1 : 0)
+            if (!(cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 67)) < NHM.MZ_SMALL) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1155, __sl41), rn2((((level_difficulty() / 2) | 0) + 10) | 0)) : rn2((((level_difficulty() / 2) | 0) + 10) | 0)) > 10 ? 1 : 0)
                 void add_to_container(otmp, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
         break;
@@ -1219,7 +1220,7 @@ export function mksobj(otyp, init, artif) {
     cptr.stI64(cptr.add(otmp.v, 40), 1n);
     cptr.st1(cptr.add(otmp.v, 49), let$);
     cptr.stI16(cptr.add(otmp.v, 32), i16(otyp));
-    cptr.st1(cptr.add(otmp.v, 52), 0);
+    cptr.st1(cptr.add(otmp.v, 52), NHM.OBJ_FREE);
     unknow_object(otmp.v);
     cptr.stI32(cptr.add(otmp.v, 168), NHC.NON_PM);
     cptr.stI32(cptr.add(otmp.v, 200), 0);
@@ -1241,7 +1242,7 @@ export function mksobj(otyp, init, artif) {
             cptr.stI32(cptr.add(otmp.v, 168), rndmonnum());
         if (cptr.ldI32(cptr.add(otmp.v, 168)) != NHC.NON_PM) {
             let ptr = cptr.add(mons, cptr.ldI32(cptr.add(otmp.v, 168)), 96);
-            cptr.st1(cptr.add(otmp.v, 48), schar((((cptr.ldU64(cptr.add((ptr), 80)) & 262144n) != 0n) ? 3 : (((cptr.ldU64(cptr.add((ptr), 80)) & 131072n) != 0n) ? 1 : (((cptr.ldU64(cptr.add((ptr), 80)) & 65536n) != 0n) ? 2 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1222, __sl43), rn2(2)) : rn2(2)) ? 1 : 2))))));
+            cptr.st1(cptr.add(otmp.v, 48), schar((((cptr.ldU64(cptr.add((ptr), 80)) & 262144n) != 0n) ? NHM.CORPSTAT_NEUTER : (((cptr.ldU64(cptr.add((ptr), 80)) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : (((cptr.ldU64(cptr.add((ptr), 80)) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1222, __sl43), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_FEMALE : NHM.CORPSTAT_MALE))))));
         }
         // @FallThrough
         ;
@@ -1263,7 +1264,7 @@ export function mksobj(otyp, init, artif) {
         break;
         case NHC.SPE_NOVEL:
         cptr.stI32(cptr.add(otmp.v, 168), -1);
-        otmp.v = oname(otmp.v, noveltitle(cptr.add(otmp.v, 168)), 0);
+        otmp.v = oname(otmp.v, noveltitle(cptr.add(otmp.v, 168)), NHM.ONAME_NO_FLAGS);
         break;
     }
     if ((cptr.ldI32(cptr.add(cptr.add(objects, otyp, 120), 40)) & 1) | 0 && !cptr.ld1s(cptr.add(otmp.v, 51)) ? 1 : 0) {
@@ -1321,7 +1322,7 @@ export function set_corpsenm(obj, id) {
         cptr.stI32(cptr.add(obj, 36), weight(obj) >>> 0);
         break;
         case NHC.FIGURINE:
-        if ((cptr.ldI32(cptr.add(obj, 168)) != NHC.NON_PM && !dead_species(cptr.ldI32(cptr.add(obj, 168)), 1) ? 1 : 0) && ((cptr.ld1s(cptr.add((obj), 52)) == 3) || (cptr.ld1s(cptr.add((obj), 52)) == 4) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ldI32(cptr.add(obj, 168)) != NHC.NON_PM && !dead_species(cptr.ldI32(cptr.add(obj, 168)), 1) ? 1 : 0) && ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) || (cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_MINVENT) ? 1 : 0) ? 1 : 0)
             attach_fig_transform_timeout(obj);
         cptr.stI32(cptr.add(obj, 36), weight(obj) >>> 0);
         break;
@@ -1366,7 +1367,7 @@ export function start_corpse_timeout(body) {
         when = rider_revival_time(body, 0);
     } else if (cptr.ld1s(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(body, 168)), 96), 28)) == NHC.S_TROLL) {
         for (age = 2n; age <= 50n; age++)
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1420, __sl45), rn2(37)) : rn2(37))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1420, __sl45), rn2(NHM.TROLL_REVIVE_CHANCE)) : rn2(NHM.TROLL_REVIVE_CHANCE))) {
                 action = NHC.REVIVE_MON;
                 when = age;
                 break;
@@ -1389,15 +1390,15 @@ function item_on_ice(item) {
     let ox = cptr.box(0);
     let oy = cptr.box(0);
     otmp = item;
-    while (cptr.ld1s(cptr.add(otmp, 52)) == 2)
+    while (cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_CONTAINED)
         otmp = cptr.ldPtr(cptr.add(otmp, 8));
-    if (get_obj_location(otmp, ox, oy, 2)) {
+    if (get_obj_location(otmp, ox, oy, NHM.BURIED_TOO)) {
         switch (cptr.ld1s(cptr.add(otmp, 52))) {
-            case 1:
+            case NHM.OBJ_FLOOR:
             if (is_ice(ox.v, oy.v))
                 return NHC.SET_ON_ICE;
             break;
-            case 6:
+            case NHM.OBJ_BURIED:
             if (is_ice(ox.v, oy.v))
                 return NHC.BURIED_UNDER_ICE;
             break;
@@ -1426,11 +1427,11 @@ export function shrink_glob(arg, expire_time) {
     let globnambuf = new Uint8Array(256);
     let obj = cptr.ldPtr(arg);
     let globloc = item_on_ice(obj);
-    let ininv = schar((cptr.ld1s(cptr.add(obj, 52)) == 3));
+    let ininv = schar((cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_INVENT));
     let shrink = 0;
     let gone = 0;
     let updinv = 0;
-    let contnr = (cptr.ld1s(cptr.add(obj, 52)) == 2) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
+    let contnr = (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_CONTAINED) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
     let topcontnr = null;
     let old_top_owt = 0;
     if (!(cptr.ldI32(cptr.add(obj, 136)) & 1)) {
@@ -1476,11 +1477,11 @@ export function shrink_glob(arg, expire_time) {
         updinv = 1;
     } else if (contnr) {
         topcontnr = contnr;
-        while (cptr.ld1s(cptr.add(topcontnr, 52)) == 2)
+        while (cptr.ld1s(cptr.add(topcontnr, 52)) == NHM.OBJ_CONTAINED)
             topcontnr = cptr.ldPtr(cptr.add(topcontnr, 8));
         old_top_owt = cptr.ldI32(cptr.add(topcontnr, 36));
         container_weight(contnr);
-        if (cptr.ld1s(cptr.add(topcontnr, 52)) == 3) {
+        if (cptr.ld1s(cptr.add(topcontnr, 52)) == NHM.OBJ_INVENT) {
             if ((gone || (shrink && cptr.ldI32(cptr.add(topcontnr, 36)) != old_top_owt ? 1 : 0) ? 1 : 0) || near_capacity() != cptr.ldI32(cptr.add(go, 536)) ? 1 : 0)
                 pline(__sl53, Yname2(topcontnr), (cptr.ldI32(cptr.add(topcontnr, 36)) != old_top_owt) ? __sl54 : __sl55, !gone ? __sl56 : __sl57);
             updinv = 1;
@@ -1489,7 +1490,7 @@ export function shrink_glob(arg, expire_time) {
     if (gone) {
         let ox = cptr.box(0);
         let oy = cptr.box(0);
-        let seeit = schar(((cptr.ld1s(cptr.add(obj, 52)) == 1 && get_obj_location(obj, ox, oy, 0) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy.v, 8)), ox.v)) & 2) != 0) ? 1 : 0));
+        let seeit = schar(((cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_FLOOR && get_obj_location(obj, ox, oy, 0) ? 1 : 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy.v, 8)), ox.v)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
         shrinking_glob_gone(obj);
         if (seeit) {
             newsym(ox.v, oy.v);
@@ -1509,21 +1510,21 @@ export function shrink_glob(arg, expire_time) {
 /** C ref: mkobj.c:1673 — @param {CPtr} obj */
 function shrinking_glob_gone(obj) {
     let owhere = i16(cptr.ld1s(cptr.add(obj, 52)));
-    if (owhere == 3) {
+    if (owhere == NHM.OBJ_INVENT) {
         if (cptr.ldI64(cptr.add(obj, 192))) {
             remove_worn_item(obj, 0);
             stop_occupation();
         }
         useupall(obj);
     } else {
-        if (owhere == 5) {
+        if (owhere == NHM.OBJ_MIGRATING) {
             cptr.stI64(cptr.add(obj, 192), 0n);
-        } else if (owhere == 4) {
+        } else if (owhere == NHM.OBJ_MINVENT) {
             if (cptr.ldI64(cptr.add(obj, 192)) && cptr.eq(obj, (cptr.ldPtr(cptr.add((cptr.ldPtr(cptr.add(obj, 8))), 288)))) ? 1 : 0)
                 setmnotwielded(cptr.ldPtr(cptr.add(obj, 8)), obj);
         }
         obj_extract_self(obj);
-        if (owhere == 1)
+        if (owhere == NHM.OBJ_FLOOR)
             maybe_unhide_at(cptr.ldI16(cptr.add(obj, 28)), cptr.ldI16(cptr.add(obj, 30)));
         obfree(obj, null);
     }
@@ -1542,7 +1543,7 @@ export function maybe_adjust_light(obj, old_range) {
             cptr.st1(cptr.decay(buf), 0);
             if (cptr.ldI32(cptr.add(iflags, 40)) == NHC.PLNMSG_OBJ_GLOWS)
                 void cptr.strcpy(cptr.decay(buf), (cptr.ldI64(cptr.add(obj, 40)) == 1n) ? __sl61 : __sl62);
-            else if ((cptr.ld1s(cptr.add((obj), 52)) == 3) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy.v, 8)), ox.v)) & 2) != 0) ? 1 : 0)
+            else if ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy.v, 8)), ox.v)) & NHM.IN_SIGHT) != 0) ? 1 : 0)
                 void cptr.strcpy(cptr.decay(buf), Yname2(obj));
             if (cptr.ld1s(cptr.decay(buf))) {
                 pline(__sl63, cptr.decay(buf), otense(obj, __sl64), (Math.abs(delta) > 1) ? __sl65 : __sl57, (delta > 0) ? __sl66 : __sl67);
@@ -1560,7 +1561,7 @@ export function bless(otmp) {
         old_light = arti_light_radius(otmp);
     cptr.stI32(cptr.add(otmp, 56), 0);
     cptr.stI32(cptr.add(otmp, 60), 1);
-    if ((cptr.ld1s(cptr.add((otmp), 52)) == 3) && confers_luck(otmp) ? 1 : 0)
+    if ((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) && confers_luck(otmp) ? 1 : 0)
         set_moreluck();
     else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.BAG_OF_HOLDING)
         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
@@ -1577,7 +1578,7 @@ export function unbless(otmp) {
     if ((cptr.ldI32(cptr.add(otmp, 76)) & 1))
         old_light = arti_light_radius(otmp);
     cptr.stI32(cptr.add(otmp, 60), 0);
-    if ((cptr.ld1s(cptr.add((otmp), 52)) == 3) && confers_luck(otmp) ? 1 : 0)
+    if ((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) && confers_luck(otmp) ? 1 : 0)
         set_moreluck();
     else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.BAG_OF_HOLDING)
         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
@@ -1600,12 +1601,12 @@ export function curse(otmp) {
         reset_remarm();
     if (cptr.eq(otmp, uswapwep.v) && cptr.ld1s(cptr.add(u, 2816)) ? 1 : 0)
         drop_uswapwep();
-    if ((cptr.ld1s(cptr.add((otmp), 52)) == 3) && confers_luck(otmp) ? 1 : 0) {
+    if ((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) && confers_luck(otmp) ? 1 : 0) {
         set_moreluck();
     } else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.BAG_OF_HOLDING) {
         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
     } else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.FIGURINE) {
-        if ((cptr.ldI32(cptr.add(otmp, 168)) != NHC.NON_PM && !dead_species(cptr.ldI32(cptr.add(otmp, 168)), 1) ? 1 : 0) && ((cptr.ld1s(cptr.add((otmp), 52)) == 3) || (cptr.ld1s(cptr.add((otmp), 52)) == 4) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ldI32(cptr.add(otmp, 168)) != NHC.NON_PM && !dead_species(cptr.ldI32(cptr.add(otmp, 168)), 1) ? 1 : 0) && ((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) || (cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_MINVENT) ? 1 : 0) ? 1 : 0)
             attach_fig_transform_timeout(otmp);
     } else if (cptr.ld1s(cptr.add(otmp, 49)) == NHC.SPBOOK_CLASS) {
         if (!already_cursed)
@@ -1622,7 +1623,7 @@ export function uncurse(otmp) {
     if ((cptr.ldI32(cptr.add(otmp, 76)) & 1))
         old_light = arti_light_radius(otmp);
     cptr.stI32(cptr.add(otmp, 56), 0);
-    if ((cptr.ld1s(cptr.add((otmp), 52)) == 3) && confers_luck(otmp) ? 1 : 0)
+    if ((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) && confers_luck(otmp) ? 1 : 0)
         set_moreluck();
     else if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.BAG_OF_HOLDING)
         cptr.stI32(cptr.add(otmp, 36), weight(otmp) >>> 0);
@@ -1656,7 +1657,7 @@ export function bcsign(otmp) {
 export function set_bknown(obj, onoff) {
     if ((cptr.ldI32(cptr.add(obj, 88)) & 1) != onoff) {
         cptr.stI32(cptr.add(obj, 88), onoff);
-        if (cptr.ld1s(cptr.add(obj, 52)) == 3 && cptr.ldI64(cptr.add(svm, 8)) > 1n ? 1 : 0)
+        if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_INVENT && cptr.ldI64(cptr.add(svm, 8)) > 1n ? 1 : 0)
             update_inventory();
     }
 }
@@ -1691,7 +1692,7 @@ export function weight(obj) {
     }
     if (cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE && ((cptr.ldI32(cptr.add(obj, 168))) >= NHC.LOW_PM && (cptr.ldI32(cptr.add(obj, 168))) < NHC.NUMMONS ? 1 : 0) ? 1 : 0) {
         let long_wt = BigInt.asIntN(64, cptr.ldI64(cptr.add(obj, 40)) * BigInt(cptr.ldI32(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96), 60)) >>> 0));
-        wt = (long_wt > 32767n) ? 32767 : Number(BigInt.asIntN(32, long_wt));
+        wt = (long_wt > 32767n) ? NHM.LARGEST_INT : Number(BigInt.asIntN(32, long_wt));
         if (cptr.ldI32(cptr.add(obj, 176)))
             wt = eaten_stat(wt, obj);
         return wt;
@@ -1766,7 +1767,7 @@ export function fixup_oil(potion, source) {
 /** C ref: mkobj.c:2067 — @param {CInt} objtype @param {CPtr} mtmp @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CUInt} corpstatflags @returns {CPtr} */
 export function mkcorpstat(objtype, mtmp, ptr, x, y, corpstatflags) {
     let otmp;
-    let init = schar((((corpstatflags & 8) >>> 0) != 0));
+    let init = schar((((corpstatflags & NHM.CORPSTAT_INIT) >>> 0) != 0));
     if (objtype != NHC.CORPSE && objtype != NHC.STATUE ? 1 : 0)
         impossible(__sl72, objtype);
     if (x == 0 && y == 0 ? 1 : 0) {
@@ -1775,7 +1776,7 @@ export function mkcorpstat(objtype, mtmp, ptr, x, y, corpstatflags) {
     } else {
         otmp = mksobj_at(objtype, x, y, init, 0);
     }
-    cptr.st1(cptr.add(otmp, 48), schar(((corpstatflags & 7) >>> 0)));
+    cptr.st1(cptr.add(otmp, 48), schar(((corpstatflags & NHM.CORPSTAT_SPE_VAL) >>> 0)));
     cptr.stI32(cptr.add(otmp, 116), cptr.ld1s(cptr.add(gm, 230)));
     if (mtmp) {
         void save_mtraits(otmp, mtmp);
@@ -1882,10 +1883,10 @@ export function mk_tt_object(objtype, x, y) {
 /** C ref: mkobj.c:2253 — @param {CInt} objtype @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CPtr} nm @returns {CPtr} */
 export function mk_named_object(objtype, ptr, x, y, nm) {
     let otmp;
-    let corpstatflags = ((objtype != NHC.STATUE) ? 8 : 0) >>> 0;
+    let corpstatflags = ((objtype != NHC.STATUE) ? NHM.CORPSTAT_INIT : NHM.CORPSTAT_NONE) >>> 0;
     otmp = mkcorpstat(objtype, null, ptr, x, y, corpstatflags);
     if (nm)
-        otmp = oname(otmp, nm, 0);
+        otmp = oname(otmp, nm, NHM.ONAME_NO_FLAGS);
     return otmp;
 }
 
@@ -1914,9 +1915,9 @@ export function place_object(otmp, x, y) {
         func = (((x < 0 || y < 0 ? 1 : 0) || x > 79 ? 1 : 0) || y > 20 ? 1 : 0) ? panic : impossible;
         (func)(__sl74, safe_typename(cptr.ldI16(cptr.add(otmp, 32))), cptr.ld1s(cptr.add(otmp, 52)), x, y);
     }
-    if (cptr.ld1s(cptr.add(otmp, 52)) != 0)
+    if (cptr.ld1s(cptr.add(otmp, 52)) != NHM.OBJ_FREE)
         panic(__sl75, safe_typename(cptr.ldI16(cptr.add(otmp, 32))), cptr.ld1s(cptr.add(otmp, 52)));
-    (__builtin_expect(BigInt((!(((x >= 0 && x < 80 ? 1 : 0) && y >= 0 ? 1 : 0) && y < 21 ? 1 : 0))), 0n) ? __assert_rtn(__sl76, __sl7, 2327, __sl77) : void 0);
+    (__builtin_expect(BigInt((!(((x >= 0 && x < NHM.COLNO ? 1 : 0) && y >= 0 ? 1 : 0) && y < NHM.ROWNO ? 1 : 0))), 0n) ? __assert_rtn(__sl76, __sl7, 2327, __sl77) : void 0);
     otmp2 = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8));
     obj_no_longer_held(otmp);
     if (cptr.ldI16(cptr.add(otmp, 32)) == NHC.BOULDER) {
@@ -1934,7 +1935,7 @@ export function place_object(otmp, x, y) {
     }
     cptr.stI16(cptr.add(otmp, 28), x);
     cptr.stI16(cptr.add(otmp, 30), y);
-    cptr.st1(cptr.add(otmp, 52), 1);
+    cptr.st1(cptr.add(otmp, 52), NHM.OBJ_FLOOR);
     if (((cptr.ldI32(cptr.add(otmp, 68)) & 1) | 0 && !costly_spot(x, y) ? 1 : 0) && !costly_adjacent(find_objowner(otmp, x, y), x, y) ? 1 : 0)
         cptr.stI32(cptr.add(otmp, 68), 0);
     cptr.stPtr(otmp, cptr.ldPtr(cptr.add(svl, 89040)));
@@ -2008,8 +2009,8 @@ function obj_timer_checks(otmp, x, y, force) {
     let tleft = 0n;
     let action = NHC.ROT_CORPSE;
     let restart_timer = 0;
-    let on_floor = schar((cptr.ld1s(cptr.add(otmp, 52)) == 1));
-    let buried = schar((cptr.ld1s(cptr.add(otmp, 52)) == 6));
+    let on_floor = schar((cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_FLOOR));
+    let buried = schar((cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_BURIED));
     if ((cptr.ldI16(cptr.add(otmp, 32)) == NHC.CORPSE && (on_floor || buried ? 1 : 0) ? 1 : 0) && is_ice(x, y) ? 1 : 0) {
         tleft = stop_timer(action, obj_to_any(otmp));
         if (tleft == 0n) {
@@ -2061,7 +2062,7 @@ function obj_timer_checks(otmp, x, y, force) {
 export function remove_object(otmp) {
     let x = cptr.ldI16(cptr.add(otmp, 28));
     let y = cptr.ldI16(cptr.add(otmp, 30));
-    if (cptr.ld1s(cptr.add(otmp, 52)) != 1)
+    if (cptr.ld1s(cptr.add(otmp, 52)) != NHM.OBJ_FLOOR)
         panic(__sl82, cptr.ld1s(cptr.add(otmp, 52)));
     extract_nexthere(otmp, cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8));
     extract_nobj(otmp, cptr.add(svl, 89040));
@@ -2077,7 +2078,7 @@ export function discard_minvent(mtmp, uncreate_artifacts) {
     while ((otmp = cptr.ldPtr(cptr.add(mtmp, 280))) !== null) {
         extract_from_minvent(mtmp, otmp, 1, 1);
         if (uncreate_artifacts && cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0)
-            artifact_exists(otmp, safe_oname(otmp), 0, 0);
+            artifact_exists(otmp, safe_oname(otmp), 0, NHM.ONAME_NO_FLAGS);
         obfree(otmp, null);
     }
 }
@@ -2085,32 +2086,32 @@ export function discard_minvent(mtmp, uncreate_artifacts) {
 /** C ref: mkobj.c:2557 — @param {CPtr} obj */
 export function obj_extract_self(obj) {
     switch (cptr.ld1s(cptr.add(obj, 52))) {
-        case 0:
-        case 8:
-        case 9:
+        case NHM.OBJ_FREE:
+        case NHM.OBJ_LUAFREE:
+        case NHM.OBJ_DELETED:
         break;
-        case 1:
+        case NHM.OBJ_FLOOR:
         remove_object(obj);
         break;
-        case 2:
+        case NHM.OBJ_CONTAINED:
         extract_nobj(obj, cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 16));
         container_weight(cptr.ldPtr(cptr.add(obj, 8)));
         cptr.stPtr(cptr.add(obj, 8), null);
         break;
-        case 3:
+        case NHM.OBJ_INVENT:
         freeinv(obj);
         break;
-        case 4:
+        case NHM.OBJ_MINVENT:
         extract_nobj(obj, cptr.add(cptr.ldPtr(cptr.add(obj, 8)), 280));
         cptr.stPtr(cptr.add(obj, 8), null);
         break;
-        case 5:
+        case NHM.OBJ_MIGRATING:
         extract_nobj(obj, cptr.add(gm, 176));
         break;
-        case 6:
+        case NHM.OBJ_BURIED:
         extract_nobj(obj, cptr.add(svl, 89048));
         break;
-        case 7:
+        case NHM.OBJ_ONBILL:
         extract_nobj(obj, cptr.add(gb, 4776));
         break;
         default:
@@ -2135,7 +2136,7 @@ export function extract_nobj(obj, head_ptr) {
     }
     if (!curr)
         panic(__sl84);
-    cptr.st1(cptr.add(obj, 52), 0);
+    cptr.st1(cptr.add(obj, 52), NHM.OBJ_FREE);
     cptr.stPtr(obj, null);
 }
 
@@ -2162,12 +2163,12 @@ export function extract_nexthere(obj, head_ptr) {
 export function add_to_minv(mon, obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
-    if (cptr.ld1s(cptr.add(obj.v, 52)) != 0)
+    if (cptr.ld1s(cptr.add(obj.v, 52)) != NHM.OBJ_FREE)
         panic(__sl86, cptr.ld1s(cptr.add(obj.v, 52)));
     for (otmp.v = cptr.ldPtr(cptr.add(mon, 280)); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (merged(otmp, obj))
             return 1;
-    cptr.st1(cptr.add(obj.v, 52), 4);
+    cptr.st1(cptr.add(obj.v, 52), NHM.OBJ_MINVENT);
     cptr.stPtr(cptr.add(obj.v, 8), mon);
     cptr.stPtr(obj.v, cptr.ldPtr(cptr.add(mon, 280)));
     cptr.stPtr(cptr.add(mon, 280), obj.v);
@@ -2178,14 +2179,14 @@ export function add_to_minv(mon, obj) {
 export function add_to_container(container, obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
-    if (cptr.ld1s(cptr.add(obj.v, 52)) != 0)
+    if (cptr.ld1s(cptr.add(obj.v, 52)) != NHM.OBJ_FREE)
         panic(__sl87, cptr.ld1s(cptr.add(obj.v, 52)));
-    if (cptr.ld1s(cptr.add(container, 52)) != 3 && cptr.ld1s(cptr.add(container, 52)) != 4 ? 1 : 0)
+    if (cptr.ld1s(cptr.add(container, 52)) != NHM.OBJ_INVENT && cptr.ld1s(cptr.add(container, 52)) != NHM.OBJ_MINVENT ? 1 : 0)
         obj_no_longer_held(obj.v);
     for (otmp.v = cptr.ldPtr(cptr.add(container, 16)); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (merged(otmp, obj))
             return otmp.v;
-    cptr.st1(cptr.add(obj.v, 52), 2);
+    cptr.st1(cptr.add(obj.v, 52), NHM.OBJ_CONTAINED);
     cptr.stPtr(cptr.add(obj.v, 8), container);
     cptr.stPtr(obj.v, cptr.ldPtr(cptr.add(container, 16)));
     cptr.stPtr(cptr.add(container, 16), obj.v);
@@ -2194,14 +2195,14 @@ export function add_to_container(container, obj) {
 
 /** C ref: mkobj.c:2698 — @param {CPtr} obj */
 export function add_to_migration(obj) {
-    if (cptr.ld1s(cptr.add(obj, 52)) != 0)
+    if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_FREE)
         panic(__sl88, cptr.ld1s(cptr.add(obj, 52)));
     if ((cptr.ldI32(cptr.add(obj, 64)) & 1))
         impossible(__sl89, simpleonames(obj));
     cptr.stI32(cptr.add(obj, 68), 0);
     if ((cptr.ldI16(cptr.add((obj), 32)) >= NHC.LARGE_BOX && cptr.ldI16(cptr.add((obj), 32)) <= NHC.BAG_OF_TRICKS ? 1 : 0))
         maybe_reset_pick(obj);
-    cptr.st1(cptr.add(obj, 52), 5);
+    cptr.st1(cptr.add(obj, 52), NHM.OBJ_MIGRATING);
     cptr.stPtr(obj, cptr.ldPtr(cptr.add(gm, 176)));
     cptr.stI16(cptr.add(obj, 204), cptr.ldI16(cptr.add(u, 24)));
     cptr.stI16(cptr.add(obj, 206), cptr.ldI16(cptr.add(u, 26)));
@@ -2210,9 +2211,9 @@ export function add_to_migration(obj) {
 
 /** C ref: mkobj.c:2720 — @param {CPtr} obj */
 export function add_to_buried(obj) {
-    if (cptr.ld1s(cptr.add(obj, 52)) != 0)
+    if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_FREE)
         panic(__sl90, cptr.ld1s(cptr.add(obj, 52)));
-    cptr.st1(cptr.add(obj, 52), 6);
+    cptr.st1(cptr.add(obj, 52), NHM.OBJ_BURIED);
     cptr.stPtr(obj, cptr.ldPtr(cptr.add(svl, 89048)));
     cptr.stPtr(cptr.add(svl, 89048), obj);
 }
@@ -2220,7 +2221,7 @@ export function add_to_buried(obj) {
 /** C ref: mkobj.c:2733 — @param {CPtr} object */
 export function container_weight(object) {
     cptr.stI32(cptr.add(object, 36), weight(object) >>> 0);
-    if (cptr.ld1s(cptr.add(object, 52)) == 2)
+    if (cptr.ld1s(cptr.add(object, 52)) == NHM.OBJ_CONTAINED)
         container_weight(cptr.ldPtr(cptr.add(object, 8)));
 }
 
@@ -2228,10 +2229,10 @@ export function container_weight(object) {
 export function dealloc_obj(obj) {
     if (cptr.ldI16(cptr.add(obj, 32)) == NHC.BOULDER)
         cptr.stI32(cptr.add(obj, 168), 0);
-    if (cptr.ld1s(cptr.add(obj, 52)) == 9) {
+    if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_DELETED) {
         impossible(__sl91, cptr.ldI16(cptr.add(obj, 32)));
         return;
-    } else if (cptr.ld1s(cptr.add(obj, 52)) != 0 && cptr.ld1s(cptr.add(obj, 52)) != 8 ? 1 : 0) {
+    } else if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_FREE && cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_LUAFREE ? 1 : 0) {
         panic(__sl92, cptr.ldI16(cptr.add(obj, 32)), cptr.ld1s(cptr.add(obj, 52)));
     }
     if (cptr.ldPtr(obj))
@@ -2259,11 +2260,11 @@ export function dealloc_obj(obj) {
     if (cptr.ldI32(cptr.add(obj, 24)) == cptr.ldI32(cptr.add(svc, 600)) || cptr.ldI32(cptr.add(obj, 24)) == cptr.ldI32(cptr.add(svc, 604)) ? 1 : 0)
         cptr.stI32(cptr.add(svc, 600), cptr.stI32(cptr.add(svc, 604), 0));
     if (cptr.ldI32(cptr.add(obj, 200))) {
-        cptr.st1(cptr.add(obj, 52), 8);
+        cptr.st1(cptr.add(obj, 52), NHM.OBJ_LUAFREE);
         return;
     }
     if (!cptr.ldI32(cptr.add(program_state, 36))) {
-        cptr.st1(cptr.add(obj, 52), 9);
+        cptr.st1(cptr.add(obj, 52), NHM.OBJ_DELETED);
         cptr.stPtr(obj, cptr.ldPtr(go));
         cptr.stPtr(go, obj);
     } else {
@@ -2285,7 +2286,7 @@ export function dobjsfree() {
     while (cptr.ldPtr(go)) {
         otmp = cptr.ldPtr(go);
         cptr.stPtr(go, cptr.ldPtr(otmp));
-        if (cptr.ld1s(cptr.add(otmp, 52)) != 9)
+        if (cptr.ld1s(cptr.add(otmp, 52)) != NHM.OBJ_DELETED)
             panic(__sl96, cptr.ld1s(cptr.add(otmp, 52)));
         obj_extract_self(otmp);
         dealloc_obj_real(otmp);
@@ -2337,7 +2338,7 @@ export function hornoplenty(horn, tipping, targetbox) {
         } else if (targetbox) {
             add_to_container(targetbox, obj);
             cptr.stI32(cptr.add(targetbox, 36), weight(targetbox) >>> 0);
-            if ((cptr.ld1s(cptr.add((targetbox), 52)) == 3)) {
+            if ((cptr.ld1s(cptr.add((targetbox), 52)) == NHM.OBJ_INVENT)) {
                 encumber_msg();
                 update_inventory();
             }
@@ -2378,14 +2379,14 @@ export function obj_sanity_check() {
     let obj;
     let otop;
     let prevo;
-    objlist_sanity(cptr.ldPtr(cptr.add(svl, 89040)), 1, __sl111);
-    for (x = 0; x < 80; x++)
-        for (y = 0; y < 21; y++) {
+    objlist_sanity(cptr.ldPtr(cptr.add(svl, 89040)), NHM.OBJ_FLOOR, __sl111);
+    for (x = 0; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++) {
             let at_fmt = new Uint8Array(256);
             otop = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8));
             prevo = null;
             for (obj = otop; obj; prevo = obj, obj = cptr.ldPtr(cptr.add(prevo, 8))) {
-                if (((cptr.ld1s(cptr.add(obj, 52)) != 1 || x == 0 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 28)) != x ? 1 : 0) || cptr.ldI16(cptr.add(obj, 30)) != y ? 1 : 0) {
+                if (((cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_FLOOR || x == 0 ? 1 : 0) || cptr.ldI16(cptr.add(obj, 28)) != x ? 1 : 0) || cptr.ldI16(cptr.add(obj, 30)) != y ? 1 : 0) {
                     void cptr.sprintf(cptr.decay(at_fmt), __sl112, x, y, cptr.ldI16(cptr.add(obj, 28)), cptr.ldI16(cptr.add(obj, 30)));
                     insane_object(obj, cptr.decay(at_fmt), __sl113, null);
                 } else if (cptr.ldI16(cptr.add(obj, 32)) == NHC.BOULDER) {
@@ -2400,11 +2401,11 @@ export function obj_sanity_check() {
                 }
             }
         }
-    objlist_sanity(cptr.ldPtr(cptr.add(gi, 8)), 3, __sl119);
-    objlist_sanity(cptr.ldPtr(cptr.add(gm, 176)), 5, __sl120);
-    objlist_sanity(cptr.ldPtr(cptr.add(svl, 89048)), 6, __sl121);
-    objlist_sanity(cptr.ldPtr(cptr.add(gb, 4776)), 7, __sl122);
-    objlist_sanity(cptr.ldPtr(go), 9, __sl123);
+    objlist_sanity(cptr.ldPtr(cptr.add(gi, 8)), NHM.OBJ_INVENT, __sl119);
+    objlist_sanity(cptr.ldPtr(cptr.add(gm, 176)), NHM.OBJ_MIGRATING, __sl120);
+    objlist_sanity(cptr.ldPtr(cptr.add(svl, 89048)), NHM.OBJ_BURIED, __sl121);
+    objlist_sanity(cptr.ldPtr(cptr.add(gb, 4776)), NHM.OBJ_ONBILL, __sl122);
+    objlist_sanity(cptr.ldPtr(go), NHM.OBJ_DELETED, __sl123);
     mon_obj_sanity(cptr.ldPtr(cptr.add(svl, 89056)), __sl124);
     mon_obj_sanity(cptr.ldPtr(cptr.add(gm, 192)), __sl125);
     if (cptr.ldPtr(cptr.add(gm, 184))) {
@@ -2427,13 +2428,13 @@ function objlist_sanity(objlist, wheretype, mesg) {
     for (obj = objlist; obj; obj = cptr.ldPtr(obj)) {
         if (cptr.ld1s(cptr.add(obj, 52)) != wheretype)
             insane_object(obj, cptr.decay(ofmt0), mesg, null);
-        if (cptr.ld1s(cptr.add(obj, 52)) == 3 && ((cptr.ldI32(cptr.add(obj, 160)) & 7) | 0) != 0 ? 1 : 0) {
+        if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_INVENT && ((cptr.ldI32(cptr.add(obj, 160)) & 7) | 0) != NHM.LOST_NONE ? 1 : 0) {
             let lostbuf = new Uint8Array(40);
             void cptr.sprintf(cptr.decay(lostbuf), __sl132, (cptr.ldI32(cptr.add(obj, 160)) & 7) | 0);
             insane_object(obj, cptr.decay(ofmt0), cptr.decay(lostbuf), null);
         }
         if ((cptr.ldPtr(cptr.add((obj), 16)) !== null)) {
-            if (wheretype == 7)
+            if (wheretype == NHM.OBJ_ONBILL)
                 insane_object(obj, __sl133, mesg, null);
             check_contained(obj, mesg);
         }
@@ -2444,13 +2445,13 @@ function objlist_sanity(objlist, wheretype, mesg) {
             let maskbuf = new Uint8Array(40);
             let bc_ok = 0;
             switch (cptr.ld1s(cptr.add(obj, 52))) {
-                case 3:
-                case 4:
+                case NHM.OBJ_INVENT:
+                case NHM.OBJ_MINVENT:
                 sanity_check_worn(obj);
                 break;
-                case 5:
+                case NHM.OBJ_MIGRATING:
                 break;
-                case 1:
+                case NHM.OBJ_FLOOR:
                 bc_ok = 1;
                 // @FallThrough
                 ;
@@ -2464,8 +2465,8 @@ function objlist_sanity(objlist, wheretype, mesg) {
         }
         if (cptr.ldI16(cptr.add(obj, 32)) == NHC.LEASH && cptr.ldI32(cptr.add(obj, 168)) ? 1 : 0) {
             let buf = new Uint8Array(256);
-            let mtmp = find_mid(cptr.ldI32(cptr.add(obj, 168)) >>> 0, 1);
-            if (cptr.ld1s(cptr.add(obj, 52)) == 3) {
+            let mtmp = find_mid(cptr.ldI32(cptr.add(obj, 168)) >>> 0, NHM.FM_FMON);
+            if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_INVENT) {
                 if (!mtmp) {
                     void cptr.sprintf(cptr.decay(buf), __sl135, cptr.ldI32(cptr.add(obj, 168)) >>> 0);
                     insane_object(obj, cptr.decay(ofmt0), cptr.decay(buf), null);
@@ -2473,8 +2474,8 @@ function objlist_sanity(objlist, wheretype, mesg) {
                     void cptr.sprintf(cptr.decay(buf), __sl136, cptr.ldI32(cptr.add(obj, 168)) >>> 0, mon_pmname(mtmp));
                     insane_object(obj, cptr.decay(ofmt0), cptr.decay(buf), null);
                 }
-            } else if (cptr.ld1s(cptr.add(obj, 52)) != 5) {
-                let mtmp2 = (cptr.ld1s(cptr.add(obj, 52)) == 4) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
+            } else if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_MIGRATING) {
+                let mtmp2 = (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_MINVENT) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
                 if (mtmp) {
                     void cptr.sprintf(cptr.decay(buf), __sl137, cptr.ldI32(cptr.add(obj, 168)) >>> 0, mon_pmname(mtmp), where_name(obj));
                     insane_object(obj, cptr.decay(ofmt0), cptr.decay(buf), mtmp2);
@@ -2501,11 +2502,11 @@ function shop_obj_sanity(obj, mesg) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     otop = obj;
-    while (cptr.ld1s(cptr.add(otop, 52)) == 2)
+    while (cptr.ld1s(cptr.add(otop, 52)) == NHM.OBJ_CONTAINED)
         otop = cptr.ldPtr(cptr.add(otop, 8));
-    void get_obj_location(otop, x, y, 2);
+    void get_obj_location(otop, x, y, NHM.BURIED_TOO);
     shkp = find_objowner(obj, x.v, y.v);
-    if (shkp && cptr.ld1s(cptr.add(obj, 52)) == 7 ? 1 : 0)
+    if (shkp && cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_ONBILL ? 1 : 0)
         x.v = cptr.ldI16(cptr.add(shkp, 28)), y.v = cptr.ldI16(cptr.add(shkp, 30));
     costly = costly_spot(x.v, y.v);
     costlytoo = costly_adjacent(shkp, x.v, y.v);
@@ -2513,7 +2514,7 @@ function shop_obj_sanity(obj, mesg) {
     if ((cptr.ldI32(cptr.add(obj, 68)) & 1) | 0 && (cptr.ldI32(cptr.add(obj, 64)) & 1) | 0 ? 1 : 0) {
         why = __sl139;
     } else if ((cptr.ldI32(cptr.add(obj, 64)) & 1)) {
-        if ((cptr.ld1s(cptr.add(otop, 52)) != 3 && cptr.ld1s(cptr.add(obj, 52)) != 7 ? 1 : 0) && ((cptr.ld1s(cptr.add(otop, 52)) != 1 && cptr.ld1s(cptr.add(obj, 52)) != 6 ? 1 : 0) || !(costly || costlytoo ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ld1s(cptr.add(otop, 52)) != NHM.OBJ_INVENT && cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_ONBILL ? 1 : 0) && ((cptr.ld1s(cptr.add(otop, 52)) != NHM.OBJ_FLOOR && cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_BURIED ? 1 : 0) || !(costly || costlytoo ? 1 : 0) ? 1 : 0) ? 1 : 0)
             why = __sl140;
         else if (!costly && !costlytoo ? 1 : 0)
             why = __sl141;
@@ -2522,7 +2523,7 @@ function shop_obj_sanity(obj, mesg) {
         else if (!onshopbill(obj, shkp, 1))
             why = __sl143;
     } else if ((cptr.ldI32(cptr.add(obj, 68)) & 1)) {
-        if ((cptr.ld1s(cptr.add(otop, 52)) != 1 && cptr.ld1s(cptr.add(otop, 52)) != 6 ? 1 : 0) && cptr.ld1s(cptr.add(otop, 52)) != 4 ? 1 : 0)
+        if ((cptr.ld1s(cptr.add(otop, 52)) != NHM.OBJ_FLOOR && cptr.ld1s(cptr.add(otop, 52)) != NHM.OBJ_BURIED ? 1 : 0) && cptr.ld1s(cptr.add(otop, 52)) != NHM.OBJ_MINVENT ? 1 : 0)
             why = __sl144;
         else if (!costly && !costlytoo ? 1 : 0)
             why = __sl145;
@@ -2532,7 +2533,7 @@ function shop_obj_sanity(obj, mesg) {
             why = __sl147;
     }
     if (why)
-        insane_object(obj, why, mesg, (cptr.ld1s(cptr.add((otop), 52)) == 4) ? cptr.ldPtr(cptr.add(otop, 8)) : null);
+        insane_object(obj, why, mesg, (cptr.ld1s(cptr.add((otop), 52)) == NHM.OBJ_MINVENT) ? cptr.ldPtr(cptr.add(otop, 8)) : null);
     return;
 }
 
@@ -2546,13 +2547,13 @@ function mon_obj_sanity(monlist, mesg) {
             continue;
         mwep = (cptr.ldPtr(cptr.add((mon), 288)));
         if (mwep) {
-            if (!(cptr.ld1s(cptr.add((mwep), 52)) == 4))
+            if (!(cptr.ld1s(cptr.add((mwep), 52)) == NHM.OBJ_MINVENT))
                 insane_object(mwep, cptr.decay(mfmt1), mesg, mon);
             if (!cptr.eq(cptr.ldPtr(cptr.add(mwep, 8)), mon))
                 insane_object(mwep, cptr.decay(mfmt2), mesg, mon);
         }
         for (obj = cptr.ldPtr(cptr.add(mon, 280)); obj; obj = cptr.ldPtr(obj)) {
-            if (cptr.ld1s(cptr.add(obj, 52)) != 4)
+            if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_MINVENT)
                 insane_object(obj, cptr.decay(mfmt1), mesg, mon);
             if (!cptr.eq(cptr.ldPtr(cptr.add(obj, 8)), mon))
                 insane_object(obj, cptr.decay(mfmt2), mesg, mon);
@@ -2567,7 +2568,7 @@ function mon_obj_sanity(monlist, mesg) {
                 mwep = null;
         }
         if (mwep) {
-            impossible(__sl148, pmname(cptr.ldPtr(cptr.add(mon, 8)), Mgender(mon)), cptr.ldI32(cptr.add(mon, 16)), safe_typename(cptr.ldI16(cptr.add(mwep, 32))), cptr.ldI32(cptr.add(mwep, 24)), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mon, 2), 48), 24))));
+            impossible(__sl148, pmname(cptr.ldPtr(cptr.add(mon, 8)), Mgender(mon)), cptr.ldI32(cptr.add(mon, 16)), safe_typename(cptr.ldI16(cptr.add(mwep, 32))), cptr.ldI32(cptr.add(mwep, 24)), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), 48), 24))));
         }
     }
 }
@@ -2578,7 +2579,7 @@ function insane_obj_bits(obj, mon) {
     let o_bypass;
     let o_nomerge;
     let o_boulder;
-    if (cptr.ld1s(cptr.add(obj, 52)) == 9)
+    if (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_DELETED)
         return;
     o_in_use = (cptr.ldI32(cptr.add(obj, 144)) & 1);
     o_bypass = (cptr.ldI32(cptr.add(obj, 148)) & 1);
@@ -2619,7 +2620,7 @@ function where_name(obj) {
     if (!obj)
         return __sl164;
     where = cptr.ld1s(cptr.add(obj, 52));
-    if ((where < 0 || where >= 10 ? 1 : 0) || !cptr.ldPtr(cptr.add(obj_state_names, where, 8)) ? 1 : 0) {
+    if ((where < 0 || where >= NHM.NOBJ_STATES ? 1 : 0) || !cptr.ldPtr(cptr.add(obj_state_names, where, 8)) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(__static_where_name_unknown), __sl165, where);
         return cptr.decay(__static_where_name_unknown);
     }
@@ -2640,7 +2641,7 @@ function insane_object(obj, fmt, mesg, mon) {
     if (mon || (strstri(mesg, __sl158) && !strstri(mesg, __sl156) ? 1 : 0) ? 1 : 0) {
         void cptr.strcat(cptr.strcpy(cptr.decay(altfmt), fmt), __sl167);
         if (mon)
-            monnm = x_monnam(mon, 2, null, 31, 1);
+            monnm = x_monnam(mon, NHM.ARTICLE_A, null, NHM.EXACT_NAME, 1);
         impossible(cptr.decay(altfmt), mesg, fmt_ptr(obj), where_name(obj), objnm, fmt_ptr(mon), monnm);
     } else {
         impossible(fmt, mesg, fmt_ptr(obj), where_name(obj), objnm);
@@ -2678,7 +2679,7 @@ function check_contained(container, mesg) {
     for (obj = cptr.ldPtr(cptr.add(container, 16)); obj; obj = cptr.ldPtr(obj)) {
         if (cptr.eq(obj, container))
             panic(__sl169);
-        if (cptr.ld1s(cptr.add(obj, 52)) != 2)
+        if (cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_CONTAINED)
             insane_object(obj, __sl170, mesg, null);
         else if (!cptr.eq(cptr.ldPtr(cptr.add(obj, 8)), container))
             impossible(__sl171, mesg, fmt_ptr(obj), fmt_ptr(cptr.ldPtr(cptr.add(obj, 8))), fmt_ptr(container));
@@ -2701,7 +2702,7 @@ function check_glob(obj, mesg) {
         let globbuf = new Uint8Array(128);
         void cptr.sprintf(cptr.decay(globbuf), __sl174, cptr.ldI16(cptr.add(obj, 32)), cptr.ldI64(cptr.add(obj, 40)), cptr.ldI32(cptr.add(obj, 36)));
         mesg = strsubst(cptr.strcpy(cptr.decay(mesgbuf), mesg), __sl175, cptr.decay(globbuf));
-        insane_object(obj, cptr.decay(ofmt0), mesg, (cptr.ld1s(cptr.add(obj, 52)) == 4) ? cptr.ldPtr(cptr.add(obj, 8)) : null);
+        insane_object(obj, cptr.decay(ofmt0), mesg, (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_MINVENT) ? cptr.ldPtr(cptr.add(obj, 8)) : null);
     }
 }
 
@@ -2747,7 +2748,7 @@ function sanity_check_worn(obj) {
         else
             n = 0, owornmask = 18446744073709551615n;
     }
-    if ((((n == 2 && (cptr.ld1s(cptr.add((obj), 52)) == 3) ? 1 : 0) && cptr.eq(obj, uball.v) ? 1 : 0) && (owornmask & 2097152n) != 0n ? 1 : 0) && (owornmask & 1792n) != 0n ? 1 : 0) {
+    if ((((n == 2 && (cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) ? 1 : 0) && cptr.eq(obj, uball.v) ? 1 : 0) && (owornmask & 2097152n) != 0n ? 1 : 0) && (owornmask & 1792n) != 0n ? 1 : 0) {
         owornmask &= 18446744073707454463n;
         n = 1;
     }
@@ -2755,11 +2756,11 @@ function sanity_check_worn(obj) {
         void cptr.sprintf(cptr.decay(maskbuf), __sl176, cptr.ldI64(cptr.add(obj, 192)));
         insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), null);
     }
-    if ((owornmask & BigInt.asUintN(64, ~allmask)) != 0n || ((cptr.ld1s(cptr.add((obj), 52)) == 3) && (owornmask & 1048576n) != 0n ? 1 : 0) ? 1 : 0) {
+    if ((owornmask & BigInt.asUintN(64, ~allmask)) != 0n || ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) && (owornmask & 1048576n) != 0n ? 1 : 0) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(maskbuf), __sl177, cptr.ldI64(cptr.add(obj, 192)));
         insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), null);
     }
-    if (n == 1 && ((cptr.ld1s(cptr.add((obj), 52)) == 3) || (owornmask & 6291456n) != 0n ? 1 : 0) ? 1 : 0) {
+    if (n == 1 && ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) || (owornmask & 6291456n) != 0n ? 1 : 0) ? 1 : 0) {
         what = null;
         switch (owornmask) {
             case 1n:
@@ -2834,7 +2835,7 @@ function sanity_check_worn(obj) {
             insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), null);
         }
     }
-    if (n == 1 && (((cptr.ld1s(cptr.add((obj), 52)) == 3) || (owornmask & 6291456n) != 0n ? 1 : 0) || (cptr.ld1s(cptr.add((obj), 52)) == 4) ? 1 : 0) ? 1 : 0) {
+    if (n == 1 && (((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_INVENT) || (owornmask & 6291456n) != 0n ? 1 : 0) || (cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_MINVENT) ? 1 : 0) ? 1 : 0) {
         what = null;
         if (owornmask & 127n) {
             if (cptr.ld1s(cptr.add(obj, 49)) != NHC.ARMOR_CLASS)
@@ -2842,7 +2843,7 @@ function sanity_check_worn(obj) {
             if (embedded && !(cptr.ldI16(cptr.add((obj), 32)) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16(cptr.add((obj), 32)) <= NHC.YELLOW_DRAGON_SCALES ? 1 : 0) ? 1 : 0)
                 what = __sl178;
         } else if (owornmask & 1792n) {
-            if ((cptr.ld1s(cptr.add((obj), 52)) == 4) && (owornmask & 1536n) != 0n ? 1 : 0)
+            if ((cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_MINVENT) && (owornmask & 1536n) != 0n ? 1 : 0)
                 what = (owornmask & 1024n) != 0n ? __sl198 : __sl199;
             else if (cptr.ld1s(cptr.add(obj, 49)) == NHC.COIN_CLASS && (owornmask & 1280n) != 0n ? 1 : 0)
                 what = (owornmask & 256n) != 0n ? __sl200 : __sl201;
@@ -2867,7 +2868,7 @@ function sanity_check_worn(obj) {
         }
         if (what) {
             let oclassname = new Uint8Array(30);
-            let mon = (cptr.ld1s(cptr.add((obj), 52)) == 4) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
+            let mon = (cptr.ld1s(cptr.add((obj), 52)) == NHM.OBJ_MINVENT) ? cptr.ldPtr(cptr.add(obj, 8)) : null;
             void cptr.strcpy(cptr.decay(oclassname), cptr.ldPtr(cptr.add(cptr.add(def_oc_syms, uchar(cptr.ld1s(cptr.add(obj, 49))), 24), 8)));
             void cptr.sprintf(cptr.decay(maskbuf), __sl205, makesingular(cptr.decay(oclassname)), what);
             insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), mon);
@@ -2973,17 +2974,17 @@ export function obj_meld(obj1, obj2) {
         otmp2 = cptr.ldPtr(obj2);
         if ((otmp1 && otmp2 ? 1 : 0) && !cptr.eq(otmp1, otmp2) ? 1 : 0) {
             ox = (oy = 0);
-            if (!(cptr.ld1s(cptr.add(otmp2, 52)) == 1 && cptr.ld1s(cptr.add(otmp1, 52)) == 0 ? 1 : 0) && (cptr.ldI32(cptr.add(otmp1, 36)) > cptr.ldI32(cptr.add(otmp2, 36)) || (cptr.ldI32(cptr.add(otmp1, 36)) == cptr.ldI32(cptr.add(otmp2, 36)) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3790, __sl209), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                if (cptr.ld1s(cptr.add(otmp2, 52)) == 1)
+            if (!(cptr.ld1s(cptr.add(otmp2, 52)) == NHM.OBJ_FLOOR && cptr.ld1s(cptr.add(otmp1, 52)) == NHM.OBJ_FREE ? 1 : 0) && (cptr.ldI32(cptr.add(otmp1, 36)) > cptr.ldI32(cptr.add(otmp2, 36)) || (cptr.ldI32(cptr.add(otmp1, 36)) == cptr.ldI32(cptr.add(otmp2, 36)) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 3790, __sl209), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+                if (cptr.ld1s(cptr.add(otmp2, 52)) == NHM.OBJ_FLOOR)
                     ox = cptr.ldI16(cptr.add(otmp2, 28)), oy = cptr.ldI16(cptr.add(otmp2, 30));
                 result = obj_absorb(obj1, obj2);
             } else {
-                if (cptr.ld1s(cptr.add(otmp1, 52)) == 1)
+                if (cptr.ld1s(cptr.add(otmp1, 52)) == NHM.OBJ_FLOOR)
                     ox = cptr.ldI16(cptr.add(otmp1, 28)), oy = cptr.ldI16(cptr.add(otmp1, 30));
                 result = obj_absorb(obj2, obj1);
             }
             if (ox) {
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy, 8)), ox)) & 2) != 0))
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), oy, 8)), ox)) & NHM.IN_SIGHT) != 0))
                     newsym(i16(ox), i16(oy));
                 maybe_unhide_at(i16(ox), i16(oy));
             }
@@ -2996,9 +2997,9 @@ export function obj_meld(obj1, obj2) {
 
 /** C ref: mkobj.c:3818 — @param {CPtr} otmp @param {CPtr} otmp2 */
 export function pudding_merge_message(otmp, otmp2) {
-    let visible = schar((((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(otmp, 30)), 8)), cptr.ldI16(cptr.add(otmp, 28)))) & 2) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(otmp2, 30)), 8)), cptr.ldI16(cptr.add(otmp2, 28)))) & 2) != 0) ? 1 : 0));
-    let onfloor = schar((cptr.ld1s(cptr.add(otmp, 52)) == 1 || cptr.ld1s(cptr.add(otmp2, 52)) == 1 ? 1 : 0));
-    let inpack = schar(((cptr.ld1s(cptr.add((otmp), 52)) == 3) || (cptr.ld1s(cptr.add((otmp2), 52)) == 3) ? 1 : 0));
+    let visible = schar((((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(otmp, 30)), 8)), cptr.ldI16(cptr.add(otmp, 28)))) & NHM.IN_SIGHT) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(otmp2, 30)), 8)), cptr.ldI16(cptr.add(otmp2, 28)))) & NHM.IN_SIGHT) != 0) ? 1 : 0));
+    let onfloor = schar((cptr.ld1s(cptr.add(otmp, 52)) == NHM.OBJ_FLOOR || cptr.ld1s(cptr.add(otmp2, 52)) == NHM.OBJ_FLOOR ? 1 : 0));
+    let inpack = schar(((cptr.ld1s(cptr.add((otmp), 52)) == NHM.OBJ_INVENT) || (cptr.ld1s(cptr.add((otmp2), 52)) == NHM.OBJ_INVENT) ? 1 : 0));
     if ((!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0) && visible ? 1 : 0) || inpack ? 1 : 0) {
         if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0)) {
             if (onfloor) {

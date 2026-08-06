@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { night } from './calendar.js';
@@ -49,7 +50,7 @@ export function were_change(mon) {
     if (!((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 4n) != 0n))
         return;
     if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mon, 8))), 80)) & 8n) != 0n)) {
-        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24)) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50))) : rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == 4 ? 10 : 50))) ? 1 : 0) {
+        if (!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24)) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON ? 10 : 50))) : rn2(night() ? (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON ? 10 : 50))) ? 1 : 0) {
             new_were(mon);
             (cptr.stI64(cptr.add(gw, 176), cptr.ldI64(cptr.add(gw, 176)) + 1n)) - (1n);
             if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.DEAF, 24)) ? 1 : 0) || cptr.ld1s(cptr.add(u, 2114)) ? 1 : 0) && !canseemon(mon) ? 1 : 0) {
@@ -182,7 +183,7 @@ export function were_summon(ptr, yours, visible, genbuf) {
             default:
             continue;
         }
-        mtmp = makemon(cptr.add(mons, typ, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 0);
+        mtmp = makemon(cptr.add(mons, typ, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), NHM.NO_MM_FLAGS);
         if (mtmp) {
             total++;
             if (canseemon(mtmp))
@@ -202,7 +203,7 @@ export function you_were() {
         return;
     if (controllable_poly) {
         void cptr.sprintf(cptr.decay(qbuf), __sl11, an(cptr.add(cptr.ldPtr(cptr.add(cptr.add(mons, cptr.ldI32(cptr.add(u, 1836)), 96), NHC.NEUTRAL, 8)), 4)));
-        if (!paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 256) >>> 0) != 0)), cptr.decay(qbuf)))
+        if (!paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), cptr.decay(qbuf)))
             return;
     } else if (monster_nearby()) {
         return;
@@ -218,7 +219,7 @@ export function you_unwere(purify) {
         You_feel(__sl12);
         set_ulycn(NHC.NON_PM);
     }
-    if (((!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24)) ? 1 : 0) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 4n) != 0n) ? 1 : 0) && !monster_nearby() ? 1 : 0) && (!controllable_poly || !paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & 256) >>> 0) != 0)), __sl13) ? 1 : 0) ? 1 : 0)
+    if (((!(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24)) ? 1 : 0) && ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 4n) != 0n) ? 1 : 0) && !monster_nearby() ? 1 : 0) && (!controllable_poly || !paranoid_query(schar((((cptr.ldI32(cptr.add(flags, 80)) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __sl13) ? 1 : 0) ? 1 : 0)
         rehumanize();
     else if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 80)) & 4n) != 0n) && !cptr.ldI32(cptr.add(u, 1820)) ? 1 : 0)
         cptr.stI32(cptr.add(u, 1820), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 227, __sl14), rn2(200)) : rn2(200)) + 200) | 0));

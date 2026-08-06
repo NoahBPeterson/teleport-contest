@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { error, tty_utf8graphics_fixup } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { flags, gc, gs, gt, iflags } from './decl.js';
@@ -223,7 +224,7 @@ export function term_startup(wid, hgt) {
         cptr.stI32(cptr.add(gt, 356), tgetnum((__sl8)));
     if (!cptr.ldI32(cptr.add(gt, 352)))
         cptr.stI32(cptr.add(gt, 352), tgetnum((__sl9)));
-    if (cptr.ldI32(cptr.add(gt, 356)) < 80 || cptr.ldI32(cptr.add(gt, 352)) < 24 ? 1 : 0)
+    if (cptr.ldI32(cptr.add(gt, 356)) < NHM.COLNO || cptr.ldI32(cptr.add(gt, 352)) < 24 ? 1 : 0)
         setclipped();
     cptr.stPtr(cptr.add(tc_lcl_data, 8), (tgetstr((__sl10), tbufptr)));
     if (tgetflag((__sl11)))
@@ -541,13 +542,13 @@ export function nomux_putch(ch) {
 /** C ref: termcap.c:776 — @param {CInt} attr */
 export function nomux_set_attr(attr) {
     switch (attr) {
-        case 7:
+        case NHM.ATR_INVERSE:
         nomux_attr_cur = uchar(nomux_attr_cur | 1);
         break;
-        case 1:
+        case NHM.ATR_BOLD:
         nomux_attr_cur = uchar(nomux_attr_cur | 2);
         break;
-        case 4:
+        case NHM.ATR_ULINE:
         nomux_attr_cur = uchar(nomux_attr_cur | 4);
         break;
     }
@@ -560,7 +561,7 @@ export function nomux_end_attr() {
 
 /** C ref: termcap.c:784 — @param {CInt} color */
 export function nomux_set_fg(color) {
-    if (color == 0 && cptr.ld1s(cptr.add(iflags, 371)) ? 1 : 0)
+    if (color == NHM.CLR_BLACK && cptr.ld1s(cptr.add(iflags, 371)) ? 1 : 0)
         color = 8;
     nomux_fg_cur = uchar(((color < 0 || color >= 16 ? 1 : 0) ? 7 : uchar(color)));
 }
@@ -875,23 +876,23 @@ export function cl_eos() {
 /** C ref: termcap.c:1294 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/win/tty/termcap.c:1292:7)[6] */
 export const ti_map = cptr.alloc(6 * 12);
 cptr.stI32(cptr.add(ti_map, 0), 1);
-cptr.stI32(cptr.add(ti_map, 4), 1);
-cptr.stI32(cptr.add(ti_map, 8), 9);
+cptr.stI32(cptr.add(ti_map, 4), NHM.CLR_RED);
+cptr.stI32(cptr.add(ti_map, 8), NHM.CLR_ORANGE);
 cptr.stI32(cptr.add(ti_map, 12), 2);
-cptr.stI32(cptr.add(ti_map, 16), 2);
-cptr.stI32(cptr.add(ti_map, 20), 10);
+cptr.stI32(cptr.add(ti_map, 16), NHM.CLR_GREEN);
+cptr.stI32(cptr.add(ti_map, 20), NHM.CLR_BRIGHT_GREEN);
 cptr.stI32(cptr.add(ti_map, 24), 3);
-cptr.stI32(cptr.add(ti_map, 28), 3);
-cptr.stI32(cptr.add(ti_map, 32), 11);
+cptr.stI32(cptr.add(ti_map, 28), NHM.CLR_BROWN);
+cptr.stI32(cptr.add(ti_map, 32), NHM.CLR_YELLOW);
 cptr.stI32(cptr.add(ti_map, 36), 4);
-cptr.stI32(cptr.add(ti_map, 40), 4);
-cptr.stI32(cptr.add(ti_map, 44), 12);
+cptr.stI32(cptr.add(ti_map, 40), NHM.CLR_BLUE);
+cptr.stI32(cptr.add(ti_map, 44), NHM.CLR_BRIGHT_BLUE);
 cptr.stI32(cptr.add(ti_map, 48), 5);
-cptr.stI32(cptr.add(ti_map, 52), 5);
-cptr.stI32(cptr.add(ti_map, 56), 13);
+cptr.stI32(cptr.add(ti_map, 52), NHM.CLR_MAGENTA);
+cptr.stI32(cptr.add(ti_map, 56), NHM.CLR_BRIGHT_MAGENTA);
 cptr.stI32(cptr.add(ti_map, 60), 6);
-cptr.stI32(cptr.add(ti_map, 64), 6);
-cptr.stI32(cptr.add(ti_map, 68), 14);
+cptr.stI32(cptr.add(ti_map, 64), NHM.CLR_CYAN);
+cptr.stI32(cptr.add(ti_map, 68), NHM.CLR_BRIGHT_CYAN);
 
 /** C ref: termcap.c:1302 — struct undefined {  } (memory model v0.5) */
 
@@ -910,22 +911,22 @@ function init_hilite() {
     cptr.stI32(cptr.add(iflags, 120), colors >>> 0);
     let md_len = 0;
     if (((colors < 8 || !MD ? 1 : 0) || !cptr.ld1s(MD) ? 1 : 0) || ((setf = tgetstr((__sl64), null)) === null && (setf = tgetstr((__sl65), null)) === null ? 1 : 0) ? 1 : 0) {
-        cptr.stPtr(cptr.add(hilites, 0, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 1, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 2, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 3, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 4, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 5, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 6, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 7, 8), cptr.decay(nilstring));
-        cptr.stPtr(cptr.add(hilites, 8, 8), cptr.decay(nilstring));
-        cptr.stPtr(cptr.add(hilites, 9, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 10, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 11, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 12, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 13, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 14, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
-        cptr.stPtr(cptr.add(hilites, 15, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BLACK, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_RED, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_GREEN, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BROWN, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BLUE, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_MAGENTA, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_CYAN, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_GRAY, 8), cptr.decay(nilstring));
+        cptr.stPtr(cptr.add(hilites, NHM.NO_COLOR, 8), cptr.decay(nilstring));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_ORANGE, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BRIGHT_GREEN, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_YELLOW, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BRIGHT_BLUE, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BRIGHT_MAGENTA, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BRIGHT_CYAN, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_WHITE, 8), cptr.ldPtr(cptr.add(tc_lcl_data, 24)));
         return;
     }
     if (colors >= 16) {
@@ -951,69 +952,69 @@ function init_hilite() {
     }
     if (colors >= 16) {
         scratch = tparm(setf, 15);
-        cptr.stPtr(cptr.add(hilites, 15, 8), dupstr(scratch));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_WHITE, 8), dupstr(scratch));
     } else {
         scratch = tparm(setf, 7);
-        cptr.stPtr(cptr.add(hilites, 15, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))));
-        void cptr.strcpy(cptr.ldPtr(cptr.add(hilites, 15, 8)), MD);
-        void cptr.strcat(cptr.ldPtr(cptr.add(hilites, 15, 8)), scratch);
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_WHITE, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))));
+        void cptr.strcpy(cptr.ldPtr(cptr.add(hilites, NHM.CLR_WHITE, 8)), MD);
+        void cptr.strcat(cptr.ldPtr(cptr.add(hilites, NHM.CLR_WHITE, 8)), scratch);
     }
-    cptr.stPtr(cptr.add(hilites, 7, 8), cptr.decay(nilstring));
-    cptr.stPtr(cptr.add(hilites, 8, 8), cptr.decay(nilstring));
+    cptr.stPtr(cptr.add(hilites, NHM.CLR_GRAY, 8), cptr.decay(nilstring));
+    cptr.stPtr(cptr.add(hilites, NHM.NO_COLOR, 8), cptr.decay(nilstring));
     if (cptr.ld1s(cptr.add(iflags, 371))) {
         if (colors >= 16) {
             scratch = tparm(setf, 8);
-            cptr.stPtr(cptr.add(hilites, 0, 8), dupstr(scratch));
+            cptr.stPtr(cptr.add(hilites, NHM.CLR_BLACK, 8), dupstr(scratch));
         } else {
             scratch = tparm(setf, 0);
-            cptr.stPtr(cptr.add(hilites, 0, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))));
-            void cptr.strcpy(cptr.ldPtr(cptr.add(hilites, 0, 8)), MD);
-            void cptr.strcat(cptr.ldPtr(cptr.add(hilites, 0, 8)), scratch);
+            cptr.stPtr(cptr.add(hilites, NHM.CLR_BLACK, 8), alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))));
+            void cptr.strcpy(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8)), MD);
+            void cptr.strcat(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8)), scratch);
         }
     } else {
-        cptr.stPtr(cptr.add(hilites, 0, 8), cptr.ldPtr(cptr.add(hilites, 4, 8)));
+        cptr.stPtr(cptr.add(hilites, NHM.CLR_BLACK, 8), cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLUE, 8)));
     }
 }
 
 /** C ref: termcap.c:1409 */
 function kill_hilite() {
     let c;
-    if (cptr.eq(cptr.ldPtr(cptr.add(hilites, 0, 8)), cptr.ldPtr(cptr.add(tc_lcl_data, 24))))
+    if (cptr.eq(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8)), cptr.ldPtr(cptr.add(tc_lcl_data, 24))))
         return;
-    if (cptr.ldPtr(cptr.add(hilites, 0, 8))) {
-        if (!cptr.eq(cptr.ldPtr(cptr.add(hilites, 0, 8)), cptr.ldPtr(cptr.add(hilites, 4, 8))))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 0, 8))), cptr.stPtr(cptr.add(hilites, 0, 8), null);
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8))) {
+        if (!cptr.eq(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8)), cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLUE, 8))))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLACK, 8))), cptr.stPtr(cptr.add(hilites, NHM.CLR_BLACK, 8), null);
     }
     if (tgetnum((__sl63)) >= 16) {
-        if (cptr.ldPtr(cptr.add(hilites, 4, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 4, 8)));
-        if (cptr.ldPtr(cptr.add(hilites, 2, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 2, 8)));
-        if (cptr.ldPtr(cptr.add(hilites, 6, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 6, 8)));
-        if (cptr.ldPtr(cptr.add(hilites, 5, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 5, 8)));
-        if (cptr.ldPtr(cptr.add(hilites, 1, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 1, 8)));
-        if (cptr.ldPtr(cptr.add(hilites, 3, 8)))
-            cptr.free(cptr.ldPtr(cptr.add(hilites, 3, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLUE, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BLUE, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_GREEN, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_GREEN, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_CYAN, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_CYAN, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_MAGENTA, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_MAGENTA, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_RED, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_RED, 8)));
+        if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BROWN, 8)))
+            cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BROWN, 8)));
     } else {
     }
-    if (cptr.ldPtr(cptr.add(hilites, 12, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 12, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 10, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 10, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 14, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 14, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 13, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 13, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 9, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 9, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 11, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 11, 8)));
-    if (cptr.ldPtr(cptr.add(hilites, 15, 8)))
-        cptr.free(cptr.ldPtr(cptr.add(hilites, 15, 8)));
-    for (c = 0; c < 16; c++)
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_BLUE, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_BLUE, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_GREEN, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_GREEN, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_CYAN, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_CYAN, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_MAGENTA, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_BRIGHT_MAGENTA, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_ORANGE, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_ORANGE, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_YELLOW, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_YELLOW, 8)));
+    if (cptr.ldPtr(cptr.add(hilites, NHM.CLR_WHITE, 8)))
+        cptr.free(cptr.ldPtr(cptr.add(hilites, NHM.CLR_WHITE, 8)));
+    for (c = 0; c < NHM.CLR_MAX; c++)
         cptr.stPtr(cptr.add(hilites, c, 8), null);
 }
 
@@ -1023,14 +1024,14 @@ const nulstr = cptr.bytes("");
 /** C ref: termcap.c:1711 — @param {CInt} n @returns {CPtr} */
 function s_atr2str(n) {
     switch (n) {
-        case 3:
+        case NHM.ATR_ITALIC:
         if (ZH && cptr.ld1s(ZH) ? 1 : 0)
             return ZH;
         // @FallThrough
         ;
-        case 5:
-        case 4:
-        if (n == 5) {
+        case NHM.ATR_BLINK:
+        case NHM.ATR_ULINE:
+        if (n == NHM.ATR_BLINK) {
             if (MB && cptr.ld1s(MB) ? 1 : 0)
                 return MB;
         } else {
@@ -1039,17 +1040,17 @@ function s_atr2str(n) {
         }
         // @FallThrough
         ;
-        case 1:
+        case NHM.ATR_BOLD:
         if (MD && cptr.ld1s(MD) ? 1 : 0)
             return MD;
         if (cptr.ldPtr(cptr.add(tc_lcl_data, 24)) && cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 24))) ? 1 : 0)
             return cptr.ldPtr(cptr.add(tc_lcl_data, 24));
         break;
-        case 7:
+        case NHM.ATR_INVERSE:
         if (MR && cptr.ld1s(MR) ? 1 : 0)
             return MR;
         break;
-        case 2:
+        case NHM.ATR_DIM:
         if (MH && cptr.ld1s(MH) ? 1 : 0)
             return MH;
         break;
@@ -1060,24 +1061,24 @@ function s_atr2str(n) {
 /** C ref: termcap.c:1750 — @param {CInt} n @returns {CPtr} */
 function e_atr2str(n) {
     switch (n) {
-        case 3:
+        case NHM.ATR_ITALIC:
         if (((ZR && cptr.ld1s(ZR) ? 1 : 0) && ZH ? 1 : 0) && cptr.ld1s(ZH) ? 1 : 0)
             return ZR;
         // @FallThrough
         ;
-        case 4:
+        case NHM.ATR_ULINE:
         if (cptr.ldPtr(cptr.add(tc_lcl_data, 48)) && cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 48))) ? 1 : 0)
             return cptr.ldPtr(cptr.add(tc_lcl_data, 48));
         // @FallThrough
         ;
-        case 1:
-        case 5:
+        case NHM.ATR_BOLD:
+        case NHM.ATR_BLINK:
         if (cptr.ldPtr(cptr.add(tc_lcl_data, 32)) && cptr.ld1s(cptr.ldPtr(cptr.add(tc_lcl_data, 32))) ? 1 : 0)
             return cptr.ldPtr(cptr.add(tc_lcl_data, 32));
         // @FallThrough
         ;
-        case 2:
-        case 7:
+        case NHM.ATR_DIM:
+        case NHM.ATR_INVERSE:
         if (ME && cptr.ld1s(ME) ? 1 : 0)
             return ME;
         break;
@@ -1145,9 +1146,9 @@ export function term_end_color() {
 /** C ref: termcap.c:1860 — @param {CInt} color */
 export function term_start_color(color) {
     nomux_set_fg(color);
-    if (color == 8)
+    if (color == NHM.NO_COLOR)
         xputs(cptr.ldPtr(cptr.add(tc_lcl_data, 32)));
-    else if ((color < 16 && cptr.ldPtr(cptr.add(hilites, color, 8)) ? 1 : 0) && cptr.ld1s(cptr.ldPtr(cptr.add(hilites, color, 8))) ? 1 : 0)
+    else if ((color < NHM.CLR_MAX && cptr.ldPtr(cptr.add(hilites, color, 8)) ? 1 : 0) && cptr.ld1s(cptr.ldPtr(cptr.add(hilites, color, 8))) ? 1 : 0)
         xputs(cptr.ldPtr(cptr.add(hilites, color, 8)));
 }
 

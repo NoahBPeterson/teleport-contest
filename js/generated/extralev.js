@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { gr, gs, svl, svn, svr } from './decl.js';
 import { impossible } from './pline.js';
@@ -78,7 +79,7 @@ function roguecorr(x, y, dir) {
             if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), NHM.D_NODOOR);
             fromy++;
         }
         if (y >= 2) {
@@ -100,7 +101,7 @@ function roguecorr(x, y, dir) {
             if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl5, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), NHM.D_NODOOR);
             toy--;
         }
         roguejoin(fromx, fromy, tox, toy, 0);
@@ -120,7 +121,7 @@ function roguecorr(x, y, dir) {
             if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), fromx, 756), fromy, 36), 8), NHM.D_NODOOR);
             fromx++;
         }
         if (x >= 2) {
@@ -142,7 +143,7 @@ function roguecorr(x, y, dir) {
             if (!((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 4))) <= NHC.DBWALL ? 1 : 0))
                 impossible(__sl7, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(gr, 196), x, 48), y, 16), 12)), 224));
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), tox, 756), toy, 36), 8), NHM.D_NODOOR);
             tox--;
         }
         roguejoin(fromx, fromy, tox, toy, 1);
@@ -268,7 +269,7 @@ export function makerogueghost() {
     croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 297, __sl14), rn2(cptr.ldI32(cptr.add(svn, 44)))) : rn2(cptr.ldI32(cptr.add(svn, 44)))), 224);
     x = i16(somex(croom));
     y = i16(somey(croom));
-    if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, 96), x, y, 0)))
+    if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, 96), x, y, NHM.NO_MM_FLAGS)))
         return;
     cptr.stI32(cptr.add(ghost, 144), 1);
     ghost = christen_monst(ghost, roguename());

@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
@@ -64,7 +65,7 @@ cptr.stI64(cptr.add(wgrowtime, 0), 0n);
 /** C ref: worm.c:96 @returns {CInt} */
 export function get_wormno() {
     let new_wormno = 1;
-    while (new_wormno < 32) {
+    while (new_wormno < NHM.MAX_NUM_WORMS) {
         if (!cptr.ldPtr(cptr.add(wheads, new_wormno, 8)))
             return new_wormno;
         new_wormno++;
@@ -141,7 +142,7 @@ export function worm_move(worm) {
         } else {
             let mmove = mcalcmove(worm, 0);
             let incr = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl1), rn2(10)) : rn2(10)) + 2) | 0);
-            incr = ((Math.imul(incr, 12)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
+            incr = ((Math.imul(incr, NHM.NORMAL_SPEED)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
             cptr.stI64(cptr.add(wgrowtime, wnum, 8), BigInt.asIntN(64, cptr.ldI64(cptr.add(svm, 8)) + BigInt(incr)));
         }
         whplimit = !cptr.ld1u(cptr.add(worm, 26)) ? 4 : (Math.imul(8, cptr.ld1u(cptr.add(worm, 26))));
@@ -152,8 +153,8 @@ export function worm_move(worm) {
         if (wsegs > 11)
             whplimit = (whplimit + Math.imul(6, ((wsegs - 11) | 0))) | 0, wsegs = 11;
         whplimit = (whplimit + Math.imul(8, wsegs)) | 0;
-        if (whplimit > 500)
-            whplimit = 500;
+        if (whplimit > NHM.MHPMAX)
+            whplimit = NHM.MHPMAX;
         prev_mhp = cptr.ldI32(cptr.add(worm, 52));
         cptr.stI32(cptr.add(worm, 52), (cptr.ldI32(cptr.add(worm, 52)) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl1), d(2, 2)) : d(2, 2))) | 0);
         whpcap = ((whplimit) > (cptr.ldI32(cptr.add(worm, 56))) ? (whplimit) : (cptr.ldI32(cptr.add(worm, 56))));
@@ -301,7 +302,7 @@ export function save_worm(nhfp) {
     let curr;
     let temp;
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
-        for (i = 1; i < 32; i++) {
+        for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             for (count.v = 0, curr = cptr.ldPtr(cptr.add(wtails, i, 8)); curr; curr = cptr.ldPtr(curr))
                 count.v++;
             sfo_int(nhfp, count, __sl10);
@@ -312,12 +313,12 @@ export function save_worm(nhfp) {
                 }
             }
         }
-        for (i = 0; i < 32; ++i)
+        for (i = 0; i < NHM.MAX_NUM_WORMS; ++i)
             sfo_long(nhfp, cptr.add(wgrowtime, i, 8), __sl13);
         ;
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
-        for (i = 1; i < 32; i++) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
+        for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             if (!(curr = cptr.ldPtr(cptr.add(wtails, i, 8))))
                 continue;
             while (curr) {
@@ -338,7 +339,7 @@ export function rest_worm(nhfp) {
     let count = cptr.box(0);
     let curr;
     let temp;
-    for (i = 1; i < 32; i++) {
+    for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
         sfi_int(nhfp, count, __sl10);
         ;
         for (curr = null, j = 0; j < count.v; j++) {
@@ -354,7 +355,7 @@ export function rest_worm(nhfp) {
         }
         cptr.stPtr(cptr.add(wheads, i, 8), curr);
     }
-    for (i = 0; i < 32; ++i) {
+    for (i = 0; i < NHM.MAX_NUM_WORMS; ++i) {
         sfi_long(nhfp, cptr.add(wgrowtime, i, 8), __sl13);
         ;
     }
@@ -515,7 +516,7 @@ function create_worm_tail(num_segs) {
 export function worm_known(worm) {
     let curr = cptr.ldPtr(cptr.add(wtails, (cptr.ldI32(cptr.add(worm, 200)) & 31), 8));
     while (curr) {
-        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(curr, 10)), 8)), cptr.ldI16(cptr.add(curr, 8)))) & 2) != 0))
+        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(curr, 10)), 8)), cptr.ldI16(cptr.add(curr, 8)))) & NHM.IN_SIGHT) != 0))
             return 1;
         curr = cptr.ldPtr(curr);
     }

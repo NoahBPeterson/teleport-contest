@@ -6,6 +6,7 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { makemon, mkclass, mkclass_aligned, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { disp, flags, gi, gm, gy, svd, svl, svm, u, uwep } from './decl.js';
@@ -163,13 +164,13 @@ export function msummon(mon) {
     } else if ((((cptr.ldU64(cptr.add((ptr), 80)) & 256n) != 0n) && ((cptr.ldU64(cptr.add((ptr), 80)) & 3072n) == 0n) ? 1 : 0)) {
         dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 99, __sl2), rn2(20)) : rn2(20))) ? dlord(atyp) : ((!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 99, __sl2), rn2(6)) : rn2(6))) ? ndemon(atyp) : (cptr.ldI32(cptr.add((ptr), 24))));
         cnt = 1;
-    } else if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mon), 8))), 80)) & 4096n) != 0n) && mon_aligntyp(mon) == 1 ? 1 : 0)) {
+    } else if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add((mon), 8))), 80)) & 4096n) != 0n) && mon_aligntyp(mon) == NHM.A_LAWFUL ? 1 : 0)) {
         dtype = (((cptr.ldU64(cptr.add((ptr), 80)) & 1024n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 103, __sl2), rn2(20)) : rn2(20)) ? 1 : 0) ? llord() : ((((cptr.ldU64(cptr.add((ptr), 80)) & 1024n) != 0n) || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 105, __sl2), rn2(6)) : rn2(6)) ? 1 : 0) ? lminion() : (cptr.ldI32(cptr.add((ptr), 24))));
         cnt = (((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 107, __sl2), rn2(4)) : rn2(4)) ? 1 : 0) && !((cptr.ldU64(cptr.add((cptr.add(mons, dtype, 96)), 80)) & 1024n) != 0n) ? 1 : 0) ? 2 : 1;
     } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ANGEL, 96))) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 110, __sl2), rn2(6)) : rn2(6))) {
             switch (atyp) {
-                case 0:
+                case NHM.A_NEUTRAL:
                 dtype = cptr.ldI32(cptr.add(elementals, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 113, __sl2), rn2(4)) : rn2(4)), 4));
                 break;
                 case -1:
@@ -184,7 +185,7 @@ export function msummon(mon) {
     }
     if (dtype == NHC.NON_PM)
         return 0;
-    if (cnt > 1 && (cptr.ldU16(cptr.add(cptr.add(mons, dtype, 96), 34)) & 4096) != 0 ? 1 : 0)
+    if (cnt > 1 && (cptr.ldU16(cptr.add(cptr.add(mons, dtype, 96), 34)) & NHM.G_UNIQ) != 0 ? 1 : 0)
         cnt = 1;
     if ((cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), dtype, 12), 2)) & 3) != 0) {
         dtype = ndemon(atyp);
@@ -227,10 +228,10 @@ export function summon_minion(alignment, talk) {
     let mon;
     let mnum;
     switch (alignment) {
-        case 1:
+        case NHM.A_LAWFUL:
         mnum = lminion();
         break;
-        case 0:
+        case NHM.A_NEUTRAL:
         mnum = cptr.ldI32(cptr.add(elementals, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 208, __sl4), rn2(4)) : rn2(4)), 4));
         break;
         case -1:
@@ -259,7 +260,7 @@ export function summon_minion(alignment, talk) {
             cptr.st1(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((mon), 312)), 32))), 5), 0);
         }
     } else {
-        mon = makemon(cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), 131072);
+        mon = makemon(cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)), NHM.MM_NOMSG);
     }
     if (mon) {
         if (talk) {
@@ -316,7 +317,7 @@ export function demon_talk(mtmp) {
         else if (canseemon(mtmp))
             pline(__sl15, Amonnam(mtmp));
         if (!tele_restrict(mtmp))
-            void rloc(mtmp, 2);
+            void rloc(mtmp, NHM.RLOC_MSG);
         return 1;
     }
     cash = money_cnt(cptr.ldPtr(cptr.add(gi, 8)));
@@ -344,7 +345,7 @@ export function demon_talk(mtmp) {
             return 0;
         }
     }
-    livelog_printf(4n, __sl23, x_monnam(mtmp, 2, null, 31, 0), offer, (offer == 1n) ? __sl24 : __sl25);
+    livelog_printf(4n, __sl23, x_monnam(mtmp, NHM.ARTICLE_A, null, NHM.EXACT_NAME, 0), offer, (offer == 1n) ? __sl24 : __sl25);
     mongone(mtmp);
     return 1;
 }

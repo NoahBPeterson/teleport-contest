@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
 import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -221,7 +222,7 @@ export function init_objects() {
     }
     init_oclass_probs();
     shuffle_all();
-    cptr.stI32(cptr.add(cptr.add(objects, NHC.WAN_NOTHING, 120), 60), ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 234, __sl11), rn2(2)) : rn2(2)) ? 1 : 2) >>> 0);
+    cptr.stI32(cptr.add(cptr.add(objects, NHC.WAN_NOTHING, 120), 60), ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 234, __sl11), rn2(2)) : rn2(2)) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
 }
 
 /** C ref: o_init.c:240 */
@@ -349,7 +350,7 @@ export function savenames(nhfp) {
                 sfo_unsigned(nhfp, len, __sl20);
                 sfo_char(nhfp, cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)), __sl21, len.v | 0);
             }
-            if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+            if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
                 cptr.free(cptr.ldPtr(cptr.add(cptr.add(objects, i, 120), 8)));
                 cptr.stPtr(cptr.add(cptr.add(objects, i, 120), 8), null);
             }
@@ -499,13 +500,13 @@ export function choose_disco_sort(mode) {
     let i;
     let n;
     let choice;
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 0; cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)); ++i) {
         cptr.stI32(any, cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, 0, clr, cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)), (cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)) == cptr.ld1s(cptr.add(flags, 96))) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.ldPtr(cptr.add(disco_orders_descr, i, 8)), (cptr.ld1s(cptr.add(cptr.decay(disco_order_let), i, 1)) == cptr.ld1s(cptr.add(flags, 96))) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     if (mode == 2) {
         add_menu_str(tmpwin, __sl9);
@@ -514,7 +515,7 @@ export function choose_disco_sort(mode) {
         add_menu_str(tmpwin, __sl30);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl31);
-    n = select_menu(tmpwin, 1, selected);
+    n = select_menu(tmpwin, NHM.PICK_ONE, selected);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (n > 0) {
         choice = cptr.ldI32(cptr.add(selected.v, 0, 24));
@@ -618,13 +619,13 @@ export function dodiscovered() {
         cptr.st1(cptr.add(flags, 96), 111);
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         if (choose_disco_sort(1) < 0)
-            return 0;
+            return NHM.ECMD_OK;
     }
     alphabyclass = schar((cptr.ld1s(cptr.add(flags, 96)) == 99));
     alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || alphabyclass ? 1 : 0));
     lootsort = schar((cptr.ld1s(cptr.add(flags, 96)) == 115));
     sortindx = cptr.diff(cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96))), cptr.decay(disco_order_let));
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     void cptr.sprintf(cptr.decay(buf), __sl43, cptr.ldPtr(cptr.add(disco_orders_descr, sortindx, 8)));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(buf));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl9);
@@ -683,7 +684,7 @@ export function dodiscovered() {
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, 1);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: o_init.c:877 — @param {CInt} oclass @param {CPtr} buf @returns {CPtr} */
@@ -723,19 +724,19 @@ export function doclassdisco() {
     let traditional;
     let alphabetized;
     let lootsort;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     if (!cptr.ld1s(cptr.add(flags, 96)) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1s(cptr.add(flags, 96)))) ? 1 : 0)
         cptr.st1(cptr.add(flags, 96), 111);
     if (cptr.ld1s(cptr.add(iflags, 135))) {
         if (choose_disco_sort(2) < 0)
-            return 0;
+            return NHM.ECMD_OK;
     }
     alphabetized = schar((cptr.ld1s(cptr.add(flags, 96)) == 97 || cptr.ld1s(cptr.add(flags, 96)) == 99 ? 1 : 0));
     lootsort = schar((cptr.ld1s(cptr.add(flags, 96)) == 115));
     cptr.st1(cptr.add(cptr.decay(discosyms), 0, 1), 0);
-    traditional = schar((cptr.ld1s(cptr.add(flags, 142)) == 0 || cptr.ld1s(cptr.add(flags, 142)) == 1 ? 1 : 0));
+    traditional = schar((cptr.ld1s(cptr.add(flags, 142)) == NHM.MENU_TRADITIONAL || cptr.ld1s(cptr.add(flags, 142)) == NHM.MENU_COMBINATION ? 1 : 0));
     if (!traditional) {
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     }
     cptr.memcpy(any, cptr.add(cg, 536), 8);
@@ -746,7 +747,7 @@ export function doclassdisco() {
             void cptr.strcat(cptr.decay(discosyms), __sl49);
             if (!traditional) {
                 cptr.stI32(any, 117);
-                add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 114, 0, clr, cptr.decay(__static_doclassdisco_unique_items), 0);
+                add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 114, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_unique_items), NHM.MENU_ITEMFLAGS_NONE);
             }
             break;
         }
@@ -755,7 +756,7 @@ export function doclassdisco() {
         void cptr.strcat(cptr.decay(discosyms), __sl50);
         if (!traditional) {
             cptr.stI32(any, 97);
-            add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 0, 0, clr, cptr.decay(__static_doclassdisco_artifact_items), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 0, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_artifact_items), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
     void cptr.strcpy(cptr.decay(allclasses), cptr.add(flags, 99));
@@ -770,7 +771,7 @@ export function doclassdisco() {
                     void strkitten(cptr.decay(discosyms), c);
                     if (!traditional) {
                         cptr.stI32(any, c);
-                        add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, c, 0, clr, oclass_to_name(oclass, cptr.decay(buf)), 0);
+                        add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, c, NHM.ATR_NONE, clr, oclass_to_name(oclass, cptr.decay(buf)), NHM.MENU_ITEMFLAGS_NONE);
                     }
                 }
             }
@@ -779,7 +780,7 @@ export function doclassdisco() {
         You(cptr.decay(__static_doclassdisco_havent_discovered_any), __sl51);
         if (tmpwin != -1)
             (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
-        return 0;
+        return NHM.ECMD_OK;
     }
     c = 0;
     if (traditional) {
@@ -797,11 +798,11 @@ export function doclassdisco() {
         if (!c)
             (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
     } else {
-        if (!cptr.ld1s(cptr.add(cptr.decay(discosyms), 1, 1)) && cptr.ld1s(cptr.add(flags, 142)) == 3 ? 1 : 0) {
+        if (!cptr.ld1s(cptr.add(cptr.decay(discosyms), 1, 1)) && cptr.ld1s(cptr.add(flags, 142)) == NHM.MENU_PARTIAL ? 1 : 0) {
             c = cptr.ld1s(cptr.add(cptr.decay(discosyms), 0, 1));
         } else {
             (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(__static_doclassdisco_prompt));
-            i = select_menu(tmpwin, 1, pick_list);
+            i = select_menu(tmpwin, NHM.PICK_ONE, pick_list);
             if (i > 0) {
                 c = schar(cptr.ldI32(cptr.add(pick_list.v, 0, 24)));
                 cptr.free(pick_list.v);
@@ -810,8 +811,8 @@ export function doclassdisco() {
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     }
     if (!c)
-        return 0;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+        return NHM.ECMD_OK;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     ct = 0;
     switch (c) {
         case 117:
@@ -878,7 +879,7 @@ export function doclassdisco() {
     if (ct)
         (cptr.ldPtr(cptr.add(windowprocs, 120)))(tmpwin, 1);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: o_init.c:1131 */
@@ -894,10 +895,10 @@ export function rename_disco() {
     let tmpwin;
     let any = cptr.alloc(8);
     let selected = cptr.box(null);
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     let buf = new Uint8Array(256);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     for (s = cptr.add(flags, 99); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
@@ -918,7 +919,7 @@ export function rename_disco() {
             cptr.stI32(any, dis);
             cptr.st1(cptr.decay(buf), 0);
             disco_append_typename(cptr.decay(buf), dis);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
     if (ct == 0) {
@@ -928,7 +929,7 @@ export function rename_disco() {
     } else {
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl61);
         dis = NHC.STRANGE_OBJECT;
-        sl = select_menu(tmpwin, 1, selected);
+        sl = select_menu(tmpwin, NHM.PICK_ONE, selected);
         if (sl > 0) {
             dis = cptr.ldI32(cptr.add(selected.v, 0, 24));
             cptr.free(selected.v);

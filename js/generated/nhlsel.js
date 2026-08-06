@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_optinteger, luaL_setfuncs } from './lauxlib.js';
 import { check_mapchr, get_table_int, get_table_int_opt, get_table_option, lcheck_param_table, nhl_add_table_entry_int, nhl_error, nhl_get_xy_params, nhl_pcall_handle } from './nhlua.js';
 import { selection_clear, selection_do_ellipse, selection_do_gradient, selection_do_grow, selection_do_line, selection_do_randline, selection_filter_mapchar, selection_filter_percent, selection_floodfill, selection_free, selection_from_mkroom, selection_getbounds, selection_getpoint, selection_new, selection_not, selection_recalc_bounds, selection_rndcoord, selection_setpoint, selection_size_description } from './selvar.js';
@@ -172,7 +173,7 @@ function l_selection_setpoint(L) {
         crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
-    get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
     selection_setpoint(x.v, y.v, sel, val);
     lua_settop(L, 1);
     return 1;
@@ -215,7 +216,7 @@ function l_selection_getpoint(L) {
         crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
-    get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, crd);
     val = selection_getpoint(x.v, y.v, sel);
     lua_settop(L, 0);
     lua_pushnumber(L, val);
@@ -425,8 +426,8 @@ function l_selection_line(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl10);
     }
-    get_location_coord(x1, y1, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y2.v, sel.v);
@@ -443,8 +444,8 @@ function l_selection_rect(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl11);
     }
-    get_location_coord(x1, y1, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y1.v, sel.v);
@@ -465,8 +466,8 @@ function l_selection_fillrect(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl12);
     }
-    get_location_coord(x1, y1, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     if (x1.v == x2.v) {
@@ -506,8 +507,8 @@ function l_selection_randline(L) {
         void l_selection_new(L);
         void l_selection_check(L, 1);
     }
-    get_location_coord(x1, y1, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
     void l_selection_clone(L);
     sel = l_selection_check(L, 2);
     selection_do_randline(x1.v, y1.v, x2.v, y2.v, schar(roughness), 12, sel);
@@ -525,10 +526,10 @@ cptr.stPtr(cptr.add(__static_l_selection_grow_growdirs, 48), null); /** C ref: n
 const __static_l_selection_grow_growdirs2i = cptr.alloc(7 * 4);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 0), 15);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 4), -1);
-cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 8), 1);
-cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 12), 8);
-cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 16), 4);
-cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 20), 2);
+cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 8), NHM.W_NORTH);
+cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 12), NHM.W_WEST);
+cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 16), NHM.W_EAST);
+cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 20), NHM.W_SOUTH);
 cptr.stI32(cptr.add(__static_l_selection_grow_growdirs2i, 24), 0); /** C ref: nhlsel.c:636 — int[7] (function-static) */
 
 /** C ref: nhlsel.c:631 — @param {CPtr} L @returns {CInt} */
@@ -612,7 +613,7 @@ function l_selection_flood(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
     if (isok(x.v, y.v)) {
         set_floodfillchk_match_under(i16(cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4))));
         selection_floodfill(sel, x.v, y.v, diagonals);
@@ -653,7 +654,7 @@ function l_selection_circle(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
     selection_do_ellipse(sel, x.v, y.v, r, r, !filled);
     lua_settop(L, 1);
     return 1;
@@ -696,7 +697,7 @@ function l_selection_ellipse(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, 16, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtr(cptr.add(gc, 568)) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gc, 568)), 8)) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
     selection_do_ellipse(sel, x.v, y.v, r1, r2, !filled);
     lua_settop(L, 1);
     return 1;
@@ -707,8 +708,8 @@ cptr.stPtr(cptr.add(__static_l_selection_gradient_gradtypes, 0), __sl22);
 cptr.stPtr(cptr.add(__static_l_selection_gradient_gradtypes, 8), __sl28);
 cptr.stPtr(cptr.add(__static_l_selection_gradient_gradtypes, 16), null); /** C ref: nhlsel.c:874 — char *[3] (function-static) */
 const __static_l_selection_gradient_gradtypes2i = cptr.alloc(3 * 4);
-cptr.stI32(cptr.add(__static_l_selection_gradient_gradtypes2i, 0), 0);
-cptr.stI32(cptr.add(__static_l_selection_gradient_gradtypes2i, 4), 1);
+cptr.stI32(cptr.add(__static_l_selection_gradient_gradtypes2i, 0), NHM.SEL_GRADIENT_RADIAL);
+cptr.stI32(cptr.add(__static_l_selection_gradient_gradtypes2i, 4), NHM.SEL_GRADIENT_SQUARE);
 cptr.stI32(cptr.add(__static_l_selection_gradient_gradtypes2i, 8), -1); /** C ref: nhlsel.c:877 — int[3] (function-static) */
 
 /** C ref: nhlsel.c:862 — @param {CPtr} L @returns {CInt} */

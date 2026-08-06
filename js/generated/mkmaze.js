@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { isok } from './cmd.js';
 import { flags, gb, ge, gf, gi, gl, gn, gr, gu, gv, gw, gx, gy, iflags, program_state, svb, svd, sve, svi, svl, svn, svr, svu, svx, svy, u, uball } from './decl.js';
 import { is_ice, is_pool } from './dbridge.js';
@@ -204,7 +205,7 @@ function wall_cleanup(x1, y1, x2, y2) {
     let x;
     let y;
     let lev;
-    if (((((x1 < 0 || x2 >= 80 ? 1 : 0) || x1 > x2 ? 1 : 0) || y1 < 0 ? 1 : 0) || y2 >= 21 ? 1 : 0) || y1 > y2 ? 1 : 0)
+    if (((((x1 < 0 || x2 >= NHM.COLNO ? 1 : 0) || x1 > x2 ? 1 : 0) || y1 < 0 ? 1 : 0) || y2 >= NHM.ROWNO ? 1 : 0) || y1 > y2 ? 1 : 0)
         panic(__sl2, x1, y1, x2, y2);
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
@@ -246,7 +247,7 @@ export function fix_wall_spines(x1, y1, x2, y2) {
     let loc_f;
     let bits;
     let locale = (function () { const flat = new Uint8Array(3 * 3 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 3 * 4, (r + 1) * 3 * 4)); a.buf = flat; return a; })();
-    if (((((x1 < 0 || x2 >= 80 ? 1 : 0) || x1 > x2 ? 1 : 0) || y1 < 0 ? 1 : 0) || y2 >= 21 ? 1 : 0) || y1 > y2 ? 1 : 0)
+    if (((((x1 < 0 || x2 >= NHM.COLNO ? 1 : 0) || x1 > x2 ? 1 : 0) || y1 < 0 ? 1 : 0) || y2 >= NHM.ROWNO ? 1 : 0) || y1 > y2 ? 1 : 0)
         panic(__sl3, x1, y1, x2, y2);
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
@@ -402,7 +403,7 @@ function put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
         case NHC.LR_DOWNTELE:
         if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) !== null) {
             if (oneshot) {
-                if (!rloc(mtmp, 4))
+                if (!rloc(mtmp, NHM.RLOC_NOMSG))
                     m_into_limbo(mtmp);
             } else
                 return 0;
@@ -431,16 +432,16 @@ function baalz_fixup() {
     let lastx;
     let lasty;
     y = 10;
-    for (lastx = (x = 0); x < 80; ++x)
-        if ((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & 8) != 0) {
+    for (lastx = (x = 0); x < NHM.COLNO; ++x)
+        if ((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & NHM.W_NONDIGGABLE) != 0) {
             if (!lastx)
                 cptr.stI16(cptr.add(gb, 4816), i16(((x + 1) | 0)));
             lastx = x;
         }
     cptr.stI16(cptr.add(gb, 4820), i16(((((lastx > cptr.ldI16(cptr.add(gb, 4816))) ? lastx : x) - 1) | 0)));
     x = cptr.ldI16(cptr.add(gb, 4816));
-    for (lasty = (y = 0); y < 21; ++y)
-        if ((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & 8) != 0) {
+    for (lasty = (y = 0); y < NHM.ROWNO; ++y)
+        if ((((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & NHM.W_NONDIGGABLE) != 0) {
             if (!lasty)
                 cptr.stI16(cptr.add(gb, 4818), i16(((y + 1) | 0)));
             lasty = y;
@@ -450,16 +451,16 @@ function baalz_fixup() {
         for (y = cptr.ldI16(cptr.add(gb, 4818)); y <= cptr.ldI16(cptr.add(gb, 4822)); ++y)
             if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.POOL) {
                 cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), NHC.HWALL);
-                if (cptr.ldI16(cptr.add(gb, 4824)) == 80)
+                if (cptr.ldI16(cptr.add(gb, 4824)) == NHM.COLNO)
                     cptr.stI16(cptr.add(gb, 4824), i16(x)), cptr.stI16(cptr.add(gb, 4826), i16(y));
                 else
                     cptr.stI16(cptr.add(gb, 4828), i16(x)), cptr.stI16(cptr.add(gb, 4830), i16(y));
             } else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.IRONBARS) {
-                if (isok(i16(((x - 1) | 0)), i16(y)) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8)) & 31) | 0) & 8) != 0 ? 1 : 0) {
+                if (isok(i16(((x - 1) | 0)), i16(y)) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8)) & 31) | 0) & NHM.W_NONDIGGABLE) != 0 ? 1 : 0) {
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8)) & -9);
                     if (isok(i16(((x - 2) | 0)), i16(y)))
                         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 2) | 0, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 2) | 0, 756), y, 36), 8)) & -9);
-                } else if (isok(i16(((x + 1) | 0)), i16(y)) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8)) & 31) | 0) & 8) != 0 ? 1 : 0) {
+                } else if (isok(i16(((x + 1) | 0)), i16(y)) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8)) & 31) | 0) & NHM.W_NONDIGGABLE) != 0 ? 1 : 0) {
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8)) & -9);
                     if (isok(i16(((x + 2) | 0)), i16(y)))
                         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 2) | 0, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 2) | 0, 756), y, 36), 8)) & -9);
@@ -480,8 +481,8 @@ function baalz_fixup() {
         if ((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) !== null)
             void rloc(mtmp, 5);
     }
-    cptr.stI16(cptr.add(gb, 4816), cptr.stI16(cptr.add(gb, 4824), 80));
-    cptr.stI16(cptr.add(gb, 4818), cptr.stI16(cptr.add(gb, 4826), 21));
+    cptr.stI16(cptr.add(gb, 4816), cptr.stI16(cptr.add(gb, 4824), NHM.COLNO));
+    cptr.stI16(cptr.add(gb, 4818), cptr.stI16(cptr.add(gb, 4826), NHM.ROWNO));
     cptr.stI16(cptr.add(gb, 4820), cptr.stI16(cptr.add(gb, 4828), 0));
     cptr.stI16(cptr.add(gb, 4822), cptr.stI16(cptr.add(gb, 4830), 0));
 }
@@ -562,7 +563,7 @@ export function fixup_special() {
             if (goodpos(i16(x), i16(y), null, 0)) {
                 let tryct2 = 0;
                 otmp = mk_tt_object(NHC.STATUE, i16(x), i16(y));
-                while ((++tryct2 < 100 && otmp ? 1 : 0) && (poly_when_stoned(cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)) || ((cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 68)) & 128) != 0) ? 1 : 0) ? 1 : 0) {
+                while ((++tryct2 < 100 && otmp ? 1 : 0) && (poly_when_stoned(cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)) || ((cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 68)) & NHM.MR_STONE) != 0) ? 1 : 0) ? 1 : 0) {
                     set_corpsenm(otmp, rndmonnum());
                 }
             }
@@ -570,10 +571,10 @@ export function fixup_special() {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 671, __sl8), rn2(2)) : rn2(2)))
             otmp = mk_tt_object(NHC.STATUE, i16(somex(croom)), i16(somey(croom)));
         else
-            otmp = mkcorpstat(NHC.STATUE, null, null, i16(somex(croom)), i16(somey(croom)), 0);
+            otmp = mkcorpstat(NHC.STATUE, null, null, i16(somex(croom)), i16(somey(croom)), NHM.CORPSTAT_NONE);
         if (otmp) {
             tryct = 0;
-            while (++tryct < 100 && (((cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 68)) & 128) != 0) || poly_when_stoned(cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)) ? 1 : 0) ? 1 : 0) {
+            while (++tryct < 100 && (((cptr.ld1u(cptr.add((cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)), 68)) & NHM.MR_STONE) != 0) || poly_when_stoned(cptr.add(mons, cptr.ldI32(cptr.add(otmp, 168)), 96)) ? 1 : 0) ? 1 : 0) {
                 set_corpsenm(otmp, rndmonnum());
             }
         }
@@ -625,7 +626,7 @@ function migrate_orc(mtmp, mflags) {
         cptr.stI64(cptr.add(mtmp, 264), (cptr.ldI64(cptr.add(mtmp, 264)) & -8193n));
     }
     get_level(dest, nlev);
-    migrate_to_level(mtmp, ledger_no(dest), 0, null);
+    migrate_to_level(mtmp, ledger_no(dest), NHM.MIGR_RANDOM, null);
 }
 
 /** C ref: mkmaze.c:748 — @param {CPtr} mtmp */
@@ -662,7 +663,7 @@ function shiny_orc_stuff(mtmp) {
 /** C ref: mkmaze.c:780 — @param {CInt} otyp @param {CPtr} gang */
 function migr_booty_item(otyp, gang) {
     let otmp;
-    otmp = mksobj_migr_to_species(otyp, 128, 1, 0);
+    otmp = mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0);
     if (otmp && gang ? 1 : 0) {
         new_oname(otmp, ((Strlen_(gang, __sl14, 786) + 1) >>> 0) | 0);
         void cptr.strcpy((cptr.ldPtr(cptr.ldPtr(cptr.add((otmp), 208)))), gang);
@@ -699,7 +700,7 @@ function stolen_booty() {
             migr_booty_item(otyp, gang);
     }
     migr_booty_item((rng_log_enabled() ? (rng_log_set_caller(__sl0, 843, __sl15), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : NHC.SILVER_SABER, gang);
-    mtmp = makemon(cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96), 0, 0, 64);
+    mtmp = makemon(cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96), 0, 0, NHM.MM_NONAME);
     if (mtmp) {
         mtmp = christen_monst(mtmp, upstart(gang));
         cptr.stI32(cptr.add(mtmp, 168), 0);
@@ -719,7 +720,7 @@ function stolen_booty() {
     for (i = 0; i < cnt; ++i) {
         let mtyp;
         mtyp = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 881, __sl15), rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) : rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) + NHC.PM_ORC) | 0;
-        mtmp = makemon(cptr.add(mons, mtyp, 96), 0, 0, 64);
+        mtmp = makemon(cptr.add(mons, mtyp, 96), 0, 0, NHM.MM_NONAME);
         if (mtmp) {
             shiny_orc_stuff(mtmp);
             migrate_orc(mtmp, 0n);
@@ -963,18 +964,18 @@ function populate_maze() {
     }
     for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1110, __sl21), rn2(3)) : rn2(3)); i; i--) {
         mazexy(mm);
-        void makemon(cptr.add(mons, NHC.PM_MINOTAUR, 96), cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), 0);
+        void makemon(cptr.add(mons, NHC.PM_MINOTAUR, 96), cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), NHM.NO_MM_FLAGS);
     }
     for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1114, __sl21), rn2(5)) : rn2(5)) + 7) | 0); i; i--) {
         mazexy(mm);
-        void makemon(null, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), 0);
+        void makemon(null, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)), NHM.NO_MM_FLAGS);
     }
     for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1118, __sl21), rn2(6)) : rn2(6)) + 7) | 0); i; i--) {
         mazexy(mm);
         void mkgold(0n, cptr.ldI16(mm), cptr.ldI16(cptr.add(mm, 2)));
     }
     for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1122, __sl21), rn2(6)) : rn2(6)) + 7) | 0); i; i--)
-        mktrap(0, 2, null, null);
+        mktrap(0, NHM.MKTRAP_MAZEFLAG, null, null);
 }
 
 /** C ref: mkmaze.c:1127 — @param {CPtr} s */
@@ -1153,7 +1154,7 @@ export function get_level_extends(left, top, right, bottom) {
     let ymin;
     let ymax;
     found = (nonwall = 0);
-    for (xmin = 0; !found && xmin <= 80 ? 1 : 0; xmin++) {
+    for (xmin = 0; !found && xmin <= NHM.COLNO ? 1 : 0; xmin++) {
         lev = cptr.add(cptr.add(cptr.add(svl, 1680), xmin, 756), 0, 36);
         for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 36)) {
             typ = cptr.ld1s(cptr.add(lev, 4));
@@ -1180,12 +1181,12 @@ export function get_level_extends(left, top, right, bottom) {
         }
     }
     xmax = i16(xmax + ((nonwall || !(cptr.ldI32(cptr.add(svl, 89148)) & 1) ? 1 : 0) ? 2 : 1));
-    if (xmax >= 80)
+    if (xmax >= NHM.COLNO)
         xmax = 79;
     found = (nonwall = 0);
-    for (ymin = 0; !found && ymin <= 21 ? 1 : 0; ymin++) {
+    for (ymin = 0; !found && ymin <= NHM.ROWNO ? 1 : 0; ymin++) {
         lev = cptr.add(cptr.add(cptr.add(svl, 1680), xmin, 756), ymin, 36);
-        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, 21, 36)) {
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
             typ = cptr.ld1s(cptr.add(lev, 4));
             if (typ != NHC.STONE) {
                 found = 1;
@@ -1198,7 +1199,7 @@ export function get_level_extends(left, top, right, bottom) {
     found = (nonwall = 0);
     for (ymax = 20; !found && ymax >= 0 ? 1 : 0; ymax--) {
         lev = cptr.add(cptr.add(cptr.add(svl, 1680), xmin, 756), ymax, 36);
-        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, 21, 36)) {
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
             typ = cptr.ld1s(cptr.add(lev, 4));
             if (typ != NHC.STONE) {
                 found = 1;
@@ -1225,13 +1226,13 @@ export function bound_digging() {
     if ((((cptr.ldI16(cptr.add((cptr.add(svd, 1852)), 2)) || cptr.ldI16((cptr.add(svd, 1852))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1852)) ? 1 : 0)))
         return;
     get_level_extends(xmin, ymin, xmax, ymax);
-    for (x = 0; x < 80; x++)
-        for (y = 0; y < 21; y++)
+    for (x = 0; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++)
             if (((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) <= NHC.DBWALL)) {
                 if (((y <= ymin.v || y >= ymax.v ? 1 : 0) || x <= xmin.v ? 1 : 0) || x >= xmax.v ? 1 : 0)
-                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | 8);
+                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | NHM.W_NONDIGGABLE);
                 if (((y < ymin.v || y > ymax.v ? 1 : 0) || x < xmin.v ? 1 : 0) || x > xmax.v ? 1 : 0)
-                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | 16);
+                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | NHM.W_NONPASSWALL);
             }
 }
 
@@ -1274,7 +1275,7 @@ export function fumaroles() {
         let y = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1501, __sl35), rn2(17)) : rn2(17)) + 3) | 0));
         if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.LAVAPOOL) {
             let r = create_gas_cloud(x, y, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + (sizemin)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + 5) | 0));
-            (cptr.stI32(cptr.add((r), 60), cptr.ldI32(cptr.add((r), 60)) | 2));
+            (cptr.stI32(cptr.add((r), 60), cptr.ldI32(cptr.add((r), 60)) | NHM.REG_NOT_HEROS));
             snd = 1;
             if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < 15)
                 loud = 1;
@@ -1473,7 +1474,7 @@ export function save_waterlevel(nhfp) {
             sfo_bubble(nhfp, b, __sl48);
         }
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         unsetup_waterlevel();
 }
 
@@ -1596,7 +1597,7 @@ function mk_bubble(x, y, n) {
         impossible(__sl56);
         n = (7 - 1) | 0;
     }
-    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(__static_mk_bubble_bmask, n, 8)), 1)) > 4) {
+    if (cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(__static_mk_bubble_bmask, n, 8)), 1)) > NHM.MAX_BMASK) {
         panic(__sl57);
     }
     b = alloc(40);
@@ -1716,7 +1717,7 @@ function mv_bubble(b, dx, dy, ini) {
                 case NHC.CONS_MON:
                 {
                     let mon = cptr.ldPtr(cptr.add(cons, 16));
-                    if (!mnearto(mon, cptr.ldI16(cptr.add(cons, 8)), cptr.ldI16(cptr.add(cons, 10)), 1, 4))
+                    if (!mnearto(mon, cptr.ldI16(cptr.add(cons, 8)), cptr.ldI16(cptr.add(cons, 10)), 1, NHM.RLOC_NOMSG))
                         elemental_clog(mon);
                     break;
                 }
@@ -1728,7 +1729,7 @@ function mv_bubble(b, dx, dy, ini) {
                     u_on_newpos(cptr.ldI16(cptr.add(cons, 8)), cptr.ldI16(cptr.add(cons, 10)));
                     newsym(i16(ux0), i16(uy0));
                     if (mtmp) {
-                        mnexto(mtmp, 4);
+                        mnexto(mtmp, NHM.RLOC_NOMSG);
                     }
                     break;
                 }

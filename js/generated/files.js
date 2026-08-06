@@ -6,6 +6,7 @@
 import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
 import { bclose, close_check } from './sfstruct.js';
@@ -259,7 +260,7 @@ export function validate_prefix_locations(reasonbuf) {
 /** C ref: files.c:444 — @param {CPtr} filename @param {CPtr} mode @param {CInt} prefix @returns {CPtr} */
 export function fopen_datafile(filename, mode, prefix) {
     let fp;
-    filename = fqname(filename, prefix, prefix == 9 ? 3 : 0);
+    filename = fqname(filename, prefix, prefix == NHM.TROUBLEPREFIX ? 3 : 0);
     fp = fopen(filename, mode);
     return fp;
 }
@@ -282,7 +283,7 @@ export function init_nhfile(nhfp) {
     }
     cptr.stI32(nhfp, -1);
     cptr.stPtr(cptr.add(nhfp, 40), null);
-    cptr.stI32(cptr.add(nhfp, 4), 1);
+    cptr.stI32(cptr.add(nhfp, 4), NHM.COUNTING);
     cptr.st1(cptr.add(nhfp, 32), 1);
     cptr.st1(cptr.add(nhfp, 33), 0);
     cptr.st1(cptr.add(nhfp, 34), 0);
@@ -389,11 +390,11 @@ export function create_levelfile(lev, errbuf) {
     if (errbuf)
         cptr.st1(errbuf, 0);
     set_levelfile_name(cptr.add(gl, 16), lev);
-    fq_lock = fqname(cptr.add(gl, 16), 1, 0);
+    fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 8), 1);
-        cptr.stI32(cptr.add(nhfp, 4), 2);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_LEVELFILE);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.WRITING);
         cptr.st1(cptr.add(nhfp, 32), 1);
         cptr.st1(cptr.add(nhfp, 33), 0);
         cptr.st1(cptr.add(nhfp, 34), 0);
@@ -402,9 +403,9 @@ export function create_levelfile(lev, errbuf) {
         cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
-        cptr.stI32(nhfp, creat(fq_lock, 432));
+        cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
         if (cptr.ldI32(nhfp) >= 0)
-            cptr.st1(cptr.add(cptr.add(svl, 89208), lev, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev, 1)) | 4);
+            cptr.st1(cptr.add(cptr.add(svl, 89208), lev, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev, 1)) | NHM.LFILE_EXISTS);
         else if (errbuf)
             void cptr.sprintf(errbuf, __sl6, cptr.add(gl, 16), lev, (cptr.ldI32(__error())));
     }
@@ -419,16 +420,16 @@ export function open_levelfile(lev, errbuf) {
     if (errbuf)
         cptr.st1(errbuf, 0);
     set_levelfile_name(cptr.add(gl, 16), lev);
-    fq_lock = fqname(cptr.add(gl, 16), 1, 0);
+    fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 4), 0);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.READING);
         cptr.st1(cptr.add(nhfp, 32), 1);
         cptr.st1(cptr.add(nhfp, 33), 0);
         cptr.st1(cptr.add(nhfp, 34), 0);
         cptr.st1(cptr.add(nhfp, 72), 0);
         cptr.st1(cptr.add(nhfp, 73), 1);
-        cptr.stI32(cptr.add(nhfp, 8), 1);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_LEVELFILE);
         cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
         cptr.stI32(nhfp, -1);
         cptr.stPtr(cptr.add(nhfp, 40), null);
@@ -444,9 +445,9 @@ export function open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
-    if (lev == 0 || (cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev, 1)) & 4) ? 1 : 0) {
+    if (lev == 0 || (cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev, 1)) & NHM.LFILE_EXISTS) ? 1 : 0) {
         set_levelfile_name(cptr.add(gl, 16), lev);
-        void unlink(fqname(cptr.add(gl, 16), 1, 0));
+        void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
         cptr.st1(cptr.add(cptr.add(svl, 89208), lev, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev, 1)) & -5);
     }
 }
@@ -505,11 +506,11 @@ export function create_bonesfile(lev, bonesid, errbuf) {
         cptr.st1(errbuf, 0);
     cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, 4784), lev));
     file = set_bonestemp_name();
-    file = fqname(file, 3, 0);
+    file = fqname(file, NHM.BONESPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 8), 3);
-        cptr.stI32(cptr.add(nhfp, 4), 2);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_BONESFILE);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.WRITING);
         cptr.st1(cptr.add(nhfp, 32), 1);
         cptr.st1(cptr.add(nhfp, 33), 0);
         cptr.st1(cptr.add(nhfp, 34), 1);
@@ -523,7 +524,7 @@ export function create_bonesfile(lev, bonesid, errbuf) {
             failed = (cptr.ldI32(__error()));
         }
         if (cptr.ld1s(cptr.add(nhfp, 32))) {
-            cptr.stI32(nhfp, creat(file, 432));
+            cptr.stI32(nhfp, creat(file, NHM.FCMASK));
             if (cptr.ldI32(nhfp) < 0)
                 failed = (cptr.ldI32(__error()));
         }
@@ -540,9 +541,9 @@ export function commit_bonesfile(lev) {
     let tempname;
     let ret;
     void set_bonesfile_name(cptr.add(gb, 4784), lev);
-    fq_bones = fqname(cptr.add(gb, 4784), 3, 0);
+    fq_bones = fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0);
     tempname = set_bonestemp_name();
-    tempname = fqname(tempname, 3, 1);
+    tempname = fqname(tempname, NHM.BONESPREFIX, 1);
     ret = rename(tempname, fq_bones);
     if (cptr.ld1s(cptr.add(flags, 10)) && ret != 0 ? 1 : 0)
         pline(__sl15, tempname, fq_bones);
@@ -553,14 +554,14 @@ export function open_bonesfile(lev, bonesid) {
     let fq_bones;
     let nhfp = null;
     cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, 4784), lev));
-    fq_bones = fqname(cptr.add(gb, 4784), 3, 0);
+    fq_bones = fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0);
     nh_uncompress(fq_bones);
     nhfp = new_nhfile();
     if (nhfp) {
         cptr.st1(cptr.add(nhfp, 32), 1);
         cptr.st1(cptr.add(nhfp, 33), 0);
-        cptr.stI32(cptr.add(nhfp, 8), 3);
-        cptr.stI32(cptr.add(nhfp, 4), 0);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_BONESFILE);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.READING);
         cptr.st1(cptr.add(nhfp, 34), 1);
         cptr.st1(cptr.add(nhfp, 72), 1);
         cptr.st1(cptr.add(nhfp, 73), schar((cptr.ldI32(cptr.add(cptr.add(sysopt, 168), 0, 4)) != NHC.exportascii)));
@@ -581,15 +582,15 @@ export function open_bonesfile(lev, bonesid) {
 export function delete_bonesfile(lev) {
     let reslt;
     void set_bonesfile_name(cptr.add(gb, 4784), lev);
-    reslt = unlink(fqname(cptr.add(gb, 4784), 3, 0));
-    delete_convertedfile(fqname(cptr.add(gb, 4784), 3, 0));
+    reslt = unlink(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
+    delete_convertedfile(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
     return !(reslt < 0);
 }
 
 /** C ref: files.c:1006 */
 export function compress_bonesfile() {
-    nh_sfconvert(fqname(cptr.add(gb, 4784), 3, 0));
-    nh_compress(fqname(cptr.add(gb, 4784), 3, 0));
+    nh_sfconvert(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
+    nh_compress(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
 }
 
 /** C ref: files.c:1020 — @param {CInt} regularize_it */
@@ -645,11 +646,11 @@ export function create_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
-    fq_save = fqname(cptr.add(gs, 884), 2, 0);
+    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 8), 2);
-        cptr.stI32(cptr.add(nhfp, 4), 2);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_SAVEFILE);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.WRITING);
         if (cptr.ldI32(cptr.add(program_state, 56)) || do_historical ? 1 : 0) {
             (void (do_historical));
             cptr.st1(cptr.add(nhfp, 32), 1);
@@ -660,7 +661,7 @@ export function create_savefile() {
             cptr.stI32(cptr.add(nhfp, 12), NHC.historical);
             cptr.stI32(nhfp, -1);
             cptr.stPtr(cptr.add(nhfp, 40), null);
-            cptr.stI32(nhfp, creat(fq_save, 432));
+            cptr.stI32(nhfp, creat(fq_save, NHM.FCMASK));
         }
     }
     nhfp = viable_nhfile(nhfp);
@@ -672,11 +673,11 @@ export function open_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
-    fq_save = fqname(cptr.add(gs, 884), 2, 0);
+    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 8), 2);
-        cptr.stI32(cptr.add(nhfp, 4), 0);
+        cptr.stI32(cptr.add(nhfp, 8), NHM.NHF_SAVEFILE);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.READING);
         if (cptr.ldI32(cptr.add(program_state, 56)) || do_historical ? 1 : 0) {
             do_historical = 1;
             (void (do_historical));
@@ -697,7 +698,7 @@ export function open_savefile() {
 
 /** C ref: files.c:1259 @returns {CInt} */
 export function delete_savefile() {
-    let sfname = fqname(cptr.add(gs, 884), 2, 0);
+    let sfname = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
     void unlink(sfname);
     void delete_convertedfile(sfname);
     return 0;
@@ -709,10 +710,10 @@ export function restore_saved_game() {
     let nhfp = null;
     let sfstatus = 0;
     set_savefile_name(1);
-    fq_save = fqname(cptr.add(gs, 884), 2, 0);
+    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
     nh_uncompress(fq_save);
     if ((nhfp = open_savefile()) !== null) {
-        if ((sfstatus = validate(nhfp, fq_save, 0)) != 0) {
+        if ((sfstatus = validate(nhfp, fq_save, 0)) != NHM.SF_UPTODATE) {
             close_nhfile(nhfp);
             nhfp = problematic_savefile(sfstatus, fq_save);
         }
@@ -725,7 +726,7 @@ export function get_freeing_nhfile() {
     let nhfp = null;
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32(cptr.add(nhfp, 4), 4);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.FREEING);
     }
     return nhfp;
 }
@@ -736,7 +737,7 @@ export function check_panic_save() {
     let cf;
     let savef;
     set_error_savefile();
-    savef = fqname(cptr.add(gs, 884), 2, 0);
+    savef = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
     let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__sl20)))));
     let cfn = alloc((ln + 1) >>> 0);
     void cptr.strcpy(cfn, savef);
@@ -771,7 +772,7 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
     }
     nh_uncompress(cptr.add(gs, 884));
     if ((nhfp = open_savefile()) !== null) {
-        if ((sfstatus = validate(nhfp, filename, without_wait_synch_per_file)) == 0) {
+        if ((sfstatus = validate(nhfp, filename, without_wait_synch_per_file)) == NHM.SF_UPTODATE) {
             ln = 49;
             result = __builtin___memset_chk(alloc(ln), 0, BigInt(ln >>> 0), __builtin_object_size(alloc(ln), 0));
             get_plname_from_file(nhfp, result, 0);
@@ -789,13 +790,13 @@ export function get_saved_games() {
     let j = 0;
     let myuid = getuid() | 0;
     let dir;
-    if ((dir = opendir(fqname(__sl22, 2, 0)))) {
+    if ((dir = opendir(fqname(__sl22, NHM.SAVEPREFIX, 0)))) {
         for (n = 0; readdir(dir); n++)
             ;
         closedir(dir);
         if (n > 0) {
             let i;
-            if (!(dir = opendir(fqname(__sl22, 2, 0))))
+            if (!(dir = opendir(fqname(__sl22, NHM.SAVEPREFIX, 0))))
                 return null;
             result = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n))));
             void __builtin___memset_chk(result, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n), __builtin_object_size(result, 0));
@@ -957,25 +958,25 @@ export function nh_uncompress(filename) {
 
 /** C ref: files.c:2000 — struct sfstatus_to_msg[10] */
 const sf2msg = cptr.alloc(10 * 16);
-cptr.stI32(cptr.add(sf2msg, 0), 0);
+cptr.stI32(cptr.add(sf2msg, 0), NHM.SF_UPTODATE);
 cptr.stPtr(cptr.add(sf2msg, 8), __sl34);
-cptr.stI32(cptr.add(sf2msg, 16), 1);
+cptr.stI32(cptr.add(sf2msg, 16), NHM.SF_OUTDATED);
 cptr.stPtr(cptr.add(sf2msg, 24), __sl35);
-cptr.stI32(cptr.add(sf2msg, 32), 2);
+cptr.stI32(cptr.add(sf2msg, 32), NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH);
 cptr.stPtr(cptr.add(sf2msg, 40), __sl36);
-cptr.stI32(cptr.add(sf2msg, 48), 3);
+cptr.stI32(cptr.add(sf2msg, 48), NHM.SF_DM_IL32LLP64_ON_ILP32LL64);
 cptr.stPtr(cptr.add(sf2msg, 56), __sl37);
-cptr.stI32(cptr.add(sf2msg, 64), 4);
+cptr.stI32(cptr.add(sf2msg, 64), NHM.SF_DM_I32LP64_ON_ILP32LL64);
 cptr.stPtr(cptr.add(sf2msg, 72), __sl38);
-cptr.stI32(cptr.add(sf2msg, 80), 5);
+cptr.stI32(cptr.add(sf2msg, 80), NHM.SF_DM_ILP32LL64_ON_I32LP64);
 cptr.stPtr(cptr.add(sf2msg, 88), __sl39);
-cptr.stI32(cptr.add(sf2msg, 96), 6);
+cptr.stI32(cptr.add(sf2msg, 96), NHM.SF_DM_ILP32LL64_ON_IL32LLP64);
 cptr.stPtr(cptr.add(sf2msg, 104), __sl40);
-cptr.stI32(cptr.add(sf2msg, 112), 7);
+cptr.stI32(cptr.add(sf2msg, 112), NHM.SF_DM_I32LP64_ON_IL32LLP64);
 cptr.stPtr(cptr.add(sf2msg, 120), __sl41);
-cptr.stI32(cptr.add(sf2msg, 128), 8);
+cptr.stI32(cptr.add(sf2msg, 128), NHM.SF_DM_IL32LLP64_ON_I32LP64);
 cptr.stPtr(cptr.add(sf2msg, 136), __sl42);
-cptr.stI32(cptr.add(sf2msg, 144), 9);
+cptr.stI32(cptr.add(sf2msg, 144), NHM.SF_DM_MISMATCH);
 cptr.stPtr(cptr.add(sf2msg, 152), __sl43);
 
 /** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr} savefilenm @returns {CPtr} */
@@ -983,23 +984,23 @@ function problematic_savefile(sfstatus, savefilenm) {
     let i;
     let nhfp = null;
     switch (sfstatus) {
-        case 0:
+        case NHM.SF_UPTODATE:
         break;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
+        case NHM.SF_DM_IL32LLP64_ON_ILP32LL64:
+        case NHM.SF_DM_I32LP64_ON_ILP32LL64:
+        case NHM.SF_DM_ILP32LL64_ON_I32LP64:
+        case NHM.SF_DM_ILP32LL64_ON_IL32LLP64:
+        case NHM.SF_DM_I32LP64_ON_IL32LLP64:
+        case NHM.SF_DM_IL32LLP64_ON_I32LP64:
         // @FallThrough
         ;
-        case 9:
-        case 1:
-        case 2:
+        case NHM.SF_DM_MISMATCH:
+        case NHM.SF_OUTDATED:
+        case NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH:
         default:
         for (i = 0; i < 10; ++i) {
             if (cptr.ldI32(cptr.add(sf2msg, i, 16)) == sfstatus) {
-                raw_printf(__sl44, savefilenm, (sfstatus == 1) ? __sl45 : __sl46, cptr.ldPtr(cptr.add(cptr.add(sf2msg, i, 16), 8)));
+                raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtr(cptr.add(cptr.add(sf2msg, i, 16), 8)));
                 break;
             }
         }
@@ -1247,7 +1248,7 @@ export function read_wizkit() {
 /** C ref: files.c:2611 @returns {CPtr} */
 function fopen_sym_file() {
     let fp;
-    fp = fopen_datafile(__sl67, __sl21, 0);
+    fp = fopen_datafile(__sl67, __sl21, NHM.HACKPREFIX);
     return fp;
 }
 
@@ -1284,11 +1285,11 @@ export function read_sym_file(which_set) {
 export function check_recordfile(dir) {
     let fq_record;
     let fd;
-    fq_record = fqname(__sl73, 5, 0);
+    fq_record = fqname(__sl73, NHM.SCOREPREFIX, 0);
     fd = open(fq_record, 2, 0);
     if (fd >= 0) {
         void nhclose(fd);
-    } else if ((fd = open(fq_record, 514, 432)) >= 0) {
+    } else if ((fd = open(fq_record, 514, NHM.FCMASK)) >= 0) {
         void nhclose(fd);
     } else {
         raw_printf(__sl74, fq_record);
@@ -1301,7 +1302,7 @@ export function paniclog(type, reason) {
     let lfile;
     if (!cptr.ldI32(cptr.add(program_state, 96))) {
         cptr.stI32(cptr.add(program_state, 96), 1);
-        lfile = fopen_datafile(__sl75, __sl46, 9);
+        lfile = fopen_datafile(__sl75, __sl46, NHM.TROUBLEPREFIX);
         if (lfile) {
             let buf = new Uint8Array(256);
             let now = getnow();
@@ -1324,7 +1325,7 @@ export function testinglog(filenm, type, reason) {
     void cptr.strcpy(cptr.decay(fnbuf), filenm);
     if (cptr.strchr(cptr.decay(fnbuf), 46) === null)
         void cptr.strcat(cptr.decay(fnbuf), __sl77);
-    lfile = fopen_datafile(cptr.decay(fnbuf), __sl46, 9);
+    lfile = fopen_datafile(cptr.decay(fnbuf), __sl46, NHM.TROUBLEPREFIX);
     if (lfile) {
         void fprintf(lfile, __sl78, type, reason);
         void fclose(lfile);
@@ -1378,7 +1379,7 @@ export function reveal_paths(code) {
     cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
     raw_printf(__sl80, s_suffix(gamename), __sl81, cptr.decay(buf));
     filep = __sl82;
-    fqn = fqname(filep, 7, 0);
+    fqn = fqname(filep, NHM.SYSCONFPREFIX, 0);
     if (fqn) {
         set_configfile_name(fqn);
         filep = get_configfile();
@@ -1529,7 +1530,7 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                         if (matchedtitle && passagenum == targetpassage ? 1 : 0) {
                             foundpassage = 1;
                             if (!nowin_buf) {
-                                tribwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+                                tribwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
                                 if (tribwin == -1)
                                     break __lbl_cleanup;
                             }
@@ -1609,8 +1610,8 @@ export function livelog_add(ll_type, str) {
     let aindx;
     if (!(ll_type & cptr.ldI64(cptr.add(sysopt, 96))))
         return;
-    if (lock_file(__sl109, 5, 10)) {
-        if (!(livelogfile = fopen_datafile(__sl109, __sl46, 5))) {
+    if (lock_file(__sl109, NHM.SCOREPREFIX, 10)) {
+        if (!(livelogfile = fopen_datafile(__sl109, __sl46, NHM.SCOREPREFIX))) {
             pline(__sl110);
             unlock_file(__sl109);
             return;

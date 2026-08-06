@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -222,7 +223,7 @@ function convert_arg(c) {
         str = rank_of(cptr.ldI32(cptr.add(u, 48)), (cptr.ldI16(cptr.add(gu, 216))), cptr.ld1s(cptr.add(flags, 13)));
         break;
         case 82:
-        str = rank_of(14, (cptr.ldI16(cptr.add(gu, 216))), cptr.ld1s(cptr.add(flags, 13)));
+        str = rank_of(NHM.MIN_QUEST_LEVEL, (cptr.ldI16(cptr.add(gu, 216))), cptr.ld1s(cptr.add(flags, 13)));
         break;
         case 115:
         str = (cptr.ld1s(cptr.add(flags, 13))) ? __sl17 : __sl18;
@@ -252,22 +253,22 @@ function convert_arg(c) {
         str = guardname();
         break;
         case 71:
-        str = align_gtitle(cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1)));
+        str = align_gtitle(cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)));
         break;
         case 72:
         str = homebase();
         break;
         case 97:
-        str = align_str(cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1)));
+        str = align_str(cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)));
         break;
         case 65:
         str = align_str(cptr.ld1s(cptr.add(u, 2172)));
         break;
         case 100:
-        str = align_gname(cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1)));
+        str = align_gname(cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)));
         break;
         case 68:
-        str = align_gname(1);
+        str = align_gname(NHM.A_LAWFUL);
         break;
         case 67:
         str = __sl22;
@@ -435,7 +436,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     let synopsis = null;
     let fallback_msgid = null;
     let res = 0;
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, 2147483648); cptr.stI32(cptr.add(sbi, 4), 1048576); cptr.stI32(cptr.add(sbi, 8), 0); cptr.stI32(cptr.add(sbi, 12), 1048576);
+    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32(cptr.add(sbi, 4), 1048576); cptr.stI32(cptr.add(sbi, 8), 0); cptr.stI32(cptr.add(sbi, 12), 1048576);
     if (skip_pager(1))
         return 0;
     L = nhl_init(sbi);
@@ -580,7 +581,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
         if (output == 0 || output == 1 ? 1 : 0)
             deliver_by_pline(text);
         else
-            deliver_by_window(text, (output == 3) ? 4 : 5);
+            deliver_by_window(text, (output == 3) ? NHM.NHW_MENU : NHM.NHW_TEXT);
         if (synopsis) {
             let in_line = new Uint8Array(256);
             let out_line = new Uint8Array(256);
@@ -617,12 +618,12 @@ export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16(cptr.add(gu, 226));
-        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
+        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & NHM.G_GENOD) ? 1 : 0)
             return cptr.add(mons, qpm, 96);
         return mkclass(cptr.ld1s(cptr.add(gu, 230)), 0);
     }
     qpm = cptr.ldI16(cptr.add(gu, 228));
-    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & 2) ? 1 : 0)
+    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), qpm, 12), 2)) & NHM.G_GENOD) ? 1 : 0)
         return cptr.add(mons, qpm, 96);
     return mkclass(cptr.ld1s(cptr.add(gu, 231)), 0);
 }

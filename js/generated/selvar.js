@@ -5,6 +5,7 @@
 
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 import { alloc, dupstr } from './alloc.js';
 import { cg, gc, svl, svr } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -31,11 +32,11 @@ const __sl10 = cptr.lit("rectangular");
 /** C ref: selvar.c:15 @returns {CPtr} */
 export function selection_new() {
     let tmps = alloc(32);
-    cptr.stI32(tmps, 80);
-    cptr.stI32(cptr.add(tmps, 4), 21);
+    cptr.stI32(tmps, NHM.COLNO);
+    cptr.stI32(cptr.add(tmps, 4), NHM.ROWNO);
     cptr.st1(cptr.add(tmps, 8), 0);
-    cptr.stI16(cptr.add(tmps, 10), 80);
-    cptr.stI16(cptr.add(tmps, 12), 21);
+    cptr.stI16(cptr.add(tmps, 10), NHM.COLNO);
+    cptr.stI16(cptr.add(tmps, 12), NHM.ROWNO);
     cptr.stI16(cptr.add(tmps, 14), cptr.stI16(cptr.add(tmps, 16), 0));
     cptr.stPtr(cptr.add(tmps, 24), alloc(1681));
     void __builtin___memset_chk(cptr.ldPtr(cptr.add(tmps, 24)), 1, 1680n, __builtin_object_size(cptr.ldPtr(cptr.add(tmps, 24)), 0));
@@ -65,8 +66,8 @@ export function selection_clear(sel, val) {
         cptr.stI16(cptr.add(sel, 14), 79);
         cptr.stI16(cptr.add(sel, 16), 20);
     } else {
-        cptr.stI16(cptr.add(sel, 10), 80);
-        cptr.stI16(cptr.add(sel, 12), 21);
+        cptr.stI16(cptr.add(sel, 10), NHM.COLNO);
+        cptr.stI16(cptr.add(sel, 12), NHM.ROWNO);
         cptr.stI16(cptr.add(sel, 14), cptr.stI16(cptr.add(sel, 16), 0));
     }
     cptr.st1(cptr.add(sel, 8), 0);
@@ -105,8 +106,8 @@ export function selection_recalc_bounds(sel) {
     let r = cptr.alloc(8);
     if (!cptr.ld1s(cptr.add(sel, 8)))
         return;
-    cptr.stI16(cptr.add(sel, 10), 80);
-    cptr.stI16(cptr.add(sel, 12), 21);
+    cptr.stI16(cptr.add(sel, 10), NHM.COLNO);
+    cptr.stI16(cptr.add(sel, 12), NHM.ROWNO);
     cptr.stI16(cptr.add(sel, 14), cptr.stI16(cptr.add(sel, 16), 0));
     cptr.stI16(r, cptr.stI16(cptr.add(r, 2), cptr.stI16(cptr.add(r, 4), cptr.stI16(cptr.add(r, 6), -1))));
     for (x = 0; x < cptr.ldI32(sel); x++) {
@@ -290,7 +291,7 @@ export function selection_do_grow(ov, dir) {
     selection_getbounds(ov, rect);
     for (x = i16((0 > ((cptr.ldI16(rect) - 1) | 0) ? 0 : ((cptr.ldI16(rect) - 1) | 0))); x <= (79 < ((cptr.ldI16(cptr.add(rect, 4)) + 1) | 0) ? 79 : ((cptr.ldI16(cptr.add(rect, 4)) + 1) | 0)); x++)
         for (y = i16((0 > ((cptr.ldI16(cptr.add(rect, 2)) - 1) | 0) ? 0 : ((cptr.ldI16(cptr.add(rect, 2)) - 1) | 0))); y <= (20 < ((cptr.ldI16(cptr.add(rect, 6)) + 1) | 0) ? 20 : ((cptr.ldI16(cptr.add(rect, 6)) + 1) | 0)); y++) {
-            if (((((((((dir & 8) && selection_getpoint(i16(((x + 1) | 0)), y, ov) ? 1 : 0) || (((dir & 9) == 9) && selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & 1) && selection_getpoint(x, i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 5) == 5) && selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & 4) && selection_getpoint(i16(((x - 1) | 0)), y, ov) ? 1 : 0) ? 1 : 0) || (((dir & 6) == 6) && selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & 2) && selection_getpoint(x, i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 10) == 10) && selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) {
+            if (((((((((dir & NHM.W_WEST) && selection_getpoint(i16(((x + 1) | 0)), y, ov) ? 1 : 0) || (((dir & 9) == 9) && selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_NORTH) && selection_getpoint(x, i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 5) == 5) && selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_EAST) && selection_getpoint(i16(((x - 1) | 0)), y, ov) ? 1 : 0) ? 1 : 0) || (((dir & 6) == 6) && selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_SOUTH) && selection_getpoint(x, i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 10) == 10) && selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) {
                 selection_setpoint(x, y, tmp, 1);
             }
         }

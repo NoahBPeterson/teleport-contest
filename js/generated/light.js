@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { cg, gb, gl, gm, gv, gy, svl, u, uskin } from './decl.js';
@@ -85,7 +86,7 @@ export function new_light_source(x, y, range, type, id) {
 /** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr} id @returns {CPtr} */
 function new_light_core(x, y, range, type, id) {
     let ls;
-    if ((range > 15 || range < 0 ? 1 : 0) || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if ((range > NHM.MAX_RADIUS || range < 0 ? 1 : 0) || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         impossible(__sl0, range);
         return null;
     }
@@ -189,7 +190,7 @@ export function do_light_sources(cs_rows) {
         }
         if (cptr.ldI16(cptr.add(ls, 14)) & 1) {
             limits = (cptr.add(circle_data, cptr.ldI16(cptr.add(circle_start, cptr.ldI16(cptr.add(ls, 12)), 2)), 2));
-            if ((max_y = i16(((cptr.ldI16(cptr.add(ls, 10)) + cptr.ldI16(cptr.add(ls, 12))) | 0))) >= 21)
+            if ((max_y = i16(((cptr.ldI16(cptr.add(ls, 10)) + cptr.ldI16(cptr.add(ls, 12))) | 0))) >= NHM.ROWNO)
                 max_y = 20;
             if ((y = i16(((cptr.ldI16(cptr.add(ls, 10)) - cptr.ldI16(cptr.add(ls, 12))) | 0))) < 0)
                 y = 0;
@@ -198,16 +199,16 @@ export function do_light_sources(cs_rows) {
                 offset = cptr.ldI16(cptr.add(limits, Math.abs((y - cptr.ldI16(cptr.add(ls, 10))) | 0), 2));
                 if ((min_x = i16(((cptr.ldI16(cptr.add(ls, 8)) - offset) | 0))) < 1)
                     min_x = 1;
-                if ((max_x = i16(((cptr.ldI16(cptr.add(ls, 8)) + offset) | 0))) >= 80)
+                if ((max_x = i16(((cptr.ldI16(cptr.add(ls, 8)) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
                 if (((cptr.ldI16(cptr.add(ls, 8))) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(ls, 10))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
                     for (x = min_x; x <= max_x; x++)
-                        if (cptr.ld1u(cptr.add(row, x)) & 1)
-                            cptr.st1(cptr.add(row, x), cptr.ld1u(cptr.add(row, x)) | 4);
+                        if (cptr.ld1u(cptr.add(row, x)) & NHM.COULD_SEE)
+                            cptr.st1(cptr.add(row, x), cptr.ld1u(cptr.add(row, x)) | NHM.TEMP_LIT);
                 } else {
                     for (x = min_x; x <= max_x; x++)
                         if ((cptr.ldI16(cptr.add(ls, 8)) == x && cptr.ldI16(cptr.add(ls, 10)) == y ? 1 : 0) || clear_path(cptr.ldI16(cptr.add(ls, 8)), cptr.ldI16(cptr.add(ls, 10)), x, y) ? 1 : 0)
-                            cptr.st1(cptr.add(row, x), cptr.ld1u(cptr.add(row, x)) | 4);
+                            cptr.st1(cptr.add(row, x), cptr.ld1u(cptr.add(row, x)) | NHM.TEMP_LIT);
                 }
             }
         }
@@ -234,7 +235,7 @@ export function show_transient_light(obj, x, y) {
                 break;
         }
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 285, __sl9) : void 0);
-        if (!ls || cptr.ld1s(cptr.add(obj, 52)) != 0 ? 1 : 0) {
+        if (!ls || cptr.ld1s(cptr.add(obj, 52)) != NHM.OBJ_FREE ? 1 : 0) {
             impossible(__sl10, (cptr.ldI32(cptr.add(obj, 76)) & 1) | 0 ? __sl11 : __sl12, simpleonames(obj), otense(obj, __sl13), !ls ? __sl14 : __sl15);
             return;
         }
@@ -296,17 +297,17 @@ function discard_flashes() {
 /** C ref: light.c:376 — @param {CUInt} nid @param {CUInt} fmflags @returns {CPtr} */
 export function find_mid(nid, fmflags) {
     let mtmp;
-    if (((fmflags & 8) >>> 0) && nid == 1 ? 1 : 0)
+    if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1 ? 1 : 0)
         return cptr.add(gy, 8);
-    if ((fmflags & 1) >>> 0)
+    if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && cptr.ldI32(cptr.add(mtmp, 16)) == nid ? 1 : 0)
                 return mtmp;
-    if ((fmflags & 2) >>> 0)
+    if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(gm, 192)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.ldI32(cptr.add(mtmp, 16)) == nid)
                 return mtmp;
-    if ((fmflags & 4) >>> 0)
+    if ((fmflags & NHM.FM_MYDOGS) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(gm, 184)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.ldI32(cptr.add(mtmp, 16)) == nid)
                 return mtmp;
@@ -316,20 +317,20 @@ export function find_mid(nid, fmflags) {
 /** C ref: light.c:398 — @param {CPtr} mon @param {CUInt} fmflags @returns {CUInt} */
 function whereis_mon(mon, fmflags) {
     let mtmp;
-    if (((fmflags & 8) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)) ? 1 : 0)
-        return 8;
-    if ((fmflags & 1) >>> 0)
+    if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)) ? 1 : 0)
+        return NHM.FM_YOU;
+    if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
-                return 1;
-    if ((fmflags & 2) >>> 0)
+                return NHM.FM_FMON;
+    if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(gm, 192)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
-                return 2;
-    if ((fmflags & 4) >>> 0)
+                return NHM.FM_MIGRATE;
+    if ((fmflags & NHM.FM_MYDOGS) >>> 0)
         for (mtmp = cptr.ldPtr(cptr.add(gm, 184)); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
-                return 4;
+                return NHM.FM_MYDOGS;
     return 0;
 }
 
@@ -349,7 +350,7 @@ export function save_light_sources(nhfp, range) {
         if (actual != count.v)
             panic(__sl17, count.v, actual, range);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
         for (prev = cptr.add(gl, 72); (curr = cptr.ldPtr(prev)) !== null; ) {
             if (!cptr.ldPtr(cptr.add(curr, 24))) {
                 impossible(__sl18, range);
@@ -367,7 +368,7 @@ export function save_light_sources(nhfp, range) {
                     impossible(__sl19, cptr.ldI16(cptr.add(curr, 16)), range);
                     break;
                 }
-            if (is_global ^ (range == 0)) {
+            if (is_global ^ (range == NHM.RANGE_LEVEL)) {
                 cptr.stPtr(prev, cptr.ldPtr(curr));
                 void __builtin___memset_chk(curr, 0, 32n, __builtin_object_size(curr, 0));
                 cptr.free(curr);
@@ -454,7 +455,7 @@ function maybe_write_ls(nhfp, range, write_it) {
             impossible(__sl25, cptr.ldI16(cptr.add(ls, 16)), range);
             break;
         }
-        if (is_global ^ (range == 0)) {
+        if (is_global ^ (range == NHM.RANGE_LEVEL)) {
             count++;
             if (write_it)
                 write_ls(nhfp, ls);
@@ -629,7 +630,7 @@ export function candle_light_range(obj) {
     } else if ((cptr.ldI16(cptr.add(obj, 32)) == NHC.TALLOW_CANDLE || cptr.ldI16(cptr.add(obj, 32)) == NHC.WAX_CANDLE ? 1 : 0)) {
         let n = cptr.ldI64(cptr.add(obj, 40));
         radius = 1;
-        while (BigInt(Math.imul(radius, radius)) <= n && radius < 15 ? 1 : 0) {
+        while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS ? 1 : 0) {
             radius++;
         }
     } else {
@@ -673,9 +674,9 @@ export function wiz_light_sources() {
     let win;
     let buf = new Uint8Array(256);
     let ls;
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     if (win == -1)
-        return 0;
+        return NHM.ECMD_OK;
     void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl33);
@@ -690,5 +691,5 @@ export function wiz_light_sources() {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl51);
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }

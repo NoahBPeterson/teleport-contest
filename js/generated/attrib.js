@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { c_common_strings, disp, flags, gi, gm, gu, gy, iflags, program_state, svc, svd, svk, svm, u, uarmc, uarmf, uarmg, uarmh, ublindf, uwep } from './decl.js';
 import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { body_part, uasmon_maxStr } from './polyself.js';
@@ -593,7 +594,7 @@ export function losestr(num, knam, k_format) {
     if (dmg) {
         if (!knam || !cptr.ld1s(knam) ? 1 : 0) {
             knam = __sl51;
-            k_format = 1;
+            k_format = NHM.KILLED_BY;
         }
         losehp(dmg, knam, k_format);
         if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
@@ -647,7 +648,7 @@ export function poisontell(typ, exclaim) {
 export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     let i;
     let loss;
-    let kprefix = 0;
+    let kprefix = NHM.KILLED_BY_AN;
     let blast = schar((!strcmp(reason, __sl61)));
     if (!blast && !strstri(reason, __sl62) ? 1 : 0) {
         let plural = schar(((cptr.ld1s(cptr.add(reason, BigInt.asUintN(64, cptr.strlen(reason) - 1n))) == 115) ? 1 : 0));
@@ -660,12 +661,12 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         return;
     }
     i = name_to_mon(pkiller, null);
-    if (((i) >= NHC.LOW_PM && (i) < NHC.NUMMONS ? 1 : 0) && (cptr.ldU16(cptr.add(cptr.add(mons, i, 96), 34)) & 4096) ? 1 : 0) {
-        kprefix = 1;
+    if (((i) >= NHC.LOW_PM && (i) < NHC.NUMMONS ? 1 : 0) && (cptr.ldU16(cptr.add(cptr.add(mons, i, 96), 34)) & NHM.G_UNIQ) ? 1 : 0) {
+        kprefix = NHM.KILLED_BY;
         if (!((cptr.ldU64(cptr.add((cptr.add(mons, i, 96)), 80)) & 524288n) != 0n))
             pkiller = the(pkiller);
     } else if ((!strncmpi(pkiller, __sl68, 4) || !strncmpi(pkiller, __sl69, 3) ? 1 : 0) || !strncmpi(pkiller, __sl70, 2) ? 1 : 0) {
-        kprefix = 1;
+        kprefix = NHM.KILLED_BY;
     }
     i = !fatal ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__sl38, 362, __sl71), rn2((fatal + (thrown_weapon ? 20 : 0)) | 0)) : rn2((fatal + (thrown_weapon ? 20 : 0)) | 0));
     if (i == 0 && typ != NHC.A_CHA ? 1 : 0) {
@@ -709,8 +710,8 @@ export function change_luck(n) {
     cptr.st1(cptr.add(u, 2186), cptr.ld1s(cptr.add(u, 2186)) + n);
     if (cptr.ld1s(cptr.add(u, 2186)) < 0 && cptr.ld1s(cptr.add(u, 2186)) < -10 ? 1 : 0)
         cptr.st1(cptr.add(u, 2186), -10);
-    if (cptr.ld1s(cptr.add(u, 2186)) > 0 && cptr.ld1s(cptr.add(u, 2186)) > 10 ? 1 : 0)
-        cptr.st1(cptr.add(u, 2186), 10);
+    if (cptr.ld1s(cptr.add(u, 2186)) > 0 && cptr.ld1s(cptr.add(u, 2186)) > NHM.LUCKMAX ? 1 : 0)
+        cptr.st1(cptr.add(u, 2186), NHM.LUCKMAX);
 }
 
 /** C ref: attrib.c:423 — @param {CInt} include_uncursed @returns {CInt} */
@@ -733,7 +734,7 @@ export function set_moreluck() {
     if (!luckbon && !carrying(NHC.LUCKSTONE) ? 1 : 0)
         cptr.st1(cptr.add(u, 2187), 0);
     else if (luckbon >= 0)
-        cptr.st1(cptr.add(u, 2187), 3);
+        cptr.st1(cptr.add(u, 2187), NHM.LUCKADD);
     else
         cptr.st1(cptr.add(u, 2187), -3);
 }
@@ -1135,7 +1136,7 @@ export function from_what(propidx) {
             else if ((((propidx == NHC.BLINDED && cptr.ldI32(cptr.add(u, 1840)) ? 1 : 0) && (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) & 16777215n) == BigInt(cptr.ldI32(cptr.add(u, 1840)) >>> 0) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) & -16777216n) ? 1 : 0)
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), __sl118, body_part(NHC.FACE));
             if ((p = strstri(cptr.decay(__static_from_what_buf), __sl119)) !== null)
-                copynchars(cptr.add(p, 1), cptr.add(p, 9), 256);
+                copynchars(cptr.add(p, 1), cptr.add(p, 9), NHM.BUFSZ);
             else if (propidx == NHC.STRANGLED && (p = strstri(cptr.decay(__static_from_what_buf), __sl120)) !== null ? 1 : 0)
                 cptr.st1(p, 0);
         } else {
@@ -1264,7 +1265,7 @@ export function newhp() {
     }
     if (hp <= 0)
         hp = 1;
-    if (cptr.ldI32(cptr.add(u, 48)) < 30) {
+    if (cptr.ldI32(cptr.add(u, 48)) < NHM.MAXULEV) {
         cptr.stI16(cptr.add(cptr.add(u, 2220), cptr.ldI32(cptr.add(u, 48)), 2), i16(hp));
     } else {
         let lim = schar(((5 - ((cptr.ldI32(cptr.add(u, 2200)) / 300) | 0)) | 0));
@@ -1401,9 +1402,9 @@ export function uchangealign(newalign, reason) {
     cptr.st1(disp, 1);
     if (reason == NHC.A_CG_CONVERT) {
         livelog_printf(512n, __sl127, cptr.ldPtr(cptr.add(cptr.add(aligns, (1 - newalign) | 0, 32), 8)));
-        cptr.st1(cptr.add(cptr.add(u, 2184), 0, 1), schar(newalign));
+        cptr.st1(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1), schar(newalign));
         if (!uarmh.v || cptr.ldI16(cptr.add(uarmh.v, 32)) != NHC.HELM_OF_OPPOSITE_ALIGNMENT ? 1 : 0)
-            cptr.st1(cptr.add(u, 2172), cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)));
+            cptr.st1(cptr.add(u, 2172), cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1)));
         You(__sl128, (cptr.ld1s(cptr.add(u, 2172)) != oldalign) ? __sl129 : __sl18);
     } else {
         cptr.st1(cptr.add(u, 2172), schar(newalign));

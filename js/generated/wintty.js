@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov, nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend, tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color, term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor, term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output, tty_nhbell, tty_number_pad, xputs } from './termcap.js';
 import { addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory, tty_putmsghistory, tty_yn_function, update_topl } from './topl.js';
 import { morc, tty_get_ext_cmd, tty_getlin, xwaitforspace } from './getline.js';
@@ -278,25 +279,25 @@ function resize_tty() {
     else
         mapx = cptr.ldI16(cptr.add(gg, 94164)), mapy = cptr.ldI16(cptr.add(gg, 94166));
     oldtoplin = cptr.ldI32(cptr.add(ttyDisplay, 24));
-    cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
     term_clear_screen();
     new_status_window();
     if (map_active) {
         docrt_flags(NHC.docrtRefresh);
         bot();
-        for (i = 0; i < 20; ++i) {
+        for (i = 0; i < NHM.MAXWIN; ++i) {
             if (((i == BASE_WINDOW || i == WIN_MAP.v ? 1 : 0) || i == WIN_STATUS.v ? 1 : 0) || i == WIN_MESSAGE.v ? 1 : 0)
                 continue;
             if (cptr.ldPtr(cptr.add(wins, i, 8)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(wins, i, 8)), 6)) ? 1 : 0) {
-                oldtoplin = 0;
-                cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+                oldtoplin = NHM.TOPLINE_EMPTY;
+                cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
                 addtopl(__sl1);
                 resize_mesg++;
                 break;
             }
         }
     }
-    if (oldtoplin != 0) {
+    if (oldtoplin != NHM.TOPLINE_EMPTY) {
         cptr.stI32(cptr.add(ttyDisplay, 24), oldtoplin);
         addtopl(cptr.add(gt, 26));
     }
@@ -310,7 +311,7 @@ function resize_tty() {
 
 /** C ref: wintty.c:471 — @param {CInt} x @param {CInt} y */
 function newclipping(x, y) {
-    if (cptr.ldI32(cptr.add(gt, 356)) < 80 || cptr.ldI32(cptr.add(gt, 352)) < ((22 + cptr.ldI32(cptr.add(iflags, 388))) | 0) ? 1 : 0) {
+    if (cptr.ldI32(cptr.add(gt, 356)) < NHM.COLNO || cptr.ldI32(cptr.add(gt, 352)) < ((22 + cptr.ldI32(cptr.add(iflags, 388))) | 0) ? 1 : 0) {
         setclipped();
         if (x)
             tty_cliparound(x, y);
@@ -345,14 +346,14 @@ export function tty_init_nhwindows(argcp, argv) {
     setftty();
     term_curs_set(0);
     ttyDisplay = alloc(60);
-    cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
     cptr.stI32(cptr.add(ttyDisplay, 52), 0);
     cptr.stI16(ttyDisplay, i16(hgt.v));
     cptr.stI16(cptr.add(ttyDisplay, 2), i16(wid.v));
     cptr.stI16(cptr.add(ttyDisplay, 4), cptr.stI16(cptr.add(ttyDisplay, 6), 0));
     cptr.stI32(cptr.add(ttyDisplay, 32), cptr.stI32(cptr.add(ttyDisplay, 36), cptr.stI32(cptr.add(ttyDisplay, 40), 0)));
     cptr.st1(cptr.add(ttyDisplay, 48), 0);
-    cptr.stI32(cptr.add(ttyDisplay, 8), 8);
+    cptr.stI32(cptr.add(ttyDisplay, 8), NHM.NO_COLOR);
     cptr.stI32(cptr.add(ttyDisplay, 20), 0);
     cptr.stI32(cptr.add(ttyDisplay, 52), 0);
     cptr.stI32(cptr.add(ttyDisplay, 56), 0);
@@ -501,7 +502,7 @@ export function tty_exit_nhwindows(str) {
     let i;
     tty_suspend_nhwindows(str);
     free_pickinv_cache();
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < NHM.MAXWIN; i++) {
         if (i == BASE_WINDOW)
             continue;
         if (cptr.ldPtr(cptr.add(wins, i, 8))) {
@@ -530,10 +531,10 @@ export function tty_create_nhwindow(type) {
     let i;
     let rowoffset;
     let newid;
-    for (newid = 0; newid < 20; ++newid)
+    for (newid = 0; newid < NHM.MAXWIN; ++newid)
         if (cptr.ldPtr(cptr.add(wins, newid, 8)) === null)
             break;
-    if (newid == 20) {
+    if (newid == NHM.MAXWIN) {
         panic(__sl13);
         return -1;
     }
@@ -555,16 +556,16 @@ export function tty_create_nhwindow(type) {
         cptr.stI64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
         cptr.stI64(cptr.add(newwin, 48), cptr.stI64(cptr.add(newwin, 56), 0n));
         break;
-        case 1:
+        case NHM.NHW_MESSAGE:
         cptr.stI16(cptr.add(newwin, 8), cptr.stI16(cptr.add(newwin, 10), 0));
         if (cptr.ldI32(cptr.add(iflags, 96)) < 20)
             cptr.stI32(cptr.add(iflags, 96), 20);
-        else if (cptr.ldI32(cptr.add(iflags, 96)) > 128)
-            cptr.stI32(cptr.add(iflags, 96), 128);
+        else if (cptr.ldI32(cptr.add(iflags, 96)) > NHM.MAX_MSG_HISTORY)
+            cptr.stI32(cptr.add(iflags, 96), NHM.MAX_MSG_HISTORY);
         cptr.stI64(cptr.add(newwin, 48), cptr.stI64(cptr.add(newwin, 16), BigInt(cptr.ldI32(cptr.add(iflags, 96)) >>> 0)));
         cptr.stI64(cptr.add(newwin, 56), cptr.stI64(cptr.add(newwin, 24), 0n));
         break;
-        case 2:
+        case NHM.NHW_STATUS:
         if (cptr.ldI32(cptr.add(iflags, 388)) < 2 || cptr.ldI32(cptr.add(iflags, 388)) > 3 ? 1 : 0)
             cptr.stI32(cptr.add(iflags, 388), 2);
         cptr.stI16(cptr.add(newwin, 8), 0);
@@ -573,7 +574,7 @@ export function tty_create_nhwindow(type) {
         cptr.stI64(cptr.add(newwin, 16), cptr.stI64(cptr.add(newwin, 48), BigInt(cptr.ldI32(cptr.add(iflags, 388)))));
         cptr.stI64(cptr.add(newwin, 24), cptr.stI64(cptr.add(newwin, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2)))));
         break;
-        case 3:
+        case NHM.NHW_MAP:
         cptr.stI16(cptr.add(newwin, 8), 0);
         cptr.stI16(cptr.add(newwin, 10), 1);
         cptr.stI64(cptr.add(newwin, 16), 21n);
@@ -581,8 +582,8 @@ export function tty_create_nhwindow(type) {
         cptr.stI64(cptr.add(newwin, 48), 0n);
         cptr.stI64(cptr.add(newwin, 56), 0n);
         break;
-        case 4:
-        case 5:
+        case NHM.NHW_MENU:
+        case NHM.NHW_TEXT:
         cptr.stI16(cptr.add(newwin, 8), cptr.stI16(cptr.add(newwin, 10), 0));
         cptr.stI64(cptr.add(newwin, 16), 0n);
         cptr.stI64(cptr.add(newwin, 24), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
@@ -604,7 +605,7 @@ export function tty_create_nhwindow(type) {
                 cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(newwin, 72)), i, 2), 0);
             }
         }
-        if (cptr.ldI16(cptr.add(newwin, 4)) == 1)
+        if (cptr.ldI16(cptr.add(newwin, 4)) == NHM.NHW_MESSAGE)
             cptr.stI64(cptr.add(newwin, 48), 0n);
     } else {
         cptr.stPtr(cptr.add(newwin, 80), null);
@@ -691,8 +692,8 @@ export function tty_clear_nhwindow(window) {
     cptr.stI32(cptr.add(ttyDisplay, 44), window);
     ;
     switch (cptr.ldI16(cptr.add(cw, 4))) {
-        case 1:
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != 0) {
+        case NHM.NHW_MESSAGE:
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != NHM.TOPLINE_EMPTY) {
             if (!erasing_tty_screen) {
                 home();
                 cl_end();
@@ -700,10 +701,10 @@ export function tty_clear_nhwindow(window) {
                     docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
             }
             cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
-            cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
         }
         break;
-        case 2:
+        case NHM.NHW_STATUS:
         m = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 48))));
         n = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 24))));
         for (i = 0; i < m; ++i) {
@@ -717,7 +718,7 @@ export function tty_clear_nhwindow(window) {
         }
         cptr.st1(cptr.add(disp, 1), 1);
         break;
-        case 3:
+        case NHM.NHW_MAP:
         cptr.st1(cptr.add(disp, 1), 1);
         // @FallThrough
         ;
@@ -726,8 +727,8 @@ export function tty_clear_nhwindow(window) {
             term_clear_screen();
         }
         break;
-        case 4:
-        case 5:
+        case NHM.NHW_MENU:
+        case NHM.NHW_TEXT:
         if (!erasing_tty_screen) {
             if (cptr.ld1s(cptr.add(cw, 6)))
                 erase_menu_or_text(window, cw, 1);
@@ -773,7 +774,7 @@ function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
 /** C ref: wintty.c:1178 — @param {CPtr} cw @param {CPtr} s */
 function dmore(cw, s) {
     let prompt = cptr.ldPtr(cptr.add(cw, 88)) ? cptr.ldPtr(cptr.add(cw, 88)) : cptr.decay(defmorestr);
-    let offset = (cptr.ldI16(cptr.add(cw, 4)) == 5) ? 1 : 2;
+    let offset = (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_TEXT) ? 1 : 2;
     do {
         if (cptr.ldI32(cptr.add(program_state, 8))) {
             morc.v = 27;
@@ -810,12 +811,12 @@ function set_item_state(window, lineno, item) {
     } while (0);
     tty_curs(window, 4, lineno);
     term_start_attr(cptr.ldI32(cptr.add(item, 80)));
-    if (cptr.ldI32(cptr.add(item, 84)) != 8)
+    if (cptr.ldI32(cptr.add(item, 84)) != NHM.NO_COLOR)
         term_start_color(cptr.ldI32(cptr.add(item, 84)));
     void putchar(ch);
     nomux_putch(ch);
     (cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1)) - (1);
-    if (cptr.ldI32(cptr.add(item, 84)) != 8)
+    if (cptr.ldI32(cptr.add(item, 84)) != NHM.NO_COLOR)
         term_end_color();
     term_end_attr(cptr.ldI32(cptr.add(item, 80)));
 }
@@ -892,10 +893,10 @@ function invert_all(window, page_start, page_end, acc, count) {
 function toggle_menu_attr(on, color, attr) {
     if (on) {
         term_start_attr(attr);
-        if (color != 8)
+        if (color != NHM.NO_COLOR)
             term_start_color(color);
     } else {
-        if (color != 8)
+        if (color != NHM.NO_COLOR)
             term_end_color();
         term_end_attr(attr);
     }
@@ -928,14 +929,14 @@ function process_menu_window(window, cw) {
     curr_page = (page_lines = 0);
     page_start = (page_end = null);
     msave = cptr.ldPtr(cptr.add(cw, 88));
-    cptr.stPtr(cptr.add(cw, 88), morestr = alloc(128));
+    cptr.stPtr(cptr.add(cw, 88), morestr = alloc(NHM.QBUFSZ));
     counting = 0;
     count = 0n;
     reset_count = 1;
     finished = 0;
     previous_page_lines = 0;
     cptr.st1(cptr.add(cptr.decay(gacc), 0, 1), 0);
-    if (cptr.ldI16(cptr.add(cw, 136)) != 0) {
+    if (cptr.ldI16(cptr.add(cw, 136)) != NHM.PICK_NONE) {
         let i;
         let gcnt = cptr.alloc(128 * 4);
         for (i = 0; i < 128; i++)
@@ -947,7 +948,7 @@ function process_menu_window(window, cw) {
             }
         if (n > 0)
             for (rp = cptr.decay(gacc), curr = cptr.ldPtr(cptr.add(cw, 96)); curr; curr = cptr.ldPtr(curr))
-                if (((cptr.ld1s(cptr.add(curr, 97)) && (cptr.ld1s(cptr.add(curr, 97)) != cptr.ld1s(cptr.add(curr, 96)) || cptr.ld1s(cptr.add(curr, 97)) == NHC.GOLD_SYM ? 1 : 0) ? 1 : 0) && !cptr.strchr(cptr.decay(gacc), cptr.ld1s(cptr.add(curr, 97))) ? 1 : 0) && (cptr.ldI16(cptr.add(cw, 136)) == 2 || cptr.ldI32(cptr.add(gcnt, ((cptr.ld1s(cptr.add(curr, 97))) & 127), 4)) == 1 ? 1 : 0) ? 1 : 0) {
+                if (((cptr.ld1s(cptr.add(curr, 97)) && (cptr.ld1s(cptr.add(curr, 97)) != cptr.ld1s(cptr.add(curr, 96)) || cptr.ld1s(cptr.add(curr, 97)) == NHC.GOLD_SYM ? 1 : 0) ? 1 : 0) && !cptr.strchr(cptr.decay(gacc), cptr.ld1s(cptr.add(curr, 97))) ? 1 : 0) && (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ANY || cptr.ldI32(cptr.add(gcnt, ((cptr.ld1s(cptr.add(curr, 97))) & 127), 4)) == 1 ? 1 : 0) ? 1 : 0) {
                     cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1s(cptr.add(curr, 97)));
                     cptr.st1(rp, 0);
                 }
@@ -989,7 +990,7 @@ function process_menu_window(window, cw) {
                 page_end = cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 104)), (curr_page + 1) | 0, 8));
                 for (page_lines = 0, curr = page_start; !cptr.eq(curr, page_end); page_lines++, curr = cptr.ldPtr(curr)) {
                     let attr;
-                    let color = 8;
+                    let color = NHM.NO_COLOR;
                     if (cptr.ld1s(cptr.add(curr, 96)))
                         cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1s(cptr.add(curr, 96)));
                     tty_curs(window, 1, page_lines);
@@ -1003,7 +1004,7 @@ function process_menu_window(window, cw) {
                     if ((((cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(curr, 24)), 0)) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(curr, 24)), 1)) == 32 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(curr, 24)), 2)) ? 1 : 0) && cptr.strchr(__sl17, cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(curr, 24)), 2))) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(curr, 24)), 3)) == 32 ? 1 : 0)
                         attr_n = 4;
                     for (n = 0, cp = cptr.ldPtr(cptr.add(curr, 24)); cptr.ld1s(cp) && cptr.stI16(cptr.add(ttyDisplay, 4), cptr.ldI16(cptr.add(ttyDisplay, 4)) + 1) < cptr.ldI16(cptr.add(ttyDisplay, 2)) ? 1 : 0; cp = cptr.add(cp, 1), n++) {
-                        if (n == attr_n && (color != 8 || attr != 0 ? 1 : 0) ? 1 : 0)
+                        if (n == attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE ? 1 : 0) ? 1 : 0)
                             toggle_menu_attr(1, color, attr);
                         if ((n == 2 && cptr.ldPtr(cptr.add(curr, 8)) !== null ? 1 : 0) && cptr.ld1s(cptr.add(curr, 88)) ? 1 : 0) {
                             let c = schar(((cptr.ldI64(cptr.add(curr, 16)) == -1n) ? 42 : 35));
@@ -1016,7 +1017,7 @@ function process_menu_window(window, cw) {
                             void putchar(c);
                         } else if (((n == 2 && cptr.ldPtr(cptr.add(curr, 8)) !== null ? 1 : 0) && show_obj_syms ? 1 : 0) && cptr.ldI32(cptr.add(curr, 32)) != NHC.MAX_GLYPH ? 1 : 0) {
                             let gcolor = cptr.ldI32(cptr.add(curr, 52));
-                            toggle_menu_attr(1, gcolor, 0);
+                            toggle_menu_attr(1, gcolor, NHM.ATR_NONE);
                             void putchar(cptr.ldI32(cptr.add(curr, 36)));
                             {
                                 let svx = cptr.ldI16(cptr.add(ttyDisplay, 4));
@@ -1024,7 +1025,7 @@ function process_menu_window(window, cw) {
                                 nomux_putch(cptr.ldI32(cptr.add(curr, 36)));
                                 cptr.stI16(cptr.add(ttyDisplay, 4), i16(svx));
                             }
-                            toggle_menu_attr(0, gcolor, 0);
+                            toggle_menu_attr(0, gcolor, NHM.ATR_NONE);
                         } else {
                             void putchar(cptr.ld1s(cp));
                             {
@@ -1035,7 +1036,7 @@ function process_menu_window(window, cw) {
                             }
                         }
                     }
-                    if (n > attr_n && (color != 8 || attr != 0 ? 1 : 0) ? 1 : 0)
+                    if (n > attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE ? 1 : 0) ? 1 : 0)
                         toggle_menu_attr(0, color, attr);
                 }
             } else {
@@ -1059,7 +1060,7 @@ function process_menu_window(window, cw) {
             }
             if (cptr.ld1s(cptr.decay(gacc))) {
                 void cptr.strcat(cptr.decay(resp), cptr.decay(gacc));
-                if (cptr.ldI16(cptr.add(cw, 136)) == 1)
+                if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ONE)
                     resp_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(resp))));
             }
             void cptr.strcat(cptr.decay(resp), __sl12);
@@ -1098,7 +1099,7 @@ function process_menu_window(window, cw) {
             if (!counting && cptr.strchr(cptr.decay(gacc), morc.v) ? 1 : 0)
                 {
                     invert_all(window, page_start, page_end, morc.v, counting ? count : -1n);
-                    if (cptr.ldI16(cptr.add(cw, 136)) == 1)
+                    if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ONE)
                         finished = 1;
                     break;
                 }
@@ -1119,7 +1120,7 @@ function process_menu_window(window, cw) {
                     cptr.st1(cptr.add(curr, 88), 0);
                     cptr.stI64(cptr.add(curr, 16), -1n);
                 }
-                cptr.stI32(cw, cptr.ldI32(cw) | 1);
+                cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_CANCELLED);
                 finished = 1;
             }
             break;
@@ -1157,18 +1158,18 @@ function process_menu_window(window, cw) {
             }
             break;
             case 44:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 2)
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ANY)
                 set_all_on_page(window, page_start, page_end);
             break;
             case 92:
             unset_all_on_page(window, page_start, page_end);
             break;
             case 126:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 2)
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ANY)
                 invert_all_on_page(window, page_start, page_end, 0, -1n);
             break;
             case 46:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 2) {
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ANY) {
                 set_all_on_page(window, page_start, page_end);
                 for (curr = cptr.ldPtr(cptr.add(cw, 96)); curr; curr = cptr.ldPtr(curr)) {
                     if ((!cptr.ldPtr(cptr.add(curr, 8)) || cptr.ld1s(cptr.add(curr, 88)) ? 1 : 0) || !menuitem_invert_test(1, cptr.ldI32(cptr.add(curr, 92)), 0) ? 1 : 0)
@@ -1187,11 +1188,11 @@ function process_menu_window(window, cw) {
             }
             break;
             case 64:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 2)
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ANY)
                 invert_all(window, page_start, page_end, 0, -1n);
             break;
             case 58:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 0) {
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_NONE) {
                 tty_nhbell();
                 break;
             } else {
@@ -1212,7 +1213,7 @@ function process_menu_window(window, cw) {
                         on_curr_page = 0;
                     if (cptr.ldPtr(cptr.add(curr, 8)) && pmatchi(cptr.decay(searchbuf), cptr.ldPtr(cptr.add(curr, 24))) ? 1 : 0) {
                         toggle_menu_curr(window, curr, lineno, on_curr_page, counting, count);
-                        if (cptr.ldI16(cptr.add(cw, 136)) == 1) {
+                        if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ONE) {
                             finished = 1;
                             break;
                         }
@@ -1225,19 +1226,19 @@ function process_menu_window(window, cw) {
             // @FallThrough
             ;
             default:
-            if (cptr.ldI16(cptr.add(cw, 136)) == 0 || !cptr.strchr(cptr.decay(resp), morc.v) ? 1 : 0) {
+            if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_NONE || !cptr.strchr(cptr.decay(resp), morc.v) ? 1 : 0) {
                 tty_nhbell();
                 break;
             } else if (cptr.strchr(cptr.decay(gacc), morc.v)) {
                 invert_all(window, page_start, page_end, morc.v, counting ? count : -1n);
-                if (cptr.ldI16(cptr.add(cw, 136)) == 1)
+                if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ONE)
                     finished = 1;
                 break;
             }
             for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr))
                 if (morc.v == cptr.ld1s(cptr.add(curr, 96))) {
                     toggle_menu_curr(window, curr, n, 1, counting, count);
-                    if (cptr.ldI16(cptr.add(cw, 136)) == 1)
+                    if (cptr.ldI16(cptr.add(cw, 136)) == NHM.PICK_ONE)
                         finished = 1;
                     break;
                 }
@@ -1267,7 +1268,7 @@ function process_text_window(window, cw) {
             cl_end();
             dmore(cw, cptr.decay(quitchars));
             if (morc.v == 27) {
-                cptr.stI32(cw, cptr.ldI32(cw) | 1);
+                cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_CANCELLED);
                 break;
             }
             if (cptr.ldI16(cptr.add(cw, 10))) {
@@ -1318,15 +1319,15 @@ function process_text_window(window, cw) {
         }
     }
     if (BigInt(i) == cptr.ldI64(cptr.add(cw, 48))) {
-        if (cptr.ldI16(cptr.add(cw, 4)) == 5) {
+        if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_TEXT) {
             tty_curs(BASE_WINDOW, 1, (cptr.ldI16(cptr.add(ttyDisplay, 6)) + 1) | 0);
             cl_eos();
         }
-        tty_curs(BASE_WINDOW, (cptr.ldI16(cptr.add(cw, 8)) + 1) | 0, (cptr.ldI16(cptr.add(cw, 4)) == 5) ? (cptr.ldI16(ttyDisplay) - 1) | 0 : n);
+        tty_curs(BASE_WINDOW, (cptr.ldI16(cptr.add(cw, 8)) + 1) | 0, (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_TEXT) ? (cptr.ldI16(ttyDisplay) - 1) | 0 : n);
         cl_end();
         dmore(cw, cptr.decay(quitchars));
         if (morc.v == 27)
-            cptr.stI32(cw, cptr.ldI32(cw) | 1);
+            cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_CANCELLED);
     }
 }
 
@@ -1342,29 +1343,29 @@ export function tty_display_nhwindow(window, blocking) {
     } while (0);
     if (window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0)
         panic(cptr.decay(winpanicstr), window, __sl22);
-    if (cptr.ldI32(cw) & 1)
+    if (cptr.ldI32(cw) & NHM.WIN_CANCELLED)
         return;
     cptr.stI32(cptr.add(ttyDisplay, 44), window);
     cptr.stI32(cptr.add(ttyDisplay, 28), 0);
     ;
     switch (cptr.ldI16(cptr.add(cw, 4))) {
-        case 1:
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1) {
+        case NHM.NHW_MESSAGE:
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE) {
             more();
-            cptr.stI32(cptr.add(ttyDisplay, 24), 1);
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NEED_MORE);
             tty_clear_nhwindow(window);
-            void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == 0)) || (nhassert_failed(__sl23, __sl24, 1926), 0) ? 1 : 0);
+            void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 1926), 0) ? 1 : 0);
         } else
-            cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
         cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
         if (!cptr.ld1s(cptr.add(cw, 6)))
             cptr.st1(cptr.add(iflags, 81), 1);
         break;
-        case 3:
+        case NHM.NHW_MAP:
         end_glyphout();
         if (blocking) {
-            if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != 0)
-                cptr.stI32(cptr.add(ttyDisplay, 24), 1);
+            if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != NHM.TOPLINE_EMPTY)
+                cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NEED_MORE);
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
             return;
         }
@@ -1373,19 +1374,19 @@ export function tty_display_nhwindow(window, blocking) {
         case 7:
         void fflush(__stdoutp);
         break;
-        case 5:
+        case NHM.NHW_TEXT:
         cptr.stI64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
         // @FallThrough
         ;
-        case 4:
+        case NHM.NHW_MENU:
         cptr.st1(cptr.add(cw, 6), 1);
         s_maxcol = Number(BigInt.asIntN(16, cptr.ldI64(cptr.add(cw, 56))));
-        cptr.stI16(cptr.add(cw, 8), i16(((cptr.ldI16(cptr.add(cw, 4)) == 5) ? 0 : (((82 < ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0) ? 82 : ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0))) < ((((cptr.ldI16(cptr.add(ttyDisplay, 2)) - s_maxcol) | 0) - 1) | 0) ? ((82 < ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0) ? 82 : ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0))) : ((((cptr.ldI16(cptr.add(ttyDisplay, 2)) - s_maxcol) | 0) - 1) | 0)))));
+        cptr.stI16(cptr.add(cw, 8), i16(((cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_TEXT) ? 0 : (((82 < ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0) ? 82 : ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0))) < ((((cptr.ldI16(cptr.add(ttyDisplay, 2)) - s_maxcol) | 0) - 1) | 0) ? ((82 < ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0) ? 82 : ((cptr.ldI16(cptr.add(ttyDisplay, 2)) / 2) | 0))) : ((((cptr.ldI16(cptr.add(ttyDisplay, 2)) - s_maxcol) | 0) - 1) | 0)))));
         if (cptr.ldI16(cptr.add(cw, 8)) < 0)
             cptr.stI16(cptr.add(cw, 8), 0);
-        if (cptr.ldI16(cptr.add(cw, 4)) == 4)
+        if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_MENU)
             cptr.stI16(cptr.add(cw, 10), 0);
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1)
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE)
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
         if (cptr.ldI64(cptr.add(cw, 48)) >= BigInt(cptr.ldI16(ttyDisplay)) || !cptr.ld1s(cptr.add(iflags, 134)) ? 1 : 0) {
             cptr.stI16(cptr.add(cw, 8), 0);
@@ -1394,7 +1395,7 @@ export function tty_display_nhwindow(window, blocking) {
                 cl_eos();
             } else
                 term_clear_screen();
-            cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
         } else {
             if (WIN_MESSAGE.v != -1)
                 tty_clear_nhwindow(WIN_MESSAGE.v);
@@ -1421,21 +1422,21 @@ export function tty_dismiss_nhwindow(window) {
         panic(cptr.decay(winpanicstr), window, __sl25);
     ;
     switch (cptr.ldI16(cptr.add(cw, 4))) {
-        case 1:
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != 0)
+        case NHM.NHW_MESSAGE:
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) != NHM.TOPLINE_EMPTY)
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
-        void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == 0)) || (nhassert_failed(__sl23, __sl24, 2015), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 2015), 0) ? 1 : 0);
         // @FallThrough
         ;
-        case 2:
+        case NHM.NHW_STATUS:
         case 7:
-        case 3:
+        case NHM.NHW_MAP:
         tty_curs(BASE_WINDOW, 1, (cptr.ldI16(ttyDisplay) - 1) | 0);
         cptr.st1(cptr.add(cw, 6), 0);
         break;
-        case 4:
-        case 5:
-        case 6:
+        case NHM.NHW_MENU:
+        case NHM.NHW_TEXT:
+        case NHM.NHW_PERMINVENT:
         if (cptr.ld1s(cptr.add(cw, 6))) {
             if (cptr.ld1s(cptr.add(iflags, 81)) && !erasing_tty_screen ? 1 : 0) {
                 let clearscreen = 0;
@@ -1460,9 +1461,9 @@ export function tty_destroy_nhwindow(window) {
     }
     if (cptr.ld1s(cptr.add(cw, 6)))
         tty_dismiss_nhwindow(window);
-    if (cptr.ldI16(cptr.add(cw, 4)) == 1)
+    if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_MESSAGE)
         cptr.st1(cptr.add(iflags, 81), 0);
-    if (cptr.ldI16(cptr.add(cw, 4)) == 3)
+    if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_MAP)
         term_clear_screen();
     free_window_info(cw, 1);
     cptr.free(cw);
@@ -1481,7 +1482,7 @@ export function erase_tty_screen() {
     } while (0);
     if (erasing_tty_screen++)
         return;
-    for (i = 0; i < 20; ++i) {
+    for (i = 0; i < NHM.MAXWIN; ++i) {
         cw = cptr.ldPtr(cptr.add(wins, i, 8));
         if (cw && cptr.ld1s(cptr.add(cw, 6)) ? 1 : 0)
             tty_clear_nhwindow(i);
@@ -1508,26 +1509,26 @@ export function tty_curs(window, x, y) {
     if (((x < 1 || y < 0 ? 1 : 0) || BigInt(y) >= cptr.ldI64(cptr.add(cw, 16)) ? 1 : 0) || BigInt(x) > cptr.ldI64(cptr.add(cw, 24)) ? 1 : 0) {
         let s = __sl28;
         switch (cptr.ldI16(cptr.add(cw, 4))) {
-            case 1:
+            case NHM.NHW_MESSAGE:
             s = __sl29;
             break;
-            case 2:
+            case NHM.NHW_STATUS:
             s = __sl30;
             break;
-            case 3:
+            case NHM.NHW_MAP:
             s = __sl31;
             break;
-            case 4:
+            case NHM.NHW_MENU:
             s = __sl32;
             break;
-            case 5:
+            case NHM.NHW_TEXT:
             s = __sl33;
             break;
             case 7:
             s = __sl34;
             break;
         }
-        if (cptr.ldI16(cptr.add(cw, 4)) != 1)
+        if (cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MESSAGE)
             do {
                 if (debugcore(__sl24, 1)) {
                     let save_plnmsg = cptr.ldI32(cptr.add(iflags, 40));
@@ -1546,7 +1547,7 @@ export function tty_curs(window, x, y) {
     }
     if (y == cy && x == cx ? 1 : 0)
         return;
-    if (cptr.ldI16(cptr.add(cw, 4)) == 3)
+    if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_MAP)
         end_glyphout();
     if (!cptr.ldPtr(cptr.add(tc_lcl_data, 8)) && (cx != x || x <= 3 ? 1 : 0) ? 1 : 0) {
         cmov(x, y);
@@ -1612,24 +1613,24 @@ export function tty_putstr(window, attr, str) {
         tty_raw_print(str);
         return;
     }
-    if (str === null || ((cptr.ldI32(cw) & 1) && (cptr.ldI16(cptr.add(cw, 4)) != 1) ? 1 : 0) ? 1 : 0)
+    if (str === null || ((cptr.ldI32(cw) & NHM.WIN_CANCELLED) && (cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MESSAGE) ? 1 : 0) ? 1 : 0)
         return;
-    if (cptr.ldI16(cptr.add(cw, 4)) != 1)
+    if (cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MESSAGE)
         str = compress_str(str);
     cptr.stI32(cptr.add(ttyDisplay, 44), window);
     ;
     switch (cptr.ldI16(cptr.add(cw, 4))) {
-        case 1:
+        case NHM.NHW_MESSAGE:
         {
-            let suppress_history = (attr & 32);
-            let urgent_message = (attr & 16);
+            let suppress_history = (attr & NHM.ATR_NOHISTORY);
+            let urgent_message = (attr & NHM.ATR_URGENT);
             end_glyphout();
             if (urgent_message) {
-                if ((cptr.ldI32(cw) & 1) != 0) {
+                if ((cptr.ldI32(cw) & NHM.WIN_STOP) != 0) {
                     tty_clear_nhwindow(WIN_MESSAGE.v);
                     cptr.stI32(cw, cptr.ldI32(cw) & -2);
                 }
-                cptr.stI32(cw, cptr.ldI32(cw) | 4);
+                cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_NOSTOP);
             }
             if (!suppress_history) {
                 update_topl(str);
@@ -1640,7 +1641,7 @@ export function tty_putstr(window, attr, str) {
             cptr.stI32(cw, cptr.ldI32(cw) & -5);
             break;
         }
-        case 3:
+        case NHM.NHW_MAP:
         tty_curs(window, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
         term_start_attr(attr);
         while (cptr.ld1s(str) && cptr.ldI16(cptr.add(ttyDisplay, 4)) < ((cptr.ldI16(cptr.add(ttyDisplay, 2)) - 1) | 0) ? 1 : 0) {
@@ -1671,9 +1672,9 @@ export function tty_putstr(window, attr, str) {
         (cptr.stI64(cptr.add(cw, 40), cptr.ldI64(cptr.add(cw, 40)) + 1n)) - (1n);
         term_end_attr(attr);
         break;
-        case 4:
-        case 5:
-        if (cptr.ldI16(cptr.add(cw, 4)) == 5 && (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + BigInt(cptr.ldI16(cptr.add(cw, 10))))) == BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0)) ? 1 : 0) {
+        case NHM.NHW_MENU:
+        case NHM.NHW_TEXT:
+        if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_TEXT && (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + BigInt(cptr.ldI16(cptr.add(cw, 10))))) == BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0)) ? 1 : 0) {
             cptr.stI64(cptr.add(cw, 56), BigInt(cptr.ldI16(cptr.add(ttyDisplay, 2))));
             tty_display_nhwindow(window, 1);
             for (i = 0n; i < cptr.ldI64(cptr.add(cw, 48)); i++)
@@ -1738,21 +1739,21 @@ export function tty_display_file(fname, complain) {
                 pline(__sl37, fname);
             }
         } else {
-            let datawin = tty_create_nhwindow(5);
+            let datawin = tty_create_nhwindow(NHM.NHW_TEXT);
             let empty = 1;
             if (complain && cptr.ldPtr(cptr.add(tc_lcl_data, 16)) ? 1 : 0) {
                 cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(wins, datawin, 8)), 10), i16(((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(wins, WIN_STATUS.v, 8)), 10)) + ((cptr.ldI32(cptr.add(iflags, 388)) <= 2) ? 2 : 3)) | 0)));
                 if (((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(wins, datawin, 8)), 10)) + 12) | 0) > cptr.ldI16(ttyDisplay))
                     cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(wins, datawin, 8)), 10), 0);
             }
-            while (fgets(cptr.decay(buf), 256, f)) {
+            while (fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
                 if ((cr = cptr.strchr(cptr.decay(buf), 10)) !== null)
                     cptr.st1(cr, 0);
                 if (cptr.strchr(cptr.decay(buf), 9) !== null)
                     void tabexpand(cptr.decay(buf));
                 empty = 0;
                 tty_putstr(datawin, 0, cptr.decay(buf));
-                if (cptr.ldI32(cptr.ldPtr(cptr.add(wins, datawin, 8))) & 1)
+                if (cptr.ldI32(cptr.ldPtr(cptr.add(wins, datawin, 8))) & NHM.WIN_CANCELLED)
                     break;
             }
             if (!empty)
@@ -1776,7 +1777,7 @@ export function tty_start_menu(window, mbehavior) {
 
 /** C ref: wintty.c:2616 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr} str @param {CUInt} itemflags */
 export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
-    let preselected = schar((((itemflags & 1) >>> 0) != 0));
+    let preselected = schar((((itemflags & NHM.MENU_ITEMFLAGS_SELECTED) >>> 0) != 0));
     let cw = null;
     let item;
     let newstr;
@@ -1789,12 +1790,12 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
     } while (0);
     if (str === null)
         return;
-    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != 4 ? 1 : 0)
+    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MENU ? 1 : 0)
         panic(cptr.decay(winpanicstr), window, __sl39);
     (cptr.stI64(cptr.add(cw, 128), cptr.ldI64(cptr.add(cw, 128)) + 1n)) - (1n);
     if (cptr.ldPtr(identifier)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(str)));
-        if (len >= 256) {
+        if (len >= NHM.BUFSZ) {
             impossible(__sl40, len);
             len = 255;
         }
@@ -1834,8 +1835,8 @@ function reverse(curr) {
 
 /** C ref: wintty.c:2697 — struct color_and_attr */
 let tty_menu_promptstyle = cptr.alloc(8);
-cptr.stI32(tty_menu_promptstyle, 8);
-cptr.stI32(cptr.add(tty_menu_promptstyle, 4), 0);
+cptr.stI32(tty_menu_promptstyle, NHM.NO_COLOR);
+cptr.stI32(cptr.add(tty_menu_promptstyle, 4), NHM.ATR_NONE);
 
 /** C ref: wintty.c:2706 — @param {CInt} window @param {CPtr} prompt */
 export function tty_end_menu(window, prompt) {
@@ -1845,8 +1846,8 @@ export function tty_end_menu(window, prompt) {
     let lmax;
     let n;
     let menu_ch;
-    let clr = 8;
-    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != 4 ? 1 : 0) {
+    let clr = NHM.NO_COLOR;
+    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MENU ? 1 : 0) {
         if (window == WIN_INVEN.v && !cw ? 1 : 0)
             return;
         panic(cptr.decay(winpanicstr), window, __sl42);
@@ -1855,8 +1856,8 @@ export function tty_end_menu(window, prompt) {
     if (prompt) {
         let any = cptr.alloc(8);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, 0, clr, __sl2, 0);
-        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32(cptr.add(tty_menu_promptstyle, 4)), cptr.ldI32(tty_menu_promptstyle), prompt, 0);
+        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl2, NHM.MENU_ITEMFLAGS_NONE);
+        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32(cptr.add(tty_menu_promptstyle, 4)), cptr.ldI32(tty_menu_promptstyle), prompt, NHM.MENU_ITEMFLAGS_NONE);
     }
     lmax = (52 < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? 52 : ((cptr.ldI16(ttyDisplay) - 1) | 0));
     cptr.stI64(cptr.add(cw, 120), (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 128)) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));
@@ -1917,7 +1918,7 @@ export function tty_select_menu(window, how, menu_list) {
     let mi;
     let n;
     let cancelled;
-    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != 4 ? 1 : 0)
+    if ((window == -1 || (cw = cptr.ldPtr(cptr.add(wins, window, 8))) === null ? 1 : 0) || cptr.ldI16(cptr.add(cw, 4)) != NHM.NHW_MENU ? 1 : 0)
         panic(cptr.decay(winpanicstr), window, __sl45);
     if (cptr.ldU64(cptr.add(cw, 64)) == 1n) {
         return 0;
@@ -1926,7 +1927,7 @@ export function tty_select_menu(window, how, menu_list) {
     cptr.stI16(cptr.add(cw, 136), i16(how));
     morc.v = 0;
     tty_display_nhwindow(window, 1);
-    cancelled = !!(cptr.ldI32(cw) & 1);
+    cancelled = !!(cptr.ldI32(cw) & NHM.WIN_CANCELLED);
     tty_dismiss_nhwindow(window);
     if (cancelled) {
         n = -1;
@@ -1953,22 +1954,22 @@ export function tty_message_menu(let$, how, mesg) {
         if (cptr.ldI32(cptr.add(program_state, 8)))
             return 27;
     } while (0);
-    if (how == 0) {
+    if (how == NHM.PICK_NONE) {
         pline(__sl46, mesg);
         return 0;
     }
     cptr.st1(cptr.add(ttyDisplay, 48), let$);
     morc.v = 0;
     tty_putstr(WIN_MESSAGE.v, 0, mesg);
-    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1) {
+    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE) {
         more();
-        cptr.stI32(cptr.add(ttyDisplay, 24), 1);
+        cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NEED_MORE);
         tty_clear_nhwindow(WIN_MESSAGE.v);
-        void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == 0)) || (nhassert_failed(__sl23, __sl24, 2895), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 2895), 0) ? 1 : 0);
     }
     cptr.stI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), cptr.ldI32(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8))) & -2);
     cptr.st1(cptr.add(ttyDisplay, 48), 0);
-    return schar((((how == 1 && morc.v == let$ ? 1 : 0) || morc.v == 27 ? 1 : 0) ? morc.v : 0));
+    return schar((((how == NHM.PICK_ONE && morc.v == let$ ? 1 : 0) || morc.v == 27 ? 1 : 0) ? morc.v : 0));
 }
 
 /** C ref: wintty.c:2907 — @param {CInt} window @param {CInt} request @param {CPtr} wri @returns {CPtr} */
@@ -2022,7 +2023,7 @@ export function tty_wait_synch() {
             addtopl(__sl47);
             void fflush(__stdoutp);
         } else if (cptr.ldI32(cptr.add(ttyDisplay, 36)) > cptr.ldI32(program_state)) {
-            cptr.stI32(cptr.add(ttyDisplay, 24), 3);
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_SPECIAL_PROMPT);
             void tty_doprev_message();
             void tty_doprev_message();
             (cptr.stI32(cptr.add(ttyDisplay, 40), cptr.ldI32(cptr.add(ttyDisplay, 40)) + 1)) - (1);
@@ -2050,7 +2051,7 @@ export function docorner(xmin, ymax, ystart_between_menu_pages) {
         tty_curs(BASE_WINDOW, xmin, y);
         if (!ystart_between_menu_pages)
             cl_end();
-        if (y < cptr.ldI16(cptr.add(cw, 10)) || ((y + clipy) | 0) > 21 ? 1 : 0)
+        if (y < cptr.ldI16(cptr.add(cw, 10)) || ((y + clipy) | 0) > NHM.ROWNO ? 1 : 0)
             continue;
         row_refresh(i16(((((xmin + clipx) | 0) - cptr.ldI16(cptr.add(cw, 8))) | 0)), 79, i16(((((y + clipy) | 0) - cptr.ldI16(cptr.add(cw, 10))) | 0)));
     }
@@ -2073,9 +2074,9 @@ export function end_glyphout() {
         GFlag = 0;
         graph_off();
     }
-    if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != 8) {
+    if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != NHM.NO_COLOR) {
         term_end_color();
-        cptr.stI32(cptr.add(ttyDisplay, 8), 8);
+        cptr.stI32(cptr.add(ttyDisplay, 8), NHM.NO_COLOR);
     }
 }
 
@@ -2148,14 +2149,14 @@ export function tty_cliparound(x, y) {
         clipx = (0 > ((x - 20) | 0) ? 0 : ((x - 20) | 0));
         clipxmax = (clipx + cptr.ldI32(cptr.add(gt, 356))) | 0;
     } else if (x > ((clipxmax - 5) | 0)) {
-        clipxmax = (80 < ((clipxmax + 20) | 0) ? 80 : ((clipxmax + 20) | 0));
+        clipxmax = (NHM.COLNO < ((clipxmax + 20) | 0) ? NHM.COLNO : ((clipxmax + 20) | 0));
         clipx = (clipxmax - cptr.ldI32(cptr.add(gt, 356))) | 0;
     }
     if (y < ((clipy + 2) | 0)) {
         clipy = (0 > ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? 0 : ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
         clipymax = (clipy + ((((cptr.ldI32(cptr.add(gt, 352)) - 1) | 0) - cptr.ldI32(cptr.add(iflags, 388))) | 0)) | 0;
     } else if (y > ((clipymax - 2) | 0)) {
-        clipymax = (21 < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? 21 : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
+        clipymax = (NHM.ROWNO < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? NHM.ROWNO : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
         clipy = (clipymax - ((((cptr.ldI32(cptr.add(gt, 352)) - 1) | 0) - cptr.ldI32(cptr.add(iflags, 388))) | 0)) | 0;
     }
     if (clipx != oldx || clipy != oldy ? 1 : 0) {
@@ -2193,13 +2194,13 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         backsp();
     }
     if (cptr.ld1s(cptr.add(iflags, 184))) {
-        cptr.stI32(cptr.add(ttyDisplay, 12), 16777216);
+        cptr.stI32(cptr.add(ttyDisplay, 12), NHM.NH_BASIC_COLOR);
         if (color != cptr.ldI32(cptr.add(ttyDisplay, 8))) {
-            if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != 8)
+            if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != NHM.NO_COLOR)
                 term_end_color();
         }
         if ((((cptr.ldU64(cptr.add(tty_procs, 24)) & 262144n) && cptr.ldI32(cptr.add(glyphinfo, 28)) != 0 ? 1 : 0) && cptr.ldI32(cptr.add(iflags, 120)) >= 256 ? 1 : 0) && !calling_from_update_inventory ? 1 : 0) {
-            if (((cptr.ldI32(cptr.add(glyphinfo, 28)) & 16777216) >>> 0) == 0) {
+            if (((cptr.ldI32(cptr.add(glyphinfo, 28)) & NHM.NH_BASIC_COLOR) >>> 0) == 0) {
                 term_start_extracolor(cptr.ldI32(cptr.add(glyphinfo, 28)), cptr.ldU16(cptr.add(glyphinfo, 32)));
                 cptr.stI32(cptr.add(ttyDisplay, 12), 0);
                 colordone = 1;
@@ -2209,18 +2210,18 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         }
         if (!colordone) {
             cptr.stI32(cptr.add(ttyDisplay, 8), color);
-            if (color != 8)
+            if (color != NHM.NO_COLOR)
                 term_start_color(color | 0);
         }
     }
-    if ((cptr.ld1s(cptr.add(iflags, 184)) && bkglyphinfo ? 1 : 0) && cptr.ldI32(cptr.add(bkglyphinfo, 8)) != 8 ? 1 : 0) {
+    if ((cptr.ld1s(cptr.add(iflags, 184)) && bkglyphinfo ? 1 : 0) && cptr.ldI32(cptr.add(bkglyphinfo, 8)) != NHM.NO_COLOR ? 1 : 0) {
         cptr.stI32(cptr.add(ttyDisplay, 16), cptr.ldI32(cptr.add(bkglyphinfo, 8)));
         term_start_bgcolor(cptr.ldI32(cptr.add(bkglyphinfo, 8)) | 0);
-    } else if (((special & 16) >>> 0) != 0 && cptr.ld1s(cptr.add(iflags, 185)) ? 1 : 0) {
+    } else if (((special & NHM.MG_PET) >>> 0) != 0 && cptr.ld1s(cptr.add(iflags, 185)) ? 1 : 0) {
         term_start_attr(cptr.ldI32(cptr.add(iflags, 396)));
         petattr = 1;
-    } else if ((((((special & 128) >>> 0) != 0 && cptr.ld1s(cptr.add(iflags, 132)) ? 1 : 0) || ((((special & 8192) >>> 0) != 0 && cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && cptr.ld1s(cptr.add(iflags, 181)) ? 1 : 0) ? 1 : 0) || (((special & 776) >>> 0) != 0) ? 1 : 0) && cptr.ld1s(cptr.add(iflags, 208)) ? 1 : 0) {
-        term_start_attr(7);
+    } else if ((((((special & NHM.MG_OBJPILE) >>> 0) != 0 && cptr.ld1s(cptr.add(iflags, 132)) ? 1 : 0) || ((((special & NHM.MG_FEMALE) >>> 0) != 0 && cptr.ld1s(cptr.add(flags, 10)) ? 1 : 0) && cptr.ld1s(cptr.add(iflags, 181)) ? 1 : 0) ? 1 : 0) || (((special & 776) >>> 0) != 0) ? 1 : 0) && cptr.ld1s(cptr.add(iflags, 208)) ? 1 : 0) {
+        term_start_attr(NHM.ATR_INVERSE);
         inverse_on = 1;
     }
     if ((((!glyphdone && (cptr.ldU64(cptr.add(tty_procs, 24)) & 131072n) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8) ? 1 : 0) && cptr.ldPtr(cptr.add(glyphinfo, 40)) ? 1 : 0) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(glyphinfo, 40)), 8)) ? 1 : 0) {
@@ -2230,15 +2231,15 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     if (!glyphdone)
         g_putch(ch);
     if (inverse_on)
-        term_end_attr(7);
+        term_end_attr(NHM.ATR_INVERSE);
     else if (petattr)
         term_end_attr(cptr.ldI32(cptr.add(iflags, 396)));
     if (cptr.ld1s(cptr.add(iflags, 184))) {
-        if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != 8 || cptr.ldI32(cptr.add(ttyDisplay, 16)) != 8 ? 1 : 0) {
+        if (cptr.ldI32(cptr.add(ttyDisplay, 8)) != NHM.NO_COLOR || cptr.ldI32(cptr.add(ttyDisplay, 16)) != NHM.NO_COLOR ? 1 : 0) {
             term_end_color();
-            cptr.stI32(cptr.add(ttyDisplay, 8), cptr.stI32(cptr.add(ttyDisplay, 16), 8));
+            cptr.stI32(cptr.add(ttyDisplay, 8), cptr.stI32(cptr.add(ttyDisplay, 16), NHM.NO_COLOR));
         }
-        if (cptr.ldI32(cptr.add(ttyDisplay, 12)) != 16777216)
+        if (cptr.ldI32(cptr.add(ttyDisplay, 12)) != NHM.NH_BASIC_COLOR)
             term_end_extracolor();
     }
     ;
@@ -2320,8 +2321,8 @@ export function tty_nhgetch() {
         cptr.st1(cptr.add(iflags, 7), 1);
         i = 27;
     }
-    if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 ? 1 : 0)
-        cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+    if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE ? 1 : 0)
+        cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
     return i;
 }
 
@@ -2338,7 +2339,7 @@ export function tty_nh_poskey(x, y, mod) {
 
 /** C ref: wintty.c:4225 — @param {CInt} dir */
 export function win_tty_init(dir) {
-    if (dir != 0)
+    if (dir != NHM.WININIT)
         return;
     return;
 }
@@ -2355,7 +2356,7 @@ export function tty_putmixed(window, attr, str) {
     cptr.stI32(cptr.add(ttyDisplay, 56), 1);
     if ((cptr.ldU64(cptr.add(windowprocs, 24)) & 131072n) && (cptr.ldI32(cptr.add(cptr.add(cptr.add(gs, 200), cptr.ldI32(cptr.add(gc, 428)), 48), 28)) == NHC.H_UTF8) ? 1 : 0) {
         mixed_to_utf8(cptr.decay(buf), 256n, str, utf8flag);
-        if (cptr.ldI16(cptr.add(cw, 4)) == 1)
+        if (cptr.ldI16(cptr.add(cw, 4)) == NHM.NHW_MESSAGE)
             cptr.stI32(cptr.add(ttyDisplay, 52), utf8flag.v);
     } else
         decode_mixed(cptr.decay(buf), str);
@@ -2551,15 +2552,15 @@ export function tty_status_init() {
     num_rows = ((cptr.ldI32(cptr.add(iflags, 388)) <= 2) ? 2 : 3);
     fieldorder = (num_rows != 3) ? cptr.decay(twolineorder) : cptr.decay(threelineorder);
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        cptr.stI32(cptr.add(cptr.decay(tty_status[1]), i, 40), NHC.BL_FLUSH);
-        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 4), 8);
-        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 8), 0);
-        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 12), cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 16), 0));
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 32), 0);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 33), 0);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 34), 0);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), i, 40), 35), 0);
-        cptr.memcpy(cptr.add(cptr.decay(tty_status[0]), i, 40), cptr.add(cptr.decay(tty_status[1]), i, 40), 40);
+        cptr.stI32(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), NHC.BL_FLUSH);
+        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 4), NHM.NO_COLOR);
+        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 8), NHM.ATR_NONE);
+        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 12), cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 16), 0));
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 32), 0);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 33), 0);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 34), 0);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 35), 0);
+        cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), i, 40), cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 40);
     }
     tty_condition_bits = 0n;
     hpbar_percent = (hpbar_crit_hp = 0);
@@ -2596,12 +2597,12 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         }
         return;
         case NHC.BL_CONDITION:
-        cptr.stI32(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), fldidx);
+        cptr.stI32(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), fldidx);
         tty_condition_bits = cptr.ldI64(condptr);
         tty_colormasks = colormasks;
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 32), 1);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 33), 1);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 35), 1);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 32), 1);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 33), 1);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 35), 1);
         truncation_expected = 0;
         break;
         case NHC.BL_GOLD:
@@ -2616,28 +2617,28 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         if (cptr.ld1s(fmt) == 32 && ((fldidx == cptr.ldI32(cptr.add(cptr.add(fieldorder, 0, 76), 0, 4)) || fldidx == cptr.ldI32(cptr.add(cptr.add(fieldorder, 1, 76), 0, 4)) ? 1 : 0) || fldidx == cptr.ldI32(cptr.add(cptr.add(fieldorder, 2, 76), 0, 4)) ? 1 : 0) ? 1 : 0)
             fmt = cptr.add(fmt, 1);
         void cptr.sprintf(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), fmt, text);
-        cptr.stI32(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), fldidx);
-        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 4), (color & 255));
-        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 8), term_attr_fixup(attrmask));
-        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, fldidx, 8))));
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 32), 1);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 33), 1);
-        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 35), 1);
+        cptr.stI32(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), fldidx);
+        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 4), (color & 255));
+        cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 8), term_attr_fixup(attrmask));
+        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, fldidx, 8))));
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 32), 1);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 33), 1);
+        cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 35), 1);
         break;
     }
-    if (((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) == 1n ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0)) == 32 ? 1 : 0) {
+    if (((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24)) == 1n ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0)) == 32 ? 1 : 0) {
         cptr.st1(cptr.add(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 0), 0);
-        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), 0n);
+        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24), 0n);
     }
     switch (fldidx) {
         case NHC.BL_HP:
         if (cptr.ld1s(cptr.add(iflags, 372))) {
             hpbar_percent = percent;
             hpbar_crit_hp = critically_low_hp(1) ? 1 : 0;
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 4), (color & 255));
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 4), (color & 255));
             attrmask = NHC.HL_INVERSE | (hpbar_crit_hp ? NHC.HL_BLINK : 0);
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 8), term_attr_fixup(attrmask));
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 33), 1);
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 8), term_attr_fixup(attrmask));
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 33), 1);
         }
         break;
         case NHC.BL_LEVELDESC:
@@ -2645,21 +2646,21 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         // @FallThrough
         ;
         case NHC.BL_HUNGER:
-        if (cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) > 0n) {
+        if (cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24)) > 0n) {
             p = cptr.ldPtr(cptr.add(status_vals, fldidx, 8));
             for (lastchar = eos(p); cptr.cmp(lastchar, p) > 0 && cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32 ? 1 : 0; ) {
                 cptr.st1(lastchar, 0);
-                (cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) + -1n)) - (-1n);
+                (cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24), cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24)) + -1n)) - (-1n);
             }
         }
         break;
         case NHC.BL_TITLE:
         if (cptr.ld1s(cptr.add(iflags, 372)))
-            cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), 32n);
+            cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24), 32n);
         break;
         case NHC.BL_GOLD:
         if ((p = cptr.strchr(cptr.ldPtr(cptr.add(status_vals, fldidx, 8)), 92)) !== null && cptr.ld1s(cptr.add(p, 1)) == 71 ? 1 : 0)
-            cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24), cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), fldidx, 40), 24)) - 9n);
+            cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24), cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24)) - 9n);
         break;
         case NHC.BL_CAP:
         enc_shrinklvl = 0;
@@ -2740,22 +2741,22 @@ function check_fields(forcefields, sz) {
         for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
                 continue;
-            if (!cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 32)))
+            if (!cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 32)))
                 valid = 0;
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34), 0);
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 16), row);
-            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 12), col);
-            if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24))) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 24))))
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34), 0);
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 16), row);
+            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12), col);
+            if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24))) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 24))))
                 update_right = 1;
-            else if (cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24)) != cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 24)) || cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 12)) != cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 12)) ? 1 : 0)
-                cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34), 1);
+            else if (cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24)) != cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 24)) || cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12)) != cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 12)) ? 1 : 0)
+                cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34), 1);
             else
                 update_right = 0;
             matchprev = 0;
-            if (((valid && !update_right ? 1 : 0) && !forcefields ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34)) ? 1 : 0) {
-                if (((do_field_opt && idx != NHC.BL_CONDITION ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 4)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 4))) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 8)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), idx, 40), 8))) ? 1 : 0) {
+            if (((valid && !update_right ? 1 : 0) && !forcefields ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34)) ? 1 : 0) {
+                if (((do_field_opt && idx != NHC.BL_CONDITION ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 4)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 4))) ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 8)) == cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 8))) ? 1 : 0) {
                     matchprev = 1;
-                    if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 33))) {
+                    if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33))) {
                         let ob;
                         let nb;
                         let cw = cptr.ldPtr(cptr.add(wins, WIN_STATUS.v, 8));
@@ -2774,9 +2775,9 @@ function check_fields(forcefields, sz) {
                     }
                 }
             }
-            if ((forcefields || update_right ? 1 : 0) || (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 33)) && !matchprev ? 1 : 0) ? 1 : 0)
-                cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34), 1);
-            col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24))));
+            if ((forcefields || update_right ? 1 : 0) || (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33)) && !matchprev ? 1 : 0) ? 1 : 0)
+                cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34), 1);
+            col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24))));
         }
         cptr.stI32(cptr.add(sz, row, 4), col);
     }
@@ -2799,7 +2800,7 @@ function tty_putstatusfield(text, x, y) {
     ;
     if (x < ncols && y < nrows ? 1 : 0) {
         if (BigInt(x) != cptr.ldI64(cptr.add(cw, 32)) || BigInt(y) != cptr.ldI64(cptr.add(cw, 40)) ? 1 : 0)
-            tty_curs(2, x, y);
+            tty_curs(NHM.NHW_STATUS, x, y);
         for (i = 0; i < lth; ++i) {
             n = (i + x) | 0;
             if (n < ncols && cptr.ld1s(text) ? 1 : 0) {
@@ -2826,7 +2827,7 @@ function set_condition_length() {
                 lth = (lth + ((1 + Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(cptr.add(cptr.add(cptr.add(conditions, c, 48), 24), cond_shrinklvl, 8)))))) | 0)) | 0;
         }
     }
-    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CONDITION, 40), 24), BigInt.asUintN(64, BigInt(lth)));
+    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40), 24), BigInt.asUintN(64, BigInt(lth)));
 }
 
 /** C ref: wintty.c:4936 — @param {CInt} lvl */
@@ -2835,7 +2836,7 @@ function shrink_enc(lvl) {
         enc_shrinklvl = lvl;
         void cptr.sprintf(cptr.ldPtr(cptr.add(status_vals, NHC.BL_CAP, 8)), __sl64, cptr.ldPtr(cptr.add(cptr.decay(encvals[lvl]), enclev, 8)));
     }
-    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CAP, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_CAP, 8))));
+    cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CAP, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_CAP, 8))));
 }
 
 /** C ref: wintty.c:4947 — @param {CInt} lvl */
@@ -2847,7 +2848,7 @@ function shrink_dlvl(lvl) {
         void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __sl65 : __sl66);
         void cptr.strcat(cptr.decay(buf), levval);
         void cptr.strcpy(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8)), cptr.decay(buf));
-        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_LEVELDESC, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8))));
+        cptr.stU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_LEVELDESC, 40), 24), cptr.strlen(cptr.ldPtr(cptr.add(status_vals, NHC.BL_LEVELDESC, 8))));
     }
 }
 
@@ -2867,11 +2868,11 @@ function check_windowdata() {
 function condcolor(bm, bmarray) {
     let i;
     if (bm && bmarray ? 1 : 0)
-        for (i = 0; i < 16; ++i) {
+        for (i = 0; i < NHM.CLR_MAX; ++i) {
             if ((BigInt.asUintN(64, bm) & cptr.ldU64(cptr.add(bmarray, i, 8))) != 0n)
                 return i;
         }
-    return 8;
+    return NHM.NO_COLOR;
 }
 
 /** C ref: wintty.c:4997 — @param {CLongLong} bm @param {CPtr} bmarray @returns {CInt} */
@@ -2943,10 +2944,10 @@ function render_status() {
         for (i = 0; (idx = cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), i, 4))) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1s(cptr.add(cptr.decay(status_activefields), idx, 1)))
                 continue;
-            x = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 12));
+            x = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12));
             text = cptr.ldPtr(cptr.add(status_vals, idx, 8));
-            tlth = Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24))));
-            if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34)) || !do_field_opt ? 1 : 0) {
+            tlth = Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24))));
+            if (cptr.ld1s(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34)) || !do_field_opt ? 1 : 0) {
                 let hitpointbar = schar((idx == NHC.BL_TITLE && cptr.ld1s(cptr.add(iflags, 372)) ? 1 : 0));
                 if (idx == NHC.BL_CONDITION) {
                     bits = tty_condition_bits;
@@ -2955,9 +2956,9 @@ function render_status() {
                         let last_col = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 24))));
                         let dat = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), y, 8)), 0);
                         if (cptr.ld1s(cptr.add(cptr.decay(status_activefields), NHC.BL_VERS, 1)) && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == NHC.BL_VERS ? 1 : 0)
-                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_VERS, 40), 24))))) | 0;
-                        if ((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 16)) < row && x < cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12)) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12)) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
-                            cstart = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_HUNGER, 40), 12));
+                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40), 24))))) | 0;
+                        if ((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 16)) < row && x < cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12)) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12)) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
+                            cstart = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12));
                         else if (BigInt(((x + tlth) | 0)) < BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 24)) - 1n))
                             cstart = (last_col - tlth) | 0;
                         else
@@ -2967,7 +2968,7 @@ function render_status() {
                                 if (cptr.ld1s(cptr.add(dat, (x - 1) | 0)) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < cstart);
-                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_CONDITION, 40), 12), x);
+                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40), 12), x);
                             tty_curs(WIN_STATUS.v, x, y);
                         }
                     }
@@ -2982,21 +2983,21 @@ function render_status() {
                                 do {
                                     if (attrmask) {
                                         if ((attrmask) & NHC.HL_BOLD)
-                                            term_start_attr(1);
+                                            term_start_attr(NHM.ATR_BOLD);
                                         if ((attrmask) & NHC.HL_DIM)
-                                            term_start_attr(2);
+                                            term_start_attr(NHM.ATR_DIM);
                                         if ((attrmask) & NHC.HL_ITALIC)
-                                            term_start_attr(3);
+                                            term_start_attr(NHM.ATR_ITALIC);
                                         if ((attrmask) & NHC.HL_ULINE)
-                                            term_start_attr(4);
+                                            term_start_attr(NHM.ATR_ULINE);
                                         if ((attrmask) & NHC.HL_BLINK)
-                                            term_start_attr(5);
+                                            term_start_attr(NHM.ATR_BLINK);
                                         if ((attrmask) & NHC.HL_INVERSE)
-                                            term_start_attr(7);
+                                            term_start_attr(NHM.ATR_INVERSE);
                                     }
                                 } while (0);
                                 coloridx = condcolor(mask, tty_colormasks);
-                                if (coloridx != 8)
+                                if (coloridx != NHM.NO_COLOR)
                                     term_start_color(coloridx);
                             }
                             condtext = cptr.ldPtr(cptr.add(cptr.add(cptr.add(conditions, ci, 48), 24), cond_shrinklvl, 8));
@@ -3008,22 +3009,22 @@ function render_status() {
                             tty_putstatusfield(condtext, x, y);
                             x = (x + Number(BigInt.asIntN(32, cptr.strlen(condtext)))) | 0;
                             if (cptr.ldI64(cptr.add(iflags, 152))) {
-                                if (coloridx != 8)
+                                if (coloridx != NHM.NO_COLOR)
                                     term_end_color();
                                 do {
                                     if (attrmask) {
                                         if ((attrmask) & NHC.HL_INVERSE)
-                                            term_end_attr(7);
+                                            term_end_attr(NHM.ATR_INVERSE);
                                         if ((attrmask) & NHC.HL_BLINK)
-                                            term_end_attr(5);
+                                            term_end_attr(NHM.ATR_BLINK);
                                         if ((attrmask) & NHC.HL_ULINE)
-                                            term_end_attr(4);
+                                            term_end_attr(NHM.ATR_ULINE);
                                         if ((attrmask) & NHC.HL_ITALIC)
-                                            term_end_attr(3);
+                                            term_end_attr(NHM.ATR_ITALIC);
                                         if ((attrmask) & NHC.HL_DIM)
-                                            term_end_attr(2);
+                                            term_end_attr(NHM.ATR_DIM);
                                         if ((attrmask) & NHC.HL_BOLD)
-                                            term_end_attr(1);
+                                            term_end_attr(NHM.ATR_BOLD);
                                     }
                                 } while (0);
                             }
@@ -3064,73 +3065,73 @@ function render_status() {
                     }
                     tty_putstatusfield(__sl75, x++, y);
                     if (cptr.ld1s(cptr.decay(bar))) {
-                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 4));
-                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_TITLE, 40), 8));
+                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 4));
+                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 8));
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
-                                    term_start_attr(1);
+                                    term_start_attr(NHM.ATR_BOLD);
                                 if ((attrmask) & NHC.HL_DIM)
-                                    term_start_attr(2);
+                                    term_start_attr(NHM.ATR_DIM);
                                 if ((attrmask) & NHC.HL_ITALIC)
-                                    term_start_attr(3);
+                                    term_start_attr(NHM.ATR_ITALIC);
                                 if ((attrmask) & NHC.HL_ULINE)
-                                    term_start_attr(4);
+                                    term_start_attr(NHM.ATR_ULINE);
                                 if ((attrmask) & NHC.HL_BLINK)
-                                    term_start_attr(5);
+                                    term_start_attr(NHM.ATR_BLINK);
                                 if ((attrmask) & NHC.HL_INVERSE)
-                                    term_start_attr(7);
+                                    term_start_attr(NHM.ATR_INVERSE);
                             }
                         } while (0);
-                        if (cptr.ldI64(cptr.add(iflags, 152)) && coloridx != 8 ? 1 : 0)
+                        if (cptr.ldI64(cptr.add(iflags, 152)) && coloridx != NHM.NO_COLOR ? 1 : 0)
                             term_start_color(coloridx);
                         tty_putstatusfield(cptr.decay(bar), x, y);
                         x = (x + Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(bar))))) | 0;
-                        if (cptr.ldI64(cptr.add(iflags, 152)) && coloridx != 8 ? 1 : 0)
+                        if (cptr.ldI64(cptr.add(iflags, 152)) && coloridx != NHM.NO_COLOR ? 1 : 0)
                             term_end_color();
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_INVERSE)
-                                    term_end_attr(7);
+                                    term_end_attr(NHM.ATR_INVERSE);
                                 if ((attrmask) & NHC.HL_BLINK)
-                                    term_end_attr(5);
+                                    term_end_attr(NHM.ATR_BLINK);
                                 if ((attrmask) & NHC.HL_ULINE)
-                                    term_end_attr(4);
+                                    term_end_attr(NHM.ATR_ULINE);
                                 if ((attrmask) & NHC.HL_ITALIC)
-                                    term_end_attr(3);
+                                    term_end_attr(NHM.ATR_ITALIC);
                                 if ((attrmask) & NHC.HL_DIM)
-                                    term_end_attr(2);
+                                    term_end_attr(NHM.ATR_DIM);
                                 if ((attrmask) & NHC.HL_BOLD)
-                                    term_end_attr(1);
+                                    term_end_attr(NHM.ATR_BOLD);
                             }
                         } while (0);
                     }
                     if (twoparts) {
                         if ((attrmask & NHC.HL_BLINK) != 0)
-                            term_start_attr(5);
+                            term_start_attr(NHM.ATR_BLINK);
                         cptr.st1(bar2, savedch);
                         tty_putstatusfield(bar2, x, y);
                         x = (x + Number(BigInt.asIntN(32, cptr.strlen(bar2)))) | 0;
                         if ((attrmask & NHC.HL_BLINK) != 0)
-                            term_end_attr(5);
+                            term_end_attr(NHM.ATR_BLINK);
                     }
                     tty_putstatusfield(__sl76, x++, y);
                 } else {
                     if (idx == NHC.BL_VERS && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4)) == NHC.BL_FLUSH ? 1 : 0) {
                         let vstart;
                         let dat = cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), y, 8)), 0);
-                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_CONDITION, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[0]), NHC.BL_CONDITION, 40), 24)))));
+                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40), 12)))) + cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40), 24)))));
                         if ((i > 0 && cptr.ldI32(cptr.add(cptr.add(fieldorder, row, 76), (i - 1) | 0, 4)) == NHC.BL_CONDITION ? 1 : 0) && x != vx ? 1 : 0) {
                             x = vx;
                             tty_curs(WIN_STATUS.v, x, y);
                         }
-                        vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 24)) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 24))))))));
+                        vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 24)) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24))))))));
                         if (x < vstart) {
                             do {
                                 if (cptr.ld1s(cptr.add(dat, (x - 1) | 0)) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < vstart);
-                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), NHC.BL_VERS, 40), 12), x);
+                            cptr.stI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40), 12), x);
                         }
                     }
                     if (cptr.ldI64(cptr.add(iflags, 152))) {
@@ -3142,46 +3143,46 @@ function render_status() {
                             tty_putstatusfield(__sl77, x++, y);
                             text = cptr.add(text, 1);
                         }
-                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 8));
+                        attrmask = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 8));
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
-                                    term_start_attr(1);
+                                    term_start_attr(NHM.ATR_BOLD);
                                 if ((attrmask) & NHC.HL_DIM)
-                                    term_start_attr(2);
+                                    term_start_attr(NHM.ATR_DIM);
                                 if ((attrmask) & NHC.HL_ITALIC)
-                                    term_start_attr(3);
+                                    term_start_attr(NHM.ATR_ITALIC);
                                 if ((attrmask) & NHC.HL_ULINE)
-                                    term_start_attr(4);
+                                    term_start_attr(NHM.ATR_ULINE);
                                 if ((attrmask) & NHC.HL_BLINK)
-                                    term_start_attr(5);
+                                    term_start_attr(NHM.ATR_BLINK);
                                 if ((attrmask) & NHC.HL_INVERSE)
-                                    term_start_attr(7);
+                                    term_start_attr(NHM.ATR_INVERSE);
                             }
                         } while (0);
-                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 4));
-                        if (coloridx != 8)
+                        coloridx = cptr.ldI32(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 4));
+                        if (coloridx != NHM.NO_COLOR)
                             term_start_color(coloridx);
                     }
                     tty_putstatusfield(text, x, y);
                     x = (x + Number(BigInt.asIntN(32, cptr.strlen(text)))) | 0;
                     if (cptr.ldI64(cptr.add(iflags, 152))) {
-                        if (coloridx != 8)
+                        if (coloridx != NHM.NO_COLOR)
                             term_end_color();
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_INVERSE)
-                                    term_end_attr(7);
+                                    term_end_attr(NHM.ATR_INVERSE);
                                 if ((attrmask) & NHC.HL_BLINK)
-                                    term_end_attr(5);
+                                    term_end_attr(NHM.ATR_BLINK);
                                 if ((attrmask) & NHC.HL_ULINE)
-                                    term_end_attr(4);
+                                    term_end_attr(NHM.ATR_ULINE);
                                 if ((attrmask) & NHC.HL_ITALIC)
-                                    term_end_attr(3);
+                                    term_end_attr(NHM.ATR_ITALIC);
                                 if ((attrmask) & NHC.HL_DIM)
-                                    term_end_attr(2);
+                                    term_end_attr(NHM.ATR_DIM);
                                 if ((attrmask) & NHC.HL_BOLD)
-                                    term_end_attr(1);
+                                    term_end_attr(NHM.ATR_BOLD);
                             }
                         } while (0);
                     }
@@ -3189,18 +3190,18 @@ function render_status() {
             } else {
                 x = (x + tlth) | 0;
             }
-            cptr.stI32(cptr.add(cptr.decay(finalx[row]), 1, 4), (x - 1) | 0);
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 33), 0);
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 34), 0);
-            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[1]), idx, 40), 35), 0);
-            cptr.memcpy(cptr.add(cptr.decay(tty_status[0]), idx, 40), cptr.add(cptr.decay(tty_status[1]), idx, 40), 40);
+            cptr.stI32(cptr.add(cptr.decay(finalx[row]), NHM.NOW, 4), (x - 1) | 0);
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33), 0);
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34), 0);
+            cptr.st1(cptr.add(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 35), 0);
+            cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 40);
         }
-        x = cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 1, 4));
-        if ((x < cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 0, 4)) || !cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 0, 4)) ? 1 : 0) && BigInt(((x + 1) | 0)) < cptr.ldI64(cptr.add(cw, 24)) ? 1 : 0) {
+        x = cptr.ldI32(cptr.add(cptr.decay(finalx[row]), NHM.NOW, 4));
+        if ((x < cptr.ldI32(cptr.add(cptr.decay(finalx[row]), NHM.BEFORE, 4)) || !cptr.ldI32(cptr.add(cptr.decay(finalx[row]), NHM.BEFORE, 4)) ? 1 : 0) && BigInt(((x + 1) | 0)) < cptr.ldI64(cptr.add(cw, 24)) ? 1 : 0) {
             tty_curs(WIN_STATUS.v, (x + 1) | 0, y);
             cl_end();
         }
-        cptr.stI32(cptr.add(cptr.decay(finalx[row]), 0, 4), cptr.ldI32(cptr.add(cptr.decay(finalx[row]), 1, 4)));
+        cptr.stI32(cptr.add(cptr.decay(finalx[row]), NHM.BEFORE, 4), cptr.ldI32(cptr.add(cptr.decay(finalx[row]), NHM.NOW, 4)));
     }
     return;
 }

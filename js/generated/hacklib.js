@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/hacklib-prelude.js) ----
 // hacklib.c needs no extern stubs beyond libc: every external call it makes
@@ -219,7 +220,7 @@ export function c_eos(s) {
 export function str_start_is(str, chkstr, caseblind) {
     let t1;
     let t2;
-    let n = 32767;
+    let n = NHM.LARGEST_INT;
     while (--n) {
         if (!cptr.ld1s(str))
             return schar((cptr.ld1s(chkstr) == 0));
@@ -396,7 +397,7 @@ export function tabexpand(sbuf) {
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), cptr.ld1s(s));
             ++idx;
         }
-        if (idx >= 256) {
+        if (idx >= NHM.BUFSZ) {
             bp = cptr.add(cptr.decay(buf), 255, 1);
             break;
         }

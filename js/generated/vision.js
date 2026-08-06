@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
 import { debugcore } from './files.js';
@@ -234,7 +235,7 @@ export function get_viz_clear(x, y) {
 /** C ref: vision.c:121 */
 export function vision_init() {
     let i;
-    for (i = 0; i < 21; i++) {
+    for (i = 0; i < NHM.ROWNO; i++) {
         cptr.stPtr(cptr.add(cs_rows0, i, 8), cptr.decay(could_see[0][i]));
         cptr.stPtr(cptr.add(cs_rows1, i, 8), cptr.decay(could_see[1][i]));
         cptr.stPtr(cptr.add(viz_clear_rows, i, 8), cptr.decay(viz_clear[i]));
@@ -263,7 +264,7 @@ export function does_block(x, y, lev) {
     for (obj = cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8)); obj; obj = cptr.ldPtr(cptr.add(obj, 8)))
         if (cptr.ldI16(cptr.add(obj, 32)) == NHC.BOULDER)
             return 1;
-    if (((mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) && (!(cptr.ldI32(cptr.add(mon, 88)) & 1) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ld1u(cptr.add((mon), 64)) & 7) == NHC.M_AP_OBJECT && cptr.ldI32(cptr.add((mon), 60)) == NHC.BOULDER ? 1 : 0) || ((cptr.ld1u(cptr.add((mon), 64)) & 7) == NHC.M_AP_FURNITURE && (((cptr.ldI32(cptr.add((mon), 60)) == NHC.S_hcdoor || cptr.ldI32(cptr.add((mon), 60)) == NHC.S_vcdoor ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) < NHC.S_ndoor ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) == NHC.S_tree ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (((mon = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)))) && (!(cptr.ldI32(cptr.add(mon, 88)) & 1) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ld1u(cptr.add((mon), 64)) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32(cptr.add((mon), 60)) == NHC.BOULDER ? 1 : 0) || ((cptr.ld1u(cptr.add((mon), 64)) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (((cptr.ldI32(cptr.add((mon), 60)) == NHC.S_hcdoor || cptr.ldI32(cptr.add((mon), 60)) == NHC.S_vcdoor ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) < NHC.S_ndoor ? 1 : 0) || cptr.ldI32(cptr.add((mon), 60)) == NHC.S_tree ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
         return 1;
     if (cptr.ldI32(cptr.add(gs, 1416)) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -285,11 +286,11 @@ export function vision_reset() {
     cptr.stPtr(cptr.add(gv, 136), cs_rmax0);
     void __builtin___memset_chk(cptr.decay(could_see), 0, 3360n, __builtin_object_size(cptr.decay(could_see), 0));
     void __builtin___memset_chk(cptr.decay(viz_clear), 0, 1680n, __builtin_object_size(cptr.decay(viz_clear), 0));
-    for (y = 0; y < 21; y++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
         dig_left = 0;
         block = 1;
         lev = cptr.add(cptr.add(cptr.add(svl, 1680), 1, 756), y, 36);
-        for (x = 1; x < 80; x++, lev = cptr.add(lev, 21, 36))
+        for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 36))
             if (block != (((cptr.ld1s(cptr.add(lev, 4))) < NHC.POOL) || does_block(x, y, lev) ? 1 : 0)) {
                 if (block) {
                     for (i = dig_left; i < x; i++) {
@@ -312,7 +313,7 @@ export function vision_reset() {
         i = dig_left;
         if (!block && dig_left ? 1 : 0)
             dig_left--;
-        for (; i < 80; i++) {
+        for (; i < NHM.COLNO; i++) {
             cptr.stI16(cptr.add(cptr.decay(left_ptrs[y]), i, 2), i16(dig_left));
             cptr.stI16(cptr.add(cptr.decay(right_ptrs[y]), i, 2), 79);
             cptr.st1(cptr.add(cptr.decay(viz_clear[y]), i, 1), schar((!block)));
@@ -339,7 +340,7 @@ function get_unused_cs(rows, rmin, rmax) {
     nrmin = cptr.ldPtr(rmin);
     nrmax = cptr.ldPtr(rmax);
     void __builtin___memset_chk(cptr.ldPtr(cptr.ldPtr(rows)), 0, 1680n, __builtin_object_size(cptr.ldPtr(cptr.ldPtr(rows)), 0));
-    for (row = 0; row < 21; row++) {
+    for (row = 0; row < NHM.ROWNO; row++) {
         cptr.stI16(cptr.postinc(() => nrmin, (v) => { nrmin = v; }, 2), 79);
         cptr.stI16(cptr.postinc(() => nrmax, (v) => { nrmax = v; }, 2), 1);
     }
@@ -347,7 +348,7 @@ function get_unused_cs(rows, rmin, rmax) {
 
 /** C ref: vision.c:314 — @param {CPtr} next @param {CPtr} rmin @param {CPtr} rmax */
 function rogue_vision(next, rmin, rmax) {
-    let rnum = (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 24)) & 63) | 0) - 3) | 0;
+    let rnum = (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 24)) & 63) | 0) - NHM.ROOMOFFSET) | 0;
     let start;
     let stop;
     let in_door;
@@ -366,7 +367,7 @@ function rogue_vision(next, rmin, rmax) {
                     cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), 3);
                     cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), zx, 756), zy, 36), 5), 255);
                 } else
-                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), 1);
+                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next, zy, 8)), zx), NHM.COULD_SEE);
             }
         }
     }
@@ -420,12 +421,12 @@ export function vision_recalc(control) {
             view_from(cptr.ldI16(cptr.add(u, 2)), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null);
             temp_array = cptr.ldPtr(cptr.add(gv, 120));
             cptr.stPtr(cptr.add(gv, 120), next_array.v);
-            for (row = 0; row < 21; row++) {
+            for (row = 0; row < NHM.ROWNO; row++) {
                 old_row = cptr.ldPtr(cptr.add(temp_array, row, 8));
                 start = ((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 128)), row, 2))) < (cptr.ldI16(cptr.add(next_rmin.v, row, 2))) ? (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 128)), row, 2))) : (cptr.ldI16(cptr.add(next_rmin.v, row, 2))));
                 stop = ((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 136)), row, 2))) > (cptr.ldI16(cptr.add(next_rmax.v, row, 2))) ? (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 136)), row, 2))) : (cptr.ldI16(cptr.add(next_rmax.v, row, 2))));
                 for (col = start; col <= stop; col++)
-                    if (cptr.ld1u(cptr.add(old_row, col)) & 2)
+                    if (cptr.ld1u(cptr.add(old_row, col)) & NHM.IN_SIGHT)
                         newsym(i16(col), i16(row));
             }
             break __lbl_skip;
@@ -449,7 +450,7 @@ export function vision_recalc(control) {
                 for (row = (cptr.ldI16(cptr.add(u, 2)) - 1) | 0; row <= ((cptr.ldI16(cptr.add(u, 2)) + 1) | 0); row++) {
                     if (row < 0)
                         continue;
-                    if (row >= 21)
+                    if (row >= NHM.ROWNO)
                         break;
                     cptr.stI16(cptr.add(next_rmin.v, row, 2), i16((1 > ((cptr.ldI16(u) - 1) | 0) ? 1 : ((cptr.ldI16(u) - 1) | 0))));
                     cptr.stI16(cptr.add(next_rmax.v, row, 2), i16((79 < ((cptr.ldI16(u) + 1) | 0) ? 79 : ((cptr.ldI16(u) + 1) | 0))));
@@ -465,7 +466,7 @@ export function vision_recalc(control) {
                     for (row = (cptr.ldI16(cptr.add(u, 2)) - cptr.ldI32(cptr.add(u, 1780))) | 0; row <= ((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 1780))) | 0); row++) {
                         if (row < 0)
                             continue;
-                        if (row >= 21)
+                        if (row >= NHM.ROWNO)
                             break;
                         dy = (((cptr.ldI16(cptr.add(u, 2)) - row) | 0) < 0 ? -((cptr.ldI16(cptr.add(u, 2)) - row) | 0) : ((cptr.ldI16(cptr.add(u, 2)) - row) | 0));
                         next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
@@ -473,17 +474,17 @@ export function vision_recalc(control) {
                         stop = (79 < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
                         for (col = start; col <= stop; col++) {
                             let old_row_val = schar(cptr.ld1u(cptr.add(next_row, col)));
-                            cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
+                            cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | NHM.IN_SIGHT);
                             oldseenv = cptr.ld1u(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 5));
                             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), col, 756), row, 36), 5), 255);
-                            if (!(old_row_val & 2) || oldseenv != 255 ? 1 : 0)
+                            if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255 ? 1 : 0)
                                 newsym(i16(col), i16(row));
                         }
                         cptr.stI16(cptr.add(next_rmin.v, row, 2), i16(((start) < (cptr.ldI16(cptr.add(next_rmin.v, row, 2))) ? (start) : (cptr.ldI16(cptr.add(next_rmin.v, row, 2))))));
                         cptr.stI16(cptr.add(next_rmax.v, row, 2), i16(((stop) > (cptr.ldI16(cptr.add(next_rmax.v, row, 2))) ? (stop) : (cptr.ldI16(cptr.add(next_rmax.v, row, 2))))));
                     }
                 } else {
-                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | 2);
+                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | NHM.IN_SIGHT);
                     cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), 255);
                     cptr.stI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) < (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                     cptr.stI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) > (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
@@ -491,7 +492,7 @@ export function vision_recalc(control) {
             }
             if (has_night_vision && cptr.ldI32(cptr.add(u, 1780)) < cptr.ldI32(cptr.add(u, 1776)) ? 1 : 0) {
                 if (!cptr.ldI32(cptr.add(u, 1776))) {
-                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | 2);
+                    cptr.st1(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u)), cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, cptr.ldI16(cptr.add(u, 2)), 8)), cptr.ldI16(u))) | NHM.IN_SIGHT);
                     cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16(cptr.add(u, 2)), 36), 5), 255);
                     cptr.stI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) < (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmin.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
                     cptr.stI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2), i16(((cptr.ldI16(u)) > (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))) ? (cptr.ldI16(u)) : (cptr.ldI16(cptr.add(next_rmax.v, cptr.ldI16(cptr.add(u, 2)), 2))))));
@@ -500,7 +501,7 @@ export function vision_recalc(control) {
                     for (row = (cptr.ldI16(cptr.add(u, 2)) - cptr.ldI32(cptr.add(u, 1776))) | 0; row <= ((cptr.ldI16(cptr.add(u, 2)) + cptr.ldI32(cptr.add(u, 1776))) | 0); row++) {
                         if (row < 0)
                             continue;
-                        if (row >= 21)
+                        if (row >= NHM.ROWNO)
                             break;
                         dy = (((cptr.ldI16(cptr.add(u, 2)) - row) | 0) < 0 ? -((cptr.ldI16(cptr.add(u, 2)) - row) | 0) : ((cptr.ldI16(cptr.add(u, 2)) - row) | 0));
                         next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
@@ -508,7 +509,7 @@ export function vision_recalc(control) {
                         stop = (79 < ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16(cptr.add(ranges, dy, 2))) | 0));
                         for (col = start; col <= stop; col++)
                             if (cptr.ld1u(cptr.add(next_row, col)))
-                                cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
+                                cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | NHM.IN_SIGHT);
                         cptr.stI16(cptr.add(next_rmin.v, row, 2), i16(((start) < (cptr.ldI16(cptr.add(next_rmin.v, row, 2))) ? (start) : (cptr.ldI16(cptr.add(next_rmin.v, row, 2))))));
                         cptr.stI16(cptr.add(next_rmax.v, row, 2), i16(((stop) > (cptr.ldI16(cptr.add(next_rmax.v, row, 2))) ? (stop) : (cptr.ldI16(cptr.add(next_rmax.v, row, 2))))));
                     }
@@ -519,7 +520,7 @@ export function vision_recalc(control) {
         temp_array = cptr.ldPtr(cptr.add(gv, 120));
         cptr.stPtr(cptr.add(gv, 120), next_array.v);
         cptr.stI16(cptr.add(__static_vision_recalc_colbump, cptr.ldI16(u), 2), cptr.stI16(cptr.add(__static_vision_recalc_colbump, (cptr.ldI16(u) + 1) | 0, 2), 1));
-        for (row = 0; row < 21; row++) {
+        for (row = 0; row < NHM.ROWNO; row++) {
             dy = (cptr.ldI16(cptr.add(u, 2)) - row) | 0;
             dy = ((dy) < 0 ? -1 : ((dy) ? 1 : 0));
             next_row = cptr.ldPtr(cptr.add(next_array.v, row, 8));
@@ -528,35 +529,35 @@ export function vision_recalc(control) {
             stop = ((cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 136)), row, 2))) > (cptr.ldI16(cptr.add(next_rmax.v, row, 2))) ? (cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(gv, 136)), row, 2))) : (cptr.ldI16(cptr.add(next_rmax.v, row, 2))));
             lev = cptr.add(cptr.add(cptr.add(svl, 1680), start, 756), row, 36);
             sv = cptr.add(cptr.decay(seenv_matrix[(dy + 1) | 0]), start < cptr.ldI16(u) ? 0 : (start > cptr.ldI16(u) ? 2 : 1), 1);
-            for (col = start; col <= stop; lev = cptr.add(lev, 21, 36), sv = cptr.add(sv, cptr.ldI16(cptr.add(__static_vision_recalc_colbump, ++col, 2)))) {
+            for (col = start; col <= stop; lev = cptr.add(lev, NHM.ROWNO, 36), sv = cptr.add(sv, cptr.ldI16(cptr.add(__static_vision_recalc_colbump, ++col, 2)))) {
                 let __go_not_in_sight = false;
                 __skip_not_in_sight: {
-                    if (cptr.ld1u(cptr.add(next_row, col)) & 2) {
+                    if (cptr.ld1u(cptr.add(next_row, col)) & NHM.IN_SIGHT) {
                         oldseenv = cptr.ld1u(cptr.add(lev, 5));
                         cptr.st1(cptr.add(lev, 5), cptr.ld1u(cptr.add(lev, 5)) | (cptr.ld1u(sv)));
-                        if (!(cptr.ld1u(cptr.add(old_row, col)) & 2) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
+                        if (!(cptr.ld1u(cptr.add(old_row, col)) & NHM.IN_SIGHT) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
                             newsym(i16(col), i16(row));
-                    } else if ((cptr.ld1u(cptr.add(next_row, col)) & 1) && ((cptr.ldI32(cptr.add(lev, 16)) & 1) | 0 || (cptr.ld1u(cptr.add(next_row, col)) & 4) ? 1 : 0) ? 1 : 0) {
+                    } else if ((cptr.ld1u(cptr.add(next_row, col)) & NHM.COULD_SEE) && ((cptr.ldI32(cptr.add(lev, 16)) & 1) | 0 || (cptr.ld1u(cptr.add(next_row, col)) & NHM.TEMP_LIT) ? 1 : 0) ? 1 : 0) {
                         if (((((cptr.ld1s(cptr.add(lev, 4))) == NHC.DOOR) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0) || ((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) ? 1 : 0) && !cptr.ld1s(cptr.add(cptr.decay(viz_clear[row]), col, 1)) ? 1 : 0) {
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
                             flev = cptr.add(cptr.add(cptr.add(svl, 1680), (col + dx) | 0, 756), (row + dy) | 0, 36);
-                            if ((cptr.ldI32(cptr.add(flev, 16)) & 1) | 0 || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, (row + dy) | 0, 8)), (col + dx) | 0)) & 4 ? 1 : 0) {
-                                cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
+                            if ((cptr.ldI32(cptr.add(flev, 16)) & 1) | 0 || cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(next_array.v, (row + dy) | 0, 8)), (col + dx) | 0)) & NHM.TEMP_LIT ? 1 : 0) {
+                                cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | NHM.IN_SIGHT);
                                 oldseenv = cptr.ld1u(cptr.add(lev, 5));
                                 cptr.st1(cptr.add(lev, 5), cptr.ld1u(cptr.add(lev, 5)) | (cptr.ld1u(sv)));
-                                if (!(cptr.ld1u(cptr.add(old_row, col)) & 2) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
+                                if (!(cptr.ld1u(cptr.add(old_row, col)) & NHM.IN_SIGHT) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
                                     newsym(i16(col), i16(row));
                             } else
                                 { __go_not_in_sight = true; break __skip_not_in_sight; }
                         } else {
-                            cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | 2);
+                            cptr.st1(cptr.add(next_row, col), cptr.ld1u(cptr.add(next_row, col)) | NHM.IN_SIGHT);
                             oldseenv = cptr.ld1u(cptr.add(lev, 5));
                             cptr.st1(cptr.add(lev, 5), cptr.ld1u(cptr.add(lev, 5)) | (cptr.ld1u(sv)));
-                            if (!(cptr.ld1u(cptr.add(old_row, col)) & 2) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
+                            if (!(cptr.ld1u(cptr.add(old_row, col)) & NHM.IN_SIGHT) || oldseenv != cptr.ld1u(cptr.add(lev, 5)) ? 1 : 0)
                                 newsym(i16(col), i16(row));
                         }
-                    } else if ((cptr.ld1u(cptr.add(next_row, col)) & 1) && (cptr.ldI32(cptr.add(lev, 20)) & 1) | 0 ? 1 : 0) {
+                    } else if ((cptr.ld1u(cptr.add(next_row, col)) & NHM.COULD_SEE) && (cptr.ldI32(cptr.add(lev, 20)) & 1) | 0 ? 1 : 0) {
                         cptr.stI32(cptr.add(lev, 20), 0);
                         newsym(i16(col), i16(row));
                     } else {
@@ -564,7 +565,7 @@ export function vision_recalc(control) {
                     }
                 }
                 if (__go_not_in_sight) {
-                    if ((cptr.ld1u(cptr.add(old_row, col)) & 2) || ((cptr.ld1u(cptr.add(next_row, col)) & 1) ^ (cptr.ld1u(cptr.add(old_row, col)) & 1)) ? 1 : 0) {
+                    if ((cptr.ld1u(cptr.add(old_row, col)) & NHM.IN_SIGHT) || ((cptr.ld1u(cptr.add(next_row, col)) & NHM.COULD_SEE) ^ (cptr.ld1u(cptr.add(old_row, col)) & NHM.COULD_SEE)) ? 1 : 0) {
                         if (col != 0)
                             newsym(i16(col), i16(row));
                     }
@@ -961,7 +962,7 @@ function right_side(row, left, right_mark, limits) {
     let row_max = null;
     let lim_max;
     nrow = (row + step.v) | 0;
-    deeper = ((nrow) >= 0 && (nrow) < 21 ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
+    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
     if (!vis_func) {
         rowp = cptr.ldPtr(cptr.add(cs_rows, row, 8));
         row_min = cptr.add(cs_left, row, 2);
@@ -991,7 +992,7 @@ function right_side(row, left, right_mark, limits) {
                 for (i = left; i <= right_edge; i++)
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1735, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, i), 1);
+                        cptr.st1(cptr.add(rowp, i), NHM.COULD_SEE);
                     } while (0);
                 do {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1736, __sl4) : void 0);
@@ -1113,7 +1114,7 @@ function right_side(row, left, right_mark, limits) {
                 } else {
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1773, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, lim_max), 1);
+                        cptr.st1(cptr.add(rowp, lim_max), NHM.COULD_SEE);
                     } while (0);
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1774, __sl5) : void 0);
@@ -1241,7 +1242,7 @@ function right_side(row, left, right_mark, limits) {
                 for (i = left; i <= right; i++)
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1840, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, i), 1);
+                        cptr.st1(cptr.add(rowp, i), NHM.COULD_SEE);
                     } while (0);
                 do {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1841, __sl4) : void 0);
@@ -1274,7 +1275,7 @@ function left_side(row, left_mark, right, limits) {
     let row_max = null;
     let lim_min;
     nrow = (row + step.v) | 0;
-    deeper = ((nrow) >= 0 && (nrow) < 21 ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
+    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
     if (!vis_func) {
         rowp = cptr.ldPtr(cptr.add(cs_rows, row, 8));
         row_min = cptr.add(cs_left, row, 2);
@@ -1304,7 +1305,7 @@ function left_side(row, left_mark, right, limits) {
                 for (i = left_edge; i <= right; i++)
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1905, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, i), 1);
+                        cptr.st1(cptr.add(rowp, i), NHM.COULD_SEE);
                     } while (0);
                 do {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1906, __sl4) : void 0);
@@ -1426,7 +1427,7 @@ function left_side(row, left_mark, right, limits) {
                 } else {
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1933, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, lim_min), 1);
+                        cptr.st1(cptr.add(rowp, lim_min), NHM.COULD_SEE);
                     } while (0);
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1934, __sl4) : void 0);
@@ -1554,7 +1555,7 @@ function left_side(row, left_mark, right, limits) {
                 for (i = left; i <= right; i++)
                     do {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1974, __sl3) : void 0);
-                        cptr.st1(cptr.add(rowp, i), 1);
+                        cptr.st1(cptr.add(rowp, i), NHM.COULD_SEE);
                     } while (0);
                 do {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1975, __sl4) : void 0);
@@ -1597,7 +1598,7 @@ function view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, 
         right = (scol == 79) ? 79 : (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(viz_clear_rows, srow, 8)), (scol + 1) | 0)) ? cptr.ldI16(cptr.add(cptr.decay(right_ptrs[srow]), (scol + 1) | 0, 2)) : (scol + 1) | 0);
     }
     if (range) {
-        if (range > 15 || range < 1 ? 1 : 0)
+        if (range > NHM.MAX_RADIUS || range < 1 ? 1 : 0)
             panic(__sl7, range);
         limits = cptr.add((cptr.add(circle_data, cptr.ldI16(cptr.add(circle_start, range, 2)), 2)), 1, 2);
         if (left < ((scol - range) | 0))
@@ -1614,12 +1615,12 @@ function view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, 
         for (i = left; i <= right; i++)
             do {
                 (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl8, __sl2, 2066, __sl3) : void 0);
-                cptr.st1(cptr.add(rowp, i), 1);
+                cptr.st1(cptr.add(rowp, i), NHM.COULD_SEE);
             } while (0);
         cptr.stI16(cptr.add(cs_left, srow, 2), i16(left));
         cptr.stI16(cptr.add(cs_right, srow, 2), i16(right));
     }
-    if ((nrow = (srow + 1) | 0) < 21) {
+    if ((nrow = (srow + 1) | 0) < NHM.ROWNO) {
         step.v = 1;
         if (scol < 79)
             right_side(nrow, scol, right, limits);
@@ -1649,12 +1650,12 @@ export function do_clear_area(scol, srow, range, func, arg) {
         let limits;
         let override_vision;
         override_vision = schar((detecting(func) && ((((cptr.ldI16(cptr.add((cptr.add(svd, 1856)), 2)) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) || (((cptr.ldI16(cptr.add((cptr.add(svd, 1864)), 2)) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) ? 1 : 0) ? 1 : 0));
-        if (range > 15 || range < 1 ? 1 : 0)
+        if (range > NHM.MAX_RADIUS || range < 1 ? 1 : 0)
             panic(__sl9, range);
         if (cptr.ld1s(cptr.add(gv, 144)))
             vision_recalc(0);
         limits = (cptr.add(circle_data, cptr.ldI16(cptr.add(circle_start, range, 2)), 2));
-        if ((max_y = ((srow + range) | 0)) >= 21)
+        if ((max_y = ((srow + range) | 0)) >= NHM.ROWNO)
             max_y = 20;
         if ((y = ((srow - range) | 0)) < 0)
             y = 0;
@@ -1662,10 +1663,10 @@ export function do_clear_area(scol, srow, range, func, arg) {
             offset = cptr.ldI16(cptr.add(limits, (((y - srow) | 0) < 0 ? -((y - srow) | 0) : ((y - srow) | 0)), 2));
             if ((min_x = ((scol - offset) | 0)) < 1)
                 min_x = 1;
-            if ((max_x = ((scol + offset) | 0)) >= 80)
+            if ((max_x = ((scol + offset) | 0)) >= NHM.COLNO)
                 max_x = 79;
             for (x = min_x; x <= max_x; x++)
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 1) != 0) || override_vision ? 1 : 0)
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.COULD_SEE) != 0) || override_vision ? 1 : 0)
                     (func)(i16(x), i16(y), arg);
         }
     }
@@ -1676,19 +1677,19 @@ export function howmonseen(mon) {
     let useemon = schar(canseemon(mon));
     let xraydist = (cptr.ldI32(cptr.add(u, 1780)) < 0) ? -1 : (Math.imul(cptr.ldI32(cptr.add(u, 1780)), cptr.ldI32(cptr.add(u, 1780))));
     let how_seen = 0;
-    if ((((cptr.ldI32(cptr.add(mon, 200)) & 31) | 0 ? worm_known(mon) : (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)), 8)), cptr.ldI16(cptr.add(mon, 28)))) & 2) != 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)), 8)), cptr.ldI16(cptr.add(mon, 28)))) & 1) != 0) ? 1 : 0)) && mon_visible(mon) ? 1 : 0) && !(cptr.ldI32(cptr.add(mon, 88)) & 1) ? 1 : 0)
-        how_seen |= 1;
+    if ((((cptr.ldI32(cptr.add(mon, 200)) & 31) | 0 ? worm_known(mon) : (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)), 8)), cptr.ldI16(cptr.add(mon, 28)))) & NHM.IN_SIGHT) != 0) && ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mon, 30)), 8)), cptr.ldI16(cptr.add(mon, 28)))) & NHM.COULD_SEE) != 0) ? 1 : 0)) && mon_visible(mon) ? 1 : 0) && !(cptr.ldI32(cptr.add(mon, 88)) & 1) ? 1 : 0)
+        how_seen |= NHM.MONSEEN_NORMAL;
     if (useemon && (cptr.ldI32(cptr.add(mon, 88)) & 1) | 0 ? 1 : 0)
-        how_seen |= 2;
+        how_seen |= NHM.MONSEEN_SEEINVIS;
     if ((!(cptr.ldI32(cptr.add(mon, 88)) & 1) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24)) ? 1 : 0) ? 1 : 0) && see_with_infrared(mon) ? 1 : 0)
-        how_seen |= 4;
+        how_seen |= NHM.MONSEEN_INFRAVIS;
     if (tp_sensemon(mon))
-        how_seen |= 8;
+        how_seen |= NHM.MONSEEN_TELEPAT;
     if ((useemon && xraydist > 0 ? 1 : 0) && dist2((cptr.ldI16(cptr.add((mon), 28))), (cptr.ldI16(cptr.add((mon), 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) <= xraydist ? 1 : 0)
-        how_seen |= 16;
+        how_seen |= NHM.MONSEEN_XRAYVIS;
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.DETECT_MONSTERS, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.DETECT_MONSTERS, 24)) ? 1 : 0))
-        how_seen |= 32;
+        how_seen |= NHM.MONSEEN_DETECT;
     if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.WARN_OF_MON, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.WARN_OF_MON, 24)) ? 1 : 0) && (((cptr.ldU64(cptr.add(svc, 552)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n || (cptr.ldU64(cptr.add(svc, 560)) & cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add((mon), 8)), 80))) != 0n ? 1 : 0) || (cptr.ldPtr(cptr.add(svc, 568)) && (cptr.eq(cptr.ldPtr(cptr.add(svc, 568)), cptr.ldPtr(cptr.add((mon), 8)))) ? 1 : 0) ? 1 : 0) ? 1 : 0))
-        how_seen |= 64;
+        how_seen |= NHM.MONSEEN_WARNMON;
     return how_seen;
 }

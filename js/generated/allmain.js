@@ -6,6 +6,7 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
 import { crashreport_init } from './report.js';
 import { objects_globals_init } from './objects.js';
@@ -147,10 +148,10 @@ function moveloop_preamble(resuming) {
     if (resuming && cptr.ld1s(cptr.add(iflags, 128)) ? 1 : 0)
         void enter_explore_mode();
     cptr.stI32(cptr.add(flags, 64), phase_of_the_moon() >>> 0);
-    if (cptr.ldI32(cptr.add(flags, 64)) == 4) {
+    if (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON) {
         You(__sl0);
         change_luck(1);
-    } else if (cptr.ldI32(cptr.add(flags, 64)) == 0) {
+    } else if (cptr.ldI32(cptr.add(flags, 64)) == NHM.NEW_MOON) {
         pline(__sl1);
     }
     cptr.st1(cptr.add(flags, 14), friday_13th());
@@ -165,7 +166,7 @@ function moveloop_preamble(resuming) {
         reset_justpicked(cptr.ldPtr(cptr.add(gi, 8)));
         void pickup(1);
         cptr.stI64(cptr.add(svc, 48), BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl3, 79, __sl4), rnd(30)) : rnd(30))));
-        cptr.stI16(cptr.add(u, 2820), 12);
+        cptr.stI16(cptr.add(u, 2820), NHM.NORMAL_SPEED);
         initrack();
     }
     cptr.st1(cptr.add(disp, 1), 1);
@@ -198,10 +199,10 @@ function u_calc_moveamt(wtcap) {
         moveamt = cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(gy, 16)), 30));
         if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16)) & -117440513n) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.FAST, 24)) ? 1 : 0)) {
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 127, __sl5), rn2(3)) : rn2(3)) != 0)
-                moveamt = (moveamt + 12) | 0;
+                moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         } else if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.FAST, 24)) ? 1 : 0)) {
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 131, __sl5), rn2(3)) : rn2(3)) == 0)
-                moveamt = (moveamt + 12) | 0;
+                moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         }
     }
     switch (wtcap) {
@@ -230,7 +231,7 @@ function u_calc_moveamt(wtcap) {
 /** C ref: allmain.c:162 */
 function maybe_generate_rnd_mon() {
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 166, __sl6), rn2((cptr.ldI32(cptr.add(u, 1928)) & 1) | 0 ? 25 : ((depth(cptr.add(u, 24)) > depth(cptr.add(svd, 1808))) ? 50 : 70))) : rn2((cptr.ldI32(cptr.add(u, 1928)) & 1) | 0 ? 25 : ((depth(cptr.add(u, 24)) > depth(cptr.add(svd, 1808))) ? 50 : 70))))
-        void makemon(null, 0, 0, 0);
+        void makemon(null, 0, 0, NHM.NO_MM_FLAGS);
 }
 
 /** C ref: allmain.c:173 — int */
@@ -255,18 +256,18 @@ export function moveloop_core() {
     if (cptr.ld1s(cptr.add(svc, 82)))
         makewish();
     if (cptr.ld1s(cptr.add(svc, 78))) {
-        cptr.stI16(cptr.add(u, 2820), cptr.ldI16(cptr.add(u, 2820)) - 12);
+        cptr.stI16(cptr.add(u, 2820), cptr.ldI16(cptr.add(u, 2820)) - NHM.NORMAL_SPEED);
         do {
             encumber_msg();
             cptr.st1(cptr.add(svc, 77), 1);
             do {
                 monscanmove = schar(movemon());
-                if (cptr.ldI16(cptr.add(u, 2820)) >= 12)
+                if (cptr.ldI16(cptr.add(u, 2820)) >= NHM.NORMAL_SPEED)
                     break;
             } while (monscanmove);
             cptr.st1(cptr.add(svc, 77), 0);
             mvl_wtcap = near_capacity();
-            if (!monscanmove && cptr.ldI16(cptr.add(u, 2820)) < 12 ? 1 : 0) {
+            if (!monscanmove && cptr.ldI16(cptr.add(u, 2820)) < NHM.NORMAL_SPEED ? 1 : 0) {
                 let mtmp;
                 cptr.stI64(cptr.add(gw, 176), 0n);
                 mcalcdistress();
@@ -371,7 +372,7 @@ export function moveloop_core() {
                     }
                 }
             }
-        } while (cptr.ldI16(cptr.add(u, 2820)) < 12);
+        } while (cptr.ldI16(cptr.add(u, 2820)) < NHM.NORMAL_SPEED);
         (cptr.stI64(cptr.add(gh, 8), cptr.ldI64(cptr.add(gh, 8)) + 1n)) - (1n);
         encumber_msg();
         if (cptr.ldI64(cptr.add(iflags, 152)))
@@ -567,21 +568,21 @@ export function stop_occupation() {
 
 /** C ref: allmain.c:699 */
 export function init_sound_disp_gamewindows() {
-    let menu_behavior = 0;
+    let menu_behavior = NHM.MENU_BEHAVE_STANDARD;
     activate_chosen_soundlib();
     if (cptr.ld1s(cptr.add(iflags, 364)) && !cptr.ldI32(cptr.add(flags, 160)) ? 1 : 0) {
         ;
     } else {
         ;
     }
-    WIN_MESSAGE.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(1);
+    WIN_MESSAGE.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MESSAGE);
     if (((cptr.ldU64(cptr.add(windowprocs, 24)) & 136n) != 0n)) {
         status_initialize(0);
     } else {
-        WIN_STATUS.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(2);
+        WIN_STATUS.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_STATUS);
     }
-    WIN_MAP.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(3);
-    WIN_INVEN.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    WIN_MAP.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MAP);
+    WIN_INVEN.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     if (WIN_INVEN.v != -1)
         adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, 112));
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(WIN_INVEN.v, BigInt.asUintN(64, BigInt(menu_behavior))), (cptr.ldPtr(cptr.add(windowprocs, 184)))(WIN_INVEN.v, null);
@@ -604,7 +605,7 @@ export function newgame() {
     cptr.stU64(cptr.add(svc, 608), 24n);
     get_nhuuid();
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
-        cptr.st1(cptr.add(cptr.add(cptr.add(svm, 16), i, 12), 2), uchar((cptr.ldU16(cptr.add(cptr.add(mons, i, 96), 34)) & 16)));
+        cptr.st1(cptr.add(cptr.add(cptr.add(svm, 16), i, 12), 2), uchar((cptr.ldU16(cptr.add(cptr.add(mons, i, 96), 34)) & NHM.G_NOCORPSE)));
     init_objects();
     cptr.stI32(cptr.add(flags, 164), -1);
     role_init();
@@ -621,7 +622,7 @@ export function newgame() {
     vision_reset();
     check_special_room(0);
     if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8)) !== null))
-        mnexto((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8))), 4);
+        mnexto((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(u), 168), cptr.ldI16(cptr.add(u, 2)), 8))), NHM.RLOC_NOMSG);
     void makedog();
     u_init_inventory_attrs();
     docrt();
@@ -661,7 +662,7 @@ export function newgame() {
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
     let currentgend = schar(((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? (cptr.ldI32(cptr.add(u, 1860)) & 1) | 0 : cptr.ld1s(cptr.add(flags, 13))));
-    let adrift = schar((cptr.ld1s(cptr.add(u, 2172)) != cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1))));
+    let adrift = schar((cptr.ld1s(cptr.add(u, 2172)) != cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1))));
     l_nhcore_call(new_game ? NHC.NHCORE_START_NEW_GAME : NHC.NHCORE_RESTORE_OLD_GAME);
     if ((!new_game && (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? 1 : 0) && ugenocided() ? 1 : 0) {
         pline(__sl23, udeadinside());
@@ -670,9 +671,9 @@ export function welcome(new_game) {
     if ((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0))
         pline(__sl24);
     cptr.st1(cptr.decay(buf), 0);
-    if ((new_game || cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1)) != cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) ? 1 : 0) || adrift ? 1 : 0)
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl25, adrift ? __sl26 : __sl27, adrift ? align_str(cptr.ld1s(cptr.add(u, 2172))) : align_str(cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1))));
-    if (!cptr.ldPtr(cptr.add(gu, 16)) && (new_game ? (cptr.ldI16(cptr.add(gu, 234)) & 61440) == 12288 : currentgend != cptr.ldI32(cptr.add(flags, 152))) ? 1 : 0)
+    if ((new_game || cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)) != cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1)) ? 1 : 0) || adrift ? 1 : 0)
+        void cptr.sprintf(eos(cptr.decay(buf)), __sl25, adrift ? __sl26 : __sl27, adrift ? align_str(cptr.ld1s(cptr.add(u, 2172))) : align_str(cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1))));
+    if (!cptr.ldPtr(cptr.add(gu, 16)) && (new_game ? (cptr.ldI16(cptr.add(gu, 234)) & NHM.ROLE_GENDMASK) == 12288 : currentgend != cptr.ldI32(cptr.add(flags, 152))) ? 1 : 0)
         void cptr.sprintf(eos(cptr.decay(buf)), __sl28, cptr.ldPtr(cptr.add(genders, currentgend, 48)));
     void cptr.sprintf(eos(cptr.decay(buf)), __sl29, cptr.ldPtr(cptr.add(gu, 328)), (currentgend && cptr.ldPtr(cptr.add(gu, 16)) ? 1 : 0) ? cptr.ldPtr(cptr.add(gu, 16)) : cptr.ldPtr(cptr.add(gu, 8)));
     pline(new_game ? __sl30 : __sl31, Hello(null), svp, cptr.decay(buf));

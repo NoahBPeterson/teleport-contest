@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { flags, gf, gi, svc, svd, svq, u } from './decl.js';
 import { com_pager, find_quest_artifact, is_quest_artifact, qt_pager } from './questpgr.js';
 import { Is_special, dungeon_branch, on_level, remdun_mapseen } from './dungeon.js';
@@ -164,25 +165,25 @@ export function ok_to_quest() {
 
 /** C ref: quest.c:147 @returns {CInt} */
 function not_capable() {
-    return schar((cptr.ldI32(cptr.add(u, 48)) < 14));
+    return schar((cptr.ldI32(cptr.add(u, 48)) < NHM.MIN_QUEST_LEVEL));
 }
 
 /** C ref: quest.c:153 — @param {CInt} talk @returns {CInt} */
 function is_pure(talk) {
     let purity;
-    let original_alignment = cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1));
+    let original_alignment = cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1));
     if (cptr.ld1s(cptr.add(flags, 10)) && talk ? 1 : 0) {
         if (cptr.ld1s(cptr.add(u, 2172)) != original_alignment) {
             You(__sl10, align_str(cptr.ld1s(cptr.add(u, 2172))), align_str(original_alignment));
-        } else if (cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) != original_alignment) {
+        } else if (cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1)) != original_alignment) {
             You(__sl11);
-        } else if (cptr.ldI32(cptr.add(u, 2176)) < 20) {
-            You(__sl12, cptr.ldI32(cptr.add(u, 2176)), 20);
+        } else if (cptr.ldI32(cptr.add(u, 2176)) < NHM.MIN_QUEST_ALIGN) {
+            You(__sl12, cptr.ldI32(cptr.add(u, 2176)), NHM.MIN_QUEST_ALIGN);
             if (yn_function(__sl13, null, 121, 1) == 121)
-                cptr.stI32(cptr.add(u, 2176), 20);
+                cptr.stI32(cptr.add(u, 2176), NHM.MIN_QUEST_ALIGN);
         }
     }
-    purity = ((cptr.ldI32(cptr.add(u, 2176)) >= 20 && cptr.ld1s(cptr.add(u, 2172)) == original_alignment ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) == original_alignment ? 1 : 0) ? 1 : ((cptr.ld1s(cptr.add(cptr.add(u, 2184), 0, 1)) != original_alignment) ? -1 : 0);
+    purity = ((cptr.ldI32(cptr.add(u, 2176)) >= NHM.MIN_QUEST_ALIGN && cptr.ld1s(cptr.add(u, 2172)) == original_alignment ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1)) == original_alignment ? 1 : 0) ? 1 : ((cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1)) != original_alignment) ? -1 : 0);
     return purity;
 }
 

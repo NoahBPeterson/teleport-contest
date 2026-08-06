@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_setfuncs } from './lauxlib.js';
 import { nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error, nhl_get_timertype } from './nhlua.js';
 import { add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight } from './mkobj.js';
@@ -154,14 +155,14 @@ function l_obj_gc(L) {
     if (lo && (obj = cptr.ldPtr(cptr.add(lo, 8))) !== null ? 1 : 0) {
         if (cptr.ldI32(cptr.add(obj, 200)) > 0)
             (cptr.stI32(cptr.add(obj, 200), cptr.ldI32(cptr.add(obj, 200)) + -1)) - (-1);
-        if (!cptr.ldI32(cptr.add(obj, 200)) && (cptr.ld1s(cptr.add(obj, 52)) == 0 || cptr.ld1s(cptr.add(obj, 52)) == 8 ? 1 : 0) ? 1 : 0) {
+        if (!cptr.ldI32(cptr.add(obj, 200)) && (cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_FREE || cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0) {
             if ((cptr.ldPtr(cptr.add((obj), 16)) !== null)) {
                 while ((otmp = cptr.ldPtr(cptr.add(obj, 16))) !== null) {
                     obj_extract_self(otmp);
                     dealloc_obj(otmp);
                 }
             }
-            cptr.st1(cptr.add(obj, 52), 0);
+            cptr.st1(cptr.add(obj, 52), NHM.OBJ_FREE);
             dealloc_obj(obj), obj = null;
         }
         cptr.stPtr(cptr.add(lo, 8), null);
@@ -202,7 +203,7 @@ function l_obj_add_to_container(L) {
     let lo = l_obj_check(L, 2);
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) || !(((lobox) && cptr.ldPtr(cptr.add((lobox), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lobox), 8)), 52)) != 8 ? 1 : 0) ? 1 : 0)
+    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) || !(((lobox) && cptr.ldPtr(cptr.add((lobox), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lobox), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0)
         return 0;
     refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
     obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
@@ -220,7 +221,7 @@ export function nhl_obj_u_giveobj(L) {
     let lo = l_obj_check(L, 1);
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 3 ? 1 : 0)
+    if (!(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) || cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_INVENT ? 1 : 0)
         return 0;
     refs = cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 200)) | 0;
     obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
@@ -291,7 +292,7 @@ function l_obj_to_table(L) {
     let lo = l_obj_check(L, 1);
     let obj = cptr.ldPtr(cptr.add(lo, 8));
     lua_createtable(L, 0, 0);
-    if (!obj || cptr.ld1s(cptr.add(obj, 52)) == 8 ? 1 : 0) {
+    if (!obj || cptr.ld1s(cptr.add(obj, 52)) == NHM.OBJ_LUAFREE ? 1 : 0) {
         nhl_add_table_entry_int(L, __sl29, 1n);
         return 1;
     }
@@ -309,10 +310,10 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl39, cptr.ldI64(cptr.add(obj, 40)));
     nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1s(cptr.add(obj, 48))));
     if (cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE)
-        nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 4) != 0)));
+        nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_HISTORIC) != 0)));
     if (cptr.ldI16(cptr.add(obj, 32)) == NHC.CORPSE || cptr.ldI16(cptr.add(obj, 32)) == NHC.STATUE ? 1 : 0) {
-        nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 2) != 0)));
-        nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & 1) != 0)));
+        nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_MALE) != 0)));
+        nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1s(cptr.add(obj, 48)) & NHM.CORPSTAT_FEMALE) != 0)));
     }
     nhl_add_table_entry_char(L, __sl44, cptr.ld1s(cptr.add(def_oc_syms, uchar(cptr.ld1s(cptr.add(obj, 49))), 24)));
     nhl_add_table_entry_char(L, __sl45, cptr.ld1s(cptr.add(obj, 50)));
@@ -422,7 +423,7 @@ function l_obj_placeobj(L) {
     y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
     cvt_to_abscoord(x, y);
     lua_settop(L, -4);
-    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0)) {
+    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0)) {
         obj_extract_self(cptr.ldPtr(cptr.add(lo, 8)));
         place_object(cptr.ldPtr(cptr.add(lo, 8)), x.v, y.v);
         newsym(x.v, y.v);
@@ -441,7 +442,7 @@ function l_obj_nextobj(L) {
         if (argc == 2)
             use_nexthere = schar(lua_toboolean(L, 2));
         if (lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0)
-            void l_obj_push(L, (use_nexthere && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 1 ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)) : cptr.ldPtr(cptr.ldPtr(cptr.add(lo, 8))));
+            void l_obj_push(L, (use_nexthere && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_FLOOR ? 1 : 0) ? cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)) : cptr.ldPtr(cptr.ldPtr(cptr.add(lo, 8))));
     }
     return 1;
 }
@@ -449,7 +450,7 @@ function l_obj_nextobj(L) {
 /** C ref: nhlobj.c:469 — @param {CPtr} L @returns {CInt} */
 function l_obj_container(L) {
     let lo = l_obj_check(L, 1);
-    if ((lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == 2 ? 1 : 0)
+    if ((lo && cptr.ldPtr(cptr.add(lo, 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 52)) == NHM.OBJ_CONTAINED ? 1 : 0)
         void l_obj_push(L, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 8)));
     else
         void l_obj_push(L, null);
@@ -459,7 +460,7 @@ function l_obj_container(L) {
 /** C ref: nhlobj.c:483 — @param {CPtr} L @returns {CInt} */
 function l_obj_isnull(L) {
     let lo = l_obj_check(L, 1);
-    lua_pushboolean(L, !(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0));
+    lua_pushboolean(L, !(((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0));
     return 1;
 }
 
@@ -555,7 +556,7 @@ function l_obj_bury(L) {
         cvt_to_abscoord(x, y);
     } else
         nhl_error(L, __sl90);
-    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != 8 ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
+    if ((((lo) && cptr.ldPtr(cptr.add((lo), 8)) ? 1 : 0) && cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add((lo), 8)), 52)) != NHM.OBJ_LUAFREE ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 28), x.v);
         cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(lo, 8)), 30), y.v);
         void bury_an_obj(cptr.ldPtr(cptr.add(lo, 8)), dealloced);

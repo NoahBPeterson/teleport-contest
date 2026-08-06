@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
 import { nh_getenv } from './options.js';
@@ -193,7 +194,7 @@ function mkshop() {
     }
     cptr.st1(cptr.add(sroom, 8), schar(((NHC.SHOPBASE + i) | 0)));
     topologize(sroom);
-    cptr.st1(cptr.add(sroom, 11), 1);
+    cptr.st1(cptr.add(sroom, 11), NHM.FILL_NORMAL);
 }
 
 /** C ref: mkroom.c:220 — @param {CInt} strict @returns {CPtr} */
@@ -223,7 +224,7 @@ function mkzoo(type) {
     let sroom;
     if ((sroom = pick_room(0)) !== null) {
         cptr.st1(cptr.add(sroom, 8), schar(type));
-        cptr.st1(cptr.add(sroom, 11), 1);
+        cptr.st1(cptr.add(sroom, 11), NHM.FILL_NORMAL);
     }
 }
 
@@ -231,7 +232,7 @@ function mkzoo(type) {
 function mk_zoo_thronemon(x, y) {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 259, __sl6), rnd(level_difficulty())) : rnd(level_difficulty()));
     let pm = (i > 9) ? NHC.PM_OGRE_TYRANT : ((i > 5) ? NHC.PM_ELVEN_MONARCH : ((i > 2) ? NHC.PM_DWARF_RULER : NHC.PM_GNOME_RULER));
-    let mon = makemon(cptr.add(mons, pm, 96), x, y, 0);
+    let mon = makemon(cptr.add(mons, pm, 96), x, y, NHM.NO_MM_FLAGS);
     if (mon) {
         cptr.stI32(cptr.add(mon, 144), 1);
         cptr.stI32(cptr.add(mon, 168), 0);
@@ -453,7 +454,7 @@ function mkswamp() {
         sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 538, __sl10), rn2(cptr.ldI32(cptr.add(svn, 44)))) : rn2(cptr.ldI32(cptr.add(svn, 44)))), 224);
         if (((cptr.ldI16(cptr.add(sroom, 2)) < 0 || cptr.ld1s(cptr.add(sroom, 8)) != NHC.OROOM ? 1 : 0) || has_upstairs(sroom) ? 1 : 0) || has_dnstairs(sroom) ? 1 : 0)
             continue;
-        rmno = (Number(BigInt.asIntN(32, (cptr.diff(sroom, svr) / 224n))) + 3) | 0;
+        rmno = (Number(BigInt.asIntN(32, (cptr.diff(sroom, svr) / 224n))) + NHM.ROOMOFFSET) | 0;
         cptr.st1(cptr.add(sroom, 8), NHC.SWAMP);
         for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16(cptr.add(sroom, 2)); sx++)
             for (sy = cptr.ldI16(cptr.add(sroom, 4)); sy <= cptr.ldI16(cptr.add(sroom, 6)); sy++) {
@@ -464,11 +465,11 @@ function mkswamp() {
                         del_engr_at(sx, sy);
                         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4), NHC.POOL);
                         if (!eelct || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 557, __sl10), rn2(4)) : rn2(4)) ? 1 : 0) {
-                            void makemon((rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl10), rn2(5)) : rn2(5)) ? cptr.add(mons, NHC.PM_GIANT_EEL, 96) : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 561, __sl10), rn2(2)) : rn2(2)) ? cptr.add(mons, NHC.PM_PIRANHA, 96) : cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96)), sx, sy, 0);
+                            void makemon((rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl10), rn2(5)) : rn2(5)) ? cptr.add(mons, NHC.PM_GIANT_EEL, 96) : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 561, __sl10), rn2(2)) : rn2(2)) ? cptr.add(mons, NHC.PM_PIRANHA, 96) : cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96)), sx, sy, NHM.NO_MM_FLAGS);
                             eelct++;
                         }
                     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 567, __sl10), rn2(4)) : rn2(4)))
-                        void makemon(mkclass(NHC.S_FUNGUS, 0), sx, sy, 0);
+                        void makemon(mkclass(NHC.S_FUNGUS, 0), sx, sy, NHM.NO_MM_FLAGS);
                 }
             }
         cptr.stI32(cptr.add(svl, 89116), 1);
@@ -480,7 +481,7 @@ let __static_shrine_pos_buf = cptr.alloc(4); /** C ref: mkroom.c:579 — struct 
 /** C ref: mkroom.c:577 — @param {CInt} roomno @returns {CPtr} */
 function shrine_pos(roomno) {
     let delta;
-    let troom = cptr.add(svr, (roomno - 3) | 0, 224);
+    let troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, 224);
     delta = (cptr.ldI16(cptr.add(troom, 2)) - cptr.ldI16(troom)) | 0;
     cptr.stI16(__static_shrine_pos_buf, i16(((cptr.ldI16(troom) + ((delta / 2) | 0)) | 0)));
     if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 588, __sl11), rn2(2)) : rn2(2)) ? 1 : 0)
@@ -505,7 +506,7 @@ function mktemple() {
     cptr.st1(cptr.add(lev, 4), NHC.ALTAR);
     cptr.stI32(cptr.add(lev, 8), induced_align(80));
     priestini(cptr.add(u, 24), sroom, cptr.ldI16(shrine_spot), cptr.ldI16(cptr.add(shrine_spot, 2)), 0);
-    cptr.stI32(cptr.add(lev, 8), cptr.ldI32(cptr.add(lev, 8)) | 8);
+    cptr.stI32(cptr.add(lev, 8), cptr.ldI32(cptr.add(lev, 8)) | NHM.AM_SHRINE);
     cptr.stI32(cptr.add(svl, 89112), 1);
 }
 

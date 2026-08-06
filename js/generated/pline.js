@@ -6,6 +6,7 @@
 import { schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { WIN_MESSAGE, a11y, flags, ge, gg, gm, gp, gs, gv, gy, iflags, program_state, svm, u, ynchars } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { windowprocs } from './windows.js';
@@ -70,13 +71,13 @@ export function dumplogmsg(line) {
             cptr.free(oldest);
         cptr.stPtr(cptr.add(cptr.add(gs, 984), indx, 8), dupstr(line));
     }
-    cptr.stI32(cptr.add(gs, 980), u32mod(((indx + 1) >>> 0), 50));
+    cptr.stI32(cptr.add(gs, 980), u32mod(((indx + 1) >>> 0), NHM.DUMPLOG_MSG_COUNT));
 }
 
 /** C ref: pline.c:52 */
 export function dumplogfreemessages() {
     let i;
-    for (i = 0; i < 50; ++i)
+    for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; ++i)
         if (cptr.ldPtr(cptr.add(cptr.add(gs, 984), i, 8)))
             cptr.free(cptr.ldPtr(cptr.add(cptr.add(gs, 984), i, 8))), cptr.stPtr(cptr.add(cptr.add(gs, 984), i, 8), null);
     cptr.stI32(cptr.add(gs, 980), 0);
@@ -84,13 +85,13 @@ export function dumplogfreemessages() {
 
 /** C ref: pline.c:65 — @param {CPtr} line */
 function putmesg(line) {
-    let attr = 0;
+    let attr = NHM.ATR_NONE;
     if (cptr.ld1s(cptr.add(iflags, 88)))
         return;
-    if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 16384n) != 0n ? 1 : 0)
-        attr |= 16;
-    if (((cptr.ldI32(cptr.add(gp, 240)) & 4) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 32768n) != 0n ? 1 : 0)
-        attr |= 32;
+    if (((cptr.ldI32(cptr.add(gp, 240)) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 16384n) != 0n ? 1 : 0)
+        attr |= NHM.ATR_URGENT;
+    if (((cptr.ldI32(cptr.add(gp, 240)) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64(cptr.add(windowprocs, 24)) & 32768n) != 0n ? 1 : 0)
+        attr |= NHM.ATR_NOHISTORY;
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(WIN_MESSAGE.v, attr, line);
     ;
 }
@@ -198,18 +199,18 @@ function vpline(line, the_args) {
             cptr.st1(cptr.add(cptr.decay(pbuf), 255, 1), 0);
             line = cptr.decay(pbuf);
         }
-        msgtyp = 0;
-        if (((cptr.ldI32(cptr.add(gp, 240)) & 4) >>> 0) == 0)
+        msgtyp = NHM.MSGTYP_NORMAL;
+        if (((cptr.ldI32(cptr.add(gp, 240)) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             dumplogmsg(line);
         if (__static_vpline_in_pline++ || !cptr.ld1s(cptr.add(iflags, 81)) ? 1 : 0) {
             (cptr.ldPtr(cptr.add(windowprocs, 240)))(line);
             cptr.stI32(cptr.add(iflags, 40), NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
         }
-        no_repeat = schar((((cptr.ldI32(cptr.add(gp, 240)) & 1) >>> 0) ? 1 : 0));
-        if (((cptr.ldI32(cptr.add(gp, 240)) & 2) >>> 0) == 0) {
+        no_repeat = schar((((cptr.ldI32(cptr.add(gp, 240)) & NHM.PLINE_NOREPEAT) >>> 0) ? 1 : 0));
+        if (((cptr.ldI32(cptr.add(gp, 240)) & NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32(cptr.add(gp, 240)) & 8) >>> 0) == 0 && (msgtyp == 2 || (msgtyp == 1 && !strcmp(line, cptr.add(gp, 244)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if (((cptr.ldI32(cptr.add(gp, 240)) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, 244)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 break __lbl_pline_done;
         }
         if (cptr.ld1s(cptr.add(gv, 144))) {
@@ -219,12 +220,12 @@ function vpline(line, the_args) {
             __static_vpline_in_pline = tmp_in_pline;
         }
         if (cptr.ldI16(u))
-            flush_screen(((cptr.ldI32(cptr.add(gp, 240)) & 64) >>> 0) ? 0 : 1);
+            flush_screen(((cptr.ldI32(cptr.add(gp, 240)) & NHM.NO_CURS_ON_U) >>> 0) ? 0 : 1);
         putmesg(line);
         execplinehandler(line);
         cptr.stI32(cptr.add(iflags, 40), NHC.PLNMSG_UNKNOWN);
         void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 1)), cptr.st1(cptr.add(cptr.add(gp, 244), 255, 1), 0);
-        if (msgtyp == 3)
+        if (msgtyp == NHM.MSGTYP_STOP)
             (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_MESSAGE.v, 1);
     }
     --__static_vpline_in_pline;
@@ -244,7 +245,7 @@ export function custompline(pflags, line, ...__va) {
 export function urgent_pline(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    cptr.stI32(cptr.add(gp, 240), 8);
+    cptr.stI32(cptr.add(gp, 240), NHM.URGENT_MESSAGE);
     vpline(line, the_args);
     cptr.stI32(cptr.add(gp, 240), 0);
     the_args = null;
@@ -254,7 +255,7 @@ export function urgent_pline(line, ...__va) {
 export function Norep(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    cptr.stI32(cptr.add(gp, 240), 1);
+    cptr.stI32(cptr.add(gp, 240), NHM.PLINE_NOREPEAT);
     vpline(line, the_args);
     cptr.stI32(cptr.add(gp, 240), 0);
     the_args = null;
@@ -373,7 +374,7 @@ export function verbalize(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) | 16);
+    cptr.stI32(cptr.add(gp, 240), cptr.ldI32(cptr.add(gp, 240)) | NHM.PLINE_VERBALIZE);
     tmp = You_buf(Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n))));
     void cptr.strcpy(tmp, __sl16);
     void cptr.strcat(tmp, line);
@@ -455,7 +456,7 @@ export function impossible(s, ...__va) {
     paniclog(__sl20, cptr.decay(pbuf));
     if (cptr.ld1s(cptr.add(iflags, 15)) == NHC.fuzzer_impossible_panic)
         panic(__sl21, cptr.decay(pbuf));
-    cptr.stI32(cptr.add(gp, 240), 8);
+    cptr.stI32(cptr.add(gp, 240), NHM.URGENT_MESSAGE);
     pline(__sl21, cptr.decay(pbuf));
     cptr.stI32(cptr.add(gp, 240), 0);
     if (cptr.ldI32(cptr.add(program_state, 76))) {

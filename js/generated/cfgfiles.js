@@ -6,6 +6,7 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { pline, raw_printf } from './pline.js';
 import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js';
 import { windowprocs } from './windows.js';
@@ -187,7 +188,7 @@ export function do_write_config_file() {
     let tmp = new Uint8Array(256);
     if (!cptr.ld1s(cptr.add(cptr.decay(configfile), 0, 1))) {
         pline(__sl1);
-        return 0;
+        return NHM.ECMD_OK;
     }
     if (cptr.ldU64(cptr.add(flags, 72)) < 50790400n) {
         pline(__sl2);
@@ -199,7 +200,7 @@ export function do_write_config_file() {
     }
     void cptr.sprintf(cptr.decay(tmp), __sl5, 226, cptr.decay(configfile));
     if (!paranoid_query(1, cptr.decay(tmp)))
-        return 0;
+        return NHM.ECMD_OK;
     fp = fopen(cptr.decay(configfile), __sl6);
     if (fp) {
         let len;
@@ -214,7 +215,7 @@ export function do_write_config_file() {
         if (wrote != len)
             pline(__sl7, wrote, len);
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: cfgfiles.c:216 — @param {CPtr} fname */
@@ -230,7 +231,7 @@ function fopen_config_file(filename, src) {
     let envp;
     if (src == NHC.set_in_sysconf) {
         if (filename && cptr.ld1s(filename) ? 1 : 0) {
-            set_configfile_name(fqname(filename, 7, 0));
+            set_configfile_name(fqname(filename, NHM.SYSCONFPREFIX, 0));
             fp = fopen(cptr.decay(configfile), __sl8);
         } else
             fp = null;
@@ -848,7 +849,7 @@ function cnf_line_HILITE_STATUS(bufp) {
 /** C ref: cfgfiles.c:1181 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_WARNINGS(bufp) {
     let translate = new Uint8Array(105);
-    void get_uchars(bufp, cptr.decay(translate), 0, 6, __sl41);
+    void get_uchars(bufp, cptr.decay(translate), 0, NHM.WARNCOUNT, __sl41);
     assign_warnings(cptr.decay(translate));
     return 1;
 }

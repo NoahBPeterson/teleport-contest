@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { gc, gg, gs, hexdd } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { glyphmap, map_glyphinfo, nul_glyphinfo } from './display.js';
@@ -65,8 +66,8 @@ export function free_all_glyphmap_u() {
             cptr.stPtr(cptr.add(cptr.add(glyphmap, glyph, 32), 24), null);
         }
     }
-    for (y = 0; y < 21; ++y) {
-        for (x = 0; x < 80; ++x) {
+    for (y = 0; y < NHM.ROWNO; ++y) {
+        for (x = 0; x < NHM.COLNO; ++x) {
             cptr.stPtr(cptr.add(cptr.add(cptr.add(gg, y, 4480), x, 56), 48), null);
         }
     }

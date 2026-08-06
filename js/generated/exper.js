@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
@@ -90,7 +91,7 @@ export function newpw() {
     }
     if (en <= 0)
         en = 1;
-    if (cptr.ldI32(cptr.add(u, 48)) < 30) {
+    if (cptr.ldI32(cptr.add(u, 48)) < NHM.MAXULEV) {
         cptr.stI16(cptr.add(cptr.add(u, 2280), cptr.ldI32(cptr.add(u, 48)), 2), i16(en));
     } else {
         let lim = schar(((4 - ((cptr.ldI32(cptr.add(u, 2212)) / 200) | 0)) | 0));
@@ -110,30 +111,30 @@ export function experience(mtmp, nk) {
     tmp = (1 + Math.imul(cptr.ld1u(cptr.add(mtmp, 26)), cptr.ld1u(cptr.add(mtmp, 26)))) | 0;
     if ((i = find_mac(mtmp)) < 3)
         tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
-    if (cptr.ld1s(cptr.add(ptr, 30)) > 12)
+    if (cptr.ld1s(cptr.add(ptr, 30)) > NHM.NORMAL_SPEED)
         tmp = (tmp + ((cptr.ld1s(cptr.add(ptr, 30)) > 18) ? 5 : 3)) | 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < NHM.NATTK; i++) {
         tmp2 = cptr.ld1u(cptr.add(cptr.add(ptr, 36), i, 4));
-        if (tmp2 > 4) {
-            if (tmp2 == 254)
+        if (tmp2 > NHM.AT_BUTT) {
+            if (tmp2 == NHM.AT_WEAP)
                 tmp = (tmp + 5) | 0;
-            else if (tmp2 == 255)
+            else if (tmp2 == NHM.AT_MAGC)
                 tmp = (tmp + 10) | 0;
             else
                 tmp = (tmp + 3) | 0;
         }
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < NHM.NATTK; i++) {
         tmp2 = cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 1));
-        if (tmp2 > 0 && tmp2 < 11 ? 1 : 0)
+        if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND ? 1 : 0)
             tmp = (tmp + Math.imul(2, cptr.ld1u(cptr.add(mtmp, 26)))) | 0;
-        else if (((tmp2 == 15) || (tmp2 == 18) ? 1 : 0) || (tmp2 == 40) ? 1 : 0)
+        else if (((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) ? 1 : 0) || (tmp2 == NHM.AD_SLIM) ? 1 : 0)
             tmp = (tmp + 50) | 0;
-        else if (tmp2 != 0)
+        else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
         if ((Math.imul(cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 3)), cptr.ld1u(cptr.add(cptr.add(cptr.add(ptr, 36), i, 4), 2)))) > 23)
             tmp = (tmp + cptr.ld1u(cptr.add(mtmp, 26))) | 0;
-        if ((tmp2 == 28 && cptr.ld1s(cptr.add(ptr, 28)) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
+        if ((tmp2 == NHM.AD_WRAP && cptr.ld1s(cptr.add(ptr, 28)) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24)) ? 1 : 0) || ((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64(cptr.add((ptr), 80)) & 33554432n) != 0n))
@@ -196,7 +197,7 @@ export function losexp(drainer) {
         ;
     } else {
         if (drainer) {
-            cptr.stI32(cptr.add(svk, 12), 1);
+            cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY);
             if (!cptr.eq(cptr.add(svk, 16), drainer))
                 void cptr.strcpy(cptr.add(svk, 16), drainer);
             done(NHC.DIED);
@@ -206,7 +207,7 @@ export function losexp(drainer) {
         cptr.stI64(cptr.add(u, 2376), 0n);
         livelog_printf(4096n, __sl5);
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < 30 ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32(cptr.add(u, 48)) >= 0 && cptr.ldI32(cptr.add(u, 48)) < NHM.MAXULEV ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
     olduhpmax = cptr.ldI32(cptr.add(u, 2200));
     uhpmin = minuhpmax(10);
     num = cptr.ldI16(cptr.add(cptr.add(u, 2220), cptr.ldI32(cptr.add(u, 48)), 2));
@@ -243,7 +244,7 @@ export function losexp(drainer) {
 
 /** C ref: exper.c:300 */
 export function newexplevel() {
-    if (cptr.ldI32(cptr.add(u, 48)) < 30 && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))) ? 1 : 0)
+    if (cptr.ldI32(cptr.add(u, 48)) < NHM.MAXULEV && cptr.ldI64(cptr.add(u, 2376)) >= newuexp(cptr.ldI32(cptr.add(u, 48))) ? 1 : 0)
         pluslvl(1);
 }
 
@@ -266,7 +267,7 @@ export function pluslvl(incr) {
     if (cptr.ldI32(cptr.add(u, 2212)) > cptr.ldI32(cptr.add(u, 2216)))
         cptr.stI32(cptr.add(u, 2216), cptr.ldI32(cptr.add(u, 2212)));
     cptr.stI32(cptr.add(u, 2208), (cptr.ldI32(cptr.add(u, 2208)) + eninc) | 0);
-    if (cptr.ldI32(cptr.add(u, 48)) < 30) {
+    if (cptr.ldI32(cptr.add(u, 48)) < NHM.MAXULEV) {
         let old_ach_cnt;
         let newrank;
         let oldrank = xlev_to_rank(cptr.ldI32(cptr.add(u, 48)));
@@ -308,7 +309,7 @@ export function rndexp(gaining) {
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
-    if (cptr.ldI32(cptr.add(u, 48)) == 30 && gaining ? 1 : 0) {
+    if (cptr.ldI32(cptr.add(u, 48)) == NHM.MAXULEV && gaining ? 1 : 0) {
         result += (BigInt.asIntN(64, cptr.ldI64(cptr.add(u, 2376)) - minexp));
         if (result < cptr.ldI64(cptr.add(u, 2376)))
             result = cptr.ldI64(cptr.add(u, 2376));

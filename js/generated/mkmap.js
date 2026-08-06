@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { gm, gn, gs, svl, svn, svr, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { isok } from './cmd.js';
@@ -28,9 +29,9 @@ const __sl5 = cptr.lit("litstate_rnd");
 function init_map(bg_typ) {
     let x;
     let y;
-    for (x = 1; x < 80; x++)
-        for (y = 0; y < 21; y++) {
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), 0);
+    for (x = 1; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++) {
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), NHM.NO_ROOM);
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), bg_typ);
             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 0);
         }
@@ -175,10 +176,10 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
                         cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 28), 1);
                         if (lit)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 16), lit);
-                        if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) & 63) | 0) == 0)
+                        if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) & 63) | 0) == NHM.NO_ROOM)
                             cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24), rmno >>> 0);
                         else if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24)) & 63) | 0) != rmno)
-                            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24), 1);
+                            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), ii, 756), jj, 36), 24), NHM.SHARED);
                     }
         }
         (cptr.stI32(cptr.add(gn, 80), cptr.ldI32(cptr.add(gn, 80)) + 1)) - (1);
@@ -226,9 +227,9 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
 function join_map_cleanup() {
     let x;
     let y;
-    for (x = 1; x < 80; x++)
-        for (y = 0; y < 21; y++)
-            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), 0);
+    for (x = 1; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++)
+            cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24), NHM.NO_ROOM);
     cptr.stI32(cptr.add(svn, 44), cptr.stI32(cptr.add(gn, 16), 0));
     cptr.stI16(cptr.add(cptr.add(svr, cptr.ldI32(cptr.add(svn, 44)), 224), 2), cptr.stI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(gs, 184)), cptr.ldI32(cptr.add(gn, 16)), 224), 2), -1));
 }
@@ -246,11 +247,11 @@ function join_map(bg_typ, fg_typ) {
     __lbl_joinm: {
         for (x = 2; x <= 78; x++)
             for (y = 1; y < 20; y++) {
-                if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) | 0) == 0 ? 1 : 0) {
+                if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ && ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) | 0) == NHM.NO_ROOM ? 1 : 0) {
                     cptr.stI16(cptr.add(gm, 222), cptr.stI16(cptr.add(gm, 224), x));
                     cptr.stI16(cptr.add(gm, 226), cptr.stI16(cptr.add(gm, 228), y));
                     cptr.stI32(cptr.add(gn, 80), 0);
-                    flood_fill_rm(x, y, (cptr.ldI32(cptr.add(svn, 44)) + 3) | 0, 0, 0);
+                    flood_fill_rm(x, y, (cptr.ldI32(cptr.add(svn, 44)) + NHM.ROOMOFFSET) | 0, 0, 0);
                     if (cptr.ldI32(cptr.add(gn, 80)) > 3) {
                         add_room(cptr.ldI16(cptr.add(gm, 222)), cptr.ldI16(cptr.add(gm, 226)), cptr.ldI16(cptr.add(gm, 224)), cptr.ldI16(cptr.add(gm, 228)), 0, NHC.OROOM, 1);
                         cptr.st1(cptr.add(cptr.add(svr, (cptr.ldI32(cptr.add(svn, 44)) - 1) | 0, 224), 21), 1);
@@ -259,9 +260,9 @@ function join_map(bg_typ, fg_typ) {
                     } else {
                         for (sx = cptr.ldI16(cptr.add(gm, 222)); sx <= cptr.ldI16(cptr.add(gm, 224)); sx++)
                             for (sy = cptr.ldI16(cptr.add(gm, 226)); sy <= cptr.ldI16(cptr.add(gm, 228)); sy++)
-                                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) == ((cptr.ldI32(cptr.add(svn, 44)) + 3) | 0)) {
+                                if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24)) & 63) | 0) == ((cptr.ldI32(cptr.add(svn, 44)) + NHM.ROOMOFFSET) | 0)) {
                                     cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4), bg_typ);
-                                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24), 0);
+                                    cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 24), NHM.NO_ROOM);
                                 }
                     }
                 }
@@ -291,19 +292,19 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     if (walled)
         wallify_map(1, 0, 79, 20);
     if (lit) {
-        for (x = 1; x < 80; x++)
-            for (y = 0; y < 21; y++)
+        for (x = 1; x < NHM.COLNO; x++)
+            for (y = 0; y < NHM.ROWNO; y++)
                 if ((((!((fg_typ) < NHC.POOL) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == fg_typ ? 1 : 0) || (!((bg_typ) < NHC.POOL) && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (bg_typ == NHC.TREE && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == bg_typ ? 1 : 0) ? 1 : 0) || (walled && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) && (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) <= NHC.DBWALL ? 1 : 0) ? 1 : 0) ? 1 : 0)
                     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 1);
         for (x = 0; x < cptr.ldI32(cptr.add(svn, 44)); x++)
             cptr.st1(cptr.add(cptr.add(svr, x, 224), 10), 1);
     }
-    for (x = 1; x < 80; x++)
-        for (y = 0; y < 21; y++) {
+    for (x = 1; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++) {
             if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.LAVAPOOL)
                 cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16), 1);
             else if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.ICE)
-                cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), (icedpools ? 8 : 16) >>> 0);
+                cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), (icedpools ? NHM.ICED_POOL : NHM.ICED_MOAT) >>> 0);
         }
 }
 
@@ -333,8 +334,8 @@ function remove_room(roomno) {
     let oroomno;
     if (!cptr.eq(croom, maxroom)) {
         cptr.memcpy(croom, maxroom, 224);
-        oroomno = ((cptr.ldI32(cptr.add(svn, 44)) + 3) | 0) >>> 0;
-        roomno = (roomno + 3) | 0;
+        oroomno = ((cptr.ldI32(cptr.add(svn, 44)) + NHM.ROOMOFFSET) | 0) >>> 0;
+        roomno = (roomno + NHM.ROOMOFFSET) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16(cptr.add(croom, 2)); ++x)
             for (y = cptr.ldI16(cptr.add(croom, 4)); y <= cptr.ldI16(cptr.add(croom, 6)); ++y) {
                 if ((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24)) & 63) == oroomno)

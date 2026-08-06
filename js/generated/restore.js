@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
 import { setworn } from './worn.js';
@@ -174,13 +175,13 @@ function find_lev_obj() {
     let otmp;
     let x;
     let y;
-    for (x = 0; x < 80; x++)
-        for (y = 0; y < 21; y++)
+    for (x = 0; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++)
             cptr.stPtr(cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8), null);
     while ((otmp = cptr.ldPtr(cptr.add(svl, 89040))) !== null) {
         cptr.stPtr(cptr.add(svl, 89040), cptr.ldPtr(otmp));
         cptr.stPtr(otmp, fobjtmp);
-        cptr.st1(cptr.add(otmp, 52), 0);
+        cptr.st1(cptr.add(otmp, 52), NHM.OBJ_FREE);
         fobjtmp = otmp;
     }
     while ((otmp = fobjtmp) !== null) {
@@ -234,7 +235,7 @@ function restdamage(nhfp) {
     let dmgcount = cptr.box(0);
     let counter;
     let tmp_dam;
-    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == 3));
+    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == NHM.NHF_BONESFILE));
     sfi_unsigned(nhfp, dmgcount, __sl3);
     ;
     counter = dmgcount.v | 0;
@@ -292,7 +293,7 @@ function restobjchn(nhfp, frozen) {
     let otmp2 = null;
     let first = null;
     let buflen = cptr.box(0);
-    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == 3));
+    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == NHM.NHF_BONESFILE));
     while (1) {
         sfi_int(nhfp, buflen, __sl12);
         ;
@@ -407,7 +408,7 @@ function restmonchn(nhfp) {
     let first = null;
     let buflen = cptr.box(0);
     let offset;
-    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == 3));
+    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == NHM.NHF_BONESFILE));
     while (1) {
         sfi_int(nhfp, buflen, __sl33);
         ;
@@ -585,7 +586,7 @@ function restgamestate(nhfp) {
     }
     assign_level(cptr.add(u, 28), cptr.add(u, 24));
     restore_killers(nhfp);
-    restore_timers(nhfp, 1, 0n);
+    restore_timers(nhfp, NHM.RANGE_GLOBAL, 0n);
     restore_light_sources(nhfp);
     cptr.stPtr(cptr.add(gi, 8), restobjchn(nhfp, 0));
     bc_obj = restobjchn(nhfp, 0);
@@ -772,7 +773,7 @@ export function restcemetery(nhfp, cemeteryaddr) {
     } else {
         cptr.stPtr(cemeteryaddr, null);
     }
-    if (((cptr.ldI32(cptr.add(nhfp, 4)) & 8) != 0) || ((cptr.ldI32(cptr.add(nhfp, 4)) & 16) != 0) ? 1 : 0) {
+    if (((cptr.ldI32(cptr.add(nhfp, 4)) & NHM.CONVERTING) != 0) || ((cptr.ldI32(cptr.add(nhfp, 4)) & NHM.UNCONVERTING) != 0) ? 1 : 0) {
         let thisbones;
         let nextbones;
         nextbones = cptr.ldPtr(cemeteryaddr);
@@ -788,8 +789,8 @@ export function restcemetery(nhfp, cemeteryaddr) {
 function rest_levl(nhfp) {
     let c;
     let r;
-    for (c = 0; c < 80; ++c) {
-        for (r = 0; r < 21; ++r) {
+    for (c = 0; c < NHM.COLNO; ++c) {
+        for (r = 0; r < NHM.ROWNO; ++r) {
             sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, 1680), c, 756), r, 36), __sl65);
         }
     }
@@ -817,7 +818,7 @@ export function getlev(nhfp, pid, lev) {
     let i;
     let c;
     let r;
-    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == 3));
+    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == NHM.NHF_BONESFILE));
     let tmpc = null;
     cptr.stI32(cptr.add(program_state, 40), 1);
     if (ghostly)
@@ -840,8 +841,8 @@ export function getlev(nhfp, pid, lev) {
     }
     restcemetery(nhfp, cptr.add(svl, 89072));
     rest_levl(nhfp);
-    for (c = 0; c < 80; ++c) {
-        for (r = 0; r < 21; ++r) {
+    for (c = 0; c < NHM.COLNO; ++c) {
+        for (r = 0; r < NHM.ROWNO; ++r) {
             sfi_schar(nhfp, cptr.add(cptr.add(svl, c, 21), r, 1), __sl75);
         }
     }
@@ -873,7 +874,7 @@ export function getlev(nhfp, pid, lev) {
     } else {
         cptr.stI32(gd, 0);
     }
-    restore_timers(nhfp, 0, elapsed);
+    restore_timers(nhfp, NHM.RANGE_LEVEL, elapsed);
     restore_light_sources(nhfp);
     cptr.stPtr(cptr.add(svl, 89056), restmonchn(nhfp));
     rest_worm(nhfp);
@@ -896,8 +897,8 @@ export function getlev(nhfp, pid, lev) {
     cptr.stPtr(cptr.add(svl, 89048), restobjchn(nhfp, 0));
     cptr.stPtr(cptr.add(gb, 4776), restobjchn(nhfp, 0));
     rest_engravings(nhfp);
-    for (x = 0; x < 80; x++)
-        for (y = 0; y < 21; y++)
+    for (x = 0; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++)
             cptr.stPtr(cptr.add(cptr.add(cptr.add(svl, 75600), x, 168), y, 8), null);
     for (mtmp = cptr.ldPtr(cptr.add(svl, 89056)); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32(cptr.add(mtmp, 180)) & 1))
@@ -959,9 +960,9 @@ export function getlev(nhfp, pid, lev) {
             else
                 assign_level(ltmp, cptr.add(br, 16));
             switch (cptr.ldI32(cptr.add(br, 12))) {
-                case 0:
-                case 1:
-                case 2:
+                case NHM.BR_STAIR:
+                case NHM.BR_NO_END1:
+                case NHM.BR_NO_END2:
                 stway = cptr.ldPtr(cptr.add(gs, 8));
                 while (stway) {
                     if (cptr.ldI16(cptr.add(stway, 4)) != cptr.ldI16(cptr.add(u, 24)))
@@ -971,7 +972,7 @@ export function getlev(nhfp, pid, lev) {
                 if (stway)
                     assign_level(cptr.add(stway, 4), ltmp);
                 break;
-                case 3:
+                case NHM.BR_PORTAL:
                 for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
                     if (((cptr.ldI32(cptr.add(trap, 20)) & 31) | 0) == NHC.MAGIC_PORTAL)
                         break;
@@ -1165,11 +1166,11 @@ export function restore_menu(bannerwin) {
     let k;
     let clet;
     let ch = 0;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     cptr.st1(svp, 0);
     saved = get_saved_games();
     if (saved && cptr.ldPtr(saved) ? 1 : 0) {
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         if (bannerwin != -1) {
@@ -1193,16 +1194,16 @@ export function restore_menu(bannerwin) {
                 void cptr.sprintf(cptr.decay(menutext), __sl98, 48, next);
             else
                 void cptr.sprintf(cptr.decay(menutext), __sl99, mode, 48, next);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(menutext), 4);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(menutext), NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
         }
         clet = (k <= 13) ? 110 : ((k <= 39) ? 78 : 0);
         cptr.stI32(any, -1);
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, 0, clr, __sl100, 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __sl100, NHM.MENU_ITEMFLAGS_NONE);
         clet = (((k + 1) | 0) <= 16 && clet == 110 ? 1 : 0) ? 113 : ((((k + 1) | 0) <= 42 && clet == 78 ? 1 : 0) ? 81 : 0);
         cptr.stI32(any, -2);
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, 0, clr, __sl101, 1);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __sl101, NHM.MENU_ITEMFLAGS_SELECTED);
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, null);
-        if (select_menu(tmpwin, 1, chosen_game) > 0) {
+        if (select_menu(tmpwin, NHM.PICK_ONE, chosen_game) > 0) {
             ch = cptr.ldI32(chosen_game.v);
             if (ch > 0)
                 void cptr.strcpy(svp, cptr.ldPtr(cptr.add(saved, (ch - 1) | 0, 8)));

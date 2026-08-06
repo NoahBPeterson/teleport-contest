@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc, svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, ynchars } from './decl.js';
 import { cmdbind_freeall, cmdq_clear, yn_function } from './cmd.js';
@@ -173,7 +174,7 @@ export function dosave() {
         } else
             docrt();
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: save.c:74 @returns {CInt} */
@@ -199,7 +200,7 @@ export function dosave0() {
         done_object_cleanup();
         if (!cptr.ldI32(cptr.add(program_state, 16)) || !cptr.ld1s(cptr.add(cptr.add(gs, 884), 0, 1)) ? 1 : 0)
             break __lbl_done;
-        fq_save = fqname(cptr.add(gs, 884), 2, 1);
+        fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
         sethanguphandler(1);
         void signal(2, 1);
         if (!cptr.ldI32(cptr.add(program_state, 8)))
@@ -230,7 +231,7 @@ export function dosave0() {
             cptr.stI64(cptr.add(nhfp, 16), cptr.stI64(cptr.add(nhfp, 24), 0n));
         }
         vision_recalc(2);
-        if (cptr.ldI32(cptr.add(flags, 64)) == 4)
+        if (cptr.ldI32(cptr.add(flags, 64)) == NHM.FULL_MOON)
             change_luck(-1);
         if (cptr.ld1s(cptr.add(flags, 14)))
             change_luck(1);
@@ -240,8 +241,8 @@ export function dosave0() {
         cptr.stI32(cptr.add(nhfp, 4), 6);
         store_version(nhfp);
         store_plname_in_file(nhfp);
-        cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
-        cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
+        cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == NHM.OBJ_FREE ? 1 : 0) ? uball.v : null);
+        cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == NHM.OBJ_FREE ? 1 : 0) ? uchain.v : null);
         savelev(nhfp, schar(ledger_no(cptr.add(u, 24))));
         savegamestate(nhfp);
         cptr.memcpy(cptr.add(gu, 432), cptr.add(u, 24), 4);
@@ -251,7 +252,7 @@ export function dosave0() {
         for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v++) {
             if (ltmp.v == ledger_no(cptr.add(gu, 432)))
                 continue;
-            if (!(cptr.ld1u(cptr.add(cptr.add(svl, 89208), ltmp.v, 1)) & 4))
+            if (!(cptr.ld1u(cptr.add(cptr.add(svl, 89208), ltmp.v, 1)) & NHM.LFILE_EXISTS))
                 continue;
             onhfp = open_levelfile(ltmp.v, cptr.decay(whynot));
             if (!onhfp) {
@@ -305,7 +306,7 @@ function save_gamelog(nhfp) {
             sfo_char(nhfp, cptr.ldPtr(cptr.add(tmp, 16)), __sl12, slen.v);
             sfo_gamelog_line(nhfp, tmp, __sl13);
         }
-        if (cptr.ldI32(cptr.add(nhfp, 4)) & 4) {
+        if (cptr.ldI32(cptr.add(nhfp, 4)) & NHM.FREEING) {
             cptr.free(cptr.ldPtr(cptr.add(tmp, 16)));
             cptr.free(tmp);
         }
@@ -315,7 +316,7 @@ function save_gamelog(nhfp) {
         slen.v = -1;
         sfo_int(nhfp, slen, __sl11);
     }
-    if (cptr.ldI32(cptr.add(nhfp, 4)) & 4)
+    if (cptr.ldI32(cptr.add(nhfp, 4)) & NHM.FREEING)
         cptr.stPtr(cptr.add(gg, 94968), null);
 }
 
@@ -348,18 +349,18 @@ function savegamestate(nhfp) {
     sfo_char(nhfp, yyyymmddhhmmss(cptr.ldI64(cptr.add(urealtime, 8))), __sl24, 14);
     cptr.stI64(cptr.add(urealtime, 8), cptr.ldI64(cptr.add(urealtime, 16)));
     save_killers(nhfp);
-    save_timers(nhfp, 1);
-    save_light_sources(nhfp, 1);
+    save_timers(nhfp, NHM.RANGE_GLOBAL);
+    save_light_sources(nhfp, NHM.RANGE_GLOBAL);
     saveobjchn(nhfp, cptr.add(gi, 8));
     save_bc(nhfp);
     saveobjchn(nhfp, cptr.add(gm, 176));
     savemonchn(nhfp, cptr.ldPtr(cptr.add(gm, 192)));
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         cptr.stPtr(cptr.add(gm, 192), null);
     for (i = 0; i < NHC.NUMMONS; ++i) {
         sfo_mvitals(nhfp, cptr.add(cptr.add(svm, 16), i, 12), __sl25);
     }
-    save_dungeon(nhfp, schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 3))), schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 4))));
+    save_dungeon(nhfp, schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & 3))), schar((!!(cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))));
     savelevchn(nhfp);
     sfo_q_score(nhfp, svq, __sl26);
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
@@ -424,7 +425,7 @@ export function savestateinlock() {
             done(NHC.TRICKED);
             return;
         }
-        cptr.stI32(cptr.add(nhfp, 4), 2);
+        cptr.stI32(cptr.add(nhfp, 4), NHM.WRITING);
         sfo_int(nhfp, svh, __sl31);
         if (cptr.ld1s(cptr.add(flags, 21))) {
             let currlev = cptr.box(ledger_no(cptr.add(u, 24)));
@@ -432,8 +433,8 @@ export function savestateinlock() {
             save_savefile_name(nhfp);
             store_version(nhfp);
             store_plname_in_file(nhfp);
-            cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == 0 ? 1 : 0) ? uball.v : null);
-            cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == 0 ? 1 : 0) ? uchain.v : null);
+            cptr.stPtr(cptr.add(gl, 496), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1s(cptr.add(uball.v, 52)) == NHM.OBJ_FREE ? 1 : 0) ? uball.v : null);
+            cptr.stPtr(cptr.add(gl, 504), (((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1s(cptr.add(uchain.v, 52)) == NHM.OBJ_FREE ? 1 : 0) ? uchain.v : null);
             savegamestate(nhfp);
         }
         close_nhfile(nhfp);
@@ -469,23 +470,23 @@ function savelev_core(nhfp, lev) {
         (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + 1)) - (1);
         if (!nhfp)
             panic(__sl35);
-        if (cptr.ldI32(cptr.add(nhfp, 4)) != 4) {
+        if (cptr.ldI32(cptr.add(nhfp, 4)) != NHM.FREEING) {
             if (cptr.ldI32(cptr.add(iflags, 56)))
                 dmonsfree();
             if (cptr.ldPtr(go))
                 dobjsfree();
             if (lev.v >= 0 && lev.v <= maxledgerno() ? 1 : 0)
-                cptr.st1(cptr.add(cptr.add(svl, 89208), lev.v, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev.v, 1)) | 1);
+                cptr.st1(cptr.add(cptr.add(svl, 89208), lev.v, 1), cptr.ld1u(cptr.add(cptr.add(svl, 89208), lev.v, 1)) | NHM.VISITED);
             sfo_int(nhfp, svh, __sl31);
             sfo_xint8(nhfp, lev, __sl36);
             ;
         }
         savecemetery(nhfp, cptr.add(svl, 89072));
-        if (cptr.ldI32(cptr.add(nhfp, 4)) == 4)
+        if (cptr.ldI32(cptr.add(nhfp, 4)) == NHM.FREEING)
             break __lbl_skip_lots;
         savelevl(nhfp);
-        for (c = 0; c < 80; ++c) {
-            for (r = 0; r < 21; ++r) {
+        for (c = 0; c < NHM.COLNO; ++c) {
+            for (r = 0; r < NHM.ROWNO; ++r) {
                 sfo_schar(nhfp, cptr.add(cptr.add(svl, c, 21), r, 1), __sl37);
             }
         }
@@ -507,8 +508,8 @@ function savelev_core(nhfp, lev) {
         }
         save_rooms(nhfp);
     }
-    save_timers(nhfp, 0);
-    save_light_sources(nhfp, 0);
+    save_timers(nhfp, NHM.RANGE_LEVEL);
+    save_light_sources(nhfp, NHM.RANGE_LEVEL);
     savemonchn(nhfp, cptr.ldPtr(cptr.add(svl, 89056)));
     save_worm(nhfp);
     savetrapchn(nhfp, cptr.ldPtr(gf));
@@ -521,12 +522,12 @@ function savelev_core(nhfp, lev) {
     save_bubbles(nhfp, lev.v);
     save_exclusions(nhfp);
     save_track(nhfp);
-    if (cptr.ldI32(cptr.add(nhfp, 4)) != 4) {
+    if (cptr.ldI32(cptr.add(nhfp, 4)) != NHM.FREEING) {
         if (cptr.ld1s(cptr.add(nhfp, 32)))
             bflush(cptr.ldI32(nhfp));
     }
     (cptr.stI32(cptr.add(program_state, 28), cptr.ldI32(cptr.add(program_state, 28)) + -1)) - (-1);
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
         clear_level_structures();
         cptr.stPtr(gf, null);
         cptr.stPtr(cptr.add(gb, 4776), null);
@@ -544,8 +545,8 @@ export function save_adjust_levelflags() {
 function savelevl(nhfp) {
     let x;
     let y;
-    for (x = 0; x < 80; x++) {
-        for (y = 0; y < 21; y++) {
+    for (x = 0; x < NHM.COLNO; x++) {
+        for (y = 0; y < NHM.ROWNO; y++) {
             sfo_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), __sl44);
         }
     }
@@ -580,10 +581,10 @@ export function savecemetery(nhfp, cemeteryaddr) {
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
             sfo_cemetery(nhfp, thisbones, __sl47);
         }
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
             cptr.free(thisbones);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         cptr.stPtr(cemeteryaddr, null);
 }
 
@@ -604,10 +605,10 @@ function savedamage(nhfp) {
         }
         tmp_dam = damageptr;
         damageptr = cptr.ldPtr(damageptr);
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
             cptr.free(tmp_dam);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         cptr.stPtr(cptr.add(svl, 89064), null);
 }
 
@@ -641,7 +642,7 @@ function save_bc(nhfp) {
     if (cptr.ldPtr(cptr.add(gl, 504))) {
         cptr.stPtr(cptr.ldPtr(cptr.add(gl, 504)), bc_objs.v);
         bc_objs.v = cptr.ldPtr(cptr.add(gl, 504));
-        if (cptr.ldI32(cptr.add(nhfp, 4)) & 4) {
+        if (cptr.ldI32(cptr.add(nhfp, 4)) & NHM.FREEING) {
             setworn(null, 4194304n);
             cptr.stPtr(cptr.add(gl, 504), null);
         }
@@ -649,7 +650,7 @@ function save_bc(nhfp) {
     if (cptr.ldPtr(cptr.add(gl, 496))) {
         cptr.stPtr(cptr.ldPtr(cptr.add(gl, 496)), bc_objs.v);
         bc_objs.v = cptr.ldPtr(cptr.add(gl, 496));
-        if (cptr.ldI32(cptr.add(nhfp, 4)) & 4) {
+        if (cptr.ldI32(cptr.add(nhfp, 4)) & NHM.FREEING) {
             setworn(null, 2097152n);
             cptr.stPtr(cptr.add(gl, 496), null);
         }
@@ -697,7 +698,7 @@ function saveobjchn(nhfp, obj_p) {
         }
         if ((cptr.ldPtr(cptr.add((otmp), 16)) !== null))
             saveobjchn(nhfp, cptr.add(otmp, 16));
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
             if (cptr.eq(otmp, cptr.ldPtr(cptr.add(svc, 128)))) {
                 cptr.stI32(cptr.add(svc, 136), cptr.ldI32(cptr.add(otmp, 24)));
                 cptr.stPtr(cptr.add(svc, 128), null);
@@ -710,7 +711,7 @@ function saveobjchn(nhfp, obj_p) {
                 cptr.stI32(cptr.add(svc, 488), cptr.ldI32(cptr.add(otmp, 24)));
                 cptr.stPtr(cptr.add(svc, 480), null);
             }
-            cptr.st1(cptr.add(otmp, 52), 0);
+            cptr.st1(cptr.add(otmp, 52), NHM.OBJ_FREE);
             cptr.stPtr(otmp, null);
             cptr.stPtr(cptr.add(otmp, 16), null);
             cptr.stI16(cptr.add(otmp, 54), 0);
@@ -728,7 +729,7 @@ function saveobjchn(nhfp, obj_p) {
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         sfo_int(nhfp, minusone, __sl52);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
         if (is_invent)
             allunworn();
         cptr.stPtr(obj_p, null);
@@ -801,7 +802,7 @@ function savemonchn(nhfp, mtmp) {
         }
         if (cptr.ldPtr(cptr.add(mtmp, 280)))
             saveobjchn(nhfp, cptr.add(mtmp, 280));
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
             if (cptr.eq(mtmp, cptr.ldPtr(cptr.add(svc, 584)))) {
                 cptr.stI32(cptr.add(svc, 592), cptr.ldI32(cptr.add(mtmp, 16)));
                 cptr.stPtr(cptr.add(svc, 584), null);
@@ -835,7 +836,7 @@ function savetrapchn(nhfp, trap) {
         }
         if (use_relative)
             cptr.stI16(cptr.add(trap, 14), cptr.ldI16(cptr.add(trap, 14)) + cptr.ldI16(cptr.add(u, 26)));
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
             cptr.free((trap));
         trap = trap2;
     }
@@ -856,14 +857,14 @@ export function savefruitchn(nhfp) {
         if (cptr.ldI32(cptr.add(f1, 32)) >= 0 && (cptr.ldI32(cptr.add((nhfp), 4)) & 3) ? 1 : 0) {
             sfo_fruit(nhfp, f1, __sl78);
         }
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
             cptr.free((f1));
         f1 = f2;
     }
     if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
         sfo_fruit(nhfp, __static_savefruitchn_zerofruit, __sl78);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         cptr.stPtr(cptr.add(gf, 88), null);
 }
 
@@ -882,10 +883,10 @@ function savelevchn(nhfp) {
         if ((cptr.ldI32(cptr.add((nhfp), 4)) & 3)) {
             sfo_s_level(nhfp, tmplev, __sl80);
         }
-        if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+        if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
             cptr.free(tmplev);
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         cptr.stPtr(cptr.add(svs, 344), null);
 }
 
@@ -963,8 +964,8 @@ export function freedynamicdata() {
     done_object_cleanup();
     savelev(tnhfp, -1);
     save_killers(tnhfp);
-    save_timers(tnhfp, 1);
-    save_light_sources(tnhfp, 1);
+    save_timers(tnhfp, NHM.RANGE_GLOBAL);
+    save_light_sources(tnhfp, NHM.RANGE_GLOBAL);
     (saveobjchn(tnhfp, cptr.add(gi, 8)), cptr.stPtr(cptr.add(gi, 8), null));
     (saveobjchn(tnhfp, cptr.add(gm, 176)), cptr.stPtr(cptr.add(gm, 176), null));
     (savemonchn(tnhfp, cptr.ldPtr(cptr.add(gm, 192))), cptr.stPtr(cptr.add(gm, 192), null));

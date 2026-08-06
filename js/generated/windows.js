@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { tty_procs, win_tty_init } from './wintty.js';
 import { WIN_STATUS, cg, flags, gb, gl, gm, go, gs, hexdd, iflags, program_state, svc } from './decl.js';
 import { eos, mungspaces, strncmpi } from './hacklib.js';
@@ -138,9 +139,9 @@ export function choose_windows(s) {
         if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtr(cptr.add(winchoices, i, 16)))), -1)) {
             cptr.memcpy(windowprocs, cptr.ldPtr(cptr.add(winchoices, i, 16)), 416);
             if (cptr.ldPtr(cptr.add(gl, 544)) && cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gl, 544)), 8)) ? 1 : 0)
-                (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gl, 544)), 8)))(1);
+                (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gl, 544)), 8)))(NHM.WININIT_UNDO);
             if (cptr.ldPtr(cptr.add(cptr.add(winchoices, i, 16), 8)))
-                (cptr.ldPtr(cptr.add(cptr.add(winchoices, i, 16), 8)))(0);
+                (cptr.ldPtr(cptr.add(cptr.add(winchoices, i, 16), 8)))(NHM.WININIT);
             cptr.stPtr(cptr.add(gl, 544), cptr.add(winchoices, i, 16));
             return;
         }
@@ -437,12 +438,12 @@ export const status_activefields = new Uint8Array(27);
 export function genl_status_init() {
     let i;
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        cptr.stPtr(cptr.add(status_vals, i, 8), alloc(200));
+        cptr.stPtr(cptr.add(status_vals, i, 8), alloc(NHM.MAXCO));
         cptr.st1(cptr.ldPtr(cptr.add(status_vals, i, 8)), 0);
         cptr.st1(cptr.add(cptr.decay(status_activefields), i, 1), 0);
         cptr.stPtr(cptr.add(status_fieldfmt, i, 8), null);
     }
-    WIN_STATUS.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(2);
+    WIN_STATUS.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_STATUS);
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(WIN_STATUS.v, 0);
 }
 
@@ -862,7 +863,7 @@ export function genl_display_file(fname, complain) {
         if (complain)
             fprintf(__stdoutp, __sl31, fname);
     } else {
-        while (fgets(cptr.decay(buf), 256, f)) {
+        while (fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
             if (fputs(cptr.decay(buf), __stdoutp) < 0)
                 break;
         }
@@ -872,7 +873,7 @@ export function genl_display_file(fname, complain) {
 
 /** C ref: windows.c:1562 — @param {CInt} mode @param {CUInt} itemflags @param {CInt} is_selected @returns {CInt} */
 export function menuitem_invert_test(mode, itemflags, is_selected) {
-    let skipinvert = schar((((itemflags & 2) >>> 0) != 0));
+    let skipinvert = schar((((itemflags & NHM.MENU_ITEMFLAGS_SKIPINVERT) >>> 0) != 0));
     if (!skipinvert)
         return 1;
     if (cptr.ldI32(cptr.add(iflags, 104)) == 2) {
@@ -912,12 +913,12 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     let n;
     let next_accelerator;
     let accelerator = 0;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     if (!class_list || !class_select ? 1 : 0)
         return 0;
     next_accelerator = 97;
     cptr.memcpy(any, cptr.add(cg, 536), 8);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
     while (cptr.ld1s(class_list)) {
         let idx;
@@ -950,7 +951,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             }
         }
         cptr.stI32(any, cptr.ld1s(class_list));
-        add_menu(win, nul_glyphinfo.v, any, schar(accelerator), schar((category ? cptr.ld1s(class_list) : 0)), 0, clr, cptr.decay(buf), selected ? 1 : 0);
+        add_menu(win, nul_glyphinfo.v, any, schar(accelerator), schar((category ? cptr.ld1s(class_list) : 0)), NHM.ATR_NONE, clr, cptr.decay(buf), selected ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
         if (category > 0) {
             if (next_accelerator == 90)
                 break;
@@ -966,14 +967,14 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, 32);
         void cptr.sprintf(cptr.decay(buf), __sl34, schar(cptr.ldI32(any)), __sl36);
-        add_menu(win, nul_glyphinfo.v, any, 65, 0, 0, clr, cptr.decay(buf), 2);
+        add_menu(win, nul_glyphinfo.v, any, 65, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT);
         if (!strcmp(prompt, __sl37)) {
             add_menu_str(win, __sl38);
             add_menu_str(win, cptr.ld1s(cptr.add(flags, 30)) ? __sl39 : __sl40);
         }
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, prompt);
-    n = select_menu(win, way ? 2 : 1, pick_list);
+    n = select_menu(win, way ? NHM.PICK_ANY : NHM.PICK_ONE, pick_list);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
     if (n > 0) {
         if (category == 1) {
@@ -1009,8 +1010,8 @@ cptr.stI32(cptr.add(zerowri, 24), 0);
 cptr.stI32(cptr.add(zerowri, 28), 0);
 cptr.stI32(cptr.add(zerowri, 32), 0);
 cptr.stI32(cptr.add(zerowri, 36), 0);
-cptr.stI32(cptr.add(zerowri, 40), 8);
-cptr.stI32(cptr.add(zerowri, 44), 0);
+cptr.stI32(cptr.add(zerowri, 40), NHM.NO_COLOR);
+cptr.stI32(cptr.add(zerowri, 44), NHM.ATR_NONE);
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr} style */
 export function adjust_menu_promptstyle(window, style) {
@@ -1036,10 +1037,10 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
         return;
     }
     if (cptr.ld1s(cptr.add(iflags, 149))) {
-        if (((itemflags & 4) >>> 0) == 0)
+        if (((itemflags & NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS) >>> 0) == 0)
             void get_menu_coloring(str, color, attr);
     }
-    itemflags &= ~4;
+    itemflags &= ~NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS;
     (cptr.ldPtr(cptr.add(windowprocs, 176)))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
 }
 
@@ -1049,14 +1050,14 @@ export function add_menu_heading(tmpwin, buf) {
     let attr = cptr.ldI32(cptr.add(iflags, 116));
     let color = cptr.ldI32(cptr.add(iflags, 112));
     if (cptr.ldI32(program_state))
-        attr = 0, color = 8;
-    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, 4);
+        attr = NHM.ATR_NONE, color = NHM.NO_COLOR;
+    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
 }
 
 /** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr} buf */
 export function add_menu_str(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, 536), 8);
-    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, 8, buf, 0);
+    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE);
 }
 
 /** C ref: windows.c:1841 — @param {CPtr} str @param {CPtr} color @param {CPtr} attr @returns {CInt} */

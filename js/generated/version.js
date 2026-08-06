@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand, what_datamodel_is_this } from './hacklib.js';
 import { nomakedefs } from './date.js';
 import { do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init } from './mdlib.js';
@@ -166,9 +167,9 @@ export function status_version(buf, bufsz, indent) {
     let altname = null;
     let indentation;
     let vflags = cptr.ldI32(cptr.add(flags, 84));
-    let shownum = schar((((vflags & 1) >>> 0) != 0));
-    let showname = schar((((vflags & 2) >>> 0) != 0));
-    let showbranch = schar((((vflags & 4) >>> 0) != 0));
+    let shownum = schar((((vflags & NHM.VI_NUMBER) >>> 0) != 0));
+    let showname = schar((((vflags & NHM.VI_NAME) >>> 0) != 0));
+    let showbranch = schar((((vflags & NHM.VI_BRANCH) >>> 0) != 0));
     if (showname) {
         name = nh_basename(cptr.ldPtr(gh), 0);
         if (!name || !cptr.ld1s(name) ? 1 : 0)
@@ -207,7 +208,7 @@ export function doversion() {
     if (cptr.ld1s(cptr.add(iflags, 135)))
         return doextversion();
     pline(__sl1, getversionstring(cptr.decay(buf), 256n));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: version.c:169 @returns {CInt} */
@@ -217,7 +218,7 @@ export function doextversion() {
     let f = null;
     let buf = new Uint8Array(256);
     let p = null;
-    let win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    let win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     let use_dlb = 1;
     let done_rt = 0;
     let done_dlb = 0;
@@ -247,7 +248,7 @@ export function doextversion() {
     prolog = 1;
     for (; ; ) {
         if (use_dlb && !done_dlb ? 1 : 0) {
-            if (!fgets(cptr.decay(buf), 256, f)) {
+            if (!fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
                 done_dlb = 1;
                 continue;
             }
@@ -279,7 +280,7 @@ export function doextversion() {
         void fclose(f);
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: version.c:280 — @param {CInt} pastebuf */
@@ -610,7 +611,7 @@ export function store_critical_bytes(nhfp) {
     let cnt;
     let indicate = cptr.box(117);
     let csc_count = cptr.box(80);
-    if (cptr.ldI32(cptr.add(nhfp, 4)) & 2) {
+    if (cptr.ldI32(cptr.add(nhfp, 4)) & NHM.WRITING) {
         indicate.v = schar(((cptr.ld1s(cptr.add(nhfp, 32))) ? 104 : ((cptr.ldI32(cptr.add(nhfp, 12)) == NHC.exportascii) ? 97 : 63)));
         sfo_char(nhfp, indicate, __sl101, 1);
         sfo_char(nhfp, csc_count, __sl102, 1);
@@ -630,7 +631,7 @@ export function uptodate(nhfp, name, utdflags) {
     let quietly = schar(((utdflags & 32n) != 0n));
     let verbose = schar((name ? 1 : 0));
     sfi_char(nhfp, indicator, __sl101, 1);
-    if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != 0) {
+    if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v ? 1 : 0) {
             if (!quietly)
                 raw_printf(__sl104, cptr.ld1u(cptr.add(critical_sizes, idx_1st_mismatch.v, 16)), cptr.ldPtr(cptr.add(cptr.add(critical_sizes, idx_1st_mismatch.v, 16), 8)));
@@ -643,7 +644,7 @@ export function uptodate(nhfp, name, utdflags) {
                 (cptr.ldPtr(cptr.add(windowprocs, 216)))();
             }
         }
-        return 1;
+        return NHM.SF_OUTDATED;
     }
     return sfstatus;
 }
@@ -654,13 +655,13 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
     let file_csc_count = cptr.box(0);
     let i;
     let cnt = active_csc_count;
-    let dmmismatch = 9;
+    let dmmismatch = NHM.SF_DM_MISMATCH;
     let quietly = schar(((utdflags & 32n) != 0n));
     sfi_char(nhfp, file_csc_count, __sl102, 1);
     if (file_csc_count.v > cnt) {
         if (!quietly)
             raw_printf(__sl105, file_csc_count.v, 80);
-        return 2;
+        return NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH;
     }
     for (i = 0; i < file_csc_count.v; ++i) {
         sfi_uchar(nhfp, cptr.add(cptr.decay(cscbuf), i, 1), __sl103);
@@ -671,24 +672,24 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
             let dmfile;
             dmfile = what_datamodel_is_this(0, cptr.ld1u(cptr.add(cptr.decay(cscbuf), 1, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 2, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 3, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 4, 1)), cptr.ld1u(cptr.add(cptr.decay(cscbuf), 5, 1)));
             if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107) ? 1 : 0) {
-                dmmismatch = 3;
+                dmmismatch = NHM.SF_DM_IL32LLP64_ON_ILP32LL64;
             } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107) ? 1 : 0) {
-                dmmismatch = 4;
+                dmmismatch = NHM.SF_DM_I32LP64_ON_ILP32LL64;
             } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108) ? 1 : 0) {
-                dmmismatch = 5;
+                dmmismatch = NHM.SF_DM_ILP32LL64_ON_I32LP64;
             } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106) ? 1 : 0) {
-                dmmismatch = 6;
+                dmmismatch = NHM.SF_DM_ILP32LL64_ON_IL32LLP64;
             } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106) ? 1 : 0) {
-                dmmismatch = 7;
+                dmmismatch = NHM.SF_DM_I32LP64_ON_IL32LLP64;
             } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108) ? 1 : 0) {
-                dmmismatch = 8;
+                dmmismatch = NHM.SF_DM_IL32LLP64_ON_I32LP64;
             }
             if (idx_1st_mismatch)
                 cptr.stI32(idx_1st_mismatch, i);
             return dmmismatch;
         }
     }
-    return 0;
+    return NHM.SF_UPTODATE;
 }
 
 /** C ref: version.c:840 — @param {CPtr} nhfp @param {CPtr} name @param {CInt} without_waitsynch_perfile @returns {CInt} */

@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
 import { arti_speak, artifact_light, is_art, restrict_name, retouch_object, undiscovered_artifact } from './artifact.js';
@@ -192,7 +193,7 @@ function cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
     if (((uarmg.v || cptr.ldI16(cptr.add(obj, 32)) != NHC.CORPSE ? 1 : 0) || !(cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32(cptr.add(obj, 168)), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STONE_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.STONE_RES, 24)) ? 1 : 0) ? 1 : 0)
         return 0;
-    You(__sl2, corpse_xname(obj, null, 4), makeplural(body_part(NHC.HAND)));
+    You(__sl2, corpse_xname(obj, null, NHM.CXN_PFX_THE), makeplural(body_part(NHC.HAND)));
     void cptr.sprintf(cptr.decay(kbuf), __sl3, killer_xname(obj));
     instapetrify(cptr.decay(kbuf));
     return 1;
@@ -206,25 +207,25 @@ export function empty_handed() {
 /** C ref: wield.c:169 — @param {CPtr} wep @returns {CInt} */
 function ready_weapon(wep) {
     wep = cptr.box(wep);
-    let res = 0;
+    let res = NHM.ECMD_OK;
     let was_twoweap = cptr.ld1s(cptr.add(u, 2816));
     let had_wep = schar((uwep.v !== null));
     if (!wep.v) {
         if (uwep.v) {
             You(__sl7, empty_handed());
             setuwep(null);
-            res = 1;
+            res = NHM.ECMD_TIME;
         } else
             You(__sl8, empty_handed());
     } else if (cptr.ldI16(cptr.add(wep.v, 32)) == NHC.CORPSE && cant_wield_corpse(wep.v) ? 1 : 0) {
-        res = 1;
+        res = NHM.ECMD_TIME;
     } else if (uarms.v && ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(wep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) {
         You(__sl9, ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 68)) >= NHC.P_SHORT_SWORD ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 68)) <= NHC.P_SABER ? 1 : 0) ? __sl10 : (cptr.ldI16(cptr.add(wep.v, 32)) == NHC.BATTLE_AXE ? __sl11 : __sl12));
-        res = 4;
+        res = NHM.ECMD_FAIL;
     } else if (!retouch_object(wep, 0)) {
-        res = 1;
+        res = NHM.ECMD_TIME;
     } else {
-        res = 1;
+        res = NHM.ECMD_TIME;
         if (((cptr.ldI32(cptr.add((wep.v), 56)) & 1) | 0 && ((((cptr.ld1s(cptr.add((wep.v), 49)) == NHC.WEAPON_CLASS || (cptr.ld1s(cptr.add((wep.v), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep.v), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add((wep.v), 32)) == NHC.HEAVY_IRON_BALL ? 1 : 0) || cptr.ldI16(cptr.add((wep.v), 32)) == NHC.IRON_CHAIN ? 1 : 0) || cptr.ldI16(cptr.add((wep.v), 32)) == NHC.TIN_OPENER ? 1 : 0) ? 1 : 0)) {
             let tmp = xname(wep.v);
             let thestr = __sl13;
@@ -232,7 +233,7 @@ function ready_weapon(wep) {
                 tmp = thestr;
             else
                 tmp = __sl14;
-            pline(__sl15, tmp, aobjnam(wep.v, __sl16), (cptr.ldI64(cptr.add(wep.v, 40)) == 1n) ? __sl17 : __sl18, ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(wep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? __sl14 : ((((cptr.ldI32(cptr.add(u, 1876)) & 1) | 0) == 0) ? __sl19 : __sl20), ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(wep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? makeplural(body_part(NHC.HAND)) : body_part(NHC.HAND));
+            pline(__sl15, tmp, aobjnam(wep.v, __sl16), (cptr.ldI64(cptr.add(wep.v, 40)) == 1n) ? __sl17 : __sl18, ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(wep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? __sl14 : ((((cptr.ldI32(cptr.add(u, 1876)) & 1) | 0) == NHM.RIGHT_HANDED) ? __sl19 : __sl20), ((cptr.ld1s(cptr.add(wep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(wep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(wep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? makeplural(body_part(NHC.HAND)) : body_part(NHC.HAND));
             set_bknown(wep.v, 1);
         } else {
             let dummy = cptr.ldI64(cptr.add(wep.v, 192));
@@ -321,24 +322,24 @@ export function dowield() {
     let result;
     __lbl_wielding: {
         cptr.stI64(cptr.add(gm, 8), 0n);
-        if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
+        if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < NHM.MZ_SMALL) ? 1 : 0)) {
             pline(__sl26);
-            return 4;
+            return NHM.ECMD_FAIL;
         }
         clear_splitobjs();
         if (!(wep = getobj(__sl27, wield_ok, 3))) {
-            return 2;
+            return NHM.ECMD_CANCEL;
         } else if (cptr.eq(wep, uwep.v)) {
             You(__sl28);
             if ((cptr.ld1s(cptr.add((wep), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0) || (cptr.ldI16(cptr.add((wep), 32)) == NHC.TOWEL && cptr.ld1s(cptr.add((wep), 48)) > 0 ? 1 : 0) ? 1 : 0)
                 cptr.st1(cptr.add(gu, 1), 0);
-            return 4;
+            return NHM.ECMD_FAIL;
         } else if (welded(uwep.v)) {
             weldmsg(uwep.v);
             reset_remarm();
             if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(svc, 604)) ? 1 : 0)
                 unsplitobj(wep);
-            return 4;
+            return NHM.ECMD_FAIL;
         } else if (cptr.ldI32(cptr.add(wep, 24)) && cptr.ldI32(cptr.add(wep, 24)) == cptr.ldI32(cptr.add(svc, 604)) ? 1 : 0) {
             if (uwep.v && cptr.ldI32(cptr.add(uwep.v, 24)) == cptr.ldI32(cptr.add(svc, 600)) ? 1 : 0) {
                 unsplitobj(wep);
@@ -347,7 +348,7 @@ export function dowield() {
                     You(__sl28);
                     if ((cptr.ld1s(cptr.add((wep), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((wep), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0) || (cptr.ldI16(cptr.add((wep), 32)) == NHC.TOWEL && cptr.ld1s(cptr.add((wep), 48)) > 0 ? 1 : 0) ? 1 : 0)
                         cptr.st1(cptr.add(gu, 1), 0);
-                    return 4;
+                    return NHM.ECMD_FAIL;
                 }
             }
             finish_splitting(wep);
@@ -362,7 +363,7 @@ export function dowield() {
                 void cptr.sprintf(cptr.decay(qbuf), __sl29, cptr.ldI64(cptr.add(uquiver.v, 40)), simpleonames(uquiver.v));
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return 0;
+                    return NHM.ECMD_OK;
                     case 121:
                     wep = splitobj(uquiver.v, 1n);
                     finish_splitting(wep);
@@ -378,12 +379,12 @@ export function dowield() {
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uquiver.v);
                 pline(__sl36, cptr.decay(qbuf), simpleonames(uquiver.v), otense(uquiver.v, __sl37));
-                return 0;
+                return NHM.ECMD_OK;
             }
             setuqwep(null);
         } else if (cptr.ldI64(cptr.add(wep, 192)) & 2031743n) {
             You(__sl38);
-            return 4;
+            return NHM.ECMD_FAIL;
         }
     }
     oldwep = uwep.v;
@@ -400,13 +401,13 @@ export function doswapweapon() {
     let oldswap;
     let result = 0;
     cptr.stI64(cptr.add(gm, 8), 0n);
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < NHM.MZ_SMALL) ? 1 : 0)) {
         pline(__sl26);
-        return 4;
+        return NHM.ECMD_FAIL;
     }
     if (welded(uwep.v)) {
         weldmsg(uwep.v);
-        return 4;
+        return NHM.ECMD_FAIL;
     }
     oldwep = uwep.v;
     oldswap = uswapwep.v;
@@ -442,12 +443,12 @@ export function doquiver_core(verb) {
         cptr.stI64(cptr.add(gm, 8), 0n);
         if (!cptr.ldPtr(cptr.add(gi, 8))) {
             You(__sl41);
-            return 0;
+            return NHM.ECMD_OK;
         }
         clear_splitobjs();
         newquiver = getobj(verb, ready_ok, 3);
         if (!newquiver) {
-            return 2;
+            return NHM.ECMD_CANCEL;
         } else if (cptr.eq(newquiver, hands_obj)) {
             if (uquiver.v) {
                 You(__sl42);
@@ -455,38 +456,38 @@ export function doquiver_core(verb) {
             } else {
                 You(__sl43);
             }
-            return 0;
+            return NHM.ECMD_OK;
         } else if (cptr.ldI32(cptr.add(newquiver, 24)) == cptr.ldI32(cptr.add(svc, 604))) {
             if (uquiver.v && cptr.ldI32(cptr.add(uquiver.v, 24)) == cptr.ldI32(cptr.add(svc, 600)) ? 1 : 0) {
                 unsplitobj(newquiver);
                 {
                     pline(__sl44);
-                    return 0;
+                    return NHM.ECMD_OK;
                 }
             } else if (cptr.ld1s(cptr.add(newquiver, 49)) == NHC.COIN_CLASS) {
                 You(__sl45);
                 unsplitobj(newquiver);
-                return 0;
+                return NHM.ECMD_OK;
             }
             finish_splitting(newquiver);
         } else if (cptr.eq(newquiver, uquiver.v)) {
             pline(__sl44);
-            return 0;
+            return NHM.ECMD_OK;
         } else if (cptr.ldI64(cptr.add(newquiver, 192)) & 2031743n) {
             You(__sl46, verb);
-            return 0;
+            return NHM.ECMD_OK;
         } else if (cptr.eq(newquiver, uwep.v)) {
             let weld_res = !(cptr.ldI32(cptr.add(uwep.v, 88)) & 1);
             if (welded(uwep.v)) {
                 weldmsg(uwep.v);
                 reset_remarm();
-                return weld_res ? 1 : 0;
+                return weld_res ? NHM.ECMD_TIME : NHM.ECMD_OK;
             }
             if ((cptr.ldI64(cptr.add(uwep.v, 40)) > 1n && inv_cnt(0) < NHC.invlet_basic ? 1 : 0) && splittable(uwep.v) ? 1 : 0) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl47, cptr.ldI64(cptr.add(uwep.v, 40)), simpleonames(uwep.v), BigInt.asIntN(64, cptr.ldI64(cptr.add(uwep.v, 40)) - 1n));
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return 0;
+                    return NHM.ECMD_OK;
                     case 121:
                     newquiver = splitobj(uwep.v, BigInt.asIntN(64, cptr.ldI64(cptr.add(uwep.v, 40)) - 1n));
                     finish_splitting(newquiver);
@@ -502,7 +503,7 @@ export function doquiver_core(verb) {
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uwep.v);
                 pline(__sl50, cptr.decay(qbuf), simpleonames(uwep.v), otense(uwep.v, __sl37));
-                return 0;
+                return NHM.ECMD_OK;
             }
             setuwep(null);
             untwoweapon();
@@ -512,7 +513,7 @@ export function doquiver_core(verb) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl51, cptr.ld1s(cptr.add(u, 2816)) ? __sl52 : __sl53, cptr.ldI64(cptr.add(uswapwep.v, 40)), simpleonames(uswapwep.v), BigInt.asIntN(64, cptr.ldI64(cptr.add(uswapwep.v, 40)) - 1n));
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return 0;
+                    return NHM.ECMD_OK;
                     case 121:
                     newquiver = splitobj(uswapwep.v, BigInt.asIntN(64, cptr.ldI64(cptr.add(uswapwep.v, 40)) - 1n));
                     finish_splitting(newquiver);
@@ -528,7 +529,7 @@ export function doquiver_core(verb) {
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uswapwep.v);
                 pline(__sl59, cptr.decay(qbuf), simpleonames(uswapwep.v), otense(uswapwep.v, __sl37), cptr.ld1s(cptr.add(u, 2816)) ? __sl60 : __sl61);
-                return 0;
+                return NHM.ECMD_OK;
             }
             setuswapwep(null);
             untwoweapon();
@@ -549,7 +550,7 @@ export function doquiver_core(verb) {
         You(__sl22, cptr.decay(are_no_longer_twoweap));
         res = 1;
     }
-    return res ? 1 : 0;
+    return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
 /** C ref: wield.c:683 — @param {CPtr} obj @param {CPtr} verb @returns {CInt} */
@@ -579,7 +580,7 @@ export function wield_tool(obj, verb) {
         }
         return 0;
     }
-    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0)) {
+    if ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < NHM.MZ_SMALL) ? 1 : 0)) {
         You_cant(__sl69, more_than_1 ? __sl35 : __sl34);
         return 0;
     }
@@ -616,7 +617,7 @@ export function wield_tool(obj, verb) {
 /** C ref: wield.c:761 @returns {CInt} */
 export function can_twoweapon() {
     let otmp;
-    if (!((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 2, 4)) == 254)) | 0) > 1)) {
+    if (!((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 0, 4)) == NHM.AT_WEAP) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 1, 4)) == NHM.AT_WEAP)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 2, 4)) == NHM.AT_WEAP)) | 0) > 1)) {
         if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))))
             You_cant(__sl73);
         else
@@ -676,15 +677,15 @@ export function dotwoweapon() {
         You(__sl96);
         set_twoweap(0);
         update_inventory();
-        return 0;
+        return NHM.ECMD_OK;
     }
     if (can_twoweapon()) {
         You(__sl97);
         set_twoweap(1);
         update_inventory();
-        return ((rng_log_enabled() ? (rng_log_set_caller(__sl98, 861, __sl99), rnd(20)) : rnd(20)) > (acurr(NHC.A_DEX))) ? 1 : 0;
+        return ((rng_log_enabled() ? (rng_log_set_caller(__sl98, 861, __sl99), rnd(20)) : rnd(20)) > (acurr(NHC.A_DEX))) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wield.c:873 */

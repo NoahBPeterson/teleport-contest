@@ -40,7 +40,19 @@ export class GameDisplay {
         this.messageWinFlags = 0;
 
         this.frames = 0;
+
+        // The screen string of the frame currently on the grid, or null when
+        // something has written to the grid outside applyFrame(). See
+        // applyFrame() / _dirty().
+        this._paintedScreen = null;
     }
+
+    /**
+     * Anything that writes cells outside applyFrame() invalidates the
+     * "this frame is already on screen" shortcut. Cheap to call, and calling it
+     * one time too many only costs a repaint.
+     */
+    _dirty() { this._paintedScreen = null; }
 
     // --- Delegate all Terminal properties and methods ---
 
@@ -58,19 +70,19 @@ export class GameDisplay {
     get flags() { return this.terminal.flags; }
     set flags(v) { this.terminal.flags = v; }
 
-    // Display methods
-    setCell(col, row, ch, color, attr) { return this.terminal.setCell(col, row, ch, color, attr); }
-    putstr(col, row, str, color, attr) { return this.terminal.putstr(col, row, str, color, attr); }
+    // Display methods. The grid-mutating ones drop the painted-frame marker.
+    setCell(col, row, ch, color, attr) { this._dirty(); return this.terminal.setCell(col, row, ch, color, attr); }
+    putstr(col, row, str, color, attr) { this._dirty(); return this.terminal.putstr(col, row, str, color, attr); }
     setCursor(col, row) { return this.terminal.setCursor(col, row); }
-    clearScreen() { return this.terminal.clearScreen(); }
-    clearRow(row) { return this.terminal.clearRow(row); }
-    scrollUp() { return this.terminal.scrollUp(); }
+    clearScreen() { this._dirty(); return this.terminal.clearScreen(); }
+    clearRow(row) { this._dirty(); return this.terminal.clearRow(row); }
+    scrollUp() { this._dirty(); return this.terminal.scrollUp(); }
     moveCursor(x, y) { return this.terminal.moveCursor(x, y); }
-    putChar(x, y, ch, attr) { return this.terminal.putChar(x, y, ch, attr); }
+    putChar(x, y, ch, attr) { this._dirty(); return this.terminal.putChar(x, y, ch, attr); }
     getChar(x, y) { return this.terminal.getChar(x, y); }
-    putString(str) { return this.terminal.putString(str); }
-    putCharAtCursor(ch) { return this.terminal.putCharAtCursor(ch); }
-    clearToEol() { return this.terminal.clearToEol(); }
+    putString(str) { this._dirty(); return this.terminal.putString(str); }
+    putCharAtCursor(ch) { this._dirty(); return this.terminal.putCharAtCursor(ch); }
+    clearToEol() { this._dirty(); return this.terminal.clearToEol(); }
     cursSet(visibility) { return this.terminal.cursSet(visibility); }
     flush() { return this.terminal.flush?.(); }
     getPreElement() { return this.terminal.getPreElement(); }
@@ -113,19 +125,42 @@ export class GameDisplay {
      * Paint one engine frame: `{ screen, cx, cy }` as produced by the C
      * shadow-buffer serializer. The decode is the judge's own
      * (frozen/screen-decode.mjs), so a cell that renders here is a cell that
-     * scores there. Terminal.setCell() already no-ops on unchanged cells, so
-     * a full 24x80 repaint only touches the DOM where the frame actually moved.
+     * scores there.
+     *
+     * Two levels of "don't do the work":
+     *
+     *  1. If the frame's screen string is byte-identical to the one already on
+     *     the grid, there is nothing to paint at all — skip the decode (1,920
+     *     freshly allocated cell objects) and the 1,920 setCell calls outright.
+     *     Most keystrokes in real play repaint an identical screen: prompts,
+     *     --More--, menu navigation, a walk into a wall.
+     *  2. Otherwise decode and compare cell by cell, calling setCell only where
+     *     the frame actually differs from what is on the grid. Terminal.setCell
+     *     no-ops on an unchanged cell anyway; doing the compare here also skips
+     *     the renderCell() lookup and the call itself.
+     *
+     * The shortcut is only valid while applyFrame is the sole writer, so every
+     * grid-mutating method on this class clears the marker (see _dirty()).
+     * Display only — none of this is on the scored path.
      */
     applyFrame(frame) {
         if (!frame || typeof frame.screen !== 'string') return;
-        const grid = decodeScreen(frame.screen);
         const t = this.terminal;
-        for (let r = 0; r < 24; r++) {
-            const row = grid[r];
-            for (let c = 0; c < 80; c++) {
-                const cell = row[c];
-                t.setCell(c, r, renderCell(cell), cell.color, cell.attr);
+        if (frame.screen !== this._paintedScreen) {
+            const grid = decodeScreen(frame.screen);
+            const tgrid = t.grid;
+            for (let r = 0; r < 24; r++) {
+                const row = grid[r];
+                const trow = tgrid[r];
+                for (let c = 0; c < 80; c++) {
+                    const cell = row[c];
+                    const ch = cell.decgfx ? renderCell(cell) : cell.ch;
+                    const cur = trow[c];
+                    if (cur.ch === ch && cur.color === cell.color && cur.attr === cell.attr) continue;
+                    t.setCell(c, r, ch, cell.color, cell.attr);
+                }
             }
+            this._paintedScreen = frame.screen;
         }
         if (typeof frame.cx === 'number') t.setCursor(frame.cx, frame.cy);
         this.frames++;

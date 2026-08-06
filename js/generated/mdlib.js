@@ -5,6 +5,7 @@
 
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { datamodel, eos, nh_snprintf } from './hacklib.js';
 import { dupstr } from './alloc.js';
 import { free_nomakedefs, populate_nomakedefs } from './date.js';
@@ -218,7 +219,7 @@ function make_version() {
 
 /** C ref: mdlib.c:300 — @param {CPtr} outbuf @param {CPtr} delim @returns {CPtr} */
 export function mdlib_version_string(outbuf, delim) {
-    void cptr.sprintf(outbuf, __sl37, 5, delim, 0, delim, 0);
+    void cptr.sprintf(outbuf, __sl37, NHM.VERSION_MAJOR, delim, NHM.VERSION_MINOR, delim, NHM.PATCHLEVEL);
     return outbuf;
 }
 
@@ -248,7 +249,7 @@ const save_bones_compat_buf = new Uint8Array(256);
 /** C ref: mdlib.c:393 */
 function build_savebones_compat_string() {
     void cptr.strcpy(cptr.decay(save_bones_compat_buf), __sl48);
-    void cptr.sprintf(eos(cptr.decay(save_bones_compat_buf)), __sl49, 5, 0, 0);
+    void cptr.sprintf(eos(cptr.decay(save_bones_compat_buf)), __sl49, NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL);
 }
 
 /** C ref: mdlib.c:417 — char *[26] */
@@ -348,7 +349,7 @@ function build_options() {
     let soundlibcnt;
     build_savebones_compat_string();
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
-    void cptr.sprintf(cptr.decay(optbuf), __sl77, cptr.decay(opt_indent), 5, 0, 0, __sl0);
+    void cptr.sprintf(cptr.decay(optbuf), __sl77, cptr.decay(opt_indent), NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL, __sl0);
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));
     void cptr.sprintf(cptr.decay(optbuf), __sl78);
     (void ((idxopttext < 60) ? (cptr.stPtr(cptr.add(opttext, idxopttext++, 8), dupstr(cptr.decay(optbuf)))) : null));

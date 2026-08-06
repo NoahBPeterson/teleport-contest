@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
 import { on_level } from './dungeon.js';
@@ -146,7 +147,7 @@ export function is_lava(x, y) {
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
-    if ((ltyp == NHC.LAVAPOOL || ltyp == NHC.LAVAWALL ? 1 : 0) || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & 28) == 4 ? 1 : 0) ? 1 : 0)
+    if ((ltyp == NHC.LAVAPOOL || ltyp == NHC.LAVAWALL ? 1 : 0) || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA ? 1 : 0) ? 1 : 0)
         return 1;
     return 0;
 }
@@ -165,7 +166,7 @@ export function is_ice(x, y) {
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
-    if (ltyp == NHC.ICE || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & 28) == 8 ? 1 : 0) ? 1 : 0)
+    if (ltyp == NHC.ICE || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_ICE ? 1 : 0) ? 1 : 0)
         return 1;
     return 0;
 }
@@ -176,19 +177,19 @@ export function is_moat(x, y) {
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
-    if (!(((cptr.ldI16(cptr.add((cptr.add(svd, 1828)), 2)) || cptr.ldI16((cptr.add(svd, 1828))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1828)) ? 1 : 0)) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & 28) == 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (!(((cptr.ldI16(cptr.add((cptr.add(svd, 1828)), 2)) || cptr.ldI16((cptr.add(svd, 1828))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1828)) ? 1 : 0)) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT ? 1 : 0) ? 1 : 0) ? 1 : 0)
         return 1;
     return 0;
 }
 
 /** C ref: dbridge.c:116 — @param {CInt} mask @returns {CInt} */
 export function db_under_typ(mask) {
-    switch (mask & 28) {
-        case 8:
+    switch (mask & NHM.DB_UNDER) {
+        case NHM.DB_ICE:
         return NHC.ICE;
-        case 4:
+        case NHM.DB_LAVA:
         return NHC.LAVAPOOL;
-        case 0:
+        case NHM.DB_MOAT:
         return NHC.MOAT;
         default:
         return NHC.STONE;
@@ -203,14 +204,14 @@ export function is_drawbridge_wall(x, y) {
     lev = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
     if (cptr.ld1s(cptr.add(lev, 4)) != NHC.DOOR && cptr.ld1s(cptr.add(lev, 4)) != NHC.DBWALL ? 1 : 0)
         return -1;
-    if ((isok(i16(((x + 1) | 0)), y) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8)) & 31) | 0) & 3) == 3 ? 1 : 0)
-        return 3;
-    if ((isok(i16(((x - 1) | 0)), y) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8)) & 31) | 0) & 3) == 2 ? 1 : 0)
-        return 2;
-    if ((isok(x, i16(((y - 1) | 0))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 8)) & 31) | 0) & 3) == 1 ? 1 : 0)
-        return 1;
-    if ((isok(x, i16(((y + 1) | 0))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 8)) & 31) | 0) & 3) == 0 ? 1 : 0)
-        return 0;
+    if ((isok(i16(((x + 1) | 0)), y) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x + 1) | 0, 756), y, 36), 8)) & 31) | 0) & NHM.DB_DIR) == NHM.DB_WEST ? 1 : 0)
+        return NHM.DB_WEST;
+    if ((isok(i16(((x - 1) | 0)), y) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), (x - 1) | 0, 756), y, 36), 8)) & 31) | 0) & NHM.DB_DIR) == NHM.DB_EAST ? 1 : 0)
+        return NHM.DB_EAST;
+    if ((isok(x, i16(((y - 1) | 0))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y - 1) | 0, 36), 8)) & 31) | 0) & NHM.DB_DIR) == NHM.DB_SOUTH ? 1 : 0)
+        return NHM.DB_SOUTH;
+    if ((isok(x, i16(((y + 1) | 0))) && ((cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_UP || (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 4))) == NHC.DRAWBRIDGE_DOWN ? 1 : 0) ? 1 : 0) && (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), (y + 1) | 0, 36), 8)) & 31) | 0) & NHM.DB_DIR) == NHM.DB_NORTH ? 1 : 0)
+        return NHM.DB_NORTH;
     return -1;
 }
 
@@ -227,16 +228,16 @@ export function find_drawbridge(x, y) {
     dir = is_drawbridge_wall(cptr.ldI16(x), cptr.ldI16(y));
     if (dir >= 0) {
         switch (dir) {
-            case 0:
+            case NHM.DB_NORTH:
             (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
             break;
-            case 1:
+            case NHM.DB_SOUTH:
             (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
             break;
-            case 2:
+            case NHM.DB_EAST:
             (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
             break;
-            case 3:
+            case NHM.DB_WEST:
             (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
             break;
         }
@@ -247,17 +248,17 @@ export function find_drawbridge(x, y) {
 
 /** C ref: dbridge.c:211 — @param {CPtr} x @param {CPtr} y */
 function get_wall_for_db(x, y) {
-    switch (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(x), 756), cptr.ldI16(y), 36), 8)) & 31) | 0) & 3) {
-        case 0:
+    switch (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(x), 756), cptr.ldI16(y), 36), 8)) & 31) | 0) & NHM.DB_DIR) {
+        case NHM.DB_NORTH:
         (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
         break;
-        case 1:
+        case NHM.DB_SOUTH:
         (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
         break;
-        case 2:
+        case NHM.DB_EAST:
         (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
         break;
-        case 3:
+        case NHM.DB_WEST:
         (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
         break;
     }
@@ -272,15 +273,15 @@ export function create_drawbridge(x, y, dir, flag) {
     x2 = x;
     y2 = y;
     switch (dir) {
-        case 0:
+        case NHM.DB_NORTH:
         horiz = 1;
         y2--;
         break;
-        case 1:
+        case NHM.DB_SOUTH:
         horiz = 1;
         y2++;
         break;
-        case 2:
+        case NHM.DB_EAST:
         horiz = 0;
         x2++;
         break;
@@ -288,7 +289,7 @@ export function create_drawbridge(x, y, dir, flag) {
         impossible(__sl0);
         // @FallThrough
         ;
-        case 3:
+        case NHM.DB_WEST:
         horiz = 0;
         x2--;
         break;
@@ -298,24 +299,24 @@ export function create_drawbridge(x, y, dir, flag) {
     if (flag) {
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), NHC.DRAWBRIDGE_DOWN);
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 4), NHC.DOOR);
-        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 8), 0);
+        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 8), NHM.D_NODOOR);
     } else {
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4), NHC.DRAWBRIDGE_UP);
         cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 4), NHC.DBWALL);
-        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 8), 8);
+        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 8), NHM.W_NONDIGGABLE);
     }
     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 12), (!horiz) >>> 0);
     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x2, 756), y2, 36), 12), horiz);
     cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), dir >>> 0);
     if (lava)
-        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | 4);
+        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8), cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8)) | NHM.DB_LAVA);
     return 1;
 }
 
 /** C ref: dbridge.c:286 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 function e_at(x, y) {
     let entitycnt;
-    for (entitycnt = 0; entitycnt < 2; entitycnt++)
+    for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++)
         if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(go, 8), entitycnt, 24), 8)) && cptr.ldI32(cptr.add(cptr.add(cptr.add(go, 8), entitycnt, 24), 16)) == x ? 1 : 0) && cptr.ldI32(cptr.add(cptr.add(cptr.add(go, 8), entitycnt, 24), 20)) == y ? 1 : 0)
             break;
     do {
@@ -325,7 +326,7 @@ function e_at(x, y) {
             cptr.stI32(cptr.add(iflags, 40), save_plnmsg);
         }
     } while (0);
-    return (entitycnt == 2) ? null : cptr.add(cptr.add(go, 8), entitycnt, 24);
+    return (entitycnt == NHM.ENTITIES) ? null : cptr.add(cptr.add(go, 8), entitycnt, 24);
 }
 
 /** C ref: dbridge.c:304 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CPtr} etmp */
@@ -405,14 +406,14 @@ function e_died(etmp, xkill_flags, how) {
         } else {
             let xy = cptr.alloc(4);
             if (!cptr.ld1s(cptr.add(cptr.add(svk, 16), 0, 1))) {
-                cptr.stI32(cptr.add(svk, 12), 0);
+                cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY_AN);
                 void cptr.strcpy(cptr.add(svk, 16), __sl6);
             }
             done(how);
             if (!e_survives_at(etmp, i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20))))) {
                 if (enexto(xy, i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20))), cptr.ldPtr(cptr.add(etmp, 8)))) {
                     pline(__sl7, (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16)) && !(cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24)) ? 1 : 0) ? 1 : 0) ? __sl8 : __sl9);
-                    teleds(cptr.ldI16(xy), cptr.ldI16(cptr.add(xy, 2)), 0);
+                    teleds(cptr.ldI16(xy), cptr.ldI16(cptr.add(xy, 2)), NHM.TELEDS_NO_FLAGS);
                 }
             }
         }
@@ -421,25 +422,25 @@ function e_died(etmp, xkill_flags, how) {
         let entitycnt;
         cptr.st1(cptr.add(cptr.add(svk, 16), 0, 1), 0);
         if (cptr.ld1s(cptr.add(svc, 77)))
-            monkilled(cptr.ldPtr(etmp), (((xkill_flags & 1) != 0) ? null : __sl10), (((xkill_flags & 2) != 0) ? 26 : 0));
+            monkilled(cptr.ldPtr(etmp), (((xkill_flags & NHM.XKILL_NOMSG) != 0) ? null : __sl10), (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS));
         else
             xkilled(cptr.ldPtr(etmp), xkill_flags);
         if (!(cptr.ldI32(cptr.add((cptr.ldPtr(etmp)), 52)) < 1)) {
             let seeit = (canseemon(cptr.ldPtr(etmp)) || sensemon(cptr.ldPtr(etmp)) ? 1 : 0);
             xkill_flags |= 5;
             if (cptr.ld1s(cptr.add(svc, 77)))
-                monkilled(cptr.ldPtr(etmp), __sl10, (((xkill_flags & 2) != 0) ? 26 : 0));
+                monkilled(cptr.ldPtr(etmp), __sl10, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS));
             else
                 xkilled(cptr.ldPtr(etmp), xkill_flags);
             if ((cptr.ldI32(cptr.add((cptr.ldPtr(etmp)), 52)) < 1)) {
                 if (seeit)
-                    pline(__sl11, mon_nam(cptr.ldPtr(etmp)), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(cptr.ldPtr(etmp), 2), 48), 8))));
+                    pline(__sl11, mon_nam(cptr.ldPtr(etmp)), (cptr.ldPtr(cptr.add(cptr.add(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), 48), 8))));
             } else {
                 ;
             }
         }
         cptr.stPtr(cptr.add(etmp, 8), null);
-        for (entitycnt = 0; entitycnt < 2; entitycnt++) {
+        for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++) {
             if (!cptr.eq(etmp, cptr.add(cptr.add(go, 8), entitycnt, 24)) && cptr.eq(cptr.ldPtr(etmp), cptr.ldPtr(cptr.add(cptr.add(go, 8), entitycnt, 24))) ? 1 : 0)
                 cptr.stPtr(cptr.add(cptr.add(cptr.add(go, 8), entitycnt, 24), 8), null);
         }
@@ -561,11 +562,11 @@ function do_entity(etmp) {
     } else {
         if (cptr.ld1s(cptr.add(crm, 4)) == NHC.DRAWBRIDGE_DOWN) {
             if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, 8)))) {
-                cptr.stI32(cptr.add(svk, 12), 2);
+                cptr.stI32(cptr.add(svk, 12), NHM.NO_KILLER_PREFIX);
                 void cptr.strcpy(cptr.add(svk, 16), __sl24);
             }
             pline(__sl25, E_phrase(etmp, __sl26));
-            e_died(etmp, 2 | (e_inview ? 0 : 1), NHC.CRUSHING);
+            e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);
             return;
         }
         must_jump = 1;
@@ -588,7 +589,7 @@ function do_entity(etmp) {
                     ;
                     You_hear(__sl29);
                 }
-                e_died(etmp, 2 | (e_inview ? 0 : 1), NHC.CRUSHING);
+                e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);
                 return;
             }
         } else {
@@ -715,9 +716,9 @@ function do_entity(etmp) {
                 pline(__sl48, E_phrase(etmp, __sl49));
         }
         if (!e_survives_at(etmp, i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20))))) {
-            cptr.stI32(cptr.add(svk, 12), 0);
+            cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, 16), __sl50);
-            e_died(etmp, 1, NHC.CRUSHING);
+            e_died(etmp, NHM.XKILL_NOMSG, NHC.CRUSHING);
             return;
         }
         do {
@@ -760,9 +761,9 @@ function do_entity(etmp) {
                 else
                     pline(__sl62, E_phrase(etmp, __sl56), lava ? hliquid(__sl60) : __sl61);
             }
-        cptr.stI32(cptr.add(svk, 12), 2);
+        cptr.stI32(cptr.add(svk, 12), NHM.NO_KILLER_PREFIX);
         void cptr.strcpy(cptr.add(svk, 16), __sl63);
-        e_died(etmp, 2 | (e_inview ? 0 : 1), is_pool(i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20)))) ? NHC.DROWNING : (is_lava(i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20)))) ? NHC.BURNING : NHC.CRUSHING));
+        e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), is_pool(i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20)))) ? NHC.DROWNING : (is_lava(i16(cptr.ldI32(cptr.add(etmp, 16))), i16(cptr.ldI32(cptr.add(etmp, 20)))) ? NHC.BURNING : NHC.CRUSHING));
         return;
     }
 }
@@ -788,7 +789,7 @@ export function close_drawbridge(x, y) {
     x2.v = x;
     y2.v = y;
     get_wall_for_db(x2, y2);
-    if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & 2) != 0) ? 1 : 0) {
+    if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & NHM.IN_SIGHT) != 0) ? 1 : 0) {
         You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16(cptr.add(u, 2)) == y ? 1 : 0) && !((cptr.ldI32(cptr.add(u, 1852)) & 1)) ? 1 : 0) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0) ? __sl65 : __sl66);
     } else {
         ;
@@ -797,17 +798,17 @@ export function close_drawbridge(x, y) {
     cptr.st1(cptr.add(lev1, 4), NHC.DRAWBRIDGE_UP);
     lev2 = cptr.add(cptr.add(cptr.add(svl, 1680), x2.v, 756), y2.v, 36);
     cptr.st1(cptr.add(lev2, 4), NHC.DBWALL);
-    switch (((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 3) {
-        case 0:
-        case 1:
+    switch (((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_DIR) {
+        case NHM.DB_NORTH:
+        case NHM.DB_SOUTH:
         cptr.stI32(cptr.add(lev2, 12), 1);
         break;
-        case 3:
-        case 2:
+        case NHM.DB_WEST:
+        case NHM.DB_EAST:
         cptr.stI32(cptr.add(lev2, 12), 0);
         break;
     }
-    cptr.stI32(cptr.add(lev2, 8), 8);
+    cptr.stI32(cptr.add(lev2, 8), NHM.W_NONDIGGABLE);
     set_entity(x, y, cptr.add(cptr.add(go, 8), 0, 24));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, 8), 1, 24));
     do_entity(cptr.add(cptr.add(go, 8), 0, 24));
@@ -846,7 +847,7 @@ export function open_drawbridge(x, y) {
     x2.v = x;
     y2.v = y;
     get_wall_for_db(x2, y2);
-    if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & 2) != 0) ? 1 : 0) {
+    if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & NHM.IN_SIGHT) != 0) ? 1 : 0) {
         You_see(__sl69, (dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2)))) ? __sl66 : __sl65);
     } else {
         ;
@@ -855,7 +856,7 @@ export function open_drawbridge(x, y) {
     cptr.st1(cptr.add(lev1, 4), NHC.DRAWBRIDGE_DOWN);
     lev2 = cptr.add(cptr.add(cptr.add(svl, 1680), x2.v, 756), y2.v, 36);
     cptr.st1(cptr.add(lev2, 4), NHC.DOOR);
-    cptr.stI32(cptr.add(lev2, 8), 0);
+    cptr.stI32(cptr.add(lev2, 8), NHM.D_NODOOR);
     set_entity(x, y, cptr.add(cptr.add(go, 8), 0, 24));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, 8), 1, 24));
     do_entity(cptr.add(cptr.add(go, 8), 0, 24));
@@ -896,17 +897,17 @@ export function destroy_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     lev2 = cptr.add(cptr.add(cptr.add(svl, 1680), x2.v, 756), y2.v, 36);
-    if ((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 28) == 0 || (((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 28) == 4 ? 1 : 0) {
+    if ((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT || (((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA ? 1 : 0) {
         let otmp2;
-        let lava = schar(((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 28) == 4));
+        let lava = schar(((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA));
         ;
         if (cptr.ld1s(cptr.add(lev1, 4)) == NHC.DRAWBRIDGE_UP) {
-            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & 2) != 0) || ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
+            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y2.v, 8)), x2.v)) & NHM.IN_SIGHT) != 0) || ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
                 pline_The(__sl71, lava ? hliquid(__sl60) : __sl61);
             else
                 You_hear(__sl72);
         } else {
-            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
+            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
                 pline_The(__sl73, lava ? hliquid(__sl60) : __sl61);
             else
                 You_hear(__sl72);
@@ -919,16 +920,16 @@ export function destroy_drawbridge(x, y) {
         }
     } else {
         ;
-        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
+        if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0)
             pline_The(__sl74);
         else
             You_hear(__sl75);
-        cptr.st1(cptr.add(lev1, 4), schar(((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 8) ? NHC.ICE : NHC.ROOM)));
-        cptr.stI32(cptr.add(lev1, 8), ((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & 8) ? 16 : 0) >>> 0);
+        cptr.st1(cptr.add(lev1, 4), schar(((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_ICE) ? NHC.ICE : NHC.ROOM)));
+        cptr.stI32(cptr.add(lev1, 8), ((((cptr.ldI32(cptr.add(lev1, 8)) & 31) | 0) & NHM.DB_ICE) ? NHM.ICED_MOAT : 0) >>> 0);
     }
     wake_nearto(x, y, 500);
     cptr.st1(cptr.add(lev2, 4), NHC.DOOR);
-    cptr.stI32(cptr.add(lev2, 8), 0);
+    cptr.stI32(cptr.add(lev2, 8), NHM.D_NODOOR);
     if ((t = t_at(x, y)) !== null)
         deltrap(t);
     if ((t = t_at(x2.v, y2.v)) !== null)
@@ -952,9 +953,9 @@ export function destroy_drawbridge(x, y) {
         if (!automiss(etmp2)) {
             if (e_inview)
                 pline(__sl77, E_phrase(etmp2, __sl26));
-            cptr.stI32(cptr.add(svk, 12), 0);
+            cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, 16), __sl78);
-            e_died(etmp2, 2 | (e_inview ? 0 : 1), NHC.CRUSHING);
+            e_died(etmp2, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);
         }
     }
     set_entity(x, y, etmp1);
@@ -992,9 +993,9 @@ export function destroy_drawbridge(x, y) {
                     } while (0);
                 }
             }
-            cptr.stI32(cptr.add(svk, 12), 0);
+            cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, 16), __sl85);
-            e_died(etmp1, 2 | (e_inview ? 0 : 1), NHC.CRUSHING);
+            e_died(etmp1, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);
             if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI32(cptr.add(etmp1, 16)), 756), cptr.ldI32(cptr.add(etmp1, 20)), 36), 4)) == NHC.MOAT)
                 do_entity(etmp1);
         }

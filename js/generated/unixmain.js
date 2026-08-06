@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { early_init, init_sound_disp_gamewindows, moveloop, newgame } from './allmain.js';
 import { rng_log_init } from './rnd.js';
 import { ARGV0, flags, ge, gh, gl, gp, gs, has_strong_rngseed, iflags, program_state, svh, svn, svp, u, ynchars } from './decl.js';
@@ -157,7 +158,7 @@ export function main(argc, argv) {
             cptr.stI32(cptr.add(program_state, 12), 0);
         }
         if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null ? 1 : 0) {
-            let fq_save = fqname(cptr.add(gs, 884), 2, 1);
+            let fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
             void chmod(fq_save, 0);
             void signal(2, done1);
             if (cptr.ld1s(cptr.add(iflags, 137))) {
@@ -176,7 +177,7 @@ export function main(argc, argv) {
                     if (yn_function(__sl8, cptr.decay(ynchars), 110, 1) == 110) {
                         void delete_savefile();
                     } else {
-                        void chmod(fq_save, 432);
+                        void chmod(fq_save, NHM.FCMASK);
                         nh_compress(fq_save);
                     }
                 }

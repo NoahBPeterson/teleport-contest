@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
 import { WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday } from './decl.js';
@@ -819,7 +820,7 @@ cptr.stPtr(cptr.add(shtypes, 0), __sl345);
 cptr.stPtr(cptr.add(shtypes, 8), null);
 cptr.st1(cptr.add(shtypes, 16), NHC.RANDOM_CLASS);
 cptr.stI32(cptr.add(shtypes, 20), 42);
-cptr.st1(cptr.add(shtypes, 24), 1);
+cptr.st1(cptr.add(shtypes, 24), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 28), 100);
 cptr.stI32(cptr.add(shtypes, 32), NHC.RANDOM_CLASS);
 cptr.stI32(cptr.add(shtypes, 36), 0);
@@ -837,7 +838,7 @@ cptr.stPtr(cptr.add(shtypes, 112), __sl346);
 cptr.stPtr(cptr.add(shtypes, 120), __sl347);
 cptr.st1(cptr.add(shtypes, 128), NHC.ARMOR_CLASS);
 cptr.stI32(cptr.add(shtypes, 132), 14);
-cptr.st1(cptr.add(shtypes, 136), 1);
+cptr.st1(cptr.add(shtypes, 136), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 140), 90);
 cptr.stI32(cptr.add(shtypes, 144), NHC.ARMOR_CLASS);
 cptr.stI32(cptr.add(shtypes, 148), 10);
@@ -855,7 +856,7 @@ cptr.stPtr(cptr.add(shtypes, 224), __sl348);
 cptr.stPtr(cptr.add(shtypes, 232), __sl349);
 cptr.st1(cptr.add(shtypes, 240), NHC.SCROLL_CLASS);
 cptr.stI32(cptr.add(shtypes, 244), 10);
-cptr.st1(cptr.add(shtypes, 248), 1);
+cptr.st1(cptr.add(shtypes, 248), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 252), 90);
 cptr.stI32(cptr.add(shtypes, 256), NHC.SCROLL_CLASS);
 cptr.stI32(cptr.add(shtypes, 260), 10);
@@ -873,7 +874,7 @@ cptr.stPtr(cptr.add(shtypes, 336), __sl350);
 cptr.stPtr(cptr.add(shtypes, 344), __sl351);
 cptr.st1(cptr.add(shtypes, 352), NHC.POTION_CLASS);
 cptr.stI32(cptr.add(shtypes, 356), 10);
-cptr.st1(cptr.add(shtypes, 360), 1);
+cptr.st1(cptr.add(shtypes, 360), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 364), 100);
 cptr.stI32(cptr.add(shtypes, 368), NHC.POTION_CLASS);
 cptr.stI32(cptr.add(shtypes, 372), 0);
@@ -891,7 +892,7 @@ cptr.stPtr(cptr.add(shtypes, 448), __sl352);
 cptr.stPtr(cptr.add(shtypes, 456), __sl353);
 cptr.st1(cptr.add(shtypes, 464), NHC.WEAPON_CLASS);
 cptr.stI32(cptr.add(shtypes, 468), 5);
-cptr.st1(cptr.add(shtypes, 472), 1);
+cptr.st1(cptr.add(shtypes, 472), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 476), 90);
 cptr.stI32(cptr.add(shtypes, 480), NHC.WEAPON_CLASS);
 cptr.stI32(cptr.add(shtypes, 484), 10);
@@ -909,7 +910,7 @@ cptr.stPtr(cptr.add(shtypes, 560), __sl354);
 cptr.stPtr(cptr.add(shtypes, 568), __sl355);
 cptr.st1(cptr.add(shtypes, 576), NHC.FOOD_CLASS);
 cptr.stI32(cptr.add(shtypes, 580), 5);
-cptr.st1(cptr.add(shtypes, 584), 1);
+cptr.st1(cptr.add(shtypes, 584), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 588), 83);
 cptr.stI32(cptr.add(shtypes, 592), NHC.FOOD_CLASS);
 cptr.stI32(cptr.add(shtypes, 596), 5);
@@ -927,7 +928,7 @@ cptr.stPtr(cptr.add(shtypes, 672), __sl356);
 cptr.stPtr(cptr.add(shtypes, 680), __sl357);
 cptr.st1(cptr.add(shtypes, 688), NHC.RING_CLASS);
 cptr.stI32(cptr.add(shtypes, 692), 3);
-cptr.st1(cptr.add(shtypes, 696), 1);
+cptr.st1(cptr.add(shtypes, 696), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 700), 85);
 cptr.stI32(cptr.add(shtypes, 704), NHC.RING_CLASS);
 cptr.stI32(cptr.add(shtypes, 708), 10);
@@ -945,7 +946,7 @@ cptr.stPtr(cptr.add(shtypes, 784), __sl358);
 cptr.stPtr(cptr.add(shtypes, 792), __sl359);
 cptr.st1(cptr.add(shtypes, 800), NHC.WAND_CLASS);
 cptr.stI32(cptr.add(shtypes, 804), 3);
-cptr.st1(cptr.add(shtypes, 808), 1);
+cptr.st1(cptr.add(shtypes, 808), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 812), 90);
 cptr.stI32(cptr.add(shtypes, 816), NHC.WAND_CLASS);
 cptr.stI32(cptr.add(shtypes, 820), 5);
@@ -959,7 +960,7 @@ cptr.stPtr(cptr.add(shtypes, 896), __sl360);
 cptr.stPtr(cptr.add(shtypes, 904), __sl361);
 cptr.st1(cptr.add(shtypes, 912), NHC.TOOL_CLASS);
 cptr.stI32(cptr.add(shtypes, 916), 3);
-cptr.st1(cptr.add(shtypes, 920), 1);
+cptr.st1(cptr.add(shtypes, 920), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 924), 100);
 cptr.stI32(cptr.add(shtypes, 928), NHC.TOOL_CLASS);
 cptr.stI32(cptr.add(shtypes, 932), 0);
@@ -977,7 +978,7 @@ cptr.stPtr(cptr.add(shtypes, 1008), __sl362);
 cptr.stPtr(cptr.add(shtypes, 1016), __sl363);
 cptr.st1(cptr.add(shtypes, 1024), NHC.SPBOOK_CLASS);
 cptr.stI32(cptr.add(shtypes, 1028), 3);
-cptr.st1(cptr.add(shtypes, 1032), 1);
+cptr.st1(cptr.add(shtypes, 1032), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 1036), 90);
 cptr.stI32(cptr.add(shtypes, 1040), NHC.SPBOOK_CLASS);
 cptr.stI32(cptr.add(shtypes, 1044), 10);
@@ -995,7 +996,7 @@ cptr.stPtr(cptr.add(shtypes, 1120), __sl364);
 cptr.stPtr(cptr.add(shtypes, 1128), __sl365);
 cptr.st1(cptr.add(shtypes, 1136), NHC.FOOD_CLASS);
 cptr.stI32(cptr.add(shtypes, 1140), 2);
-cptr.st1(cptr.add(shtypes, 1144), 1);
+cptr.st1(cptr.add(shtypes, 1144), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 1148), 70);
 cptr.stI32(cptr.add(shtypes, 1152), ((NHC.MAXOCLASSES + 1) | 0));
 cptr.stI32(cptr.add(shtypes, 1156), 20);
@@ -1013,7 +1014,7 @@ cptr.stPtr(cptr.add(shtypes, 1232), __sl366);
 cptr.stPtr(cptr.add(shtypes, 1240), __sl367);
 cptr.st1(cptr.add(shtypes, 1248), NHC.TOOL_CLASS);
 cptr.stI32(cptr.add(shtypes, 1252), 0);
-cptr.st1(cptr.add(shtypes, 1256), 1);
+cptr.st1(cptr.add(shtypes, 1256), NHM.D_SHOP);
 cptr.stI32(cptr.add(shtypes, 1260), 30);
 cptr.stI32(cptr.add(shtypes, 1264), -225);
 cptr.stI32(cptr.add(shtypes, 1268), 44);
@@ -1126,7 +1127,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
             cptr.stI32(cptr.add(svc, 620), 1);
         return;
     }
-    if ((((rng_log_enabled() ? (rng_log_set_caller(__sl369, 470, __sl372), rn2(100)) : rn2(100)) < depth(cptr.add(u, 24)) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx, 168), sy, 8)) !== null) ? 1 : 0) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null ? 1 : 0) && (mtmp = makemon(ptr, i16(sx), i16(sy), 0)) !== null ? 1 : 0) {
+    if ((((rng_log_enabled() ? (rng_log_set_caller(__sl369, 470, __sl372), rn2(100)) : rn2(100)) < depth(cptr.add(u, 24)) && !(cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx, 168), sy, 8)) !== null) ? 1 : 0) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null ? 1 : 0) && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null ? 1 : 0) {
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
         if (atype == ((NHC.MAXOCLASSES + 1) | 0))
@@ -1275,8 +1276,8 @@ function shkinit(shp, sroom) {
         return -1;
     }
     if ((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx.v, 168), sy.v, 8)) !== null))
-        void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx.v, 168), sy.v, 8))), 4);
-    if (!(shk = makemon(cptr.add(mons, NHC.PM_SHOPKEEPER, 96), sx.v, sy.v, 512)))
+        void rloc((cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), sx.v, 168), sy.v, 8))), NHM.RLOC_NOMSG);
+    if (!(shk = makemon(cptr.add(mons, NHC.PM_SHOPKEEPER, 96), sx.v, sy.v, NHM.MM_ESHK)))
         return -1;
     eshkp = (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add((shk), 312)), 24)));
     cptr.stI32(cptr.add(shk, 180), cptr.stI32(cptr.add(shk, 168), 1));
@@ -1331,17 +1332,17 @@ export function stock_room(shp_indx, sroom) {
         return;
     sx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), cptr.ldI32(cptr.add(sroom, 16)), 4));
     sy = cptr.ldI16(cptr.add(cptr.add(cptr.ldPtr(cptr.add(svd, 1928)), cptr.ldI32(cptr.add(sroom, 16)), 4), 2));
-    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) == 0) {
-        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8), 2);
+    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) == NHM.D_NODOOR) {
+        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8), NHM.D_ISOPEN);
         newsym(i16(sx), i16(sy));
     }
     if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 4)) == NHC.SDOOR) {
         cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36));
         newsym(i16(sx), i16(sy));
     }
-    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) & 16)
-        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8), 8);
-    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) == 8) {
+    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) & NHM.D_TRAPPED)
+        cptr.stI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8), NHM.D_LOCKED);
+    if (((cptr.ldI32(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8)) & 31) | 0) == NHM.D_LOCKED) {
         let m = sx;
         let n = sy;
         if (inside_shop(i16(((sx + 1) | 0)), i16(sy)))
@@ -1353,7 +1354,7 @@ export function stock_room(shp_indx, sroom) {
         else if (inside_shop(i16(sx), i16(((sy - 1) | 0))))
             n++;
         void cptr.sprintf(cptr.decay(buf), __sl385);
-        make_engr_at(i16(m), i16(n), cptr.decay(buf), null, 0n, 1);
+        make_engr_at(i16(m), i16(n), cptr.decay(buf), null, 0n, NHM.DUST);
         if (cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), m, 756), n, 36), 4)) != NHC.CORR && cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), m, 756), n, 36), 4)) != NHC.ROOM ? 1 : 0)
             cptr.st1(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), m, 756), n, 36), 4), schar(((Is_special(cptr.add(u, 24)) || cptr.ld1s(in_rooms(i16(m), i16(n), 0)) ? 1 : 0) ? NHC.ROOM : NHC.CORR)));
     }

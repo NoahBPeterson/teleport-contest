@@ -6,6 +6,7 @@
 import { i16, schar, u32div } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { acurr } from './attrib.js';
 import { WIN_STATUS, cg, disp, flags, gb, gc, gi, gm, gn, gs, gu, gv, gy, iflags, svc, svd, svl, svm, svp, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uleft, uright, uswapwep, uwep } from './decl.js';
 import { nul_glyphinfo, suppress_map_output } from './display.js';
@@ -538,7 +539,7 @@ export function do_statusline1() {
     void cptr.strcpy(cptr.decay(__static_do_statusline1_newbot1), svp);
     if (97 <= cptr.ld1s(cptr.add(cptr.decay(__static_do_statusline1_newbot1), 0, 1)) && cptr.ld1s(cptr.add(cptr.decay(__static_do_statusline1_newbot1), 0, 1)) <= 122 ? 1 : 0)
         cptr.st1(cptr.add(cptr.decay(__static_do_statusline1_newbot1), 0, 1), cptr.ld1s(cptr.add(cptr.decay(__static_do_statusline1_newbot1), 0, 1)) + -32);
-    cptr.st1(cptr.add(cptr.decay(__static_do_statusline1_newbot1), 16, 1), 0);
+    cptr.st1(cptr.add(cptr.decay(__static_do_statusline1_newbot1), NHM.BOTL_NSIZ, 1), 0);
     void cptr.sprintf(nb = eos(cptr.decay(__static_do_statusline1_newbot1)), __sl10);
     if ((cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804)))) {
         let mbot = new Uint8Array(256);
@@ -559,7 +560,7 @@ export function do_statusline1() {
     if (((i - j) | 0) > 0)
         void cptr.sprintf(nb = eos(nb), __sl12, (i - j) | 0, __sl13);
     void cptr.sprintf(nb = eos(nb), __sl14, get_strength_str(), (acurr(NHC.A_DEX)), (acurr(NHC.A_CON)), (acurr(NHC.A_INT)), (acurr(NHC.A_WIS)), (acurr(NHC.A_CHA)));
-    void cptr.sprintf(nb = eos(nb), __sl15, (cptr.ld1s(cptr.add(u, 2172)) == -1) ? __sl16 : ((cptr.ld1s(cptr.add(u, 2172)) == 0) ? __sl17 : __sl18));
+    void cptr.sprintf(nb = eos(nb), __sl15, (cptr.ld1s(cptr.add(u, 2172)) == -1) ? __sl16 : ((cptr.ld1s(cptr.add(u, 2172)) == NHM.A_NEUTRAL) ? __sl17 : __sl18));
     return cptr.decay(__static_do_statusline1_newbot1);
 }
 
@@ -620,9 +621,9 @@ export function do_statusline2() {
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STRANGLED, 24), 16)))
         void cptr.strcpy(nb = eos(nb), __sl29);
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SICK, 24), 16))) {
-        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 1)
+        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & NHM.SICK_VOMITABLE)
             void cptr.strcpy(nb = eos(nb), __sl30);
-        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 2)
+        if (((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & NHM.SICK_NONVOMITABLE)
             void cptr.strcpy(nb = eos(nb), __sl31);
     }
     if (cptr.ldI32(cptr.add(u, 108)) != NHC.NOT_HUNGRY)
@@ -655,7 +656,7 @@ export function do_statusline2() {
         nh_snprintf(__sl41, 229, cptr.decay(__static_do_statusline2_newbot2), 256n, __sl42, cptr.decay(__static_do_statusline2_dloc), cptr.decay(__static_do_statusline2_hlth), cptr.decay(__static_do_statusline2_expr), cptr.decay(__static_do_statusline2_tmmv), cptr.decay(__static_do_statusline2_cond), cptr.decay(__static_do_statusline2_vers));
     } else {
         if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, dln + 1n) + hln) + 1n) + xln) + 1n) + tln) + 1n) + cln) + vrn) > 200n) {
-            panic(__sl43, Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, dln + 1n) + hln) + 1n) + xln) + 1n) + tln) + 1n) + cln) + vrn)))), 200);
+            panic(__sl43, Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, dln + 1n) + hln) + 1n) + xln) + 1n) + tln) + 1n) + cln) + vrn)))), NHM.MAXCO);
         } else if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln) + 1n) + xln) + 1n) + cln) <= 80n) {
             nh_snprintf(__sl41, 238, cptr.decay(__static_do_statusline2_newbot2), 256n, __sl42, cptr.decay(__static_do_statusline2_dloc), cptr.decay(__static_do_statusline2_hlth), cptr.decay(__static_do_statusline2_expr), cptr.decay(__static_do_statusline2_cond), cptr.decay(__static_do_statusline2_tmmv), cptr.decay(__static_do_statusline2_vers));
         } else if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln) + 1n) + cln) <= 80n) {
@@ -900,7 +901,7 @@ cptr.stI32(cptr.add(initblstats, 28), NHC.ANY_STR);
 cptr.stPtr(cptr.add(initblstats, 32), null);
 cptr.stPtr(cptr.add(initblstats, 40), null);
 cptr.stPtr(cptr.add(initblstats, 48), null);
-cptr.stI32(cptr.add(initblstats, 56), 80);
+cptr.stI32(cptr.add(initblstats, 56), NHM.MAXVALWIDTH);
 cptr.stI32(cptr.add(initblstats, 60), -1);
 cptr.stI32(cptr.add(initblstats, 64), NHC.BL_TITLE);
 cptr.stPtr(cptr.add(initblstats, 72), null);
@@ -1200,7 +1201,7 @@ cptr.stI32(cptr.add(initblstats, 1788), NHC.ANY_STR);
 cptr.stPtr(cptr.add(initblstats, 1792), null);
 cptr.stPtr(cptr.add(initblstats, 1800), null);
 cptr.stPtr(cptr.add(initblstats, 1808), null);
-cptr.stI32(cptr.add(initblstats, 1816), 80);
+cptr.stI32(cptr.add(initblstats, 1816), NHM.MAXVALWIDTH);
 cptr.stI32(cptr.add(initblstats, 1820), -1);
 cptr.stI32(cptr.add(initblstats, 1824), NHC.BL_LEVELDESC);
 cptr.stPtr(cptr.add(initblstats, 1832), null);
@@ -1245,7 +1246,7 @@ cptr.stI32(cptr.add(initblstats, 2052), NHC.ANY_STR);
 cptr.stPtr(cptr.add(initblstats, 2056), null);
 cptr.stPtr(cptr.add(initblstats, 2064), null);
 cptr.stPtr(cptr.add(initblstats, 2072), null);
-cptr.stI32(cptr.add(initblstats, 2080), 80);
+cptr.stI32(cptr.add(initblstats, 2080), NHM.MAXVALWIDTH);
 cptr.stI32(cptr.add(initblstats, 2084), -1);
 cptr.stI32(cptr.add(initblstats, 2088), NHC.BL_VERS);
 cptr.stPtr(cptr.add(initblstats, 2096), null);
@@ -1766,7 +1767,7 @@ function bot_via_windowport() {
     i = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 6n) + cptr.strlen(titl)) - 1n))));
     if (i > 30) {
         i = (30 - Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 6n + cptr.strlen(titl)) - 1n))))) | 0;
-        cptr.st1(cptr.add(nb, ((i) > 16 ? (i) : 16)), 0);
+        cptr.st1(cptr.add(nb, ((i) > NHM.BOTL_NSIZ ? (i) : NHM.BOTL_NSIZ)), 0);
     }
     void cptr.strcpy(nb = eos(nb), __sl10);
     void cptr.strcpy(nb = eos(nb), titl);
@@ -1785,7 +1786,7 @@ function bot_via_windowport() {
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_IN, 88), 32), (acurr(NHC.A_INT)));
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_WI, 88), 32), (acurr(NHC.A_WIS)));
     cptr.stI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_CH, 88), 32), (acurr(NHC.A_CHA)));
-    void cptr.strcpy(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ALIGN, 88), 48)), (cptr.ld1s(cptr.add(u, 2172)) == -1) ? __sl273 : ((cptr.ld1s(cptr.add(u, 2172)) == 0) ? __sl274 : __sl275));
+    void cptr.strcpy(cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_ALIGN, 88), 48)), (cptr.ld1s(cptr.add(u, 2172)) == -1) ? __sl273 : ((cptr.ld1s(cptr.add(u, 2172)) == NHM.A_NEUTRAL) ? __sl274 : __sl275));
     cptr.stI64(cptr.add(cptr.add(cptr.add(gb, idx, 2376), NHC.BL_SCORE, 88), 32), 0n);
     i = (cptr.ldI32(cptr.add(u, 1808)) != cptr.ldI32(cptr.add(u, 1804))) ? cptr.ldI32(cptr.add(u, 1812)) : cptr.ldI32(cptr.add(u, 2196));
     if (i < 0)
@@ -1831,9 +1832,9 @@ function bot_via_windowport() {
     cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_foodpois, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_termill, 24), 22), 0));
     if (cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.SICK, 24), 16))) {
         if (cptr.ld1s(cptr.add(cptr.add(condtests, NHC.bl_foodpois, 24), 20)))
-            cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_foodpois, 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 1) != 0)));
+            cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_foodpois, 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)));
         if (cptr.ld1s(cptr.add(cptr.add(condtests, NHC.bl_termill, 24), 20)))
-            cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_termill, 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & 2) != 0)));
+            cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_termill, 24), 22), schar(((((cptr.ldI32(cptr.add(u, 1772)) & 3) | 0) & NHM.SICK_NONVOMITABLE) != 0)));
     }
     cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_inlava, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_tethered, 24), 22), cptr.st1(cptr.add(cptr.add(condtests, NHC.bl_trapped, 24), 22), 0)));
     if (cptr.ldI32(cptr.add(u, 60))) {
@@ -1967,7 +1968,7 @@ function stat_update_time() {
     cptr.st1(cptr.add(gv, fld, 1), 0);
     eval_notify_windowport_field(fld, gv, idx);
     if ((cptr.ldU64(cptr.add(windowprocs, 24)) & 128n) != 0n)
-        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_FLUSH, null, 0, 0, 8, null);
+        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_FLUSH, null, 0, 0, NHM.NO_COLOR, null);
     return;
 }
 
@@ -2044,19 +2045,19 @@ export function cond_menu() {
     let picks = cptr.box(null);
     let mbuf = new Uint8Array(128);
     let showmenu = 1;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     let changed = 0;
     do {
         for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
             cptr.stI32(cptr.add(sequence, i, 4), i);
         }
         nh_deterministic_qsort((sequence), 30n, 4n, ((cptr.ldI32(cptr.add(gc, 208))) ? cond_cmp : menualpha_cmp));
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, 1);
         void cptr.sprintf(cptr.decay(mbuf), __sl279, cptr.ldPtr(cptr.add(__static_cond_menu_menutitle, cptr.ldI32(cptr.add(gc, 208)), 8)), cptr.ldPtr(cptr.add(__static_cond_menu_menutitle, (1 - cptr.ldI32(cptr.add(gc, 208))) | 0, 8)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 83, 0, 0, clr, cptr.decay(mbuf), 2);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 83, 0, NHM.ATR_NONE, clr, cptr.decay(mbuf), NHM.MENU_ITEMFLAGS_SKIPINVERT);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         void cptr.sprintf(cptr.decay(mbuf), __sl280, cptr.ldPtr(cptr.add(__static_cond_menu_menutitle, cptr.ldI32(cptr.add(gc, 208)), 8)));
         add_menu_heading(tmpwin, cptr.decay(mbuf));
@@ -2066,10 +2067,10 @@ export function cond_menu() {
             cptr.memcpy(any, cptr.add(cg, 536), 8);
             cptr.stI32(any, (idx + 2) | 0);
             cptr.st1(cptr.add(cptr.add(condtests, idx, 24), 21), 0);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(mbuf), cptr.ld1s(cptr.add(cptr.add(condtests, idx, 24), 20)) ? 1 : 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mbuf), cptr.ld1s(cptr.add(cptr.add(condtests, idx, 24), 20)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl282);
-        res = select_menu(tmpwin, 2, picks);
+        res = select_menu(tmpwin, NHM.PICK_ANY, picks);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
         showmenu = 0;
         if (res > 0) {
@@ -2116,7 +2117,7 @@ let __static_eval_notify_windowport_field_oldgoldsym = 0; /** C ref: botl.c:1499
 function eval_notify_windowport_field(fld, valsetlist, idx) {
     let pc;
     let chg;
-    let color = cptr.box(8);
+    let color = cptr.box(NHM.NO_COLOR);
     let anytype;
     let updated = 0;
     let reset;
@@ -2126,7 +2127,7 @@ function eval_notify_windowport_field(fld, valsetlist, idx) {
     anytype = cptr.ldI32(cptr.add(cptr.add(cptr.add(gb, idx, 2376), fld, 88), 28));
     curr = cptr.add(cptr.add(gb, idx, 2376), fld, 88);
     prev = cptr.add(cptr.add(gb, (1 - idx) | 0, 2376), fld, 88);
-    color.v = 8;
+    color.v = NHM.NO_COLOR;
     chg = cptr.ld1s(gu) ? 0 : compare_blstats(prev, curr);
     if (((((chg || cptr.ld1s(gu) ? 1 : 0) || fld == NHC.BL_XP ? 1 : 0) && cptr.ld1s(cptr.add(curr, 25)) ? 1 : 0) && cptr.ldPtr(cptr.add(curr, 80)) ? 1 : 0) || (fld == NHC.BL_HP && cptr.ld1s(cptr.add(iflags, 372)) ? 1 : 0) ? 1 : 0) {
         fldmax = cptr.ldI32(cptr.add(curr, 60));
@@ -2161,7 +2162,7 @@ function eval_notify_windowport_field(fld, valsetlist, idx) {
                 cptr.stPtr(cptr.add(curr, 72), get_hilite(idx, fld, cptr.add(curr, 32), chg, pc, color));
                 cptr.stPtr(cptr.add(prev, 72), cptr.ldPtr(cptr.add(curr, 72)));
                 if (chg == 2) {
-                    color.v = 8;
+                    color.v = NHM.NO_COLOR;
                     chg = 0;
                 }
             }
@@ -2189,9 +2190,9 @@ function evaluate_and_notify_windowport(valsetlist, idx) {
             updated++;
     }
     if (cptr.ld1s(cptr.add(disp, 1)) && (cptr.ldU64(cptr.add(windowprocs, 24)) & 256n) != 0n ? 1 : 0)
-        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_RESET, null, 0, 0, 8, null);
+        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_RESET, null, 0, 0, NHM.NO_COLOR, null);
     else if ((updated || cptr.ld1s(cptr.add(disp, 1)) ? 1 : 0) && (cptr.ldU64(cptr.add(windowprocs, 24)) & 128n) != 0n ? 1 : 0)
-        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_FLUSH, null, 0, 0, 8, null);
+        (cptr.ldPtr(cptr.add(windowprocs, 384)))(NHC.BL_FLUSH, null, 0, 0, NHM.NO_COLOR, null);
     cptr.st1(disp, cptr.st1(cptr.add(disp, 1), cptr.st1(cptr.add(disp, 2), 0)));
     cptr.st1(gu, 0);
 }
@@ -2640,7 +2641,7 @@ function fldname_to_bl_indx(name) {
 function hilite_reset_needed(bl_p, augmented_time) {
     if (cptr.ldI64(cptr.add(gm, 8)))
         return 0;
-    if (!((cptr.ldPtr(cptr.add(bl_p, 72))) && cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(bl_p, 72))), 24)) == 102 ? 1 : 0))
+    if (!((cptr.ldPtr(cptr.add(bl_p, 72))) && cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(bl_p, 72))), 24)) == NHM.BL_TH_UPDOWN ? 1 : 0))
         return 0;
     if (cptr.ldI64(cptr.add(bl_p, 16)) == 0n || cptr.ldI64(cptr.add(bl_p, 16)) >= augmented_time ? 1 : 0)
         return 0;
@@ -2659,7 +2660,7 @@ export function status_eval_next_unhilite() {
         curr = cptr.add(cptr.add(gb, 0, 2376), i, 88);
         if (cptr.ld1s(cptr.add(curr, 24))) {
             let prev = cptr.add(cptr.add(gb, 1, 2376), i, 88);
-            if (((cptr.ldPtr(cptr.add(curr, 72))) && cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(curr, 72))), 24)) == 102 ? 1 : 0))
+            if (((cptr.ldPtr(cptr.add(curr, 72))) && cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(curr, 72))), 24)) == NHM.BL_TH_UPDOWN ? 1 : 0))
                 cptr.stI64(cptr.add(curr, 16), (BigInt.asIntN(64, cptr.ldI64(cptr.add(gb, 4760)) + cptr.ldI64(cptr.add(iflags, 152)))));
             else
                 cptr.stI64(cptr.add(curr, 16), 0n);
@@ -2709,7 +2710,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
         let max_pc = -1;
         let min_pc = 101;
         let max_ival = -32767;
-        let min_ival = 32767;
+        let min_ival = NHM.LARGEST_INT;
         let max_lval = -9223372036854775807n;
         let min_lval = 9223372036854775807n;
         let exactmatch = 0;
@@ -2719,14 +2720,14 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
         let crit_hp = 0;
         for (hl = cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, 0, 2376), fldidx, 88), 80)); hl; hl = cptr.ldPtr(cptr.add(hl, 120))) {
             dt = cptr.ldI32(cptr.add(cptr.add(initblstats, fldidx, 88), 28));
-            if (crit_hp && cptr.ldI32(cptr.add(hl, 24)) != 106 ? 1 : 0)
+            if (crit_hp && cptr.ldI32(cptr.add(hl, 24)) != NHM.BL_TH_CRITICALHP ? 1 : 0)
                 continue;
-            if ((updown || changed ? 1 : 0) && cptr.ldI32(cptr.add(hl, 24)) != 102 ? 1 : 0)
+            if ((updown || changed ? 1 : 0) && cptr.ldI32(cptr.add(hl, 24)) != NHM.BL_TH_UPDOWN ? 1 : 0)
                 continue;
-            if (perc_or_abs && cptr.ldI32(cptr.add(hl, 24)) == 105 ? 1 : 0)
+            if (perc_or_abs && cptr.ldI32(cptr.add(hl, 24)) == NHM.BL_TH_ALWAYS_HILITE ? 1 : 0)
                 continue;
             switch (cptr.ldI32(cptr.add(hl, 24))) {
-                case 100:
+                case NHM.BL_TH_VAL_PERCENTAGE:
                 if (cptr.ldI32(cptr.add(hl, 108)) == NHC.EQ_VALUE && pc == cptr.ldI32(cptr.add(hl, 16)) ? 1 : 0) {
                     rule = hl;
                     min_pc = (max_pc = cptr.ldI32(cptr.add(hl, 16)));
@@ -2751,7 +2752,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                     perc_or_abs = 1;
                 }
                 break;
-                case 102:
+                case NHM.BL_TH_UPDOWN:
                 if (chg < 0 && cptr.ldI32(cptr.add(hl, 108)) == NHC.LT_VALUE ? 1 : 0) {
                     rule = hl;
                     updown = 1;
@@ -2763,7 +2764,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                     changed = 1;
                 }
                 break;
-                case 101:
+                case NHM.BL_TH_VAL_ABSOLUTE:
                 if (dt == NHC.ANY_INT) {
                     if (cptr.ldI32(cptr.add(hl, 108)) == NHC.EQ_VALUE && cptr.ldI32(cptr.add(hl, 16)) == cptr.ldI32(value) ? 1 : 0) {
                         rule = hl;
@@ -2814,7 +2815,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                     }
                 }
                 break;
-                case 104:
+                case NHM.BL_TH_TEXTMATCH:
                 txtstr = cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, idx, 2376), fldidx, 88), 48));
                 if (fldidx == NHC.BL_TITLE)
                     txtstr = cptr.add(txtstr, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(svp) + 6n) - 1n));
@@ -2829,24 +2830,24 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                     }
                 }
                 break;
-                case 105:
+                case NHM.BL_TH_ALWAYS_HILITE:
                 rule = hl;
                 break;
-                case 106:
+                case NHM.BL_TH_CRITICALHP:
                 if (fldidx == NHC.BL_HP && critically_low_hp(0) ? 1 : 0) {
                     rule = hl;
                     crit_hp = 1;
                     updown = (changed = (perc_or_abs = 0));
                 }
                 break;
-                case 0:
+                case NHM.BL_TH_NONE:
                 break;
                 default:
                 break;
             }
         }
     }
-    cptr.stI32(colorptr, rule ? cptr.ldI32(cptr.add(rule, 112)) : 8);
+    cptr.stI32(colorptr, rule ? cptr.ldI32(cptr.add(rule, 112)) : NHM.NO_COLOR);
     return rule;
 }
 
@@ -2998,18 +2999,18 @@ function query_arrayvalue(querystr, arr, arrmin, arrmax) {
     let any = cptr.alloc(8);
     let picks = cptr.box(null);
     let adj = (arrmin > 0) ? 1 : arrmax;
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     for (i = arrmin; i < arrmax; i++) {
         if (!cptr.ldPtr(cptr.add(arr, i, 8)))
             continue;
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, (i + adj) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.ldPtr(cptr.add(arr, i, 8)), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtr(cptr.add(arr, i, 8)), NHM.MENU_ITEMFLAGS_NONE);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, querystr);
-    res = select_menu(tmpwin, 1, picks);
+    res = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (res > 0) {
         ret = (cptr.ldI32(picks.v) - adj) | 0;
@@ -3156,7 +3157,7 @@ function parse_status_hl2(s, from_configfile) {
             dt = (percent ? NHC.ANY_INT : cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 28))) | 0;
             void s_to_anything(cptr.add(hilite, 16), tmp, dt);
             op = grt ? __sl335 : (gte ? __sl336 : (lt ? __sl337 : (le ? __sl338 : __sl339)));
-            if (dt == NHC.ANY_INT && (cptr.ldI32(cptr.add(hilite, 16)) < ((fld == NHC.BL_AC) ? -128 : (grt ? -1 : (lt ? 1 : 0))) || cptr.ldI32(cptr.add(hilite, 16)) > (percent ? (lt ? 101 : 100) : 32767) ? 1 : 0) ? 1 : 0) {
+            if (dt == NHC.ANY_INT && (cptr.ldI32(cptr.add(hilite, 16)) < ((fld == NHC.BL_AC) ? -128 : (grt ? -1 : (lt ? 1 : 0))) || cptr.ldI32(cptr.add(hilite, 16)) > (percent ? (lt ? 101 : 100) : NHM.LARGEST_INT) ? 1 : 0) ? 1 : 0) {
                 config_error_add(__sl340, cptr.decay(threshold_value), op, cptr.ldI32(cptr.add(hilite, 16)), percent ? __sl341 : __sl0, cptr.decay(is_out_of_range));
                 return 0;
             } else if (dt == NHC.ANY_LONG && cptr.ldI64(cptr.add(hilite, 16)) < (grt ? -1n : (lt ? 1n : 0n)) ? 1 : 0) {
@@ -3211,23 +3212,23 @@ function parse_status_hl2(s, from_configfile) {
         disp_attrib = NHC.HL_UNDEF;
         for (i = 0; i < sf; ++i) {
             let a = match_str2attr(cptr.ldPtr(cptr.add(subfields.v, i, 8)), 0);
-            if (a == 1)
+            if (a == NHM.ATR_BOLD)
                 disp_attrib |= NHC.HL_BOLD;
-            else if (a == 2)
+            else if (a == NHM.ATR_DIM)
                 disp_attrib |= NHC.HL_DIM;
-            else if (a == 3)
+            else if (a == NHM.ATR_ITALIC)
                 disp_attrib |= NHC.HL_ITALIC;
-            else if (a == 4)
+            else if (a == NHM.ATR_ULINE)
                 disp_attrib |= NHC.HL_ULINE;
-            else if (a == 5)
+            else if (a == NHM.ATR_BLINK)
                 disp_attrib |= NHC.HL_BLINK;
-            else if (a == 7)
+            else if (a == NHM.ATR_INVERSE)
                 disp_attrib |= NHC.HL_INVERSE;
-            else if (a == 0)
+            else if (a == NHM.ATR_NONE)
                 disp_attrib = NHC.HL_NONE;
             else {
                 let c = match_str2clr(cptr.ldPtr(cptr.add(subfields.v, i, 8)), 0);
-                if (c >= 16 || coloridx != -1 ? 1 : 0) {
+                if (c >= NHM.CLR_MAX || coloridx != -1 ? 1 : 0) {
                     config_error_add(__sl348, c, coloridx);
                     return 0;
                 }
@@ -3235,26 +3236,26 @@ function parse_status_hl2(s, from_configfile) {
             }
         }
         if (coloridx == -1)
-            coloridx = 8;
+            coloridx = NHM.NO_COLOR;
         cptr.stI32(cptr.add(hilite, 112), coloridx | (disp_attrib << 8));
         if (always)
-            cptr.stI32(cptr.add(hilite, 24), 105);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_ALWAYS_HILITE);
         else if (percent)
-            cptr.stI32(cptr.add(hilite, 24), 100);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_VAL_PERCENTAGE);
         else if (changed)
-            cptr.stI32(cptr.add(hilite, 24), 102);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_UPDOWN);
         else if (numeric)
-            cptr.stI32(cptr.add(hilite, 24), 101);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_VAL_ABSOLUTE);
         else if (txtval)
-            cptr.stI32(cptr.add(hilite, 24), 104);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_TEXTMATCH);
         else if (cptr.ldPtr(cptr.add(hilite, 16)))
-            cptr.stI32(cptr.add(hilite, 24), 101);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_VAL_ABSOLUTE);
         else if (criticalhp)
-            cptr.stI32(cptr.add(hilite, 24), 106);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_CRITICALHP);
         else
-            cptr.stI32(cptr.add(hilite, 24), 0);
+            cptr.stI32(cptr.add(hilite, 24), NHM.BL_TH_NONE);
         cptr.stI32(cptr.add(hilite, 8), dt);
-        if (cptr.ldI32(cptr.add(hilite, 24)) == 104 && txt ? 1 : 0) {
+        if (cptr.ldI32(cptr.add(hilite, 24)) == NHM.BL_TH_TEXTMATCH && txt ? 1 : 0) {
             void __builtin___strncpy_chk(cptr.add(hilite, 28), txt, 80n, __builtin_object_size(cptr.add(hilite, 28), 1));
             cptr.st1(cptr.add(cptr.add(hilite, 28), 79n, 1), 0);
             void trimspaces(cptr.add(hilite, 28));
@@ -3274,16 +3275,16 @@ function query_conditions() {
     let tmpwin;
     let any = cptr.alloc(8);
     let picks = cptr.box(null);
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     for (i = 0; i < 30; i++) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stU64(any, BigInt.asUintN(64, cptr.ldI64(cptr.add(cptr.add(conditions, i, 48), 8))));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.ldPtr(cptr.add(cptr.add(cptr.add(conditions, i, 48), 24), 0, 8)), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtr(cptr.add(cptr.add(cptr.add(conditions, i, 48), 24), 0, 8)), NHM.MENU_ITEMFLAGS_NONE);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl358);
-    res = select_menu(tmpwin, 2, picks);
+    res = select_menu(tmpwin, NHM.PICK_ANY, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (res > 0) {
         for (i = 0; i < res; i++)
@@ -3369,7 +3370,7 @@ function str2conditionbitmask(str) {
 /** C ref: botl.c:3233 — @param {CPtr} s @param {CInt} sidx @returns {CInt} */
 function parse_condition(s, sidx) {
     let i;
-    let coloridx = 8;
+    let coloridx = NHM.NO_COLOR;
     let tmp;
     let how;
     let conditions_bitmask = 0n;
@@ -3400,19 +3401,19 @@ function parse_condition(s, sidx) {
         sf = splitsubfields(cptr.decay(buf), subfields, 0);
         for (i = 0; i < sf; ++i) {
             let a = match_str2attr(cptr.ldPtr(cptr.add(subfields.v, i, 8)), 0);
-            if (a == 1)
+            if (a == NHM.ATR_BOLD)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 18, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 18, 8)) | conditions_bitmask);
-            else if (a == 2)
+            else if (a == NHM.ATR_DIM)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 19, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 19, 8)) | conditions_bitmask);
-            else if (a == 3)
+            else if (a == NHM.ATR_ITALIC)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 20, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 20, 8)) | conditions_bitmask);
-            else if (a == 4)
+            else if (a == NHM.ATR_ULINE)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 21, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 21, 8)) | conditions_bitmask);
-            else if (a == 5)
+            else if (a == NHM.ATR_BLINK)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 22, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 22, 8)) | conditions_bitmask);
-            else if (a == 7)
+            else if (a == NHM.ATR_INVERSE)
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 23, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 23, 8)) | conditions_bitmask);
-            else if (a == 0) {
+            else if (a == NHM.ATR_NONE) {
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 18, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 18, 8)) & BigInt.asUintN(64, ~conditions_bitmask));
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 19, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 19, 8)) & BigInt.asUintN(64, ~conditions_bitmask));
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 20, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 20, 8)) & BigInt.asUintN(64, ~conditions_bitmask));
@@ -3421,7 +3422,7 @@ function parse_condition(s, sidx) {
                 cptr.stU64(cptr.add(cptr.add(gc, 16), 23, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 23, 8)) & BigInt.asUintN(64, ~conditions_bitmask));
             } else {
                 let k = match_str2clr(cptr.ldPtr(cptr.add(subfields.v, i, 8)), 0);
-                if (k >= 16) {
+                if (k >= NHM.CLR_MAX) {
                     config_error_add(__sl364, k);
                     return 0;
                 }
@@ -3553,10 +3554,10 @@ function status_hilite_linestr_gather_conditions() {
     let cond_maps = cptr.alloc(30 * 16);
     void __builtin___memset_chk(cond_maps, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(30)) * 16n), __builtin_object_size(cond_maps, 0));
     for (i = 0; i < 30; i++) {
-        let clr = cptr.box(8);
+        let clr = cptr.box(NHM.NO_COLOR);
         let atr = cptr.box(NHC.HL_NONE);
         let j;
-        for (j = 0; j < 16; j++)
+        for (j = 0; j < NHM.CLR_MAX; j++)
             if (cptr.ldU64(cptr.add(cptr.add(gc, 16), j, 8)) & BigInt.asUintN(64, cptr.ldI64(cptr.add(cptr.add(conditions, i, 48), 8)))) {
                 clr.v = j;
                 break;
@@ -3575,7 +3576,7 @@ function status_hilite_linestr_gather_conditions() {
             atr.v |= NHC.HL_INVERSE;
         if (atr.v != NHC.HL_NONE)
             atr.v &= -2;
-        if (clr.v != 8 || atr.v != NHC.HL_NONE ? 1 : 0) {
+        if (clr.v != NHM.NO_COLOR || atr.v != NHC.HL_NONE ? 1 : 0) {
             let ca = (clr.v | (atr.v << 8)) >>> 0;
             let added_condmap = 0;
             for (j = 0; j < 30; j++)
@@ -3596,10 +3597,10 @@ function status_hilite_linestr_gather_conditions() {
     }
     for (i = 0; i < 30; i++)
         if (cptr.ldU64(cptr.add(cond_maps, i, 16))) {
-            let clr = cptr.box(8);
+            let clr = cptr.box(NHM.NO_COLOR);
             let atr = cptr.box(NHC.HL_NONE);
             split_clridx(cptr.ldI32(cptr.add(cptr.add(cond_maps, i, 16), 8)) | 0, clr, atr);
-            if (clr.v != 8 || atr.v != NHC.HL_NONE ? 1 : 0) {
+            if (clr.v != NHM.NO_COLOR || atr.v != NHC.HL_NONE ? 1 : 0) {
                 let clrbuf = new Uint8Array(256);
                 let attrbuf = new Uint8Array(256);
                 let condbuf = new Uint8Array(256);
@@ -3633,8 +3634,8 @@ const __static_status_hilite2str_buf = new Uint8Array(256); /** C ref: botl.c:35
 
 /** C ref: botl.c:3590 — @param {CPtr} hl @returns {CPtr} */
 function status_hilite2str(hl) {
-    let clr = cptr.box(8);
-    let attr = cptr.box(0);
+    let clr = cptr.box(NHM.NO_COLOR);
+    let attr = cptr.box(NHM.ATR_NONE);
     let behavebuf = new Uint8Array(256);
     let clrbuf = new Uint8Array(256);
     let attrbuf = new Uint8Array(256);
@@ -3646,13 +3647,13 @@ function status_hilite2str(hl) {
     cptr.st1(cptr.add(cptr.decay(clrbuf), 0, 1), 0);
     op = (cptr.ldI32(cptr.add(hl, 108)) == NHC.LT_VALUE) ? __sl337 : ((cptr.ldI32(cptr.add(hl, 108)) == NHC.LE_VALUE) ? __sl338 : ((cptr.ldI32(cptr.add(hl, 108)) == NHC.GT_VALUE) ? __sl335 : ((cptr.ldI32(cptr.add(hl, 108)) == NHC.GE_VALUE) ? __sl336 : ((cptr.ldI32(cptr.add(hl, 108)) == NHC.EQ_VALUE) ? __sl339 : null))));
     switch (cptr.ldI32(cptr.add(hl, 24))) {
-        case 100:
+        case NHM.BL_TH_VAL_PERCENTAGE:
         if (op)
             void cptr.sprintf(cptr.decay(behavebuf), __sl381, op, cptr.ldI32(cptr.add(hl, 16)));
         else
             impossible(__sl382);
         break;
-        case 102:
+        case NHM.BL_TH_UPDOWN:
         if (cptr.ldI32(cptr.add(hl, 108)) == NHC.LT_VALUE)
             void cptr.sprintf(cptr.decay(behavebuf), __sl331);
         else if (cptr.ldI32(cptr.add(hl, 108)) == NHC.GT_VALUE)
@@ -3662,31 +3663,31 @@ function status_hilite2str(hl) {
         else
             impossible(__sl383);
         break;
-        case 101:
+        case NHM.BL_TH_VAL_ABSOLUTE:
         if (op)
             void cptr.sprintf(cptr.decay(behavebuf), __sl384, op, cptr.ldI32(cptr.add(hl, 16)));
         else
             impossible(__sl385);
         break;
-        case 104:
+        case NHM.BL_TH_TEXTMATCH:
         if (cptr.ldI32(cptr.add(hl, 108)) == NHC.TXT_VALUE && cptr.ld1s(cptr.add(cptr.add(hl, 28), 0, 1)) ? 1 : 0)
             void cptr.sprintf(cptr.decay(behavebuf), __sl15, cptr.add(hl, 28));
         else
             impossible(__sl386);
         break;
-        case 103:
+        case NHM.BL_TH_CONDITION:
         if (cptr.ldI32(cptr.add(hl, 108)) == NHC.EQ_VALUE)
             void cptr.sprintf(cptr.decay(behavebuf), __sl15, conditionbitmask2str(cptr.ldU64(cptr.add(hl, 16))));
         else
             impossible(__sl387);
         break;
-        case 105:
+        case NHM.BL_TH_ALWAYS_HILITE:
         void cptr.sprintf(cptr.decay(behavebuf), __sl329);
         break;
-        case 106:
+        case NHM.BL_TH_CRITICALHP:
         void cptr.sprintf(cptr.decay(behavebuf), __sl333);
         break;
-        case 0:
+        case NHM.BL_TH_NONE:
         break;
         default:
         break;
@@ -3709,18 +3710,18 @@ function status_hilite_menu_choose_field() {
     let fld = NHC.BL_FLUSH;
     let any = cptr.alloc(8);
     let picks = cptr.box(null);
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     for (i = 0; i < NHC.MAXBLSTATS; i++) {
         if (cptr.ldI32(cptr.add(cptr.add(initblstats, i, 88), 64)) == NHC.BL_SCORE && !cptr.ldPtr(cptr.add(cptr.add(cptr.add(gb, 0, 2376), NHC.BL_SCORE, 88), 80)) ? 1 : 0)
             continue;
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, ((i + 1) | 0));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.ldPtr(cptr.add(initblstats, i, 88)), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtr(cptr.add(initblstats, i, 88)), NHM.MENU_ITEMFLAGS_NONE);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl390);
-    res = select_menu(tmpwin, 1, picks);
+    res = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (res > 0) {
         fld = (cptr.ldI32(picks.v) - 1) | 0;
@@ -3738,69 +3739,69 @@ function status_hilite_menu_choose_behavior(fld) {
     let picks = cptr.box(null);
     let buf = new Uint8Array(256);
     let at;
-    let onlybeh = 0;
+    let onlybeh = NHM.BL_TH_NONE;
     let nopts = 0;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     if (fld < 0 || fld >= NHC.MAXBLSTATS ? 1 : 0)
-        return 0;
+        return NHM.BL_TH_NONE;
     at = cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 28));
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     if (fld != NHC.BL_CONDITION) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 105);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_ALWAYS_HILITE);
         void cptr.sprintf(cptr.decay(buf), __sl391, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if (fld == NHC.BL_CONDITION) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 103);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 98, 0, 0, clr, __sl392, 0);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_CONDITION);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 98, 0, NHM.ATR_NONE, clr, __sl392, NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if (fld != NHC.BL_CONDITION && fld != NHC.BL_VERS ? 1 : 0) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 102);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_UPDOWN);
         void cptr.sprintf(cptr.decay(buf), __sl393, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if ((fld != NHC.BL_CAP && fld != NHC.BL_HUNGER ? 1 : 0) && (at == NHC.ANY_INT || at == NHC.ANY_LONG ? 1 : 0) ? 1 : 0) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 101);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, 0, clr, __sl394, 0);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_VAL_ABSOLUTE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl394, NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if (cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 60)) >= 0) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 100);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 112, 0, 0, clr, __sl395, 0);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_VAL_PERCENTAGE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 112, 0, NHM.ATR_NONE, clr, __sl395, NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if (fld == NHC.BL_HP) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 106);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_CRITICALHP);
         void cptr.sprintf(cptr.decay(buf), __sl396, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 67, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 67, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     if ((cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 28)) == NHC.ANY_STR || fld == NHC.BL_CAP ? 1 : 0) || fld == NHC.BL_HUNGER ? 1 : 0) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        cptr.stI32(any, onlybeh = 104);
+        cptr.stI32(any, onlybeh = NHM.BL_TH_TEXTMATCH);
         void cptr.sprintf(cptr.decay(buf), __sl397, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
     void cptr.sprintf(cptr.decay(buf), __sl398, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(buf));
     if (nopts > 1) {
-        res = select_menu(tmpwin, 1, picks);
+        res = select_menu(tmpwin, NHM.PICK_ONE, picks);
         if (res == 0)
-            beh = 0;
+            beh = NHM.BL_TH_NONE;
         else if (res == -1)
             beh = -1;
-    } else if (onlybeh != 0) {
+    } else if (onlybeh != NHM.BL_TH_NONE) {
         beh = onlybeh;
     }
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
@@ -3819,8 +3820,8 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
     let buf = new Uint8Array(256);
     let any = cptr.alloc(8);
     let picks = cptr.box(null);
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     if (ltok) {
         if (str)
@@ -3829,12 +3830,12 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
             void cptr.sprintf(cptr.decay(buf), __sl402);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, ((10 + NHC.LT_VALUE) | 0));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         if (str) {
             void cptr.sprintf(cptr.decay(buf), __sl403, str, (fld == NHC.BL_AC) ? __sl404 : __sl405);
             cptr.memcpy(any, cptr.add(cg, 536), 8);
             cptr.stI32(any, ((10 + NHC.LE_VALUE) | 0));
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
     if (str)
@@ -3843,13 +3844,13 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
         void cptr.sprintf(cptr.decay(buf), __sl407);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     cptr.stI32(any, ((10 + NHC.EQ_VALUE) | 0));
-    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+    add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     if (gtok) {
         if (str) {
             void cptr.sprintf(cptr.decay(buf), __sl403, str, (fld == NHC.BL_AC) ? __sl408 : __sl409);
             cptr.memcpy(any, cptr.add(cg, 536), 8);
             cptr.stI32(any, ((10 + NHC.GE_VALUE) | 0));
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
         if (str)
             void cptr.sprintf(cptr.decay(buf), __sl399, (fld == NHC.BL_AC) ? __sl410 : __sl411, str);
@@ -3857,11 +3858,11 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
             void cptr.sprintf(cptr.decay(buf), __sl412);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, ((10 + NHC.GT_VALUE) | 0));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     void cptr.sprintf(cptr.decay(buf), __sl413, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(buf));
-    res = select_menu(tmpwin, 1, picks);
+    res = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (res > 0) {
         ret = (cptr.ldI32(picks.v) - 10) | 0;
@@ -3888,7 +3889,7 @@ function status_hilite_menu_add(origfld) {
     let fld;
     let behavior;
     let lt_gt_eq;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     let atr = NHC.HL_UNDEF;
     let hilite = cptr.alloc(128);
     let cond = 0n;
@@ -3914,7 +3915,7 @@ function status_hilite_menu_add(origfld) {
             behavior = status_hilite_menu_choose_behavior(fld);
             if (behavior == -1) {
                 return 0;
-            } else if (behavior == 0) {
+            } else if (behavior == NHM.BL_TH_NONE) {
                 if (origfld == NHC.BL_FLUSH)
                     continue __lbl_choose_field;
                 return 0;
@@ -3925,14 +3926,14 @@ function status_hilite_menu_add(origfld) {
                     pline(__sl414);
                     return 0;
                 }
-                if (behavior == 100 || behavior == 101 ? 1 : 0) {
+                if (behavior == NHM.BL_TH_VAL_PERCENTAGE || behavior == NHM.BL_TH_VAL_ABSOLUTE ? 1 : 0) {
                     let inbuf = new Uint8Array(256);
                     let buf = new Uint8Array(256);
                     let aval = cptr.alloc(8);
                     let val;
                     let dt;
                     let gotnum = 0;
-                    let percent = schar((behavior == 100));
+                    let percent = schar((behavior == NHM.BL_TH_VAL_PERCENTAGE));
                     let inp;
                     let numstart;
                     let op;
@@ -3986,7 +3987,7 @@ function status_hilite_menu_add(origfld) {
                         val = cptr.ldI32(aval);
                         if (cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 60)) == -1) {
                             pline(__sl420, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
-                            behavior = 101;
+                            behavior = NHM.BL_TH_VAL_ABSOLUTE;
                             continue __lbl_choose_value;
                         }
                         if ((((val < 0 && (val != -1 || lt_gt_eq != NHC.GT_VALUE ? 1 : 0) ? 1 : 0) || (val == 0 && lt_gt_eq == NHC.LT_VALUE ? 1 : 0) ? 1 : 0) || (val == 100 && lt_gt_eq == NHC.GT_VALUE ? 1 : 0) ? 1 : 0) || (val > 100 && (val != 101 || lt_gt_eq != NHC.LT_VALUE ? 1 : 0) ? 1 : 0) ? 1 : 0) {
@@ -4013,7 +4014,7 @@ function status_hilite_menu_add(origfld) {
                     void cptr.sprintf(cptr.decay(attrqry), __sl428, cptr.ldPtr(cptr.add(initblstats, fld, 88)), (lt_gt_eq == NHC.LT_VALUE) ? __sl424 : ((lt_gt_eq == NHC.GT_VALUE) ? __sl425 : __sl0), numstart, (lt_gt_eq == NHC.LE_VALUE) ? __sl426 : ((lt_gt_eq == NHC.GE_VALUE) ? __sl427 : __sl0));
                     cptr.stI32(cptr.add(hilite, 108), lt_gt_eq);
                     cptr.memcpy(cptr.add(hilite, 16), aval, 8);
-                } else if (behavior == 102) {
+                } else if (behavior == NHM.BL_TH_UPDOWN) {
                     if (cptr.ldI32(cptr.add(cptr.add(initblstats, fld, 88), 28)) != NHC.ANY_STR) {
                         let ltok = schar((fld != NHC.BL_TIME));
                         let gtok = 1;
@@ -4026,7 +4027,7 @@ function status_hilite_menu_add(origfld) {
                     void cptr.sprintf(cptr.decay(colorqry), __sl429, cptr.ldPtr(cptr.add(initblstats, fld, 88)), (lt_gt_eq == NHC.EQ_VALUE) ? __sl430 : ((lt_gt_eq == NHC.LT_VALUE) ? __sl431 : __sl432));
                     void cptr.sprintf(cptr.decay(attrqry), __sl433, cptr.ldPtr(cptr.add(initblstats, fld, 88)), (lt_gt_eq == NHC.EQ_VALUE) ? __sl430 : ((lt_gt_eq == NHC.LT_VALUE) ? __sl431 : __sl432));
                     cptr.stI32(cptr.add(hilite, 108), lt_gt_eq);
-                } else if (behavior == 103) {
+                } else if (behavior == NHM.BL_TH_CONDITION) {
                     cond = query_conditions();
                     if (!cond) {
                         if (origfld == NHC.BL_FLUSH)
@@ -4035,7 +4036,7 @@ function status_hilite_menu_add(origfld) {
                     }
                     nh_snprintf(__sl434, 4121, cptr.decay(colorqry), 256n, __sl435, conditionbitmask2str(cond));
                     nh_snprintf(__sl434, 4124, cptr.decay(attrqry), 256n, __sl436, conditionbitmask2str(cond));
-                } else if (behavior == 104) {
+                } else if (behavior == NHM.BL_TH_TEXTMATCH) {
                     let qry_buf = new Uint8Array(256);
                     void cptr.sprintf(cptr.decay(qry_buf), __sl437, (((fld == NHC.BL_CAP || fld == NHC.BL_ALIGN ? 1 : 0) || fld == NHC.BL_HUNGER ? 1 : 0) || fld == NHC.BL_TITLE ? 1 : 0) ? __sl438 : __sl439, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                     if (fld == NHC.BL_CAP) {
@@ -4110,22 +4111,22 @@ function status_hilite_menu_add(origfld) {
                     }
                     void cptr.sprintf(cptr.decay(colorqry), __sl442, cptr.ldPtr(cptr.add(initblstats, fld, 88)), cptr.add(hilite, 28));
                     void cptr.sprintf(cptr.decay(attrqry), __sl443, cptr.ldPtr(cptr.add(initblstats, fld, 88)), cptr.add(hilite, 28));
-                } else if (behavior == 105) {
+                } else if (behavior == NHM.BL_TH_ALWAYS_HILITE) {
                     void cptr.sprintf(cptr.decay(colorqry), __sl444, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                     void cptr.sprintf(cptr.decay(attrqry), __sl445, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
                 }
                 __lbl_choose_color: while (true) {
-                    clr = query_color(cptr.decay(colorqry), 8);
+                    clr = query_color(cptr.decay(colorqry), NHM.NO_COLOR);
                     if (clr == -1) {
-                        if (behavior != 105)
+                        if (behavior != NHM.BL_TH_ALWAYS_HILITE)
                             continue __lbl_choose_value;
                         else
                             continue __lbl_choose_behavior;
                     }
-                    atr = query_attr(cptr.decay(attrqry), 0);
+                    atr = query_attr(cptr.decay(attrqry), NHM.ATR_NONE);
                     if (atr == -1)
                         continue __lbl_choose_color;
-                    if (behavior == 103) {
+                    if (behavior == NHM.BL_TH_CONDITION) {
                         let clrbuf = new Uint8Array(256);
                         let attrbuf = new Uint8Array(256);
                         let tmpattr;
@@ -4194,7 +4195,7 @@ function status_hilite_remove(id) {
         return 0;
     if (cptr.ldI32(cptr.add(hlstr, 4)) == NHC.BL_CONDITION) {
         let i;
-        for (i = 0; i < 16; i++)
+        for (i = 0; i < NHM.CLR_MAX; i++)
             cptr.stU64(cptr.add(cptr.add(gc, 16), i, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), i, 8)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(hlstr, 16))));
         cptr.stU64(cptr.add(cptr.add(gc, 16), 18, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 18, 8)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(hlstr, 16))));
         cptr.stU64(cptr.add(cptr.add(gc, 16), 19, 8), cptr.ldU64(cptr.add(cptr.add(gc, 16), 19, 8)) & BigInt.asUintN(64, ~cptr.ldU64(cptr.add(hlstr, 16))));
@@ -4239,7 +4240,7 @@ function status_hilite_menu_fld(fld) {
     let hlstr;
     let buf = new Uint8Array(256);
     let acted;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     if (!count) {
         if (status_hilite_menu_add(fld)) {
             status_hilite_linestr_done();
@@ -4248,7 +4249,7 @@ function status_hilite_menu_fld(fld) {
         } else
             return 0;
     }
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     if (count) {
         hlstr = status_hilite_str;
@@ -4256,7 +4257,7 @@ function status_hilite_menu_fld(fld) {
             if (cptr.ldI32(cptr.add(hlstr, 4)) == fld) {
                 cptr.memcpy(any, cptr.add(cg, 536), 8);
                 cptr.stI32(any, cptr.ldI32(hlstr));
-                add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.add(hlstr, 24), 0);
+                add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.add(hlstr, 24), NHM.MENU_ITEMFLAGS_NONE);
             }
             hlstr = cptr.ldPtr(cptr.add(hlstr, 280));
         }
@@ -4268,19 +4269,19 @@ function status_hilite_menu_fld(fld) {
     if (count) {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, -1);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 88, 0, 0, clr, __sl450, 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 88, 0, NHM.ATR_NONE, clr, __sl450, NHM.MENU_ITEMFLAGS_NONE);
     }
     if (fld == NHC.BL_SCORE) {
         ;
     } else {
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, -2);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 90, 0, 0, clr, __sl451, 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 90, 0, NHM.ATR_NONE, clr, __sl451, NHM.MENU_ITEMFLAGS_NONE);
     }
     void cptr.sprintf(cptr.decay(buf), __sl452, cptr.ldPtr(cptr.add(initblstats, fld, 88)));
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(buf));
     acted = 0;
-    if ((res = select_menu(tmpwin, 2, picks)) > 0) {
+    if ((res = select_menu(tmpwin, NHM.PICK_ANY, picks)) > 0) {
         let idx;
         let mode = 0;
         for (i = 0; i < res; i++) {
@@ -4312,7 +4313,7 @@ function status_hilites_viewall() {
     let datawin;
     let hlstr = status_hilite_str;
     let buf = new Uint8Array(256);
-    datawin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    datawin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     while (hlstr) {
         void cptr.sprintf(cptr.decay(buf), __sl453, 231, cptr.add(hlstr, 24));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(datawin, 0, cptr.decay(buf));
@@ -4347,17 +4348,17 @@ export function status_hilite_menu() {
     let any = cptr.alloc(8);
     let redo;
     let countall;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     __lbl_shlmenu_redo: while (true) {
         redo = 0;
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         status_hilite_linestr_gather();
         countall = status_hilite_linestr_countfield(NHC.BL_FLUSH);
         if (countall) {
             cptr.memcpy(any, cptr.add(cg, 536), 8);
             cptr.stI32(any, -1);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, __sl455, 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl455, NHM.MENU_ITEMFLAGS_NONE);
             add_menu_str(tmpwin, __sl0);
         }
         for (i = 0; i < NHC.MAXBLSTATS; i++) {
@@ -4372,10 +4373,10 @@ export function status_hilite_menu() {
             void cptr.sprintf(cptr.decay(buf), __sl456, cptr.ldPtr(cptr.add(initblstats, i, 88)));
             if (count)
                 void cptr.sprintf(eos(cptr.decay(buf)), __sl457, count);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, __sl458);
-        if ((res = select_menu(tmpwin, 1, picks)) > 0) {
+        if ((res = select_menu(tmpwin, NHM.PICK_ONE, picks)) > 0) {
             fld = (cptr.ldI32(picks.v) - 1) | 0;
             if (fld < 0) {
                 status_hilites_viewall();

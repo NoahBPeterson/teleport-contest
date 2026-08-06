@@ -166,11 +166,11 @@ function operand(e, parentPrec, side) {
 const SYM_MAX_LEAVES = Number(process.env.C2JS_SYM_LEAVES || 6);
 const SYM_MAX_CHARS = Number(process.env.C2JS_SYM_CHARS || 120);
 const SYM_LEAF_GUARD = 64; // walk cap, so an unbounded expression cannot be scanned forever
-const SYM_STATS = { unfit: 0, leaves: 0, chars: 0, named: 0, namedViaArm: 0, symbolic: 0, symbolicViaArm: 0, rejected: 0 };
+const SYM_STATS = { unfit: 0, leaves: 0, chars: 0, named: 0, namedViaArm: 0, symbolic: 0, symbolicViaArm: 0, macro: 0, rejected: 0 };
 if (process.env.C2JS_SYM_STATS) {
   process.on('exit', () => process.stderr.write(
     `named constants: ${SYM_STATS.named} named (${SYM_STATS.namedViaArm} via a macro's selected arm), `
-    + `${SYM_STATS.symbolic} symbolic (${SYM_STATS.symbolicViaArm} via arm), ${SYM_STATS.rejected} refused by the equality audit\n`
+    + `${SYM_STATS.symbolic} symbolic (${SYM_STATS.symbolicViaArm} via arm), ${SYM_STATS.macro} macro-spelled, ${SYM_STATS.rejected} refused by the equality audit\n`
     + `symbolic budget: ${SYM_STATS.unfit} not all-const, ${SYM_STATS.leaves} refused on leaves (>${SYM_MAX_LEAVES}), ${SYM_STATS.chars} on length (>${SYM_MAX_CHARS})\n`));
 }
 
@@ -332,13 +332,25 @@ const LIBC = new Set(['strlen', 'strcpy', 'strcat', 'strncmp', 'strchr', 'strrch
 export const CONST_NS = 'NHC';
 export const CONST_MODULE = './nhconst.js';
 
+// The macro tier (roadmap 1.9): an object-like `#define NAME <integer>` is
+// gone by the time clang emits an AST, but the token it expanded to still
+// carries the *spelling* location of the macro's body.  Values recovered that
+// way get their own module and prefix, because they are a different
+// provenance tier from enum constants and will churn differently in 5.1.
+export const MACRO_NS = 'NHM';
+export const MACRO_MODULE = './nhmacro.js';
+// spelling files we will trust: NetHack's own headers, as the compile
+// database spells them.  System headers and clang's `<scratch space>` are
+// not ours to name.
+export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
+
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
 export const EMIT_VERSION = 7;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -346,6 +358,10 @@ export class Emitter {
     // empty in single-file mode, where enum constants stay file-local
     this.constNames = constNames instanceof Set ? constNames : new Set(constNames || []);
     this.usesConsts = false;
+    // "header.h:line" -> [macroName, value] for object-like integer #defines
+    // that nhmacro.js exports; empty in single-file mode
+    this.macroDefs = macroDefs instanceof Map ? macroDefs : new Map(macroDefs || []);
+    this.usesMacros = false;
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
@@ -743,13 +759,14 @@ export class Emitter {
     let got;
     try {
       // eslint-disable-next-line no-new-func
-      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, `return (${code});`)(
+      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, MACRO_NS, `return (${code});`)(
         (a, b) => { a >>>= 0; b >>>= 0; return ((a - (a % b)) / b) >>> 0; },
         (a, b) => (a >>> 0) % (b >>> 0),
         (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF,
         // named constants stand in for their values: the audit checks the
-        // emitted arithmetic, and nhconst.js binds exactly these numbers
-        (this._constObj ||= Object.fromEntries(this.enumValues)));
+        // emitted arithmetic, and nhconst.js / nhmacro.js bind exactly these
+        // numbers
+        (this._constObj ||= Object.fromEntries(this.enumValues)), this.macroObj());
     } catch (e) { FOLD_AUDIT.skipped.push(`eval: ${e.message} :: ${code}`); return; }
     const want = c.t.bits === 64 ? c.v : Number(c.v);
     const same = typeof got === 'bigint' ? got === BigInt(want) : Number(got) === Number(want);
@@ -821,10 +838,68 @@ export class Emitter {
     return n.inner[c.v !== 0n ? 1 : 2] || n;
   }
 
+  /** macro name -> value, for the emit-time evaluators that stand in for nhmacro.js */
+  macroObj() {
+    if (!this._macroObj) {
+      this._macroObj = Object.create(null);
+      for (const [, [name, v]] of this.macroDefs) this._macroObj[name] = v;
+    }
+    return this._macroObj;
+  }
+
   /** `NHC.NAME` descriptor; keeps `const` so downstream folds still see a value */
   constRefExpr(name, value) {
     this.usesConsts = true;
     return { code: `${CONST_NS}.${name}`, prec: PREC.atom, const: String(value), rep: 'val' };
+  }
+
+  /**
+   * The nhmacro.js name a folded value was *spelled* as, or null.
+   *
+   * The macro tier.  `#define COLNO 80` leaves no trace in the AST except
+   * one thing: the IntegerLiteral it expanded to records where its token was
+   * spelled, and that is the macro's own body.  So the name is recovered by
+   * *location*, the same way the enum tier recovers it by declaration —
+   * never by looking a value up in a table, which for a value as reused as
+   * `1` or `80` could only ever be a guess.
+   *
+   * Three things gate an emission, and all three are checked here:
+   *   - the spelling file must be one of NetHack's own headers, spelled
+   *     `../include/x.h`, and the location must carry both a file and a line
+   *     (clang omits either when it is unchanged since the previous location
+   *     it printed, and a partly-inherited location is not a location);
+   *   - that header line must be an object-like `#define` whose whole body is
+   *     one integer token — nothing else can have spelled the token;
+   *   - the macro's value must equal the value C folds the node to.  A `1`
+   *     spelled inside some *other* macro's body cannot survive that, and
+   *     neither can a narrowing cast.
+   */
+  namedMacro(n, c) {
+    if (!this.macroDefs.size) return null;
+    if (c.t.bits === 64) return null; // constExpr would emit `123n`; NHM.X is a Number
+    let x = n;
+    for (let guard = 0; x && guard < 256; guard++) {
+      if (x.kind === 'ParenExpr' || x.kind === 'ConstantExpr'
+        || ((x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr') && (x.inner || []).length === 1)) {
+        if (x.kind === 'CStyleCastExpr' && this.matchSizeIdiom(x)) return null;
+        x = x.inner[0];
+        continue;
+      }
+      const arm = this.constArm(x);
+      if (arm === x) break;
+      x = arm;
+    }
+    if (!x || x.kind !== 'IntegerLiteral') return null;
+    const s = x.range?.begin?.spellingLoc;
+    if (!s || typeof s.file !== 'string' || typeof s.line !== 'number') return null;
+    const hdr = MACRO_HEADER_RE.exec(s.file);
+    if (!hdr) return null;
+    const def = this.macroDefs.get(`${hdr[1]}:${s.line}`);
+    if (!def) return null;
+    if (BigInt(def[1]) !== c.v) { SYM_STATS.rejected++; return null; }
+    SYM_STATS.macro++;
+    this.usesMacros = true;
+    return { code: `${MACRO_NS}.${def[0]}`, prec: PREC.atom, const: String(Number(c.v)), rep: 'val' };
   }
 
   /**
@@ -857,11 +932,11 @@ export class Emitter {
     let got;
     try {
       // eslint-disable-next-line no-new-func
-      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, `return (${code});`)(
+      got = Function('u32div', 'u32mod', 'schar', 'uchar', 'i16', 'u16', CONST_NS, MACRO_NS, `return (${code});`)(
         (a, b) => { a >>>= 0; b >>>= 0; return ((a - (a % b)) / b) >>> 0; },
         (a, b) => (a >>> 0) % (b >>> 0),
         (x) => (x << 24) >> 24, (x) => x & 0xFF, (x) => (x << 16) >> 16, (x) => x & 0xFFFF,
-        (this._constObj ||= Object.fromEntries(this.enumValues)));
+        (this._constObj ||= Object.fromEntries(this.enumValues)), this.macroObj());
     } catch { return null; }
     if (typeof got !== 'number' || Number(got) !== Number(c.v)) { SYM_STATS.rejected++; return null; }
     SYM_STATS.symbolic++;
@@ -947,6 +1022,9 @@ export class Emitter {
         if (nm) return this.constRefExpr(nm, Number(c.v));
         const sym = this.symbolicConst(n, c);
         if (sym) return { code: sym, prec: PREC.atom, const: String(Number(c.v)), rep: 'val' };
+        // a fold that is exactly one object-like macro keeps its name
+        const mac = this.namedMacro(n, c);
+        if (mac) return mac;
         return this.constExpr(c);
       }
     }

@@ -42,9 +42,42 @@
 
 import { installBrowserGlobals } from './browser-env.mjs';
 
-installBrowserGlobals();
-
+// Decided before installBrowserGlobals(), which installs a stand-in `process`
+// in a browser — after that call `typeof process` no longer tells the two
+// realms apart.
 const IS_BROWSER_WORKER = typeof self !== 'undefined' && typeof self.postMessage === 'function';
+
+// ---------------------------------------------------------------------------
+// V8 compile cache (Node only).
+//
+// Every game boots a fresh worker, and that worker's first job is to compile
+// the whole transpiled corpus — ~500 ms of pure parse/compile before NetHack
+// runs a single instruction. V8 can serialize that work to disk and replay it,
+// which is worth roughly 200 ms of the ~1.1 s it takes to get a game to its
+// first frame.
+//
+// Three things make this safe to do unconditionally on the Node path:
+//   - it is a *cache*: a miss (cold dir, different Node build, unwritable
+//     directory) just compiles normally, and the cached data is validated
+//     against the source before it is used, so stale entries cannot change
+//     behaviour;
+//   - under the judge's `node --permission` sandbox the directory is not
+//     writable, and enableCompileCache() reports that in its return value
+//     rather than throwing — checked, not assumed;
+//   - it is guarded to Node, because a browser worker has no `node:module`
+//     (and js/boot/browser-env.mjs does not shim one).
+// The cache lives under the repo's gitignored .cache/.
+if (!IS_BROWSER_WORKER) {
+    try {
+        const { enableCompileCache } = await import('node:module');
+        const { fileURLToPath } = await import('node:url');
+        if (typeof enableCompileCache === 'function') {
+            enableCompileCache(fileURLToPath(new URL('../../.cache/v8-compile-cache', import.meta.url)));
+        }
+    } catch { /* no compile cache here; compile from source as before */ }
+}
+
+installBrowserGlobals();
 
 let post, listen;
 if (IS_BROWSER_WORKER) {

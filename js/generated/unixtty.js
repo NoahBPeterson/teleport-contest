@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { getioctls, setioctls } from './ioctl.js';
 import { windowprocs } from './windows.js';
 import { term_end_screen, term_start_screen } from './termcap.js';
@@ -117,8 +118,8 @@ export function settty(s) {
         if (!getenv(__sl0))
             perror(__sl3);
     }
-    cptr.st1(cptr.add(iflags, 130), schar(((cptr.ldU64(cptr.add(inittyb, 24)) & 8n) ? 1 : 0)));
-    cptr.st1(cptr.add(iflags, 127), schar(((!(cptr.ldU64(cptr.add(inittyb, 24)) & 256n)) ? 1 : 0)));
+    cptr.st1(cptr.add(iflags, 130), schar(((cptr.ldU64(cptr.add(inittyb, 24)) & 8n) ? NHM.ON : NHM.OFF)));
+    cptr.st1(cptr.add(iflags, 127), schar(((!(cptr.ldU64(cptr.add(inittyb, 24)) & 256n)) ? NHM.ON : NHM.OFF)));
     cptr.stU64(curttyb, cptr.ldU64(curttyb) | 32n);
     setioctls();
     settty_needed = 0;
@@ -131,8 +132,8 @@ export function setftty() {
     let change = 0;
     ef = 0;
     cf = 0;
-    cptr.st1(cptr.add(iflags, 127), 1);
-    cptr.st1(cptr.add(iflags, 130), 0);
+    cptr.st1(cptr.add(iflags, 127), NHM.ON);
+    cptr.st1(cptr.add(iflags, 130), NHM.OFF);
     if (Number(BigInt.asUintN(32, (cptr.ldU64(cptr.add(curttyb, 24)) & 8n))) != ef) {
         cptr.stU64(cptr.add(curttyb, 24), cptr.ldU64(cptr.add(curttyb, 24)) & 18446744073709551607n);
         change++;

@@ -5,6 +5,7 @@
 
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { dupstr } from './alloc.js';
 import { panic } from './end.js';
 import { gc } from './decl.js';
@@ -40,8 +41,8 @@ export function sys_early_init() {
     cptr.stI32(cptr.add(sysopt, 76), 0);
     cptr.stI32(cptr.add(sysopt, 92), 0);
     cptr.stI64(cptr.add(sysopt, 96), 0n);
-    cptr.stI32(cptr.add(sysopt, 104), 3);
-    cptr.stI32(cptr.add(sysopt, 112), 100);
+    cptr.stI32(cptr.add(sysopt, 104), NHM.PERSMAX);
+    cptr.stI32(cptr.add(sysopt, 112), NHM.ENTRYMAX);
     cptr.stI32(cptr.add(sysopt, 116), 1);
     cptr.stI32(cptr.add(sysopt, 108), 1);
     cptr.stI32(cptr.add(sysopt, 120), 10);

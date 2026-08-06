@@ -5,6 +5,7 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
@@ -68,10 +69,10 @@ function eraseoldlocks() {
     cptr.stI32(cptr.add(program_state, 12), 0);
     for (i = 1; i <= 513; i++) {
         set_levelfile_name(cptr.add(gl, 16), i);
-        void unlink(fqname(cptr.add(gl, 16), 1, 0));
+        void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
     }
     set_levelfile_name(cptr.add(gl, 16), 0);
-    if (unlink(fqname(cptr.add(gl, 16), 1, 0)))
+    if (unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0)))
         return 0;
     return 1;
 }
@@ -89,7 +90,7 @@ export function getlock() {
         if (!strcmp(cptr.ldPtr(windowprocs), __sl0))
             if (!isatty(0) && !getenv(__sl1) ? 1 : 0)
                 error(__sl2);
-        if (!lock_file(__sl3, 6, 10)) {
+        if (!lock_file(__sl3, NHM.LOCKPREFIX, 10)) {
             (cptr.ldPtr(cptr.add(windowprocs, 216)))();
             error(__sl4, __sl5);
         }
@@ -102,7 +103,7 @@ export function getlock() {
                 cptr.stI32(cptr.add(gl, 8), 25);
             do {
                 cptr.st1(cptr.add(cptr.add(gl, 16), 0, 1), schar(((97 + i++) | 0)));
-                fq_lock = fqname(cptr.add(gl, 16), 1, 0);
+                fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
                 if ((fd = open(fq_lock, 0)) == -1) {
                     if ((cptr.ldI32(__error())) == 2)
                         break __lbl_gotlock;
@@ -118,7 +119,7 @@ export function getlock() {
             unlock_file(__sl3);
             error(__sl8);
         } else {
-            fq_lock = fqname(cptr.add(gl, 16), 1, 0);
+            fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
             if ((fd = open(fq_lock, 0)) == -1) {
                 if ((cptr.ldI32(__error())) == 2)
                     break __lbl_gotlock;
@@ -157,7 +158,7 @@ export function getlock() {
             }
         }
     }
-    fd = creat(fq_lock, 432);
+    fd = creat(fq_lock, NHM.FCMASK);
     unlock_file(__sl3);
     if (fd == -1) {
         error(__sl11, fq_lock);

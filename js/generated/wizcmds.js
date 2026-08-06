@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
 import { encumber_msg } from './pickup.js';
@@ -252,7 +253,7 @@ export function wiz_wish() {
         encumber_msg();
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_wish));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:50 @returns {CInt} */
@@ -265,13 +266,13 @@ export function wiz_identify() {
         cptr.stI32(cptr.add(iflags, 48), 0);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_identify));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:73 — @param {CPtr} mtmp @param {CInt} migratory */
 function makemap_unmakemon(mtmp, migratory) {
     let ndx = (cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 24)));
-    if (cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & 4096)
+    if (cptr.ldU16(cptr.add(cptr.ldPtr(cptr.add(mtmp, 8)), 34)) & NHM.G_UNIQ)
         cptr.st1(cptr.add(cptr.add(cptr.add(svm, 16), ndx, 12), 2), cptr.ld1u(cptr.add(cptr.add(cptr.add(svm, 16), ndx, 12), 2)) & -2);
     if (cptr.ld1u(cptr.add(cptr.add(svm, 16), ndx, 12)))
         (cptr.st1(cptr.add(cptr.add(svm, 16), ndx, 12), cptr.ld1u(cptr.add(cptr.add(svm, 16), ndx, 12)) + -1)) - (-1);
@@ -326,7 +327,7 @@ export function wiz_makemap() {
     } else {
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_makemap));
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:176 @returns {CInt} */
@@ -358,7 +359,7 @@ export function wiz_map() {
         cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16), save_Hhallu);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_map));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:203 @returns {CInt} */
@@ -370,7 +371,7 @@ export function wiz_genesis() {
         cptr.st1(cptr.add(iflags, 86), mongen_saved);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_genesis));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:218 @returns {CInt} */
@@ -379,7 +380,7 @@ export function wiz_where() {
         void print_dungeon(0, null, null);
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_where));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:229 @returns {CInt} */
@@ -388,7 +389,7 @@ export function wiz_detect() {
         void findit();
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_detect));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:243 @returns {CInt} */
@@ -426,7 +427,7 @@ export function wiz_kill() {
                 void cptr.sprintf(cptr.decay(qbuf), __sl7, (cptr.ldI16(cptr.add(gu, 216)) == NHC.PM_SAMURAI) ? __sl8 : __sl9);
                 if (paranoid_query(1, cptr.decay(qbuf))) {
                     void cptr.sprintf(cptr.add(svk, 16), __sl10, (cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ld1s(cptr.add(flags, 13)) ? 1 : 0, 48), 24))));
-                    cptr.stI32(cptr.add(svk, 12), 1);
+                    cptr.stI32(cptr.add(svk, 12), NHM.KILLED_BY);
                     done(NHC.DIED);
                 }
                 break;
@@ -440,17 +441,17 @@ export function wiz_kill() {
         if (mtmp) {
             let tame = !!cptr.ld1s(cptr.add(mtmp, 65));
             let seen = ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || ((cptr.ldI32(cptr.add(u, 1848)) & 1) | 0 && cptr.eq(mtmp, cptr.ldPtr(cptr.add(u, 2416))) ? 1 : 0) ? 1 : 0);
-            let flgs = (5 | ((tame && (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0) ? 1 : 0) ? 8 : 0));
-            let articl = tame ? 3 : (seen ? 1 : 2);
+            let flgs = (5 | ((tame && (cptr.ldPtr(cptr.add((mtmp), 312)) && (cptr.ldPtr(cptr.ldPtr(cptr.add((mtmp), 312)))) ? 1 : 0) ? 1 : 0) ? NHM.SUPPRESS_SADDLE : 0));
+            let articl = tame ? NHM.ARTICLE_YOUR : (seen ? NHM.ARTICLE_THE : NHM.ARTICLE_A);
             let adjs = tame ? (!seen ? __sl11 : __sl12) : (!seen ? __sl13 : null);
             let Mn = x_monnam(mtmp, articl, adjs, flgs, 0);
             if (!cptr.ld1s(cptr.add(iflags, 135))) {
                 You(__sl14, ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_MANES, 96)) ? 1 : 0) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == NHC.S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == NHC.S_VORTEX ? 1 : 0) ? 1 : 0) ? __sl15 : __sl16, Mn);
-                xkilled(mtmp, 1);
+                xkilled(mtmp, NHM.XKILL_NOMSG);
             } else {
                 cptr.st1(cptr.add(svc, 77), 1);
                 pline(__sl17, upstart(Mn), ((((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 80)) & 2n) != 0n) || cptr.eq((cptr.ldPtr(cptr.add(mtmp, 8))), cptr.add(mons, NHC.PM_MANES, 96)) ? 1 : 0) || ((cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == NHC.S_GOLEM) || cptr.ld1s(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 28)) == NHC.S_VORTEX ? 1 : 0) ? 1 : 0) ? __sl18 : __sl19);
-                monkilled(mtmp, null, 0);
+                monkilled(mtmp, null, NHM.AD_PHYS);
                 cptr.st1(cptr.add(svc, 77), 0);
             }
             if (cptr.ld1u(cptr.add(u, 36)) || !on_level(cptr.add(u, 24), uarehere) ? 1 : 0)
@@ -461,7 +462,7 @@ export function wiz_kill() {
         }
     }
     dmonsfree();
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:353 @returns {CInt} */
@@ -472,13 +473,13 @@ export function wiz_load_lua() {
         cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
         getlin(__sl21, cptr.decay(buf));
         if (cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)) == 27 || cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)) == 0 ? 1 : 0)
-            return 2;
+            return NHM.ECMD_CANCEL;
         if (!cptr.strchr(cptr.decay(buf), 46))
             cptr.strcat(cptr.decay(buf), __sl22);
         void load_lua(cptr.decay(buf), sbi);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_load_lua));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:376 @returns {CInt} */
@@ -488,7 +489,7 @@ export function wiz_load_splua() {
         cptr.st1(cptr.add(cptr.decay(buf), 0, 1), 0);
         getlin(__sl23, cptr.decay(buf));
         if (cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)) == 27 || cptr.ld1s(cptr.add(cptr.decay(buf), 0, 1)) == 0 ? 1 : 0)
-            return 2;
+            return NHM.ECMD_CANCEL;
         if (!cptr.strchr(cptr.decay(buf), 46))
             cptr.strcat(cptr.decay(buf), __sl22);
         lspo_reset_level(null);
@@ -496,7 +497,7 @@ export function wiz_load_splua() {
         lspo_finalize_level(null);
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_load_splua));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:399 @returns {CInt} */
@@ -505,7 +506,7 @@ export function wiz_level_tele() {
         level_tele();
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_level_tele));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 const __static_wiz_flip_level_choices = cptr.bytes("0123"); /** C ref: wizcmds.c:414 — char[5] (function-static) */
@@ -526,7 +527,7 @@ export function wiz_flip_level() {
             pline(__sl24, cptr.ldPtr(cptr.add(c_common_strings, 64)));
         }
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:446 @returns {CInt} */
@@ -544,31 +545,31 @@ export function wiz_level_change() {
         ret = sscanf(cptr.decay(buf), __sl26, newlevel, dummy);
     if (ret != 1) {
         pline(__sl24, cptr.ldPtr(cptr.add(c_common_strings, 64)));
-        return 0;
+        return NHM.ECMD_OK;
     }
     if (newlevel.v == cptr.ldI32(cptr.add(u, 48))) {
         You(__sl27);
     } else if (newlevel.v < cptr.ldI32(cptr.add(u, 48))) {
         if (cptr.ldI32(cptr.add(u, 48)) == 1) {
             You(__sl28);
-            return 0;
+            return NHM.ECMD_OK;
         }
         if (newlevel.v < 1)
             newlevel.v = 1;
         while (cptr.ldI32(cptr.add(u, 48)) > newlevel.v)
             losexp(__sl29);
     } else {
-        if (cptr.ldI32(cptr.add(u, 48)) >= 30) {
+        if (cptr.ldI32(cptr.add(u, 48)) >= NHM.MAXULEV) {
             You(__sl30);
-            return 0;
+            return NHM.ECMD_OK;
         }
-        if (newlevel.v > 30)
-            newlevel.v = 30;
+        if (newlevel.v > NHM.MAXULEV)
+            newlevel.v = NHM.MAXULEV;
         while (cptr.ldI32(cptr.add(u, 48)) < newlevel.v)
             pluslvl(0);
     }
     cptr.stI32(cptr.add(u, 52), cptr.ldI32(cptr.add(u, 48)));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:494 @returns {CInt} */
@@ -582,10 +583,10 @@ export function wiz_telekinesis() {
     do {
         ans = getpos(cc, 1, __sl5);
         if (ans < 0 || cptr.ldI16(cc) < 1 ? 1 : 0)
-            return 2;
+            return NHM.ECMD_CANCEL;
         if ((((mtmp = (cptr.ldPtr(cptr.add(cptr.add(cptr.add(svl, 75600), cptr.ldI16(cc), 168), cptr.ldI16(cptr.add(cc, 2)), 8)))) !== null) && (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0) || ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) {
             if (!getdir(__sl32))
-                return 2;
+                return NHM.ECMD_CANCEL;
             if (mtmp) {
                 mhurtle(mtmp, cptr.ldI32(cptr.add(u, 4)), cptr.ldI32(cptr.add(u, 8)), 6);
                 if (!(cptr.ldI32(cptr.add((mtmp), 52)) < 1) && (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0) {
@@ -598,7 +599,7 @@ export function wiz_telekinesis() {
             }
         }
     } while (cptr.ld1u(cptr.add(u, 36)) == NHC.UTOTYPE_NONE);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:534 @returns {CInt} */
@@ -606,11 +607,11 @@ export function wiz_panic() {
     if (cptr.ld1s(cptr.add(iflags, 15))) {
         cptr.stI32(cptr.add(u, 2196), cptr.stI32(cptr.add(u, 2200), 1000));
         cptr.stI32(cptr.add(u, 2208), cptr.stI32(cptr.add(u, 2212), 1000));
-        return 0;
+        return NHM.ECMD_OK;
     }
     if (paranoid_query(1, __sl33))
         panic(__sl34);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:549 @returns {CInt} */
@@ -626,13 +627,13 @@ export function wiz_fuzzer() {
             cptr.st1(cptr.add(iflags, 15), NHC.fuzzer_impossible_panic);
         }
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:568 @returns {CInt} */
 export function wiz_polyself() {
     polyself(NHC.POLY_CONTROLLED);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:576 @returns {CInt} */
@@ -645,12 +646,12 @@ export function wiz_show_seenv() {
     let curx;
     let v;
     let row = new Uint8Array(81);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     startx = i16((1 > ((cptr.ldI16(u) - 20) | 0) ? 1 : ((cptr.ldI16(u) - 20) | 0)));
-    stopx = i16((((startx + 40) | 0) < 80 ? ((startx + 40) | 0) : 80));
+    stopx = i16((((startx + 40) | 0) < NHM.COLNO ? ((startx + 40) | 0) : NHM.COLNO));
     if (((stopx - startx) | 0) == 40)
         startx++;
-    for (y = 0; y < 21; y++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
         for (x = startx, curx = 0; x < stopx; x++, curx = i16(curx + 2)) {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
                 cptr.st1(cptr.add(cptr.decay(row), curx, 1), cptr.st1(cptr.add(cptr.decay(row), (curx + 1) | 0, 1), 64));
@@ -670,7 +671,7 @@ export function wiz_show_seenv() {
     }
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 1);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:621 @returns {CInt} */
@@ -680,12 +681,12 @@ export function wiz_show_vision() {
     let y;
     let v;
     let row = new Uint8Array(81);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
-    void cptr.sprintf(cptr.decay(row), __sl40, 1, 2, 4);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
+    void cptr.sprintf(cptr.decay(row), __sl40, NHM.COULD_SEE, NHM.IN_SIGHT, NHM.TEMP_LIT);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(row));
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl41);
-    for (y = 0; y < 21; y++) {
-        for (x = 1; x < 80; x++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
+        for (x = 1; x < NHM.COLNO; x++) {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
                 cptr.st1(cptr.add(cptr.decay(row), x, 1), 64);
             } else {
@@ -701,7 +702,7 @@ export function wiz_show_vision() {
     }
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 1);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:657 @returns {CInt} */
@@ -712,16 +713,16 @@ export function wiz_show_wmodes() {
     let row = new Uint8Array(81);
     let lev;
     let istty = schar((cptr.ldI32(cptr.add(windowprocs, 8)) == NHC.wp_tty));
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     if (istty)
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl41);
-    for (y = 0; y < 21; y++) {
-        for (x = 0; x < 80; x++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
+        for (x = 0; x < NHM.COLNO; x++) {
             lev = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
                 cptr.st1(cptr.add(cptr.decay(row), x, 1), 64);
             else if (((cptr.ld1s(cptr.add(lev, 4))) && (cptr.ld1s(cptr.add(lev, 4))) <= NHC.DBWALL ? 1 : 0) || cptr.ld1s(cptr.add(lev, 4)) == NHC.SDOOR ? 1 : 0)
-                cptr.st1(cptr.add(cptr.decay(row), x, 1), schar(((48 + (((cptr.ldI32(cptr.add(lev, 8)) & 31) | 0) & 7)) | 0)));
+                cptr.st1(cptr.add(cptr.decay(row), x, 1), schar(((48 + (((cptr.ldI32(cptr.add(lev, 8)) & 31) | 0) & NHM.WM_MASK)) | 0)));
             else if (cptr.ld1s(cptr.add(lev, 4)) == NHC.CORR)
                 cptr.st1(cptr.add(cptr.decay(row), x, 1), 35);
             else if (((cptr.ld1s(cptr.add(lev, 4))) >= NHC.ROOM) || ((cptr.ld1s(cptr.add(lev, 4))) == NHC.DOOR) ? 1 : 0)
@@ -729,12 +730,12 @@ export function wiz_show_wmodes() {
             else
                 cptr.st1(cptr.add(cptr.decay(row), x, 1), 120);
         }
-        cptr.st1(cptr.add(cptr.decay(row), 80, 1), 0);
+        cptr.st1(cptr.add(cptr.decay(row), NHM.COLNO, 1), 0);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.add(cptr.decay(row), 1, 1));
     }
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 1);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:693 */
@@ -745,11 +746,11 @@ export function wiz_map_levltyp() {
     let terrain;
     let row = new Uint8Array(81);
     let istty = schar((!strcmp(cptr.ldPtr(windowprocs), __sl42)));
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     if (istty)
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl41);
-    for (y = 0; y < 21; y++) {
-        for (x = 1; x < 80; x++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
+        for (x = 1; x < NHM.COLNO; x++) {
             terrain = cptr.ld1s(cptr.add(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4));
             cptr.st1(cptr.add(cptr.decay(row), (x - 1) | 0, 1), schar(((terrain == NHC.STONE && !may_dig(x, y) ? 1 : 0) ? 42 : ((terrain < 10) ? (48 + terrain) | 0 : ((terrain < 36) ? (((97 + terrain) | 0) - 10) | 0 : (((65 + terrain) | 0) - 36) | 0)))));
         }
@@ -863,7 +864,7 @@ export function wiz_levltyp_legend() {
     let dsc;
     let fmt;
     let buf = new Uint8Array(256);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl82);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl41);
     fmt = __sl83;
@@ -896,14 +897,14 @@ export function wiz_smell() {
     cptr.stI16(cptr.add(cc, 2), cptr.ldI16(cptr.add(u, 2)));
     if (!olfaction(cptr.ldPtr(cptr.add(gy, 16)))) {
         You(__sl85);
-        return 0;
+        return NHM.ECMD_OK;
     }
     You(__sl86);
     do {
         pline(__sl87);
         ans = getpos(cc, 1, __sl5);
         if (ans < 0 || cptr.ldI16(cc) < 0 ? 1 : 0) {
-            return 2;
+            return NHM.ECMD_CANCEL;
         }
         is_you = 0;
         if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16(cptr.add(cc, 2))) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0)) {
@@ -932,7 +933,7 @@ export function wiz_smell() {
                 unmap_invisible(cptr.ldI16(cc), cptr.ldI16(cptr.add(cc, 2)));
         }
     } while (1);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 const __static_wiz_intrinsic_wizintrinsic = cptr.bytes("#wizintrinsic"); /** C ref: wizcmds.c:952 — char[14] (function-static) */
@@ -954,9 +955,9 @@ export function wiz_intrinsic() {
         let newtimeout;
         let propname;
         let pick_list = cptr.box(null);
-        let clr = 8;
+        let clr = NHM.NO_COLOR;
         cptr.memcpy(any, cptr.add(cg, 536), 8);
-        win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
         if (cptr.ld1s(cptr.add(iflags, 178))) {
             void cptr.sprintf(cptr.decay(buf), __sl93, 30);
@@ -975,10 +976,10 @@ export function wiz_intrinsic() {
                 void cptr.sprintf(cptr.decay(buf), __sl95, propname, oldtimeout);
             else
                 void cptr.sprintf(cptr.decay(buf), __sl24, propname);
-            add_menu(win, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, __sl96);
-        n = select_menu(win, 2, pick_list);
+        n = select_menu(win, NHM.PICK_ANY, pick_list);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
         for (j = 0; j < n; ++j) {
             i = (cptr.ldI32(cptr.add(pick_list.v, j, 24)) - 1) | 0;
@@ -1007,7 +1008,7 @@ export function wiz_intrinsic() {
                 make_hallucinated(newtimeout, 1, 0n);
                 break;
                 case NHC.SICK:
-                typ = !(rng_log_enabled() ? (rng_log_set_caller(__sl97, 1036, __sl98), rn2(2)) : rn2(2)) ? 1 : 2;
+                typ = !(rng_log_enabled() ? (rng_log_set_caller(__sl97, 1036, __sl98), rn2(2)) : rn2(2)) ? NHM.SICK_VOMITABLE : NHM.SICK_NONVOMITABLE;
                 make_sick(newtimeout, cptr.decay(__static_wiz_intrinsic_wizintrinsic), 1, typ);
                 break;
                 case NHC.SLIMED:
@@ -1016,7 +1017,7 @@ export function wiz_intrinsic() {
                 break;
                 case NHC.STONED:
                 void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.STONED, 24), 16)) ? __sl41 : __sl99, __sl101);
-                make_stoned(newtimeout, cptr.decay(buf), 1, cptr.decay(__static_wiz_intrinsic_wizintrinsic));
+                make_stoned(newtimeout, cptr.decay(buf), NHM.KILLED_BY, cptr.decay(__static_wiz_intrinsic_wizintrinsic));
                 break;
                 case NHC.STUNNED:
                 make_stunned(newtimeout, 1);
@@ -1063,13 +1064,13 @@ export function wiz_intrinsic() {
         docrt();
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_intrinsic));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1102 @returns {CInt} */
 export function wiz_rumor_check() {
     rumor_check();
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1112 — char[18] */
@@ -1348,8 +1349,8 @@ function levl_sanity_check() {
     let y;
     if (((cptr.ldI32(cptr.add(u, 1852)) & 1)))
         return;
-    for (y = 0; y < 21; y++) {
-        for (x = 1; x < 80; x++) {
+    for (y = 0; y < NHM.ROWNO; y++) {
+        for (x = 1; x < NHM.COLNO; x++) {
             if ((does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)) ? 1 : 0) != get_viz_clear(x, y))
                 impossible(__sl123, x, y);
         }
@@ -1429,7 +1430,7 @@ function list_migrating_mons(nextlevl) {
         c = yn_function(__sl128, cptr.decay(prmpt), 113, 1);
         n = ((c == 99) ? here : ((c == 110) ? nxtlv : ((c == 111) ? other : ((c == 97) ? (((here + nxtlv) | 0) + other) | 0 : 0)))) >>> 0;
         if (n > 0) {
-            win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+            win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
             switch (c) {
                 case 99:
                 case 110:
@@ -1467,7 +1468,7 @@ function list_migrating_mons(nextlevl) {
                 if (c == 111 || c == 97 ? 1 : 0)
                     void cptr.sprintf(eos(cptr.decay(buf)), __sl137, cptr.ldI16(cptr.add(mtmp, 32)), cptr.ldI16(cptr.add(mtmp, 34)));
                 xyloc = cptr.ldI16(cptr.add(cptr.add(mtmp, 36), 0, 4));
-                if (xyloc == 2) {
+                if (xyloc == NHM.MIGR_EXACT_XY) {
                     x = cptr.ldI16(cptr.add(cptr.add(mtmp, 36), 1, 4));
                     y = cptr.ldI16(cptr.add(cptr.add(cptr.add(mtmp, 36), 1, 4), 2));
                     void cptr.sprintf(eos(cptr.decay(buf)), __sl138, x, y);
@@ -1495,7 +1496,7 @@ export function wiz_show_stats() {
     let total_ovr_count = cptr.box(0n);
     let total_misc_size = cptr.box(0n);
     let total_misc_count = cptr.box(0n);
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl140);
     total_obj_count.v = (total_obj_size.v = 0n);
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(stats_hdr));
@@ -1543,7 +1544,7 @@ export function wiz_show_stats() {
     (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, cptr.decay(buf));
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 const __static_wiz_display_macros_display_issues = cptr.bytes("Display macro issues:"); /** C ref: wizcmds.c:1707 — char[22] (function-static) */
@@ -1557,7 +1558,7 @@ export function wiz_display_macros() {
     let trouble = 0;
     let no_glyph = NHC.MAX_GLYPH;
     let max_glyph = NHC.MAX_GLYPH;
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0) ? 1 : 0)) {
             test = glyph_to_cmap(glyph);
@@ -1603,13 +1604,13 @@ export function wiz_display_macros() {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl164);
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1782 @returns {CInt} */
 export function wiz_show_nhuuid() {
     pline(__sl165, cptr.add(svn, 4));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 const __static_wiz_mon_diff_window_title = cptr.bytes("Review of monster difficulty ratings [index:level]:"); /** C ref: wizcmds.c:1792 — char[52] (function-static) */
@@ -1625,7 +1626,7 @@ export function wiz_mon_diff() {
     let mdiff = 0;
     let mlev;
     let ptr;
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     for (ptr = cptr.add(mons, 0, 96); cptr.ld1s(cptr.add(ptr, 28)); ptr = cptr.add(ptr, 1, 96), cnt++) {
         mcalculated = mstrength(ptr);
         mhardcoded = cptr.ld1u(cptr.add(ptr, 90));
@@ -1644,7 +1645,7 @@ export function wiz_mon_diff() {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(win, 0, __sl168);
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1832 @returns {CInt} */
@@ -1658,7 +1659,7 @@ export function wiz_objprobs() {
     for (otyp = NHC.FIRST_OBJECT; otyp < NHC.NUM_OBJECTS; otyp++) {
         cptr.stI32(cptr.add(probsum, cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 70)), 4), (cptr.ldI32(cptr.add(probsum, cptr.ld1s(cptr.add(cptr.add(objects, otyp, 120), 70)), 4)) + cptr.ldI16(cptr.add(cptr.add(objects, otyp, 120), 74))) | 0);
     }
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
     for (otyp = NHC.FIRST_OBJECT; otyp < NHC.NUM_OBJECTS; otyp++) {
         if (!(cptr.ldPtr(cptr.add(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))))
             continue;
@@ -1671,7 +1672,7 @@ export function wiz_objprobs() {
     }
     (cptr.ldPtr(cptr.add(windowprocs, 120)))(win, 0);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1873 @returns {CInt} */
@@ -1696,7 +1697,7 @@ export function wiz_migrate_mons() {
     else
         pline(__sl172);
     if (cptr.ld1s(cptr.decay(inbuf)) == 27 || cptr.ld1s(cptr.decay(inbuf)) == 0 ? 1 : 0)
-        return 0;
+        return NHM.ECMD_OK;
     mcount = atoi(cptr.decay(inbuf));
     if (mcount < 0) {
         use_random_mon = 0;
@@ -1710,16 +1711,16 @@ export function wiz_migrate_mons() {
     while (mcount > 0) {
         if (use_random_mon) {
             ptr = rndmonst();
-            mtmp = makemon(ptr, 0, 0, 131072);
+            mtmp = makemon(ptr, 0, 0, NHM.MM_NOMSG);
         } else {
             mtmp = cptr.ldPtr(cptr.add(svl, 89056));
         }
         if (mtmp)
-            migrate_to_level(mtmp, ledger_no(tolevel), 0, null);
+            migrate_to_level(mtmp, ledger_no(tolevel), NHM.MIGR_RANDOM, null);
         mcount--;
     }
     cptr.st1(cptr.add(iflags, 86), mongen_saved);
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 const __static_wiz_custom_wizcustom = cptr.bytes("#wizcustom"); /** C ref: wizcmds.c:1939 — char[11] (function-static) */
@@ -1734,7 +1735,7 @@ export function wiz_custom() {
         let pick_list = cptr.box(null);
         if (!glyphid_cache_status())
             fill_glyphid_cache();
-        win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
         add_menu_heading(win, __sl173);
         void cptr.sprintf(cptr.decay(bufa), __sl174, cptr.decay(__static_wiz_custom_wizcustom), BigInt(cptr.ldI32(cptr.add(iflags, 120)) >>> 0), cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), NHC.PRIMARYSET, 48), 8)) ? cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), NHC.PRIMARYSET, 48), 8)) : __sl175);
@@ -1746,7 +1747,7 @@ export function wiz_custom() {
         void cptr.sprintf(cptr.decay(buf), __sl24, cptr.decay(bufa));
         wizcustom_glyphids(win);
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, cptr.decay(bufa));
-        n = select_menu(win, 0, pick_list);
+        n = select_menu(win, NHM.PICK_NONE, pick_list);
         (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
         if (n >= 1)
             cptr.free(pick_list.v);
@@ -1755,13 +1756,13 @@ export function wiz_custom() {
         docrt();
     } else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_custom));
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: wizcmds.c:1987 — @param {CInt} win @param {CInt} glyphnum @param {CPtr} id */
 export function wizcustom_callback(win, glyphnum, id) {
     let cgm;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     let buf = new Uint8Array(256);
     let bufa = new Uint8Array(256);
     let bufb = new Uint8Array(256);
@@ -1788,7 +1789,7 @@ export function wizcustom_callback(win, glyphnum, id) {
             }
             cptr.stI32(any, (glyphnum + 1) | 0);
             nh_snprintf(__sl183, 2021, cptr.decay(buf), 256n, __sl184, cptr.decay(bufa), cptr.decay(bufb), cptr.decay(bufc), cptr.decay(bufu));
-            add_menu(win, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), 0);
+            add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
     return;

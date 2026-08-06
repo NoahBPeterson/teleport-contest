@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -174,7 +175,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
                 impossible(__sl5);
                 return cptr.strcpy(rumor_buf, __sl6);
             }
-            void cptr.strcpy(rumor_buf, get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, 60));
+            void cptr.strcpy(rumor_buf, get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, NHM.MD_PAD_RUMORS));
         } while ((count++ < 50 && exclude_cookie ? 1 : 0) && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0);
         void fclose(rumors);
         if (count >= 50)
@@ -218,7 +219,7 @@ export function rumor_check() {
                     { __go_no_rumors = true; break __skip_no_rumors; }
                 }
             }
-            tmpwin.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+            tmpwin.v = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64(cptr.add(gt, 408))), cptr.ldU64(cptr.add(gt, 408)), cptr.ldI64(cptr.add(gt, 416)), BigInt.asUintN(64, cptr.ldI64(cptr.add(gt, 416))), cptr.ldI64(cptr.add(gt, 400)), BigInt.asUintN(64, cptr.ldI64(cptr.add(gt, 400))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin.v, 0, cptr.decay(rumor_buf));
             void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64(cptr.add(gf, 112))), cptr.ldU64(cptr.add(gf, 112)), cptr.ldI64(cptr.add(gf, 120)), BigInt.asUintN(64, cptr.ldI64(cptr.add(gf, 120))), cptr.ldI64(cptr.add(gf, 104)), BigInt.asUintN(64, cptr.ldI64(cptr.add(gf, 104))));
@@ -286,7 +287,7 @@ function others_check(ftype, fname, winptr) {
     if (fh) {
         __lbl_closeit: {
             if (tmpwin == -1) {
-                cptr.stI32(winptr, tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5));
+                cptr.stI32(winptr, tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT));
                 if (tmpwin == -1) {
                     impossible(cptr.decay(__static_others_check_errfmt), fname, __sl22);
                     break __lbl_closeit;
@@ -412,12 +413,12 @@ const __static_outrumor_fortune_msg = cptr.bytes("This cookie has a scrap of pap
 export function outrumor(truth, mechanism) {
     let line;
     let buf = new Uint8Array(256);
-    let reading = schar((mechanism == 1 || mechanism == 2 ? 1 : 0));
+    let reading = schar((mechanism == NHM.BY_COOKIE || mechanism == NHM.BY_PAPER ? 1 : 0));
     if (reading) {
-        if (is_fainted() && mechanism == 1 ? 1 : 0) {
+        if (is_fainted() && mechanism == NHM.BY_COOKIE ? 1 : 0) {
             return;
         } else if (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0)) {
-            if (mechanism == 1)
+            if (mechanism == NHM.BY_COOKIE)
                 pline(cptr.decay(__static_outrumor_fortune_msg));
             pline(__sl33);
             return;
@@ -427,16 +428,16 @@ export function outrumor(truth, mechanism) {
     if (!cptr.ld1s(line))
         line = __sl34;
     switch (mechanism) {
-        case 0:
+        case NHM.BY_ORACLE:
         pline(__sl35, (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 558, __sl36), rn2(4)) : rn2(4)) ? __sl37 : (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl36), rn2(3)) : rn2(3)) ? __sl38 : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 560, __sl36), rn2(2)) : rn2(2)) ? __sl39 : __sl13))));
         ;
         verbalize(__sl40, line);
         return;
-        case 1:
+        case NHM.BY_COOKIE:
         pline(cptr.decay(__static_outrumor_fortune_msg));
         // @FallThrough
         ;
-        case 2:
+        case NHM.BY_PAPER:
         pline(__sl41);
         break;
     }
@@ -473,7 +474,7 @@ export function save_oracles(nhfp) {
             }
         }
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4)) {
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING)) {
         if (cptr.ldI32(svo)) {
             cptr.stI32(svo, 0), cptr.stI32(cptr.add(go, 552), 0);
         }
@@ -524,13 +525,13 @@ export function outoracle(special, delphi) {
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx, 8))), 0);
             if (!special)
                 cptr.stU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), oracle_idx, 8), cptr.ldU64(cptr.add(cptr.ldPtr(cptr.add(svo, 8)), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8)));
-            tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+            tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
             if (delphi)
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, special ? __sl48 : __sl49);
             else
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl50);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl13);
-            while (fgets(cptr.decay(line), 80, oracles) && strcmp(cptr.decay(line), __sl51) ? 1 : 0) {
+            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51) ? 1 : 0) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
                 (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
@@ -557,32 +558,32 @@ export function doconsult(oracl) {
     umoney = money_cnt(cptr.ldPtr(cptr.add(gi, 8)));
     if (!oracl) {
         There(__sl52);
-        return 0;
+        return NHM.ECMD_OK;
     } else if (!(cptr.ldI32(cptr.add(oracl, 168)) & 1)) {
         pline(__sl53, Monnam(oracl));
-        return 0;
+        return NHM.ECMD_OK;
     } else if (!umoney) {
         You(__sl54);
-        return 0;
+        return NHM.ECMD_OK;
     }
     void cptr.sprintf(cptr.decay(qbuf), __sl55, minor_cost, currency(BigInt(minor_cost)));
     switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
         default:
         case 113:
-        return 0;
+        return NHM.ECMD_OK;
         case 121:
         if (umoney < BigInt(minor_cost)) {
             You(__sl56);
-            return 0;
+            return NHM.ECMD_OK;
         }
         u_pay = minor_cost;
         break;
         case 110:
         if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32(cptr.add(go, 552)) < 0 ? 1 : 0) ? 1 : 0)
-            return 0;
+            return NHM.ECMD_OK;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, currency(BigInt(major_cost)));
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
-            return 0;
+            return NHM.ECMD_OK;
         u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
         break;
     }
@@ -592,7 +593,7 @@ export function doconsult(oracl) {
         record_achievement(NHC.ACH_ORCL);
     add_xpts = 0;
     if (u_pay == minor_cost) {
-        outrumor(1, 0);
+        outrumor(1, NHM.BY_ORACLE);
         if (!(cptr.ldI32(cptr.add(u, 1884)) & 1))
             add_xpts = (u_pay / ((cptr.ldI32(cptr.add(u, 1888)) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32(cptr.add(u, 1884), 1);
@@ -608,7 +609,7 @@ export function doconsult(oracl) {
         more_experienced(add_xpts, (u_pay / 50) | 0);
         newexplevel();
     }
-    return 1;
+    return NHM.ECMD_TIME;
 }
 
 /** C ref: rumors.c:770 — @param {CPtr} filename */
@@ -657,7 +658,7 @@ function init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
-            if ((cptr.ldU16(cptr.add(mptr, 34)) & 4096) != 0 && !the_unique_pm(mptr) ? 1 : 0)
+            if ((cptr.ldU16(cptr.add(mptr, 34)) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr) ? 1 : 0)
                 continue;
             for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
                 nam = cptr.ldPtr(cptr.add(mptr, mgend, 8));
@@ -704,7 +705,7 @@ function init_CapMons() {
     if (cptr.ld1s(cptr.add(flags, 10)) && debugcore(__sl62, 0) ? 1 : 0) {
         let buf = new Uint8Array(256);
         let i;
-        let tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(5);
+        let tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl63);
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
             void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtr(cptr.add(CapMons, i, 8)));

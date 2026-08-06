@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { flags, gh, gi, gm, gt, gu, iflags, program_state, svd, svk, svm, svp, u, ubirthday, urealtime } from './decl.js';
 import { impossible, raw_printf } from './pline.js';
 import { an } from './objnam.js';
@@ -237,13 +238,13 @@ export function formatkiller(buf, siz, how, incl_helpless) {
         impossible(__sl0, cptr.ldI32(cptr.add(svk, 12)));
         // @FallThrough
         ;
-        case 2:
+        case NHM.NO_KILLER_PREFIX:
         break;
-        case 0:
+        case NHM.KILLED_BY_AN:
         kname = an(kname);
         // @FallThrough
         ;
-        case 1:
+        case NHM.KILLED_BY:
         void __builtin___strncat_chk(buf, cptr.ldPtr(cptr.add(__static_formatkiller_killed_by_prefix, how, 8)), BigInt(((siz - 1) >>> 0) >>> 0), __builtin_object_size(buf, 1));
         l = Strlen_(buf, __sl1, 123);
         buf = cptr.add(buf, l), siz = (siz - l) | 0;
@@ -275,7 +276,7 @@ function topten_print(x) {
     if (cptr.ldI32(cptr.add(gt, 440)) == -1)
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(x);
     else
-        (cptr.ldPtr(cptr.add(windowprocs, 144)))(cptr.ldI32(cptr.add(gt, 440)), 0, x);
+        (cptr.ldPtr(cptr.add(windowprocs, 144)))(cptr.ldI32(cptr.add(gt, 440)), NHM.ATR_NONE, x);
 }
 
 /** C ref: topten.c:174 — @param {CPtr} x */
@@ -283,7 +284,7 @@ function topten_print_bold(x) {
     if (cptr.ldI32(cptr.add(gt, 440)) == -1)
         (cptr.ldPtr(cptr.add(windowprocs, 248)))(x);
     else
-        (cptr.ldPtr(cptr.add(windowprocs, 144)))(cptr.ldI32(cptr.add(gt, 440)), 1, x);
+        (cptr.ldPtr(cptr.add(windowprocs, 144)))(cptr.ldI32(cptr.add(gt, 440)), NHM.ATR_BOLD, x);
 }
 
 /** C ref: topten.c:183 — @param {CPtr} lev @returns {CInt} */
@@ -388,7 +389,7 @@ function writexlentry(rfile, tt, how) {
     void fprintf(rfile, __sl30, 9, encode_extended_achievements(cptr.decay(achbuf)));
     void fprintf(rfile, __sl31, 9, encode_extended_conducts(cptr.decay(buf)));
     void fprintf(rfile, __sl32, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64(cptr.add(urealtime, 16))));
-    void fprintf(rfile, __sl33, 9, cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ldI32(cptr.add(flags, 152)), 48), 32)), 9, cptr.ldPtr(cptr.add(cptr.add(aligns, (1 - cptr.ld1s(cptr.add(cptr.add(u, 2184), 1, 1))) | 0, 32), 16)));
+    void fprintf(rfile, __sl33, 9, cptr.ldPtr(cptr.add(cptr.add(genders, cptr.ldI32(cptr.add(flags, 152)), 48), 32)), 9, cptr.ldPtr(cptr.add(cptr.add(aligns, (1 - cptr.ld1s(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1))) | 0, 32), 16)));
     void fprintf(rfile, __sl34, 9, encodexlogflags());
     void fprintf(rfile, __sl35, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtr(cptr.add(gi, 8))) + hidden_gold(1)));
     void fprintf(rfile, __sl36, 9, cptr.ldI64(cptr.add(u, 2040)));
@@ -625,14 +626,14 @@ export function topten(how, when) {
         if (cptr.ldI32(cptr.add(program_state, 20)))
             return;
         if (cptr.ld1s(cptr.add(iflags, 146))) {
-            cptr.stI32(cptr.add(gt, 440), (cptr.ldPtr(cptr.add(windowprocs, 104)))(5));
+            cptr.stI32(cptr.add(gt, 440), (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_TEXT));
         }
         t0_used = 0;
         t0 = alloc(208);
         cptr.memcpy(t0, zerott, 208);
-        cptr.stI32(cptr.add(t0, 40), 5);
-        cptr.stI32(cptr.add(t0, 44), 0);
-        cptr.stI32(cptr.add(t0, 48), 0);
+        cptr.stI32(cptr.add(t0, 40), NHM.VERSION_MAJOR);
+        cptr.stI32(cptr.add(t0, 44), NHM.VERSION_MINOR);
+        cptr.stI32(cptr.add(t0, 48), NHM.PATCHLEVEL);
         cptr.stI64(cptr.add(t0, 8), cptr.ldI64(cptr.add(u, 2384)));
         cptr.stI32(cptr.add(t0, 16), cptr.ldI16(cptr.add(u, 24)));
         cptr.stI32(cptr.add(t0, 20), observable_depth(cptr.add(u, 24)));
@@ -650,8 +651,8 @@ export function topten(how, when) {
         cptr.stI64(cptr.add(t0, 64), yyyymmdd(ubirthday.v));
         cptr.stI64(cptr.add(t0, 56), yyyymmdd(when));
         cptr.stPtr(t0, null);
-        if (lock_file(__sl84, 5, 10)) {
-            if (!(lfile = fopen_datafile(__sl84, __sl85, 5))) {
+        if (lock_file(__sl84, NHM.SCOREPREFIX, 10)) {
+            if (!(lfile = fopen_datafile(__sl84, __sl85, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32(cptr.add(program_state, 8)))
                     (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl86);
             } else {
@@ -660,8 +661,8 @@ export function topten(how, when) {
             }
             unlock_file(__sl84);
         }
-        if (lock_file(__sl87, 5, 10)) {
-            if (!(xlfile = fopen_datafile(__sl87, __sl85, 5))) {
+        if (lock_file(__sl87, NHM.SCOREPREFIX, 10)) {
+            if (!(xlfile = fopen_datafile(__sl87, __sl85, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32(cptr.add(program_state, 8)))
                     (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl88);
             } else {
@@ -680,9 +681,9 @@ export function topten(how, when) {
                 }
             break __lbl_showwin;
         }
-        if (!lock_file(__sl92, 5, 60))
+        if (!lock_file(__sl92, NHM.SCOREPREFIX, 60))
             break __lbl_destroywin;
-        rfile = fopen_datafile(__sl92, __sl93, 5);
+        rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
         if (!rfile) {
             if (!cptr.ldI32(cptr.add(program_state, 8)))
                 (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl94);
@@ -741,7 +742,7 @@ export function topten(how, when) {
         }
         if (flg) {
             void fclose(rfile);
-            if (!(rfile = fopen_datafile(__sl92, __sl96, 5))) {
+            if (!(rfile = fopen_datafile(__sl92, __sl96, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32(cptr.add(program_state, 8)))
                     (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl97);
                 unlock_file(__sl92);
@@ -814,7 +815,7 @@ function outheader() {
     let bp;
     void cptr.strcpy(cptr.decay(linebuf), __sl100);
     bp = eos(cptr.decay(linebuf));
-    while (cptr.cmp(bp, cptr.add(cptr.add(cptr.decay(linebuf), 80), -(9))) < 0)
+    while (cptr.cmp(bp, cptr.add(cptr.add(cptr.decay(linebuf), NHM.COLNO), -(9))) < 0)
         cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
     void cptr.strcpy(bp, __sl101);
     topten_print(cptr.decay(linebuf));
@@ -960,7 +961,7 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
     let arg;
     let nxt;
     let i;
-    if (current_ver && ((cptr.ldI32(cptr.add(t1, 40)) != 5 || cptr.ldI32(cptr.add(t1, 44)) != 0 ? 1 : 0) || cptr.ldI32(cptr.add(t1, 48)) != 0 ? 1 : 0) ? 1 : 0)
+    if (current_ver && ((cptr.ldI32(cptr.add(t1, 40)) != NHM.VERSION_MAJOR || cptr.ldI32(cptr.add(t1, 44)) != NHM.VERSION_MINOR ? 1 : 0) || cptr.ldI32(cptr.add(t1, 48)) != NHM.PATCHLEVEL ? 1 : 0) ? 1 : 0)
         return 0;
     if ((cptr.ldI32(cptr.add(sysopt, 108)) && !playerct ? 1 : 0) && cptr.ldI32(cptr.add(t1, 72)) == uid ? 1 : 0)
         return 1;
@@ -1000,7 +1001,7 @@ export function prscore(argc, argv) {
         raw_printf(__sl152, argc);
         return;
     }
-    rfile = fopen_datafile(__sl92, __sl93, 5);
+    rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
     if (!rfile) {
         (cptr.ldPtr(cptr.add(windowprocs, 240)))(__sl94);
         return;
@@ -1123,7 +1124,7 @@ export function get_rnd_toptenentry() {
     let i;
     let rfile;
     let tt;
-    rfile = fopen_datafile(__sl92, __sl93, 5);
+    rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
     if (!rfile) {
         impossible(__sl94);
         return null;
@@ -1160,10 +1161,10 @@ export function tt_oname(otmp) {
         return null;
     set_corpsenm(otmp, classmon(cptr.add(tt, 76)));
     if (cptr.ld1s(cptr.add(cptr.add(tt, 84), 0, 1)) == 70)
-        cptr.st1(cptr.add(otmp, 48), 1);
+        cptr.st1(cptr.add(otmp, 48), NHM.CORPSTAT_FEMALE);
     else if (cptr.ld1s(cptr.add(cptr.add(tt, 84), 0, 1)) == 77)
-        cptr.st1(cptr.add(otmp, 48), 2);
-    otmp = oname(otmp, cptr.add(tt, 92), 0);
+        cptr.st1(cptr.add(otmp, 48), NHM.CORPSTAT_MALE);
+    otmp = oname(otmp, cptr.add(tt, 92), NHM.ONAME_NO_FLAGS);
     return otmp;
 }
 

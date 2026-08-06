@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
 import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
 import { doinvoke, undiscovered_artifact } from './artifact.js';
@@ -255,10 +256,10 @@ function item_reading_classification(obj, outbuf) {
 /** C ref: iactions.c:127 — @param {CInt} win @param {CInt} act @param {CInt} let @param {CPtr} txt */
 function ia_addmenu(win, act, let$, txt) {
     let any = cptr.alloc(8);
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     cptr.stI32(any, act);
-    add_menu(win, nul_glyphinfo.v, any, let$, 0, 0, clr, txt, 0);
+    add_menu(win, nul_glyphinfo.v, any, let$, 0, NHM.ATR_NONE, clr, txt, NHM.MENU_ITEMFLAGS_NONE);
 }
 
 /** C ref: iactions.c:140 — @param {CPtr} otmp @param {CInt} act */
@@ -390,7 +391,7 @@ export function itemactions(otmp) {
     let mtmp;
     let light = (cptr.ldI32(cptr.add(otmp, 76)) & 1) | 0 ? __sl19 : __sl20;
     let already_worn = schar(((cptr.ldI64(cptr.add(otmp, 192)) & 983167n) != 0n));
-    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(win, 0n);
     if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) ? 1 : 0) || cptr.eq(otmp, uquiver.v) ? 1 : 0) {
         let verb = (cptr.eq(otmp, uquiver.v)) ? __sl21 : __sl22;
@@ -573,7 +574,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __sl119);
     if ((((cptr.ldI16(cptr.add(otmp, 32)) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32(cptr.add(otmp, 80)) & 1) ? 1 : 0) || cptr.ld1s(cptr.add(otmp, 51)) ? 1 : 0) || (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(otmp, 32)), 120), 40)) & 1) | 0 ? 1 : 0) || cptr.ldI16(cptr.add(otmp, 32)) == NHC.CRYSTAL_BALL ? 1 : 0)
         ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __sl120);
-    if (cptr.eq(otmp, uwep.v) || (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < 1) ? 1 : 0) ? 1 : 0) {
+    if (cptr.eq(otmp, uwep.v) || (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 72)) & 8192n) != 0n) || (cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 67)) < NHM.MZ_SMALL) ? 1 : 0) ? 1 : 0) {
         ;
     } else if (((cptr.ld1s(cptr.add(otmp, 49)) == NHC.WEAPON_CLASS || (cptr.ld1s(cptr.add((otmp), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((otmp), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0) ? 1 : 0) || (cptr.ldI16(cptr.add((otmp), 32)) == NHC.TOWEL && cptr.ld1s(cptr.add((otmp), 48)) > 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16(cptr.add(otmp, 32)) == NHC.HEAVY_IRON_BALL ? 1 : 0) {
         void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldI64(cptr.add(otmp, 40)) > 1n) ? __sl69 : __sl28);
@@ -601,7 +602,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __sl127);
     else if (cptr.eq(otmp, uswapwep.v))
         ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __sl128);
-    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) ? 1 : 0) && (cptr.ld1s(cptr.add(u, 2816)) || (((((((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 0, 4)) == 254) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 1, 4)) == 254)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 2, 4)) == 254)) | 0) > 1) && !uarms.v ? 1 : 0) && uwep.v ? 1 : 0) && (((cptr.ld1s(cptr.add((uwep.v), 49)) == NHC.WEAPON_CLASS) ? !((((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= NHC.P_BOW ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= NHC.P_CROSSBOW ? 1 : 0) || (((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.GEM_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) : (cptr.ld1s(cptr.add((uwep.v), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0)) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && uswapwep.v ? 1 : 0) && (((cptr.ld1s(cptr.add((uswapwep.v), 49)) == NHC.WEAPON_CLASS) ? !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= NHC.P_BOW ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= NHC.P_CROSSBOW ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.GEM_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) : (cptr.ld1s(cptr.add((uswapwep.v), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0)) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) ? 1 : 0) && (cptr.ld1s(cptr.add(u, 2816)) || (((((((((((cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 0, 4)) == NHM.AT_WEAP) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 1, 4)) == NHM.AT_WEAP)) | 0) + (cptr.ld1u(cptr.add(cptr.add((cptr.ldPtr(cptr.add(gy, 16))), 36), 2, 4)) == NHM.AT_WEAP)) | 0) > 1) && !uarms.v ? 1 : 0) && uwep.v ? 1 : 0) && (((cptr.ld1s(cptr.add((uwep.v), 49)) == NHC.WEAPON_CLASS) ? !((((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= NHC.P_BOW ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= NHC.P_CROSSBOW ? 1 : 0) || (((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.GEM_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) : (cptr.ld1s(cptr.add((uwep.v), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uwep.v), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0)) && !((cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) && uswapwep.v ? 1 : 0) && (((cptr.ld1s(cptr.add((uswapwep.v), 49)) == NHC.WEAPON_CLASS) ? !((((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= NHC.P_BOW ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= NHC.P_CROSSBOW ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.GEM_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -22 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -20 ? 1 : 0) ? 1 : 0) || (((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) >= -25 ? 1 : 0) && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 68)) <= -23 ? 1 : 0) ? 1 : 0) : (cptr.ld1s(cptr.add((uswapwep.v), 49)) == NHC.TOOL_CLASS && cptr.ld1s(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add((uswapwep.v), 32)), 120), 68)) != NHC.P_NONE ? 1 : 0)) && !((cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.WEAPON_CLASS || cptr.ld1s(cptr.add(uswapwep.v, 49)) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32(cptr.add(cptr.add(objects, cptr.ldI16(cptr.add(uswapwep.v, 32)), 120), 48)) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         void cptr.sprintf(cptr.decay(buf), __sl129, cptr.ld1s(cptr.add(u, 2816)) ? __sl130 : __sl131);
         ia_addmenu(win, NHC.IA_TWOWEAPON, 88, cptr.decay(buf));
     }
@@ -613,12 +614,12 @@ export function itemactions(otmp) {
     }
     void cptr.sprintf(cptr.decay(buf), __sl134, the(cxname(otmp)));
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(win, cptr.decay(buf));
-    n = select_menu(win, 1, selected);
+    n = select_menu(win, NHM.PICK_ONE, selected);
     if (n > 0) {
         act = cptr.ldI32(cptr.add(selected.v, 0, 24));
         cptr.free(selected.v);
         itemactions_pushkeys(otmp, act);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(win);
-    return 0;
+    return NHM.ECMD_OK;
 }

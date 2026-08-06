@@ -6,6 +6,7 @@
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { alloc } from './alloc.js';
 import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
 import { mons } from './monst.js';
@@ -119,8 +120,8 @@ export function create_region(rects, nrect) {
     if (nrect > 0) {
         cptr.memcpy(reg, cptr.add(rects, 0, 8), 8);
     } else {
-        cptr.stI16(reg, 80);
-        cptr.stI16(cptr.add(reg, 2), 21);
+        cptr.stI16(reg, NHM.COLNO);
+        cptr.stI16(cptr.add(reg, 2), NHM.ROWNO);
         cptr.stI16(cptr.add(reg, 4), 0);
         cptr.stI16(cptr.add(reg, 6), 0);
     }
@@ -149,7 +150,7 @@ export function create_region(rects, nrect) {
     cptr.stI16(cptr.add(reg, 54), -1);
     cptr.stI16(cptr.add(reg, 58), -1);
     (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) & 4294967294));
-    (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) | 2));
+    (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) | NHM.REG_NOT_HEROS));
     cptr.stI16(cptr.add(reg, 72), 0);
     cptr.stI16(cptr.add(reg, 74), 0);
     cptr.stPtr(cptr.add(reg, 64), null);
@@ -188,14 +189,14 @@ export function add_mon_to_reg(reg, mon) {
         return;
     }
     if (cptr.ldI16(cptr.add(reg, 74)) <= cptr.ldI16(cptr.add(reg, 72))) {
-        tmp_m = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 4n * BigInt.asUintN(64, BigInt(((cptr.ldI16(cptr.add(reg, 74)) + 5) | 0)))))));
+        tmp_m = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 4n * BigInt.asUintN(64, BigInt(((cptr.ldI16(cptr.add(reg, 74)) + NHM.MONST_INC) | 0)))))));
         if (cptr.ldI16(cptr.add(reg, 74)) > 0) {
             for (i = 0; i < cptr.ldI16(cptr.add(reg, 74)); i++)
                 cptr.stI32(cptr.add(tmp_m, i, 4), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(reg, 64)), i, 4)));
             cptr.free(cptr.ldPtr(cptr.add(reg, 64)));
         }
         cptr.stPtr(cptr.add(reg, 64), tmp_m);
-        cptr.stI16(cptr.add(reg, 74), cptr.ldI16(cptr.add(reg, 74)) + 5);
+        cptr.stI16(cptr.add(reg, 74), cptr.ldI16(cptr.add(reg, 74)) + NHM.MONST_INC);
     }
     cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(reg, 64)), (cptr.stI16(cptr.add(reg, 72), cptr.ldI16(cptr.add(reg, 72)) + 1)) - (1), 4), cptr.ldI32(cptr.add(mon, 16)));
 }
@@ -266,12 +267,12 @@ export function add_region(reg) {
             if (cptr.ld1s(cptr.add(reg, 76))) {
                 if (is_inside)
                     block_point(i, j);
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), j, 8)), i)) & 2) != 0))
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), j, 8)), i)) & NHM.IN_SIGHT) != 0))
                     newsym(i16(i), i16(j));
             }
         }
     if (inside_region(reg, cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))))
-        (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) | 1));
+        (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) | NHM.REG_HERO_INSIDE));
     else
         (cptr.stI32(cptr.add((reg), 60), cptr.ldI32(cptr.add((reg), 60)) & 4294967294));
 }
@@ -302,7 +303,7 @@ export function remove_region(reg) {
                             if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)))
                                 unblock_point(x, y);
                         } else {
-                            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0))
+                            if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0))
                                 newsym(i16(x), i16(y));
                         }
                     }
@@ -342,11 +343,11 @@ export function run_regions() {
         if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40)) > 0n)
             (cptr.stI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40), cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 40)) + -1n)) - (-1n);
         f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58));
-        if (f_indx != -1 && ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) ? 1 : 0)
+        if (f_indx != -1 && ((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) ? 1 : 0)
             void (callbacks[f_indx])(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), null);
         if (f_indx != -1) {
             for (j = 0; j < cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 72)); j++) {
-                let mtmp = find_mid(cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 64)), j, 4)), 1);
+                let mtmp = find_mid(cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 64)), j, 4)), NHM.FM_FMON);
                 if ((!mtmp || (cptr.ldI32(cptr.add((mtmp), 52)) < 1) ? 1 : 0) || (callbacks[f_indx])(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), mtmp) ? 1 : 0) {
                     k = (cptr.stI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 72), cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 72)) - 1));
                     cptr.stI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 64)), j, 4), cptr.ldI32(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 64)), k, 4)));
@@ -375,7 +376,7 @@ export function in_out_region(x, y) {
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
         if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 18)))
             continue;
-        if (inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) && (f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 50))) != -1 ? 1 : 0) : (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) && (f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 54))) != -1 ? 1 : 0)) {
+        if (inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) && (f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 50))) != -1 ? 1 : 0) : (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) && (f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 54))) != -1 ? 1 : 0)) {
             if (!(callbacks[f_indx])(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), null))
                 return 0;
         }
@@ -383,7 +384,7 @@ export function in_out_region(x, y) {
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
         if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 18)))
             continue;
-        if (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) && !inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? 1 : 0) {
+        if (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) && !inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? 1 : 0) {
             (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 4294967294));
             if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 32)) !== null)
                 pline(__sl7, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 32)));
@@ -394,8 +395,8 @@ export function in_out_region(x, y) {
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
         if (cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 18)))
             continue;
-        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) && inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? 1 : 0) {
-            (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) | 1));
+        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) && inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), x, y) ? 1 : 0) {
+            (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) | NHM.REG_HERO_INSIDE));
             if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 24)) !== null)
                 pline(__sl7, cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 24)));
             if ((f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 52))) != -1)
@@ -443,7 +444,7 @@ export function update_player_regions() {
     let i;
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++)
         if (!cptr.ld1s(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 18)) && inside_region(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) ? 1 : 0)
-            (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) | 1));
+            (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) | NHM.REG_HERO_INSIDE));
         else
             (cptr.stI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60), cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 4294967294));
 }
@@ -575,7 +576,7 @@ export function save_regions(nhfp) {
             sfo_any(nhfp, cptr.add(r, 88), __sl39);
         }
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         clear_regions();
 }
 
@@ -587,7 +588,7 @@ export function rest_regions(nhfp) {
     let n = cptr.box(0);
     let tmstamp = cptr.box(0n);
     let msg_buf;
-    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == 3));
+    let ghostly = schar((cptr.ldI32(cptr.add(nhfp, 8)) == NHM.NHF_BONESFILE));
     clear_regions();
     sfi_long(nhfp, tmstamp, __sl16);
     ;
@@ -649,7 +650,7 @@ export function rest_regions(nhfp) {
         ;
         if (ghostly) {
             (cptr.stI32(cptr.add((r), 60), cptr.ldI32(cptr.add((r), 60)) & 4294967294));
-            (cptr.stI32(cptr.add((r), 60), cptr.ldI32(cptr.add((r), 60)) | 2));
+            (cptr.stI32(cptr.add((r), 60), cptr.ldI32(cptr.add((r), 60)) | NHM.REG_NOT_HEROS));
         }
         sfi_short(nhfp, cptr.add(r, 72), __sl35);
         if (cptr.ldI16(cptr.add(r, 72)) > 0)
@@ -735,7 +736,7 @@ export function expire_gas_cloud(p1, p2) {
                         if (!(cptr.ldI32(cptr.add(u, 1848)) & 1)) {
                             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0))
                                 cptr.st1(cptr.add(gg, 94976), 1);
-                            else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0))
+                            else if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0))
                                 (cptr.stI32(cptr.add(gg, 94980), cptr.ldI32(cptr.add(gg, 94980)) + 1)) - (1);
                         }
                     }
@@ -757,7 +758,7 @@ export function inside_gas_cloud(p1, p2) {
     if (dam < 1)
         return 0;
     if (!mtmp) {
-        if (m_poisongas_ok(cptr.add(gy, 8)) == 2)
+        if (m_poisongas_ok(cptr.add(gy, 8)) == NHM.M_POISONGAS_OK)
             return 0;
         if (!((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24)) ? 1 : 0) && !cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8)) ? 1 : 0)) {
             Your(__sl41, makeplural(body_part(NHC.EYE)));
@@ -770,7 +771,7 @@ export function inside_gas_cloud(p1, p2) {
             dam = (((cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.HALF_PHDAM, 24), 16)) || cptr.ldI64(cptr.add(cptr.add(u, 112), NHC.HALF_PHDAM, 24)) ? 1 : 0)) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
             if (((ublindf.v && cptr.ldI16(cptr.add(ublindf.v, 32)) == NHC.TOWEL ? 1 : 0) && cptr.ld1s(cptr.add(ublindf.v, 48)) > 0 ? 1 : 0))
                 dam = (((dam + 1) | 0) / 2) | 0;
-            losehp(dam, __sl46, 0);
+            losehp(dam, __sl46, NHM.KILLED_BY_AN);
             monstunseesu(64n);
             return 0;
         } else {
@@ -781,13 +782,13 @@ export function inside_gas_cloud(p1, p2) {
         }
     } else {
         mtmp = p2;
-        if (m_poisongas_ok(mtmp) != 2) {
+        if (m_poisongas_ok(mtmp) != NHM.M_POISONGAS_OK) {
             if (!(cptr.ld1u(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 66)) == NHC.MS_SILENT)) {
-                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)), 8)), cptr.ldI16(cptr.add(mtmp, 28)))) & 2) != 0) || (dist2((cptr.ldI16(cptr.add(mtmp, 28))), (cptr.ldI16(cptr.add(mtmp, 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < 8) ? 1 : 0)
+                if (((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), cptr.ldI16(cptr.add(mtmp, 30)), 8)), cptr.ldI16(cptr.add(mtmp, 28)))) & NHM.IN_SIGHT) != 0) || (dist2((cptr.ldI16(cptr.add(mtmp, 28))), (cptr.ldI16(cptr.add(mtmp, 30))), cptr.ldI16(u), cptr.ldI16(cptr.add(u, 2))) < 8) ? 1 : 0)
                     pline(__sl48, Monnam(mtmp));
                 wake_nearto(cptr.ldI16(cptr.add(mtmp, 28)), cptr.ldI16(cptr.add(mtmp, 30)), 2);
             }
-            if ((!((cptr.ldI32(cptr.add((reg), 60)) & 2) >>> 0)))
+            if ((!((cptr.ldI32(cptr.add((reg), 60)) & NHM.REG_NOT_HEROS) >>> 0)))
                 setmangry(mtmp, 1);
             if (((cptr.ldU64(cptr.add((cptr.ldPtr(cptr.add(mtmp, 8))), 72)) & 4096n) == 0n) && (cptr.ldI32(cptr.add(mtmp, 112)) & 1) | 0 ? 1 : 0) {
                 cptr.stI32(cptr.add(mtmp, 148), 1);
@@ -797,10 +798,10 @@ export function inside_gas_cloud(p1, p2) {
                 return 0;
             cptr.stI32(cptr.add(mtmp, 52), (cptr.ldI32(cptr.add(mtmp, 52)) - (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1152, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0)) | 0);
             if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
-                if ((!((cptr.ldI32(cptr.add((reg), 60)) & 2) >>> 0)))
+                if ((!((cptr.ldI32(cptr.add((reg), 60)) & NHM.REG_NOT_HEROS) >>> 0)))
                     killed(mtmp);
                 else
-                    monkilled(mtmp, __sl46, 7);
+                    monkilled(mtmp, __sl46, NHM.AD_DRST);
                 if ((cptr.ldI32(cptr.add((mtmp), 52)) < 1)) {
                     return 1;
                 }
@@ -814,7 +815,7 @@ export function inside_gas_cloud(p1, p2) {
 function is_hero_inside_gas_cloud() {
     let i;
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++)
-        if (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0) && cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58)) == 0 ? 1 : 0)
+        if (((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0) && cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58)) == 0 ? 1 : 0)
             return 1;
     return 0;
 }
@@ -849,7 +850,7 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
     let curridx;
     let newidx = 1;
     let inside_cloud = is_hero_inside_gas_cloud();
-    if (((!cptr.ld1s(cptr.add(svc, 77)) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) && cloudsize == 1 ? 1 : 0) && (!damage || (damage && m_poisongas_ok(cptr.add(gy, 8)) == 2 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (((!cptr.ld1s(cptr.add(svc, 77)) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) ? 1 : 0) && cloudsize == 1 ? 1 : 0) && (!damage || (damage && m_poisongas_ok(cptr.add(gy, 8)) == NHM.M_POISONGAS_OK ? 1 : 0) ? 1 : 0) ? 1 : 0)
         inside_cloud = 1;
     if (cloudsize > 150) {
         impossible(__sl52, cloudsize);
@@ -932,7 +933,7 @@ export function region_danger() {
     let f_indx;
     let n = 0;
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
-        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0))
+        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0))
             continue;
         f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58));
         if (f_indx == 0) {
@@ -953,7 +954,7 @@ export function region_safety() {
     let f_indx;
     let n = 0;
     for (i = 0; i < cptr.ldI32(cptr.add(svn, 48)); i++) {
-        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & 1) >>> 0))
+        if (!((cptr.ldI32(cptr.add((cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8))), 60)) & NHM.REG_HERO_INSIDE) >>> 0))
             continue;
         f_indx = cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gr, 344)), i, 8)), 58));
         if (f_indx == 0) {
@@ -962,7 +963,7 @@ export function region_safety() {
         }
     }
     if (n > 1 || (n == 1 && !r ? 1 : 0) ? 1 : 0) {
-        void safe_teleds(0);
+        void safe_teleds(NHM.TELEDS_NO_FLAGS);
         if (region_danger()) {
             set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1391, __sl54), d(4, 4)) : d(4, 4)) + 4) | 0)));
             You_feel(__sl55);

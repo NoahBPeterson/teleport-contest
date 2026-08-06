@@ -5,6 +5,7 @@
 
 import { u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 import { windowprocs } from './windows.js';
 import { ARGV0, gc, gs } from './decl.js';
 import { sysopt } from './sys.js';
@@ -360,7 +361,7 @@ export function dobugreport() {
     if (!submit_web_report(2, null, __sl19)) {
         pline(__sl20, (cptr.ldPtr(cptr.add(sysopt, 144)) && cptr.ld1s(cptr.ldPtr(cptr.add(sysopt, 144))) ? 1 : 0) ? cptr.ldPtr(cptr.add(sysopt, 144)) : __sl21);
     }
-    return 0;
+    return NHM.ECMD_OK;
 }
 
 /** C ref: report.c:485 @returns {CInt} */
@@ -409,14 +410,14 @@ export function NH_panictrace_gdb() {
 /** C ref: report.c:571 — @param {CInt} lineno @returns {CPtr} */
 export function get_saved_pline(lineno) {
     let p;
-    let limit = 50;
-    if (lineno >= 50)
+    let limit = NHM.DUMPLOG_MSG_COUNT;
+    if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
-    p = u32mod(((cptr.ldI32(cptr.add(gs, 980)) - 1) >>> 0), 50) | 0;
+    p = u32mod(((cptr.ldI32(cptr.add(gs, 980)) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
     while (limit--) {
         if (cptr.ldPtr(cptr.add(cptr.add(gs, 984), p, 8))) {
             if (lineno--) {
-                p = ((((p - 1) | 0) + 50) | 0) % 50;
+                p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
                 return cptr.ldPtr(cptr.add(cptr.add(gs, 984), p, 8));
             }

@@ -5,6 +5,7 @@
 
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { u, uleft, uright } from './decl.js';
 import { distmin } from './hacklib.js';
 import { sfi_int, sfi_nhcoord, sfo_int, sfo_nhcoord } from './sfbase.js';
@@ -81,7 +82,7 @@ export function save_track(nhfp) {
             sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2);
         }
     }
-    if ((cptr.ldI32(cptr.add((nhfp), 4)) & 4))
+    if ((cptr.ldI32(cptr.add((nhfp), 4)) & NHM.FREEING))
         initrack();
 }
 

@@ -5,6 +5,7 @@
 
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 import { BASE_WINDOW, defmorestr, docorner, end_glyphout, g_putch, ttyDisplay, tty_clear_nhwindow, tty_curs, wins } from './wintty.js';
 import { WIN_MESSAGE, flags, gs, gt, iflags, program_state, quitchars, svx, yn_number } from './decl.js';
 import { windowprocs } from './windows.js';
@@ -44,7 +45,7 @@ export function tty_doprev_message() {
     let i;
     if ((cptr.ld1s(cptr.add(iflags, 176)) != 115) && !cptr.ldI32(cptr.add(ttyDisplay, 36)) ? 1 : 0) {
         if (cptr.ld1s(cptr.add(iflags, 176)) == 102) {
-            prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+            prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl0);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl1);
             cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
@@ -77,7 +78,7 @@ export function tty_doprev_message() {
                     if (!cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), cptr.ldI64(cptr.add(cw, 56)), 8)))
                         cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
                 } else {
-                    prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+                    prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
                     (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl0);
                     (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl1);
                     cptr.stI64(cptr.add(cw, 56), cptr.ldI64(cptr.add(cw, 48)));
@@ -95,7 +96,7 @@ export function tty_doprev_message() {
             cptr.st1(cptr.add(ttyDisplay, 48), 0);
         } else {
             morc.v = 0;
-            prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+            prevmsg_win = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl0);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, __sl1);
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(prevmsg_win, 0, cptr.add(gt, 26));
@@ -147,24 +148,24 @@ function redotoplin(str) {
     }
     putsyms(str);
     cl_end();
-    cptr.stI32(cptr.add(ttyDisplay, 24), 1);
-    if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && otoplin != 3 ? 1 : 0)
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NEED_MORE);
+    if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && otoplin != NHM.TOPLINE_SPECIAL_PROMPT ? 1 : 0)
         more();
 }
 
 /** C ref: topl.c:145 — @param {CPtr} str */
 export function show_topl(str) {
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
-    if ((cptr.ldI32(cw) & 5) != 1) {
+    if ((cptr.ldI32(cw) & 5) != NHM.WIN_STOP) {
         cptr.stI32(cw, cptr.ldI32(cw) & -6);
-        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 2 ? 1 : 0)
+        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NON_EMPTY ? 1 : 0)
             tty_clear_nhwindow(WIN_MESSAGE.v);
         cptr.stI64(cptr.add(cw, 32), cptr.stI64(cptr.add(cw, 40), 0n));
         home();
         cl_end();
         addtopl(str);
-        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) != 3 ? 1 : 0)
-            cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+        if (cptr.ldI16(cptr.add(ttyDisplay, 6)) && cptr.ldI32(cptr.add(ttyDisplay, 24)) != NHM.TOPLINE_SPECIAL_PROMPT ? 1 : 0)
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
     }
 }
 
@@ -173,7 +174,7 @@ export function remember_topl() {
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     let idx = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 48))));
     let len = Number(BigInt.asUintN(32, BigInt.asUintN(64, cptr.strlen(cptr.add(gt, 26)) + 1n)));
-    if ((cptr.ldI32(cw) & 2) || !cptr.ld1s(cptr.add(gt, 26)) ? 1 : 0)
+    if ((cptr.ldI32(cw) & NHM.WIN_LOCKHISTORY) || !cptr.ld1s(cptr.add(gt, 26)) ? 1 : 0)
         return;
     if (len > cptr.ldI16(cptr.add(cptr.ldPtr(cptr.add(cw, 72)), idx, 2))) {
         if (cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(cw, 80)), idx, 8)))
@@ -195,7 +196,7 @@ export function addtopl(s) {
     tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 32)) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 40)))));
     putsyms(s);
     cl_end();
-    cptr.stI32(cptr.add(ttyDisplay, 24), 1);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NEED_MORE);
 }
 
 /** C ref: topl.c:205 */
@@ -218,8 +219,8 @@ export function more() {
         standoutend();
     xwaitforspace(__sl2);
     if (morc.v == 27) {
-        if (!(cptr.ldI32(cw) & 4))
-            cptr.stI32(cw, cptr.ldI32(cw) | 1);
+        if (!(cptr.ldI32(cw) & NHM.WIN_NOSTOP))
+            cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_STOP);
     }
     if (cptr.ldI32(cptr.add(ttyDisplay, 24)) && cptr.ldI64(cptr.add(cw, 40)) ? 1 : 0) {
         docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
@@ -230,7 +231,7 @@ export function more() {
         home();
         cl_end();
     }
-    cptr.stI32(cptr.add(ttyDisplay, 24), 0);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_EMPTY);
     cptr.stI32(cptr.add(ttyDisplay, 32), 0);
 }
 
@@ -241,9 +242,9 @@ export function update_topl(bp) {
     let n0;
     let notdied = 1;
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
-    let skip = schar(((cptr.ldI32(cw) & 5) == 1));
+    let skip = schar(((cptr.ldI32(cw) & 5) == NHM.WIN_STOP));
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
-    if ((((cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 || skip ? 1 : 0) && cptr.ldI64(cptr.add(cw, 40)) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(gt, 356)) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
+    if ((((cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE || skip ? 1 : 0) && cptr.ldI64(cptr.add(cw, 40)) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32(cptr.add(gt, 356)) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
         void cptr.strcat(cptr.add(gt, 26), __sl4);
         void cptr.strcat(cptr.add(gt, 26), bp);
         cptr.stI64(cptr.add(cw, 32), cptr.ldI64(cptr.add(cw, 32)) + 2n);
@@ -251,7 +252,7 @@ export function update_topl(bp) {
             addtopl(bp);
         return;
     } else if (!skip) {
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1) {
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE) {
             more();
         } else if (cptr.ldI64(cptr.add(cw, 40))) {
             docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 40)) + 1n))), 0);
@@ -341,10 +342,10 @@ export function tty_yn_function(query, resp, def) {
     let prompt = new Uint8Array(256);
     __lbl_clean_up: {
         yn_number.v = 0n;
-        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && (cptr.ldI32(cw) & 5) != 1 ? 1 : 0)
+        if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE && (cptr.ldI32(cw) & 5) != NHM.WIN_STOP ? 1 : 0)
             more();
         cptr.stI32(cw, cptr.ldI32(cw) & -6);
-        cptr.stI32(cptr.add(ttyDisplay, 24), 3);
+        cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_SPECIAL_PROMPT);
         (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + 1)) - (1);
         if (resp) {
             let rb;
@@ -476,7 +477,7 @@ export function tty_yn_function(query, resp, def) {
     void cptr.sprintf(cptr.add(gt, 26), __sl16, cptr.decay(prompt), cptr.decay(rtmp));
     dumplogmsg(cptr.add(gt, 26));
     (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + -1)) - (-1);
-    cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
     if (cptr.ldI32(cptr.add(ttyDisplay, 40)))
         (cptr.stI32(cptr.add(ttyDisplay, 40), cptr.ldI32(cptr.add(ttyDisplay, 40)) + -1)) - (-1);
     if (cptr.ldI64(cptr.add(cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8)), 40)))
@@ -499,7 +500,7 @@ function msghistory_snapshot(purge) {
     cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     remember_topl();
     if (!purge)
-        cptr.stI32(cw, cptr.ldI32(cw) | 2);
+        cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_LOCKHISTORY);
     snapshot_mesgs = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64(cptr.add(cw, 16)) + 1n))) * 8n))));
     outidx = 0;
     inidx = Number(BigInt.asIntN(32, cptr.ldI64(cptr.add(cw, 48))));
@@ -566,13 +567,13 @@ export function tty_putmsghistory(msg, restoring_msghist) {
         cptr.stI32(cptr.add(gs, 980), 0);
     }
     if (msg) {
-        if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 ? 1 : 0)
-            cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+        if (ttyDisplay && cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE ? 1 : 0)
+            cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
         remember_topl();
         void cptr.strcpy(cptr.add(gt, 26), msg);
         dumplogmsg(cptr.add(gt, 26));
     } else if (snapshot_mesgs) {
-        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32(cptr.add(ttyDisplay, 24)) != 1 ? 1 : 0)) || (nhassert_failed(__sl17, __sl7, 720), 0) ? 1 : 0);
+        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32(cptr.add(ttyDisplay, 24)) != NHM.TOPLINE_NEED_MORE ? 1 : 0)) || (nhassert_failed(__sl17, __sl7, 720), 0) ? 1 : 0);
         for (idx = 0; cptr.ldPtr(cptr.add(snapshot_mesgs, idx, 8)); ++idx) {
             remember_topl();
             void cptr.strcpy(cptr.add(gt, 26), cptr.ldPtr(cptr.add(snapshot_mesgs, idx, 8)));

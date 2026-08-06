@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
@@ -1907,16 +1908,16 @@ export function u_init_misc() {
     cptr.stI32(cptr.add(u, 48), cptr.stI32(cptr.add(u, 52), 1));
     init_uhunger();
     for (i = 0; i <= NHC.MAXSPELL; i++)
-        cptr.stI16(cptr.add(svs, i, 8), 0);
+        cptr.stI16(cptr.add(svs, i, 8), NHM.NO_SPELL);
     cptr.stI32(cptr.add(u, 2352), 300);
-    cptr.st1(cptr.add(cptr.add(u, 2184), 0, 1), cptr.st1(cptr.add(cptr.add(u, 2184), 1, 1), cptr.st1(cptr.add(u, 2172), cptr.ld1s(cptr.add(cptr.add(aligns, cptr.ldI32(cptr.add(flags, 156)), 32), 26)))));
+    cptr.st1(cptr.add(cptr.add(u, 2184), NHM.A_CURRENT, 1), cptr.st1(cptr.add(cptr.add(u, 2184), NHM.A_ORIGINAL, 1), cptr.st1(cptr.add(u, 2172), cptr.ld1s(cptr.add(cptr.add(aligns, cptr.ldI32(cptr.add(flags, 156)), 32), 26)))));
     ubirthday.v = getnow();
     cptr.stI32(cptr.add(u, 1776), 1);
     cptr.stI32(cptr.add(u, 1780), -1);
     cptr.stI32(cptr.add(u, 1784), -1);
     if (cptr.ld1s(cptr.add(u, 2112)))
         cptr.stI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16), cptr.ldI64(cptr.add(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16)) | 67108864n);
-    cptr.stI32(cptr.add(u, 1876), ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1028, __sl3), rn2(10)) : rn2(10)) ? 0 : 1) >>> 0);
+    cptr.stI32(cptr.add(u, 1876), ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1028, __sl3), rn2(10)) : rn2(10)) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
     max_rank_sz();
     return;
 }

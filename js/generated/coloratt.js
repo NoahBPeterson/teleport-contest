@@ -6,6 +6,7 @@
 import { schar, u16, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { digit, fuzzymatch, mungspaces, nh_snprintf, strncmpi, strstri } from './hacklib.js';
 import { config_error_add } from './cfgfiles.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
@@ -208,86 +209,86 @@ const __sl186 = cptr.lit("");
 /** C ref: coloratt.c:12 — struct color_names[27] */
 const colornames = cptr.alloc(27 * 16);
 cptr.stPtr(cptr.add(colornames, 0), __sl0);
-cptr.stI32(cptr.add(colornames, 8), 0);
+cptr.stI32(cptr.add(colornames, 8), NHM.CLR_BLACK);
 cptr.stPtr(cptr.add(colornames, 16), __sl1);
-cptr.stI32(cptr.add(colornames, 24), 1);
+cptr.stI32(cptr.add(colornames, 24), NHM.CLR_RED);
 cptr.stPtr(cptr.add(colornames, 32), __sl2);
-cptr.stI32(cptr.add(colornames, 40), 2);
+cptr.stI32(cptr.add(colornames, 40), NHM.CLR_GREEN);
 cptr.stPtr(cptr.add(colornames, 48), __sl3);
-cptr.stI32(cptr.add(colornames, 56), 3);
+cptr.stI32(cptr.add(colornames, 56), NHM.CLR_BROWN);
 cptr.stPtr(cptr.add(colornames, 64), __sl4);
-cptr.stI32(cptr.add(colornames, 72), 4);
+cptr.stI32(cptr.add(colornames, 72), NHM.CLR_BLUE);
 cptr.stPtr(cptr.add(colornames, 80), __sl5);
-cptr.stI32(cptr.add(colornames, 88), 5);
+cptr.stI32(cptr.add(colornames, 88), NHM.CLR_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 96), __sl6);
-cptr.stI32(cptr.add(colornames, 104), 6);
+cptr.stI32(cptr.add(colornames, 104), NHM.CLR_CYAN);
 cptr.stPtr(cptr.add(colornames, 112), __sl7);
-cptr.stI32(cptr.add(colornames, 120), 7);
+cptr.stI32(cptr.add(colornames, 120), NHM.CLR_GRAY);
 cptr.stPtr(cptr.add(colornames, 128), __sl8);
-cptr.stI32(cptr.add(colornames, 136), 9);
+cptr.stI32(cptr.add(colornames, 136), NHM.CLR_ORANGE);
 cptr.stPtr(cptr.add(colornames, 144), __sl9);
-cptr.stI32(cptr.add(colornames, 152), 10);
+cptr.stI32(cptr.add(colornames, 152), NHM.CLR_BRIGHT_GREEN);
 cptr.stPtr(cptr.add(colornames, 160), __sl10);
-cptr.stI32(cptr.add(colornames, 168), 11);
+cptr.stI32(cptr.add(colornames, 168), NHM.CLR_YELLOW);
 cptr.stPtr(cptr.add(colornames, 176), __sl11);
-cptr.stI32(cptr.add(colornames, 184), 12);
+cptr.stI32(cptr.add(colornames, 184), NHM.CLR_BRIGHT_BLUE);
 cptr.stPtr(cptr.add(colornames, 192), __sl12);
-cptr.stI32(cptr.add(colornames, 200), 13);
+cptr.stI32(cptr.add(colornames, 200), NHM.CLR_BRIGHT_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 208), __sl13);
-cptr.stI32(cptr.add(colornames, 216), 14);
+cptr.stI32(cptr.add(colornames, 216), NHM.CLR_BRIGHT_CYAN);
 cptr.stPtr(cptr.add(colornames, 224), __sl14);
-cptr.stI32(cptr.add(colornames, 232), 15);
+cptr.stI32(cptr.add(colornames, 232), NHM.CLR_WHITE);
 cptr.stPtr(cptr.add(colornames, 240), __sl15);
-cptr.stI32(cptr.add(colornames, 248), 8);
+cptr.stI32(cptr.add(colornames, 248), NHM.NO_COLOR);
 cptr.stPtr(cptr.add(colornames, 256), null);
-cptr.stI32(cptr.add(colornames, 264), 0);
+cptr.stI32(cptr.add(colornames, 264), NHM.CLR_BLACK);
 cptr.stPtr(cptr.add(colornames, 272), __sl16);
-cptr.stI32(cptr.add(colornames, 280), 8);
+cptr.stI32(cptr.add(colornames, 280), NHM.NO_COLOR);
 cptr.stPtr(cptr.add(colornames, 288), __sl17);
-cptr.stI32(cptr.add(colornames, 296), 5);
+cptr.stI32(cptr.add(colornames, 296), NHM.CLR_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 304), __sl18);
-cptr.stI32(cptr.add(colornames, 312), 13);
+cptr.stI32(cptr.add(colornames, 312), NHM.CLR_BRIGHT_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 320), __sl19);
-cptr.stI32(cptr.add(colornames, 328), 13);
+cptr.stI32(cptr.add(colornames, 328), NHM.CLR_BRIGHT_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 336), __sl20);
-cptr.stI32(cptr.add(colornames, 344), 7);
+cptr.stI32(cptr.add(colornames, 344), NHM.CLR_GRAY);
 cptr.stPtr(cptr.add(colornames, 352), __sl21);
-cptr.stI32(cptr.add(colornames, 360), 9);
+cptr.stI32(cptr.add(colornames, 360), NHM.CLR_ORANGE);
 cptr.stPtr(cptr.add(colornames, 368), __sl22);
-cptr.stI32(cptr.add(colornames, 376), 10);
+cptr.stI32(cptr.add(colornames, 376), NHM.CLR_BRIGHT_GREEN);
 cptr.stPtr(cptr.add(colornames, 384), __sl23);
-cptr.stI32(cptr.add(colornames, 392), 12);
+cptr.stI32(cptr.add(colornames, 392), NHM.CLR_BRIGHT_BLUE);
 cptr.stPtr(cptr.add(colornames, 400), __sl24);
-cptr.stI32(cptr.add(colornames, 408), 13);
+cptr.stI32(cptr.add(colornames, 408), NHM.CLR_BRIGHT_MAGENTA);
 cptr.stPtr(cptr.add(colornames, 416), __sl25);
-cptr.stI32(cptr.add(colornames, 424), 14);
+cptr.stI32(cptr.add(colornames, 424), NHM.CLR_BRIGHT_CYAN);
 
 /** C ref: coloratt.c:42 — struct attr_names { name, attr } (memory model v0.5) */
 
 /** C ref: coloratt.c:47 — struct attr_names[11] */
 const attrnames = cptr.alloc(11 * 16);
 cptr.stPtr(cptr.add(attrnames, 0), __sl26);
-cptr.stI32(cptr.add(attrnames, 8), 0);
+cptr.stI32(cptr.add(attrnames, 8), NHM.ATR_NONE);
 cptr.stPtr(cptr.add(attrnames, 16), __sl27);
-cptr.stI32(cptr.add(attrnames, 24), 1);
+cptr.stI32(cptr.add(attrnames, 24), NHM.ATR_BOLD);
 cptr.stPtr(cptr.add(attrnames, 32), __sl28);
-cptr.stI32(cptr.add(attrnames, 40), 2);
+cptr.stI32(cptr.add(attrnames, 40), NHM.ATR_DIM);
 cptr.stPtr(cptr.add(attrnames, 48), __sl29);
-cptr.stI32(cptr.add(attrnames, 56), 3);
+cptr.stI32(cptr.add(attrnames, 56), NHM.ATR_ITALIC);
 cptr.stPtr(cptr.add(attrnames, 64), __sl30);
-cptr.stI32(cptr.add(attrnames, 72), 4);
+cptr.stI32(cptr.add(attrnames, 72), NHM.ATR_ULINE);
 cptr.stPtr(cptr.add(attrnames, 80), __sl31);
-cptr.stI32(cptr.add(attrnames, 88), 5);
+cptr.stI32(cptr.add(attrnames, 88), NHM.ATR_BLINK);
 cptr.stPtr(cptr.add(attrnames, 96), __sl32);
-cptr.stI32(cptr.add(attrnames, 104), 7);
+cptr.stI32(cptr.add(attrnames, 104), NHM.ATR_INVERSE);
 cptr.stPtr(cptr.add(attrnames, 112), null);
-cptr.stI32(cptr.add(attrnames, 120), 0);
+cptr.stI32(cptr.add(attrnames, 120), NHM.ATR_NONE);
 cptr.stPtr(cptr.add(attrnames, 128), __sl33);
-cptr.stI32(cptr.add(attrnames, 136), 0);
+cptr.stI32(cptr.add(attrnames, 136), NHM.ATR_NONE);
 cptr.stPtr(cptr.add(attrnames, 144), __sl34);
-cptr.stI32(cptr.add(attrnames, 152), 4);
+cptr.stI32(cptr.add(attrnames, 152), NHM.ATR_ULINE);
 cptr.stPtr(cptr.add(attrnames, 160), __sl35);
-cptr.stI32(cptr.add(attrnames, 168), 7);
+cptr.stI32(cptr.add(attrnames, 168), NHM.ATR_INVERSE);
 
 /** C ref: coloratt.c:67 — struct nethack_color[155] */
 export const colortable = cptr.alloc(155 * 48);
@@ -1383,7 +1384,7 @@ export function colortable_to_int32(cte) {
     if (cptr.ldI32(cte) == NHC.rgb_color)
         clr = Number(BigInt.asIntN(32, ((cptr.ldI64(cptr.add(cte, 24)) << 16n) | (cptr.ldI64(cptr.add(cte, 32)) << 8n) | cptr.ldI64(cptr.add(cte, 40)))));
     else if (cptr.ldI32(cte) == NHC.nh_color)
-        clr = cptr.ldI32(cptr.add(cte, 4)) | 16777216;
+        clr = cptr.ldI32(cptr.add(cte, 4)) | NHM.NH_BASIC_COLOR;
     return clr;
 }
 
@@ -1400,8 +1401,8 @@ export function color_attr_parse_str(ca, str) {
     let buf = new Uint8Array(256);
     let amp = null;
     let tmp;
-    let c = 8;
-    let a = 0;
+    let c = NHM.NO_COLOR;
+    let a = NHM.ATR_NONE;
     void __builtin___strncpy_chk(cptr.decay(buf), str, 255n, __builtin_object_size(cptr.decay(buf), 1));
     cptr.st1(cptr.add(cptr.decay(buf), 255n, 1), 0);
     if ((amp = cptr.strchr(cptr.decay(buf), 38)) !== null)
@@ -1410,17 +1411,17 @@ export function color_attr_parse_str(ca, str) {
         amp = cptr.add(amp, 1);
         c = match_str2clr(cptr.decay(buf), 0);
         a = match_str2attr(amp, 1);
-        if (c >= 16 && a == -1 ? 1 : 0) {
+        if (c >= NHM.CLR_MAX && a == -1 ? 1 : 0) {
             c = match_str2clr(amp, 0);
             a = match_str2attr(cptr.decay(buf), 1);
         }
-        if (c >= 16 || a == -1 ? 1 : 0)
+        if (c >= NHM.CLR_MAX || a == -1 ? 1 : 0)
             return 0;
     } else {
         tmp = match_str2attr(cptr.decay(buf), 0);
         if (tmp == -1) {
             tmp = match_str2clr(cptr.decay(buf), 0);
-            if (tmp >= 16)
+            if (tmp >= NHM.CLR_MAX)
                 return 0;
             c = tmp;
         } else {
@@ -1468,7 +1469,7 @@ export function clr2colorname(clr) {
 /** C ref: coloratt.c:349 — @param {CPtr} str @param {CInt} suppress_msg @returns {CInt} */
 export function match_str2clr(str, suppress_msg) {
     let i;
-    let c = 16;
+    let c = NHM.CLR_MAX;
     for (i = 0; i < 27; i++)
         if (cptr.ldPtr(cptr.add(colornames, i, 16)) && fuzzymatch(str, cptr.ldPtr(cptr.add(colornames, i, 16)), __sl168, 1) ? 1 : 0) {
             c = cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8));
@@ -1476,10 +1477,10 @@ export function match_str2clr(str, suppress_msg) {
         }
     if (i == 27 && digit(cptr.ld1s(str)) ? 1 : 0)
         c = atoi(str);
-    if (c < 0 || c >= 16 ? 1 : 0) {
+    if (c < 0 || c >= NHM.CLR_MAX ? 1 : 0) {
         if (!suppress_msg)
             config_error_add(__sl169, str);
-        c = 16;
+        c = NHM.CLR_MAX;
     }
     return c;
 }
@@ -1506,18 +1507,18 @@ export function query_attr(prompt, dflt_attr) {
     let pick_cnt;
     let picks = cptr.box(null);
     let allow_many = schar((prompt && !strncmpi(prompt, __sl171, 6) ? 1 : 0));
-    let clr = 8;
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    let clr = NHM.NO_COLOR;
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 0; i < 11; i++) {
         if (!cptr.ldPtr(cptr.add(attrnames, i, 16)))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)), clr, cptr.ldPtr(cptr.add(attrnames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)) == dflt_attr) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)), clr, cptr.ldPtr(cptr.add(attrnames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(attrnames, i, 16), 8)) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, (prompt && cptr.ld1s(prompt) ? 1 : 0) ? prompt : __sl172);
-    pick_cnt = select_menu(tmpwin, allow_many ? 2 : 1, picks);
+    pick_cnt = select_menu(tmpwin, allow_many ? NHM.PICK_ANY : NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (pick_cnt > 0) {
         let j;
@@ -1525,27 +1526,27 @@ export function query_attr(prompt, dflt_attr) {
         if (allow_many) {
             for (i = 0; i < pick_cnt; ++i) {
                 j = (cptr.ldI32(cptr.add(picks.v, i, 24)) - 1) | 0;
-                if (cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8)) != 0 || pick_cnt == 1 ? 1 : 0) {
+                if (cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8)) != NHM.ATR_NONE || pick_cnt == 1 ? 1 : 0) {
                     switch (cptr.ldI32(cptr.add(cptr.add(attrnames, j, 16), 8))) {
-                        case 0:
+                        case NHM.ATR_NONE:
                         k = NHC.HL_NONE;
                         break;
-                        case 1:
+                        case NHM.ATR_BOLD:
                         k |= NHC.HL_BOLD;
                         break;
-                        case 2:
+                        case NHM.ATR_DIM:
                         k |= NHC.HL_DIM;
                         break;
-                        case 3:
+                        case NHM.ATR_ITALIC:
                         k |= NHC.HL_ITALIC;
                         break;
-                        case 4:
+                        case NHM.ATR_ULINE:
                         k |= NHC.HL_ULINE;
                         break;
-                        case 5:
+                        case NHM.ATR_BLINK:
                         k |= NHC.HL_BLINK;
                         break;
-                        case 7:
+                        case NHM.ATR_INVERSE:
                         k |= NHC.HL_INVERSE;
                         break;
                     }
@@ -1573,22 +1574,22 @@ export function query_color(prompt, dflt_color) {
     let pick_cnt;
     let picks = cptr.box(null);
     basic_menu_colors(1);
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 0; i < 27; i++) {
         if (!cptr.ldPtr(cptr.add(colornames, i, 16)))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, 8, cptr.ldPtr(cptr.add(colornames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8)) == dflt_color) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtr(cptr.add(colornames, i, 16)), (cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8)) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, (prompt && cptr.ld1s(prompt) ? 1 : 0) ? prompt : __sl173);
-    pick_cnt = select_menu(tmpwin, 1, picks);
+    pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     basic_menu_colors(0);
     if (pick_cnt > 0) {
         i = cptr.ldI32(cptr.add(cptr.add(colornames, (cptr.ldI32(cptr.add(picks.v, 0, 24)) - 1) | 0, 16), 8));
-        if (pick_cnt == 2 && i == 8 ? 1 : 0)
+        if (pick_cnt == 2 && i == NHM.NO_COLOR ? 1 : 0)
             i = cptr.ldI32(cptr.add(cptr.add(colornames, (cptr.ldI32(cptr.add(picks.v, 1, 24)) - 1) | 0, 16), 8));
         cptr.free(picks.v);
         return i;
@@ -1617,10 +1618,10 @@ export function basic_menu_colors(load_colors) {
                 if (!cptr.ldPtr(cptr.add(colornames, i, 16)))
                     break;
                 c = cptr.ldI32(cptr.add(cptr.add(colornames, i, 16), 8));
-                if ((c == 0 || c == 15 ? 1 : 0) || c == 8 ? 1 : 0)
+                if ((c == NHM.CLR_BLACK || c == NHM.CLR_WHITE ? 1 : 0) || c == NHM.NO_COLOR ? 1 : 0)
                     continue;
                 void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtr(cptr.add(colornames, i, 16)));
-                add_menu_coloring_parsed(cptr.decay(cnm), c, 0);
+                add_menu_coloring_parsed(cptr.decay(cnm), c, NHM.ATR_NONE);
             }
             cptr.stPtr(cptr.add(gc, 480), cptr.ldPtr(cptr.add(gm, 168)));
         }
@@ -1658,8 +1659,8 @@ export function add_menu_coloring_parsed(str, c, a) {
 
 /** C ref: coloratt.c:617 — @param {CPtr} tmpstr @returns {CInt} */
 export function add_menu_coloring(tmpstr) {
-    let c = 8;
-    let a = 0;
+    let c = NHM.NO_COLOR;
+    let a = NHM.ATR_NONE;
     let tmps;
     let cs;
     let amp;
@@ -1675,7 +1676,7 @@ export function add_menu_coloring(tmpstr) {
     if ((amp = cptr.strchr(tmps, 38)) !== null)
         cptr.st1(amp, 0);
     c = match_str2clr(tmps, 0);
-    if (c >= 16)
+    if (c >= NHM.CLR_MAX)
         return 0;
     if (amp) {
         tmps = cptr.add(amp, 1);
@@ -1752,8 +1753,8 @@ export function check_enhanced_colors(buf) {
     let b = cptr.box(0);
     let retcolor = -1;
     let color;
-    if ((color = match_str2clr(buf, 1)) != 16) {
-        retcolor = color | 16777216;
+    if ((color = match_str2clr(buf, 1)) != NHM.CLR_MAX) {
+        retcolor = color | NHM.NH_BASIC_COLOR;
     } else if (sscanf(buf, __sl179, r, g, b, xtra) >= 3) {
         retcolor = !xtra.v ? (((((r.v << 16) >>> 0) | ((g.v << 8) >>> 0)) >>> 0 | b.v) >>> 0) | 0 : -1;
     } else {

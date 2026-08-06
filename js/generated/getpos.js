@@ -6,6 +6,7 @@
 import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
 import { eos, nh_deterministic_qsort, nh_snprintf, sgn, strsubst, visctrl } from './hacklib.js';
@@ -161,7 +162,7 @@ export function getpos_sethilite(gp_hilitef, gp_getvalidf) {
     getpos_hilitefunc = gp_hilitef;
     getpos_getvalid = gp_getvalidf;
     getpos_getvalids_selection(sel, getpos_getvalid);
-    cptr.stI32(cptr.add(gw, 172), ((getpos_hilite_state == NHC.HiliteBackground) ? 12 : 8) >>> 0);
+    cptr.stI32(cptr.add(gw, 172), ((getpos_hilite_state == NHC.HiliteBackground) ? NHM.CLR_BRIGHT_BLUE : NHM.NO_COLOR) >>> 0);
     if (getpos_getvalid !== old_getvalid || cptr.ldI32(cptr.add(gw, 172)) != old_map_frame_color ? 1 : 0)
         selection_force_newsyms(sel);
     selection_free(sel, 1);
@@ -258,7 +259,7 @@ function getpos_help(force, goal) {
         switch (__pc) {
         case 0: {
         sbuf = new Uint8Array(256);
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         void cptr.sprintf(cptr.decay(sbuf), __sl30, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
         void cptr.sprintf(cptr.decay(sbuf), __sl31, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtr(cptr.add(__static_getpos_help_fastmovemode, cptr.ld1s(cptr.add(iflags, 73)), 8)));
@@ -268,7 +269,7 @@ function getpos_help(force, goal) {
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, __sl33);
         void cptr.sprintf(cptr.decay(sbuf), __sl34, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_SELF, 1))));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 8) >>> 0) != 0 ? 1 : 0) {
+        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & NHM.TER_MON) >>> 0) != 0 ? 1 : 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MON_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MON_PREV, 1))), NHC.GLOC_MONS);
         }
         if (goal && !strcmp(goal, __sl35) ? 1 : 0) { __pc = 3; continue; }
@@ -280,17 +281,17 @@ function getpos_help(force, goal) {
         continue;
         }
         case 2: {
-        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 4) >>> 0) != 0 ? 1 : 0) {
+        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & NHM.TER_OBJ) >>> 0) != 0 ? 1 : 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_OBJ_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_OBJ_PREV, 1))), NHC.GLOC_OBJS);
         }
-        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 1) >>> 0) != 0 ? 1 : 0) {
+        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & NHM.TER_MAP) >>> 0) != 0 ? 1 : 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_DOOR_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_DOOR_PREV, 1))), NHC.GLOC_DOOR);
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_UNEX_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_UNEX_PREV, 1))), NHC.GLOC_EXPLORE);
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_INTERESTING_NEXT, 1))), visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_INTERESTING_PREV, 1))), NHC.GLOC_INTERESTING);
         }
         void cptr.sprintf(cptr.decay(sbuf), __sl36, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MOVESKIP, 1))), cptr.ldPtr(cptr.add(__static_getpos_help_fastmovemode, !cptr.ld1s(cptr.add(iflags, 73)), 8)));
         (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
-        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & 32) >>> 0) == 0 ? 1 : 0) {
+        if (!cptr.ldI32(cptr.add(iflags, 68)) || ((cptr.ldI32(cptr.add(iflags, 68)) & NHM.TER_DETECT) >>> 0) == 0 ? 1 : 0) {
             void cptr.sprintf(cptr.decay(sbuf), __sl37, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_MENU, 1))));
             (cptr.ldPtr(cptr.add(windowprocs, 144)))(tmpwin, 0, cptr.decay(sbuf));
             void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1s(cptr.add(cptr.add(gc, 264), NHC.NHKF_GETPOS_LIMITVIEW, 1))));
@@ -448,7 +449,7 @@ function known_vibrating_square_at(x, y) {
 export function gather_locs_interesting(x, y, gloc) {
     let glyph;
     let sym;
-    if (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_VIEW && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & 2) != 0) ? 1 : 0)
+    if (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_VIEW && !((cptr.ld1u(cptr.add(cptr.ldPtr(cptr.add(cptr.ldPtr(cptr.add(gv, 120)), y, 8)), x)) & NHM.IN_SIGHT) != 0) ? 1 : 0)
         return 0;
     if (((((cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtr(cptr.add(gg, 94168)))) ? 1 : 0) ? 1 : 0)
         return 0;
@@ -484,8 +485,8 @@ function gather_locs(arr_p, cnt_p, gloc) {
     gloc_filter_init();
     cptr.stI32(cnt_p, idx = 0);
     for (pass = 0; pass < 2; pass++) {
-        for (x = 1; x < 80; x++)
-            for (y = 0; y < 21; y++) {
+        for (x = 1; x < NHM.COLNO; x++)
+            for (y = 0; y < NHM.ROWNO; y++) {
                 if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16(cptr.add(u, 2)) ? 1 : 0) || gather_locs_interesting(x, y, gloc) ? 1 : 0) {
                     if (!pass) {
                         cptr.stI32(cnt_p, cptr.ldI32(cnt_p) + 1);
@@ -592,14 +593,14 @@ export function getpos_menu(ccp, gloc) {
     let pick_cnt;
     let picks = cptr.box(null);
     let tmpbuf = new Uint8Array(256);
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     gather_locs(garr, gcount, gloc);
     if (gcount.v < 2) {
         cptr.free(garr.v);
         You(__sl79, (cptr.ldI32(cptr.add(iflags, 32)) == NHC.GFILTER_VIEW) ? __sl80 : __sl81, cptr.ldPtr(cptr.add(cptr.decay(gloc_descr[gloc]), 0, 8)));
         return 0;
     }
-    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+    tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
     (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, 536), 8);
     for (i = 1; i < gcount.v; i++) {
@@ -613,12 +614,12 @@ export function getpos_menu(ccp, gloc) {
         if (do_screen_description(tmpcc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
             void coord_desc(cptr.ldI16(cptr.add(garr.v, i, 4)), cptr.ldI16(cptr.add(cptr.add(garr.v, i, 4), 2)), cptr.decay(tmpbuf), schar(cptr.ldI32(cptr.add(iflags, 100))));
             nh_snprintf(__sl82, 705, cptr.decay(fullbuf), 256n, __sl83, firstmatch.v, (cptr.ld1s(cptr.decay(tmpbuf)) ? __sl76 : __sl21), cptr.decay(tmpbuf));
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(fullbuf), 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(fullbuf), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
     void cptr.sprintf(cptr.decay(tmpbuf), __sl84, an(cptr.ldPtr(cptr.add(cptr.decay(gloc_descr[gloc]), 1, 8))), cptr.ldPtr(cptr.add(gloc_filtertxt, cptr.ldI32(cptr.add(iflags, 32)), 8)), cptr.ld1s(cptr.add(iflags, 74)) ? __sl85 : __sl21);
     (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(tmpbuf));
-    pick_cnt = select_menu(tmpwin, 1, picks);
+    pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtr(cptr.add(windowprocs, 128)))(tmpwin);
     if (pick_cnt > 0) {
         cptr.stI16(ccp, cptr.ldI16(cptr.add(garr.v, (cptr.ldI32(picks.v) - 1) | 0, 4)));

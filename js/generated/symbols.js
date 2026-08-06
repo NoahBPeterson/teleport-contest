@@ -6,6 +6,7 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as NHM from './nhmacro.js';
 import { cg, gc, go, gp, gr, gs, svd, u } from './decl.js';
 import { def_monsyms, def_oc_syms, def_r_oc_syms, def_warnsyms, defsyms } from './drawing.js';
 import { nul_glyphinfo, reset_glyphmap } from './display.js';
@@ -278,12 +279,12 @@ export function init_symbols() {
 export function init_showsyms() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1(cptr.add(cptr.add(gs, 680), (i + 0) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+        cptr.st1(cptr.add(cptr.add(gs, 680), (i + NHM.SYM_OFF_P) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
-    for (i = 0; i < 6; i++)
+    for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(cptr.add(gs, 680), (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1), get_othersym(i, NHC.PRIMARYSET));
@@ -332,12 +333,12 @@ export function get_othersym(idx, which_set) {
 export function init_primary_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1(cptr.add(cptr.add(gp, 29), (i + 0) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+        cptr.st1(cptr.add(cptr.add(gp, 29), (i + NHM.SYM_OFF_P) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_oc_syms, i, 24))));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
-    for (i = 0; i < 6; i++)
+    for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(cptr.add(gp, 29), (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1), get_othersym(i, NHC.PRIMARYSET));
@@ -348,14 +349,14 @@ export function init_primary_symbols() {
 export function init_rogue_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1(cptr.add(gr, (i + 0) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
+        cptr.st1(cptr.add(gr, (i + NHM.SYM_OFF_P) | 0, 1), cptr.ld1u(cptr.add(defsyms, i, 24)));
     cptr.st1(cptr.add(gr, NHC.S_vodoor, 1), cptr.st1(cptr.add(gr, NHC.S_hodoor, 1), cptr.st1(cptr.add(gr, NHC.S_ndoor, 1), 43)));
     cptr.st1(cptr.add(gr, NHC.S_upstair, 1), cptr.st1(cptr.add(gr, NHC.S_dnstair, 1), 37));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
         cptr.st1(cptr.add(gr, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1), cptr.ld1u(cptr.add(cptr.decay(def_r_oc_syms), i, 1)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1(cptr.add(gr, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1), uchar(cptr.ld1s(cptr.add(def_monsyms, i, 24))));
-    for (i = 0; i < 6; i++)
+    for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1(cptr.add(gr, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1), cptr.ld1u(cptr.add(def_warnsyms, i, 24)));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1(cptr.add(gr, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1), get_othersym(i, NHC.ROGUESET));
@@ -1476,7 +1477,7 @@ export function do_symset(rogueflag) {
     let setcount = 0;
     let chosen = -2;
     let defindx = 0;
-    let clr = 8;
+    let clr = NHM.NO_COLOR;
     which_set = rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET;
     cptr.stPtr(cptr.add(gs, 952), null);
     symset_name = cptr.ldPtr(cptr.add(cptr.add(cptr.add(gs, 200), which_set, 48), 8));
@@ -1505,13 +1506,13 @@ export function do_symset(rogueflag) {
             return 1;
         }
         void cptr.sprintf(cptr.decay(fmtstr), __sl228, (biggest + 2) | 0);
-        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(4);
+        tmpwin = (cptr.ldPtr(cptr.add(windowprocs, 104)))(NHM.NHW_MENU);
         (cptr.ldPtr(cptr.add(windowprocs, 168)))(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, 1);
         if (!symset_name)
             defindx = cptr.ldI32(any);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, __sl229, (cptr.ldI32(any) == defindx) ? 1 : 0);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl229, (cptr.ldI32(any) == defindx) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
         for (sl = cptr.ldPtr(cptr.add(gs, 952)); sl; sl = cptr.ldPtr(sl)) {
             if (rogueflag ? (cptr.ldI32(cptr.add(sl, 36)) & 1) | 0 : (cptr.ldI32(cptr.add(sl, 40)) & 1) | 0)
                 continue;
@@ -1522,12 +1523,12 @@ export function do_symset(rogueflag) {
                 if (symset_name && !strncmpi((cptr.ldPtr(cptr.add(sl, 8))), (symset_name), -1) ? 1 : 0)
                     defindx = cptr.ldI32(any);
                 void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.ldPtr(cptr.add(sl, 8)), cptr.ldPtr(cptr.add(sl, 16)) ? cptr.ldPtr(cptr.add(sl, 16)) : __sl213);
-                add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, 0, clr, cptr.decay(buf), (cptr.ldI32(any) == defindx) ? 1 : 0);
+                add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), (cptr.ldI32(any) == defindx) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
             }
         }
         void cptr.sprintf(cptr.decay(buf), __sl230, rogueflag ? __sl231 : __sl213);
         (cptr.ldPtr(cptr.add(windowprocs, 184)))(tmpwin, cptr.decay(buf));
-        n = select_menu(tmpwin, 1, symset_pick);
+        n = select_menu(tmpwin, NHM.PICK_ONE, symset_pick);
         if (n > 0) {
             chosen = cptr.ldI32(cptr.add(symset_pick.v, 0, 24));
             if (n == 2 && chosen == defindx ? 1 : 0)

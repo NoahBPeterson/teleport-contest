@@ -5,6 +5,7 @@
 
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as NHM from './nhmacro.js';
 import { ttyDisplay, tty_clear_nhwindow, tty_nhgetch, wins } from './wintty.js';
 import { WIN_MESSAGE, gi, gt, iflags, program_state } from './decl.js';
 import { addtopl, more, putsyms, tty_doprev_message } from './topl.js';
@@ -42,10 +43,10 @@ function hooked_tty_getlin(query, bufp, hook) {
     let c;
     let cw = cptr.ldPtr(cptr.add(wins, WIN_MESSAGE.v, 8));
     let doprev = 0;
-    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == 1 && !(cptr.ldI32(cw) & 1) ? 1 : 0)
+    if (cptr.ldI32(cptr.add(ttyDisplay, 24)) == NHM.TOPLINE_NEED_MORE && !(cptr.ldI32(cw) & NHM.WIN_STOP) ? 1 : 0)
         more();
     cptr.stI32(cw, cptr.ldI32(cw) & -2);
-    cptr.stI32(cptr.add(ttyDisplay, 24), 3);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_SPECIAL_PROMPT);
     (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + 1)) - (1);
     custompline(6, __sl0, query);
     cptr.st1(bufp, 0);
@@ -146,7 +147,7 @@ function hooked_tty_getlin(query, bufp, hook) {
         } else
             tty_nhbell();
     }
-    cptr.stI32(cptr.add(ttyDisplay, 24), 2);
+    cptr.stI32(cptr.add(ttyDisplay, 24), NHM.TOPLINE_NON_EMPTY);
     (cptr.stI32(cptr.add(ttyDisplay, 36), cptr.ldI32(cptr.add(ttyDisplay, 36)) + -1)) - (-1);
     (cptr.ldPtr(cptr.add(windowprocs, 112)))(WIN_MESSAGE.v);
     if (suppress_history) {
@@ -183,7 +184,7 @@ export function xwaitforspace(s) {
 /** C ref: getline.c:272 — @param {CPtr} base @returns {CInt} */
 function ext_cmd_getlin_hook(base) {
     let ecmatches = cptr.box(0);
-    let nmatches = extcmds_match(base, 0, ecmatches);
+    let nmatches = extcmds_match(base, NHM.ECM_NOFLAGS, ecmatches);
     if (nmatches == 1) {
         let ec = extcmds_getentry(cptr.ldI32(cptr.add(ecmatches.v, 0, 4)));
         void cptr.strcpy(base, cptr.ldPtr(cptr.add(ec, 8)));
