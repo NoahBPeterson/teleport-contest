@@ -147,6 +147,14 @@ export async function runBootGame(opts) {
   const bootFiles = new Map();
   if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', bytesOfString(opts.nethackrc));
 
+  // Lua->JS script ports (roadmap 1.10). Bound below, after the transpiled
+  // module graph has been imported — js/lua-js/bridge.mjs pulls in lapi/sp_lev/
+  // nhlsel/nhlobj, and importing those ahead of unixmain.js would reorder the
+  // generated graph's cyclic module initialisation. Null until then, and null
+  // for good when no script is ported, in which case every path below is the
+  // pre-1.10 path byte for byte. See js/lua-js/registry.mjs.
+  let luaPort = null;
+
   const overlay = new Map();
   if (storage) {
     try {
@@ -705,11 +713,30 @@ export async function runBootGame(opts) {
     const data = realRead(p);
     if (!data) return null;
     const fd = openFd(p, 'r');
+    // A ported .lua script: hand nhl_loadlua a same-length comment stub (so its
+    // alloc(buflen+2) is unchanged) and remember to run the port at fclose.
+    const ported = luaPort && luaPort.scriptFor(vendoredName(resolveP(p)));
+    if (ported) {
+      const f = fds.get(fd);
+      const stub = luaPort.onOpen(ported, f.data);
+      if (stub) { f.data = stub; f.base = stub; f.pos = 0; }
+      f.luaPort = ported;
+    }
     return { __fd: fd };
   };
   g.freopen = (p, mode, f) => g.fopen(p, mode);
   g.fdopen = (fd, mode) => fds.has(fd) ? { __fd: fd } : null;
-  g.fclose = (f) => { if (f && f.__fd !== undefined) { fdFlush(f.__fd); fds.delete(f.__fd); } return 0; };
+  g.fclose = (f) => {
+    if (f && f.__fd !== undefined) {
+      const fd = fds.get(f.__fd);
+      fdFlush(f.__fd);
+      fds.delete(f.__fd);
+      // nhl_loadlua has finished reading; the stub it holds is an empty chunk.
+      // Run the JS port here, where the real chunk's body would have run.
+      if (fd && fd.luaPort) luaPort.onClose(fd.luaPort);
+    }
+    return 0;
+  };
   g.fread = (ptr, size, nmemb, f) => {
     const fd = fds.get(f.__fd);
     if (!fd || !fd.data) return 0n;
@@ -807,6 +834,11 @@ export async function runBootGame(opts) {
       }
       throw new Error('input exhausted');
     }
+    // Sampling point for the Lua-port differential oracle: the first key read
+    // after a ported script ran is also the first moment the freshly generated
+    // level is quiescent, and it happens at the same place whether the script
+    // came from the interpreter or from its JS port. Inert unless armed.
+    if (luaPort) luaPort.tick();
     return inputQueue.shift();
   };
   g.vfprintf = (f, fmt, ap) => { const s = cptr.sprintfCore(fmt, ap && ap.args ? ap.args.slice(ap.i) : []); g.fputs(cptr.lit(s), f); return s.length; };
@@ -890,6 +922,13 @@ export async function runBootGame(opts) {
   let rngLog = [];
   try {
     const um = await import('../generated/unixmain.js');
+    // After unixmain.js, so the generated graph's cyclic init order is the one
+    // it has always had; before main(), so the first level generated already
+    // sees the ports. A registry with nothing in it leaves luaPort inert.
+    try {
+      const reg = await import('../lua-js/registry.mjs');
+      if (reg.active()) luaPort = reg;
+    } catch (e) { __trace('lua-port: registry unavailable', String(e)); }
     __trace('boot: calling main()');
     const argvBuf = new Uint8Array(16);
     const argv = cptr.decay(argvBuf);
@@ -953,5 +992,6 @@ export async function runBootGame(opts) {
     }
   }
 
-  return { screens, cursors, animFramesByStep, rngLog, stdout, exitCode, error };
+  const luaLoads = luaPort ? luaPort.closeTrace() : [];
+  return { screens, cursors, animFramesByStep, rngLog, stdout, exitCode, error, luaLoads };
 }
