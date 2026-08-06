@@ -441,6 +441,50 @@ async function recordSegment({
     // asked for it (TELEPORT_RECORD_STATE=1 → main passes a path).
     if (stateDumpPath) env.NETHACK_STATEDUMP = stateDumpPath;
 
+    // Optional per-segment signal schedule (recipe-only; a plain session
+    // has none and this whole block is inert).  Shape:
+    //
+    //   "signals": [ { "at": 12, "sig": "SIGHUP", "when": "before-key",
+    //                  "pause": 50 } ]
+    //
+    //   at    — the input-marker sequence number (== steps recorded so far)
+    //           after which the signal is delivered.  `at: 12` means "the
+    //           screen for step 12 has been captured".
+    //   when  — "before-key" (default): deliver while the C process is
+    //           blocked in read() waiting for the next key.  This is the
+    //           only boundary the harness can attribute deterministically:
+    //           the marker is written from inside the input routine, so
+    //           receiving it proves the process reached the read.
+    //           "after-key": deliver right after the next key is written,
+    //           i.e. while the process is executing the command.  Truly
+    //           asynchronous; expected to be timing-dependent.
+    //   pause — ms to wait after kill() before writing the next key, so the
+    //           handler has run before the read returns.
+    //
+    // NOTE: signals are NOT part of the replay contract.  The judge
+    // (frozen/ps_test_runner.mjs replayInputFor) hands the contestant only
+    // {seed, datetime, nethackrc, moves}, so any recording whose output
+    // depends on a signal is unreplayable by construction.  This support
+    // exists to *measure* which signals are observationally inert; see
+    // docs/NOTES-signal-laced-recording.md.
+    const sigSchedule = new Map();
+    for (const s of (Array.isArray(seg.signals) ? seg.signals : [])) {
+        const key = `${s.when || 'before-key'}@${s.at}`;
+        if (!sigSchedule.has(key)) sigSchedule.set(key, []);
+        sigSchedule.get(key).push(s);
+    }
+    const fireSignals = async (when, at) => {
+        const list = sigSchedule.get(`${when}@${at}`);
+        if (!list) return;
+        for (const s of list) {
+            let ok = true;
+            try { process.kill(child.pid, s.sig); }
+            catch (err) { ok = false; console.error(`[signal] ${s.sig} @${at} failed: ${err.code}`); }
+            console.error(`[signal] sent ${s.sig} ${when}@${at}${ok ? '' : ' (FAILED)'}`);
+            if (s.pause) await sleep(s.pause);
+        }
+    };
+
     // Some legacy sessions have steps[].key populated but moves
     // empty. Fall back to reconstructing moves from step keys
     // (skipping the null initial step) so they replay.
@@ -573,6 +617,9 @@ async function recordSegment({
                 finish('expected steps reached');
                 return;
             }
+            // The process is blocked in read() right now — the marker we
+            // just consumed was emitted from inside the input routine.
+            await fireSignals('before-key', steps.length);
             if (nextKeyIdx < moves.length) {
                 let k = moves[nextKeyIdx++];
                 // The canonical sessions were captured under tmux, whose pty
@@ -584,6 +631,7 @@ async function recordSegment({
                 if (k === '\r') k = '\n';
                 child.stdin.write(Buffer.from(k, 'utf8'));
                 armTimeout(20000, `after key ${nextKeyIdx}/${moves.length}`);
+                await fireSignals('after-key', steps.length);
             } else if (!child.stdin.writableEnded) {
                 try { child.stdin.end(); } catch {}
                 armTimeout(10000, 'awaiting process exit');
@@ -609,17 +657,28 @@ async function recordSegment({
     child.on('error', (err) => rejectDone(err));
     child.on('close', (code, signal) => {
         if (timeoutHandle) clearTimeout(timeoutHandle);
-        parser.stop();
-        if (signal === 'SIGTERM' || signal === 'SIGKILL') {
-            // Killed by us after collecting expected steps.
-            resolveDone(0);
-            return;
-        }
-        // For death sessions the game can terminate before all keys are
-        // consumed (the death itself fires nh_terminate); record whatever
-        // steps we got and let the caller compare against the canonical
-        // session, which captures the same truncated trace.
-        resolveDone(code ?? 0);
+        // The child is gone, but markers it already wrote may still be
+        // sitting in the async handler queue: onMarker awaits file IO (the
+        // rng-log delta) before it pushes a step, and 'close' fires as soon
+        // as the pipes shut. Resolving here would drop however many trailing
+        // steps had not finished processing — which is scheduling-dependent,
+        // so re-recording the *same* recipe produced different step counts
+        // from run to run. It only bites segments whose process exits on its
+        // own (save-exit 'Sy', #quit, a death); segments that run out of keys
+        // are torn down by finish() from inside the queue and are unaffected.
+        // Drain the queue before settling.
+        const drain = chain;
+        drain.catch(() => {}).then(() => {
+            if (timeoutHandle) clearTimeout(timeoutHandle);
+            parser.stop();
+            // For death sessions the game can terminate before all keys are
+            // consumed (the death itself fires nh_terminate); record whatever
+            // steps we got and let the caller compare against the canonical
+            // session, which captures the same truncated trace.
+            // signal SIGTERM/SIGKILL means we killed it after collecting the
+            // expected steps.
+            resolveDone(signal === 'SIGTERM' || signal === 'SIGKILL' ? 0 : (code ?? 0));
+        });
     });
 
     await done;
