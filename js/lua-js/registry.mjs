@@ -24,9 +24,9 @@
 //             an empty chunk is reordered past the des.* calls, and parsing
 //             touches neither NetHack's globals nor its RNG.
 //
-// OFF-BY-DEFAULT SAFETY. With PORTS empty, or with C2JS_LUA_PORT=0, active()
-// is false, the harness leaves luaPort null and not one byte of behaviour
-// changes. The corpus is run both ways.
+// OFF-BY-DEFAULT SAFETY. With both maps empty, or with C2JS_LUA_PORT=0,
+// active() is false, the harness leaves luaPort null, the allocator is not
+// wrapped, and not one byte of behaviour changes. The corpus is run both ways.
 //
 // TRACING. C2JS_LUA_TRACE=1 makes the registry active without swapping any
 // bytes: it only records, per load of a ported script, the slice of the RNG log
@@ -42,8 +42,7 @@
 // lists the scripts that need it. Everything else about the seam is the same.
 
 import * as cptr from '../cptr.js';
-import { svl } from '../generated/decl.js';
-import { gu } from '../generated/decl.js';
+import { gu, svl } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
 import { com_pager, qt_pager } from '../generated/questpgr.js';
 import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
