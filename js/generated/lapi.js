@@ -1005,7 +1005,7 @@ export function lua_getmetatable(L, objindex) {
         mt = cptr.ldPtro(((((((cptr.ldPtr(((obj))))))))), 24);
         break;
         default:
-        mt = cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 480), ((((cptr.ld1uo((obj), 8))) & 15)), 8);
+        mt = cptr.ldPtro2((cptr.ldPtro(L, 24)), ((((cptr.ld1uo((obj), 8))) & 15)), 8, 480);
         break;
     }
     if (!cptr.eq(mt, (null))) {
@@ -1251,7 +1251,7 @@ export function lua_setmetatable(L, objindex) {
         }
         default:
         {
-            cptr.stPtro(cptr.add((cptr.ldPtro(L, 24)), 480), ((((cptr.ld1uo((obj), 8))) & 15)), mt, 8);
+            cptr.stPtro2((cptr.ldPtro(L, 24)), ((((cptr.ld1uo((obj), 8))) & 15)), 8, 480, mt);
             break;
         }
     }
@@ -1377,7 +1377,7 @@ export function lua_load(L, reader, data, chunkname, mode) {
         if (cptr.ld1uo(f, 10) >= 1) {
             let gt = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, 24)), 64)))))))))), 16), 1, 16));
             {
-                let io1 = (cptr.ldPtro(cptr.ldPtro(cptr.add(f, 32), 0, 8), 16));
+                let io1 = (cptr.ldPtro(cptr.ldPtro2(f, 0, 8, 32), 16));
                 let io2 = (gt);
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
@@ -1385,7 +1385,7 @@ export function lua_load(L, reader, data, chunkname, mode) {
                 (void 0);
             }
             ;
-            (((cptr.ld1uo((gt), 8)) & 64) ? ((((cptr.ld1uo((cptr.ldPtro(cptr.add(f, 32), 0, 8)), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((gt))))), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cptr.ldPtro(cptr.add(f, 32), 0, 8))))), (((((cptr.ldPtr(((gt))))))))) : (void 0)) : (void 0));
+            (((cptr.ld1uo((gt), 8)) & 64) ? ((((cptr.ld1uo((cptr.ldPtro2(f, 0, 8, 32)), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((gt))))), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cptr.ldPtro2(f, 0, 8, 32))))), (((((cptr.ldPtr(((gt))))))))) : (void 0)) : (void 0));
         }
     }
     (void 0);
@@ -1713,9 +1713,9 @@ function aux_upvalue(fi, n, val, owner) {
             let p = cptr.ldPtro(f, 24);
             if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, 16))) >>> 0)))
                 return null;
-            cptr.stPtr(val, cptr.ldPtro(cptr.ldPtro(cptr.add(f, 32), (n - 1) | 0, 8), 16));
+            cptr.stPtr(val, cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, 32), 16));
             if (owner)
-                cptr.stPtr(owner, ((((cptr.ldPtro(cptr.add(f, 32), (n - 1) | 0, 8))))));
+                cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, 32))))));
             name = cptr.ldPtro(cptr.ldPtro(p, 80), (n - 1) | 0, 16);
             return (cptr.eq(name, (null))) ? __sl2 : (cptr.add((name), 24));
         }

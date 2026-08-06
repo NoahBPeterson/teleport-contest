@@ -218,9 +218,9 @@ function loadUpvalues(S, f) {
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, 80), i, null, 16);
     for (i = 0; i < n; i++) {
-        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 8, loadByte(S));
-        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 9, loadByte(S));
-        cptr.st1o(cptr.add(cptr.ldPtro(f, 80), i, 16), 10, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, 80), i, 16, 8, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, 80), i, 16, 9, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, 80), i, 16, 10, loadByte(S));
     }
 }
 
@@ -237,7 +237,7 @@ function loadDebug(S, f) {
     cptr.stI32o(f, 40, n);
     for (i = 0; i < n; i++) {
         cptr.stI32o(cptr.ldPtro(f, 96), i, loadInt(S), 8);
-        cptr.stI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4, loadInt(S));
+        cptr.stI32o2(cptr.ldPtro(f, 96), i, 8, 4, loadInt(S));
     }
     n = loadInt(S);
     cptr.stPtro(f, 104, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
@@ -246,8 +246,8 @@ function loadDebug(S, f) {
         cptr.stPtro(cptr.ldPtro(f, 104), i, null, 16);
     for (i = 0; i < n; i++) {
         cptr.stPtro(cptr.ldPtro(f, 104), i, loadStringN(S, f), 16);
-        cptr.stI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 8, loadInt(S));
-        cptr.stI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 12, loadInt(S));
+        cptr.stI32o2(cptr.ldPtro(f, 104), i, 16, 8, loadInt(S));
+        cptr.stI32o2(cptr.ldPtro(f, 104), i, 16, 12, loadInt(S));
     }
     n = loadInt(S);
     if (n != 0)

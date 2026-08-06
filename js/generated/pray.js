@@ -410,7 +410,7 @@ export function stuck_in_wall() {
     let x;
     let y;
     let count = 0;
-    if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PASSES_WALLS, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.PASSES_WALLS, 24) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, 128) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, 112) ? 1 : 0))
         return 0;
     for (i = -1; i <= 1; i++) {
         x = (cptr.ldI16(u) + i) | 0;
@@ -418,7 +418,7 @@ export function stuck_in_wall() {
             if (!i && !j ? 1 : 0)
                 continue;
             y = (cptr.ldI16o(u, 2) + j) | 0;
-            if ((!isok(i16(x), i16(y)) || (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) < NHC.POOL) && (cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4) != NHC.SDOOR && cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4) != NHC.SCORR ? 1 : 0) ? 1 : 0) ? 1 : 0) || (blocked_boulder(i, j) && !((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 134217728n) != 0n) ? 1 : 0) ? 1 : 0)
+            if ((!isok(i16(x), i16(y)) || (((cptr.ld1so3(svl, x, 756, y, 36, 1684)) < NHC.POOL) && (cptr.ld1so3(svl, x, 756, y, 36, 1684) != NHC.SDOOR && cptr.ld1so3(svl, x, 756, y, 36, 1684) != NHC.SCORR ? 1 : 0) ? 1 : 0) ? 1 : 0) || (blocked_boulder(i, j) && !((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 134217728n) != 0n) ? 1 : 0) ? 1 : 0)
                 ++count;
         }
     }
@@ -429,25 +429,25 @@ export function stuck_in_wall() {
 function in_trouble() {
     let otmp;
     let i;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STONED, 24), 16))
+    if (cptr.ldI64o2(u, NHC.STONED, 24, 128))
         return 14;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SLIMED, 24), 16))
+    if (cptr.ldI64o2(u, NHC.SLIMED, 24, 128))
         return 13;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STRANGLED, 24), 16))
+    if (cptr.ldI64o2(u, NHC.STRANGLED, 24, 128))
         return 12;
     if (cptr.ldI32o(u, 60) && cptr.ldI32o(u, 64) == NHC.TT_LAVA ? 1 : 0)
         return 11;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SICK, 24), 16))
+    if (cptr.ldI64o2(u, NHC.SICK, 24, 128))
         return 10;
     if (cptr.ldI32o(u, 108) >= NHC.WEAK)
         return 9;
     if (region_danger())
         return 8;
-    if ((!(cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) || (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.UNCHANGING, 24) ? 1 : 0) ? 1 : 0) && critically_low_hp(0) ? 1 : 0)
+    if ((!(cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) || (cptr.ldI64o2(u, NHC.UNCHANGING, 24, 128) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, 112) ? 1 : 0) ? 1 : 0) && critically_low_hp(0) ? 1 : 0)
         return 7;
     if (((cptr.ldI32o(u, 1836)) >= NHC.LOW_PM && (cptr.ldI32o(u, 1836)) < NHC.NUMMONS ? 1 : 0))
         return 6;
-    if (near_capacity() >= NHC.EXT_ENCUMBER && (((cptr.ld1so(cptr.add(u, 2154), NHC.A_STR, 1)) - (cptr.ld1so(cptr.add(u, 2136), NHC.A_STR, 1))) | 0) > 3 ? 1 : 0)
+    if (near_capacity() >= NHC.EXT_ENCUMBER && (((cptr.ld1so2(u, NHC.A_STR, 1, 2154)) - (cptr.ld1so2(u, NHC.A_STR, 1, 2136))) | 0) > 3 ? 1 : 0)
         return 5;
     if (stuck_in_wall())
         return 4;
@@ -456,10 +456,10 @@ function in_trouble() {
     if (((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 8192n) != 0n) || !freehand() ? 1 : 0) {
         if (welded(uwep.v))
             return 2;
-        if (((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) && ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 8192n) != 0n) ? 1 : 0) && (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.UNCHANGING, 24) ? 1 : 0) || ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, 56) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        if (((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) && ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 8192n) != 0n) ? 1 : 0) && (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, 128) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, 112) ? 1 : 0) || ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, 56) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0)
             return 2;
     }
-    if (cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) && (cptr.ldI32o(ublindf.v, 56) & 1) | 0 ? 1 : 0)
+    if (cptr.ldI64o2(u, NHC.BLINDED, 24, 112) && (cptr.ldI32o(ublindf.v, 56) & 1) | 0 ? 1 : 0)
         return 1;
     if ((uball.v !== null) || (cptr.ldI32o(u, 60) && cptr.ldI32o(u, 64) == NHC.TT_BURIEDBALL ? 1 : 0) ? 1 : 0)
         return -1;
@@ -472,22 +472,22 @@ function in_trouble() {
         if ((((otmp) && cptr.ldI16o((otmp), 32) == NHC.SADDLE ? 1 : 0) && (cptr.ldI32o((otmp), 56) & 1) | 0 ? 1 : 0))
             return -4;
     }
-    if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) & 16777215n) > 1n && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) & -16777216n) ? 1 : 0) && (!(cptr.ldI32o(u, 1848) & 1) || !attacktype_fordmg(cptr.ldPtro(cptr.ldPtro(u, 2416), 8), NHM.AT_ENGL, NHM.AD_BLND) ? 1 : 0) ? 1 : 0)
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) & 16777215n) > 1n && !(cptr.ldI64o2(u, NHC.BLINDED, 24, 128) & -16777216n) ? 1 : 0) && (!(cptr.ldI32o(u, 1848) & 1) || !attacktype_fordmg(cptr.ldPtro(cptr.ldPtro(u, 2416), 8), NHM.AT_ENGL, NHM.AD_BLND) ? 1 : 0) ? 1 : 0)
         return -5;
-    if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) & 16777215n) > 1n)
+    if ((cptr.ldI64o2(u, NHC.DEAF, 24, 128) & 16777215n) > 1n)
         return -5;
     for (i = 0; i < NHC.A_MAX; i++)
-        if ((cptr.ld1so(cptr.add(u, 2136), i, 1)) < (cptr.ld1so(cptr.add(u, 2154), i, 1)))
+        if ((cptr.ld1so2(u, i, 1, 2136)) < (cptr.ld1so2(u, i, 1, 2154)))
             return -6;
-    if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.WOUNDED_LEGS, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.WOUNDED_LEGS, 24) ? 1 : 0) && !cptr.ldPtro(u, 2424) ? 1 : 0)
+    if ((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, 128) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, 112) ? 1 : 0) && !cptr.ldPtro(u, 2424) ? 1 : 0)
         return -7;
     if (cptr.ldI32o(u, 108) >= NHC.HUNGRY)
         return -8;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STUNNED, 24), 16) & 16777215n)
+    if (cptr.ldI64o2(u, NHC.STUNNED, 24, 128) & 16777215n)
         return -9;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.CONFUSION, 24), 16) & 16777215n)
+    if (cptr.ldI64o2(u, NHC.CONFUSION, 24, 128) & 16777215n)
         return -10;
-    if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) & 16777215n)
+    if (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) & 16777215n)
         return -11;
     return 0;
 }
@@ -500,7 +500,7 @@ function worst_cursed_item() {
             if ((((otmp) && cptr.ldI16o((otmp), 32) == NHC.LOADSTONE ? 1 : 0) && (cptr.ldI32o((otmp), 56) & 1) | 0 ? 1 : 0))
                 return otmp;
     }
-    if (welded(uwep.v) && (uright.v || ((cptr.ld1so(uwep.v, 49) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, 49) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32o(cptr.add(objects, cptr.ldI16o(uwep.v, 32), 120), 48) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if (welded(uwep.v) && (uright.v || ((cptr.ld1so(uwep.v, 49) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, 49) == NHC.TOOL_CLASS ? 1 : 0) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, 32), 120, 48) & 1) | 0 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         otmp = uwep.v;
     } else if (uarmg.v && (cptr.ldI32o(uarmg.v, 56) & 1) | 0 ? 1 : 0) {
         otmp = uarmg.v;
@@ -545,16 +545,16 @@ function fix_curse_trouble(otmp, what) {
         impossible(__sl5);
         return;
     }
-    if (cptr.eq(otmp, uarmg.v) && cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.GLIB, 24), 16) ? 1 : 0) {
+    if (cptr.eq(otmp, uarmg.v) && cptr.ldI64o2(u, NHC.GLIB, 24, 128) ? 1 : 0) {
         make_glib(0);
         Your(__sl6, gloves_simple_name(uarmg.v));
         if (!(cptr.ldI32o(otmp, 56) & 1))
             return;
     }
-    if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) || (cptr.eq(otmp, ublindf.v) && (cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) || (cptr.eq(otmp, ublindf.v) && (cptr.ldI64o2(u, NHC.BLINDED, 24, 112) && !(cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         pline(__sl7, what ? what : Yobjnam2(otmp, __sl8), hcolor(cptr.ldPtro(c_color_names, 8)));
         cptr.stI32o(iflags, 40, NHC.PLNMSG_OBJ_GLOWS);
-        cptr.stI32o(otmp, 88, (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0)) >>> 0);
+        cptr.stI32o(otmp, 88, (!(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0)) >>> 0);
     }
     uncurse(otmp);
     update_inventory();
@@ -582,7 +582,7 @@ function fix_worst_trouble(trouble) {
             useup(uamul.v);
         }
         You(__sl12);
-        cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.STRANGLED, 24), 16, 0n);
+        cptr.stI64o2(u, NHC.STRANGLED, 24, 128, 0n);
         cptr.st1(disp, 1);
         break;
         case 11:
@@ -620,10 +620,10 @@ function fix_worst_trouble(trouble) {
         cptr.st1(disp, 1);
         break;
         case 5:
-        You_feel(__sl18, ((((cptr.ld1so(cptr.add(u, 2154), NHC.A_STR, 1)) - (cptr.ld1so(cptr.add(u, 2136), NHC.A_STR, 1))) | 0) > 6) ? __sl19 : __sl20);
-        cptr.st1o(cptr.add(u, 2136), NHC.A_STR, (cptr.ld1so(cptr.add(u, 2154), NHC.A_STR, 1)), 1);
+        You_feel(__sl18, ((((cptr.ld1so2(u, NHC.A_STR, 1, 2154)) - (cptr.ld1so2(u, NHC.A_STR, 1, 2136))) | 0) > 6) ? __sl19 : __sl20);
+        cptr.st1o2(u, NHC.A_STR, 1, 2136, (cptr.ld1so2(u, NHC.A_STR, 1, 2154)));
         cptr.st1(disp, 1);
-        if (cptr.ldI64o(cptr.add(u, 112), NHC.FIXED_ABIL, 24)) {
+        if (cptr.ldI64o2(u, NHC.FIXED_ABIL, 24, 112)) {
             if ((otmp = stuck_ring(uleft.v, NHC.RIN_SUSTAIN_ABILITY)) !== null) {
                 if (cptr.eq(otmp, uleft.v))
                     what = cptr.decay(__static_fix_worst_trouble_leftglow);
@@ -664,7 +664,7 @@ function fix_worst_trouble(trouble) {
             break;
         }
         if ((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) && ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 8192n) != 0n) ? 1 : 0) {
-            if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.UNCHANGING, 24) ? 1 : 0)) {
+            if (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, 128) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, 112) ? 1 : 0)) {
                 Your(__sl23);
                 rehumanize();
             } else if ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, 56) & 1) | 0 ? 1 : 0) {
@@ -705,13 +705,13 @@ function fix_worst_trouble(trouble) {
         fix_curse_trouble(otmp, what);
         break;
         case -6:
-        if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
             pline(__sl26);
         else
             You_feel(__sl27);
         for (i = 0; i < NHC.A_MAX; i++) {
-            if ((cptr.ld1so(cptr.add(u, 2136), i, 1)) < (cptr.ld1so(cptr.add(u, 2154), i, 1))) {
-                cptr.st1o(cptr.add(u, 2136), i, (cptr.ld1so(cptr.add(u, 2154), i, 1)), 1);
+            if ((cptr.ld1so2(u, i, 1, 2136)) < (cptr.ld1so2(u, i, 1, 2154))) {
+                cptr.st1o2(u, i, 1, 2136, (cptr.ld1so2(u, i, 1, 2154)));
                 cptr.st1(disp, 1);
             }
         }
@@ -721,9 +721,9 @@ function fix_worst_trouble(trouble) {
         {
             let msgbuf = new Uint8Array(256);
             let eyes = body_part(NHC.EYE);
-            let cure_deaf = schar(((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) & 16777215n) ? 1 : 0));
+            let cure_deaf = schar(((cptr.ldI64o2(u, NHC.DEAF, 24, 128) & 16777215n) ? 1 : 0));
             cptr.st1o(cptr.decay(msgbuf), 0, 0, 1);
-            if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+            if ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
                 if ((!((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) ? 1 : 0) ? 1 : 2)) != 1)
                     eyes = makeplural(eyes);
                 void cptr.sprintf(cptr.decay(msgbuf), __sl28, eyes, vtense(eyes, __sl29));
@@ -732,7 +732,7 @@ function fix_worst_trouble(trouble) {
             }
             if (cure_deaf) {
                 make_deaf(0n, 0);
-                if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+                if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
                     void cptr.sprintf(eos(cptr.decay(msgbuf)), __sl30, !cptr.ld1s(cptr.decay(msgbuf)) ? __sl31 : __sl32);
             }
             if (cptr.ld1s(cptr.decay(msgbuf)))
@@ -754,7 +754,7 @@ function fix_worst_trouble(trouble) {
         break;
         case -4:
         otmp = which_armor(cptr.ldPtro(u, 2424), 1048576n);
-        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
             pline(__sl7, Yobjnam2(otmp, __sl8), hcolor(cptr.ldPtro(c_color_names, 8)));
             set_bknown(otmp, 1);
         }
@@ -775,14 +775,14 @@ function god_zaps_you(resp_god) {
             pline(__sl38, Monnam(cptr.ldPtro(u, 2416)));
     } else {
         pline(__sl39);
-        if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.REFLECTING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.REFLECTING, 24) ? 1 : 0)) {
+        if ((cptr.ldI64o2(u, NHC.REFLECTING, 24, 128) || cptr.ldI64o2(u, NHC.REFLECTING, 24, 112) ? 1 : 0)) {
             shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2));
-            if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 pline(__sl40);
             else
                 void ureflects(__sl41, __sl42);
             monstseesu(256n);
-        } else if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SHOCK_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.SHOCK_RES, 24) ? 1 : 0)) {
+        } else if ((cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 128) || cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 112) ? 1 : 0)) {
             shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2));
             pline(__sl43);
             monstseesu(32n);
@@ -802,15 +802,15 @@ function god_zaps_you(resp_god) {
             pline(__sl38, Monnam(cptr.ldPtro(u, 2416)));
     } else {
         pline(__sl47);
-        if ((uarms.v && !(cptr.ldI64o(cptr.add(u, 112), NHC.REFLECTING, 24) & 8n) ? 1 : 0) && !(cptr.ldI64o(cptr.add(u, 112), NHC.DISINT_RES, 24) & 8n) ? 1 : 0)
+        if ((uarms.v && !(cptr.ldI64o2(u, NHC.REFLECTING, 24, 112) & 8n) ? 1 : 0) && !(cptr.ldI64o2(u, NHC.DISINT_RES, 24, 112) & 8n) ? 1 : 0)
             void disintegrate_arm(uarms.v);
-        if ((uarmc.v && !(cptr.ldI64o(cptr.add(u, 112), NHC.REFLECTING, 24) & 2n) ? 1 : 0) && !(cptr.ldI64o(cptr.add(u, 112), NHC.DISINT_RES, 24) & 2n) ? 1 : 0)
+        if ((uarmc.v && !(cptr.ldI64o2(u, NHC.REFLECTING, 24, 112) & 2n) ? 1 : 0) && !(cptr.ldI64o2(u, NHC.DISINT_RES, 24, 112) & 2n) ? 1 : 0)
             void disintegrate_arm(uarmc.v);
-        if (((uarm.v && !(cptr.ldI64o(cptr.add(u, 112), NHC.REFLECTING, 24) & 1n) ? 1 : 0) && !(cptr.ldI64o(cptr.add(u, 112), NHC.DISINT_RES, 24) & 1n) ? 1 : 0) && !uarmc.v ? 1 : 0)
+        if (((uarm.v && !(cptr.ldI64o2(u, NHC.REFLECTING, 24, 112) & 1n) ? 1 : 0) && !(cptr.ldI64o2(u, NHC.DISINT_RES, 24, 112) & 1n) ? 1 : 0) && !uarmc.v ? 1 : 0)
             void disintegrate_arm(uarm.v);
         if ((uarmu.v && !uarm.v ? 1 : 0) && !uarmc.v ? 1 : 0)
             void disintegrate_arm(uarmu.v);
-        if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DISINT_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DISINT_RES, 24) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.DISINT_RES, 24, 128) || cptr.ldI64o2(u, NHC.DISINT_RES, 24, 112) ? 1 : 0)) {
             fry_by_god(resp_god, 1);
             monstunseesu(16n);
         } else {
@@ -825,7 +825,7 @@ function god_zaps_you(resp_god) {
             summon_minion(resp_god, 0);
             summon_minion(resp_god, 0);
             ;
-            verbalize(__sl51, (cptr.ldPtro(cptr.add(genders, cptr.ld1so(flags, 13) ? 1 : 0, 48), 16)));
+            verbalize(__sl51, (cptr.ldPtro2(genders, cptr.ld1so(flags, 13) ? 1 : 0, 48, 16)));
         }
     }
 }
@@ -856,7 +856,7 @@ function angrygods(resp_god) {
     switch ((rng_log_enabled() ? (rng_log_set_caller(__sl16, 725, __sl56), rn2(maxanger)) : rn2(maxanger))) {
         case 0:
         case 1:
-        You_feel(__sl57, align_gname(resp_god), (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl58 : __sl59);
+        You_feel(__sl57, align_gname(resp_god), (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl58 : __sl59);
         break;
         case 2:
         case 3:
@@ -878,7 +878,7 @@ function angrygods(resp_god) {
         case 4:
         case 5:
         gods_angry(resp_god);
-        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.ANTIMAGIC, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.ANTIMAGIC, 24) ? 1 : 0) ? 1 : 0)
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) && !(cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0) ? 1 : 0)
             pline(__sl66, An(hcolor(cptr.ldPtr(c_color_names))));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl16, 757, __sl56), rn2(2)) : rn2(2)) || !attrcurse() ? 1 : 0)
             rndcurse();
@@ -887,7 +887,7 @@ function angrygods(resp_god) {
         case 8:
         godvoice(resp_god, null);
         ;
-        verbalize(__sl67, (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) && (((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) != resp_god) ? 1 : 0) ? __sl68 : __sl69);
+        verbalize(__sl67, (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) && (((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) != resp_god) ? 1 : 0) ? __sl68 : __sl69);
         pline(__sl70, (cptr.ld1so(cptr.ldPtro(gy, 16), 28) == NHC.S_HUMAN) ? __sl63 : __sl64);
         summon_minion(resp_god, 0);
         break;
@@ -904,12 +904,12 @@ function angrygods(resp_god) {
 
 /** C ref: pray.c:788 — @param {CPtr} str */
 function at_your_feet(str) {
-    if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
         str = cptr.ldPtro(c_common_strings, 48);
     if ((cptr.ldI32o(u, 1848) & 1)) {
         pline(__sl71, str, vtense(str, __sl72), s_suffix(mon_nam(cptr.ldPtro(u, 2416))), mbodypart(cptr.ldPtro(u, 2416), NHC.STOMACH));
     } else {
-        pline(__sl73, str, vtense(str, ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? __sl74 : __sl75), ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.LEVITATION, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8) ? 1 : 0) ? __sl76 : __sl77, makeplural(body_part(NHC.FOOT)));
+        pline(__sl73, str, vtense(str, ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl74 : __sl75), ((cptr.ldI64o2(u, NHC.LEVITATION, 24, 128) || cptr.ldI64o2(u, NHC.LEVITATION, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, 120) ? 1 : 0) ? __sl76 : __sl77, makeplural(body_part(NHC.FOOT)));
     }
 }
 
@@ -920,12 +920,12 @@ function gcrownu() {
     let already_exists;
     let in_hand;
     let class_gift;
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SEE_INVIS, 24), 16) | 67108864n);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.FIRE_RES, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FIRE_RES, 24), 16) | 67108864n);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.COLD_RES, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.COLD_RES, 24), 16) | 67108864n);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.SHOCK_RES, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SHOCK_RES, 24), 16) | 67108864n);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.SLEEP_RES, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SLEEP_RES, 24), 16) | 67108864n);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.POISON_RES, 24), 16) | 67108864n);
+    cptr.stI64o2(u, NHC.SEE_INVIS, 24, 128, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) | 67108864n);
+    cptr.stI64o2(u, NHC.FIRE_RES, 24, 128, cptr.ldI64o2(u, NHC.FIRE_RES, 24, 128) | 67108864n);
+    cptr.stI64o2(u, NHC.COLD_RES, 24, 128, cptr.ldI64o2(u, NHC.COLD_RES, 24, 128) | 67108864n);
+    cptr.stI64o2(u, NHC.SHOCK_RES, 24, 128, cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 128) | 67108864n);
+    cptr.stI64o2(u, NHC.SLEEP_RES, 24, 128, cptr.ldI64o2(u, NHC.SLEEP_RES, 24, 128) | 67108864n);
+    cptr.stI64o2(u, NHC.POISON_RES, 24, 128, cptr.ldI64o2(u, NHC.POISON_RES, 24, 128) | 67108864n);
     godvoice(cptr.ld1so(u, 2172), null);
     class_gift = NHC.STRANGE_OBJECT;
     if ((((cptr.ldI16o(gu, 216) == NHC.PM_WIZARD) && !is_art(uwep.v, NHC.ART_VORPAL_BLADE) ? 1 : 0) && !is_art(uwep.v, NHC.ART_STORMBRINGER) ? 1 : 0) && !carrying(NHC.SPE_FINGER_OF_DEATH) ? 1 : 0) {
@@ -933,7 +933,7 @@ function gcrownu() {
     } else if (((cptr.ldI16o(gu, 216) == NHC.PM_MONK) && (!uwep.v || !cptr.ld1so(uwep.v, 51) ? 1 : 0) ? 1 : 0) && !carrying(NHC.SPE_RESTORE_ABILITY) ? 1 : 0) {
         class_gift = NHC.SPE_RESTORE_ABILITY;
     }
-    obj = ((uwep.v) && (cptr.ld1so((uwep.v), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o((uwep.v), 32), 120), 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) ? uwep.v : null;
+    obj = ((uwep.v) && (cptr.ld1so((uwep.v), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), 32), 120, 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) ? uwep.v : null;
     already_exists = (in_hand = 0);
     switch (cptr.ld1so(u, 2172)) {
         case NHM.A_LAWFUL:
@@ -960,7 +960,7 @@ function gcrownu() {
         livelog_printf(8n, __sl85, what, u_gname());
         break;
     }
-    if (cptr.ld1so(cptr.add(objects, class_gift, 120), 70) == NHC.SPBOOK_CLASS) {
+    if (cptr.ld1so2(objects, class_gift, 120, 70) == NHC.SPBOOK_CLASS) {
         let bbuf = new Uint8Array(256);
         obj = mksobj(class_gift, 1, 0);
         void cptr.strcpy(cptr.decay(bbuf), actualoname(obj));
@@ -971,7 +971,7 @@ function gcrownu() {
         dropy(obj);
         (cptr.stI32o(u, 2344, cptr.ldI32o(u, 2344) + 1)) - (1);
         livelog_printf(8264n, __sl86, cptr.decay(bbuf));
-        if (known_spell(class_gift) != NHC.spe_Unknown && ((uwep.v) && (cptr.ld1so((uwep.v), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o((uwep.v), 32), 120), 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+        if (known_spell(class_gift) != NHC.spe_Unknown && ((uwep.v) && (cptr.ld1so((uwep.v), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), 32), 120, 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
             obj = uwep.v;
     }
     switch (cptr.ld1so(u, 2172)) {
@@ -981,12 +981,12 @@ function gcrownu() {
         } else if ((obj && cptr.ldI16o(obj, 32) == NHC.LONG_SWORD ? 1 : 0) && !cptr.ld1so(obj, 51) ? 1 : 0) {
             let lbuf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(lbuf), simpleonames(obj));
-            if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 Your(__sl87);
             obj = oname(obj, artiname(NHC.ART_EXCALIBUR), 264);
             if (is_art(obj, NHC.ART_EXCALIBUR)) {
                 (cptr.stI32o(u, 2344, cptr.ldI32o(u, 2344) + 1)) - (1);
-                livelog_printf(72n, __sl88, (cptr.ldPtro(cptr.add(genders, cptr.ld1so(flags, 13) ? 1 : 0, 48), 24)), cptr.decay(lbuf), artiname(NHC.ART_EXCALIBUR));
+                livelog_printf(72n, __sl88, (cptr.ldPtro2(genders, cptr.ld1so(flags, 13) ? 1 : 0, 48, 24)), cptr.decay(lbuf), artiname(NHC.ART_EXCALIBUR));
             }
         }
         unrestrict_weapon_skill(NHC.P_LONG_SWORD);
@@ -1039,7 +1039,7 @@ function gcrownu() {
         obj = null;
         break;
     }
-    if (((obj) && (cptr.ld1so((obj), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((obj), 49) == NHC.TOOL_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o((obj), 32), 120), 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+    if (((obj) && (cptr.ld1so((obj), 49) == NHC.WEAPON_CLASS || (cptr.ld1so((obj), 49) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), 32), 120, 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
         bless(obj);
         cptr.stI32o(obj, 112, cptr.stI32o(obj, 116, 0));
         cptr.stI32o(obj, 120, 1);
@@ -1064,13 +1064,13 @@ function give_spell() {
     otmp = mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 1);
     while (--trycnt > 0) {
         if (cptr.ldI16o(otmp, 32) != NHC.SPE_BLANK_PAPER) {
-            if (known_spell(cptr.ldI16o(otmp, 32)) <= NHC.spe_Unknown && !(cptr.ldI16o(cptr.add(u, 2588), spell_skilltype(cptr.ldI16o(otmp, 32)), 6) == NHC.P_ISRESTRICTED) ? 1 : 0)
+            if (known_spell(cptr.ldI16o(otmp, 32)) <= NHC.spe_Unknown && !(cptr.ldI16o2(u, spell_skilltype(cptr.ldI16o(otmp, 32)), 6, 2588) == NHC.P_ISRESTRICTED) ? 1 : 0)
                 break;
         } else {
-            if (!(cptr.ldI32o(cptr.add(objects, NHC.SPE_BLANK_PAPER, 120), 16) & 1) || carrying(NHC.MAGIC_MARKER) ? 1 : 0)
+            if (!(cptr.ldI32o2(objects, NHC.SPE_BLANK_PAPER, 120, 16) & 1) || carrying(NHC.MAGIC_MARKER) ? 1 : 0)
                 break;
         }
-        cptr.stI16o(otmp, 32, i16(rnd_class(cptr.ldI32o(cptr.add(svb, 16), NHC.SPBOOK_CLASS, 4), NHC.SPE_BLANK_PAPER)));
+        cptr.stI16o(otmp, 32, i16(rnd_class(cptr.ldI32o2(svb, NHC.SPBOOK_CLASS, 4, 16), NHC.SPE_BLANK_PAPER)));
     }
     if ((cptr.ldI16o(otmp, 32) != NHC.SPE_BLANK_PAPER && !(rng_log_enabled() ? (rng_log_set_caller(__sl16, 1030, __sl94), rn2(4)) : rn2(4)) ? 1 : 0) && (spe_knowledge = known_spell(cptr.ldI16o(otmp, 32))) != NHC.spe_Fresh ? 1 : 0) {
         if ((spe_let = force_learn_spell(cptr.ldI16o(otmp, 32))) != 0) {
@@ -1100,8 +1100,8 @@ function pleased(g_align) {
     let trouble = in_trouble();
     let pat_on_head = 0;
     let kick_on_butt;
-    You_feel(__sl57, align_gname(g_align), (cptr.ldI32o(u, 2176) >= 14) ? (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl99 : __sl100 : ((cptr.ldI32o(u, 2176) >= 4) ? (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl101 : __sl102 : ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl103 : __sl104)));
-    if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) && cptr.ld1so(gp, 508) != cptr.ld1so(u, 2172) ? 1 : 0) {
+    You_feel(__sl57, align_gname(g_align), (cptr.ldI32o(u, 2176) >= 14) ? (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl99 : __sl100 : ((cptr.ldI32o(u, 2176) >= 4) ? (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl101 : __sl102 : ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl103 : __sl104)));
+    if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) && cptr.ld1so(gp, 508) != cptr.ld1so(u, 2172) ? 1 : 0) {
         adjalign(-1);
         return;
     } else if (cptr.ldI32o(u, 2176) < 2 && trouble <= 0 ? 1 : 0)
@@ -1114,8 +1114,8 @@ function pleased(g_align) {
         let prayer_luck;
         let tryct = 0;
         prayer_luck = ((((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0)) > -1 ? (((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0)) : -1);
-        action = (((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1126, __sl102), rn2((prayer_luck + (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) ? (3 + ((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_SHRINE) != 0)) | 0 : 2)) | 0)) : rn2((prayer_luck + (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) ? (3 + ((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_SHRINE) != 0)) | 0 : 2)) | 0)) + 1) | 0);
-        if (!((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR))
+        action = (((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1126, __sl102), rn2((prayer_luck + (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) ? (3 + ((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_SHRINE) != 0)) | 0 : 2)) | 0)) : rn2((prayer_luck + (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) ? (3 + ((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_SHRINE) != 0)) | 0 : 2)) | 0)) + 1) | 0);
+        if (!((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR))
             action = ((action) < 3 ? (action) : 3);
         if (cptr.ldI32o(u, 2176) < 4)
             action = (cptr.ldI32o(u, 2176) > 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl16, 1130, __sl102), rnl(2)) : rnl(2)) ? 1 : 0) ? 1 : 0;
@@ -1150,13 +1150,13 @@ function pleased(g_align) {
             case 0:
             break;
             case 1:
-            if (uwep.v && ((welded(uwep.v) || cptr.ld1so(uwep.v, 49) == NHC.WEAPON_CLASS ? 1 : 0) || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o((uwep.v), 32), 120), 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+            if (uwep.v && ((welded(uwep.v) || cptr.ld1so(uwep.v, 49) == NHC.WEAPON_CLASS ? 1 : 0) || (cptr.ld1so((uwep.v), 49) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), 32), 120, 68) != NHC.P_NONE ? 1 : 0) ? 1 : 0) ? 1 : 0) {
                 let repair_buf = new Uint8Array(256);
                 cptr.st1(cptr.decay(repair_buf), 0);
                 if ((cptr.ldI32o(uwep.v, 112) & 3) | 0 || (cptr.ldI32o(uwep.v, 116) & 3) | 0 ? 1 : 0)
                     void cptr.sprintf(cptr.decay(repair_buf), __sl105, otense(uwep.v, __sl106));
                 if ((cptr.ldI32o(uwep.v, 56) & 1)) {
-                    if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+                    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
                         pline(__sl107, Yobjnam2(uwep.v, __sl8), hcolor(cptr.ldPtro(c_color_names, 8)), cptr.decay(repair_buf));
                         cptr.stI32o(iflags, 40, NHC.PLNMSG_OBJ_GLOWS);
                     } else
@@ -1165,7 +1165,7 @@ function pleased(g_align) {
                     cptr.stI32o(uwep.v, 88, 1);
                     cptr.st1(cptr.decay(repair_buf), 0);
                 } else if (!(cptr.ldI32o(uwep.v, 60) & 1)) {
-                    if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+                    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
                         pline(__sl109, Yobjnam2(uwep.v, __sl8), an(hcolor(cptr.ldPtro(c_color_names, 24))), cptr.decay(repair_buf));
                         cptr.stI32o(iflags, 40, NHC.PLNMSG_OBJ_GLOWS);
                     } else
@@ -1177,7 +1177,7 @@ function pleased(g_align) {
                 if ((cptr.ldI32o(uwep.v, 112) & 3) | 0 || (cptr.ldI32o(uwep.v, 116) & 3) | 0 ? 1 : 0) {
                     cptr.stI32o(uwep.v, 112, cptr.stI32o(uwep.v, 116, 0));
                     if (cptr.ld1s(cptr.decay(repair_buf)))
-                        pline(__sl111, Yobjnam2(uwep.v, ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? __sl29 : __sl112));
+                        pline(__sl111, Yobjnam2(uwep.v, ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl29 : __sl112));
                 }
                 update_inventory();
             }
@@ -1204,7 +1204,7 @@ function pleased(g_align) {
             // @FallThrough
             ;
             case 2:
-            if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 You(__sl117, an(hcolor(cptr.ldPtro(c_color_names, 16))));
             if (cptr.ldI32o(u, 48) < cptr.ldI32o(u, 52)) {
                 cptr.stI32o(u, 52, (cptr.ldI32o(u, 52) - 1) | 0);
@@ -1219,8 +1219,8 @@ function pleased(g_align) {
             cptr.stI32o(u, 2196, cptr.ldI32o(u, 2200));
             if ((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)))
                 cptr.stI32o(u, 1812, cptr.ldI32o(u, 1816));
-            if ((cptr.ld1so(cptr.add(u, 2136), NHC.A_STR, 1)) < (cptr.ld1so(cptr.add(u, 2154), NHC.A_STR, 1))) {
-                cptr.st1o(cptr.add(u, 2136), NHC.A_STR, (cptr.ld1so(cptr.add(u, 2154), NHC.A_STR, 1)), 1);
+            if ((cptr.ld1so2(u, NHC.A_STR, 1, 2136)) < (cptr.ld1so2(u, NHC.A_STR, 1, 2154))) {
+                cptr.st1o2(u, NHC.A_STR, 1, 2136, (cptr.ld1so2(u, NHC.A_STR, 1, 2154)));
                 cptr.st1(disp, 1);
                 encumber_msg();
             }
@@ -1237,14 +1237,14 @@ function pleased(g_align) {
                 let otmp;
                 let nextobj;
                 let any = 0;
-                if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+                if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                     You_feel(__sl118, u_gname());
                 else
                     You(__sl119, an(hcolor(cptr.ldPtro(c_color_names, 24))));
                 for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = nextobj) {
                     nextobj = cptr.ldPtr(otmp);
                     if ((cptr.ldI32o(otmp, 56) & 1) | 0 && (!cptr.eq(otmp, uarmh.v) || cptr.ldI16o(uarmh.v, 32) != NHC.HELM_OF_OPPOSITE_ALIGNMENT ? 1 : 0) ? 1 : 0) {
-                        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+                        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
                             pline(__sl7, Yobjnam2(otmp, __sl8), hcolor(cptr.ldPtro(c_color_names, 8)));
                             cptr.stI32o(iflags, 40, NHC.PLNMSG_OBJ_GLOWS);
                             cptr.stI32o(otmp, 88, 1);
@@ -1260,20 +1260,20 @@ function pleased(g_align) {
             case 5:
             {
                 godvoice(cptr.ld1so(u, 2172), __sl120);
-                if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.TELEPAT, 24), 16) & 117440512n)) {
-                    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.TELEPAT, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.TELEPAT, 24), 16) | 67108864n);
+                if (!(cptr.ldI64o2(u, NHC.TELEPAT, 24, 128) & 117440512n)) {
+                    cptr.stI64o2(u, NHC.TELEPAT, 24, 128, cptr.ldI64o2(u, NHC.TELEPAT, 24, 128) | 67108864n);
                     pline(cptr.decay(__static_pleased_msg), __sl121);
-                    if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+                    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                         see_monsters();
-                } else if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16) & 117440512n)) {
-                    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16) | 67108864n);
+                } else if (!(cptr.ldI64o2(u, NHC.FAST, 24, 128) & 117440512n)) {
+                    cptr.stI64o2(u, NHC.FAST, 24, 128, cptr.ldI64o2(u, NHC.FAST, 24, 128) | 67108864n);
                     pline(cptr.decay(__static_pleased_msg), __sl122);
-                } else if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 16) & 117440512n)) {
-                    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STEALTH, 24), 16) | 67108864n);
+                } else if (!(cptr.ldI64o2(u, NHC.STEALTH, 24, 128) & 117440512n)) {
+                    cptr.stI64o2(u, NHC.STEALTH, 24, 128, cptr.ldI64o2(u, NHC.STEALTH, 24, 128) | 67108864n);
                     pline(cptr.decay(__static_pleased_msg), __sl123);
                 } else {
-                    if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16) & 117440512n)) {
-                        cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16) | 67108864n);
+                    if (!(cptr.ldI64o2(u, NHC.PROTECTION, 24, 128) & 117440512n)) {
+                        cptr.stI64o2(u, NHC.PROTECTION, 24, 128, cptr.ldI64o2(u, NHC.PROTECTION, 24, 128) | 67108864n);
                         if (!cptr.ldI32o(u, 2348))
                             cptr.stI32o(u, 2348, (((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1331, __sl102), rn2(3)) : rn2(3)) + 2) | 0));
                     } else
@@ -1320,8 +1320,8 @@ function water_prayer(bless_water) {
     let otmp;
     let changed = 0n;
     let other = 0;
-    let bc_known = schar((!(((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) || (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? 1 : 0)));
-    for (otmp = cptr.ldPtro(cptr.add(cptr.add(svl, 62160), cptr.ldI16(u), 168), cptr.ldI16o(u, 2), 8); otmp; otmp = cptr.ldPtro(otmp, 8)) {
+    let bc_known = schar((!(((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? 1 : 0)));
+    for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, 2), 8, 62160); otmp; otmp = cptr.ldPtro(otmp, 8)) {
         if (cptr.ldI16o(otmp, 32) == NHC.POT_WATER && (bless_water ? !(cptr.ldI32o(otmp, 60) & 1) : !(cptr.ldI32o(otmp, 56) & 1)) ? 1 : 0) {
             cptr.stI32o(otmp, 60, bless_water);
             cptr.stI32o(otmp, 56, (!bless_water) >>> 0);
@@ -1330,7 +1330,7 @@ function water_prayer(bless_water) {
         } else if (cptr.ld1so(otmp, 49) == NHC.POTION_CLASS)
             other = 1;
     }
-    if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) && changed ? 1 : 0) {
+    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) && changed ? 1 : 0) {
         pline(__sl127, ((other && changed > 1n ? 1 : 0) ? __sl128 : (other ? __sl129 : __sl130)), ((other || changed > 1n ? 1 : 0) ? __sl131 : __sl20), (changed > 1n ? __sl20 : __sl131), (bless_water ? hcolor(cptr.ldPtro(c_color_names, 24)) : hcolor(cptr.ldPtr(c_color_names))));
     }
     return schar((changed > 0n));
@@ -1362,7 +1362,7 @@ function gods_upset(g_align) {
 
 /** C ref: pray.c:1446 — @param {CPtr} otmp */
 function consume_offering(otmp) {
-    if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
         switch ((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1449, __sl136), rn2(3)) : rn2(3))) {
             case 0:
             Your(__sl137);
@@ -1374,7 +1374,7 @@ function consume_offering(otmp) {
             Your(__sl139);
             break;
         }
-    else if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) && cptr.ld1so(u, 2172) == NHM.A_LAWFUL ? 1 : 0)
+    else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) && cptr.ld1so(u, 2172) == NHM.A_LAWFUL ? 1 : 0)
         Your(__sl140);
     else
         Your(__sl141, (cptr.ld1so(u, 2172) == NHM.A_LAWFUL) ? __sl142 : ((cptr.ld1so(u, 2172) == NHM.A_NEUTRAL) ? __sl143 : __sl144));
@@ -1391,7 +1391,7 @@ function offer_too_soon(altaralign) {
         gods_upset(-128);
         return;
     }
-    You_feel(__sl33, (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl145 : ((altaralign == cptr.ld1so(u, 2172)) ? __sl146 : __sl147));
+    You_feel(__sl33, (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl145 : ((altaralign == cptr.ld1so(u, 2172)) ? __sl146 : __sl147));
 }
 
 /** C ref: pray.c:1501 — @param {CInt} highaltar @param {CInt} altaralign */
@@ -1470,11 +1470,11 @@ function offer_fake_amulet(otmp, highaltar, altaralign) {
     ;
     You_hear(__sl167);
     if (!(cptr.ldI32o(otmp, 80) & 1)) {
-        You(__sl168, (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl169 : __sl170);
+        You(__sl168, (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl169 : __sl170);
         cptr.stI32o(otmp, 80, 1);
         change_luck(-1);
     } else {
-        if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+        if (((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
             pline(__sl171);
         change_luck(-3);
         adjalign(-1);
@@ -1486,7 +1486,7 @@ function offer_fake_amulet(otmp, highaltar, altaralign) {
 /** C ref: pray.c:1631 — @param {CPtr} otmp @param {CInt} altaralign */
 function offer_different_alignment_altar(otmp, altaralign) {
     if ((cptr.ldI32o(u, 2176) < 0) || (altaralign == -128 && In_hell(cptr.add(u, 24)) ? 1 : 0) ? 1 : 0) {
-        if (cptr.ld1so(cptr.add(u, 2184), NHM.A_CURRENT, 1) == cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1) && altaralign != -128 ? 1 : 0) {
+        if (cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184) && altaralign != -128 ? 1 : 0) {
             You(__sl172, u_gname());
             consume_offering(otmp);
             pline(__sl173, a_gname());
@@ -1512,12 +1512,12 @@ function offer_different_alignment_altar(otmp, altaralign) {
             You_feel(__sl178, u_gname());
             exercise(NHC.A_WIS, 1);
             change_luck(1);
-            shrine = schar(((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_SHRINE) != 0));
-            cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8, ((((cptr.ld1so(u, 2172)) == -128) ? NHM.AM_NONE : (((cptr.ld1so(u, 2172)) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((cptr.ld1so(u, 2172)) + 2) | 0))) >>> 0));
+            shrine = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_SHRINE) != 0));
+            cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688, ((((cptr.ld1so(u, 2172)) == -128) ? NHM.AM_NONE : (((cptr.ld1so(u, 2172)) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((cptr.ld1so(u, 2172)) + 2) | 0))) >>> 0));
             if (shrine)
-                cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8, cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) | NHM.AM_SHRINE);
+                cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) | NHM.AM_SHRINE);
             newsym(cptr.ldI16(u), cptr.ldI16o(u, 2));
-            if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 pline_The(__sl179, hcolor((cptr.ld1so(u, 2172) == NHM.A_LAWFUL) ? cptr.ldPtro(c_color_names, 72) : (cptr.ld1so(u, 2172) ? cptr.ldPtr(c_color_names) : __sl180)));
             if (((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1679, __sl177), rnl(cptr.ldI32o(u, 48))) : rnl(cptr.ldI32o(u, 48))) > 6 && cptr.ldI32o(u, 2176) > 0 ? 1 : 0) && BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1680, __sl177), rnd(cptr.ldI32o(u, 2176))) : rnd(cptr.ldI32o(u, 2176)))) > (BigInt.asIntN(64, 3n * (BigInt.asIntN(64, 10n + (cptr.ldI64o(svm, 8) / 200n))))) / 4n ? 1 : 0)
                 summon_minion(altaralign, 1);
@@ -1548,7 +1548,7 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
         return;
     } else if (altaralign != -1 && altaralign != -128 ? 1 : 0) {
         pline_The(__sl184, cptr.ldPtro(gu, 328));
-        cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8, NHM.AM_CHAOTIC);
+        cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688, NHM.AM_CHAOTIC);
         newsym(cptr.ldI16(u), cptr.ldI16o(u, 2));
         angry_priest();
     } else {
@@ -1556,8 +1556,8 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
         let demonless_msg;
         if (altaralign == -1 && cptr.ld1so(u, 2172) != -1 ? 1 : 0) {
             pline(__sl185, an(hcolor(cptr.ldPtr(c_color_names))));
-            cptr.st1o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4, NHC.ROOM);
-            cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8, 0);
+            cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684, NHC.ROOM);
+            cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688, 0);
             newsym(cptr.ldI16(u), cptr.ldI16o(u, 2));
             angry_priest();
             demonless_msg = __sl186;
@@ -1610,7 +1610,7 @@ function bestow_artifact(max_giftvalue) {
     }
     if (do_bestow) {
         let otmp;
-        otmp = mk_artifact(null, ((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))), max_giftvalue, 1);
+        otmp = mk_artifact(null, ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))), max_giftvalue, 1);
         if (otmp) {
             let buf = new Uint8Array(256);
             artifact_origin(otmp, 264);
@@ -1619,8 +1619,8 @@ function bestow_artifact(max_giftvalue) {
             if ((cptr.ldI32o(otmp, 56) & 1))
                 uncurse(otmp);
             cptr.stI32o(otmp, 120, 1);
-            void cptr.strcpy(cptr.decay(buf), ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl196 : (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? __sl197 : ansimpleoname(otmp))));
-            if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            void cptr.strcpy(cptr.decay(buf), ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl196 : (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl197 : ansimpleoname(otmp))));
+            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 void cptr.sprintf(eos(cptr.decay(buf)), __sl198, bare_artifactname(otmp));
             at_your_feet(upstart(cptr.decay(buf)));
             dropy(otmp);
@@ -1630,7 +1630,7 @@ function bestow_artifact(max_giftvalue) {
             exercise(NHC.A_WIS, 1);
             livelog_printf(72n, __sl200, artiname(cptr.ld1so(otmp, 51)), align_gname(cptr.ld1so(u, 2172)));
             unrestrict_weapon_skill(weapon_type(otmp));
-            if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? 1 : 0) {
+            if (!(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? 1 : 0) {
                 observe_object(otmp);
                 discover_object((cptr.ldI16o(otmp, 32)), 1, 1, 1);
                 discover_artifact(i16(cptr.ld1so(otmp, 51)));
@@ -1645,7 +1645,7 @@ function bestow_artifact(max_giftvalue) {
 function sacrifice_value(otmp) {
     let value = 0;
     if (cptr.ldI32o(otmp, 168) == NHC.PM_ACID_BLOB || (cptr.ldI64o(svm, 8) <= BigInt.asIntN(64, peek_at_iced_corpse_age(otmp) + 50n)) ? 1 : 0) {
-        value = (cptr.ld1uo(cptr.add(mons, cptr.ldI32o(otmp, 168), 96), 90) + 1) | 0;
+        value = (cptr.ld1uo2(mons, cptr.ldI32o(otmp, 168), 96, 90) + 1) | 0;
         if (cptr.ldI32o(otmp, 176))
             value = eaten_stat(value, otmp);
     }
@@ -1656,15 +1656,15 @@ function sacrifice_value(otmp) {
 export function dosacrifice() {
     let otmp;
     let highaltar;
-    let altaralign = ((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
-    if (!((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) || (cptr.ldI32o(u, 1848) & 1) | 0 ? 1 : 0) {
-        You(__sl201, (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.LEVITATION, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.LEVITATION, 24), 8) ? 1 : 0) || (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.FLYING, 24) ? 1 : 0) || (cptr.ldPtro(u, 2424) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, 2424), 8)), 72) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.FLYING, 24), 8) ? 1 : 0) ? 1 : 0) ? __sl202 : __sl203);
+    let altaralign = ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
+    if (!((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) || (cptr.ldI32o(u, 1848) & 1) | 0 ? 1 : 0) {
+        You(__sl201, (((cptr.ldI64o2(u, NHC.LEVITATION, 24, 128) || cptr.ldI64o2(u, NHC.LEVITATION, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, 120) ? 1 : 0) || (((cptr.ldI64o2(u, NHC.FLYING, 24, 128) || cptr.ldI64o2(u, NHC.FLYING, 24, 112) ? 1 : 0) || (cptr.ldPtro(u, 2424) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, 2424), 8)), 72) & 1n) != 0n) ? 1 : 0) ? 1 : 0) && !cptr.ldI64o2(u, NHC.FLYING, 24, 120) ? 1 : 0) ? 1 : 0) ? __sl202 : __sl203);
         return NHM.ECMD_OK;
-    } else if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.CONFUSION, 24), 16) || cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STUNNED, 24), 16) ? 1 : 0) {
+    } else if (cptr.ldI64o2(u, NHC.CONFUSION, 24, 128) || cptr.ldI64o2(u, NHC.STUNNED, 24, 128) ? 1 : 0) {
         You(__sl204);
         return NHM.ECMD_OK;
     }
-    highaltar = schar((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_SANCTUM));
+    highaltar = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_SANCTUM));
     otmp = floorfood(__sl205, 1);
     if (!otmp)
         return NHM.ECMD_OK;
@@ -1740,7 +1740,7 @@ function offer_corpse(otmp, highaltar, altaralign) {
     if (((cptr.ldPtro((otmp), 208) && (cptr.ldPtro(cptr.ldPtro((otmp), 208), 8)) ? 1 : 0) && (mtmp = get_mtraits(otmp, 0)) !== null ? 1 : 0) && cptr.ld1so(mtmp, 65) ? 1 : 0) {
         pline(__sl214);
         adjalign(-3);
-        cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.AGGRAVATE_MONSTER, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.AGGRAVATE_MONSTER, 24), 16) | 67108864n);
+        cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, 24, 128, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, 128) | 67108864n);
         offer_negative_valued(highaltar, altaralign);
         return;
     }
@@ -1769,16 +1769,16 @@ function offer_corpse(otmp, highaltar, altaralign) {
             cptr.stI32o(u, 2340, 0);
         if (cptr.ldI32o(u, 2340) != saved_anger) {
             if (cptr.ldI32o(u, 2340)) {
-                pline(__sl215, u_gname(), (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl216 : __sl217);
+                pline(__sl215, u_gname(), (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl216 : __sl217);
                 if (cptr.ld1so(u, 2186) < 0)
                     change_luck(1);
             } else {
-                pline(__sl215, u_gname(), (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl218 : __sl219);
+                pline(__sl215, u_gname(), (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl218 : __sl219);
                 if (cptr.ld1so(u, 2186) < 0)
                     cptr.st1o(u, 2186, 0);
             }
         } else {
-            if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+            if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
                 pline_The(__sl220);
             else
                 You(__sl221);
@@ -1797,14 +1797,14 @@ function offer_corpse(otmp, highaltar, altaralign) {
             cptr.stI32o(u, 2352, 0);
         if (cptr.ldI32o(u, 2352) != saved_cnt) {
             if (cptr.ldI32o(u, 2352)) {
-                if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+                if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
                     You(__sl223);
                 else
                     You(__sl224);
                 if (cptr.ld1so(u, 2186) < 0)
                     change_luck(1);
             } else {
-                if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+                if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
                     pline(__sl225);
                 else
                     You(__sl226);
@@ -1827,10 +1827,10 @@ function offer_corpse(otmp, highaltar, altaralign) {
         if (cptr.ld1so(u, 2186) < 0)
             cptr.st1o(u, 2186, 0);
         if (cptr.ld1so(u, 2186) != orig_luck) {
-            if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
                 You(__sl227, cptr.ldPtro(c_common_strings, 40), body_part(NHC.FOOT));
             else
-                You((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? __sl228 : __sl229, makeplural(body_part(NHC.FOOT)));
+                You((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? __sl228 : __sl229, makeplural(body_part(NHC.FOOT)));
         }
     }
 }
@@ -1838,7 +1838,7 @@ function offer_corpse(otmp, highaltar, altaralign) {
 /** C ref: pray.c:2124 — @param {CInt} praying @returns {CInt} */
 export function can_pray(praying) {
     let alignment;
-    cptr.st1o(gp, 508, schar((((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) ? ((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) : cptr.ld1so(u, 2172))));
+    cptr.st1o(gp, 508, schar((((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) ? ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) : cptr.ld1so(u, 2172))));
     cptr.stI32o(gp, 512, in_trouble());
     if (((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 256n) != 0n) && (cptr.ld1so(gp, 508) == NHM.A_LAWFUL || cptr.ld1so(gp, 508) != NHM.A_NEUTRAL ? 1 : 0) ? 1 : 0) {
         if (praying)
@@ -1860,7 +1860,7 @@ export function can_pray(praying) {
     else if ((((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0) < 0 || cptr.ldI32o(u, 2340) ? 1 : 0) || alignment < 0 ? 1 : 0)
         cptr.stI32o(gp, 516, 1);
     else {
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != cptr.ld1so(gp, 508) ? 1 : 0)
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != cptr.ld1so(gp, 508) ? 1 : 0)
             cptr.stI32o(gp, 516, 2);
         else
             cptr.stI32o(gp, 516, 3);
@@ -1873,7 +1873,7 @@ export function can_pray(praying) {
 /** C ref: pray.c:2177 @returns {CInt} */
 function pray_revive() {
     let otmp;
-    for (otmp = cptr.ldPtro(cptr.add(cptr.add(svl, 62160), cptr.ldI16(u), 168), cptr.ldI16o(u, 2), 8); otmp; otmp = cptr.ldPtro(otmp, 8))
+    for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, 2), 8, 62160); otmp; otmp = cptr.ldPtro(otmp, 8))
         if ((((cptr.ldI16o(otmp, 32) == NHC.CORPSE || cptr.ldI16o(otmp, 32) == NHC.STATUE ? 1 : 0) && (cptr.ldPtro((otmp), 208) && (cptr.ldPtro(cptr.ldPtro((otmp), 208), 8)) ? 1 : 0) ? 1 : 0) && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((otmp), 208), 8)), 65) ? 1 : 0) && !(cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((otmp), 208), 8)), 184) & 1) ? 1 : 0)
             break;
     if (!otmp)
@@ -1924,7 +1924,7 @@ export function dopray() {
     cptr.stPtro(gn, 8, __sl238);
     cptr.stPtr(ga, prayer_done);
     if (cptr.ldI32o(gp, 516) == 3 && !In_hell(cptr.add(u, 24)) ? 1 : 0) {
-        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
             You(__sl239);
         cptr.stI32o(u, 1864, 1);
     }
@@ -1936,7 +1936,7 @@ function prayer_done() {
     let alignment = cptr.ld1so(gp, 508);
     cptr.stI32o(u, 1864, 0);
     if (cptr.ldI32o(gp, 516) == -2) {
-        You(__sl240, !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl241 : __sl242);
+        You(__sl240, !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl241 : __sl242);
         wake_nearby(0);
         adjalign(-2);
         exercise(NHC.A_WIS, 0);
@@ -1959,13 +1959,13 @@ function prayer_done() {
         return 0;
     }
     if (cptr.ldI32o(gp, 516) == 0) {
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != alignment ? 1 : 0)
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != alignment ? 1 : 0)
             void water_prayer(0);
         cptr.stI32o(u, 2352, (cptr.ldI32o(u, 2352) + (rng_log_enabled() ? (rng_log_set_caller(__sl16, 2319, __sl247), rnz(250)) : rnz(250))) | 0);
         change_luck(-3);
         gods_upset(cptr.ld1so(u, 2172));
     } else if (cptr.ldI32o(gp, 516) == 1) {
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != alignment ? 1 : 0)
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR) && cptr.ld1so(u, 2172) != alignment ? 1 : 0)
             void water_prayer(0);
         angrygods(cptr.ld1so(u, 2172));
     } else if (cptr.ldI32o(gp, 516) == 2) {
@@ -1976,7 +1976,7 @@ function prayer_done() {
         } else
             pleased(alignment);
     } else {
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.ALTAR)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ALTAR)) {
             void pray_revive();
             void water_prayer(1);
         }
@@ -1991,7 +1991,7 @@ function maybe_turn_mon_iter(mtmp) {
         return;
     if (!(cptr.ldI32o(mtmp, 168) & 1) && ((((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 2n) != 0n) || ((cptr.ldI16o((mtmp), 22) == NHC.PM_VAMPIRE || cptr.ldI16o((mtmp), 22) == NHC.PM_VAMPIRE_LEADER ? 1 : 0) || cptr.ldI16o((mtmp), 22) == NHC.PM_VLAD_THE_IMPALER ? 1 : 0) ? 1 : 0) || (((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 256n) != 0n) && (cptr.ldI32o(u, 48) > 15) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         cptr.stI32o(mtmp, 144, 0);
-        if (cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.CONFUSION, 24), 16)) {
+        if (cptr.ldI64o2(u, NHC.CONFUSION, 24, 128)) {
             if (!turn_undead_msg_cnt++)
                 pline(__sl250);
             cptr.stI32o(mtmp, 136, 0);
@@ -2053,7 +2053,7 @@ export function doturn() {
         livelog_printf(32n, __sl252);
     Gname = halu_gname(cptr.ld1so(u, 2172));
     if (!can_chant(cptr.add(gy, 8))) {
-        You(__sl253, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.STRANGLED, 24), 16) ? __sl254 : __sl255, Gname);
+        You(__sl253, cptr.ldI64o2(u, NHC.STRANGLED, 24, 128) ? __sl254 : __sl255, Gname);
         return (cptr.ldI64o(u, 1992) == 1n) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
     if ((cptr.ld1so(u, 2172) != -1 && ((((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 256n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 2n) != 0n) ? 1 : 0) || ((cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VAMPIRE || cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VAMPIRE_LEADER ? 1 : 0) || cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VLAD_THE_IMPALER ? 1 : 0) ? 1 : 0) ? 1 : 0) || cptr.ldI32o(u, 2340) > 6 ? 1 : 0) {
@@ -2083,11 +2083,11 @@ export function doturn() {
 export function altarmask_at(x, y) {
     let res = 0;
     if (isok(x, y)) {
-        let mon = (cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8));
+        let mon = (cptr.ldPtro3(svl, x, 168, y, 8, 75600));
         if ((mon && (cptr.ld1uo((mon), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE ? 1 : 0) && cptr.ldI32o(mon, 60) == NHC.S_altar ? 1 : 0)
             res = (cptr.ldPtro((mon), 312) && (cptr.ldI32o(cptr.ldPtro((mon), 312), 56)) != NHC.NON_PM ? 1 : 0) ? (cptr.ldI32o(cptr.ldPtro((mon), 312), 56)) : 0;
-        else if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.ALTAR))
-            res = (cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0;
+        else if (((cptr.ld1so3(svl, x, 756, y, 36, 1684)) == NHC.ALTAR))
+            res = (cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0;
     }
     return res;
 }
@@ -2099,9 +2099,9 @@ export function a_gname() {
 
 /** C ref: pray.c:2514 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function a_gname_at(x, y) {
-    if (!((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4)) == NHC.ALTAR))
+    if (!((cptr.ld1so3(svl, x, 756, y, 36, 1684)) == NHC.ALTAR))
         return null;
-    return align_gname(((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))));
+    return align_gname(((schar(((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))));
 }
 
 /** C ref: pray.c:2524 @returns {CPtr} */
@@ -2156,23 +2156,23 @@ cptr.stPtro(hallu_gods, 104, __sl277);
 export function halu_gname(alignment) {
     let gnam = null;
     let which;
-    if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0))
+    if (!(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
         return align_gname(alignment);
     do
         which = randrole(1);
-    while (!cptr.ldPtro(cptr.add(roles, which, 312), 160));
+    while (!cptr.ldPtro2(roles, which, 312, 160));
     switch (rn2_on_display_rng(9)) {
         case 0:
         case 1:
-        gnam = cptr.ldPtro(cptr.add(roles, which, 312), 160);
+        gnam = cptr.ldPtro2(roles, which, 312, 160);
         break;
         case 2:
         case 3:
-        gnam = cptr.ldPtro(cptr.add(roles, which, 312), 168);
+        gnam = cptr.ldPtro2(roles, which, 312, 168);
         break;
         case 4:
         case 5:
-        gnam = cptr.ldPtro(cptr.add(roles, which, 312), 176);
+        gnam = cptr.ldPtro2(roles, which, 312, 176);
         break;
         case 6:
         case 7:
@@ -2218,13 +2218,13 @@ export function align_gtitle(alignment) {
 
 /** C ref: pray.c:2652 — @param {CInt} x @param {CInt} y */
 export function altar_wrath(x, y) {
-    let altaralign = ((schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 8) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
+    let altaralign = ((schar(((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
     if (cptr.ld1so(u, 2172) == altaralign && cptr.ldI32o(u, 2176) > -(rng_log_enabled() ? (rng_log_set_caller(__sl16, 2656, __sl282), rn2(4)) : rn2(4)) ? 1 : 0) {
         godvoice(altaralign, __sl283);
         void adjattrib(NHC.A_WIS, -1, 0);
         (cptr.stI32o(u, 2176, cptr.ldI32o(u, 2176) + -1)) - (-1);
     } else {
-        pline(__sl284, !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl285 : __sl286, align_gname(altaralign), !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl287 : __sl288);
+        pline(__sl284, !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl285 : __sl286, align_gname(altaralign), !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? __sl287 : __sl288);
         ;
         verbalize(__sl289);
         if (((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0) > -5 && (rng_log_enabled() ? (rng_log_set_caller(__sl16, 2670, __sl282), rn2((((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0) + 6) | 0)) : rn2((((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0) + 6) | 0)) ? 1 : 0)
@@ -2238,7 +2238,7 @@ function blocked_boulder(dx, dy) {
     let nx;
     let ny;
     let count = 0n;
-    for (otmp = cptr.ldPtro(cptr.add(cptr.add(svl, 62160), (cptr.ldI16(u) + dx) | 0, 168), (cptr.ldI16o(u, 2) + dy) | 0, 8); otmp; otmp = cptr.ldPtro(otmp, 8)) {
+    for (otmp = cptr.ldPtro3(svl, (cptr.ldI16(u) + dx) | 0, 168, (cptr.ldI16o(u, 2) + dy) | 0, 8, 62160); otmp; otmp = cptr.ldPtro(otmp, 8)) {
         if (cptr.ldI16o(otmp, 32) == NHC.BOULDER)
             count += cptr.ldI64o(otmp, 40);
     }
@@ -2260,7 +2260,7 @@ function blocked_boulder(dx, dy) {
         return 1;
     if (!isok(i16(nx), i16(ny)))
         return 1;
-    if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), nx, 756), ny, 36), 4)) < NHC.POOL))
+    if (((cptr.ld1so3(svl, nx, 756, ny, 36, 1684)) < NHC.POOL))
         return 1;
     if (sobj_at(NHC.BOULDER, i16(nx), i16(ny)))
         return 1;

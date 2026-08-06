@@ -262,7 +262,7 @@ function savelineinfo(fs, f, line) {
     if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, 69)) >= 128 ? 1 : 0) {
         (cptr.stPtro(f, 96, ((luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, 16), 56), cptr.ldPtro(f, 96), cptr.ldI32o(fs, 52), cptr.add(f, 40), 8, 2147483647, __sl1)))));
         cptr.stI32o(cptr.ldPtro(f, 96), cptr.ldI32o(fs, 52), pc, 8);
-        cptr.stI32o(cptr.add(cptr.ldPtro(f, 96), (cptr.stI32o(fs, 52, cptr.ldI32o(fs, 52) + 1)) - (1), 8), 4, line);
+        cptr.stI32o2(cptr.ldPtro(f, 96), (cptr.stI32o(fs, 52, cptr.ldI32o(fs, 52) + 1)) - (1), 8, 4, line);
         linedif = -128;
         cptr.st1o(fs, 69, 1);
     }

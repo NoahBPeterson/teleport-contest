@@ -392,7 +392,7 @@ export function lua_newstate(f, ud) {
     (cptr.st1o(g, 105, 25));
     cptr.st1o(g, 104, 20);
     for (i = 0; i < 9; i++)
-        cptr.stPtro(cptr.add(g, 480), i, null, 8);
+        cptr.stPtro2(g, i, 8, 480, null);
     if (luaD_rawrunprotected(L, f_luaopen, (null)) != 0) {
         close_state(L);
         L = null;

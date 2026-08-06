@@ -672,7 +672,7 @@ export function luaL_loadfilex(L, filename, mode) {
     }
     cptr.stI32(lf, 0);
     if (skipcomment(cptr.ldPtro(lf, 8), c))
-        cptr.st1o(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 10, 1);
+        cptr.st1o2(lf, (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1, 16, 10);
     if (c.v == cptr.ld1so(__sl47, 0, 1)) {
         cptr.stI32(lf, 0);
         if (filename) {
@@ -684,7 +684,7 @@ export function luaL_loadfilex(L, filename, mode) {
         }
     }
     if (c.v != -1)
-        cptr.st1o(cptr.add(lf, 16), (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), schar(c.v), 1);
+        cptr.st1o2(lf, (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1, 16, schar(c.v));
     cptr.stI32(__error(), 0);
     status = lua_load(L, getF, lf, lua_tolstring(L, -1, null), mode);
     readstatus = ferror(cptr.ldPtro(lf, 8));

@@ -222,7 +222,7 @@ export function show_transient_light(obj, x, y) {
     let mon;
     let radius_squared;
     if (!obj) {
-        if ((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16) & 1))
+        if ((cptr.ldI32o3(svl, x, 756, y, 36, 1696) & 1))
             return;
         cptr.memcpy(cameraflash, cptr.add(cg, 536), 8);
         ls = new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash);

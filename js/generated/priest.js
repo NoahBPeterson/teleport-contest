@@ -164,7 +164,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
         cnt = schar(mfndpos(mtmp, mfp, allowflags));
         if (((cptr.ldI32o(mtmp, 180) & 1) | 0 && avoid ? 1 : 0) && uondoor ? 1 : 0) {
             for (i = 0; i < cnt; i++)
-                if (!(cptr.ldI64o(cptr.add(mfp, 40), i, 8) & 2097152n))
+                if (!(cptr.ldI64o2(mfp, i, 8, 40) & 2097152n))
                     break __skip_pick_move;
             avoid = 0;
         }
@@ -172,15 +172,15 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
     __lbl_pick_move: for (;;) {
         chcnt = 0;
         for (i = 0; i < cnt; i++) {
-            nx = cptr.ldI16o(cptr.add(mfp, 4), i, 4);
-            ny = cptr.ldI16o(cptr.add(cptr.add(mfp, 4), i, 4), 2);
-            if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), nx, 756), ny, 36), 4)) >= NHC.ROOM) || ((cptr.ldI32o(mtmp, 180) & 1) | 0 && (!in_his_shop || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 46) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
-                if ((avoid && (cptr.ldI64o(cptr.add(mfp, 40), i, 8) & 2097152n) ? 1 : 0) && !(cptr.ldI64o(cptr.add(mfp, 40), i, 8) & 524288n) ? 1 : 0)
+            nx = cptr.ldI16o2(mfp, i, 4, 4);
+            ny = cptr.ldI16o2(mfp, i, 4, 6);
+            if (((cptr.ld1so3(svl, nx, 756, ny, 36, 1684)) >= NHC.ROOM) || ((cptr.ldI32o(mtmp, 180) & 1) | 0 && (!in_his_shop || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 46) ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+                if ((avoid && (cptr.ldI64o2(mfp, i, 8, 40) & 2097152n) ? 1 : 0) && !(cptr.ldI64o2(mfp, i, 8, 40) & 524288n) ? 1 : 0)
                     continue;
-                if (((!appr && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 85, __sl1), rn2(++chcnt)) : rn2(++chcnt)) ? 1 : 0) || (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64o(cptr.add(mfp, 40), i, 8) & 524288n) ? 1 : 0) {
+                if (((!appr && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 85, __sl1), rn2(++chcnt)) : rn2(++chcnt)) ? 1 : 0) || (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy)) ? 1 : 0) ? 1 : 0) || (cptr.ldI64o2(mfp, i, 8, 40) & 524288n) ? 1 : 0) {
                     nix = nx;
                     niy = ny;
-                    ninfo = cptr.ldI64o(cptr.add(mfp, 40), i, 8);
+                    ninfo = cptr.ldI64o2(mfp, i, 8, 40);
                 }
             }
         }
@@ -200,9 +200,9 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
                     return 1;
                 }
             }
-            if ((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), nix, 168), niy, 8) !== null) || ((nix) == cptr.ldI16(u) && (niy) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+            if ((cptr.ldPtro3(svl, nix, 168, niy, 8, 75600) !== null) || ((nix) == cptr.ldI16(u) && (niy) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
                 return 0;
-            cptr.stPtro(cptr.add(cptr.add(svl, 75600), omx, 168), omy, null, 8);
+            cptr.stPtro3(svl, omx, 168, omy, 8, 75600, null);
             place_monster(mtmp, nix, niy);
             newsym(nix, niy);
             if (((cptr.ldI32o(mtmp, 180) & 1) | 0 && !in_his_shop ? 1 : 0) && inhishop(mtmp) ? 1 : 0)
@@ -218,7 +218,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
 export function temple_occupied(array) {
     let ptr;
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
-        if (cptr.ld1so(cptr.add(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, 224), 8) == NHC.TEMPLE)
+        if (cptr.ld1so2(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, 224, 8) == NHC.TEMPLE)
             return cptr.ld1s(ptr);
     return 0;
 }
@@ -254,20 +254,20 @@ export function pri_move(priest) {
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 8);
     ggx = i16(ggx + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 194, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
     ggy = i16(ggy + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 195, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
-    if (!(cptr.ldI32o(priest, 168) & 1) || ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.CONFLICT, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.CONFLICT, 24) ? 1 : 0) && !resist_conflict(priest) ? 1 : 0) ? 1 : 0) {
+    if (!(cptr.ldI32o(priest, 168) & 1) || ((cptr.ldI64o2(u, NHC.CONFLICT, 24, 128) || cptr.ldI64o2(u, NHC.CONFLICT, 24, 112) ? 1 : 0) && !resist_conflict(priest) ? 1 : 0) ? 1 : 0) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, 2))) {
-            if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DISPLACED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DISPLACED, 24) ? 1 : 0))
+            if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112) ? 1 : 0))
                 Your(__sl3, mon_nam(priest));
             void mattacku(priest);
             return 0;
         } else if (cptr.strchr(cptr.add(u, 68), temple)) {
-            if ((cptr.ldI32o(priest, 112) & 1) | 0 && (((!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.INVIS, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.INVIS, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.INVIS, 24), 8) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro((priest), 8)), 72) & 16777216n) != 0n) ? 1 : 0) && !((cptr.ldI32o(u, 1852) & 1)) ? 1 : 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o((priest), 30), 8), cptr.ldI16o((priest), 28)) & NHM.COULD_SEE) != 0) ? 1 : 0) ? 1 : 0) {
+            if ((cptr.ldI32o(priest, 112) & 1) | 0 && (((!((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro((priest), 8)), 72) & 16777216n) != 0n) ? 1 : 0) && !((cptr.ldI32o(u, 1852) & 1)) ? 1 : 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o((priest), 30), 8), cptr.ldI16o((priest), 28)) & NHM.COULD_SEE) != 0) ? 1 : 0) ? 1 : 0) {
                 ggx = cptr.ldI16(u);
                 ggy = cptr.ldI16o(u, 2);
             }
             avoid = 0;
         }
-    } else if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.INVIS, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.INVIS, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.INVIS, 24), 8) ? 1 : 0))
+    } else if (((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0))
         avoid = 0;
     return move_special(priest, 0, 1, 0, avoid, omx, omy, ggx, ggy);
 }
@@ -290,12 +290,12 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     }
     if (i == ((NHC.N_DIRS_Z - 2) | 0))
         px = sx, py = sy;
-    if ((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), px, 168), py, 8) !== null))
-        void rloc((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), px, 168), py, 8)), NHM.RLOC_NOMSG);
+    if ((cptr.ldPtro3(svl, px, 168, py, 8, 75600) !== null))
+        void rloc((cptr.ldPtro3(svl, px, 168, py, 8, 75600)), NHM.RLOC_NOMSG);
     priest = makemon(prim, i16(px), i16(py), NHM.MM_EPRI);
     if (priest) {
         cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 5, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
-        cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 4, (schar(((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8) & 31)) | 0) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36), 8) & 31)) | 0) & NHM.AM_MASK)) - 2) | 0)))));
+        cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 4, (schar(((((((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31)) | 0) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31)) | 0) & NHM.AM_MASK)) - 2) | 0)))));
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 6, i16(sx));
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 8, i16(sy));
         assign_level(cptr.add((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 10), lvl);
@@ -330,7 +330,7 @@ export function mon_aligntyp(mon) {
 
 /** C ref: priest.c:302 — @param {CPtr} mon @param {CInt} article @param {CInt} reveal_high_priest @param {CPtr} pname @returns {CPtr} */
 export function priestname(mon, article, reveal_high_priest, pname) {
-    let do_hallu = schar((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0));
+    let do_hallu = schar((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0));
     let aligned_priest = schar(cptr.eq(cptr.ldPtro(mon, 8), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, 96)));
     let high_priest = schar(cptr.eq(cptr.ldPtro(mon, 8), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)));
     let whatcode = cptr.box(0);
@@ -427,9 +427,9 @@ export function intemple(roomno) {
         shrined = has_shrine(priest);
         sanctum = schar((cptr.eq(cptr.ldPtro(priest, 8), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && ((((cptr.ldI16o((cptr.add(svd, 1848)), 2) || cptr.ldI16((cptr.add(svd, 1848))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1848)) ? 1 : 0)) || (cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))) ? 1 : 0) ? 1 : 0));
         can_speak = schar((!((cptr.ldI32o((priest), 144) & 1) | 0 || !(cptr.ldI32o((priest), 160) & 1) ? 1 : 0)));
-        if ((can_speak && !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? 1 : 0) && cptr.ldI64o(svm, 8) >= cptr.ldI64o(epri_p, 24) ? 1 : 0) {
+        if ((can_speak && !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? 1 : 0) && cptr.ldI64o(svm, 8) >= cptr.ldI64o(epri_p, 24) ? 1 : 0) {
             let save_priest = (cptr.ldI32o(priest, 192) & 1);
-            if (sanctum && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if (sanctum && !(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 cptr.stI32o(priest, 192, 0);
             pline(__sl18, canseemon(priest) ? Monnam(priest) : __sl19);
             cptr.stI32o(priest, 192, save_priest);
@@ -450,7 +450,7 @@ export function intemple(roomno) {
             void cptr.sprintf(cptr.decay(buf), __sl24, !shrined ? __sl25 : __sl26);
             msg1 = cptr.decay(buf);
         }
-        if ((msg1 && can_speak ? 1 : 0) && !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? 1 : 0) {
+        if ((msg1 && can_speak ? 1 : 0) && !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? 1 : 0) {
             ;
             verbalize(__sl27, msg1);
             if (msg2)
@@ -492,7 +492,7 @@ export function intemple(roomno) {
             break;
         }
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 519, __sl20), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, 2), NHM.MM_NOMSG)) !== null ? 1 : 0) {
-            let ngen = cptr.ld1uo(cptr.add(svm, 16), NHC.PM_GHOST, 12);
+            let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, 12, 16);
             if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0))
                 pline(__sl37, ngen < 5 ? __sl38 : __sl29, ngen < 10 ? 33 : 46);
             else
@@ -539,7 +539,7 @@ export function priest_talk(priest) {
     }
     if ((!inhistemple(priest) || !(cptr.ldI32o(priest, 168) & 1) ? 1 : 0) || ((cptr.ldI32o((priest), 144) & 1) | 0 || !(cptr.ldI32o((priest), 160) & 1) ? 1 : 0) ? 1 : 0) {
         if (((cptr.ldI32o((priest), 144) & 1) | 0 || !(cptr.ldI32o((priest), 160) & 1) ? 1 : 0)) {
-            pline(__sl46, Monnam(priest), (cptr.ldPtro(cptr.add(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), 48), 24)));
+            pline(__sl46, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), 48, 24)));
             cptr.stI32o(priest, 156, cptr.stI32o(priest, 144, 0));
             cptr.stI32o(priest, 160, 1);
         }
@@ -559,7 +559,7 @@ export function priest_talk(priest) {
             let pmoney = money_cnt(cptr.ldPtro(priest, 280));
             if (pmoney > 0n) {
                 let bits;
-                bits = ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0)) ? currency(pmoney) : ((pmoney == 1n) ? __sl49 : __sl50);
+                bits = ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0)) ? currency(pmoney) : ((pmoney == 1n) ? __sl49 : __sl50);
                 pline(__sl51, Monnam(priest), (pmoney == 1n) ? __sl52 : __sl53, bits);
                 money2u(priest, BigInt((pmoney > 1n ? 2 : 1)));
             } else
@@ -609,8 +609,8 @@ export function priest_talk(priest) {
             incr_itimeout(cptr.add(cptr.add(cptr.add(u, 112), NHC.CLAIRVOYANT, 24), 16), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl47), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, 2348);
-            if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16) & 117440512n)) {
-                cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16, cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PROTECTION, 24), 16) | 67108864n);
+            if (!(cptr.ldI64o2(u, NHC.PROTECTION, 24, 128) & 117440512n)) {
+                cptr.stI64o2(u, NHC.PROTECTION, 24, 128, cptr.ldI64o2(u, NHC.PROTECTION, 24, 128) | 67108864n);
                 orig_ublessed = -1;
             }
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
@@ -644,8 +644,8 @@ export function priest_talk(priest) {
 export function mk_roamer(ptr, alignment, x, y, peaceful) {
     let roamer;
     let coaligned = schar((cptr.ld1so(u, 2172) == alignment));
-    if ((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8) !== null))
-        void rloc((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)), NHM.RLOC_NOMSG);
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null))
+        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), NHM.RLOC_NOMSG);
     if (!(roamer = makemon(ptr, x, y, 132112)))
         return null;
     cptr.st1o((cptr.ldPtro(cptr.ldPtro((roamer), 312), 32)), 4, alignment);
@@ -706,7 +706,7 @@ export function ghod_hitsu(priest) {
     ay = (y = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), 312), 16)), 8));
     troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, 224);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) || !linedup(cptr.ldI16(u), cptr.ldI16o(u, 2), x, y, 1) ? 1 : 0) {
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.DOOR)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.DOOR)) {
             if (cptr.ldI16(u) == ((cptr.ldI16(troom) - 1) | 0)) {
                 x = cptr.ldI16o(troom, 2);
                 y = cptr.ldI16o(u, 2);

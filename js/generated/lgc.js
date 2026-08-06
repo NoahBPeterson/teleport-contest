@@ -190,9 +190,9 @@ function reallymarkobject(g, o) {
 function markmt(g) {
     let i;
     for (i = 0; i < 9; i++) {
-        if (cptr.ldPtro(cptr.add(g, 480), i, 8)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.add(g, 480), i, 8)), 9)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.add(g, 480), i, 8))))));
+        if (cptr.ldPtro2(g, i, 8, 480)) {
+            if (((cptr.ld1uo((cptr.ldPtro2(g, i, 8, 480)), 9)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro2(g, i, 8, 480))))));
         }
         ;
     }
@@ -379,7 +379,7 @@ function traversestrongtable(g, h) {
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
-    let mode = (cptr.eq((cptr.ldPtro(h, 40)), (null)) ? null : (((cptr.ld1uo((cptr.ldPtro(h, 40)), 10) & ((1 << (NHC.TM_MODE)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtro(h, 40), NHC.TM_MODE, cptr.ldPtro(cptr.add((g), 280), NHC.TM_MODE, 8))));
+    let mode = (cptr.eq((cptr.ldPtro(h, 40)), (null)) ? null : (((cptr.ld1uo((cptr.ldPtro(h, 40)), 10) & ((1 << (NHC.TM_MODE)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtro(h, 40), NHC.TM_MODE, cptr.ldPtro2((g), NHC.TM_MODE, 8, 280))));
     let smode;
     {
         if (cptr.ldPtro(h, 40)) {
@@ -490,7 +490,7 @@ function traverseLclosure(g, cl) {
     }
     ;
     for (i = 0; i < cptr.ld1uo(cl, 10); i++) {
-        let uv = cptr.ldPtro(cptr.add(cl, 32), i, 8);
+        let uv = cptr.ldPtro2(cl, i, 8, 32);
         {
             if (uv) {
                 if (((cptr.ld1uo((uv), 9)) & 24))
@@ -858,7 +858,7 @@ function correctpointers(g, o) {
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtro(L, 24));
-    if ((((cptr.ld1uo((o), 9)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), 10) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro(cptr.add((g), 280), NHC.TM_GC, 8)))), (null)) ? 1 : 0) || (cptr.ld1uo(g, 106) & 4) ? 1 : 0)
+    if ((((cptr.ld1uo((o), 9)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), 10) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, 280)))), (null)) ? 1 : 0) || (cptr.ld1uo(g, 106) & 4) ? 1 : 0)
         return;
     else {
         let p;

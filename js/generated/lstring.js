@@ -82,8 +82,8 @@ export function luaS_clearcache(g) {
     let j;
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.add(cptr.add(g, 552), i, 16), j, 8)), 9)) & 24))
-                cptr.stPtro(cptr.add(cptr.add(g, 552), i, 16), j, cptr.ldPtro(g, 272), 8);
+            if (((cptr.ld1uo((cptr.ldPtro3(g, i, 16, j, 8, 552)), 9)) & 24))
+                cptr.stPtro3(g, i, 16, j, 8, 552, cptr.ldPtro(g, 272));
         }
 }
 
@@ -100,7 +100,7 @@ export function luaS_init(L) {
     luaC_fix(L, ((((cptr.ldPtro(g, 272))))));
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)
-            cptr.stPtro(cptr.add(cptr.add(g, 552), i, 16), j, cptr.ldPtro(g, 272), 8);
+            cptr.stPtro3(g, i, 16, j, 8, 552, cptr.ldPtro(g, 272));
 }
 
 /** C ref: lstring.c:143 — @param {CPtr} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr} */

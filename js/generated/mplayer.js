@@ -213,8 +213,8 @@ export function mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
         return (null);
-    if ((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8) !== null))
-        void rloc((cptr.ldPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, 8)), 5);
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null))
+        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), 5);
     if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))))
         special = 0;
     if ((mtmp = makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n))))) !== null) {
@@ -343,8 +343,8 @@ export function mk_mplayer(ptr, x, y, special) {
                 cptr.stI32o(otmp, 140, 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
                 otmp = mk_artifact(otmp, -128, 99, 0);
-            if (((cptr.ldI32o(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 20) & 1) | 0 && !cptr.ld1so(otmp, 51) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
-                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
+            if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, 32), 120, 20) & 1) | 0 && !cptr.ld1so(otmp, 51) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
+                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
             cptr.stI32o(otmp, 36, weight(otmp) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
                 cptr.st1o(otmp, 48, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));

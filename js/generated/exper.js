@@ -92,7 +92,7 @@ export function newpw() {
     if (en <= 0)
         en = 1;
     if (cptr.ldI32o(u, 48) < NHM.MAXULEV) {
-        cptr.stI16o(cptr.add(u, 2280), cptr.ldI32o(u, 48), i16(en), 2);
+        cptr.stI16o2(u, cptr.ldI32o(u, 48), 2, 2280, i16(en));
     } else {
         let lim = schar(((4 - ((cptr.ldI32o(u, 2212) / 200) | 0)) | 0));
         lim = schar(((lim) > 1 ? (lim) : 1));
@@ -114,7 +114,7 @@ export function experience(mtmp, nk) {
     if (cptr.ld1so(ptr, 30) > NHM.NORMAL_SPEED)
         tmp = (tmp + ((cptr.ld1so(ptr, 30) > 18) ? 5 : 3)) | 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo(cptr.add(ptr, 36), i, 4);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, 36);
         if (tmp2 > NHM.AT_BUTT) {
             if (tmp2 == NHM.AT_WEAP)
                 tmp = (tmp + 5) | 0;
@@ -125,16 +125,16 @@ export function experience(mtmp, nk) {
         }
     }
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo(cptr.add(cptr.add(ptr, 36), i, 4), 1);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, 37);
         if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND ? 1 : 0)
             tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, 26))) | 0;
         else if (((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) ? 1 : 0) || (tmp2 == NHM.AD_SLIM) ? 1 : 0)
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
-        if ((Math.imul(cptr.ld1uo(cptr.add(cptr.add(ptr, 36), i, 4), 3), cptr.ld1uo(cptr.add(cptr.add(ptr, 36), i, 4), 2))) > 23)
+        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, 39), cptr.ld1uo2(ptr, i, 4, 38))) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
-        if ((tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, 28) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
+        if ((tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, 28) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64o((ptr), 80) & 33554432n) != 0n))
@@ -210,7 +210,7 @@ export function losexp(drainer) {
     (__builtin_expect(BigInt((!(cptr.ldI32o(u, 48) >= 0 && cptr.ldI32o(u, 48) < NHM.MAXULEV ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
     olduhpmax = cptr.ldI32o(u, 2200);
     uhpmin = minuhpmax(10);
-    num = cptr.ldI16o(cptr.add(u, 2220), cptr.ldI32o(u, 48), 2);
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, 48), 2, 2220);
     cptr.stI32o(u, 2200, (cptr.ldI32o(u, 2200) - num) | 0);
     if (cptr.ldI32o(u, 2200) < uhpmin)
         setuhpmax(uhpmin, 1);
@@ -221,7 +221,7 @@ export function losexp(drainer) {
         cptr.stI32o(u, 2196, 1);
     else if (cptr.ldI32o(u, 2196) > cptr.ldI32o(u, 2200))
         cptr.stI32o(u, 2196, cptr.ldI32o(u, 2200));
-    num = cptr.ldI16o(cptr.add(u, 2280), cptr.ldI32o(u, 48), 2);
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, 48), 2, 2280);
     cptr.stI32o(u, 2212, (cptr.ldI32o(u, 2212) - num) | 0);
     if (cptr.ldI32o(u, 2212) < 0)
         cptr.stI32o(u, 2212, 0);

@@ -291,10 +291,10 @@ function io_lines(L) {
 /** C ref: liolib.c:441 — @param {CPtr} rn @returns {CInt} */
 function nextc(rn) {
     if ((__builtin_expect(BigInt(((cptr.ldI32o(rn, 12) >= 200) != 0)), 0n))) {
-        cptr.st1o(cptr.add(rn, 16), 0, 0, 1);
+        cptr.st1o2(rn, 0, 1, 16, 0);
         return 0;
     } else {
-        cptr.st1o(cptr.add(rn, 16), (cptr.stI32o(rn, 12, cptr.ldI32o(rn, 12) + 1)) - (1), schar(cptr.ldI32o(rn, 8)), 1);
+        cptr.st1o2(rn, (cptr.stI32o(rn, 12, cptr.ldI32o(rn, 12) + 1)) - (1), 1, 16, schar(cptr.ldI32o(rn, 8)));
         cptr.stI32o(rn, 8, (cptr.stI32o((cptr.ldPtr(rn)), 8, cptr.ldI32o((cptr.ldPtr(rn)), 8) + -1) < 0 ? __srget(cptr.ldPtr(rn)) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((cptr.ldPtr(rn))), (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); })))));
         return 1;
     }
@@ -346,7 +346,7 @@ function read_number(L, f) {
     }
     ungetc(cptr.ldI32o(rn, 8), cptr.ldPtr(rn));
     funlockfile(cptr.ldPtr(rn));
-    cptr.st1o(cptr.add(rn, 16), cptr.ldI32o(rn, 12), 0, 1);
+    cptr.st1o2(rn, cptr.ldI32o(rn, 12), 1, 16, 0);
     if ((__builtin_expect(BigInt(((lua_stringtonumber(L, cptr.add(rn, 16))) != 0n)), 1n)))
         return 1;
     else {

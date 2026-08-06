@@ -261,7 +261,7 @@ export function update_topl(bp) {
     }
     remember_topl();
     void __builtin___strncpy_chk(cptr.add(gt, 26), bp, 300n, __builtin_object_size(cptr.add(gt, 26), 1));
-    cptr.st1o(cptr.add(gt, 26), 299, 0, 1);
+    cptr.st1o2(gt, 299, 1, 26, 0);
     for (tl = cptr.add(gt, 26); n0 >= cptr.ldI32o(gt, 356); ) {
         otl = tl;
         for (tl = cptr.add(tl, (cptr.ldI32o(gt, 356) - 1) | 0); !cptr.eq(tl, otl); tl = cptr.add(tl, -1))

@@ -417,7 +417,7 @@ export function outrumor(truth, mechanism) {
     if (reading) {
         if (is_fainted() && mechanism == NHM.BY_COOKIE ? 1 : 0) {
             return;
-        } else if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0)) {
+        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
             if (mechanism == NHM.BY_COOKIE)
                 pline(cptr.decay(__static_outrumor_fortune_msg));
             pline(__sl33);

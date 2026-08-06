@@ -227,7 +227,7 @@ export function selection_filter_mapchar(ov, typ, lit) {
     selection_getbounds(ov, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
         for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 4))) ? 1 : 0) {
+            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1so3(svl, x, 756, y, 36, 1684))) ? 1 : 0) {
                 switch (lit) {
                     default:
                     case -2:
@@ -238,7 +238,7 @@ export function selection_filter_mapchar(ov, typ, lit) {
                     break;
                     case 0:
                     case 1:
-                    if ((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 16) & 1) == lit >>> 0)
+                    if ((cptr.ldI32o3(svl, x, 756, y, 36, 1696) & 1) == lit >>> 0)
                         selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                 }
@@ -734,7 +734,7 @@ export function selection_from_mkroom(croom) {
     rmno = Number(BigInt.asUintN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
     for (y = cptr.ldI16o(croom, 4); y <= cptr.ldI16o(croom, 6); y++)
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, 2); x++)
-            if ((isok(x, y) && !(cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 28) & 1) ? 1 : 0) && (cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 24) & 63) == rmno ? 1 : 0)
+            if ((isok(x, y) && !(cptr.ldI32o3(svl, x, 756, y, 36, 1708) & 1) ? 1 : 0) && (cptr.ldI32o3(svl, x, 756, y, 36, 1704) & 63) == rmno ? 1 : 0)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }

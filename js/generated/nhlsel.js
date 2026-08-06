@@ -615,7 +615,7 @@ function l_selection_flood(L) {
     }
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, 568) ? cptr.ldPtro(cptr.ldPtro(gc, 568), 8) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
     if (isok(x.v, y.v)) {
-        set_floodfillchk_match_under(i16(cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), x.v, 756), y.v, 36), 4)));
+        set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)));
         selection_floodfill(sel, x.v, y.v, diagonals);
     }
     return 1;

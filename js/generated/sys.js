@@ -61,7 +61,7 @@ export function sys_early_init() {
     cptr.stI32o(sysopt, 88, 0);
     cptr.stI32o(sysopt, 80, 1);
     sysopt_seduce_set(cptr.ldI32o(sysopt, 80));
-    cptr.stI32o(cptr.add(sysopt, 160), 0, cptr.stI32o(cptr.add(sysopt, 168), 0, NHC.historical, 4), 4);
+    cptr.stI32o2(sysopt, 0, 4, 160, cptr.stI32o2(sysopt, 0, 4, 168, NHC.historical));
     cptr.stI32o(sysopt, 176, 0);
     cptr.stI32o(sysopt, 180, 0);
     return;

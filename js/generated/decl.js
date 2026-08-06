@@ -1461,12 +1461,12 @@ export function decl_globals_init() {
     cptr.memcpy(svw, init_svw, 16);
     cptr.memcpy(svx, init_svx, 8);
     cptr.memcpy(svy, init_svy, 8);
-    cptr.stPtro(cptr.add(gv, 32), 0, cptr.add(gg, 94200), 16);
-    cptr.stI32o(cptr.add(cptr.add(gv, 32), 0, 16), 8, Number(BigInt.asIntN(32, (368n / 16n))));
-    cptr.stPtro(cptr.add(gv, 32), 1, cptr.add(ga, 24), 16);
-    cptr.stI32o(cptr.add(cptr.add(gv, 32), 1, 16), 8, Number(BigInt.asIntN(32, (208n / 16n))));
-    cptr.stPtro(cptr.add(gv, 32), 2, null, 16);
-    cptr.stI32o(cptr.add(cptr.add(gv, 32), 2, 16), 8, 0);
+    cptr.stPtro2(gv, 0, 16, 32, cptr.add(gg, 94200));
+    cptr.stI32o2(gv, 0, 16, 40, Number(BigInt.asIntN(32, (368n / 16n))));
+    cptr.stPtro2(gv, 1, 16, 32, cptr.add(ga, 24));
+    cptr.stI32o2(gv, 1, 16, 40, Number(BigInt.asIntN(32, (208n / 16n))));
+    cptr.stPtro2(gv, 2, 16, 32, null);
+    cptr.stI32o2(gv, 2, 16, 40, 0);
     do {
         if (cptr.ld1so((g_init_a), 272) != 1) {
             raw_printf(__sl70, __sl71);

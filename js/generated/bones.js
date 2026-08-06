@@ -78,7 +78,7 @@ function no_bones_level(lev) {
     let sptr;
     if (ledger_no(cptr.add(gs, 192)))
         assign_level(lev, cptr.add(gs, 192));
-    return schar(((((((sptr = Is_special(lev)) !== null && !cptr.ld1so(sptr, 27) ? 1 : 0) || !cptr.ld1so(cptr.add(svd, cptr.ldI16(lev), 112), 69) ? 1 : 0) || Is_botlevel(lev) ? 1 : 0) || (Is_branchlev(lev) && cptr.ldI16o(lev, 2) > 1 ? 1 : 0) ? 1 : 0) || (In_hell(lev) && cptr.ldI16o(lev, 2) == ((dunlevs_in_dungeon(lev) - 1) | 0) ? 1 : 0) ? 1 : 0));
+    return schar(((((((sptr = Is_special(lev)) !== null && !cptr.ld1so(sptr, 27) ? 1 : 0) || !cptr.ld1so2(svd, cptr.ldI16(lev), 112, 69) ? 1 : 0) || Is_botlevel(lev) ? 1 : 0) || (Is_branchlev(lev) && cptr.ldI16o(lev, 2) > 1 ? 1 : 0) ? 1 : 0) || (In_hell(lev) && cptr.ldI16o(lev, 2) == ((dunlevs_in_dungeon(lev) - 1) | 0) ? 1 : 0) ? 1 : 0));
 }
 
 /** C ref: bones.c:42 — @param {CInt} id */
@@ -123,7 +123,7 @@ function resetobjs(ochain, restore) {
                 cptr.stI32o(otmp, 68, ((((cptr.ld1so(top, 52) == NHM.OBJ_FLOOR && get_obj_location(top, ox, oy, 0) ? 1 : 0) && inside_shop(ox.v, oy.v) ? 1 : 0) && cptr.ld1s((p = in_rooms(ox.v, oy.v, NHC.SHOPBASE))) ? 1 : 0) && tended_shop(cptr.add(svr, (cptr.ld1s(p) - NHM.ROOMOFFSET) | 0, 224)) ? 1 : 0) >>> 0);
             }
         } else {
-            if ((cptr.ldI32o(cptr.add(objects, cptr.ldI16o(otmp, 32), 120), 24) & 1))
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, 32), 120, 24) & 1))
                 cptr.stI32o(otmp, 80, 0);
             cptr.stI32o(otmp, 84, cptr.stI32o(otmp, 88, 0));
             cptr.stI32o(otmp, 92, 0);
@@ -208,7 +208,7 @@ function give_to_nearby_mon(otmp, x, y) {
                 continue;
             if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16o(u, 2) ? 1 : 0))
                 continue;
-            if (!(mtmp = (cptr.ldPtro(cptr.add(cptr.add(svl, 75600), xx, 168), yy, 8))))
+            if (!(mtmp = (cptr.ldPtro3(svl, xx, 168, yy, 8, 75600))))
                 continue;
             if (!(((((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 536870912n) != 0n) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, 8), NHM.AT_WEAP) ? 1 : 0) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 2147483648n) != 0n) ? 1 : 0))
                 continue;
@@ -259,22 +259,22 @@ function fixuporacle(oracle) {
     if (!(((cptr.ldI16o((cptr.add(svd, 1792)), 2) || cptr.ldI16((cptr.add(svd, 1792))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1792)) ? 1 : 0)))
         return 0;
     cptr.stI32o(oracle, 168, 1);
-    o_ridx = (((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16o(oracle, 28), 756), cptr.ldI16o(oracle, 30), 36), 24) & 63) | 0) - NHM.ROOMOFFSET) | 0;
-    if (o_ridx >= 0 && cptr.ld1so(cptr.add(svr, o_ridx, 224), 8) == NHC.DELPHI ? 1 : 0)
+    o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, 28), 756, cptr.ldI16o(oracle, 30), 36, 1704) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+    if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, 224, 8) == NHC.DELPHI ? 1 : 0)
         return 1;
     for (ridx = 0; ridx < Number(BigInt.asIntN(32, (18368n / 224n))); ++ridx)
-        if (cptr.ld1so(cptr.add(svr, ridx, 224), 9) == NHC.DELPHI)
+        if (cptr.ld1so2(svr, ridx, 224, 9) == NHC.DELPHI)
             break;
     if (o_ridx != ridx && ridx < Number(BigInt.asIntN(32, (18368n / 224n))) ? 1 : 0) {
-        cptr.stI16(cc, i16(((((cptr.ldI16o(svr, ridx, 224) + cptr.ldI16o(cptr.add(svr, ridx, 224), 2)) | 0) / 2) | 0)));
-        cptr.stI16o(cc, 2, i16(((((cptr.ldI16o(cptr.add(svr, ridx, 224), 4) + cptr.ldI16o(cptr.add(svr, ridx, 224), 6)) | 0) / 2) | 0)));
+        cptr.stI16(cc, i16(((((cptr.ldI16o(svr, ridx, 224) + cptr.ldI16o2(svr, ridx, 224, 2)) | 0) / 2) | 0)));
+        cptr.stI16o(cc, 2, i16(((((cptr.ldI16o2(svr, ridx, 224, 4) + cptr.ldI16o2(svr, ridx, 224, 6)) | 0) / 2) | 0)));
         if (enexto(cc, cptr.ldI16(cc), cptr.ldI16o(cc, 2), cptr.ldPtro(oracle, 8))) {
             rloc_to(oracle, cptr.ldI16(cc), cptr.ldI16o(cc, 2));
-            o_ridx = (((cptr.ldI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16o(oracle, 28), 756), cptr.ldI16o(oracle, 30), 36), 24) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+            o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, 28), 756, cptr.ldI16o(oracle, 30), 36, 1704) & 63) | 0) - NHM.ROOMOFFSET) | 0;
         }
     }
     if (ridx == o_ridx)
-        cptr.st1o(cptr.add(svr, ridx, 224), 8, NHC.DELPHI);
+        cptr.st1o2(svr, ridx, 224, 8, NHC.DELPHI);
     return 1;
 }
 
@@ -433,14 +433,14 @@ export function savebones(how, when, corpse) {
     cptr.stI16(u, cptr.stI16o(u, 2, 0));
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
-            cptr.st1o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 5, 0);
-            cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36), 20, 0);
-            cptr.stI32o(cptr.add(cptr.add(svl, 1680), x, 756), y, NHC.GLYPH_UNEXPLORED_OFF, 36);
-            cptr.st1o(cptr.add(svl, x, 21), y, 0, 1);
+            cptr.st1o3(svl, x, 756, y, 36, 1685, 0);
+            cptr.stI32o3(svl, x, 756, y, 36, 1700, 0);
+            cptr.stI32o3(svl, x, 756, y, 36, 1680, NHC.GLYPH_UNEXPLORED_OFF);
+            cptr.st1o3(svl, x, 21, y, 1, 0, 0);
         }
     newbones = alloc(184);
     void __builtin___memset_chk(newbones, 32, 184n, __builtin_object_size(newbones, 0));
-    void cptr.sprintf(cptr.add(newbones, 8), __sl6, svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro(cptr.add(genders, cptr.ld1so(flags, 13), 48), 32), cptr.ldPtro(cptr.add(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32), 16));
+    void cptr.sprintf(cptr.add(newbones, 8), __sl6, svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro2(genders, cptr.ld1so(flags, 13), 48, 32), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32, 16));
     formatkiller(cptr.add(newbones, 57), 101, how, 1);
     void cptr.strcpy(cptr.add(newbones, 158), yyyymmddhhmmss(when));
     cptr.stI16o(newbones, 174, cptr.ldI16o(u, 20)), cptr.stI16o(newbones, 176, cptr.ldI16o(u, 22));

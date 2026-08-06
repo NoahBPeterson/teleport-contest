@@ -319,11 +319,11 @@ cptr.stPtro(rt_opts, 40, cptr.add(gl, 572));
 /** C ref: version.c:339 — @param {CPtr} buf */
 function insert_rtoption(buf) {
     let i;
-    if (!cptr.ld1so(cptr.add(gl, 552), 0, 1))
+    if (!cptr.ld1so2(gl, 0, 1, 552))
         get_lua_version();
     for (i = 0; i < 3; ++i) {
-        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro(cptr.add(rt_opts, i, 16), 8)) ? 1 : 0) {
-            void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro(cptr.add(rt_opts, i, 16), 8));
+        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, 8)) ? 1 : 0) {
+            void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro2(rt_opts, i, 16, 8));
         }
     }
 }
@@ -634,7 +634,7 @@ export function uptodate(nhfp, name, utdflags) {
     if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v ? 1 : 0) {
             if (!quietly)
-                raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro(cptr.add(critical_sizes, idx_1st_mismatch.v, 16), 8));
+                raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, 8));
         }
     }
     sfi_version_info(nhfp, vers_info, __sl30);

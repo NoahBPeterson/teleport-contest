@@ -57,18 +57,18 @@ export function free_all_glyphmap_u() {
     let x;
     let y;
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24)) {
-            if (cptr.ldPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8)) {
-                cptr.free(cptr.ldPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8));
-                cptr.stPtro(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24), 8, null);
+        if (cptr.ldPtro2(glyphmap, glyph, 32, 24)) {
+            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8)) {
+                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8));
+                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8, null);
             }
-            cptr.free(cptr.ldPtro(cptr.add(glyphmap, glyph, 32), 24));
-            cptr.stPtro(cptr.add(glyphmap, glyph, 32), 24, null);
+            cptr.free(cptr.ldPtro2(glyphmap, glyph, 32, 24));
+            cptr.stPtro2(glyphmap, glyph, 32, 24, null);
         }
     }
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
-            cptr.stPtro(cptr.add(cptr.add(gg, y, 4480), x, 56), 48, null);
+            cptr.stPtro3(gg, y, 4480, x, 56, 48, null);
         }
     }
 }
@@ -99,7 +99,7 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                             cptr.stI32(retflags, 1);
                     } else {
                         so = cptr.ldI32o(glyphinfo, 24);
-                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo(cptr.add(gs, 680), so, 1)));
+                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, 680)));
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }

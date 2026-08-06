@@ -92,7 +92,7 @@ export function main() {
         let tg = cptr.alloc(16);
         cptr.stI32(tg, 7);
         cptr.stI64o(tg, 8, 1234605616436508552n);
-        cptr.printf(__sl11, cptr.ldI32(tg), cptr.ld1uo(cptr.add(tg, 8), 0, 1), BigInt.asUintN(64, cptr.ldI64o(tg, 8)));
+        cptr.printf(__sl11, cptr.ldI32(tg), cptr.ld1uo2(tg, 0, 1, 8), BigInt.asUintN(64, cptr.ldI64o(tg, 8)));
     }
     {
         let u = cptr.alloc(8);

@@ -177,7 +177,7 @@ function find_lev_obj() {
     let y;
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
-            cptr.stPtro(cptr.add(cptr.add(svl, 62160), x, 168), y, null, 8);
+            cptr.stPtro3(svl, x, 168, y, 8, 62160, null);
     while ((otmp = cptr.ldPtro(svl, 89040)) !== null) {
         cptr.stPtro(svl, 89040, cptr.ldPtr(otmp));
         cptr.stPtr(otmp, fobjtmp);
@@ -870,7 +870,7 @@ export function getlev(nhfp, pid, lev) {
     }
     rest_rooms(nhfp);
     if (cptr.ldI32o(svn, 44)) {
-        cptr.stI32(gd, (cptr.ldI32o(cptr.add(svr, (cptr.ldI32o(svn, 44) - 1) | 0, 224), 16) + cptr.ld1so(cptr.add(svr, (cptr.ldI32o(svn, 44) - 1) | 0, 224), 13)) | 0);
+        cptr.stI32(gd, (cptr.ldI32o2(svr, (cptr.ldI32o(svn, 44) - 1) | 0, 224, 16) + cptr.ld1so2(svr, (cptr.ldI32o(svn, 44) - 1) | 0, 224, 13)) | 0);
     } else {
         cptr.stI32(gd, 0);
     }
@@ -899,7 +899,7 @@ export function getlev(nhfp, pid, lev) {
     rest_engravings(nhfp);
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
-            cptr.stPtro(cptr.add(cptr.add(svl, 75600), x, 168), y, null, 8);
+            cptr.stPtro3(svl, x, 168, y, 8, 75600, null);
     for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o(mtmp, 180) & 1))
             set_residency(mtmp, 0);
@@ -950,7 +950,7 @@ export function getlev(nhfp, pid, lev) {
             cptr.stI16o(dest, 2, i16(((cptr.ldI16o(u, 26) + 1) | 0)));
             mazexy(cc);
             stairway_add(cptr.ldI16(cc), cptr.ldI16o(cc, 2), 0, 0, dest);
-            cptr.st1o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(cc), 756), cptr.ldI16o(cc, 2), 36), 4, NHC.STAIRS);
+            cptr.st1o3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, 2), 36, 1684, NHC.STAIRS);
         }
         br = Is_branchlev(cptr.add(u, 24));
         if (br && cptr.ldI16o(u, 26) == 1 ? 1 : 0) {
@@ -1106,8 +1106,8 @@ function add_id_mapping(gid, nid) {
         cptr.stPtr(gnu, cptr.ldPtro(gi, 56));
         cptr.stPtro(gi, 56, gnu);
     }
-    cptr.stI32o(cptr.add(cptr.ldPtro(gi, 56), 8), idx, gid, 8);
-    cptr.stI32o(cptr.add(cptr.add(cptr.ldPtro(gi, 56), 8), idx, 8), 4, nid);
+    cptr.stI32o2(cptr.ldPtro(gi, 56), idx, 8, 8, gid);
+    cptr.stI32o2(cptr.ldPtro(gi, 56), idx, 8, 12, nid);
     (cptr.stI32o(gn, 152, cptr.ldI32o(gn, 152) + 1)) - (1);
 }
 
@@ -1124,8 +1124,8 @@ export function lookup_id_mapping(gid, nidp) {
             } else
                 i = 64;
             while (--i >= 0)
-                if (gid == cptr.ldI32o(cptr.add(curr, 8), i, 8)) {
-                    cptr.stI32(nidp, cptr.ldI32o(cptr.add(cptr.add(curr, 8), i, 8), 4));
+                if (gid == cptr.ldI32o2(curr, i, 8, 8)) {
+                    cptr.stI32(nidp, cptr.ldI32o2(curr, i, 8, 12));
                     return 1;
                 }
         }

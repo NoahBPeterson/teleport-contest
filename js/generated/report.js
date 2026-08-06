@@ -415,11 +415,11 @@ export function get_saved_pline(lineno) {
         return null;
     p = u32mod(((cptr.ldI32o(gs, 980) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
     while (limit--) {
-        if (cptr.ldPtro(cptr.add(gs, 984), p, 8)) {
+        if (cptr.ldPtro2(gs, p, 8, 984)) {
             if (lineno--) {
                 p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
-                return cptr.ldPtro(cptr.add(gs, 984), p, 8);
+                return cptr.ldPtro2(gs, p, 8, 984);
             }
         }
     }

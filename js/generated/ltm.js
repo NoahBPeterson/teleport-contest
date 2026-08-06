@@ -101,8 +101,8 @@ cptr.stPtro(__static_luaT_init_luaT_eventname, 192, __sl34); /** C ref: ltm.c:39
 export function luaT_init(L) {
     let i;
     for (i = 0; i < NHC.TM_N; i++) {
-        cptr.stPtro(cptr.add((cptr.ldPtro(L, 24)), 280), i, luaS_new(L, cptr.ldPtro(__static_luaT_init_luaT_eventname, i, 8)), 8);
-        luaC_fix(L, ((((cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 280), i, 8))))));
+        cptr.stPtro2((cptr.ldPtro(L, 24)), i, 8, 280, luaS_new(L, cptr.ldPtro(__static_luaT_init_luaT_eventname, i, 8)));
+        luaC_fix(L, ((((cptr.ldPtro2((cptr.ldPtro(L, 24)), i, 8, 280))))));
     }
 }
 
@@ -128,9 +128,9 @@ export function luaT_gettmbyobj(L, o, event) {
         mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), 24);
         break;
         default:
-        mt = cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 480), ((((cptr.ld1uo((o), 8))) & 15)), 8);
+        mt = cptr.ldPtro2((cptr.ldPtro(L, 24)), ((((cptr.ld1uo((o), 8))) & 15)), 8, 480);
     }
-    return (mt ? luaH_getshortstr(mt, cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 280), event, 8)) : cptr.add((cptr.ldPtro(L, 24)), 80));
+    return (mt ? luaH_getshortstr(mt, cptr.ldPtro2((cptr.ldPtro(L, 24)), event, 8, 280)) : cptr.add((cptr.ldPtro(L, 24)), 80));
 }
 
 /** C ref: ltm.c:91 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */

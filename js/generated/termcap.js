@@ -336,7 +336,7 @@ function tty_decgraphics_termcap_fixup() {
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
-    if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_DEC)) {
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_DEC)) {
         xputs(__sl46);
         xputs(cptr.ldPtro(gt, 344));
     }
@@ -362,7 +362,7 @@ function tty_decgraphics_termcap_fixup() {
 export function term_start_screen() {
     xputs(TI);
     xputs(VS);
-    if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_DEC))
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_DEC))
         tty_decgraphics_termcap_fixup();
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
     utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
@@ -504,9 +504,9 @@ export function nomux_clear_screen() {
     for (r = 0; r < 24; r++)
         for (c = 0; c < 80; c++) {
             cptr.st1o(cptr.decay(nomux_buf[r]), c, 32, 4);
-            cptr.st1o(cptr.add(cptr.decay(nomux_buf[r]), c, 4), 1, 7);
-            cptr.st1o(cptr.add(cptr.decay(nomux_buf[r]), c, 4), 2, 0);
-            cptr.st1o(cptr.add(cptr.decay(nomux_buf[r]), c, 4), 3, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, 1, 7);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, 2, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, 3, 0);
         }
 }
 
@@ -517,9 +517,9 @@ export function nomux_clear_to_eol(row, col) {
         return;
     for (c = (col < 0 ? 0 : col); c < 80; c++) {
         cptr.st1o(cptr.decay(nomux_buf[row]), c, 32, 4);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), c, 4), 1, 7);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), c, 4), 2, 0);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), c, 4), 3, 0);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, 1, 7);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, 2, 0);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, 3, 0);
     }
 }
 
@@ -533,9 +533,9 @@ export function nomux_putch(ch) {
     col = cptr.ldI16o(ttyDisplay, 4);
     if (((row >= 0 && row < 24 ? 1 : 0) && col >= 0 ? 1 : 0) && col < 80 ? 1 : 0) {
         cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), 4);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), col, 4), 1, nomux_fg_cur);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), col, 4), 2, nomux_attr_cur);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[row]), col, 4), 3, nomux_decgfx_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, 1, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, 2, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, 3, nomux_decgfx_cur);
     }
 }
 
@@ -595,7 +595,7 @@ export function nomux_capture_screen() {
         cur_fg = 7;
         cur_attr = 0;
         end = 79;
-        while (((end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 0 ? 1 : 0) ? 1 : 0) && cptr.ld1uo(cptr.add(cptr.decay(nomux_buf[row]), end, 4), 2) == 0 ? 1 : 0) && (cptr.ld1uo(cptr.add(cptr.decay(nomux_buf[row]), end, 4), 1) == 7 || cptr.ld1uo(cptr.add(cptr.decay(nomux_buf[row]), end, 4), 1) == 0 ? 1 : 0) ? 1 : 0)
+        while (((end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 0 ? 1 : 0) ? 1 : 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, 2) == 0 ? 1 : 0) && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, 1) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, 1) == 0 ? 1 : 0) ? 1 : 0)
             end--;
         let in_dec = 0;
         for (col = 0; col <= end; col++) {
@@ -683,9 +683,9 @@ function nomux_raw_putch(ch) {
         return;
     if (((nomux_raw_row >= 0 && nomux_raw_row < 24 ? 1 : 0) && nomux_raw_col >= 0 ? 1 : 0) && nomux_raw_col < 80 ? 1 : 0) {
         cptr.st1o(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, schar(ch), 4);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4), 1, nomux_fg_cur);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4), 2, nomux_attr_cur);
-        cptr.st1o(cptr.add(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4), 3, nomux_decgfx_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, 1, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, 2, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, 3, nomux_decgfx_cur);
     }
     nomux_raw_col++;
 }
@@ -931,10 +931,10 @@ function init_hilite() {
     }
     if (colors >= 16) {
         for (c = 0; c < 6; c++) {
-            scratch = tparm(setf, cptr.ldI32o(cptr.add(ti_map, c, 12), 4));
-            cptr.stPtro(hilites, cptr.ldI32o(cptr.add(ti_map, c, 12), 4), dupstr(scratch), 8);
-            scratch = tparm(setf, cptr.ldI32o(cptr.add(ti_map, c, 12), 8));
-            cptr.stPtro(hilites, cptr.ldI32o(cptr.add(ti_map, c, 12), 8), dupstr(scratch), 8);
+            scratch = tparm(setf, cptr.ldI32o2(ti_map, c, 12, 4));
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 4), dupstr(scratch), 8);
+            scratch = tparm(setf, cptr.ldI32o2(ti_map, c, 12, 8));
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), dupstr(scratch), 8);
         }
     } else {
         md_len = Number(BigInt.asIntN(32, cptr.strlen(MD)));
@@ -944,10 +944,10 @@ function init_hilite() {
             scratch = tparm(setf, cptr.ldI32o(ti_map, c, 12));
             work = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n))));
             void cptr.strcpy(work, MD);
-            cptr.stPtro(hilites, cptr.ldI32o(cptr.add(ti_map, c, 12), 8), work, 8);
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), work, 8);
             work = cptr.add(work, md_len);
             void cptr.strcpy(work, scratch);
-            cptr.stPtro(hilites, cptr.ldI32o(cptr.add(ti_map, c, 12), 4), work, 8);
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 4), work, 8);
         }
     }
     if (colors >= 16) {

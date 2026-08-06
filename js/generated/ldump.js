@@ -117,9 +117,9 @@ function dumpUpvalues(D, f) {
     let n = cptr.ldI32o(f, 16);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 8));
-        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 9));
-        dumpByte(D, cptr.ld1uo(cptr.add(cptr.ldPtro(f, 80), i, 16), 10));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 8));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 9));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 10));
     }
 }
 
@@ -134,14 +134,14 @@ function dumpDebug(D, f) {
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
         dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
-        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 96), i, 8, 4));
     }
     n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 36);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
         dumpString(D, cptr.ldPtro(cptr.ldPtro(f, 104), i, 16));
-        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 8));
-        dumpInt(D, cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 12));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 8));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 12));
     }
     n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 16);
     dumpInt(D, n);

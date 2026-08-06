@@ -372,7 +372,7 @@ cptr.stPtro(stringmetamethods, 152, null);
 /** C ref: lstrlib.c:386 — @param {CPtr} ms @param {CInt} l @returns {CInt} */
 function check_capture(ms, l) {
     l = (l - 49) | 0;
-    if ((__builtin_expect(BigInt((((l < 0 || l >= cptr.ld1uo(ms, 36) ? 1 : 0) || cptr.ldI64o(cptr.add(cptr.add(ms, 40), l, 16), 8) == -1n ? 1 : 0) != 0)), 0n)))
+    if ((__builtin_expect(BigInt((((l < 0 || l >= cptr.ld1uo(ms, 36) ? 1 : 0) || cptr.ldI64o2(ms, l, 16, 48) == -1n ? 1 : 0) != 0)), 0n)))
         return luaL_error(cptr.ldPtro(ms, 24), __sl15, (l + 1) | 0);
     return l;
 }
@@ -381,7 +381,7 @@ function check_capture(ms, l) {
 function capture_to_close(ms) {
     let level = cptr.ld1uo(ms, 36);
     for (level--; level >= 0; level--)
-        if (cptr.ldI64o(cptr.add(cptr.add(ms, 40), level, 16), 8) == -1n)
+        if (cptr.ldI64o2(ms, level, 16, 48) == -1n)
             return level;
     return luaL_error(cptr.ldPtro(ms, 24), __sl16);
 }
@@ -552,8 +552,8 @@ function start_capture(ms, s, p, what) {
     let level = cptr.ld1uo(ms, 36);
     if (level >= 32)
         luaL_error(cptr.ldPtro(ms, 24), __sl20);
-    cptr.stPtro(cptr.add(ms, 40), level, s, 16);
-    cptr.stI64o(cptr.add(cptr.add(ms, 40), level, 16), 8, BigInt(what));
+    cptr.stPtro2(ms, level, 16, 40, s);
+    cptr.stI64o2(ms, level, 16, 48, BigInt(what));
     cptr.st1o(ms, 36, uchar(((level + 1) | 0)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
         (cptr.st1o(ms, 36, cptr.ld1uo(ms, 36) + -1)) - (-1);
@@ -564,9 +564,9 @@ function start_capture(ms, s, p, what) {
 function end_capture(ms, s, p) {
     let l = capture_to_close(ms);
     let res;
-    cptr.stI64o(cptr.add(cptr.add(ms, 40), l, 16), 8, cptr.diff(s, cptr.ldPtro(cptr.add(ms, 40), l, 16)));
+    cptr.stI64o2(ms, l, 16, 48, cptr.diff(s, cptr.ldPtro2(ms, l, 16, 40)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
-        cptr.stI64o(cptr.add(cptr.add(ms, 40), l, 16), 8, -1n);
+        cptr.stI64o2(ms, l, 16, 48, -1n);
     return res;
 }
 
@@ -574,8 +574,8 @@ function end_capture(ms, s, p) {
 function match_capture(ms, s, l) {
     let len;
     l = check_capture(ms, l);
-    len = BigInt.asUintN(64, cptr.ldI64o(cptr.add(cptr.add(ms, 40), l, 16), 8));
-    if (BigInt.asUintN(64, (cptr.diff(cptr.ldPtro(ms, 8), s))) >= len && memcmp(cptr.ldPtro(cptr.add(ms, 40), l, 16), s, len) == 0 ? 1 : 0)
+    len = BigInt.asUintN(64, cptr.ldI64o2(ms, l, 16, 48));
+    if (BigInt.asUintN(64, (cptr.diff(cptr.ldPtro(ms, 8), s))) >= len && memcmp(cptr.ldPtro2(ms, l, 16, 40), s, len) == 0 ? 1 : 0)
         return cptr.add(s, len);
     else
         return null;
@@ -885,12 +885,12 @@ function get_onecapture(ms, i, s, e, cap) {
         cptr.stPtr(cap, s);
         return BigInt.asUintN(64, cptr.diff(e, s));
     } else {
-        let capl = cptr.ldI64o(cptr.add(cptr.add(ms, 40), i, 16), 8);
-        cptr.stPtr(cap, cptr.ldPtro(cptr.add(ms, 40), i, 16));
+        let capl = cptr.ldI64o2(ms, i, 16, 48);
+        cptr.stPtr(cap, cptr.ldPtro2(ms, i, 16, 40));
         if ((__builtin_expect(BigInt(((capl == -1n) != 0)), 0n)))
             luaL_error(cptr.ldPtro(ms, 24), __sl23);
         else if (capl == -2n)
-            lua_pushinteger(cptr.ldPtro(ms, 24), BigInt.asIntN(64, (cptr.diff(cptr.ldPtro(cptr.add(ms, 40), i, 16), cptr.ldPtr(ms))) + 1n));
+            lua_pushinteger(cptr.ldPtro(ms, 24), BigInt.asIntN(64, (cptr.diff(cptr.ldPtro2(ms, i, 16, 40), cptr.ldPtr(ms))) + 1n));
         return BigInt.asUintN(64, capl);
     }
 }

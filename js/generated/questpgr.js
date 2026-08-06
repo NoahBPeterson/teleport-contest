@@ -101,7 +101,7 @@ export function quest_info(typ) {
 /** C ref: questpgr.c:50 @returns {CPtr} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, 220);
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro(cptr.add(mons, i, 96), NHC.NEUTRAL, 8));
+    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, 87);
 }
 
@@ -161,14 +161,14 @@ export function find_quest_artifact(whichchains) {
 /** C ref: questpgr.c:124 @returns {CPtr} */
 function neminame() {
     let i = cptr.ldI16o(gu, 224);
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro(cptr.add(mons, i, 96), NHC.NEUTRAL, 8));
+    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, 87);
 }
 
 /** C ref: questpgr.c:134 @returns {CPtr} */
 function guardname() {
     let i = cptr.ldI16o(gu, 222);
-    return cptr.ldPtro(cptr.add(mons, i, 96), NHC.NEUTRAL, 8);
+    return cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0);
 }
 
 /** C ref: questpgr.c:142 @returns {CPtr} */
@@ -201,11 +201,11 @@ function qtext_pronoun(who, which) {
         pnoun = (lwhich == 104) ? __sl13 : ((lwhich == 105) ? __sl14 : ((lwhich == 106) ? __sl15 : __sl16));
     } else {
         godgend = (who == 100) ? (cptr.ldI32o(svq, 76) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, 68) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, 72) & 3) | 0 : 2));
-        pnoun = (lwhich == 104) ? cptr.ldPtro(cptr.add(genders, godgend, 48), 8) : ((lwhich == 105) ? cptr.ldPtro(cptr.add(genders, godgend, 48), 16) : ((lwhich == 106) ? cptr.ldPtro(cptr.add(genders, godgend, 48), 24) : __sl16));
+        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, 8) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, 16) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, 24) : __sl16));
     }
     void cptr.strcpy(cptr.add(gc, 497), pnoun);
     if (lwhich != which)
-        cptr.st1o(cptr.add(gc, 497), 0, highc(cptr.ld1so(cptr.add(gc, 497), 0, 1)), 1);
+        cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
     return;
 }
 
@@ -253,19 +253,19 @@ function convert_arg(c) {
         str = guardname();
         break;
         case 71:
-        str = align_gtitle(cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1));
+        str = align_gtitle(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184));
         break;
         case 72:
         str = homebase();
         break;
         case 97:
-        str = align_str(cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1));
+        str = align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184));
         break;
         case 65:
         str = align_str(cptr.ld1so(u, 2172));
         break;
         case 100:
-        str = align_gname(cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1));
+        str = align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184));
         break;
         case 68:
         str = align_gname(NHM.A_LAWFUL);
@@ -280,7 +280,7 @@ function convert_arg(c) {
         str = __sl24;
         break;
         case 120:
-        str = ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? __sl25 : __sl26;
+        str = ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl25 : __sl26;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
@@ -320,7 +320,7 @@ function convert_line(in_line, out_line) {
                     cc = cptr.add(cc, cptr.strlen(cc));
                     continue;
                     case 67:
-                    cptr.st1o(cptr.add(gc, 497), 0, highc(cptr.ld1so(cptr.add(gc, 497), 0, 1)), 1);
+                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
                     break;
                     case 104:
                     case 72:
@@ -334,14 +334,14 @@ function convert_line(in_line, out_line) {
                         c = cptr.add(c, -1);
                     break;
                     case 80:
-                    cptr.st1o(cptr.add(gc, 497), 0, highc(cptr.ld1so(cptr.add(gc, 497), 0, 1)), 1);
+                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
                     // @FallThrough
                     ;
                     case 112:
                     void cptr.strcpy(cptr.add(gc, 497), makeplural(cptr.add(gc, 497)));
                     break;
                     case 83:
-                    cptr.st1o(cptr.add(gc, 497), 0, highc(cptr.ld1so(cptr.add(gc, 497), 0, 1)), 1);
+                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
                     // @FallThrough
                     ;
                     case 115:
@@ -618,12 +618,12 @@ export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16o(gu, 226);
-        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo(cptr.add(cptr.add(svm, 16), qpm, 12), 2) & NHM.G_GENOD) ? 1 : 0)
+        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
             return cptr.add(mons, qpm, 96);
         return mkclass(cptr.ld1so(gu, 230), 0);
     }
     qpm = cptr.ldI16o(gu, 228);
-    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo(cptr.add(cptr.add(svm, 16), qpm, 12), 2) & NHM.G_GENOD) ? 1 : 0)
+    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
         return cptr.add(mons, qpm, 96);
     return mkclass(cptr.ld1so(gu, 231), 0);
 }

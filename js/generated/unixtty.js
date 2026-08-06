@@ -90,16 +90,16 @@ export function gettty() {
             perror(__sl2);
     }
     if (getenv(__sl0)) {
-        cptr.st1o(cptr.add(inittyb, 32), 3, 127, 1);
-        cptr.st1o(cptr.add(inittyb, 32), 5, 21, 1);
-        cptr.st1o(cptr.add(inittyb, 32), 8, 3, 1);
+        cptr.st1o2(inittyb, 3, 1, 32, 127);
+        cptr.st1o2(inittyb, 5, 1, 32, 21);
+        cptr.st1o2(inittyb, 8, 1, 32, 3);
     }
     cptr.memcpy(curttyb, inittyb, 72);
     cptr.memcpy(curttyb, inittyb, 72);
     ospeed.v = i16((speednum(cfgetospeed(inittyb))));
-    erase_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 3, 1));
-    kill_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 5, 1));
-    intr_char = schar(cptr.ld1uo(cptr.add(inittyb, 32), 8, 1));
+    erase_char = schar(cptr.ld1uo2(inittyb, 3, 1, 32));
+    kill_char = schar(cptr.ld1uo2(inittyb, 5, 1, 32));
+    intr_char = schar(cptr.ld1uo2(inittyb, 8, 1, 32));
     getioctls();
     if (cptr.ldU64o(curttyb, 8) & 4n) {
         cptr.stU64o(curttyb, 8, cptr.ldU64o(curttyb, 8) & 18446744073709551611n);
@@ -141,20 +141,20 @@ export function setftty() {
     if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, 24) & 256n))) != cf) {
         cptr.stU64o(curttyb, 24, cptr.ldU64o(curttyb, 24) & 18446744073709551359n);
         cptr.stU64o(curttyb, 24, cptr.ldU64o(curttyb, 24) | BigInt(cf >>> 0));
-        cptr.st1o(cptr.add(curttyb, 32), 16, 1, 1);
-        cptr.st1o(cptr.add(curttyb, 32), 17, 0, 1);
-        cptr.st1o(cptr.add(curttyb, 32), 10, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
-        cptr.st1o(cptr.add(curttyb, 32), 11, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
-        cptr.st1o(cptr.add(curttyb, 32), 6, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
-        cptr.st1o(cptr.add(curttyb, 32), 15, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
-        cptr.st1o(cptr.add(curttyb, 32), 4, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
-        cptr.st1o(cptr.add(curttyb, 32), 14, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+        cptr.st1o2(curttyb, 16, 1, 32, 1);
+        cptr.st1o2(curttyb, 17, 1, 32, 0);
+        cptr.st1o2(curttyb, 10, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 11, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 6, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 15, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 4, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 14, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         change++;
     }
     if (!(cptr.ldU64o((inittyb), 16) & 512n))
         cptr.stU64(curttyb, cptr.ldU64(curttyb) & 18446744073709551583n);
-    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) != 3 ? 1 : 0) {
-        cptr.st1o(cptr.add(curttyb, 32), 8, 3, 1);
+    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, 32) != 3 ? 1 : 0) {
+        cptr.st1o2(curttyb, 8, 1, 32, 3);
         change++;
     }
     if (change)
@@ -165,16 +165,16 @@ export function setftty() {
 
 /** C ref: unixtty.c:338 */
 export function intron() {
-    if (((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) != 3 ? 1 : 0) {
-        cptr.st1o(cptr.add(curttyb, 32), 8, 3, 1);
+    if (((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) ? 1 : 0) && cptr.ld1uo2(curttyb, 8, 1, 32) != 3 ? 1 : 0) {
+        cptr.st1o2(curttyb, 8, 1, 32, 3);
         setctty();
     }
 }
 
 /** C ref: unixtty.c:350 */
 export function introff() {
-    if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(cptr.ld1uo(cptr.add(curttyb, 32), 8, 1) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
-        cptr.st1o(cptr.add(curttyb, 32), 8, Number(BigInt.asUintN(8, (fpathconf(0, 9)))), 1);
+    if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) && BigInt(cptr.ld1uo2(curttyb, 8, 1, 32) >>> 0) != (fpathconf(0, 9)) ? 1 : 0) {
+        cptr.st1o2(curttyb, 8, 1, 32, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }
 }

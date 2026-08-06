@@ -1232,12 +1232,12 @@ export function parse_config_line(origbuf) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1so(cptr.add(config_line_stmt, i, 24), 12) && !in_sysconf ? 1 : 0)
+        if (cptr.ld1so2(config_line_stmt, i, 24, 12) && !in_sysconf ? 1 : 0)
             continue;
-        if (match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o(cptr.add(config_line_stmt, i, 24), 8), 1)) {
-            let parm = cptr.ld1so(cptr.add(config_line_stmt, i, 24), 13) ? origbuf : bufp;
+        if (match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o2(config_line_stmt, i, 24, 8), 1)) {
+            let parm = cptr.ld1so2(config_line_stmt, i, 24, 13) ? origbuf : bufp;
             if (!cptr.ld1so(cptr.decay(disregarded_config_lines), i, 1))
-                return cptr.ldPtro(cptr.add(config_line_stmt, i, 24), 16)(parm);
+                return cptr.ldPtro2(config_line_stmt, i, 24, 16)(parm);
         }
     }
     if (!ignore_errors_on_unmatched)
@@ -1263,12 +1263,12 @@ export function config_error_init(from_file, sourcename, secure) {
     cptr.st1o(tmp, 8, 0);
     cptr.st1o(tmp, 9, from_file);
     cptr.st1o(tmp, 10, secure);
-    cptr.st1o(cptr.add(tmp, 11), 0, 0, 1);
+    cptr.st1o2(tmp, 0, 1, 11, 0);
     if (sourcename && cptr.ld1so(sourcename, 0) ? 1 : 0) {
         void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, 255n, __builtin_object_size(cptr.add(tmp, 1035), 1));
-        cptr.st1o(cptr.add(tmp, 1035), 255n, 0, 1);
+        cptr.st1o2(tmp, 255n, 1, 1035, 0);
     } else
-        cptr.st1o(cptr.add(tmp, 1035), 0, 0, 1);
+        cptr.st1o2(tmp, 0, 1, 1035, 0);
     cptr.stPtro(tmp, 1296, config_error_data);
     config_error_data = tmp;
     cptr.stI32o(program_state, 80, 1);
@@ -1285,9 +1285,9 @@ function config_error_nextline(line) {
     cptr.st1o(ced, 8, 0);
     if (line && cptr.ld1so(line, 0) ? 1 : 0) {
         void __builtin___strncpy_chk(cptr.add(ced, 11), line, 1023n, __builtin_object_size(cptr.add(ced, 11), 1));
-        cptr.st1o(cptr.add(ced, 11), 1023n, 0, 1);
+        cptr.st1o2(ced, 1023n, 1, 11, 0);
     } else
-        cptr.st1o(cptr.add(ced, 11), 0, 0, 1);
+        cptr.st1o2(ced, 0, 1, 11, 0);
     return 1;
 }
 

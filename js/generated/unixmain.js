@@ -569,6 +569,6 @@ export function get_nhuuid() {
 export function free_nhuuid() {
     let i;
     for (i = 0; i < Number(BigInt.asIntN(32, (37n / 1n))); i++) {
-        cptr.st1o(cptr.add(svn, 4), i, 0, 1);
+        cptr.st1o2(svn, i, 1, 4, 0);
     }
 }

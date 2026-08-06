@@ -171,11 +171,11 @@ function not_capable() {
 /** C ref: quest.c:153 — @param {CInt} talk @returns {CInt} */
 function is_pure(talk) {
     let purity;
-    let original_alignment = cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1);
+    let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184);
     if (cptr.ld1so(flags, 10) && talk ? 1 : 0) {
         if (cptr.ld1so(u, 2172) != original_alignment) {
             You(__sl10, align_str(cptr.ld1so(u, 2172)), align_str(original_alignment));
-        } else if (cptr.ld1so(cptr.add(u, 2184), NHM.A_CURRENT, 1) != original_alignment) {
+        } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) != original_alignment) {
             You(__sl11);
         } else if (cptr.ldI32o(u, 2176) < NHM.MIN_QUEST_ALIGN) {
             You(__sl12, cptr.ldI32o(u, 2176), NHM.MIN_QUEST_ALIGN);
@@ -183,7 +183,7 @@ function is_pure(talk) {
                 cptr.stI32o(u, 2176, NHM.MIN_QUEST_ALIGN);
         }
     }
-    purity = ((cptr.ldI32o(u, 2176) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, 2172) == original_alignment ? 1 : 0) && cptr.ld1so(cptr.add(u, 2184), NHM.A_CURRENT, 1) == original_alignment ? 1 : 0) ? 1 : ((cptr.ld1so(cptr.add(u, 2184), NHM.A_CURRENT, 1) != original_alignment) ? -1 : 0);
+    purity = ((cptr.ldI32o(u, 2176) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, 2172) == original_alignment ? 1 : 0) && cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) == original_alignment ? 1 : 0) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -217,7 +217,7 @@ function expulsion(seal) {
 export function finish_quest(obj) {
     let otmp;
     if (obj && !is_quest_artifact(obj) ? 1 : 0) {
-        if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+        if (((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
             return;
         fully_identify_obj(obj);
         if (cptr.ldI16o(obj, 32) == NHC.AMULET_OF_YENDOR) {

@@ -140,8 +140,8 @@ export function choose_windows(s) {
             cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, 16), 416);
             if (cptr.ldPtro(gl, 544) && cptr.ldPtro(cptr.ldPtro(gl, 544), 8) ? 1 : 0)
                 (cptr.ldPtro(cptr.ldPtro(gl, 544), 8))(NHM.WININIT_UNDO);
-            if (cptr.ldPtro(cptr.add(winchoices, i, 16), 8))
-                (cptr.ldPtro(cptr.add(winchoices, i, 16), 8))(NHM.WININIT);
+            if (cptr.ldPtro2(winchoices, i, 16, 8))
+                (cptr.ldPtro2(winchoices, i, 16, 8))(NHM.WININIT);
             cptr.stPtro(gl, 544, cptr.add(winchoices, i, 16));
             return;
         }
@@ -759,7 +759,7 @@ export function dump_redirect(onoff_flag) {
 
 /** C ref: windows.c:1397 — @param {CInt} color @returns {CInt} */
 export function has_color(color) {
-    return (((cptr.ld1so(iflags, 184) && cptr.ldPtr(windowprocs) ? 1 : 0) && (cptr.ldU64o(windowprocs, 16) & 1n) ? 1 : 0) && cptr.ld1so(cptr.add(windowprocs, 32), color, 1) ? 1 : 0);
+    return (((cptr.ld1so(iflags, 184) && cptr.ldPtr(windowprocs) ? 1 : 0) && (cptr.ldU64o(windowprocs, 16) & 1n) ? 1 : 0) && cptr.ld1so2(windowprocs, color, 1, 32) ? 1 : 0);
 }
 
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
@@ -830,7 +830,7 @@ export function decode_mixed(buf, str) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
                     so = cptr.ldI32o(glyphinfo, 24);
-                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo(cptr.add(gs, 680), so, 1)));
+                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, 680)));
                     continue;
                 } else {
                     str = save_str;
@@ -929,7 +929,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 61 ? 1 : 0)) {
                 panic(__sl32, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro(cptr.add(def_monsyms, idx, 24), 16);
+            text = cptr.ldPtro2(def_monsyms, idx, 24, 16);
             accelerator = cptr.ld1s(class_list);
             void cptr.sprintf(cptr.decay(buf), __sl7, text);
             break;
@@ -938,7 +938,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 18 ? 1 : 0)) {
                 panic(__sl33, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro(cptr.add(def_oc_syms, idx, 24), 16);
+            text = cptr.ldPtro2(def_oc_syms, idx, 24, 16);
             accelerator = next_accelerator;
             void cptr.sprintf(cptr.decay(buf), __sl34, cptr.ld1s(class_list), text);
             break;

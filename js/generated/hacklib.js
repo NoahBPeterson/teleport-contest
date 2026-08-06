@@ -772,11 +772,11 @@ export function datamodel(retidx) {
     for (i = 1; i < 5; ++i) {
         matchcount = 0;
         for (j = 0; j < 5; ++j) {
-            if (cptr.ldI32o(cptr.add(dm, 0, 40), j, 4) == cptr.ldI32o(cptr.add(dm, i, 40), j, 4))
+            if (cptr.ldI32o3(dm, 0, 40, j, 4, 0) == cptr.ldI32o3(dm, i, 40, j, 4, 0))
                 ++matchcount;
         }
         if (matchcount == 5)
-            return (retidx == 0) ? cptr.ldPtro(cptr.add(dm, i, 40), 24) : cptr.ldPtro(cptr.add(dm, i, 40), 32);
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, 24) : cptr.ldPtro2(dm, i, 40, 32);
     }
     return __static_datamodel_unknown;
 }
@@ -787,8 +787,8 @@ let __static_what_datamodel_is_this_unknown = __sl27; /** C ref: hacklib.c:1068 
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
     for (i = 1; i < 5; ++i) {
-        if ((((szshort == cptr.ldI32o(cptr.add(dm, i, 40), 0, 4) && szint == cptr.ldI32o(cptr.add(dm, i, 40), 1, 4) ? 1 : 0) && szlong == cptr.ldI32o(cptr.add(dm, i, 40), 2, 4) ? 1 : 0) && szll == cptr.ldI32o(cptr.add(dm, i, 40), 3, 4) ? 1 : 0) && szptr == cptr.ldI32o(cptr.add(dm, i, 40), 4, 4) ? 1 : 0)
-            return (retidx == 0) ? cptr.ldPtro(cptr.add(dm, i, 40), 24) : cptr.ldPtro(cptr.add(dm, i, 40), 32);
+        if ((((szshort == cptr.ldI32o3(dm, i, 40, 0, 4, 0) && szint == cptr.ldI32o3(dm, i, 40, 1, 4, 0) ? 1 : 0) && szlong == cptr.ldI32o3(dm, i, 40, 2, 4, 0) ? 1 : 0) && szll == cptr.ldI32o3(dm, i, 40, 3, 4, 0) ? 1 : 0) && szptr == cptr.ldI32o3(dm, i, 40, 4, 4, 0) ? 1 : 0)
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, 24) : cptr.ldPtro2(dm, i, 40, 32);
     }
     return __static_what_datamodel_is_this_unknown;
 }

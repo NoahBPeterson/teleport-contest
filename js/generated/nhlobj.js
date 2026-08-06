@@ -258,8 +258,8 @@ function l_obj_objects_to_table(L) {
     lua_createtable(L, 0, 0);
     if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)))
         nhl_add_table_entry_str(L, __sl4, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)));
-    if ((cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16), 8)))
-        nhl_add_table_entry_str(L, __sl5, (cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16), 8)));
+    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16, 8)))
+        nhl_add_table_entry_str(L, __sl5, (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16, 8)));
     if (cptr.ldPtro(o, 8))
         nhl_add_table_entry_str(L, __sl6, cptr.ldPtro(o, 8));
     nhl_add_table_entry_int(L, __sl7, BigInt((cptr.ldI32o(o, 16) & 1) >>> 0));
@@ -304,8 +304,8 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl35, BigInt(cptr.ldI16o(obj, 32)));
     if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, 32), 120))), 16)))
         nhl_add_table_entry_str(L, __sl36, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, 32), 120))), 16)));
-    if ((cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16), 8)))
-        nhl_add_table_entry_str(L, __sl37, (cptr.ldPtro(cptr.add(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16), 8)));
+    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16, 8)))
+        nhl_add_table_entry_str(L, __sl37, (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, 32), 120)), 2), 16, 8)));
     nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI32o(obj, 36) >>> 0));
     nhl_add_table_entry_int(L, __sl39, cptr.ldI64o(obj, 40));
     nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1so(obj, 48)));
@@ -335,7 +335,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32o(obj, 120) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32o(obj, 124) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32o(obj, 128) & 1) >>> 0));
-    if ((((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS && cptr.ld1so(cptr.add(objects, cptr.ldI16o(obj, 32), 120), 68) >= -24 ? 1 : 0) && cptr.ld1so(cptr.add(objects, cptr.ldI16o(obj, 32), 120), 68) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
+    if ((((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -24 ? 1 : 0) && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
         nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0));
     else
         nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0));
@@ -351,7 +351,7 @@ function l_obj_to_table(L) {
     nhl_add_table_entry_int(L, __sl73, BigInt((cptr.ldI32o(obj, 100) & 1) >>> 0));
     nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32o(obj, 168)));
     if (cptr.ldI32o(obj, 168) != NHC.NON_PM && ((((cptr.ldI16o(obj, 32) == NHC.TIN || cptr.ldI16o(obj, 32) == NHC.CORPSE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.EGG ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.FIGURINE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.STATUE ? 1 : 0) ? 1 : 0)
-        nhl_add_table_entry_str(L, __sl75, cptr.ldPtro(cptr.add(mons, cptr.ldI32o(obj, 168), 96), NHC.NEUTRAL, 8));
+        nhl_add_table_entry_str(L, __sl75, cptr.ldPtro3(mons, cptr.ldI32o(obj, 168), 96, NHC.NEUTRAL, 8, 0));
     nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32o(obj, 172)));
     nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32o(obj, 176) >>> 0));
     nhl_add_table_entry_int(L, __sl78, cptr.ldI64o(obj, 184));
@@ -404,7 +404,7 @@ function l_obj_at(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         cvt_to_abscoord(x, y);
         lua_settop(L, -3);
-        void l_obj_push(L, cptr.ldPtro(cptr.add(cptr.add(svl, 62160), x.v, 168), y.v, 8));
+        void l_obj_push(L, cptr.ldPtro3(svl, x.v, 168, y.v, 8, 62160));
         return 1;
     } else
         nhl_error(L, __sl84);

@@ -405,7 +405,7 @@ export function create_levelfile(lev, errbuf) {
         cptr.stPtro(nhfp, 40, null);
         cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
         if (cptr.ldI32(nhfp) >= 0)
-            cptr.st1o(cptr.add(svl, 89208), lev, cptr.ld1uo(cptr.add(svl, 89208), lev, 1) | NHM.LFILE_EXISTS, 1);
+            cptr.st1o2(svl, lev, 1, 89208, cptr.ld1uo2(svl, lev, 1, 89208) | NHM.LFILE_EXISTS);
         else if (errbuf)
             void cptr.sprintf(errbuf, __sl6, cptr.add(gl, 16), lev, (cptr.ldI32(__error())));
     }
@@ -445,10 +445,10 @@ export function open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
-    if (lev == 0 || (cptr.ld1uo(cptr.add(svl, 89208), lev, 1) & NHM.LFILE_EXISTS) ? 1 : 0) {
+    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, 89208) & NHM.LFILE_EXISTS) ? 1 : 0) {
         set_levelfile_name(cptr.add(gl, 16), lev);
         void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
-        cptr.st1o(cptr.add(svl, 89208), lev, cptr.ld1uo(cptr.add(svl, 89208), lev, 1) & -5, 1);
+        cptr.st1o2(svl, lev, 1, 89208, cptr.ld1uo2(svl, lev, 1, 89208) & -5);
     }
 }
 
@@ -479,7 +479,7 @@ function set_bonesfile_name(file, lev) {
         void cptr.sprintf(eos(file), __sl9, poolnum);
     }
     dptr = eos(file);
-    void cptr.sprintf(dptr, __sl10, cptr.ld1so(cptr.add(svd, cptr.ldI16(lev), 112), 69), In_quest(lev) ? cptr.ldPtro(gu, 192) : __sl11);
+    void cptr.sprintf(dptr, __sl10, cptr.ld1so2(svd, cptr.ldI16(lev), 112, 69), In_quest(lev) ? cptr.ldPtro(gu, 192) : __sl11);
     if ((sptr = Is_special(lev)) !== null)
         void cptr.sprintf(eos(dptr), __sl12, cptr.ld1so(sptr, 27));
     else
@@ -564,8 +564,8 @@ export function open_bonesfile(lev, bonesid) {
         cptr.stI32o(nhfp, 4, NHM.READING);
         cptr.st1o(nhfp, 34, 1);
         cptr.st1o(nhfp, 72, 1);
-        cptr.st1o(nhfp, 73, schar((cptr.ldI32o(cptr.add(sysopt, 168), 0, 4) != NHC.exportascii)));
-        cptr.stI32o(nhfp, 12, cptr.ldI32o(cptr.add(sysopt, 168), 0, 4));
+        cptr.st1o(nhfp, 73, schar((cptr.ldI32o2(sysopt, 0, 4, 168) != NHC.exportascii)));
+        cptr.stI32o(nhfp, 12, cptr.ldI32o2(sysopt, 0, 4, 168));
         cptr.stI32(nhfp, -1);
         cptr.stPtro(nhfp, 40, null);
         if (cptr.ldPtro(nhfp, 40)) {
@@ -768,7 +768,7 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
         let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, 884))));
         let xln = Number(BigInt.asIntN(32, cptr.strlen(__sl20)));
         if (sln > xln && !strcmp(cptr.add(cptr.add(gs, 884), (sln - xln) | 0, 1), __sl20) ? 1 : 0)
-            cptr.st1o(cptr.add(gs, 884), (sln - xln) | 0, 0, 1);
+            cptr.st1o2(gs, (sln - xln) | 0, 1, 884, 0);
     }
     nh_uncompress(cptr.add(gs, 884));
     if ((nhfp = open_savefile()) !== null) {
@@ -1000,7 +1000,7 @@ function problematic_savefile(sfstatus, savefilenm) {
         default:
         for (i = 0; i < 10; ++i) {
             if (cptr.ldI32o(sf2msg, i, 16) == sfstatus) {
-                raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtro(cptr.add(sf2msg, i, 16), 8));
+                raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtro2(sf2msg, i, 16, 8));
                 break;
             }
         }
@@ -1171,7 +1171,7 @@ function fopen_wizkit_file() {
     envp = nh_getenv(__sl60);
     if (envp && cptr.ld1s(envp) ? 1 : 0)
         void __builtin___strncpy_chk(cptr.add(gw, 23), envp, 127n, __builtin_object_size(cptr.add(gw, 23), 1));
-    if (!cptr.ld1so(cptr.add(gw, 23), 0, 1))
+    if (!cptr.ld1so2(gw, 0, 1, 23))
         return null;
     if (access(cptr.add(gw, 23), 4) == -1) {
         raw_printf(__sl61, cptr.add(gw, 23), (cptr.ldI32(__error())));
@@ -1255,10 +1255,10 @@ function fopen_sym_file() {
 /** C ref: files.c:2631 — @param {CInt} which_set @returns {CInt} */
 export function read_sym_file(which_set) {
     let fp;
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 44, 0);
+    cptr.stI32o2(gs, which_set, 48, 244, 0);
     if (!(fp = fopen_sym_file()))
         return 0;
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 44, 1);
+    cptr.stI32o2(gs, which_set, 48, 244, 1);
     cptr.st1o(gc, 456, cptr.st1o(gc, 457, 0));
     cptr.stI32o(gs, 880, which_set);
     cptr.stI32o(gs, 876, 0);
@@ -1266,17 +1266,17 @@ export function read_sym_file(which_set) {
     parse_conf_file(fp, proc_symset_line);
     void fclose(fp);
     if (!cptr.ld1so(gc, 456) && !cptr.ld1so(gc, 457) ? 1 : 0) {
-        if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8) && (fuzzymatch(cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8), __sl68, __sl69, 1) || !strncmpi((cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8)), (__sl70), -1) ? 1 : 0) ? 1 : 0)
+        if (cptr.ldPtro2(gs, which_set, 48, 208) && (fuzzymatch(cptr.ldPtro2(gs, which_set, 48, 208), __sl68, __sl69, 1) || !strncmpi((cptr.ldPtro2(gs, which_set, 48, 208)), (__sl70), -1) ? 1 : 0) ? 1 : 0)
             clear_symsetentry(which_set, 1);
         config_error_done();
-        if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8)) {
-            cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 44, 0);
+        if (cptr.ldPtro2(gs, which_set, 48, 208)) {
+            cptr.stI32o2(gs, which_set, 48, 244, 0);
             return 0;
         }
         return 1;
     }
     if (!cptr.ld1so(gc, 457))
-        config_error_add(__sl71, cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8) ? cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8) : __sl72);
+        config_error_add(__sl71, cptr.ldPtro2(gs, which_set, 48, 208) ? cptr.ldPtro2(gs, which_set, 48, 208) : __sl72);
     config_error_done();
     return 1;
 }
@@ -1439,19 +1439,19 @@ function choose_passage(passagecnt, oid) {
         if (range <= limit) {
             cptr.stI32o(svc, 636, passagecnt);
             for (idx = 0; idx < Number(BigInt.asIntN(32, (30n / 1n))); idx++)
-                cptr.st1o(cptr.add(svc, 640), idx, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))), 1);
+                cptr.st1o2(svc, idx, 1, 640, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))));
         } else {
             cptr.stI32o(svc, 636, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
                 if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit ? 1 : 0) {
-                    cptr.st1o(cptr.add(svc, 640), idx++, schar(i16(((i + 1) | 0))), 1);
+                    cptr.st1o2(svc, idx++, 1, 640, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
         }
     }
     idx = (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3463, __sl93), rn2(cptr.ldI32o(svc, 636))) : rn2(cptr.ldI32o(svc, 636)));
-    res = cptr.ld1so(cptr.add(svc, 640), idx, 1);
-    cptr.st1o(cptr.add(svc, 640), idx, cptr.ld1so(cptr.add(svc, 640), cptr.stI32o(svc, 636, cptr.ldI32o(svc, 636) + -1), 1), 1);
+    res = cptr.ld1so2(svc, idx, 1, 640);
+    cptr.st1o2(svc, idx, 1, 640, cptr.ld1so2(svc, cptr.stI32o(svc, 636, cptr.ldI32o(svc, 636) + -1), 1, 640));
     return res;
 }
 
@@ -1619,7 +1619,7 @@ export function livelog_add(ll_type, str) {
         now = getnow();
         gindx = cptr.ld1so(flags, 13) ? 1 : 0;
         aindx = (1 - cptr.ld1so(u, 2172)) | 0;
-        void fprintf(livelogfile, __sl111, (ll_type & cptr.ldI64o(sysopt, 96)), svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro(cptr.add(genders, gindx, 48), 32), cptr.ldPtro(cptr.add(aligns, aindx, 32), 16), cptr.ldI64o(svm, 8), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
+        void fprintf(livelogfile, __sl111, (ll_type & cptr.ldI64o(sysopt, 96)), svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro2(genders, gindx, 48, 32), cptr.ldPtro2(aligns, aindx, 32, 16), cptr.ldI64o(svm, 8), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
         unlock_file(__sl109);
     }

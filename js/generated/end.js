@@ -320,7 +320,7 @@ export function done_in_by(mtmp, how) {
     let buf = new Uint8Array(256);
     let mptr = cptr.ldPtro(mtmp, 8);
     let champtr = ((cptr.ldI16o(mtmp, 22)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, 22)) < NHC.NUMMONS ? 1 : 0) ? cptr.add(mons, cptr.ldI16o(mtmp, 22), 96) : mptr;
-    let distorted = schar(((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC, 24), 16) && !(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.HALLUC_RES, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.HALLUC_RES, 24) ? 1 : 0) ? 1 : 0) && (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0));
+    let distorted = schar(((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) && (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0));
     let mimicker = schar(((cptr.ld1uo((mtmp), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
     You((how == NHC.STONING) ? __sl30 : __sl31);
@@ -397,7 +397,7 @@ export function done_in_by(mtmp, how) {
         cptr.stI32o(u, 2456, NHC.PM_VAMPIRE);
     else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, 96)))
         cptr.stI32o(u, 2456, NHC.PM_GHOUL);
-    if (cptr.ldI32o(u, 2456) >= NHC.LOW_PM && (cptr.ld1uo(cptr.add(cptr.add(svm, 16), cptr.ldI32o(u, 2456), 12), 2) & NHM.G_GENOD) ? 1 : 0)
+    if (cptr.ldI32o(u, 2456) >= NHC.LOW_PM && (cptr.ld1uo2(svm, cptr.ldI32o(u, 2456), 12, 18) & NHM.G_GENOD) ? 1 : 0)
         cptr.stI32o(u, 2456, NHC.NON_PM);
     done(how);
     return;
@@ -421,13 +421,13 @@ function fixup_death(how) {
     let i;
     if (cptr.ldPtro(gm, 16)) {
         for (i = 0; i < 2; ++i)
-            if (cptr.ldI32o(death_fixups, i, 24) == how && !strcmp(cptr.ldPtro(cptr.add(death_fixups, i, 24), 8), cptr.ldPtro(gm, 16)) ? 1 : 0) {
-                if (cptr.ldPtro(cptr.add(death_fixups, i, 24), 16))
-                    cptr.stPtro(gm, 16, cptr.ldPtro(cptr.add(death_fixups, i, 24), 16));
+            if (cptr.ldI32o(death_fixups, i, 24) == how && !strcmp(cptr.ldPtro2(death_fixups, i, 24, 8), cptr.ldPtro(gm, 16)) ? 1 : 0) {
+                if (cptr.ldPtro2(death_fixups, i, 24, 16))
+                    cptr.stPtro(gm, 16, cptr.ldPtro2(death_fixups, i, 24, 16));
                 else
                     cptr.stPtro(gm, 16, null);
-                cptr.st1o(cptr.add(gm, 24), 0, 0, 1);
-                if (cptr.ldI32o(cptr.add(death_fixups, i, 24), 4))
+                cptr.st1o2(gm, 0, 1, 24, 0);
+                if (cptr.ldI32o2(death_fixups, i, 24, 4))
                     cptr.stI64o(gm, 8, 0n);
                 break;
             }
@@ -492,7 +492,7 @@ function should_query_disclose_option(category, defquery) {
             cptr.st1(defquery, 121);
             return 1;
         }
-        disclose = cptr.ld1so(cptr.add(flags, 135), idx, 1);
+        disclose = cptr.ld1so2(flags, idx, 1, 135);
         if (disclose == 43) {
             cptr.st1(defquery, 121);
             return 0;
@@ -598,7 +598,7 @@ function savelife(how) {
     if (cptr.ldI32o(u, 104) < 500 || how == NHC.CHOKING ? 1 : 0) {
         init_uhunger();
     }
-    if ((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.SICK, 24), 16) & 16777215n) == 1n) {
+    if ((cptr.ldI64o2(u, NHC.SICK, 24, 128) & 16777215n) == 1n) {
         make_sick(0n, null, 0, NHM.SICK_ALL);
     }
     cptr.stPtro(gn, 8, __sl74);
@@ -609,7 +609,7 @@ function savelife(how) {
         reset_utrap(0);
     cptr.st1(disp, 1);
     cptr.stI32o(u, 2456, NHC.NON_PM);
-    cptr.stI64o(cptr.add(cptr.add(u, 112), NHC.UNCHANGING, 24), 16, 0n);
+    cptr.stI64o2(u, NHC.UNCHANGING, 24, 128, 0n);
     curs_on_u();
     if (!cptr.ld1so(svc, 77))
         endmultishot(0);
@@ -635,18 +635,18 @@ function get_valuables(list) {
             continue;
         } else if (cptr.ld1so(obj, 49) == NHC.AMULET_CLASS) {
             i = (cptr.ldI16o(obj, 32) - NHC.FIRST_AMULET) | 0;
-            if (!cptr.ldI64o(cptr.add(ga, 24), i, 16)) {
-                cptr.stI64o(cptr.add(ga, 24), i, cptr.ldI64o(obj, 40), 16);
-                cptr.stI32o(cptr.add(cptr.add(ga, 24), i, 16), 8, cptr.ldI16o(obj, 32));
+            if (!cptr.ldI64o2(ga, i, 16, 24)) {
+                cptr.stI64o2(ga, i, 16, 24, cptr.ldI64o(obj, 40));
+                cptr.stI32o2(ga, i, 16, 32, cptr.ldI16o(obj, 32));
             } else
-                cptr.stI64o(cptr.add(ga, 24), i, cptr.ldI64o(cptr.add(ga, 24), i, 16) + cptr.ldI64o(obj, 40), 16);
+                cptr.stI64o2(ga, i, 16, 24, cptr.ldI64o2(ga, i, 16, 24) + cptr.ldI64o(obj, 40));
         } else if (cptr.ld1so(obj, 49) == NHC.GEM_CLASS && cptr.ldI16o(obj, 32) <= NHC.LAST_GLASS_GEM ? 1 : 0) {
             i = (((cptr.ldI16o(obj, 32)) < ((NHC.LAST_REAL_GEM + 1) | 0) ? (cptr.ldI16o(obj, 32)) : ((NHC.LAST_REAL_GEM + 1) | 0)) - NHC.FIRST_REAL_GEM) | 0;
-            if (!cptr.ldI64o(cptr.add(gg, 94200), i, 16)) {
-                cptr.stI64o(cptr.add(gg, 94200), i, cptr.ldI64o(obj, 40), 16);
-                cptr.stI32o(cptr.add(cptr.add(gg, 94200), i, 16), 8, cptr.ldI16o(obj, 32));
+            if (!cptr.ldI64o2(gg, i, 16, 94200)) {
+                cptr.stI64o2(gg, i, 16, 94200, cptr.ldI64o(obj, 40));
+                cptr.stI32o2(gg, i, 16, 94208, cptr.ldI16o(obj, 32));
             } else
-                cptr.stI64o(cptr.add(gg, 94200), i, cptr.ldI64o(cptr.add(gg, 94200), i, 16) + cptr.ldI64o(obj, 40), 16);
+                cptr.stI64o2(gg, i, 16, 94200, cptr.ldI64o2(gg, i, 16, 94200) + cptr.ldI64o(obj, 40));
         }
     return;
 }
@@ -745,7 +745,7 @@ function fuzzer_savelife(how) {
             }
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl81, 979, __sl82), rn2((3 + Math.imul(3, remedies)) | 0)) : rn2((3 + Math.imul(3, remedies)) | 0))) {
                 for (propidx = 1; propidx <= 8; ++propidx) {
-                    if ((!cptr.ldI64o(cptr.add(cptr.add(u, 112), propidx, 24), 16) && !cptr.ldI64o(cptr.add(u, 112), propidx, 24) ? 1 : 0) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 985, __sl82), rn2(3)) : rn2(3))) > 0 ? 1 : 0)
+                    if ((!cptr.ldI64o2(u, propidx, 24, 128) && !cptr.ldI64o2(u, propidx, 24, 112) ? 1 : 0) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 985, __sl82), rn2(3)) : rn2(3))) > 0 ? 1 : 0)
                         set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), propidx, 24), 16), BigInt(((Math.imul(2, proptim) + 1) | 0)));
                 }
                 ++remedies;
@@ -754,7 +754,7 @@ function fuzzer_savelife(how) {
                 ;
             }
         }
-        cptr.st1o(cptr.add(svk, 16), 0, 0, 1);
+        cptr.st1o2(svk, 0, 1, 16, 0);
         cptr.stI32o(svk, 12, 0);
         if ((cptr.stI64o(gd, 128, cptr.ldI64o(gd, 128) + 1n)) - (1n) > BigInt.asIntN(64, cptr.ldI64o(gh, 8) + 100n)) {
             if (!cptr.ld1so(flags, 10))
@@ -770,9 +770,9 @@ function fuzzer_savelife(how) {
 export function done(how) {
     let survive = 0;
     if (how == NHC.TRICKED) {
-        if (cptr.ld1so(cptr.add(svk, 16), 0, 1)) {
+        if (cptr.ld1so2(svk, 0, 1, 16)) {
             paniclog(__sl12, cptr.add(svk, 16));
-            cptr.st1o(cptr.add(svk, 16), 0, 0, 1);
+            cptr.st1o2(svk, 0, 1, 16, 0);
         }
         if (cptr.ld1so(flags, 10)) {
             cptr.stI32o(svk, 12, NHM.KILLED_BY_AN);
@@ -791,11 +791,11 @@ export function done(how) {
         if (fuzzer_savelife(how))
             return;
     }
-    if (how == NHC.ASCENDED || (!cptr.ld1so(cptr.add(svk, 16), 0, 1) && how == NHC.GENOCIDED ? 1 : 0) ? 1 : 0)
+    if (how == NHC.ASCENDED || (!cptr.ld1so2(svk, 0, 1, 16) && how == NHC.GENOCIDED ? 1 : 0) ? 1 : 0)
         cptr.stI32o(svk, 12, NHM.NO_KILLER_PREFIX);
-    if (!cptr.ld1so(cptr.add(svk, 16), 0, 1) && (how == NHC.STARVING || how == NHC.BURNING ? 1 : 0) ? 1 : 0)
+    if (!cptr.ld1so2(svk, 0, 1, 16) && (how == NHC.STARVING || how == NHC.BURNING ? 1 : 0) ? 1 : 0)
         cptr.stI32o(svk, 12, NHM.KILLED_BY);
-    if (!cptr.ld1so(cptr.add(svk, 16), 0, 1) || how >= NHC.PANICKED ? 1 : 0)
+    if (!cptr.ld1so2(svk, 0, 1, 16) || how >= NHC.PANICKED ? 1 : 0)
         void cptr.strcpy(cptr.add(svk, 16), cptr.ldPtro(deaths, how, 8));
     if (how < NHC.PANICKED) {
         (cptr.stI32o(u, 2452, cptr.ldI32o(u, 2452) + 1)) - (1);
@@ -804,10 +804,10 @@ export function done(how) {
             cptr.st1(disp, 1);
         }
     }
-    if (cptr.ldI64o(cptr.add(u, 112), NHC.LIFESAVED, 24) && (how <= NHC.GENOCIDED) ? 1 : 0) {
+    if (cptr.ldI64o2(u, NHC.LIFESAVED, 24, 112) && (how <= NHC.GENOCIDED) ? 1 : 0) {
         pline(__sl83);
         discover_object(NHC.AMULET_OF_LIFE_SAVING, 1, 1, 1);
-        Your(__sl84, !((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0) ? __sl85 : __sl86);
+        Your(__sl84, !((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl85 : __sl86);
         if (how == NHC.CHOKING)
             You(__sl87);
         You_feel(__sl88);
@@ -832,7 +832,7 @@ export function done(how) {
         survive = 1;
     }
     if (survive) {
-        cptr.st1o(cptr.add(svk, 16), 0, 0, 1);
+        cptr.st1o2(svk, 0, 1, 16, 0);
         cptr.stI32o(svk, 12, NHM.KILLED_BY_AN);
         return;
     }
@@ -862,7 +862,7 @@ function really_done(how) {
     cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(endtime, cptr.ldI64o(urealtime, 8)));
     cptr.stI32o(iflags, 20, night());
     cptr.stI32o(iflags, 16, midnight());
-    if (cptr.ld1so(cptr.add(u, 2822), 0, 1) || !cptr.ld1so(flags, 5) ? 1 : 0) {
+    if (cptr.ld1so2(u, 0, 1, 2822) || !cptr.ld1so(flags, 5) ? 1 : 0) {
         if (cptr.ld1so(u, 2112))
             record_achievement(NHC.ACH_BLND);
         if (cptr.ld1so(u, 2113))
@@ -887,7 +887,7 @@ function really_done(how) {
         cptr.stI32o(u, 2456, ((NHC.NON_PM - 2) | 0));
     else if (how == NHC.STONING)
         cptr.stI32o(u, 2456, NHC.LEAVESTATUE);
-    else if (how == NHC.TURNED_SLIME && !(cptr.ld1uo(cptr.add(cptr.add(svm, 16), NHC.PM_GREEN_SLIME, 12), 2) & NHM.G_GENOD) ? 1 : 0)
+    else if (how == NHC.TURNED_SLIME && !(cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, 12, 18) & NHM.G_GENOD) ? 1 : 0)
         cptr.stI32o(u, 2456, NHC.PM_GREEN_SLIME);
     if (how == NHC.QUIT) {
         cptr.stI32o(svk, 12, NHM.NO_KILLER_PREFIX);
@@ -939,15 +939,15 @@ function really_done(how) {
         keepdogs(1);
     if (bones_ok && taken ? 1 : 0)
         finish_paybill();
-    if ((bones_ok && cptr.ldI32o(u, 2456) == NHC.NON_PM ? 1 : 0) && !(cptr.ld1uo(cptr.add(cptr.add(svm, 16), cptr.ldI32o(u, 1808), 12), 2) & NHM.G_NOCORPSE) ? 1 : 0) {
+    if ((bones_ok && cptr.ldI32o(u, 2456) == NHC.NON_PM ? 1 : 0) && !(cptr.ld1uo2(svm, cptr.ldI32o(u, 1808), 12, 18) & NHM.G_NOCORPSE) ? 1 : 0) {
         let mnum = !(cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? cptr.ldI16o(gu, 368) : cptr.ldI32o(u, 1808);
-        let was_already_grave = ((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.GRAVE);
+        let was_already_grave = ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.GRAVE);
         corpse = mk_named_object(NHC.CORPSE, cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16o(u, 2), svp);
         void cptr.sprintf(cptr.decay(pbuf), __sl99, svp);
         formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, BigInt.asUintN(64, 256n - BigInt(Strlen_(cptr.decay(pbuf), __sl100, 1317) >>> 0)))), how, 1);
         make_grave(cptr.ldI16(u), cptr.ldI16o(u, 2), cptr.decay(pbuf));
-        if (((cptr.ld1so(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 4)) == NHC.GRAVE) && !was_already_grave ? 1 : 0)
-            cptr.stI32o(cptr.add(cptr.add(cptr.add(svl, 1680), cptr.ldI16(u), 756), cptr.ldI16o(u, 2), 36), 8, 1);
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.GRAVE) && !was_already_grave ? 1 : 0)
+            cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688, 1);
     }
     cptr.st1o(cptr.decay(pbuf), 0, 0, 1);
     {
@@ -964,8 +964,8 @@ function really_done(how) {
         if (deepest > 20)
             tmp += BigInt.asIntN(64, 1000n * BigInt(((deepest > 30) ? 10 : (deepest - 20) | 0)));
         cptr.stI64o(u, 2384, ((cptr.ldI64o(u, 2384)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, 2384)) + (tmp))) : 9223372036854775807n));
-        if (how == NHC.ASCENDED && cptr.ld1so(u, 2172) == cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1) ? 1 : 0) {
-            tmp = (cptr.ld1so(cptr.add(u, 2184), NHM.A_CURRENT, 1) == cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)) ? cptr.ldI64o(u, 2384) : (cptr.ldI64o(u, 2384) / 2n);
+        if (how == NHC.ASCENDED && cptr.ld1so(u, 2172) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184) ? 1 : 0) {
+            tmp = (cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184)) ? cptr.ldI64o(u, 2384) : (cptr.ldI64o(u, 2384) / 2n);
             cptr.stI64o(u, 2384, ((cptr.ldI64o(u, 2384)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, 2384)) + (tmp))) : 9223372036854775807n));
         }
     }
@@ -1021,7 +1021,7 @@ function really_done(how) {
         for (val = cptr.add(gv, 32); cptr.ldPtr(val); val = cptr.add(val, 1, 16))
             for (i = 0; i < cptr.ldI32o(val, 8); i++)
                 if (cptr.ldI64o(cptr.ldPtr(val), i, 16) != 0n) {
-                    tmp = BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtr(val), i, 16) * BigInt(cptr.ldI16o(cptr.add(objects, cptr.ldI32o(cptr.add(cptr.ldPtr(val), i, 16), 8), 120), 80)));
+                    tmp = BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtr(val), i, 16) * BigInt(cptr.ldI16o2(objects, cptr.ldI32o2(cptr.ldPtr(val), i, 16, 8), 120, 80)));
                     cptr.stI64o(u, 2384, ((cptr.ldI64o(u, 2384)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, 2384)) + (tmp))) : 9223372036854775807n));
                 }
         artifact_score(cptr.ldPtro(gi, 8), 1, endwin);
@@ -1054,11 +1054,11 @@ function really_done(how) {
         for (val = cptr.add(gv, 32); cptr.ldPtr(val); val = cptr.add(val, 1, 16)) {
             sort_valuables(cptr.ldPtr(val), cptr.ldI32o(val, 8));
             for (i = 0; i < cptr.ldI32o(val, 8) && !cptr.ldI32o(program_state, 4) ? 1 : 0; i++) {
-                let typ = cptr.ldI32o(cptr.add(cptr.ldPtr(val), i, 16), 8);
+                let typ = cptr.ldI32o2(cptr.ldPtr(val), i, 16, 8);
                 let count = cptr.ldI64o(cptr.ldPtr(val), i, 16);
                 if (count == 0n)
                     continue;
-                if (cptr.ld1so(cptr.add(objects, typ, 120), 70) != NHC.GEM_CLASS || typ <= NHC.LAST_REAL_GEM ? 1 : 0) {
+                if (cptr.ld1so2(objects, typ, 120, 70) != NHC.GEM_CLASS || typ <= NHC.LAST_REAL_GEM ? 1 : 0) {
                     otmp = mksobj(typ, 0, 0);
                     discover_object(cptr.ldI16o(otmp, 32), 1, 1, 0);
                     cptr.stI32o(otmp, 84, 1);
@@ -1066,7 +1066,7 @@ function really_done(how) {
                     if ((cptr.ldPtro((otmp), 208) && (cptr.ldPtr(cptr.ldPtro((otmp), 208))) ? 1 : 0))
                         free_oname(otmp);
                     cptr.stI64o(otmp, 40, count);
-                    void cptr.sprintf(cptr.decay(pbuf), __sl119, count, xname(otmp), BigInt.asIntN(64, count * BigInt(cptr.ldI16o(cptr.add(objects, typ, 120), 80))), currency(2n));
+                    void cptr.sprintf(cptr.decay(pbuf), __sl119, count, xname(otmp), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, 120, 80))), currency(2n));
                     obfree(otmp, null);
                 } else {
                     void cptr.sprintf(cptr.decay(pbuf), __sl120, count, (((count) == 1n) ? __sl44 : __sl118));
@@ -1201,7 +1201,7 @@ export function delayed_killer(id, format, killername) {
     }
     cptr.stI32o(k, 12, format);
     void cptr.strcpy(cptr.add(k, 16), killername ? killername : __sl44);
-    cptr.st1o(cptr.add(svk, 16), 0, 0, 1);
+    cptr.st1o2(svk, 0, 1, 16, 0);
 }
 
 /** C ref: end.c:1740 — @param {CInt} id @returns {CPtr} */

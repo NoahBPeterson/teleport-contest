@@ -1290,7 +1290,7 @@ function process_text_window(window, cw) {
             term_start_attr(attr);
             for (cp = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8), 1), linestart = 1; cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, 4, cptr.ldI16o(ttyDisplay, 4) + 1) < cptr.ldI16o(ttyDisplay, 2) ? 1 : 0; cp = cptr.add(cp, 1)) {
                 if (linestart) {
-                    if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_UTF8)) {
+                    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8)) {
                         g_putch(cptr.ld1s(cp));
                     } else if ((cptr.ld1s(cp) & 128) != 0) {
                         g_putch(cptr.ld1s(cp));
@@ -2089,9 +2089,9 @@ export function g_putch(in_ch) {
             return;
         }
     } while (0);
-    if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_UTF8)) {
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8)) {
         void putchar(ch);
-    } else if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_IBM) || (cptr.ld1so(iflags, 366) && (!(cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_DEC) || (in_ch & 127) < 96 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_IBM) || (cptr.ld1so(iflags, 366) && (!(cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_DEC) || (in_ch & 127) < 96 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
         void putchar(ch);
     } else if (ch & 128) {
         if (!GFlag || HE_resets_AS.v ? 1 : 0) {
@@ -2224,7 +2224,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         term_start_attr(NHM.ATR_INVERSE);
         inverse_on = 1;
     }
-    if ((((!glyphdone && (cptr.ldU64o(tty_procs, 24) & 131072n) ? 1 : 0) && (cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_UTF8) ? 1 : 0) && cptr.ldPtro(glyphinfo, 40) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8) ? 1 : 0) {
+    if ((((!glyphdone && (cptr.ldU64o(tty_procs, 24) & 131072n) ? 1 : 0) && (cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8) ? 1 : 0) && cptr.ldPtro(glyphinfo, 40) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8) ? 1 : 0) {
         g_pututf8(cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8));
         glyphdone = 1;
     }
@@ -2354,7 +2354,7 @@ export function tty_putmixed(window, attr, str) {
         return;
     }
     cptr.stI32o(ttyDisplay, 56, 1);
-    if ((cptr.ldU64o(windowprocs, 24) & 131072n) && (cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_UTF8) ? 1 : 0) {
+    if ((cptr.ldU64o(windowprocs, 24) & 131072n) && (cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8) ? 1 : 0) {
         mixed_to_utf8(cptr.decay(buf), 256n, str, utf8flag);
         if (cptr.ldI16o(cw, 4) == NHM.NHW_MESSAGE)
             cptr.stI32o(ttyDisplay, 52, utf8flag.v);
@@ -2553,13 +2553,13 @@ export function tty_status_init() {
     fieldorder = (num_rows != 3) ? cptr.decay(twolineorder) : cptr.decay(threelineorder);
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), i, NHC.BL_FLUSH, 40);
-        cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 4, NHM.NO_COLOR);
-        cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 8, NHM.ATR_NONE);
-        cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 12, cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 16, 0));
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 32, 0);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 33, 0);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 34, 0);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 35, 0);
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 4, NHM.NO_COLOR);
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 8, NHM.ATR_NONE);
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 12, cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 16, 0));
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 32, 0);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 33, 0);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 34, 0);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, 40, 35, 0);
         cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), i, 40), cptr.add(cptr.decay(tty_status[NHM.NOW]), i, 40), 40);
     }
     tty_condition_bits = 0n;
@@ -2600,9 +2600,9 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), fldidx, fldidx, 40);
         tty_condition_bits = cptr.ldI64(condptr);
         tty_colormasks = colormasks;
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 32, 1);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 33, 1);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 35, 1);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 32, 1);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 33, 1);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 35, 1);
         truncation_expected = 0;
         break;
         case NHC.BL_GOLD:
@@ -2614,31 +2614,31 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         fmt = cptr.ldPtro(status_fieldfmt, fldidx, 8);
         if (!fmt)
             fmt = __sl46;
-        if (cptr.ld1s(fmt) == 32 && ((fldidx == cptr.ldI32o(cptr.add(fieldorder, 0, 76), 0, 4) || fldidx == cptr.ldI32o(cptr.add(fieldorder, 1, 76), 0, 4) ? 1 : 0) || fldidx == cptr.ldI32o(cptr.add(fieldorder, 2, 76), 0, 4) ? 1 : 0) ? 1 : 0)
+        if (cptr.ld1s(fmt) == 32 && ((fldidx == cptr.ldI32o3(fieldorder, 0, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 1, 76, 0, 4, 0) ? 1 : 0) || fldidx == cptr.ldI32o3(fieldorder, 2, 76, 0, 4, 0) ? 1 : 0) ? 1 : 0)
             fmt = cptr.add(fmt, 1);
         void cptr.sprintf(cptr.ldPtro(status_vals, fldidx, 8), fmt, text);
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), fldidx, fldidx, 40);
-        cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 4, (color & 255));
-        cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 8, term_attr_fixup(attrmask));
-        cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24, cptr.strlen(cptr.ldPtro(status_vals, fldidx, 8)));
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 32, 1);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 33, 1);
-        cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 35, 1);
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 4, (color & 255));
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 8, term_attr_fixup(attrmask));
+        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24, cptr.strlen(cptr.ldPtro(status_vals, fldidx, 8)));
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 32, 1);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 33, 1);
+        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 35, 1);
         break;
     }
-    if (((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24) == 1n ? 1 : 0) && cptr.ld1so(cptr.ldPtro(status_vals, fldidx, 8), 0) == 32 ? 1 : 0) {
+    if (((fldidx >= 0 && fldidx < NHC.MAXBLSTATS ? 1 : 0) && cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24) == 1n ? 1 : 0) && cptr.ld1so(cptr.ldPtro(status_vals, fldidx, 8), 0) == 32 ? 1 : 0) {
         cptr.st1o(cptr.ldPtro(status_vals, fldidx, 8), 0, 0);
-        cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24, 0n);
+        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24, 0n);
     }
     switch (fldidx) {
         case NHC.BL_HP:
         if (cptr.ld1so(iflags, 372)) {
             hpbar_percent = percent;
             hpbar_crit_hp = critically_low_hp(1) ? 1 : 0;
-            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 4, (color & 255));
+            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, 4, (color & 255));
             attrmask = NHC.HL_INVERSE | (hpbar_crit_hp ? NHC.HL_BLINK : 0);
-            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 8, term_attr_fixup(attrmask));
-            cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 33, 1);
+            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, 8, term_attr_fixup(attrmask));
+            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, 33, 1);
         }
         break;
         case NHC.BL_LEVELDESC:
@@ -2646,21 +2646,21 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         // @FallThrough
         ;
         case NHC.BL_HUNGER:
-        if (cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24) > 0n) {
+        if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24) > 0n) {
             p = cptr.ldPtro(status_vals, fldidx, 8);
             for (lastchar = eos(p); cptr.cmp(lastchar, p) > 0 && cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32 ? 1 : 0; ) {
                 cptr.st1(lastchar, 0);
-                (cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24, cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24) + -1n)) - (-1n);
+                (cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24) + -1n)) - (-1n);
             }
         }
         break;
         case NHC.BL_TITLE:
         if (cptr.ld1so(iflags, 372))
-            cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24, 32n);
+            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24, 32n);
         break;
         case NHC.BL_GOLD:
         if ((p = cptr.strchr(cptr.ldPtro(status_vals, fldidx, 8), 92)) !== null && cptr.ld1so(p, 1) == 71 ? 1 : 0)
-            cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24, cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), fldidx, 40), 24) - 9n);
+            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, 40, 24) - 9n);
         break;
         case NHC.BL_CAP:
         enc_shrinklvl = 0;
@@ -2738,25 +2738,25 @@ function check_fields(forcefields, sz) {
         cptr.stI32o(sz, row, 0, 4);
         col = 1;
         update_right = 0;
-        for (i = 0; (idx = cptr.ldI32o(cptr.add(fieldorder, row, 76), i, 4)) != NHC.BL_FLUSH; ++i) {
+        for (i = 0; (idx = cptr.ldI32o3(fieldorder, row, 76, i, 4, 0)) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
                 continue;
-            if (!cptr.ld1so(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 32))
+            if (!cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 32))
                 valid = 0;
-            cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34, 0);
-            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 16, row);
-            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12, col);
-            if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12))) + cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24)) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 12))) + cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 24)))
+            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34, 0);
+            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 16, row);
+            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 12, col);
+            if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 12))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 24)) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 12))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 24)))
                 update_right = 1;
-            else if (cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24) != cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 24) || cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12) != cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 12) ? 1 : 0)
-                cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34, 1);
+            else if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 24) != cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 24) || cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 12) != cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 12) ? 1 : 0)
+                cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34, 1);
             else
                 update_right = 0;
             matchprev = 0;
-            if (((valid && !update_right ? 1 : 0) && !forcefields ? 1 : 0) && !cptr.ld1so(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34) ? 1 : 0) {
-                if (((do_field_opt && idx != NHC.BL_CONDITION ? 1 : 0) && (cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 4) == cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 4)) ? 1 : 0) && (cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 8) == cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), 8)) ? 1 : 0) {
+            if (((valid && !update_right ? 1 : 0) && !forcefields ? 1 : 0) && !cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34) ? 1 : 0) {
+                if (((do_field_opt && idx != NHC.BL_CONDITION ? 1 : 0) && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 4) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 4)) ? 1 : 0) && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 8) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, 40, 8)) ? 1 : 0) {
                     matchprev = 1;
-                    if (cptr.ld1so(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33)) {
+                    if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 33)) {
                         let ob;
                         let nb;
                         let cw = cptr.ldPtro(wins, WIN_STATUS.v, 8);
@@ -2775,9 +2775,9 @@ function check_fields(forcefields, sz) {
                     }
                 }
             }
-            if ((forcefields || update_right ? 1 : 0) || (cptr.ld1so(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33) && !matchprev ? 1 : 0) ? 1 : 0)
-                cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34, 1);
-            col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24)));
+            if ((forcefields || update_right ? 1 : 0) || (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 33) && !matchprev ? 1 : 0) ? 1 : 0)
+                cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34, 1);
+            col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 24)));
         }
         cptr.stI32o(sz, row, col, 4);
     }
@@ -2822,12 +2822,12 @@ function set_condition_length() {
     let lth = 0;
     if (tty_condition_bits) {
         for (c = 0; c < 30; ++c) {
-            mask = cptr.ldI64o(cptr.add(conditions, c, 48), 8);
+            mask = cptr.ldI64o2(conditions, c, 48, 8);
             if ((tty_condition_bits & mask) == mask)
-                lth = (lth + ((1 + Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(cptr.add(cptr.add(conditions, c, 48), 24), cond_shrinklvl, 8))))) | 0)) | 0;
+                lth = (lth + ((1 + Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro3(conditions, c, 48, cond_shrinklvl, 8, 24))))) | 0)) | 0;
         }
     }
-    cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40), 24, BigInt.asUintN(64, BigInt(lth)));
+    cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40, 24, BigInt.asUintN(64, BigInt(lth)));
 }
 
 /** C ref: wintty.c:4936 — @param {CInt} lvl */
@@ -2836,7 +2836,7 @@ function shrink_enc(lvl) {
         enc_shrinklvl = lvl;
         void cptr.sprintf(cptr.ldPtro(status_vals, NHC.BL_CAP, 8), __sl64, cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8));
     }
-    cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CAP, 40), 24, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_CAP, 8)));
+    cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CAP, 40, 24, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_CAP, 8)));
 }
 
 /** C ref: wintty.c:4947 — @param {CInt} lvl */
@@ -2848,7 +2848,7 @@ function shrink_dlvl(lvl) {
         void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __sl65 : __sl66);
         void cptr.strcat(cptr.decay(buf), levval);
         void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8), cptr.decay(buf));
-        cptr.stU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_LEVELDESC, 40), 24, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8)));
+        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_LEVELDESC, 40, 24, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8)));
     }
 }
 
@@ -2941,13 +2941,13 @@ function render_status() {
         } while (0);
         y = row;
         tty_curs(WIN_STATUS.v, 1, y);
-        for (i = 0; (idx = cptr.ldI32o(cptr.add(fieldorder, row, 76), i, 4)) != NHC.BL_FLUSH; ++i) {
+        for (i = 0; (idx = cptr.ldI32o3(fieldorder, row, 76, i, 4, 0)) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
                 continue;
-            x = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 12);
+            x = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 12);
             text = cptr.ldPtro(status_vals, idx, 8);
-            tlth = Number(BigInt.asIntN(32, cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24)));
-            if (cptr.ld1so(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34) || !do_field_opt ? 1 : 0) {
+            tlth = Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 24)));
+            if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34) || !do_field_opt ? 1 : 0) {
                 let hitpointbar = schar((idx == NHC.BL_TITLE && cptr.ld1so(iflags, 372) ? 1 : 0));
                 if (idx == NHC.BL_CONDITION) {
                     bits = tty_condition_bits;
@@ -2955,10 +2955,10 @@ function render_status() {
                         let cstart;
                         let last_col = Number(BigInt.asIntN(32, cptr.ldI64o(cw, 24)));
                         let dat = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, 80), y, 8), 0);
-                        if (cptr.ld1so(cptr.decay(status_activefields), NHC.BL_VERS, 1) && cptr.ldI32o(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4) == NHC.BL_VERS ? 1 : 0)
-                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40), 24)))) | 0;
-                        if ((cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 16) < row && x < cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12) ? 1 : 0) && (((cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
-                            cstart = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40), 12);
+                        if (cptr.ld1so(cptr.decay(status_activefields), NHC.BL_VERS, 1) && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_VERS ? 1 : 0)
+                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40, 24)))) | 0;
+                        if ((cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40, 16) < row && x < cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40, 12) ? 1 : 0) && (((cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40, 12) + tlth) | 0) < ((last_col - 1) | 0)) ? 1 : 0)
+                            cstart = cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, 40, 12);
                         else if (BigInt(((x + tlth) | 0)) < BigInt.asIntN(64, cptr.ldI64o(cw, 24) - 1n))
                             cstart = (last_col - tlth) | 0;
                         else
@@ -2968,13 +2968,13 @@ function render_status() {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < cstart);
-                            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40), 12, x);
+                            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40, 12, x);
                             tty_curs(WIN_STATUS.v, x, y);
                         }
                     }
                     for (c = 0; c < 30 && bits != 0n ? 1 : 0; ++c) {
                         ci = cptr.ldI32o(cond_idx, c, 4);
-                        mask = cptr.ldI64o(cptr.add(conditions, ci, 48), 8);
+                        mask = cptr.ldI64o2(conditions, ci, 48, 8);
                         if (bits & mask) {
                             let condtext;
                             tty_putstatusfield(__sl12, x++, y);
@@ -3000,7 +3000,7 @@ function render_status() {
                                 if (coloridx != NHM.NO_COLOR)
                                     term_start_color(coloridx);
                             }
-                            condtext = cptr.ldPtro(cptr.add(cptr.add(conditions, ci, 48), 24), cond_shrinklvl, 8);
+                            condtext = cptr.ldPtro3(conditions, ci, 48, cond_shrinklvl, 8, 24);
                             if (BigInt(x) >= cptr.ldI64o(cw, 24) && !truncation_expected ? 1 : 0) {
                                 impossible(__sl71, condtext);
                                 condtext = __sl2;
@@ -3065,8 +3065,8 @@ function render_status() {
                     }
                     tty_putstatusfield(__sl75, x++, y);
                     if (cptr.ld1s(cptr.decay(bar))) {
-                        coloridx = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 4);
-                        attrmask = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40), 8);
+                        coloridx = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, 4);
+                        attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, 8);
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
@@ -3117,21 +3117,21 @@ function render_status() {
                     }
                     tty_putstatusfield(__sl76, x++, y);
                 } else {
-                    if (idx == NHC.BL_VERS && cptr.ldI32o(cptr.add(fieldorder, row, 76), (i + 1) | 0, 4) == NHC.BL_FLUSH ? 1 : 0) {
+                    if (idx == NHC.BL_VERS && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_FLUSH ? 1 : 0) {
                         let vstart;
                         let dat = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, 80), y, 8), 0);
-                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40), 12))) + cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40), 24))));
-                        if ((i > 0 && cptr.ldI32o(cptr.add(fieldorder, row, 76), (i - 1) | 0, 4) == NHC.BL_CONDITION ? 1 : 0) && x != vx ? 1 : 0) {
+                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40, 12))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, 40, 24))));
+                        if ((i > 0 && cptr.ldI32o3(fieldorder, row, 76, (i - 1) | 0, 4, 0) == NHC.BL_CONDITION ? 1 : 0) && x != vx ? 1 : 0) {
                             x = vx;
                             tty_curs(WIN_STATUS.v, x, y);
                         }
-                        vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 24) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 24)))))));
+                        vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 24) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 24)))))));
                         if (x < vstart) {
                             do {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
                                     tty_putstatusfield(__sl12, x, y);
                             } while (++x < vstart);
-                            cptr.stI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40), 12, x);
+                            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40, 12, x);
                         }
                     }
                     if (cptr.ldI64o(iflags, 152)) {
@@ -3143,7 +3143,7 @@ function render_status() {
                             tty_putstatusfield(__sl77, x++, y);
                             text = cptr.add(text, 1);
                         }
-                        attrmask = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 8);
+                        attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 8);
                         do {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
@@ -3160,7 +3160,7 @@ function render_status() {
                                     term_start_attr(NHM.ATR_INVERSE);
                             }
                         } while (0);
-                        coloridx = cptr.ldI32o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 4);
+                        coloridx = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 4);
                         if (coloridx != NHM.NO_COLOR)
                             term_start_color(coloridx);
                     }
@@ -3191,9 +3191,9 @@ function render_status() {
                 x = (x + tlth) | 0;
             }
             cptr.stI32o(cptr.decay(finalx[row]), NHM.NOW, (x - 1) | 0, 4);
-            cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 33, 0);
-            cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 34, 0);
-            cptr.st1o(cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 35, 0);
+            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 33, 0);
+            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 34, 0);
+            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, 35, 0);
             cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, 40), cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, 40), 40);
         }
         x = cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4);

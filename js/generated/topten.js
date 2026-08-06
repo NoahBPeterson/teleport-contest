@@ -326,16 +326,16 @@ function readentry(rfile, tt) {
         if (cptr.ldI32o(tt, 40) < 3 || (cptr.ldI32o(tt, 40) == 3 && cptr.ldI32o(tt, 44) < 3 ? 1 : 0) ? 1 : 0) {
             let i;
             if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt32), cptr.add(tt, 76), cptr.add(tt, 84), cptr.decay(s1), cptr.decay(s2)) == 4) {
-                cptr.st1o(cptr.add(tt, 76), 1, cptr.st1o(cptr.add(tt, 84), 1, 0, 1), 1);
+                cptr.st1o2(tt, 1, 1, 76, cptr.st1o2(tt, 1, 1, 84, 0));
                 copynchars(cptr.add(tt, 92), cptr.decay(s1), 10);
                 copynchars(cptr.add(tt, 103), cptr.decay(s2), 100);
             } else
                 cptr.stI64o(tt, 8, 0n);
-            cptr.st1o(cptr.add(tt, 76), 1, 0, 1);
+            cptr.st1o2(tt, 1, 1, 76, 0);
             if ((i = str2role(cptr.add(tt, 76))) >= 0)
-                void cptr.strcpy(cptr.add(tt, 76), cptr.ldPtro(cptr.add(roles, i, 312), 184));
+                void cptr.strcpy(cptr.add(tt, 76), cptr.ldPtro2(roles, i, 312, 184));
             void cptr.strcpy(cptr.add(tt, 80), __sl16);
-            void cptr.strcpy(cptr.add(tt, 84), (cptr.ld1so(cptr.add(tt, 84), 0, 1) == 77) ? __sl17 : __sl18);
+            void cptr.strcpy(cptr.add(tt, 84), (cptr.ld1so2(tt, 0, 1, 84) == 77) ? __sl17 : __sl18);
             void cptr.strcpy(cptr.add(tt, 88), __sl16);
         } else if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt33), cptr.decay(s1), cptr.decay(s2), cptr.decay(s3), cptr.decay(s4), cptr.decay(s5), cptr.decay(s6)) == 6) {
             copynchars(cptr.add(tt, 76), cptr.decay(s1), 3);
@@ -364,7 +364,7 @@ const __static_writeentry_fmtX = cptr.bytes("%s,%s\n"); /** C ref: topten.c:307 
 function writeentry(rfile, tt) {
     void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32o(tt, 40), cptr.ldI32o(tt, 44), cptr.ldI32o(tt, 48), cptr.ldI64o(tt, 8), cptr.ldI32o(tt, 16), cptr.ldI32o(tt, 20), cptr.ldI32o(tt, 24), cptr.ldI32o(tt, 28), cptr.ldI32o(tt, 32), cptr.ldI32o(tt, 36), cptr.ldI64o(tt, 56), cptr.ldI64o(tt, 64), cptr.ldI32o(tt, 72));
     if (cptr.ldI32o(tt, 40) < 3 || (cptr.ldI32o(tt, 40) == 3 && cptr.ldI32o(tt, 44) < 3 ? 1 : 0) ? 1 : 0)
-        void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1so(cptr.add(tt, 76), 0, 1), cptr.ld1so(cptr.add(tt, 84), 0, 1));
+        void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1so2(tt, 0, 1, 76), cptr.ld1so2(tt, 0, 1, 84));
     else
         void fprintf(rfile, cptr.decay(__static_writeentry_fmt33), cptr.add(tt, 76), cptr.add(tt, 80), cptr.add(tt, 84), cptr.add(tt, 88));
     void fprintf(rfile, cptr.decay(__static_writeentry_fmtX), onlyspace(cptr.add(tt, 92)) ? __sl19 : cptr.add(tt, 92), cptr.add(tt, 103));
@@ -389,7 +389,7 @@ function writexlentry(rfile, tt, how) {
     void fprintf(rfile, __sl30, 9, encode_extended_achievements(cptr.decay(achbuf)));
     void fprintf(rfile, __sl31, 9, encode_extended_conducts(cptr.decay(buf)));
     void fprintf(rfile, __sl32, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64o(urealtime, 16)));
-    void fprintf(rfile, __sl33, 9, cptr.ldPtro(cptr.add(genders, cptr.ldI32o(flags, 152), 48), 32), 9, cptr.ldPtro(cptr.add(aligns, (1 - cptr.ld1so(cptr.add(u, 2184), NHM.A_ORIGINAL, 1)) | 0, 32), 16));
+    void fprintf(rfile, __sl33, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, 152), 48, 32), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184)) | 0, 32, 16));
     void fprintf(rfile, __sl34, 9, encodexlogflags());
     void fprintf(rfile, __sl35, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, 8)) + hidden_gold(1)));
     void fprintf(rfile, __sl36, 9, cptr.ldI64o(u, 2040));
@@ -454,8 +454,8 @@ function encodeachieve(secondlong) {
     let offset;
     let r = 0n;
     offset = secondlong ? 31 : 0;
-    for (i = 0; cptr.ld1so(cptr.add(u, 2822), i, 1); ++i) {
-        achidx = (cptr.ld1so(cptr.add(u, 2822), i, 1) - offset) | 0;
+    for (i = 0; cptr.ld1so2(u, i, 1, 2822); ++i) {
+        achidx = (cptr.ld1so2(u, i, 1, 2822) - offset) | 0;
         if (achidx > 0 && achidx < 32 ? 1 : 0)
             r |= 1n << BigInt(((achidx - 1) | 0));
     }
@@ -480,8 +480,8 @@ function encode_extended_achievements(buf) {
     let achidx;
     let absidx;
     cptr.st1o(buf, 0, 0);
-    for (i = 0; cptr.ld1so(cptr.add(u, 2822), i, 1); i++) {
-        achidx = cptr.ld1so(cptr.add(u, 2822), i, 1);
+    for (i = 0; cptr.ld1so2(u, i, 1, 2822); i++) {
+        achidx = cptr.ld1so2(u, i, 1, 2822);
         absidx = Math.abs(achidx);
         switch (absidx) {
             case NHC.ACH_UWIN:
@@ -644,8 +644,8 @@ export function topten(how, when) {
         cptr.stI32o(t0, 72, uid);
         copynchars(cptr.add(t0, 76), cptr.ldPtro(gu, 192), 3);
         copynchars(cptr.add(t0, 80), cptr.ldPtro(gu, 344), 3);
-        copynchars(cptr.add(t0, 84), cptr.ldPtro(cptr.add(genders, cptr.ld1so(flags, 13), 48), 32), 3);
-        copynchars(cptr.add(t0, 88), cptr.ldPtro(cptr.add(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32), 16), 3);
+        copynchars(cptr.add(t0, 84), cptr.ldPtro2(genders, cptr.ld1so(flags, 13), 48, 32), 3);
+        copynchars(cptr.add(t0, 88), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32, 16), 3);
         copynchars(cptr.add(t0, 92), svp, 10);
         formatkiller(cptr.add(t0, 103), 101, how, 1);
         cptr.stI64o(t0, 64, yyyymmdd(ubirthday.v));
@@ -837,10 +837,10 @@ function outentry(rank, t1, so) {
         void cptr.strcat(cptr.decay(linebuf), __sl103);
     void cptr.sprintf(eos(cptr.decay(linebuf)), __sl104, cptr.ldI64o(t1, 8) ? cptr.ldI64o(t1, 8) : cptr.ldI64o(u, 2384), cptr.add(t1, 92));
     void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 76));
-    if (cptr.ld1so(cptr.add(t1, 80), 0, 1) != 63)
+    if (cptr.ld1so2(t1, 0, 1, 80) != 63)
         void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 80));
     void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, 84));
-    if (cptr.ld1so(cptr.add(t1, 88), 0, 1) != 63)
+    if (cptr.ld1so2(t1, 0, 1, 88) != 63)
         void cptr.sprintf(eos(cptr.decay(linebuf)), __sl106, cptr.add(t1, 88));
     else
         void cptr.strcat(cptr.decay(linebuf), __sl63);
@@ -850,7 +850,7 @@ function outentry(rank, t1, so) {
             cptr.st1(bp, schar(((cptr.ldI32o(t1, 16) == cptr.ldI16((cptr.add(svd, 1868)))) ? 0 : 32)));
         second_line = 0;
     } else if (!cptr.strncmp(__sl41, cptr.add(t1, 103), 8n)) {
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl110, (cptr.ld1so(cptr.add(t1, 84), 0, 1) == 70) ? __sl111 : __sl14);
+        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl110, (cptr.ld1so2(t1, 0, 1, 84) == 70) ? __sl111 : __sl14);
         second_line = 0;
     } else {
         if (!cptr.strncmp(cptr.add(t1, 103), __sl112, 4n)) {
@@ -860,7 +860,7 @@ function outentry(rank, t1, so) {
             void cptr.strcat(cptr.decay(linebuf), __sl114);
             second_line = 0;
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl115, 6n)) {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl116, (cptr.ld1so(cptr.add(t1, 84), 0, 1) == 70) ? __sl117 : __sl118);
+            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl116, (cptr.ld1so2(t1, 0, 1, 84) == 70) ? __sl117 : __sl118);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl119, 8n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl120);
         } else if (!cptr.strncmp(cptr.add(t1, 103), __sl121, 7n)) {
@@ -974,7 +974,7 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
             if (((cptr.ld1so(arg, 1) == 112 && str2role(nxt) == str2role(cptr.add(t1, 76)) ? 1 : 0) || (cptr.ld1so(arg, 1) == 114 && str2race(nxt) == str2race(cptr.add(t1, 80)) ? 1 : 0) ? 1 : 0) || (cptr.ld1so(arg, 1) == 117 && (!strcmp(nxt, __sl148) || !cptr.strncmp(cptr.add(t1, 92), nxt, 10n) ? 1 : 0) ? 1 : 0) ? 1 : 0)
                 return 1;
             i++;
-        } else if (((!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, 92), arg, 10n) ? 1 : 0) || ((cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == cptr.ld1so(cptr.add(t1, 76), 0, 1) ? 1 : 0) && !cptr.ld1so(arg, 2) ? 1 : 0) ? 1 : 0) || (digit(cptr.ld1so(arg, 0)) && rank <= atoi(arg) ? 1 : 0) ? 1 : 0)
+        } else if (((!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, 92), arg, 10n) ? 1 : 0) || ((cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == cptr.ld1so2(t1, 0, 1, 76) ? 1 : 0) && !cptr.ld1so(arg, 2) ? 1 : 0) ? 1 : 0) || (digit(cptr.ld1so(arg, 0)) && rank <= atoi(arg) ? 1 : 0) ? 1 : 0)
             return 1;
     }
     return 0;
@@ -1103,9 +1103,9 @@ export function prscore(argc, argv) {
 function classmon(plch) {
     let i;
     for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
-        if (!cptr.strncmp(plch, cptr.ldPtro(cptr.add(roles, i, 312), 184), 3n)) {
-            if (cptr.ldI16o(cptr.add(roles, i, 312), 208) != NHC.NON_PM)
-                return cptr.ldI16o(cptr.add(roles, i, 312), 208);
+        if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, 312, 184), 3n)) {
+            if (cptr.ldI16o2(roles, i, 312, 208) != NHC.NON_PM)
+                return cptr.ldI16o2(roles, i, 312, 208);
             else
                 return NHC.PM_HUMAN;
         }
@@ -1160,9 +1160,9 @@ export function tt_oname(otmp) {
     if (!tt)
         return null;
     set_corpsenm(otmp, classmon(cptr.add(tt, 76)));
-    if (cptr.ld1so(cptr.add(tt, 84), 0, 1) == 70)
+    if (cptr.ld1so2(tt, 0, 1, 84) == 70)
         cptr.st1o(otmp, 48, NHM.CORPSTAT_FEMALE);
-    else if (cptr.ld1so(cptr.add(tt, 84), 0, 1) == 77)
+    else if (cptr.ld1so2(tt, 0, 1, 84) == 77)
         cptr.st1o(otmp, 48, NHM.CORPSTAT_MALE);
     otmp = oname(otmp, cptr.add(tt, 92), NHM.ONAME_NO_FLAGS);
     return otmp;
@@ -1175,9 +1175,9 @@ export function tt_doppel(mon) {
     if (!tt)
         ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
-        if (cptr.ld1so(cptr.add(tt, 84), 0, 1) == 70)
+        if (cptr.ld1so2(tt, 0, 1, 84) == 70)
             cptr.stI32o(mon, 84, 1);
-        else if (cptr.ld1so(cptr.add(tt, 84), 0, 1) == 77)
+        else if (cptr.ld1so2(tt, 0, 1, 84) == 77)
             cptr.stI32o(mon, 84, 0);
         ret = classmon(cptr.add(tt, 76));
         if (canseemon(mon))

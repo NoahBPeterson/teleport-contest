@@ -279,29 +279,29 @@ export function init_symbols() {
 export function init_showsyms() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o(cptr.add(gs, 680), (i + NHM.SYM_OFF_P) | 0, cptr.ld1uo(defsyms, i, 24), 1);
+        cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, 680, cptr.ld1uo(defsyms, i, 24));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o(cptr.add(gs, 680), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, uchar(cptr.ld1so(def_oc_syms, i, 24)), 1);
+        cptr.st1o2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, 680, uchar(cptr.ld1so(def_oc_syms, i, 24)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o(cptr.add(gs, 680), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, uchar(cptr.ld1so(def_monsyms, i, 24)), 1);
+        cptr.st1o2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, 680, uchar(cptr.ld1so(def_monsyms, i, 24)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o(cptr.add(gs, 680), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, cptr.ld1uo(def_warnsyms, i, 24), 1);
+        cptr.st1o2(gs, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, 680, cptr.ld1uo(def_warnsyms, i, 24));
     for (i = 0; i < NHC.MAXOTHER; i++)
-        cptr.st1o(cptr.add(gs, 680), (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.PRIMARYSET), 1);
+        cptr.st1o2(gs, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, 680, get_othersym(i, NHC.PRIMARYSET));
 }
 
 /** C ref: symbols.c:113 */
 export function init_ov_rogue_symbols() {
     let i;
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-        cptr.st1o(cptr.add(go, 284), i, 0, 1);
+        cptr.st1o2(go, i, 1, 284, 0);
 }
 
 /** C ref: symbols.c:122 */
 export function init_ov_primary_symbols() {
     let i;
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-        cptr.st1o(cptr.add(go, 88), i, 0, 1);
+        cptr.st1o2(go, i, 1, 88, 0);
 }
 
 /** C ref: symbols.c:131 — @param {CInt} idx @param {CInt} which_set @returns {*} */
@@ -309,9 +309,9 @@ export function get_othersym(idx, which_set) {
     let sym = 0;
     let oidx = (idx + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0;
     if (which_set == NHC.ROGUESET)
-        sym = uchar((cptr.ld1uo(cptr.add(go, 284), oidx, 1) ? cptr.ld1uo(cptr.add(go, 284), oidx, 1) : cptr.ld1uo(gr, oidx, 1)));
+        sym = uchar((cptr.ld1uo2(go, oidx, 1, 284) ? cptr.ld1uo2(go, oidx, 1, 284) : cptr.ld1uo(gr, oidx, 1)));
     else
-        sym = uchar((cptr.ld1uo(cptr.add(go, 88), oidx, 1) ? cptr.ld1uo(cptr.add(go, 88), oidx, 1) : cptr.ld1uo(cptr.add(gp, 29), oidx, 1)));
+        sym = uchar((cptr.ld1uo2(go, oidx, 1, 88) ? cptr.ld1uo2(go, oidx, 1, 88) : cptr.ld1uo2(gp, oidx, 1, 29)));
     if (!sym) {
         switch (idx) {
             case NHC.SYM_NOTHING:
@@ -333,15 +333,15 @@ export function get_othersym(idx, which_set) {
 export function init_primary_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o(cptr.add(gp, 29), (i + NHM.SYM_OFF_P) | 0, cptr.ld1uo(defsyms, i, 24), 1);
+        cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, 29, cptr.ld1uo(defsyms, i, 24));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o(cptr.add(gp, 29), (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, uchar(cptr.ld1so(def_oc_syms, i, 24)), 1);
+        cptr.st1o2(gp, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, 29, uchar(cptr.ld1so(def_oc_syms, i, 24)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o(cptr.add(gp, 29), (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, uchar(cptr.ld1so(def_monsyms, i, 24)), 1);
+        cptr.st1o2(gp, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, 29, uchar(cptr.ld1so(def_monsyms, i, 24)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o(cptr.add(gp, 29), (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, cptr.ld1uo(def_warnsyms, i, 24), 1);
+        cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, 29, cptr.ld1uo(def_warnsyms, i, 24));
     for (i = 0; i < NHC.MAXOTHER; i++)
-        cptr.st1o(cptr.add(gp, 29), (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.PRIMARYSET), 1);
+        cptr.st1o2(gp, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, 29, get_othersym(i, NHC.PRIMARYSET));
     clear_symsetentry(NHC.PRIMARYSET, 0);
 }
 
@@ -361,7 +361,7 @@ export function init_rogue_symbols() {
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o(gr, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.ROGUESET), 1);
     clear_symsetentry(NHC.ROGUESET, 0);
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), NHC.ROGUESET, 48), 32, 1);
+    cptr.stI32o2(gs, NHC.ROGUESET, 48, 232, 1);
 }
 
 /** C ref: symbols.c:217 — @param {CInt} whichset */
@@ -370,13 +370,13 @@ export function assign_graphics(whichset) {
     switch (whichset) {
         case NHC.ROGUESET:
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o(cptr.add(gs, 680), i, uchar((cptr.ld1uo(cptr.add(go, 284), i, 1) ? cptr.ld1uo(cptr.add(go, 284), i, 1) : cptr.ld1uo(gr, i, 1))), 1);
+            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 284) ? cptr.ld1uo2(go, i, 1, 284) : cptr.ld1uo(gr, i, 1))));
         cptr.stI32o(gc, 428, NHC.ROGUESET);
         break;
         case NHC.PRIMARYSET:
         default:
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o(cptr.add(gs, 680), i, uchar((cptr.ld1uo(cptr.add(go, 88), i, 1) ? cptr.ld1uo(cptr.add(go, 88), i, 1) : cptr.ld1uo(cptr.add(gp, 29), i, 1))), 1);
+            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 88) ? cptr.ld1uo2(go, i, 1, 88) : cptr.ld1uo2(gp, i, 1, 29))));
         cptr.stI32o(gc, 428, NHC.PRIMARYSET);
         break;
     }
@@ -388,10 +388,10 @@ export function switch_symbols(nondefault) {
     let i;
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o(cptr.add(gs, 680), i, uchar((cptr.ld1uo(cptr.add(go, 88), i, 1) ? cptr.ld1uo(cptr.add(go, 88), i, 1) : cptr.ld1uo(cptr.add(gp, 29), i, 1))), 1);
-        if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_DEC) && decgraphics_mode_callback.v ? 1 : 0)
+            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 88) ? cptr.ld1uo2(go, i, 1, 88) : cptr.ld1uo2(gp, i, 1, 29))));
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_DEC) && decgraphics_mode_callback.v ? 1 : 0)
             (decgraphics_mode_callback.v)();
-        if ((cptr.ldI32o(cptr.add(cptr.add(gs, 200), cptr.ldI32o(gc, 428), 48), 28) == NHC.H_UTF8) && utf8graphics_mode_callback.v ? 1 : 0)
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8) && utf8graphics_mode_callback.v ? 1 : 0)
             (utf8graphics_mode_callback.v)();
     } else {
         init_primary_symbols();
@@ -401,17 +401,17 @@ export function switch_symbols(nondefault) {
 
 /** C ref: symbols.c:295 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_primary_symset(symp, val) {
-    cptr.st1o(cptr.add(go, 88), cptr.ldI32o(symp, 4), uchar(val), 1);
+    cptr.st1o2(go, cptr.ldI32o(symp, 4), 1, 88, uchar(val));
 }
 
 /** C ref: symbols.c:301 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_rogue_symset(symp, val) {
-    cptr.st1o(cptr.add(go, 284), cptr.ldI32o(symp, 4), uchar(val), 1);
+    cptr.st1o2(go, cptr.ldI32o(symp, 4), 1, 284, uchar(val));
 }
 
 /** C ref: symbols.c:307 — @param {CPtr} symp @param {CInt} val */
 export function update_primary_symset(symp, val) {
-    cptr.st1o(cptr.add(gp, 29), cptr.ldI32o(symp, 4), uchar(val), 1);
+    cptr.st1o2(gp, cptr.ldI32o(symp, 4), 1, 29, uchar(val));
 }
 
 /** C ref: symbols.c:313 — @param {CPtr} symp @param {CInt} val */
@@ -422,20 +422,20 @@ export function update_rogue_symset(symp, val) {
 /** C ref: symbols.c:319 — @param {CInt} which_set @param {CInt} name_too */
 export function clear_symsetentry(which_set, name_too) {
     let other_set = (which_set == NHC.PRIMARYSET) ? NHC.ROGUESET : NHC.PRIMARYSET;
-    let old_handling = cptr.ldI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28);
-    if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 16))
-        cptr.free(cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 16));
-    cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 16, null);
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28, NHC.H_UNK);
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 32, 0);
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 36, 0);
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 40, 0);
+    let old_handling = cptr.ldI32o2(gs, which_set, 48, 228);
+    if (cptr.ldPtro2(gs, which_set, 48, 216))
+        cptr.free(cptr.ldPtro2(gs, which_set, 48, 216));
+    cptr.stPtro2(gs, which_set, 48, 216, null);
+    cptr.stI32o2(gs, which_set, 48, 228, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, 48, 232, 0);
+    cptr.stI32o2(gs, which_set, 48, 236, 0);
+    cptr.stI32o2(gs, which_set, 48, 240, 0);
     if (name_too) {
-        if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8))
-            cptr.free(cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8));
-        cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8, null);
+        if (cptr.ldPtro2(gs, which_set, 48, 208))
+            cptr.free(cptr.ldPtro2(gs, which_set, 48, 208));
+        cptr.stPtro2(gs, which_set, 48, 208, null);
     }
-    if (old_handling == NHC.H_UTF8 && cptr.ldI32o(cptr.add(cptr.add(gs, 200), other_set, 48), 28) != NHC.H_UTF8 ? 1 : 0)
+    if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, 48, 228) != NHC.H_UTF8 ? 1 : 0)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
@@ -1110,7 +1110,7 @@ export function parse_sym_line(buf, which_set) {
         return 0;
     }
     if (symp) {
-        if (!cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8)) {
+        if (!cptr.ldPtro2(gs, which_set, 48, 208)) {
             if (cptr.ldI32(symp) == NHC.SYM_CONTROL) {
                 let tmpsp;
                 let lastsp;
@@ -1172,7 +1172,7 @@ export function parse_sym_line(buf, which_set) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) == NHC.SYM_CONTROL ? 1 : 0) {
             switch (cptr.ldI32o(symp, 4)) {
                 case 0:
-                if (!strncmpi((bufp), (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8)), -1)) {
+                if (!strncmpi((bufp), (cptr.ldPtro2(gs, which_set, 48, 208)), -1)) {
                     cptr.st1o(gc, 456, 1);
                     if (which_set == NHC.ROGUESET)
                         init_rogue_symbols();
@@ -1193,9 +1193,9 @@ export function parse_sym_line(buf, which_set) {
                 if (cptr.ld1so(gc, 456)) {
                     if (bufp) {
                         if ((!strncmpi((bufp), (__sl205), -1) || !strncmpi((bufp), (__sl206), -1) ? 1 : 0) || !strncmpi((bufp), (__sl207), -1) ? 1 : 0)
-                            cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 32, 0);
+                            cptr.stI32o2(gs, which_set, 48, 232, 0);
                         else if ((!strncmpi((bufp), (__sl208), -1) || !strncmpi((bufp), (__sl209), -1) ? 1 : 0) || !strncmpi((bufp), (__sl210), -1) ? 1 : 0)
-                            cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 32, 1);
+                            cptr.stI32o2(gs, which_set, 48, 232, 1);
                     }
                 }
                 break;
@@ -1206,10 +1206,10 @@ export function parse_sym_line(buf, which_set) {
                         if (!strncmpi((cptr.ldPtro(known_restrictions, n, 8)), (bufp), -1)) {
                             switch (n) {
                                 case 0:
-                                cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 36, 1);
+                                cptr.stI32o2(gs, which_set, 48, 236, 1);
                                 break;
                                 case 1:
-                                cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 40, 1);
+                                cptr.stI32o2(gs, which_set, 48, 240, 1);
                                 break;
                             }
                             break;
@@ -1220,7 +1220,7 @@ export function parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
-            if (cptr.ldI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28) != NHC.H_UTF8) {
+            if (cptr.ldI32o2(gs, which_set, 48, 228) != NHC.H_UTF8) {
                 if (cptr.ld1so(gc, 456)) {
                     val = sym_val(bufp);
                     if (which_set == NHC.PRIMARYSET) {
@@ -1244,10 +1244,10 @@ export function parse_sym_line(buf, which_set) {
 /** C ref: symbols.c:657 — @param {CPtr} handling @param {CInt} which_set */
 export function set_symhandling(handling, which_set) {
     let i = 0;
-    cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, 48, 228, NHC.H_UNK);
     while (cptr.ldPtro(known_handling, i, 8)) {
         if (!strncmpi((cptr.ldPtro(known_handling, i, 8)), (handling), -1)) {
-            cptr.stI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28, i);
+            cptr.stI32o2(gs, which_set, 48, 228, i);
             return;
         }
         i++;
@@ -1257,9 +1257,9 @@ export function set_symhandling(handling, which_set) {
 /** C ref: symbols.c:673 — @param {CPtr} s @param {CInt} which_set @returns {CInt} */
 export function load_symset(s, which_set) {
     clear_symsetentry(which_set, 1);
-    if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8))
-        cptr.free(cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8));
-    cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8, dupstr(s));
+    if (cptr.ldPtro2(gs, which_set, 48, 208))
+        cptr.free(cptr.ldPtro2(gs, which_set, 48, 208));
+    cptr.stPtro2(gs, which_set, 48, 208, dupstr(s));
     if (read_sym_file(which_set)) {
         switch_symbols(1);
         apply_customizations(cptr.ldI32o(gc, 428), (NHC.do_custom_symbols | NHC.do_custom_colors));
@@ -1386,7 +1386,7 @@ export function parsesymbols(opts, which_set) {
         return 0;
     if (symp) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) != NHC.SYM_CONTROL ? 1 : 0) {
-            if (cptr.ldI32o(cptr.add(cptr.add(gs, 200), which_set, 48), 28) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43 ? 1 : 0) ? 1 : 0) {
+            if (cptr.ldI32o2(gs, which_set, 48, 228) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43 ? 1 : 0) ? 1 : 0) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
                 nh_snprintf(__sl214, 836, cptr.decay(buf), 256n, __sl215, opts, strval);
@@ -1451,7 +1451,7 @@ export function match_sym(buf) {
         if ((len >= cptr.strlen(cptr.ldPtro(__static_match_sym_alternates, i, 16))) && !strncmpi(buf, cptr.ldPtro(__static_match_sym_alternates, i, 16), Number(BigInt.asIntN(32, len))) ? 1 : 0) {
             sp = loadsyms;
             while (cptr.ldI32(sp)) {
-                if (!strcmp(cptr.ldPtro(cptr.add(__static_match_sym_alternates, i, 16), 8), cptr.ldPtro(sp, 8)))
+                if (!strcmp(cptr.ldPtro2(__static_match_sym_alternates, i, 16, 8), cptr.ldPtro(sp, 8)))
                     return sp;
                 sp = cptr.add(sp, 1, 16);
             }
@@ -1480,10 +1480,10 @@ export function do_symset(rogueflag) {
     let clr = NHM.NO_COLOR;
     which_set = rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET;
     cptr.stPtro(gs, 952, null);
-    symset_name = cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8);
-    cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8, null);
+    symset_name = cptr.ldPtro2(gs, which_set, 48, 208);
+    cptr.stPtro2(gs, which_set, 48, 208, null);
     res = read_sym_file(which_set);
-    cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8, symset_name);
+    cptr.stPtro2(gs, which_set, 48, 208, symset_name);
     if (res && cptr.ldPtro(gs, 952) ? 1 : 0) {
         let thissize;
         let biggest = 15;
@@ -1545,7 +1545,7 @@ export function do_symset(rogueflag) {
                     break;
             if (sl) {
                 clear_symsetentry(which_set, 1);
-                cptr.stPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8, dupstr(cptr.ldPtro(sl, 8)));
+                cptr.stPtro2(gs, which_set, 48, 208, dupstr(cptr.ldPtro(sl, 8)));
                 ready_to_switch = 1;
             }
         } else if (chosen == -1) {
@@ -1573,7 +1573,7 @@ export function do_symset(rogueflag) {
         init_rogue_symbols();
     else
         init_primary_symbols();
-    if (cptr.ldPtro(cptr.add(cptr.add(gs, 200), which_set, 48), 8)) {
+    if (cptr.ldPtro2(gs, which_set, 48, 208)) {
         let ok;
         if (!glyphid_cache_status()) {
             fill_glyphid_cache();

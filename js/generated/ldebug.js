@@ -69,7 +69,7 @@ function getbaseline(f, pc, basepc) {
         while (((i + 1) | 0) < cptr.ldI32o(f, 40) && pc >= cptr.ldI32o(cptr.ldPtro(f, 96), (i + 1) | 0, 8) ? 1 : 0)
             i++;
         cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
-        return cptr.ldI32o(cptr.add(cptr.ldPtro(f, 96), i, 8), 4);
+        return cptr.ldI32o2(cptr.ldPtro(f, 96), i, 8, 4);
     }
 }
 
@@ -678,7 +678,7 @@ function funcnamefromcode(L, p, pc, name) {
         default:
         return null;
     }
-    cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtro(cptr.add((cptr.ldPtro(L, 24)), 280), tm, 8)), 24)), 2));
+    cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtro2((cptr.ldPtro(L, 24)), tm, 8, 280)), 24)), 2));
     return __sl17;
 }
 
@@ -712,7 +712,7 @@ function getupvalname(ci, o, name) {
     let c = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
     let i;
     for (i = 0; i < cptr.ld1uo(c, 10); i++) {
-        if (cptr.eq(cptr.ldPtro(cptr.ldPtro(cptr.add(c, 32), i, 8), 16), o)) {
+        if (cptr.eq(cptr.ldPtro(cptr.ldPtro2(c, i, 8, 32), 16), o)) {
             cptr.stPtr(name, upvalname(cptr.ldPtro(c, 24), i));
             return cptr.decay(strupval);
         }

@@ -198,7 +198,7 @@ export function dosave0() {
         if ((cptr.ldI32o(iflags, 408) & 1))
             cptr.stI32o(u, 1868, 1), cptr.stI32o(iflags, 408, 0);
         done_object_cleanup();
-        if (!cptr.ldI32o(program_state, 16) || !cptr.ld1so(cptr.add(gs, 884), 0, 1) ? 1 : 0)
+        if (!cptr.ldI32o(program_state, 16) || !cptr.ld1so2(gs, 0, 1, 884) ? 1 : 0)
             break __lbl_done;
         fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
         sethanguphandler(1);
@@ -252,7 +252,7 @@ export function dosave0() {
         for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v++) {
             if (ltmp.v == ledger_no(cptr.add(gu, 432)))
                 continue;
-            if (!(cptr.ld1uo(cptr.add(svl, 89208), ltmp.v, 1) & NHM.LFILE_EXISTS))
+            if (!(cptr.ld1uo2(svl, ltmp.v, 1, 89208) & NHM.LFILE_EXISTS))
                 continue;
             onhfp = open_levelfile(ltmp.v, cptr.decay(whynot));
             if (!onhfp) {
@@ -476,7 +476,7 @@ function savelev_core(nhfp, lev) {
             if (cptr.ldPtr(go))
                 dobjsfree();
             if (lev.v >= 0 && lev.v <= maxledgerno() ? 1 : 0)
-                cptr.st1o(cptr.add(svl, 89208), lev.v, cptr.ld1uo(cptr.add(svl, 89208), lev.v, 1) | NHM.VISITED, 1);
+                cptr.st1o2(svl, lev.v, 1, 89208, cptr.ld1uo2(svl, lev.v, 1, 89208) | NHM.VISITED);
             sfo_int(nhfp, svh, __sl31);
             sfo_xint8(nhfp, lev, __sl36);
             ;
@@ -895,7 +895,7 @@ export function store_plname_in_file(nhfp) {
     let hero = new Uint8Array(49);
     let plsiztmp = cptr.box(49);
     void __builtin___memset_chk(cptr.decay(hero), 0, 49n, __builtin_object_size(cptr.decay(hero), 0));
-    nh_snprintf(__sl81, 1010, cptr.decay(hero), 49n, __sl82, svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro(cptr.add(genders, cptr.ld1so(flags, 13), 48), 32), cptr.ldPtro(cptr.add(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32), 16));
+    nh_snprintf(__sl81, 1010, cptr.decay(hero), 49n, __sl82, svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro2(genders, cptr.ld1so(flags, 13), 48, 32), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, 2172)) | 0, 32, 16));
     cptr.st1o(cptr.decay(hero), cptr.strlen(svp), 0, 1);
     (__builtin_expect(BigInt((!(cptr.ld1so(cptr.decay(hero), 47, 1) == 0))), 0n) ? __assert_rtn(__sl81, __sl83, 1017, __sl84) : void 0);
     cptr.st1o(cptr.decay(hero), 48, schar((cptr.ld1so(flags, 10) ? 68 : (cptr.ld1so(flags, 12) ? 88 : 45))), 1);

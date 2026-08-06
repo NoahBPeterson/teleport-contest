@@ -142,7 +142,7 @@ function registerlocalvar(ls, fs, varname) {
     while (oldsize < cptr.ldI32o(f, 36))
         cptr.stPtro(cptr.ldPtro(f, 104), oldsize++, null, 16);
     cptr.stPtro(cptr.ldPtro(f, 104), cptr.ldI16o(fs, 64), varname, 16);
-    cptr.stI32o(cptr.add(cptr.ldPtro(f, 104), cptr.ldI16o(fs, 64), 16), 8, cptr.ldI32o(fs, 32));
+    cptr.stI32o2(cptr.ldPtro(f, 104), cptr.ldI16o(fs, 64), 16, 8, cptr.ldI32o(fs, 32));
     ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((varname), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((f)))), ((((varname))))) : (void 0));
     return (cptr.stI16o(fs, 64, cptr.ldI16o(fs, 64) + 1)) - (1);
 }
@@ -208,7 +208,7 @@ function check_readonly(ls, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
         {
-            varname = cptr.ldPtro(cptr.add(cptr.ldPtr(cptr.ldPtro(ls, 88)), cptr.ldI32o(e, 8), 24), 16);
+            varname = cptr.ldPtro2(cptr.ldPtr(cptr.ldPtro(ls, 88)), cptr.ldI32o(e, 8), 24, 16);
             break;
         }
         case NHC.VLOCAL:
@@ -291,7 +291,7 @@ function newupvalue(fs, name, v) {
     } else {
         cptr.st1o(up, 8, 0);
         cptr.st1o(up, 9, (uchar(((cptr.ldI32o(v, 8))))));
-        cptr.st1o(up, 10, cptr.ld1uo(cptr.add(cptr.ldPtro(cptr.ldPtr(prev), 80), cptr.ldI32o(v, 8), 16), 10));
+        cptr.st1o(up, 10, cptr.ld1uo2(cptr.ldPtro(cptr.ldPtr(prev), 80), cptr.ldI32o(v, 8), 16, 10));
         (void 0);
     }
     cptr.stPtr(up, name);
@@ -430,10 +430,10 @@ function newlabelentry(ls, l, name, line, pc) {
     let n = cptr.ldI32o(l, 8);
     (cptr.stPtr(l, ((luaM_growaux_(cptr.ldPtro(ls, 56), cptr.ldPtr(l), n, cptr.add(l, 12), 24, 32767, __sl9)))));
     cptr.stPtro(cptr.ldPtr(l), n, name, 24);
-    cptr.stI32o(cptr.add(cptr.ldPtr(l), n, 24), 12, line);
-    cptr.st1o(cptr.add(cptr.ldPtr(l), n, 24), 16, cptr.ld1uo(cptr.ldPtro(ls, 48), 66));
-    cptr.st1o(cptr.add(cptr.ldPtr(l), n, 24), 17, 0);
-    cptr.stI32o(cptr.add(cptr.ldPtr(l), n, 24), 8, pc);
+    cptr.stI32o2(cptr.ldPtr(l), n, 24, 12, line);
+    cptr.st1o2(cptr.ldPtr(l), n, 24, 16, cptr.ld1uo(cptr.ldPtro(ls, 48), 66));
+    cptr.st1o2(cptr.ldPtr(l), n, 24, 17, 0);
+    cptr.stI32o2(cptr.ldPtr(l), n, 24, 8, pc);
     cptr.stI32o(l, 8, (n + 1) | 0);
     return n;
 }
@@ -450,7 +450,7 @@ function solvegotos(ls, lb) {
     let needsclose = 0;
     while (i < cptr.ldI32o(gl, 8)) {
         if ((cptr.eq((cptr.ldPtro(cptr.ldPtr(gl), i, 24)), (cptr.ldPtr(lb))))) {
-            needsclose |= cptr.ld1uo(cptr.add(cptr.ldPtr(gl), i, 24), 17);
+            needsclose |= cptr.ld1uo2(cptr.ldPtr(gl), i, 24, 17);
             solvegoto(ls, i, lb);
         } else
             i++;
@@ -464,7 +464,7 @@ function createlabel(ls, name, line, last) {
     let ll = cptr.add(cptr.ldPtro(ls, 88), 32);
     let l = newlabelentry(ls, ll, name, line, luaK_getlabel(fs));
     if (last) {
-        cptr.st1o(cptr.add(cptr.ldPtr(ll), l, 24), 16, cptr.ld1uo(cptr.ldPtro(fs, 24), 16));
+        cptr.st1o2(cptr.ldPtr(ll), l, 24, 16, cptr.ld1uo(cptr.ldPtro(fs, 24), 16));
     }
     if (solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, 24))) {
         luaK_codeABCk(fs, NHC.OP_CLOSE, luaY_nvarstack(fs), 0, 0, 0);
@@ -1156,7 +1156,7 @@ function subexpr(ls, v, limit) {
         let line = cptr.ldI32o(ls, 4);
         luaX_next(ls);
         luaK_infix(cptr.ldPtro(ls, 48), op, v);
-        nextop = subexpr(ls, v2, cptr.ld1uo(cptr.add(priority, op, 2), 1));
+        nextop = subexpr(ls, v2, cptr.ld1uo2(priority, op, 2, 1));
         luaK_posfix(cptr.ldPtro(ls, 48), op, v, v2, line);
         op = nextop;
     }

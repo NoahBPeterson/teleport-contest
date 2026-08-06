@@ -1642,9 +1642,9 @@ export function str2role(str) {
     for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
         if (!strncmpi(str, cptr.ldPtro(roles, i, 312), len))
             return i;
-        if (cptr.ldPtro(cptr.add(roles, i, 312), 8) && !strncmpi(str, cptr.ldPtro(cptr.add(roles, i, 312), 8), len) ? 1 : 0)
+        if (cptr.ldPtro2(roles, i, 312, 8) && !strncmpi(str, cptr.ldPtro2(roles, i, 312, 8), len) ? 1 : 0)
             return i;
-        if (!strncmpi((str), (cptr.ldPtro(cptr.add(roles, i, 312), 184)), -1))
+        if (!strncmpi((str), (cptr.ldPtro2(roles, i, 312, 184)), -1))
             return i;
     }
     if ((len == 1 && (cptr.ld1s(str) == 42 || cptr.ld1s(str) == 64 ? 1 : 0) ? 1 : 0) || !strncmpi(str, cptr.decay(randomstr), len) ? 1 : 0)
@@ -1654,7 +1654,7 @@ export function str2role(str) {
 
 /** C ref: role.c:778 — @param {CInt} rolenum @param {CInt} racenum @returns {CInt} */
 export function validrace(rolenum, racenum) {
-    return schar((((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.ROLE_RACEMASK) ? 1 : 0));
+    return schar((((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & NHM.ROLE_RACEMASK) ? 1 : 0));
 }
 
 /** C ref: role.c:787 — @param {CInt} rolenum @returns {CInt} */
@@ -1662,12 +1662,12 @@ export function randrace(rolenum) {
     let i;
     let n = 0;
     for (i = 0; cptr.ldPtro(races, i, 112); i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, i, 112), 54) & NHM.ROLE_RACEMASK)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, i, 112, 54) & NHM.ROLE_RACEMASK)
             n++;
     if (n)
         n = ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 799, __sl277), rn2(Math.imul(n, 100))) : rn2(Math.imul(n, 100))) / 100) | 0;
     for (i = 0; cptr.ldPtro(races, i, 112); i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, i, 112), 54) & NHM.ROLE_RACEMASK) {
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, i, 112, 54) & NHM.ROLE_RACEMASK) {
             if (n)
                 n--;
             else
@@ -1686,9 +1686,9 @@ export function str2race(str) {
     for (i = 0; cptr.ldPtro(races, i, 112); i++) {
         if (!strncmpi(str, cptr.ldPtro(races, i, 112), len))
             return i;
-        if (cptr.ldPtro(cptr.add(races, i, 112), 8) && !strncmpi(str, cptr.ldPtro(cptr.add(races, i, 112), 8), len) ? 1 : 0)
+        if (cptr.ldPtro2(races, i, 112, 8) && !strncmpi(str, cptr.ldPtro2(races, i, 112, 8), len) ? 1 : 0)
             return i;
-        if (!strncmpi((str), (cptr.ldPtro(cptr.add(races, i, 112), 24)), -1))
+        if (!strncmpi((str), (cptr.ldPtro2(races, i, 112, 24)), -1))
             return i;
     }
     if ((len == 1 && (cptr.ld1s(str) == 42 || cptr.ld1s(str) == 64 ? 1 : 0) ? 1 : 0) || !strncmpi(str, cptr.decay(randomstr), len) ? 1 : 0)
@@ -1698,7 +1698,7 @@ export function str2race(str) {
 
 /** C ref: role.c:844 — @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @returns {CInt} */
 export function validgend(rolenum, racenum, gendnum) {
-    return schar(((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40) & NHM.ROLE_GENDMASK) ? 1 : 0));
+    return schar(((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(genders, gendnum, 48, 40) & NHM.ROLE_GENDMASK) ? 1 : 0));
 }
 
 /** C ref: role.c:853 — @param {CInt} rolenum @param {CInt} racenum @returns {CInt} */
@@ -1706,12 +1706,12 @@ export function randgend(rolenum, racenum) {
     let i;
     let n = 0;
     for (i = 0; i < NHM.ROLE_GENDERS; i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(genders, i, 48), 40) & NHM.ROLE_GENDMASK)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(genders, i, 48, 40) & NHM.ROLE_GENDMASK)
             n++;
     if (n)
         n = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 865, __sl279), rn2(n)) : rn2(n));
     for (i = 0; i < NHM.ROLE_GENDERS; i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(genders, i, 48), 40) & NHM.ROLE_GENDMASK) {
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(genders, i, 48, 40) & NHM.ROLE_GENDMASK) {
             if (n)
                 n--;
             else
@@ -1730,7 +1730,7 @@ export function str2gend(str) {
     for (i = 0; i < NHM.ROLE_GENDERS; i++) {
         if (!strncmpi(str, cptr.ldPtro(genders, i, 48), len))
             return i;
-        if (!strncmpi((str), (cptr.ldPtro(cptr.add(genders, i, 48), 32)), -1))
+        if (!strncmpi((str), (cptr.ldPtro2(genders, i, 48, 32)), -1))
             return i;
     }
     if ((len == 1 && (cptr.ld1s(str) == 42 || cptr.ld1s(str) == 64 ? 1 : 0) ? 1 : 0) || !strncmpi(str, cptr.decay(randomstr), len) ? 1 : 0)
@@ -1740,7 +1740,7 @@ export function str2gend(str) {
 
 /** C ref: role.c:907 — @param {CInt} rolenum @param {CInt} racenum @param {CInt} alignnum @returns {CInt} */
 export function validalign(rolenum, racenum, alignnum) {
-    return schar(((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24) & NHM.AM_MASK) ? 1 : 0));
+    return schar(((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(aligns, alignnum, 32, 24) & NHM.AM_MASK) ? 1 : 0));
 }
 
 /** C ref: role.c:916 — @param {CInt} rolenum @param {CInt} racenum @returns {CInt} */
@@ -1748,12 +1748,12 @@ export function randalign(rolenum, racenum) {
     let i;
     let n = 0;
     for (i = 0; i < NHM.ROLE_ALIGNS; i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(aligns, i, 32), 24) & NHM.AM_MASK)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(aligns, i, 32, 24) & NHM.AM_MASK)
             n++;
     if (n)
         n = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 928, __sl281), rn2(n)) : rn2(n));
     for (i = 0; i < NHM.ROLE_ALIGNS; i++)
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & cptr.ldI16o(cptr.add(aligns, i, 32), 24) & NHM.AM_MASK) {
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & cptr.ldI16o2(races, racenum, 112, 54) & cptr.ldI16o2(aligns, i, 32, 24) & NHM.AM_MASK) {
             if (n)
                 n--;
             else
@@ -1770,9 +1770,9 @@ export function str2align(str) {
         return -1;
     len = Strlen_(str, __sl282, 952) | 0;
     for (i = 0; i < NHM.ROLE_ALIGNS; i++) {
-        if (!strncmpi(str, cptr.ldPtro(cptr.add(aligns, i, 32), 8), len))
+        if (!strncmpi(str, cptr.ldPtro2(aligns, i, 32, 8), len))
             return i;
-        if (!strncmpi((str), (cptr.ldPtro(cptr.add(aligns, i, 32), 16)), -1))
+        if (!strncmpi((str), (cptr.ldPtro2(aligns, i, 32, 16)), -1))
             return i;
     }
     if ((len == 1 && (cptr.ld1s(str) == 42 || cptr.ld1s(str) == 64 ? 1 : 0) ? 1 : 0) || !strncmpi(str, cptr.decay(randomstr), len) ? 1 : 0)
@@ -1785,26 +1785,26 @@ export function ok_role(rolenum, racenum, gendnum, alignnum) {
     let i;
     let allow;
     if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0)) {
-        if (cptr.ld1so(cptr.add(gr, 366), rolenum, 1))
+        if (cptr.ld1so2(gr, rolenum, 1, 366))
             return 0;
-        allow = cptr.ldI16o(cptr.add(roles, rolenum, 312), 226);
-        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.ROLE_RACEMASK) ? 1 : 0)
+        allow = cptr.ldI16o2(roles, rolenum, 312, 226);
+        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.ROLE_RACEMASK) ? 1 : 0)
             return 0;
-        if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
+        if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o2(genders, gendnum, 48, 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
             return 0;
-        if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24) & NHM.AM_MASK) ? 1 : 0)
+        if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o2(aligns, alignnum, 32, 24) & NHM.AM_MASK) ? 1 : 0)
             return 0;
         return 1;
     } else {
         for (i = 0; i < ((14 - 1) | 0); i++) {
-            if (cptr.ld1so(cptr.add(gr, 366), i, 1))
+            if (cptr.ld1so2(gr, i, 1, 366))
                 continue;
-            allow = cptr.ldI16o(cptr.add(roles, i, 312), 226);
-            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.ROLE_RACEMASK) ? 1 : 0)
+            allow = cptr.ldI16o2(roles, i, 312, 226);
+            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.ROLE_RACEMASK) ? 1 : 0)
                 continue;
-            if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
+            if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o2(genders, gendnum, 48, 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
                 continue;
-            if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24) & NHM.AM_MASK) ? 1 : 0)
+            if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o2(aligns, alignnum, 32, 24) & NHM.AM_MASK) ? 1 : 0)
                 continue;
             return 1;
         }
@@ -1831,26 +1831,26 @@ export function ok_race(rolenum, racenum, gendnum, alignnum) {
     let i;
     let allow;
     if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0)) {
-        if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(races, racenum, 112), 56))
+        if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(races, racenum, 112, 56))
             return 0;
-        allow = cptr.ldI16o(cptr.add(races, racenum, 112), 54);
-        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_RACEMASK) ? 1 : 0)
+        allow = cptr.ldI16o2(races, racenum, 112, 54);
+        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_RACEMASK) ? 1 : 0)
             return 0;
-        if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
+        if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o2(genders, gendnum, 48, 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
             return 0;
-        if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24) & NHM.AM_MASK) ? 1 : 0)
+        if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o2(aligns, alignnum, 32, 24) & NHM.AM_MASK) ? 1 : 0)
             return 0;
         return 1;
     } else {
         for (i = 0; i < ((6 - 1) | 0); i++) {
-            if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(races, i, 112), 56))
+            if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(races, i, 112, 56))
                 continue;
-            allow = cptr.ldI16o(cptr.add(races, i, 112), 54);
-            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_RACEMASK) ? 1 : 0)
+            allow = cptr.ldI16o2(races, i, 112, 54);
+            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_RACEMASK) ? 1 : 0)
                 continue;
-            if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
+            if ((gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) && !(allow & cptr.ldI16o2(genders, gendnum, 48, 40) & NHM.ROLE_GENDMASK) ? 1 : 0)
                 continue;
-            if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24) & NHM.AM_MASK) ? 1 : 0)
+            if ((alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) && !(allow & cptr.ldI16o2(aligns, alignnum, 32, 24) & NHM.AM_MASK) ? 1 : 0)
                 continue;
             return 1;
         }
@@ -1885,22 +1885,22 @@ export function ok_gend(rolenum, racenum, gendnum, alignnum) {
     let i;
     let allow;
     if (gendnum >= 0 && gendnum < NHM.ROLE_GENDERS ? 1 : 0) {
-        if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(genders, gendnum, 48), 40))
+        if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(genders, gendnum, 48, 40))
             return 0;
-        allow = cptr.ldI16o(cptr.add(genders, gendnum, 48), 40);
-        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_GENDMASK) ? 1 : 0)
+        allow = cptr.ldI16o2(genders, gendnum, 48, 40);
+        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_GENDMASK) ? 1 : 0)
             return 0;
-        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.ROLE_GENDMASK) ? 1 : 0)
+        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.ROLE_GENDMASK) ? 1 : 0)
             return 0;
         return 1;
     } else {
         for (i = 0; i < NHM.ROLE_GENDERS; i++) {
-            if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(genders, i, 48), 40))
+            if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(genders, i, 48, 40))
                 continue;
-            allow = cptr.ldI16o(cptr.add(genders, i, 48), 40);
-            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_GENDMASK) ? 1 : 0)
+            allow = cptr.ldI16o2(genders, i, 48, 40);
+            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_GENDMASK) ? 1 : 0)
                 continue;
-            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.ROLE_GENDMASK) ? 1 : 0)
+            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.ROLE_GENDMASK) ? 1 : 0)
                 continue;
             return 1;
         }
@@ -1935,22 +1935,22 @@ export function ok_align(rolenum, racenum, gendnum, alignnum) {
     let i;
     let allow;
     if (alignnum >= 0 && alignnum < NHM.ROLE_ALIGNS ? 1 : 0) {
-        if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24))
+        if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(aligns, alignnum, 32, 24))
             return 0;
-        allow = cptr.ldI16o(cptr.add(aligns, alignnum, 32), 24);
-        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.AM_MASK) ? 1 : 0)
+        allow = cptr.ldI16o2(aligns, alignnum, 32, 24);
+        if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.AM_MASK) ? 1 : 0)
             return 0;
-        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.AM_MASK) ? 1 : 0)
+        if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.AM_MASK) ? 1 : 0)
             return 0;
         return 1;
     } else {
         for (i = 0; i < NHM.ROLE_ALIGNS; i++) {
-            if (cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(aligns, i, 32), 24))
+            if (cptr.ldI16o(gr, 380) & cptr.ldI16o2(aligns, i, 32, 24))
                 continue;
-            allow = cptr.ldI16o(cptr.add(aligns, i, 32), 24);
-            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.AM_MASK) ? 1 : 0)
+            allow = cptr.ldI16o2(aligns, i, 32, 24);
+            if (((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.AM_MASK) ? 1 : 0)
                 continue;
-            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.AM_MASK) ? 1 : 0)
+            if (((racenum) >= 0 && (racenum) < ((6 - 1) | 0) ? 1 : 0) && !(allow & cptr.ldI16o2(races, racenum, 112, 54) & NHM.AM_MASK) ? 1 : 0)
                 continue;
             return 1;
         }
@@ -2009,13 +2009,13 @@ export function setrolefilter(bufp) {
     let i;
     let reslt = 1;
     if ((i = str2role(bufp)) != -1 && i != -2 ? 1 : 0)
-        cptr.st1o(cptr.add(gr, 366), i, 1, 1);
+        cptr.st1o2(gr, i, 1, 366, 1);
     else if ((i = str2race(bufp)) != -1 && i != -2 ? 1 : 0)
-        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o(cptr.add(races, i, 112), 56));
+        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o2(races, i, 112, 56));
     else if ((i = str2gend(bufp)) != -1 && i != -2 ? 1 : 0)
-        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o(cptr.add(genders, i, 48), 40));
+        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o2(genders, i, 48, 40));
     else if ((i = str2align(bufp)) != -1 && i != -2 ? 1 : 0)
-        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o(cptr.add(aligns, i, 32), 24));
+        cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) | cptr.ldI16o2(aligns, i, 32, 24));
     else
         reslt = 0;
     return reslt;
@@ -2027,7 +2027,7 @@ export function gotrolefilter() {
     if (cptr.ldI16o(gr, 380))
         return 1;
     for (i = 0; i < ((14 - 1) | 0); ++i)
-        if (cptr.ld1so(cptr.add(gr, 366), i, 1))
+        if (cptr.ld1so2(gr, i, 1, 366))
             return 1;
     return 0;
 }
@@ -2039,26 +2039,26 @@ export function rolefilterstring(outbuf, which) {
     switch (which) {
         case NHM.RS_ROLE:
         for (i = 0; i < ((14 - 1) | 0); ++i) {
-            if (cptr.ld1so(cptr.add(gr, 366), i, 1))
+            if (cptr.ld1so2(gr, i, 1, 366))
                 void cptr.sprintf(eos(outbuf), __sl287, cptr.ldPtro(roles, i, 312));
         }
         break;
         case NHM.RS_RACE:
         for (i = 0; i < ((6 - 1) | 0); ++i) {
-            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(races, i, 112), 56)) != 0)
+            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o2(races, i, 112, 56)) != 0)
                 void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro(races, i, 112));
         }
         break;
         case NHM.RS_GENDER:
         for (i = 0; i < ((4 - 1) | 0); ++i) {
-            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(genders, i, 48), 40)) != 0)
+            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o2(genders, i, 48, 40)) != 0)
                 void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro(genders, i, 48));
         }
         break;
         case NHM.RS_ALGNMNT:
         for (i = 0; i < ((4 - 1) | 0); ++i) {
-            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o(cptr.add(aligns, i, 32), 24)) != 0)
-                void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro(cptr.add(aligns, i, 32), 8));
+            if ((cptr.ldI16o(gr, 380) & cptr.ldI16o2(aligns, i, 32, 24)) != 0)
+                void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro2(aligns, i, 32, 8));
         }
         break;
         default:
@@ -2079,7 +2079,7 @@ export function clearrolefilter(which) {
         ;
         case NHM.RS_ROLE:
         for (i = 0; i < ((14 - 1) | 0); ++i)
-            cptr.st1o(cptr.add(gr, 366), i, 0, 1);
+            cptr.st1o2(gr, i, 1, 366, 0);
         break;
         case NHM.RS_RACE:
         cptr.stI16o(gr, 380, cptr.ldI16o(gr, 380) & -4089);
@@ -2109,11 +2109,11 @@ function promptsep(buf, num_post_attribs) {
 function role_gendercount(rolenum) {
     let gendcount = 0;
     if (validrole(rolenum)) {
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_MALE)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_MALE)
             ++gendcount;
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_FEMALE)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_FEMALE)
             ++gendcount;
-        if (cptr.ldI16o(cptr.add(roles, rolenum, 312), 226) & NHM.ROLE_NEUTER)
+        if (cptr.ldI16o2(roles, rolenum, 312, 226) & NHM.ROLE_NEUTER)
             ++gendcount;
     }
     return gendcount;
@@ -2123,11 +2123,11 @@ function role_gendercount(rolenum) {
 function race_alignmentcount(racenum) {
     let aligncount = 0;
     if (racenum != -1 && racenum != -2 ? 1 : 0) {
-        if (cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.AM_CHAOTIC)
+        if (cptr.ldI16o2(races, racenum, 112, 54) & NHM.AM_CHAOTIC)
             ++aligncount;
-        if (cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.AM_LAWFUL)
+        if (cptr.ldI16o2(races, racenum, 112, 54) & NHM.AM_LAWFUL)
             ++aligncount;
-        if (cptr.ldI16o(cptr.add(races, racenum, 112), 54) & NHM.AM_NEUTRAL)
+        if (cptr.ldI16o2(races, racenum, 112, 54) & NHM.AM_NEUTRAL)
             ++aligncount;
     }
     return aligncount;
@@ -2146,7 +2146,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         return cptr.decay(__static_root_plselection_prompt_err_ret);
     cptr.st1o(gr, 364, 0);
     for (k = 0; k < NHM.NUM_BP; ++k)
-        cptr.st1o(cptr.add(gr, 360), k, 0, 1);
+        cptr.st1o2(gr, k, 1, 360, 0);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     cptr.st1(suppliedbuf, 0);
     if (racenum != -1 && racenum != -2 ? 1 : 0)
@@ -2154,13 +2154,13 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
     if ((alignnum != -1 && alignnum != -2 ? 1 : 0) && ok_align(rolenum, racenum, gendnum, alignnum) ? 1 : 0) {
         if (donefirst)
             void cptr.strcat(cptr.decay(buf), __sl293);
-        void cptr.strcat(cptr.decay(buf), cptr.ldPtro(cptr.add(aligns, alignnum, 32), 8));
+        void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(aligns, alignnum, 32, 8));
         donefirst = 1;
     } else {
         if (alignnum != -2)
             alignnum = -1;
         if ((((racenum != -1 && racenum != -2 ? 1 : 0) && ok_race(rolenum, racenum, gendnum, alignnum) ? 1 : 0) && (aligncount > 1) ? 1 : 0) || (racenum == -1 || racenum == -2 ? 1 : 0) ? 1 : 0) {
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_ALIGN, 1, 1);
+            cptr.st1o2(gr, NHM.BP_ALIGN, 1, 360, 1);
             cptr.postinc1(cptr.add(gr, 364));
         }
     }
@@ -2168,7 +2168,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         gendercount = role_gendercount(rolenum);
     if (gendnum != -1 && gendnum != -2 ? 1 : 0) {
         if (validrole(rolenum)) {
-            if (((rolenum != -1) && (gendercount > 1) ? 1 : 0) && !cptr.ldPtro(cptr.add(roles, rolenum, 312), 8) ? 1 : 0) {
+            if (((rolenum != -1) && (gendercount > 1) ? 1 : 0) && !cptr.ldPtro2(roles, rolenum, 312, 8) ? 1 : 0) {
                 if (donefirst)
                     void cptr.strcat(cptr.decay(buf), __sl293);
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(genders, gendnum, 48));
@@ -2182,7 +2182,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         }
     } else {
         if ((validrole(rolenum) && (gendercount > 1) ? 1 : 0) || !validrole(rolenum) ? 1 : 0) {
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_GEND, 1, 1);
+            cptr.st1o2(gr, NHM.BP_GEND, 1, 360, 1);
             cptr.postinc1(cptr.add(gr, 364));
         }
     }
@@ -2190,7 +2190,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         if (validrole(rolenum) && ok_race(rolenum, racenum, gendnum, alignnum) ? 1 : 0) {
             if (donefirst)
                 void cptr.strcat(cptr.decay(buf), __sl293);
-            void cptr.strcat(cptr.decay(buf), (rolenum == -1) ? cptr.ldPtro(races, racenum, 112) : cptr.ldPtro(cptr.add(races, racenum, 112), 8));
+            void cptr.strcat(cptr.decay(buf), (rolenum == -1) ? cptr.ldPtro(races, racenum, 112) : cptr.ldPtro2(races, racenum, 112, 8));
             donefirst = 1;
         } else if (!validrole(rolenum)) {
             if (donefirst)
@@ -2198,11 +2198,11 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
             void cptr.strcat(cptr.decay(buf), cptr.ldPtro(races, racenum, 112));
             donefirst = 1;
         } else {
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_RACE, 1, 1);
+            cptr.st1o2(gr, NHM.BP_RACE, 1, 360, 1);
             cptr.postinc1(cptr.add(gr, 364));
         }
     } else {
-        cptr.st1o(cptr.add(gr, 360), NHM.BP_RACE, 1, 1);
+        cptr.st1o2(gr, NHM.BP_RACE, 1, 360, 1);
         cptr.postinc1(cptr.add(gr, 364));
     }
     if (validrole(rolenum)) {
@@ -2210,21 +2210,21 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         if (donefirst)
             void cptr.strcat(cptr.decay(buf), __sl293);
         if (gendnum != -1) {
-            if (gendnum == 1 && cptr.ldPtro(cptr.add(roles, rolenum, 312), 8) ? 1 : 0)
-                void cptr.strcat(cptr.decay(buf), cptr.ldPtro(cptr.add(roles, rolenum, 312), 8));
+            if (gendnum == 1 && cptr.ldPtro2(roles, rolenum, 312, 8) ? 1 : 0)
+                void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(roles, rolenum, 312, 8));
             else
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(roles, rolenum, 312));
         } else {
-            if (cptr.ldPtro(cptr.add(roles, rolenum, 312), 8)) {
+            if (cptr.ldPtro2(roles, rolenum, 312, 8)) {
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(roles, rolenum, 312));
                 void cptr.strcat(cptr.decay(buf), __sl297);
-                void cptr.strcat(cptr.decay(buf), cptr.ldPtro(cptr.add(roles, rolenum, 312), 8));
+                void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(roles, rolenum, 312, 8));
             } else
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(roles, rolenum, 312));
         }
         donefirst = 1;
     } else if (rolenum == -1) {
-        cptr.st1o(cptr.add(gr, 360), NHM.BP_ROLE, 1, 1);
+        cptr.st1o2(gr, NHM.BP_ROLE, 1, 360, 1);
         cptr.postinc1(cptr.add(gr, 364));
     }
     if ((racenum == -1 || racenum == -2 ? 1 : 0) && !validrole(rolenum) ? 1 : 0) {
@@ -2259,30 +2259,30 @@ export function build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum,
         strkitten(buf, 115);
     num_post_attribs = cptr.ld1so(gr, 364);
     if (!num_post_attribs) {
-        if (cptr.ldI32o(flags, 144) == -1 && !cptr.ld1so(cptr.add(gr, 360), NHM.BP_ROLE, 1) ? 1 : 0)
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_ROLE, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1), 1);
-        if (cptr.ldI32o(flags, 148) == -1 && !cptr.ld1so(cptr.add(gr, 360), NHM.BP_RACE, 1) ? 1 : 0)
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_RACE, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1), 1);
-        if (cptr.ldI32o(flags, 156) == -1 && !cptr.ld1so(cptr.add(gr, 360), NHM.BP_ALIGN, 1) ? 1 : 0)
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_ALIGN, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1), 1);
-        if (cptr.ldI32o(flags, 152) == -1 && !cptr.ld1so(cptr.add(gr, 360), NHM.BP_GEND, 1) ? 1 : 0)
-            cptr.st1o(cptr.add(gr, 360), NHM.BP_GEND, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1), 1);
+        if (cptr.ldI32o(flags, 144) == -1 && !cptr.ld1so2(gr, NHM.BP_ROLE, 1, 360) ? 1 : 0)
+            cptr.st1o2(gr, NHM.BP_ROLE, 1, 360, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1));
+        if (cptr.ldI32o(flags, 148) == -1 && !cptr.ld1so2(gr, NHM.BP_RACE, 1, 360) ? 1 : 0)
+            cptr.st1o2(gr, NHM.BP_RACE, 1, 360, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1));
+        if (cptr.ldI32o(flags, 156) == -1 && !cptr.ld1so2(gr, NHM.BP_ALIGN, 1, 360) ? 1 : 0)
+            cptr.st1o2(gr, NHM.BP_ALIGN, 1, 360, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1));
+        if (cptr.ldI32o(flags, 152) == -1 && !cptr.ld1so2(gr, NHM.BP_GEND, 1, 360) ? 1 : 0)
+            cptr.st1o2(gr, NHM.BP_GEND, 1, 360, cptr.st1o(gr, 364, cptr.ld1so(gr, 364) + 1));
         num_post_attribs = cptr.ld1so(gr, 364);
     }
     if (num_post_attribs) {
-        if (cptr.ld1so(cptr.add(gr, 360), NHM.BP_RACE, 1)) {
+        if (cptr.ld1so2(gr, NHM.BP_RACE, 1, 360)) {
             void promptsep(eos(buf), num_post_attribs);
             void cptr.strcat(buf, __sl308);
         }
-        if (cptr.ld1so(cptr.add(gr, 360), NHM.BP_ROLE, 1)) {
+        if (cptr.ld1so2(gr, NHM.BP_ROLE, 1, 360)) {
             void promptsep(eos(buf), num_post_attribs);
             void cptr.strcat(buf, __sl309);
         }
-        if (cptr.ld1so(cptr.add(gr, 360), NHM.BP_GEND, 1)) {
+        if (cptr.ld1so2(gr, NHM.BP_GEND, 1, 360)) {
             void promptsep(eos(buf), num_post_attribs);
             void cptr.strcat(buf, __sl310);
         }
-        if (cptr.ld1so(cptr.add(gr, 360), NHM.BP_ALIGN, 1)) {
+        if (cptr.ld1so2(gr, NHM.BP_ALIGN, 1, 360)) {
             void promptsep(eos(buf), num_post_attribs);
             void cptr.strcat(buf, __sl311);
         }
@@ -2350,10 +2350,10 @@ export function role_selection_prolog(which, where) {
     a = cptr.ldI32o(flags, 156);
     if (r >= 0) {
         (__builtin_expect(BigInt((!(((r) >= 0 && (r) < ((14 - 1) | 0) ? 1 : 0)))), 0n) ? __assert_rtn(__sl314, __sl295, 1739, __sl315) : void 0);
-        allowmask = cptr.ldI16o(cptr.add(roles, r, 312), 226);
+        allowmask = cptr.ldI16o2(roles, r, 312, 226);
         if (BigInt((allowmask & NHM.ROLE_RACEMASK)) == 8n)
             c = 0;
-        else if (((c) >= 0 && (c) < ((6 - 1) | 0) ? 1 : 0) && !(allowmask & NHM.ROLE_RACEMASK & cptr.ldI16o(cptr.add(races, c, 112), 54)) ? 1 : 0)
+        else if (((c) >= 0 && (c) < ((6 - 1) | 0) ? 1 : 0) && !(allowmask & NHM.ROLE_RACEMASK & cptr.ldI16o2(races, c, 112, 54)) ? 1 : 0)
             c = -2;
         if ((allowmask & NHM.ROLE_GENDMASK) == NHM.ROLE_MALE)
             gend = 0;
@@ -2368,7 +2368,7 @@ export function role_selection_prolog(which, where) {
     }
     if (c >= 0) {
         (__builtin_expect(BigInt((!(((c) >= 0 && (c) < ((6 - 1) | 0) ? 1 : 0)))), 0n) ? __assert_rtn(__sl314, __sl295, 1758, __sl316) : void 0);
-        allowmask = cptr.ldI16o(cptr.add(races, c, 112), 54);
+        allowmask = cptr.ldI16o2(races, c, 112, 54);
         if ((allowmask & NHM.AM_MASK) == NHM.AM_LAWFUL)
             a = 0;
         else if ((allowmask & NHM.AM_MASK) == NHM.AM_NEUTRAL)
@@ -2382,11 +2382,11 @@ export function role_selection_prolog(which, where) {
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl319);
     (__builtin_expect(BigInt((!(((which == NHM.RS_ROLE || r == -1 ? 1 : 0) || r == -2 ? 1 : 0) || ((r) >= 0 && (r) < ((14 - 1) | 0) ? 1 : 0) ? 1 : 0))), 0n) ? __assert_rtn(__sl314, __sl295, 1777, __sl320) : void 0);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ROLE) ? cptr.decay(__static_role_selection_prolog_choosing) : ((r == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((r == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(roles, r, 312))));
-    if (r >= 0 && cptr.ldPtro(cptr.add(roles, r, 312), 8) ? 1 : 0) {
+    if (r >= 0 && cptr.ldPtro2(roles, r, 312, 8) ? 1 : 0) {
         if (gend == 1)
-            void cptr.sprintf(cptr.strchr(cptr.decay(buf), 58), __sl321, cptr.ldPtro(cptr.add(roles, r, 312), 8));
+            void cptr.sprintf(cptr.strchr(cptr.decay(buf), 58), __sl321, cptr.ldPtro2(roles, r, 312, 8));
         else if (gend < 0)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl322, cptr.ldPtro(cptr.add(roles, r, 312), 8));
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl322, cptr.ldPtro2(roles, r, 312, 8));
     }
     (cptr.ldPtro(windowprocs, 144))(where, 0, cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl323);
@@ -2397,7 +2397,7 @@ export function role_selection_prolog(which, where) {
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_GENDER) ? cptr.decay(__static_role_selection_prolog_choosing) : ((gend == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((gend == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(genders, gend, 48))));
     (cptr.ldPtro(windowprocs, 144))(where, 0, cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl326);
-    void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ALGNMNT) ? cptr.decay(__static_role_selection_prolog_choosing) : ((a == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((a == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(cptr.add(aligns, a, 32), 8))));
+    void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ALGNMNT) ? cptr.decay(__static_role_selection_prolog_choosing) : ((a == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((a == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro2(aligns, a, 32, 8))));
     (cptr.ldPtro(windowprocs, 144))(where, 0, cptr.decay(buf));
 }
 
@@ -2428,7 +2428,7 @@ export function role_menu_extra(which, where, preselect) {
         what = __sl309;
         f = r;
         for (i = 0; i < ((14 - 1) | 0); ++i)
-            if (i != f && !cptr.ld1so(cptr.add(gr, 366), i, 1) ? 1 : 0)
+            if (i != f && !cptr.ld1so2(gr, i, 1, 366) ? 1 : 0)
                 break;
         if (i == ((14 - 1) | 0)) {
             constrainer = __sl328;
@@ -2440,13 +2440,13 @@ export function role_menu_extra(which, where, preselect) {
         f = cptr.ldI32o(flags, 148);
         c = -1;
         if (r >= 0) {
-            allowmask = cptr.ldI16o(cptr.add(roles, r, 312), 226) & NHM.ROLE_RACEMASK;
+            allowmask = cptr.ldI16o2(roles, r, 312, 226) & NHM.ROLE_RACEMASK;
             if (BigInt(allowmask) == 8n)
                 c = 0;
             if (c >= 0) {
                 constrainer = __sl309;
                 forcedvalue = cptr.ldPtro(races, c, 112);
-            } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o(cptr.add(races, f, 112), 56)) ? 1 : 0) {
+            } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o2(races, f, 112, 56)) ? 1 : 0) {
                 constrainer = __sl328;
                 forcedvalue = __sl308;
             }
@@ -2457,7 +2457,7 @@ export function role_menu_extra(which, where, preselect) {
         f = cptr.ldI32o(flags, 152);
         gend = -1;
         if (r >= 0) {
-            allowmask = cptr.ldI16o(cptr.add(roles, r, 312), 226) & NHM.ROLE_GENDMASK;
+            allowmask = cptr.ldI16o2(roles, r, 312, 226) & NHM.ROLE_GENDMASK;
             if (allowmask == NHM.ROLE_MALE)
                 gend = 0;
             else if (allowmask == NHM.ROLE_FEMALE)
@@ -2465,7 +2465,7 @@ export function role_menu_extra(which, where, preselect) {
             if (gend >= 0) {
                 constrainer = __sl309;
                 forcedvalue = cptr.ldPtro(genders, gend, 48);
-            } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o(cptr.add(genders, f, 48), 40)) ? 1 : 0) {
+            } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o2(genders, f, 48, 40)) ? 1 : 0) {
                 constrainer = __sl328;
                 forcedvalue = __sl310;
             }
@@ -2476,7 +2476,7 @@ export function role_menu_extra(which, where, preselect) {
         f = cptr.ldI32o(flags, 156);
         a = -1;
         if (r >= 0) {
-            allowmask = cptr.ldI16o(cptr.add(roles, r, 312), 226) & NHM.AM_MASK;
+            allowmask = cptr.ldI16o2(roles, r, 312, 226) & NHM.AM_MASK;
             if (allowmask == NHM.AM_LAWFUL)
                 a = 0;
             else if (allowmask == NHM.AM_NEUTRAL)
@@ -2487,7 +2487,7 @@ export function role_menu_extra(which, where, preselect) {
                 constrainer = __sl309;
         }
         if (c >= 0 && !constrainer ? 1 : 0) {
-            allowmask = cptr.ldI16o(cptr.add(races, c, 112), 54) & NHM.AM_MASK;
+            allowmask = cptr.ldI16o2(races, c, 112, 54) & NHM.AM_MASK;
             if (allowmask == NHM.AM_LAWFUL)
                 a = 0;
             else if (allowmask == NHM.AM_NEUTRAL)
@@ -2497,12 +2497,12 @@ export function role_menu_extra(which, where, preselect) {
             if (a >= 0)
                 constrainer = __sl308;
         }
-        if ((f >= 0 && !constrainer ? 1 : 0) && (NHM.AM_MASK & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o(cptr.add(aligns, f, 32), 24) ? 1 : 0) {
+        if ((f >= 0 && !constrainer ? 1 : 0) && (NHM.AM_MASK & ~cptr.ldI16o(gr, 380)) == cptr.ldI16o2(aligns, f, 32, 24) ? 1 : 0) {
             constrainer = __sl328;
             forcedvalue = __sl311;
         }
         if (a >= 0)
-            forcedvalue = cptr.ldPtro(cptr.add(aligns, a, 32), 8);
+            forcedvalue = cptr.ldPtro2(aligns, a, 32, 8);
         break;
     }
     cptr.memcpy(any, cptr.add(cg, 536), 8);
@@ -2540,7 +2540,7 @@ export function role_init() {
             cptr.stI32o(flags, 144, randrole_filtered());
     }
     void cptr.strcpy(cptr.add(svp, 32), cptr.ldPtro(roles, cptr.ldI32o(flags, 144), 312));
-    cptr.st1o(cptr.add(svp, 32), 31, 0, 1);
+    cptr.st1o2(svp, 31, 1, 32, 0);
     if (!validrace(cptr.ldI32o(flags, 144), cptr.ldI32o(flags, 148)))
         cptr.stI32o(flags, 148, randrace(cptr.ldI32o(flags, 144)));
     if (cptr.ldI32o(flags, 164) == -1) {
@@ -2551,7 +2551,7 @@ export function role_init() {
         cptr.stI32o(flags, 152, cptr.ld1so(flags, 13));
     if (!validalign(cptr.ldI32o(flags, 144), cptr.ldI32o(flags, 148), cptr.ldI32o(flags, 156)))
         cptr.stI32o(flags, 156, randalign(cptr.ldI32o(flags, 144), cptr.ldI32o(flags, 148)));
-    alignmnt = cptr.ld1so(cptr.add(aligns, cptr.ldI32o(flags, 156), 32), 26);
+    alignmnt = cptr.ld1so2(aligns, cptr.ldI32o(flags, 156), 32, 26);
     cptr.memcpy(cptr.add(gu, 8), cptr.add(roles, cptr.ldI32o(flags, 144), 312), 312);
     cptr.memcpy(cptr.add(gu, 320), cptr.add(races, cptr.ldI32o(flags, 148), 112), 112);
     if (cptr.ldI16o(gu, 220) != NHC.NON_PM) {
@@ -2579,25 +2579,25 @@ export function role_init() {
     if (cptr.ldI32o(flags, 164) == -1) {
         let trycnt = 0;
         cptr.stI32o(flags, 164, cptr.ldI32o(flags, 144));
-        while (!cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 164), 312), 160) && ++trycnt < 100 ? 1 : 0)
+        while (!cptr.ldPtro2(roles, cptr.ldI32o(flags, 164), 312, 160) && ++trycnt < 100 ? 1 : 0)
             cptr.stI32o(flags, 164, randrole(0));
-        if (!cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 164), 312), 160)) {
+        if (!cptr.ldPtro2(roles, cptr.ldI32o(flags, 164), 312, 160)) {
             let i;
             for (i = 0; i < ((14 - 1) | 0); i++)
-                if (cptr.ldPtro(cptr.add(roles, i, 312), 160)) {
+                if (cptr.ldPtro2(roles, i, 312, 160)) {
                     cptr.stI32o(flags, 164, i);
                     break;
                 }
         }
     }
     if (!cptr.ldPtro(gu, 168)) {
-        cptr.stPtro(gu, 168, cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 164), 312), 160));
-        cptr.stPtro(gu, 176, cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 164), 312), 168));
-        cptr.stPtro(gu, 184, cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 164), 312), 176));
+        cptr.stPtro(gu, 168, cptr.ldPtro2(roles, cptr.ldI32o(flags, 164), 312, 160));
+        cptr.stPtro(gu, 176, cptr.ldPtro2(roles, cptr.ldI32o(flags, 164), 312, 168));
+        cptr.stPtro(gu, 184, cptr.ldPtro2(roles, cptr.ldI32o(flags, 164), 312, 176));
     }
     cptr.stI32o(svq, 76, (!strncmpi((align_gtitle(schar(alignmnt))), (__sl339), -1)) >>> 0);
     if ((cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
-        cptr.st1o(cptr.add(objects, NHC.SPE_LIGHT, 120), 68, NHC.P_CLERIC_SPELL);
+        cptr.st1o2(objects, NHC.SPE_LIGHT, 120, 68, NHC.P_CLERIC_SPELL);
     return;
 }
 
@@ -3119,11 +3119,11 @@ function plsel_startmenu(ttyrows, aspect) {
     let win;
     let rolename;
     rigid_role_checks();
-    rolename = (cptr.ldI32o(flags, 144) < 0) ? __sl370 : ((cptr.ldI32o(flags, 152) == 1 && cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 144), 312), 8) ? 1 : 0) ? cptr.ldPtro(cptr.add(roles, cptr.ldI32o(flags, 144), 312), 8) : cptr.ldPtro(roles, cptr.ldI32o(flags, 144), 312));
+    rolename = (cptr.ldI32o(flags, 144) < 0) ? __sl370 : ((cptr.ldI32o(flags, 152) == 1 && cptr.ldPtro2(roles, cptr.ldI32o(flags, 144), 312, 8) ? 1 : 0) ? cptr.ldPtro2(roles, cptr.ldI32o(flags, 144), 312, 8) : cptr.ldPtro(roles, cptr.ldI32o(flags, 144), 312));
     if ((((!cptr.ld1so(svp, 0, 1) || cptr.ldI32o(flags, 144) < 0 ? 1 : 0) || cptr.ldI32o(flags, 148) < 0 ? 1 : 0) || cptr.ldI32o(flags, 152) < 0 ? 1 : 0) || cptr.ldI32o(flags, 156) < 0 ? 1 : 0) {
-        void cptr.sprintf(cptr.decay(qbuf), __sl371, rolename, (cptr.ldI32o(flags, 148) < 0) ? __sl372 : cptr.ldPtro(races, cptr.ldI32o(flags, 148), 112), (cptr.ldI32o(flags, 152) < 0) ? __sl373 : cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48), (cptr.ldI32o(flags, 156) < 0) ? __sl374 : cptr.ldPtro(cptr.add(aligns, cptr.ldI32o(flags, 156), 32), 8));
+        void cptr.sprintf(cptr.decay(qbuf), __sl371, rolename, (cptr.ldI32o(flags, 148) < 0) ? __sl372 : cptr.ldPtro(races, cptr.ldI32o(flags, 148), 112), (cptr.ldI32o(flags, 152) < 0) ? __sl373 : cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48), (cptr.ldI32o(flags, 156) < 0) ? __sl374 : cptr.ldPtro2(aligns, cptr.ldI32o(flags, 156), 32, 8));
     } else {
-        void cptr.sprintf(cptr.decay(qbuf), __sl375, svp, cptr.ldPtro(cptr.add(aligns, cptr.ldI32o(flags, 156), 32), 8), cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48), cptr.ldPtro(cptr.add(races, cptr.ldI32o(flags, 148), 112), 8), rolename);
+        void cptr.sprintf(cptr.decay(qbuf), __sl375, svp, cptr.ldPtro2(aligns, cptr.ldI32o(flags, 156), 32, 8), cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48), cptr.ldPtro2(races, cptr.ldI32o(flags, 148), 112, 8), rolename);
     }
     win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
     if (win == -1)
@@ -3157,12 +3157,12 @@ function setup_rolemenu(win, filtering, race, gend, algn) {
         if (thisch == lastch)
             thisch = highc(thisch);
         void cptr.strcpy(cptr.decay(rolenamebuf), cptr.ldPtro(roles, i, 312));
-        if (cptr.ldPtro(cptr.add(roles, i, 312), 8)) {
+        if (cptr.ldPtro2(roles, i, 312, 8)) {
             if (gend == 1) {
-                void cptr.strcpy(cptr.decay(rolenamebuf), cptr.ldPtro(cptr.add(roles, i, 312), 8));
+                void cptr.strcpy(cptr.decay(rolenamebuf), cptr.ldPtro2(roles, i, 312, 8));
             } else if (gend < 0) {
                 void cptr.strcat(cptr.decay(rolenamebuf), __sl297);
-                void cptr.strcat(cptr.decay(rolenamebuf), cptr.ldPtro(cptr.add(roles, i, 312), 8));
+                void cptr.strcat(cptr.decay(rolenamebuf), cptr.ldPtro2(roles, i, 312, 8));
             }
         }
         add_menu(win, nul_glyphinfo.v, any, thisch, 0, NHM.ATR_NONE, clr, an(cptr.decay(rolenamebuf)), (!filtering && !role_ok ? 1 : 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
@@ -3227,8 +3227,8 @@ function setup_algnmenu(win, filtering, role, race, gend) {
         if (filtering)
             cptr.stI32(any, (i + 1) | 0);
         else
-            cptr.stPtr(any, cptr.ldPtro(cptr.add(aligns, i, 32), 8));
-        this_ch = cptr.ld1s(cptr.ldPtro(cptr.add(aligns, i, 32), 8));
-        add_menu(win, nul_glyphinfo.v, any, schar((filtering ? this_ch : highc(this_ch))), schar((filtering ? highc(this_ch) : 0)), NHM.ATR_NONE, clr, cptr.ldPtro(cptr.add(aligns, i, 32), 8), (!filtering && !algn_ok ? 1 : 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+            cptr.stPtr(any, cptr.ldPtro2(aligns, i, 32, 8));
+        this_ch = cptr.ld1s(cptr.ldPtro2(aligns, i, 32, 8));
+        add_menu(win, nul_glyphinfo.v, any, schar((filtering ? this_ch : highc(this_ch))), schar((filtering ? highc(this_ch) : 0)), NHM.ATR_NONE, clr, cptr.ldPtro2(aligns, i, 32, 8), (!filtering && !algn_ok ? 1 : 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
 }

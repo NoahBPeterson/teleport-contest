@@ -61,7 +61,7 @@ const __sl32 = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
 /** C ref: pline.c:22 — @param {CPtr} line */
 export function dumplogmsg(line) {
     let indx = cptr.ldI32o(gs, 980);
-    let oldest = cptr.ldPtro(cptr.add(gs, 984), indx, 8);
+    let oldest = cptr.ldPtro2(gs, indx, 8, 984);
     if (!cptr.strncmp(line, __sl0, 15n))
         return;
     if (oldest && cptr.strlen(oldest) >= cptr.strlen(line) ? 1 : 0) {
@@ -69,7 +69,7 @@ export function dumplogmsg(line) {
     } else {
         if (oldest)
             cptr.free(oldest);
-        cptr.stPtro(cptr.add(gs, 984), indx, dupstr(line), 8);
+        cptr.stPtro2(gs, indx, 8, 984, dupstr(line));
     }
     cptr.stI32o(gs, 980, u32mod(((indx + 1) >>> 0), NHM.DUMPLOG_MSG_COUNT));
 }
@@ -78,8 +78,8 @@ export function dumplogmsg(line) {
 export function dumplogfreemessages() {
     let i;
     for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; ++i)
-        if (cptr.ldPtro(cptr.add(gs, 984), i, 8))
-            cptr.free(cptr.ldPtro(cptr.add(gs, 984), i, 8)), cptr.stPtro(cptr.add(gs, 984), i, null, 8);
+        if (cptr.ldPtro2(gs, i, 8, 984))
+            cptr.free(cptr.ldPtro2(gs, i, 8, 984)), cptr.stPtro2(gs, i, 8, 984, null);
     cptr.stI32o(gs, 980, 0);
 }
 
@@ -224,7 +224,7 @@ function vpline(line, the_args) {
         putmesg(line);
         execplinehandler(line);
         cptr.stI32o(iflags, 40, NHC.PLNMSG_UNKNOWN);
-        void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 1)), cptr.st1o(cptr.add(gp, 244), 255, 0, 1);
+        void __builtin___strncpy_chk(cptr.add(gp, 244), line, 256n, __builtin_object_size(cptr.add(gp, 244), 1)), cptr.st1o2(gp, 255, 1, 244, 0);
         if (msgtyp == NHM.MSGTYP_STOP)
             (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1);
     }
@@ -341,7 +341,7 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if ((((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) && !(cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
+    if ((((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) && !(cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
         return;
     the_args = cptr.vaList(__va);
     if (((cptr.ldI32o(u, 1852) & 1)))
@@ -361,7 +361,7 @@ export function You_see(line, ...__va) {
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
-    else if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+    else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
     else
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __sl15);

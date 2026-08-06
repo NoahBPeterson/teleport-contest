@@ -102,7 +102,7 @@ export function getlock() {
             if (cptr.ldI32o(gl, 8) > 25)
                 cptr.stI32o(gl, 8, 25);
             do {
-                cptr.st1o(cptr.add(gl, 16), 0, schar(((97 + i++) | 0)), 1);
+                cptr.st1o2(gl, 0, 1, 16, schar(((97 + i++) | 0)));
                 fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
                 if ((fd = open(fq_lock, 0)) == -1) {
                     if ((cptr.ldI32(__error())) == 2)

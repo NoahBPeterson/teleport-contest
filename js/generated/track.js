@@ -41,7 +41,7 @@ export function settrack() {
     if (utpnt.v == 100)
         utpnt.v = 0;
     cptr.stI16o(utrack, utpnt.v, cptr.ldI16(u), 4);
-    cptr.stI16o(cptr.add(utrack, utpnt.v, 4), 2, cptr.ldI16o(u, 2));
+    cptr.stI16o2(utrack, utpnt.v, 4, 2, cptr.ldI16o(u, 2));
     utpnt.v++;
 }
 
@@ -67,7 +67,7 @@ export function gettrack(x, y) {
 export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o(cptr.add(utrack, i, 4), 2) == y ? 1 : 0)
+        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o2(utrack, i, 4, 2) == y ? 1 : 0)
             return 1;
     return 0;
 }

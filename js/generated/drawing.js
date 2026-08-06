@@ -785,13 +785,13 @@ export function def_char_is_furniture(ch) {
     let furniture = 0;
     for (i = 0; i < NHC.MAXPCHARS; ++i) {
         if (!furniture) {
-            if (!cptr.strncmp(cptr.ldPtro(cptr.add(defsyms, i, 24), 8), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
+            if (!cptr.strncmp(cptr.ldPtro2(defsyms, i, 24, 8), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
                 furniture = 1;
         }
         if (furniture) {
             if (cptr.ld1uo(defsyms, i, 24) == uchar(ch))
                 return i;
-            if (!strcmp(cptr.ldPtro(cptr.add(defsyms, i, 24), 8), cptr.decay(__static_def_char_is_furniture_last_furniture)))
+            if (!strcmp(cptr.ldPtro2(defsyms, i, 24, 8), cptr.decay(__static_def_char_is_furniture_last_furniture)))
                 break;
         }
     }

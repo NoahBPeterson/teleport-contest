@@ -446,7 +446,7 @@ export function tactics(mtmp) {
                 return 0;
             }
             if (where == 67108864n) {
-                if (!(cptr.ldPtro(cptr.add(cptr.add(svl, 75600), tx, 168), ty, 8) !== null) || (cptr.ldI16o(mtmp, 28) == tx && cptr.ldI16o(mtmp, 30) == ty ? 1 : 0) ? 1 : 0) {
+                if (!(cptr.ldPtro3(svl, tx, 168, ty, 8, 75600) !== null) || (cptr.ldI16o(mtmp, 28) == tx && cptr.ldI16o(mtmp, 30) == ty ? 1 : 0) ? 1 : 0) {
                     rloc_to(mtmp, tx, ty);
                     if ((otmp = on_ground(which_arti(targ))) !== null) {
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.IN_SIGHT) != 0))
@@ -515,7 +515,7 @@ export function clonewiz() {
         if (!(cptr.ldI32o(u, 1944) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 524, __sl10), rn2(2)) : rn2(2)) ? 1 : 0) {
             void add_to_minv(mtmp2, mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0));
         }
-        if (!(cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.PROT_FROM_SHAPE_CHANGERS, 24) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, 128) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, 112) ? 1 : 0)) {
             cptr.st1o(mtmp2, 64, NHC.M_AP_MONSTER);
             cptr.stI32o(mtmp2, 60, cptr.ldI32o(wizapp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 530, __sl10), rn2(12)) : rn2(12)), 4));
         }
@@ -530,10 +530,10 @@ export function pick_nasty(difcap) {
     if ((((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0)) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), 28), 24)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), 28), 24)) <= 90 ? 1 : 0) ? 1 : 0)
         res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 551, __sl11), rn2(44)) : rn2(44)), 4);
     alt = res;
-    if (((cptr.ld1uo(cptr.add(cptr.add(svm, 16), res, 12), 2) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo(cptr.add(mons, res, 96), 90) >= difcap ? 1 : 0) ? 1 : 0) || (cptr.ldU16o(cptr.add(mons, res, 96), 34) & (In_hell(cptr.add(u, 24)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0 ? 1 : 0)
+    if (((cptr.ld1uo2(svm, res, 12, 18) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, 96, 90) >= difcap ? 1 : 0) ? 1 : 0) || (cptr.ldU16o2(mons, res, 96, 34) & (In_hell(cptr.add(u, 24)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0 ? 1 : 0)
         alt = big_to_little(res);
-    if (alt != res && (cptr.ld1uo(cptr.add(cptr.add(svm, 16), alt, 12), 2) & NHM.G_GENOD) == 0 ? 1 : 0) {
-        let mnam = cptr.ldPtro(cptr.add(mons, alt, 96), NHC.NEUTRAL, 8);
+    if (alt != res && (cptr.ld1uo2(svm, alt, 12, 18) & NHM.G_GENOD) == 0 ? 1 : 0) {
+        let mnam = cptr.ldPtro3(mons, alt, 96, NHC.NEUTRAL, 8, 0);
         let lastspace = cptr.strrchr(mnam, 32);
         if (cptr.strncmp(mnam, __sl12, 5n) && (!lastspace || ((strcmp(lastspace, __sl13) && strcmp(lastspace, __sl14) ? 1 : 0) && strcmp(lastspace, __sl15) ? 1 : 0) ? 1 : 0) ? 1 : 0)
             res = alt;
@@ -576,8 +576,8 @@ export function nasty(summoner) {
                         if (!--trylimit)
                             break __lbl_nextj;
                         makeindex = pick_nasty(difcap);
-                        m_cls = cptr.ld1so(cptr.add(mons, makeindex, 96), 28);
-                    } while ((((difcap > 0 && cptr.ld1uo(cptr.add(mons, makeindex, 96), 90) >= difcap ? 1 : 0) && attacktype(cptr.add(mons, makeindex, 96), NHM.AT_MAGC) ? 1 : 0) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL ? 1 : 0) ? 1 : 0) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON ? 1 : 0) ? 1 : 0);
+                        m_cls = cptr.ld1so2(mons, makeindex, 96, 28);
+                    } while ((((difcap > 0 && cptr.ld1uo2(mons, makeindex, 96, 90) >= difcap ? 1 : 0) && attacktype(cptr.add(mons, makeindex, 96), NHM.AT_MAGC) ? 1 : 0) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL ? 1 : 0) ? 1 : 0) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON ? 1 : 0) ? 1 : 0);
                     if (summoner && !enexto(bypos, cptr.ldI16o(summoner, 32), cptr.ldI16o(summoner, 34), cptr.add(mons, makeindex, 96)) ? 1 : 0)
                         continue;
                     if ((mtmp = makemon(cptr.add(mons, makeindex, 96), cptr.ldI16(bypos), cptr.ldI16o(bypos, 2), mmflags)) !== null) {
@@ -592,7 +592,7 @@ export function nasty(summoner) {
                     }
                     if (mtmp) {
                         if (cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_ARCH_LICH, 96)) || cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_ARCHON, 96)) ? 1 : 0) {
-                            tmp = ((cptr.ld1uo(cptr.add(mons, NHC.PM_ARCHON, 96), 90)) < (cptr.ld1uo(cptr.add(mons, NHC.PM_ARCH_LICH, 96), 90)) ? (cptr.ld1uo(cptr.add(mons, NHC.PM_ARCHON, 96), 90)) : (cptr.ld1uo(cptr.add(mons, NHC.PM_ARCH_LICH, 96), 90)));
+                            tmp = ((cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, 90)) < (cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, 90)) ? (cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, 90)) : (cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, 90)));
                             if (!difcap || difcap > tmp ? 1 : 0)
                                 difcap = tmp;
                         }
@@ -649,7 +649,7 @@ export function resurrect() {
         cptr.stU64o(mtmp, 224, cptr.ldU64o(mtmp, 224) & 18446744072904245247n);
         cptr.st1o(mtmp, 65, 0), cptr.stI32o(mtmp, 168, 0);
         set_malign(mtmp);
-        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+        if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
             pline(__sl20);
             ;
             verbalize(__sl21, verb);
@@ -666,7 +666,7 @@ export function intervene() {
         You_feel(__sl23);
         break;
         case 2:
-        if (!((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.BLINDED, 24) ? 1 : 0) && !cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.BLINDED, 24), 8) ? 1 : 0))
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
             You(__sl24, hcolor(cptr.ldPtr(c_color_names)));
         rndcurse();
         break;
@@ -738,7 +738,7 @@ cptr.stPtro(random_malediction, 80, __sl64);
 
 /** C ref: wizard.c:846 — @param {CPtr} mtmp */
 export function cuss(mtmp) {
-    if (((cptr.ldI64o(cptr.add(cptr.add(u, 112), NHC.DEAF, 24), 16) || cptr.ldI64o(cptr.add(u, 112), NHC.DEAF, 24) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+    if (((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
         return;
     if ((cptr.ldI32o(mtmp, 196) & 1)) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 851, __sl65), rn2(5)) : rn2(5))) {

@@ -31,7 +31,7 @@ export function luaF_newLclosure(L, nupvals) {
     cptr.stPtro(c, 24, null);
     cptr.st1o(c, 10, (uchar(((nupvals)))));
     while (nupvals--)
-        cptr.stPtro(cptr.add(c, 32), nupvals, null, 8);
+        cptr.stPtro2(c, nupvals, 8, 32, null);
     return c;
 }
 
@@ -43,7 +43,7 @@ export function luaF_initupvals(L, cl) {
         let uv = (((((o)))));
         cptr.stPtro(uv, 16, cptr.add(uv, 24));
         (cptr.st1o((cptr.ldPtro(uv, 16)), 8, 0));
-        cptr.stPtro(cptr.add(cl, 32), i, uv, 8);
+        cptr.stPtro2(cl, i, 8, 32, uv);
         ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((uv), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((uv))))) : (void 0));
     }
 }
@@ -255,8 +255,8 @@ export function luaF_freeproto(L, f) {
 /** C ref: lfunc.c:283 — @param {CPtr} f @param {CInt} local_number @param {CInt} pc @returns {CPtr} */
 export function luaF_getlocalname(f, local_number, pc) {
     let i;
-    for (i = 0; i < cptr.ldI32o(f, 36) && cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 8) <= pc ? 1 : 0; i++) {
-        if (pc < cptr.ldI32o(cptr.add(cptr.ldPtro(f, 104), i, 16), 12)) {
+    for (i = 0; i < cptr.ldI32o(f, 36) && cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 8) <= pc ? 1 : 0; i++) {
+        if (pc < cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 12)) {
             local_number--;
             if (local_number == 0)
                 return (cptr.add((cptr.ldPtro(cptr.ldPtro(f, 104), i, 16)), 24));

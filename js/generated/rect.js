@@ -34,9 +34,9 @@ export function init_rect() {
             panic(__sl0);
     }
     rect_cnt = 1;
-    cptr.stI16o(rect, 0, cptr.stI16o(cptr.add(rect, 0, 8), 2, 0), 8);
-    cptr.stI16o(cptr.add(rect, 0, 8), 4, 79);
-    cptr.stI16o(cptr.add(rect, 0, 8), 6, 20);
+    cptr.stI16o(rect, 0, cptr.stI16o2(rect, 0, 8, 2, 0), 8);
+    cptr.stI16o2(rect, 0, 8, 4, 79);
+    cptr.stI16o2(rect, 0, 8, 6, 20);
 }
 
 /** C ref: rect.c:45 */

@@ -1616,7 +1616,7 @@ export function argcheck(argc, argv, e_arg) {
         } else {
             userea = cptr.add(cptr.ldPtro(argv, i, 8), 1);
         }
-        match = match_optname(userea, cptr.ldPtro(cptr.add(earlyopts, idx, 24), 8), cptr.ldI32o(cptr.add(earlyopts, idx, 24), 16), cptr.ld1so(cptr.add(earlyopts, idx, 24), 20));
+        match = match_optname(userea, cptr.ldPtro2(earlyopts, idx, 24, 8), cptr.ldI32o2(earlyopts, idx, 24, 16), cptr.ld1so2(earlyopts, idx, 24, 20));
         if (match)
             break;
     }
@@ -4281,15 +4281,15 @@ function dump_enums() {
     let comment = new Uint8Array(256);
     for (i = 0; i < NHC.NUM_ENUM_DUMPS; ++i) {
         raw_printf(__sl1239, cptr.ldPtro(__static_dump_enums_edmp, i, 32));
-        for (j = 0; j < cptr.ldI32o(cptr.add(__static_dump_enums_edmp, i, 32), 24); ++j) {
-            nmprefix = (j >= ((cptr.ldI32o(cptr.add(__static_dump_enums_edmp, i, 32), 24) - cptr.ldI32o(cptr.add(__static_dump_enums_edmp, i, 32), 16)) | 0)) ? __sl24 : cptr.ldPtro(cptr.add(__static_dump_enums_edmp, i, 32), 8);
+        for (j = 0; j < cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 24); ++j) {
+            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 24) - cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 16)) | 0)) ? __sl24 : cptr.ldPtro2(__static_dump_enums_edmp, i, 32, 8);
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
-            if (cptr.ldI32o(cptr.add(__static_dump_enums_edmp, i, 32), 20) > 0) {
+            if (cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 20) > 0) {
                 nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) <= 126 ? 1 : 0) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) : 32);
             } else {
                 cptr.st1o(cptr.decay(comment), 0, 0, 1);
             }
-            raw_printf(__sl1242, nmprefix, -nmwidth, cptr.ldPtro(cptr.add(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16), 8), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16), cptr.decay(comment));
+            raw_printf(__sl1242, nmprefix, -nmwidth, cptr.ldPtro2(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16, 8), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16), cptr.decay(comment));
         }
         (cptr.ldPtro(windowprocs, 240))(__sl1243);
         (cptr.ldPtro(windowprocs, 240))(__sl24);

@@ -216,17 +216,17 @@ export function init_isaac64(seed, fn) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
         seed >>= 8n;
     }
-    cptr.stPtro(cptr.add(rnglist, rngindx, 4144), 16, isaac64_init(new_rng_state));
+    cptr.stPtro2(rnglist, rngindx, 4144, 16, isaac64_init(new_rng_state));
 }
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro(cptr.add(rnglist, NHC.CORE, 4144), 16)) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.CORE, 4144, 16)) % BigInt.asUintN(64, BigInt(x)))));
 }
 
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro(cptr.add(rnglist, NHC.DISP, 4144), 16)) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, 4144, 16)) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp ? 1 : 0) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);
