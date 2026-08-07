@@ -70,6 +70,23 @@ const MAX_CANDIDATES = 8;
 let installed = false;
 
 /**
+ * The bridge's own lua_State, which is emphatically not the interpreter's.
+ *
+ * It is allocated through the same `realloc` and is exactly as long, so it
+ * lands in `candidates` like any other — and because bridge.mjs creates it
+ * lazily, the very first ported level script in a run creates it *immediately
+ * before* its body executes, i.e. it becomes the newest candidate. A port that
+ * then asked for the interpreter's state (dat/Arc-loca.lua and dat/minetn-6.lua
+ * do, for nhlib's `align`) would be handed the port's own, in which nhlib was
+ * deliberately never loaded. Excluding it by identity is exact; the structural
+ * check cannot tell the two apart, because both really are lua_States.
+ */
+let portState = null;
+
+/** Tell the probe which state belongs to the bridge. @param {object} L */
+export function markPortState(L) { portState = L; }
+
+/**
  * Start watching the allocator. Idempotent, and a no-op unless a read-back
  * port is actually registered — with the ports off, `realloc` is untouched.
  *
@@ -115,7 +132,10 @@ function looksLikeState(l) {
  */
 export function interpState() {
     for (let i = candidates.length - 1; i >= 0; i--) {
-        if (looksLikeState(candidates[i])) return cptr.add(candidates[i], L_OFFSET);
+        if (!looksLikeState(candidates[i])) continue;
+        const L = cptr.add(candidates[i], L_OFFSET);
+        if (portState && cptr.eq(L, portState)) continue;
+        return L;
     }
     return null;
 }
@@ -161,6 +181,6 @@ export function stateSeed(L) {
 export function candidateCount() { return candidates.length; }
 
 /** Forget every candidate (segment teardown / test isolation). */
-export function resetStateProbe() { candidates.length = 0; }
+export function resetStateProbe() { candidates.length = 0; portState = null; }
 
 export { LUA_TTABLE };

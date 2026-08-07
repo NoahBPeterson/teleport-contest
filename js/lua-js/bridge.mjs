@@ -61,6 +61,7 @@ import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
 import { l_obj_register } from '../generated/nhlobj.js';
 import { rn2 } from '../generated/rnd.js';
+import { markPortState } from './interp-state.mjs';
 
 /** lua_type() tag for tables — LUA_TTABLE. */
 const LUA_TTABLE = 5;
@@ -95,6 +96,10 @@ function state() {
     if (L === null) {
         L = luaL_newstate();
         if (!L) throw new Error('lua-port: luaL_newstate() failed');
+        // This state is sizeof(LG) bytes out of the same allocator the
+        // interpreter's states come from, so interp-state.mjs's probe would
+        // otherwise mistake it for one. See markPortState().
+        markPortState(L);
         l_selection_register(L);
         l_register_des(L);
         l_obj_register(L);
