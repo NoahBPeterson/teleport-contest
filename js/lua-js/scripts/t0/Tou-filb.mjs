@@ -5,10 +5,9 @@
 // call stream is re-checked against the .lua by
 // test/lua-port-scripts.test.mjs on every run.
 //
-// A T0 script: a flat stream of des.* calls, no control flow, no closures
-// and no script-level RNG, so equivalence is exactly "the same des.* calls
-// in the same order with the same arguments". All randomness is inside the
-// C bindings themselves.
+// The script issues a stream of des.* calls and spends no RNG of its own,
+// so equivalence is exactly "the same des.* calls in the same order with
+// the same arguments". All randomness is inside the C bindings themselves.
 //
 // Original header:
 //   NetHack Tourist Tou-filb.lua	$NHDT-Date: 1652196015 2022/05/10 15:20:15 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.2 $
