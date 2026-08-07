@@ -35,10 +35,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkLibFn, checkPort } from '../tools/lua-port-gen/lua2des.mjs';
-import { T0, T1, T2 } from '../tools/lua-port-gen/gen-ports.mjs';
+import { T0, T1, T2, T3 } from '../tools/lua-port-gen/gen-ports.mjs';
 import { T0_PORTS } from '../js/lua-js/scripts/t0/index.mjs';
 import { T1_PORTS } from '../js/lua-js/scripts/t1/index.mjs';
 import { T2_PORTS } from '../js/lua-js/scripts/t2/index.mjs';
+import { T3_PORTS } from '../js/lua-js/scripts/t3/index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -46,6 +47,7 @@ const TIERS = [
     { tier: 't0', list: T0, ports: T0_PORTS },
     { tier: 't1', list: T1, ports: T1_PORTS },
     { tier: 't2', list: T2, ports: T2_PORTS },
+    { tier: 't3', list: T3, ports: T3_PORTS },
 ];
 
 let failures = 0;
@@ -88,7 +90,7 @@ for (const { tier, list, ports } of TIERS) {
 
 // A script may not be registered twice: the registry merges the tiers into one
 // map and a duplicate key would silently drop one of them.
-const all = [...T0, ...T1, ...T2];
+const all = [...T0, ...T1, ...T2, ...T3];
 if (new Set(all).size !== all.length) {
     console.error('FAIL a script appears in more than one tier');
     failures++;

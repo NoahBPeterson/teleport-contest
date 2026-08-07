@@ -50,7 +50,8 @@
 
 import * as cptr from '../cptr.js';
 import { Longjmp } from '../cjmp.js';
-import { luaL_newstate, luaL_ref, luaL_unref } from '../generated/lauxlib.js';
+import { luaL_newstate, luaL_ref, luaL_requiref, luaL_unref } from '../generated/lauxlib.js';
+import { luaopen_string } from '../generated/lstrlib.js';
 import {
     lua_arith, lua_callk, lua_checkstack, lua_createtable, lua_getfield,
     lua_getglobal, lua_gettop, lua_pcallk, lua_pushboolean, lua_pushcclosure,
@@ -65,6 +66,7 @@ import { rn2 } from '../generated/rnd.js';
 import { cmd_from_ecname } from '../generated/cmd.js';
 import { depth } from '../generated/dungeon.js';
 import { name_to_mon } from '../generated/mondata.js';
+import { parse_conf_str, parse_config_line } from '../generated/cfgfiles.js';
 import { gu, svm, u } from '../generated/decl.js';
 import { interpState, markPortState } from './interp-state.mjs';
 import { luaLen, luaList, makeNhlib } from './nhlib.mjs';
@@ -114,6 +116,22 @@ function state() {
         l_selection_register(L);
         l_register_des(L);
         l_obj_register(L);
+        // Lua's *string* library, and only it. dat/tut-1.lua is the one script
+        // in the corpus that uses a string method — `s:match("^^([A-Z])$")`,
+        // twice — and a Lua pattern is not a JS regexp: the two disagree about
+        // `%`, about `-`, about character classes and about anchoring. Rather
+        // than reimplement `str_match`, the port calls it, through the same
+        // `string.match` the VM would have reached via the string metatable's
+        // __index. nhl_init() opens this library too (NHL_SB_STRING is part of
+        // NHL_SB_SAFE, nhlua.c's nhlL_openlibs), so this is the same code
+        // running on the same input.
+        //
+        // Only `string`. §9's gotcha still stands for the rest: opening `math`
+        // would re-seed a PRNG nobody reads, and luaL_openlibs would open both.
+        // luaopen_string touches no NetHack global and draws nothing.
+        const base = lua_gettop(L);
+        luaL_requiref(L, cstr('string'), luaopen_string, 1);
+        lua_settop(L, base);
     }
     return L;
 }
@@ -471,6 +489,40 @@ export const selection = Object.freeze(Object.fromEntries([
     ['sub', (a, b) => selectionArith(LUA_OPSUB, a, b)],
 ]));
 
+// nhlobj.c's l_obj_methods[]. Registered as one table whose metatable __index
+// points back at itself, exactly as nhlsel.c does for selections, so
+// `o:placeobj(x, y)` and `obj.placeobj(o, x, y)` are the same call and the port
+// spells out the second form.
+const OBJ_FUNCS = [
+    'new', 'isnull', 'at', 'next', 'totable', 'class', 'placeobj', 'container',
+    'contents', 'addcontent', 'has_timer', 'peek_timer', 'stop_timer',
+    'start_timer', 'bury',
+];
+
+/** obj.* — `obj.new(name)` hands back the userdata as an opaque LuaValue. */
+export const obj = Object.freeze(Object.fromEntries(
+    OBJ_FUNCS.map((n) => [n, (...args) => callTable1('obj', n, args)]),
+));
+
+/**
+ * Lua's `string` library, as far as this corpus reaches it: `s:match(p)`.
+ *
+ * A port writes `string.match(s, p)` for the .lua's `s:match(p)`, which is what
+ * that sugar means — `luaopen_string` sets the string metatable's `__index` to
+ * the library table, so `("x"):match(p)` *is* `string.match("x", p)`. Driving
+ * the real `str_match` means the port does not have to reimplement Lua
+ * patterns, which are not regular expressions and differ from JS in every
+ * detail that matters here.
+ *
+ * `match` returns the first capture (a JS string), or null when the pattern
+ * does not match — `lua_type` reports LUA_TNIL and takeResult() maps it to
+ * null, so a port's `m != null` reads the way the .lua's `m ~= nil` does.
+ */
+export const string = Object.freeze({
+    match: (s, pat) => callTable1('string', 'match', [s, pat]),
+    format: (fmt, ...args) => callTable1('string', 'format', [fmt, ...args]),
+});
+
 // ---------------------------------------------------------------------------
 // nhlib.lua's helpers, ported (RNG-exact)
 // ---------------------------------------------------------------------------
@@ -538,6 +590,19 @@ export function interpAlign() {
 }
 
 /**
+ * `nh.parse_config(str)` — nhl_parse_config() (nhlua.c), which is exactly
+ * `parse_conf_str(luaL_checkstring(L, 1), parse_config_line)` and returns
+ * nothing. dat/tut-1.lua turns on three newbie-friendly options with it before
+ * it draws anything, and those options change what the rest of the game
+ * displays, so the call has to happen at the same point with the same bytes.
+ *
+ * parse_conf_str() copies out of the string into its own parser buffer
+ * (cfgfiles.c) and never writes through the pointer, so handing it an interned
+ * cstr() is safe.
+ */
+export function parseConfig(s) { parse_conf_str(cstr(s), parse_config_line); }
+
+/**
  * nhlib.lua:47 `monkfoodshop()` — the one nhlib helper a T0 script calls.
  * `u.role` is nhl_u_index()'s "role" case, i.e. gu.urole.name.m
  * (js/generated/nhlua.js:2046). No RNG, no Lua state.
@@ -566,14 +631,27 @@ export function isGenocided(name) {
 /**
  * The `u` table, as far as anything this port replaces reads it.
  *
- * Only `depth` is needed, and only by hell_tweaks(), which spends
- * `percent(20 + u.depth)` and `math.random(u.depth)` on it. nhl_meta_u_index()'s
- * "depth" case is `lua_pushinteger(L, depth(&u.uz))` (nhlua.c:2171), and `&u.uz`
- * is `cptr.add(u, 24)` in the transpiler's own output (nhlua.js:2055). A getter,
- * so a port that never mentions `u` never reads NetHack's memory for it.
+ * Every field is a getter, so a port that never mentions `u` never reads
+ * NetHack's memory for it. The offsets are nhl_meta_u_index()'s own: that
+ * function is a table of {name, &field, type} triples, and the transpiler
+ * emitted it as a 24-byte-stride array of literal `cptr.add(u, N)` pointers
+ * (js/generated/nhlua.js:1960-2031), so each N below is the transpiler's answer
+ * rather than a guess. `role`, `depth` and `moves` are the three special cases
+ * nhl_meta_u_index() handles after the table.
+ *
+ *   ux  @0   ANY_UCHAR    uhunger @104  ANY_INT
+ *   uy  @2   ANY_UCHAR    uenmax  @2212 ANY_INT
+ *   role     = gu.urole.name.m       depth = depth(&u.uz), &u.uz == u+24
+ *   moves    = svm.moves
  */
 export const uTable = Object.freeze({
     get depth() { return depth(cptr.add(u, 24)); },
+    get ux() { return cptr.ld1uo(u, 0); },
+    get uy() { return cptr.ld1uo(u, 2); },
+    get uhunger() { return cptr.ldI32o(u, 104); },
+    get uenmax() { return cptr.ldI32o(u, 2212); },
+    get role() { return cptr.cstr(cptr.ldPtro(gu, 8)); },
+    get moves() { return Number(cptr.ldI64o(svm, 8)); },
 });
 
 /**
@@ -604,8 +682,11 @@ export { luaLen, luaList };
  * the seven Gehennom levels that end with it are ports all the way down.
  */
 export const api = Object.freeze({
-    des, selection,
-    nh: Object.freeze({ rn2: nhRn2, random: nhRandom, eckey, is_genocided: isGenocided }),
+    des, selection, obj, string,
+    nh: Object.freeze({
+        rn2: nhRn2, random: nhRandom, eckey, is_genocided: isGenocided,
+        parse_config: parseConfig,
+    }),
     // `math` is nhlib.lua's shim, not JavaScript's: a port writes
     // `math.random(4, 8)` exactly as the .lua does and draws from NetHack's RNG.
     percent, shuffle, d, math: Object.freeze({ random: mathRandom }),

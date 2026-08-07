@@ -370,9 +370,20 @@ async function main() {
     if (argv[0] === '--seed') {
         const seed = argv[1];
         const get = (f, d) => { const i = argv.indexOf(f); return i < 0 ? d : argv[i + 1]; };
+        // --rc=<text> writes a .nethackrc for the synthetic segment. It is how
+        // a script behind an *option* rather than behind a dungeon branch gets
+        // reached in ordinary play: `--rc='OPTIONS=tutorial'` makes
+        // ask_do_tutorial() (options.c:430) answer yes without a menu, so
+        // maybe_do_tutorial() (allmain.c:568) teleports the hero into tut-1 as
+        // the very first thing the game does. See NOTES-lua-port.md §14.1.
+        const rc = (get('--rc', '') || '').replace(/\\n/g, '\n');
         sessions = [{
-            name: `seed${seed}`,
-            segments: [{ seed, datetime: get('--datetime', '20260401090000'), moves: get('--moves', '  ') }],
+            name: `seed${seed}${rc ? ` [${rc.replace(/\n/g, '; ')}]` : ''}`,
+            segments: [{
+                seed, datetime: get('--datetime', '20260401090000'),
+                moves: get('--moves', '  '),
+                nethackrc: rc && !rc.endsWith('\n') ? `${rc}\n` : rc,
+            }],
         }];
     } else {
         const files = [];

@@ -64,7 +64,7 @@ export default function bigrm_2({ des, selection, percent, math }) {
         darkness = selection.bor(selection.area(1, 1, 22, 16), selection.area(52, 1, 73, 16));
     }
 
-    if (darkness !== null) {
+    if (darkness != null) {
         des.region(darkness, 'unlit');
         if (percent(25)) {
             des.replace_terrain({

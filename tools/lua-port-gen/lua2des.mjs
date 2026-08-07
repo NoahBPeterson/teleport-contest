@@ -77,7 +77,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { luaLen, luaList, makeNhlib } from '../../js/lua-js/nhlib.mjs';
+import { LuaList, luaLen, luaList, makeNhlib } from '../../js/lua-js/nhlib.mjs';
 
 // ---------------------------------------------------------------------------
 // Lexer
@@ -662,10 +662,7 @@ function expr(node, pad) {
         case 'len': return `luaLen(${expr(node.obj, pad)})`;
         case 'concat': return node.parts.map((x) => expr(x, pad)).join(' + ');
         case 'call': return `${expr(node.fn, pad)}(${argList(node.args, pad)})`;
-        // `sel:filter_mapchar('.')` is sugar for the same C function with the
-        // selection as argument 1 — nhlsel.c registers one table and points
-        // the metatable's __index at it — so the port spells it out.
-        case 'method': return `selection.${node.name}(${argList([node.obj, ...node.args], pad)})`;
+        case 'method': return methodJs(node, pad);
         case 'table': return tableLit(node, pad);
         case 'func': return funcLit(node, pad);
         case 'paren': return `(${expr(node.e, pad)})`;
@@ -714,44 +711,139 @@ function luaTrueJsFalse(n) {
 const SELECTION_SCALARS = new Set(['numpoints', 'get', 'rndcoord', 'bounds', 'describe_size']);
 
 /**
- * Is this expression a selection?
+ * `a:m(…)` is sugar for `<table>.m(a, …)`, and until S5 the emitter assumed the
+ * table was always `selection` — true for the first 126 ports, and false for
+ * dat/tut-1.lua, whose `s:match("^^([A-Z])$")` is Lua's *string* library. So a
+ * method call now has to be typed by its receiver.
  *
- * It has to be answerable, because `+` and `-` are overloaded: nhlsel.c aliases
- * `__add` to l_selection_or and `__sub` to l_selection_sub, so
+ * The three tables whose `__index` makes method sugar work here, with the
+ * methods this corpus uses:
+ *   selection — nhlsel.c's l_selection_methods[], all 24
+ *   string    — Lua's own, `match` only (dat/tut-1.lua:7,13)
+ *   obj       — nhlobj.c's l_obj_methods[], `placeobj` only (nhlib.lua:222)
+ *
+ * The name sets are disjoint, but dispatching on the name alone would be a
+ * guess. `string` and `obj` methods therefore require a *positively inferred*
+ * receiver (exprType below) and are a hard error otherwise; a selection method
+ * keeps the name-based rule that the 126 existing ports were generated under,
+ * and additionally errors if the receiver is positively something else.
+ */
+const SELECTION_METHODS = new Set([
+    'new', 'clone', 'get', 'set', 'numpoints', 'negate', 'percentage',
+    'rndcoord', 'line', 'randline', 'rect', 'fillrect', 'area', 'grow',
+    'filter_mapchar', 'match', 'floodfill', 'circle', 'ellipse', 'gradient',
+    'iterate', 'bounds', 'room', 'describe_size',
+]);
+const STRING_METHODS = new Set(['match']);
+const OBJ_METHODS = new Set([
+    'isnull', 'at', 'next', 'totable', 'class', 'placeobj', 'container',
+    'contents', 'addcontent', 'has_timer', 'peek_timer', 'stop_timer',
+    'start_timer', 'bury',
+]);
+
+/**
+ * The static type of an expression, as far as this generator needs one:
+ * `'selection'`, `'string'`, `'obj'`, or null for "not known".
+ *
+ * It has to be answerable for selections, because `+` and `-` are overloaded:
+ * nhlsel.c aliases `__add` to l_selection_or and `__sub` to l_selection_sub, so
  * `validtraps - (a + b)` in dat/Tou-loca.lua is set difference and union, while
  * `bnds.hy - 1` two files away is ordinary subtraction. Emitting JS `-` for the
  * first produces NaN, and NaN reaches lspo_trap as a coordinate — which is
- * exactly the bug this function exists to make impossible.
+ * exactly the bug this function exists to make impossible. S5 needs the same
+ * question answered for strings, so that `s:match(p)` goes to `string.match`
+ * and not to a selection method that does not exist.
  *
- * The rule is syntactic and conservative: a selection is what `selection.*`
- * returns (minus the scalar methods above), what a `:method()` on one returns,
- * and what an operator between two of them returns. `scope` supplies the answer
- * for a bare name; anything it does not know is not a selection.
+ * The rule is syntactic and conservative: anything not derivable is null, and
+ * a null type is never used to *choose* a translation, only to refuse one.
  */
-function isSelectionExpr(node, scope) {
-    if (!node) return false;
+function exprType(node, scope) {
+    if (!node) return null;
     switch (node.t) {
-        case 'paren': return isSelectionExpr(node.e, scope);
-        case 'name': return !!scope?.isSelection(node.v);
-        case 'method': return !SELECTION_SCALARS.has(node.name);
+        case 'paren': return exprType(node.e, scope);
+        case 'lit': return typeof node.v === 'string' ? 'string' : null;
+        case 'concat': return 'string';
+        case 'name': return scope?.typeOf(node.v) ?? null;
+        case 'method':
+            if (STRING_METHODS.has(node.name)
+                && exprType(node.obj, scope) === 'string') return 'string';
+            return SELECTION_SCALARS.has(node.name) ? null : 'selection';
         case 'call': {
-            if (node.fn.t !== 'field' || node.fn.obj.t !== 'name') return false;
+            // nhlib's monkfoodshop() is the one bare-name call whose result is
+            // concatenated or compared as a string.
+            if (node.fn.t === 'name') return node.fn.v === 'monkfoodshop' ? 'string' : null;
+            if (node.fn.t !== 'field' || node.fn.obj.t !== 'name') return null;
+            const tbl = node.fn.obj.v, fn = node.fn.name;
             // lspo_map() returns a selection of the squares it wrote; the seven
             // Gehennom levels union three of those into hell_tweaks()'s
             // protected area. It is the only des.* whose result the corpus reads.
-            if (node.fn.obj.v === 'des') return node.fn.name === 'map';
-            return node.fn.obj.v === 'selection' && !SELECTION_SCALARS.has(node.fn.name);
+            if (tbl === 'des') return fn === 'map' ? 'selection' : null;
+            if (tbl === 'selection') return SELECTION_SCALARS.has(fn) ? null : 'selection';
+            if (tbl === 'string') return 'string';
+            if (tbl === 'obj') return fn === 'new' || fn === 'at' ? 'obj' : null;
+            if (tbl === 'nh') return fn === 'eckey' ? 'string' : null;
+            return null;
         }
         case 'binop':
-            return '|&+-'.includes(node.op)
-                && (isSelectionExpr(node.l, scope) || isSelectionExpr(node.r, scope));
-        default: return false;
+            if ('|&+-'.includes(node.op)
+                && (exprType(node.l, scope) === 'selection'
+                    || exprType(node.r, scope) === 'selection')) return 'selection';
+            return null;
+        default: return null;
     }
 }
+
+/** Kept as its own name because §12.2's reasoning is all phrased in it. */
+function isSelectionExpr(node, scope) { return exprType(node, scope) === 'selection'; }
+
+/**
+ * `a:m(args)` -> `<table>.m(a, args)`, with the table chosen by the receiver.
+ * See SELECTION_METHODS above for why the choice is made this way.
+ */
+function methodJs(node, pad) {
+    const recv = exprType(node.obj, curScope);
+    const spelled = (tbl) => {
+        if (quirks) quirks.used.add(tbl);
+        return `${tbl}.${node.name}(${argList([node.obj, ...node.args], pad)})`;
+    };
+    if (recv === 'string') {
+        if (!STRING_METHODS.has(node.name)) {
+            throw new Error(`lua2des: line ${node.line}: \`:${node.name}()\` on a string is `
+                + 'outside the supported subset — port this expression by hand');
+        }
+        return spelled('string');
+    }
+    if (recv === 'obj') {
+        if (!OBJ_METHODS.has(node.name)) {
+            throw new Error(`lua2des: line ${node.line}: \`:${node.name}()\` on an obj is `
+                + 'outside the supported subset — port this expression by hand');
+        }
+        return spelled('obj');
+    }
+    if (!SELECTION_METHODS.has(node.name)) {
+        throw new Error(`lua2des: line ${node.line}: \`:${node.name}()\` is not a selection `
+            + 'method and the receiver is not a string or an obj — port this expression by hand');
+    }
+    return spelled('selection');
+}
+
+/** A literal `nil`. */
+function isNilLit(n) { return n.t === 'lit' && n.v === null; }
 
 function binopJs(node, pad) {
     const l = () => expr(node.l, pad);
     const r = () => expr(node.r, pad);
+    // `x ~= nil` / `x == nil`. Lua has one absent value; JS has two, and which
+    // one a port sees is an implementation detail of how it was called — an
+    // omitted parameter is `undefined`, a table field that was never set is
+    // `undefined`, and a marshalled Lua nil is `null`. Strict `!==` would make
+    // `d(20)`'s `faces == nil` false and take the wrong branch, silently and on
+    // both sides of --check. Loose `==`/`!=` against `null` is true for exactly
+    // {null, undefined}, which is Lua's rule; evalNode() below implements the
+    // same thing for the .lua side.
+    if ((node.op === '==' || node.op === '~=') && (isNilLit(node.l) || isNilLit(node.r))) {
+        return `${l()} ${node.op === '==' ? '==' : '!='} ${r()}`;
+    }
     // The selection algebra. `|` and `&` are metamethods on the selection
     // userdata (nhlsel.c's l_selection_meta[]: __bor -> l_selection_or,
     // __band -> l_selection_and), and the port spells out the C function the
@@ -922,8 +1014,8 @@ export function fnName(base) {
  * helpers; `align` and `monkfoodshop` are the two other pieces of the Lua
  * prelude a level script reaches for.
  */
-const API_FIELDS = ['des', 'selection', 'nh', 'percent', 'shuffle', 'd', 'math',
-    'align', 'monkfoodshop', 'hell_tweaks', 'u', 'nhc', 'luaList', 'luaLen'];
+const API_FIELDS = ['des', 'selection', 'obj', 'string', 'nh', 'percent', 'shuffle',
+    'd', 'math', 'align', 'monkfoodshop', 'hell_tweaks', 'u', 'nhc', 'luaList', 'luaLen'];
 
 /** nhlib.lua globals a script may call as a bare function. */
 const NHLIB_FUNCS = new Set(['monkfoodshop', 'percent', 'shuffle', 'd', 'hell_tweaks']);
@@ -934,7 +1026,9 @@ function apiFields(items) {
     walkExprs(items, (n) => {
         if (n.t === 'name') used.add(n.v);
         if (n.t === 'field' && n.obj.t === 'name') used.add(n.obj.v);
-        if (n.t === 'method') used.add('selection');
+        // A `a:m(…)` needs whichever table its receiver's type selects;
+        // methodJs() records that in quirks.used as it emits, because only the
+        // emitter has the scope that answers it.
         if (n.t === 'len') used.add('luaLen');
         // `a | b` and `a & b` on selections dispatch to the same C functions
         // the metatable's __bor / __band entries name; the bridge spells them
@@ -1058,23 +1152,23 @@ export function emitModule(items, base) {
 class Scope {
     constructor(parent) {
         this.names = new Set();
-        /** Names currently bound to a selection — see isSelectionExpr(). */
-        this.selections = new Set();
+        /** Names currently bound to a typed value — see exprType(). */
+        this.types = new Map();
         this.parent = parent ?? null;
     }
-    declare(n, isSel = false) {
+    declare(n, ty = null) {
         this.names.add(n);
-        if (isSel) this.selections.add(n); else this.selections.delete(n);
+        if (ty) this.types.set(n, ty); else this.types.delete(n);
     }
     has(n) { return this.names.has(n) || (this.parent ? this.parent.has(n) : false); }
-    isSelection(n) {
-        if (this.names.has(n)) return this.selections.has(n);
-        return this.parent ? this.parent.isSelection(n) : false;
+    typeOf(n) {
+        if (this.names.has(n)) return this.types.get(n) ?? null;
+        return this.parent ? this.parent.typeOf(n) : null;
     }
-    /** `x = e` where x lives further out: update the flag where it lives. */
-    reassign(n, isSel) {
+    /** `x = e` where x lives further out: update the type where it lives. */
+    reassign(n, ty) {
         for (let s = this; s; s = s.parent) {
-            if (s.names.has(n)) { if (isSel) s.selections.add(n); else s.selections.delete(n); return; }
+            if (s.names.has(n)) { if (ty) s.types.set(n, ty); else s.types.delete(n); return; }
         }
     }
 }
@@ -1275,10 +1369,10 @@ function renderStmts(body, pad, scope, out) {
                     out.push(`${pad}// luaList keeps Lua's 1-based indices, so ${it.name}[n] means the same here.`);
                 }
             }
-            const isSel = isSelectionExpr(it.value, scope);
+            const ty = exprType(it.value, scope);
             const kw = declares ? keyword(it.name, i) : '';
-            if (declares) { seen.add(it.name); scope.declare(it.name, isSel); }
-            else scope.reassign(it.name, isSel);
+            if (declares) { seen.add(it.name); scope.declare(it.name, ty); }
+            else scope.reassign(it.name, ty);
             pushWrapped(out, `${pad}${kw}${jsName(it.name)} = ${v};`, pad);
             return;
         }
@@ -1378,6 +1472,12 @@ function pushWrapped(out, text, pad = PAD) {
     if (open < 0 || close < open) { out.push(text); return; }
     const head = text.slice(0, open + 1), tail = text.slice(close);
     const args = splitTop(text.slice(open + 1, close));
+    // The first `(` and the last `)` are not always one call's argument list.
+    // dat/tut-1.lua's `tut_key("movewest") .. " " .. tut_key("movesouth") .. …`
+    // is a chain of four calls, so the text between them is unbalanced and
+    // breaking there would put a newline in the middle of an argument list.
+    // splitTop() says so by returning null; leave the long line alone.
+    if (args === null) { out.push(text); return; }
     const padIn = pad + PAD;
     const rows = [];
     let row = '';
@@ -1392,7 +1492,11 @@ function pushWrapped(out, text, pad = PAD) {
     out.push(pad + tail);
 }
 
-/** Split an argument list on top-level commas. */
+/**
+ * Split an argument list on top-level commas.
+ * @returns {string[]|null} null when `s` is not a balanced argument list, i.e.
+ *   when the `(`/`)` it was sliced out of belong to two different calls.
+ */
 function splitTop(s) {
     const out = [];
     let depth = 0, cur = '', q = null;
@@ -1401,10 +1505,11 @@ function splitTop(s) {
         if (q) { cur += c; if (c === '\\') { cur += s[++i] ?? ''; } else if (c === q) q = null; continue; }
         if (c === "'" || c === '`') { q = c; cur += c; continue; }
         if ('([{'.includes(c)) depth++;
-        if (')]}'.includes(c)) depth--;
+        if (')]}'.includes(c)) { depth--; if (depth < 0) return null; }
         if (c === ',' && depth === 0) { out.push(cur.trim()); cur = ''; continue; }
         cur += c;
     }
+    if (depth !== 0) return null;
     if (cur.trim()) out.push(cur.trim());
     return out;
 }
@@ -1456,12 +1561,101 @@ export function stubRng(mode) {
 const CHECK_RNGS = ['low', 'high', 1, 2, 3, 4, 5, 6];
 
 /**
+ * `string.match`, for the check stub only.
+ *
+ * The *port* does not use this: bridge.mjs calls the transpiled `str_match`
+ * through `string.match` in its own lua_State, so the game path runs Lua's own
+ * pattern engine on Lua's own input. --check has no game, so it needs an
+ * implementation — and it only has to be the *same* implementation on both
+ * sides of the comparison, since both the .lua interpreter and the emitted
+ * module call this one function.
+ *
+ * It is still written to Lua's rules rather than JS's, so that the values the
+ * branches see are the values the real game would produce: a Lua pattern is not
+ * a regexp, `%` is the escape (not `\`), `-` is a lazy quantifier (not a range
+ * outside `[]`), and `^`/`$` anchor only at the pattern's ends. Anything
+ * outside the translated subset is a hard error, so a 5.1 that grew `%b` or a
+ * back-reference fails loudly instead of matching something else.
+ */
+export function luaMatch(s, pat) {
+    if (typeof s !== 'string' || typeof pat !== 'string') {
+        throw new Error('lua2des --check: string.match needs two strings');
+    }
+    const CLASS = {
+        a: 'A-Za-z', A: '^A-Za-z', d: '0-9', D: '^0-9', l: 'a-z', L: '^a-z',
+        s: ' \\t\\n\\r\\f\\v', S: '^ \\t\\n\\r\\f\\v', u: 'A-Z', U: '^A-Z',
+        w: '0-9A-Za-z', W: '^0-9A-Za-z', x: '0-9A-Fa-f', X: '^0-9A-Fa-f',
+        p: '!-/:-@\\[-`{-~', c: '\\x00-\\x1f',
+    };
+    const quote = (c) => (/[.*+?^${}()|[\]\\/]/.test(c) ? `\\${c}` : c);
+    let out = '', i = 0, ncap = 0;
+    if (pat[0] === '^') { out += '^'; i = 1; } else out += '^';   // match() scans; see below
+    let anchoredStart = pat[0] === '^';
+    for (; i < pat.length; i++) {
+        const c = pat[i];
+        if (c === '%') {
+            const e = pat[++i];
+            if (e === undefined) throw new Error('lua2des --check: pattern ends with %');
+            if (e in CLASS) { out += `[${CLASS[e]}]`; continue; }
+            if (/[0-9bf]/.test(e)) {
+                throw new Error(`lua2des --check: Lua pattern item %${e} is outside the supported subset`);
+            }
+            out += quote(e);
+            continue;
+        }
+        if (c === '[') {
+            let j = i + 1, set = '';
+            if (pat[j] === '^') { set += '^'; j++; }
+            if (pat[j] === ']') { set += '\\]'; j++; }
+            for (; j < pat.length && pat[j] !== ']'; j++) {
+                if (pat[j] === '%') {
+                    const e = pat[++j];
+                    set += e in CLASS ? CLASS[e].replace(/^\^/, '') : quote(e);
+                } else set += pat[j] === '\\' ? '\\\\' : pat[j];
+            }
+            if (pat[j] !== ']') throw new Error('lua2des --check: unfinished [ in pattern');
+            out += `[${set}]`;
+            i = j;
+            continue;
+        }
+        if (c === '(') { ncap++; out += '('; continue; }
+        if (c === ')') { out += ')'; continue; }
+        if (c === '.') { out += '[\\s\\S]'; continue; }
+        if (c === '*' || c === '+' || c === '?') { out += c; continue; }
+        if (c === '-') { out += '*?'; continue; }
+        if (c === '$' && i === pat.length - 1) { out += '$'; continue; }
+        out += quote(c);
+    }
+    // Lua's match() scans for the leftmost match unless the pattern is anchored
+    // with a leading '^'. Both tut-1 patterns are anchored at both ends; an
+    // unanchored one is emulated by dropping the '^' this builder always writes.
+    const re = new RegExp(anchoredStart ? out : out.slice(1));
+    const m = re.exec(s);
+    if (!m) return null;
+    if (ncap === 0) return m[0];
+    if (ncap > 1) throw new Error('lua2des --check: multi-capture patterns are outside the supported subset');
+    return m[1];
+}
+
+/**
  * The `u.depth` each setting reports. Only hell_tweaks() reads it, for
  * `percent(20 + u.depth)` and `math.random(u.depth)`; running the settings at
  * different depths covers the shallow case where the pool branch is a coin
  * flip and the deep case where it is nearly certain.
  */
 const DEPTHS = [1, 45, 26, 33, 40, 47, 52, 30];
+
+/**
+ * The `u.role` and `u.uenmax` each setting reports.
+ *
+ * dat/tut-1.lua branches on both — a Knight gets a jump engraving, a Monk gets
+ * gloves instead of leather armour, and a hero with under 5 Pw gets an extra
+ * "not enough energy" engraving — and nhlib.lua's monkfoodshop() branches on
+ * the first. Varying them across the settings is what transcription-checks both
+ * arms, the way `low`/`high` do for `percent()`.
+ */
+const ROLES = ['Knight', 'Monk', 'Wizard', 'Knight', 'Valkyrie', 'Monk', 'Tourist', 'Knight'];
+const UENMAX = [0, 10, 3, 20, 4, 15, 2, 30];
 
 /** Repo root, for the generated modules --check has to import. */
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -1492,7 +1686,7 @@ function sanitize(v, pending) {
  * what makes the two streams comparable at all.
  */
 export function recordingApi(rng = stubRng(1), opts = {}) {
-    const { depth = 30, hellTweaks = null } = opts;
+    const { depth = 30, role = 'Knight', uenmax = 10, hellTweaks = null } = opts;
     const calls = [];
     /**
      * Selection methods that hand a *value* back to the script rather than
@@ -1535,8 +1729,22 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         get: (_, name) => (...args) => record(`${tbl}.${String(name)}`, args),
     });
     const { mathRandom, percent, d, shuffle } = makeNhlib(rng.rn2);
+    /**
+     * nh.eckey() cycles through the three *shapes* a key binding can have, so
+     * that dat/tut-1.lua's `s:match("^^([A-Z])$")` and `s:match("^M%-([A-Z])$")`
+     * each match sometimes and fail sometimes inside one run. A hash of the
+     * command name would fix which arm each site takes for ever; a call counter
+     * moves them as soon as anything above shifts, and both sides of the
+     * comparison share the order because they run the same calls.
+     */
+    let eckeys = 0;
+    const eckey = (c) => {
+        const shape = eckeys++ % 3;
+        const L = String(c)[0].toUpperCase();
+        return shape === 0 ? placeholder(`nh.eckey(${c})`) : shape === 1 ? `^${L}` : `M-${L}`;
+    };
     const nh = {
-        eckey: (c) => placeholder(`nh.eckey(${c})`),
+        eckey,
         rn2: (n) => rng.rn2(n),
         random: (a, b) => (b === undefined ? rng.rn2(a) : (a + rng.rn2(b)) | 0),
         // The real nhl_is_genocided() spends no RNG. The stub draws so that
@@ -1544,16 +1752,28 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         // dat/tower1.lua's `if (not Vgenod)`; both sides share the counter, so
         // the extra draw cancels out of the comparison.
         is_genocided: () => rng.rn2(2) === 0,
+        // Everything below has a *game* effect rather than a value, so it goes
+        // into the recorded stream like a des.* call: a port that dropped one,
+        // or moved it, has to fail the comparison.
+        parse_config: (...a) => { record('nh.parse_config', a); },
+        pline: (...a) => { record('nh.pline', a); },
+        text: (...a) => { record('nh.text', a); },
+        callback: (...a) => { record('nh.callback', a); },
+        gamestate: (...a) => { record('nh.gamestate', a); },
     };
     const align = luaList(placeholder('align[1]'), placeholder('align[2]'), placeholder('align[3]'));
     const api = {
-        des: table('des'), selection: table('selection'), nh,
+        des: table('des'), selection: table('selection'), obj: table('obj'), nh,
+        // string.match is recorded *and* answered: recording pins the pattern
+        // the port passes, answering drives the branch that reads the result.
+        string: { match: (s, p) => { record('string.match', [s, p]); return luaMatch(s, p); } },
         percent, shuffle, d, math: { random: mathRandom },
         align, monkfoodshop: () => placeholder('monkfoodshop()'),
-        // nhc's constants are the real ones; u.depth is a setting of the check
-        // (hell_tweaks() reads it for two thresholds and a die roll).
+        // nhc's constants are the real ones; u.depth / u.role / u.uenmax are
+        // settings of the check (hell_tweaks() reads depth for two thresholds
+        // and a die roll; tut-1 branches on the other two).
         nhc: { COLNO: 80, ROWNO: 21 },
-        u: { depth },
+        u: { depth, role, uenmax, ux: 40, uy: 10, uhunger: 900, moves: 100 },
         luaList, luaLen,
     };
     // hell_tweaks() is itself a port (js/lua-js/nhlib-fns.mjs), generated from
@@ -1603,6 +1823,12 @@ class Env {
  * wrong port. See the module header.
  */
 function luaTrue(v) { return v !== false && v !== null && v !== undefined; }
+
+/** Lua's `nil`, in either of the two spellings JS offers. */
+function isNil(v) { return v === null || v === undefined; }
+
+/** Lua's `==`, with null and undefined both meaning nil. */
+function luaEq(a, b) { return isNil(a) || isNil(b) ? isNil(a) && isNil(b) : a === b; }
 
 /** Lua's `%` is floor-modulo; JS's `%` truncates. They differ on negatives. */
 function luaMod(a, b) { return a - Math.floor(a / b) * b; }
@@ -1654,8 +1880,11 @@ function evalNode(node, env) {
                 case '/': return a / b;
                 case '//': return Math.floor(a / b);
                 case '%': return luaMod(a, b);
-                case '==': return a === b;
-                case '~=': return a !== b;
+                // Lua has one nil; JS has null and undefined, and both stand
+                // for it here (see binopJs). `nil == nil` is true whichever
+                // spelling each side happens to hold.
+                case '==': return luaEq(a, b);
+                case '~=': return !luaEq(a, b);
                 case '<': return a < b;
                 case '>': return a > b;
                 case '<=': return a <= b;
@@ -1683,8 +1912,15 @@ function evalNode(node, env) {
             return r === undefined ? undefined : r.value;
         };
         case 'method': {
-            const obj = evalNode(node.obj, env);
-            return env.api.selection[node.name](obj, ...node.args.map((a) => evalNode(a, env)));
+            const recv = evalNode(node.obj, env);
+            // Lua picks the method table from the receiver's metatable, i.e.
+            // from the *value*. The emitter has to decide it statically
+            // (methodJs / exprType), so doing it dynamically here is what turns
+            // a wrong static inference into a --check failure.
+            const tbl = typeof recv === 'string' ? 'string'
+                : (recv && typeof recv === 'object' && typeof recv.__call === 'string'
+                    && recv.__call.startsWith('obj.')) ? 'obj' : 'selection';
+            return env.api[tbl][node.name](recv, ...node.args.map((a) => evalNode(a, env)));
         }
         case 'call': {
             const fn = evalNode(node.fn, env);
@@ -1815,7 +2051,8 @@ export async function checkPort(luaPath, modPath, root = ROOT) {
     for (const mode of CHECK_RNGS) {
         // u.depth varies with the setting so hell_tweaks()'s two
         // depth-dependent thresholds are exercised at more than one value.
-        const opts = { hellTweaks, depth: DEPTHS[CHECK_RNGS.indexOf(mode)] };
+        const i = CHECK_RNGS.indexOf(mode);
+        const opts = { hellTweaks, depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i] };
         const want = luaCallStream(items, stubRng(mode), opts);
         const { calls, api } = recordingApi(stubRng(mode), opts);
         mod.default(api);
@@ -1831,47 +2068,107 @@ export async function checkPort(luaPath, modPath, root = ROOT) {
     return null;
 }
 
+/** A stub standing in for a selection argument, distinguishable from a string. */
+const selArg = (n) => ({ __call: `selection.${n}`, args: [] });
+
 /**
- * The same comparison for a *library* function port (js/lua-js/nhlib-fns.mjs).
+ * The same comparison for a *library* function port — one that a script calls
+ * rather than one that replaces a script (js/lua-js/nhlib-fns.mjs and the
+ * hand-written halves of js/lua-js/nhlib.mjs).
  *
  * The .lua side is this file's interpreter running the function's body out of
- * dat/nhlib.lua; the JS side is the generated module. Both are handed the same
- * stub argument and the same RNG, so the comparison pins hell_tweaks()'s draw
- * order — which is the only mechanical check there is on a library function
- * that seven level scripts depend on.
+ * dat/nhlib.lua; the JS side is the exported module function. Both are handed
+ * the same arguments and the same RNG, so the comparison pins three things at
+ * once:
+ *
+ *   * the **call stream** — which `des`, `selection` and `nh` calls it makes,
+ *     in order, with which arguments (hell_tweaks() is 60 lines of these);
+ *   * the **return value** — which is the whole observable of `percent`, `d`,
+ *     `monkfoodshop`, `table_stringify` and `tutorial_cmd_before`, and which the
+ *     call stream cannot see at all;
+ *   * the **draws spent**, and any mutation of a table argument, which is what
+ *     `shuffle` is (it returns nothing and rewrites its argument in place).
+ *
+ * S6 needs all three: most of nhlib.lua's functions produce a value rather than
+ * a call, and two of them (`shuffle`, `math.random`) are the primitives every
+ * earlier stage's RNG accounting rests on, so they want a proof of their own
+ * rather than being assumed.
  *
  * @param {string} luaPath @param {string} modPath @param {string} name
+ * @param {{root?: string, argvs?: any[][], fn?: string}} [opts]
+ *   `argvs` is a list of argument vectors, each tried under every RNG setting;
+ *   the default is one selection stub per declared parameter. `fn` names the
+ *   module export when it is not the default one.
  * @returns {Promise<string|null>}
  */
-export async function checkLibFn(luaPath, modPath, name, root = ROOT) {
+export async function checkLibFn(luaPath, modPath, name, opts = {}) {
+    const { root = ROOT, fn = 'default' } = opts;
     const src = extractFunction(fs.readFileSync(luaPath, 'utf8'), name);
     const decl = parse(src).find((it) => it.s === 'funcdecl' && it.name === name);
+    if (!decl) throw new Error(`lua2des --check: ${name} is not a function declaration`);
     const mod = await import(`file://${fs.realpathSync(modPath)}`);
-    const arg = placeholder(`${decl.params[0]}`);
+    if (typeof mod[fn] !== 'function') {
+        throw new Error(`lua2des --check: ${modPath} has no export '${fn}'`);
+    }
+    const argvs = opts.argvs ?? [decl.params.map((p, i) => selArg(p || i))];
+    // A copy per side, so a function that mutates its argument (shuffle) is
+    // compared rather than handed the other side's already-shuffled list.
+    const fresh = (v) => (v instanceof LuaList ? LuaList.from(v)
+        : Array.isArray(v) ? v.slice() : v);
     for (const mode of CHECK_RNGS) {
-        const opts = { depth: DEPTHS[CHECK_RNGS.indexOf(mode)] };
-        const lua = recordingApi(stubRng(mode), opts);
-        const saved = rootItems;
-        rootItems = decl.body;
-        try {
-            const env = new Env(null, lua.api);
-            decl.params.forEach((p, i) => env.set(p, i === 0 ? arg : undefined));
-            execBlock(decl.body, env);
-        } finally {
-            rootItems = saved;
-        }
-        const js = recordingApi(stubRng(mode), opts);
-        mod.default(js.api, arg);
-        const where = `${name} rng=${mode} `;
-        if (js.calls.length !== lua.calls.length) {
-            return `${where}call count: lua=${lua.calls.length} js=${js.calls.length}`;
-        }
-        for (let i = 0; i < lua.calls.length; i++) {
-            const d = diff(lua.calls[i], js.calls[i], `${where}call[${i}] ${lua.calls[i].fn}`);
-            if (d) return d;
+        const i = CHECK_RNGS.indexOf(mode);
+        const sopts = { depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i] };
+        for (let a = 0; a < argvs.length; a++) {
+            const where = `${name} rng=${mode} argv=${a} `;
+            const luaRng = counted(stubRng(mode)), jsRng = counted(stubRng(mode));
+            const lua = recordingApi(luaRng, sopts);
+            const luaArgs = argvs[a].map(fresh);
+            let luaRet;
+            const saved = rootItems;
+            rootItems = decl.body;
+            try {
+                const env = new Env(null, lua.api);
+                decl.params.forEach((p, k) => env.set(p, luaArgs[k]));
+                const r = execBlock(decl.body, env);
+                luaRet = r === undefined ? undefined : r.value;
+            } finally {
+                rootItems = saved;
+            }
+            const js = recordingApi(jsRng, sopts);
+            const jsArgs = argvs[a].map(fresh);
+            const jsRet = mod[fn](js.api, ...jsArgs);
+            if (js.calls.length !== lua.calls.length) {
+                return `${where}call count: lua=${lua.calls.length} js=${js.calls.length}`;
+            }
+            for (let k = 0; k < lua.calls.length; k++) {
+                const d = diff(lua.calls[k], js.calls[k], `${where}call[${k}] ${lua.calls[k].fn}`);
+                if (d) return d;
+            }
+            if (luaRng.draws !== jsRng.draws) {
+                return `${where}rn2 draws: lua=${luaRng.draws} js=${jsRng.draws}`;
+            }
+            const rd = diff(norm(luaRet), norm(jsRet), `${where}return`);
+            if (rd) return rd;
+            for (let k = 0; k < luaArgs.length; k++) {
+                const ad = diff(norm(luaArgs[k]), norm(jsArgs[k]), `${where}arg[${k}] after`);
+                if (ad) return ad;
+            }
         }
     }
     return null;
+}
+
+/** Wrap a stub RNG so the number of draws it served can be compared. */
+function counted(rng) {
+    const out = { draws: 0, rn2: (n) => { out.draws++; return rng.rn2(n); } };
+    return out;
+}
+
+/** diff() compares own keys; a LuaList's hole at 0 and undefined agree anyway. */
+function norm(v) {
+    if (v === undefined) return null;
+    if (v instanceof LuaList) return { __luaList: Array.from(v, (x) => (x === undefined ? null : x)) };
+    return v;
 }
 
 // ---------------------------------------------------------------------------

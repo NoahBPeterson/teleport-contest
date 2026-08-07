@@ -42,7 +42,7 @@
 // lists the scripts that need it. Everything else about the seam is the same.
 
 import * as cptr from '../cptr.js';
-import { gf, gu, svl } from '../generated/decl.js';
+import { gf, gu, head_engr, svl } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
 import { com_pager, qt_pager } from '../generated/questpgr.js';
 import { load_special, lspo_finalize_level, lspo_reset_level } from '../generated/sp_lev.js';
@@ -53,6 +53,7 @@ import oracle from './scripts/oracle.mjs';
 import { T0_PORTS } from './scripts/t0/index.mjs';
 import { T1_PORTS } from './scripts/t1/index.mjs';
 import { T2_PORTS } from './scripts/t2/index.mjs';
+import { T3_PORTS } from './scripts/t3/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 
@@ -61,9 +62,10 @@ import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
  * Add an entry here and the JS port replaces the .lua at runtime.
  *
  * T0_PORTS is the pure-declarative tier (49 scripts, stage S2, §7),
- * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11) and
- * T2_PORTS the loop / selection-algebra tier (46 scripts, stage S4, §12); all
- * three are generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
+ * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11),
+ * T2_PORTS the loop / selection-algebra tier (46 scripts, stage S4, §12) and
+ * T3_PORTS the tutorial level (1 script, stage S5, §14); all four are
+ * generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
  * oracle.lua predates the generator and stays hand-written.
  */
 const PORTS = new Map([
@@ -71,6 +73,7 @@ const PORTS = new Map([
     ...T0_PORTS,
     ...T1_PORTS,
     ...T2_PORTS,
+    ...T3_PORTS,
 ]);
 
 /**
@@ -249,6 +252,33 @@ const TRAP_FIELDS = [
     [28, 4, true], [32, 4, true], [36, 4, true], // once, madeby_u, vl
 ];
 
+// Engravings are a fourth chain, and S5 found that nothing swept it — which
+// mattered the moment `tut-1.lua` was ported, because that script is 43
+// `des.engraving` calls and almost nothing else. An engraving is not in
+// `struct rm`, not an object and not a trap: it hangs off the global
+// `head_engr` list (decl.js:198), which js/generated/engrave.js's engr_at()
+// walks with the offset-0 link exactly as t_at() walks the traps.
+//
+// The offsets are that function's own and its neighbours':
+//   nxt_engr @0, engr_txt[3] @8/@16/@24, engr_x @32 (i16), engr_y @34 (i16),
+//   engr_szeach @36, engr_alloc @40, engr_time @48 (i64), engr_type @56 (i8),
+//   then guardobjects/nowipeout/eread/erevealed at @60/@64/@68/@72, one
+//   32-bit slot each as this transpile widens every C bitfield.
+//
+// Excluded on the same principle as struct rm's glyph/seenv: `engr_txt[1]` is
+// remembered_text and `eread`/`erevealed` are what the hero has read and seen,
+// i.e. display state rather than what the script built. `engr_alloc` is
+// allocation bookkeeping. Everything else is content.
+const ENGR_FIELDS = [
+    [32, 2, true], [34, 2, true],           // engr_x, engr_y
+    [36, 4, true],                          // engr_szeach
+    [48, 8, true],                          // engr_time
+    [56, 1, true],                          // engr_type
+    [60, 4, true], [64, 4, true],           // guardobjects, nowipeout
+];
+/** engr_txt[actual_text] and engr_txt[pristine_text]; [1] is remembered_text. */
+const ENGR_TEXTS = [8, 24];
+
 function fnv(h, v) { return Math.imul(h ^ (v & 0xFF), 0x01000193) >>> 0; }
 function fnv32(h, v) {
     return fnv(fnv(fnv(fnv(h, v), v >> 8), v >> 16), v >>> 24);
@@ -312,7 +342,24 @@ function levelFingerprint() {
         h = fnv(h, 0xC2);
         for (const f of TRAP_FIELDS) h = hashField(h, t, f);
     }
+    // The engraving chain, newest first — make_engr_at() pushes each new one
+    // onto the head of head_engr, so the order is the reverse of the order the
+    // script issued its des.engraving() calls, and just as deterministic.
+    for (let e = head_engr.v; e; e = cptr.ldPtr(e)) {
+        h = fnv(h, 0xC3);
+        for (const f of ENGR_FIELDS) h = hashField(h, e, f);
+        for (const off of ENGR_TEXTS) h = hashCStr(h, cptr.ldPtro(e, off));
+    }
     return h >>> 0;
+}
+
+/** A C string, or a single marker byte when the pointer is null. */
+function hashCStr(h, p) {
+    if (!p) return fnv(h, 0xFF);
+    const s = cptr.cstr(p);
+    h = fnv(h, s.length);
+    for (let i = 0; i < s.length; i++) h = fnv(h, s.charCodeAt(i));
+    return h;
 }
 
 /**

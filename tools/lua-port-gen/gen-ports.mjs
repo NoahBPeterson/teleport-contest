@@ -118,6 +118,16 @@ export const T2 = [
 ];
 
 /**
+ * Stage S5's tier: the tutorial's first level, and the only script in the
+ * corpus that calls a method on something other than a selection.
+ * `s:match("^^([A-Z])$")` is Lua's string library, so the emitter has to type
+ * the receiver of `a:m(…)` rather than assume — §14.1.
+ */
+export const T3 = [
+    'tut-1',
+];
+
+/**
  * The one library function a *level script* port still has to be able to call.
  * See emitLibFn() in lua2des.mjs for why it is here and not in a tier.
  */
@@ -131,6 +141,7 @@ function tiers() {
         { tier: 't0', dir: path.join(ROOT, 'js/lua-js/scripts/t0'), list: T0, label: 'pure-declarative' },
         { tier: 't1', dir: path.join(ROOT, 'js/lua-js/scripts/t1'), list: T1, label: 'branch/shuffle/closure' },
         { tier: 't2', dir: path.join(ROOT, 'js/lua-js/scripts/t2'), list: T2, label: 'loop/selection-algebra' },
+        { tier: 't3', dir: path.join(ROOT, 'js/lua-js/scripts/t3'), list: T3, label: 'tutorial / string-pattern' },
     ];
 }
 
