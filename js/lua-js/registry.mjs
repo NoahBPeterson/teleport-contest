@@ -45,6 +45,7 @@ import * as cptr from '../cptr.js';
 import { gu, svl } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
 import { com_pager, qt_pager } from '../generated/questpgr.js';
+import { load_special, lspo_finalize_level, lspo_reset_level } from '../generated/sp_lev.js';
 import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
 import { installStateProbe, interpState, stateIsFresh, stateSeed } from './interp-state.mjs';
 import { dumpGlobal, runRealChunk } from './readback.mjs';
@@ -117,55 +118,111 @@ function questProbeEnabled() {
     return v === '1' || v === 'on' || v === 'true';
 }
 
+/**
+ * C2JS_LUA_LEVELPROBE=<a.lua,b.lua,…>: once the game is up, build each of
+ * those special levels for real and fingerprint the result.
+ *
+ * §10 is blunt about the biggest risk to this roadmap: an oracle only reports
+ * on levels a session actually generates, and the 69-session corpus reaches
+ * about a dozen of the 131 scripts. Sokoban, the Planes, Vlad's Tower and all
+ * 49 quest levels are behind gameplay no recorded session performs.
+ *
+ * This is §10's second option, and NetHack already contains it: #wizloaddes
+ * (wiz_load_splua(), wizcmds.c:376) is exactly
+ *
+ *     lspo_reset_level(NULL); load_special(name); lspo_finalize_level(NULL);
+ *
+ * so forcing a level is not a bespoke code path — it is the game's own debug
+ * command, driven from JS instead of from a getlin() prompt, and it runs the
+ * same load_lua() the level generator runs. The registry therefore intercepts
+ * the load exactly as it would in play, and the level that comes out is
+ * fingerprinted the same way. Because the interpreter run and the port run
+ * probe the same names at the same moment, the comparison is the same
+ * five-way one a real session gets.
+ *
+ * What it does NOT prove is that the level is reachable, or that the rest of
+ * the game is happy with it afterwards — the probe overwrites whatever level
+ * the hero is standing on. Synthetic evidence is labelled as such in §9's
+ * table; corpus evidence, where it exists, is the stronger claim.
+ */
+const LEVEL_PROBE = String(env('C2JS_LUA_LEVELPROBE') || '')
+    .split(',').map((s) => s.trim()).filter(Boolean);
+
 /** Read once: tick() is on the key-read path and must stay a null check. */
 const QUEST_PROBE = questProbeEnabled();
 
 /** Message ids present in every one of quest.lua's 13 role sections. */
 const QUEST_PROBE_MSGIDS = ['firsttime', 'goal_first', 'encourage', 'discourage', 'gotit'];
 
-// levl[x][y] layout, read straight out of the transpiled accessor the des
-// bindings use (js/generated/sp_lev.js:613):
-//     levl[x][y].typ  ==  cptr.ld1so3(svl, x, 756, y, 36, 1684)
-// i.e. svl + 1684 + x*756 + y*36, struct rm = 36 bytes, ROWNO rows per column.
+// levl[x][y] layout, read straight out of the transpiled accessors the des
+// bindings use (js/generated/sp_lev.js:613, :2335):
+//     levl[x][y].typ    ==  cptr.ld1so3(svl, x, 756, y, 36, 1684)
+//     levl[x][y].flags  ==  cptr.ldI32o3(svl, x, 756, y, 36, 1688)
+// i.e. struct rm starts at svl + 1680 + x*756 + y*36 and is 36 bytes, because
+// this transpile widens each C bitfield to its own 32-bit slot. Enumerating
+// every offset the generated code ever uses with that stride gives the whole
+// struct: glyph @0, typ @4, seenv @5, flags @8, horizontal @12, lit @16,
+// waslit @20, roomno @24, edge @28, candig @32.
+//
 // Object/monster chains hang off the same struct level, at offsets taken the
 // same way (js/generated/mkobj.js:1952, js/generated/apply.js:900):
 //     level.objects[x][y]  ==  cptr.ldPtro3(svl, x, 168, y, 8, 62160)
 //     level.monsters[x][y] ==  cptr.ldPtro3(svl, x, 168, y, 8, 75600)
-// struct obj:   nexthere @8, ox @28 (i16), oy @30, otyp @32
-// struct monst: mnum @20 (i16), mx @28, my @30
-const RM_BASE = 1684, RM_XSTRIDE = 756, RM_SIZE = 36, COLNO = 80, ROWNO = 21;
+// struct obj:   nexthere @8, ox @28 (i16), oy @30, otyp @32 (i16),
+//               quan @40 (i64), spe @48 (i8), corpsenm @168 (i32)
+// struct monst: mnum @20 (i16), mx @28, my @30, female @84, mpeaceful @168
+const RM_BASE = 1680, RM_XSTRIDE = 756, RM_SIZE = 36, COLNO = 80, ROWNO = 21;
 const OBJ_BASE = 62160, MON_BASE = 75600, GRID_XSTRIDE = 168, GRID_YSTRIDE = 8;
 
 function fnv(h, v) { return Math.imul(h ^ (v & 0xFF), 0x01000193) >>> 0; }
-function fnv16(h, v) { return fnv(fnv(h, v & 0xFF), (v >> 8) & 0xFF); }
+function fnv32(h, v) {
+    return fnv(fnv(fnv(fnv(h, v), v >> 8), v >> 16), v >>> 24);
+}
 
 /**
- * FNV-1a over what a level script actually built: the terrain type of every
- * square, then every object (position + otyp) and every monster (position +
- * species) on the level, in map order.
+ * FNV-1a over what a level script actually built: every content field of every
+ * square, then every object and every monster on the level, in map order.
  *
  * This is the *result* of the script, and it catches things the RNG log and
  * the visible screens do not — a statue placed one square over consumes
  * identical randomness and may never be looked at, but it moves this hash.
- * Deliberately excludes heap pointers and the rest of struct rm/obj/monst:
- * the port and the interpreter allocate different amounts of memory by
- * construction, so raw addresses are not a fair comparison.
+ *
+ * The fields are chosen so that every argument a T0 script can pass is visible
+ * in the hash, which the original typ-only version was not: `des.altar`'s
+ * alignment and `des.door`'s locked/closed state live in `rm.flags`,
+ * `des.region`'s lighting in `rm.lit`, `des.object`'s `spe`/`quantity`/
+ * `montype` in the object, and `des.monster`'s `peaceful` in the monster. A
+ * port that dropped one of those would otherwise consume identical randomness
+ * and hash identically — the §5 statue control's failure mode, one level down.
+ *
+ * Deliberately excluded: heap pointers, and the two display fields (`glyph`,
+ * `seenv`). The port and the interpreter allocate different amounts of memory
+ * by construction, so raw addresses are not a fair comparison, and what the
+ * hero has *seen* is not what the script built.
  */
 function levelFingerprint() {
     let h = 0x811c9dc5;
     for (let x = 0; x < COLNO; x++) {
         for (let y = 0; y < ROWNO; y++) {
-            h = fnv(h, cptr.ld1uo(svl, RM_BASE + x * RM_XSTRIDE + y * RM_SIZE));
+            const rm = RM_BASE + x * RM_XSTRIDE + y * RM_SIZE;
+            h = fnv(h, cptr.ld1uo(svl, rm + 4));                    // typ
+            for (const off of [8, 12, 16, 20, 24, 28, 32]) {        // flags..candig
+                h = fnv32(h, cptr.ldI32o(svl, rm + off));
+            }
         }
     }
     for (let x = 0; x < COLNO; x++) {
         for (let y = 0; y < ROWNO; y++) {
             for (let o = cptr.ldPtro3(svl, x, GRID_XSTRIDE, y, GRID_YSTRIDE, OBJ_BASE);
                 o; o = cptr.ldPtro(o, 8)) {
-                h = fnv16(fnv(fnv(h, x), y), cptr.ldI16o(o, 32));
+                h = fnv32(fnv32(fnv(fnv(h, x), y), cptr.ldI16o(o, 32)), cptr.ld1so(o, 48));
+                h = fnv32(fnv32(h, Number(BigInt.asIntN(32, cptr.ldI64o(o, 40)))), cptr.ldI32o(o, 168));
             }
             const m = cptr.ldPtro3(svl, x, GRID_XSTRIDE, y, GRID_YSTRIDE, MON_BASE);
-            if (m) h = fnv16(fnv(fnv(h, x), y), cptr.ldI16o(m, 20));
+            if (m) {
+                h = fnv32(fnv32(fnv(fnv(h, x), y), cptr.ldI16o(m, 20)), cptr.ldI32o(m, 84));
+                h = fnv32(h, cptr.ldI32o(m, 168));
+            }
         }
     }
     return h >>> 0;
@@ -177,12 +234,14 @@ export function portedScripts() { return [...PORTS.keys(), ...READBACK.keys()]; 
 /** True when the harness should consult this registry at all. */
 export function active() {
     const on = (PORTS.size + READBACK.size) > 0
-        && (portsEnabled() || traceEnabled() || fpEnabled() || readbackDump() || questProbeEnabled());
-    // The read-back ports need the interpreter's lua_State, and the only place
-    // it can be caught is at creation — before main() runs, which is where the
-    // harness imports this module. Installing it here rather than at module
-    // scope keeps `realloc` untouched whenever the registry is inert.
-    if (on && READBACK.size > 0) installStateProbe();
+        && (portsEnabled() || traceEnabled() || fpEnabled() || readbackDump()
+            || questProbeEnabled() || LEVEL_PROBE.length > 0);
+    // The read-back ports need the interpreter's lua_State, and so do the two
+    // level ports that read nhlib's shuffled `align` out of it. The only place
+    // the state can be caught is at creation — before main() runs, which is
+    // where the harness imports this module. Installing it here rather than at
+    // module scope keeps `realloc` untouched whenever the registry is inert.
+    if (on) installStateProbe();
     return on;
 }
 
@@ -317,9 +376,41 @@ let armed = null;
  */
 export function tick() {
     if (QUEST_PROBE && !questProbed) runQuestProbe();
+    if (LEVEL_PROBE.length && !levelProbed) runLevelProbe();
     if (armed === null) return;
     armed.typFingerprint = levelFingerprint();
     armed = null;
+}
+
+/** Whether the C2JS_LUA_LEVELPROBE levels have already been built. */
+let levelProbed = false;
+
+/**
+ * Build each C2JS_LUA_LEVELPROBE level in turn and fingerprint it.
+ *
+ * The gate is the same one the quest probe uses: com_pager("legacy") is the
+ * last thing newgame() does (allmain.c:832), so a recorded quest.lua load
+ * means the game is fully up — a level exists, u.uz is set, and
+ * level_difficulty() will answer. Each iteration is one #wizloaddes.
+ *
+ * The result is appended to `loads` as a record with `probe: true`, so it
+ * travels to the oracle through the same channel as a real load and is
+ * compared by the same fingerprint check.
+ */
+function runLevelProbe() {
+    if (!loads.some((l) => l.script === 'quest.lua')) return;
+    if (!cptr.ldPtro(gu, 192)) return;   // role not set up yet
+    levelProbed = true;
+    for (const name of LEVEL_PROBE) {
+        const rngFrom = getRngLog().length;
+        lspo_reset_level(null);
+        const ok = load_special(cptr.lit(name));
+        lspo_finalize_level(null);
+        loads.push({
+            script: name, probe: true, ok: !!ok, mode: mode(),
+            rngFrom, rngTo: getRngLog().length, typFingerprint: levelFingerprint(),
+        });
+    }
 }
 
 /** Whether the C2JS_LUA_QUESTPROBE deliveries have already been made. */
