@@ -2,13 +2,17 @@
 // gen-ports.mjs — regenerate every generated level-script port, and the index
 // modules registry.mjs registers them from.
 //
-// One tier so far, driven by tools/lua-port-gen/lua2des.mjs:
+// Two tiers so far, both driven by tools/lua-port-gen/lua2des.mjs:
 //
 //   T0 — pure declarative. Comments stripped, `functions + if + for + while +
 //        percent + shuffle + math.random + nh.rn2` is zero (stage S2, §7).
+//   T1 — the same, plus `if percent(…)`, `shuffle` over a literal table,
+//        `math.random`, and `contents`/`inventory` closures; still no loops,
+//        no selection algebra (`|`/`&`/`~`), no nhlib helper beyond those
+//        (stage S3, §11).
 //
-// The list is explicit and reviewable rather than rediscovered by a
-// heuristic at runtime — but it is also *checked*, in the sense that the
+// Both lists are explicit and reviewable rather than rediscovered by a
+// heuristic at runtime — but they are also *checked*, in the sense that the
 // generator refuses anything outside its subset, so "it generated" is itself
 // evidence that a script belongs to the tier it is listed in.
 //
@@ -53,10 +57,39 @@ export const T0 = [
     'tut-2',      // the second tutorial level
 ];
 
+/**
+ * Stage S3's tier: the same declarative surface plus branches, shuffles and
+ * closures. §11 has the per-script evidence and the reasons the rest of the
+ * mechanically-similar scripts are not here (they need loops, selection
+ * algebra, or nhlib's hell_tweaks()).
+ */
+export const T1 = [
+    // The ten quest filler levels whose whole body is `des.room{contents=…}`.
+    'Arc-fila', 'Arc-filb',
+    'Mon-fila', 'Mon-filb',
+    'Pri-fila', 'Pri-filb',
+    'Rog-fila', 'Rog-filb',
+    'Wiz-fila', 'Wiz-filb',
+    // The seven quest home levels that are a call stream plus one `inventory`
+    // closure on the class leader. (The other six -strt levels have a `for`.)
+    'Arc-strt', 'Cav-strt', 'Hea-strt', 'Ran-strt', 'Sam-strt', 'Tou-strt', 'Wiz-strt',
+    // Three quest nemesis levels that pick a spot with math.random.
+    'Mon-goal', 'Pri-goal', 'Sam-goal',
+    // Sokoban level 1: one `if percent(…)` choosing the prize.
+    'soko1-1', 'soko1-2',
+    // The Mines' end levels: two shuffle a niche list, one branches.
+    'minend-1', 'minend-2', 'minend-3',
+    // One-offs.
+    'castle',     // two shuffles, a selection of four towers, one closure
+    'juiblex',    // Gehennom: Juiblex's swamp; shuffles its monster classes
+    'sanctum',    // Gehennom: Moloch's sanctum; one closure inside a region
+];
+
 /** @returns {{tier: string, dir: string, list: string[]}[]} */
 function tiers() {
     return [
         { tier: 't0', dir: path.join(ROOT, 'js/lua-js/scripts/t0'), list: T0, label: 'pure-declarative' },
+        { tier: 't1', dir: path.join(ROOT, 'js/lua-js/scripts/t1'), list: T1, label: 'branch/shuffle/closure' },
     ];
 }
 
