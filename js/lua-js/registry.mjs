@@ -42,7 +42,7 @@
 // lists the scripts that need it. Everything else about the seam is the same.
 
 import * as cptr from '../cptr.js';
-import { gu, svl } from '../generated/decl.js';
+import { gf, gu, svl } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
 import { com_pager, qt_pager } from '../generated/questpgr.js';
 import { load_special, lspo_finalize_level, lspo_reset_level } from '../generated/sp_lev.js';
@@ -191,6 +191,64 @@ const RM_BASE = 1680, RM_XSTRIDE = 756, RM_SIZE = 36, COLNO = 80, ROWNO = 21;
 const OBJ_BASE = 62160, MON_BASE = 75600, GRID_XSTRIDE = 168, GRID_YSTRIDE = 8;
 const O_NOBJ = 0, O_NEXTHERE = 8, O_COBJ = 16, M_MINVENT = 280;
 
+// S4 widening. The fields above were enumerated by hand from the accessors the
+// generated code happens to use, which is why each earlier stage found the list
+// short. These come from the transpiler's own layout pass instead — Emitter's
+// layoutOf('obj') / layoutOf('monst') / layoutOf('oextra') / layoutOf('mextra'),
+// the same function that decided every offset in js/generated — so the list is
+// the struct, not a sample of it.
+//
+// Everything a des.* call can write is here, minus three deliberate exclusions:
+// pointers (nobj/v/cobj/oextra, nmon/data/minvent/mw/mextra), because the two
+// sides allocate different amounts by construction; the o_id/m_id counters, for
+// the same reason; and struct rm's glyph/seenv, which are display state.
+//
+// Each entry is [offset, byte width, signed]. A width of 4 covers the C
+// bitfields, every one of which this transpile widens into its own 32-bit slot.
+const OBJ_FIELDS = [
+    [28, 2, true], [30, 2, true],           // ox, oy
+    [32, 2, true], [36, 4, true],           // otyp, owt
+    [40, 8, true], [48, 1, true],           // quan, spe
+    [49, 1, true], [51, 1, true], [52, 2, true], [54, 2, true], // oclass, oartifact, where, timed
+    // cursed .. named_how: 28 consecutive flag slots, which is where `buc`,
+    // `locked`, `trapped` and `eroded` land.
+    ...Array.from({ length: 28 }, (_, i) => [56 + i * 4, 4, true]),
+    [168, 4, true], [172, 4, true], [176, 8, true], // corpsenm, usecount, oeaten
+    [184, 8, true], [192, 8, true],         // age, owornmask
+];
+const MON_FIELDS = [
+    [20, 2, true], [22, 2, true], [24, 2, true], // mnum, cham, movement
+    [26, 1, true], [27, 1, true],           // m_lev  <- m_lev_adj, malign <- align
+    [28, 2, true], [30, 2, true], [32, 2, true], [34, 2, true], // mx, my, mux, muy
+    [52, 4, true], [56, 4, true],           // mhp, mhpmax
+    [60, 4, true], [64, 1, true], [65, 1, true], // mappearance/m_ap_type <- appear_as, mtame
+    [66, 2, true], [68, 4, true], [72, 8, true], [80, 4, true],
+    // female .. mgenmklev: 35 consecutive flag slots — `peaceful`, `asleep`
+    // (msleeping) and everything else des.monster sets by name.
+    ...Array.from({ length: 35 }, (_, i) => [84 + i * 4, 4, true]),
+    [224, 8, true], [232, 8, true], [240, 8, true], // mstrategy <- waiting, mgoal, mtrapseen
+    [248, 8, true], [256, 8, true], [264, 8, true], [272, 8, true],
+];
+
+// The name a `des.object{ name = … }` or `des.monster{ name = … }` attaches.
+// It is not in the struct at all: it hangs off obj->oextra->oname and
+// monst->mextra->mgivenname, so a fingerprint that only reads the struct sees
+// nothing. Found by a negative control that passed — §12.
+const O_OEXTRA = 208, OEXTRA_ONAME = 0;
+const M_MEXTRA = 312, MEXTRA_MGIVENNAME = 0;
+
+// Traps are a third chain, and until S4 the fingerprint did not sweep it at
+// all — `des.trap` is 794 uses across 117 files and a trap changes neither the
+// square nor any object. It hangs off gf.ftrap, which js/generated/trap.js's
+// t_at() reads as `cptr.ldPtr(gf)` and walks with the same offset-0 link,
+// confirming layoutOf('trap')'s ntrap @0 / tx @8 / ty @10.
+const TRAP_FIELDS = [
+    [8, 2, true], [10, 2, true],            // tx, ty
+    [12, 4, true], [16, 4, true],           // dst (d_level), launch (coord)
+    [20, 4, true], [24, 4, true],           // ttyp, tseen
+    [28, 4, true], [32, 4, true], [36, 4, true], // once, madeby_u, vl
+];
+
 function fnv(h, v) { return Math.imul(h ^ (v & 0xFF), 0x01000193) >>> 0; }
 function fnv32(h, v) {
     return fnv(fnv(fnv(fnv(h, v), v >> 8), v >> 16), v >>> 24);
@@ -245,14 +303,14 @@ function levelFingerprint() {
                 h = hashObj(fnv(fnv(h, x), y), o);
             }
             const m = cptr.ldPtro3(svl, x, GRID_XSTRIDE, y, GRID_YSTRIDE, MON_BASE);
-            if (m) {
-                h = fnv32(fnv32(fnv(fnv(h, x), y), cptr.ldI16o(m, 20)), cptr.ldI32o(m, 84));
-                h = fnv32(h, cptr.ldI32o(m, 168));
-                for (let o = cptr.ldPtro(m, M_MINVENT); o; o = cptr.ldPtro(o, O_NOBJ)) {
-                    h = hashObj(fnv(h, 0xC1), o);
-                }
-            }
+            if (m) h = hashMon(fnv(fnv(h, x), y), m);
         }
+    }
+    // The trap chain, in creation order — which is the order the script issued
+    // its des.trap() calls, so it is as deterministic as the map sweep.
+    for (let t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t)) {
+        h = fnv(h, 0xC2);
+        for (const f of TRAP_FIELDS) h = hashField(h, t, f);
     }
     return h >>> 0;
 }
@@ -264,10 +322,39 @@ function levelFingerprint() {
  * add_to_container built them in, which is the order the script issued its
  * des.object() calls — so it is as deterministic as the floor sweep.
  */
+/** One [offset, width, signed] field of a struct, into the hash. */
+function hashField(h, p, [off, width, signed]) {
+    if (width === 1) return fnv(h, signed ? cptr.ld1so(p, off) : cptr.ld1uo(p, off));
+    if (width === 2) return fnv32(h, cptr.ldI16o(p, off));
+    if (width === 4) return fnv32(h, cptr.ldI32o(p, off));
+    // A 64-bit field, hashed as its two halves so nothing is dropped.
+    const v = BigInt.asIntN(64, cptr.ldI64o(p, off));
+    return fnv32(fnv32(h, Number(BigInt.asIntN(32, v))), Number(BigInt.asIntN(32, v >> 32n)));
+}
+
+/** A C string a script attached, or nothing if the pointer chain is absent. */
+function hashName(h, p, extraOff, nameOff) {
+    const extra = cptr.ldPtro(p, extraOff);
+    if (!extra) return h;
+    const s = cptr.ldPtro(extra, nameOff);
+    if (!s) return h;
+    const str = cptr.cstr(s);
+    h = fnv(h, str.length);
+    for (let i = 0; i < str.length; i++) h = fnv(h, str.charCodeAt(i));
+    return h;
+}
+
 function hashObj(h, o) {
-    h = fnv32(fnv32(h, cptr.ldI16o(o, 32)), cptr.ld1so(o, 48));                       // otyp, spe
-    h = fnv32(fnv32(h, Number(BigInt.asIntN(32, cptr.ldI64o(o, 40)))), cptr.ldI32o(o, 168)); // quan, corpsenm
+    for (const f of OBJ_FIELDS) h = hashField(h, o, f);
+    h = hashName(h, o, O_OEXTRA, OEXTRA_ONAME);
     for (let c = cptr.ldPtro(o, O_COBJ); c; c = cptr.ldPtro(c, O_NOBJ)) h = hashObj(fnv(h, 0xC0), c);
+    return h;
+}
+
+function hashMon(h, m) {
+    for (const f of MON_FIELDS) h = hashField(h, m, f);
+    h = hashName(h, m, M_MEXTRA, MEXTRA_MGIVENNAME);
+    for (let o = cptr.ldPtro(m, M_MINVENT); o; o = cptr.ldPtro(o, O_NOBJ)) h = hashObj(fnv(h, 0xC1), o);
     return h;
 }
 
