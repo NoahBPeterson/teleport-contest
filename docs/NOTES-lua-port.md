@@ -11,12 +11,13 @@ This note is the architecture decision, the traps analysis, the proof-of-concept
 result, the cookbooks for porting the next script, and the staged plan for the
 rest.
 
-Status: **PoC + S1 + S2 + S3 + S4 landed.** `oracle.lua`, `dungeon.lua`,
-`quest.lua`, the whole 49-file T0 tier, S3's 28-file T1 tier and S4's 46-file
-T2 tier are ported and live — **126 of 131 files, 88.4 % of the corpus by
-bytes**. What is left is five files: `tut-1.lua` (S5), `nhlib.lua` and
-`nhcore.lua` (S6), `themerms.lua` and `hellfill.lua` (S7). The corpus passes
-with the ports enabled and with them disabled.
+Status: **PoC + S1 + S2 + S3 + S4 + S5 + S6 landed.** `oracle.lua`,
+`dungeon.lua`, `quest.lua`, the whole 49-file T0 tier, S3's 28-file T1 tier,
+S4's 46-file T2 tier, S5's `tut-1.lua` and S6's two library files `nhlib.lua`
+and `nhcore.lua` are ported and live — **129 of 131 files, 92.7 % of the corpus
+by bytes**. What is left is two files: `themerms.lua` and `hellfill.lua` (S7).
+The corpus passes with the ports enabled and with them disabled, and a session
+run with every port live parses exactly one `.lua` file — `themerms.lua` (§14.5).
 
 ---
 
@@ -965,6 +966,21 @@ S4 (126 ports):
 | all 126 ports live (default), run 1 | **69/69** | 1016 + 0.85/turn (R² 0.732) |
 | all 126 ports live (default), run 2 | **69/69** | 993 + 0.84/turn (R² 0.724) |
 
+S5+S6 (129 ports):
+
+| Configuration | Result | Speed |
+|---|---|---|
+| registry inert — `C2JS_LUA_PORT=0` | **69/69** | 995 + 0.80/turn (R² 0.731) |
+| all 129 ports live (default), run 1 | **69/69** | 886 + 0.76/turn (R² 0.736) |
+| all 129 ports live (default), run 2 | **69/69** | 915 + 0.78/turn (R² 0.726) |
+
+S6 is the first stage whose ports run in *every* session unconditionally rather
+than when a particular level is generated: `nhlib.lua` is loaded by every
+`nhl_init()`, so a chargen-only session runs its port five times and
+`gen9999-omnibus-all-keys` runs it hundreds. The corpus is therefore the primary
+evidence for S6 in a way it was not for S2–S4, and it caught two real bugs that
+nothing else did (§14.8's postscript).
+
 Every session exercises `dungeon.lua` and `quest.lua`; `gen9996-marathon-dlvl10`
 also reaches the Oracle level. It scores `RNG 54924/54924, Screen 17829/17829`
 in every configuration, i.e. the ports are byte-exact against the **C recorder**,
@@ -985,7 +1001,8 @@ imported once per replay segment, and the per-turn slope is unchanged.
 Other gates: `tools/c2js/test-rnd.mjs`, `test-hacklib.mjs`, `test-setjmp.mjs`,
 `test-union.mjs` PASS; `node --test test/*.test.mjs` 6/6 (posix-ere, the
 `lua-port-data` transcription check and the `lua-port-scripts` call-stream
-check, now 123 scripts + one library function × 8 RNG settings); judge-sim
+check, now 124 scripts and 19 library functions × 8 RNG settings × up to six
+argument vectors); judge-sim
 `run.mjs seed8000-tourist-starter.session.json` PASS (0 mismatches, 0
 out-of-scope requests); `playability.mjs --keys=hjklhjkl` engages the `xhr`
 engine with `console_entries: []` — and its top line is
@@ -1051,10 +1068,17 @@ operators `+ - * / // %`, the comparisons `== ~= < <= > >=`, `and`/`or`/`not`,
 the selection operators `|`, `&`, `+` and `-`, and nhlib's
 `percent`/`shuffle`/`d`/`math.random`/`hell_tweaks`.
 
-The refused set is now `while`, `break`, `goto`, a generic `for k, v in …`, `^`,
-`<<`/`>>`, `~` (bitwise xor and not), a mixed array/record table constructor, a
-numeric `for` with a non-literal step, and a `repeat` whose `until` reads a local
-of the loop body.
+S5 added one construct: `a:m(…)` on a *string* receiver becomes
+`string.m(a, …)` rather than `selection.m(a, …)`, chosen by the receiver's
+inferred type (§14.1).
+
+The refused set is now `while`, `break`, `goto`, `^`, `<<`/`>>`, `~` (bitwise
+xor and not), a mixed array/record table constructor, a numeric `for` with a
+non-literal step, and a `repeat` whose `until` reads a local of the loop body —
+plus four constructs S6 taught the *parser* and the `--check` interpreter so
+that hand-written library ports could be proved, and which the emitter still
+refuses by name: a generic `for k, v in …`, assignment through an index or a
+field, `...`, and Lua's own `type`/`tostring`/`table.unpack`/`_G` (§14.3).
 
 Three constructs are *accepted* but guarded rather than refused, because they
 mean different things in Lua and JS and the difference is not syntactic —
@@ -1154,15 +1178,15 @@ Ordered by risk-adjusted value. "Legs" = agent sessions, roughly.
 | **S2** *T0 level scripts* ✅ | 49 T0 files: `soko2-1 … soko4-2`, `air/fire/water/earth`, `baalz`, `minetn-6`, `tower3`, `tut-2`, 34 quest `*-goal/-loca/-fil*` | 49 | **Landed — see §7.** Cost 1 leg, not 6, because the transliteration is generated (§7.1) and reachability turned out to be half-solved already: forced generation (§7.6) covers everything, and the corpus's wizard-mode tour sessions reach 16 of the 49 in real play. Note the tier list here was slightly wrong: `minetn-6` is T0. (The claim that `soko1-1`/`soko1-2` have a `for` and a `math.random` was itself wrong — see the S3 row.) Three things the tier score did not predict, all in §7.3: nhlib's `align`, `monkfoodshop()` and `nh.eckey`. | 6 → 1 |
 | **S3** *T1: branches, shuffles, closures* ✅ | 28 T1 files: the 10 `*-fil{a,b}` closure levels, 7 `*-strt` quest homes, `Mon/Pri/Sam-goal`, `soko1-1/2`, `minend-1/2/3`, `castle`, `juiblex`, `sanctum` | 28 | **Landed — see §11.** Cost 1 leg, not 4, for the same reason S2 did: the transliteration is generated. The tier list here was right in kind and wrong in detail — `fakewiz1/2` and `wizard2` call nhlib's `hell_tweaks()`, which is selection algebra, so they moved to S4; the six `*-strt` levels with a `for` moved with them; `soko1-1/2` moved *in* (S2's note that they have a `for` was wrong — they have one `if percent`). The stage's real work was two things §7 did not have: a `--check` that shares one RNG with the .lua so branch and shuffle draws are compared too (§11.1), and a fingerprint that follows `obj->cobj` and `monst->minvent` (§11.3), without which a whole class of this tier's content is invisible. | 4 → 1 |
 | **S4** *T2: loops and selection algebra* ✅ | 46 T2 files: `minetn-1/2/3/4/5/7`, `minefill`, `medusa-1..4`, `bigrm-1..13`, `astral`, `knox`, `valley`, `orcus`, `asmodeus`, `wizard1/2/3`, `fakewiz1/2`, `tower1/2`, `Wiz-loca`, `Bar/Kni/Mon/Pri/Rog/Val-strt`, `Tou-goal/loca`, `Val-goal` | 46 | **Landed — see §12.** Cost 1 leg, not 6, for the third time in a row and for the same reason: the transliteration is generated. The row above listed 47 entries because it counted `oracle.lua`, which the PoC had already ported; the tier is 46. The bridge work the row predicted was real but smaller than feared — `lua_arith()` reaches the selection metamethods by the identical dispatch path, so the operators are two lines each. `~` never appears; `+` and `-` do, and they turned out to be the dangerous ones. Seven scripts (not nine) call `hell_tweaks()`. | 6 → 1 |
-| **S5** *tutorial* | `tut-1`, plus the tutorial half of `nhlib` | 2 | The only string-pattern code in the corpus (`s:match("^^([A-Z])$")`) and the only place `nh.eckey` interpolation matters. Self-contained and never reached in normal play, so low risk and low value — do it late, or not at all before the freeze. | 1 |
-| **S6** *the libraries* | `nhlib.lua`, `nhcore.lua` | 2 | The hard ones, and the ones that change the load-time RNG contract. Porting `nhlib` moves the `align` shuffle into JS and requires the bridge to own per-state library state; porting `nhcore` requires reproducing `pairs()` order over a string-keyed table and `_G[k]` dispatch — and §6.2 now says what that costs: `pairs()` order over a hash part is a function of `g->seed`, which the port cannot control, so a `nhcore` port has to make the dispatch order independent of it (or the current interpreter behaviour has to be shown independent of it first). Both are read-back *and* executable, so they need §9's two recipes at once. **Only worth doing if S1–S4 land comfortably before the freeze**; the interpreter running two small library files costs nothing in the Phase-1 baseline. | 3 |
+| **S5** *tutorial* ✅ | `tut-1` | 1 | **Landed — see §14.1.** Cost part of a leg. The one prediction that was wrong is "never reached in normal play": `OPTIONS=tutorial` in the rc makes `ask_do_tutorial()` skip its menu and the hero starts in `tut-1`, so it has real-play evidence for three roles. The stage's real product was two things the brief did not name — the emitter now *types* the receiver of `a:m(…)`, and the level fingerprint now sweeps the engraving chain, without which a script that is 43 engravings had no oracle at all. | 1 |
+| **S6** *the libraries* ✅ | `nhlib.lua`, `nhcore.lua` | 2 | **Landed — see §14.2.** Cost 1 leg, not 3. The load-time RNG contract is the whole of the risk and it held: the port spends the same two `shuffle(align)` draws at the same seam, in every one of the dozens of `nhl_init()` calls a game makes. `pairs()` turned out not to need reproducing at all — a ported function that walks a Lua table walks it with `lua_next`, so it visits what the interpreter's `pairs` would visit, in that order, by construction (§14.4). What the row did not predict is that porting `nhlib` means leaving *callable Lua values* behind, because `themerms.lua` and `hellfill.lua` call ninety of them and are S7's; and that the stage's most valuable output is a first-ever proof of `shuffle` and `math.random` against the .lua, which four earlier stages had assumed. | 3 → 1 |
 | **S7** *themed rooms* | `themerms.lua`, `hellfill.lua` | 2 | 46 KB, 122 functions, frequency-weighted reservoir sampling, deferred post-process callbacks, and the *only* long-lived level-gen state (`gl.luathemes[dnum]`, cached per branch and never closed). `themerms` runs on essentially every ordinary level, so a mistake here is a corpus-wide failure rather than a one-level one — but that also means the corpus tests it hardest. Highest value in a Phase-2 diff (themed rooms are the most likely thing to change in 5.1) and highest risk. | 4 |
 
-Total ≈ 26 agent-legs as first estimated; S1, S2, S3 and S4 came in at 1 leg
-each instead of 2, 6, 4 and 6, so the remaining estimate is ≈ 8. S1–S4 was the
-sensible pre-freeze target and it has landed: 126 scripts, 96 % of the file
-count, 88.4 % by bytes. S5/S6/S7 are now optional rather than planned — §12's
-last section says what each still needs.
+Total ≈ 26 agent-legs as first estimated; S1, S2, S3, S4 and S6 came in at 1 leg
+each instead of 2, 6, 4, 6 and 3, and S5 at part of one, so the remaining
+estimate is ≈ 4. S1–S6 has landed: 129 scripts, 98 % of the file count, 92.7 %
+by bytes, and one `.lua` file still parsed per session. Only S7 is left —
+§14.9 says what it still needs.
 
 ---
 
@@ -2014,3 +2038,503 @@ outlives its load, it runs on nearly every level, and its reservoir sampling
 means a single misordered `nh.rn2` shifts every subsequent room in the dungeon.
 It should be attempted only with the whole corpus green and a leg budgeted for
 backing it out.
+
+---
+
+## 14. Stages S5 and S6: the tutorial, and the two libraries
+
+**Landed.** `tut-1.lua` (S5), `nhlib.lua` and `nhcore.lua` (S6) are ported.
+With everything before them that is **129 of 131 files and 92.7 % of the corpus
+by bytes**. Two files remain, both S7's: `themerms.lua` (34 KB) and
+`hellfill.lua` (11.9 KB).
+
+These three are the first ports that are not *scripts* in the sense the first
+four stages meant. `tut-1` is a level script, but it is the only one that calls
+a method on something other than a selection. `nhlib.lua` and `nhcore.lua` are
+not level scripts at all: their product is a set of names in a `lua_State` that
+C, and the two files S7 still owns, call afterwards.
+
+### 14.1 S5 — `tut-1.lua`, and typing the receiver of `a:m(…)`
+
+§12.10 predicted the whole of the port's difficulty and got it right:
+
+> The generator would need `a:match(p)` on a *string* rather than a selection —
+> which is a new kind of method call, since `method` currently always emits
+> `selection.<name>`.
+
+`a:m(…)` is sugar for `<table>.m(a, …)`, and which table depends on the
+receiver's metatable. For 126 ports the answer was always `selection`, because
+nhlsel.c registers one method table and points `__index` at it. `tut-1.lua:7`
+and `:13` are Lua's *string* metatable instead:
+
+```lua
+local s = nh.eckey(command);
+local m = s:match("^^([A-Z])$");        -- ^X is Ctrl-X
+```
+
+So `isSelectionExpr()` became `exprType()`, which answers `'selection'`,
+`'string'`, `'obj'` or null, and `methodJs()` picks the table from it. The two
+new tables need a *positively inferred* receiver and are a hard error otherwise;
+a selection method keeps the name-based rule the existing ports were generated
+under, and errors if the receiver is positively something else. The `--check`
+interpreter dispatches on the runtime *value* instead — which is what Lua does —
+so a wrong static inference is a check failure rather than a wrong port.
+
+**The port calls the real `str_match`.** A Lua pattern is not a regular
+expression: `%` is the escape, `-` is a lazy quantifier, `[` classes differ, and
+`^`/`$` anchor only at the pattern's ends. Rather than reimplement any of that,
+`bridge.mjs` opens Lua's **string** library — and only that one — in the port's
+state with `luaL_requiref(L, "string", luaopen_string, 1)`, and
+`string.match(s, p)` runs the same transpiled `str_match` the VM would have
+reached through the string metatable. `nhl_init()` opens the same library
+(`NHL_SB_STRING` is part of `NHL_SB_SAFE`), so it is the same code on the same
+input. §9's gotcha still stands for everything else: opening `math` would
+re-seed a PRNG nobody reads, and `luaL_openlibs` would open both.
+
+Three smaller things the script needed:
+
+* **`nh.parse_config`.** `nhl_parse_config()` is exactly
+  `parse_conf_str(luaL_checkstring(L, 1), parse_config_line)`, and `tut-1` turns
+  on `mention_walls`, `mention_decor` and `lit_corridor` with it before it draws
+  anything — options that change what the rest of the game displays, so the
+  call has to happen at the same point with the same bytes.
+* **`u.role` and `u.uenmax`.** Two more entries of `nhl_meta_u_index()`'s
+  {name, &field, type} table, whose offsets the transpiler emitted literally
+  (`cptr.add(u, 104)`, `cptr.add(u, 2212)`).
+* **nil.** Lua has one absent value and JS has two. `x ~= nil` now emits loose
+  `!= null`, which is true for exactly `{null, undefined}`. Strict `!==` was
+  right for every existing port (they only ever compare against a `null` the
+  emitter itself wrote) and would have been wrong for the first library function
+  called with a missing argument: `d(20)`'s `faces == nil` would have been false
+  on *both* sides of `--check`, which is the shape of bug that passes every gate.
+
+**The fingerprint had a hole, and tut-1 fell straight into it.** The script is
+43 `des.engraving` calls and almost nothing else, and an engraving is not in
+`struct rm`, not an object, not a monster and not a trap: it hangs off the
+global `head_engr` list. A negative control that changed one engraving's text
+**passed the fingerprint** (§14.8, control 4). `levelFingerprint()` now walks
+that chain too, with `engr_at()`'s own offsets — position, type, time, size,
+`guardobjects`/`nowipeout`, and both `engr_txt[actual_text]` and
+`engr_txt[pristine_text]`. `remembered_text`, `eread` and `erevealed` stay out
+for the same reason `struct rm`'s `glyph`/`seenv` do: they are what the hero has
+read and seen, not what the script built.
+
+**Reachability turned out to be free.** §10 called `tut-1` "never reached in
+normal play". It is reached in *ordinary* play by one line of rc:
+`ask_do_tutorial()` (options.c:430) skips its menu when `tutorial` was set in
+the configuration file, and `maybe_do_tutorial()` (allmain.c:568) then
+teleports the hero into `tut-1` as the first thing the game does.
+`tools/lua-oracle.mjs --rc=…` drives that, and it is how S6's tutorial half is
+evidenced as well.
+
+### 14.2 S6 — what "porting nhlib" means operationally
+
+`nhlib.lua` is not loaded by the level generator. It is loaded by
+**`nhl_init()`**, which means *every* `lua_State` the game builds gets it —
+one per level load, one per quest message, one for `init_dungeons()`, one for
+`gl.luacore`. A chargen-only session builds five; a marathon builds dozens.
+
+So the first question is not how to transcribe the file but what a port of it
+would even be. The answer is forced by who calls into it:
+
+| Caller | Reaches |
+|---|---|
+| C, by name | `nh_get_variables_string` (nhlua.c:1407), `get_variables_string`, `nh_callback_set/rm/run`, the `nhcore` table |
+| `nhcore.lua`'s `_G[k]` | `tutorial_cmd_before`, `tutorial_turn` |
+| **`themerms.lua` and `hellfill.lua`** | `percent` ×41, `math.random` ×28, `shuffle` ×13, `align` ×18, `d` ×5, `pline` ×4, `hell_tweaks` ×2 |
+
+That last row is the constraint. Those two files are S7's and are still
+interpreted, and they call nhlib's globals ninety times over. **A port of
+nhlib.lua therefore has to leave callable Lua values in the state**, not JS
+ones — there is no version of this that is only a JS module.
+
+In this transpile that is nearly free, for the reason §2 already recorded: a C
+function pointer *is* a JS function object, so `lua_pushcclosure(L, jsFn, 0)`
+makes a JS function a valid `lua_CFunction`. `bridge.mjs` grew two calling
+conventions over that — `luaFn` (arguments converted to JS, return value
+pushed) and `luaRawFn` (the stack itself, for the three functions that rewrite
+or walk a caller's table) — and `js/lua-js/scripts/nhlib.mjs` installs fifteen
+of them.
+
+**The state cursor.** A library function is called *by Lua*, with Lua values
+that belong to the calling state: `hellfill.lua`'s `hell_tweaks(protected)`
+hands over a selection userdata that cannot be moved to another state. So the
+bridge's api gained an active-state cursor: while a library port runs,
+`state()` answers with the state that called it and every `des.*` /
+`selection.*` / `obj.*` the ported body issues is marshalled there. A level
+script's port is unaffected — the cursor is null and it gets the port-owned
+state exactly as before.
+
+**The load-time RNG contract, which is the whole risk of this stage.**
+`nhlib.lua:24` is
+
+```lua
+align = { "law", "neutral", "chaos" };
+shuffle(align);
+```
+
+and that spends exactly two draws — `rn2(3)` then `rn2(2)`, from
+`math.random(i)` for i = 3 and i = 2 — inside **every** `nhl_init()`. Four
+stages have been built on that fact: §2 says the bridge's own state must not be
+created with `nhl_init()` because it would duplicate them, and §7.3 says a port
+that wants `align[1]` must read it out of the interpreter's state rather than
+recompute it. Both still hold, unchanged. What the port has to do is spend the
+same two draws in the same order at the same seam, and it does: the seam is the
+`fclose` of `nhlib.lua`, which is *inside* `nhl_init()`, after the state is
+fully registered and before anything else has happened, and the shuffle is the
+same `shuffleWith()` every other port draws through. The oracle prints it
+directly — `rng draws inside port: [2,0,2,0,2,2,0,2,162]` on the tutorial
+session, one `2` per `nhlib.lua` load and a `0` for `nhcore.lua`, which draws
+nothing.
+
+`align` itself is still read back out of the interpreter's state by
+`interpAlign()`, and has to be: the port writes it *there*, so the two scripts
+that name `align[1]` see the same table `themerms.lua` and `hellfill.lua` see.
+
+**nhcore.lua** is the smaller half and the same shape. It is loaded once, into
+`gl.luacore`, by a state that `nhlib.mjs` has already furnished. Its port
+defines `nh_lua_variables`, four functions C calls by name, `show_getpos_tip`,
+and the `nhcore` hook table — with exactly three entries, because
+`l_nhcore_call()` uses the *absence* of the other four names to switch those
+hooks off after one attempt, and a port that helpfully defined them would change
+behaviour.
+
+One global is defined and unreachable. `mk_dgl_extrainfo()` writes a
+dgamelaunch status file with `io.open`, which the sandbox does not open at all;
+`nhcore.moveloop_turn` is commented out in the .lua, and `nh_callback_run`'s
+`_G[k]` can only name something that was passed to `nh.callback()` — which in
+the whole 131-file corpus is `tutorial_cmd_before` and `tutorial_turn`, from
+nhlib's two tutorial functions and nowhere else. The port defines it, because
+the global's *type* is observable and has to match, and makes it throw, because
+that turns the reachability argument into an assertion. It has never fired.
+
+### 14.3 Proving a library function
+
+A level script's port is proved by its call stream; that is all a level script
+is. Most of nhlib.lua is not: `percent`, `d`, `monkfoodshop`,
+`table_stringify` and `tutorial_cmd_before` make no calls at all and their
+whole observable is a *return value*, and `shuffle` returns nothing and rewrites
+its argument in place.
+
+So `checkLibFn` now compares four things, over a list of argument vectors, under
+all eight RNG settings: the call stream, the return value, the number of `rn2`
+draws spent, and any mutation of an argument. `gen-ports.mjs`'s `LIB_ARGV`
+carries the vectors — five thresholds for `percent`, six dice shapes for `d`,
+four list lengths for `shuffle`, four tables for `table_stringify` — and
+`node --test` runs all of it in about 300 ms.
+
+**Eight functions are generated**, by the same `lua2des.mjs` that emits the
+level scripts, now into a module with named exports rather than one function per
+file: `hell_tweaks`, `monkfoodshop`, `nh_set_variables_string`,
+`nh_get_variables_string`, `tutorial_cmd_before`, `tutorial_enter`,
+`tutorial_leave` (into `js/lua-js/nhlib-fns.mjs`) and `show_getpos_tip` (into
+`js/lua-js/nhcore-fns.mjs`). `extractFunction()` grew two things for them: a
+file-scope `local` the function closes over comes along and becomes a
+module-level `const` (`tutorial_blacklist_commands`, `tutorial_events`), and a
+definition written as an assignment rather than a declaration
+(`math.random = function(...)`) is recognised.
+
+**Eleven are hand-written**, in `js/lua-js/nhlib.mjs` and
+`js/lua-js/nhcore.mjs`, because they use constructs a generator should not
+attempt: varargs, a generic `for k, v in pairs(…)`, simultaneous assignment
+through an index, `_G[k]`, and Lua's own `type`/`tostring`/`table.unpack`. They
+are proved the same way, and that required the *interpreter* half of
+`lua2des.mjs` to learn those constructs while the *emitter* half keeps refusing
+every one of them by name (`EMITTER_REFUSES`). The generated-port contract is
+therefore unchanged: nothing a generated module can contain has grown.
+
+The two on that list that matter most are `shuffle` and `math.random`. Every
+`percent()`, every `d()`, every shuffled list in 127 ports draws through them —
+and until S6 **nothing had ever compared them with `nhlib.lua`**, because
+`--check` handed *both* sides the same `makeNhlib()` and so compared two
+transcriptions of a function it was itself supplying. Now the .lua side runs
+nhlib.lua's own statements, the JS side runs `shuffleWith` /
+`mathRandomWith`, and what is shared is only the `rn2` underneath. That is a
+retroactive proof of four earlier stages' RNG accounting, and it is the single
+most valuable thing S6 produced.
+
+### 14.4 `pairs()`, measured
+
+§10 named this as S6's hard problem:
+
+> porting `nhcore` requires reproducing `pairs()` order over a string-keyed
+> table, which §6.2 showed is a function of `g->seed` and therefore not
+> reproducible — the dispatch order has to be shown independent of it first.
+
+There are three hash-part tables in the two files: `nhcore` itself,
+`nh_lua_variables`, and each `nh_lua_variables._CB_<event>`. The answer has
+three parts and none of them is "reproduce the order".
+
+**1. The port does not choose an order.** `table_stringify` and
+`nh_callback_run` walk *the caller's own Lua table*, and the port walks it with
+`lua_next` — the same traversal the interpreter's `pairs` performs, of the same
+table, in the same state. The order is identical by construction rather than by
+agreement, which is why `bridge.mjs`'s `luaTable.pairs` exists at all.
+
+**2. Where an order is nevertheless visible, it is seed-derived, and that is
+measured.** §6.2 settled the same question for `questtext` by loading it eight
+times in one run and watching the *interpreter alone* produce eight different
+orders. `gl.luacore` is built once per game, so `tools/lua-pairs-probe.mjs`
+does the equivalent across eight runs: `luai_makeseed()` mixes `time(NULL)`,
+which the harness pins from the session's `datetime`, so varying the datetime
+varies `g->seed` exactly as a different allocation history would. Interpreter
+only, no port anywhere:
+
+```
+  nhcore.lua:nhcore: 4 distinct orders in 8 runs
+    x3  a30bc1b5  getpos_tip,enter_tutorial,leave_tutorial
+    x2   e351d89  getpos_tip,leave_tutorial,enter_tutorial
+    x2  9de01a79  enter_tutorial,getpos_tip,leave_tutorial
+    x1  b4b31381  enter_tutorial,leave_tutorial,getpos_tip
+```
+
+The same probe over `align` reports **one** key order in all eight runs —
+`1,2,3` — because it is an array part, and an array part's order is not
+seed-derived. That contrast is what makes the measurement worth having: had
+`align` moved, the port would be wrong. The oracle therefore requires the
+lua_next order of `align` to match and only *reports* `nhcore`'s, exactly as
+§6.2 requires `dungeon`'s and reports `questtext`'s. Nothing walks `nhcore`
+with `lua_next` anyway — `l_nhcore_call()` reads it with `lua_getfield`.
+
+**3. For the one table a `pairs()` order could actually reach the game
+through, the order is unique.** `nh_callback_run` iterates
+`nh_lua_variables["_CB_" .. cb]`, whose keys are the function names passed to
+`nh.callback()`. `nh.callback(` appears **four times in the whole corpus**, all
+of them in nhlib.lua's `tutorial_enter` and `tutorial_leave`, and they register
+one function per event (`tutorial_cmd_before` for `cmd_before`,
+`tutorial_turn` for `end_turn`). Every reachable `_CB_*` table therefore has at
+most one key, and a one-key table has one traversal order. The four C call sites
+are gated on `nhcb_counts[]`, so in a game that never enters the tutorial
+`nh_callback_run` is never called at all and `nh_lua_variables` stays empty —
+which is also why `table_stringify`'s `pairs` produces `"{}"` in every corpus
+session.
+
+### 14.5 The assertion: what still reaches the Lua parser
+
+The stated goal of roadmap 1.10 is that a game with every port live never parses
+a line of Lua. That is not something the corpus or the RNG log can show — a port
+that quietly stopped running and let the interpreter do the work would pass
+both — so S6 measures it directly, at the one place every `.lua` enters the VM.
+
+`registry.mjs`'s `scriptFor()` is called from the harness's `fopen` for every
+file the game opens. A name the registry does not handle goes to the interpreter
+with its real bytes, and is now counted; the count travels out through
+`runBootGame`'s result and the oracle prints it. On every session tried, with
+all 129 ports live, the answer is:
+
+```
+      .lua still parsed:   themerms.lua×1
+```
+
+and, when a Gehennom filler level is forced,
+`hellfill.lua×1, themerms.lua×1`. Those two files are S7's and nothing else
+remains: **129 of the 131 scripts, and every one of the ~60 `.lua` loads a
+marathon session performs, are intercepted.** `themerms.lua` is loaded once per
+dungeon branch that names it (only the main dungeon does — `dungeon.lua:13`) and
+cached in `gl.luathemes[dnum]`; `hellfill.lua` is `svd.dungeons[].fill_lvl` for
+Gehennom and is loaded per filler level.
+
+Two honest qualifications. The interpreter still *compiles* something for each
+ported file — the same-length `--[[ ]]` stub §4 describes, which is an empty
+chunk — so "never parses any .lua source" is exact and "never runs the Lua
+parser" is not. And the interpreter itself is still in the tree and still
+running, because it is the differential oracle; removing it was never the goal.
+
+### 14.6 Evidence, per script
+
+| Script | .lua lines | What it adds | Evidence |
+|---|---|---|---|
+| `tut-1` | 347 | `s:match(p)`, `nh.parse_config`, `u.role`/`u.uenmax`, 43 engravings, `shuffle` + `for` + `percent` | **both** — forced generation at Dlvl 1, Dlvl 10, a Monk game and a Knight game; and *ordinary play* via `OPTIONS=tutorial` as Knight, Monk and Wizard |
+| `nhlib` | 242 | fifteen globals, two load-time draws, the Lua-callable surface themerms/hellfill use | **every session** — it is loaded by every `nhl_init()`, so all 69 corpus sessions exercise it dozens of times |
+| `nhcore` | 144 | the hook table, the callback registry, `_G[k]` dispatch | **every session** for the load and the four self-disabling hooks; the tutorial rc session for `enter_tutorial`/`leave_tutorial` and for `nh_callback_run` firing every turn |
+
+The `getpos_tip` hook is the one part of `nhcore` no session reaches: it needs
+the hero to enter `getpos()` for the first time, which none of the 69 recorded
+sessions does. It is a two-line generated function (`nh.text` of a fixed
+string), it is checked against the .lua by `checkLibFn`, and its presence and
+type in the hook table are checked by the globals dump — but it has no
+behavioural evidence, and that is worth writing down rather than glossing.
+
+### 14.7 Oracle results
+
+The library ports need a sixth check, for the same reason the read-back scripts
+needed a fifth: their product is a set of globals, and neither the RNG log, the
+screens nor the level fingerprint sees one. `--globals` adds two runs with
+`C2JS_LUA_GLOBALS=dump`, which records — per load, per expected global — the Lua
+type actually found and, for the tables, the content hash and the raw `lua_next`
+order. As with `--readback`, the interpreter side runs the real chunk from this
+module at the same `fclose` seam, so both dumps are taken at the same instant of
+the same game, and the RNG logs of the dump runs are checked against the plain
+ones to show the instrumentation changed nothing.
+
+```
+$ node tools/lua-oracle.mjs --globals sessions/seed0077-rogue-chargen.session.json
+PASS  seed0077-rogue-chargen.session.json
+      rng     interpreter=3242 port=3242 firstDiff=-1
+      screens interpreter=33 port=33 firstDiff=-1
+      ported-script loads: nhlib.lua@rng200, dungeon.lua@rng202, nhlib.lua@rng302,
+                           nhcore.lua@rng304, nhlib.lua@rng306, nhlib.lua@rng3191,
+                           quest.lua@rng3193
+      rng draws inside port: [2,0,2,0,2,2,0]
+      library globals:     MATCH (5 loads of nhlib.lua+nhcore.lua; every global the
+                           expected type: yes; lua_next order MATCH; instrumentation
+                           undisturbed)
+        nhlib.lua[math.random:function shuffle:function align:table:1690268d:3
+                  d:function percent:function monkfoodshop:function hell_tweaks:function
+                  pline:function nh_set_variables_string:function
+                  nh_get_variables_string:function table_stringify:function
+                  tutorial_cmd_before:function tutorial_enter:function
+                  tutorial_leave:function tutorial_turn:function]
+      .lua still parsed:   themerms.lua×1
+```
+
+The tutorial session — the one that exercises `tut-1`, `tutorial_enter`,
+`nh_callback_set`, `nh_callback_run` once per turn and `tutorial_leave` — is
+`PASS` on all of it for Knight, Monk, Wizard and Valkyrie.
+
+`hellfill.lua` is the sharpest test of the nhlib port, because it is *still
+interpreted* and reads `align` eighteen times, draws through `math.random`
+twenty-eight times and ends with two `hell_tweaks()` calls — every one of which
+now goes through a JS `lua_CFunction`. Forced on the wizard world tour it builds
+byte-identically:
+
+```
+$ node tools/lua-oracle.mjs --levels=hellfill.lua sessions/seed0360-wizard-world-tour.session.json
+PASS  seed0360-wizard-world-tour.session.json
+        ok   hellfill.lua   fp a67192d4/a67192d4 rng 5117/5117 (still interpreted)
+      .lua still parsed:   hellfill.lua×1, themerms.lua×1
+```
+
+**The 128 earlier ports are unaffected**, and it is worth saying why that was
+not obvious: S6 changes what `percent`, `shuffle`, `math.random`, `d` and
+`align` *are* for every script in the game, ported or not. All 128 still MATCH
+forced at Dlvl 1 (eight batches of ≤16 per process; §11's budget note still
+applies), the plain oracle on `gen9996-marathon-dlvl10` still reports
+`rng 54924/54924, screens 17829/17829`, `seed0360-wizard-world-tour` still
+reports `120639/120639`, and `--readback --questprobe --globals` on
+`seed0077-rogue-chargen` reports `read-back table: MATCH` with the `lua_next`
+order over `dungeon` matching, the quest text byte-identical
+(`23882 terminal bytes, firstDiff=-1`) and `library globals: MATCH`.
+
+### 14.8 Negative controls
+
+Four, of which two are the ones the brief asked for and one found the hole in
+the fingerprint. Every one was reverted.
+
+1. **nhlib's `shuffle` draw accounting.** `shuffleWith`'s loop bound
+   `i >= 2` → `i >= 1`, i.e. one extra `math.random(1)` per shuffle — a draw
+   that always returns 1 and changes nothing about the result. **Three
+   detectors fire.** `checkLibFn` reports it as
+   `shuffle rng=low argv=1 rn2 draws: lua=0 js=1` (the argv-1 vector is a
+   one-element list, where the .lua spends nothing and the control spends one).
+   The RNG log diverges at index 202 — `nhlib.lua`'s very first load, and the
+   whole log shortens from 3242 draws to 3115. And the globals dump reports
+   `align` with a different content hash. This is the control the brief named:
+   the draw accounting is checked mechanically, behaviourally, and in the
+   product.
+2. **A nhcore global, invisible to everything else.** `mk_dgl_extrainfo` not
+   defined. `rng 3242/3242 firstDiff=-1`, `screens 33/33 firstDiff=-1`, level
+   fingerprint `MATCH` — **caught only by the globals dump**, which reports
+   `mk_dgl_extrainfo:nil` against the interpreter's `:function`. This is §5's
+   statue control in its S6 form, and it is why the dump records the Lua type of
+   every expected name rather than only hashing the tables.
+3. **A nhcore callback, in the tutorial.** The hook table's
+   `enter_tutorial = tutorial_enter` → `tutorial_leave` — a transcription slip
+   that is one identifier wide. On the `OPTIONS=tutorial` session the RNG log
+   diverges at 2842 (the moment `maybe_do_tutorial()` runs), the screens at 15,
+   the level fingerprint has one entry fewer because `tut-1` is never generated
+   at all, and the globals dump differs. Everything fires, which is the point:
+   the tutorial path is not a corner the oracle cannot see into.
+4. **An engraving's text — the one that failed.** `tut-1`'s
+   `"Move around with " .. movekeys` → `"Move around With "`. Against the §12.5
+   fingerprint this **passed**: `fp ef977367/ef977367 MATCH`, and only the
+   screens noticed, and only because the level probe leaves the hero standing on
+   the forced level. An engraving is a fifth chain — `head_engr` — that nothing
+   swept. With §14.1's widening the same control moves the fingerprint
+   `d705d960` → `34b99ce0` on its own. This is §11.5's control 4 and §12.8's
+   control 5 happening a third time, and it is the argument for taking a
+   negative control that *passes* as the most useful result available.
+
+**And two bugs the corpus found that nothing else could.** Both are worth
+recording because they are the shape of thing a library port produces, and
+because they are the argument for running the whole corpus rather than the
+oracle on a few sessions.
+
+* **`tutorial_turn` walked a JS list through Lua's `pairs`.** The api a library
+  port is handed answers `pairs` with `lua_next`, which is right for every
+  table that lives in the game — and wrong for `tutorial_events`, which is a
+  file-scope local that never leaves JS. Marshalling it into Lua and walking it
+  there produced a registry handle where the ported body expected an object, so
+  `v.func` was not a function. Five corpus sessions failed, and all five were
+  ones with no `!tutorial` in their rc whose recorded keys happen to answer the
+  tutorial menu with *yes* — i.e. exactly the sessions that reach the code. The
+  fix is that `luaTable.pairs` and `setNil` dispatch on where the value lives,
+  and the JS side of that dispatch is now the *same function*
+  (`js/lua-js/nhlib.mjs`'s `jsPairs`) that the `--check` interpreter uses, so
+  the two cannot drift.
+* **`luaL_ref` on the wrong state.** `luaFn` converted its arguments to JS
+  *before* binding the api to the calling state, so a table or userdata
+  argument was pushed on the caller's stack and referenced into the port's
+  registry. One corpus session hands a library function a table
+  (`seed4500-knight-coverage`), and it aborted inside `luaF_close`. Conversion
+  now happens inside `withState` with everything else. This is §7.4's bug in a
+  new place — the port's state shadowing the interpreter's — and the lesson is
+  the same one: state identity has to be explicit, never inferred.
+
+### 14.9 What S7 still needs
+
+`themerms.lua` (34 KB, 87 functions) and `hellfill.lua` (11.9 KB) are the last
+two files, 7.3 % of the corpus by bytes. S5 and S6 removed three more of the
+prerequisites §12.10 listed and added one fact that changes the shape of the
+stage.
+
+Removed:
+
+* **`obj.*` methods.** §12.10 called them "untested". `obj.new` and
+  `obj.placeobj` are now bound, typed by the emitter (`exprType` answers
+  `'obj'`), driven by nhlib's `tutorial_events` closure, and checked by
+  `checkLibFn`.
+* **Generic `for k, v in pairs/ipairs`.** The parser and the `--check`
+  interpreter have it (§14.3); `themerms.lua:1093` is an `ipairs` and ordered.
+  What is *not* done is emitting one — `EMITTER_REFUSES` still rejects it, on
+  purpose, so S7 must either extend the emitter deliberately or hand-write the
+  function and prove it with `checkLibFn`, which is now a real option.
+* **The whole library surface.** `percent`, `shuffle`, `math.random`, `d`,
+  `align`, `pline` and `hell_tweaks` are ports, and `themerms.lua` already runs
+  against them today — the only thing S7 changes is who *calls* them.
+
+Still outstanding, and unchanged:
+
+1. **`des.object()`'s return value.** Both files bind it and call `obj` methods
+   on the result. `DES_VALUE_FUNCS` is the one-line switch and `obj.*` now
+   works, but turning it on globally mints a registry reference per
+   `des.object` call and there are 1,420 of them, so it wants to be conditional
+   on the script. The `LuaRef` path S6 added for `nh_lua_variables` is the
+   cheaper shape if a reference per object turns out to matter.
+2. **The long-lived state.** `gl.luathemes[dnum]` is cached per dungeon branch
+   and never closed — the only level-generation state that outlives its load.
+   Every port so far has run inside one `nhl_loadlua` and been done;
+   `themerms.lua` leaves a table of 87 room generators behind and `makerooms()`
+   calls into it on every ordinary level. The nearest thing S6 built is the
+   library port, which also leaves callable values behind in a state it does not
+   own — `js/lua-js/scripts/nhlib.mjs` is the template.
+3. **Reservoir sampling.** `themerms` picks a room by frequency-weighted
+   sampling; a single misordered `nh.rn2` shifts every subsequent room in the
+   dungeon. It runs on essentially every level, so a mistake is a corpus-wide
+   failure rather than a one-level one — which is also why the corpus tests it
+   harder than anything else, and why §13's advice to attempt it only with the
+   whole corpus green and a leg budgeted for backing it out still stands.
+
+New, and worth planning for:
+
+4. **`themerms.lua` is one of the two files whose `pairs()` §3(a) flagged, and
+   it is the *only* remaining one.** §14.4 disposed of nhcore's and nhlib's by
+   measurement and by cardinality. `themerms.lua:1093` is an `ipairs` over a
+   sequence and is ordered, so the same treatment applies — but it should be
+   measured with `tools/lua-pairs-probe.mjs` rather than assumed, because that
+   tool now exists and the argument for `nhcore` took ten minutes to make with
+   it and would have taken an afternoon without.
+5. **`tools/lua-port-gen/gen-ports.mjs` grows a `T4` list** (S5 took `T3` for
+   `tut-1`) and `js/lua-js/scripts/t4/`; `LIB_MODULES` and `HAND_FNS` take
+   `themerms`' 87 functions the way they took nhlib's fifteen. Nothing else
+   about the machinery has to change.

@@ -35,7 +35,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkLibFn, checkPort } from '../tools/lua-port-gen/lua2des.mjs';
-import { T0, T1, T2, T3 } from '../tools/lua-port-gen/gen-ports.mjs';
+import { HAND_FNS, LIB_ARGV, LIB_MODULES, T0, T1, T2, T3 } from '../tools/lua-port-gen/gen-ports.mjs';
+import { makeTutorialEvents } from '../js/lua-js/nhlib.mjs';
 import { T0_PORTS } from '../js/lua-js/scripts/t0/index.mjs';
 import { T1_PORTS } from '../js/lua-js/scripts/t1/index.mjs';
 import { T2_PORTS } from '../js/lua-js/scripts/t2/index.mjs';
@@ -53,16 +54,34 @@ const TIERS = [
 let failures = 0;
 let checked = 0;
 
-// The library ports first: seven T2 scripts end by calling hell_tweaks(), so a
-// wrong library port would show up as seven wrong level scripts. Checking it on
-// its own says which it is.
-{
+// The library ports first, generated and hand-written alike. Seven T2 scripts
+// end by calling hell_tweaks(), so a wrong library port would show up as seven
+// wrong level scripts; and `shuffle` and `math.random` are what every percent(),
+// every d() and every shuffled list in 127 ports draws through, so a wrong one
+// would show up as the whole corpus. Checking each on its own says which it is.
+//
+// The comparison is the same one a level script gets and three things more:
+// the *return value* (which is the whole observable of percent, d,
+// monkfoodshop, table_stringify and tutorial_cmd_before), the number of rn2()
+// draws spent, and any mutation of an argument (which is what shuffle is).
+const JS_LOCALS = { tutorial_turn: (a) => { a.tutorial_events = makeTutorialEvents(a); } };
+const LIB_CASES = [
+    ...LIB_MODULES.flatMap((m) => m.fns.map((f) => ({
+        name: f.name, from: m.from, mod: m.out, fn: f.name, locals: f.locals ?? [],
+    }))),
+    ...HAND_FNS.map((f) => ({
+        name: f.name, from: f.from, mod: f.mod, fn: f.fn, locals: f.locals ?? [],
+    })),
+];
+for (const c of LIB_CASES) {
+    // eslint-disable-next-line no-await-in-loop
     const d = await checkLibFn(
-        path.join(ROOT, 'nethack-c/recorder/dat/nhlib.lua'),
-        path.join(ROOT, 'js/lua-js/nhlib-fns.mjs'),
-        'hell_tweaks',
+        path.join(ROOT, `nethack-c/recorder/dat/${c.from}.lua`),
+        path.join(ROOT, c.mod),
+        c.name,
+        { fn: c.fn, locals: c.locals, argvs: LIB_ARGV[c.name], jsLocals: JS_LOCALS[c.name] },
     );
-    if (d) { console.error(`FAIL nhlib-fns.mjs differs from nhlib.lua at ${d}`); failures++; }
+    if (d) { console.error(`FAIL ${c.mod} differs from ${c.from}.lua at ${d}`); failures++; }
     checked++;
 }
 

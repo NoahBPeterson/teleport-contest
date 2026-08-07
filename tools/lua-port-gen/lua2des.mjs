@@ -77,27 +77,45 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LuaList, luaLen, luaList, makeNhlib } from '../../js/lua-js/nhlib.mjs';
+import {
+    LuaList, jsPairs, jsSetIndex, jsToString, jsType, libTableStringify, luaLen,
+    luaList, makeNhlib,
+} from '../../js/lua-js/nhlib.mjs';
+
+// Re-exported so gen-ports.mjs can build argument vectors without a second
+// import of the runtime module.
+export { luaList, luaLen };
 
 // ---------------------------------------------------------------------------
 // Lexer
 // ---------------------------------------------------------------------------
 
-const PUNCT3 = [];
+const PUNCT3 = ['...'];
 const PUNCT2 = ['..', '==', '~=', '<=', '>=', '//'];
 const PUNCT1 = ['{', '}', '[', ']', '(', ')', '=', ',', ';', '.', ':', '#',
     '+', '-', '*', '/', '%', '<', '>', '|', '&'];
 
 const KEYWORDS = new Set(['true', 'false', 'nil', 'local',
     'if', 'then', 'elseif', 'else', 'end', 'function',
-    'for', 'do', 'repeat', 'until', 'return', 'and', 'or', 'not']);
+    'for', 'do', 'repeat', 'until', 'return', 'and', 'or', 'not', 'in']);
 /**
- * Lua keywords this subset still refuses outright. `while` and `break` appear
- * nowhere in the 131-file corpus; `in` would mean a generic `for k,v in …`,
- * which only the two library files use. A script that grows one must fail here
- * rather than be quietly mistranslated.
+ * Lua keywords this subset refuses outright. `while`, `break` and `goto` appear
+ * nowhere in the 131-file corpus.
+ *
+ * `in` used to be here too, and S6 took it out — not because generated ports
+ * may now contain a generic `for k, v in …`, but because the *--check
+ * interpreter* has to be able to run one. nhlib.lua's `table_stringify` and
+ * `tutorial_turn` and nhcore.lua's `nh_callback_run` are hand-written ports
+ * (the constructs they use are outside anything an emitter should attempt), and
+ * the only way to prove a hand-written port is to run the .lua beside it. So
+ * the parser and the interpreter grew generic `for`, multiple assignment,
+ * assignment through an index, varargs and `type`/`tostring`/`table.unpack`,
+ * while renderStmts() and expr() *refuse* every one of them by name (see
+ * EMITTER_REFUSES). The generated-port contract is unchanged: anything a
+ * generated module could contain is still exactly the S4 subset plus S5's
+ * string methods.
  */
-const REJECTED = new Set(['while', 'break', 'goto', 'in']);
+const REJECTED = new Set(['while', 'break', 'goto']);
 
 /**
  * @param {string} src
@@ -295,12 +313,21 @@ export function parse(src) {
     function funcBody(line) {
         eat('punct', '(');
         const params = [];
+        let vararg = false;
         while (!at('punct', ')')) {
+            // `function pline(fmt, ...)` — nhlib.lua's one variadic function.
+            if (at('punct', '...')) { p++; vararg = true; break; }
             params.push(eat('name').v);
             if (at('punct', ',')) p++;
             else break;
         }
         eat('punct', ')');
+        if (vararg) {
+            const body = block();
+            const endLine = peek().line;
+            eat('kw', 'end');
+            return { t: 'func', params, vararg, body, line, endLine };
+        }
         const body = block();
         const endLine = peek().line;
         eat('kw', 'end');
@@ -309,6 +336,8 @@ export function parse(src) {
 
     function primary() {
         const t = peek();
+        // `...` — only ever inside `{...}` or `table.unpack{...}` here.
+        if (t.k === 'punct' && t.v === '...') { p++; return { t: 'vararg', line: t.line }; }
         if (t.k === 'str' || t.k === 'num') { p++; return { t: 'lit', v: t.v, long: !!t.long, line: t.line }; }
         if (t.k === 'kw') {
             if (t.v === 'function') { p++; return funcBody(t.line); }
@@ -419,13 +448,30 @@ export function parse(src) {
         return { s: 'if', clauses, otherwise, line, endLine };
     }
 
-    /** `for NAME = e1, e2 [, e3] do block end` — the only loop form in play. */
+    /**
+     * `for NAME = e1, e2 [, e3] do block end`, or the generic
+     * `for k[, v] in explist do block end`.
+     *
+     * Only the numeric form is ever *emitted* (renderStmts refuses the other);
+     * the generic one exists so the interpreter can run nhlib.lua's
+     * `table_stringify` and nhcore.lua's `nh_callback_run` beside their
+     * hand-written ports.
+     */
     function forStat() {
         const line = eat('kw', 'for').line;
         const name = eat('name').v;
-        // A generic `for k, v in …` would show up as a comma here; `in` is in
-        // REJECTED so the lexer has already refused it, but be explicit.
-        if (at('punct', ',')) err('generic for (`for k, v in …`) is outside the supported subset');
+        if (at('punct', ',') || at('kw', 'in')) {
+            const names = [name];
+            while (at('punct', ',')) { p++; names.push(eat('name').v); }
+            eat('kw', 'in');
+            const exprs = [exp()];
+            while (at('punct', ',')) { p++; exprs.push(exp()); }
+            eat('kw', 'do');
+            const body = block();
+            const endLine = peek().line;
+            eat('kw', 'end');
+            return { s: 'forin', names, exprs, body, line, endLine };
+        }
         eat('punct', '=');
         const from = exp();
         eat('punct', ',');
@@ -480,7 +526,7 @@ export function parse(src) {
                 p++;
                 const name = eat('name').v;
                 const f = funcBody(t.line);
-                items.push({ s: 'funcdecl', name, params: f.params, body: f.body, line: t.line, endLine: f.endLine });
+                items.push({ s: 'funcdecl', name, params: f.params, vararg: !!f.vararg, body: f.body, line: t.line, endLine: f.endLine });
                 continue;
             }
             if (t.k === 'kw' && t.v === 'local') {
@@ -505,6 +551,19 @@ export function parse(src) {
                 const value = exp();
                 if (at('punct', ';')) p++;
                 items.push({ s: 'assign', name: e.v, value, line: t.line, endLine: toks[p - 1].line });
+                continue;
+            }
+            // `t[k] = v`, `t.f = v`, and the multiple form
+            // `list[i], list[j] = list[j], list[i]` (nhlib.lua's shuffle).
+            // Interpreter-only, like the generic `for`: renderStmts refuses it.
+            if ((e.t === 'index' || e.t === 'field') && (at('punct', '=') || at('punct', ','))) {
+                const targets = [e];
+                while (at('punct', ',')) { p++; targets.push(primary()); }
+                eat('punct', '=');
+                const values = [exp()];
+                while (at('punct', ',')) { p++; values.push(exp()); }
+                if (at('punct', ';')) p++;
+                items.push({ s: 'setindex', targets, values, line: t.line, endLine: toks[p - 1].line });
                 continue;
             }
             if (e.t !== 'call' && e.t !== 'method') err('a statement must be a function call or an assignment');
@@ -541,6 +600,11 @@ function walkExprs(items, visit) {
                 if (it.otherwise) stmts(it.otherwise);
             } else if (it.s === 'for') {
                 node(it.from); node(it.to); node(it.step); stmts(it.body);
+            } else if (it.s === 'forin') {
+                for (const e of it.exprs) node(e); stmts(it.body);
+            } else if (it.s === 'setindex') {
+                for (const t of it.targets) node(t);
+                for (const v of it.values) node(v);
             } else if (it.s === 'repeat') {
                 stmts(it.body); node(it.cond);
             } else if (it.s === 'funcdecl') {
@@ -557,6 +621,7 @@ function boundNames(list, into = new Set()) {
         if (it.s === 'local') into.add(it.name);
         if (it.s === 'funcdecl') { into.add(it.name); boundNames(it.body, into); }
         if (it.s === 'for') { into.add(it.name); boundNames(it.body, into); }
+        if (it.s === 'forin') { for (const n of it.names) into.add(n); boundNames(it.body, into); }
         if (it.s === 'repeat') boundNames(it.body, into);
         if (it.s === 'if') {
             for (const c of it.clauses) boundNames(c.body, into);
@@ -663,6 +728,9 @@ function expr(node, pad) {
         case 'concat': return node.parts.map((x) => expr(x, pad)).join(' + ');
         case 'call': return `${expr(node.fn, pad)}(${argList(node.args, pad)})`;
         case 'method': return methodJs(node, pad);
+        case 'vararg':
+            throw new Error(`lua2des: line ${node.line}: \`...\` — port this by hand `
+                + '(js/lua-js/nhlib.mjs) and prove it with checkLibFn');
         case 'table': return tableLit(node, pad);
         case 'func': return funcLit(node, pad);
         case 'paren': return `(${expr(node.e, pad)})`;
@@ -923,6 +991,10 @@ function argList(args, pad) {
  * Lua closure.
  */
 function funcLit(node, pad) {
+    if (node.vararg) {
+        throw new Error(`lua2des: line ${node.line}: a variadic function — port this by hand `
+            + '(js/lua-js/nhlib.mjs) and prove it with checkLibFn');
+    }
     const inner = new Scope(curScope);
     for (const p of node.params) inner.declare(p);
     const lines = renderBlock(node.body, pad + PAD, inner);
@@ -1015,10 +1087,12 @@ export function fnName(base) {
  * prelude a level script reaches for.
  */
 const API_FIELDS = ['des', 'selection', 'obj', 'string', 'nh', 'percent', 'shuffle',
-    'd', 'math', 'align', 'monkfoodshop', 'hell_tweaks', 'u', 'nhc', 'luaList', 'luaLen'];
+    'd', 'math', 'align', 'monkfoodshop', 'hell_tweaks', 'table_stringify',
+    'nh_lua_variables', 'u', 'nhc', 'luaList', 'luaLen'];
 
 /** nhlib.lua globals a script may call as a bare function. */
-const NHLIB_FUNCS = new Set(['monkfoodshop', 'percent', 'shuffle', 'd', 'hell_tweaks']);
+const NHLIB_FUNCS = new Set(['monkfoodshop', 'percent', 'shuffle', 'd', 'hell_tweaks',
+    'table_stringify']);
 
 /** The api fields a script actually uses, in the order the api declares them. */
 function apiFields(items) {
@@ -1232,13 +1306,53 @@ function reassignedLater(body, idx, name) {
  * @param {string} src @param {string} name
  * @returns {string} the function's source, `function` line through `end`
  */
-export function extractFunction(src, name) {
+export function extractFunction(src, name, locals = []) {
     const lines = src.split('\n');
+    const head = locals.map((n) => extractLocal(lines, n));
+    // `math.random = function(...) … end` — nhlib.lua's one assignment-shaped
+    // definition, and the single most load-bearing function in the corpus
+    // (every percent(), every d(), every shuffle in 127 ports draws through
+    // it). Rewriting the header to a declaration is a rename and nothing else.
+    if (name.includes('.')) {
+        const decl = `${name} = function(`;
+        const start = lines.findIndex((l) => l.startsWith(decl));
+        if (start < 0) throw new Error(`lua2des: no top-level '${decl}' found`);
+        const end = lines.findIndex((l, i) => i > start && l === 'end');
+        if (end < 0) throw new Error(`lua2des: '${name}' has no closing 'end' at column 0`);
+        const body = lines.slice(start, end + 1);
+        body[0] = `function ${declName(name)}(${body[0].slice(decl.length)}`;
+        return [...head, body.join('\n')].join('\n');
+    }
     const start = lines.findIndex((l) => l.startsWith(`function ${name}(`));
     if (start < 0) throw new Error(`lua2des: no top-level 'function ${name}(' found`);
     const end = lines.findIndex((l, i) => i > start && l === 'end');
     if (end < 0) throw new Error(`lua2des: 'function ${name}' has no closing 'end' at column 0`);
-    return lines.slice(start, end + 1).join('\n');
+    return [...head, lines.slice(start, end + 1).join('\n')].join('\n');
+}
+
+/** The declaration name extractFunction() gives a dotted definition. */
+export function declName(name) { return name.replace(/\./g, '_'); }
+
+/**
+ * One top-level `local NAME = <table constructor>` out of a library .lua.
+ *
+ * nhlib.lua has two, and both are *upvalues* of a function that has to be
+ * ported: `tutorial_blacklist_commands` (read by tutorial_cmd_before) and
+ * `tutorial_events` (walked and mutated by tutorial_turn). A function cannot be
+ * checked against the .lua without the values it closes over, so they come
+ * along. The block ends where its braces balance, which is exact for a table
+ * constructor and refuses anything else.
+ */
+function extractLocal(lines, name) {
+    const start = lines.findIndex((l) => l.startsWith(`local ${name} `) || l.startsWith(`local ${name}=`));
+    if (start < 0) throw new Error(`lua2des: no top-level 'local ${name}' found`);
+    let depth = 0;
+    for (let i = start; i < lines.length; i++) {
+        for (const c of lines[i]) { if (c === '{') depth++; else if (c === '}') depth--; }
+        if (depth === 0 && /[;}]\s*$/.test(lines[i])) return lines.slice(start, i + 1).join('\n');
+        if (depth === 0 && i > start) break;
+    }
+    throw new Error(`lua2des: 'local ${name}' does not end in a balanced table constructor`);
 }
 
 /**
@@ -1255,46 +1369,88 @@ export function extractFunction(src, name) {
  * @param {string} from    provenance for the header, e.g. "dat/nhlib.lua"
  */
 export function emitLibFn(luaSrc, name, from) {
-    const items = parse(luaSrc);
-    const decl = items.find((it) => it.s === 'funcdecl' && it.name === name);
-    if (!decl) throw new Error(`lua2des: ${name} did not parse as a function declaration`);
+    return emitLibModule([{ name, src: luaSrc }], from, 'nhlib-fns.mjs', true);
+}
 
-    quirks = { nils: new Set(), globals: new Set(), funcs: new Set(), used: new Set(), listed: new Set() };
-    rootItems = decl.body;
-    const lines = renderBlock(decl.body, PAD, new Scope(null));
-    const { used } = quirks;
-    quirks = null;
-    rootItems = null;
-
-    const fields = new Set([...apiFields(decl.body), ...used]);
-    const params = API_FIELDS.filter((f) => fields.has(f));
-
-    return [
-        `// nhlib-fns.mjs — port of ${name}() from ${from}.`,
+/**
+ * Emit one module holding several ported library functions.
+ *
+ * S6 turns "the library port" from one function into most of a file, so the
+ * generated module exports each by name. A `local` the .lua declared at file
+ * scope and a function closes over (nhlib.lua's `tutorial_blacklist_commands`)
+ * becomes a module-level `const` in the same place — which is exactly what it
+ * is in Lua: a value created once when the chunk ran, shared by everything
+ * below it.
+ *
+ * @param {{name: string, src: string}[]} fns  each `src` from extractFunction()
+ * @param {string} from      provenance for the header, e.g. "dat/nhlib.lua"
+ * @param {string} basename  the emitted file's name, for its first line
+ * @param {boolean} [alsoDefault]  export the single function as default too
+ */
+export function emitLibModule(fns, from, basename, alsoDefault = false) {
+    const out = [
+        `// ${basename} — ports of ${fns.length === 1 ? `${fns[0].name}()` : `${fns.length} functions`} from ${from}.`,
         '//',
         '// GENERATED by tools/lua-port-gen/lua2des.mjs. Regenerate rather than',
-        '// hand-edit; the call stream is re-checked against the .lua by',
-        '// test/lua-port-scripts.test.mjs on every run.',
+        '// hand-edit; each function is re-checked against the .lua by',
+        '// test/lua-port-scripts.test.mjs on every run — call stream, return',
+        '// value, and the rn2() draws it spends.',
         '//',
-        '// WHY THIS IS NOT A LEVEL SCRIPT PORT. nhlib.lua is loaded into every',
-        '// lua_State nhl_init() builds, so its functions are in scope for every',
-        `// script. ${name}() is the one a *ported* script still has to be able to`,
-        '// call: seven Gehennom levels end with it, and it is 60 lines of selection',
-        '// algebra with its own percent() and math.random() draws. Porting it once',
-        '// here is what lets those seven be ports at all.',
+        '// WHY THESE ARE NOT LEVEL SCRIPT PORTS. nhlib.lua is loaded into every',
+        '// lua_State nhl_init() builds and nhcore.lua into gl.luacore, so their',
+        '// functions are in scope for every script and callable from C. A port of',
+        '// one is a function, not a chunk; js/lua-js/scripts/nhlib.mjs and',
+        '// js/lua-js/scripts/nhcore.mjs are the chunks, and they install these.',
         '//',
         '// The api arrives as a parameter rather than a destructured signature',
-        "// because the function has the .lua's own parameters to carry too.",
+        "// because each function has the .lua's own parameters to carry too.",
         '',
-        `/** @param {object} api @returns {void} */`,
-        `export default function ${fnName(name)}(api, ${decl.params.map(jsName).join(', ')}) {`,
-        `${PAD}const { ${params.join(', ')} } = api;`,
-        '',
-        ...lines,
-        '}',
-        '',
-    ].join('\n');
+    ];
+    const exported = [];
+    for (const f of fns) {
+        const items = parse(f.src);
+        const decl = items.find((it) => it.s === 'funcdecl' && it.name === f.name);
+        if (!decl) throw new Error(`lua2des: ${f.name} did not parse as a function declaration`);
+        const heads = items.filter((it) => it.s === 'local');
+
+        quirks = { nils: new Set(), globals: new Set(), funcs: new Set(), used: new Set(), listed: new Set() };
+        rootItems = decl.body;
+        const outer = new Scope(null);
+        const headLines = heads.length ? renderBlock(heads, '', outer) : [];
+        for (const h of heads) outer.declare(h.name);
+        const lines = renderBlock(decl.body, PAD, outer);
+        const { used } = quirks;
+        quirks = null;
+        rootItems = null;
+
+        const fields = new Set([...apiFields([...heads, ...decl.body]), ...used]);
+        const params = API_FIELDS.filter((f2) => fields.has(f2));
+
+        if (headLines.length) {
+            out.push(`// dat/${from.replace(/^dat\//, '')}'s file-scope local, which ${f.name}() closes over.`);
+            out.push(...headLines);
+            out.push('');
+        }
+        out.push('/** @param {object} api */');
+        out.push(`export function ${fnName(f.name)}(api${decl.params.length ? `, ${decl.params.map(jsName).join(', ')}` : ''}) {`);
+        if (params.length) { out.push(`${PAD}const { ${params.join(', ')} } = api;`); out.push(''); }
+        out.push(...lines);
+        out.push('}');
+        out.push('');
+        exported.push(fnName(f.name));
+    }
+    if (alsoDefault) { out.push(`export default ${exported[0]};`); out.push(''); }
+    return out.join('\n');
 }
+
+/**
+ * Statement kinds the parser understands and the emitter will not write.
+ * See REJECTED at the top of the file for why they are parseable at all.
+ */
+const EMITTER_REFUSES = {
+    forin: 'a generic `for k, v in …`',
+    setindex: 'an assignment through an index or a field',
+};
 
 /**
  * One block of statements, one .lua line mapped to one JS line.
@@ -1332,6 +1488,16 @@ function renderStmts(body, pad, scope, out) {
     body.forEach((it, i) => {
         if (it.line - prevLine > 1) out.push('');
         prevLine = it.endLine ?? it.line;
+        // The constructs S6 taught the *parser* and the *interpreter*, so that
+        // a hand-written library port has a reference to be compared against.
+        // A generated module must never contain one: they mean things JS does
+        // not say the same way (Lua's generic-for protocol, its simultaneous
+        // assignment, its varargs), and this generator's whole contract is that
+        // anything it cannot transcribe exactly fails loudly.
+        if (EMITTER_REFUSES[it.s]) {
+            throw new Error(`lua2des: line ${it.line}: ${EMITTER_REFUSES[it.s]} — `
+                + 'port this by hand (js/lua-js/nhlib.mjs) and prove it with checkLibFn');
+        }
         if (it.s === 'comment') {
             for (const l of String(it.text).split('\n')) out.push(`${pad}//${l.replace(/\s+$/, '')}`);
             return;
@@ -1343,6 +1509,10 @@ function renderStmts(body, pad, scope, out) {
             // A Lua `function NAME(…)` statement is a global assignment. The
             // script state is torn down with the level and nothing reads it
             // back, so an ordinary JS declaration is exact.
+            if (it.vararg) {
+                throw new Error(`lua2des: line ${it.line}: \`function ${it.name}(…, ...)\` is `
+                    + 'variadic — port this by hand and prove it with checkLibFn');
+            }
             if (quirks) quirks.funcs.add(it.name);
             scope.declare(it.name);
             out.push(`${pad}function ${jsName(it.name)}(${it.params.map(jsName).join(', ')}) {`);
@@ -1769,12 +1939,47 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         string: { match: (s, p) => { record('string.match', [s, p]); return luaMatch(s, p); } },
         percent, shuffle, d, math: { random: mathRandom },
         align, monkfoodshop: () => placeholder('monkfoodshop()'),
+        // The real table_stringify, so the two wrappers around it
+        // (nh_set/nh_get_variables_string, get_variables_string) are checked
+        // end to end rather than against a placeholder.
+        table_stringify: (t) => libTableStringify(api, t),
         // nhc's constants are the real ones; u.depth / u.role / u.uenmax are
         // settings of the check (hell_tweaks() reads depth for two thresholds
         // and a die roll; tut-1 branches on the other two).
         nhc: { COLNO: 80, ROWNO: 21 },
-        u: { depth, role, uenmax, ux: 40, uy: 10, uhunger: 900, moves: 100 },
+        u: { depth, role, uenmax, ux: 40, uy: 10, uhunger: 900, moves: 100, ...(opts.u ?? {}) },
         luaList, luaLen,
+        // Lua's base library, as far as nhlib.lua and nhcore.lua reach it.
+        // These are not stubs of NetHack, they are the language: a hand-written
+        // port of table_stringify() or nh_callback_run() is only checkable if
+        // the .lua side can run `type`, `pairs` and `table.unpack`.
+        type: luaType,
+        tostring: luaToString,
+        pairs: (t) => ({ __iter: () => luaPairs(t) }),
+        ipairs: (t) => ({
+            __iter: () => luaPairs(t).filter(([k, v]) => typeof k === 'number' && !isNil(v)),
+        }),
+        table: { unpack: (t) => new Varargs(luaPairs(t).map(([, v]) => v)) },
+        error: (m) => { throw new Error(`lua2des --check: lua error(${m})`); },
+        // `t[k] = nil`, which JS spells three different ways depending on what
+        // `t` is. A hand-written port says what it means and the api does it.
+        setNil: (t, k) => setIndex(t, k, null),
+        // The rest of the accessors a hand-written library port uses to reach a
+        // table that, in the game, lives on the Lua side. Here they are plain
+        // JS objects, and the operations are the obvious ones.
+        getField: (t, k) => t[k],
+        newTable: (t, k) => { t[k] = {}; return t[k]; },
+        setField: (t, k, v) => { t[k] = v; },
+        callGlobal: (name, args) => (opts._G ?? {})[name](...args),
+        nh_lua_variables: opts.nh_lua_variables ?? {},
+        // `_G[k]` — nhcore.lua's callback dispatch, the one reflective site in
+        // the corpus. Only the names a check registers are in it.
+        _G: opts._G ?? {},
+    };
+    // Lua's string.format, the two directives nhlib.lua's pline() can pass it.
+    api.string.format = (fmt, ...rest) => {
+        let i = 0;
+        return String(fmt).replace(/%[sd%]/g, (m) => (m === '%%' ? '%' : luaToString(rest[i++])));
     };
     // hell_tweaks() is itself a port (js/lua-js/nhlib-fns.mjs), generated from
     // dat/nhlib.lua the same way the level scripts are. A level script's check
@@ -1826,6 +2031,36 @@ function luaTrue(v) { return v !== false && v !== null && v !== undefined; }
 
 /** Lua's `nil`, in either of the two spellings JS offers. */
 function isNil(v) { return v === null || v === undefined; }
+
+/**
+ * A Lua multiple-value result: what `...` is, and what `table.unpack(t)`
+ * returns. It expands when it is the last item of an argument list or a table
+ * constructor, and collapses to its first value anywhere else — Lua's rule.
+ */
+class Varargs {
+    constructor(v) { this.v = v; }
+}
+
+/** Apply Lua's expansion rule to a list of evaluated expressions. */
+function expand(vals) {
+    const out = [];
+    for (let i = 0; i < vals.length; i++) {
+        const v = vals[i];
+        if (!(v instanceof Varargs)) { out.push(v); continue; }
+        if (i === vals.length - 1) out.push(...v.v);
+        else out.push(v.v.length ? v.v[0] : null);
+    }
+    return out;
+}
+
+// pairs()/[]=/type()/tostring() over the JS stand-ins the interpreter uses for
+// Lua tables. Shared with the runtime ports (js/lua-js/nhlib.mjs) rather than
+// written twice: `tutorial_turn` is hand-ported over exactly these, and a
+// --check that used a *different* iteration would be comparing two programs.
+const luaPairs = jsPairs;
+const setIndex = jsSetIndex;
+const luaType = jsType;
+const luaToString = jsToString;
 
 /** Lua's `==`, with null and undefined both meaning nil. */
 function luaEq(a, b) { return isNil(a) || isNil(b) ? isNil(a) && isNil(b) : a === b; }
@@ -1900,14 +2135,16 @@ function evalNode(node, env) {
         case 'table': {
             const t = dropNilPositional(node);
             const values = tableValues(t);
-            if (t.positional === values.length) return values.map((e) => evalNode(e.value, env));
+            if (t.positional === values.length) return expand(values.map((e) => evalNode(e.value, env)));
             const o = {};
             for (const e of values) o[e.key] = evalNode(e.value, env);
             return o;
         }
+        case 'vararg': return env.get('...');
         case 'func': return (...args) => {
             const inner = new Env(env);
             node.params.forEach((p, i) => inner.set(p, args[i]));
+            if (node.vararg) inner.set('...', new Varargs(args.slice(node.params.length)));
             const r = execBlock(node.body, inner);
             return r === undefined ? undefined : r.value;
         };
@@ -1920,12 +2157,12 @@ function evalNode(node, env) {
             const tbl = typeof recv === 'string' ? 'string'
                 : (recv && typeof recv === 'object' && typeof recv.__call === 'string'
                     && recv.__call.startsWith('obj.')) ? 'obj' : 'selection';
-            return env.api[tbl][node.name](recv, ...node.args.map((a) => evalNode(a, env)));
+            return env.api[tbl][node.name](recv, ...expand(node.args.map((a) => evalNode(a, env))));
         }
         case 'call': {
             const fn = evalNode(node.fn, env);
             if (typeof fn !== 'function') throw new Error(`lua2des --check: not a function at line ${node.line}`);
-            return fn(...node.args.map((a) => evalNode(a, env)));
+            return fn(...expand(node.args.map((a) => evalNode(a, env))));
         }
         default: throw new Error(`lua2des --check: cannot evaluate ${node.t}`);
     }
@@ -1952,6 +2189,7 @@ function execBlock(items, env) {
             env.set(it.name, (...args) => {
                 const inner = new Env(env);
                 it.params.forEach((p, i) => inner.set(p, args[i]));
+                if (it.vararg) inner.set('...', new Varargs(args.slice(it.params.length)));
                 const r = execBlock(it.body, inner);
                 return r === undefined ? undefined : r.value;
             });
@@ -1989,6 +2227,35 @@ function execBlock(items, env) {
                 const r = execBlock(it.body, inner);
                 if (r) return r;
             }
+            continue;
+        }
+        if (it.s === 'forin') {
+            // Only `pairs`/`ipairs` — the two the corpus uses. Lua's real
+            // generic-for protocol (iterator, state, control) is not modelled,
+            // because nothing here needs it and pretending to would be a second
+            // implementation nobody checks.
+            const iter = evalNode(it.exprs[0], env);
+            if (!iter || typeof iter.__iter !== 'function') {
+                throw new Error(`lua2des --check: line ${it.line}: generic for needs pairs() or ipairs()`);
+            }
+            for (const pair of iter.__iter()) {
+                const inner = new Env(env);
+                it.names.forEach((n, k) => inner.set(n, pair[k]));
+                const r = execBlock(it.body, inner);
+                if (r) return r;
+            }
+            continue;
+        }
+        if (it.s === 'setindex') {
+            // Lua evaluates every prefix expression and every value before it
+            // assigns anything, which is what makes
+            // `list[i], list[j] = list[j], list[i]` a swap.
+            const slots = it.targets.map((t) => ({
+                t: evalNode(t.obj, env),
+                k: t.t === 'index' ? evalNode(t.key, env) : t.name,
+            }));
+            const vals = expand(it.values.map((v) => evalNode(v, env)));
+            slots.forEach((s, k) => setIndex(s.t, s.k, vals[k]));
             continue;
         }
         if (it.s === 'repeat') {
@@ -2102,10 +2369,13 @@ const selArg = (n) => ({ __call: `selection.${n}`, args: [] });
  * @returns {Promise<string|null>}
  */
 export async function checkLibFn(luaPath, modPath, name, opts = {}) {
-    const { root = ROOT, fn = 'default' } = opts;
-    const src = extractFunction(fs.readFileSync(luaPath, 'utf8'), name);
-    const decl = parse(src).find((it) => it.s === 'funcdecl' && it.name === name);
+    const { root = ROOT, fn = 'default', locals = [] } = opts;
+    const src = extractFunction(fs.readFileSync(luaPath, 'utf8'), name, locals);
+    const items = parse(src);
+    const want = declName(name);
+    const decl = items.find((it) => it.s === 'funcdecl' && it.name === want);
     if (!decl) throw new Error(`lua2des --check: ${name} is not a function declaration`);
+    const heads = items.filter((it) => it.s === 'local');
     const mod = await import(`file://${fs.realpathSync(modPath)}`);
     if (typeof mod[fn] !== 'function') {
         throw new Error(`lua2des --check: ${modPath} has no export '${fn}'`);
@@ -2127,14 +2397,24 @@ export async function checkLibFn(luaPath, modPath, name, opts = {}) {
             const saved = rootItems;
             rootItems = decl.body;
             try {
-                const env = new Env(null, lua.api);
+                // The file-scope locals the function closes over run first,
+                // exactly as they did when the chunk loaded.
+                const top = new Env(null, lua.api);
+                if (heads.length) execBlock(heads, top);
+                const env = new Env(top);
                 decl.params.forEach((p, k) => env.set(p, luaArgs[k]));
+                if (decl.vararg) env.set('...', new Varargs(luaArgs.slice(decl.params.length)));
                 const r = execBlock(decl.body, env);
                 luaRet = r === undefined ? undefined : r.value;
             } finally {
                 rootItems = saved;
             }
             const js = recordingApi(jsRng, sopts);
+            // The JS side's own copy of any file-scope local the function
+            // closes over. The .lua side got its copy by running `heads`; this
+            // is the transcription of the same declaration, so the two closures
+            // inside it are compared rather than one being used twice.
+            if (opts.jsLocals) opts.jsLocals(js.api);
             const jsArgs = argvs[a].map(fresh);
             const jsRet = mod[fn](js.api, ...jsArgs);
             if (js.calls.length !== lua.calls.length) {

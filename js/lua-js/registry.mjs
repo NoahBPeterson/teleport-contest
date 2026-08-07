@@ -48,7 +48,7 @@ import { com_pager, qt_pager } from '../generated/questpgr.js';
 import { load_special, lspo_finalize_level, lspo_reset_level } from '../generated/sp_lev.js';
 import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
 import { installStateProbe, interpState, stateIsFresh, stateSeed } from './interp-state.mjs';
-import { dumpGlobal, runRealChunk } from './readback.mjs';
+import { dumpGlobal, dumpGlobals, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
 import { T0_PORTS } from './scripts/t0/index.mjs';
 import { T1_PORTS } from './scripts/t1/index.mjs';
@@ -56,6 +56,8 @@ import { T2_PORTS } from './scripts/t2/index.mjs';
 import { T3_PORTS } from './scripts/t3/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
+import nhlibPort, { GLOBALS as NHLIB_GLOBALS, globalName as nhlibGlobal } from './scripts/nhlib.mjs';
+import nhcorePort, { GLOBALS as NHCORE_GLOBALS, globalName as nhcoreGlobal } from './scripts/nhcore.mjs';
 
 /**
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
@@ -86,8 +88,25 @@ const READBACK = new Map([
     ['quest.lua', { body: questPort, global: questGlobal }],
 ]);
 
-/** Every script this registry handles, ported or read-back. */
-function handles(name) { return PORTS.has(name) || READBACK.has(name); }
+/**
+ * The two *library* scripts (stage S6, §14.2). A third shape again: their whole
+ * product is a set of globals — functions, mostly — that C, nhcore's `_G[k]`
+ * dispatch, and the two still-interpreted scripts call later. Like a read-back
+ * port they run against the interpreter's own lua_State; unlike one, what they
+ * leave there is callable.
+ *
+ * `nhlib.lua` is loaded by nhl_init() into *every* state, so its port runs
+ * dozens of times a game and spends the two `shuffle(align)` draws each time —
+ * the load-time contract §2 and §7.3 are built on.
+ * `nhcore.lua` is loaded once, into gl.luacore.
+ */
+const LIBRARY = new Map([
+    ['nhlib.lua', { body: nhlibPort, global: nhlibGlobal, globals: NHLIB_GLOBALS }],
+    ['nhcore.lua', { body: nhcorePort, global: nhcoreGlobal, globals: NHCORE_GLOBALS }],
+]);
+
+/** Every script this registry handles, ported, read-back or library. */
+function handles(name) { return PORTS.has(name) || READBACK.has(name) || LIBRARY.has(name); }
 
 function env(name) { return globalThis.process?.env?.[name]; }
 
@@ -120,6 +139,19 @@ function fpEnabled() {
  * of the script either way.
  */
 function readbackDump() { return env('C2JS_LUA_READBACK') === 'dump'; }
+
+/**
+ * C2JS_LUA_GLOBALS=dump: fingerprint the *globals* a library script leaves
+ * behind, on whichever side is running.
+ *
+ * The S6 analogue of the read-back dump, and needed for the same reason. A
+ * library port's whole product is a set of names in a lua_State — fourteen
+ * functions and a shuffled `align` for nhlib.lua, a hook table and a callback
+ * registry for nhcore.lua. The RNG log sees the two align draws and nothing
+ * else; the level fingerprint sees nothing at all. What has to match is the set
+ * of names, the Lua type of each, and the contents of the tables among them.
+ */
+function globalsDump() { return env('C2JS_LUA_GLOBALS') === 'dump'; }
 
 /**
  * C2JS_LUA_QUESTPROBE=1: once the game is up, deliver a fixed list of quest
@@ -453,8 +485,45 @@ export const loads = [];
  * @returns {string|null} the same name if this registry handles it
  */
 export function scriptFor(vendoredName) {
-    if (vendoredName === null || !handles(vendoredName)) return null;
+    if (vendoredName === null) return null;
+    if (!handles(vendoredName)) { noteUnported(vendoredName); return null; }
     return active() ? vendoredName : null;
+}
+
+/**
+ * Every .lua file whose *real bytes* the interpreter was given, and how many
+ * of them there were.
+ *
+ * THE ASSERTION S6 EXISTS TO MAKE. The stated goal of roadmap 1.10 is that a
+ * game with every port live never parses a line of Lua. That is not something
+ * the RNG log or the corpus can show — a port that quietly stopped running and
+ * let the interpreter do the work would pass both — so it is measured directly,
+ * at the one place every .lua enters the VM. scriptFor() is called from the
+ * harness's fopen for every file the game opens; a name this registry does not
+ * handle goes to the interpreter with its real bytes, and is counted here.
+ *
+ * The census is only kept while the registry is active, costs one Map lookup on
+ * a path that is already doing a file read, and changes nothing.
+ */
+const unportedLua = new Map();
+function noteUnported(name) {
+    if (!name.endsWith('.lua')) return;
+    unportedLua.set(name, (unportedLua.get(name) ?? 0) + 1);
+}
+
+/**
+ * @returns {{unported: [string, number][], ported: [string, number][]}}
+ *   how many times each .lua reached luaL_loadbufferx with its real bytes, and
+ *   how many times each ported one was intercepted instead.
+ */
+export function sourceCensus() {
+    const ported = new Map();
+    for (const r of loads) if (!r.probe) ported.set(r.script, (ported.get(r.script) ?? 0) + 1);
+    return {
+        unported: [...unportedLua.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)),
+        ported: [...ported.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)),
+        handled: portedScripts().length,
+    };
 }
 
 /**
@@ -494,7 +563,10 @@ export function onOpen(name, orig) {
     // one case where 'trace' still swaps the bytes: this module runs the real
     // chunk itself at fclose so the dump can be taken at the same seam as the
     // port's, and the interpreter must then not run it a second time.
-    if (readbackDump() && READBACK.has(name)) { rec.realBytes = orig.slice(); return stubFor(orig); }
+    if ((readbackDump() && READBACK.has(name)) || (globalsDump() && LIBRARY.has(name))) {
+        rec.realBytes = orig.slice();
+        return stubFor(orig);
+    }
     return null;
 }
 
@@ -507,6 +579,30 @@ export function onOpen(name, orig) {
 export function onClose(name) {
     const rec = loads[loads.length - 1];
     const rb = READBACK.get(name);
+    const lib = LIBRARY.get(name);
+    if (lib) {
+        // A library script. The seam is the same one §4 describes and it is if
+        // anything tighter here: for nhlib.lua we are *inside* nhl_init(),
+        // between the file read and the (empty) compile, with the state fully
+        // registered and nothing else having happened. The two align-shuffle
+        // draws therefore land exactly where the interpreter's did.
+        if (mode() === 'run') {
+            const L = readbackState(name, lib.global);
+            runProtected(L, name, () => lib.body(L));
+            rec.rngTo = getRngLog().length;
+            if (globalsDump()) recordGlobals(rec, L, lib);
+        } else if (rec.realBytes) {
+            // Interpreter side of the globals oracle: same seam, same state,
+            // the real chunk — so both dumps are taken at the same instant of
+            // the same game, which is what makes them comparable.
+            const L = readbackState(name, lib.global);
+            runRealChunk(L, rec.realBytes, name);
+            rec.realBytes = null;
+            rec.rngTo = getRngLog().length;
+            recordGlobals(rec, L, lib);
+        }
+        return;
+    }
     if (mode() === 'run') {
         if (rb) {
             const L = readbackState(name, rb.global);
@@ -529,6 +625,13 @@ export function onClose(name) {
     }
     // trace mode: the chunk has not run yet; the slice is closed lazily.
     if (fpEnabled()) armed = rec;
+}
+
+/** Attach the globals fingerprint a library script left behind. */
+function recordGlobals(rec, L, lib) {
+    rec.globalsScript = true;
+    rec.globals = dumpGlobals(L, lib.globals);
+    rec.globalsSeed = stateSeed(L);
 }
 
 /** Attach the read-back fingerprint of `globalName` to a load record. */

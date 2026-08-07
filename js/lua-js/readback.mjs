@@ -29,8 +29,8 @@
 
 import * as cptr from '../cptr.js';
 import {
-    lua_getglobal, lua_gettop, lua_next, lua_pcallk, lua_pushnil, lua_pushvalue,
-    lua_settop, lua_toboolean, lua_tolstring, lua_type,
+    lua_getfield, lua_getglobal, lua_gettop, lua_next, lua_pcallk, lua_pushnil,
+    lua_pushvalue, lua_settop, lua_toboolean, lua_tolstring, lua_type,
 } from '../generated/lapi.js';
 import { luaL_loadbufferx } from '../generated/lauxlib.js';
 
@@ -133,6 +133,71 @@ export function dumpGlobal(L, name) {
         lua_settop(L, base);
     }
 }
+
+/**
+ * Fingerprint the globals a *library* script left in `L` (stage S6).
+ *
+ * A library port's product is not a value the game reads back, it is a set of
+ * names the game *calls*. Nothing else in the oracle sees them: the RNG log
+ * carries nhlib's two align draws and nothing more, and the level fingerprint
+ * carries nothing at all. So this is the check that a library port left the
+ * state in the state the chunk would have.
+ *
+ * For each expected name it records the Lua type actually found, so a global
+ * the port forgot reads as `nil` rather than as silence, and a global whose
+ * type is wrong (a table where a function belongs — which is how
+ * l_nhcore_call() decides a hook is unavailable) is caught. For the tables it
+ * also records the content hash and the raw lua_next order, exactly as
+ * dumpGlobal() does for a read-back script: `align`'s three entries are the two
+ * shuffle draws made visible, and `nhcore`'s three are the hook table.
+ *
+ * `math.random` is spelled with a dot and is looked up as a field.
+ *
+ * @param {object} L
+ * @param {[string, string][]} spec  [name, expected Lua type] pairs
+ */
+export function dumpGlobals(L, spec) {
+    const out = [];
+    for (const [name, want] of spec) {
+        const base = lua_gettop(L);
+        try {
+            const dot = name.indexOf('.');
+            let t;
+            if (dot < 0) {
+                t = lua_getglobal(L, cptr.lit(name));
+            } else {
+                t = lua_getglobal(L, cptr.lit(name.slice(0, dot)));
+                t = t === LUA_TTABLE ? lua_getfield(L, -1, cptr.lit(name.slice(dot + 1))) : LUA_TNIL;
+            }
+            const row = { name, want, type: TYPE_NAMES[t] ?? `t${t}` };
+            if (t === LUA_TTABLE) {
+                // The top-level lua_next order, verbatim, so a difference can
+                // be *attributed* rather than merely observed — §6.2's eight
+                // questtext traversals are the precedent.
+                const keys = [];
+                lua_pushnil(L);
+                while (lua_next(L, -2) !== 0) {
+                    keys.push(scalar(L, -2).slice(2));
+                    lua_settop(L, lua_gettop(L) - 1);
+                }
+                const r = walk(L, 0x811c9dc5, 0x811c9dc5, 0);
+                row.hash = r.content >>> 0;
+                row.order = r.traversal >>> 0;
+                row.values = r.n;
+                row.keys = keys;
+            }
+            out.push(row);
+        } finally {
+            lua_settop(L, base);
+        }
+    }
+    return out;
+}
+
+const TYPE_NAMES = {
+    [-1]: 'none', 0: 'nil', 1: 'boolean', 2: 'lightuserdata', 3: 'number',
+    4: 'string', 5: 'table', 6: 'function', 7: 'userdata', 8: 'thread',
+};
 
 /**
  * Compile and run the real .lua bytes on `L`, the way nhl_loadlua() would.

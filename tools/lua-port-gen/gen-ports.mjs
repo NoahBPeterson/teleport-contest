@@ -24,8 +24,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-    checkLibFn, checkPort, emitLibFn, emitModule, extractFunction, fnName, parse,
+    checkLibFn, checkPort, emitLibModule, emitModule, extractFunction, fnName, luaList, parse,
 } from './lua2des.mjs';
+import { makeTutorialEvents } from '../../js/lua-js/nhlib.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DAT = path.join(ROOT, 'nethack-c/recorder/dat');
@@ -128,12 +129,128 @@ export const T3 = [
 ];
 
 /**
- * The one library function a *level script* port still has to be able to call.
- * See emitLibFn() in lua2des.mjs for why it is here and not in a tier.
+ * The library functions — the ones a *script* calls rather than the ones that
+ * replace a script. See emitLibModule() in lua2des.mjs for the shape.
+ *
+ * Only what the generator can transcribe is here. nhlib.lua's `shuffle`,
+ * `math.random`, `percent`, `d`, `table_stringify`, `pline` and
+ * `tutorial_turn`, and nhcore.lua's three `nh_callback_*` and
+ * `get_variables_string`, use varargs, a generic `for`, assignment through an
+ * index or Lua's own base library; the generator refuses all of those by name,
+ * so they are hand-written in js/lua-js/nhlib.mjs and js/lua-js/nhcore.mjs and
+ * proved the same way — checkLibFn against the .lua. §14.3.
+ *
+ * `locals` names a file-scope `local` the function closes over.
  */
-const LIB_FNS = [
-    { name: 'hell_tweaks', from: 'nhlib', out: 'js/lua-js/nhlib-fns.mjs' },
+export const LIB_MODULES = [
+    {
+        from: 'nhlib',
+        out: 'js/lua-js/nhlib-fns.mjs',
+        // hell_tweaks stays the default export: seven Gehennom level ports
+        // import it that way and predate the rest of this list.
+        alsoDefault: true,
+        fns: [
+            { name: 'hell_tweaks' },
+            { name: 'monkfoodshop' },
+            { name: 'nh_set_variables_string' },
+            { name: 'nh_get_variables_string' },
+            { name: 'tutorial_cmd_before', locals: ['tutorial_blacklist_commands'] },
+            { name: 'tutorial_enter' },
+            { name: 'tutorial_leave' },
+        ],
+    },
+    {
+        from: 'nhcore',
+        out: 'js/lua-js/nhcore-fns.mjs',
+        fns: [
+            { name: 'show_getpos_tip' },
+        ],
+    },
 ];
+
+/**
+ * The hand-written library ports — the ones the generator refuses, each named
+ * with the module and export that carries it. Same proof as a generated one:
+ * checkLibFn runs the .lua's own body beside the JS and compares the call
+ * stream, the return value, the draws spent and any mutation of an argument.
+ *
+ * `shuffle` and `math.random` are on this list and are the two the whole
+ * roadmap's RNG accounting has rested on since S2 — every `percent()`,
+ * every `d()`, every shuffled list in 127 ports draws through them, and until
+ * S6 nothing compared them with nhlib.lua. §14.3.
+ */
+export const HAND_FNS = [
+    { name: 'math.random', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libMathRandom', luaName: null },
+    { name: 'shuffle', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libShuffle' },
+    { name: 'percent', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libPercent' },
+    { name: 'd', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libD' },
+    { name: 'table_stringify', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libTableStringify' },
+    { name: 'pline', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libPline' },
+    {
+        name: 'tutorial_turn', from: 'nhlib', mod: 'js/lua-js/nhlib.mjs', fn: 'libTutorialTurn',
+        // The .lua side gets `tutorial_events` by running the file-scope local
+        // it closes over; the JS side gets the transcription of that same
+        // declaration. Two lists, two copies of the closure inside them, and
+        // the call streams of both are compared.
+        locals: ['tutorial_events'],
+        jsLocals: (a) => { a.tutorial_events = makeTutorialEvents(a); },
+    },
+    { name: 'get_variables_string', from: 'nhcore', mod: 'js/lua-js/nhcore.mjs', fn: 'libGetVariablesString' },
+    { name: 'nh_callback_set', from: 'nhcore', mod: 'js/lua-js/nhcore.mjs', fn: 'libCallbackSet' },
+    { name: 'nh_callback_rm', from: 'nhcore', mod: 'js/lua-js/nhcore.mjs', fn: 'libCallbackRm' },
+    { name: 'nh_callback_run', from: 'nhcore', mod: 'js/lua-js/nhcore.mjs', fn: 'libCallbackRun' },
+];
+
+/**
+ * Argument vectors per library function. Each is tried under all eight RNG
+ * settings, so a function with a branch gets both arms and one with a loop gets
+ * several lengths. The default (a selection stub per parameter) is what
+ * hell_tweaks wants and nothing else does.
+ */
+export const LIB_ARGV = {
+    monkfoodshop: [[]],
+    tutorial_enter: [[]],
+    tutorial_leave: [[]],
+    tutorial_turn: [[]],
+    show_getpos_tip: [[]],
+    get_variables_string: [[]],
+    tutorial_cmd_before: [['save'], ['open'], ['pray'], ['']],
+    nh_set_variables_string: [['k', { a: 1, b: 'two', c: true }], ['empty', {}]],
+    nh_get_variables_string: [[{ a: 1, b: 'two', c: true }], [{}]],
+    table_stringify: [
+        [{}],
+        [{ n: 3, s: 'text', b: true, f: false }],
+        [{ outer: { inner: 'x', k: 2 }, top: 'y' }],
+        [[10, 20, 30]],
+    ],
+    pline: [['plain'], ['%s and %d', 'a', 7], ['%d%%', 50]],
+    'math.random': [[1], [4], [20], [3, 9], [0, 99], [1, 1]],
+    shuffle: [
+        [luaList()],
+        [luaList('a')],
+        [luaList('law', 'neutral', 'chaos')],
+        [luaList(1, 2, 3, 4, 5, 6, 7)],
+    ],
+    percent: [[0], [1], [50], [99], [100]],
+    d: [[1], [6], [20], [2, 6], [3, 4], [5, 1]],
+    nh_callback_set: [['end_turn', 'tutorial_turn'], ['cmd_before', 'tutorial_cmd_before']],
+    nh_callback_rm: [['end_turn', 'tutorial_turn'], ['cmd_before', 'tutorial_cmd_before']],
+    nh_callback_run: [['end_turn'], ['cmd_before', 'save'], ['cmd_before', 'open'], ['nosuch']],
+};
+
+/** Regenerate nothing; just prove the hand-written library ports. */
+async function handFns() {
+    let bad = 0;
+    for (const f of HAND_FNS) {
+        const luaPath = path.join(DAT, `${f.from}.lua`);
+        // eslint-disable-next-line no-await-in-loop
+        const d = await checkLibFn(luaPath, path.join(ROOT, f.mod), f.name, {
+            fn: f.fn, locals: f.locals ?? [], argvs: LIB_ARGV[f.name], jsLocals: f.jsLocals,
+        });
+        if (d) { process.stderr.write(`gen-ports: HAND-PORT FAIL ${f.name}: ${d}\n`); bad++; }
+    }
+    return bad;
+}
 
 /** @returns {{tier: string, dir: string, list: string[]}[]} */
 function tiers() {
@@ -152,20 +269,24 @@ function tiers() {
  */
 async function libFns(check) {
     let bad = 0;
-    for (const f of LIB_FNS) {
-        const luaPath = path.join(DAT, `${f.from}.lua`);
-        const outPath = path.join(ROOT, f.out);
-        const text = emitLibFn(extractFunction(fs.readFileSync(luaPath, 'utf8'), f.name),
-            f.name, `dat/${f.from}.lua`);
+    for (const m of LIB_MODULES) {
+        const luaPath = path.join(DAT, `${m.from}.lua`);
+        const outPath = path.join(ROOT, m.out);
+        const src = fs.readFileSync(luaPath, 'utf8');
+        const fns = m.fns.map((f) => ({ name: f.name, src: extractFunction(src, f.name, f.locals ?? []) }));
+        const text = emitLibModule(fns, `dat/${m.from}.lua`, path.basename(m.out), !!m.alsoDefault);
         if (check) {
             const have = fs.existsSync(outPath) ? fs.readFileSync(outPath, 'utf8') : '';
-            if (have !== text) { process.stderr.write(`gen-ports: STALE ${f.out}\n`); bad++; }
+            if (have !== text) { process.stderr.write(`gen-ports: STALE ${m.out}\n`); bad++; }
         } else {
             fs.writeFileSync(outPath, text);
         }
-        // eslint-disable-next-line no-await-in-loop
-        const d = await checkLibFn(luaPath, outPath, f.name);
-        if (d) { process.stderr.write(`gen-ports: CALL-STREAM FAIL ${f.name}: ${d}\n`); bad++; }
+        for (const f of m.fns) {
+            // eslint-disable-next-line no-await-in-loop
+            const d = await checkLibFn(luaPath, outPath, f.name,
+                { fn: f.name, locals: f.locals ?? [], argvs: LIB_ARGV[f.name] });
+            if (d) { process.stderr.write(`gen-ports: CALL-STREAM FAIL ${f.name}: ${d}\n`); bad++; }
+        }
     }
     return bad;
 }
@@ -211,7 +332,8 @@ function index(t) {
 async function main(argv) {
     const check = argv.includes('--check');
     let bad = await libFns(check);
-    let count = LIB_FNS.length;
+    bad += await handFns();
+    let count = LIB_MODULES.reduce((n, m) => n + m.fns.length, 0) + HAND_FNS.length;
     for (const t of tiers()) {
         bad += generate(t, check);
         const idxPath = path.join(t.dir, 'index.mjs');

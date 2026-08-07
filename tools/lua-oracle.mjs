@@ -89,6 +89,7 @@ async function runSession(session, env, pad = false) {
     const screens = [];
     const luaLoads = [];
     const stdout = [];
+    const source = new Map();
     for (const seg0 of session.segments) {
         const seg = pad ? { ...seg0, moves: (seg0.moves || '') + PROBE_KEYS } : seg0;
         const r = await runSegment(seg, env);
@@ -96,9 +97,10 @@ async function runSession(session, env, pad = false) {
         for (const l of r.rngLog) rng.push(l);
         for (const s of r.screens) screens.push(s);
         for (const l of r.luaLoads) luaLoads.push(l);
+        for (const [n, c] of r.luaSource?.unported ?? []) source.set(n, (source.get(n) ?? 0) + c);
         stdout.push(r.stdout);
     }
-    return { rng, screens, luaLoads, stdout: stdout.join('') };
+    return { rng, screens, luaLoads, stdout: stdout.join(''), source };
 }
 
 /** Strip the "@ caller" suffix the scorer ignores (frozen/ps_test_runner.mjs). */
@@ -158,15 +160,21 @@ export async function compareSession(session, label, opts = {}) {
         : null;
 
     const levelprobe = opts.levels && opts.levels.length ? summariseProbe(A, B, opts.levels) : null;
+    const globals = opts.globals ? await compareGlobals(session, { A, B }) : null;
 
     return {
         label,
         readback,
         questprobe,
         levelprobe,
+        globals,
+        // What the interpreter still had to parse, with every port live. The
+        // goal state of the roadmap is that this list is empty; §14.5 says what
+        // is on it and why.
+        source: [...B.source.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)),
         pass: rngDiff < 0 && scrDiff < 0 && loadsMatch && fpMatch && A.rng.length === B.rng.length
             && (readback === null || readback.match) && (questprobe === null || questprobe.match)
-            && (levelprobe === null || levelprobe.match),
+            && (levelprobe === null || levelprobe.match) && (globals === null || globals.match),
         fingerprints: {
             match: fpMatch,
             interpreter: A.luaLoads.map((l) => (l.typFingerprint ?? 0).toString(16)),
@@ -205,14 +213,20 @@ function summariseProbe(A, B, names) {
         const a = pa[i], b = pb[i];
         const loadedBy = (r, p) => p && r.luaLoads.some(
             (l) => !l.probe && l.script === names[i] && l.rngFrom >= p.rngFrom && l.rngFrom <= p.rngTo);
+        // A probe target need not be a *ported* script: S6 forces hellfill.lua,
+        // which is still interpreted, precisely to see the ported nhlib serve
+        // it. So what is required is that the two sides agree about whether the
+        // registry intercepted it, not that it did.
+        const ra = !!(a && loadedBy(A, a)), rb = !!(b && loadedBy(B, b));
         const ok = !!a && !!b && a.script === names[i] && b.script === names[i]
-            && a.ok && b.ok && loadedBy(A, a) && loadedBy(B, b)
+            && a.ok && b.ok && ra === rb
             && a.typFingerprint === b.typFingerprint
             && (a.rngTo - a.rngFrom) === (b.rngTo - b.rngFrom);
         rows.push({
             script: names[i], ok,
             built: !!(a && a.ok) && !!(b && b.ok),
-            reached: !!(a && loadedBy(A, a)) && !!(b && loadedBy(B, b)),
+            reached: ra && rb,
+            interpreted: !ra && !rb,
             fingerprint: [(a?.typFingerprint ?? 0).toString(16), (b?.typFingerprint ?? 0).toString(16)],
             rng: [a ? a.rngTo - a.rngFrom : -1, b ? b.rngTo - b.rngFrom : -1],
         });
@@ -260,6 +274,61 @@ async function compareReadback(session, extra, baselines) {
         portOrder: di.map(rbOrder),
         seeds: [ci.map((l) => l.readbackSeed), di.map((l) => l.readbackSeed)],
         values: ci.map((l) => l.readbackValues),
+    };
+}
+
+/**
+ * The library oracle (stage S6): what nhlib.lua and nhcore.lua left in the
+ * lua_State, interpreter versus port.
+ *
+ * A library script's product is a set of *globals* — fourteen functions and a
+ * shuffled `align` for nhlib.lua, a hook table and a callback registry for
+ * nhcore.lua — and neither the RNG log, the screens nor the level fingerprint
+ * sees one of them. nhlib.lua is loaded by every nhl_init(), so a session
+ * produces dozens of dumps; each records, per expected global, the Lua type
+ * actually found and (for tables) the content hash and lua_next order.
+ *
+ * Both runs use C2JS_LUA_GLOBALS=dump, which also moves the interpreter's chunk
+ * execution to the fclose seam (js/lua-js/registry.mjs) so the two dumps are
+ * taken at the same instant of the same game. The RNG logs of the dump runs are
+ * checked against the plain ones, which is what says the instrumentation
+ * changed nothing — and for nhlib that check is load-bearing, because the two
+ * align draws happen inside the window being instrumented.
+ */
+async function compareGlobals(session, baselines) {
+    const dump = { C2JS_LUA_GLOBALS: 'dump' };
+    const G = await runSession(session, { ...dump, C2JS_LUA_PORT: '0', C2JS_LUA_TRACE: '1' });
+    const H = await runSession(session, { ...dump, C2JS_LUA_PORT: '1', C2JS_LUA_TRACE: '0' });
+    const rows = (r) => r.luaLoads.filter((l) => l.globalsScript);
+    const key = (l) => `${l.script}[${l.globals.map((g) => `${g.name}:${g.type}`
+        + (g.hash === undefined ? '' : `:${(g.hash >>> 0).toString(16)}:${g.values}`)).join(' ')}]`;
+    const order = (l) => l.globals.filter((g) => g.order !== undefined)
+        .map((g) => `${g.name}:${(g.order >>> 0).toString(16)}`).join(' ');
+    const gi = rows(G), hi = rows(H);
+    const typesOk = gi.every((l) => l.globals.every((g) => g.type === g.want));
+    const match = gi.length > 0 && gi.length === hi.length
+        && gi.every((l, i) => key(l) === key(hi[i])) && typesOk;
+    const bad = gi.findIndex((l, i) => !hi[i] || key(l) !== key(hi[i]));
+    return {
+        match,
+        typesOk,
+        loads: gi.length,
+        scripts: [...new Set(gi.map((l) => l.script))],
+        // lua_next order over a hash part is seed-derived, so it is reported
+        // rather than required — the same treatment questtext gets in §6.2.
+        orderMatch: gi.length === hi.length && gi.every((l, i) => order(l) === order(hi[i])),
+        // Which tables' lua_next order differs, if any. §6.2: a hash part's
+        // order is a property of g->seed, not of the data, so it is reported
+        // and attributed rather than required — but an *array* part's is not,
+        // and `align` is an array part, so seeing it here would be a bug.
+        orderDiffers: [...new Set(gi.flatMap((l, i) => (hi[i] ? l.globals : [])
+            .filter((g, k) => g.order !== undefined && g.order !== hi[i].globals[k]?.order)
+            .map((g) => g.name)))],
+        undisturbed: baselines === undefined ? null
+            : firstDiff(baselines.A.rng, G.rng, normRng) < 0
+                && firstDiff(baselines.B.rng, H.rng, normRng) < 0,
+        first: bad < 0 ? null : { interpreter: key(gi[bad]), port: hi[bad] ? key(hi[bad]) : '(no such load)' },
+        sample: gi.length ? key(gi[0]) : '',
     };
 }
 
@@ -343,8 +412,29 @@ function printVerdict(v) {
         for (const r of lp.rows) {
             console.log(`        ${r.ok ? 'ok  ' : 'FAIL'} ${r.script.padEnd(14)} `
                 + `fp ${r.fingerprint[0]}/${r.fingerprint[1]} rng ${r.rng[0]}/${r.rng[1]}`
-                + `${r.built ? '' : ' NOT-BUILT'}${r.reached ? '' : ' PORT-NOT-REACHED'}`);
+                + `${r.built ? '' : ' NOT-BUILT'}`
+                + `${r.reached || r.interpreted ? '' : ' PORT-NOT-REACHED'}`
+                + `${r.interpreted ? ' (still interpreted)' : ''}`);
         }
+    }
+    if (v.globals) {
+        const g = v.globals;
+        console.log(`      library globals:     ${g.match ? 'MATCH' : 'MISMATCH'} `
+            + `(${g.loads} loads of ${g.scripts.join('+')}; every global the expected type: `
+            + `${g.typesOk ? 'yes' : 'NO'}; lua_next order ${g.orderMatch ? 'MATCH'
+                : `differs for ${g.orderDiffers.join(',')}`}; `
+            + `instrumentation ${g.undisturbed === null ? 'not compared'
+                : g.undisturbed ? 'undisturbed' : 'PERTURBED THE RUN'})`);
+        if (g.first) {
+            console.log(`        interpreter=${g.first.interpreter}`);
+            console.log(`        port       =${g.first.port}`);
+        } else if (g.sample) {
+            console.log(`        ${g.sample}`);
+        }
+    }
+    if (v.source) {
+        console.log(`      .lua still parsed:   ${v.source.length === 0 ? 'NONE'
+            : v.source.map(([n, c]) => `${n}\u00d7${c}`).join(', ')}`);
     }
     if (v.questprobe) {
         console.log(`      quest-text delivery: ${v.questprobe.match ? 'MATCH' : 'MISMATCH'} `
@@ -363,12 +453,14 @@ async function main() {
     const levelsArg = argv.find((a) => a.startsWith('--levels='));
     const opts = {
         readback: argv.includes('--readback'),
+        globals: argv.includes('--globals'),
         questprobe: argv.includes('--questprobe'),
         levels: levelsArg ? levelsArg.slice('--levels='.length).split(',').filter(Boolean) : [],
     };
     let sessions = [];
-    if (argv[0] === '--seed') {
-        const seed = argv[1];
+    const seedAt = argv.indexOf('--seed');
+    if (seedAt >= 0) {
+        const seed = argv[seedAt + 1];
         const get = (f, d) => { const i = argv.indexOf(f); return i < 0 ? d : argv[i + 1]; };
         // --rc=<text> writes a .nethackrc for the synthetic segment. It is how
         // a script behind an *option* rather than behind a dungeon branch gets

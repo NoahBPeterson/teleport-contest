@@ -993,5 +993,8 @@ export async function runBootGame(opts) {
   }
 
   const luaLoads = luaPort ? luaPort.closeTrace() : [];
-  return { screens, cursors, animFramesByStep, rngLog, stdout, exitCode, error, luaLoads };
+  // What still reached the Lua parser with its real bytes. See
+  // js/lua-js/registry.mjs's sourceCensus().
+  const luaSource = luaPort ? luaPort.sourceCensus() : null;
+  return { screens, cursors, animFramesByStep, rngLog, stdout, exitCode, error, luaLoads, luaSource };
 }

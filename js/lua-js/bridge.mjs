@@ -54,10 +54,11 @@ import { luaL_newstate, luaL_ref, luaL_requiref, luaL_unref } from '../generated
 import { luaopen_string } from '../generated/lstrlib.js';
 import {
     lua_arith, lua_callk, lua_checkstack, lua_createtable, lua_getfield,
-    lua_getglobal, lua_gettop, lua_pcallk, lua_pushboolean, lua_pushcclosure,
-    lua_pushinteger, lua_pushnil, lua_pushnumber, lua_pushstring, lua_rawgeti,
-    lua_rawseti, lua_setfield, lua_setglobal, lua_settop, lua_toboolean,
-    lua_tointegerx, lua_tolstring, lua_tonumberx, lua_type,
+    lua_getglobal, lua_gettop, lua_len, lua_next, lua_pcallk, lua_pushboolean,
+    lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushnumber,
+    lua_pushstring, lua_pushvalue, lua_rawgeti, lua_rawseti, lua_rotate, lua_setfield,
+    lua_setglobal, lua_settop, lua_toboolean, lua_tointegerx, lua_tolstring,
+    lua_tonumberx, lua_type,
 } from '../generated/lapi.js';
 import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
@@ -69,8 +70,11 @@ import { name_to_mon } from '../generated/mondata.js';
 import { parse_conf_str, parse_config_line } from '../generated/cfgfiles.js';
 import { gu, svm, u } from '../generated/decl.js';
 import { interpState, markPortState } from './interp-state.mjs';
-import { luaLen, luaList, makeNhlib } from './nhlib.mjs';
-import hellTweaksFn from './nhlib-fns.mjs';
+import {
+    jsPairs, jsSetIndex, jsToString, jsType, libTableStringify, luaLen, luaList,
+    makeNhlib,
+} from './nhlib.mjs';
+import hellTweaksFn, { monkfoodshop as monkfoodshopFn } from './nhlib-fns.mjs';
 
 /** lua_type() tags. LUA_TNONE is -1. */
 const LUA_TNIL = 0;
@@ -95,6 +99,38 @@ function cstr(s) {
 let L = null;
 
 /**
+ * The state the api is currently driving, or null for "the port's own".
+ *
+ * S6 needs this. A *level* script's port is the only thing running, so its
+ * marshalling can happen in a state of its own (see below). A *library* port —
+ * nhlib.lua's `hell_tweaks`, `shuffle`, `tutorial_turn` — is installed into the
+ * interpreter's state as a lua_CFunction and is called *by Lua*, with Lua
+ * values (a selection userdata, a table) that belong to that state and cannot
+ * be moved to another one. So while such a function runs, `state()` answers
+ * with the state that called it, and every `des.*` / `selection.*` / `obj.*`
+ * the ported body issues is marshalled there instead.
+ *
+ * It is a cursor rather than a parameter for the same reason the generator's
+ * `curScope` is: threading a state through 34 des bindings and 24 selection
+ * ones would put it in every ported line, and the ports are the thing a
+ * reviewer has to be able to read against the .lua.
+ */
+let activeL = null;
+
+/**
+ * Run `body` with the api bound to state `Lp`. Restores the previous binding,
+ * so a library function called from a level-script port (hell_tweaks, from the
+ * seven Gehennom ports) keeps using the port's state.
+ *
+ * @param {object} Lp @param {() => *} body
+ */
+export function withState(Lp, body) {
+    const saved = activeL;
+    activeL = Lp;
+    try { return body(); } finally { activeL = saved; }
+}
+
+/**
  * The state used to marshal arguments into the transpiled C bindings.
  *
  * Deliberately NOT nhl_init(): that also loads nhlib.lua, whose top-level
@@ -106,6 +142,7 @@ let L = null;
  * @returns {object} the lua_State pointer
  */
 function state() {
+    if (activeL !== null) return activeL;
     if (L === null) {
         L = luaL_newstate();
         if (!L) throw new Error('lua-port: luaL_newstate() failed');
@@ -172,10 +209,18 @@ function push(v, Lp = state()) {
             return;
         case 'bigint': lua_pushinteger(Lp, v); return;
         case 'string': lua_pushstring(Lp, cstr(v)); return;
-        case 'function': lua_pushcclosure(Lp, wrapCallback(v), 0); return;
+        case 'function':
+            // A function built by luaFn()/luaRawFn() is *already* a
+            // lua_CFunction with its own calling convention; wrapping it again
+            // would hand it the mkroom table where it expects a lua_State.
+            // Anything else is a port's `contents`/`inventory`/`iterate`
+            // closure, which is what wrapCallback exists for.
+            lua_pushcclosure(Lp, v.__luaCFunction ? v : wrapCallback(v), 0);
+            return;
         default: break;
     }
     if (v instanceof LuaValue) { v.push(); return; }
+    if (v instanceof LuaRef) { v.push(Lp); return; }
     if (Array.isArray(v)) {
         // OP_NEWTABLE's size hints come from the constructor's shape; match them.
         lua_createtable(Lp, v.length, 0);
@@ -237,9 +282,41 @@ export function setGlobal(Lp, name, value) {
  */
 const LUA_REGISTRYINDEX = -1001000;
 
+/**
+ * A Lua table named by its *path* from a global, rather than by a registry
+ * reference: `nh_lua_variables`, `nh_lua_variables._CB_end_turn`.
+ *
+ * nhcore.lua's callback tables are reached hundreds of times in a tutorial
+ * game — once per turn for `end_turn`, once per extended command for
+ * `cmd_before` — and a registry reference per read would grow the registry
+ * without bound, because a ported body has no natural place to unref one. A
+ * path costs nothing to hold and re-derives the value with the same
+ * lua_getglobal + lua_getfield the .lua's own indexing compiles to.
+ */
+export class LuaRef {
+    /** @param {string} root a global name @param {string[]} keys */
+    constructor(root, keys = []) { this.root = root; this.keys = keys; }
+    /** The table at `this[k]`. */
+    child(k) { return new LuaRef(this.root, [...this.keys, k]); }
+    push(Lp) {
+        lua_getglobal(Lp, cstr(this.root));
+        for (const k of this.keys) {
+            lua_getfield(Lp, -1, cstr(k));
+            // lua_remove(L, -2): the intermediate table was only a step of the
+            // path, and only the value it led to belongs on the stack.
+            lua_rotate(Lp, -2, 1);
+            lua_settop(Lp, lua_gettop(Lp) - 1);
+        }
+    }
+}
+
 export class LuaValue {
     /** Takes the value at the top of the stack and pops it. */
-    constructor() { this.ref = luaL_ref(state(), LUA_REGISTRYINDEX); }
+    constructor(ltype) {
+        /** lua_type() of the value, so a port can ask what it is holding. */
+        this.ltype = ltype ?? lua_type(state(), -1);
+        this.ref = luaL_ref(state(), LUA_REGISTRYINDEX);
+    }
     push() { lua_rawgeti(state(), LUA_REGISTRYINDEX, BigInt(this.ref)); }
     /** Release the reference so the value can be collected. */
     free() { luaL_unref(state(), LUA_REGISTRYINDEX, this.ref); this.ref = -1; }
@@ -667,6 +744,309 @@ export const nhc = Object.freeze({ COLNO: 80, ROWNO: 21 });
 export { luaLen, luaList };
 
 // ---------------------------------------------------------------------------
+// Library ports: JS functions the *interpreter* can call
+// ---------------------------------------------------------------------------
+//
+// A level-script port replaces a chunk. A library port replaces a chunk whose
+// whole product is a set of globals that somebody else calls later — nhlib.lua
+// leaves fourteen of them in every state nhl_init() builds, nhcore.lua eight
+// more in gl.luacore, and the callers are C (`lua_getglobal("nh_callback_run")`,
+// `l_nhcore_call`), the two .lua scripts S7 has not ported yet
+// (themerms/hellfill call percent/shuffle/math.random/d/pline/hell_tweaks and
+// read `align`), and nhcore's own `_G[k]` dispatch.
+//
+// So the port has to put *callable Lua values* in that state, not JS ones. In
+// this transpile that is nearly free: lua_pushcclosure() stores the pointer
+// verbatim and luaD_precall() invokes it as `n = (f)(L)`, so a JS function is a
+// lua_CFunction. The two wrappers below are the calling conventions.
+
+/** The Lua value at `idx`, as the JS value a port body wants to see. */
+function toJs(Lp, idx) {
+    const t = lua_type(Lp, idx);
+    if (t === LUA_TNIL || t < 0) return null;
+    if (t === LUA_TBOOLEAN) return lua_toboolean(Lp, idx) !== 0;
+    if (t === LUA_TNUMBER) {
+        const n = lua_tointegerx(Lp, idx, null);
+        return n === null || n === undefined ? lua_tonumberx(Lp, idx, null) : Number(n);
+    }
+    if (t === LUA_TSTRING) return cptr.cstr(lua_tolstring(Lp, idx, null));
+    // A table or userdata stays on the Lua side, held by a registry reference
+    // so the ported body can hand it straight back to another binding — which
+    // is what hellfill.lua's `hell_tweaks(protected)` does with its selection.
+    lua_pushvalue(Lp, idx);
+    return new LuaValue();
+}
+
+/**
+ * Wrap a JS function as a lua_CFunction with the ordinary calling convention:
+ * every argument converted to JS, the return value pushed, and the api bound to
+ * the state that made the call.
+ *
+ * `undefined` means "returned nothing", which is what a Lua function that falls
+ * off the end does; anything else (including null, i.e. an explicit `nil`) is
+ * one result.
+ *
+ * @param {(...args: *[]) => *} fn
+ */
+export function luaFn(fn) {
+    // Everything inside withState, argument conversion included: toJs() takes a
+    // registry reference for a table or a userdata, and a reference has to be
+    // taken in the state the value lives in. Converting first and binding
+    // afterwards put luaL_ref on the *port's* state while the value sat on the
+    // caller's, which corrupts both — found by seed4500-knight-coverage, the
+    // only corpus session that hands a library function a table.
+    const cfn = (Lp) => withState(Lp, () => {
+        const argc = lua_gettop(Lp);
+        const args = [];
+        for (let i = 1; i <= argc; i++) args.push(toJs(Lp, i));
+        const v = fn(...args);
+        if (v === undefined) return 0;
+        push(v, Lp);
+        return 1;
+    });
+    cfn.__luaCFunction = true;
+    return cfn;
+}
+
+/**
+ * Wrap a JS function that wants the Lua stack itself: `shuffle` rewrites its
+ * table argument in place, `table_stringify` and `nh_callback_run` walk one
+ * with lua_next. Converting those to JS and back would be a different program.
+ *
+ * @param {(Lp: object) => number} fn  returns the number of results pushed
+ */
+export function luaRawFn(fn) {
+    const cfn = (Lp) => withState(Lp, () => fn(Lp));
+    cfn.__luaCFunction = true;
+    return cfn;
+}
+
+/**
+ * `<name> = <fn>` in the globals of `Lp`, where fn is already a lua_CFunction.
+ * @param {object} Lp @param {string} name @param {Function} cfn
+ */
+export function defineFn(Lp, name, cfn) {
+    lua_pushcclosure(Lp, cfn, 0);
+    lua_setglobal(Lp, cstr(name));
+}
+
+/** The current value of global `name` in `Lp`, as an opaque LuaValue. */
+export function globalValue(Lp, name) {
+    const base = lua_gettop(Lp);
+    lua_getglobal(Lp, cstr(name));
+    const v = withState(Lp, () => new LuaValue());
+    lua_settop(Lp, base);
+    return v;
+}
+
+/** `tbl.field = value` on a global table that already exists (math.random). */
+export function setTableField(Lp, tbl, field, value) {
+    const base = lua_gettop(Lp);
+    try {
+        if (lua_getglobal(Lp, cstr(tbl)) !== LUA_TTABLE) {
+            throw new Error(`lua-port: global '${tbl}' is not a table`);
+        }
+        push(value, Lp);
+        lua_setfield(Lp, -2, cstr(field));
+    } finally {
+        lua_settop(Lp, base);
+    }
+}
+
+/** Lua's `#t` on the value at `idx` — the operator, metamethods included. */
+export function luaLenAt(Lp, idx) {
+    lua_len(Lp, idx);
+    const n = Number(lua_tointegerx(Lp, -1, null) ?? 0n);
+    lua_settop(Lp, lua_gettop(Lp) - 1);
+    return n;
+}
+
+/** Lua's own `tostring`-in-a-concat for the value at `idx`, without changing it. */
+export function luaStrAt(Lp, idx) {
+    lua_pushvalue(Lp, idx);
+    const s = cptr.cstr(lua_tolstring(Lp, -1, null));
+    lua_settop(Lp, lua_gettop(Lp) - 1);
+    return s;
+}
+
+/**
+ * Reading and writing a table that lives on the Lua side.
+ *
+ * nhcore.lua's `nh_lua_variables` is such a table: the port creates it in the
+ * interpreter's own state (that is where C reads it back from and where the
+ * save file gets it), so a ported `nh_callback_set` has to index *that* table
+ * rather than a JS object standing in for it. These are the five things the
+ * ported bodies do to it, written the way nhlua.c writes them.
+ *
+ * A handle is a LuaValue — a registry reference — so it survives across the
+ * calls in between. `pairs()` is lua_next, which is the whole answer to §14.4:
+ * the port visits exactly what the interpreter's `pairs` would have visited, in
+ * exactly that order, because it is the same traversal of the same table.
+ */
+export const luaTable = {
+    /**
+     * `t[k]`. A scalar comes back as a JS value; a table comes back as the
+     * path to it, so nothing has to be unref'd later.
+     */
+    getField(t, k) {
+        const Lp = state();
+        const base = lua_gettop(Lp);
+        push(t, Lp);
+        const ty = lua_getfield(Lp, -1, cstr(k));
+        const v = ty === LUA_TTABLE && t instanceof LuaRef ? t.child(k) : toJs(Lp, -1);
+        lua_settop(Lp, base);
+        return v;
+    },
+    /** `t[k] = {}`, and hand the new table back. */
+    newTable(t, k) {
+        const Lp = state();
+        const base = lua_gettop(Lp);
+        push(t, Lp);
+        lua_createtable(Lp, 0, 0);
+        lua_setfield(Lp, -2, cstr(k));
+        lua_settop(Lp, base);
+        return t instanceof LuaRef ? t.child(k) : luaTable.getField(t, k);
+    },
+    /** `t[k] = v`. */
+    setField(t, k, v) {
+        const Lp = state();
+        const base = lua_gettop(Lp);
+        push(t, Lp);
+        push(v, Lp);
+        lua_setfield(Lp, -2, cstr(k));
+        lua_settop(Lp, base);
+    },
+    /**
+     * `t[k] = nil`.
+     *
+     * A JS stand-in takes the JS path: nhlib.lua's `tutorial_events` is a
+     * file-scope local that never leaves this side, and `tutorial_events[k] =
+     * nil` on it must delete a JS slot rather than marshal the whole list into
+     * Lua and back.
+     */
+    setNil(t, k) {
+        if (!onLuaSide(t)) { jsSetIndex(t, k, null); return; }
+        luaTable.setField(t, k, null);
+    },
+    /**
+     * `pairs(t)`, as the check stub shapes it: `{ __iter() }` over [k, v].
+     *
+     * For a table that lives in Lua this is lua_next over that very table, in
+     * the interpreter's own traversal order — §14.4's whole answer. For a JS
+     * stand-in it is jsPairs(), the same iteration the --check interpreter
+     * performs, because there is no Lua table to walk.
+     */
+    pairs(t) {
+        if (!onLuaSide(t)) return { __iter: () => jsPairs(t) };
+        return {
+            __iter() {
+                const Lp = state();
+                const base = lua_gettop(Lp);
+                const out = [];
+                push(t, Lp);
+                lua_pushnil(Lp);
+                while (lua_next(Lp, -2) !== 0) {
+                    // The key must be read without converting it in place —
+                    // lua_tolstring rewrites a number's slot and that is what
+                    // breaks a lua_next traversal. toJs() copies first.
+                    const top = lua_gettop(Lp);
+                    const k = toJs(Lp, top - 1);
+                    const v = toJs(Lp, top);
+                    out.push([k, v]);
+                    lua_settop(Lp, top - 1);        // pop value, keep key
+                }
+                lua_settop(Lp, base);
+                return out;
+            },
+        };
+    },
+};
+
+/**
+ * The api a *library* port is handed: everything a level-script port gets, plus
+ * the pieces of Lua's own base library that nhlib.lua and nhcore.lua use —
+ * bound, here, to whatever state the call came in on.
+ *
+ * `pairs` being lua_next is the whole of §14.4: a ported `table_stringify` or
+ * `nh_callback_run` visits the caller's own Lua table in the caller's own
+ * traversal order, so there is no order for the port to reproduce or to get
+ * wrong.
+ *
+ * A fresh object per call, because nhlib.lua's `tutorial_events` is a
+ * file-scope local — one list per chunk load, i.e. one per lua_State.
+ */
+export function libApi() {
+    const A = Object.assign({
+        des: api.des,
+        selection: api.selection,
+        obj: api.obj,
+        string: api.string,
+        nh: api.nh,
+        percent: api.percent,
+        shuffle: api.shuffle,
+        d: api.d,
+        math: api.math,
+        // Still a getter, and it has to be: libApi() runs *before* the nhlib
+        // port has defined `align`, and interpAlign() throws when it is absent.
+        get align() { return api.align; },
+        monkfoodshop: api.monkfoodshop,
+        hell_tweaks: api.hell_tweaks,
+        u: api.u,
+        nhc: api.nhc,
+        luaList: api.luaList,
+        luaLen: api.luaLen,
+    }, {
+        pairs: luaTable.pairs,
+        type: luaTypeOf,
+        tostring: luaToStringOf,
+        getField: luaTable.getField,
+        newTable: luaTable.newTable,
+        setField: luaTable.setField,
+        setNil: luaTable.setNil,
+        callGlobal,
+        nh_lua_variables: new LuaRef('nh_lua_variables'),
+    });
+    A.table_stringify = (t) => libTableStringify(A, t);
+    return A;
+}
+
+/** Does this value name a table on the Lua side, or a JS stand-in for one? */
+function onLuaSide(t) { return t instanceof LuaRef || t instanceof LuaValue; }
+
+/** Lua's `type()` for a value that came back through toJs(). */
+export function luaTypeOf(v) {
+    if (v instanceof LuaRef) return 'table';
+    if (v instanceof LuaValue) return v.ltype === 6 ? 'function' : v.ltype === 5 ? 'table' : 'userdata';
+    return jsType(v);
+}
+
+/** Lua's `tostring()` for the same, as `..` would coerce it. */
+export function luaToStringOf(v) { return jsToString(v); }
+
+/**
+ * `_G[name](...args)` — nhcore.lua's `nh_callback_run` dispatch, the one
+ * reflective construct in the corpus. lua_getglobal is exactly `_G[name]`.
+ */
+export function callGlobal(name, args) {
+    const Lp = state();
+    const base = lua_gettop(Lp);
+    lua_getglobal(Lp, cstr(name));
+    for (const a of args) push(a, Lp);
+    lua_callk(Lp, args.length, 1, 0n, null);
+    const v = lua_toboolean(Lp, -1) !== 0;
+    lua_settop(Lp, base);
+    return v;
+}
+
+/** Re-exported so a library port can drive the stack the way nhlua.c does. */
+export {
+    lua_createtable, lua_getfield, lua_getglobal, lua_gettop, lua_len, lua_next,
+    lua_pushboolean, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawgeti,
+    lua_rawseti, lua_setfield, lua_settop, lua_toboolean, lua_tointegerx,
+    lua_type, cstr,
+};
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -683,15 +1063,26 @@ export { luaLen, luaList };
  */
 export const api = Object.freeze({
     des, selection, obj, string,
+    // `pline`, `text`, `callback` and `gamestate` are the four nh.* entries a
+    // *library* port calls, and they go through the interpreter's own `nh`
+    // table (nhl_functions[]) rather than through a JS transcription — the C
+    // side of each is a window-port call or a game-state save, not something
+    // worth reimplementing. They therefore only work while the api is bound to
+    // a state that has `nh` in it, i.e. inside a library port; the port state
+    // has des/selection/obj/string and deliberately nothing else.
     nh: Object.freeze({
         rn2: nhRn2, random: nhRandom, eckey, is_genocided: isGenocided,
         parse_config: parseConfig,
+        pline: (...args) => callTable('nh', 'pline', args),
+        text: (...args) => callTable('nh', 'text', args),
+        callback: (...args) => callTable('nh', 'callback', args),
+        gamestate: (...args) => callTable('nh', 'gamestate', args),
     }),
     // `math` is nhlib.lua's shim, not JavaScript's: a port writes
     // `math.random(4, 8)` exactly as the .lua does and draws from NetHack's RNG.
     percent, shuffle, d, math: Object.freeze({ random: mathRandom }),
     get align() { return interpAlign(); },
-    monkfoodshop,
+    monkfoodshop: () => monkfoodshopFn(api),
     hell_tweaks: (protectedArea) => hellTweaksFn(api, protectedArea),
     u: uTable, nhc, luaList, luaLen,
 });
