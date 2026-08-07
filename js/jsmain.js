@@ -38,8 +38,27 @@
 import { enableSegmentIsolation, segmentSpecifier } from './boot/isolation.mjs';
 import { installBrowserGlobals } from './boot/browser-env.mjs';
 
-// Captured before installBrowserGlobals() can fake a `process` into existence.
-const IS_NODE = typeof process !== 'undefined' && !!(process.versions && process.versions.node);
+// Am I in Node? Captured before installBrowserGlobals() can fake a `process`
+// into existence — and written so that somebody *else's* fake cannot fool it
+// either.
+//
+// The judge's own pages install a `process` stub with `versions.node` set
+// (confirmed in the Session Viewer, and every indication says the playability
+// harness too) plus an import map pointing `node:*` at their shims. A check
+// that only asks "is there a process.versions.node?" answers yes in that page,
+// and then this file takes the Node path in a browser: the spent-realm guard
+// below never runs, so session 2 replays into session 1's C globals and dies in
+// raw generated code. Asking what the realm *is* cannot be faked by a
+// page-supplied object: no Node has `window` or `WorkerGlobalScope`, and every
+// browser realm this code runs in — page, dedicated worker, shared worker — has
+// one of them.
+//
+// The same three lines are in js/boot/interactive.mjs and js/boot/isolation.mjs.
+// Keep them in step.
+const IS_BROWSER = typeof globalThis.window !== 'undefined'
+    || typeof globalThis.WorkerGlobalScope !== 'undefined';
+const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
+    && !!(process.versions && process.versions.node);
 
 const HARNESS_URL = new URL('./boot/harness.mjs', import.meta.url).href;
 const FRAME_URL = new URL('./boot/frame.mjs', import.meta.url).href;

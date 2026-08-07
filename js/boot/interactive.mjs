@@ -72,7 +72,18 @@
 
 const WORKER_URL = new URL('./engine-worker.mjs', import.meta.url);
 const SHARED_WORKER_URL = new URL('./shared-engine.js', import.meta.url);
-const IS_NODE = typeof process !== 'undefined' && !!(process.versions && process.versions.node);
+// Am I in Node? Not "is there a process.versions.node", which is a question a
+// page can answer for us: the judge's pages install a `process` stub with
+// versions.node set and an import map aiming `node:*` at their own shims, and a
+// browser that believes it is Node comes through here and tries to host the
+// engine on `node:worker_threads` — an import that in that page resolves to a
+// shim and fails, before any frame is painted. So ask what the realm *is*
+// first; no Node has either of these globals, and every browser realm this runs
+// in has one of them. Same three lines in js/jsmain.js and js/boot/isolation.mjs.
+const IS_BROWSER = typeof globalThis.window !== 'undefined'
+    || typeof globalThis.WorkerGlobalScope !== 'undefined';
+const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
+    && !!(process.versions && process.versions.node);
 
 /** Where js/sw.js lives, and the in-scope URL it parks for us. */
 const SW_URL = new URL('../sw.js', import.meta.url);

@@ -36,11 +36,26 @@
 // guarantee, different mechanism. Segment 1 runs in the page's own realm, which
 // is pristine anyway. Nothing in this file is imported eagerly by the browser:
 // the node:module specifier is computed, so a bundler will not try to resolve
-// it, and js/boot/browser-env.mjs deliberately leaves process.versions.node
-// unset so the shimmed `process` cannot fool the check below.
+// it, and the check below asks what the realm *is* rather than trusting a
+// `process` object, which in the judge's pages is theirs and does claim to be
+// Node.
 
 /** Query key stamped onto per-segment module URLs. */
 export const SEG_KEY = 'c2jsseg';
+
+// Am I in Node? `process.versions.node` alone is not an answer: our own shim
+// leaves it unset (see js/boot/browser-env.mjs), but the judge's pages install
+// a `process` stub that sets it, along with an import map that resolves `node:*`
+// to their shims. In that page the check below would import a `node:module`
+// that is not Node's, and either believe it has registerHooks or complain that
+// it does not — neither of which a browser should be doing. What a realm *is*
+// cannot be faked by a page-supplied object: no Node has `window` or
+// `WorkerGlobalScope`. Same three lines in js/jsmain.js and
+// js/boot/interactive.mjs; keep them in step.
+const IS_BROWSER = typeof globalThis.window !== 'undefined'
+    || typeof globalThis.WorkerGlobalScope !== 'undefined';
+const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
+    && !!(process.versions && process.versions.node);
 
 // Modules that are pure immutable data and must stay shared: duplicating the
 // 2.2 MB vendored playground per segment would be pointless parse + heap.
@@ -69,7 +84,7 @@ export async function enableSegmentIsolation() {
     if (state !== null) return state;
     state = false;
     try {
-        if (typeof process === 'undefined' || !process.versions || !process.versions.node) return state;
+        if (!IS_NODE) return state;
         // Computed specifier: keeps browser bundlers from trying to resolve it.
         const nodeModule = 'node:' + 'module';
         const mod = await import(nodeModule);
