@@ -46,10 +46,6 @@ const FRAME_URL = new URL('./boot/frame.mjs', import.meta.url).href;
 
 let segmentCount = 0;
 let spawnFallback;
-// null = untried, true = module Workers give us fresh realms, false = they don't
-// (no Worker constructor, CSP worker-src, module-worker support missing …) and
-// later segments have to share this realm's graph.
-let realmForking = null;
 
 class TranspiledGame {
     constructor(result) {
@@ -154,22 +150,40 @@ export async function runSegment(input) {
         return new TranspiledGame(await spawnFallback.runSegmentInChild(job));
     }
 
-    // Browser, segment 2+: run in a throwaway realm so the previous segment's C
-    // globals cannot leak in. Never for segment 1 (this realm is already fresh),
-    // never in Node (isolation.mjs does it in-process, cheaper and proven).
-    if (!IS_NODE && n > 1 && realmForking !== false) {
-        const before = snapshotStorage(job.storage);
-        try {
-            const msg = await runInFreshRealm({ ...job, storage: before });
-            realmForking = true;
-            applyStorage(job.storage, before, msg.storage || {});
-            return new TranspiledGame(msg.result);
-        } catch (e) {
-            if (!(e instanceof RealmUnavailable)) throw e;
-            realmForking = false;
-            warnSharedRealm(e.message);
-            // fall through to the shared-graph path below
+    // Browser: any segment after the FIRST GAME THIS REALM EVER RAN must run
+    // in a throwaway Worker realm so the previous game's C globals cannot leak
+    // in. "First segment of this runSegment counter" is NOT the same thing:
+    // pages like the judge's Session Viewer import this module once and then
+    // run MANY sessions through it (and a cache-busted re-import of jsmain.js
+    // still shares the generated graph), so pristineness is tracked on
+    // globalThis, which survives both. Never in Node — isolation.mjs forks the
+    // graph in-process there, cheaper and proven.
+    if (!IS_NODE) {
+        const pristine = globalThis.__c2jsEngineRealmUsed !== true;
+        if (pristine && n === 1) {
+            globalThis.__c2jsEngineRealmUsed = true;
+            installBrowserGlobals();
+            const { runBootGame } = await import(HARNESS_URL);
+            const result = await runBootGame(job);
+            if (result.error) throw result.error;
+            return new TranspiledGame(result);
         }
+        // Not pristine: a fresh realm is the only correct option. A failure to
+        // get one is a clean, explained error — NEVER a run in the spent realm,
+        // which produces "init_blstats called more than once" garbage that
+        // looks like a broken port. No sticky failure flag either: a transient
+        // worker failure must not poison every later session on the page.
+        const before = snapshotStorage(job.storage);
+        const msg = await runInFreshRealm({ ...job, storage: before }).catch((e) => {
+            if (e instanceof RealmUnavailable) {
+                throw new Error('cannot run another game in this page: this '
+                    + 'realm already ran one and a fresh Worker realm could not '
+                    + 'be created (' + e.message + '). Reload the page.');
+            }
+            throw e;
+        });
+        applyStorage(job.storage, before, msg.storage || {});
+        return new TranspiledGame(msg.result);
     }
 
     installBrowserGlobals();
@@ -178,15 +192,6 @@ export async function runSegment(input) {
     const result = await runBootGame(job);
     if (result.error) throw result.error;
     return new TranspiledGame(result);
-}
-
-// Same reasoning as isolation.mjs's warnDegraded: silent degradation here looks
-// like a scoring bug rather than a platform gap.
-function warnSharedRealm(why) {
-    try {
-        console.warn('[c2js] per-segment realm forking unavailable (' + why + '); '
-            + "segments after the first will replay into the previous segment's C globals.");
-    } catch {}
 }
 
 // -- interactive play ---------------------------------------------------------

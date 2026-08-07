@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>judge-sim viewer repro</title>
+<pre id="out">starting…</pre>
+<script type="module">
+// viewer-repro.html — stands in for the judge's Session Viewer driving pattern:
+// ONE import of js/jsmain.js, then MULTIPLE sessions run back-to-back through
+// the same module instance (tools/session-viewer/viz.mjs does exactly this —
+// the page never reloads between sessions, only the hash changes).
+//
+// The scoring harness runs one session per import; the viewer does not. A
+// runSegment that assumes "first segment ever ⇒ this realm is pristine" is
+// right exactly once per page, and session 2's first segment lands in a spent
+// realm (observed on mazesofmenace.ai: "init_blstats called more than once",
+// then a null-cptr throw). This driver reproduces that shape locally.
+
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log('[repro] ' + s); };
+
+const params = new URLSearchParams(location.search);
+const names = (params.get('sessions')
+    || 'seed0002-healer-reflection-drummer.session.json,seed0004-feeding-pony.session.json').split(',');
+
+async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function digestSegment(game) {
+    const screens = game.getScreens?.() || [];
+    const cursors = game.getCursors?.() || [];
+    const rng = game.getRngLog?.() || [];
+    return {
+        screens: screens.length, rng: rng.length,
+        screensSha: await sha256(JSON.stringify(screens)),
+        rngSha: await sha256(JSON.stringify(rng)),
+        firstScreenTail: (screens[0] || '').slice(-500),
+    };
+}
+
+const report = { sessions: [], error: null };
+try {
+    const { runSegment } = await import('/js/jsmain.js');
+    log('imported /js/jsmain.js ONCE for ' + names.length + ' sessions');
+    for (const name of names) {
+        const sess = await (await fetch('/__sim/session/' + name)).json();
+        const storage = new Map();
+        const h = {
+            getItem(k) { return storage.has(k) ? storage.get(k) : null; },
+            setItem(k, v) { storage.set(k, String(v)); },
+            removeItem(k) { storage.delete(k); },
+            get length() { return storage.size; },
+            key(i) { let n = 0; for (const k of storage.keys()) { if (n === i) return k; n++; } return null; },
+        };
+        const entry = { session: name, segments: [], error: null };
+        try {
+            for (const seg of sess.segments) {
+                const game = await runSegment({
+                    seed: seg.seed, datetime: seg.datetime, nethackrc: seg.nethackrc,
+                    moves: seg.moves, storage: h,
+                });
+                entry.segments.push(await digestSegment(game));
+                log(name + ' seg ' + entry.segments.length + ': screens=' + entry.segments.at(-1).screens);
+            }
+        } catch (e) {
+            entry.error = String((e && e.stack) || e);
+            log(name + ' THREW: ' + String(e && e.message || e));
+        }
+        report.sessions.push(entry);
+    }
+} catch (e) {
+    report.error = String((e && e.stack) || e);
+}
+await fetch('/__sim/result', { method: 'POST', body: JSON.stringify(report, null, 2) });
+log('posted result');
+</script>
