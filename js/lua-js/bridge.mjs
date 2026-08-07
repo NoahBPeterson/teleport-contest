@@ -64,6 +64,7 @@ import { rn2 } from '../generated/rnd.js';
 import { cmd_from_ecname } from '../generated/cmd.js';
 import { gu } from '../generated/decl.js';
 import { interpState, markPortState } from './interp-state.mjs';
+import { luaLen, luaList, makeNhlib } from './nhlib.mjs';
 
 /** lua_type() tag for tables — LUA_TTABLE. */
 const LUA_TTABLE = 5;
@@ -314,41 +315,12 @@ export const selection = Object.freeze(Object.fromEntries(
 /** nh.rn2(n) — nhl_rn2() is a straight call to NetHack's rn2(). */
 export function nhRn2(n) { return rn2(n); }
 
-/** nh.random(base, range) / nh.random(range) — nhl_random(). */
-export function nhRandom(a, b) { return b === undefined ? rn2(a) : (a + rn2(b)) | 0; }
-
 /**
- * nhlib.lua's math.random shim:
- *   1 arg  -> 1 + nh.rn2(n)
- *   2 args -> nh.random(lo, hi + 1 - lo)
+ * nhlib.lua's `math.random` / `shuffle` / `percent` / `d`, built over NetHack's
+ * own rn2(). The algorithms live in nhlib.mjs so that the generator's --check
+ * can drive the identical code from a deterministic counter — see that file.
  */
-export function mathRandom(a, b) {
-    return b === undefined ? 1 + rn2(a) : nhRandom(a, (b + 1 - a) | 0);
-}
-
-/** nhlib.lua: percent(t) = math.random(0, 99) < t, i.e. rn2(100) < t. */
-export function percent(t) { return mathRandom(0, 99) < t; }
-
-/** nhlib.lua: d(dice, faces); one-arg form is 1dN. */
-export function d(dice, faces) {
-    if (faces === undefined) return mathRandom(1, dice);
-    let sum = 0;
-    for (let i = 0; i < dice; i++) sum += mathRandom(1, faces);
-    return sum;
-}
-
-/**
- * nhlib.lua's shuffle(): descending Fisher-Yates over a 1-based Lua list.
- * `list` here is a 0-based JS array; the draw sequence is identical because it
- * depends only on the length, not the indexing convention.
- */
-export function shuffle(list) {
-    for (let i = list.length; i >= 2; i--) {
-        const j = mathRandom(i);
-        const t = list[i - 1]; list[i - 1] = list[j - 1]; list[j - 1] = t;
-    }
-    return list;
-}
+export const { nhRandom, mathRandom, percent, d, shuffle } = makeNhlib(rn2);
 
 // ---------------------------------------------------------------------------
 // The rest of the prelude a level script can see
@@ -411,15 +383,10 @@ export function monkfoodshop() {
     return cptr.cstr(cptr.ldPtro(gu, 8)) === 'Monk' ? 'health food shop' : 'food shop';
 }
 
-/**
- * A Lua-indexed list: `luaList(a, b, c)[1] === a`.
- *
- * dat/tower3.lua keeps its ten niche coordinates in a local table and picks
- * from it with `place[4]`. Writing that as a 0-based JS array would put an
- * off-by-one between the .lua and its port on every index — precisely the
- * thing a Phase-2 reviewer diffing the two would have to hold in their head.
- */
-export function luaList(...items) { return [undefined, ...items]; }
+// `luaList` / `luaLen` — Lua's 1-based lists and its `#` operator. Defined in
+// nhlib.mjs because shuffle() has to know where element 1 lives; re-exported
+// here so a port only ever imports the bridge.
+export { luaLen, luaList };
 
 // ---------------------------------------------------------------------------
 // Entry point
@@ -435,9 +402,11 @@ export function luaList(...items) { return [undefined, ...items]; }
 export const api = Object.freeze({
     des, selection,
     nh: Object.freeze({ rn2: nhRn2, random: nhRandom, eckey }),
-    percent, shuffle, d, mathRandom,
+    // `math` is nhlib.lua's shim, not JavaScript's: a port writes
+    // `math.random(4, 8)` exactly as the .lua does and draws from NetHack's RNG.
+    percent, shuffle, d, math: Object.freeze({ random: mathRandom }),
     get align() { return interpAlign(); },
-    monkfoodshop, luaList,
+    monkfoodshop, luaList, luaLen,
 });
 
 /**
