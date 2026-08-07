@@ -54,10 +54,12 @@ import { T0_PORTS } from './scripts/t0/index.mjs';
 import { T1_PORTS } from './scripts/t1/index.mjs';
 import { T2_PORTS } from './scripts/t2/index.mjs';
 import { T3_PORTS } from './scripts/t3/index.mjs';
+import { T4_PORTS } from './scripts/t4/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 import nhlibPort, { GLOBALS as NHLIB_GLOBALS, globalName as nhlibGlobal } from './scripts/nhlib.mjs';
 import nhcorePort, { GLOBALS as NHCORE_GLOBALS, globalName as nhcoreGlobal } from './scripts/nhcore.mjs';
+import themermsPort, { GLOBALS as THEMERMS_GLOBALS, globalName as themermsGlobal } from './scripts/themerms.mjs';
 
 /**
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
@@ -65,9 +67,10 @@ import nhcorePort, { GLOBALS as NHCORE_GLOBALS, globalName as nhcoreGlobal } fro
  *
  * T0_PORTS is the pure-declarative tier (49 scripts, stage S2, §7),
  * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11),
- * T2_PORTS the loop / selection-algebra tier (46 scripts, stage S4, §12) and
- * T3_PORTS the tutorial level (1 script, stage S5, §14); all four are
- * generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
+ * T2_PORTS the loop / selection-algebra tier (46 scripts, stage S4, §12),
+ * T3_PORTS the tutorial level (1 script, stage S5, §14) and T4_PORTS the
+ * Gehennom filler (1 script, stage S7, §15); all five are generated from their
+ * .lua by tools/lua-port-gen/gen-ports.mjs.
  * oracle.lua predates the generator and stays hand-written.
  */
 const PORTS = new Map([
@@ -76,6 +79,7 @@ const PORTS = new Map([
     ...T1_PORTS,
     ...T2_PORTS,
     ...T3_PORTS,
+    ...T4_PORTS,
 ]);
 
 /**
@@ -103,6 +107,13 @@ const READBACK = new Map([
 const LIBRARY = new Map([
     ['nhlib.lua', { body: nhlibPort, global: nhlibGlobal, globals: NHLIB_GLOBALS }],
     ['nhcore.lua', { body: nhcorePort, global: nhcoreGlobal, globals: NHCORE_GLOBALS }],
+    // themerms.lua is the same shape with the longest lifetime in the game
+    // (stage S7, §15): makerooms() (mklev.c:366) loads it into a state it then
+    // *keeps* as gl.luathemes[dnum], and calls four of the globals it leaves
+    // there on every ordinary level of that dungeon branch. Only the Dungeons
+    // of Doom names a themerms file (dungeon.lua:13), so there is one such
+    // state per game and it lives until free_luathemes().
+    ['themerms.lua', { body: themermsPort, global: themermsGlobal, globals: THEMERMS_GLOBALS }],
 ]);
 
 /** Every script this registry handles, ported, read-back or library. */
@@ -438,7 +449,9 @@ function hashMon(h, m) {
 }
 
 /** @returns {string[]} the ported script names */
-export function portedScripts() { return [...PORTS.keys(), ...READBACK.keys()]; }
+export function portedScripts() {
+    return [...PORTS.keys(), ...READBACK.keys(), ...LIBRARY.keys()];
+}
 
 /** True when the harness should consult this registry at all. */
 export function active() {
