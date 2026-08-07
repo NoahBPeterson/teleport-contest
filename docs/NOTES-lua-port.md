@@ -8,11 +8,13 @@ JavaScript under `js/`, keeping the transpiled interpreter in the tree as a
 equivalent.
 
 This note is the architecture decision, the traps analysis, the proof-of-concept
-result, the cookbook for porting script #2, and the staged plan for the rest.
+result, the cookbooks for porting the next script, and the staged plan for the
+rest.
 
-Status: **PoC + S1 landed.** `oracle.lua`, `dungeon.lua` and `quest.lua` are
-ported and live — 3 of 131 files, 23 % of the corpus by bytes. The corpus
-passes with the ports enabled and with them disabled.
+Status: **PoC + S1 + S2 landed.** `oracle.lua`, `dungeon.lua`, `quest.lua` and
+the whole 49-file T0 tier are ported and live — **52 of 131 files, 44 % of the
+corpus by bytes**. The corpus passes with the ports enabled and with them
+disabled.
 
 ---
 
@@ -302,6 +304,11 @@ the port — and compares:
 The fingerprint is what makes the oracle sharp. Point 1 and 2 alone are not:
 they are the contest's own observables, and a level can differ in ways neither
 sees.
+
+> **Superseded in S2.** The fingerprint now covers every *content* field of
+> `struct rm` and several more object and monster fields — see §7.5. The hashes
+> quoted in the rest of this section are the S1 values and no longer reproduce;
+> the reasoning does.
 
 ### Result
 
@@ -594,10 +601,318 @@ Three, because three different checks had to be shown capable of failing.
 
 ---
 
-## 7. Corpus regression
+## 7. Stage S2: the 49 pure-declarative level scripts
+
+**Landed.** Every T0 level script is ported: the 34 quest `*-goal` / `*-loca` /
+`*-fil{a,b}` levels, six Sokoban levels, the four Elemental Planes, `baalz`,
+`minetn-6`, `tower3` and `tut-2`. 3,883 lines of Lua, 136 KB — with S1 and the
+PoC that is 52 of 131 files and 44 % of the corpus by bytes.
+
+The porting itself is exactly what §9's cookbook says it is. The craft in this
+stage is in three other places: a generator sharp enough that the *result* is
+readable rather than a compiler artifact, a way to get an oracle on 33 scripts
+no recorded session reaches, and a fingerprint sharp enough that the oracle
+would have noticed if the port were wrong.
+
+### 7.1 The generator
+
+`tools/lua-port-gen/lua2des.mjs` parses the call-stream subset — comments,
+`des.NAME(args)` statements, `local NAME = exp`, literals, long strings, table
+constructors, `a.b`, `a[k]`, `a:m(args)`, nested calls and `..` — and emits one
+JS module per script. Anything outside that subset is a **hard error**: the
+lexer rejects `if`/`for`/`function`/`return` by name, so a 5.1 script that grows
+control flow fails loudly instead of being quietly mistranslated. That is the
+same contract S1's `lua2js.mjs` has for the data files, and the reason a
+generator is safe to use at all.
+
+`tools/lua-port-gen/gen-t0.mjs` drives it over the 49 files (the list is
+explicit and reviewable, not rediscovered by a heuristic at runtime) and emits
+`js/lua-js/scripts/t0/index.mjs`, which `registry.mjs` merges into `PORTS`.
+
+The output is meant to be diffed against a future 5.1 `.lua`, so it keeps the
+source's shape: statement order, comments in place, blank lines where the .lua
+had them, and table constructors broken across the same lines the Lua broke
+them across. Maps stay whole as template literals, first row against the
+backtick because Lua's `[[` eats one newline and JS's backtick does not.
+
+```js
+export default function Arc_goal({ des, selection }) {
+    des.level_init({ style: 'solidfill', fg: ' ' });
+    // Dungeon Description
+    des.region(selection.area(0, 0, 75, 19), 'lit');
+    des.region({ region: [43, 13, 50, 15], lit: 0, type: 'temple', filled: 2 });
+}
+```
+
+### 7.2 The transcription proof
+
+`--check` imports the emitted module, runs it against a recording stub API, and
+compares the resulting call stream — every call, every argument, every table key
+in order — against the stream the parser derives from the `.lua`.
+`test/lua-port-scripts.test.mjs` runs that over all 49 on every `node --test`,
+in about 100 ms, and also asserts that the registry's index lists exactly the
+tier in order.
+
+This is not belt-and-braces; it covers a failure mode the differential oracle
+cannot. 21 of the 34 maps have **significant trailing spaces**, and they live
+inside JS template literals now. An editor or formatter that strips trailing
+whitespace would corrupt 21 levels in a way no reviewer would see in a diff.
+The call-stream check compares the map bytes.
+
+Values that only exist at runtime — `nh.eckey("up")`, `align[1]`,
+`monkfoodshop()` — are compared as sentinel strings, so a port that read
+`align[2]` fails the check as loudly as one that moved a boulder.
+
+### 7.3 What the tier contained besides `des.*`
+
+The mechanical T0 score counts tokens in the level script; it does not follow
+calls out of it. Six things needed more than the cookbook:
+
+* **`align[1]`** (`Arc-loca`, `minetn-6`). nhlib.lua's `align = {"law",
+  "neutral", "chaos"}` is *shuffled* at the top of every `nhl_init()`, spending
+  the two RNG draws §3(b) warns about. The result exists only in that state, so
+  the port cannot recompute it — recomputing would cost two more draws and
+  desynchronise immediately. `bridge.mjs`'s `interpAlign()` reads it out of the
+  interpreter's own state with `lua_getglobal` + `lua_rawgeti`, using S1's
+  `interpState()`. It is exposed as a **getter** on the api object, so only the
+  two scripts that name it pay for the state lookup.
+* **`monkfoodshop()`** (`minetn-6`). An nhlib function with an `if` in it:
+  `u.role == "Monk"` picks "health food shop" over "food shop". `u.role` is
+  `nhl_u_index`'s own `gu.urole.name.m`, so the JS is one pointer read. Both
+  branches are exercised — a Monk session and a Rogue session both PASS.
+* **`nh.eckey("up")` and `..`** (`tut-2`). The engraving text is built at
+  runtime from a key binding. The port calls the same `cmd_from_ecname()` the
+  binding calls and joins with JS `+`.
+* **`selection.negate():filter_mapchar('.')`** (`Mon-loca`). Method sugar:
+  nhlsel.c registers one function table and points the metatable's `__index` at
+  it, so `sel:m(x)` and `selection.m(sel, x)` are the same call. The port spells
+  out the second form.
+* **`{ class = "B",random, peaceful = 0 }`** (`Wiz-goal`, 19 times). A stray
+  token in NetHack's own source: `random` is a global nothing defines, so Lua
+  stores nil at index 1, which stores nothing. Dropped, with the reason in the
+  module header.
+* **`place[4]`** (`tower3`). A local list of niche coordinates, indexed with
+  Lua's 1-based indices. `luaList()` returns an array whose `[1]` is the first
+  element, so the JS index reads the same as the Lua one. An off-by-one between
+  a .lua and its port is exactly the thing a Phase-2 reviewer should not have to
+  hold in their head.
+
+### 7.4 The bug this stage found: the port's own state shadows the interpreter's
+
+`interpState()` (§6.1) finds the interpreter's `lua_State` by watching the
+allocator for a fresh block of exactly `sizeof(LG)` and taking the newest one
+that verifies structurally. The bridge's **own** state is allocated the same way
+and is exactly as long, and `bridge.mjs` creates it lazily — on the first ported
+script that needs it. So the first ported *level* script in a run creates the
+port state immediately before its body executes, making it the newest candidate,
+and a body that then asked for the interpreter's state got its own — in which
+nhlib was deliberately never loaded.
+
+It surfaced as `lua-port: nhlib's 'align' global is not a table` when
+`minetn-6` was probed on its own, and *not* when it was probed 47th, which is
+the shape of bug that hides for a long time. S1 never met it because
+`dungeon.lua` and `quest.lua` load during `newgame()`, before any level script
+exists to create the port state.
+
+The fix is identity, not heuristics: `bridge.mjs` calls
+`markPortState(L)` at creation and `interpState()` skips that one block. The
+structural check could not have distinguished them, because both really are
+`lua_State`s. This matters for S3 onward, where more ports will want `align`.
+
+### 7.5 A sharper fingerprint
+
+S1's fingerprint hashed `rm.typ`, and for each object and monster its position
+plus `otyp` / species. That is enough to catch a statue placed one square over
+(§5's control) and not enough for this tier:
+
+* `des.altar{ align = align[1] }` writes `rm.flags` (the altar mask). Terrain
+  type is still `ALTAR` either way.
+* `des.door("locked", …)` writes `rm.flags` too; `des.region(…, "lit")` writes
+  `rm.lit`.
+* `des.object{ id = "crystal ball", spe = 5, … }` writes `obj.spe`.
+  `quantity`, and `montype` on a statue, are equally invisible in `otyp`.
+* `des.monster{ id = "air elemental", peaceful = 0 }` — `air.lua` sets it 40
+  times — writes `monst.mpeaceful`.
+
+Every one of those consumes identical randomness whether the port gets it right
+or wrong, so S1's five checks would all have passed. The fingerprint now covers
+every content field of `struct rm` (`typ`, `flags`, `horizontal`, `lit`,
+`waslit`, `roomno`, `edge`, `candig`), the objects' `otyp`/`spe`/`quan`/
+`corpsenm` and the monsters' species/`female`/`mpeaceful`. The offsets come from
+the transpiler's own output the same way §6.1's did — enumerating every offset
+the generated code uses with the `struct rm` stride recovers the whole struct,
+because this transpile widens each C bitfield into its own 32-bit slot.
+
+Still deliberately excluded: heap pointers (the two sides allocate different
+amounts by construction) and the two *display* fields, `glyph` and `seenv` —
+what the hero has seen is not what the script built.
+
+### 7.6 Reachability: forced generation, and how much of it was needed
+
+§11 says the biggest risk is reachability, and proposes a
+level-generation-only harness. NetHack already contains one: `#wizloaddes`
+(`wiz_load_splua()`, wizcmds.c:376) is exactly
+
+```c
+lspo_reset_level(NULL); load_special(name); lspo_finalize_level(NULL);
+```
+
+so `C2JS_LUA_LEVELPROBE=<a.lua,b.lua,…>` drives those three calls from JS once
+the game is up, and fingerprints each result. It is not a bespoke code path: it
+runs the same `load_special()` the level generator runs, through the same
+`load_lua()`, so the registry intercepts the script exactly as it would in play.
+`tools/lua-oracle.mjs --levels=…` sets it on **both** runs, which costs no extra
+module graphs — the probe's work lands in the RNG log, the screens and the load
+records the oracle already compares — and adds a per-script table requiring
+four things each: both sides built the level, both sides actually loaded the
+`.lua` inside the probe's RNG window, the fingerprints match, and the two spent
+the same number of draws.
+
+One gotcha, found by watching a batch stop silently at script 19: **the probe
+spends keys**. Building a level on top of a live game produces messages, and a
+`--More--` waits for input; when the session's queue empties the harness treats
+it as a normal segment end, so an unpadded run just stops probing. The oracle
+pads each segment's moves with ESCs when `--levels` is given.
+
+Then the pleasant surprise, which is that the corpus is better than §11
+feared. A trace sweep over all 69 sessions shows **16 of the 49 are reached in
+real play** — because four sessions (`seed0360-wizard-world-tour`,
+`seed0361-archeologist-tour`, `seed0367-priest-quest-tour`,
+`seed0373-barbarian-quest-tour`) and `seed4500-knight-coverage` use wizard-mode
+level teleport to walk the quest branches, Sokoban, Vlad's Tower, Gehennom and
+the Planes. Those 16 are byte-exact against the **C recorder**, not merely
+against the JS interpreter.
+
+### 7.7 Evidence, per script
+
+"synthetic" = forced generation only (§7.6); "both" = that plus at least one
+recorded session that generates the level in play. Every one of the 49 has
+synthetic evidence at Dlvl 1 (`seed0077-rogue-chargen`), at Dlvl 10
+(`gen9996-marathon-dlvl10`) and in two Monk games; the sessions listed are the
+corpus ones.
+
+| Script | .lua lines | Evidence | Corpus sessions |
+|---|---|---|---|
+| `Arc-goal` | 116 | both | `seed0361` |
+| `Arc-loca` | 146 | both | `seed0361` |
+| `Bar-fila` | 34 | both | `seed0373` |
+| `Bar-filb` | 45 | both | `seed0373` |
+| `Bar-goal` | 96 | synthetic | — |
+| `Bar-loca` | 108 | both | `seed0373` |
+| `Cav-fila` | 36 | synthetic | — |
+| `Cav-filb` | 42 | synthetic | — |
+| `Cav-goal` | 60 | synthetic | — |
+| `Cav-loca` | 102 | synthetic | — |
+| `Hea-fila` | 43 | synthetic | — |
+| `Hea-filb` | 51 | synthetic | — |
+| `Hea-goal` | 91 | synthetic | — |
+| `Hea-loca` | 98 | synthetic | — |
+| `Kni-fila` | 36 | synthetic | — |
+| `Kni-filb` | 41 | synthetic | — |
+| `Kni-goal` | 100 | both | `seed4500` |
+| `Kni-loca` | 138 | synthetic | — |
+| `Mon-loca` | 99 | synthetic | — |
+| `Pri-loca` | 74 | both | `seed0367` |
+| `Ran-fila` | 36 | synthetic | — |
+| `Ran-filb` | 40 | synthetic | — |
+| `Ran-goal` | 107 | synthetic | — |
+| `Ran-loca` | 80 | synthetic | — |
+| `Rog-goal` | 111 | synthetic | — |
+| `Rog-loca` | 100 | synthetic | — |
+| `Sam-fila` | 38 | synthetic | — |
+| `Sam-filb` | 61 | synthetic | — |
+| `Sam-loca` | 142 | synthetic | — |
+| `Tou-fila` | 36 | synthetic | — |
+| `Tou-filb` | 40 | synthetic | — |
+| `Val-fila` | 41 | synthetic | — |
+| `Val-filb` | 43 | synthetic | — |
+| `Val-loca` | 86 | synthetic | — |
+| `Wiz-goal` | 133 | synthetic | — |
+| `soko2-1` | 71 | both | `seed0360`, `seed0373` |
+| `soko2-2` | 73 | synthetic | — |
+| `soko3-1` | 83 | both | `seed0373` |
+| `soko3-2` | 75 | both | `seed0360` |
+| `soko4-1` | 105 | both | `seed0360` |
+| `soko4-2` | 75 | both | `seed0373` |
+| `air` | 109 | both | `seed0373` |
+| `earth` | 131 | synthetic | — |
+| `fire` | 159 | both | `seed0373` |
+| `water` | 103 | synthetic | — |
+| `baalz` | 67 | both | `seed0360` |
+| `minetn-6` | 103 | synthetic | — |
+| `tower3` | 51 | both | `seed0360` |
+| `tut-2` | 28 | synthetic | — |
+
+**16 both, 33 synthetic-only.** The 33 are the ones behind a quest portal, a
+Sokoban ascent or an Amulet that no recorded session performs; extending the
+corpus to reach them is an S3 opportunity rather than an S2 gap, and the tour
+sessions above show the technique (wizard-mode level teleport) already exists.
+
+### 7.8 Oracle results
+
+All 49, forced at Dlvl 1, in one run:
+
+```
+$ node tools/lua-oracle.mjs --levels=<all 49> sessions/seed0077-rogue-chargen.session.json
+PASS  seed0077-rogue-chargen.session.json
+      rng     interpreter=136267 port=136267 firstDiff=-1
+      screens interpreter=33 port=33 firstDiff=-1
+      forced level generation: MATCH (49 scripts)
+        ok   Arc-goal.lua   fp dbfdb661/dbfdb661 rng 8693/8693
+        …
+        ok   tut-2.lua      fp 8cb1187a/8cb1187a rng 177/177
+```
+
+Repeated on `gen9996-marathon-dlvl10` (Dlvl 10, 150,051 draws),
+`gen9005-monk-human-items` and `seed0012-monk-vault-escort` (the
+`monkfoodshop()` branch) — all 49 PASS in each.
+
+The five sessions that reach a T0 level in play PASS the plain five-check
+oracle, with no probe involved:
+
+| Session | rng | screens | fingerprints |
+|---|---|---|---|
+| `seed0360-wizard-world-tour` | 120639 = | 833 = | 10 loads MATCH |
+| `seed0361-archeologist-tour` | 53865 = | 366 = | 11 loads MATCH |
+| `seed0367-priest-quest-tour` | 50125 = | 324 = | 12 loads MATCH |
+| `seed0373-barbarian-quest-tour` | 35386 = | 124 = | MATCH |
+| `seed4500-knight-coverage` | 108275 = | 1814 = | 4 loads MATCH |
+
+### 7.9 Negative controls
+
+Four, chosen so that each of the ways this tier can be wrong is shown to fail.
+Every one was reverted.
+
+1. **A tile, in a simple script.** `soko3-1`: one boulder from (3,2) to (3,3).
+   RNG identical (`3441/3441`, `firstDiff=-1`); fingerprint `65ad687b` →
+   `34f1d496`. The screens also diverged here, because with the probe on the
+   hero is standing on the forced level — so this control proves the fingerprint
+   fires, not that it is the only thing that can.
+2. **A field the player cannot see.** `Arc-goal`: the Orb of Detection's
+   `spe: 5` → `spe: 4`. RNG identical, **screens identical** (`firstDiff=-1`),
+   caught only by the fingerprint (`3b0e712b` → `504e522e`) — and only because
+   §7.5 widened it to include `obj.spe`.
+3. **A value read out of the interpreter's state.** `minetn-6`: `align[1]` →
+   `align[2]`. RNG identical, screens identical, caught only by `rm.flags`
+   (`ec52018d` → `91800a46`). This is the control that justifies both §7.4's
+   fix and §7.5's widening at once.
+4. **A `contents` closure.** No T0 script has one, so this is `oracle.lua`
+   (§5's control, re-run against the new fingerprint): one statue from (2,4) to
+   (2,5), on the marathon session. `rng 54924/54924 firstDiff=-1`,
+   `screens 17829/17829 firstDiff=-1`, fingerprint `3351a7b` → `fa8056fe`.
+
+Controls 1–3 are also caught independently by `--check`, which reports the
+differing argument by path (`call[30] des.object.args.0.spe: 5 != 4`). Two
+detectors, one mechanical and one behavioural.
+
+---
+
+## 8. Corpus regression
 
 Full 69-session corpus
 (`SESSION_REPLAY_TIMEOUT_MS=300000 node frozen/ps_test_runner.mjs sessions/ sessions-extra/`):
+
+S1 (3 ports):
 
 | Configuration | Result | Speed |
 |---|---|---|
@@ -606,23 +921,38 @@ Full 69-session corpus
 | all three ports live (default), run 2 | **69/69** | 990 + 0.83/turn (R² 0.728) |
 | all three ports live (default), run 3 | **69/69** | 993 + 0.82/turn (R² 0.728) |
 
+S2 (52 ports):
+
+| Configuration | Result | Speed |
+|---|---|---|
+| registry inert — `C2JS_LUA_PORT=0` | **69/69** | 951 + 0.80/turn (R² 0.723) |
+| all 52 ports live (default), run 1 | **69/69** | 926 + 0.83/turn (R² 0.763) |
+| all 52 ports live (default), run 2 | **69/69** | 935 + 0.80/turn (R² 0.731) |
+
 Every session exercises `dungeon.lua` and `quest.lua`; `gen9996-marathon-dlvl10`
-also reaches the Oracle level and so exercises all three. It scores
-`RNG 54924/54924, Screen 17829/17829` in every configuration, i.e. the ports are
-byte-exact against the **C recorder**, not merely against the JS interpreter.
+also reaches the Oracle level. It scores `RNG 54924/54924, Screen 17829/17829`
+in every configuration, i.e. the ports are byte-exact against the **C recorder**,
+not merely against the JS interpreter. After S2 the corpus additionally
+exercises 16 T0 level scripts in real play (§7.6): the tour sessions score
+`RNG 120639/120639` (`seed0360`), `53865/53865` (`seed0361`), `50125/50125`
+(`seed0367`), `35386/35386` (`seed0373`) and `108275/108275` (`seed4500`).
+
+Registering 49 more ports costs nothing measurable — 49 small modules imported
+once per replay segment, and the per-turn slope is unchanged.
 
 Other gates: `tools/c2js/test-rnd.mjs`, `test-hacklib.mjs`, `test-setjmp.mjs`,
-`test-union.mjs` PASS; `node --test test/*.test.mjs` 5/5 (posix-ere and the new
-`lua-port-data` transcription check); judge-sim
-`run.mjs seed8000-tourist-starter.session.json` PASS (0 mismatches, 0
-out-of-scope requests); `playability.mjs --keys=hjklhjkl` engages the `xhr`
-engine with `console_entries: []` — and its top line is
+`test-union.mjs` PASS; `node --test test/*.test.mjs` 6/6 (posix-ere, the
+`lua-port-data` transcription check and S2's `lua-port-scripts` call-stream
+check); judge-sim `run.mjs seed8000-tourist-starter.session.json` PASS (0
+mismatches, 0 out-of-scope requests); `playability.mjs --keys=hjklhjkl` engages
+the `xhr` engine with `console_entries: []` — and its top line is
 `It is written in the Book of Odin:`, which is `questtext.common.legacy`
-arriving from the JS port through a real browser.
+arriving from the JS port through a real browser;
+`node tools/strict-score.mjs --all` 0 violations.
 
 ---
 
-## 8. Cookbook — porting script #2
+## 9. Cookbook — porting a level script
 
 1. **Read the Lua.** `nethack-c/recorder/dat/<name>.lua`.
 2. **Write `js/lua-js/scripts/<name>.mjs`** exporting a default function taking
@@ -647,12 +977,25 @@ arriving from the JS port through a real browser.
 3. **Register it** in `js/lua-js/registry.mjs`'s `PORTS` map.
 4. **Prove it.** Find a session that generates the level (trace mode reports
    which ported scripts a session reaches), then
-   `node tools/lua-oracle.mjs <session>`. Require all four checks green,
-   *especially the fingerprint*. If no corpus session reaches the level, record
-   one — `tools/play-record.mjs` / `tools/generate-sessions.mjs` — and add it to
-   `sessions-extra/`; a port with no reaching session has no oracle.
+   `node tools/lua-oracle.mjs <session>`. Require all checks green,
+   *especially the fingerprint*. If no corpus session reaches the level, use
+   forced generation — `node tools/lua-oracle.mjs --levels=<name>.lua <session>`
+   (§7.6) — and record the evidence as synthetic in §7.7. Recording a reaching
+   session (`tools/play-record.mjs` / `tools/generate-sessions.mjs`, into
+   `sessions-extra/`) is strictly better where it is practical, because it
+   compares against the C recorder rather than against the JS interpreter.
 5. **Regress.** Full corpus with the port on; and once per batch, with
    `C2JS_LUA_PORT=0`, to confirm the registry is still inert when disabled.
+
+### If the script is a pure `des.*` call stream, generate it
+
+Do not hand-type a T0 script. `node tools/lua-port-gen/lua2des.mjs <in.lua>
+<out.mjs>` emits the module; add the basename to `gen-t0.mjs`'s `T0` list and
+`node tools/lua-port-gen/gen-t0.mjs` regenerates everything including the
+registry index. Then read the result — the generator is a transcriber, not an
+authority — and let `node --test test/lua-port-scripts.test.mjs` hold it. The
+generator refuses anything outside the subset, so "it generated" is itself
+evidence that the script is T0.
 
 ### Gotchas found the hard way
 
@@ -663,6 +1006,15 @@ arriving from the JS port through a real browser.
   as Lua integers when `Number.isInteger`, which is what every des field wants.
 * A JS `throw` inside a port body must not cross a Lua C frame; `runPortedScript`
   stashes and re-throws after the pcall.
+* The T0 score is computed over the level script alone. It does not follow calls
+  *out* of it, so a "pure declarative" script can still reach `align`,
+  `monkfoodshop()` or `nh.eckey()` in nhlib. Grep the script for free names
+  before believing the tier.
+* A port that needs the interpreter's `lua_State` must not run before the
+  bridge's own state exists — or rather, must not care: see §7.4, and never
+  add a fallback that silently uses the wrong state.
+* Lua tables are 1-based. `luaList()` exists so a port can index a local list
+  with the same numbers the .lua uses.
 
 ### Cookbook — a *read-back* script
 
@@ -710,26 +1062,59 @@ Gotchas specific to this shape:
 
 ---
 
-## 9. Staged plan for the remaining 130 scripts
+## 10. Staged plan for the remaining scripts
 
 Ordered by risk-adjusted value. "Legs" = agent sessions, roughly.
 
 | Stage | Scripts | Count | Why here | Legs |
 |---|---|---|---|---|
 | **S1** *pure-data* ✅ | `quest.lua`, `dungeon.lua` | 2 | **Landed — see §6.** Cost 1 leg, not 2. The new primitive turned out to be `interpState()` + `setGlobal()`, not a `setGlobalTable` on the port's own state: the table has to live in the interpreter's `lua_State`, which had to be recovered from the allocator. Traversal order was reproduced exactly where C observes it (`dungeon`'s array part) and shown to be seed-derived and unobservable where it is not (`questtext`'s hash part). Both scripts turn out to load in *every* game, so the corpus is real-play evidence for both. | 2 |
-| **S2** *T0 level scripts* | 49 remaining T0 files: `soko1-1 … soko4-2`, `air/fire/water/earth`, `baalz`, `tower3`, `tut-2`, all quest `*-goal/-loca/-fil*` | 49 | Mechanical transliteration, no RNG, no closures. The bulk of the file count for the least risk. Batch 8–12 per leg. Reachability is the constraint, not correctness: Sokoban, the Planes and the quest branches need recorded sessions that get there — budget a leg for session recording first. | 6 |
-| **S3** *T1 + closure-only T2* | `castle`, `juiblex`, `sanctum`, `*-strt`, `minend-1/3`, `fakewiz1/2`, `wizard2`, the 10 `*-fil{a,b}` | 28 | Adds `shuffle` over literal tables and single closures. Both already exercised by the PoC and the bridge. | 4 |
+| **S2** *T0 level scripts* ✅ | 49 T0 files: `soko2-1 … soko4-2`, `air/fire/water/earth`, `baalz`, `minetn-6`, `tower3`, `tut-2`, 34 quest `*-goal/-loca/-fil*` | 49 | **Landed — see §7.** Cost 1 leg, not 6, because the transliteration is generated (§7.1) and reachability turned out to be half-solved already: forced generation (§7.6) covers everything, and the corpus's wizard-mode tour sessions reach 16 of the 49 in real play. Note the tier list here was slightly wrong: `soko1-1`/`soko1-2` have a `for` and a `math.random`, so they are S4's, and `minetn-6` is T0. Three things the tier score did not predict, all in §7.3: nhlib's `align`, `monkfoodshop()` and `nh.eckey`. | 6 → 1 |
+| **S3** *T1 + closure-only T2* | `castle`, `juiblex`, `sanctum`, `*-strt`, `minend-1/3`, `fakewiz1/2`, `wizard2`, the 10 `*-fil{a,b}` | 28 | Adds `shuffle` over literal tables and single closures. Both already exercised by the PoC and the bridge. S2 leaves it: a generator that already handles the whole declarative surface (extend `lua2des.mjs` with `if`/`percent`/closures rather than starting over), a forced-generation harness that needs no new work, and a fingerprint that now sees object and monster fields — which matters more here, because `*-strt` levels place named artifacts with `spe`/`buc` set. | 4 |
 | **S4** *T2 with real logic* | `minetn-*`, `medusa-*`, `bigrm-*`, `astral`, `knox`, `valley`, `orcus`, `Wiz-loca`, `minefill`, `tower1/2`, `wizard1/3`, `asmodeus`, `Kni-strt`, `Tou-goal/loca`, `Val-*`, `Bar-strt`, `Mon-strt`, `Pri-strt`, `soko1-1/2`, `oracle` ✅ | 30 | Loops, `percent`, selection algebra. First real use of `selection.*` handles through the bridge — `LuaValue` exists but is only smoke-tested; expect a leg of bridge work for selection operators (`|`, `&`, `~`) and `:iterate(closure)`. Mines levels are corpus-reachable, which makes this the best-tested stage after S2. | 6 |
 | **S5** *tutorial* | `tut-1`, plus the tutorial half of `nhlib` | 2 | The only string-pattern code in the corpus (`s:match("^^([A-Z])$")`) and the only place `nh.eckey` interpolation matters. Self-contained and never reached in normal play, so low risk and low value — do it late, or not at all before the freeze. | 1 |
-| **S6** *the libraries* | `nhlib.lua`, `nhcore.lua` | 2 | The hard ones, and the ones that change the load-time RNG contract. Porting `nhlib` moves the `align` shuffle into JS and requires the bridge to own per-state library state; porting `nhcore` requires reproducing `pairs()` order over a string-keyed table and `_G[k]` dispatch — and §6.2 now says what that costs: `pairs()` order over a hash part is a function of `g->seed`, which the port cannot control, so a `nhcore` port has to make the dispatch order independent of it (or the current interpreter behaviour has to be shown independent of it first). Both are read-back *and* executable, so they need §8's two recipes at once. **Only worth doing if S1–S4 land comfortably before the freeze**; the interpreter running two small library files costs nothing in the Phase-1 baseline. | 3 |
+| **S6** *the libraries* | `nhlib.lua`, `nhcore.lua` | 2 | The hard ones, and the ones that change the load-time RNG contract. Porting `nhlib` moves the `align` shuffle into JS and requires the bridge to own per-state library state; porting `nhcore` requires reproducing `pairs()` order over a string-keyed table and `_G[k]` dispatch — and §6.2 now says what that costs: `pairs()` order over a hash part is a function of `g->seed`, which the port cannot control, so a `nhcore` port has to make the dispatch order independent of it (or the current interpreter behaviour has to be shown independent of it first). Both are read-back *and* executable, so they need §9's two recipes at once. **Only worth doing if S1–S4 land comfortably before the freeze**; the interpreter running two small library files costs nothing in the Phase-1 baseline. | 3 |
 | **S7** *themed rooms* | `themerms.lua`, `hellfill.lua` | 2 | 46 KB, 122 functions, frequency-weighted reservoir sampling, deferred post-process callbacks, and the *only* long-lived level-gen state (`gl.luathemes[dnum]`, cached per branch and never closed). `themerms` runs on essentially every ordinary level, so a mistake here is a corpus-wide failure rather than a one-level one — but that also means the corpus tests it hardest. Highest value in a Phase-2 diff (themed rooms are the most likely thing to change in 5.1) and highest risk. | 4 |
 
-Total ≈ 26 agent-legs. S1–S4 (109 scripts, ~78 % of the file count) is ≈ 18 and
-is the sensible pre-freeze target; S6/S7 only if that lands early.
+Total ≈ 26 agent-legs as first estimated; S1 and S2 came in at 1 leg each
+instead of 2 and 6, so the remaining estimate is ≈ 17. S1–S4 (109 scripts,
+~78 % of the file count) is the sensible pre-freeze target; S6/S7 only if that
+lands early.
+
+### What S3 inherits
+
+* A generator (`lua2des.mjs`) whose parser already covers every *declarative*
+  construct in the corpus. What T1 adds on top is `if`, `percent`, `shuffle`
+  over a literal table, and `contents = function() … end` — the bridge already
+  runs all four (§3(c), §5); it is the *emitter* and the `--check` evaluator
+  that need extending, and the lexer's hard error on `if`/`function` is the
+  natural place to start.
+* A forced-generation harness that needs nothing new: add the script to
+  `--levels=` and it has an oracle at any depth, in any role.
+* A fingerprint that sees object and monster fields (§7.5), which is what a
+  tier full of named artifacts and peaceful/asleep monsters needs.
+* One trap already sprung: §7.4. Any port that reads the interpreter's state
+  must go through `interpState()`, and `markPortState()` is what keeps that
+  honest.
+* An open opportunity, not a blocker: 33 of S2's scripts have synthetic
+  evidence only. The five wizard-mode tour sessions in the corpus show how to
+  fix that — level-teleporting into a branch and walking it is a recordable
+  session — and each new tour session upgrades several scripts at once.
 
 ---
 
-## 10. Biggest risk to full coverage
+## 11. Biggest risk to full coverage
+
+> **S2 update.** Both halves of this section's "honest answer" now exist and are
+> in use: the synthetic harness is `C2JS_LUA_LEVELPROBE` / `--levels=` (§7.6),
+> and each stage's write-up carries a per-script evidence table (§7.7). Two of
+> the estimates below were pessimistic. The corpus reaches more than "perhaps a
+> dozen" — 19 of the 131, because five sessions use wizard-mode level teleport
+> to tour the branches — and the synthetic harness cost part of an afternoon
+> rather than a leg, because NetHack already contains it as `#wizloaddes`. The
+> residual risk is unchanged in kind: 33 of S2's 49 have synthetic evidence
+> only, and a port that is right in the harness and wrong in play would still
+> slip through.
 
 **Reachability, not correctness.** The bridge is proved and the oracle is sharp,
 but an oracle only reports on levels a session actually generates. Of the 131

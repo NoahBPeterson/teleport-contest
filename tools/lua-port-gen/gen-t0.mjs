@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const DAT = path.join(ROOT, 'nethack-c/recorder/dat');
 const OUT = path.join(ROOT, 'js/lua-js/scripts/t0');
 
-/** Grouped the way §9 orders the stage: quest branches, then the rest. */
+/** Grouped the way §7 tells the stage: quest branches, then the rest. */
 export const T0 = [
     // The 34 quest levels that are pure call streams. Every role's -goal (the
     // nemesis level) and -loca (the locate level) and, for eight roles, the

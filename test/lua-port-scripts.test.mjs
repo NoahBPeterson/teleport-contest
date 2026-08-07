@@ -18,7 +18,7 @@
  *   * a .lua updated without regenerating its port.
  *
  * It does *not* prove the port produces the same level: that is the differential
- * oracle's job (tools/lua-oracle.mjs, and NOTES-lua-port.md §9's evidence
+ * oracle's job (tools/lua-oracle.mjs, and NOTES-lua-port.md §7.7's evidence
  * table). This proves the port says what the .lua says.
  */
 

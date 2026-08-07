@@ -60,7 +60,7 @@ import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
  *
  * T0_PORTS is the whole pure-declarative tier — 49 level scripts generated
  * from their .lua by tools/lua-port-gen/gen-t0.mjs (docs/NOTES-lua-port.md
- * §9, stage S2). oracle.lua is hand-written because it has closures.
+ * §7, stage S2). oracle.lua is hand-written because it has closures.
  */
 const PORTS = new Map([
     ['oracle.lua', oracle],
@@ -128,12 +128,12 @@ function questProbeEnabled() {
  * C2JS_LUA_LEVELPROBE=<a.lua,b.lua,…>: once the game is up, build each of
  * those special levels for real and fingerprint the result.
  *
- * §10 is blunt about the biggest risk to this roadmap: an oracle only reports
+ * §11 is blunt about the biggest risk to this roadmap: an oracle only reports
  * on levels a session actually generates, and the 69-session corpus reaches
  * about a dozen of the 131 scripts. Sokoban, the Planes, Vlad's Tower and all
  * 49 quest levels are behind gameplay no recorded session performs.
  *
- * This is §10's second option, and NetHack already contains it: #wizloaddes
+ * This is §11's second option, and NetHack already contains it: #wizloaddes
  * (wiz_load_splua(), wizcmds.c:376) is exactly
  *
  *     lspo_reset_level(NULL); load_special(name); lspo_finalize_level(NULL);
@@ -148,7 +148,7 @@ function questProbeEnabled() {
  *
  * What it does NOT prove is that the level is reachable, or that the rest of
  * the game is happy with it afterwards — the probe overwrites whatever level
- * the hero is standing on. Synthetic evidence is labelled as such in §9's
+ * the hero is standing on. Synthetic evidence is labelled as such in §7.7's
  * table; corpus evidence, where it exists, is the stronger claim.
  */
 const LEVEL_PROBE = String(env('C2JS_LUA_LEVELPROBE') || '')

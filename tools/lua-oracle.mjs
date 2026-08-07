@@ -33,7 +33,7 @@
 // up, both runs build each of those special levels with the game's own
 // #wizloaddes calls and compare the resulting level fingerprints. It is how a
 // script no recorded session reaches gets an oracle at all — see
-// js/lua-js/registry.mjs's C2JS_LUA_LEVELPROBE and NOTES-lua-port.md §10.
+// js/lua-js/registry.mjs's C2JS_LUA_LEVELPROBE and NOTES-lua-port.md §7.6.
 
 import fs from 'node:fs';
 import path from 'node:path';
