@@ -51,6 +51,7 @@ import { installStateProbe, interpState, stateIsFresh, stateSeed } from './inter
 import { dumpGlobal, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
 import { T0_PORTS } from './scripts/t0/index.mjs';
+import { T1_PORTS } from './scripts/t1/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 
@@ -58,13 +59,15 @@ import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
  * Add an entry here and the JS port replaces the .lua at runtime.
  *
- * T0_PORTS is the whole pure-declarative tier — 49 level scripts generated
- * from their .lua by tools/lua-port-gen/gen-t0.mjs (docs/NOTES-lua-port.md
- * §7, stage S2). oracle.lua is hand-written because it has closures.
+ * T0_PORTS is the pure-declarative tier (49 scripts, stage S2, §7) and
+ * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11); both
+ * are generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
+ * oracle.lua predates the generator and stays hand-written.
  */
 const PORTS = new Map([
     ['oracle.lua', oracle],
     ...T0_PORTS,
+    ...T1_PORTS,
 ]);
 
 /**
@@ -174,11 +177,16 @@ const QUEST_PROBE_MSGIDS = ['firsttime', 'goal_first', 'encourage', 'discourage'
 // same way (js/generated/mkobj.js:1952, js/generated/apply.js:900):
 //     level.objects[x][y]  ==  cptr.ldPtro3(svl, x, 168, y, 8, 62160)
 //     level.monsters[x][y] ==  cptr.ldPtro3(svl, x, 168, y, 8, 75600)
-// struct obj:   nexthere @8, ox @28 (i16), oy @30, otyp @32 (i16),
-//               quan @40 (i64), spe @48 (i8), corpsenm @168 (i32)
-// struct monst: mnum @20 (i16), mx @28, my @30, female @84, mpeaceful @168
+// struct obj:   nobj @0, nexthere @8, cobj @16, ox @28 (i16), oy @30,
+//               otyp @32 (i16), quan @40 (i64), spe @48 (i8), corpsenm @168 (i32)
+// struct monst: mnum @20 (i16), mx @28, my @30, female @84, mpeaceful @168,
+//               minvent @280
+// cobj and minvent come from js/generated/shk.js:1266 (delete_contents walks
+// `obj+16` with the `obj+0` link) and js/generated/mthrowu.js:1313 (m_carrying
+// walks `mtmp+280` with the same link).
 const RM_BASE = 1680, RM_XSTRIDE = 756, RM_SIZE = 36, COLNO = 80, ROWNO = 21;
 const OBJ_BASE = 62160, MON_BASE = 75600, GRID_XSTRIDE = 168, GRID_YSTRIDE = 8;
+const O_NOBJ = 0, O_NEXTHERE = 8, O_COBJ = 16, M_MINVENT = 280;
 
 function fnv(h, v) { return Math.imul(h ^ (v & 0xFF), 0x01000193) >>> 0; }
 function fnv32(h, v) {
@@ -205,6 +213,16 @@ function fnv32(h, v) {
  * `seenv`). The port and the interpreter allocate different amounts of memory
  * by construction, so raw addresses are not a fair comparison, and what the
  * hero has *seen* is not what the script built.
+ *
+ * S3 widened it once more, to the two *chains* a floor sweep does not reach:
+ * what is inside a container (`obj->cobj`) and what a monster is carrying
+ * (`monst->minvent`). That is not an optional refinement for this tier, it is
+ * the tier's whole signature — `des.object{ id="chest", contents=function() …
+ * end }` puts the wand of wishing inside the chest and `des.monster{ …,
+ * inventory=function() … end }` puts the class leader's kit in his pack, and
+ * neither object is ever on a square. A control that changed the fedora's
+ * enchantment inside Arc-strt's `inventory` closure passed all five checks
+ * before this change (§11.5).
  */
 function levelFingerprint() {
     let h = 0x811c9dc5;
@@ -220,18 +238,34 @@ function levelFingerprint() {
     for (let x = 0; x < COLNO; x++) {
         for (let y = 0; y < ROWNO; y++) {
             for (let o = cptr.ldPtro3(svl, x, GRID_XSTRIDE, y, GRID_YSTRIDE, OBJ_BASE);
-                o; o = cptr.ldPtro(o, 8)) {
-                h = fnv32(fnv32(fnv(fnv(h, x), y), cptr.ldI16o(o, 32)), cptr.ld1so(o, 48));
-                h = fnv32(fnv32(h, Number(BigInt.asIntN(32, cptr.ldI64o(o, 40)))), cptr.ldI32o(o, 168));
+                o; o = cptr.ldPtro(o, O_NEXTHERE)) {
+                h = hashObj(fnv(fnv(h, x), y), o);
             }
             const m = cptr.ldPtro3(svl, x, GRID_XSTRIDE, y, GRID_YSTRIDE, MON_BASE);
             if (m) {
                 h = fnv32(fnv32(fnv(fnv(h, x), y), cptr.ldI16o(m, 20)), cptr.ldI32o(m, 84));
                 h = fnv32(h, cptr.ldI32o(m, 168));
+                for (let o = cptr.ldPtro(m, M_MINVENT); o; o = cptr.ldPtro(o, O_NOBJ)) {
+                    h = hashObj(fnv(h, 0xC1), o);
+                }
             }
         }
     }
     return h >>> 0;
+}
+
+/**
+ * One object, and everything inside it, recursively.
+ *
+ * The chains are walked in the game's own order — the order obj_extract_self /
+ * add_to_container built them in, which is the order the script issued its
+ * des.object() calls — so it is as deterministic as the floor sweep.
+ */
+function hashObj(h, o) {
+    h = fnv32(fnv32(h, cptr.ldI16o(o, 32)), cptr.ld1so(o, 48));                       // otyp, spe
+    h = fnv32(fnv32(h, Number(BigInt.asIntN(32, cptr.ldI64o(o, 40)))), cptr.ldI32o(o, 168)); // quan, corpsenm
+    for (let c = cptr.ldPtro(o, O_COBJ); c; c = cptr.ldPtro(c, O_NOBJ)) h = hashObj(fnv(h, 0xC0), c);
+    return h;
 }
 
 /** @returns {string[]} the ported script names */
