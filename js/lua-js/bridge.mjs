@@ -61,7 +61,9 @@ import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
 import { l_obj_register } from '../generated/nhlobj.js';
 import { rn2 } from '../generated/rnd.js';
-import { markPortState } from './interp-state.mjs';
+import { cmd_from_ecname } from '../generated/cmd.js';
+import { gu } from '../generated/decl.js';
+import { interpState, markPortState } from './interp-state.mjs';
 
 /** lua_type() tag for tables — LUA_TTABLE. */
 const LUA_TTABLE = 5;
@@ -349,14 +351,93 @@ export function shuffle(list) {
 }
 
 // ---------------------------------------------------------------------------
+// The rest of the prelude a level script can see
+// ---------------------------------------------------------------------------
+
+/**
+ * `nh.eckey(cmd)` — nhl_get_cmd_key() (nhlua.c:1798), which is a bare
+ * cmd_from_ecname() and a lua_pushstring of the result. dat/tut-2.lua
+ * concatenates it into an engraving, so the bytes have to be identical; taking
+ * them from the same C function is how that is guaranteed.
+ */
+export function eckey(cmd) {
+    const p = cmd_from_ecname(cstr(cmd));
+    if (!p) throw new Error(`lua-port: nh.eckey(${cmd}) has no key binding`);
+    return cptr.cstr(p);
+}
+
+/**
+ * nhlib.lua's `align`, read out of the interpreter's own lua_State.
+ *
+ * This one cannot be recomputed. `align = { "law", "neutral", "chaos" }`
+ * followed by `shuffle(align)` runs at the top of nhlib.lua, i.e. inside the
+ * nhl_init() that built the state now loading this script, and it spends two
+ * rn2() draws doing it (§3(b)). Those draws have already happened and their
+ * result lives only in that state, so a port that wants `align[1]` has to go
+ * and read it — reproducing the shuffle in JS would need two more draws and
+ * desynchronise the RNG immediately.
+ *
+ * @returns {(string|undefined)[]} 1-based, so `align[1]` means what it means
+ *   in the .lua; index 0 is unused.
+ */
+export function interpAlign() {
+    const L = interpState();
+    if (!L) throw new Error('lua-port: interpreter lua_State not found (align)');
+    const base = lua_gettop(L);
+    try {
+        if (lua_getglobal(L, cstr('align')) !== LUA_TTABLE) {
+            throw new Error("lua-port: nhlib's `align` global is not a table");
+        }
+        const out = [undefined];
+        for (let i = 1; i <= 3; i++) {
+            lua_rawgeti(L, -1, BigInt(i));
+            const s = lua_tolstring(L, -1, null);
+            if (!s) throw new Error(`lua-port: align[${i}] is not a string`);
+            out.push(cptr.cstr(s));
+            lua_settop(L, lua_gettop(L) - 1);
+        }
+        return out;
+    } finally {
+        lua_settop(L, base);
+    }
+}
+
+/**
+ * nhlib.lua:47 `monkfoodshop()` — the one nhlib helper a T0 script calls.
+ * `u.role` is nhl_u_index()'s "role" case, i.e. gu.urole.name.m
+ * (js/generated/nhlua.js:2046). No RNG, no Lua state.
+ */
+export function monkfoodshop() {
+    return cptr.cstr(cptr.ldPtro(gu, 8)) === 'Monk' ? 'health food shop' : 'food shop';
+}
+
+/**
+ * A Lua-indexed list: `luaList(a, b, c)[1] === a`.
+ *
+ * dat/tower3.lua keeps its ten niche coordinates in a local table and picks
+ * from it with `place[4]`. Writing that as a 0-based JS array would put an
+ * off-by-one between the .lua and its port on every index — precisely the
+ * thing a Phase-2 reviewer diffing the two would have to hold in their head.
+ */
+export function luaList(...items) { return [undefined, ...items]; }
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
-/** The API object handed to every ported script. */
+/**
+ * The API object handed to every ported script.
+ *
+ * `align` is a getter because it reads the interpreter's state: evaluating it
+ * eagerly would make every port depend on a state discovery that only the two
+ * scripts using `align` actually need. Destructuring `{ des }` never touches it.
+ */
 export const api = Object.freeze({
     des, selection,
-    nh: Object.freeze({ rn2: nhRn2, random: nhRandom }),
+    nh: Object.freeze({ rn2: nhRn2, random: nhRandom, eckey }),
     percent, shuffle, d, mathRandom,
+    get align() { return interpAlign(); },
+    monkfoodshop, luaList,
 });
 
 /**

@@ -50,15 +50,21 @@ import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
 import { installStateProbe, interpState, stateIsFresh, stateSeed } from './interp-state.mjs';
 import { dumpGlobal, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
+import { T0_PORTS } from './scripts/t0/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 
 /**
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
  * Add an entry here and the JS port replaces the .lua at runtime.
+ *
+ * T0_PORTS is the whole pure-declarative tier — 49 level scripts generated
+ * from their .lua by tools/lua-port-gen/gen-t0.mjs (docs/NOTES-lua-port.md
+ * §9, stage S2). oracle.lua is hand-written because it has closures.
  */
 const PORTS = new Map([
     ['oracle.lua', oracle],
+    ...T0_PORTS,
 ]);
 
 /**
