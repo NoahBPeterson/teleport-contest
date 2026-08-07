@@ -925,9 +925,11 @@ S2 (52 ports):
 
 | Configuration | Result | Speed |
 |---|---|---|
-| registry inert — `C2JS_LUA_PORT=0` | **69/69** | 951 + 0.80/turn (R² 0.723) |
+| registry inert — `C2JS_LUA_PORT=0`, run 1 | **69/69** | 951 + 0.80/turn (R² 0.723) |
+| registry inert — `C2JS_LUA_PORT=0`, run 2 | **69/69** | 989 + 0.77/turn (R² 0.710) |
 | all 52 ports live (default), run 1 | **69/69** | 926 + 0.83/turn (R² 0.763) |
 | all 52 ports live (default), run 2 | **69/69** | 935 + 0.80/turn (R² 0.731) |
+| all 52 ports live (default), run 3 | **69/69** | 936 + 0.76/turn (R² 0.725) |
 
 Every session exercises `dungeon.lua` and `quest.lua`; `gen9996-marathon-dlvl10`
 also reaches the Oracle level. It scores `RNG 54924/54924, Screen 17829/17829`
