@@ -34,13 +34,16 @@
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkLibFn, checkPort } from '../tools/lua-port-gen/lua2des.mjs';
-import { HAND_FNS, LIB_ARGV, LIB_MODULES, T0, T1, T2, T3 } from '../tools/lua-port-gen/gen-ports.mjs';
+import { checkChunk, checkLibFn, checkPort } from '../tools/lua-port-gen/lua2des.mjs';
+import {
+    CHUNK_PORTS, HAND_FNS, LIB_ARGV, LIB_MODULES, T0, T1, T2, T3, T4,
+} from '../tools/lua-port-gen/gen-ports.mjs';
 import { makeTutorialEvents } from '../js/lua-js/nhlib.mjs';
 import { T0_PORTS } from '../js/lua-js/scripts/t0/index.mjs';
 import { T1_PORTS } from '../js/lua-js/scripts/t1/index.mjs';
 import { T2_PORTS } from '../js/lua-js/scripts/t2/index.mjs';
 import { T3_PORTS } from '../js/lua-js/scripts/t3/index.mjs';
+import { T4_PORTS } from '../js/lua-js/scripts/t4/index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -49,6 +52,7 @@ const TIERS = [
     { tier: 't1', list: T1, ports: T1_PORTS },
     { tier: 't2', list: T2, ports: T2_PORTS },
     { tier: 't3', list: T3, ports: T3_PORTS },
+    { tier: 't4', list: T4, ports: T4_PORTS },
 ];
 
 let failures = 0;
@@ -109,10 +113,28 @@ for (const { tier, list, ports } of TIERS) {
 
 // A script may not be registered twice: the registry merges the tiers into one
 // map and a duplicate key would silently drop one of them.
-const all = [...T0, ...T1, ...T2, ...T3];
+const all = [...T0, ...T1, ...T2, ...T3, ...T4];
 if (new Set(all).size !== all.length) {
     console.error('FAIL a script appears in more than one tier');
     failures++;
+}
+
+// The chunk ports (S7): a whole .lua whose product is a set of functions the
+// game calls afterwards. checkChunk() runs themerms.lua's top level beside the
+// port's, then drives mklev.c's own protocol — pre_themerooms_generate,
+// themerooms_generate x12, post_themerooms_generate, post_level_generate —
+// and finally sweeps all 46 themeroom and themeroom-fill closures directly,
+// because the "default" room's frequency of 1000 means the sampled protocol
+// alone would visit almost none of them. Roughly 8,900 recorded calls per run.
+for (const c of CHUNK_PORTS) {
+    // eslint-disable-next-line no-await-in-loop
+    const d = await checkChunk(
+        path.join(ROOT, `nethack-c/recorder/dat/${c.from}.lua`),
+        path.join(ROOT, c.mod),
+        { make: c.make },
+    );
+    if (d) { console.error(`FAIL ${c.mod} differs from ${c.from}.lua at ${d}`); failures++; }
+    checked++;
 }
 
 if (failures) {

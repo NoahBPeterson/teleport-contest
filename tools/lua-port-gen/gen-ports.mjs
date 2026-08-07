@@ -24,7 +24,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-    checkLibFn, checkPort, emitLibModule, emitModule, extractFunction, fnName, luaList, parse,
+    checkChunk, checkLibFn, checkPort, emitLibModule, emitModule, extractFunction, fnName,
+    luaList, parse,
 } from './lua2des.mjs';
 import { makeTutorialEvents } from '../../js/lua-js/nhlib.mjs';
 
@@ -126,6 +127,27 @@ export const T2 = [
  */
 export const T3 = [
     'tut-1',
+];
+
+/**
+ * Stage S7's tier: the Gehennom filler.
+ *
+ * `hellfill.lua` is the last *level* script in the corpus and, at 443 lines,
+ * the largest thing the generator has ever been given — seven whole level
+ * generators picked by one `math.random`, a `repeat` loop over a list of
+ * prefab maps that mixes bare functions with `{repeatable, contents}` tables,
+ * and two `hell_tweaks()` calls. The one construct it needed that no earlier
+ * tier did is Lua's own `type()`, used to tell those two prefab shapes apart.
+ *
+ * `themerms.lua`, the other half of S7, is *not* here: it is a library-shaped
+ * port (js/lua-js/scripts/themerms.mjs) because its state outlives the level,
+ * and it uses four constructs the emitter refuses on purpose — a generic
+ * `for`, assignment through an index, multiple assignment, and table.insert.
+ * It is proved by checkChunk() instead, which is the same call-stream
+ * comparison run over the whole file. §15.
+ */
+export const T4 = [
+    'hellfill',
 ];
 
 /**
@@ -238,6 +260,33 @@ export const LIB_ARGV = {
     nh_callback_run: [['end_turn'], ['cmd_before', 'save'], ['cmd_before', 'open'], ['nosuch']],
 };
 
+/**
+ * The hand-written *chunk* ports — a whole .lua whose product is a set of
+ * functions somebody else calls later, rather than a call stream (S7, §15).
+ *
+ * `themerms.lua` is the only one. checkChunk() runs its top level on both
+ * sides and then drives the protocol mklev.c drives — pre_themerooms_generate,
+ * themerooms_generate x N, post_themerooms_generate, post_level_generate —
+ * plus a direct sweep over all 46 themeroom and themeroom-fill closures,
+ * because the "default" room's frequency of 1000 means the sampled protocol
+ * alone would visit almost none of them.
+ */
+export const CHUNK_PORTS = [
+    { from: 'themerms', mod: 'js/lua-js/themerms-fns.mjs', make: 'makeThemerms' },
+];
+
+/** Prove the hand-written chunk ports. */
+async function chunkPorts() {
+    let bad = 0;
+    for (const c of CHUNK_PORTS) {
+        // eslint-disable-next-line no-await-in-loop
+        const d = await checkChunk(path.join(DAT, `${c.from}.lua`), path.join(ROOT, c.mod),
+            { make: c.make });
+        if (d) { process.stderr.write(`gen-ports: CHUNK-PORT FAIL ${c.from}: ${d}\n`); bad++; }
+    }
+    return bad;
+}
+
 /** Regenerate nothing; just prove the hand-written library ports. */
 async function handFns() {
     let bad = 0;
@@ -259,6 +308,7 @@ function tiers() {
         { tier: 't1', dir: path.join(ROOT, 'js/lua-js/scripts/t1'), list: T1, label: 'branch/shuffle/closure' },
         { tier: 't2', dir: path.join(ROOT, 'js/lua-js/scripts/t2'), list: T2, label: 'loop/selection-algebra' },
         { tier: 't3', dir: path.join(ROOT, 'js/lua-js/scripts/t3'), list: T3, label: 'tutorial / string-pattern' },
+        { tier: 't4', dir: path.join(ROOT, 'js/lua-js/scripts/t4'), list: T4, label: 'Gehennom filler' },
     ];
 }
 
@@ -333,7 +383,9 @@ async function main(argv) {
     const check = argv.includes('--check');
     let bad = await libFns(check);
     bad += await handFns();
-    let count = LIB_MODULES.reduce((n, m) => n + m.fns.length, 0) + HAND_FNS.length;
+    bad += await chunkPorts();
+    let count = LIB_MODULES.reduce((n, m) => n + m.fns.length, 0)
+        + HAND_FNS.length + CHUNK_PORTS.length;
     for (const t of tiers()) {
         bad += generate(t, check);
         const idxPath = path.join(t.dir, 'index.mjs');

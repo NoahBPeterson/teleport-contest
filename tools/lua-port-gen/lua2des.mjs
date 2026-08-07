@@ -78,8 +78,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-    LuaList, jsPairs, jsSetIndex, jsToString, jsType, libTableStringify, luaLen,
-    luaList, makeNhlib,
+    LuaList, jsPairs, jsSetIndex, jsToString, jsType, libPline, libTableStringify,
+    luaLen, luaList, makeNhlib,
 } from '../../js/lua-js/nhlib.mjs';
 
 // Re-exported so gen-ports.mjs can build argument vectors without a second
@@ -513,7 +513,12 @@ export function parse(src) {
                 p++;
                 // `return` with no value, or `return e`. A `return` is always
                 // the last statement of its block in Lua.
-                const bare = at('punct', ';') || at('kw', 'end') || at('eof');
+                // A `return` is the last statement of its block, so "no value"
+                // is "the block ends here" — at `end`, `else`, `elseif`,
+                // `until` or eof. themerms.lua's themerooms_generate() returns
+                // bare immediately before an `elseif`.
+                const bare = at('punct', ';') || at('eof') || at('kw', 'end')
+                    || at('kw', 'else') || at('kw', 'elseif') || at('kw', 'until');
                 const value = bare ? null : exp();
                 if (at('punct', ';')) p++;
                 items.push({ s: 'return', value, line: t.line, endLine: toks[p - 1].line });
@@ -553,10 +558,14 @@ export function parse(src) {
                 items.push({ s: 'assign', name: e.v, value, line: t.line, endLine: toks[p - 1].line });
                 continue;
             }
-            // `t[k] = v`, `t.f = v`, and the multiple form
-            // `list[i], list[j] = list[j], list[i]` (nhlib.lua's shuffle).
+            // `t[k] = v`, `t.f = v`, and the multiple forms
+            // `list[i], list[j] = list[j], list[i]` (nhlib.lua's shuffle) and
+            // `ltype, rtype = rtype, ltype` (themerms.lua's Twin businesses,
+            // whose targets are bare names). A bare name followed by `=` was
+            // consumed just above, so one reaching here is followed by `,`.
             // Interpreter-only, like the generic `for`: renderStmts refuses it.
-            if ((e.t === 'index' || e.t === 'field') && (at('punct', '=') || at('punct', ','))) {
+            if ((e.t === 'index' || e.t === 'field' || e.t === 'name')
+                && (at('punct', '=') || at('punct', ','))) {
                 const targets = [e];
                 while (at('punct', ',')) { p++; targets.push(primary()); }
                 eat('punct', '=');
@@ -1088,7 +1097,13 @@ export function fnName(base) {
  */
 const API_FIELDS = ['des', 'selection', 'obj', 'string', 'nh', 'percent', 'shuffle',
     'd', 'math', 'align', 'monkfoodshop', 'hell_tweaks', 'table_stringify',
-    'nh_lua_variables', 'u', 'nhc', 'luaList', 'luaLen'];
+    'nh_lua_variables', 'u', 'nhc', 'luaList', 'luaLen',
+    // Lua's own `type()`, which S7 needs: dat/hellfill.lua's rnd_hell_prefab()
+    // branches on it because its prefab list holds both bare functions and
+    // {repeatable, contents} tables. It is the *language*, not NetHack, and the
+    // api answers it with jsType() — the same function the --check interpreter
+    // uses, so the two cannot disagree.
+    'type'];
 
 /** nhlib.lua globals a script may call as a bare function. */
 const NHLIB_FUNCS = new Set(['monkfoodshop', 'percent', 'shuffle', 'd', 'hell_tweaks',
@@ -1727,8 +1742,18 @@ export function stubRng(mode) {
     };
 }
 
-/** The RNG settings --check runs. Both branch arms, then several shuffles. */
-const CHECK_RNGS = ['low', 'high', 1, 2, 3, 4, 5, 6];
+/**
+ * The RNG settings --check runs. Both branch arms, then several shuffles.
+ *
+ * The three at the end are S7's. dat/hellfill.lua picks one of seven whole
+ * level generators with its very first draw (`hells[math.random(1, #hells)]`),
+ * so which arms the check visits is decided before anything else happens:
+ * `low` selects generator 1, `high` selects 7, and settings 1-6 between them
+ * select only 3 and 4. Settings 8, 14 and 47 are chosen so that the remaining
+ * three — 2, 5 and 6, i.e. the mazegrid one that calls hell_tweaks(), the
+ * thick-walled one and the cold one — are transcription-checked too.
+ */
+const CHECK_RNGS = ['low', 'high', 1, 2, 3, 4, 5, 6, 8, 14, 47];
 
 /**
  * `string.match`, for the check stub only.
@@ -1813,7 +1838,7 @@ export function luaMatch(s, pat) {
  * different depths covers the shallow case where the pool branch is a coin
  * flip and the deep case where it is nearly certain.
  */
-const DEPTHS = [1, 45, 26, 33, 40, 47, 52, 30];
+const DEPTHS = [1, 45, 26, 33, 40, 47, 52, 30, 22, 38, 50];
 
 /**
  * The `u.role` and `u.uenmax` each setting reports.
@@ -1824,8 +1849,21 @@ const DEPTHS = [1, 45, 26, 33, 40, 47, 52, 30];
  * the first. Varying them across the settings is what transcription-checks both
  * arms, the way `low`/`high` do for `percent()`.
  */
-const ROLES = ['Knight', 'Monk', 'Wizard', 'Knight', 'Valkyrie', 'Monk', 'Tourist', 'Knight'];
-const UENMAX = [0, 10, 3, 20, 4, 15, 2, 30];
+const ROLES = ['Knight', 'Monk', 'Wizard', 'Knight', 'Valkyrie', 'Monk', 'Tourist', 'Knight',
+    'Wizard', 'Monk', 'Knight'];
+const UENMAX = [0, 10, 3, 20, 4, 15, 2, 30, 6, 12, 1];
+
+/**
+ * `nh.level_difficulty()` and `u.invocation_level` per setting (S7).
+ *
+ * themerms.lua branches on the difficulty in four places and each threshold is
+ * a different one — `mindiff = 4` on two themerooms, `> 3` and `> 6` for the
+ * zombifiable list, `> 8` for spiders on webs — so the settings straddle all of
+ * them. dat/hellfill.lua's last statement is `if (u.invocation_level)`, which
+ * is true on exactly one level of a game, so one setting says so.
+ */
+const DIFFICULTIES = [1, 4, 3, 7, 9, 5, 12, 20, 2, 6, 30];
+const INVOCATION = [false, true, false, false, false, false, false, false, false, false, false];
 
 /** Repo root, for the generated modules --check has to import. */
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -1856,7 +1894,10 @@ function sanitize(v, pending) {
  * what makes the two streams comparable at all.
  */
 export function recordingApi(rng = stubRng(1), opts = {}) {
-    const { depth = 30, role = 'Knight', uenmax = 10, hellTweaks = null } = opts;
+    const {
+        depth = 30, role = 'Knight', uenmax = 10, hellTweaks = null,
+        difficulty = 12, invocation = false,
+    } = opts;
     const calls = [];
     /**
      * Selection methods that hand a *value* back to the script rather than
@@ -1879,20 +1920,62 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         bounds: () => { reads++; return { lx: 2, ly: 1, hx: 2 + reads % 60, hy: 4 + reads % 14 }; },
         describe_size: () => placeholder(`describe_size#${++reads}`),
     };
+    /**
+     * The two obj methods that hand a *table* back rather than another obj.
+     * Both are S7's: themerms.lua reads `xobj.NO_OBJ`/`ox`/`oy` off
+     * `otmp:totable()` and `itmcls["material"]` off `itm:class()`, and branches
+     * on each. Like the selection read-backs above, each is a pure function of
+     * how many times it has been called, so both sides of the comparison see
+     * the same value and both arms are visited across the settings.
+     */
+    const objReadback = {
+        totable: () => { reads++; return { ox: reads * 3 % 76, oy: reads % 19 }; },
+        class: () => { reads++; return { material: reads % 3 === 0 ? 'glass' : 'iron' }; },
+    };
+    /**
+     * The table lspo_room()/lspo_region() hand a `contents` closure
+     * (l_push_mkroom_table, nhlua.c:3059), and the smaller one lspo_map()
+     * hands its own (l_push_wid_hei_table). themerms.lua reads `rm.width`,
+     * `rm.height`, `rm.lit` and `rm.region.x1`/`y1`; `lit` is a boolean and its
+     * two values select two different themeroom fills, so it alternates.
+     */
+    let rooms = 0;
+    const roomTable = (mkroom) => {
+        rooms++;
+        const w = 5 + rooms % 9, h = 4 + rooms % 6, x = rooms * 7 % 60, y = rooms * 3 % 14;
+        if (!mkroom) return { width: w, height: h };
+        return {
+            width: w,
+            height: h,
+            region: { x1: x, y1: y, x2: x + w - 1, y2: y + h - 1 },
+            lit: rooms % 2 === 0,
+            irregular: false,
+            needjoining: true,
+            type: 'themed',
+        };
+    };
+    /** Which des.* bindings call their `contents` with a room table. */
+    const ROOM_CONTENTS = { 'des.room': true, 'des.region': true, 'des.map': false };
     const record = (fn, args) => {
         const pending = [];
         const clean = args.map((a) => sanitize(a, pending));
         calls.push({ fn, args: clean });
-        // lspo_room()/lspo_monster() invoke `contents`/`inventory` with no
-        // arguments; l_selection_iterate() invokes its callback once per point
-        // with (x, y). Three points is enough to check the body transcribes,
-        // and both sides iterate identically because this is the same stub.
+        // lspo_room()/lspo_region()/lspo_map() invoke `contents` with the room
+        // table they just built; lspo_object() invokes a container's with the
+        // obj it made; lspo_monster() invokes `inventory` with nothing; and
+        // l_selection_iterate() invokes its callback once per point with
+        // (x, y). Three points is enough to check the body transcribes, and
+        // both sides iterate identically because this is the same stub.
         for (const f of pending) {
             if (fn === 'selection.iterate') for (let k = 1; k <= 3; k++) f(k * 11 % 76, k * 7 % 19);
+            else if (fn in ROOM_CONTENTS) f(roomTable(ROOM_CONTENTS[fn]));
+            else if (fn === 'des.object') f({ __call: 'obj.contained', args: [] });
             else f();
         }
         const method = fn.startsWith('selection.') ? fn.slice(10) : null;
         if (method && method in readback) return readback[method]();
+        const om = fn.startsWith('obj.') ? fn.slice(4) : null;
+        if (om && om in objReadback) return objReadback[om]();
         return { __call: fn, args: clean };
     };
     const table = (tbl) => new Proxy({}, {
@@ -1917,6 +2000,15 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         eckey,
         rn2: (n) => rng.rn2(n),
         random: (a, b) => (b === undefined ? rng.rn2(a) : (a + rng.rn2(b)) | 0),
+        // themerms.lua asks the level's difficulty on every eligibility test and
+        // branches on it three times (mindiff, the spider-web threshold and the
+        // zombifiable list). It is a setting of the check, like u.depth.
+        level_difficulty: () => difficulty,
+        // nh.debug_themerm() reads THEMERM/THEMERMFILL from the environment and
+        // only in wizard mode; it is nil in every recorded session and in every
+        // check. Returning nil is what makes themerooms_generate() take its
+        // reservoir-sampling path rather than the debug one.
+        debug_themerm: () => null,
         // The real nhl_is_genocided() spends no RNG. The stub draws so that
         // the `low` and `high` settings take opposite branches of
         // dat/tower1.lua's `if (not Vgenod)`; both sides share the counter, so
@@ -1926,6 +2018,8 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         // into the recorded stream like a des.* call: a port that dropped one,
         // or moved it, has to fail the comparison.
         parse_config: (...a) => { record('nh.parse_config', a); },
+        impossible: (...a) => { record('nh.impossible', a); },
+        start_timer_at: (...a) => { record('nh.start_timer_at', a); },
         pline: (...a) => { record('nh.pline', a); },
         text: (...a) => { record('nh.text', a); },
         callback: (...a) => { record('nh.callback', a); },
@@ -1937,8 +2031,13 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         // string.match is recorded *and* answered: recording pins the pattern
         // the port passes, answering drives the branch that reads the result.
         string: { match: (s, p) => { record('string.match', [s, p]); return luaMatch(s, p); } },
-        percent, shuffle, d, math: { random: mathRandom },
+        percent, shuffle, d, math: { random: mathRandom, floor: Math.floor, abs: Math.abs },
         align, monkfoodshop: () => placeholder('monkfoodshop()'),
+        // nhlib.lua's `pline` as a bare global — themerms.lua's four warning
+        // messages. The real one is libPline (js/lua-js/nhlib.mjs); using it
+        // here rather than a placeholder means the format string and its
+        // arguments are compared, not just the fact that a message happened.
+        pline: (fmt, ...rest) => libPline(api, fmt, ...rest),
         // The real table_stringify, so the two wrappers around it
         // (nh_set/nh_get_variables_string, get_variables_string) are checked
         // end to end rather than against a placeholder.
@@ -1947,7 +2046,14 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         // settings of the check (hell_tweaks() reads depth for two thresholds
         // and a die roll; tut-1 branches on the other two).
         nhc: { COLNO: 80, ROWNO: 21 },
-        u: { depth, role, uenmax, ux: 40, uy: 10, uhunger: 900, moves: 100, ...(opts.u ?? {}) },
+        u: {
+            depth, role, uenmax, ux: 40, uy: 10, uhunger: 900, moves: 100,
+            // dat/hellfill.lua's last branch: the vibrating square instead of a
+            // down staircase. It is a boolean in the interpreter too
+            // (lua_pushboolean, nhlua.js:2058).
+            invocation_level: invocation,
+            ...(opts.u ?? {}),
+        },
         luaList, luaLen,
         // Lua's base library, as far as nhlib.lua and nhcore.lua reach it.
         // These are not stubs of NetHack, they are the language: a hand-written
@@ -1959,11 +2065,23 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
         ipairs: (t) => ({
             __iter: () => luaPairs(t).filter(([k, v]) => typeof k === 'number' && !isNil(v)),
         }),
-        table: { unpack: (t) => new Varargs(luaPairs(t).map(([, v]) => v)) },
+        table: {
+            unpack: (t) => new Varargs(luaPairs(t).map(([, v]) => v)),
+            // themerms.lua's `postprocess` queue is built with table.insert and
+            // walked with ipairs, so it is always a sequence — which is why the
+            // ipairs at themerms.lua:1093 has one order rather than a
+            // seed-derived one (§15).
+            insert: (t, v) => setIndex(t, luaLen(t) + 1, v),
+        },
         error: (m) => { throw new Error(`lua2des --check: lua error(${m})`); },
         // `t[k] = nil`, which JS spells three different ways depending on what
         // `t` is. A hand-written port says what it means and the api does it.
         setNil: (t, k) => setIndex(t, k, null),
+        // S7's lifetime marker. In the game it takes a registry reference out
+        // of the call-scoped pool; here there is no Lua and no pool, so it is
+        // the identity — which is also what it means on the .lua side, where
+        // the value is simply stored in a table that outlives the call.
+        keepValue: (v) => v,
         // The rest of the accessors a hand-written library port uses to reach a
         // table that, in the game, lives on the Lua side. Here they are plain
         // JS objects, and the operations are the obvious ones.
@@ -1979,7 +2097,10 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
     // Lua's string.format, the two directives nhlib.lua's pline() can pass it.
     api.string.format = (fmt, ...rest) => {
         let i = 0;
-        return String(fmt).replace(/%[sd%]/g, (m) => (m === '%%' ? '%' : luaToString(rest[i++])));
+        // `%i` is themerms.lua's, in make_dig_engraving's " %i %s"; Lua's own
+        // string.format accepts it as a synonym for %d (lstrlib.c), and so does
+        // the real one the port calls through the interpreter's string library.
+        return String(fmt).replace(/%[sdi%]/g, (m) => (m === '%%' ? '%' : luaToString(rest[i++])));
     };
     // hell_tweaks() is itself a port (js/lua-js/nhlib-fns.mjs), generated from
     // dat/nhlib.lua the same way the level scripts are. A level script's check
@@ -1987,7 +2108,10 @@ export function recordingApi(rng = stubRng(1), opts = {}) {
     // injected rather than imported so that this file can *generate* it
     // without already depending on it.
     if (hellTweaks) api.hell_tweaks = (protectedArea) => hellTweaks(api, protectedArea);
-    return { calls, api };
+    // `roomTable` is exposed so checkChunk() can hand a themeroom fill the same
+    // mkroom table lspo_room() would have pushed, on both sides of the
+    // comparison and at the same point of the shared counter.
+    return { calls, api, roomTable };
 }
 
 /** The generated hell_tweaks() port, imported once and only when needed. */
@@ -2154,9 +2278,12 @@ function evalNode(node, env) {
             // from the *value*. The emitter has to decide it statically
             // (methodJs / exprType), so doing it dynamically here is what turns
             // a wrong static inference into a --check failure.
-            const tbl = typeof recv === 'string' ? 'string'
-                : (recv && typeof recv === 'object' && typeof recv.__call === 'string'
-                    && recv.__call.startsWith('obj.')) ? 'obj' : 'selection';
+            // `des.object()` hands back an obj userdata (lspo_object ends with
+            // nhl_push_obj), so `box:addcontent(itm)` is obj.addcontent — the
+            // one des binding whose result carries the obj metatable.
+            const isObj = recv && typeof recv === 'object' && typeof recv.__call === 'string'
+                && (recv.__call.startsWith('obj.') || recv.__call === 'des.object');
+            const tbl = typeof recv === 'string' ? 'string' : isObj ? 'obj' : 'selection';
             return env.api[tbl][node.name](recv, ...expand(node.args.map((a) => evalNode(a, env))));
         }
         case 'call': {
@@ -2250,12 +2377,13 @@ function execBlock(items, env) {
             // Lua evaluates every prefix expression and every value before it
             // assigns anything, which is what makes
             // `list[i], list[j] = list[j], list[i]` a swap.
-            const slots = it.targets.map((t) => ({
+            const slots = it.targets.map((t) => (t.t === 'name' ? { name: t.v } : {
                 t: evalNode(t.obj, env),
                 k: t.t === 'index' ? evalNode(t.key, env) : t.name,
             }));
             const vals = expand(it.values.map((v) => evalNode(v, env)));
-            slots.forEach((s, k) => setIndex(s.t, s.k, vals[k]));
+            slots.forEach((s, k) => (s.name !== undefined
+                ? env.assign(s.name, vals[k]) : setIndex(s.t, s.k, vals[k])));
             continue;
         }
         if (it.s === 'repeat') {
@@ -2319,7 +2447,10 @@ export async function checkPort(luaPath, modPath, root = ROOT) {
         // u.depth varies with the setting so hell_tweaks()'s two
         // depth-dependent thresholds are exercised at more than one value.
         const i = CHECK_RNGS.indexOf(mode);
-        const opts = { hellTweaks, depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i] };
+        const opts = {
+            hellTweaks, depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i],
+            difficulty: DIFFICULTIES[i], invocation: INVOCATION[i],
+        };
         const want = luaCallStream(items, stubRng(mode), opts);
         const { calls, api } = recordingApi(stubRng(mode), opts);
         mod.default(api);
@@ -2387,7 +2518,10 @@ export async function checkLibFn(luaPath, modPath, name, opts = {}) {
         : Array.isArray(v) ? v.slice() : v);
     for (const mode of CHECK_RNGS) {
         const i = CHECK_RNGS.indexOf(mode);
-        const sopts = { depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i] };
+        const sopts = {
+            depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i],
+            difficulty: DIFFICULTIES[i], invocation: INVOCATION[i],
+        };
         for (let a = 0; a < argvs.length; a++) {
             const where = `${name} rng=${mode} argv=${a} `;
             const luaRng = counted(stubRng(mode)), jsRng = counted(stubRng(mode));
@@ -2432,6 +2566,147 @@ export async function checkLibFn(luaPath, modPath, name, opts = {}) {
             for (let k = 0; k < luaArgs.length; k++) {
                 const ad = diff(norm(luaArgs[k]), norm(jsArgs[k]), `${where}arg[${k}] after`);
                 if (ad) return ad;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * The same comparison for a *whole chunk* whose product is a set of functions
+ * that somebody else calls afterwards (stage S7, §15).
+ *
+ * checkPort() suits a level script, whose whole body is a call stream, and
+ * checkLibFn() suits one function lifted out of a library file. dat/themerms.lua
+ * is neither: its top level defines two tables of 46 closures and ten functions,
+ * spends no RNG and issues no call, and everything interesting happens when
+ * makerooms() calls back into it later. So this runs the chunk's top level on
+ * both sides and then drives *the protocol C drives*:
+ *
+ *     pre_themerooms_generate()
+ *     themerooms_generate() x N          -- mklev.c's "make rooms until satisfied"
+ *     post_themerooms_generate()
+ *     post_level_generate()              -- from themerooms_post_level_generate()
+ *
+ * with one shared RNG per side, so the reservoir sampling, the eligibility
+ * tests, every themeroom's contents closure, the themeroom fill it recurses
+ * into and the deferred `postprocess` handlers are all compared call for call
+ * and argument for argument. Repeating the whole sequence under each CHECK_RNGS
+ * setting — which also varies nh.level_difficulty() — is what visits the
+ * difficulty-gated rooms and both arms of every `eligible`.
+ *
+ * @param {string} luaPath @param {string} modPath
+ * @param {{make: string, rounds?: number, root?: string}} opts
+ *   `make` names the export that builds the chunk's globals from an api.
+ * @returns {Promise<string|null>} the first difference, or null
+ */
+export async function checkChunk(luaPath, modPath, opts) {
+    const { make, rounds = 12 } = opts;
+    const items = parse(fs.readFileSync(luaPath, 'utf8'));
+    const mod = await import(`file://${fs.realpathSync(modPath)}`);
+    if (typeof mod[make] !== 'function') {
+        throw new Error(`lua2des --check: ${modPath} has no export '${make}'`);
+    }
+    for (const mode of CHECK_RNGS) {
+        const i = CHECK_RNGS.indexOf(mode);
+        const sopts = {
+            depth: DEPTHS[i], role: ROLES[i], uenmax: UENMAX[i],
+            difficulty: DIFFICULTIES[i], invocation: INVOCATION[i],
+        };
+        const luaRng = counted(stubRng(mode)), jsRng = counted(stubRng(mode));
+        const lua = recordingApi(luaRng, sopts);
+        const js = recordingApi(jsRng, sopts);
+        const saved = rootItems;
+        rootItems = items;
+        let luaG, jsG;
+        try {
+            const env = new Env(null, lua.api);
+            execBlock(items, env);
+            // The .lua's globals, addressed the way the module's exports are.
+            luaG = new Proxy({}, { get: (_, k) => env.get(String(k)) });
+            jsG = mod[make](js.api);
+        } finally {
+            rootItems = saved;
+        }
+
+        const nrooms = luaLen(luaG.themerooms), nfills = luaLen(luaG.themeroom_fills);
+        if (nrooms !== luaLen(jsG.themerooms) || nfills !== luaLen(jsG.themeroom_fills)) {
+            return `rng=${mode} table sizes: lua ${nrooms}/${nfills} `
+                + `js ${luaLen(jsG.themerooms)}/${luaLen(jsG.themeroom_fills)}`;
+        }
+
+        /**
+         * One step of the comparison: run it on both sides and require the
+         * call streams, the draws spent and any returned value to agree.
+         * `side` is the recordingApi half, so a step can ask it for the room
+         * table lspo_room would have pushed.
+         */
+        const steps = [];
+        // 1. The protocol mklev.c drives, verbatim. This is what proves the
+        //    reservoir sampling: "make rooms until satisfied".
+        steps.push(['pre_themerooms_generate', (g) => g.pre_themerooms_generate()]);
+        for (let n = 1; n <= rounds; n++) {
+            steps.push([`themerooms_generate#${n}`, (g) => g.themerooms_generate()]);
+        }
+        steps.push(['post_themerooms_generate', (g) => g.post_themerooms_generate()]);
+        // 2. Every themeroom and every fill, directly. The "default" room has
+        //    frequency 1000 against 45 for everything else, so the sampled
+        //    protocol above visits the other thirty closures roughly never;
+        //    this is what transcription-checks them. is_eligible() is called
+        //    the way themeroom_fill() calls it, so the `eligible` closures and
+        //    the mindiff gate are checked by their return value.
+        for (let k = 1; k <= nrooms; k++) {
+            steps.push([`themerooms[${k}].contents`, (g) => {
+                if (!g.is_eligible(g.themerooms[k], null)) return 'ineligible';
+                g.themerooms[k].contents();
+                return 'ok';
+            }]);
+        }
+        for (let k = 1; k <= nfills; k++) {
+            steps.push([`themeroom_fills[${k}].contents`, (g, side) => {
+                const rm = side.roomTable(true);
+                if (!g.is_eligible(g.themeroom_fills[k], rm)) return 'ineligible';
+                g.themeroom_fills[k].contents(rm);
+                return 'ok';
+            }]);
+        }
+        // 3. The deferred handlers everything above queued.
+        steps.push(['post_level_generate', (g) => g.post_level_generate()]);
+
+        for (const [label, step] of steps) {
+            const luaRet = step(luaG, lua);
+            const jsRet = step(jsG, js);
+            const where = `rng=${mode} ${label}`;
+            if (js.calls.length !== lua.calls.length) {
+                return `${where}: call count lua=${lua.calls.length} js=${js.calls.length}`;
+            }
+            for (let k = 0; k < lua.calls.length; k++) {
+                const d = diff(lua.calls[k], js.calls[k], `${where} call[${k}] ${lua.calls[k].fn}`);
+                if (d) return d;
+            }
+            if (luaRng.draws !== jsRng.draws) {
+                return `${where}: rn2 draws lua=${luaRng.draws} js=${jsRng.draws}`;
+            }
+            const rd = diff(norm(luaRet), norm(jsRet), `${where}: result`);
+            if (rd) return rd;
+        }
+
+        // 4. The two data tables, entry for entry: `name`, `frequency` and
+        //    `mindiff` are what the reservoir sampling and the eligibility test
+        //    read, and a wrong one of those is invisible until a game happens
+        //    to roll that room.
+        for (const t of ['themerooms', 'themeroom_fills']) {
+            const a = luaG[t], b = jsG[t];
+            for (let k = 1; k <= luaLen(a); k++) {
+                for (const f of ['name', 'frequency', 'mindiff', 'maxdiff']) {
+                    const d = diff(a[k][f] ?? null, b[k][f] ?? null, `${t}[${k}].${f}`);
+                    if (d) return d;
+                }
+                for (const f of ['contents', 'eligible']) {
+                    if ((typeof a[k][f]) !== (typeof b[k][f])) {
+                        return `${t}[${k}].${f}: lua ${typeof a[k][f]} != js ${typeof b[k][f]}`;
+                    }
+                }
             }
         }
     }
