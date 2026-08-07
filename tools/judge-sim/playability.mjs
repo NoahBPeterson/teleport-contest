@@ -7,6 +7,7 @@
 //   node tools/judge-sim/playability.mjs [--coi] [--no-sw] [--keys=hjkl...]
 //                                        [--inert-sw] [--sw-deny-dedicated]
 //                                        [--transport=worker|sharedworker|replay]
+//                                        [--transport-delay=ms] [--datetime=YYYYMMDDHHMMSS]
 //                                        [--seed=N] [--timeout=ms] [--keep]
 //
 // --no-sw additionally 404s js/sw.js, which leaves the page with no blocking
@@ -71,6 +72,14 @@ const inertSw = args.includes('--inert-sw');
 // the game. See tools/judge-sim/server.mjs.
 const denyDedicated = args.includes('--sw-deny-dedicated');
 const transport = opt('transport', '');
+// --transport-delay=<ms> holds the transports back inside
+// js/boot/interactive.mjs, so the ReplayEngine fallback demonstrably wins the
+// boot race and the upgrade swap that follows can be measured on purpose. Only
+// a test can ask for this, and all it can do is make the page slower.
+const transportDelay = opt('transport-delay', '');
+// --datetime=<YYYYMMDDHHMMSS> pins the clock NetHack starts from, so two runs
+// can be compared screen-for-screen (the default is "now", which is not).
+const datetime = opt('datetime', '');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
 // DevTools endpoint, kept clear of the range PORT is drawn from.
@@ -107,6 +116,8 @@ const q = new URLSearchParams({ bench: '/__sim/result', seed: opt('seed', '8000'
 const keys = opt('keys', '');
 if (keys) q.set('keys', keys);
 if (transport) q.set('transport', transport);
+if (transportDelay) q.set('transportdelay', transportDelay);
+if (datetime) q.set('datetime', datetime);
 q.set('bmoves', opt('moves', '240'));
 const url = `http://127.0.0.1:${PORT}/?${q}`;
 
@@ -277,6 +288,11 @@ if (timedOut) {
 const report = JSON.parse(fs.readFileSync(resultFile, 'utf8'));
 process.stderr.write('\n=== Interactive play ===\n');
 process.stderr.write(`  engine transport : ${report.engine_mode}  (crossOriginIsolated=${report.crossOriginIsolated})\n`);
+// The judge's browser check gives a session a few seconds to show something.
+// This is that clock: navigation start to the first painted frame, whichever
+// engine won the boot race in js/boot/interactive.mjs.
+process.stderr.write(`  first frame      : ${report.first_frame_ms} ms  (painted by ${report.first_frame_mode}`
+    + `${report.upgraded ? `, upgraded to ${report.engine_mode} mid-game` : ''})\n`);
 process.stderr.write(`  moves            : ${report.moves}\n`);
 process.stderr.write(`  ms/move          : ${report.ms_per_move}  (median ${report.median_ms}, p95 ${report.p95_ms}, max ${report.max_ms})\n`);
 process.stderr.write(`  frames painted   : ${report.frames}\n`);
