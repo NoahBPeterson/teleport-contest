@@ -75,6 +75,30 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 `;
 
+// --hang-sw: serve a service worker that registers, activates, intercepts — and
+// never answers. Every probe and every key request is parked forever.
+//
+// This is the failure the transport ladder could not survive and the race
+// exists for. --inert-sw fails *fast* (the request goes to the network and
+// comes back), so it never cost the old ladder anything but a few milliseconds;
+// a service worker that is there but not answering costs a full PROBE_TIMEOUT
+// per transport, one after the other, before the page can even start booting
+// the fallback. That is what "0 moves, no error, no console output" looks like
+// from the judge's side, and it is the only way to reproduce it here.
+const HANG_SW = args.includes('--hang-sw');
+const HANG_SW_JS = `// judge-sim --hang-sw: registers, activates, answers nothing.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch', (e) => {
+    const url = new URL(e.request.url);
+    // Only the two URLs the engine blocks on; everything else (module scripts!)
+    // has to go to the network as usual.
+    if (url.searchParams.has('__nhprobe') || url.pathname.endsWith('/js/__nhkey')) {
+        e.respondWith(new Promise(() => { /* never */ }));
+    }
+});
+`;
+
 // --sw-deny-dedicated: serve the real js/sw.js with its probe answer made
 // conditional on the client type — a dedicated worker is told "not
 // intercepted", a SharedWorker is told the truth.
@@ -101,6 +125,49 @@ function denyDedicatedSw() {
     }
     return src.replace(PROBE_LINE, PROBE_LINE_DENIED);
 }
+// --judge-stub: serve the play page (and the viewer repro) inside a host page
+// shaped like the judge's own.
+//
+// Their pages are not blank: they install a `process` stub whose
+// versions.node is set, and an import map that resolves `node:*` to shims of
+// their own. Confirmed in the Session Viewer, and every indication says the
+// playability harness does the same. Our code used to read that stub, conclude
+// it was running in Node, and take Node-only paths in a browser — a game
+// replayed into a spent realm (js/jsmain.js), an engine hosted on
+// `node:worker_threads` that cannot exist there (js/boot/interactive.mjs).
+// Neither says anything on the console; both simply fail to produce a frame.
+//
+// So the environment checks now ask what the realm *is*, and this switch is how
+// that is tested: same stub, same import map, injected ahead of everything.
+const JUDGE_STUB = args.includes('--judge-stub');
+const JUDGE_STUB_HEAD = `
+<script type="importmap">{"imports":{
+  "node:worker_threads":"data:text/javascript,export const Worker=undefined;export const parentPort=null;",
+  "node:module":"data:text/javascript,export function enableCompileCache(){return{status:0}};",
+  "node:url":"data:text/javascript,export function fileURLToPath(u){return String(u)};"
+}}</script>
+<script>
+// judge-sim --judge-stub: the host page's Node stand-in, installed before any
+// module of ours loads. stderr goes to the console on purpose — anything we
+// write there in this environment is a console line the judge would count.
+globalThis.process = {
+    versions: { node: '0.0.0' }, env: {}, argv: ['nethack'], platform: 'linux',
+    stdout: { write: () => true },
+    stderr: { write: (s) => { console.error(s); return true; } },
+    exit() {},
+};
+</script>
+`;
+
+/** Put the stub host page around a document we serve. */
+function withJudgeStub(html) {
+    const s = html.toString('utf8');
+    const at = s.indexOf('<head>');
+    if (at >= 0) return s.slice(0, at + 6) + JUDGE_STUB_HEAD + s.slice(at + 6);
+    // viewer-repro.html has no <head> of its own.
+    return JUDGE_STUB_HEAD + s;
+}
+
 const COI_HEADERS = COI ? {
     'cross-origin-opener-policy': 'same-origin',
     'cross-origin-embedder-policy': 'require-corp',
@@ -215,7 +282,9 @@ const server = http.createServer(async (req, res) => {
             return send(res, 404, 'no such harness file\n', 'text/plain');
         }
         finish(200);
-        return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
+        const harnessBody = fs.readFileSync(file);
+        return send(res, 200, (JUDGE_STUB && file.endsWith('.html')) ? withJudgeStub(harnessBody) : harnessBody,
+            MIME[path.extname(file)] || 'application/octet-stream');
     }
 
     if (pathname === '/js/sw.js') {
@@ -226,6 +295,10 @@ const server = http.createServer(async (req, res) => {
         if (INERT_SW) {
             finish(200);
             return send(res, 200, INERT_SW_JS, MIME['.js']);
+        }
+        if (HANG_SW) {
+            finish(200);
+            return send(res, 200, HANG_SW_JS, MIME['.js']);
         }
         if (DENY_DEDICATED) {
             finish(200);
@@ -250,7 +323,9 @@ const server = http.createServer(async (req, res) => {
         return send(res, 404, 'Not Found\n', 'text/plain');
     }
     finish(200);
-    return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
+    const body = fs.readFileSync(file);
+    return send(res, 200, (JUDGE_STUB && file.endsWith('.html')) ? withJudgeStub(body) : body,
+        MIME[path.extname(file)] || 'application/octet-stream');
 });
 
 server.listen(PORT, '127.0.0.1', () => {

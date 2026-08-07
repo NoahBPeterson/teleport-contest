@@ -6,6 +6,7 @@
 //
 //   node tools/judge-sim/playability.mjs [--coi] [--no-sw] [--keys=hjkl...]
 //                                        [--inert-sw] [--sw-deny-dedicated]
+//                                        [--hang-sw] [--judge-stub]
 //                                        [--transport=worker|sharedworker|replay]
 //                                        [--transport-delay=ms] [--datetime=YYYYMMDDHHMMSS]
 //                                        [--seed=N] [--timeout=ms] [--keep]
@@ -71,6 +72,15 @@ const inertSw = args.includes('--inert-sw');
 // and falsely for a dedicated worker, so rung 2 fails and rung 3 has to catch
 // the game. See tools/judge-sim/server.mjs.
 const denyDedicated = args.includes('--sw-deny-dedicated');
+// --hang-sw serves a service worker that registers, activates, intercepts — and
+// never answers. It is the failure the old serial ladder could not survive
+// (every transport waiting out its own probe timeout before the next was tried)
+// and the one the judge's "0 moves, no error, no console output" looks like.
+const hangSw = args.includes('--hang-sw');
+// --judge-stub wraps the page in a host shaped like the judge's own: a
+// `process` stub claiming to be Node, and an import map aiming `node:*` at
+// shims. Our environment checks used to believe it. See server.mjs.
+const judgeStub = args.includes('--judge-stub');
 const transport = opt('transport', '');
 // --transport-delay=<ms> holds the transports back inside
 // js/boot/interactive.mjs, so the ReplayEngine fallback demonstrably wins the
@@ -93,7 +103,9 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
-    ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []), ...(denyDedicated ? ['--sw-deny-dedicated'] : [])],
+    ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []),
+    ...(denyDedicated ? ['--sw-deny-dedicated'] : []), ...(hangSw ? ['--hang-sw'] : []),
+    ...(judgeStub ? ['--judge-stub'] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
 
 let up = false;
@@ -119,7 +131,17 @@ if (transport) q.set('transport', transport);
 if (transportDelay) q.set('transportdelay', transportDelay);
 if (datetime) q.set('datetime', datetime);
 q.set('bmoves', opt('moves', '240'));
-const url = `http://127.0.0.1:${PORT}/?${q}`;
+// --viewer drives tools/judge-sim/viewer-repro.html instead of the play page:
+// ONE import of js/jsmain.js, then several sessions replayed back-to-back
+// through it, which is how the judge's Session Viewer works and is the only
+// thing here that exercises "a second game in a page that already ran one".
+// Same browser, same console capture, different page.
+const viewer = args.includes('--viewer') || !!opt('viewer', '');
+const url = viewer
+    ? `http://127.0.0.1:${PORT}/__sim/viewer-repro.html?sessions=${encodeURIComponent(opt('viewer',
+        'seed0002-healer-reflection-drummer.session.json,seed0004-feeding-pony.session.json,'
+        + 'seed0013-friday13-save-then-fullmoon-restore.session.json'))}`
+    : `http://127.0.0.1:${PORT}/?${q}`;
 
 process.stderr.write(`\n=== Headless Chrome: ${url} (COI ${coi ? 'on' : 'off'}) ===\n`);
 // Start on about:blank and navigate over CDP instead of passing the URL on the
@@ -248,7 +270,12 @@ const timedOut = !fs.existsSync(resultFile);
 // Give any last-gasp console entry (a rejected promise settling as the page
 // finishes, a worker tearing down) a chance to arrive before we stop listening.
 await sleep(300);
-const cdpEntries = dev.entries.filter(e => !(e.kind === 'console.log' && e.text.startsWith('[bench] ')));
+// The two harness pages narrate themselves on purpose ([bench] from
+// index.html's ?bench= run, [repro] from viewer-repro.html). Those lines exist
+// only in these runs and are not the page's own output, so they are not part of
+// the tally that decides the verdict.
+const cdpEntries = dev.entries.filter(e => !(e.kind === 'console.log'
+    && (e.text.startsWith('[bench] ') || e.text.startsWith('[repro] '))));
 dev.close();
 chrome.kill();
 await sleep(200);
@@ -286,6 +313,26 @@ if (timedOut) {
 }
 
 const report = JSON.parse(fs.readFileSync(resultFile, 'utf8'));
+
+if (viewer) {
+    // One import of js/jsmain.js, N sessions through it. What is being checked
+    // is that session 2 does not land in session 1's spent C globals, and that
+    // nothing says anything on the console while it happens.
+    const sessions = report.sessions || [];
+    const bad = sessions.filter(s => s.error);
+    process.stderr.write('\n=== Session Viewer shape (one import, many sessions) ===\n');
+    for (const s of sessions) {
+        process.stderr.write(`  ${s.error ? 'FAIL' : 'ok  '} ${s.session}`
+            + `  segments=${(s.segments || []).map(x => x.screens).join('+') || '-'}`
+            + `${s.error ? '\n       ' + s.error.split('\n')[0] : ''}\n`);
+    }
+    process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
+    process.stdout.write(JSON.stringify({ ...report, viewer: true, judge_stub: judgeStub,
+        console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
+    if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
+    process.exit((!report.error && !bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
+}
+
 process.stderr.write('\n=== Interactive play ===\n');
 process.stderr.write(`  engine transport : ${report.engine_mode}  (crossOriginIsolated=${report.crossOriginIsolated})\n`);
 // The judge's browser check gives a session a few seconds to show something.
