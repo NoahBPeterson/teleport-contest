@@ -11,13 +11,15 @@ This note is the architecture decision, the traps analysis, the proof-of-concept
 result, the cookbooks for porting the next script, and the staged plan for the
 rest.
 
-Status: **PoC + S1 + S2 + S3 + S4 + S5 + S6 landed.** `oracle.lua`,
-`dungeon.lua`, `quest.lua`, the whole 49-file T0 tier, S3's 28-file T1 tier,
-S4's 46-file T2 tier, S5's `tut-1.lua` and S6's two library files `nhlib.lua`
-and `nhcore.lua` are ported and live — **129 of 131 files, 92.7 % of the corpus
-by bytes**. What is left is two files: `themerms.lua` and `hellfill.lua` (S7).
-The corpus passes with the ports enabled and with them disabled, and a session
-run with every port live parses exactly one `.lua` file — `themerms.lua` (§14.5).
+Status: **complete — PoC + S1 + S2 + S3 + S4 + S5 + S6 + S7 landed.**
+`oracle.lua`, `dungeon.lua`, `quest.lua`, the whole 49-file T0 tier, S3's
+28-file T1 tier, S4's 46-file T2 tier, S5's `tut-1.lua`, S6's two library files
+`nhlib.lua` and `nhcore.lua`, and S7's `themerms.lua` and `hellfill.lua` are
+ported and live — **all 131 files, 100 % of the corpus by bytes**. The corpus
+passes with the ports enabled and with them disabled, and **a game with every
+port live parses zero bytes of Lua source**: the registry's census reports
+`.lua still parsed: NONE` on every session tried, including the ones that force
+a Gehennom filler level (§15.9).
 
 ---
 
@@ -79,6 +81,11 @@ while + percent + shuffle + math.random + nh.rn2):
 | **T1** declarative + a little RNG or one closure | 18 | `castle` (8.6 KB, two shuffles), `juiblex`, `sanctum`, the `*-strt` quest homes, `minend-1/3`, `fakewiz1/2`, `wizard2` |
 | **T2** loops / conditionals / closures | 58 | `minetn-*`, `medusa-*`, `bigrm-*`, `astral`, `knox`, `valley`, `orcus`, `oracle`, `tut-1`, `Wiz-loca`, the 10 `*-fil{a,b}` closure levels |
 | **T3** heavy logic | 4 | `themerms.lua` (34 KB, 87 functions, reservoir sampling), `hellfill.lua` (12 KB), `nhlib.lua` (7 KB, the shared prelude), `nhcore.lua` (4.8 KB, the callback registry) |
+
+> **S7 update.** All four are ported. `hellfill.lua` turned out to be an
+> ordinary *generated* level script — the emitter needed one new construct,
+> Lua's own `type()` — and `themerms.lua` is the only file in the corpus that
+> needed a shape of its own, because its state outlives the level (§15).
 
 By bytes the corpus is far easier than the file count suggests: `quest.lua` +
 `dungeon.lua` alone are 21.7 % of it and contain **no executable statements**.
@@ -974,6 +981,21 @@ S5+S6 (129 ports):
 | all 129 ports live (default), run 1 | **69/69** | 886 + 0.76/turn (R² 0.736) |
 | all 129 ports live (default), run 2 | **69/69** | 915 + 0.78/turn (R² 0.726) |
 
+S7 (131 ports — every `.lua` in the corpus):
+
+| Configuration | Result | Speed |
+|---|---|---|
+| registry inert — `C2JS_LUA_PORT=0` | **69/69** | 960 + 0.77/turn (R² 0.723) |
+| all 131 ports live (default), run 1 | **69/69** | 832 + 0.76/turn (R² 0.727) |
+| all 131 ports live (default), run 2 | **69/69** | 822 + 0.74/turn (R² 0.738) |
+
+S7 is the second stage after S6 whose ports run in *every* session rather than
+when a particular level is generated: `themerms.lua` is loaded once per game
+(the Dungeons of Doom is the only branch with a themerms file) and its
+generators are then called on **every ordinary level** of it, so all 69 corpus
+sessions exercise it and the deep ones exercise it hundreds of times. The
+corpus is therefore the primary evidence for S7, exactly as it was for S6.
+
 S6 is the first stage whose ports run in *every* session unconditionally rather
 than when a particular level is generated: `nhlib.lua` is loaded by every
 `nhl_init()`, so a chargen-only session runs its port five times and
@@ -1001,8 +1023,9 @@ imported once per replay segment, and the per-turn slope is unchanged.
 Other gates: `tools/c2js/test-rnd.mjs`, `test-hacklib.mjs`, `test-setjmp.mjs`,
 `test-union.mjs` PASS; `node --test test/*.test.mjs` 6/6 (posix-ere, the
 `lua-port-data` transcription check and the `lua-port-scripts` call-stream
-check, now 124 scripts and 19 library functions × 8 RNG settings × up to six
-argument vectors); judge-sim
+check, now **145** transcriptions — 125 generated level scripts, 19 library
+functions and one whole chunk — × 11 RNG settings × up to six argument
+vectors); judge-sim
 `run.mjs seed8000-tourist-starter.session.json` PASS (0 mismatches, 0
 out-of-scope requests); `playability.mjs --keys=hjklhjkl` engages the `xhr`
 engine with `console_entries: []` — and its top line is
@@ -1070,15 +1093,24 @@ the selection operators `|`, `&`, `+` and `-`, and nhlib's
 
 S5 added one construct: `a:m(…)` on a *string* receiver becomes
 `string.m(a, …)` rather than `selection.m(a, …)`, chosen by the receiver's
-inferred type (§14.1).
+inferred type (§14.1). S7 added one more: Lua's own `type()`, which
+`dat/hellfill.lua` uses to tell a bare prefab function from a
+`{repeatable, contents}` table (§15.1).
 
 The refused set is now `while`, `break`, `goto`, `^`, `<<`/`>>`, `~` (bitwise
 xor and not), a mixed array/record table constructor, a numeric `for` with a
 non-literal step, and a `repeat` whose `until` reads a local of the loop body —
-plus four constructs S6 taught the *parser* and the `--check` interpreter so
-that hand-written library ports could be proved, and which the emitter still
-refuses by name: a generic `for k, v in …`, assignment through an index or a
-field, `...`, and Lua's own `type`/`tostring`/`table.unpack`/`_G` (§14.3).
+plus the constructs S6 and S7 taught the *parser* and the `--check` interpreter
+so that hand-written library and chunk ports could be proved, and which the
+emitter still refuses by name: a generic `for k, v in …`, assignment through an
+index or a field, multiple assignment to bare names, `...`, `table.insert`, and
+Lua's own `tostring`/`table.unpack`/`_G` (§14.3, §15.6). `type` moved off that
+list in S7, because `dat/hellfill.lua` needs it and the api answers it with the
+same `jsType()` the interpreter uses.
+
+`--check` runs **eleven** RNG settings after S7 (§15.1), and there is a third
+entry point beside `checkPort` and `checkLibFn`: `checkChunk`, for a whole .lua
+whose product is a set of functions the game calls afterwards (§15.6).
 
 Three constructs are *accepted* but guarded rather than refused, because they
 mean different things in Lua and JS and the difference is not syntactic —
@@ -1180,13 +1212,13 @@ Ordered by risk-adjusted value. "Legs" = agent sessions, roughly.
 | **S4** *T2: loops and selection algebra* ✅ | 46 T2 files: `minetn-1/2/3/4/5/7`, `minefill`, `medusa-1..4`, `bigrm-1..13`, `astral`, `knox`, `valley`, `orcus`, `asmodeus`, `wizard1/2/3`, `fakewiz1/2`, `tower1/2`, `Wiz-loca`, `Bar/Kni/Mon/Pri/Rog/Val-strt`, `Tou-goal/loca`, `Val-goal` | 46 | **Landed — see §12.** Cost 1 leg, not 6, for the third time in a row and for the same reason: the transliteration is generated. The row above listed 47 entries because it counted `oracle.lua`, which the PoC had already ported; the tier is 46. The bridge work the row predicted was real but smaller than feared — `lua_arith()` reaches the selection metamethods by the identical dispatch path, so the operators are two lines each. `~` never appears; `+` and `-` do, and they turned out to be the dangerous ones. Seven scripts (not nine) call `hell_tweaks()`. | 6 → 1 |
 | **S5** *tutorial* ✅ | `tut-1` | 1 | **Landed — see §14.1.** Cost part of a leg. The one prediction that was wrong is "never reached in normal play": `OPTIONS=tutorial` in the rc makes `ask_do_tutorial()` skip its menu and the hero starts in `tut-1`, so it has real-play evidence for three roles. The stage's real product was two things the brief did not name — the emitter now *types* the receiver of `a:m(…)`, and the level fingerprint now sweeps the engraving chain, without which a script that is 43 engravings had no oracle at all. | 1 |
 | **S6** *the libraries* ✅ | `nhlib.lua`, `nhcore.lua` | 2 | **Landed — see §14.2.** Cost 1 leg, not 3. The load-time RNG contract is the whole of the risk and it held: the port spends the same two `shuffle(align)` draws at the same seam, in every one of the dozens of `nhl_init()` calls a game makes. `pairs()` turned out not to need reproducing at all — a ported function that walks a Lua table walks it with `lua_next`, so it visits what the interpreter's `pairs` would visit, in that order, by construction (§14.4). What the row did not predict is that porting `nhlib` means leaving *callable Lua values* behind, because `themerms.lua` and `hellfill.lua` call ninety of them and are S7's; and that the stage's most valuable output is a first-ever proof of `shuffle` and `math.random` against the .lua, which four earlier stages had assumed. | 3 → 1 |
-| **S7** *themed rooms* | `themerms.lua`, `hellfill.lua` | 2 | 46 KB, 122 functions, frequency-weighted reservoir sampling, deferred post-process callbacks, and the *only* long-lived level-gen state (`gl.luathemes[dnum]`, cached per branch and never closed). `themerms` runs on essentially every ordinary level, so a mistake here is a corpus-wide failure rather than a one-level one — but that also means the corpus tests it hardest. Highest value in a Phase-2 diff (themed rooms are the most likely thing to change in 5.1) and highest risk. | 4 |
+| **S7** *themed rooms* ✅ | `themerms.lua`, `hellfill.lua` | 2 | **Landed — see §15.** Cost 1 leg, not 4. `hellfill.lua` turned out to be an ordinary *generated* level script needing one new construct (Lua's `type()`); `themerms.lua` is the library-shaped port the row predicted, and its long-lived state is real but turned out to be observable only through the *load count* — a control that rebuilt the port's world per level passed every check (§15.10 control 6). What the row did not predict is that the state is **memory-capped at 1 MB** and therefore needs explicit registry-reference lifetimes, and that reading a Lua boolean out of the marshalling buffer had been wrong since the PoC (§15.4). | 4 → 1 |
 
-Total ≈ 26 agent-legs as first estimated; S1, S2, S3, S4 and S6 came in at 1 leg
-each instead of 2, 6, 4, 6 and 3, and S5 at part of one, so the remaining
-estimate is ≈ 4. S1–S6 has landed: 129 scripts, 98 % of the file count, 92.7 %
-by bytes, and one `.lua` file still parsed per session. Only S7 is left —
-§14.9 says what it still needs.
+Total ≈ 26 agent-legs as first estimated; S1, S2, S3, S4, S6 and S7 came in at
+1 leg each instead of 2, 6, 4, 6, 3 and 4, and S5 at part of one — **7 legs
+against 26**. The roadmap is complete: 131 scripts, 100 % of the file count and
+100 % by bytes, and **zero** `.lua` files parsed per session (§15.9). §15.11
+says what is left, which is evidence quality rather than coverage.
 
 ---
 
@@ -2039,6 +2071,14 @@ means a single misordered `nh.rn2` shifts every subsequent room in the dungeon.
 It should be attempted only with the whole corpus green and a leg budgeted for
 backing it out.
 
+> **S7 update.** That risk was real and it was the one the corpus is best at
+> catching: a reversed reservoir loop diverges at RNG index 313 of a marathon
+> session, inside the first `makerooms()` (§15.10 control 1). The risk the row
+> did *not* name is the one that actually bit — a themed room *fill* is chosen
+> once in a thousand rooms, so a wrong one passes the whole 69-session corpus.
+> §15.5's themeroom probe is the answer, and it found a bridge bug that had
+> been latent since the PoC (§15.4).
+
 ---
 
 ## 14. Stages S5 and S6: the tutorial, and the two libraries
@@ -2483,6 +2523,16 @@ oracle on a few sessions.
 
 ### 14.9 What S7 still needs
 
+> **Answered in §15.** All four outstanding items landed. Two of the
+> predictions were wrong in detail: `des.object()`'s return value did want a
+> per-script switch but `LuaRef` was the wrong shape for it (a registry
+> reference with an explicit lifetime is), and `themerms.lua`'s long-lived
+> state turned out to be observable only through the *load count* — a control
+> that rebuilt the port's world per level passed every check. Two things the
+> section did not predict: the state is memory-capped at 1 MB and therefore
+> needs those lifetimes at all, and reading a Lua boolean out of the
+> marshalling buffer had been wrong since the PoC (§15.4).
+
 `themerms.lua` (34 KB, 87 functions) and `hellfill.lua` (11.9 KB) are the last
 two files, 7.3 % of the corpus by bytes. S5 and S6 removed three more of the
 prerequisites §12.10 listed and added one fact that changes the shape of the
@@ -2538,3 +2588,435 @@ New, and worth planning for:
    `tut-1`) and `js/lua-js/scripts/t4/`; `LIB_MODULES` and `HAND_FNS` take
    `themerms`' 87 functions the way they took nhlib's fifteen. Nothing else
    about the machinery has to change.
+
+---
+
+## 15. Stage S7: themed rooms, and the Gehennom filler
+
+**Landed.** `themerms.lua` (34 KB, 1,097 lines) and `hellfill.lua` (11.9 KB,
+443 lines) are ported. That is **131 of 131 files and 100 % of the corpus by
+bytes**, and a game with every port live parses **zero bytes of Lua source**
+(§15.9).
+
+The two files are as different from each other as any two in the corpus.
+`hellfill.lua` is a level script — the biggest one, but still a call stream —
+and the generator took it with one new construct. `themerms.lua` is the only
+script in the corpus whose lua_State outlives the level that created it, and it
+needed a shape of its own.
+
+### 15.1 `hellfill.lua`: the last generated level script
+
+`svd.dungeons[].fill_lvl` for Gehennom, i.e. every level of Gehennom that is
+not `valley`, `asmodeus`, `orcus`, `juiblex`, `baalz`, `wizard1/2/3`,
+`fakewiz1/2` or `sanctum`. Its body is `local hellno = math.random(1, #hells);
+hells[hellno]()` over seven whole level generators, followed by a staircase, a
+`u.invocation_level` branch and `populatemaze()`.
+
+`tools/lua-port-gen/lua2des.mjs` emitted it with **one** addition: Lua's own
+`type()`. `rnd_hell_prefab()` picks from a list that mixes bare functions with
+`{repeatable = true, contents = function() … end}` tables and tells them apart
+with `type(fab)`, so `type` joined the api — answered by `jsType()`, the same
+function the `--check` interpreter uses, so the two cannot disagree. Two
+smaller things came with it: `u.invocation_level`, which is
+`Invocation_lev(&u.uz)` pushed as a *boolean* (nhlua.js:2058), and three more
+`--check` RNG settings.
+
+**Why three more settings.** `hellfill.lua` chooses one of seven level
+generators with its *very first draw*, so which arms `--check` visits is
+decided before anything else happens: `low` selects generator 1, `high` selects
+7, and settings 1–6 between them select only 3 and 4. Settings 8, 14 and 47 are
+chosen so that 2, 5 and 6 — the mazegrid one that calls `hell_tweaks()`, the
+thick-walled one and the cold one — are transcription-checked too. Without them
+three of the seven generators would have been emitted and never compared.
+
+**Three of its seven functions are unreachable, and a negative control proved
+it.** `hellobjects()`, `hellmonsters()` and `helltraps()` are defined and never
+called — the file's only callers are `hells[n]()` and `populatemaze()`. A
+control that made `hellmonsters()`'s last monster peaceful **passed** both
+`--check` and the oracle, which is how that was established rather than
+assumed; the same control inside `populatemaze()` fires on both (§15.8).
+
+### 15.2 `themerms.lua`: the only state that outlives its load
+
+Every other script in the corpus runs inside one `nhl_loadlua()` and is done.
+`themerms.lua` does not:
+
+```c
+makerooms()                                   /* mklev.c:366 */
+  themes = gl.luathemes[u.uz.dnum];                  /* may already exist */
+  if (!themes) { themes = nhl_init(&sbi);            /* 1 MB sandbox */
+                 nhl_loadlua(themes, "themerms.lua");
+                 gl.luathemes[u.uz.dnum] = themes; } /* and KEPT */
+  lua_getglobal(themes, "pre_themerooms_generate");   nhl_pcall_handle
+  while (…) lua_getglobal(themes, "themerooms_generate");  nhl_pcall_handle
+  lua_getglobal(themes, "post_themerooms_generate");  nhl_pcall_handle
+themerooms_post_level_generate()              /* mklev.c:1174 */
+  lua_getglobal(themes, "post_level_generate");  nhl_pcall_handle
+  lua_gc(themes, LUA_GCCOLLECT);
+```
+
+The chunk runs **once per dungeon branch** — only the Dungeons of Doom names a
+themerms file (`dungeon.lua:13`), so once per game — and C calls back into what
+it left behind on every ordinary level of that branch, until
+`free_luathemes()` releases it (mklev.c:345, from `do.c:1646` on entering the
+endgame or leaving the tutorial and from `save.c:1067` at the end of the game).
+
+So the port is a *library* port in exactly the sense §14.2 established for
+`nhlib.lua`: `js/lua-js/scripts/themerms.mjs` runs at the `fclose` seam against
+the state `nhl_loadlua()` was handed, and leaves fifteen callable Lua values
+behind. The bodies live in `js/lua-js/themerms-fns.mjs`, which imports nothing,
+so `--check` can run them without the transpiled game in scope — the same split
+`nhlib-fns.mjs` has from `scripts/nhlib.mjs`.
+
+Everything is built *inside* the port function rather than at module scope: one
+load means one set of closures over one `postprocess` queue, which is what one
+chunk load's upvalues are.
+
+**`align` comes out of that state, not out of `interpState()`.** §7.3's
+`interpAlign()` takes the *most recently created* lua_State, which is right for
+a script being loaded and wrong here: by the time a themed room is generated the
+newest state is some other level's. `alignIn(L)` reads it from the state the
+port was handed, once, at load — it is shuffled at that state's `nhl_init()` and
+never changes afterwards.
+
+### 15.3 Three things the bridge did not have
+
+**1. `des.object()`'s return value, per script.** `lspo_object()` always pushes
+the obj it made and 1,420 calls in the corpus ignore it; two in `themerms.lua`
+do not (`local o = des.object{…}` in Buried zombies, `box = des.object{…}` in
+the Water-surrounded vault). Taking the result costs a `luaL_ref` each, so
+`DES_VALUE_FUNCS` stays `{map}` and `withDesObjectResult()` turns `object` on
+around this script's entry points alone. §12.10 predicted this and predicted it
+correctly.
+
+**2. Lifetimes — the part §12.10 did not predict.** Until S7 nothing ever
+released a registry reference, and that was harmless for 129 ports because the
+state holding them dies with the script. `gl.luathemes[dnum]` does not, and it
+is created by `nhl_init()` with a **1 MB memory cap** (mklev.c:369). A
+`selection.room()` userdata is over a kilobyte and `themerms.lua` takes one or
+two per themed room, so leaking them would exhaust the sandbox inside one game.
+The interpreter does not leak them — they are Lua locals, collected by the
+`lua_gc(themes, LUA_GCCOLLECT)` above — so the port reproduces the .lua's two
+lifetimes explicitly:
+
+* `withCallValues()` releases everything a room generator took when the C entry
+  point returns, which is before `makerooms()`'s next call and long before the
+  collection;
+* `keepValue()` marks the one value that escapes into `postprocess` — the
+  Garden fill's `selection.room()`, read by `make_garden_walls()` after the
+  level is finished — and `releaseKeptValues()` drops it where
+  `post_level_generate()` drops the .lua's last reference.
+
+This is not only about memory. An obj userdata carries `obj->lua_ref_cnt`, which
+`l_obj_gc()` decrements; a reference the port never released would leave that
+count high on an object the interpreter had already let go.
+
+**3. The tables a callback is handed.** `readIntTable()` had been reading
+`x`/`y`/`w`/`h`/`lit`/`rlit`/… as integers since the PoC, and **none of those
+are the field names `l_push_mkroom_table()` actually pushes**: they are `width`,
+`height`, `region = {x1,y1,x2,y2}`, the three booleans `lit`/`irregular`/
+`needjoining` and the string `type` (nhlua.c:3059). No port had ever read one —
+the nine `contents = function(rm)` closures in the T2 tier ignore their
+argument — so it had never mattered. `themerms.lua` reads `rm.lit`, `rm.width`,
+`rm.height` and `rm.region.x1`, so `readRoomTable()` now reads exactly what the
+C function pushes, by name and by type.
+
+`wrapCallback()` also grew a third shape: `lspo_object()` invokes a container's
+`contents` with the **obj userdata** (`nhl_push_obj`), which is what the Buried
+treasure fill reads with `otmp:totable()`. It dispatches on what is on the stack
+— two numbers for `l_selection_iterate`, a table for room/region/map, userdata
+for object — rather than on the JS function's arity.
+
+### 15.4 The bug the themeroom probe found
+
+> `lua_toboolean()` returns an `int` in C. This transpile emits its body as
+> `return !(…)` (`js/generated/lapi.js:410`), i.e. a JS **boolean**. Four sites
+> in `bridge.mjs` wrote `lua_toboolean(…) !== 0`, and `false !== 0` is `true`.
+
+Every Lua boolean the port read came back `true`. The consequence was invisible
+for 129 ports — no earlier port reads a boolean out of Lua at all — and immediate
+for this one: `rm.lit` was always `true`, so the Garden themeroom fill was
+eligible in unlit rooms. The interpreter printed
+`Warning: fill 'Garden' is not eligible in room that generated it` twice in a
+ten-level game and the port printed it never.
+
+It was found by the themeroom probe (§15.5), not by the corpus: a themeroom
+fill is chosen once in a thousand rooms, so a whole 69-session corpus run passed
+with the bug in place. Every read of a Lua boolean now goes through one
+`luaBool()` helper.
+
+The same mistake was latent in `callGlobal()`, which is how nhcore.lua's
+`nh_callback_run` dispatches: it returned `true` for a callback that returned
+`nil`. That one is genuinely unobservable — all four C call sites ask
+`nhl_pcall_handle` for **0** results (allmain.c:559, cmd.c:468, do.c:1587,
+mklev.c:1423) — but it is fixed by the same helper.
+
+### 15.5 The themeroom probe
+
+§7.6's level probe forces a *level* script; there is no such thing for a
+themeroom, because `themerms.lua` is not loaded by `load_special()`. NetHack
+supplies the hook itself: `nhl_get_debug_themerm_name()` (nhlua.c:1147) reads
+`THEMERM` and `THEMERMFILL` from the environment in wizard mode, and
+`themerooms_generate()` then generates that room half the time, on every level.
+
+`js/boot/harness.mjs` gained one line — `...(opts.env || {})` on its `ENV`
+object, inert unless a caller passes something — and `tools/lua-oracle.mjs`
+gained `--themerm=` / `--themermfill=`, which set it on **both** sides of the
+comparison. The probe is not a bespoke code path: it is the game's own developer
+hook, driven from JS instead of from a shell.
+
+That turns "45 of the 46 themeroom closures are rolled once in a thousand rooms"
+into behavioural evidence for every one of them. All 31 themerooms and all 15
+themeroom fills PASS the five-check oracle on a nine-level wizard game
+(§15.7).
+
+### 15.6 Proving a chunk: `checkChunk()`
+
+`checkPort()` suits a level script, whose whole body is a call stream.
+`checkLibFn()` suits one function lifted out of a library file.
+`themerms.lua` is neither: its top level defines two tables of 46 closures and
+ten functions, spends no RNG and issues no call, and everything interesting
+happens when `makerooms()` calls back into it later.
+
+So `checkChunk()` runs the chunk's top level on both sides — the .lua's
+statements in this file's interpreter, the port's `makeThemerms(api)` — and then
+drives **the protocol C drives**:
+
+```
+pre_themerooms_generate()
+themerooms_generate() x12          -- mklev.c's "make rooms until satisfied"
+post_themerooms_generate()
+themerooms[k].contents()      for k = 1..31    -- the sweep, see below
+themeroom_fills[k].contents(rm) for k = 1..15
+post_level_generate()                          -- the deferred handlers
+```
+
+with one shared RNG per side. After each step it compares the call stream, the
+number of `rn2()` draws spent and the step's own result; at the end it compares
+`name`, `frequency`, `mindiff` and `maxdiff` for all 46 entries.
+
+The sweep is the half that makes it worth having. The `default` themeroom has
+frequency 1000 against 45 for everything else, so the sampled protocol on its
+own visits the other thirty closures roughly never — 223 recorded calls across
+the eleven RNG settings. With the sweep it is **8,899**, and every closure,
+every `eligible` predicate and every difficulty gate is compared. `is_eligible`
+is called the way `themeroom_fill()` calls it, so the `eligible` closures are
+checked by their return value as well as by what they do.
+
+Three constructs the *parser* and the *interpreter* had to learn for this (the
+emitter still refuses all of them, so nothing a generated module can contain has
+grown): multiple assignment to bare names (`ltype, rtype = rtype, ltype`), a
+bare `return` immediately before `elseif`, and `table.insert`. Plus `math.abs`,
+`math.floor`, `%i` in `string.format`, `nh.impossible`,
+`nh.level_difficulty`, `nh.debug_themerm`, `nh.start_timer_at`, and stub
+read-backs for `obj:totable()` and `obj:class()` so that both arms of the
+Water-surrounded vault's `if itmcls["material"] == "glass"` are visited.
+
+### 15.7 `ipairs`, measured
+
+§14.9 asked for this to be measured rather than assumed, and
+`tools/lua-pairs-probe.mjs` exists to do it. `themerms.lua:1093` is
+
+```lua
+for i, v in ipairs(postprocess) do  v.handler(v.data);  end
+```
+
+`postprocess` is a file-scope local, appended to only with `table.insert` and
+reset only with `postprocess = { }`, so it is a pure sequence — and `ipairs`
+visits `1, 2, 3, …` by the language's definition, not by the table's layout.
+What could still have been seed-derived is the *array part's* traversal order,
+and the probe measures exactly that on the two sequences in the same state that
+the globals dump can see. Eight runs, eight different `luai_makeseed()` values,
+interpreter and port alike:
+
+```
+  themerms.lua:themerooms:      1,2,3,…,31   in 8 of 8 runs (one key order)
+  themerms.lua:themeroom_fills: 1,2,3,…,15   in 8 of 8 runs (one key order)
+  nhcore.lua:nhcore:            4 distinct orders in 8 runs
+```
+
+The contrast is the point: `nhcore`'s three string keys land in four different
+orders across eight seeds, and the two sequences land in one. An array part's
+order is not a property of `g->seed`; a hash part's is. (The per-entry *values*
+of `themerooms` are hash-part tables, so the recursive order hash does vary —
+seven distinct in eight runs — which is why the oracle requires the **content**
+hash to match and only reports the order, exactly as §6.2 does for `questtext`.)
+
+### 15.8 Oracle results
+
+`themerms.lua` runs on every ordinary level of the main dungeon, so the plain
+five-check oracle is the whole test. Seven settings, no probe:
+
+| Session | rng | screens | fingerprint |
+|---|---|---|---|
+| `seed0077-rogue-chargen` (Dlvl 1) | 3242 = | 33 = | MATCH |
+| `gen9996-marathon-dlvl10` (10 levels) | 54924 = | 17829 = | MATCH |
+| `gen9005-monk-human-items` | 3816 = | 136 = | MATCH |
+| `gen9011-valkyrie-dwarf-items` | 3080 = | 136 = | MATCH |
+| `seed0014-dequa-fountain-explore` | 59178 = | 714 = | MATCH |
+| `seed0030-ten-diverse-deaths` | 108079 = | 1953 = | MATCH |
+| `seed4500-knight-coverage` | 108275 = | 1814 = | MATCH |
+
+`hellfill.lua` is forced with `--levels=hellfill.lua`, at five settings:
+
+```
+seed0077-rogue-chargen      hellfill.lua  fp 481ff12d/481ff12d  rng 2767/2767
+gen9996-marathon-dlvl10     hellfill.lua  fp 332bbeb8/332bbeb8  rng 4977/4977
+gen9005-monk-human-items    hellfill.lua  fp 852e08fc/852e08fc  rng 1666/1666
+gen9011-valkyrie-dwarf-items hellfill.lua fp eb6daf97/eb6daf97  rng 1413/1413
+seed4500-knight-coverage    hellfill.lua  fp cf7825a5/cf7825a5  rng 3543/3543
+```
+
+and on `seed0360-wizard-world-tour` it reproduces **S6's own recording of the
+interpreted script** — `fp a67192d4 rng 5117` (§14.7) — exactly.
+
+The themeroom probe covers the 46 closures the reservoir sampling almost never
+reaches. On a nine-level wizard game (`--seed 4242`, `playmode:debug`, level
+teleport to Dlvl 2–10), all five checks PASS for:
+
+* **all 15 themeroom fills** — Ice room, Cloud room, Boulder room, Spider nest,
+  Trap room, Garden, Buried treasure, Buried zombies, Massacre, Statuary, Light
+  source, Temple of the gods, Ghost of an Adventurer, Storeroom, Teleportation
+  hub;
+* **all 31 themerooms** — default, Fake Delphi, Room in a room, Huge room with
+  another room inside, Nesting rooms, the three "themed fill" rooms, Pillars,
+  Mausoleum, Random dungeon feature…, the four L-shapes, Blocked center, the
+  three Circulars, the four T-shapes, both S-shapes, both Z-shapes, Cross,
+  Four-leaf clover, Water-surrounded vault, Twin businesses.
+
+Evidence per script, in the form §7.7 uses:
+
+| Script | .lua lines | What it adds | Evidence |
+|---|---|---|---|
+| `themerms` | 1097 | the only state that outlives its load; reservoir sampling; `des.object()`'s result; obj methods; deferred `postprocess` handlers; 46 closures | **every session** — it is loaded once per game and its generators run on every ordinary level of the main dungeon, so all 69 corpus sessions exercise it; plus the themeroom probe for all 46 closures |
+| `hellfill` | 443 | seven level generators; `type()`; a `repeat` over mixed prefabs; `u.invocation_level`; two `hell_tweaks()` | **both** — forced generation at five depth/role settings, and three real generations in `seed4500-knight-coverage`, which is the one corpus session that walks into Gehennom's *filled* levels rather than teleporting to the named ones |
+
+The six-check oracle on `seed0077-rogue-chargen`
+(`--readback --questprobe --globals`) reports `library globals: MATCH (6 loads
+of nhlib.lua+nhcore.lua+themerms.lua; every global the expected type: yes)` —
+the fifteen names `themerms.lua` leaves in the themes state, with the content
+hash of `themerooms` (31 entries) and `themeroom_fills` (15) compared against
+the interpreter's.
+
+**The 129 earlier ports are unaffected.** All 126 level-script ports still
+MATCH forced at Dlvl 1 (nine batches of 14; §11's budget note still applies),
+`--readback --questprobe --globals` still reports `read-back table: MATCH` and
+`quest-text delivery: MATCH (23882 terminal bytes, firstDiff=-1)`, the tutorial
+session (`OPTIONS=tutorial`, Knight) is `PASS` on all of it, and the plain
+oracle on `seed0360-wizard-world-tour` still reports `120639/120639`.
+
+### 15.9 The assertion: zero .lua parsed
+
+§14.5 measured what still reached the Lua parser and got
+`themerms.lua×1` — or `hellfill.lua×1, themerms.lua×1` with a Gehennom filler
+forced. With S7 the same census over **all 69 corpus sessions**, ports live,
+reports:
+
+```
+sessions: 69  segments: 104
+.lua loads intercepted by a port: 987
+.lua files parsed by the interpreter: 0
+distinct unported names: (none)
+distinct ported names (64):
+  nhlib.lua x499   dungeon.lua x104  nhcore.lua x104  themerms.lua x104
+  quest.lua x80    minefill.lua x8   oracle.lua x6    tut-1.lua x5
+  soko1-1.lua x5   tower1.lua x4     hellfill.lua x3  … 53 more
+```
+
+**987 loads, zero parses.** Every `.lua` the 69 sessions open is intercepted:
+`nhlib.lua` 499 times (one per `nhl_init()`), `themerms.lua` once per game,
+`quest.lua` once per delivered message, and 60 level scripts between them.
+`sourceCensus()` counts a file only when the interpreter is handed its *real*
+bytes, so `distinct unported names: (none)` is the assertion itself and not a
+summary of one.
+
+The 64 distinct scripts reached in ordinary or wizard-mode play is up from the
+56 §8 recorded after S4: S5's `tut-1`, S6's `nhlib`/`nhcore`, S7's `themerms`
+and `hellfill`, and three more level scripts the S7 sweep happened to record.
+
+Two honest qualifications, unchanged from §14.5. The interpreter still
+*compiles* something for each ported file — the same-length `--[[ ]]` stub §4
+describes, which is an empty chunk — so "never parses any .lua source" is exact
+and "never runs the Lua parser" is not. And the interpreter itself is still in
+the tree and still running, because it is the differential oracle; removing it
+was never the goal.
+
+### 15.10 Negative controls
+
+Six, of which one is the control that found §15.4's bug and one is a control
+that **passes** and is the more interesting for it. Every one was reverted.
+
+1. **Reservoir draw order.** `themerooms_generate()`'s loop over `themerooms`
+   reversed. The same number of draws — one `nh.rn2(total_frequency)` per
+   eligible room either way — in the opposite order, so every room the sampler
+   picks changes. `checkChunk` catches it at the first call
+   (`rng=low themerooms_generate#1: call count lua=11 js=1`) and the oracle on
+   `gen9996-marathon-dlvl10` diverges at `rng firstDiff=313` — inside the very
+   first `makerooms()` — with the fingerprint `96cc0eb7` → `4948ba23`.
+2. **A theme closure's content, invisible to play.** Temple of the gods:
+   `align[1]` and `align[2]` swapped, so the three altars are built in a
+   different order. Costs no randomness at all. `rng 24324/24324 firstDiff=-1`,
+   `screens 42/42 firstDiff=-1` — **caught only by the fingerprint**
+   (`30383567` → `b468f25b`) and, independently, by `checkChunk`
+   (`themeroom_fills[12].contents call[704] des.altar.args.0.align:
+   "align[1]" != "align[2]"`). This is §5's statue control in its S7 form.
+3. **The `postprocess` queue's lifetime.** `post_level_generate()` clears the
+   queue *before* draining it instead of after, i.e. the state does not survive
+   from `themerooms_generate()` to `post_level_generate()`. The deferred
+   handlers never run: `rng 27669/24696 firstDiff=1117`, screens diverge at 0,
+   fingerprints differ on all three levels, and `checkChunk` reports
+   `post_level_generate: call count lua=909 js=727`.
+4. **The kept value's lifetime.** `releaseKeptValues()` moved from
+   `post_level_generate` to the end of `themerooms_generate`, so the Garden
+   fill's selection is released before `make_garden_walls()` reads it. The game
+   **aborts** — the registry slot is gone and `selection.grow` is handed a
+   collected value. A loud failure is the right outcome for a lifetime error,
+   and it is the reason `keepValue()` is an explicit marker rather than a
+   heuristic.
+5. **A field invisible to play, in the generated port.** `hellfill.lua`'s
+   `populatemaze()`: the minotaurs become peaceful. A peaceful minotaur costs
+   exactly the same randomness, so the forced generation spends the same
+   **5,117** draws and the fingerprint moves `a67192d4` → `a0c362f`; `--check`
+   reports it mechanically as `rng=low call[24] des.monster.args.0.peaceful:
+   0 != 1`. (The global RNG log then diverges downstream at 8161, because a
+   peaceful minotaur changes the rest of the game.)
+6. **The cache lifetime — the control that passed.** The port rebuilt its whole
+   world (`makeThemerms(api)`) at the start of every
+   `pre_themerooms_generate()`, i.e. per *level* instead of per *branch*. It
+   **PASSES**: `gen9996-marathon-dlvl10` `54924/54924`, `17829/17829`,
+   fingerprints MATCH, and `seed0360-wizard-world-tour` `120639/120639`.
+   That is worth writing down rather than glossing. The chunk's own state is
+   effectively re-initialised every level *by the .lua itself* — `postprocess`
+   is drained and reset by `post_level_generate()`, `debug_rm_idx` and
+   `debug_fill_idx` are recomputed by `pre_themerooms_generate()`, and the two
+   big tables never change — so nothing the script holds is observably
+   per-branch. What *is* observably per-branch is the **load count**: the
+   interpreter loads `themerms.lua` once in a ten-level game, and the oracle's
+   load list shows the port running at exactly the same single point
+   (`themerms.lua@rng312` on the marathon). Control 3 is what pins the state's
+   lifetime *within* a level; the load list is what pins it across levels.
+
+Controls 1, 2, 3 and 5 are also caught by a source-level check that needs no
+game at all — two independent detectors, as in every stage since S2.
+
+### 15.11 What remains for the branch
+
+Nothing in the roadmap. What is left is evidence quality, and it is the same
+gap §13 has described since S2:
+
+* **Tour-session evidence.** The corpus reaches **64** of the 131 scripts in
+  ordinary or wizard-mode play (§15.9's census); the other 67 have synthetic
+  evidence only — forced generation or a probe rather than a recorded session
+  that reaches them. The cheapest improvement is unchanged: one more
+  wizard-mode tour session per role would upgrade quest levels in three tiers
+  at once. S7 adds its own version of the same gap: the 46 themeroom closures
+  are evidenced by the themeroom probe (§15.5) at one seed and nine depths, and
+  a recorded session with `THEMERM` set would be stronger.
+* **Merge-to-main readiness.** The branch is green on every gate: corpus 69/69
+  twice with the ports live and once with `C2JS_LUA_PORT=0`, the marathon
+  session byte-exact against the C recorder (54,924 draws / 17,829 screens),
+  `node --test` 6/6, the four `tools/c2js` suites, judge-sim `PASS` with 0
+  mismatches and 0 out-of-scope requests, `playability.mjs` on the `xhr` engine
+  with `console_entries: []`, and `strict-score --all` clean. The off-switch is
+  structural (§4) and is exercised on every corpus sweep. **It is ready to
+  merge; this stage does not merge it.**

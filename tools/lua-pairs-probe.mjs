@@ -62,8 +62,12 @@ async function main() {
     }
     const runs = Number(get('--runs', '8'));
     const seed = get('--seed', '8123');
-    const rc = (get('--rc', '') || '').replace(/\\n/g, '\n');
-    const moves = get('--moves', 'jjjllllkkkhhh   ');
+    // The defaults have to get a game *started*, or nothing is loaded and the
+    // probe prints nothing: NetHack asks "Who are you?" before anything else,
+    // and only a configured name skips it. `y` then answers the
+    // pick-a-character prompt. Found the hard way in S7 (§15.7).
+    const rc = (get('--rc', 'OPTIONS=name:Probe') || '').replace(/\\n/g, '\n');
+    const moves = get('--moves', 'yjjjllllkkkhhh   ');
 
     // Both sides, so the port's orders can be read next to the interpreter's.
     for (const [label, env] of [
