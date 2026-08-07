@@ -23,7 +23,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkPort, emitModule, fnName, parse } from './lua2des.mjs';
+import {
+    checkLibFn, checkPort, emitLibFn, emitModule, extractFunction, fnName, parse,
+} from './lua2des.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DAT = path.join(ROOT, 'nethack-c/recorder/dat');
@@ -85,12 +87,76 @@ export const T1 = [
     'sanctum',    // Gehennom: Moloch's sanctum; one closure inside a region
 ];
 
+/**
+ * Stage S4's tier: everything left that is a level script. Two things put a
+ * script here rather than in T1 and neither of them is "difficulty" — a loop,
+ * or a selection expression. §11.4 and §12 have the per-script evidence.
+ */
+export const T2 = [
+    // The six quest home levels with a `for` in them; the other seven are T1.
+    'Bar-strt', 'Kni-strt', 'Mon-strt', 'Pri-strt', 'Rog-strt', 'Val-strt',
+    // Four more quest levels: both Tourist ones, the Valkyrie nemesis, the
+    // Wizard locate level.
+    'Tou-goal', 'Tou-loca', 'Val-goal', 'Wiz-loca',
+    // The thirteen big-room variants. Every one ends with three `for` loops
+    // scattering objects, traps and monsters; the interesting ones are
+    // bigrm-1/2 (selection unions chosen by math.random), bigrm-11
+    // (selection.match | selection.match, then :iterate) and bigrm-13 (a table
+    // of eight predicate closures, one of them picked to filter the pillars).
+    'bigrm-1', 'bigrm-2', 'bigrm-3', 'bigrm-4', 'bigrm-5', 'bigrm-6', 'bigrm-7',
+    'bigrm-8', 'bigrm-9', 'bigrm-10', 'bigrm-11', 'bigrm-12', 'bigrm-13',
+    // Medusa's four island variants.
+    'medusa-1', 'medusa-2', 'medusa-3', 'medusa-4',
+    // The Mines: the filler level and the six remaining Mine Town variants.
+    'minefill', 'minetn-1', 'minetn-2', 'minetn-3', 'minetn-4', 'minetn-5', 'minetn-7',
+    // Gehennom — i.e. every level that ends with nhlib.lua's hell_tweaks().
+    'asmodeus', 'fakewiz1', 'fakewiz2', 'orcus', 'wizard1', 'wizard2', 'wizard3',
+    // Vlad's Tower, lower two floors (tower3 is T0).
+    'tower1', 'tower2',
+    // One-offs.
+    'astral', 'knox', 'valley',
+];
+
+/**
+ * The one library function a *level script* port still has to be able to call.
+ * See emitLibFn() in lua2des.mjs for why it is here and not in a tier.
+ */
+const LIB_FNS = [
+    { name: 'hell_tweaks', from: 'nhlib', out: 'js/lua-js/nhlib-fns.mjs' },
+];
+
 /** @returns {{tier: string, dir: string, list: string[]}[]} */
 function tiers() {
     return [
         { tier: 't0', dir: path.join(ROOT, 'js/lua-js/scripts/t0'), list: T0, label: 'pure-declarative' },
         { tier: 't1', dir: path.join(ROOT, 'js/lua-js/scripts/t1'), list: T1, label: 'branch/shuffle/closure' },
+        { tier: 't2', dir: path.join(ROOT, 'js/lua-js/scripts/t2'), list: T2, label: 'loop/selection-algebra' },
     ];
+}
+
+/**
+ * Regenerate (or verify) the library ports, and prove each still produces the
+ * .lua's call stream. Runs before the tiers, because a level script's own
+ * check calls into the library port.
+ */
+async function libFns(check) {
+    let bad = 0;
+    for (const f of LIB_FNS) {
+        const luaPath = path.join(DAT, `${f.from}.lua`);
+        const outPath = path.join(ROOT, f.out);
+        const text = emitLibFn(extractFunction(fs.readFileSync(luaPath, 'utf8'), f.name),
+            f.name, `dat/${f.from}.lua`);
+        if (check) {
+            const have = fs.existsSync(outPath) ? fs.readFileSync(outPath, 'utf8') : '';
+            if (have !== text) { process.stderr.write(`gen-ports: STALE ${f.out}\n`); bad++; }
+        } else {
+            fs.writeFileSync(outPath, text);
+        }
+        // eslint-disable-next-line no-await-in-loop
+        const d = await checkLibFn(luaPath, outPath, f.name);
+        if (d) { process.stderr.write(`gen-ports: CALL-STREAM FAIL ${f.name}: ${d}\n`); bad++; }
+    }
+    return bad;
 }
 
 function generate(t, check) {
@@ -133,8 +199,8 @@ function index(t) {
 
 async function main(argv) {
     const check = argv.includes('--check');
-    let bad = 0;
-    let count = 0;
+    let bad = await libFns(check);
+    let count = LIB_FNS.length;
     for (const t of tiers()) {
         bad += generate(t, check);
         const idxPath = path.join(t.dir, 'index.mjs');

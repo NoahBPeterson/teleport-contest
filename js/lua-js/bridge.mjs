@@ -49,24 +49,32 @@
 //     nhl_loadlua() wraps the chunk in.
 
 import * as cptr from '../cptr.js';
+import { Longjmp } from '../cjmp.js';
 import { luaL_newstate, luaL_ref, luaL_unref } from '../generated/lauxlib.js';
 import {
-    lua_callk, lua_checkstack, lua_createtable, lua_getfield, lua_getglobal,
-    lua_gettop, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger,
-    lua_pushnil, lua_pushnumber, lua_pushstring, lua_rawgeti, lua_rawseti,
-    lua_setfield, lua_setglobal, lua_settop, lua_tointegerx, lua_tolstring,
-    lua_type,
+    lua_arith, lua_callk, lua_checkstack, lua_createtable, lua_getfield,
+    lua_getglobal, lua_gettop, lua_pcallk, lua_pushboolean, lua_pushcclosure,
+    lua_pushinteger, lua_pushnil, lua_pushnumber, lua_pushstring, lua_rawgeti,
+    lua_rawseti, lua_setfield, lua_setglobal, lua_settop, lua_toboolean,
+    lua_tointegerx, lua_tolstring, lua_tonumberx, lua_type,
 } from '../generated/lapi.js';
 import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
 import { l_obj_register } from '../generated/nhlobj.js';
 import { rn2 } from '../generated/rnd.js';
 import { cmd_from_ecname } from '../generated/cmd.js';
-import { gu } from '../generated/decl.js';
+import { depth } from '../generated/dungeon.js';
+import { name_to_mon } from '../generated/mondata.js';
+import { gu, svm, u } from '../generated/decl.js';
 import { interpState, markPortState } from './interp-state.mjs';
 import { luaLen, luaList, makeNhlib } from './nhlib.mjs';
+import hellTweaksFn from './nhlib-fns.mjs';
 
-/** lua_type() tag for tables — LUA_TTABLE. */
+/** lua_type() tags. LUA_TNONE is -1. */
+const LUA_TNIL = 0;
+const LUA_TBOOLEAN = 1;
+const LUA_TNUMBER = 3;
+const LUA_TSTRING = 4;
 const LUA_TTABLE = 5;
 
 // C strings are allocated per call by cptr.lit(); intern them so a script that
@@ -230,7 +238,17 @@ export class LuaValue {
  */
 function wrapCallback(fn) {
     return (Lp) => {
-        const room = fn.length >= 1 && lua_gettop(Lp) >= 1 && lua_type(Lp, 1) === LUA_TTABLE
+        const argc = lua_gettop(Lp);
+        // Two shapes of callback exist. lspo_room()/lspo_map() push the mkroom
+        // table as argument 1 before calling `contents`; l_selection_iterate()
+        // pushes two integers, the point it is visiting. Dispatch on what is
+        // actually on the stack rather than on the JS arity, because a port
+        // may legitimately ignore either.
+        if (argc >= 2 && lua_type(Lp, 1) === LUA_TNUMBER) {
+            fn(Number(lua_tointegerx(Lp, 1, null)), Number(lua_tointegerx(Lp, 2, null)));
+            return 0;
+        }
+        const room = fn.length >= 1 && argc >= 1 && lua_type(Lp, 1) === LUA_TTABLE
             ? readIntTable(Lp, 1) : undefined;
         fn(room);
         return 0;
@@ -267,7 +285,7 @@ function callTable(tbl, name, args) {
     lua_settop(Lp, base);
 }
 
-/** Same, but keeps the one result and returns it as a LuaValue handle. */
+/** Same, but keeps the one result. @see takeResult */
 function callTable1(tbl, name, args) {
     const Lp = state();
     const base = lua_gettop(Lp);
@@ -275,10 +293,116 @@ function callTable1(tbl, name, args) {
     lua_getfield(Lp, -1, cstr(name));
     for (const a of args) push(a);
     lua_callk(Lp, args.length, 1, 0n, null);
-    const v = new LuaValue();   // pops the result into the registry
+    const v = takeResult(Lp);
     lua_settop(Lp, base);       // drop the table
     return v;
 }
+
+/**
+ * Turn the value on top of the stack into the JS value a Lua script would have
+ * been handed, and pop it.
+ *
+ * Most `selection.*` calls return the selection userdata, which has no JS
+ * meaning and is kept as an opaque registry reference (LuaValue) so it can be
+ * pushed back later. Four of them do not:
+ *
+ *   numpoints()  -> an integer, and hell_tweaks() does arithmetic on it
+ *   get()        -> an integer
+ *   rndcoord()   -> a *fresh* table {x=…, y=…} (nhlsel.c:l_selection_rndcoord
+ *                   builds it with lua_newtable + two int entries)
+ *   describe_size() -> a string
+ *
+ * A script that reads `a.x` off rndcoord's result needs a real JS object, and
+ * one that passes the whole thing back as `coord = a` needs it re-marshalled —
+ * which is exact here, because the table is freshly built, nothing else holds
+ * it, and every C reader takes `x` and `y` by name or by index.
+ */
+function takeResult(Lp) {
+    const t = lua_type(Lp, -1);
+    if (t === LUA_TNUMBER) {
+        const n = lua_tointegerx(Lp, -1, null);
+        const v = n === null || n === undefined
+            ? lua_tonumberx(Lp, -1, null) : Number(n);
+        lua_settop(Lp, lua_gettop(Lp) - 1);
+        return v;
+    }
+    if (t === LUA_TBOOLEAN) {
+        const v = lua_toboolean(Lp, -1) !== 0;
+        lua_settop(Lp, lua_gettop(Lp) - 1);
+        return v;
+    }
+    if (t === LUA_TSTRING) {
+        const v = cptr.cstr(lua_tolstring(Lp, -1, null));
+        lua_settop(Lp, lua_gettop(Lp) - 1);
+        return v;
+    }
+    if (t === LUA_TNIL) { lua_settop(Lp, lua_gettop(Lp) - 1); return null; }
+    if (t === LUA_TTABLE) {
+        const v = readNumTable(Lp, -1);
+        lua_settop(Lp, lua_gettop(Lp) - 1);
+        return v;
+    }
+    return new LuaValue();      // userdata: pops into the registry
+}
+
+/**
+ * The integer fields of a table a selection method built.
+ *
+ * There are exactly two such tables and between them six field names:
+ * `rndcoord()` returns {x, y} and `bounds()` returns {lx, ly, hx, hy}. Reading
+ * by name rather than walking with lua_next is deliberate — it is what every
+ * C consumer of these tables does too (sp_lev.c's get_coord() reads "x" then
+ * "y"), so the port never depends on a hash order.
+ *
+ * `idx` is a stack index of the table itself; it stays valid across the loop
+ * because each lua_getfield's result is popped before the next one.
+ */
+function readNumTable(Lp, idx) {
+    const out = {};
+    for (const k of ['x', 'y', 'lx', 'ly', 'hx', 'hy']) {
+        lua_getfield(Lp, idx, cstr(k));
+        const n = lua_type(Lp, -1) === LUA_TNUMBER ? Number(lua_tointegerx(Lp, -1, null)) : undefined;
+        lua_settop(Lp, lua_gettop(Lp) - 1);
+        if (n !== undefined) out[k] = n;
+    }
+    return out;
+}
+
+/**
+ * `a | b` and `a & b` on two selections.
+ *
+ * These are not operators the VM evaluates itself. A selection is userdata, so
+ * OP_BOR's fast path (`tointegerns` on both operands) fails and the VM falls
+ * through to `luaT_trybinTM(L, v1, v2, ra, TM_BOR)`, which finds `__bor` in the
+ * selection metatable (nhlsel.c:1009) and calls `l_selection_or`. `l_selection_or`
+ * itself is static, so the port cannot call it directly — and should not want
+ * to, because the point is to make the same dispatch happen.
+ *
+ * `lua_arith(L, LUA_OPBOR)` is that dispatch: lua_arith -> luaO_arith ->
+ * luaO_rawarith (which fails on userdata for exactly the same reason) ->
+ * luaT_trybinTM(..., TM_ADD + (LUA_OPBOR - LUA_OPADD)) = TM_BOR. Same
+ * metamethod, same two arguments, same result slot. The only difference from
+ * OP_BOR is that the result lands on the stack top instead of in a register,
+ * and both are stack slots.
+ *
+ * @param {number} op LUA_OPBAND (7) or LUA_OPBOR (8), lua.h's ORDER TM
+ */
+function selectionArith(op, a, b) {
+    const Lp = state();
+    const base = lua_gettop(Lp);
+    push(a);
+    push(b);
+    lua_arith(Lp, op);
+    const v = takeResult(Lp);
+    lua_settop(Lp, base);
+    return v;
+}
+
+/** lua.h's arithmetic opcodes (ORDER TM, ORDER OP). */
+const LUA_OPADD = 0;
+const LUA_OPSUB = 1;
+const LUA_OPBAND = 7;
+const LUA_OPBOR = 8;
 
 // The 34 entries of sp_lev.c's nhl_functions[], i.e. the whole des DSL.
 const DES_FUNCS = [
@@ -298,15 +422,54 @@ const SELECTION_FUNCS = [
     'iterate', 'bounds', 'room', 'describe_size',
 ];
 
-/** des.* — every call discards its results, as a Lua statement does. */
+/**
+ * The two `des.*` bindings that push a result: lspo_map() returns a selection
+ * of the squares it wrote, lspo_object() returns the obj it made. Every other
+ * one returns 0.
+ *
+ * Only lspo_map()'s result is ever read in the 131-file corpus, and only by
+ * the Gehennom group — `local asmo1 = des.map{…}`, seven more like it — which
+ * then unions the three regions into hell_tweaks()'s protected area. (The two
+ * scripts that read `des.object`'s result are themerms.lua and hellfill.lua,
+ * i.e. S7's; this list is where that will be turned on.)
+ *
+ * Asking lua_callk for one result where the .lua asked for none is not
+ * observable: luaD_poscall's moveresults() only pads or trims the *port's own*
+ * stack, and the C function has already done all its work by then. Keeping the
+ * list to `map` is about not minting a registry reference per des.object()
+ * call — there are 1,420 of those — rather than about correctness.
+ */
+const DES_VALUE_FUNCS = new Set(['map']);
+
+/** des.* — a call discards its results, as a Lua statement does. */
 export const des = Object.freeze(Object.fromEntries(
-    DES_FUNCS.map((n) => [n, (...args) => callTable('des', n, args)]),
+    DES_FUNCS.map((n) => [n, DES_VALUE_FUNCS.has(n)
+        ? (...args) => callTable1('des', n, args)
+        : (...args) => callTable('des', n, args)]),
 ));
 
-/** selection.* — every call yields a value, so results are kept. */
-export const selection = Object.freeze(Object.fromEntries(
-    SELECTION_FUNCS.map((n) => [n, (...args) => callTable1('selection', n, args)]),
-));
+/**
+ * selection.* — every call yields a value, so results are kept.
+ *
+ * The last four are not entries in nhlsel.c's method table. They are the four
+ * *operators* a script can write between two selections, named for the
+ * metamethod each dispatches to, because JS has no operator overloading:
+ *
+ *   a | b  ->  __bor  -> l_selection_or     selection.bor(a, b)
+ *   a & b  ->  __band -> l_selection_and    selection.band(a, b)
+ *   a + b  ->  __add  -> l_selection_or     selection.add(a, b)
+ *   a - b  ->  __sub  -> l_selection_sub    selection.sub(a, b)
+ *
+ * `+` and `|` really are the same C function — nhlsel.c says so in a comment —
+ * but they are kept apart here so the port issues the dispatch the .lua wrote.
+ */
+export const selection = Object.freeze(Object.fromEntries([
+    ...SELECTION_FUNCS.map((n) => [n, (...args) => callTable1('selection', n, args)]),
+    ['bor', (a, b) => selectionArith(LUA_OPBOR, a, b)],
+    ['band', (a, b) => selectionArith(LUA_OPBAND, a, b)],
+    ['add', (a, b) => selectionArith(LUA_OPADD, a, b)],
+    ['sub', (a, b) => selectionArith(LUA_OPSUB, a, b)],
+]));
 
 // ---------------------------------------------------------------------------
 // nhlib.lua's helpers, ported (RNG-exact)
@@ -383,6 +546,43 @@ export function monkfoodshop() {
     return cptr.cstr(cptr.ldPtro(gu, 8)) === 'Monk' ? 'health food shop' : 'food shop';
 }
 
+/**
+ * `nh.is_genocided(name)` — nhl_is_genocided(), transcribed the way
+ * monkfoodshop() is: name_to_mon() and then the G_GENOD bit of that species'
+ * svm.mvitals[] entry. dat/tower1.lua asks before naming Dracula's three
+ * brides, so a game that genocided vampires gets them nameless.
+ *
+ * `cptr.ld1uo2(svm, i, 12, 18)` is js/generated/nhlua.js's own expression for
+ * `svm.mvitals[i].mvflags`: element stride 12, field offset 18, one unsigned
+ * byte. No RNG, no Lua state — the same shape of read as levelFingerprint()'s.
+ */
+const G_GENOD = 0x02;
+const NON_PM = -1;
+export function isGenocided(name) {
+    const i = name_to_mon(cstr(name), cptr.box(0));
+    return i !== NON_PM && (cptr.ld1uo2(svm, i, 12, 18) & G_GENOD) !== 0;
+}
+
+/**
+ * The `u` table, as far as anything this port replaces reads it.
+ *
+ * Only `depth` is needed, and only by hell_tweaks(), which spends
+ * `percent(20 + u.depth)` and `math.random(u.depth)` on it. nhl_meta_u_index()'s
+ * "depth" case is `lua_pushinteger(L, depth(&u.uz))` (nhlua.c:2171), and `&u.uz`
+ * is `cptr.add(u, 24)` in the transpiler's own output (nhlua.js:2055). A getter,
+ * so a port that never mentions `u` never reads NetHack's memory for it.
+ */
+export const uTable = Object.freeze({
+    get depth() { return depth(cptr.add(u, 24)); },
+});
+
+/**
+ * `nhc` — nhl_consts[] (nhlua.c:2060), the compile-time constants nhlua.c
+ * publishes to Lua. hell_tweaks() reads COLNO and ROWNO to size its lava
+ * river; nothing else a port replaces reads any of the other five.
+ */
+export const nhc = Object.freeze({ COLNO: 80, ROWNO: 21 });
+
 // `luaList` / `luaLen` — Lua's 1-based lists and its `#` operator. Defined in
 // nhlib.mjs because shuffle() has to know where element 1 lives; re-exported
 // here so a port only ever imports the bridge.
@@ -398,15 +598,21 @@ export { luaLen, luaList };
  * `align` is a getter because it reads the interpreter's state: evaluating it
  * eagerly would make every port depend on a state discovery that only the two
  * scripts using `align` actually need. Destructuring `{ des }` never touches it.
+ *
+ * `hell_tweaks` is nhlib.lua's, ported to js/lua-js/nhlib-fns.mjs by the same
+ * generator that emits the level scripts and handed this same api object — so
+ * the seven Gehennom levels that end with it are ports all the way down.
  */
 export const api = Object.freeze({
     des, selection,
-    nh: Object.freeze({ rn2: nhRn2, random: nhRandom, eckey }),
+    nh: Object.freeze({ rn2: nhRn2, random: nhRandom, eckey, is_genocided: isGenocided }),
     // `math` is nhlib.lua's shim, not JavaScript's: a port writes
     // `math.random(4, 8)` exactly as the .lua does and draws from NetHack's RNG.
     percent, shuffle, d, math: Object.freeze({ random: mathRandom }),
     get align() { return interpAlign(); },
-    monkfoodshop, luaList, luaLen,
+    monkfoodshop,
+    hell_tweaks: (protectedArea) => hellTweaksFn(api, protectedArea),
+    u: uTable, nhc, luaList, luaLen,
 });
 
 /**
@@ -443,7 +649,21 @@ export function runPortedScript(name, body) {
 export function runProtected(Lp, name, body) {
     const base = lua_gettop(Lp);
     let thrown = null;
-    lua_pushcclosure(Lp, () => { try { body(); } catch (e) { thrown = e; } return 0; }, 0);
+    lua_pushcclosure(Lp, () => {
+        try {
+            body();
+        } catch (e) {
+            // A Lua error is a longjmp, and in this transpile a longjmp is a JS
+            // throw of cjmp.Longjmp. That one has to keep going: lua_pcallk's
+            // own handler is what catches it, unwinds the Lua stack and leaves
+            // the message on top, which is how a bad argument to an lspo_*
+            // becomes a readable "lua-port <script>: …" instead of an opaque
+            // object. Only a *JS*-level throw is stashed for re-throw below.
+            if (e instanceof Longjmp) throw e;
+            thrown = e;
+        }
+        return 0;
+    }, 0);
     const rc = lua_pcallk(Lp, 0, 0, 0, 0n, null);
     if (thrown) { lua_settop(Lp, base); throw thrown; }
     if (rc !== 0) {

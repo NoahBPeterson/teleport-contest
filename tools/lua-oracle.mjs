@@ -389,7 +389,7 @@ async function main() {
     for (const s of sessions) {
         let v;
         try { v = await compareSession(s, s.name, opts); }
-        catch (e) { console.log(`ERROR ${s.name}: ${e.message}`); bad++; continue; }
+        catch (e) { console.log(`ERROR ${s.name}: ${e.message}`); console.log(e.stack ?? e); bad++; continue; }
         printVerdict(v);
         if (!v.pass) bad++;
     }

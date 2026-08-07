@@ -1,7 +1,7 @@
 /**
  * The transcription check for the generated level-script ports.
  *
- * js/lua-js/scripts/t{0,1}/*.mjs are generated from nethack-c/recorder/dat/*.lua
+ * js/lua-js/scripts/t{0,1,2}/*.mjs are generated from nethack-c/recorder/dat/*.lua
  * by tools/lua-port-gen/lua2des.mjs. Once committed they are ordinary source:
  * reviewers diff them, and a 5.1 update will edit them. This test re-parses
  * each .lua, evaluates the call stream it describes, runs the committed module
@@ -10,7 +10,7 @@
  *
  * Both sides are driven by the *same* deterministic RNG object and the same
  * copy of nhlib's percent/shuffle/math.random (js/lua-js/nhlib.mjs), so for the
- * T1 tier the comparison also pins the script's own draw sequence: a port that
+ * T1 and T2 tiers the comparison also pins the script's own draw sequence: a port that
  * takes the other arm of an `if percent(…)`, or shuffles a list of the wrong
  * length, spends a different number of draws, desynchronises the shared counter
  * and diverges. checkPort() runs several RNG settings including one that forces
@@ -34,20 +34,35 @@
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkPort } from '../tools/lua-port-gen/lua2des.mjs';
-import { T0, T1 } from '../tools/lua-port-gen/gen-ports.mjs';
+import { checkLibFn, checkPort } from '../tools/lua-port-gen/lua2des.mjs';
+import { T0, T1, T2 } from '../tools/lua-port-gen/gen-ports.mjs';
 import { T0_PORTS } from '../js/lua-js/scripts/t0/index.mjs';
 import { T1_PORTS } from '../js/lua-js/scripts/t1/index.mjs';
+import { T2_PORTS } from '../js/lua-js/scripts/t2/index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const TIERS = [
     { tier: 't0', list: T0, ports: T0_PORTS },
     { tier: 't1', list: T1, ports: T1_PORTS },
+    { tier: 't2', list: T2, ports: T2_PORTS },
 ];
 
 let failures = 0;
 let checked = 0;
+
+// The library ports first: seven T2 scripts end by calling hell_tweaks(), so a
+// wrong library port would show up as seven wrong level scripts. Checking it on
+// its own says which it is.
+{
+    const d = await checkLibFn(
+        path.join(ROOT, 'nethack-c/recorder/dat/nhlib.lua'),
+        path.join(ROOT, 'js/lua-js/nhlib-fns.mjs'),
+        'hell_tweaks',
+    );
+    if (d) { console.error(`FAIL nhlib-fns.mjs differs from nhlib.lua at ${d}`); failures++; }
+    checked++;
+}
 
 for (const { tier, list, ports } of TIERS) {
     // The index the registry loads from must list exactly the tier, in order: a
@@ -73,7 +88,7 @@ for (const { tier, list, ports } of TIERS) {
 
 // A script may not be registered twice: the registry merges the tiers into one
 // map and a duplicate key would silently drop one of them.
-const all = [...T0, ...T1];
+const all = [...T0, ...T1, ...T2];
 if (new Set(all).size !== all.length) {
     console.error('FAIL a script appears in more than one tier');
     failures++;
@@ -83,4 +98,4 @@ if (failures) {
     console.error(`lua-port-scripts: ${failures} failure(s)`);
     process.exit(1);
 }
-console.log(`lua-port-scripts: ${checked} level-script transcriptions verified`);
+console.log(`lua-port-scripts: ${checked} script transcriptions verified`);

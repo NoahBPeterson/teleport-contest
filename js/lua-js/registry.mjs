@@ -52,6 +52,7 @@ import { dumpGlobal, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
 import { T0_PORTS } from './scripts/t0/index.mjs';
 import { T1_PORTS } from './scripts/t1/index.mjs';
+import { T2_PORTS } from './scripts/t2/index.mjs';
 import dungeonPort, { globalName as dungeonGlobal } from './scripts/dungeon.mjs';
 import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
 
@@ -59,15 +60,17 @@ import questPort, { globalName as questGlobal } from './scripts/quest.mjs';
  * Ported scripts, keyed by the filename nhl_loadlua() is given.
  * Add an entry here and the JS port replaces the .lua at runtime.
  *
- * T0_PORTS is the pure-declarative tier (49 scripts, stage S2, §7) and
- * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11); both
- * are generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
+ * T0_PORTS is the pure-declarative tier (49 scripts, stage S2, §7),
+ * T1_PORTS the branch/shuffle/closure tier (28 scripts, stage S3, §11) and
+ * T2_PORTS the loop / selection-algebra tier (46 scripts, stage S4, §12); all
+ * three are generated from their .lua by tools/lua-port-gen/gen-ports.mjs.
  * oracle.lua predates the generator and stays hand-written.
  */
 const PORTS = new Map([
     ['oracle.lua', oracle],
     ...T0_PORTS,
     ...T1_PORTS,
+    ...T2_PORTS,
 ]);
 
 /**
