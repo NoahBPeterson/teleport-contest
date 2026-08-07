@@ -65,16 +65,32 @@ import { l_selection_register } from '../generated/nhlsel.js';
 import { l_obj_register } from '../generated/nhlobj.js';
 import { rn2 } from '../generated/rnd.js';
 import { cmd_from_ecname } from '../generated/cmd.js';
-import { depth } from '../generated/dungeon.js';
+import { Invocation_lev, depth, level_difficulty } from '../generated/dungeon.js';
 import { name_to_mon } from '../generated/mondata.js';
 import { parse_conf_str, parse_config_line } from '../generated/cfgfiles.js';
 import { gu, svm, u } from '../generated/decl.js';
 import { interpState, markPortState } from './interp-state.mjs';
 import {
-    jsPairs, jsSetIndex, jsToString, jsType, libTableStringify, luaLen, luaList,
-    makeNhlib,
+    LuaList, jsPairs, jsSetIndex, jsToString, jsType, libPline, libTableStringify,
+    luaLen, luaList, makeNhlib,
 } from './nhlib.mjs';
 import hellTweaksFn, { monkfoodshop as monkfoodshopFn } from './nhlib-fns.mjs';
+
+/**
+ * `lua_toboolean()` as a JS boolean.
+ *
+ * The C function returns an `int`, but this transpile emits its body as
+ * `return !(…)` (js/generated/lapi.js:410), i.e. a JS *boolean*. Comparing that
+ * against 0 with `!==` is therefore true for `false` as well as for `true` —
+ * which is what made every `rm.lit` the port read come back `true`, and the
+ * Garden themeroom fill eligible in unlit rooms. Found by the themeroom probe
+ * (§15): the interpreter printed "Warning: fill 'Garden' is not eligible in
+ * room that generated it" twice and the port printed it never.
+ *
+ * Everything that reads a Lua boolean goes through here so the mistake cannot
+ * be made twice.
+ */
+function luaBool(Lp, idx) { return !!lua_toboolean(Lp, idx); }
 
 /** lua_type() tags. LUA_TNONE is -1. */
 const LUA_TNIL = 0;
@@ -82,6 +98,7 @@ const LUA_TBOOLEAN = 1;
 const LUA_TNUMBER = 3;
 const LUA_TSTRING = 4;
 const LUA_TTABLE = 5;
+const LUA_TUSERDATA = 7;
 
 // C strings are allocated per call by cptr.lit(); intern them so a script that
 // pushes "monster" 2000 times doesn't build 2000 identical byte arrays.
@@ -221,6 +238,17 @@ function push(v, Lp = state()) {
     }
     if (v instanceof LuaValue) { v.push(); return; }
     if (v instanceof LuaRef) { v.push(Lp); return; }
+    // A LuaList is an Array whose slot 0 is a placeholder for Lua's 1-based
+    // indexing, so it must not go through the Array branch below: that would
+    // push a nil at index 1 and shift every element. themerms.lua's port keeps
+    // `themerooms` and `themeroom_fills` as luaList()s and mirrors them into the
+    // state, which is where this matters.
+    if (v instanceof LuaList) {
+        const n = luaLen(v);
+        lua_createtable(Lp, n, 0);
+        for (let i = 1; i <= n; i++) { push(v[i], Lp); lua_rawseti(Lp, -2, BigInt(i)); }
+        return;
+    }
     if (Array.isArray(v)) {
         // OP_NEWTABLE's size hints come from the constructor's shape; match them.
         lua_createtable(Lp, v.length, 0);
@@ -316,10 +344,89 @@ export class LuaValue {
         /** lua_type() of the value, so a port can ask what it is holding. */
         this.ltype = ltype ?? lua_type(state(), -1);
         this.ref = luaL_ref(state(), LUA_REGISTRYINDEX);
+        this.L = state();
+        if (callPool !== null) callPool.push(this);
     }
     push() { lua_rawgeti(state(), LUA_REGISTRYINDEX, BigInt(this.ref)); }
     /** Release the reference so the value can be collected. */
-    free() { luaL_unref(state(), LUA_REGISTRYINDEX, this.ref); this.ref = -1; }
+    free() {
+        if (this.ref < 0) return;
+        luaL_unref(this.L, LUA_REGISTRYINDEX, this.ref);
+        this.ref = -1;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Lifetimes: freeing the registry references a port takes (S7)
+// ---------------------------------------------------------------------------
+//
+// Every selection or obj a binding hands back is held by a luaL_ref, and until
+// S7 nothing ever released one. That was harmless for 129 ports because the
+// state holding the references dies with the script: a level script's port
+// state is the bridge's own (dropped per replay segment) and a library port's
+// is the interpreter's throwaway per-level one.
+//
+// themerms.lua is the exception, and the reason this exists. Its lua_State is
+// gl.luathemes[dnum] — created once per dungeon branch, kept across every level
+// of that branch, and created by nhl_init() with a **1 MB memory cap**
+// (mklev.c:369's nhl_sandbox_info). A `selection.room()` userdata is over a
+// kilobyte, so leaking one per themed room would exhaust the sandbox inside one
+// game. The interpreter does not leak them: they are Lua locals, they become
+// garbage when the room generator returns, and themerooms_post_level_generate()
+// ends with lua_gc(themes, LUA_GCCOLLECT).
+//
+// So the port reproduces those two lifetimes explicitly, and they are exactly
+// the .lua's own:
+//
+//   withCallValues() — a value that dies with the room generator that made it.
+//                      Everything minted inside is freed when the C-callable
+//                      entry point returns, which is before makerooms()'s next
+//                      call and long before the LUA_GCCOLLECT.
+//   keepValue()      — a value that escapes into `postprocess`, i.e. survives
+//                      until post_level_generate() runs the handler. themerms
+//                      has exactly one (the Garden fill's `sel`).
+//
+// Freeing matters for more than memory. An obj userdata carries
+// obj->lua_ref_cnt, which l_obj_gc() decrements; a reference the port never
+// released would leave that count high on an object the interpreter's GC had
+// already let go.
+
+/** LuaValues minted during the current entry-point call, or null. */
+let callPool = null;
+/** LuaValues explicitly kept past the call that made them. */
+let keptValues = [];
+
+/**
+ * Run `body` with a call-scoped pool: every LuaValue taken inside is released
+ * when it returns, except those handed to keepValue().
+ * @param {() => *} body
+ */
+export function withCallValues(body) {
+    const saved = callPool;
+    callPool = [];
+    try {
+        return body();
+    } finally {
+        const pool = callPool;
+        callPool = saved;
+        for (let i = pool.length - 1; i >= 0; i--) pool[i].free();
+    }
+}
+
+/** Keep `v` past the current call; released by releaseKeptValues(). */
+export function keepValue(v) {
+    if (callPool !== null) {
+        const i = callPool.indexOf(v);
+        if (i >= 0) callPool.splice(i, 1);
+    }
+    keptValues.push(v);
+    return v;
+}
+
+/** Release everything keepValue() is holding. */
+export function releaseKeptValues() {
+    for (let i = keptValues.length - 1; i >= 0; i--) keptValues[i].free();
+    keptValues = [];
 }
 
 /**
@@ -334,32 +441,74 @@ export class LuaValue {
 function wrapCallback(fn) {
     return (Lp) => {
         const argc = lua_gettop(Lp);
-        // Two shapes of callback exist. lspo_room()/lspo_map() push the mkroom
-        // table as argument 1 before calling `contents`; l_selection_iterate()
-        // pushes two integers, the point it is visiting. Dispatch on what is
-        // actually on the stack rather than on the JS arity, because a port
-        // may legitimately ignore either.
+        // Three shapes of callback exist, and the port dispatches on what is
+        // actually on the stack rather than on the JS arity, because a port may
+        // legitimately ignore any of them.
+        //
+        //   two integers — l_selection_iterate(), the point it is visiting
+        //   a table      — lspo_room()/lspo_region() push l_push_mkroom_table(),
+        //                  lspo_map() pushes l_push_wid_hei_table()
+        //   userdata     — lspo_object() pushes nhl_push_obj(otmp) into the
+        //                  container's `contents`, which is what themerms.lua's
+        //                  "Buried treasure" reads with otmp:totable()
         if (argc >= 2 && lua_type(Lp, 1) === LUA_TNUMBER) {
             fn(Number(lua_tointegerx(Lp, 1, null)), Number(lua_tointegerx(Lp, 2, null)));
             return 0;
         }
-        const room = fn.length >= 1 && argc >= 1 && lua_type(Lp, 1) === LUA_TTABLE
-            ? readIntTable(Lp, 1) : undefined;
-        fn(room);
+        if (fn.length >= 1 && argc >= 1) {
+            const t = lua_type(Lp, 1);
+            if (t === LUA_TTABLE) { fn(readRoomTable(Lp, 1)); return 0; }
+            if (t === LUA_TUSERDATA) {
+                lua_pushvalue(Lp, 1);
+                fn(new LuaValue());
+                return 0;
+            }
+        }
+        fn(undefined);
         return 0;
     };
 }
 
-/** Read the integer fields of a table (the mkroom table lspo_room passes). */
-function readIntTable(Lp, idx) {
+/**
+ * The table a `contents` callback is handed, read by name.
+ *
+ * There are two of them and this is the union. `l_push_mkroom_table()`
+ * (nhlua.c:3059) pushes `width`, `height`, `region = {x1,y1,x2,y2}`, the three
+ * booleans `lit`/`irregular`/`needjoining` and the string `type`;
+ * `l_push_wid_hei_table()` (nhlua.c:3050) pushes only `width` and `height`.
+ *
+ * Reading by name rather than walking with lua_next is deliberate and is what
+ * the .lua does too — `rm.lit`, `rm.width`, `rm.region.x1`. `lit` in particular
+ * is a *boolean*, and themerms.lua's Garden and Light source fills compare it
+ * against `true` and `false`, so reading it as an integer would answer nil to
+ * both.
+ */
+function readRoomTable(Lp, idx) {
     const out = {};
-    for (const k of ['x', 'y', 'w', 'h', 'lit', 'rlit', 'nsubrooms', 'needjoining', 'irregular']) {
-        lua_getfield(Lp, idx, cstr(k));
-        const n = lua_tointegerx(Lp, -1, null);
-        lua_settop(Lp, lua_gettop(Lp) - 1);
-        if (n !== null && n !== undefined) out[k] = Number(n);
+    scalarField(Lp, idx, out, 'width', LUA_TNUMBER);
+    scalarField(Lp, idx, out, 'height', LUA_TNUMBER);
+    lua_getfield(Lp, idx, cstr('region'));
+    if (lua_type(Lp, -1) === LUA_TTABLE) {
+        const r = {};
+        for (const k of ['x1', 'y1', 'x2', 'y2']) scalarField(Lp, -1, r, k, LUA_TNUMBER);
+        out.region = r;
     }
+    lua_settop(Lp, lua_gettop(Lp) - 1);
+    for (const k of ['lit', 'irregular', 'needjoining']) scalarField(Lp, idx, out, k, LUA_TBOOLEAN);
+    scalarField(Lp, idx, out, 'type', LUA_TSTRING);
     return out;
+}
+
+/** `out[k] = t[k]` when the field is present and has type `want`. */
+function scalarField(Lp, idx, out, k, want) {
+    lua_getfield(Lp, idx, cstr(k));
+    const t = lua_type(Lp, -1);
+    if (t === want) {
+        out[k] = want === LUA_TNUMBER ? Number(lua_tointegerx(Lp, -1, null))
+            : want === LUA_TBOOLEAN ? luaBool(Lp, -1)
+                : cptr.cstr(lua_tolstring(Lp, -1, null));
+    }
+    lua_settop(Lp, lua_gettop(Lp) - 1);
 }
 
 // ---------------------------------------------------------------------------
@@ -388,9 +537,50 @@ function callTable1(tbl, name, args) {
     lua_getfield(Lp, -1, cstr(name));
     for (const a of args) push(a);
     lua_callk(Lp, args.length, 1, 0n, null);
-    const v = takeResult(Lp);
+    const v = takeResult(Lp, RESULT_FIELDS[`${tbl}.${name}`] ?? COORD_FIELDS);
     lua_settop(Lp, base);       // drop the table
     return v;
+}
+
+/**
+ * Which fields of a C-built result table a port reads, per binding.
+ *
+ * A table handed back by a binding is freshly built by that binding, nothing
+ * else holds it, and every consumer — the .lua and the C readers alike — takes
+ * it apart by name. So the port reads it by name too, from an explicit list
+ * per producer rather than by walking it: walking would make the JS object's
+ * key order depend on the state's hash seed, and that object is sometimes
+ * pushed straight back (`des.trap{ coord = pos }`).
+ *
+ * `selection.rndcoord()` returns {x,y} and `selection.bounds()` {lx,ly,hx,hy};
+ * those are the default. The two obj tables are S7's — themerms.lua reads
+ * `xobj.NO_OBJ`/`ox`/`oy` off `otmp:totable()` (nhlobj.c:246) and
+ * `itmcls["material"]` off `itm:class()` (nhlobj.c:200).
+ */
+const COORD_FIELDS = ['x', 'y', 'lx', 'ly', 'hx', 'hy'];
+const RESULT_FIELDS = {
+    'obj.totable': ['NO_OBJ', 'ox', 'oy'],
+    'obj.class': ['material'],
+};
+
+/**
+ * Whether `des.object()`'s result is taken (S7).
+ *
+ * lspo_object() always pushes the obj it made, and 1,420 des.object() calls in
+ * the corpus ignore it. Taking it costs a registry reference each, so it is off
+ * by default and turned on around the one script that binds it —
+ * themerms.lua's "Buried zombies" and "Water-surrounded vault". Asking
+ * lua_callk for a result the .lua discarded is not observable (moveresults()
+ * only pads the caller's own stack, and the C function has already done its
+ * work), but the reference would be.
+ */
+let desObjectResult = false;
+
+/** Run `body` with `des.object()` handing its obj back. @param {() => *} body */
+export function withDesObjectResult(body) {
+    const saved = desObjectResult;
+    desObjectResult = true;
+    try { return body(); } finally { desObjectResult = saved; }
 }
 
 /**
@@ -412,7 +602,7 @@ function callTable1(tbl, name, args) {
  * which is exact here, because the table is freshly built, nothing else holds
  * it, and every C reader takes `x` and `y` by name or by index.
  */
-function takeResult(Lp) {
+function takeResult(Lp, fields = COORD_FIELDS) {
     const t = lua_type(Lp, -1);
     if (t === LUA_TNUMBER) {
         const n = lua_tointegerx(Lp, -1, null);
@@ -422,7 +612,7 @@ function takeResult(Lp) {
         return v;
     }
     if (t === LUA_TBOOLEAN) {
-        const v = lua_toboolean(Lp, -1) !== 0;
+        const v = luaBool(Lp, -1);
         lua_settop(Lp, lua_gettop(Lp) - 1);
         return v;
     }
@@ -433,7 +623,7 @@ function takeResult(Lp) {
     }
     if (t === LUA_TNIL) { lua_settop(Lp, lua_gettop(Lp) - 1); return null; }
     if (t === LUA_TTABLE) {
-        const v = readNumTable(Lp, -1);
+        const v = readNumTable(Lp, -1, fields);
         lua_settop(Lp, lua_gettop(Lp) - 1);
         return v;
     }
@@ -441,24 +631,24 @@ function takeResult(Lp) {
 }
 
 /**
- * The integer fields of a table a selection method built.
+ * The named fields of a table a binding built — see RESULT_FIELDS.
  *
- * There are exactly two such tables and between them six field names:
- * `rndcoord()` returns {x, y} and `bounds()` returns {lx, ly, hx, hy}. Reading
- * by name rather than walking with lua_next is deliberate — it is what every
- * C consumer of these tables does too (sp_lev.c's get_coord() reads "x" then
- * "y"), so the port never depends on a hash order.
+ * Reading by name rather than walking with lua_next is deliberate: it is what
+ * every C consumer of these tables does too (sp_lev.c's get_coord() reads "x"
+ * then "y"), so the port never depends on a hash order.
  *
  * `idx` is a stack index of the table itself; it stays valid across the loop
  * because each lua_getfield's result is popped before the next one.
  */
-function readNumTable(Lp, idx) {
+function readNumTable(Lp, idx, fields) {
     const out = {};
-    for (const k of ['x', 'y', 'lx', 'ly', 'hx', 'hy']) {
+    for (const k of fields) {
         lua_getfield(Lp, idx, cstr(k));
-        const n = lua_type(Lp, -1) === LUA_TNUMBER ? Number(lua_tointegerx(Lp, -1, null)) : undefined;
+        const t = lua_type(Lp, -1);
+        const v = t === LUA_TNUMBER ? Number(lua_tointegerx(Lp, -1, null))
+            : t === LUA_TSTRING ? cptr.cstr(lua_tolstring(Lp, -1, null)) : undefined;
         lua_settop(Lp, lua_gettop(Lp) - 1);
-        if (n !== undefined) out[k] = n;
+        if (v !== undefined) out[k] = v;
     }
     return out;
 }
@@ -532,15 +722,19 @@ const SELECTION_FUNCS = [
  * observable: luaD_poscall's moveresults() only pads or trims the *port's own*
  * stack, and the C function has already done all its work by then. Keeping the
  * list to `map` is about not minting a registry reference per des.object()
- * call — there are 1,420 of those — rather than about correctness.
+ * call — there are 1,420 of those — rather than about correctness. S7 turns
+ * `object` on around themerms.lua alone; see withDesObjectResult().
  */
 const DES_VALUE_FUNCS = new Set(['map']);
 
 /** des.* — a call discards its results, as a Lua statement does. */
 export const des = Object.freeze(Object.fromEntries(
-    DES_FUNCS.map((n) => [n, DES_VALUE_FUNCS.has(n)
-        ? (...args) => callTable1('des', n, args)
-        : (...args) => callTable('des', n, args)]),
+    DES_FUNCS.map((n) => [n, n === 'object'
+        ? (...args) => (desObjectResult
+            ? callTable1('des', 'object', args) : callTable('des', 'object', args))
+        : DES_VALUE_FUNCS.has(n)
+            ? (...args) => callTable1('des', n, args)
+            : (...args) => callTable('des', n, args)]),
 ));
 
 /**
@@ -647,6 +841,20 @@ export function eckey(cmd) {
 export function interpAlign() {
     const L = interpState();
     if (!L) throw new Error('lua-port: interpreter lua_State not found (align)');
+    return alignIn(L);
+}
+
+/**
+ * The same, out of a state the caller already has.
+ *
+ * themerms.lua's port needs this: its state is gl.luathemes[dnum], which is
+ * created once per dungeon branch and then *kept*, so by the time a themed room
+ * is generated the newest lua_State interpState() would find is some other
+ * level's. The port is handed its own state at load and reads `align` from it.
+ *
+ * @param {object} L
+ */
+export function alignIn(L) {
     const base = lua_gettop(L);
     try {
         if (lua_getglobal(L, cstr('align')) !== LUA_TTABLE) {
@@ -719,10 +927,15 @@ export function isGenocided(name) {
  *   ux  @0   ANY_UCHAR    uhunger @104  ANY_INT
  *   uy  @2   ANY_UCHAR    uenmax  @2212 ANY_INT
  *   role     = gu.urole.name.m       depth = depth(&u.uz), &u.uz == u+24
- *   moves    = svm.moves
+ *   moves    = svm.moves             invocation_level = Invocation_lev(&u.uz)
+ *
+ * `invocation_level` is pushed with lua_pushboolean (nhlua.js:2058), so it is a
+ * Lua boolean rather than the 0/1 the C macro yields; dat/hellfill.lua's
+ * `if (u.invocation_level)` reads it.
  */
 export const uTable = Object.freeze({
     get depth() { return depth(cptr.add(u, 24)); },
+    get invocation_level() { return Invocation_lev(cptr.add(u, 24)) !== 0; },
     get ux() { return cptr.ld1uo(u, 0); },
     get uy() { return cptr.ld1uo(u, 2); },
     get uhunger() { return cptr.ldI32o(u, 104); },
@@ -764,7 +977,7 @@ export { luaLen, luaList };
 function toJs(Lp, idx) {
     const t = lua_type(Lp, idx);
     if (t === LUA_TNIL || t < 0) return null;
-    if (t === LUA_TBOOLEAN) return lua_toboolean(Lp, idx) !== 0;
+    if (t === LUA_TBOOLEAN) return luaBool(Lp, idx);
     if (t === LUA_TNUMBER) {
         const n = lua_tointegerx(Lp, idx, null);
         return n === null || n === undefined ? lua_tonumberx(Lp, idx, null) : Number(n);
@@ -998,6 +1211,16 @@ export function libApi() {
     }, {
         pairs: luaTable.pairs,
         type: luaTypeOf,
+        // nhlib.lua's `pline`, as a *global* — themerms.lua calls it by that
+        // name four times. It is the same libPline the nhlib port installs into
+        // the state; calling it directly rather than through the Lua global is
+        // the same code on the same arguments.
+        pline: (fmt, ...rest) => libPline(A, fmt, ...rest),
+        // S7's lifetime marker: "this value escapes the call that made it".
+        // It is part of the api rather than an import so that the ported
+        // bodies stay importable without the transpiled game in scope, which
+        // is what lets --check run them.
+        keepValue,
         tostring: luaToStringOf,
         getField: luaTable.getField,
         newTable: luaTable.newTable,
@@ -1033,7 +1256,7 @@ export function callGlobal(name, args) {
     lua_getglobal(Lp, cstr(name));
     for (const a of args) push(a, Lp);
     lua_callk(Lp, args.length, 1, 0n, null);
-    const v = lua_toboolean(Lp, -1) !== 0;
+    const v = luaBool(Lp, -1);
     lua_settop(Lp, base);
     return v;
 }
@@ -1073,14 +1296,30 @@ export const api = Object.freeze({
     nh: Object.freeze({
         rn2: nhRn2, random: nhRandom, eckey, is_genocided: isGenocided,
         parse_config: parseConfig,
+        // level_difficulty() is nhl_level_difficulty()'s whole body and is a
+        // plain exported C function, so it is called directly the way depth()
+        // is. The rest are staticfn wrappers around a window-port call or a
+        // game-state change, and go through the interpreter's own `nh` table —
+        // which means they only work while the api is bound to a state that has
+        // one, i.e. inside a library or themes port.
+        level_difficulty,
         pline: (...args) => callTable('nh', 'pline', args),
         text: (...args) => callTable('nh', 'text', args),
         callback: (...args) => callTable('nh', 'callback', args),
         gamestate: (...args) => callTable('nh', 'gamestate', args),
+        impossible: (...args) => callTable('nh', 'impossible', args),
+        debug_themerm: (...args) => callTable1('nh', 'debug_themerm', args),
+        start_timer_at: (...args) => callTable('nh', 'start_timer_at', args),
     }),
-    // `math` is nhlib.lua's shim, not JavaScript's: a port writes
+    // Lua's `type()`. dat/hellfill.lua's rnd_hell_prefab() branches on it —
+    // its prefab list holds both bare functions and {repeatable, contents}
+    // tables — and it is the language rather than NetHack, so it is jsType().
+    type: luaTypeOf,
+    // `math.random` is nhlib.lua's shim, not JavaScript's: a port writes
     // `math.random(4, 8)` exactly as the .lua does and draws from NetHack's RNG.
-    percent, shuffle, d, math: Object.freeze({ random: mathRandom }),
+    // `floor` and `abs` are Lua's own and are JS's own — themerms.lua uses both,
+    // on non-negative integers, where the two languages agree exactly.
+    percent, shuffle, d, math: Object.freeze({ random: mathRandom, floor: Math.floor, abs: Math.abs }),
     get align() { return interpAlign(); },
     monkfoodshop: () => monkfoodshopFn(api),
     hell_tweaks: (protectedArea) => hellTweaksFn(api, protectedArea),

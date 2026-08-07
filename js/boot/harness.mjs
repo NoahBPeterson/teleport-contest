@@ -120,6 +120,13 @@ export async function runBootGame(opts) {
     // through to the ospeed/`nh_CM` padding loop, which is a no-op here, so we
     // emitted zero anim frames and scored 0/1483 on the supplemental metric.
     NETHACK_NO_DELAY: '1',
+    // Per-run overrides. Nothing in scoring sets these; they exist for the
+    // differential oracle, which uses THEMERM / THEMERMFILL — NetHack's own
+    // developer hook, read by nhl_get_debug_themerm_name() (nhlua.c:1147) in
+    // wizard mode — to force one particular themed room or fill on every
+    // level, so that a themeroom the reservoir sampling picks once in a
+    // thousand can be compared in a real game. See NOTES-lua-port.md §15.
+    ...(opts.env || {}),
   };
 
   // ---------------- VFS: vendored base + write overlay ----------------------

@@ -46,6 +46,19 @@ const HARNESS = pathToFileURL(path.join(ROOT, 'js/boot/harness.mjs')).href;
 let segCounter = 0;
 
 /**
+ * Variables handed to the *game's* getenv (js/boot/harness.mjs's ENV), as
+ * opposed to this process's environment, which carries the C2JS_LUA_* switches.
+ *
+ * Only --themerm= / --themermfill= set anything here. THEMERM and THEMERMFILL
+ * are read by nhl_get_debug_themerm_name() (nhlua.c:1147) and only in wizard
+ * mode; themerms.lua's pre_themerooms_generate() looks them up by name and
+ * themerooms_generate() then generates that room half the time, on every level.
+ * That is how a themeroom with frequency 1 against the default's 1000 gets
+ * behavioural evidence at all — §15.
+ */
+let gameEnv = {};
+
+/**
  * Boot one segment in its own module graph.
  * @param {object} seg  {seed, datetime, moves, nethackrc}
  * @param {object} env  environment overrides applied for the duration
@@ -61,6 +74,11 @@ async function runSegment(seg, env) {
             datetime: seg.datetime,
             moves: seg.moves,
             nethackrc: seg.nethackrc || '',
+            // THEMERM / THEMERMFILL, when --themerm= is given. They go to the
+            // *game's* getenv rather than to this process's environment: it is
+            // NetHack's own developer hook for forcing a themed room, and it is
+            // set identically on both sides of the comparison. §15.
+            env: gameEnv,
             stdoutSink: () => {},
         });
     } finally {
@@ -451,6 +469,10 @@ async function main() {
     }
 
     const levelsArg = argv.find((a) => a.startsWith('--levels='));
+    const themerm = argv.find((a) => a.startsWith('--themerm='));
+    const themermfill = argv.find((a) => a.startsWith('--themermfill='));
+    if (themerm) gameEnv.THEMERM = themerm.slice('--themerm='.length);
+    if (themermfill) gameEnv.THEMERMFILL = themermfill.slice('--themermfill='.length);
     const opts = {
         readback: argv.includes('--readback'),
         globals: argv.includes('--globals'),
