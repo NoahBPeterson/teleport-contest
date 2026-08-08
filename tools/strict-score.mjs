@@ -9,11 +9,13 @@
 // it runs the same session twice, once sandboxed exactly like the judge
 // and once unsandboxed, and requires byte-identical outputs.
 //
-// It also walks the *reachable* module graph from js/jsmain.js (the only
-// entry point the judge imports) and rejects forbidden runtime imports in
-// it. Reachability matters: js/boot/boot.mjs and js/boot/worker.mjs are
-// developer entry points that legitimately use node:fs, and tools/ is not
-// shipped code — none of them may be reachable from runSegment.
+// It also walks the *reachable* module graph from every shipped entry point
+// (see ENTRIES below — js/jsmain.js, the only one the judge imports, plus
+// js/boot/main-thread-engine.mjs, which is the root of the yieldable build the
+// browser rung ships) and rejects forbidden runtime imports in it.
+// Reachability matters: js/boot/boot.mjs and js/boot/worker.mjs are developer
+// entry points that legitimately use node:fs, and tools/ is not shipped code —
+// none of them may be reachable from runSegment.
 //
 // Technique credit: Alex Serrano's strict-score.mjs / check-submission.mjs
 // (serteal's transpiled entry).
@@ -29,7 +31,33 @@ import { fileURLToPath } from 'node:url';
 
 const TOOLS_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(TOOLS_DIR, '..');
-const ENTRY = join(ROOT, 'js/jsmain.js');
+
+// The roots the walk starts from.
+//
+// js/jsmain.js is the only entry the judge imports, and for the *scoring* path
+// it is still the only root that matters. The second one is there because the
+// browser rung grew a module graph of its own: js/boot/interactive.mjs reaches
+// js/boot/main-thread-engine.mjs, which reaches js/boot/harness-y.mjs, which
+// reaches all 176 modules of js/generated-y/**. Those are 13.6 MB of machine-
+// written JS that no human reviewed and that ships to a real browser, so they
+// are held to exactly the same rule as js/generated/**: no node builtins, no
+// WebAssembly, nothing the judge's sandbox forbids.
+//
+// It is named explicitly rather than left to the dynamic-import chain from
+// js/jsmain.js. The chain does reach it today, and a walk that depends on
+// which rung happens to be wired up this week is a walk that stops checking
+// 13.6 MB the day somebody moves an import. A root costs one line.
+//
+// NOT roots, on purpose: js/boot/boot.mjs and js/boot/worker.mjs (developer
+// entry points that legitimately use node:fs), js/jsmain-yield.mjs and
+// yieldtest/** (the Node-side parity harness for the yieldable build — same
+// reason, it is not shipped), and tools/** (not shipped code either). None of
+// them may be *reachable* from the roots below, which is the property this
+// walk exists to enforce.
+const ENTRIES = [
+    join(ROOT, 'js/jsmain.js'),
+    join(ROOT, 'js/boot/main-thread-engine.mjs'),
+];
 
 // Precisely-justified exceptions: file → forbidden pattern that is allowed
 // there. js/boot/interactive.mjs's `import('node:worker_threads')` sits on the
@@ -56,10 +84,10 @@ const FORBIDDEN = [
 // Static + literal-dynamic import specifiers.
 const SPEC_RE = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
 
-/** Every file reachable from `entry` by a resolvable relative specifier. */
-function reachableFiles(entry) {
+/** Every file reachable from `entries` by a resolvable relative specifier. */
+function reachableFiles(entries) {
     const seen = new Set();
-    const queue = [entry];
+    const queue = [...entries];
     while (queue.length) {
         const file = queue.pop();
         if (seen.has(file) || !existsSync(file) || !statSync(file).isFile()) continue;
@@ -76,7 +104,7 @@ function reachableFiles(entry) {
 }
 
 function staticCheck() {
-    const files = reachableFiles(ENTRY);
+    const files = reachableFiles(ENTRIES);
     let bad = 0;
     for (const file of files) {
         const rel = relative(ROOT, file);
@@ -96,7 +124,19 @@ function staticCheck() {
             }
         }
     }
-    console.log(`static: ${files.length} file(s) reachable from js/jsmain.js, ${bad} violation(s)`);
+    // Reported per root as well as in total: "0 violations" over a walk that
+    // silently found no yieldable build is not the same answer as "0
+    // violations" over one that walked all 176 of its modules, and only the
+    // count can tell them apart. js/generated-y/ is a build artifact
+    // (C2JS_YIELD=1 node tools/c2js/build.mjs --all), and a tree that has not
+    // built it gets the smaller number and a note rather than a false pass.
+    const y = files.filter((f) => relative(ROOT, f).startsWith('js/generated-y/')).length;
+    for (const e of ENTRIES) {
+        console.log(`  root ${relative(ROOT, e)}: ${existsSync(e) ? 'walked' : 'ABSENT'}`);
+    }
+    console.log(`static: ${files.length} file(s) reachable from ${ENTRIES.length} root(s)`
+        + ` (${y} in js/generated-y/${y ? '' : ' — NOT BUILT, run C2JS_YIELD=1 node tools/c2js/build.mjs --all'}),`
+        + ` ${bad} violation(s)`);
     return bad;
 }
 
@@ -123,7 +163,7 @@ async function main() {
 
     const badImports = staticCheck();
     if (badImports) {
-        console.error(`\n${badImports} forbidden import(s) reachable from js/jsmain.js — fix before push.`);
+        console.error(`\n${badImports} forbidden import(s) reachable from a shipped entry — fix before push.`);
         process.exit(1);
     }
 
