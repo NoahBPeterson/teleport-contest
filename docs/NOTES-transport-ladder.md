@@ -454,6 +454,35 @@ Scoring and the Node path are unaffected:
 - `--no-prewarm` — passes `?prewarm=0`, so `index.html` warms nothing at page
   load. This is the floor: it is what every run looked like before the prewarm
   existed.
+- `--key-delay=<ms>` — paces the bench's keystrokes instead of typing as fast
+  as frames arrive. Needed once a rung got fast enough that 1200 keys take
+  0.6 s, which is shorter than any transport takes to come up: without a pace
+  the upgrade swap cannot be observed for reasons that have nothing to do with
+  whether it works. The pause is excluded from `wall_ms`, so `ms/move` stays
+  comparable with unpaced rows.
+- `--cpu-throttle=<n>` — CDP `Emulation.setCPUThrottlingRate`, applied to every
+  target that accepts it at attach time. Chrome's `Emulation` domain is not
+  available on worker targets, so this slows the page and leaves the worker
+  transports' engines at full speed; it handicaps the main-thread rung on
+  purpose and must be read with that in mind.
+- `--latency=<ms>` — makes the server answer every request that much later, so
+  the cost of *fetching* a module graph is priced instead of assumed. Loopback
+  answers in microseconds; the mirror does not.
+- `--multigame[=N]` — drives `tools/judge-sim/multigame-repro.html`: N
+  *interactive* games built back-to-back in one page with no reload. Nothing
+  else here can stage that (`index.html` plays one game and reloads for the
+  next), and it is the only check on what happens after a main-thread engine has
+  spent the page realm. Asserts that game 2 is hosted by something other than
+  that realm, or refuses in words.
+- `--workerless` — with `--multigame`, removes `Worker` and `SharedWorker` from
+  the repro page before anything imports. Staged by deleting the globals rather
+  than by a CSP header, because a CSP violation is a console line and the
+  console tally is part of what is being checked.
+
+`tools/judge-sim/loadgen.mjs` is not a switch but belongs beside them: it burns
+N cores for S seconds so a bench can be taken on a machine busy the way a small
+container is busy. It contends for the same cores as every target in the
+browser at once, which is the handicap `--cpu-throttle` cannot apply evenly.
 
 ## The prewarm
 
