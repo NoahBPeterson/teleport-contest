@@ -107,6 +107,21 @@ const seed2 = opt('seed2', '');
 // is what every run looked like before the prewarm existed, and it is the
 // number a *discarded* prewarm would cost if one could be discarded.
 const noPrewarm = args.includes('--no-prewarm');
+// --shape-b drives the page the way a browser harness does, from OUTSIDE it:
+// navigate, wait for a game frame WITHOUT sending anything, and only then send
+// keys — over CDP Input.dispatchKeyEvent, so they arrive as real keydowns at
+// the document, not as synthetic events the page dispatched to itself.
+//
+// This is the shape that produced "browser_ok, no error class, 0 moves in 88
+// sessions". A page whose first frame was gated on display.readKey() deadlocks
+// it outright: the harness waits for a frame that will never paint because it
+// is waiting to be typed at. Every other mode in this file dispatches its own
+// first key and can never see it. Run with --no-autoboot to watch it fail.
+const shapeB = args.includes('--shape-b');
+// --no-autoboot passes ?autoboot=0, which restores the page's old
+// wait-for-a-key shape. It is the floor for every auto-boot measurement and the
+// way --shape-b's failure is staged.
+const noAutoboot = args.includes('--no-autoboot');
 // --cpu-throttle=<n> slows every target Chrome will let us slow, via CDP
 // Emulation.setCPUThrottlingRate, applied at attach time so it is in force
 // before the target runs a line of script. It is the only way here to ask the
@@ -158,7 +173,13 @@ const DEFAULT_RC = [
     'OPTIONS=color,showexp,showscore,time', 'OPTIONS=runmode:walk',
 ].join('\n') + '\n';
 
-const q = new URLSearchParams({ bench: '/__sim/result', seed: opt('seed', '8000'), rc: opt('rc', DEFAULT_RC) });
+// --shape-b runs the page with no bench at all: the driver below is the thing
+// that types, and the page must be caught doing nothing until it does. ?shapeb=1
+// only tells index.html that the URL is allowed to pin the character and the
+// clock, which is otherwise a ?bench= privilege.
+const q = shapeB
+    ? new URLSearchParams({ shapeb: '1', seed: opt('seed', '8000'), rc: opt('rc', DEFAULT_RC) })
+    : new URLSearchParams({ bench: '/__sim/result', seed: opt('seed', '8000'), rc: opt('rc', DEFAULT_RC) });
 const keys = opt('keys', '');
 if (keys) q.set('keys', keys);
 if (transport) q.set('transport', transport);
@@ -167,6 +188,7 @@ if (datetime) q.set('datetime', datetime);
 if (part2) q.set('part2', part2);
 if (seed2) q.set('seed2', seed2);
 if (noPrewarm) q.set('prewarm', '0');
+if (noAutoboot) q.set('autoboot', '0');
 // --key-delay=<ms> paces the bench's keystrokes; see runBench() in index.html.
 if (opt('key-delay', '')) q.set('keydelay', opt('key-delay', ''));
 q.set('bmoves', opt('moves', '240'));
@@ -305,11 +327,136 @@ async function cdpConnect(port) {
     return { call, entries, whenPage, close: () => { try { ws.close(); } catch { /* already closed */ } } };
 }
 
+/**
+ * Drive the page from outside it, the way a browser harness does.
+ *
+ * Phase one: navigate and WAIT FOR A GAME FRAME, sending nothing. What is being
+ * asserted is that one paints — `keys_before_first_frame: 0` — because the
+ * alternative is the deadlock this whole mode exists to catch.
+ *
+ * Phase two: send keys as real keydowns over Input.dispatchKeyEvent, and check
+ * they are consumed by the game rather than queued into a page that is still
+ * waiting to be started.
+ *
+ * The two timings it reports mean different things and are labelled that way.
+ * `first_frame_ms` is the page's own clock (performance.now(), i.e. from
+ * navigation start) and is directly comparable with every other mode here.
+ * `ms_per_move` includes one CDP round trip per keystroke — the driver is on
+ * the other side of a WebSocket — so it is an upper bound, and
+ * `engine_ms_per_move`, taken on the engine thread, is the clean figure.
+ */
+async function driveShapeB(dev, sid, keyStream) {
+    const evaluate = async (expression, awaitPromise = false) => {
+        const r = await dev.call('Runtime.evaluate',
+            { expression, awaitPromise, returnByValue: true }, sid);
+        if (r.exceptionDetails) {
+            throw new Error((r.exceptionDetails.text || 'evaluate failed') + ' '
+                + ((r.exceptionDetails.exception && r.exceptionDetails.exception.description) || ''));
+        }
+        return r.result && r.result.value;
+    };
+
+    // Phase one. Nothing is sent, on purpose. Bounded well under the run
+    // timeout because "no frame" is an answer this mode is expected to get
+    // (--no-autoboot), and it should not cost three minutes to hear it.
+    const deadline = Date.now() + Math.min(timeoutMs, 20000);
+    let first = null;
+    while (Date.now() < deadline) {
+        first = await evaluate(`(function(){
+            if (!window.__NH || !window.__NH_FIRST_FRAME_MS) return null;
+            var d = window.__NH.display;
+            return { ms: Math.round(window.__NH_FIRST_FRAME_MS),
+                     mode: window.__NH.engine && window.__NH.engine.mode,
+                     frames: d.frames, keys_before: window.__NH_KEYS_AT_FIRST_FRAME || 0 };
+        })()`);
+        if (first) break;
+        await sleep(50);
+    }
+    if (!first) {
+        return { moves: 0, shape_b: true, first_frame_ms: 0,
+                 error: 'no game frame ever painted, and nothing was typed — '
+                      + 'this is the deadlock --shape-b exists to catch' };
+    }
+
+    // Phase two. One frame counter, read once per key, so a key that produced
+    // no frame is visible as a stall rather than as a fast move.
+    await evaluate(`window.__SB = { frames: 0, last: 0 };
+        (function(){ var d = window.__NH.display;
+            d.onFrame = function(){ window.__SB.frames++; window.__SB.last = performance.now(); }; })(); 0`);
+
+    const times = [];
+    for (let i = 0; i < keyStream.length; i++) {
+        const ch = keyStream[i];
+        const want = i + 1;
+        const t0 = Date.now();
+        await dev.call('Input.dispatchKeyEvent', {
+            type: 'keyDown', text: ch, key: ch, unmodifiedText: ch,
+            windowsVirtualKeyCode: ch.toUpperCase().charCodeAt(0),
+            nativeVirtualKeyCode: ch.toUpperCase().charCodeAt(0),
+        }, sid);
+        let got = 0;
+        while (Date.now() - t0 < 20000) {
+            got = await evaluate('window.__SB.frames');
+            if (got >= want) break;
+            await sleep(2);
+        }
+        times.push(Date.now() - t0);
+        if (got < want) break;
+        if (await evaluate('!!(window.__NH && window.__NH.game && window.__NH.game.engine'
+                           + ' && window.__NH.game.engine.gameover)')) break;
+    }
+
+    const tail = await evaluate(`(function(){
+        var d = window.__NH.display, rows = [], r, c, s;
+        for (r = 0; r < 24; r++) { s = ''; for (c = 0; c < 80; c++) s += d.grid[r][c].ch; rows.push(s); }
+        var e = window.__NH.engine;
+        return {
+            engine_mode: e && e.mode, frames: d.frames, final_screen: rows,
+            queued: d.terminal.inputQueueLength,
+            engine_ms_per_move: (e && e.engineTime) ? +(e.engineTime.ms / e.engineTime.steps).toFixed(3) : null,
+            gameover: !!(window.__NH.game && window.__NH.game.engine && window.__NH.game.engine.gameover),
+            crossOriginIsolated: !!window.crossOriginIsolated,
+        };
+    })()`);
+
+    const wall = times.reduce((a, b) => a + b, 0);
+    const sorted = times.slice().sort((a, b) => a - b);
+    return {
+        shape_b: true,
+        moves: times.length,
+        wall_ms: wall,
+        ms_per_move: +(wall / Math.max(1, times.length)).toFixed(3),
+        median_ms: sorted[sorted.length >> 1] || 0,
+        p95_ms: sorted[Math.floor(sorted.length * 0.95)] || 0,
+        max_ms: sorted[sorted.length - 1] || 0,
+        first_frame_ms: first.ms,
+        first_frame_mode: first.mode,
+        auto_frame_ms: first.ms,
+        keys_before_first_frame: first.keys_before,
+        frames_before_first_key: first.frames,
+        start_to_frame_ms: 0,
+        ...tail,
+        top_line: tail.final_screen[0].trimEnd(),
+        status_line: tail.final_screen[22].trimEnd(),
+        bottom_line: tail.final_screen[23].trimEnd(),
+    };
+}
+
 let dev = null;
 try {
     dev = await cdpConnect(DPORT);
     const sid = await dev.whenPage;
     await dev.call('Page.navigate', { url }, sid);
+    if (shapeB) {
+        const stream = keys || (() => {
+            const n = Number(opt('moves', '240'));
+            let s = '   ';
+            for (let i = 0; s.length < n + 3; i++) s += 'lljjhhkk'[i % 8] + ' ' + 'hjkl'[(i * 5) % 4] + ' ' + 's ';
+            return s;
+        })();
+        const r = await driveShapeB(dev, sid, stream);
+        fs.writeFileSync(resultFile, JSON.stringify(r));
+    }
 } catch (e) {
     process.stderr.write(`\nFAIL: could not drive Chrome over CDP: ${e && e.message}\n`);
     chrome.kill(); server.kill('SIGINT');
@@ -414,6 +561,33 @@ if (viewer) {
         console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
     if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
     process.exit((!report.error && !bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
+}
+
+if (shapeB) {
+    // The two claims, stated as assertions rather than as a number to squint at.
+    const bad = [];
+    if (report.error) bad.push(report.error);
+    if (!report.first_frame_ms) bad.push('no game frame painted with nothing typed');
+    if (report.keys_before_first_frame) {
+        bad.push(`${report.keys_before_first_frame} key(s) were typed before the first frame`);
+    }
+    if (!report.moves) bad.push('the driver\'s keys were not consumed');
+    if (report.queued) bad.push(`${report.queued} key(s) left unconsumed in the terminal queue`);
+    process.stderr.write('\n=== Page-driving harness (frame first, then keys, all from outside) ===\n');
+    process.stderr.write(`  frame with nothing typed : ${report.first_frame_ms || 'NONE'} ms`
+        + `${report.first_frame_mode ? ` (painted by ${report.first_frame_mode})` : ''}\n`);
+    process.stderr.write(`  keys before that frame   : ${report.keys_before_first_frame}\n`);
+    process.stderr.write(`  keys consumed after it   : ${report.moves}\n`);
+    process.stderr.write(`  ms/move                  : ${report.ms_per_move}  (incl. one CDP round trip each; `
+        + `engine ${report.engine_ms_per_move})\n`);
+    process.stderr.write(`  status line              : ${JSON.stringify(report.status_line)}\n`);
+    process.stderr.write(`  turn counter             : ${JSON.stringify(report.bottom_line)}\n`);
+    for (const b of bad) process.stderr.write(`  FAIL: ${b}\n`);
+    process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
+    process.stdout.write(JSON.stringify({ ...report, transport: transport || null,
+        console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
+    if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
+    process.exit((!bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
 }
 
 process.stderr.write('\n=== Interactive play ===\n');
