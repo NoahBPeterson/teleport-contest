@@ -432,6 +432,9 @@ const BENCH = new URLSearchParams(location.search).get('bench');
 // picked, which is the case the judge always presents.
 const PART2 = BENCH ? Number(new URLSearchParams(location.search).get('part2') || 0) : 0;
 
+/** A millisecond figure the engine may not have, reported as a round number or not at all. */
+const msOrNull = (v) => (typeof v === 'number' ? Math.round(v) : null);
+
 function benchRow(display, r) {
     let s = '';
     for (let c = 0; c < 80; c++) s += display.grid[r][c].ch;
@@ -472,9 +475,25 @@ async function runBench(display, reportUrl) {
     const nextFrame = () => new Promise((res) => { display.onFrame = () => { display.onFrame = null; res(); }; });
     const dispatch = (ch) => document.dispatchEvent(new KeyboardEvent('keydown', { key: ch, bubbles: true }));
 
+    // ?keydelay=<ms> paces the keystrokes instead of typing as fast as frames
+    // arrive. The default (0) measures how fast the engine *can* go; a pace is
+    // what a person types at, and it is the only way to observe anything that
+    // happens on a wall clock while a game is being played — the upgrade swap
+    // most of all. At 0.5 ms/move the fastest rung consumes 1200 keystrokes in
+    // 0.6 s, which is shorter than any transport takes to come up, so without a
+    // pace the swap is unobservable for reasons that have nothing to do with
+    // whether it works. Excluded from the timing: the wait is around the
+    // measured region, not inside it.
+    const keyDelay = Number(new URLSearchParams(location.search).get('keydelay') || 0);
     const times = [];
     const t_first = performance.now();
+    let paced = 0;
     for (let i = 0; i < keys.length; i++) {
+        if (keyDelay) {
+            const t_pause = performance.now();
+            await new Promise((res) => setTimeout(res, keyDelay));
+            paced += performance.now() - t_pause;
+        }
         const waited = nextFrame();
         const t0 = performance.now();
         dispatch(keys[i]);
@@ -482,7 +501,7 @@ async function runBench(display, reportUrl) {
         times.push(performance.now() - t0);
         if (game.program_state?.gameover) break;
     }
-    const wall = performance.now() - t_first;
+    const wall = performance.now() - t_first - paced;
     const sorted = times.slice().sort((a, b) => a - b);
     const report = {
         moves: times.length,
@@ -508,6 +527,12 @@ async function runBench(display, reportUrl) {
         prewarmed: !!(window.__NH?.engine?.prewarmed),
         prewarm_warmed: !!(window.__NH?.engine?.prewarmWarmed),
         part2_ms: PART2 || null,
+        key_delay_ms: keyDelay || null,
+        // The main-thread rung's boot, split: how much was instantiating
+        // js/generated-y/** and how much was newgame(). Null on every other
+        // rung, which does both in a worker.
+        main_graph_ms: msOrNull(window.__NH?.engine?.graphMs),
+        main_boot_ms: msOrNull(window.__NH?.engine?.bootMs),
         // Which engine painted that first frame, and which one is playing now.
         // They differ when a slow transport lost the boot race and was swapped
         // in later — see startEngine() in js/boot/interactive.mjs.

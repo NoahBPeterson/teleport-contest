@@ -236,7 +236,15 @@ async function serveSession(name) {
     return null;
 }
 
+// --latency=<ms> delays every response by that much, which is the one thing
+// loopback cannot stage on its own: on the real mirror each of the ~170
+// generated modules costs a round trip that this server answers in microseconds.
+// A rung whose module graph is fetched *before* the clock starts wins exactly
+// that latency, and without this switch the harness prices that win at zero.
+const LATENCY_MS = Number((args.find(a => a.startsWith('--latency=')) || '').split('=')[1] || 0) || 0;
+
 const server = http.createServer(async (req, res) => {
+    if (LATENCY_MS) await new Promise((r) => setTimeout(r, LATENCY_MS));
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
     const kind = classify(pathname);

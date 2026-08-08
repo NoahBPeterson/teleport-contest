@@ -7,8 +7,12 @@
 //   node tools/judge-sim/playability.mjs [--coi] [--no-sw] [--keys=hjkl...]
 //                                        [--inert-sw] [--sw-deny-dedicated]
 //                                        [--hang-sw] [--judge-stub]
-//                                        [--transport=worker|sharedworker|replay]
-//                                        [--transport-delay=ms] [--datetime=YYYYMMDDHHMMSS]
+//                                        [--transport=worker|sharedworker|replay|main]
+//                                        [--transport-delay=ms] [--key-delay=ms]
+//                                        [--datetime=YYYYMMDDHHMMSS]
+//                                        [--cpu-throttle=N] [--latency=ms]
+//                                        [--viewer[=a.json,b.json]]
+//                                        [--multigame[=N]] [--workerless]
 //                                        [--seed=N] [--timeout=ms] [--keep]
 //
 // --no-sw additionally 404s js/sw.js, which leaves the page with no blocking
@@ -103,6 +107,23 @@ const seed2 = opt('seed2', '');
 // is what every run looked like before the prewarm existed, and it is the
 // number a *discarded* prewarm would cost if one could be discarded.
 const noPrewarm = args.includes('--no-prewarm');
+// --cpu-throttle=<n> slows every target Chrome will let us slow, via CDP
+// Emulation.setCPUThrottlingRate, applied at attach time so it is in force
+// before the target runs a line of script. It is the only way here to ask the
+// question the judge's container asks: does this rung still paint in time on
+// hardware several times slower than this laptop?
+//
+// Read the answer with care. The rate is honoured by *page* targets; Chrome's
+// Emulation domain is not available on dedicated/shared/service workers, so a
+// throttled run slows the main thread and leaves the worker transports at full
+// speed. That biases the comparison AGAINST the main-thread engine — which is
+// what makes it a useful number: a rung that wins while carrying the handicap
+// has won. tools/judge-sim/loadgen.mjs is the unbiased complement.
+const cpuThrottle = Number(opt('cpu-throttle', '0')) || 0;
+// --latency=<ms> makes tools/judge-sim/server.mjs answer every request that much
+// later, so the cost of *fetching* a module graph is priced instead of assumed.
+// Loopback answers in microseconds; the mirror does not.
+const latency = opt('latency', '');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
 // DevTools endpoint, kept clear of the range PORT is drawn from.
@@ -118,7 +139,7 @@ const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
     ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []),
     ...(denyDedicated ? ['--sw-deny-dedicated'] : []), ...(hangSw ? ['--hang-sw'] : []),
-    ...(judgeStub ? ['--judge-stub'] : [])],
+    ...(judgeStub ? ['--judge-stub'] : []), ...(latency ? ['--latency=' + latency] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
 
 let up = false;
@@ -146,6 +167,8 @@ if (datetime) q.set('datetime', datetime);
 if (part2) q.set('part2', part2);
 if (seed2) q.set('seed2', seed2);
 if (noPrewarm) q.set('prewarm', '0');
+// --key-delay=<ms> paces the bench's keystrokes; see runBench() in index.html.
+if (opt('key-delay', '')) q.set('keydelay', opt('key-delay', ''));
 q.set('bmoves', opt('moves', '240'));
 // --viewer drives tools/judge-sim/viewer-repro.html instead of the play page:
 // ONE import of js/jsmain.js, then several sessions replayed back-to-back
@@ -153,11 +176,23 @@ q.set('bmoves', opt('moves', '240'));
 // thing here that exercises "a second game in a page that already ran one".
 // Same browser, same console capture, different page.
 const viewer = args.includes('--viewer') || !!opt('viewer', '');
+// --multigame[=N] drives tools/judge-sim/multigame-repro.html: N *interactive*
+// games built back-to-back in one page with no reload, which nothing else here
+// can stage (index.html plays one game and reloads for the next). It is the
+// only check on what happens after the main-thread rung has spent the page
+// realm — the game-2 contract in js/boot/main-thread-engine.mjs.
+const multigame = args.includes('--multigame') || !!opt('multigame', '');
 const url = viewer
     ? `http://127.0.0.1:${PORT}/__sim/viewer-repro.html?sessions=${encodeURIComponent(opt('viewer',
         'seed0002-healer-reflection-drummer.session.json,seed0004-feeding-pony.session.json,'
         + 'seed0013-friday13-save-then-fullmoon-restore.session.json'))}`
-    : `http://127.0.0.1:${PORT}/?${q}`;
+    : multigame
+        ? `http://127.0.0.1:${PORT}/__sim/multigame-repro.html?games=${opt('multigame', '2') || '2'}`
+            + `&seed=${opt('seed', '8000')}&seed2=${opt('seed2', '4500')}&datetime=${opt('datetime', '20240101120000')}`
+            + (keys ? `&keys=${encodeURIComponent(keys)}` : '')
+            + (transport ? `&transport=${transport}` : '')
+            + (args.includes('--workerless') ? '&workerless=1' : '')
+        : `http://127.0.0.1:${PORT}/?${q}`;
 
 process.stderr.write(`\n=== Headless Chrome: ${url} (COI ${coi ? 'on' : 'off'}) ===\n`);
 // Start on about:blank and navigate over CDP instead of passing the URL on the
@@ -242,6 +277,7 @@ async function cdpConnect(port) {
             for (const [method, params] of [
                 ['Log.enable', {}],
                 ['Runtime.enable', {}],
+                ...(cpuThrottle > 1 ? [['Emulation.setCPUThrottlingRate', { rate: cpuThrottle }]] : []),
                 ['Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true }],
                 ['Runtime.runIfWaitingForDebugger', {}],
             ]) call(method, params, sid).catch(() => { /* target gone, or not that kind of target */ });
@@ -330,6 +366,37 @@ if (timedOut) {
 
 const report = JSON.parse(fs.readFileSync(resultFile, 'utf8'));
 
+if (multigame) {
+    // What is being checked is that game 2 is hosted by something OTHER than
+    // the spent page realm — a worker transport, a ReplayEngine realm, or a
+    // refusal that says why — and never by the arena game 1 left behind.
+    const gs = report.games || [];
+    process.stderr.write('\n=== Two interactive games, one page, no reload ===\n');
+    for (const g of gs) {
+        process.stderr.write(`  game ${g.n}: ${g.error ? 'ERROR ' + g.error : `mode=${g.mode} moves=${g.moves} `
+            + `start->frame=${g.start_to_frame_ms}ms status=${JSON.stringify(g.status)}`}\n`);
+    }
+    // Game 1 must play. Game 2 must either play in a realm of its own or say,
+    // in words, that it could not get one — the one forbidden outcome is a
+    // game 2 that "succeeds" in game 1's arena, which shows up as a second
+    // main-thread mode or as NetHack's own "called more than once" garbage.
+    const g1 = gs[0] || {};
+    const g2 = gs[1] || {};
+    const bad = [];
+    if (g1.error || !g1.moves) bad.push('game 1 did not play: ' + (g1.error || 'no moves'));
+    if (!g2.error && g2.mode === 'main') bad.push('game 2 was hosted by the spent page realm');
+    if (!g2.error && !g2.moves) bad.push('game 2 neither played nor explained itself');
+    if (g2.error && !/realm|transport|Worker|reload/i.test(g2.error)) {
+        bad.push('game 2 failed without an explanation: ' + g2.error);
+    }
+    for (const b of bad) process.stderr.write(`  FAIL: ${b}\n`);
+    process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
+    process.stdout.write(JSON.stringify({ ...report, multigame: true, transport: transport || null,
+        console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
+    if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
+    process.exit((!report.error && !bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
+}
+
 if (viewer) {
     // One import of js/jsmain.js, N sessions through it. What is being checked
     // is that session 2 does not land in session 1's spent C globals, and that
@@ -350,7 +417,8 @@ if (viewer) {
 }
 
 process.stderr.write('\n=== Interactive play ===\n');
-process.stderr.write(`  engine transport : ${report.engine_mode}  (crossOriginIsolated=${report.crossOriginIsolated})\n`);
+process.stderr.write(`  engine transport : ${report.engine_mode}  (crossOriginIsolated=${report.crossOriginIsolated}`
+    + `${cpuThrottle > 1 ? `, cpu throttle ${cpuThrottle}x on every page target` : ''})\n`);
 // The judge's browser check gives a session a few seconds to show something.
 // This is that clock: navigation start to the first painted frame, whichever
 // engine won the boot race in js/boot/interactive.mjs.
@@ -368,7 +436,7 @@ process.stderr.write(`  status line      : ${JSON.stringify(report.status_line)}
 
 process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
 process.stdout.write(JSON.stringify({
-    ...report, coi, transport: transport || null,
+    ...report, coi, transport: transport || null, cpu_throttle: cpuThrottle || null,
     out_of_scope: blocked.map(r => r.path),
     console_entries: cdpEntries,
 }, null, 2) + '\n');
