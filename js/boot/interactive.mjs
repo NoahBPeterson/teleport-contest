@@ -141,7 +141,7 @@ function transportOverride() {
     try {
         if (typeof location === 'undefined' || !location.search) return null;
         const v = new URLSearchParams(location.search).get('transport');
-        return ['sab', 'worker', 'sharedworker', 'replay'].includes(v) ? v : null;
+        return ['sab', 'worker', 'sharedworker', 'replay', 'main'].includes(v) ? v : null;
     } catch { return null; }
 }
 
@@ -841,6 +841,10 @@ function replayInFreshRealm(job, onAbort) {
 // transport wins on its own and one grace period when it is genuinely broken.
 const PREFER_GRACE_MS = 300;
 
+// Engine modes that occupy the fallback slot, and may therefore be superseded
+// by a real transport mid-game. See RacedEngine._swapIn.
+const FALLBACK_MODES = new Set(['replay', 'main']);
+
 /**
  * The first of these engines to come up wins — subject to the order they were
  * given in, which is a preference and not a ladder: an earlier entry that is
@@ -1044,6 +1048,70 @@ async function claimPrewarm(job) {
 }
 
 /**
+ * The fallback slot: a main-thread resident engine if this tree has one, and
+ * ReplayEngine if it does not.
+ *
+ * ReplayEngine costs ~21 ms/move because it re-runs the whole key prefix — the
+ * only thing a realm that cannot block has ever been able to do. The yieldable
+ * build (js/generated-y/, see docs/NOTES-async-engine.md) removes the premise:
+ * its engine suspends its C stack into generator objects at every keystroke
+ * read, so it can be resident on the main thread and costs one resume per key.
+ *
+ * Chosen at start() rather than at construction, because "is there a yieldable
+ * build in this tree" is answered by an import that may fail, and because a
+ * main-thread engine cannot be unloaded once started — so nothing may start one
+ * before the race has decided the fallback is going to run at all.
+ *
+ * Silence obligations, same as every other rung: the import failure is
+ * swallowed, and the ReplayEngine that takes over is the behaviour this page
+ * had before, so a tree without js/generated-y/ is bit-for-bit the old page.
+ */
+class FallbackEngine {
+    constructor(job, only) {
+        this.job = job;
+        this._only = only;
+        this._inner = null;
+        this._dead = false;
+    }
+
+    get mode() { return this._inner ? this._inner.mode : null; }
+    get frame() { return this._inner ? this._inner.frame : null; }
+    get exited() { return this._inner ? this._inner.exited : false; }
+    get gameover() { return this.exited; }
+    get exitInfo() { return this._inner ? this._inner.exitInfo : null; }
+    get whenExit() { return this._inner ? this._inner.whenExit : undefined; }
+    get engineTime() { return this._inner ? this._inner.engineTime : undefined; }
+    get msPerMove() { return this._inner ? this._inner.msPerMove : undefined; }
+
+    async start() {
+        if (this._only !== 'replay') {
+            try {
+                const { MainThreadEngine } = await import('./main-thread-engine.mjs');
+                const eng = new MainThreadEngine(this.job);
+                const frame = await eng.start();
+                if (this._dead) { eng.retire(); return frame; }
+                this._inner = eng;
+                return frame;
+            } catch {
+                // No yieldable build, or the page realm already hosted one.
+                // Silently take the path this page always took.
+            }
+        }
+        if (this._dead) return null;
+        this._inner = new ReplayEngine(this.job);
+        return this._inner.start();
+    }
+
+    async step(code) { return this._inner ? this._inner.step(code) : null; }
+    async stop() { if (this._inner) await this._inner.stop(); }
+    retire() { this.destroy(); }
+    destroy() {
+        this._dead = true;
+        if (this._inner) { try { this._inner.destroy(); } catch { /* already gone */ } }
+    }
+}
+
+/**
  * What the page holds while it plays: one engine's worth of API over an engine
  * that may be replaced exactly once.
  *
@@ -1086,7 +1154,7 @@ class RacedEngine {
     /** Race the transports against the fallback; resolve with the first frame. */
     start() {
         const only = transportOverride();
-        const fallback = new ReplayEngine(this.job);
+        const fallback = new FallbackEngine(this.job, only);
         this._fallback = fallback;      // so a page that goes away mid-race can stop it
 
         // The fallback's head start (see FALLBACK_HEAD_START_MS), cut short the
@@ -1228,7 +1296,11 @@ class RacedEngine {
      */
     async _swapIn(eng) {
         const old = this._engine;
-        if (this._dead || !old || old.exited || old.mode !== 'replay') { eng.retire(); return; }
+        // Both fallbacks are upgradeable. A main-thread engine is much closer
+        // to a transport in cost (~1.4 ms/move against ~21) but it is still the
+        // fallback: it holds the page realm, cannot be unloaded, and can only
+        // ever host one game. If a real transport arrives, take it.
+        if (this._dead || !old || old.exited || !FALLBACK_MODES.has(old.mode)) { eng.retire(); return; }
         for (const code of this._keys) {
             await eng.step(code);
             // The transport says this game is already over. It is right — it ran

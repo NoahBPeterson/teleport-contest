@@ -45,6 +45,7 @@
 // judge scores, so what you see in the browser is what the scorer sees.
 
 import { installBrowserGlobals } from './browser-env.mjs';
+import { makeFrameReader } from './frames.mjs';
 
 // Decided before installBrowserGlobals(), which installs a stand-in `process`
 // in a browser — after that call `typeof process` no longer tells the two
@@ -168,44 +169,7 @@ function xhrWaiter(keyUrl) {
     };
 }
 
-// ---------------------------------------------------------------------------
-// Frame extraction.
-//
-// harness.mjs writes an OSC marker + payload at every input boundary; we are
-// called synchronously right after the boundary marker was flushed, so
-// everything we need is already in the buffer.
-
-const OSC = '\x1b]7777;';
-
-function makeFrameReader() {
-    let buf = '';
-    return {
-        sink(s) { buf += s; },
-        /** Consume every complete marker; return the last input frame + any anim frames. */
-        take() {
-            let i = 0, last = null;
-            const anim = [];
-            for (;;) {
-                const m = buf.indexOf(OSC, i);
-                if (m < 0) break;
-                const end = buf.indexOf('\x07', m);
-                if (end < 0) break;
-                const kv = Object.fromEntries(buf.slice(m + OSC.length, end).split(';').map((p) => p.split('=')));
-                const len = Number(kv.LEN);
-                if (buf.length < end + 1 + len) break;   // payload still coming
-                const frame = {
-                    screen: buf.slice(end + 1, end + 1 + len),
-                    cx: Number(kv.CX), cy: Number(kv.CY),
-                };
-                if (kv.KIND === 'anim') anim.push(frame);
-                else last = frame;
-                i = end + 1 + len;
-            }
-            buf = buf.slice(i);
-            return { last, anim };
-        },
-    };
-}
+// Frame extraction lives in ./frames.mjs — shared with the main-thread engine.
 
 // ---------------------------------------------------------------------------
 

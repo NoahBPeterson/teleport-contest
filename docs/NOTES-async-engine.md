@@ -470,48 +470,106 @@ end-of-run heap equals after-first-segment heap in every run.
 
 ## Phase 2 — the browser rung
 
-**Not reached in this leg.** The design is settled and the mechanism is proved
-end-to-end in Node (`yieldtest/resident.mjs` is a resident engine driven purely
-from the event loop, which is the browser configuration minus Chrome), but the
-rung itself — registration in `js/boot/interactive.mjs`'s race, silence and
-timeout-bounding, `--noworker` in `tools/judge-sim/playability.mjs` — is not
-written. What the numbers above predict, and what a next leg would verify:
+**Reached.** `js/boot/main-thread-engine.mjs` is a resident NetHack on the
+browser main thread. It runs `js/generated-y/`, boots once, parks at its first
+`getchar`, and costs one generator resume per keystroke. No worker, no
+SharedArrayBuffer, no service worker, no blocking.
 
-- **ms/move.** 1.44 ms in Node, engine-only. A main-thread rung pays no worker
-  message hop and no service-worker round trip — the ~4 ms of Chrome SW
-  dispatch that dominates the XHR transport's per-keystroke budget simply is
-  not there. It does pay DOM paint, which the XHR transport pays too. Expect
-  **~2–3 ms/move**, i.e. between the SAB transport (1.2) and the XHR transport
-  (2.4), and roughly **7–10× better than the 21 ms replay fallback** it would
-  displace. Comfortably inside the judge's 5 ms bar even after the judge box's
-  ~2.6× penalty is applied to the engine share.
-- **first_frame_ms.** +6–9% over cold boot, so ~1.1–1.3 s local against the
-  measured 1.0–1.9 s, and the prewarm applies unchanged (a warm main-thread
-  realm is *more* natural than a warm worker — there is no realm to spawn).
+### Wiring
 
-Where it goes, precisely (from the recon in `docs/NOTES-transport-ladder.md`
-and `js/boot/interactive.mjs`):
+Four edits, all in the fallback's slot rather than as a fifth transport:
 
-1. A third racer in `RacedEngine.start()` (~line 1099), alongside `transportP`
-   and `fallbackP`, with its own smaller head-start gate — so its ordering
-   against `ReplayEngine` is a time constant rather than a list position. It
-   must be registered *outside* the `keyServiceOnce()` gate at line 923, which
-   throws before the `modes` array is built when there is no service worker —
-   exactly the hosts where a main-thread engine is the only thing left standing.
-2. `_swapIn()`'s guard at line 1231 (`old.mode !== 'replay'`) must become a
-   set, or a main-thread engine once adopted could never be upgraded to a real
-   transport.
-3. `transportOverride()`'s whitelist at line 144.
-4. `--noworker` in `playability.mjs`, cribbed from `driver.html:22–29`, with
-   the `Worker` poison landing **before** the prewarm IIFE at `index.html:55`.
-   That is the right bench: with `Worker` unavailable, `Port.spawn` and
-   `replayInFreshRealm` both fail into their `try/catch`, and the main-thread
-   rung is the only engine left.
+- `js/boot/frames.mjs` — the input-boundary frame reader, extracted from
+  `engine-worker.mjs` so the two resident engines share one copy of a
+  wire-format parser.
+- `FallbackEngine` in `interactive.mjs` — chooses the main-thread engine if the
+  tree has one and `ReplayEngine` if it does not. The choice is made at
+  `start()`, not at construction, because "is there a yieldable build here" is
+  answered by an `import()` that may fail, and because **a main-thread engine
+  cannot be unloaded once started** — nothing may start one before the race has
+  decided the fallback is going to run at all.
+- `FALLBACK_MODES` — `_swapIn`'s guard was `old.mode !== 'replay'`; a
+  main-thread engine is also a fallback and must also be upgradeable.
+- `transportOverride()` gains `main`, for the bench.
 
-Every one of those has an obligation to be silent — the judge fails an entry on
-any console line — and to be timeout-bounded rather than error-bounded.
+A tree without `js/generated-y/` is bit-for-bit the old page: the `import()`
+fails, the failure is swallowed, and `ReplayEngine` takes over. `js/generated-y/`
+and `js/boot/harness-y.mjs` are build artifacts and are `.gitignore`d, so that
+is the *default* state of a fresh checkout until `C2JS_YIELD=1` is run.
 
----
+### Measured
+
+`tools/judge-sim/playability.mjs`, headless Chrome, seed8000, 240 keys.
+This machine was heavily contended; absolute values run ~2–3× the figures in
+`NOTES-transport-ladder.md`. **Compare within this table, not across
+documents** — every row here was taken in the same session.
+
+| invocation | engine | first_frame_ms | ms/move | median | p95 | console |
+|---|---|---|---|---|---|---|
+| production | `xhr` | 1161 / 1424 | 6.85 / 7.01 | 3.2 / 3.0 | 14.2 / 15.6 | 0 |
+| `--coi` | `sab` | 1413 / 1389 | 3.43 / 3.34 | 0.69 / 0.56 | 7.5 / 7.0 | 0 |
+| `--sw-deny-dedicated` | `xhr-shared` | 1482 | 6.60 | 2.9 | 12.3 | 0 |
+| `--judge-stub` | `xhr` | 1404 | 5.50 | 1.8 | 10.4 | 0 |
+| `--transport=replay` *(control)* | `replay` | 1252 / 1475 | **21.80 / 20.37** | 0 | 0.1 | 0 |
+| `--no-sw` | **`main`** | 1420 / 1374 / 1405 | **0.714 / 0.688 / 0.682** | 0.4 | 1.9 – 2.0 | 1 † |
+| `--inert-sw` | **`main`** | 1378 / 1389 / 1122 | **0.660 / 0.661 / 0.734** | 0.4 | 1.7 – 2.1 | 0 |
+| `--hang-sw` | **`main`** | 2089 | **0.690** | 0.4 | 1.8 | 0 |
+| `--transport=main` | **`main`** | 1350 / 1374 / 1403 | **0.667 / 0.688 / 0.699** | 0.4 | 1.6 – 2.0 | 0 |
+
+Control at HEAD, same machine, same session: `--no-sw` → `replay`,
+first frame 1441 ms, **21.665 ms/move**, 1 console line.
+
+† The single console line under `--no-sw` is **pre-existing and not ours**: it
+is Chrome's uncatchable "A bad HTTP response code (404) was received when
+fetching the script" from the service-worker registration against a mirror that
+has no `js/sw.js`. It is reproduced verbatim by HEAD (see the control row). Worth
+fixing on its own account — the judge fails an entry on any console line — but
+it belongs to `--no-sw`, not to this rung.
+
+Three readings:
+
+1. **It replaces the fallback, by a factor of 30.** Every degraded mode that
+   used to land on `replay` at ~21 ms/move now lands on `main` at ~0.68. The
+   target was "well under 5 ms local"; this is under 1.
+2. **It is the fastest engine in the table** — faster than `sab` (3.4) and
+   `xhr` (6.9). That is not a surprise on reflection: it pays no thread hop, no
+   `postMessage`, and none of the ~4 ms of Chrome service-worker dispatch that
+   dominates the XHR transport's per-keystroke budget. The engine is 17% slower
+   and the transport is 100% of the difference.
+3. **Healthy transports still win, unchanged.** production → `xhr`, `--coi` →
+   `sab`, `--sw-deny-dedicated` → `xhr-shared`, `--judge-stub` → `xhr`. The
+   race is untouched when it has something to race.
+
+First frame is comparable (1350–1420 against 1161–1482 for the transports).
+`--hang-sw` costs ~200 ms more than HEAD's 1879 — see the next section.
+
+### One real problem found, not fixed
+
+**A main-thread engine's boot starves the transports' handshake.**
+
+With `--transport-delay`, HEAD's replay fallback paints first and is then
+upgraded to `xhr` at key 2 (delay 1500) or key 8 (delay 3000). With this rung
+in the fallback slot, the upgrade never fires at any delay from 600 to 3000 ms.
+Two causes, and both are real:
+
+- The bench's 200 keys complete in ~150 ms at 0.7 ms/move, so there is
+  frequently no window in which a delayed transport can arrive *and matter*.
+  That half is benign — the swap is an optimisation and the thing it optimises
+  away is already gone.
+- Instantiating 13.6 MB of modules **on the main thread** blocks the event loop
+  for hundreds of milliseconds, and the transports' `ready`/`probe` handling is
+  main-thread message dispatch. A transport that starts while the fallback is
+  mid-boot can time out against `READY_TIMEOUT_MS`/`PROBE_TIMEOUT_MS` for no
+  reason but CPU. That half is not benign: it means this rung does not merely
+  fail to win gracefully, it can *cause* a healthy transport to lose.
+
+Production is not affected — the transports start at t=0 and the fallback at
+t=700 ms, by which time the handshake is done, which is what the whole table
+above shows. But `FALLBACK_HEAD_START_MS` was tuned for a fallback that boots
+in a worker realm. A main-thread fallback needs either a longer head start, or
+to be started only once the transports have definitively failed, or a yielding
+boot. Deciding that is the first task of the next leg, and it is the reason
+this is a "ship after one more leg" and not a "ship".
 
 ## Verdict
 
@@ -525,9 +583,10 @@ The case for:
 - **The cost is small and lands in the right place.** +12.5% engine time on
   replay, +17% per move resident, +7% heap. The RNG stays a plain function; the
   hot integer utilities stay plain functions; only 12.1% of call sites change.
-- **It is 7–10× better than what it replaces.** The rung it would displace
-  costs ~21 ms/move. Nothing else about the ladder changes: SAB and XHR still
-  win when available, and `_swapIn` still upgrades.
+- **It is 30× better than what it replaces, measured in Chrome.** 0.68 ms/move
+  against 21. Every degraded mode that used to land on `replay` now lands on
+  `main`, first frame is comparable, and console output is unchanged. Healthy
+  transports still win.
 - **It removes the ladder's worst failure mode.** A transport that is trusted
   wrongly does not fail, it hangs inside `getchar()` forever. A main-thread
   engine has nothing to trust — no service worker, no SAB, no realm to spawn.
@@ -546,15 +605,26 @@ The case against, honestly:
   different message. The analysis is only as good as its model of what a call
   site is, and that model was wrong three times. The pre-flight now checks four
   properties; there is no argument that four is the right number.
-- **Phase 2 is unproven.** The prediction above is an extrapolation from Node.
-  Chrome's paint and the race's silence requirements are not free.
+- **The rung starves the transports' handshake while it boots.** Documented
+  above. Production is unaffected, but the head start was tuned for a fallback
+  that boots in a worker, and a main-thread fallback can make a healthy
+  transport time out for no reason but CPU. This must be fixed before it ships,
+  and it is the single reason the verdict is not simply "ship".
+- **It can only ever host one game per page**, because C file-scope state is
+  global and a page realm's module graph cannot be unloaded. Fine for a game
+  the player plays once; not fine for the judge's Session Viewer, which runs
+  many sessions through one page. `MainThreadEngine` enforces it and the second
+  game falls back to `ReplayEngine`.
 
-What the next leg must do, in order: (1) the browser rung and a real
-`playability.mjs --noworker` run — first frame, ms/move, and **0 console
-lines**; (2) `tools/strict-score.mjs` against `js/jsmain-yield.mjs`; (3) a
-download-size decision, since shipping both builds is the actual cost; (4)
-re-run this census after any transpiler change, because the colouring is a
-property of the emitted output and will drift.
+What the next leg must do, in order: (1) fix the boot-starvation interaction —
+longer head start, start-after-transports-fail, or a boot that yields; (2)
+`tools/strict-score.mjs` against `js/jsmain-yield.mjs`; (3) a download-size
+decision, since shipping both builds is the actual cost, and the browser rung
+means a real user downloads 13.6 MB more; (4) decide whether this should stay a
+*fallback* at all — it measured faster than every transport, and if that holds
+across browsers the ladder's whole shape is wrong; (5) re-run this census after
+any transpiler change, because the colouring is a property of the emitted
+output and will drift.
 
 Abandoning would be wrong: this is the only route to a resident engine on a
 plain static host with no COOP/COEP and no service worker, and it works.
