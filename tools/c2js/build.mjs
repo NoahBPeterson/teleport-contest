@@ -524,5 +524,8 @@ async function maybeYield() {
 }
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 
-if (process.argv[2] === '--all') buildAll().then(maybeYield);
+// buildAll/buildSingle may or may not return a promise depending on the path
+// taken; normalise before chaining so the hook can never mask a build failure
+// or, worse, invent one after a build that succeeded.
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield);
 else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

@@ -46,6 +46,10 @@ const coloredSitesByMod = new Map();
 const arrowHazards = [];
 
 for (const [key, scan] of mods) {
+  // Only js/generated/ is rewritten. The hand-written runtime is shared
+  // between the two builds unchanged, so its sites are not "coloured" in any
+  // sense that costs anything — they are reported separately below.
+  if (!key.startsWith('js/generated')) continue;
   for (const c of scan.calls) {
     if (c.kind === 'member') continue;
     if (!G.siteIsColored(key, c, scan.src)) continue;
@@ -100,6 +104,7 @@ out(`COLOURED call sites  : ${coloredSiteTotal} / ${totalSites}   (${pct(colored
 out(`  direct             : ${coloredDirect}`);
 out(`  via function ptr   : ${coloredIndirect}`);
 out(`coloured sites inside arrow closures (would make the transform invalid): ${arrowHazards.length}`);
+out(`hand-written runtime call-backs into transpiled code (answered by Y.drive): ${G.runtimeCallbackSites.length}`);
 out('');
 
 out('--- per-module (top 40 by coloured call sites) ---');

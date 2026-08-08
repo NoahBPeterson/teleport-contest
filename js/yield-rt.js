@@ -67,20 +67,62 @@ export function* stdinRead(buf) {
 /**
  * Run a yieldable engine to completion, answering every park from `nextKey`.
  *
- * The synchronous driver: used by the Node parity harness, where the whole
- * move string is known up front and `nextKey` never actually has to wait.
- * The browser rung uses the generator directly instead, parking between
- * keystrokes rather than looping here.
+ * This is the whole trick, and it is worth being precise about why it works.
+ * When the engine parks, its entire C call stack — forty-odd frames of
+ * transpiled NetHack — is suspended inside generator objects on the heap.
+ * There is no live JS stack to hold. So the driver is free to return to the
+ * event loop and come back later, which is exactly what a browser main thread
+ * requires and exactly what the synchronous engine can never do.
+ *
+ * `nextKey` may return a key code or a promise of one. During replay it is
+ * never called at all: the whole move string is queued up front, getchar
+ * drains it without reaching its `yield`, and the loop below runs `it.next()`
+ * exactly once. That is deliberate — it makes a corpus run a test of the
+ * TRANSFORM, with no trampoline behaviour mixed in.
  *
  * @param {Generator} it   the generator returned by the engine's main()
- * @param {() => number} nextKey  supplies a key code, or a negative for EOF
+ * @param {() => number | Promise<number>} [nextKey]
  */
-export function trampoline(it, nextKey) {
+export async function trampoline(it, nextKey) {
   let send;
   for (;;) {
     const r = it.next(send);
     if (r.done) return r.value;
     if (r.value !== KEY_REQUEST) throw new Error('yield-rt: unexpected yield from the engine');
-    send = nextKey();
+    if (!nextKey) throw new Error('yield-rt: engine parked with no key source');
+    const k = nextKey();
+    send = (k && typeof k.then === 'function') ? await k : k;
+  }
+}
+
+/**
+ * A resident engine: park-per-keystroke rather than run-to-completion.
+ *
+ * `start()` runs until the first park (the first painted frame); `step(code)`
+ * delivers one key and runs until the next park. Nothing here blocks, so this
+ * is usable on a browser main thread — which is the entire point of the
+ * yieldable build.
+ */
+export class ResidentEngine {
+  /** @param {Generator} it @param {() => void} [onPark] called at each park */
+  constructor(it, onPark) {
+    this.it = it;
+    this.onPark = onPark;
+    this.done = false;
+    this.result = undefined;
+  }
+
+  /** run to the first park. @returns {boolean} true if parked, false if the game already ended */
+  start() { return this._runTo(undefined); }
+
+  /** deliver one key and run to the next park. */
+  step(code) { return this._runTo(code); }
+
+  _runTo(send) {
+    const r = this.it.next(send);
+    if (r.done) { this.done = true; this.result = r.value; return false; }
+    if (r.value !== KEY_REQUEST) throw new Error('yield-rt: unexpected yield from the engine');
+    if (this.onPark) this.onPark();
+    return true;
   }
 }
