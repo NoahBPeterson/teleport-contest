@@ -90,6 +90,19 @@ const transportDelay = opt('transport-delay', '');
 // --datetime=<YYYYMMDDHHMMSS> pins the clock NetHack starts from, so two runs
 // can be compared screen-for-screen (the default is "now", which is not).
 const datetime = opt('datetime', '');
+// --part2=<ms> runs the two-phase shape the judge's browser check uses: load
+// index.html and leave it alone for <ms> (their script-error/failed-fetch
+// observation window), then build a NethackGame and drive it. --seed2=<n> gives
+// that second phase a seed of its own, which is always the case for the judge:
+// the page cannot know the session seed at load time. The number to read out of
+// these runs is start_to_frame_ms, not first_frame_ms.
+const part2 = opt('part2', '');
+const seed2 = opt('seed2', '');
+// --no-prewarm passes ?prewarm=0, which stops index.html warming an engine
+// realm at page load. This is the floor a prewarm can never do worse than: it
+// is what every run looked like before the prewarm existed, and it is the
+// number a *discarded* prewarm would cost if one could be discarded.
+const noPrewarm = args.includes('--no-prewarm');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
 // DevTools endpoint, kept clear of the range PORT is drawn from.
@@ -130,6 +143,9 @@ if (keys) q.set('keys', keys);
 if (transport) q.set('transport', transport);
 if (transportDelay) q.set('transportdelay', transportDelay);
 if (datetime) q.set('datetime', datetime);
+if (part2) q.set('part2', part2);
+if (seed2) q.set('seed2', seed2);
+if (noPrewarm) q.set('prewarm', '0');
 q.set('bmoves', opt('moves', '240'));
 // --viewer drives tools/judge-sim/viewer-repro.html instead of the play page:
 // ONE import of js/jsmain.js, then several sessions replayed back-to-back
@@ -340,6 +356,10 @@ process.stderr.write(`  engine transport : ${report.engine_mode}  (crossOriginIs
 // engine won the boot race in js/boot/interactive.mjs.
 process.stderr.write(`  first frame      : ${report.first_frame_ms} ms  (painted by ${report.first_frame_mode}`
     + `${report.upgraded ? `, upgraded to ${report.engine_mode} mid-game` : ''})\n`);
+// The clock the judge's harness actually starts: t_start, then start().
+process.stderr.write(`  start -> frame   : ${report.start_to_frame_ms} ms`
+    + `  (prewarmed=${report.prewarmed}, warmed=${report.prewarm_warmed}`
+    + `${report.part2_ms ? `, part-1 window ${report.part2_ms} ms` : ''})\n`);
 process.stderr.write(`  moves            : ${report.moves}\n`);
 process.stderr.write(`  ms/move          : ${report.ms_per_move}  (median ${report.median_ms}, p95 ${report.p95_ms}, max ${report.max_ms})\n`);
 process.stderr.write(`  frames painted   : ${report.frames}\n`);
