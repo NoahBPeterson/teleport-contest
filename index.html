@@ -6,16 +6,19 @@
 <meta name="description" content="The Teleport Coding Challenge — port NetHack C to JavaScript.">
 <meta name="theme-color" content="#f9f7f1">
 <title>The Teleport Coding Challenge</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 
 <!-- The module chain the page needs before it can draw anything, fetched in
      parallel with the parse instead of discovered one import at a time. All of
      these are published by the mirror (js/** and frozen/**), so none of them
      can 404 — a 404 here would be a console line, and the judge's playability
      check fails an entry on any console output at all. Free on a warm cache
-     and worth a round trip each on a cold one. -->
+     and worth a round trip each on a cold one.
+
+     ABOVE the web-font <link> on purpose. A parser-inserted classic script does
+     not run until every stylesheet ahead of it has loaded, and the script below
+     is the one that starts the engine — so a round trip to somebody else's font
+     server used to sit in front of the prewarm, the auto-boot and the
+     snapshot.json fetch, on a page whose whole budget is about three seconds. -->
 <link rel="modulepreload" href="./js/boot/interactive.mjs">
 <link rel="modulepreload" href="./js/boot/engine-worker.mjs">
 <link rel="modulepreload" href="./js/boot/browser-env.mjs">
@@ -26,41 +29,70 @@
 <link rel="modulepreload" href="./frozen/screen-decode.mjs">
 <link rel="modulepreload" href="./js/gstate.js">
 <link rel="modulepreload" href="./js/allmain.js">
-<link rel="modulepreload" href="./js/storage.js">
 
 <script>
-// Warm an engine realm NOW, before anything else on this page runs.
+// Three things, at parse time, before anything else on this page runs.
 //
-// Loading the page and playing the first game are two different moments, and
-// everything between them used to be thrown away. A human stares at "press any
-// key"; the judge's browser check spends its first phase watching a freshly
-// loaded page for script errors and failed fetches before it drives anything.
-// Either way the CPU is idle and the expensive half of a first frame —
-// instantiating the 176-module transpiled graph, ~500 ms — depends on nothing
-// at all. So start it here, at parse time, ahead of the module script below and
-// ahead of the snapshot.json fetch it opens with.
+// 1. START THE snapshot.json FETCH. The module script below needs the fork's
+//    owner to namespace this fork's saves in localStorage, and it used to open
+//    with `await fetch('./snapshot.json')` — one full round trip in front of
+//    the five dynamic imports that follow it, on the critical path to the first
+//    frame for the sake of a string. Started here it overlaps the module graph
+//    instead, and the module script picks the answer up where it is really
+//    needed, immediately before the game's storage handle is built.
 //
-// What this does NOT do is start a game: a game needs a seed, and neither a
-// human's random one nor the judge's session one exists yet. The warmed realm
-// has run no C code, so it is pristine and fits whatever job turns up — see
-// prewarmEngine() in js/boot/interactive.mjs. Whoever calls startEngine() first
-// adopts it, whether that is this page's main() or a driver that imported
-// js/jsmain.js and built its own NethackGame.
+// 2. ARM THE AUTO-BOOT CLAIM. This page boots a real game at load — see
+//    "The auto-boot claim" in js/boot/interactive.mjs. A driver that builds its
+//    own NethackGame takes that game away from us; arming here is what makes
+//    the handover a claim rather than a collision.
 //
-// Everything about it is silent and optional. A browser that cannot host a
+// 3. WARM AN ENGINE REALM. Loading the page and playing the first game are two
+//    different moments, and everything between them used to be thrown away.
+//    The expensive half of a first frame — instantiating the 176-module
+//    transpiled graph, ~500 ms — depends on nothing at all, so it starts here.
+//    The warmed realm has run no C code: it is pristine and fits whatever job
+//    turns up, ours or a driver's. `?prewarm=0` turns it off, which is how the
+//    no-prewarm floor is measured (playability.mjs --no-prewarm).
+//
+// Everything here is silent and optional. A browser that cannot host a
 // transport, a service worker that never answers, a mirror missing a file: all
-// of them end here as a resolved promise with nothing in it, and the game boots
-// exactly as it did before. `?prewarm=0` turns it off, which is how the
-// no-prewarm path is measured (tools/judge-sim/playability.mjs --no-prewarm).
+// of them end as a resolved promise with nothing in it, and the game boots
+// exactly as it did before.
 (function () {
+    window.__NH_T_HEAD = performance.now();
     try {
-        if (new URLSearchParams(location.search).get('prewarm') === '0') return;
+        window.__NH_SNAPSHOT = fetch('./snapshot.json', { cache: 'no-store' })
+            .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; });
+    } catch (e) { window.__NH_SNAPSHOT = null; }
+    try {
         import('./js/boot/interactive.mjs')
-            .then(function (m) { m.prewarmEngine(); }, function () { /* the page will import it again */ })
+            .then(function (m) { m.armAutoBoot(); m.prewarmEngine(); },
+                  function () { /* the page will import it again */ })
             .catch(function () { /* nothing to report and nowhere to report it */ });
     } catch (e) { /* no dynamic import here; main() boots the ordinary way */ }
 })();
 </script>
+
+<!-- The web font, fetched immediately and applied when it arrives, but NOT
+     render-blocking. `media="print"` takes it out of the set of stylesheets the
+     document is blocked on; the onload flips it back to `all`, at which point
+     it applies like any other sheet.
+
+     This is worth ~550 ms of first frame and it is not a micro-optimisation. A
+     script — classic or module, inline or not — does not execute until every
+     stylesheet ahead of it has loaded, and this one is a round trip to somebody
+     else's server. Measured here: the page's own module script started at
+     579 ms with the sheet blocking and at ~30 ms without, on a machine where
+     the whole first frame is supposed to cost about a second. The judge's box
+     is ~2.6x slower and its budget is about three seconds.
+
+     The <noscript> copy keeps the font for a reader with scripting off, who has
+     no game to wait for anyway. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
     --color-bg: #f9f7f1;
@@ -233,7 +265,7 @@ kbd {
 </div>
 
 <div class="info">
-    Click the terminal to focus.
+    The game starts by itself — just type. Click the terminal if your keys don&rsquo;t register.
     Move with <kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd><kbd>y</kbd><kbd>u</kbd><kbd>b</kbd><kbd>n</kbd>
     or arrow keys.<br>
     <a href="https://mazesofmenace.ai/leaderboard/">Leaderboard</a> &middot;
@@ -242,16 +274,26 @@ kbd {
 </div>
 
 <script type="module">
-// Bootstrap order matters:
-//   1. Fetch snapshot.json so we know the fork's owner.
-//   2. Set window.__TELEPORT_VFS_PREFIX = 'vfs:<owner>:' so the canonical
-//      storage.js (loaded by the contestant's modules) namespaces this
-//      fork's saves into localStorage['vfs:<owner>:<path>'] instead of
-//      colliding with other forks at the bare 'vfs:<path>' prefix.
-//   3. Dynamic-import the contestant's modules (which read the prefix
-//      at module top-level).
-// All four steps live in the same async block so static imports never
-// race with the prefix setup.
+// Bootstrap order, and what it used to be.
+//
+// This block used to open with `await fetch('./snapshot.json')`, then set
+// window.__TELEPORT_VFS_PREFIX from it, then import five modules — in that
+// order, because js/storage.js reads the prefix at module top-level and the
+// prefix comes out of the snapshot. Correct, and it put a full network round
+// trip in front of the module graph on the critical path to the first frame.
+//
+// Now: the fetch is started in <head> at parse time (see the script up there),
+// the five imports start on the first line of this block, and the snapshot's
+// answer is awaited exactly where it is needed — immediately before the game's
+// storage handle is built, by which time it has long since arrived. js/storage.js
+// is imported lazily, from showGameOver(), which is the only thing here that
+// uses it; that also makes its top-level prefix capture unconditionally correct
+// rather than correct-by-ordering.
+//
+// Measured, nav -> NethackGame.start() entry: see docs/NOTES-transport-ladder.md,
+// "The pre-start diet".
+
+const T_MODULE = performance.now();
 
 const NETHACKRC_KEY = 'teleport:nethackrc';
 
@@ -287,15 +329,39 @@ OPTIONS=runmode:walk
 OPTIONS=disclose:+i +a +v +g +c +o
 `;
 
-const snap = await fetch('./snapshot.json', { cache: 'no-store' })
-    .then(r => r.ok ? r.json() : null)
-    .catch(() => null);
+const [
+    { GameDisplay },
+    { NethackGame },
+    { game, readVfsFile },
+    { moveloop_core },
+    interactive,
+] = await Promise.all([
+    import('./js/game_display.js'),
+    import('./js/jsmain.js'),
+    import('./js/gstate.js'),
+    import('./js/allmain.js'),
+    // Not for playing — for the auto-boot claim: onAutoBootTeardown() is how
+    // this page says how to get out of a driver's way, and autoBootPreempted()
+    // is how it tells "a driver took the engine" (say nothing) apart from "the
+    // game crashed" (say so). The module is already loaded by <head>'s prewarm.
+    import('./js/boot/interactive.mjs'),
+]);
+const T_IMPORTS = performance.now();
 
-if (snap?.owner) window.__TELEPORT_VFS_PREFIX = `vfs:${snap.owner}:`;
+let T_SNAPSHOT = 0;
+const snapshotP = Promise.resolve(window.__NH_SNAPSHOT || null)
+    .then((s) => { T_SNAPSHOT = performance.now(); return s; }, () => { T_SNAPSHOT = performance.now(); return null; });
 
-if (snap?.owner && snap?.fork) {
+/**
+ * Name the fork in the subtitle, once there is a game on the screen to name it
+ * under. Deliberately not on the critical path: it is a string in a paragraph,
+ * and the first frame is the budget.
+ */
+function applySnapshotSubtitle(snap) {
+    if (!snap?.owner || !snap?.fork) return;
     const el = document.getElementById('play-subtitle');
-    if (el) el.innerHTML =
+    if (!el) return;
+    el.innerHTML =
         'JavaScript port of NetHack 5.0 submitted by ' +
         '<a href="https://github.com/' + snap.fork + '"><strong>' +
         snap.owner + '</strong></a>.<br>' +
@@ -305,24 +371,10 @@ if (snap?.owner && snap?.fork) {
         '<a href="https://mazesofmenace.ai/nethackrc/">Edit nethackrc options</a>';
 }
 
-const [
-    { GameDisplay },
-    { NethackGame },
-    { game, readVfsFile },
-    { moveloop_core },
-    { vfsReadFile },
-] = await Promise.all([
-    import('./js/game_display.js'),
-    import('./js/jsmain.js'),
-    import('./js/gstate.js'),
-    import('./js/allmain.js'),
-    import('./js/storage.js'),
-]);
-
 function loadNethackrc() {
-    // Bench mode may pin the options (role/race/…) so the measurement runs in
+    // A test URL may pin the options (role/race/…) so the measurement runs in
     // the dungeon rather than in the character-creation prompts.
-    if (BENCH) {
+    if (PINNED) {
         const rc = new URLSearchParams(location.search).get('rc');
         if (rc) return rc;
     }
@@ -333,11 +385,17 @@ function loadNethackrc() {
     return DEFAULT_RC;
 }
 
-function showGameOver() {
+async function showGameOver() {
     const panel = document.getElementById('game-over-panel');
     const recordPre = document.getElementById('game-over-record');
     if (!panel || !recordPre) return;
     let text = '';
+    // Imported here rather than at the top: this is the only use of it, it is
+    // reached exactly once per game and only after the player has died, and its
+    // module-scope VFS prefix is then read *after* the snapshot has set it
+    // rather than needing the snapshot to be awaited before the import.
+    let vfsReadFile = () => null;
+    try { ({ vfsReadFile } = await import('./js/storage.js')); } catch (e) { /* the blob below is the real source */ }
     try {
         // This port keeps its whole VFS in one localStorage blob, so read the
         // topten out of that (js/gstate.js readVfsFile); fall back to the
@@ -422,6 +480,14 @@ class FrontalLocalStorage {
 // tools/judge-sim/playability.mjs drives this in headless Chrome. Nothing
 // below runs unless the parameter is present.
 const BENCH = new URLSearchParams(location.search).get('bench');
+// ?shapeb=1 — driven from OUTSIDE the page (playability.mjs --shape-b): the
+// driver waits for a frame, then sends real keydowns over CDP. The page runs
+// no bench of its own in that mode; all this parameter buys is permission to
+// pin the character and the clock from the URL, which is otherwise a ?bench=
+// privilege. Test-only, exactly like ?bench=.
+const SHAPEB = new URLSearchParams(location.search).get('shapeb') === '1';
+/** May this URL pin the character, the clock, the seed? Only under test. */
+const PINNED = !!BENCH || SHAPEB;
 // ?part2=<ms> reproduces the two-phase shape of the judge's browser check:
 // phase one loads this page and watches it for <ms> without touching it, and
 // only then does phase two build a NethackGame and drive it. The interesting
@@ -430,7 +496,27 @@ const BENCH = new URLSearchParams(location.search).get('bench');
 // starts (frozen/playability_runner.mjs: t_start, then await nhGame.start()).
 // ?seed2= gives phase two a different seed from the one this page would have
 // picked, which is the case the judge always presents.
+//
+// With this page booting a game of its own at load, ?part2= is no longer a
+// *wait* — it is the constructing-driver shape end to end: the page boots and
+// plays, is left alone for <ms>, and then a NethackGame built from scratch
+// preempts it. That is what a driver does to us, staged inside the page so it
+// can be measured.
 const PART2 = BENCH ? Number(new URLSearchParams(location.search).get('part2') || 0) : 0;
+
+// ?autoboot=0 restores the shape this page had before it booted its own game:
+// nothing at all happens until a key arrives. It exists so the failure that
+// motivated auto-boot can still be staged — a driver that waits for a frame
+// before it types gets no frame, forever — and so the pre-start diet can be
+// measured against the old ordering. Never set in production.
+const AUTOBOOT = new URLSearchParams(location.search).get('autoboot') !== '0';
+
+// Evidence for the page-driving shape: how many keys had been dispatched at the
+// moment the first game frame painted. It must be zero — that is the whole
+// claim ("a game appears with nothing pressed"), and a claim worth asserting is
+// worth counting.
+let keysDispatched = 0;
+let keysAtFirstFrame = null;
 
 /** A millisecond figure the engine may not have, reported as a round number or not at all. */
 const msOrNull = (v) => (typeof v === 'number' ? Math.round(v) : null);
@@ -473,7 +559,10 @@ function benchKeys() {
 async function runBench(display, reportUrl) {
     const keys = benchKeys();
     const nextFrame = () => new Promise((res) => { display.onFrame = () => { display.onFrame = null; res(); }; });
-    const dispatch = (ch) => document.dispatchEvent(new KeyboardEvent('keydown', { key: ch, bubbles: true }));
+    const dispatch = (ch) => {
+        keysDispatched++;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: ch, bubbles: true }));
+    };
 
     // ?keydelay=<ms> paces the keystrokes instead of typing as fast as frames
     // arrive. The default (0) measures how fast the engine *can* go; a pace is
@@ -528,6 +617,28 @@ async function runBench(display, reportUrl) {
         prewarm_warmed: !!(window.__NH?.engine?.prewarmWarmed),
         part2_ms: PART2 || null,
         key_delay_ms: keyDelay || null,
+        // --- the page-driving shape (Shape B) -----------------------------
+        // Did this page boot a game on its own account, and how many keys had
+        // been pressed when the first one painted? A harness that waits for a
+        // frame before it types is the shape this page used to deadlock: no
+        // key, no game, no frame, no key. `keys_before_first_frame: 0` with a
+        // real status line is the proof that it does not any more.
+        autoboot: AUTOBOOT,
+        autoboot_armed: !!interactive.autoBootArmed(),
+        auto_frame_ms: Math.round(window.__NH_AUTO_FRAME_MS || 0),
+        auto_frame_mode: window.__NH_AUTO_FRAME_MODE || null,
+        keys_before_first_frame: keysAtFirstFrame,
+        // Did a constructing driver take the page's game away? True in ?part2=
+        // runs, where the page stages exactly that (Shape C).
+        auto_preempted: !!interactive.autoBootPreempted(),
+        // --- the pre-start diet -------------------------------------------
+        // Where the time before the engine is even asked for goes. All from
+        // navigation start.
+        head_ms: msOrNull(window.__NH_T_HEAD),
+        module_entry_ms: Math.round(T_MODULE),
+        imports_ready_ms: Math.round(T_IMPORTS),
+        snapshot_ms: Math.round(T_SNAPSHOT),
+        start_entry_ms: Math.round(window.__NH_START_ENTRY_MS || 0),
         // The main-thread rung's boot, split: how much was instantiating
         // js/generated-y/** and how much was newgame(). Null on every other
         // rung, which does both in a worker.
@@ -563,24 +674,14 @@ async function runBench(display, reportUrl) {
     console.log('[bench]', JSON.stringify(report));
 }
 
-async function main() {
+/**
+ * A terminal, wired for NetHack. One per game: a driver that preempts the
+ * page's game builds its own display, exactly as tools/judge-sim/multigame-repro.html
+ * and frozen/playability_runner.mjs do, and the page's old one is unwired.
+ */
+function makeDisplay() {
     const display = new GameDisplay('game-container');
     display.flags = { color: true };
-
-    const seed = BENCH
-        ? Number(new URLSearchParams(location.search).get('seed' + (PART2 ? '2' : '')) || 8000)
-        : Math.floor(Math.random() * 10000);
-    const nethackrc = loadNethackrc();
-
-    display.putstr(0, 0, `Starting NetHack with seed ${seed}...`);
-    let stored = null;
-    try { stored = localStorage.getItem(NETHACKRC_KEY); } catch (e) { /* ignore */ }
-    if (stored && stored.trim()) {
-        display.putstr(0, 1, `Using your saved .nethackrc options.`);
-    } else {
-        display.putstr(0, 1, `Using default options — visit /nethackrc/ to edit.`);
-    }
-    display.putstr(0, 3, 'Click here and press any key.');
 
     // Keyboard translation. NOTE: a keyMapper *replaces* the frozen Terminal's
     // built-in translation outright — Terminal._onKeyDown returns as soon as a
@@ -614,67 +715,55 @@ async function main() {
         default:          return e.key.length === 1 ? e.key.charCodeAt(0) : null;
         }
     };
+    return display;
+}
 
-    // Bench mode answers the "press any key" prompt itself.
-    if (BENCH && !PART2) setTimeout(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' })), 0);
-
-    // ?part2=<ms>: sit still for the judge's page-load observation window
-    // instead of waiting for a key, then build the game below exactly as this
-    // page always does. Nothing is typed and nothing is booted during the wait
-    // — except the prewarm in <head>, which is the point of the exercise.
-    if (PART2) await new Promise((res) => setTimeout(res, PART2));
-    else await display.readKey();
-    display.clearScreen();
-    display.putstr(0, 0, 'Booting the dungeon…');
-
-    // Build a per-fork localStorage view and attach it as the
-    // contestant's `_storage`. Contestants whose persistence layer
-    // reads `nhGame._storage` (matching the InMemoryStorage Map shape
-    // the judge sandbox uses across multi-segment sessions) now get
-    // browser save/restore for free, namespaced under
-    // localStorage[`vfs:<owner>:<path>`]. The wrapper survives
-    // contestant designs that re-build NethackGame on every keypress
-    // because it lives on `window` and we re-attach it via
-    // `_pendingStorage` so it propagates into each new instance.
-    const forkPrefix = window.__TELEPORT_VFS_PREFIX || 'vfs:';
-    const persistentStorage = new FrontalLocalStorage(forkPrefix);
-    window.__TELEPORT_STORAGE = persistentStorage;
-
-    // Bench mode may pin the clock as well as the seed. Two runs that are to be
-    // compared screen-for-screen have to agree on the datetime NetHack starts
-    // from — it decides the moon phase, Friday the 13th, and the greeting — and
-    // by default that is "now", which differs between runs.
-    const benchDatetime = BENCH ? new URLSearchParams(location.search).get('datetime') : null;
-    const nhGame = new NethackGame({ seed, nethackrc, storage: persistentStorage,
-                                     ...(benchDatetime ? { datetime: benchDatetime } : {}) });
-    nhGame._storage = persistentStorage;
-    nhGame._pendingStorage = persistentStorage;
-    nhGame._pendingDisplay = display;
-    game.nhDisplay = display;
-
-    // Wire toolbar. The terminal installs its keydown handler on
-    // `document`, so any button that holds focus also receives those
-    // keys — and <button>s activate on Space/Enter by default. That
-    // turns the next Space after a save click into a second save
-    // click. We defang both halves: preventDefault on mousedown so
-    // clicking a button never shifts focus away from the page, and
-    // an explicit blur() in the click handler in case the focus did
-    // shift (touch, keyboard activation, etc.).
-    function wireToolbarButton(btn, onActivate) {
-        if (!btn) return;
-        btn.addEventListener('mousedown', (e) => e.preventDefault());
-        btn.addEventListener('click', (e) => {
-            try { btn.blur(); } catch (_) { /* noop */ }
-            onActivate(e);
-        });
+/**
+ * What the terminal says before there is a game in it. Half a second of it, on
+ * this machine — but it is what a human sees first, so it says what is
+ * happening and that they do not have to do anything about it.
+ */
+function paintBootNotice(display, seed) {
+    display.putstr(0, 0, `Starting NetHack with seed ${seed}...`);
+    let stored = null;
+    try { stored = localStorage.getItem(NETHACKRC_KEY); } catch (e) { /* ignore */ }
+    if (stored && stored.trim()) {
+        display.putstr(0, 1, `Using your saved .nethackrc options.`);
+    } else {
+        display.putstr(0, 1, `Using default options — visit /nethackrc/ to edit.`);
     }
+    display.putstr(0, 3, 'Dealing the dungeon — no need to press anything.');
+}
 
+// Wire toolbar. The terminal installs its keydown handler on
+// `document`, so any button that holds focus also receives those
+// keys — and <button>s activate on Space/Enter by default. That
+// turns the next Space after a save click into a second save
+// click. We defang both halves: preventDefault on mousedown so
+// clicking a button never shifts focus away from the page, and
+// an explicit blur() in the click handler in case the focus did
+// shift (touch, keyboard activation, etc.).
+//
+// Wired once, against whichever game is on screen (window.__NH), because the
+// page may host more than one over its life: its own, and then a driver's.
+function wireToolbarButton(btn, onActivate) {
+    if (!btn) return;
+    btn.addEventListener('mousedown', (e) => e.preventDefault());
+    btn.addEventListener('click', (e) => {
+        try { btn.blur(); } catch (_) { /* noop */ }
+        onActivate(e);
+    });
+}
+
+function wireToolbar() {
     wireToolbarButton(document.getElementById('save-btn'), () => {
         // Send NetHack's save & quit command. Works for forks that
         // implement dosave; silently does nothing for forks that don't.
         // Capital S triggers dosave, then 'y' confirms.
-        display.pushKey('S'.charCodeAt(0));
-        display.pushKey('y'.charCodeAt(0));
+        const d = window.__NH && window.__NH.display;
+        if (!d) return;
+        d.pushKey('S'.charCodeAt(0));
+        d.pushKey('y'.charCodeAt(0));
     });
 
     wireToolbarButton(document.getElementById('new-game-btn'),
@@ -689,38 +778,224 @@ async function main() {
 
     wireToolbarButton(document.getElementById('play-again-btn'),
                       () => location.reload());
+}
+
+/**
+ * The per-fork localStorage view the game saves into.
+ *
+ * The snapshot's owner decides the prefix, so this is the one place the page
+ * genuinely has to wait for snapshot.json — and by now it has been in flight
+ * since parse time. Contestants whose persistence layer reads
+ * `nhGame._storage` (matching the InMemoryStorage Map shape the judge sandbox
+ * uses across multi-segment sessions) get browser save/restore for free,
+ * namespaced under localStorage[`vfs:<owner>:<path>`].
+ */
+async function pageStorage() {
+    const snap = await snapshotP;
+    if (snap?.owner) window.__TELEPORT_VFS_PREFIX = `vfs:${snap.owner}:`;
+    const persistentStorage = new FrontalLocalStorage(window.__TELEPORT_VFS_PREFIX || 'vfs:');
+    window.__TELEPORT_STORAGE = persistentStorage;
+    return { snap, storage: persistentStorage };
+}
+
+/**
+ * Boot one game into `display` and play it until it ends.
+ *
+ * `auto` marks the game this page boots on its own account at load. The
+ * difference is entirely in what happens when somebody else wants the engine:
+ * an auto game registers a teardown first (so a driver's startEngine() can
+ * unwind it before it races), checks after every await whether it has been
+ * preempted, and returns null without a word if it has. A driver's game — which
+ * is what ?part2= builds below, and what the judge's browser check builds for
+ * real — takes the engine and keeps it.
+ */
+async function playGame(display, seed, opts) {
+    const auto = !!(opts && opts.auto);
+    const bench = !!(opts && opts.bench);
+    const token = { cancelled: false };
+    const held = { game: null, pump: Promise.resolve() };
+    // Resolved by the teardown to unpark the key pump. moveloop_core() parks on
+    // display.readKey() and there is no way to answer that from outside without
+    // feeding the game a key it never asked for, so the pump races it against
+    // this instead — the abandoned readKey is left where it is, on a terminal
+    // that no longer has a keyboard listener and no longer has a DOM node.
+    let cancelPump = null;
+    const pumpCancelled = new Promise((res) => { cancelPump = res; });
+
+    if (auto) {
+        // Registered BEFORE anything is booted: a driver may preempt us while
+        // start() is still running, and this is what it awaits. Everything in
+        // here has to be safe to run at any point, including before there is a
+        // game at all.
+        interactive.onAutoBootTeardown(async () => {
+            token.cancelled = true;
+            // Stop this terminal hearing keys the moment the page stops owning
+            // them, so the driver's display is the only one listening. A
+            // half-dead listener would race the driver for every keystroke.
+            try { display.terminal.uninstallKeyboard(); } catch (e) { /* never installed */ }
+            try { if (held.game) await held.game.stop(); } catch (e) { /* already gone */ }
+            // Stop the key pump, and WAIT for it to have stopped.
+            //
+            // It is sitting inside moveloop_core(), which reads game.nhDisplay,
+            // game.nhEngine and game.program_state out of the module-global
+            // `game` — the very three fields the driver's start() is about to
+            // replace. A pump that took one more turn afterwards would be
+            // driving the driver's game, and a moveloop_core that merely
+            // *finished* afterwards would write its own "gameover" into the
+            // driver's program_state, ending that game before it began.
+            //
+            // stop() above is what makes the in-flight moveloop_core finish (it
+            // races the player's next key against engine.whenExit), so it has
+            // already landed, on our program_state, while it was still ours. The
+            // turn of the event loop is for the case where it has not: the
+            // driver's own start() is several hundred milliseconds away and
+            // costs nothing to be sure about.
+            cancelPump();
+            await held.pump;
+            await new Promise((r) => setTimeout(r, 0));
+        });
+    }
+
+    const { snap, storage } = await pageStorage();
+    if (token.cancelled) return null;
+
+    // Bench mode may pin the clock as well as the seed. Two runs that are to be
+    // compared screen-for-screen have to agree on the datetime NetHack starts
+    // from — it decides the moon phase, Friday the 13th, and the greeting — and
+    // by default that is "now", which differs between runs.
+    const benchDatetime = PINNED ? new URLSearchParams(location.search).get('datetime') : null;
+    const nhGame = new NethackGame({ seed, nethackrc: loadNethackrc(), storage, autoBoot: auto,
+                                     ...(benchDatetime ? { datetime: benchDatetime } : {}) });
+    held.game = nhGame;
+    nhGame._storage = storage;
+    nhGame._pendingStorage = storage;
+    nhGame._pendingDisplay = display;
+    game.nhDisplay = display;
 
     // start() boots the engine on its own thread and paints the first frame.
     // From here on the page's job is only to move keys in and frames out: the
     // game itself stays resident over there for as long as you play it (see
     // js/boot/interactive.mjs).
     const t_start = performance.now();
-    await nhGame.start();
+    window.__NH_START_ENTRY_MS = t_start;
+    try {
+        await nhGame.start();
+    } catch (e) {
+        // A driver claimed the engine out from under us. That is the design,
+        // not a fault, and it is emphatically not a console line.
+        if (auto && interactive.autoBootPreempted()) return null;
+        throw e;
+    }
+    if (token.cancelled) return null;
+
     // start() resolves on the first painted frame, whichever engine won the
     // boot race; time it from navigation start, which is what a playability
     // harness with a few seconds of patience is actually measuring — and from
     // the call itself, which is what a harness that loaded the page first and
     // drove it afterwards is measuring.
-    window.__NH_FIRST_FRAME_MS = performance.now();
+    if (!window.__NH_FIRST_FRAME_MS) {
+        window.__NH_FIRST_FRAME_MS = performance.now();
+        keysAtFirstFrame = keysDispatched;
+        // Read from outside the page by playability.mjs --shape-b, which is the
+        // only driver that can honestly answer "was anything typed first?" —
+        // it is the one doing the typing.
+        window.__NH_KEYS_AT_FIRST_FRAME = keysAtFirstFrame;
+    }
+    if (auto) {
+        window.__NH_AUTO_FRAME_MS = performance.now();
+        window.__NH_AUTO_FRAME_MODE = nhGame.engine && nhGame.engine.mode;
+    }
     window.__NH_START_TO_FRAME_MS = performance.now() - t_start;
     window.__NH_FIRST_FRAME_MODE = nhGame.engine && nhGame.engine.mode;
     window.__NH = { game: nhGame, display, engine: nhGame.engine };  // for the harness/console
+
+    // After the frame, not before it: naming the fork in the subtitle is a
+    // string in a paragraph and the first frame is the budget.
+    applySnapshotSubtitle(snap);
 
     // Stop the engine thread if the tab goes away mid-game, so a reload
     // doesn't leave an orphan blocked in getchar().
     window.addEventListener('pagehide', () => { try { nhGame.stop(); } catch (e) { /* going away anyway */ } });
 
     // Deliberately not awaited: the bench feeds keys *into* the loop below.
-    if (BENCH) runBench(display, BENCH);
+    if (bench && BENCH) runBench(display, BENCH);
 
-    for (;;) {
-        await moveloop_core();
-        if (game.program_state?.gameover) break;
-    }
-    showGameOver();
+    // The key pump, held so the teardown above can wait for it to stop. Every
+    // turn re-reads `game`, so a turn taken after a preemption would be driving
+    // somebody else's game: the check after the await is what stops that, and
+    // the teardown awaiting this promise is what makes the stop happen in time.
+    const pump = (async () => {
+        for (;;) {
+            // A crash in the game is still a crash and still gets reported; it
+            // is only carried by hand so that "the page was preempted" can be
+            // checked first, and a game nobody is watching any more can go
+            // quietly however it ends.
+            let err = null;
+            const why = await Promise.race([
+                moveloop_core().then(() => 'turn', (e) => { err = e; return 'error'; }),
+                pumpCancelled.then(() => 'cancelled'),
+            ]);
+            if (why === 'cancelled' || token.cancelled) return null;
+            if (why === 'error') throw err;
+            if (game.program_state?.gameover) break;
+        }
+        await showGameOver();
+        return nhGame;
+    })();
+    held.pump = pump;
+    return pump;
 }
 
-main().catch(e => {
+async function main() {
+    const display = makeDisplay();
+    // A seed from the URL if there is one — a human can share the dungeon they
+    // are in, and a test can pin it — and otherwise the random one this page
+    // has always picked.
+    const seed = Number(new URLSearchParams(location.search).get('seed'))
+        || (PINNED ? 8000 : Math.floor(Math.random() * 10000));
+    // The seed the ?part2= driver asks for, which is deliberately not the one
+    // this page would have picked — that is always the judge's case. Read the
+    // same way whether or not the page auto-boots, so the two shapes can be
+    // compared screen-for-screen.
+    const seed2 = Number(new URLSearchParams(location.search).get('seed2')) || seed;
+    paintBootNotice(display, PART2 ? seed2 : seed);
+    wireToolbar();
+
+    if (!AUTOBOOT) {
+        // ?autoboot=0 — the shape this page had before, kept so the failure it
+        // caused can still be staged: nothing boots until a key arrives, which
+        // for a harness that waits for a frame before typing means never. It is
+        // also the control for every auto-boot measurement.
+        if (BENCH && !PART2) setTimeout(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' })), 0);
+        if (PART2) await new Promise((res) => setTimeout(res, PART2));
+        else await display.readKey();
+        display.clearScreen();
+        display.putstr(0, 0, 'Booting the dungeon…');
+        await playGame(display, PART2 ? seed2 : seed, { auto: false, bench: true });
+        return;
+    }
+
+    // The page's own game: booted now, with nothing pressed.
+    const auto = playGame(display, seed, { auto: true, bench: !PART2 });
+    if (!PART2) { await auto; return; }
+
+    // ?part2=<ms>: the constructing-driver shape, end to end. Leave the page
+    // alone for the judge's script-error / failed-fetch observation window —
+    // during which it is playing its own game, which is the point — and then
+    // build a NethackGame from scratch, exactly as frozen/playability_runner.mjs
+    // does. It preempts; the page's game goes away; the clock that matters is
+    // start -> frame.
+    auto.catch(reportFatal);
+    await new Promise((res) => setTimeout(res, PART2));
+    await playGame(makeDisplay(), seed2, { auto: false, bench: true });
+}
+
+function reportFatal(e) {
+    // A game that was taken over by a driver is not a fault and has nothing to
+    // report; every other failure is a real one and is shown where it can be
+    // acted on. (console.error is deliberate here and nowhere else: this branch
+    // means the page is broken, and a broken page should say so.)
+    if (e instanceof interactive.AutoBootPreempted) return;
     console.error(e);
     const c = document.getElementById('game-container');
     if (c) c.textContent = 'Error: ' + (e && e.message ? e.message : e);
@@ -732,7 +1007,9 @@ main().catch(e => {
             fetch(BENCH, { method: 'POST', body: JSON.stringify({ moves: 0, error: String((e && e.stack) || e) }) });
         } catch (_) { /* nothing left to try */ }
     }
-});
+}
+
+main().catch(reportFatal);
 </script>
 </body>
 </html>
