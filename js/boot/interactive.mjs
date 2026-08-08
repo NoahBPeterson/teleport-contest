@@ -972,7 +972,7 @@ async function firstReadyTransport(job, only) {
 
 const PREWARM_WARM_TIMEOUT_MS = 20000;
 
-let prewarm = null;                 // { p: Promise<InteractiveEngine|null>, claimed }
+let prewarm = null;                 // { p, claimed, eng, why } — see prewarmEngine()
 
 /**
  * Begin warming an engine realm for a game that has not been asked for yet.
@@ -1007,10 +1007,6 @@ export function prewarmEngine() {
         // first frame for precisely that reason: a realm whose probe never
         // came back spent its whole timeout instantiating a graph, against the
         // replay fallback that was about to need the CPU.
-        //
-        // Not awaited. Whoever claims this engine calls _boot(), whose own
-        // import of the graph is the same module job, so an early claim joins
-        // the work in flight and a late one finds it done.
         slot.eng._warm(PREWARM_WARM_TIMEOUT_MS).catch(() => { /* boot pays for it */ });
         return slot.eng;
     })().catch((e) => {
@@ -1301,6 +1297,6 @@ export async function startEngine(job, onDegraded) {
     // but there is no bench in this repo that plays two interactive games in
     // one page, so that would be an unmeasured change, and the cost of getting
     // it wrong is a spare 13 MB realm on the machine of every human who only
-    // ever plays one. See docs/NOTES-transport-ladder.md, "What was left".
+    // ever plays one. See docs/NOTES-transport-ladder.md, "What could not be verified".
     return raced;
 }

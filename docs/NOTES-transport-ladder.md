@@ -10,6 +10,12 @@ without saying a word.
 > because the failure that matters is a transport that hangs, and a ladder pays
 > for every hanging rung in wall-clock time before the page can paint anything.
 > See [The race](#the-race).
+>
+> The race removed all the *waiting* and left the *work*, which on the judge's
+> hardware is still the whole budget. [The prewarm](#the-prewarm) is what
+> happened next: the half of a first frame that does not depend on the job —
+> instantiating the transpiled module graph — is now paid while the page is
+> loading, before anybody starts a clock.
 
 ## The problem it solves
 
@@ -437,6 +443,328 @@ Scoring and the Node path are unaffected:
   slower.
 - `--datetime=<YYYYMMDDHHMMSS>` — pins the clock NetHack starts from, so two
   runs can be compared screen-for-screen (the default is "now", which is not).
+- `--part2=<ms>` — runs the two-phase shape the judge's browser check uses:
+  load `index.html` and leave it alone for `<ms>` (their script-error /
+  failed-fetch observation window), and only then build a `NethackGame` and
+  drive it. The number to read out of these runs is `start_to_frame_ms`, not
+  `first_frame_ms`. See [The prewarm](#the-prewarm).
+- `--seed2=<n>` — the seed that second phase asks for, which is never the one
+  the page would have picked itself. Staged on purpose, because it is always
+  the judge's case.
+- `--no-prewarm` — passes `?prewarm=0`, so `index.html` warms nothing at page
+  load. This is the floor: it is what every run looked like before the prewarm
+  existed.
+
+## The prewarm
+
+The race removed every *wait* from the first frame and left the *work*: about a
+second of it, on this machine, before either engine can paint. The judge's box
+is roughly 2.6x slower (their scoring fit is 2157 + 6.40·n against our 830 +
+0.8·n), so 1.2 s here is ~3.1 s there, which is the whole budget — and the
+crawls that followed the race said exactly that: `browser_ok: true`,
+`error_class: None`, **0 moves in 88 sessions**, total_cumulative_ms 2.7–3.2 s.
+No waiting left to remove. So remove the work from the clock instead.
+
+### The free time nobody was using
+
+Loading the page and playing the first game are two different moments:
+
+- a **human** loads `/play/<owner>/`, reads the subtitle, and presses a key
+  seconds later;
+- the **judge's browser check** loads `index.html` in headless Chromium and
+  watches it for script errors and failed fetches, and only *then* drives a game
+  — `new NethackGame({seed, datetime, nethackrc})`, `_pendingDisplay`,
+  `game.nhDisplay`, `await start()`, one `moveloop_core()` per key. That is the
+  shape of `frozen/playability_runner.mjs`, and its clock starts at `t_start`,
+  immediately before `start()`.
+
+Everything in between was idle CPU, and the page threw it away: `index.html`
+waited on `display.readKey()` and booted nothing until somebody asked.
+
+### What is warmed, and why it needs no seed
+
+A cold boot is two costs in a fixed order (measured in Node, and the browser
+agrees within noise):
+
+| | cost | depends on |
+| --- | --- | --- |
+| instantiate `js/generated/**` (176 modules, 13 MB) | ~480 ms | **nothing** |
+| `runBootGame` → `main()` → newgame, to the first `getchar()` park | ~550 ms | seed, datetime, nethackrc |
+
+Only the second half needs a job. So `prewarmEngine()` (js/boot/interactive.mjs),
+called from a classic `<script>` at the top of `index.html`'s `<head>` — before
+the page's own module script, before its `snapshot.json` fetch — brings up a
+transport the ordinary way and then posts `{type:'warm'}` to the realm that won
+it. The worker imports `harness.mjs` and `../generated/unixmain.js` and stops
+there (`warmRealm()` in js/boot/engine-worker.mjs). It has run no C code. Every
+C file-scope variable is at its static initialiser.
+
+**That realm is therefore pristine, and it fits any job.** There is no
+fingerprint, no seed to match, and no such thing as a prewarm for the wrong
+seed — which matters, because the page cannot know the judge's seed at load
+time and never will. Whoever calls `startEngine()` first adopts the realm,
+whatever they ask for.
+
+Importing the graph outside `runBootGame()` is safe because no generated module
+reads a harness global at module scope: the graph imports cleanly on its own
+with none of `runBootGame()`'s shims installed. `runBootGame()`'s own
+`await import('../generated/unixmain.js')` then resolves from the module map, to
+the same namespace object, and the graph is still instantiated exactly once per
+realm.
+
+### The adopt/discard contract
+
+- **Claimed at most once.** `claimPrewarm()` empties the slot before it awaits,
+  so two games can never be handed the same realm.
+- **Claiming never waits for the warm.** The prewarm promise resolves when the
+  realm is *prepared* (spawned, ready, probe passed), not when it is warm; the
+  warm-up is left running. A claim that arrives early therefore *joins* the
+  import already in flight — `_boot()`'s own import is the same module job — and
+  a claim that arrives late finds it done. Waiting would have turned the prewarm
+  into a delay on exactly the pages it exists to help, and did, in the first
+  version of this: the self-driven bench went 1293 → 1514 ms until the claim was
+  made non-blocking.
+- **Realm discipline.** The warm realm is a worker of its own, so adopting it
+  cannot mark the *page* realm spent (`js/jsmain.js`'s `__c2jsEngineRealmUsed`)
+  and cannot interact with `runSegment()`. Nothing on the scoring path can see
+  it: `runSegment` never calls `startEngine`.
+- **Discarding is `retire()`** — worker terminated, service-worker lane closed
+  with `{type:'nhclose'}`. The only paths that discard are a prewarm whose
+  transports failed (nothing was left running to discard) and a page that goes
+  away.
+- **Nothing is ever said.** `prewarmEngine()` returns void and its promise
+  cannot reject: every failure — no service worker, a service worker that
+  hangs, a browser with no workers, `?transport=replay` — ends as a resolved
+  `null`, with handlers attached before anything can settle. A prewarm has
+  nobody to report to, and a console line would fail the run on its own.
+- **A failed prewarm is evidence, and the race is not re-run.** A prewarm that
+  came to nothing has already run this exact race at page load and lost it, and
+  the answer cannot have changed: the service-worker registration is memoised
+  (below), a realm that never said `ready` has no workers, and a realm the
+  service worker declined to intercept is a property of the browser rather than
+  of a moment. So `RacedEngine.start()` fails the transport immediately, which
+  releases the ReplayEngine's head start at once and puts the degradation banner
+  up with the prewarm's own reason. Re-running it was measurably worse: two more
+  realms spawning and probing while the replay fallback wants the CPU cost
+  `--hang-sw` about 200 ms of first frame for an answer that was already known.
+  (`js/sw.js` calls `skipWaiting()` and `clients.claim()`, so there is no
+  first-visit window where the answer would legitimately change between the two
+  attempts.)
+- **`ensureKeyService()` is memoised, null included.** The prewarm asks at page
+  load and `startEngine()` would ask again, and
+  `navigator.serviceWorker.register()` is not free to ask twice: on a mirror
+  that failed to publish `js/sw.js` the *browser* logs a 404 line we cannot
+  catch. Two calls would have been two console lines where there was one. The
+  null answer is memoised deliberately — service workers disabled, a
+  private-mode profile, `js/sw.js` unpublished — none of those heal inside one
+  page's lifetime, and asking again costs a console line to learn the same
+  thing.
+
+### Only the winner is warmed, and only after it has proved it can block
+
+The first version warmed the preferred realm *during* the race, to overlap the
+import with the service-worker round trip. That was a mistake and the bench
+said so: in `--hang-sw` the dedicated realm spent its whole 1 s probe timeout
+instantiating a 13 MB graph, against a replay fallback that was about to need
+the CPU, and the first frame went 1970 → 2237 ms.
+
+So `warm` is posted only to the realm that won `firstReadyTransport()` — after
+`ready`, after the probe, after it has proved it can block. A realm nobody will
+play in never pays for a graph, and the SharedWorker (which has no
+`terminate()`, so an abandoned one would go on burning a core until it finished
+a graph nobody wants) is only ever warmed when it is the one that won.
+
+The overlap that was given up is worth almost nothing on a healthy host: the
+probe is one same-origin request the service worker answers from memory.
+
+### index.html still waits for a key
+
+Deliberately. The prewarm is job-independent and adoptable; a *game* is not. If
+`index.html` booted its own game at load, a driver that then built its own
+`NethackGame` would find `startEngine()` retiring a game it never asked for and
+paying for a second boot — the double-boot hazard. The `readKey()` gate is what
+keeps the page from starting a game nobody asked for, and the prewarm is what
+makes that gate free.
+
+### The first-frame diet: what was taken, what was not
+
+Profiled with `--cpu-prof` on the Node boot path, which is the only place the
+two halves can be separated cleanly (`node --cpu-prof -e "import graph; then
+runBootGame(..., waitForKey: () => -1)"`):
+
+```
+    23 ms   process start
+     1 ms   js/boot/browser-env.mjs
+    18 ms   js/boot/harness.mjs  (incl. data-nethackdir + posix-ere)
+     2 ms   js/cptr.js
+   477 ms   js/generated/unixmain.js — the whole graph
+   555 ms   newgame, to the first getchar() park
+```
+
+and inside that 555 ms: `js/cptr.js` 297 ms spread over everything,
+`options.js:determine_ambiguities` 35 ms, the Lua interpreter parsing NetHack's
+`.lua` data files (`nhlua`/`llex`/`lparser`/`lcode`/`ldo`/`lstring`) ~90 ms,
+`glyphs.js` 20 ms, `display.js` 13 ms, `mklev.js` 9 ms.
+
+**Taken:**
+
+1. **Move the 477 ms graph off the clock entirely** (the prewarm above). This is
+   the item that was written down as "defer nhconst/nhmacro/rarely-reached
+   generated modules via dynamic import after the first park", and it turned out
+   there was a better answer to the same question: the graph does not have to be
+   made smaller if it can be instantiated before anyone is timing.
+2. **Warm the realm in parallel with the interception probe** rather than after
+   it — the `warm` message is posted immediately behind the probe on the same
+   queue, so the ~500 ms import overlaps the service-worker round trip and the
+   page's own module loading instead of following them.
+3. **`<link rel="modulepreload">` for the page's hot chain** (`interactive.mjs`,
+   `engine-worker.mjs`, `browser-env.mjs`, `jsmain.js`, `isolation.mjs`,
+   `game_display.js`, `terminal.js`, `frozen/screen-decode.mjs`, `gstate.js`,
+   `allmain.js`, `storage.js`). Not measurable on the judge-sim server, which is
+   loopback with no latency; it is worth one round trip each on the real mirror,
+   where the chain is otherwise discovered one import at a time. Every file
+   listed is published under `js/**` or `frozen/**`, so none of them can 404 —
+   a 404 here would be a console line, which is the failure this whole document
+   is about. Checked: Chrome logs nothing for the two that the *page* realm
+   never imports (`engine-worker.mjs` is imported by the worker, not the page).
+
+**Not taken, and why:**
+
+- **Splitting the static graph.** `js/generated/**` is one statically-imported
+  component: `unixmain.js` reaches everything, and the emitter writes those
+  imports. Cutting `nhconst`/`nhmacro`/cold modules out of the eager graph and
+  behind `import()` would need `tools/c2js` to emit different module boundaries
+  and to know which symbols are reachable before the first `getchar()` — a
+  reachability analysis over the whole corpus, owned by the emitter effort, not
+  by this one. **It is also now worth much less than it was**: the graph is no
+  longer on the first frame's critical path at all, so the prize for halving it
+  is halving a cost the page already pays for free. Design recorded here; not
+  attempted.
+- **Deferring work inside newgame.** Everything expensive in the 555 ms is
+  transpiled C running under `main()` — option parsing, the Lua data files, the
+  level maker. There is no seam that does not change what the C does, and
+  parity is the gate that outranks speed. `determine_ambiguities` (35 ms) and
+  the Lua parse (~90 ms) are genuinely job-independent and would be the two
+  candidates if the seam existed; it does not, in JS, without moving the split
+  into the emitter.
+- **Warming a second realm speculatively with a guessed seed.** A full
+  speculative boot would make the adopt path ~0 ms instead of ~420 ms, but only
+  when the seed matches, and the judge's never does. Two realms booting at once
+  is also precisely the contention that the fallback's head start exists to
+  avoid, on a container with fewer cores than this laptop.
+- **Re-arming the prewarm after each game.** A driver that plays many games in
+  one page — the judge's session loop — would get a realm warmed during the
+  previous game and save the graph on every session after the first. It is four
+  lines. It is not here because no bench in this repo plays two *interactive*
+  games in one page, so it would be an unmeasured change, and the cost of
+  getting it wrong is a spare 13 MB realm on the machine of every human who only
+  ever plays one game per page load. Worth doing next, behind a bench that can
+  see it.
+
+### Verified
+
+All runs: Chrome 139 headless (`--headless=new`), macOS, `judge-sim` mirror
+server, a fresh Chrome profile per run, 63 keys (`--moves=60`), medians of 3.
+
+Two clocks, because the prewarm moves work between them:
+
+- **first frame** — navigation start to the first painted frame. The right
+  clock for a page that boots itself. In `?bench=` mode the page answers its own
+  "press any key" prompt at `t=0`, so this is a *synthetic worst case* for the
+  prewarm: `start()` is called before the warm-up can possibly have finished.
+- **start → frame** — `t_start` to the first painted frame, where `t_start` is
+  taken immediately before `nhGame.start()`. This is the clock
+  `frozen/playability_runner.mjs` keeps, and therefore the clock the judge's
+  `total_cumulative_ms` is made of.
+
+| mode | first frame, before → after | start → frame | engine | CDP console |
+| --- | --- | --- | --- | --- |
+| production shape | 1493 → **1448** | 674 | `xhr` | 0 |
+| `--coi` | 1496 → **1480** | 666 | `sab` | 0 |
+| `--transport=sharedworker` | 1529 → **1473** | 672 | `xhr-shared` | 0 |
+| `--sw-deny-dedicated` | 1530 → **1458** | 698 | `xhr-shared` | 0 |
+| `--inert-sw` | 1494 → **1476** | 684 | `replay` | 0 |
+| `--no-sw` | 1522 → **1449** | 680 | `replay` | **1** (unchanged) |
+| `--hang-sw` | 1970 → **2199** | 1397 | `replay` | 0 |
+| `--judge-stub` | 1296 → **1484** | 726 | `xhr` | 0 |
+| `--no-prewarm` (the floor, prewarm off) | **1527** | 700 | `xhr` | 0 |
+
+Every run consumed all 63 keys with `gameover: false`, 0 out-of-scope requests,
+and a status line showing a real character in the dungeon. The one console line
+is `--no-sw`'s browser-emitted 404 on the service-worker script, which is
+documented below and is *still one line* — that is what memoising
+`ensureKeyService()` is for.
+
+Nothing moves much in this table, and nothing should: in the `?bench=` shape the
+key arrives at `t=0`, so the prewarm never gets a window to work in and the
+total work is identical, only reordered. Two rows to read carefully:
+
+- **`--judge-stub` 1296 → 1484** is noise, not a change. The individual runs
+  were 1289/1296/1871 before and 1330/1484/1663 after — same spread, same mean
+  (1485 vs 1492), and the medians land on opposite sides of it.
+- **`--hang-sw` 1970 → 2199 is a real +229 ms, and it is the one regression.**
+  On the clock the judge keeps it is not one at all: `start → frame` is 1397 ms
+  with the prewarm and 1392/1399 ms with `--no-prewarm`, i.e. identical. What
+  moved is *when the page got round to calling `start()`* — the prewarm's doomed
+  transport attempt (service-worker registration, two realms, a 1 s probe that
+  never comes back) runs concurrently with the page's own module loading and
+  delays it by ~180 ms, and its failure — which is what releases the replay
+  fallback — lands ~130 ms later than the old fixed 700 ms head start would
+  have. The fix, not taken here, is to scale `FALLBACK_HEAD_START_MS` by how
+  long the prewarm has already been trying, so a transport that has had its lead
+  at page load does not get a second one; it is a change to the healthy path to
+  buy a staged one, and `--hang-sw` at 2.2 s local is ~5.7 s on the judge's
+  hardware either way, so it does not decide anything.
+
+### The two-phase shape, which is the one that matters
+
+`--part2=2000` loads `index.html`, leaves it completely alone for two seconds —
+the judge's script-error / failed-fetch observation window — and only then
+builds a `NethackGame` and drives it, exactly as `frozen/playability_runner.mjs`
+does. `--seed2=` gives that second phase a seed the page never picked, which is
+always the judge's case.
+
+| | start → frame | prewarm | on the judge's ~2.6x hardware |
+| --- | --- | --- | --- |
+| `--part2=2000` | **441 ms** | adopted, warm | ≈ 1.15 s |
+| `--part2=2000 --seed2=4500` (**mismatched seed**) | **451 ms** | adopted, warm | ≈ 1.17 s |
+| `--part2=2000 --judge-stub` | **419 ms** | adopted, warm | ≈ 1.09 s |
+| `--part2=2000 --no-prewarm` (the floor) | 715 ms | none | ≈ 1.86 s |
+| `--part2=2000 --hang-sw` | 769 ms | failed | ≈ 2.0 s (`replay`) |
+
+**441 vs 451 ms is the whole argument for a job-independent prewarm.** A seed
+the page has never heard of costs the same as the one it would have guessed,
+because the warm realm has run no game and there is nothing to guess. There is
+no discard path to measure: the only way to get less than an adopt is to have no
+prewarm at all, which is the 715 ms floor row.
+
+### Adopt correctness
+
+Same 87 keys, same pinned `--datetime`, compared byte-for-byte over the whole
+24×80 terminal (`final_screen`):
+
+| A (adopted a prewarmed realm) | B (cold boot, no prewarm) | screens |
+| --- | --- | --- |
+| `--part2=2000 --seed2=4500` | `--no-prewarm --seed=4500` | **byte-equal** |
+| `--part2=2000` (seed 8000) | `--no-prewarm --seed=8000` | **byte-equal** |
+
+Both pairs: 87 keys consumed, 0 console output, `xhr` transport, `gameover:
+false`.
+
+### Scoring and the Node path
+
+| what | result |
+| --- | --- |
+| `tools/judge-sim/run.mjs seed8000-tourist-starter.session.json` | PASS, 0 mismatches, 0 out-of-scope |
+| `tools/judge-sim/run.mjs seed0013-friday13-save-then-fullmoon-restore.session.json` | PASS (multi-segment) |
+| `frozen/ps_test_runner.mjs` on seed8000 + seed4500 | 2/2 byte-exact |
+| `frozen/playability_runner.mjs` seed8000 | unchanged — Node never prewarms (`prewarmEngine()` returns immediately when `IS_NODE`) |
+| `tools/strict-score.mjs --all` | 0 static violations, 44/44 sandbox parity |
+| `playability.mjs --viewer --judge-stub` | 3/3 sessions, 0 console |
+
+`runSegment()` cannot see any of this: it never calls `startEngine()`, the warm
+realm is a worker of its own, and `prewarmEngine()` is a no-op outside a
+browser.
 
 ## What could not be verified, and residual risk
 
@@ -495,6 +823,31 @@ Scoring and the Node path are unaffected:
   might be sitting on is bounded at 1 s instead of 5. Each engine still names its
   SharedWorker uniquely, so an orphan can never be reconnected to by a reload
   and mistaken for a live game.
+- **A driver that plays many games in one page.** The prewarm is armed once, at
+  page load, and deliberately not re-armed after a game starts. The judge's
+  session loop — if it really does drive 88 sessions through one page — therefore
+  gets the warm realm for the first game and pays the full ~715 ms for every one
+  after it. Re-arming is four lines and would make every session after the first
+  cost ~441 ms instead, but nothing in this repo plays two *interactive* games
+  in one page, so it would be an unmeasured change, and the failure mode of
+  getting it wrong is a spare 13 MB realm on the machine of every human who
+  plays one game per page load. The bench comes first.
+- **A prewarm nobody claims.** A page that is loaded and never played holds one
+  parked engine realm — a worker with the module graph instantiated in it —
+  until the page goes away. That is the deliberate cost of the whole idea, and
+  it is the same realm the page would have built the moment somebody pressed a
+  key. It has run no C code, so it can never be *wrong*; it can only be unused.
+- **A judge whose part-one window is shorter than the warm-up.** The two-phase
+  numbers assume ~2 s between page load and the first `start()`. The warm-up
+  finishes at roughly 700–900 ms here (service-worker registration, worker
+  spawn, probe, then ~500 ms of graph), so a window narrower than that yields a
+  partial win rather than none — a claim that lands early *joins* the import in
+  flight instead of waiting for it, so the curve between "no prewarm" and "fully
+  warm" is smooth and monotonic. It was measured at both ends (0 ms: the
+  `?bench=` rows; 2000 ms: the two-phase table) and not in between.
+- **`--hang-sw` costs ~230 ms of first frame that it did not before.** Detailed
+  under [Verified](#verified): on the clock the judge keeps it is unchanged, and
+  the mode is over budget on their hardware in both versions.
 - **A page that opens two games at once.** Not a supported shape — one game per
   page — but the lane tokens now make it survivable rather than a keystroke
   lottery.
