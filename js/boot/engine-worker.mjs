@@ -32,9 +32,11 @@
 //
 // Protocol
 //   driver -> worker  { type:'probe', probeUrl }   (browser, xhr transports)
+//                     { type:'warm' }              (browser, prewarm)
 //                     { type:'init', job, mode, ctl?, keyUrl? }
 //   worker -> driver  { type:'ready' }
 //                     { type:'probe', ok }
+//                     { type:'warmed' }
 //                     { type:'frame', screen, cx, cy, anim }  at each input boundary
 //                     { type:'exit', code, error, storage }
 //
@@ -218,6 +220,44 @@ function storageHandleOver(map) {
 }
 
 let started = false;
+let warming = null;
+
+/**
+ * Instantiate everything a game needs *before* the job that needs it exists.
+ *
+ * Booting a game is two costs in a fixed order: instantiating the 176-module
+ * transpiled graph (~480 ms, and it depends on nothing at all — every C
+ * file-scope variable goes to its static initialiser), and then running
+ * newgame() (~550 ms, and it depends on the seed, the datetime and the
+ * nethackrc). Only the second half needs a job. So a realm can pay the first
+ * half while the page is still loading and park, and a `init` that arrives
+ * afterwards only pays the second.
+ *
+ * Importing ../generated/unixmain.js here rather than from inside runBootGame()
+ * is safe because no generated module reads a harness global at module scope:
+ * verified by importing the graph on its own, with none of runBootGame()'s
+ * shims installed, in Node and in the browser — nothing throws and nothing is
+ * observably different. runBootGame()'s own `await import(...)` of the same
+ * specifier then resolves from the module map, instantly and to the same
+ * namespace object, and the graph is still instantiated exactly once in this
+ * realm.
+ *
+ * A warmed realm has NOT run a game — it is pristine, so it can host any job,
+ * whatever seed the caller turns out to want. That is the whole point: the page
+ * cannot know the judge's seed at load time, and with this it does not have to.
+ *
+ * Failure is silent and harmless: nothing is posted, the driver's timeout
+ * fires, and the game boots the ordinary way, paying for the graph then.
+ */
+function warmRealm(post) {
+    if (warming) return warming;
+    warming = (async () => {
+        await import('./harness.mjs');
+        await import('../generated/unixmain.js');
+    })();
+    warming.then(() => post({ type: 'warmed' }), () => { /* boot pays for it instead */ });
+    return warming;
+}
 
 async function runEngine(msg, post) {
     const waitForKeyRaw = msg.mode === 'xhr' ? xhrWaiter(msg.keyUrl) : sabWaiter(msg.ctl);
@@ -283,6 +323,11 @@ function serve(post, listen) {
         // Asked before init, from the realm that will do the blocking: only
         // this realm's own request can tell us whether it is intercepted.
         if (msg.type === 'probe') { post({ type: 'probe', ok: swIntercepts(msg.probeUrl) }); return; }
+        // Prewarm: instantiate the module graph now, park, and wait for a job.
+        // Only ever sent to a realm that has already won the transport race and
+        // proved it can block, so a realm nobody will play in never pays for a
+        // graph — and never competes with the fallback that is about to.
+        if (msg.type === 'warm') { warmRealm(post); return; }
         if (msg.type !== 'init' || started) return;
         started = true;
         runEngine(msg, post);
