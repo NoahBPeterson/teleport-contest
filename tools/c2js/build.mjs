@@ -499,5 +499,30 @@ function buildAll() {
   console.log(`\nfull report: ${path.relative(repoRoot, reportPath)}`);
 }
 
-if (process.argv[2] === '--all') buildAll();
-else buildSingle(process.argv[2]);
+/**
+ * C2JS_YIELD=1 — additionally emit the yieldable build.
+ *
+ * The yield build is a whole-program rewrite of the emitter's output (every
+ * function that can reach a blocking keystroke read becomes a generator), so
+ * it necessarily runs AFTER all 176 modules exist and can see all of them at
+ * once; it is a separate pass, not a mode inside emit.mjs. Two consequences
+ * that matter:
+ *
+ *   - the synchronous build in js/generated/ is produced by exactly the same
+ *     code with the flag on or off — the flag adds work after that directory
+ *     is final, and cannot alter a byte of it;
+ *   - the rewrite sees the hand-written runtime preludes that assemble()
+ *     inlines verbatim, which emit.mjs never does.
+ *
+ * See tools/c2js/yieldify.mjs and docs/NOTES-async-engine.md.
+ */
+async function maybeYield() {
+  if (!process.env.C2JS_YIELD) return;
+  console.log('\nC2JS_YIELD=1 — emitting the yieldable build');
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'yieldify.mjs'), '--check'], { stdio: 'inherit' });
+}
+const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
+
+if (process.argv[2] === '--all') buildAll().then(maybeYield);
+else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

@@ -5,3 +5,5 @@ tools/c2js/fixtures/printf_ref
 .DS_Store
 .claude/
 sessions-live/
+js/generated-y/
+js/boot/harness-y.mjs
