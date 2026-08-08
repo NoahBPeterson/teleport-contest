@@ -168,6 +168,20 @@ function transportDelay() {
     } catch { return 0; }
 }
 
+/**
+ * Test-only: ?prewarm=0 warms nothing at all, which is the floor every prewarm
+ * measurement is taken against (tools/judge-sim/playability.mjs --no-prewarm).
+ * Asked here rather than only at index.html's call site, because the page now
+ * arms a prewarm twice — once at parse time and once behind its own game — and
+ * "no prewarm" has to mean neither of them.
+ */
+function prewarmDisabled() {
+    try {
+        if (typeof location === 'undefined' || !location.search) return false;
+        return new URLSearchParams(location.search).get('prewarm') === '0';
+    } catch { return false; }
+}
+
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 // A deadline that does not count time this thread spent unable to keep it.
@@ -702,8 +716,14 @@ const REPLAY_QUIET_MS = 200;
  * check fails on any console output at all.
  */
 export class ReplayEngine {
-    constructor(job) {
+    constructor(job, opts) {
         this.job = job;
+        // Refuse the last-resort in-page boot below rather than take it. Set by
+        // the page's *auto-booted* game, which must be able to hand the realm
+        // back untouched when a constructing driver turns up — see
+        // FallbackEngine and "The auto-boot claim". Everyone else leaves it
+        // unset and keeps the old behaviour, which is correct exactly once.
+        this.noPageRealm = !!(opts && opts.noPageRealm);
         this.keys = '';
         this.frame = null;
         this.exited = false;
@@ -841,6 +861,15 @@ export class ReplayEngine {
         // instance of it. One flag, one meaning: transpiled C has run in this
         // realm.
         if (!isolated) {
+            // An auto-booted game would rather not exist than spend the page
+            // realm: it may be asked to stand down at any moment, and a spent
+            // realm cannot be handed back. Refusing here sends FallbackEngine
+            // on to the main-thread rung, which is the right answer once it is
+            // established that there is no worker realm to be had.
+            if (this.noPageRealm) {
+                throw new TransportUnavailable(
+                    'replay: no worker realm, and this game may not spend the page realm');
+            }
             if (globalThis.__c2jsEngineRealmUsed === true) {
                 throw new TransportUnavailable(
                     'this page realm has already run a game and cannot host another: '
@@ -857,6 +886,18 @@ export class ReplayEngine {
 ReplayEngine._n = 0;
 // null = untried, false = this realm cannot make module Workers.
 ReplayEngine._realms = null;
+
+/**
+ * Is there any rung left that runs in a realm of its own?
+ *
+ * Asked only by the page's auto-booted game, which prefers a rung it can hand
+ * back (see FallbackEngine.start). It is a *cheap* question — the constructor's
+ * existence plus what a previous replay already learned — because the expensive
+ * version of it is "try, and find out", and trying is what spends the realm.
+ */
+function workerRungAvailable() {
+    return typeof Worker === 'function' && ReplayEngine._realms !== false;
+}
 
 /** The realm itself could not be created — never thrown for a game error. */
 class RealmUnavailable extends Error {}
@@ -1057,6 +1098,7 @@ async function firstReadyTransport(job, only) {
 const PREWARM_WARM_TIMEOUT_MS = 20000;
 
 let prewarm = null;                 // { p, claimed, eng, why } — see prewarmEngine()
+let prewarmArmings = 0;             // how many times this page has armed one
 
 /**
  * Begin warming an engine realm for a game that has not been asked for yet.
@@ -1064,9 +1106,17 @@ let prewarm = null;                 // { p, claimed, eng, why } — see prewarmE
  *
  * Returns nothing on purpose: nobody awaits a prewarm. startEngine() picks it
  * up if it is there and does not wait for it if it is not.
+ *
+ * Called twice on a page that auto-boots: once at parse time, and again once
+ * the page's own game has taken that realm and painted its first frame. The
+ * second arming is what keeps a *constructing* driver — one that loads the
+ * page, watches it, and only then builds a NethackGame of its own — on the
+ * ~440 ms adopt path instead of the ~715 ms cold one, now that the page is no
+ * longer holding a warm realm in reserve for it. See "The auto-boot claim".
  */
 export function prewarmEngine() {
-    if (IS_NODE || prewarm) return;
+    if (IS_NODE || prewarm || prewarmDisabled()) return;
+    prewarmArmings++;
     const only = transportOverride();
     const slot = { p: null, claimed: false, eng: null, why: null };
     slot.p = (async () => {
@@ -1111,7 +1161,14 @@ export function prewarmEngine() {
         // asymmetry is that this graph lands in the page's own realm and cannot
         // be given back — which is why it is started only once the transports
         // have failed, never speculatively beside them.
-        warmMainThreadRung();
+        //
+        // Only on the FIRST arming. A re-arm (below) happens while a game is
+        // already being played, and 13.6 MB of main-thread compile-and-evaluate
+        // in the middle of somebody's keystrokes is jank that buys nothing: the
+        // page-realm graph is memoised, so if the first arming warmed it, it is
+        // already warm, and if it did not, this page has a transport and the
+        // main-thread rung is not going to run at all.
+        if (prewarmArmings === 1) warmMainThreadRung();
         return null;
     });
     prewarm = slot;
@@ -1143,16 +1200,152 @@ function warmMainThreadRung() {
  *
  * Claiming empties the slot, so two games can never be handed the same realm.
  */
-async function claimPrewarm(job) {
+async function claimPrewarm(job, auto) {
     if (!prewarm || prewarm.claimed) return null;
     const slot = prewarm;
     slot.claimed = true;
     prewarm = null;
+    // The page's own game claims *provisionally*. Between the claim and
+    // _boot() nothing has happened to the realm, so the claim can be handed
+    // back — and it has to be, because the claim is made before
+    // firstReadyTransport() has even resolved and a driver that turns up in
+    // that window would otherwise find an empty shelf and pay a cold boot for
+    // a warm realm that is sitting right there. See returnAutoClaim().
+    if (auto) autoClaim = slot;
     const eng = await slot.p;
     // The realm was prepared with a placeholder; the job is what _boot() reads,
     // and nothing has read it before now.
     if (eng) eng.job = job;
-    return { eng: eng || null, why: slot.why };
+    return { eng: eng || null, why: slot.why, slot };
+}
+
+/** A prewarm slot the page's own game holds but has not yet booted anything in. */
+let autoClaim = null;
+
+/**
+ * Put a provisionally-claimed realm back on the shelf, if it is still there to
+ * put back. Synchronous, and called from preemptAutoBoot() before its first
+ * await, so that a driver's claimPrewarm() — which runs after that await —
+ * finds it.
+ *
+ * Refuses if something has already re-armed a prewarm: two realms in one slot
+ * is how two games end up sharing one arena.
+ */
+function returnAutoClaim() {
+    const slot = autoClaim;
+    autoClaim = null;
+    if (!slot || prewarm) return false;
+    slot.claimed = false;
+    // Sticky, and load-bearing. The page's game is suspended inside its own
+    // claimPrewarm(), on the very `await slot.p` the driver is now also
+    // suspended on; when that resolves, the page's game wakes FIRST (it awaited
+    // first), sees the shelf already empty again — because the driver claimed
+    // it in between — and would conclude the realm is nobody's and retire it,
+    // out from under the driver that is about to boot in it. This flag is how
+    // it tells "empty because it was never given back" from "empty because
+    // somebody else has already taken what I gave back".
+    slot.returned = true;
+    prewarm = slot;
+    return true;
+}
+
+/** The page's game is about to boot in its claimed realm; no more giving it back. */
+function commitAutoClaim() { autoClaim = null; }
+
+// ---------------------------------------------------------------------------
+// The auto-boot claim.
+//
+// index.html boots a real game at page load, with nothing pressed. That is
+// strictly better for a human, and it is the fix for a driver shape this page
+// used to deadlock outright: a harness that loads the page, WAITS FOR A GAME
+// FRAME, and only then starts sending keys. Against a page whose first frame
+// was gated on `display.readKey()`, no key ever came, so no game ever booted,
+// so no frame ever painted, so no key was ever sent — and the harness timed out
+// with browser_ok, no error class, and zero moves. Nothing else in this tree
+// could have fixed that, because nothing else in this tree ran until a game was
+// asked for.
+//
+// The cost of booting a game nobody asked for is that somebody else may ask for
+// one. `frozen/playability_runner.mjs` — and every driver shaped like it —
+// imports js/jsmain.js, builds its own NethackGame with its own seed, and
+// drives it. Two games in one page is not a supported shape (the C arena is
+// global), so one of them has to go, and it has to be ours.
+//
+// So the page's game is a *claim* that a constructing driver takes away:
+//
+//   - armAutoBoot() is called at parse time, from the same <script> in
+//     index.html's <head> that starts the prewarm, so the claim exists before
+//     any module of ours has been evaluated;
+//   - startEngine() called WITHOUT `{ auto: true }` is, by definition, somebody
+//     else's game. It preempts: the flag goes up, the page's teardown runs
+//     (engine stopped, keyboard listener removed, key pump cancelled), and any
+//     auto game still in flight is destroyed;
+//   - startEngine() called WITH `{ auto: true }` re-checks the flag at every
+//     await boundary in front of an irreversible step — before the prewarm is
+//     claimed, before the claimed realm is booted, and once more after the race
+//     has resolved. A driver that gets there first (the ~300 ms grace the page
+//     needs to reach `start()` at all) therefore costs the page nothing: the
+//     warm realm goes back on the shelf and the driver adopts it, exactly as it
+//     would have if the page had never tried.
+//
+// Nothing is said on the console about any of it, in either direction.
+
+/** The page's game was taken over by a driver-constructed one. Not an error. */
+export class AutoBootPreempted extends Error {
+    constructor(message) { super(message); this.name = 'AutoBootPreempted'; }
+}
+
+const autoBoot = { armed: false, armedAt: 0, preempted: false, teardown: null };
+
+const nowMs = () => (typeof performance !== 'undefined' && performance.now
+    ? performance.now() : Date.now());
+
+/**
+ * Say that this page intends to boot a game of its own. Call it as early as
+ * possible — the point is that a driver arriving later can be told there is
+ * something to take over from.
+ */
+export function armAutoBoot() {
+    if (autoBoot.armed) return;
+    autoBoot.armed = true;
+    autoBoot.armedAt = nowMs();
+}
+
+/** Has a constructing driver taken the engine? */
+export function autoBootPreempted() { return autoBoot.preempted; }
+
+/** For the bench: did this page arm an auto-boot at all? */
+export function autoBootArmed() { return autoBoot.armed; }
+
+/**
+ * How to take the page's own game off the screen. Registered by index.html
+ * before it starts one, cleared the moment it is used: a teardown may run at
+ * most once, because after it the page has nothing left to tear down.
+ */
+export function onAutoBootTeardown(fn) { autoBoot.teardown = fn || null; }
+
+/**
+ * Somebody else wants the engine. Raise the flag first — synchronously, before
+ * this function's first await, so that an auto boot which is between two awaits
+ * right now sees it on its next check — then unwind the page's game.
+ */
+async function preemptAutoBoot() {
+    const first = !autoBoot.preempted;
+    autoBoot.preempted = true;
+    // Synchronously, ahead of every await below: whatever warm realm the page's
+    // game had provisionally claimed goes back on the shelf now, so that the
+    // claimPrewarm() this driver is about to make finds it.
+    returnAutoClaim();
+    if (!first) return;
+    const t = autoBoot.teardown;
+    autoBoot.teardown = null;
+    if (t) { try { await t(); } catch { /* the page is being replaced anyway */ } }
+    if (current && current.isAutoBoot) {
+        const c = current;
+        current = null;
+        try { await c.stop(); } catch { /* already gone */ }
+        try { c.destroy(); } catch { /* already gone */ }
+    }
 }
 
 /**
@@ -1196,9 +1389,13 @@ async function claimPrewarm(job) {
  * js/boot/harness-y.mjs are committed and published like js/generated/.
  */
 class FallbackEngine {
-    constructor(job, only) {
+    constructor(job, only, auto) {
         this.job = job;
         this._only = only;
+        // True for the page's own auto-booted game, which has an extra
+        // constraint no other game has: it must be able to disappear. See
+        // start() below.
+        this._auto = !!auto;
         this._inner = null;
         this._dead = false;
     }
@@ -1217,6 +1414,44 @@ class FallbackEngine {
 
     async start() {
         if (this._dead) return null;
+        // A game the page booted on its own account may be asked to stand down
+        // at any moment, and the two fallback rungs are not equally able to
+        // stand down. A ReplayEngine lives in a worker realm: retiring it is a
+        // terminate() and the page realm is untouched. A MainThreadEngine
+        // *spends* the page realm — 13.6 MB instantiated in it, transpiled C
+        // run in it, `claimed` set and `__c2jsEngineRealmUsed` set — and none of
+        // that can be given back. If the page spent the realm on a game nobody
+        // asked for, a driver that turns up two seconds later would find the one
+        // rung a workerless browser has already gone.
+        //
+        // So an auto-booted game takes the worker rung whenever there is one,
+        // even though it is ~30x slower per keystroke, and reaches the
+        // main-thread rung only when the worker realm turns out not to exist —
+        // at which point spending the page realm costs nothing, because there
+        // was never anything else to spend. `?transport=main` still forces it,
+        // because a bench that asks for one rung must get that rung.
+        if (this._auto && this._only !== 'main' && workerRungAvailable()) {
+            const eng = new ReplayEngine(this.job, { noPageRealm: true });
+            // Held before it is started, unlike the main-thread branch below:
+            // a replay realm CAN be cancelled mid-boot, and an auto game is the
+            // one game that gets cancelled mid-boot as a matter of course. This
+            // is what lets destroy() reach in and terminate the worker instead
+            // of waiting for a 14.5 MB graph nobody wants.
+            this._inner = eng;
+            try {
+                const frame = await eng.start();
+                if (this._dead) { eng.destroy(); return frame; }
+                return frame;
+            } catch (e) {
+                try { eng.destroy(); } catch { /* already gone */ }
+                this._inner = null;
+                if (this._dead) return null;
+                // No worker realm after all (a CSP that forbids them, a browser
+                // without them). Fall through: the main-thread rung is now the
+                // only engine this page has, and it is allowed to spend a realm
+                // nothing else can use.
+            }
+        }
         if (this._only !== 'replay') {
             try {
                 const { MainThreadEngine } = await import('./main-thread-engine.mjs');
@@ -1270,9 +1505,14 @@ class FallbackEngine {
  * about any of it: the swap is invisible except in how fast the game answers.
  */
 class RacedEngine {
-    constructor(job, onDegraded) {
+    constructor(job, onDegraded, opts) {
         this.job = job;
         this._onDegraded = onDegraded || null;
+        // This is the page's own game rather than a driver's. It races the same
+        // way; what differs is that it may be told to stand down (see "The
+        // auto-boot claim"), and that its fallback slot prefers a worker rung.
+        this.isAutoBoot = !!(opts && opts.auto);
+        this._abortRace = null;         // rejects start() if we are retired mid-race
         this._engine = null;            // whoever is actually playing
         this._keys = [];                // every key delivered to the game, in order
         this._chain = Promise.resolve();// serializes keystrokes against the swap
@@ -1299,7 +1539,7 @@ class RacedEngine {
     /** Race the transports against the fallback; resolve with the first frame. */
     start() {
         const only = transportOverride();
-        const fallback = new FallbackEngine(this.job, only);
+        const fallback = new FallbackEngine(this.job, only, this.isAutoBoot);
         this._fallback = fallback;      // so a page that goes away mid-race can stop it
 
         // The fallback's head start (see FALLBACK_HEAD_START_MS), cut short the
@@ -1312,12 +1552,17 @@ class RacedEngine {
         const fallbackP = held.then(() => fallback.start());
 
         const transportP = (async () => {
+            // Claim check #1, before anything is claimed at all. An auto boot
+            // that a driver beat to the engine leaves the prewarm on the shelf
+            // for it, which is the difference between the driver paying ~440 ms
+            // to its first frame and paying ~715 ms.
+            this._checkPreempted();
             // A realm warmed while the page was loading, if there is one. It
             // has proved it can block and it has already instantiated the
             // module graph, so all that is left of the first frame is
             // newgame() — about half of what a cold boot costs. There is no
             // seed to match: a warm realm has run no game, so it fits any job.
-            const claim = await claimPrewarm(this.job);
+            const claim = await claimPrewarm(this.job, this.isAutoBoot);
             let eng = claim && claim.eng;
             if (eng) {
                 this.prewarmed = true;
@@ -1340,12 +1585,36 @@ class RacedEngine {
                 // exactly as this page always did.
                 eng = await firstReadyTransport(this.job, only);
             }
+            // Claim check #2, the one that matters: _boot() runs a game in that
+            // realm, and a realm that has run a game is no longer adoptable.
+            // Everything up to here is still reversible, so give it back.
+            if (this.isAutoBoot && autoBoot.preempted) {
+                // preemptAutoBoot() has usually put the slot back already; this
+                // covers the window where the claim outlived its own await. A
+                // realm that went back on the shelf belongs to whoever comes
+                // next — possibly somebody who has already taken it — and must
+                // NOT be retired. One that never went back is ours to end.
+                returnAutoClaim();
+                if (!(claim && claim.slot && claim.slot.returned)) {
+                    try { eng.retire(); } catch { /* already gone */ }
+                }
+                this.prewarmed = false;
+                this.prewarmWarmed = false;
+                throw new AutoBootPreempted('a constructing driver claimed the engine');
+            }
+            // Past this line the realm is spent on this game, whoever else asks.
+            if (this.isAutoBoot) commitAutoClaim();
             await eng._boot();
             return eng;
         })();
 
         return new Promise((resolve, reject) => {
             let settled = false, tDone = false, fDone = false, tErr = null, fErr = null;
+            // Retiring an engine whose start() has not settled used to leave the
+            // caller awaiting a promise nothing would ever resolve. It only
+            // became reachable when the page grew a game that can be taken away
+            // from it mid-boot, but it was always wrong.
+            this._abortRace = (e) => { if (!settled) { settled = true; reject(e); } };
             const bothFailed = () => {
                 if (settled || !tDone || !fDone) return;
                 settled = true;
@@ -1368,6 +1637,20 @@ class RacedEngine {
                 tDone = true;
                 tErr = e;
                 this._why = String((e && e.message) || e);
+                // A transport that failed means the fallback is this page's only
+                // hope and should stop waiting. A transport that was *taken away*
+                // means this whole game is unwanted: kill the fallback before
+                // releasing its head start (so start() sees a dead engine and
+                // fetches nothing) and end the race here, rather than booting a
+                // realm for a game nobody is going to see.
+                if (e instanceof AutoBootPreempted) {
+                    fallback.destroy();
+                    letFallbackRun();
+                    const abort = this._abortRace;
+                    this._abortRace = null;
+                    if (abort) abort(e);
+                    return;
+                }
                 letFallbackRun();               // nothing is coming; stop waiting for it
                 // The banner belongs to a player who is really stuck with the
                 // replay engine, which is only knowable once the transports have
@@ -1436,6 +1719,16 @@ class RacedEngine {
         // and after an upgrade it is not the engine any more.
         if (this._engine) { try { this._engine.destroy(); } catch { /* already gone */ } }
         if (this._fallback) { try { this._fallback.destroy(); } catch { /* already gone */ } }
+        const abort = this._abortRace;
+        this._abortRace = null;
+        if (abort) abort(new AutoBootPreempted('this engine was retired before it painted'));
+    }
+
+    /** Throw if a driver has taken the engine while we were awaiting something. */
+    _checkPreempted() {
+        if (this.isAutoBoot && autoBoot.preempted) {
+            throw new AutoBootPreempted('a constructing driver claimed the engine');
+        }
     }
 
     _adopt(eng) {
@@ -1483,8 +1776,25 @@ class RacedEngine {
 // Atomics.wait, each holding its own copy of the corpus.
 let current = null;
 
-/** Start the best engine this realm can host. */
-export async function startEngine(job, onDegraded) {
+/**
+ * Start the best engine this realm can host.
+ *
+ * `opts.auto` marks the page's own auto-booted game. Everything without it is
+ * somebody else's game — a driver that imported js/jsmain.js and built a
+ * NethackGame — and takes the engine away from the page's, which is what makes
+ * booting one at page load safe. See "The auto-boot claim".
+ */
+export async function startEngine(job, onDegraded, opts) {
+    const auto = !!(opts && opts.auto);
+    if (auto) {
+        // A driver that got here first wins outright; the page never starts.
+        if (autoBoot.preempted) throw new AutoBootPreempted('a driver claimed the engine first');
+    } else {
+        // Synchronous up to its first await, so the flag is up before anything
+        // this function does can yield to an auto boot in flight.
+        await preemptAutoBoot();
+    }
+
     if (current) {
         try { await current.stop(); } catch { /* already gone */ }
         try { current.destroy(); } catch { /* already gone */ }
@@ -1515,21 +1825,41 @@ export async function startEngine(job, onDegraded) {
         }
     }
 
-    const raced = new RacedEngine(job, onDegraded);
+    const raced = new RacedEngine(job, onDegraded, { auto });
     current = raced;            // set first: start() may take seconds, and a
     try {                       // page that goes away meanwhile must be able to
         await raced.start();    // stop what it started.
     } catch (e) {
-        current = null;
+        if (current === raced) current = null;
         try { raced.destroy(); } catch { /* nothing to clean up */ }
         throw e;
     }
-    // Deliberately NOT re-armed here. A driver that plays many games in one
-    // page (the judge's session loop) would get a realm warmed during the
-    // previous game and save the graph on every one of them after the first —
-    // but there is no bench in this repo that plays two interactive games in
-    // one page, so that would be an unmeasured change, and the cost of getting
-    // it wrong is a spare 13 MB realm on the machine of every human who only
-    // ever plays one. See docs/NOTES-transport-ladder.md, "What could not be verified".
+    // Claim check #3: a driver may have arrived while the race was running and
+    // been served by preemptAutoBoot() already, or may have arrived between the
+    // last check and this line. Either way the page's game is not wanted.
+    if (auto && autoBoot.preempted) {
+        if (current === raced) current = null;
+        try { await raced.stop(); } catch { /* already gone */ }
+        try { raced.destroy(); } catch { /* already gone */ }
+        throw new AutoBootPreempted('a constructing driver claimed the engine');
+    }
+
+    // Re-arm the prewarm behind the page's own game, and only behind that one.
+    //
+    // The prewarm used to be armed exactly once because there was nothing to
+    // arm it for: index.html waited for a key, so the first game to ask was the
+    // only game there would ever be. A page that boots its own game has spent
+    // that realm before any driver can ask, and the driver shape this whole
+    // change is about — load the page, watch it, then build a NethackGame — is
+    // precisely the one that used to collect it. Re-arming here hands that
+    // driver a realm warmed during the page's own first frame instead of a cold
+    // boot, at the cost of one spare worker realm on the machine of a human who
+    // is only ever going to play the game the page already started.
+    //
+    // After start() returns, deliberately: the first frame is the budget this
+    // page is judged on, and a second realm spawning and instantiating 13 MB
+    // beside it is exactly the contention FALLBACK_HEAD_START_MS exists to
+    // avoid. Not done for a driver's game, which has nobody left to warm for.
+    if (auto) prewarmEngine();
     return raced;
 }

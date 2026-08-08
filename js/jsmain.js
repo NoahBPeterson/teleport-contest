@@ -238,6 +238,13 @@ export class NethackGame {
         this._pendingDisplay = null;
         this.display = null;
         this.engine = null;
+        // Set only by index.html, for the game the page boots on its own
+        // account at load. Every game built by somebody else — a driver that
+        // imported this module, frozen/playability_runner.mjs, the judge's
+        // browser check — leaves it false and therefore *preempts* the page's
+        // game rather than colliding with it. See "The auto-boot claim" in
+        // js/boot/interactive.mjs.
+        this.autoBoot = !!opts.autoBoot;
     }
 
     async start() {
@@ -257,7 +264,7 @@ export class NethackGame {
             // back out at game end (same contract as js/boot/frame.mjs).
             storage: snapshotStorage(storage),
             onStorage: (after) => applyStorage(storage, {}, after),
-        }, (why) => warnDegradedEngine(why));
+        }, (why) => warnDegradedEngine(why), { auto: this.autoBoot });
 
         this.display = display;
         this.engine = engine;
