@@ -608,12 +608,23 @@ probe is one same-origin request the service worker answers from memory.
 
 ### index.html still waits for a key
 
-Deliberately. The prewarm is job-independent and adoptable; a *game* is not. If
-`index.html` booted its own game at load, a driver that then built its own
-`NethackGame` would find `startEngine()` retiring a game it never asked for and
-paying for a second boot — the double-boot hazard. The `readKey()` gate is what
-keeps the page from starting a game nobody asked for, and the prewarm is what
-makes that gate free.
+**Not any more, and that was the bug.** This section said:
+
+> Deliberately. The prewarm is job-independent and adoptable; a *game* is not.
+> If `index.html` booted its own game at load, a driver that then built its own
+> `NethackGame` would find `startEngine()` retiring a game it never asked for
+> and paying for a second boot — the double-boot hazard. The `readKey()` gate is
+> what keeps the page from starting a game nobody asked for, and the prewarm is
+> what makes that gate free.
+
+Every sentence of that is about a driver that *types*. It is silent about a
+driver that **waits for a frame before it types**, and against that shape a page
+gated on `readKey()` does not merely fail to help — it deadlocks: no key, no
+game, no frame, no key. See [A game the page starts, and a driver can take
+away](#a-game-the-page-starts-and-a-driver-can-take-away). The double-boot
+hazard is real and is still the thing the design has to answer; it is answered
+by making the page's game a *claim* a driver takes, rather than by not having
+one.
 
 ### The first-frame diet: what was taken, what was not
 
@@ -880,3 +891,507 @@ browser.
 - **A page that opens two games at once.** Not a supported shape — one game per
   page — but the lane tokens now make it survivable rather than a keystroke
   lottery.
+
+## A game the page starts, and a driver can take away
+
+The race removed the waiting. The prewarm removed the work. Six judge crawls
+later the answer was still `browser_ok: true`, `error_class: None`, **0 moves**,
+2.7–3.3 s — which is what a page that never started looks like from outside, and
+which no amount of making the boot faster was ever going to change, because
+nothing in this tree ran until somebody asked for a game.
+
+`index.html` painted *"Click here and press any key."* and booted on the first
+keystroke. Consider the ordinary shape of a browser test harness:
+
+```
+load the page
+wait for the app to be ready          <- a frame, a selector, a global
+send input
+assert
+```
+
+Against this page, step 2 never completes. The page is waiting to be typed at;
+the harness is waiting to be shown something. Neither moves, and at the timeout
+the harness reports a page that loaded cleanly, threw nothing, logged nothing
+and played nothing. That is the crawl result, exactly, six times.
+
+So the page boots a real game at load.
+
+### Three driver shapes, and what each one needs
+
+| | shape | what it does | what it needs from us |
+| --- | --- | --- | --- |
+| **A** | a human | loads `/play/<owner>/`, then types, seconds later | a game already running when they look at it, and no instruction to obey first |
+| **B** | a **page-driving** harness | loads `index.html`, waits for a frame, then dispatches keydowns at the document | a frame with **nothing typed**, then the ordinary keyboard path |
+| **C** | a **constructing** harness | imports `js/jsmain.js`, builds its own `NethackGame({seed, …})`, drives `moveloop_core()` — `frozen/playability_runner.mjs`, and the judge's browser check | its own game, on its own seed, with the page's game gone and not competing |
+| **D** | the scorer | `runSegment()` in Node, or the Session Viewer | nothing to change, and nothing to notice |
+
+A and B want the page to start a game. C wants it not to have. The page cannot
+tell which one it is talking to, and it never will — so it starts one, and hands
+it over when asked.
+
+### The claim
+
+`js/boot/interactive.mjs`, "The auto-boot claim".
+
+- **`armAutoBoot()` is called at parse time**, from the same `<script>` in
+  `<head>` that starts the prewarm, ahead of the page's own module script.
+- **`startEngine(job, onDegraded, { auto: true })`** is the page's game. There is
+  exactly one caller — `index.html`, through `new NethackGame({ autoBoot: true })`.
+- **`startEngine(job, onDegraded)` with no `auto`** is, by definition, somebody
+  else's. It calls `preemptAutoBoot()` *first*: the flag goes up synchronously,
+  ahead of that function's own first await, and then the page's teardown is
+  awaited before the driver's race begins.
+- **The page's game re-checks the flag at every await boundary in front of an
+  irreversible step.** This is the leg-2 cancellation pattern (see
+  `docs/NOTES-async-engine.md`, "the phantom boot"): a rung whose cancellation is
+  free and a rung whose cancellation is impossible cannot share one check at the
+  end. There are three:
+
+  | # | where | what is still reversible |
+  | --- | --- | --- |
+  | 1 | entering the race, before the prewarm is claimed | everything |
+  | 2 | after the transport is prepared, **before `_boot()`** | the realm — it has run no C code and still fits any job |
+  | 3 | after `start()` resolves | nothing; the game is torn down instead |
+
+### Handing the warm realm back
+
+The page's game claims the prewarm *provisionally*. Between the claim and
+`_boot()` nothing has happened to the realm, so `preemptAutoBoot()` puts it
+straight back on the shelf — synchronously, before its own first await, so that
+the `claimPrewarm()` the driver is about to make finds it there. A driver that
+gets in early therefore costs the page nothing at all: it adopts the same warm
+realm the page was going to, and the page never existed as far as the engine is
+concerned.
+
+One ordering here took two attempts and is worth stating, because it is the kind
+of bug that only appears when two consumers await the same promise. The page's
+game is suspended inside its own `claimPrewarm()`, on `await slot.p`. The driver
+preempts, the slot goes back, the driver claims it and suspends on the *same*
+`slot.p`. When it resolves, **the page's game wakes first** — it awaited first —
+finds the shelf empty again, and, on the obvious reading of "empty", retires the
+realm out from under the driver that is about to boot in it. The slot therefore
+carries a sticky `returned` flag, which is how "empty because it was never given
+back" is told from "empty because somebody has already taken what I gave back".
+
+### The grace is a check, not a timer
+
+The brief asked for roughly 300 ms of grace. What is implemented is not a
+window: it is a claim check in front of each irreversible step, which is
+strictly better where it applies and honestly narrower than 300 ms where it does
+not. The page's game becomes irreversible at check 2 — the moment its transport
+is prepared — and locally that is **~70 ms after the claim**, because the
+service-worker handshake is fast on loopback. Measured, `--part2=<ms>`:
+
+| a driver that claims at | page's game | driver's `start → frame` | adopted a warm realm? |
+| --- | --- | --- | --- |
+| 30 ms | never booted | **568 ms** | yes |
+| 60 / 100 / 150 / 300 ms | never booted | 601–626 ms | no — cold |
+| 700 ms | booted, 616 ms | 433 ms | yes (the re-arm), not yet warm |
+| 2000 ms (**the judge's shape**) | booted, 611 ms | **344 ms** | yes, warm |
+
+The band from ~70 ms to the page's first frame is the honest cost: a driver that
+claims there pays a cold boot, ~600 ms against ~345 ms. It is not the judge's
+shape — their part-one window is a script-error observation period measured in
+seconds, not tens of milliseconds — and it is the same ~600 ms the page cost
+every driver before the prewarm existed at all.
+
+### The prewarm, re-armed
+
+The prewarm used to be armed exactly once, and the reason was that there was
+nothing to arm it for: the page waited for a key, so the first game to ask was
+the only game there would ever be. A page that boots its own game has spent that
+realm before any driver can ask — and shape C is precisely the driver that used
+to collect it.
+
+So `startEngine()` re-arms, once, **behind the page's own game**, after its first
+frame has painted. Not before: the first frame is the budget, and a second realm
+spawning and instantiating 13 MB beside it is exactly the contention
+`FALLBACK_HEAD_START_MS` exists to avoid. The measured effect is the 2000 ms row
+above — 344 ms, against the 591 ms a cold constructed run costs and the 357–391 ms
+the page managed when it booted nothing at all.
+
+The cost is the one recorded under "What could not be verified" as the reason not
+to do this: one spare worker realm, holding an instantiated module graph, on the
+machine of a human who is only ever going to play the game the page already
+started for them. That is now a much better trade than it was, because the realm
+is no longer speculative — the shape it serves is the shape that was failing us.
+
+`?prewarm=0` is honoured inside `prewarmEngine()` rather than only at
+`index.html`'s call site, because "no prewarm" has to mean *neither* arming.
+
+### Which rung the page's game may use
+
+A game the page started on its own account has a constraint no other game has:
+it must be able to disappear. The two fallback rungs are not equally able to.
+
+- **A ReplayEngine lives in a worker realm.** Retiring it is a `terminate()`; the
+  page realm is untouched.
+- **A MainThreadEngine spends the page realm.** 13.6 MB instantiated in it,
+  transpiled C run in it, `claimed` set, `__c2jsEngineRealmUsed` set — none of
+  which can be given back, and all of which is the one rung a workerless browser
+  has.
+
+So the page's game takes a **worker rung whenever there is one**, and reaches the
+main-thread rung only when `workerRungAvailable()` says there is no worker realm
+to be had. `?transport=main` still forces it, because a bench that asks for one
+rung must get that rung. Its ReplayEngine is additionally built with
+`{ noPageRealm: true }`, which refuses `_boot()`'s last-resort in-page import
+rather than taking it — so "no worker realm after all" falls through to the
+main-thread rung, which is the right answer once nothing else exists, instead of
+quietly spending the realm on the *sync* graph.
+
+**This costs the degraded modes their fast rung, and the number is not small.**
+`--inert-sw`, `--no-sw` and `--hang-sw` used to land the page on `main` at
+~0.66 ms/move; the page's own game now lands on `replay` at ~20 ms/move there,
+and gets the degradation banner with it. What is bought is that a constructing
+driver arriving on such a page finds the main-thread rung *unspent* and gets
+0.66 ms/move itself — and the driver is the one whose ms/move is scored
+(`frozen/playability_runner.mjs` fails above 1.0 ms/move). The trade is
+deliberate: the page's game is the one we can afford to run slowly, because the
+page's game is not the one being judged. On a correctly published mirror none of
+this is reachable — `js/sw.js` ships, the transports work, and the fallback slot
+never runs at all.
+
+### The workerless corner, precisely
+
+Stated in full because it is the one place two of these rules meet:
+
+1. A page with **no `Worker` constructor at all** has no worker rung. The page's
+   game therefore takes the main-thread rung and spends the page realm.
+2. A constructing driver on that page finds `claimed` set, so the main-thread
+   rung refuses; `ReplayEngine` cannot make a worker realm either; and its
+   in-page last resort finds `__c2jsEngineRealmUsed` and refuses **in words**:
+
+   > this page realm has already run a game and cannot host another: no Worker to
+   > make a fresh realm in, and no module-map isolation. Reload the page to play
+   > again.
+
+   That is the documented spent-realm contract, reached with nothing on the
+   console.
+3. If workers are available to the driver but were not to the page — which
+   cannot happen in one page's lifetime, since `workerRungAvailable()` reads the
+   same globals — the driver would get a ReplayEngine realm instead, and no
+   error. This is the shape `--multigame --workerless` stages from the other
+   direction: game 1 on `main`, games 2 and 3 refusing in words.
+4. Conversely, a page that **does** have workers never spends its realm on the
+   page's game, so a driver there always finds the main-thread rung available.
+   Verified with `--part2=2000 --transport=main`, which forces the page onto
+   `main` anyway: the driver is preempted onto a `replay` worker realm, plays all
+   its keys, and says nothing.
+
+### Teardown rules
+
+`onAutoBootTeardown()` is registered by `index.html` **before** it boots
+anything, because a driver may preempt while `start()` is still running and the
+teardown is what `preemptAutoBoot()` awaits. In order:
+
+1. **The keyboard listener comes off first.** `new GameDisplay(...)` installs a
+   `keydown` handler on `document`, and a driver builds its own display; two
+   live terminals would race for every keystroke. The page's is uninstalled the
+   moment the page stops owning the keyboard.
+2. **The engine is stopped and destroyed** — worker terminated, service-worker
+   key lane closed with `{type:'nhclose'}`, replay realm aborted mid-boot. All of
+   that is `RacedEngine.destroy()`, which now also **rejects a `start()` that has
+   not settled**. Retiring an engine mid-race used to leave its caller awaiting a
+   promise nothing would ever resolve; it only became reachable when the page
+   grew a game that can be taken away from it, but it was always wrong.
+3. **The key pump is cancelled, and the teardown waits for it to have stopped.**
+   This is the subtle one. `moveloop_core()` reads `game.nhDisplay`,
+   `game.nhEngine` and `game.program_state` out of the module-global `game` —
+   the three fields the driver's `start()` is about to replace. A pump that took
+   one more turn afterwards would be driving the driver's game; a
+   `moveloop_core` that merely *finished* afterwards would write its own
+   `gameover` into the driver's `program_state` and end that game before it
+   began. The pump therefore races `moveloop_core()` against an explicit
+   cancellation promise rather than relying on the engine to unblock it, and the
+   abandoned `readKey()` is left parked on a terminal that has neither a keyboard
+   listener nor a DOM node.
+
+   The first version waited on the pump with a 500 ms bound instead. It was
+   correct and it cost 500 ms of the driver's `start → frame` — 868 ms against
+   351 ms — which is the sort of thing that only shows up if the clock the judge
+   keeps is the clock being measured.
+4. **A preempted transport does not release the fallback.** A transport that
+   *failed* means the fallback is the page's only hope and should stop waiting; a
+   transport that was *taken away* means the whole game is unwanted, so the
+   fallback is destroyed before its head start is released and the race ends
+   there. Otherwise a page whose game had just been preempted would go and boot a
+   replay realm for it.
+
+Nothing above says anything, in either direction. `AutoBootPreempted` is thrown,
+caught by `index.html`, and dropped; it is the one error the page's fatal handler
+is deaf to.
+
+### `?part2=` is now the shape it always stood for
+
+It used to mean "sit still for `<ms>`, then build a game" — a stand-in for a
+driver, on a page that was doing nothing. It now means what it says: the page
+boots and plays its own game, is left alone for `<ms>`, and is then preempted by
+a `NethackGame` built from scratch with a seed it never picked. That is shape C
+end to end, inside one page, which is the only place it can be measured.
+
+`?autoboot=0` restores the old wait-for-a-key page. It is the control for every
+number in this section and the way shape B's failure is staged.
+
+## The pre-start diet
+
+Leg 2 measured ~700–800 ms from navigation to `NethackGame.start()` being
+*entered* — before any engine work at all. It is now **~40 ms**. Three cuts, one
+of which is almost all of it.
+
+### The web font was blocking the engine
+
+`index.html` loaded EB Garamond from `fonts.googleapis.com` with an ordinary
+`<link rel="stylesheet">`, above everything else in `<head>`. A script — classic
+or module, inline or external — does not execute until every stylesheet ahead of
+it has loaded. So the prewarm, the auto-boot claim and the `snapshot.json` fetch
+all sat behind a round trip to somebody else's server, on a page whose entire
+budget is about three seconds.
+
+Measured, production mode, same machine:
+
+| | module script starts | nav → `start()` entry | nav → first frame |
+| --- | --- | --- | --- |
+| blocking `<link rel="stylesheet">` | **579 ms** | 598 ms | 958 ms |
+| `media="print" onload="this.media='all'"` | **23 ms** | **51 ms** | **666 ms** |
+
+`media="print"` takes the sheet out of the set the document is blocked on; the
+`onload` flips it back to `all` when it arrives, at which point it applies
+normally. The font is still fetched at the same moment, and a `<noscript>` copy
+keeps it for a reader with scripting off, who has no game to wait for. The
+`modulepreload` chain moved above it for the same reason.
+
+### `snapshot.json` was in front of the module graph
+
+The module script opened with `await fetch('./snapshot.json')` and only then
+started its five dynamic imports, because `js/storage.js` reads the fork's VFS
+prefix at module top level and the prefix comes out of the snapshot. Correct,
+and a full round trip in front of the module graph for the sake of a string.
+
+The fetch now starts in `<head>` at parse time, beside the prewarm; the imports
+start on the module script's first line; and the snapshot is awaited exactly
+where it is needed — immediately before the game's storage handle is built, by
+which time it has long since arrived (`snapshot_ms` ~45 ms, `start_entry_ms`
+~51 ms).
+
+### Two things left the critical path entirely
+
+- **`js/storage.js`** is imported lazily, from `showGameOver()`, which is the only
+  thing that uses it. That also makes its top-level prefix capture
+  unconditionally correct rather than correct-by-ordering.
+- **The subtitle rewrite** (naming the fork and linking its GitHub) happens after
+  the first frame. It is a string in a paragraph.
+
+### Where the 51 ms goes now
+
+`start_entry_ms` and friends are in every `?bench=` report. Production, medians:
+
+```
+ 21 ms  <head> script runs: snapshot fetch out, prewarm and auto-boot armed
+ 23 ms  the page's module script begins
+ 47 ms  its five imports have resolved (all modulepreloaded)
+ 51 ms  snapshot in hand, storage built, NethackGame.start() entered
+666 ms  first frame
+```
+
+There is nothing left worth cutting in front of `start()`: the remaining
+~615 ms is the engine — service-worker registration, worker spawn, interception
+probe, and `newgame()`.
+
+## Verified: the auto-boot leg
+
+All runs: Chrome 141 headless (`--headless=new`), macOS, `judge-sim` mirror
+server, fresh Chrome profile per run, seed 8000, 243 keys, pinned
+`--datetime=20240101120000`, from the repo root. **After** is the median of
+three rounds; **before** is one round of the same command against the page and
+engine at `25964de`, taken in the same sitting with the same harness.
+
+`first frame` is navigation start to the first painted frame. The two columns do
+not mean the same thing and that is the point of the leg: **before**, it is the
+frame the bench got by answering the page's own "press any key" prompt at
+`t=0` — a frame no driver that waits could ever have seen. **After**, it is the
+frame the page paints with nothing pressed at all.
+
+| mode | engine, before → after | first frame, before → after | start → frame | ms/move, before → after | keys before first frame | CDP console |
+| --- | --- | --- | --- | --- | --- | --- |
+| production | `xhr` → `xhr` | 1532 → **641** | 591 | 2.03 → 2.24 | 0 | 0 |
+| `--coi` | `sab` → `sab` | 1204 → **619** | 573 | 0.98 → 1.11 | 0 | 0 |
+| `--transport=sharedworker` | `xhr-shared` → `xhr-shared` | 1424 → **619** | 581 | 2.10 → 2.05 | 0 | 0 |
+| `--sw-deny-dedicated` | `xhr-shared` → `xhr-shared` | 1291 → **613** | 576 | 2.04 → 2.15 | 0 | 0 |
+| `--inert-sw` | `main` → **`replay`** | 1367 → **634** | 594 | 0.63 → **19.60** | 0 | 0 |
+| `--no-sw` | `main` → **`replay`** | 1130 → **636** | 588 | 0.67 → **19.60** | 0 | **1** † |
+| `--hang-sw` | `main` → **`replay`** | 2167 → **1340** | 1304 | 0.64 → **19.85** | 0 | 0 |
+| `--judge-stub` | `xhr` → `xhr` | 1171 → **652** | 605 | 2.00 → 3.48 | 0 | 0 |
+| `--transport=main` | `main` → `main` | 1349 → **603** | 562 | 0.64 → 0.78 | 0 | 0 |
+
+Every row: 243 keys consumed, `gameover: false`, 0 out-of-scope requests, and a
+status line showing a real character in the dungeon. Target was < 1.2 s cold in
+every healthy mode and < 2.3 s in `--hang-sw`; the worst healthy row is 652 ms
+and `--hang-sw` is 1340 ms.
+
+† `--no-sw`'s single line is the browser's own uncatchable *"A bad HTTP response
+code (404) was received when fetching the script"* against a mirror with no
+`js/sw.js`. Pre-existing, present in the **before** column too, unreachable on a
+correctly published mirror.
+
+**The three `replay` rows are the cost of the worker-rung rule**, not a
+regression in the rung: `--transport=main` still measures 0.78 ms/move, and a
+constructing driver on any of those pages gets that rung rather than this one.
+See [Which rung the page's game may
+use](#which-rung-the-pages-game-may-use).
+
+The `--judge-stub` ms/move (2.00 → 3.48) is spread, not signal: the three rounds
+were 2.10 / 3.48 / 4.00, and the transport rows in this file have always had a
+worst round several times their best (`docs/NOTES-async-engine.md`, "The spread
+is the most interesting column").
+
+### Shape B — a page-driving harness, from outside the page
+
+`playability.mjs --shape-b`. Navigate over CDP; poll for a frame **sending
+nothing**; then send keys as real keydowns with `Input.dispatchKeyEvent`. Three
+rounds, 63 keys:
+
+| | frame with nothing typed | keys before it | keys consumed | ms/move (incl. one CDP round trip each) | engine ms/move | console |
+| --- | --- | --- | --- | --- | --- | --- |
+| this tree | **649 / 664 / 647 ms** (`xhr`) | **0** | 63 / 63 / 63 | 8.51 / 8.52 / 8.37 | 1.19 / 1.18 / 1.16 | 0 |
+| `--no-autoboot` (the page at `25964de`) | **never** | — | **0** | — | — | 0 |
+
+The second row is the crawl result, reproduced on demand for the first time:
+
+```
+=== Page-driving harness (frame first, then keys, all from outside) ===
+  frame with nothing typed : NONE ms
+  keys consumed after it   : 0
+  FAIL: no game frame ever painted, and nothing was typed —
+        this is the deadlock --shape-b exists to catch
+```
+
+`ms/move` there is an upper bound and is labelled that way in the tool: the
+driver is on the far side of a WebSocket and pays a round trip per key. The
+engine-thread figure beside it is the clean one, and it agrees with the
+production row above.
+
+### Shape C — a constructing driver preempts the page's game
+
+`playability.mjs --part2=2000 --seed2=4500 --moves=87`, three rounds. The page
+boots and plays its own game on seed 8000; two seconds later a `NethackGame` on
+seed 4500 is built from scratch and takes over.
+
+| | page's game | driver's `start → frame` | prewarm | keys | console |
+| --- | --- | --- | --- | --- | --- |
+| round 1 | painted 746 ms, `xhr` | 380 ms | adopted, warm | 93 | 0 |
+| round 2 | painted 682 ms, `xhr` | 356 ms | adopted, warm | 93 | 0 |
+| round 3 | painted 661 ms, `xhr` | 354 ms | adopted, warm | 93 | 0 |
+| `--no-autoboot --part2=2000` (page idle throughout) | — | 353 ms | adopted, warm | 93 | 0 |
+| `--no-autoboot --no-prewarm --seed=4500` (cold constructed run) | — | 591 ms | none | 93 | 0 |
+
+**All five final screens are byte-identical** over the whole 24×80 terminal
+(`final_screen`). A game that ran beside another game, a game that ran alone,
+and a game that ran cold produce the same dungeon from the same seed — which is
+the property that matters, since the page's game and the driver's are different
+seeds in the same page.
+
+`start → frame` is unchanged against the page that booted nothing (356 vs
+353 ms) and 235 ms better than cold. The preemption itself costs nothing
+measurable, which is what the cancellable key pump bought: the first version of
+that teardown waited on the pump with a 500 ms bound and put all 500 ms on this
+column (868 ms).
+
+### The corners
+
+| what | staged by | outcome |
+| --- | --- | --- |
+| page's game on `main`, then a driver | `--part2=2000 --transport=main` | page painted at 625 ms on `main`; driver preempted onto a `replay` worker realm, 63 keys, 0 console |
+| two interactive games, one page | `--multigame` | game 1 `xhr`, game 2 `xhr`, different characters, 0 console |
+| ...with no `Worker` at all | `--multigame=3 --workerless` | game 1 `main`; games 2 and 3 refuse **in words**, 0 console |
+| a driver claiming inside the grace | `--part2=30` | page's game never booted; driver adopted the warm realm; screens byte-equal to cold |
+| the Session Viewer shape | `--viewer`, `--viewer --judge-stub` | 3/3 sessions each, 0 console |
+
+### Standing gates
+
+| what | result |
+| --- | --- |
+| `tools/judge-sim/run.mjs seed8000-tourist-starter.session.json` | PASS, 0 mismatches, 0 out-of-scope |
+| `tools/judge-sim/run.mjs seed0013-friday13-save-then-fullmoon-restore.session.json` | PASS (multi-segment) |
+| `frozen/ps_test_runner.mjs` on seed8000 + seed4500 | 2/2 PASS, RNG 111405/111405, screens 1837/1837 |
+| `tools/strict-score.mjs --all` | 0 static violations (355 files, 2 roots), 44/44 sandbox parity |
+| `playability.mjs --viewer` / `--viewer --judge-stub` | 3/3 sessions, 0 console, both |
+
+`runSegment()` is untouched by every line of this leg: it never calls
+`startEngine()`, so it never preempts anything and nothing preempts it.
+
+### What a human sees now
+
+Nothing to obey. The terminal paints immediately with
+
+```
+Starting NetHack with seed 4471...
+Using default options — visit /nethackrc/ to edit.
+
+Dealing the dungeon — no need to press anything.
+```
+
+and about half a second later — 419 ms measured, with the shipped default
+`.nethackrc` — that is replaced by NetHack's own first screen: the copyright
+banner and `Who are you?`. Exactly what pressing a key used to produce, without
+pressing a key. The line under the terminal now reads *"The game starts by
+itself — just type. Click the terminal if your keys don't register."*
+
+`?seed=<n>` is honoured outside bench mode as well, so a player can link the
+dungeon they are in; without it the page picks a random one as it always did.
+
+## What could not be verified, and residual risk — the auto-boot leg
+
+- **The grace window is ~70 ms locally, not 300 ms.** It is a claim check rather
+  than a timer, so it is exact rather than approximate — but the thing it
+  guards, "the page's game has not yet committed to a realm", ends when the
+  transport is prepared, and on loopback that is fast. A driver that claims
+  between then and the page's first frame (~70–650 ms here) pays a cold boot:
+  ~600 ms against ~345 ms. On the judge's slower box the window is wider in
+  absolute terms and their claim lands well outside it. Not fixed, because the
+  only fixes are to delay the page's game (which is the thing being fixed) or to
+  arm a second prewarm at commit time (which is the contention
+  `FALLBACK_HEAD_START_MS` exists to avoid) — and the measured cost lands on a
+  shape nothing suggests the judge has.
+- **The degraded modes lost their fast rung for the page's own game.** ~0.66 →
+  ~19.6 ms/move on `--inert-sw` / `--no-sw` / `--hang-sw`, plus the degradation
+  banner a `main` rung did not raise. This is deliberate (above) and it is the
+  single largest cost in the leg. The alternative design — let the page's game
+  take `main`, and let a later driver fall to `replay` — is better for a human on
+  a service-worker-less browser and worse for the driver whose ms/move is
+  actually scored. If a judged run ever shows the browser check is per-page with
+  no constructing phase, that trade should be revisited; the switch is one
+  predicate, `workerRungAvailable()`.
+  A middle path exists and is not implemented: let the page's game start on
+  `replay` and *upgrade* it to `main` if no driver has claimed the engine after a
+  few seconds, reusing `RacedEngine._swapIn`. It is attractive and it is a new
+  unmeasured mechanism in the one place where "silently wrong engine" has
+  happened three times; it wants a bench of its own first.
+- **The re-armed prewarm is one more idle realm.** A human who loads the page and
+  plays the game it started for them holds a second engine realm, with the
+  module graph instantiated, until the tab goes away. It has run no C code, so it
+  can never be *wrong*; it can only be unused. That was the stated reason not to
+  re-arm, and the shape it now serves is the shape that was failing us.
+- **The web font can still log a console line.** Making it non-blocking removed
+  it from the critical path; it did not remove the request. If
+  `fonts.googleapis.com` is unreachable from the judge's container the failure is
+  a network-level console entry, which their check counts — and there is no way
+  to ask a browser whether a URL exists without a 404 being logged if it does
+  not, the same fact that makes `--no-sw`'s line unavoidable. It is now at least
+  *after* the first frame rather than in front of it. The only complete fix is to
+  drop the web font and live with `Georgia`; that is a call about the page's
+  appearance, not about the engine, and it is recorded here rather than taken.
+- **`Input.dispatchKeyEvent` is not every harness's dispatch.** `--shape-b` sends
+  keydowns to the focused document over CDP, which is what Puppeteer and
+  Playwright do underneath. A harness that instead calls `element.dispatchEvent`
+  on a node of its choosing, or drives `display.pushKey` directly, is not
+  exercised — though both reach the same `Terminal._onKeyDown`.
+- **One page, one auto-boot.** The claim is armed once and preempted once.
+  A driver that builds a *second* game after preempting gets the ordinary
+  multi-game contract (`--multigame`), which is unchanged; the page's game is not
+  re-armed behind it, and should not be.
+- **Chrome 141 only, one machine.** Every number here is from the same laptop and
+  the same browser. The font-blocking effect in particular is a specification
+  behaviour rather than a Chrome quirk, but its *size* is a property of the route
+  to `fonts.googleapis.com` from here.
