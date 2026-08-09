@@ -76,7 +76,13 @@ Top self time:
 | 9.0 | 1.03 | `parse` (JSON, package.json) | (node) |
 | 8.1 | 0.93 | `llex` | js/generated/llex.js |
 
-Buckets: **compile/parse 28.7%**, `js/generated/**` 27.7%, `js/cptr.js` 18.8%,
+> **`compileSourceTextModule` is V8, not `tools/c2js`.** The C→JS transpile is
+> AOT and happens at *our* build time; the judge never runs it. This line is
+> V8 parsing and compiling the 13.2 MB of JavaScript we ship, into bytecode,
+> at load time — the unavoidable cost of "the judge just loads our generated
+> JS". What makes it big is not that it happens, but *how often*: see §5.1.
+
+Buckets: **V8 parse/compile of our emitted JS 28.7%**, `js/generated/**` 27.7%, `js/cptr.js` 18.8%,
 Node internals (resolution, `stat`, `package.json`) 17.3%, GC 4.0%,
 `js/boot/**` 2.2%.
 
@@ -97,10 +103,13 @@ Inclusive time, from the call tree:
 
 **Top five startup costs, ranked**
 
-1. **`compileSourceTextModule` — 229 ms, 26.3%.** Parsing and compiling 13.2 MB
-   of generated JS. Paid per segment. This is what source-size reductions buy
-   directly, and it is why stage 1's −1.27 MB and stage 2's −228 KB both moved
-   the intercept.
+1. **`compileSourceTextModule` — 229 ms, 26.3%.** V8 parsing and compiling the
+   13.2 MB of JavaScript we ship. Not `tools/c2js`: the C→JS transpile is AOT
+   and happens at our build time, and the judge never runs it. This is what
+   *loading* our output costs any JS engine — and we pay it **once per segment**,
+   not once per process (§5.1). It is what source-size reductions buy directly,
+   and it is why stage 1's −1.27 MB and stage 2's −228 KB both moved the
+   intercept.
 2. **Node's ESM machinery — ~151 ms, 17.3%.** `internalModuleStat`,
    `getPackageScopeConfig` (twice, in two different realms of the loader),
    `JSON.parse` of `package.json`, `pathToFileURL`, `normalizeString`. 176
@@ -236,7 +245,7 @@ per-move work.
 | `js/generated/**` (game logic) | 1,169 | **30.04** |
 | GC | 331 | 8.51 |
 | Node internals | 281 | 7.21 |
-| compile / parse | 252 | 6.48 |
+| V8 parse/compile of our emitted JS (not the transpiler) | 252 | 6.48 |
 | `js/boot/harness.mjs` | 225 | 5.78 |
 | terminal / screen decode (scorer side) | 129 | 3.30 |
 
@@ -569,10 +578,11 @@ would be.
 
 **Startup: yes, and this is the interesting half.** 26,810 × 7 bytes = **183 KB**
 off a 13.22 MB tree — 1.4%. For scale, stage 2 removed 228 KB (1.7%) and that
-was part of its −2.7% startup. §1 shows why the coupling is real:
-`compileSourceTextModule` is 26.3% of a short session and the graph is
-re-parsed **per segment**. A 1.4% source reduction is a ~1.4% reduction in the
-largest single startup item.
+was part of its −2.7% startup. §1 shows why the coupling is real: V8 has to
+parse and compile every byte of the tree we ship (26.3% of a short session's
+CPU), and §5.1 shows it does so **once per segment**. Fewer bytes shipped is
+less parsing, linearly, every fork. A 1.4% source reduction is a ~1.4%
+reduction in the largest single startup item.
 
 **But it is not free to implement.** The emitter has to grow a consumer-side
 context — `opts.boolCtx` threaded from `emitPlainIf` / `stmt_WhileStmt` /
@@ -698,11 +708,29 @@ a long one**, plus **~151 ms (17.3%)** of Node's ESM resolution machinery
 `package.json`, `pathToFileURL`, `normalizeString`). Together **44% of a short
 session's CPU, and none of it is game work.**
 
-It is paid **per segment**, not per process. `js/boot/isolation.mjs` forks a
-fresh 176-module graph for each segment because that is the only per-segment
-freshness a `node --permission` sandbox allows. `seed0030-ten-diverse-deaths` is
-one session with ten segments and it costs 1,156 MB of heap and 9.3 s in a
-single child, for 1,943 moves.
+It is paid **per segment**, not per process, and V8's compilation cache does not
+rescue the repeats. Four consecutive graph forks in one process, timed:
+
+```
+graph 1: harness 17.4 ms   generated (176 modules) 490.1 ms   heapUsed  69 MB
+graph 2: harness  1.3 ms   generated (176 modules) 401.2 ms   heapUsed 105 MB
+graph 3: harness  1.4 ms   generated (176 modules) 440.5 ms   heapUsed 168 MB
+graph 4: harness  1.1 ms   generated (176 modules) 439.5 ms   heapUsed 209 MB
+```
+
+The harness collapses to ~1 ms after the first fork — that one *is* cached,
+because it is the same URL. The generated graph does not, because
+`js/boot/isolation.mjs` gives each segment a distinct `?c2jsseg=N` URL, and a
+distinct URL is a distinct script to V8: fresh parse, fresh compile, fresh
+bytecode, every time. That query is not gratuitous — it is the only per-segment
+freshness a `node --permission` sandbox allows, since the judge forbids child
+processes and worker threads. But the price is that **fork 4 costs what fork 1
+cost.**
+
+`seed0030-ten-diverse-deaths` is the bill: one session, ten segments, **1,156 MB
+of heap and 8.9–10.8 s in a single child, for 1,943 moves** — against seed4500's
+1,813 moves in one segment for 2.9–3.6 s. Same move count, three times the time,
+and the difference is nine extra parses of the same 13.2 MB.
 
 Two levers, neither previously named in the notes:
 
