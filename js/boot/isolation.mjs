@@ -58,8 +58,20 @@ const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
     && !!(process.versions && process.versions.node);
 
 // Modules that are pure immutable data and must stay shared: duplicating the
-// 2.2 MB vendored playground per segment would be pointless parse + heap.
-const SHARED = /\/data\/nethackdir\//;
+// 2.1 MB vendored playground per segment would be pointless parse + heap.
+//
+// This pattern said `/data/nethackdir/` and matched nothing: the playground
+// moved to js/data-nethackdir/ when the mirror turned out to publish only
+// js/** + frozen/**, and the pattern did not move with it. So every fork has
+// been carrying its own copy of the vendored playground ever since — measured
+// here, 4.4 MB of heap and ~20% of the graph instantiation, per fork, on both
+// the scoring path and the Node interactive rung.
+//
+// Shared is *safe* here rather than merely intended: the single consumer is
+// js/boot/harness.mjs:172, which does `readVendored(v).slice()` — the VFS gets
+// a copy and every write goes to the per-run overlay, so no segment can reach
+// another's bytes through this module.
+const SHARED = /\/data-nethackdir\//;
 
 function resolve(specifier, context, nextResolve) {
     const result = nextResolve(specifier, context);
@@ -75,32 +87,53 @@ function resolve(specifier, context, nextResolve) {
 }
 
 let state = null; // null = untried, true/false = resolved
+let failure = null; // why, when state === false in Node — see enableSegmentIsolation
+let warned = false; // has that reason been printed to somebody who wanted it?
 
 /**
  * Install the per-segment resolve hook (idempotent).
+ *
+ * `opts.quiet` suppresses the degradation notice *for this caller only*. The
+ * interactive rungs (js/boot/main-thread-engine.mjs, ReplayEngine) ask quietly
+ * because a browser-play check fails an entry on any output at all, and because
+ * the thing the notice warns about — "segments after the first replay into the
+ * previous segment's C globals" — is not what happens to them: an interactive
+ * engine that cannot fork the graph refuses the second game in words instead.
+ *
+ * The reason is *remembered* rather than dropped, so a later scoring caller
+ * that did want to hear it still does. Suppressing it globally would mean a
+ * process that played a game before it scored one lost the warning that the
+ * scored run is the one actually affected.
+ *
+ * @param {{quiet?: boolean}} [opts]
  * @returns {Promise<boolean>} true when `?c2jsseg=N` will fork the whole graph.
  */
-export async function enableSegmentIsolation() {
-    if (state !== null) return state;
-    state = false;
-    try {
-        if (!IS_NODE) return state;
-        // Computed specifier: keeps browser bundlers from trying to resolve it.
-        const nodeModule = 'node:' + 'module';
-        const mod = await import(nodeModule);
-        // registerHooks (Node >= 22.15 / >= 23.5) runs hooks synchronously on
-        // this thread. module.register() would work too but starts a worker,
-        // which --permission blocks without --allow-worker.
-        if (typeof mod.registerHooks !== 'function') {
-            warnDegraded(`node ${process.versions.node} has no module.registerHooks (needs >= 22.15)`);
-            return state;
-        }
-        mod.registerHooks({ resolve });
-        state = true;
-    } catch (e) {
-        warnDegraded(String((e && e.message) || e));
+export async function enableSegmentIsolation(opts) {
+    if (state === null) {
         state = false;
+        try {
+            if (IS_NODE) {
+                // Computed specifier: keeps browser bundlers from trying to
+                // resolve it.
+                const nodeModule = 'node:' + 'module';
+                const mod = await import(nodeModule);
+                // registerHooks (Node >= 22.15 / >= 23.5) runs hooks
+                // synchronously on this thread. module.register() would work
+                // too but starts a worker, which --permission blocks without
+                // --allow-worker.
+                if (typeof mod.registerHooks !== 'function') {
+                    failure = `node ${process.versions.node} has no module.registerHooks (needs >= 22.15)`;
+                } else {
+                    mod.registerHooks({ resolve });
+                    state = true;
+                }
+            }
+        } catch (e) {
+            failure = String((e && e.message) || e);
+            state = false;
+        }
     }
+    if (failure && !warned && !(opts && opts.quiet)) { warned = true; warnDegraded(failure); }
     return state;
 }
 
