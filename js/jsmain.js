@@ -112,6 +112,116 @@ function applyStorage(h, before, after) {
     }
 }
 
+// -- what the mirror's play page expects of a storage handle -----------------
+//
+// Provenance for everything in this section: the page the mirror actually
+// serves, fetched from https://mazesofmenace.ai/play/NoahBPeterson/ on
+// 2026-08-09 and vendored verbatim at tools/judge-sim/fixtures-judge-play-page.html.
+// It is not our index.html; nobody playing this fork ever sees ours. It hands
+// `NethackGame` a `FrontalLocalStorage` — a Web-Storage-shaped view of the
+// browser's localStorage that rewrites any key beginning `vfs:` to
+// `vfs:<owner>:` and passes every other key through untouched — and it reads
+// the finished game back out with `vfsReadFile('/record')` from OUR
+// js/storage.js, which looks in `localStorage[window.__TELEPORT_VFS_PREFIX +
+// path]`.
+//
+// Both halves of that were missed, because both are invisible from our own
+// page:
+//
+//   1. js/boot/harness.mjs persists the whole VFS under the single key
+//      `c2js-overlay`. No `vfs:` prefix, so their wrapper passes it through
+//      unnamespaced: every fork on mazesofmenace.ai shares one localStorage
+//      key, a second fork can be handed a save written by the first, and their
+//      "Clear saved games" button — which deletes exactly the keys under
+//      `vfs:<owner>:` — cannot delete ours. vfsKeyed() below moves the overlay
+//      under the prefix, so all three stop being true, and still reads the old
+//      key when the new one is absent so an in-progress save survives the move.
+//
+//   2. Nothing ever wrote `/record` where their game-over panel looks for it,
+//      so the panel said "(no record file)" after every death. publishVfsFiles()
+//      copies the two files a page has any business reading out of the overlay
+//      the engine hands back at game end.
+//
+// Both are confined to the interactive path. runSegment() never comes through
+// here, so the scored replay's storage contract is byte-for-byte what it was.
+
+const OVERLAY_KEY = 'c2js-overlay';
+const VFS_OVERLAY_KEY = 'vfs:' + OVERLAY_KEY;
+
+/** Files worth publishing where a page can read them. Small, and read-only to us. */
+const PUBLISHED_VFS_FILES = ['/record', '/logfile'];
+
+/**
+ * Wrap a storage handle so the engine's overlay lands under the `vfs:` prefix
+ * the mirror namespaces per fork. A handle we were given is never mutated and
+ * never replaced — this only renames one key on the way through.
+ */
+function vfsNamespaced(h) {
+    if (!h) return h;
+    const get = (k) => { try { return h.getItem(k); } catch { return null; } };
+    // A save left at the bare key by a build from before this move. It is
+    // readable through their wrapper (no `vfs:` prefix, so it passes through)
+    // but not *enumerable* through it, whose length()/key() only walk the
+    // fork's own prefix — so the snapshot the engine gets would not contain it
+    // unless enumeration says so too.
+    const legacyOnly = () => get(VFS_OVERLAY_KEY) == null && get(OVERLAY_KEY) != null;
+    return {
+        getItem(k) {
+            if (k !== OVERLAY_KEY) return h.getItem(k);
+            const v = get(VFS_OVERLAY_KEY);
+            return v != null ? v : get(OVERLAY_KEY);
+        },
+        setItem(k, v) {
+            if (k !== OVERLAY_KEY) return h.setItem(k, v);
+            h.setItem(VFS_OVERLAY_KEY, v);
+            // The migration is finished the moment the namespaced copy exists.
+            // Leaving the bare key behind would leave every fork sharing one
+            // stale save that their "Clear saved games" button cannot reach,
+            // which is half of what this move was for.
+            try { if (get(OVERLAY_KEY) != null) h.removeItem(OVERLAY_KEY); } catch { /* not there */ }
+        },
+        removeItem(k) {
+            if (k !== OVERLAY_KEY) return h.removeItem(k);
+            h.removeItem(VFS_OVERLAY_KEY);
+            try { h.removeItem(OVERLAY_KEY); } catch { /* legacy key may not exist */ }
+        },
+        get length() { return (h.length || 0) + (legacyOnly() ? 1 : 0); },
+        key(i) {
+            const n = h.length || 0;
+            if (i >= n) return (i === n && legacyOnly()) ? OVERLAY_KEY : null;
+            const k = h.key(i);
+            return k === VFS_OVERLAY_KEY ? OVERLAY_KEY : k;
+        },
+    };
+}
+
+/**
+ * Copy the handful of VFS files a page may want out of the overlay and into
+ * `vfs:<path>`, which is where js/storage.js's vfsReadFile() looks.
+ *
+ * Called only when the engine hands its storage back at game end, so it costs
+ * one JSON parse per game and writes a few hundred bytes.
+ */
+function publishVfsFiles(storage, after) {
+    if (!storage || !after) return;
+    const raw = after[OVERLAY_KEY] || after[VFS_OVERLAY_KEY];
+    if (!raw) return;
+    let files;
+    try { files = JSON.parse(raw); } catch { return; }
+    for (const want of PUBLISHED_VFS_FILES) {
+        // The game writes these inside HACKDIR, so match on the tail.
+        const hit = Object.keys(files).find((k) => k === want || k.endsWith(want));
+        if (!hit) continue;
+        try { storage.setItem('vfs:' + want, atobText(files[hit])); } catch { /* quota, or no atob */ }
+    }
+}
+
+/** base64 → text, in whichever realm this is. */
+function atobText(b64) {
+    if (typeof atob === 'function') return atob(b64);
+    return Buffer.from(b64, 'base64').toString('binary');
+}
+
 /** Thrown when the *realm* could not be created — never for a game error. */
 class RealmUnavailable extends Error {}
 
@@ -252,7 +362,11 @@ export class NethackGame {
         const display = this._pendingDisplay || game.nhDisplay;
         if (!display) throw new Error('NethackGame.start(): no display (set _pendingDisplay)');
 
-        const storage = this._pendingStorage || this._storage;
+        // `_pendingStorage` wins over `_storage`: the mirror's play page sets
+        // BOTH, after construction, to the same per-fork localStorage view, and
+        // says in a comment that it re-attaches through `_pendingStorage` so the
+        // handle survives designs that rebuild NethackGame per keystroke.
+        const storage = vfsNamespaced(this._pendingStorage || this._storage);
         const { startEngine } = await import('./boot/interactive.mjs');
 
         const engine = await startEngine({
@@ -263,7 +377,7 @@ export class NethackGame {
             // page's localStorage handle: it gets a snapshot in and hands one
             // back out at game end (same contract as js/boot/frame.mjs).
             storage: snapshotStorage(storage),
-            onStorage: (after) => applyStorage(storage, {}, after),
+            onStorage: (after) => { applyStorage(storage, {}, after); publishVfsFiles(storage, after); },
         }, (why) => warnDegradedEngine(why), { auto: this.autoBoot });
 
         this.display = display;
