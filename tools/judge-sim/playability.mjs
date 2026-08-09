@@ -118,6 +118,64 @@ const noPrewarm = args.includes('--no-prewarm');
 // is waiting to be typed at. Every other mode in this file dispatches its own
 // first key and can never see it. Run with --no-autoboot to watch it fail.
 const shapeB = args.includes('--shape-b');
+// --their-page drives THE JUDGE'S OWN PAGE, served verbatim at the fork root by
+// tools/judge-sim/server.mjs --their-page (fixture fetched from
+// https://mazesofmenace.ai/play/NoahBPeterson/ on 2026-08-09; the import map's
+// /shim/node-builtins.mjs came from the same origin the same day).
+//
+// This is the only mode here that tests the thing that is actually deployed.
+// The mirror never serves our index.html to anybody: it serves that page, which
+// imports five of our modules and drives them through an API contract we had
+// only ever inferred from the skeleton — including a `await display.readKey()`
+// gate in front of the whole game, a FrontalLocalStorage handle stapled on
+// after construction, and `vfsReadFile('/record')` at the end.
+//
+// The shape of the run mirrors what their harness has to do:
+//   1. navigate, and wait for their "press any key" prompt to be on screen;
+//   2. send ONE key, which is the gate;
+//   3. wait for the first game frame — sending nothing — because after the gate
+//      the page boots the engine on its own and their for(;;) loop must park;
+//   4. send game keys as real keydowns and check each one is consumed;
+//   5. optionally play the game to its end (--quit) and check that their loop
+//      exits on game.program_state.gameover and that their game-over panel
+//      finds a record through js/storage.js's vfsReadFile('/record').
+//
+// Nothing about the page is patched. The two things the driver imposes from
+// outside are a pinned Math.random (their seed is `Math.floor(Math.random() *
+// 10000)`, and a re-runnable measurement needs a known one) and, with --pin-rc,
+// a localStorage['teleport:nethackrc'] — which is their own documented
+// mechanism, not a hook of ours.
+const theirPage = args.includes('--their-page');
+// Play to a real game over: send #quit and answer the prompts. This is what
+// exercises their gameover break and their showGameOver() → vfsReadFile('/record').
+const theirQuit = args.includes('--quit');
+// --die replays a RECORDED DEATH through their page: seed 31 with the moves and
+// options of sessions/seed0030-ten-diverse-deaths.session.json segment 1, which
+// ends "killed by a gnome". That is the only way to prove the last third of
+// their page — the `game.program_state.gameover` break, showGameOver(), and
+// vfsReadFile('/record') — because NetHack writes no record for a 0-point
+// #quit, so a game that merely ends is not enough.
+//
+// It needs the clock pinned as well as the seed: their page passes no
+// `datetime`, so NethackGame falls back to "now", and the recording was made at
+// 20260101120000. Both are pinned from outside the page, like the seed.
+const theirDie = args.includes('--die');
+const DEATH_SEED = 31;
+const DEATH_DATETIME = [2026, 0, 1, 12, 0, 0];
+const DEATH_RC = 'OPTIONS=name:Quincy,role:Tourist,race:human,gender:male,align:neutral\n'
+    + 'OPTIONS=!autopickup,!legacy,!tutorial\n'
+    + 'OPTIONS=disclose:-i -a -v -g -c -o\n'
+    + 'OPTIONS=suppress_alert:3.4.3\n'
+    + 'OPTIONS=symset:DECgraphics\n';
+const DEATH_MOVES = ' kjhhhhhjjjnnllllllllll  un>   hhhhybhhhhbnj> uuuu  uuuuuujjjjjjjjjjjjjy y  y ';
+// Pin the character so ms/move is measured in the dungeon rather than in the
+// chargen prompts. Without it the run uses their DEFAULT_RC verbatim, prompts
+// and all, which is what a first-time visitor gets.
+const pinRc = args.includes('--pin-rc');
+// --save-reload clicks their "Save game" button and then reloads the page, which
+// is a returning player's second visit: a new random seed, and a save that has
+// to be found under this fork's own localStorage prefix and restored.
+const saveReload = args.includes('--save-reload');
 // --no-autoboot passes ?autoboot=0, which restores the page's old
 // wait-for-a-key shape. It is the floor for every auto-boot measurement and the
 // way --shape-b's failure is staged.
@@ -154,7 +212,8 @@ const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
     ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []),
     ...(denyDedicated ? ['--sw-deny-dedicated'] : []), ...(hangSw ? ['--hang-sw'] : []),
-    ...(judgeStub ? ['--judge-stub'] : []), ...(latency ? ['--latency=' + latency] : [])],
+    ...(judgeStub ? ['--judge-stub'] : []), ...(theirPage ? ['--their-page'] : []),
+    ...(latency ? ['--latency=' + latency] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
 
 let up = false;
@@ -204,7 +263,9 @@ const viewer = args.includes('--viewer') || !!opt('viewer', '');
 // only check on what happens after the main-thread rung has spent the page
 // realm — the game-2 contract in js/boot/main-thread-engine.mjs.
 const multigame = args.includes('--multigame') || !!opt('multigame', '');
-const url = viewer
+const url = theirPage
+    ? `http://127.0.0.1:${PORT}/`
+    : viewer
     ? `http://127.0.0.1:${PORT}/__sim/viewer-repro.html?sessions=${encodeURIComponent(opt('viewer',
         'seed0002-healer-reflection-drummer.session.json,seed0004-feeding-pony.session.json,'
         + 'seed0013-friday13-save-then-fullmoon-restore.session.json'))}`
@@ -283,6 +344,10 @@ async function cdpConnect(port) {
             const p = pending.get(m.id);
             pending.delete(m.id);
             if (p) (m.error ? p.rej(new Error(m.error.message)) : p.res(m.result));
+            return;
+        }
+        if (m.method === 'Fetch.requestPaused') {
+            if (dev && dev.onFetchPaused) dev.onFetchPaused(m.params);
             return;
         }
         if (m.method === 'Target.attachedToTarget') {
@@ -442,11 +507,330 @@ async function driveShapeB(dev, sid, keyStream) {
     };
 }
 
+/**
+ * Drive the judge's own page. Nothing about it is patched; every observation is
+ * taken through the module graph it loaded, which is the same graph we ship.
+ *
+ * `import('/js/gstate.js')` inside Runtime.evaluate resolves to the module
+ * instance the page already imported (same URL, same module map), so
+ * `game.nhDisplay` / `game.nhEngine` / `game.program_state` are literally the
+ * objects their `for(;;) await moveloop_core()` loop is reading. There is no
+ * page-side hook to install and none to trust.
+ */
+async function driveTheirPage(dev, sid, keyStream) {
+    const evaluate = async (expression, awaitPromise = false) => {
+        const r = await dev.call('Runtime.evaluate',
+            { expression, awaitPromise, returnByValue: true }, sid);
+        if (r.exceptionDetails) {
+            throw new Error((r.exceptionDetails.text || 'evaluate failed') + ' '
+                + ((r.exceptionDetails.exception && r.exceptionDetails.exception.description) || ''));
+        }
+        return r.result && r.result.value;
+    };
+    // Arrow keys are written in the stream as the arrow characters themselves
+    // and dispatched as real arrow keydowns — no `text`, which is what makes
+    // them arrows rather than characters. They are the one key the page the
+    // mirror serves advertises ("Move with hjklyubn or arrow keys") and does
+    // not itself translate.
+    const ARROWS = { '←': ['ArrowLeft', 37], '↑': ['ArrowUp', 38],
+                     '→': ['ArrowRight', 39], '↓': ['ArrowDown', 40] };
+    const sendKey = (ch) => {
+        if (ARROWS[ch]) {
+            const [key, vk] = ARROWS[ch];
+            return dev.call('Input.dispatchKeyEvent', { type: 'rawKeyDown', key,
+                windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk }, sid);
+        }
+        return dev.call('Input.dispatchKeyEvent', ch === '\n'
+            ? { type: 'keyDown', key: 'Enter', text: '\r', unmodifiedText: '\r',
+                windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 }
+            : { type: 'keyDown', text: ch, key: ch, unmodifiedText: ch,
+                windowsVirtualKeyCode: ch.toUpperCase().charCodeAt(0),
+                nativeVirtualKeyCode: ch.toUpperCase().charCodeAt(0) }, sid);
+    };
+
+    const out = { their_page: true, seed: Number(opt('seed', '4242')) };
+
+    // --- 1. their gate -------------------------------------------------------
+    // "Click here and press any key." has to be ON THE TERMINAL before a key is
+    // worth sending: it is painted by three display.putstr() calls, so its
+    // absence would mean GameDisplay never built a terminal in #game-container.
+    let gate = null;
+    const gateDeadline = Date.now() + Math.min(timeoutMs, 20000);
+    while (Date.now() < gateDeadline) {
+        gate = await evaluate(`(function(){
+            var c = document.getElementById('game-container');
+            if (!c) return null;
+            var t = c.textContent || '';
+            if (t.indexOf('press any key') < 0) return null;
+            return { ms: Math.round(performance.now()),
+                     random_calls: (window.__PIN && window.__PIN.calls) || 0,
+                     seed_line: (t.match(/Starting NetHack with seed \\d+/) || [''])[0],
+                     rc_line: t.indexOf('saved .nethackrc') >= 0 ? 'saved' : 'default' };
+        })()`);
+        if (gate) break;
+        await sleep(25);
+    }
+    if (!gate) {
+        const why = await evaluate(`(document.getElementById('game-container')||{}).textContent || '(no #game-container)'`);
+        return { ...out, moves: 0, error: 'their page never painted its gate prompt: ' + String(why).slice(0, 300) };
+    }
+    out.gate_ms = gate.ms;
+    out.seed_line = gate.seed_line;
+    out.rc_source = gate.rc_line;
+
+    // --- 2. one key, which is the gate --------------------------------------
+    const tGate = Date.now();
+    await sendKey(' ');
+
+    // --- 3. the first game frame, with NOTHING further typed ----------------
+    // Their page boots the engine itself after the gate and their loop parks in
+    // moveloop_core(). A frame that needs a second keystroke to appear is the
+    // deadlock; a loop that spins instead of parking shows up as a frame that
+    // never comes while the CPU is pegged.
+    let first = null;
+    const frameDeadline = Date.now() + Math.min(timeoutMs, 30000);
+    while (Date.now() < frameDeadline) {
+        first = await evaluate(`(async function(){
+            var m = await import('/js/gstate.js');
+            var g = m.game, d = g.nhDisplay;
+            if (!d || !d.frames) return null;
+            return { ms: Math.round(performance.now()), frames: d.frames,
+                     mode: g.nhEngine && g.nhEngine.mode,
+                     queued: d.terminal.inputQueueLength };
+        })()`, true);
+        if (first) break;
+        await sleep(20);
+    }
+    if (!first) {
+        return { ...out, moves: 0, gate_to_frame_ms: Date.now() - tGate,
+                 error: 'no game frame after their gate key — their for(;;) loop '
+                      + 'never got a frame out of moveloop_core()' };
+    }
+    out.gate_to_frame_ms = Date.now() - tGate;
+    out.first_frame_ms = first.ms;
+    out.first_frame_mode = first.mode;
+    out.queued_at_first_frame = first.queued;
+
+    // --- 4. play ------------------------------------------------------------
+    await evaluate(`(async function(){
+        var m = await import('/js/gstate.js');
+        window.__TP = { n: 0 };
+        m.game.nhDisplay.onFrame = function(){ window.__TP.n++; };
+        return true;
+    })()`, true);
+
+    const times = [];
+    let stalledOn = null;
+    for (let i = 0; i < keyStream.length; i++) {
+        const ch = keyStream[i];
+        const want = i + 1;
+        const t0 = Date.now();
+        await sendKey(ch);
+        let got = 0;
+        while (Date.now() - t0 < 20000) {
+            got = await evaluate('(window.__TP && window.__TP.n) || 0');
+            if (got >= want) break;
+            await sleep(2);
+        }
+        times.push(Date.now() - t0);
+        if (got < want) { stalledOn = { i, ch }; break; }
+        if (await evaluate(`(async function(){ var m = await import('/js/gstate.js');
+            return !!(m.game.program_state && m.game.program_state.gameover); })()`, true)) break;
+    }
+
+    // --- 4b. their Save game button, and the visit after it -----------------
+    // The toolbar on their page pushes 'S' then 'y' into our display and
+    // expects NetHack's dosave. What comes after it is the part no harness of
+    // ours could reach before: a reload, a NEW random seed, and a fork whose
+    // save has to be found in localStorage under the fork's own prefix and
+    // restored. A player's second visit is the only place this runs, and a
+    // throw there lands in their main().catch as a console line.
+    if (saveReload) {
+        await evaluate(`document.getElementById('save-btn').click(); 0`);
+        const saveDeadline = Date.now() + 20000;
+        let saved = false;
+        while (Date.now() < saveDeadline && !saved) {
+            saved = await evaluate(`(async function(){ var m = await import('/js/gstate.js');
+                return !!(m.game.program_state && m.game.program_state.gameover); })()`, true);
+            if (!saved) await sleep(25);
+        }
+        out.saved = saved;
+        out.save_storage_keys = await evaluate('Object.keys(localStorage)');
+
+        // --legacy-save puts the freshly written save back where builds before
+        // this leg wrote it — the bare, un-namespaced key — so the one-time
+        // migration read in js/jsmain.js's vfsNamespaced() is exercised rather
+        // than assumed. Their FrontalLocalStorage passes that key through
+        // untouched, but does not *enumerate* it, which is the part that had to
+        // be handled for the engine's storage snapshot to contain it at all.
+        if (args.includes('--legacy-save')) {
+            out.legacy_migration = await evaluate(`(function(){
+                var k = Object.keys(localStorage).filter(function(x){ return /c2js-overlay$/.test(x); })[0];
+                if (!k || k === 'c2js-overlay') return false;
+                localStorage.setItem('c2js-overlay', localStorage.getItem(k));
+                localStorage.removeItem(k);
+                return true;
+            })()`);
+        }
+
+        await dev.call('Page.reload', {}, sid);
+        let gate2 = null;
+        const g2Deadline = Date.now() + 20000;
+        while (Date.now() < g2Deadline) {
+            gate2 = await evaluate(`(function(){
+                var c = document.getElementById('game-container');
+                var t = c && c.textContent || '';
+                return t.indexOf('press any key') < 0 ? null : true; })()`);
+            if (gate2) break;
+            await sleep(25);
+        }
+        out.reload_gate = !!gate2;
+        if (gate2) {
+            await sendKey(' ');
+            let f2 = null;
+            const f2Deadline = Date.now() + 30000;
+            while (Date.now() < f2Deadline) {
+                f2 = await evaluate(`(async function(){
+                    var m = await import('/js/gstate.js'), d = m.game.nhDisplay;
+                    if (!d || !d.frames) return null;
+                    var rows = [], r, c, s;
+                    for (r = 0; r < 24; r++) { s = ''; for (c = 0; c < 80; c++) s += d.grid[r][c].ch; rows.push(s); }
+                    return { top: rows[0].trimEnd(), status: rows[22].trimEnd(), turn: rows[23].trimEnd() };
+                })()`, true);
+                if (f2) break;
+                await sleep(25);
+            }
+            out.reload_frame = f2;
+        }
+    }
+
+    // --- 5. the end of the game, which is the end of their loop -------------
+    const tail = await evaluate(`(async function(){
+        var m = await import('/js/gstate.js');
+        var g = m.game, d = g.nhDisplay, rows = [], r, c, s;
+        for (r = 0; r < 24; r++) { s = ''; for (c = 0; c < 80; c++) s += d.grid[r][c].ch; rows.push(s); }
+        var e = g.nhEngine;
+        var panel = document.getElementById('game-over-panel');
+        var rec = document.getElementById('game-over-record');
+        return {
+            engine_mode: e && e.mode, frames: d.frames, final_screen: rows,
+            queued: d.terminal.inputQueueLength,
+            engine_ms_per_move: (e && e.engineTime) ? +(e.engineTime.ms / e.engineTime.steps).toFixed(3) : null,
+            gameover: !!(g.program_state && g.program_state.gameover),
+            panel_visible: !!(panel && panel.classList.contains('visible')),
+            record_text: rec ? rec.textContent : null,
+            container_text: (document.getElementById('game-container').textContent || '').slice(0, 120),
+            crossOriginIsolated: !!window.crossOriginIsolated,
+            // What the fork actually left in the browser, seen the way their
+            // "Clear saved games" button sees it: a key that does not begin
+            // with the fork's prefix is a key no player can clear and a key
+            // the next fork in the same browser will collide with.
+            storage_keys: Object.keys(localStorage),
+            vfs_prefix: window.__TELEPORT_VFS_PREFIX || null,
+            overlay_files: (function(){
+                var k = Object.keys(localStorage).filter(function(x){ return /c2js-overlay$/.test(x); })[0];
+                if (!k) return null;
+                try { return Object.keys(JSON.parse(localStorage.getItem(k))); } catch (e) { return 'unparseable'; }
+            })(),
+        };
+    })()`, true);
+
+    const wall = times.reduce((a, b) => a + b, 0);
+    const sorted = times.slice().sort((a, b) => a - b);
+    return {
+        ...out,
+        moves: times.length - (stalledOn ? 1 : 0),
+        stalled_on: stalledOn,
+        wall_ms: wall,
+        ms_per_move: +(wall / Math.max(1, times.length)).toFixed(3),
+        median_ms: sorted[sorted.length >> 1] || 0,
+        p95_ms: sorted[Math.floor(sorted.length * 0.95)] || 0,
+        max_ms: sorted[sorted.length - 1] || 0,
+        ...tail,
+        top_line: tail.final_screen[0].trimEnd(),
+        status_line: tail.final_screen[22].trimEnd(),
+        bottom_line: tail.final_screen[23].trimEnd(),
+    };
+}
+
 let dev = null;
 try {
     dev = await cdpConnect(DPORT);
     const sid = await dev.whenPage;
+    if (theirPage) {
+        // Two things imposed from outside the page, both before its first line
+        // of script runs. Their seed is `Math.floor(Math.random() * 10000)`, so
+        // pinning the FIRST Math.random() (and only the first) makes a run
+        // re-runnable without touching the fixture. --pin-rc writes the
+        // nethackrc their loadNethackrc() reads, which is their own mechanism.
+        const seed = theirDie ? DEATH_SEED : Number(opt('seed', '4242'));
+        const rc = theirDie ? DEATH_RC : (pinRc ? DEFAULT_RC : null);
+        await dev.call('Page.enable', {}, sid);
+        await dev.call('Page.addScriptToEvaluateOnNewDocument', {
+            source: `(function(){
+                var real = Math.random, n = 0;
+                window.__PIN = { calls: 0 };
+                Math.random = function(){
+                    window.__PIN.calls++;
+                    if (n++ === 0) return ${seed} / 10000;
+                    return real();
+                };
+                ${theirDie ? `
+                // Their page passes no datetime, so js/jsmain.js uses "now".
+                // The recorded death was played at 20260101120000 local.
+                var Real = Date, FIXED = new Real(${DEATH_DATETIME.join(', ')}).getTime();
+                Date = class extends Real {
+                    constructor(){ if (arguments.length === 0) super(FIXED); else super(...arguments); }
+                    static now(){ return FIXED; }
+                };
+                ` : ''}
+                ${rc ? `try { localStorage.setItem('teleport:nethackrc', ${JSON.stringify(rc)}); } catch (e) {}` : ''}
+            })();`,
+        }, sid);
+        // Their page <link>s Google Fonts over https. Headless Chrome here has
+        // no route to that origin, and the two failed subresource loads would
+        // land in the CDP tally that decides the verdict — noise from THEIR
+        // page, which on the real mirror loads fine. Answer them from the
+        // driver with an empty stylesheet: no @font-face is declared, so no
+        // font file is requested either, and the fixture is still verbatim.
+        await dev.call('Fetch.enable', {
+            patterns: [{ urlPattern: 'https://fonts.googleapis.com/*' },
+                       { urlPattern: 'https://fonts.gstatic.com/*' }],
+        }, sid);
+        dev.onFetchPaused = (p) => dev.call('Fetch.fulfillRequest', {
+            requestId: p.requestId, responseCode: 200,
+            responseHeaders: [{ name: 'content-type', value: 'text/css' }],
+            body: Buffer.from('/* judge-sim: fonts stubbed */\n').toString('base64'),
+        }, sid).catch(() => { /* page gone */ });
+    }
     await dev.call('Page.navigate', { url }, sid);
+    if (theirPage) {
+        const stream = keys || (theirDie ? DEATH_MOVES : null) || (() => {
+            // Their DEFAULT_RC leaves name/role/race/gender/align commented
+            // out, so the very first thing a visitor to the real mirror sees
+            // after the gate is NetHack's own "Who are you?" — then "Shall I
+            // pick a character... [ynaq]", then the intro to dismiss. That is
+            // the opening any harness driving their page has to get through,
+            // so it is the opening this drives. --pin-rc writes an rc that
+            // fixes the character and skips all of it.
+            const open = pinRc ? '  ' : 'Judge\ny   ';
+            let s = open;
+            const n = Number(opt('moves', '120'));
+            // --arrows walks with arrow keys instead of vi keys. One arrow must
+            // consume one key and paint one frame: Terminal's built-in
+            // translation answers an arrow with the three-byte ANSI sequence
+            // ESC [ A, so a page that gets no NetHack keyMapper leaves two keys
+            // queued behind every arrow — which the `queued` assertion catches
+            // without having to read the dungeon.
+            const walk = args.includes('--arrows') ? '←←↓↓→→↑↑' : 'lljjhhkk';
+            for (let i = 0; s.length < n + open.length; i++) s += walk[i % 8] + walk[(i * 5) % 8];
+            // #quit, confirm, then the disclosure prompts their rc turns on
+            // (disclose:+i +a +v +g +c +o) and the topten screen behind them.
+            return theirQuit ? s + '#quit\ny' + 'y'.repeat(8) + ' '.repeat(14) : s;
+        })();
+        const r = await driveTheirPage(dev, sid, stream);
+        fs.writeFileSync(resultFile, JSON.stringify(r));
+    }
     if (shapeB) {
         const stream = keys || (() => {
             const n = Number(opt('moves', '240'));
@@ -561,6 +945,83 @@ if (viewer) {
         console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
     if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
     process.exit((!report.error && !bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
+}
+
+if (theirPage) {
+    // The gate for this leg. Every claim is about the page the mirror actually
+    // serves, so none of them can be satisfied by something only our index.html
+    // does.
+    const bad = [];
+    if (report.error) bad.push(report.error);
+    if (!report.gate_ms) bad.push('their putstr gate never appeared on the terminal');
+    if (!report.first_frame_ms) bad.push('no frame after their gate key');
+    if (report.queued_at_first_frame) {
+        bad.push(`${report.queued_at_first_frame} key(s) were still queued when the first frame painted`);
+    }
+    if (!report.moves) bad.push('their for(;;) moveloop_core loop consumed no keys');
+    if (report.stalled_on) {
+        bad.push(`key ${report.stalled_on.i} (${JSON.stringify(report.stalled_on.ch)}) painted no frame`);
+    }
+    if (report.queued) bad.push(`${report.queued} key(s) left unconsumed in the terminal queue`);
+    if (/^Error: /.test(String(report.container_text || ''))) {
+        bad.push('their main().catch replaced the terminal: ' + report.container_text);
+    }
+    if (theirQuit || theirDie) {
+        if (!report.gameover) bad.push('the game never reached game over, so their loop never broke');
+        if (!report.panel_visible) bad.push('their game-over panel never became visible');
+        // A record is only demanded when the game wrote one. NetHack writes no
+        // topten entry for a 0-point #quit — authentic, and not ours to fix —
+        // so --quit proves the break and the panel, and --die proves the
+        // record all the way through their vfsReadFile('/record').
+        const wroteRecord = (report.overlay_files || []).some(f => /record$/.test(f));
+        if (wroteRecord && report.record_text === '(no record file)') {
+            bad.push('the game wrote a /record and their showGameOver() could not find it '
+                     + 'through js/storage.js vfsReadFile()');
+        }
+        if (theirDie && !wroteRecord) bad.push('the recorded death wrote no /record at all');
+    }
+    if (saveReload) {
+        if (!report.saved) bad.push('their Save game button did not end the game');
+        if (!report.reload_gate) bad.push('the page after the reload never painted their gate');
+        if (!report.reload_frame) bad.push('no frame after the reload — the saved game did not come back');
+        process.stderr.write(`  save button ended the game  : ${report.saved}\n`);
+        process.stderr.write(`  after reload, top line      : ${JSON.stringify((report.reload_frame || {}).top)}\n`);
+        process.stderr.write(`  after reload, status line   : ${JSON.stringify((report.reload_frame || {}).status)}\n`);
+        process.stderr.write(`  after reload, turn counter  : ${JSON.stringify((report.reload_frame || {}).turn)}\n`);
+    }
+    // Whatever this fork leaves in a shared browser has to be clearable by
+    // their "Clear saved games" button, which deletes exactly the keys under
+    // the fork's own prefix — and has to not collide with the next fork.
+    const stray = (report.storage_keys || []).filter(k => !k.startsWith(report.vfs_prefix || 'vfs:')
+        && k !== 'teleport:nethackrc'
+        // --legacy-save plants this key itself and the game it starts has not
+        // ended yet, so the migrating write has not happened. It is the input
+        // to that test, not a leak.
+        && !(args.includes('--legacy-save') && k === 'c2js-overlay'));
+    if (stray.length) bad.push('storage keys outside this fork\'s prefix: ' + stray.join(', '));
+    process.stderr.write('\n=== The judge\'s own play page (fixture, verbatim) ===\n');
+    process.stderr.write(`  their gate painted at    : ${report.gate_ms} ms  (${JSON.stringify(report.seed_line)}, rc=${report.rc_source})\n`);
+    process.stderr.write(`  gate key -> first frame  : ${report.gate_to_frame_ms} ms`
+        + `${report.first_frame_mode ? ` (painted by ${report.first_frame_mode})` : ''}\n`);
+    process.stderr.write(`  keys queued at that frame: ${report.queued_at_first_frame}\n`);
+    process.stderr.write(`  keys consumed            : ${report.moves}\n`);
+    process.stderr.write(`  ms/move                  : ${report.ms_per_move}  (incl. one CDP round trip each; `
+        + `engine ${report.engine_ms_per_move})\n`);
+    process.stderr.write(`  top line                 : ${JSON.stringify(report.top_line)}\n`);
+    process.stderr.write(`  status line              : ${JSON.stringify(report.status_line)}\n`);
+    process.stderr.write(`  turn counter             : ${JSON.stringify(report.bottom_line)}\n`);
+    if (theirQuit || theirDie) {
+        process.stderr.write(`  their loop broke on gameover: ${report.gameover}\n`);
+        process.stderr.write(`  their game-over panel    : ${report.panel_visible ? 'visible' : 'HIDDEN'}\n`);
+        process.stderr.write(`  their vfsReadFile('/record'): ${JSON.stringify(String(report.record_text || '').split('\n')[0])}\n`);
+    }
+    for (const b of bad) process.stderr.write(`  FAIL: ${b}\n`);
+    process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
+    process.stdout.write(JSON.stringify({ ...report, their_page: true, transport: transport || null,
+        console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');
+    if (!args.includes('--keep')) fs.rmSync(work, { recursive: true, force: true });
+    else process.stderr.write(`(artifacts kept in ${work})\n`);
+    process.exit((!bad.length && !blocked.length && !cdpEntries.length) ? 0 : 1);
 }
 
 if (shapeB) {

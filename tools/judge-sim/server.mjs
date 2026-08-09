@@ -110,6 +110,34 @@ self.addEventListener('fetch', (e) => {
 // the network and coming back with sw.js's own bytes. With rung 2 failing that
 // way, rung 3 has to be what picks the game up.
 const DENY_DEDICATED = args.includes('--sw-deny-dedicated');
+
+// --their-page: serve THE JUDGE'S OWN PLAY PAGE at the fork root, verbatim.
+//
+// Provenance: tools/judge-sim/fixtures-judge-play-page.html was fetched from
+// https://mazesofmenace.ai/play/NoahBPeterson/ on 2026-08-09, and
+// tools/judge-sim/fixtures-judge-shim-node-builtins.mjs from
+// https://mazesofmenace.ai/shim/node-builtins.mjs the same day. Neither file is
+// ours and neither is edited here — that is the point. The mirror never serves
+// our index.html to a player or to the judge's browser check: it serves that
+// page, and that page drives our modules through an API contract we had only
+// ever inferred. Every other mode in this directory drives *our* page, so not
+// one of them could see a gap between the two.
+//
+// Two extra routes come with it, both on the judge's side of the fence and
+// accounted as JUDGE rather than IN-SCOPE:
+//
+//   /shim/node-builtins.mjs   the import map's target. Vendored above.
+//   /css2 + /s/**            Google Fonts. The page <link>s them and headless
+//                            Chrome has no route to fonts.googleapis.com, so a
+//                            run would collect two network console entries that
+//                            the real mirror does not produce. playability.mjs
+//                            points those hostnames here with
+//                            --host-resolver-rules and this answers them, so
+//                            the console tally stays a measurement of *our*
+//                            code.
+const THEIR_PAGE = args.includes('--their-page');
+const THEIR_PAGE_FILE = path.join(HERE, 'fixtures-judge-play-page.html');
+const THEIR_SHIM_FILE = path.join(HERE, 'fixtures-judge-shim-node-builtins.mjs');
 const PROBE_LINE = '    if (url.searchParams.has(PROBE_PARAM)) return e.respondWith(plain(PROBE_ALIVE));';
 const PROBE_LINE_DENIED = `    if (url.searchParams.has(PROBE_PARAM)) return e.respondWith(
         self.clients.get(e.clientId).then((c) => (c && c.type === 'worker')
@@ -200,6 +228,10 @@ function classify(pathname) {
     // point of the console tally is that a zero there means zero.
     if (pathname === '/favicon.ico') return 'BROWSER-UA';
     if (pathname.startsWith('/__sim/')) return 'HARNESS';
+    // The judge's own assets (--their-page). Served by the mirror, not by the
+    // fork, so they are neither IN-SCOPE nor a violation when they are fetched.
+    if (THEIR_PAGE && (pathname.startsWith('/shim/')
+                       || pathname === '/css2' || pathname.startsWith('/s/'))) return 'JUDGE';
     if (SERVED_FILES.includes(pathname)) return 'IN-SCOPE';
     const seg = pathname.split('/').filter(Boolean)[0];
     return SERVED_ROOTS.includes(seg) ? 'IN-SCOPE' : 'BLOCKED';
@@ -265,6 +297,19 @@ const server = http.createServer(async (req, res) => {
         return send(res, 404, 'Not Found (mirror serves js/** and frozen/** only)\n', 'text/plain');
     }
 
+    if (kind === 'JUDGE') {
+        if (pathname === '/shim/node-builtins.mjs') {
+            finish(200);
+            return send(res, 200, fs.readFileSync(THEIR_SHIM_FILE), MIME['.mjs']);
+        }
+        // Google Fonts, pointed here by --host-resolver-rules. An empty
+        // stylesheet declares no @font-face, so no font file is ever requested
+        // and the page falls back to Georgia — which changes nothing about the
+        // terminal, whose font stack is monospace and set inline.
+        finish(200);
+        return send(res, 200, '/* judge-sim: fonts stubbed */\n', MIME['.css']);
+    }
+
     if (kind === 'HARNESS') {
         // The page posts its finished result back here: headless Chrome's
         // console/DOM capture is timing-dependent, an HTTP POST is not.
@@ -320,6 +365,15 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/snapshot.json' && !fs.existsSync(path.join(ROOT, 'snapshot.json'))) {
         finish(200);
         return send(res, 200, JSON.stringify({ owner: 'judge-sim', fork: 'judge-sim/nethack' }), MIME['.json']);
+    }
+
+    // --their-page: the fork root is the judge's page, byte-for-byte as the
+    // mirror serves it. Never rewritten — not even by --judge-stub, whose
+    // whole payload (a Node-claiming `process`, an import map at the node:*
+    // names) this page already carries for real.
+    if (THEIR_PAGE && (pathname === '/' || pathname === '/index.html')) {
+        finish(200);
+        return send(res, 200, fs.readFileSync(THEIR_PAGE_FILE), MIME['.html']);
     }
 
     // IN-SCOPE: plain static file out of js/ or frozen/, no directory escapes.
