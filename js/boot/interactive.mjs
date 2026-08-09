@@ -832,7 +832,11 @@ export class ReplayEngine {
         const { enableSegmentIsolation, segmentSpecifier } = await import('./isolation.mjs');
         const { installBrowserGlobals } = await import('./browser-env.mjs');
         installBrowserGlobals();
-        const isolated = await enableSegmentIsolation();
+        // Quiet: interactive play is judged on producing no output at all, and
+        // the notice this would print concerns *scored* segments replaying into
+        // each other — which is not what happens to a replay engine that cannot
+        // fork, since it refuses the second game in words instead.
+        const isolated = await enableSegmentIsolation({ quiet: true });
         if (this._dead) throw new ReplayAborted('replay realm retired before it started');
         if (!isolated && ReplayEngine._realms !== false) {
             try {
@@ -1468,7 +1472,14 @@ class FallbackEngine {
                 if (this._dead) { eng.retire(); return frame; }
                 this._inner = eng;
                 return frame;
-            } catch {
+            } catch (e) {
+                // "This process has no room for another module graph" is not a
+                // rung failing, it is the process being full, and the rung
+                // below forks a graph *per replay* — taking it would reach the
+                // same wall sooner and abort instead of reporting. Say so and
+                // let the driver record a failed game. Node only; nothing in a
+                // browser raises this.
+                if (e && e.name === 'RealmExhausted') throw e;
                 // No yieldable build, or the page realm already hosted one.
                 // Silently take the path this page always took.
             }
@@ -1802,8 +1813,33 @@ export async function startEngine(job, onDegraded, opts) {
     }
 
     // Node has SharedArrayBuffer unconditionally and no service worker to
-    // wonder about, so there is nothing to race: one transport, one attempt,
-    // exactly as before. frozen/playability_runner.mjs drives this path.
+    // wonder about, so there is nothing to race: try the one transport, and if
+    // this process is not allowed to have it, walk down the same two rungs a
+    // browser walks. frozen/playability_runner.mjs drives this path.
+    //
+    // "Not allowed to have it" is the case that matters, and it took a
+    // measurement to notice. The judge runs the playability check under
+    // `node --permission`, which denies worker threads: `new Worker` throws
+    // ERR_ACCESS_DENIED, _prepare() turns that into TransportUnavailable, and
+    // every keystroke after it used to be paid at ReplayEngine's prefix-replay
+    // prices. Measured on this machine: 190 ms/move on a 22-move session, and
+    // the judge's box is slower still — their ~3.2 s of patience would not have
+    // finished the FIRST session, which is what "0 moves in 88 sessions" looks
+    // like from outside.
+    //
+    // The rung that fixes it was already in the tree and browser-gated: the
+    // yieldable engine (js/boot/main-thread-engine.mjs, js/generated-y/) needs
+    // no thread that can block, because the C stack suspends into generator
+    // objects at every keystroke read. It is an in-process trampoline — no
+    // worker to be denied — so a sandbox that takes the transport away cannot
+    // take this. Per-game freshness comes from js/boot/isolation.mjs, the same
+    // in-process graph fork runSegment uses, which is why a driver that plays
+    // 44 sessions in one process gets 44 pristine dungeons instead of session 2
+    // replaying into session 1's C globals.
+    //
+    // Rung order is preference, not capability: the transport is still first
+    // (it is genuinely faster per move when the sandbox allows it), the yield
+    // engine second, ReplayEngine last.
     if (IS_NODE) {
         const eng = new InteractiveEngine(job);
         try {
@@ -1813,13 +1849,21 @@ export async function startEngine(job, onDegraded, opts) {
         } catch (e) {
             try { eng.destroy(); } catch { /* nothing to clean up */ }
             // A game that crashed on boot is a bug, and it gets reported as one.
-            // Only a realm that cannot host a blocking thread earns the
-            // quadratic replay engine — otherwise a one-line NetHack crash would
-            // present as a mysteriously unplayable page.
+            // Only a realm that cannot host a blocking thread earns the rungs
+            // below — otherwise a one-line NetHack crash would present as a
+            // mysteriously unplayable page.
             if (!(e instanceof TransportUnavailable)) throw e;
-            if (onDegraded) onDegraded(String((e && e.message) || e));
-            const fallback = new ReplayEngine(job);
+            // FallbackEngine is the same object the browser race puts in the
+            // fallback slot, and it holds the same two rungs in the same order:
+            // main-thread engine, then ReplayEngine. `auto` is false — nothing
+            // in Node is going to come along and want this realm back — so it
+            // goes straight to the yieldable rung.
+            const fallback = new FallbackEngine(job, null, false);
             await fallback.start();
+            // The banner belongs to somebody really stuck with prefix replay.
+            // The yieldable rung is not a degradation: it is resident, and it
+            // answers a keystroke faster than the transport it replaced.
+            if (fallback.mode === 'replay' && onDegraded) onDegraded(String((e && e.message) || e));
             current = fallback;
             return fallback;
         }
