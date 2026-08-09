@@ -1042,6 +1042,205 @@ that a tree which has not built it gets a note rather than a false pass.
 
 ---
 
+# Phase 4 — the Node rung
+
+**Reached.** The yieldable engine now runs in Node, in the fallback slot, and it
+is what a `node --permission` sandbox gets when it is not allowed a worker
+thread.
+
+## The measurement that started it
+
+`frozen/playability_runner.mjs` imports `js/jsmain.js`, builds a `NethackGame`
+per session and drives `moveloop_core()` one key at a time. Run it the way the
+judge's box runs it and the numbers are not the numbers we had been quoting:
+
+```
+node --permission --allow-fs-read="$PWD/*" \
+  frozen/playability_runner.mjs sessions/seed8000-tourist-starter.session.json
+  → 22 moves in 4192 ms (190.55 ms/move)
+```
+
+`--permission` denies worker threads. `Port.spawn('node')` therefore throws
+`ERR_ACCESS_DENIED`, `_prepare()` turns that into `TransportUnavailable`, and
+`startEngine()`'s Node branch had exactly one thing left to try: `ReplayEngine`,
+which re-runs the whole key prefix from a fresh module graph. 190 ms/move is
+that, and it is a *floor*, not a spike — the judge's box is slower, and the
+~3.2 s of patience their playability check gives a session would not have
+finished the first one. "0 moves in 88 sessions" is what that looks like from
+outside.
+
+The rung that fixes it was already in the tree, browser-gated. Phase 2's engine
+needs no thread that can block, so nothing a sandbox denies is in its way.
+
+## Wiring: three rungs in Node, in the same order as the browser's
+
+`startEngine()`'s `IS_NODE` branch used to be transport-or-replay. It now falls
+into `FallbackEngine` — the same object the browser race puts in the fallback
+slot, holding the same two rungs in the same order — with `auto` false, so it
+goes straight to `MainThreadEngine` and reaches `ReplayEngine` only if that
+fails:
+
+| rung | when | cost |
+|---|---|---|
+| `sab` (worker_threads + `Atomics.wait`) | unsandboxed Node | ~2.6 ms/move marginal |
+| `main` (yieldable, in-process trampoline) | `--permission`, no worker | ~2-4 ms/move marginal |
+| `replay` | neither | ~190 ms/move |
+
+Preference, not capability: the transport is still tried first and still wins
+when the sandbox allows it. The degradation banner is unchanged too — it fires
+on `mode === 'replay'` and not on `main`, because a resident engine is not a
+degradation to warn a player about.
+
+## Isolation, composed
+
+The browser rung can host **one** game per realm, and says so in `claimed`. The
+playability runner plays 44 in one process. Those two facts are only compatible
+because the one-game rule is a property of *sharing a graph*, not of running on
+the main thread — and Node can stop sharing.
+
+`MainThreadEngine.start()` now asks `forkGraph()` first. In Node that is
+`js/boot/isolation.mjs`'s resolve hook, the same in-process graph fork
+`runSegment` uses: `import(harness-y.mjs + '?c2jsseg=yN')` pulls a private copy
+of all 176 generated modules plus the hand-written runtime under them, so game N
+starts from static initialisers and not from game N−1's dungeon. When there is a
+fork, `claimed` and `globalThis.__c2jsEngineRealmUsed` are *not* set: this game
+spent nothing the realm owns. In a browser `forkGraph()` is not even called —
+the `IS_NODE ?` test is synchronous, so the second game's refusal still happens
+in the same microtask it always did.
+
+Two details that had to be right:
+
+- **The tag namespace.** `yN`, not `N`. The hook copies whatever follows
+  `?c2jsseg=` verbatim, so the tag is a namespace, and `runSegment` is already
+  using the integers. `js/generated/` and `js/generated-y/` would not collide on
+  their own — but `js/cptr.js` is under both, and `cptr.js?c2jsseg=1` is *one*
+  module whichever graph asked for it. A scored segment 1 and an interactive
+  game 1 in one process would have shared the fd table and the pointer registry.
+- **Silence.** `enableSegmentIsolation()` prints a degradation notice when
+  `module.registerHooks` is missing, and the interactive path may not print
+  anything. It now takes `{ quiet: true }` — which suppresses the notice *for
+  that caller* and remembers the reason, so a later scoring caller still hears
+  it. `ReplayEngine._boot` asks quietly for the same reason.
+
+## `SHARED` had stopped matching anything
+
+`isolation.mjs` excludes the vendored playground from forking, because
+duplicating 2.1 MB of immutable data per graph is pointless parse and heap. The
+pattern was `/\/data\/nethackdir\//`, and the playground moved to
+`js/data-nethackdir/` when the mirror turned out to publish only `js/**` +
+`frozen/**`. It has matched nothing since, on the scoring path as well as this
+one. Measured, four forks:
+
+| | per fork, heap | graph instantiation |
+|---|---|---|
+| pattern as it was | 54.2 MB | ~520-710 ms |
+| pattern fixed | 49.8 MB | ~440-500 ms |
+
+Sharing is safe rather than merely intended: the single consumer,
+`js/boot/harness.mjs:172`, does `readVendored(v).slice()`, so the VFS gets a
+copy and every write goes to the per-run overlay.
+
+## What it costs, and the ceiling it has
+
+Per-session, sandboxed, against the same runner in the same sandbox:
+
+| | before (replay) | after (yield rung) |
+|---|---|---|
+| `seed8000-tourist-starter` (22 moves) | 4192 ms — 190.55 ms/move | 931 ms — 42.33 ms/move |
+
+Almost all of what is left is boot, not play. Split out (`--expose-gc`, forced
+gc between sessions, first eight sessions of `sessions/`):
+
+```
+seed0002 (594 moves)  boot 596 ms   play 1173 ms  (1.97 ms/move)
+seed0004 (408 moves)  boot 484 ms   play  855 ms  (2.10 ms/move)
+seed0007 (301 moves)  boot 468 ms   play 1060 ms  (3.52 ms/move)
+seed0012 (307 moves)  boot 496 ms   play  908 ms  (2.96 ms/move)
+```
+
+The marginal cost is 2-4 ms/move, which is what a resident engine should cost
+and is comparable to the worker transport's. Boot is ~500 ms of module
+instantiation plus ~150 ms of `newgame()`, per session, and it is the aggregate.
+
+**And it grows.** A forked graph can never be unloaded: Node's module map keys
+on the URL and has no eviction, so every game a process plays leaves ~50 MB of
+graph plus ~30 MB of spent arena behind it. By session 20 the heap is ~1.6 GB
+and *boot* has gone from 580 ms to 1600 ms — the play cost is unchanged, but
+each fork's 50 MB allocation now drags a major GC over a 1.6 GB live set:
+
+```
+session  1   boot  581 ms   heap  160 MB
+session 10   boot  951 ms   heap 1156 MB
+session 20   boot 1606 ms   heap 1615 MB
+session 21   boot 94.6 s
+session 22   boot  354 s
+```
+
+Aggregated the way the runner aggregates, over the same trace (16 GB machine):
+
+| sessions played in one process | boot/move | play/move | ms/move |
+|---|---|---|---|
+| first 10 | 3.00 | 3.61 | **6.61** |
+| first 20 | 6.29 | 3.89 | **10.18** |
+| 21 and beyond | — | — | collapses |
+
+Through session 20 the `play/move` column is flat: the engine is not what
+degrades, the whole movement is boot, and the whole of boot is a fresh
+176-module graph allocated against a heap that keeps growing. Past that point
+the distinction stops being useful — session 22 recorded 354 s of graph
+instantiation *and* 2037 ms/move of play, which is not V8 any more but the OS
+paging a 1.7 GB heap on a machine that has run out of room. Both halves go. Ten sessions in one process is right beside
+the worker transport's own aggregate on the same corpus (6.46 ms/move,
+unsandboxed, measured before this machine's memory got tight); twenty is 1.6x
+that; twenty-two does not finish. **The full 44-session sandboxed aggregate is
+therefore not a number this branch can report** — the run does not complete on
+a 16 GB machine, and the reason is above.
+
+`releaseForkedGraph()` in `main-thread-engine.mjs` gives back what it can when a
+game ends — `js/cptr.js`'s pointer table (append-only by construction, so it
+pins every monster, object and temporary the game ever stored through a pointer
+field) and the RNG log nothing interactive reads. Measured over eight sessions,
+that is ~110 MB retained per game before and ~80 MB after. It moves the wall; it
+does not remove it.
+
+The wall is structural and it is not this rung's fault. A `--permission`
+sandbox offers no disposable realm — no worker to terminate, no child to exit —
+so in-process graph forking is the *only* per-game freshness available, and its
+cost is quadratic in one process. Note that `frozen/ps_test_runner.mjs`, the
+scoring runner, does not have this problem for a reason worth knowing: it
+`spawnSync`s a child per session, so it never holds two graphs at once.
+`frozen/playability_runner.mjs` does not.
+
+## What happens at the wall, which is the part that had to be chosen
+
+Left alone, a process that keeps forking meets V8's heap limit (4192 MB here)
+and aborts. An out-of-memory abort mid-corpus takes every result the driver had
+already collected with it, which is a worse answer than any answer — and the
+rung *below* would make it arrive sooner, because `ReplayEngine` forks a graph
+per replay rather than per game.
+
+So `roomForAnotherGraph()` asks `node:v8` before each fork after the first, and
+a game that would not fit is refused rather than attempted:
+
+> this process has played N games and has no room for another: a forked module
+> graph cannot be unloaded, and the heap is within X MB of its 4192 MB limit
+> (node --permission allows no worker or child realm to play in instead). Play
+> fewer games per process.
+
+`RealmExhausted` is passed through `FallbackEngine` rather than degraded around
+— it is the process being full, not a rung failing — so it reaches the driver,
+which records that session as a failure and goes on. It is the same contract
+`ReplayEngine`'s spent-realm branch already keeps in a browser ("this page realm
+has already run a game and cannot host another... Reload the page to play
+again"), in the shape Node can act on.
+
+It is a floor, not a fix. The fix is a disposable realm per game, and the two
+that exist are both outside this tree: a sandbox that allows `--allow-worker`,
+or a playability runner that forks per session the way the scoring runner
+already does.
+
+---
+
 ## Verdict
 
 **Ship, as a fallback replacement.** Not as the primary rung, and not as the
