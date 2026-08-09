@@ -1395,3 +1395,273 @@ dungeon they are in; without it the page picks a random one as it always did.
   the same browser. The font-blocking effect in particular is a specification
   behaviour rather than a Chrome quirk, but its *size* is a property of the route
   to `fonts.googleapis.com` from here.
+
+## The page we were never serving
+
+Everything above this line was measured against `index.html` — our play page, in
+this repository, driven by `tools/judge-sim/playability.mjs`. On 2026-08-09 we
+fetched what `https://mazesofmenace.ai/play/NoahBPeterson/` actually returns and
+found out that nobody is ever served it.
+
+The mirror serves **its own page**. It is vendored verbatim, with that
+provenance, at `tools/judge-sim/fixtures-judge-play-page.html`, together with
+the import map's target from `https://mazesofmenace.ai/shim/node-builtins.mjs`
+at `tools/judge-sim/fixtures-judge-shim-node-builtins.mjs`. Our `index.html` is
+a file in the fork that the mirror will happily serve at `/` and that no player
+and no judge ever navigates to.
+
+That page imports five modules out of this tree and drives them itself:
+
+```js
+const [{ GameDisplay }, { NethackGame }, { game }, { moveloop_core }, { vfsReadFile }] =
+    await Promise.all([ import('./js/game_display.js'), import('./js/jsmain.js'),
+                        import('./js/gstate.js'),      import('./js/allmain.js'),
+                        import('./js/storage.js') ]);
+
+const display = new GameDisplay('game-container');
+display.flags = { color: true };
+display.putstr(0, 0, `Starting NetHack with seed ${seed}...`);   // seed = Math.random() * 10000
+display.putstr(0, 3, 'Click here and press any key.');
+await display.readKey();                                        // ← the gate
+display.clearScreen();
+
+const nhGame = new NethackGame({ seed, nethackrc, storage: persistentStorage });
+nhGame._storage = nhGame._pendingStorage = persistentStorage;   // after construction
+nhGame._pendingDisplay = display;
+game.nhDisplay = display;
+await nhGame.start();
+
+for (;;) { await moveloop_core(); if (game.program_state?.gameover) break; }
+showGameOver();                                                 // vfsReadFile('/record')
+```
+
+`main().catch` logs `console.error(e)` and writes `'Error: ' + e.message` into
+`#game-container`, so any throw anywhere in that sequence is simultaneously a
+dead terminal and a console line — the two things the browser check fails on.
+
+### The suspicion, and what was actually true
+
+The suspicion going in was that their `for (;;)` loop spins: if `moveloop_core()`
+returns immediately when no key is queued, that loop is a hot loop, and "100%
+CPU, no console, no error, 0 moves" is exactly the shape of the seven bad
+crawls.
+
+**It does not spin, and it never did.** `moveloop_core()` awaits
+`display.readKey()`, `GameDisplay.readKey()` forwards `onEmptyQueue`, and their
+page never sets one — so `Terminal.readKey()` falls through to
+`new Promise(resolve => this._inputResolver = resolve)` and parks until a
+keydown arrives at the document handler `Terminal` installed when the display
+was built with a container id. Both drivers are satisfied by the same code:
+their page parks on a key that has not been typed, and
+`frozen/playability_runner.mjs`, which pushes a key *first*, finds it already in
+`_inputQueue` and never waits at all. Measured on the fixture: 78 keys sent, 78
+frames painted, `inputQueueLength` 0 at the end.
+
+`--their-page` was written to prove that, and instead found two other things —
+both invisible from our own page, because our own page happens to do the work
+itself.
+
+### Gap 1 — the arrow keys their page does not translate
+
+Their page tells the player, under the terminal, "Move with `hjklyubn` or arrow
+keys". It builds a `GameDisplay` and never touches `keyMapper`, so an arrow key
+reached `Terminal`'s built-in translation, which answers with the raw ANSI
+sequence `ESC [ A`. On the other end of that is real tty NetHack, where `ESC`
+cancels the command in progress, `[` is not a command, and `A` takes off your
+armour. One arrow, three wrong things — and two keys left in the queue behind
+every one of them, because their loop consumes exactly one key per iteration.
+
+The fix that already existed was in `index.html`, where nobody is served it. It
+now lives on `GameDisplay` as the default value of `keyMapper`
+(`defaultNethackKeyMapper`), so every page that builds one inherits it, and
+`index.html` inherits it like any other page rather than re-declaring it. The
+replay path is untouched: `frozen/playability_runner.mjs` and the judge's
+scoring harness push key codes straight into the queue and never raise a
+`keydown` at all.
+
+Staged as a failing test first — `--their-page --arrows` on the unfixed tree:
+
+```
+keys consumed            : 42
+FAIL: 55 key(s) left unconsumed in the terminal queue
+turn counter             : Dlvl:1 ... T:3
+```
+
+and after:
+
+```
+keys consumed            : 42
+turn counter             : Dlvl:1 ... T:2   (0 queued)
+```
+
+### Gap 2 — a save no fork owned, and a record nobody could read
+
+Their page hands `NethackGame` a `FrontalLocalStorage`: a Web-Storage-shaped
+view that rewrites any key starting `vfs:` to `vfs:<owner>:` and passes every
+other key through unchanged. The comment above it says, in as many words, that
+this is how a contestant gets browser save/restore for free.
+
+`js/boot/harness.mjs` persists the entire VFS under one key, `c2js-overlay`. No
+`vfs:` prefix — so it passed straight through their wrapper, and:
+
+* every fork on `mazesofmenace.ai` shared one localStorage key, so a second fork
+  could be handed a save written by the first;
+* their "Clear saved games" button, which deletes exactly the keys under
+  `vfs:<owner>:`, could not delete ours — a player with a bad save had no way
+  out;
+* `showGameOver()` calls `vfsReadFile('/record')` from our own `js/storage.js`,
+  which reads `localStorage[window.__TELEPORT_VFS_PREFIX + path]`. Nothing ever
+  wrote `/record` there, so the panel said `(no record file)` after every death.
+
+Both are fixed in `js/jsmain.js`, in `NethackGame.start()` only —
+`runSegment()` never passes through it, so the scored replay's storage contract
+is byte-for-byte what it was:
+
+* `vfsNamespaced()` wraps the handle and renames the overlay to
+  `vfs:c2js-overlay` on the way through, which their wrapper turns into
+  `vfs:<owner>:c2js-overlay`. It reads the bare key when the namespaced one is
+  absent, and — the part that had to be got right — *enumerates* it too, since
+  their wrapper's `length`/`key()` only walk the fork's own prefix and the
+  engine gets its storage as a snapshot built by enumeration. The bare key is
+  removed once the namespaced copy is written.
+* `publishVfsFiles()` copies `/record` and `/logfile` out of the overlay the
+  engine hands back at game end and writes them to `vfs:/record` and
+  `vfs:/logfile`, which is where `vfsReadFile()` looks.
+
+A `#quit` was not enough to prove the record end of that. NetHack writes no
+topten entry for a 0-point quit — `topten()` only rewrites the record file when
+`flg` is set, and a quit at turn 60 with no experience never sets it. That is
+authentic and not ours to fix, so the gate only demands a record when the game
+wrote one, and `--die` supplies a game that did: seed 31 with the moves of
+`sessions/seed0030-ten-diverse-deaths.session.json` segment 1, replayed through
+their page, clock pinned from outside because their page passes no `datetime`.
+
+```
+their loop broke on gameover: true
+their game-over panel    : visible
+their vfsReadFile('/record'): "5.0.0 124 2 3 3 0 10 1 20260101 20260101 501 Tou Hum Mal Neu Quincy,killed by a gnome"
+localStorage            : vfs:judge-sim:/logfile, vfs:judge-sim:/record,
+                          vfs:judge-sim:c2js-overlay, teleport:nethackrc
+```
+
+The screen behind it is the recorded death, cell for cell: *"1  124  Quincy-Tou-Hum-Mal-Neu
+died in The Gnomish Mines on level 3.  Killed by a gnome."*
+
+### `--their-page`
+
+`tools/judge-sim/server.mjs --their-page` serves the fixture at the fork root
+and answers two routes on the judge's side of the fence (`/shim/node-builtins.mjs`,
+and Google Fonts, which `playability.mjs` fulfils over CDP so that two failed
+subresource loads from *their* markup do not land in a tally that is supposed to
+measure our code). Nothing in the fixture is rewritten — not even by
+`--judge-stub`, whose whole payload this page already carries for real.
+
+`tools/judge-sim/playability.mjs --their-page` drives it the way their harness
+has to: wait for their `putstr` gate to be on the terminal, send **one** key,
+then wait for the first game frame **sending nothing more** — which is where a
+non-parking `moveloop_core` would show up — then send game keys and check each
+one is consumed. Every observation is read through
+`import('/js/gstate.js')` inside `Runtime.evaluate`, which resolves to the
+module instance their page already imported, so `game.nhDisplay`,
+`game.nhEngine` and `game.program_state` are literally the objects their loop is
+reading. There is no hook installed in the page and none to trust.
+
+Two things are imposed from outside, both before the page's first line of
+script: the first `Math.random()` (their seed is `Math.floor(Math.random() *
+10000)`, and a re-runnable measurement needs a known one) and, with `--pin-rc`
+or `--die`, `localStorage['teleport:nethackrc']` — their own documented
+mechanism, not a hook of ours.
+
+| flag | what it stages |
+| --- | --- |
+| *(none)* | their `DEFAULT_RC` verbatim, prompts and all — a first-time visitor |
+| `--pin-rc` | a fixed character, so ms/move is measured in the dungeon |
+| `--arrows` | walks with arrow keys; one arrow must consume one key |
+| `--quit` | `#quit` through the disclosure prompts: the gameover break and the panel |
+| `--die` | a recorded death: the record, all the way to their panel |
+| `--save-reload` | their Save button, then a reload — a returning player's second visit |
+| `--legacy-save` | with the above, the save put back at the bare key first |
+
+### What their page measures
+
+Chrome 141, headless, this laptop, loopback unless stated.
+
+| run | gate painted | gate key → first frame | keys | ms/move (engine) | console |
+| --- | --- | --- | --- | --- | --- |
+| seed 7 | 94 ms | 457 ms (`xhr`) | 70 | 13.3 (5.70) | 0 |
+| seed 4242 | 100 ms | 435 ms (`xhr`) | 70 | 14.4 (6.30) | 0 |
+| seed 9999 | 93 ms | 409 ms (`xhr`) | 70 | 12.4 (4.86) | 0 |
+| `--arrows` | 93 ms | 678 ms (`xhr`) | 42, 0 queued | 8.5 (0.74) | 0 |
+| `--die` | 107 ms | 686 ms (`xhr`) | 78 | 9.8 (2.49) | 0 |
+| `--save-reload` | 103 ms | 721 ms (`xhr`) | 14 + restore | 10.7 | 0 |
+| `--latency=20` | 188 ms | 1132 ms (`xhr`) | 50 | 23.7 (7.66) | 0 |
+| `--no-sw` | 89 ms | 322 ms (`main`) | 50 | 11.7 (8.57) | 0 |
+
+The three seeds are three different roles (Caveman, Healer, Priest), which is
+the point: their seed is random per load and any of 0–9999 has to work.
+`ms/move` includes one CDP round trip per key and is an upper bound; the
+engine-thread figure beside it is the clean one. `--latency=20` prices the
+mirror's ~170 module round trips: 1.1 s to the first frame, against a browser
+check that gives a session about three seconds.
+
+Their page has **no prewarm** — ours warms an engine realm at load and theirs
+cannot, since it does not know our modules exist until it imports them. The
+gate covers part of it anyway: their `await display.readKey()` sits in front of
+the whole game, so whatever time a human (or a harness) takes to press a key is
+time the boot does not have to spend afterwards. It is not used, though: nothing
+starts until the key arrives.
+
+### Standing gates, after this leg
+
+| what | result |
+| --- | --- |
+| `playability.mjs --their-page` × seeds 7 / 4242 / 9999 | 3/3 exit 0, 0 console |
+| `playability.mjs --their-page --arrows` | 42 keys, 0 queued, exit 0 |
+| `playability.mjs --their-page --die` | record read through their panel, exit 0 |
+| `playability.mjs --their-page --save-reload [--legacy-save]` | restored both ways, exit 0 |
+| `frozen/playability_runner.mjs` | 0 failures, 9096 moves (baseline 9096), 6.13 ms/move (baseline 6.45) |
+| `tools/judge-sim/run.mjs seed8000` / `seed0013` | PASS, 0 mismatches, 0 out-of-scope |
+| `frozen/ps_test_runner.mjs` seed8000 + seed4500 | 2/2 PASS, RNG 111405/111405, screens 1837/1837 |
+| `tools/strict-score.mjs --all` | 0 static violations (355 files, 2 roots), 44/44 sandbox parity |
+| `playability.mjs --viewer` | 3/3 sessions, 0 console |
+| `playability.mjs --shape-b` | frame at 732 ms with nothing typed, 63 keys, 0 console |
+
+## What could not be verified, and residual risk — the mirror's-page leg
+
+- **The fixture is a snapshot.** It was fetched on 2026-08-09. If the mirror
+  changes its page — a different bootstrap order, a `datetime` it did not pass
+  before, a storage wrapper with different rules — every number here describes a
+  page that no longer exists. There is no way to be notified; re-fetching it is
+  a manual step, and the two fixtures carry their source URL and date in the
+  server's comments so the check is at least cheap.
+- **Their harness's dispatch and patience are still inferred.** `--their-page`
+  sends real keydowns over `Input.dispatchKeyEvent` because that is what
+  Puppeteer and Playwright do underneath. A harness that instead calls
+  `display.pushKey` directly, or dispatches to a node of its choosing, is not
+  exercised — though both reach the same `Terminal._onKeyDown` or the same
+  queue. The three-second budget is inferred from the crawl behaviour, not
+  documented, and 1.1 s at 20 ms of latency is comfortable against it but not
+  against a much slower box.
+- **Nobody presses the gate key on the judge's behalf, that we know of.** Their
+  page will not start a game until a `keydown` reaches the document. If their
+  browser check ever loads the page and only *watches*, every fork on the
+  leaderboard scores 0 moves and nothing in this repository can change that.
+  `--their-page` sends the key because a harness that did not would be measuring
+  their page's gate rather than our engine.
+- **The record is published at game end only.** `publishVfsFiles()` runs when the
+  engine hands its storage back, which is when the game ends. A tab closed
+  mid-game leaves `/record` at whatever the last finished game wrote. That
+  matches what the panel is for and costs nothing, but it does mean the
+  published copy can lag the overlay.
+- **The legacy overlay key is migrated on write, not on read.** A player whose
+  save is at the bare `c2js-overlay` gets it restored, and it is moved under the
+  fork prefix the next time a game *ends*. A player who restores and never
+  finishes keeps a key their "Clear saved games" button cannot reach. Fixing
+  that properly means writing during boot, which is a write on a path that has
+  never needed one.
+- **Fonts are stubbed in the measurement.** Their `<link>` to
+  `fonts.googleapis.com` is fulfilled from the driver, because headless Chrome
+  here has no route to it and two failed subresource loads would otherwise sit
+  in a console tally that exists to measure *our* code. On the real mirror that
+  request succeeds; if it ever does not, the console line is theirs and lands on
+  us anyway, and there is nothing on our side of the fence to do about it.
