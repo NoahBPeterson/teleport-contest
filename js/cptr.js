@@ -1282,3 +1282,35 @@ export function write(fd, buf, n) {
   for (let i = 0; i < n; i++) f.writeBuf.push(buf.buf[buf.off + i]);
   return BigInt(n);
 }
+
+// ---------------------------------------------------------------------------
+// Letting a spent graph go.
+//
+// __ptrRegistry above is append-only by construction: an id is an index into
+// it, so an entry can never be reused or dropped while the ids are still live.
+// That is the right trade for a game that runs once and exits, and it is a
+// problem for a process that plays many games in a row. Node's yieldable rung
+// (js/boot/main-thread-engine.mjs) forks a copy of this module per game because
+// that is the only per-game freshness a `node --permission` sandbox allows —
+// no worker to terminate, no child to exit — and a forked module graph can
+// never be unloaded, so everything it can still reach is in the heap for the
+// life of the process. frozen/playability_runner.mjs plays the whole corpus
+// that way, in one process.
+//
+// Most of what a spent graph holds is the graph, and that is not negotiable.
+// What is negotiable is the state below, which no longer means anything once
+// the game that filled it is over: every pointer it ever stored through a
+// struct field, including everything C freed long ago, and whatever the VFS
+// was still holding open.
+//
+// The one precondition, and it is absolute: the game must be over and its
+// module graph must never run again. A live game whose pointer table has been
+// dropped reads garbage back out of every pointer field it has stored. That is
+// why this is named like the internal it is and why its only caller is an
+// engine tearing a finished game down.
+export function __releaseSpentGraph() {
+    __ptrRegistry.length = 0;
+    __intPtrs.clear();
+    __fmtCache.clear();
+    __fds.clear();
+}
