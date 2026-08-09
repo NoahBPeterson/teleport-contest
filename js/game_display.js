@@ -20,6 +20,30 @@ import { decodeScreen, renderCell } from '../frozen/screen-decode.mjs';
 const TOPLINE_EMPTY = 0;
 const TOPLINE_NEED_MORE = 1;
 
+/** Arrow keys become the vi keys the game binds; Shift/Ctrl+arrow runs. */
+const VI_FOR_ARROW = { ArrowUp: 'k', ArrowDown: 'j', ArrowLeft: 'h', ArrowRight: 'l' };
+
+/** See GameDisplay.keyMapper. Every branch here has to answer, or drop, a key. */
+function defaultNethackKeyMapper(e) {
+    if (!e.altKey && !e.metaKey && VI_FOR_ARROW[e.key]) {
+        const c = e.shiftKey || e.ctrlKey ? VI_FOR_ARROW[e.key].toUpperCase() : VI_FOR_ARROW[e.key];
+        return c.charCodeAt(0);
+    }
+    if (e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
+        const c = e.key.toLowerCase().charCodeAt(0);
+        return (c >= 97 && c <= 122) ? c - 96 : null;
+    }
+    if (e.altKey || e.metaKey) return null;
+    switch (e.key) {
+    case 'Enter':     return 13;
+    case 'Backspace': return 8;
+    case 'Delete':    return 127;
+    case 'Escape':    return 27;
+    case 'Tab':       return 9;
+    default:          return e.key.length === 1 ? e.key.charCodeAt(0) : null;
+    }
+}
+
 export class GameDisplay {
     constructor(terminalOrContainerId) {
         // Accept either a Terminal instance or a container ID (backward compat)
@@ -112,8 +136,34 @@ export class GameDisplay {
         });
     }
 
-    /** NetHack key mapper — converts browser keys to game codes. */
-    keyMapper = null;
+    /**
+     * NetHack key mapper — converts browser keys to game codes.
+     *
+     * This is a *default*, not a null, because of who else builds a
+     * GameDisplay. The page the mirror serves — fetched from
+     * https://mazesofmenace.ai/play/NoahBPeterson/ on 2026-08-09 and vendored
+     * at tools/judge-sim/fixtures-judge-play-page.html — does
+     * `new GameDisplay('game-container')`, sets `flags`, and never touches
+     * `keyMapper`. Its own instructions to the player read "Move with
+     * hjklyubn or arrow keys."
+     *
+     * Terminal's built-in translation answers an arrow key with the raw ANSI
+     * sequence ESC [ A, which is right for a terminal emulator and wrong for
+     * this game: the engine on the other end is real tty NetHack, where ESC
+     * cancels the command in progress and the '[' and 'A' behind it are two
+     * more commands ('A' takes off your armour). So an arrow key on their page
+     * did three unwanted things instead of one wanted one — and the fix lived
+     * only in our index.html, which no player is ever served.
+     *
+     * A keyMapper *replaces* Terminal's translation outright (Terminal._onKeyDown
+     * returns as soon as one is present, whatever it answers), so this has to
+     * handle every key, not just the ones it changes. Returning null means
+     * "drop this keystroke", which is right for bare modifier presses and wrong
+     * for everything else. Assign your own to override; frozen/playability_runner.mjs
+     * and the judge's replay path never come through here at all, because they
+     * push key codes straight into the queue.
+     */
+    keyMapper = defaultNethackKeyMapper;
     /** Ctrl-C handler. */
     onInterrupt = null;
     /** Called when input queue is empty (headless replay). */

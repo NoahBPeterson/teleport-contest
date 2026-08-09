@@ -670,38 +670,13 @@ function makeDisplay() {
     const display = new GameDisplay('game-container');
     display.flags = { color: true };
 
-    // Keyboard translation. NOTE: a keyMapper *replaces* the frozen Terminal's
-    // built-in translation outright — Terminal._onKeyDown returns as soon as a
-    // keyMapper is present, whatever it answers — so this has to handle every
-    // key, not just the ones we want to change. Returning null means "drop
-    // this keystroke", which is right for bare modifier presses and wrong for
-    // everything else.
-    //
-    // The one real change from the default: arrow keys. Terminal's default
-    // pushes the raw ANSI sequence (ESC [ A), and this is the real tty
-    // NetHack, where ESC means "cancel the current command". Send the vi keys
-    // the game binds instead; Shift+arrow sends the run-in-that-direction
-    // capital.
-    display.keyMapper = (e) => {
-        const VI = { ArrowUp: 'k', ArrowDown: 'j', ArrowLeft: 'h', ArrowRight: 'l' };
-        if (!e.altKey && !e.metaKey && VI[e.key]) {
-            const c = e.shiftKey || e.ctrlKey ? VI[e.key].toUpperCase() : VI[e.key];
-            return c.charCodeAt(0);
-        }
-        if (e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1) {
-            const c = e.key.toLowerCase().charCodeAt(0);
-            return (c >= 97 && c <= 122) ? c - 96 : null;
-        }
-        if (e.altKey || e.metaKey) return null;
-        switch (e.key) {
-        case 'Enter':     return 13;
-        case 'Backspace': return 8;
-        case 'Delete':    return 127;
-        case 'Escape':    return 27;
-        case 'Tab':       return 9;
-        default:          return e.key.length === 1 ? e.key.charCodeAt(0) : null;
-        }
-    };
+    // Keyboard translation used to be set up here, which is exactly why the
+    // mirror's own play page never got it: that page does
+    // `new GameDisplay('game-container')` and nothing else, so an arrow key
+    // there reached tty NetHack as ESC [ A — cancel, then two stray commands.
+    // The mapper now lives on GameDisplay as its default (see
+    // js/game_display.js), where every page that builds one inherits it, and
+    // this page inherits it like any other.
     return display;
 }
 
