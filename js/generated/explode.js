@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, completelyburns, explosion_to_glyph, is_vampshifter, weirdnonliving } from './nhmacrofn.js';
+import { canspotmon, completelyburns, explosion_to_glyph, is_vampshifter, nonliving } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, Cold_resistance, Deaf, Disint_resistance, Fire_resistance, Half_physical_damage, Hallucination, Invulnerable, Poison_resistance, Role_switch, Shock_resistance, Upolyd, nh_delay_output, sokoban_dnum } from './nhprop.js';
 import { disp, flags, gb, gi, gm, gt, gu, gv, gy, iflags, shield_static, svc, svd, svk, svl, u, uball, uchain, xdir, ydir } from './decl.js';
 import { mons } from './monst.js';
@@ -191,7 +191,7 @@ function explosionmask(m, adtyp, olet) {
                 res = NHC.EXPL_HERO;
             break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS) ? ((((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(m, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(m, $monst_data))) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 1 : 0) : Disint_resistance())
+            if ((olet == NHC.WAND_CLASS) ? (nonliving(cptr.ldPtro(m, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 1 : 0) : Disint_resistance())
                 res = NHC.EXPL_HERO;
             break;
             case NHM.AD_ELEC:
@@ -227,7 +227,7 @@ function explosionmask(m, adtyp, olet) {
                 res = NHC.EXPL_MON;
             break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS) ? ((((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(m, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(m, $monst_data))) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) || is_vampshifter(m) ? 1 : 0) : !!Resists_Elem(m, NHC.DISINT_RES))
+            if ((olet == NHC.WAND_CLASS) ? (nonliving(cptr.ldPtro(m, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) || is_vampshifter(m) ? 1 : 0) : !!Resists_Elem(m, NHC.DISINT_RES))
                 res = NHC.EXPL_MON;
             break;
             case NHM.AD_ELEC:
@@ -577,7 +577,7 @@ export function explode(x, y, type, dam, olet, expltype) {
                         xkilled(mtmp, NHM.XKILL_GIVEMSG | xkflg);
                     } else if (mdef && cptr.eq(mtmp, mdef)) {
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) || canspotmon(mtmp))
-                            pline(__sl35, Monnam(mtmp), xkflg ? __sl36 : ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) ? __sl37 : __sl38));
+                            pline(__sl35, Monnam(mtmp), xkflg ? __sl36 : (nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl37 : __sl38));
                         xkilled(mtmp, 5 | xkflg);
                     } else {
                         if (xkflg)

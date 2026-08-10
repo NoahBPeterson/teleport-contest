@@ -27,7 +27,9 @@ import { isok } from './cmd.js';
 import { db_under_typ } from './dbridge.js';
 import { iflags, svl, svq, u } from './decl.js';
 import { canseemon, sensemon } from './display.js';
+import { has_ceiling } from './dungeon.js';
 import { dist2 } from './hacklib.js';
+import { is_flammable, is_rottable } from './mkobj.js';
 import { breakarm, sliparm } from './mondata.js';
 import { mons } from './monst.js';
 import { objects } from './objects.js';
@@ -53,14 +55,18 @@ const $dlevel_t_flags = FLD.dlevel_t_flags, $engr_engr_x = FLD.engr_engr_x, $eng
     $obj_corpsenm = FLD.obj_corpsenm, $obj_dknown = FLD.obj_dknown, $obj_oartifact = FLD.obj_oartifact,
     $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2,
     $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_material = FLD.objclass_oc_material,
+    $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_dir = FLD.objclass_oc_dir,
+    $objclass_oc_material = FLD.objclass_oc_material, $objclass_oc_oc1 = FLD.objclass_oc_oc1,
     $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $oextra_omailcmd = FLD.oextra_omailcmd,
     $oextra_omid = FLD.oextra_omid, $oextra_omonst = FLD.oextra_omonst, $permonst_mattk = FLD.permonst_mattk,
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
     $permonst_mlet = FLD.permonst_mlet, $permonst_mresists = FLD.permonst_mresists,
     $permonst_msize = FLD.permonst_msize, $q_score_leader_m_id = FLD.q_score_leader_m_id,
     $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ, $trap_launch = FLD.trap_launch,
-    $trap_ttyp = FLD.trap_ttyp, $you_uy = FLD.you_uy;
+    $trap_ttyp = FLD.trap_ttyp, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+
+/** C: include/hack.h — the `ARM_BONUS(obj)` macro body */
+export function ARM_BONUS(obj) { return ((((cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((obj), $obj_spe)) | 0) - (((((cptr.ldI32o((obj), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((obj), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0)) < (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)) ? ((((cptr.ldI32o((obj), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((obj), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0)) : (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)))) | 0); }
 
 /** C: include/align.h — the `Align2amask(x)` macro body */
 export function Align2amask(x) { return ((((x) == -128) ? NHM.AM_NONE : (((x) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((x) + 2) | 0))) >>> 0); }
@@ -107,6 +113,9 @@ export function Is_candle(otmp) { return (cptr.ldI16o(otmp, $obj_otyp) == NHC.TA
 /** C: include/obj.h — the `Is_container(o)` macro body */
 export function Is_container(o) { return (cptr.ldI16o((o), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((o), $obj_otyp) <= NHC.BAG_OF_TRICKS ? 1 : 0); }
 
+/** C: include/obj.h — the `Is_dragon_armor(obj)` macro body */
+export function Is_dragon_armor(obj) { return ((cptr.ldI16o((obj), $obj_otyp) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16o((obj), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALES) || (cptr.ldI16o((obj), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((obj), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL) ? 1 : 0); }
+
 /** C: include/obj.h — the `Is_dragon_mail(obj)` macro body */
 export function Is_dragon_mail(obj) { return (cptr.ldI16o((obj), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((obj), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL ? 1 : 0); }
 
@@ -131,6 +140,9 @@ export function SURFACE_AT(x, y) { return ((cptr.ld1so3(svl, x, 756, y, 36, $ins
 /** C: include/obj.h — the `SchroedingersBox(o)` macro body */
 export function SchroedingersBox(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((o), $obj_spe) == 1 ? 1 : 0); }
 
+/** C: include/obj.h — the `Waterproof_container(o)` macro body */
+export function Waterproof_container(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.OILSKIN_SACK || cptr.ldI16o((o), $obj_otyp) == NHC.ICE_BOX || (cptr.ldI16o((o), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((o), $obj_otyp) == NHC.CHEST) ? 1 : 0); }
+
 /** C: include/obj.h — the `WrappingAllowed(mptr)` macro body */
 export function WrappingAllowed(mptr) { return (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && cptr.ld1uo((mptr), $permonst_msize) >= NHM.MZ_SMALL && cptr.ld1uo((mptr), $permonst_msize) <= NHM.MZ_HUGE && !(cptr.ld1so((mptr), $permonst_mlet) == NHC.S_GHOST) && cptr.ld1so((mptr), $permonst_mlet) != NHC.S_CENTAUR && !cptr.eq((mptr), cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)) && !cptr.eq((mptr), cptr.add(mons, NHC.PM_MARILITH, 96)) ? 1 : 0); }
 
@@ -139,6 +151,9 @@ export function age_is_relative(otmp) { return (cptr.ldI16o((otmp), $obj_otyp) =
 
 /** C: include/display.h — the `altar_to_glyph(amsk)` macro body */
 export function altar_to_glyph(amsk) { return ((((((cptr.ldI32o(amsk, $rm_flags) & 31)) | 0) & NHM.AM_SANCTUM) == NHM.AM_SANCTUM) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_other) | 0) : ((((((cptr.ldI32o(amsk, $rm_flags) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_lawful) | 0) : ((((((cptr.ldI32o(amsk, $rm_flags) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_NEUTRAL) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : ((((((cptr.ldI32o(amsk, $rm_flags) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_CHAOTIC) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_chaotic) | 0) : ((NHC.GLYPH_ALTAR_OFF + NHC.altar_unaligned) | 0))))); }
+
+/** C: include/obj.h — the `ammo_and_launcher(a, l)` macro body */
+export function ammo_and_launcher(a, l) { return (((cptr.ld1so(a, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(a, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(a, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(a, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) && ((l) && cptr.ld1so2(objects, cptr.ldI16o((a), $obj_otyp), 120, $objclass_oc_subtyp) == -cptr.ld1so2(objects, cptr.ldI16o((l), $obj_otyp), 120, $objclass_oc_subtyp)) ? 1 : 0); }
 
 /** C: include/mondata.h — the `befriend_with_obj(ptr, obj)` macro body */
 export function befriend_with_obj(ptr, obj) { return ((cptr.eq((ptr), cptr.add(mons, NHC.PM_MONKEY, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_APE, 96))) ? cptr.ldI16o((obj), $obj_otyp) == NHC.BANANA : (((cptr.ldU64o((ptr), $permonst_mflags2) & 4194304n) != 0n) && cptr.ld1so((obj), $obj_oclass) == NHC.FOOD_CLASS && (cptr.ld1so((ptr), $permonst_mlet) != NHC.S_UNICORN || ((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.VEGGY || (cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE && cptr.ldI32o((obj), $obj_corpsenm) == NHC.PM_LICHEN)) ? 1 : 0)); }
@@ -160,6 +175,15 @@ export function cantwield(ptr) { return (((cptr.ldU64o((ptr), $permonst_mflags1)
 
 /** C: include/mondata.h — the `ceiling_hider(ptr)` macro body */
 export function ceiling_hider(ptr) { return (((cptr.ldU64o((ptr), $permonst_mflags1) & 256n) != 0n) && ((((cptr.ldU64o((ptr), $permonst_mflags1) & 16n) != 0n) && cptr.ld1so((ptr), $permonst_mlet) != NHC.S_MIMIC) || ((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n)) ? 1 : 0); }
+
+/** C: include/display.h — the `cmap_a_to_glyph(cmap_idx)` macro body */
+export function cmap_a_to_glyph(cmap_idx) { return (((((((cptr.ld1so3(svl, cptr.ldI16o((cmap_idx), $engr_engr_x), 756, cptr.ldI16o((cmap_idx), $engr_engr_y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? NHC.S_engrcorr : NHC.S_engroom)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0); }
+
+/** C: include/display.h — the `cmap_b_to_glyph(cmap_idx)` macro body */
+export function cmap_b_to_glyph(cmap_idx) { return (((((((cptr.ld1so3(svl, cptr.ldI16o((cmap_idx), $engr_engr_x), 756, cptr.ldI16o((cmap_idx), $engr_engr_y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? NHC.S_engrcorr : NHC.S_engroom)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0); }
+
+/** C: include/display.h — the `cmap_c_to_glyph(cmap_idx)` macro body */
+export function cmap_c_to_glyph(cmap_idx) { return (((((((cptr.ld1so3(svl, cptr.ldI16o((cmap_idx), $engr_engr_x), 756, cptr.ldI16o((cmap_idx), $engr_engr_y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? NHC.S_engrcorr : NHC.S_engroom)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0); }
 
 /** C: include/mondata.h — the `completelyburns(ptr)` macro body */
 export function completelyburns(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_PAPER_GOLEM, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_STRAW_GOLEM, 96)) ? 1 : 0); }
@@ -193,6 +217,12 @@ export function fixed_tele_trap(t) { return (((cptr.ldI32o((t), $trap_ttyp) & 31
 
 /** C: include/mondata.h — the `flaming(ptr)` macro body */
 export function flaming(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_SALAMANDER, 96)) ? 1 : 0); }
+
+/** C: include/mondata.h — the `flesh_petrifies(pm)` macro body */
+export function flesh_petrifies(pm) { return ((cptr.eq((pm), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((pm), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((pm), cptr.add(mons, NHC.PM_MEDUSA, 96)) ? 1 : 0); }
+
+/** C: include/display.h — the `glyph_is_body(glyph)` macro body */
+export function glyph_is_body(glyph) { return ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0); }
 
 /** C: include/display.h — the `glyph_is_body_piletop(glyph)` macro body */
 export function glyph_is_body_piletop(glyph) { return (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0); }
@@ -239,17 +269,29 @@ export function glyph_is_detected_male_monster(glyph) { return ((glyph) >= NHC.G
 /** C: include/display.h — the `glyph_is_explosion(glyph)` macro body */
 export function glyph_is_explosion(glyph) { return ((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0); }
 
+/** C: include/display.h — the `glyph_is_fem_statue(glyph)` macro body */
+export function glyph_is_fem_statue(glyph) { return ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0); }
+
 /** C: include/display.h — the `glyph_is_fem_statue_piletop(glyph)` macro body */
 export function glyph_is_fem_statue_piletop(glyph) { return (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0); }
 
 /** C: include/display.h — the `glyph_is_female_pet(glyph)` macro body */
 export function glyph_is_female_pet(glyph) { return ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0); }
 
+/** C: include/display.h — the `glyph_is_generic_object(glyph)` macro body */
+export function glyph_is_generic_object(glyph) { return (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? 1 : 0); }
+
 /** C: include/display.h — the `glyph_is_male_pet(glyph)` macro body */
 export function glyph_is_male_pet(glyph) { return ((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0); }
 
+/** C: include/display.h — the `glyph_is_male_statue(glyph)` macro body */
+export function glyph_is_male_statue(glyph) { return ((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? 1 : 0); }
+
 /** C: include/display.h — the `glyph_is_male_statue_piletop(glyph)` macro body */
 export function glyph_is_male_statue_piletop(glyph) { return (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0); }
+
+/** C: include/display.h — the `glyph_is_monster(glyph)` macro body */
+export function glyph_is_monster(glyph) { return ((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0))) ? 1 : 0); }
 
 /** C: include/display.h — the `glyph_is_normal_female_monster(glyph)` macro body */
 export function glyph_is_normal_female_monster(glyph) { return ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0); }
@@ -263,6 +305,12 @@ export function glyph_is_normal_male_monster(glyph) { return ((glyph) >= NHC.GLY
 /** C: include/display.h — the `glyph_is_normal_piletop_obj(glyph)` macro body */
 export function glyph_is_normal_piletop_obj(glyph) { return ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)) ? 1 : 0); }
 
+/** C: include/display.h — the `glyph_is_object(glyph)` macro body */
+export function glyph_is_object(glyph) { return (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? 1 : 0); }
+
+/** C: include/display.h — the `glyph_is_pet(glyph)` macro body */
+export function glyph_is_pet(glyph) { return (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0); }
+
 /** C: include/display.h — the `glyph_is_piletop_generic_obj(glyph)` macro body */
 export function glyph_is_piletop_generic_obj(glyph) { return ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0); }
 
@@ -271,6 +319,9 @@ export function glyph_is_ridden_female_monster(glyph) { return ((glyph) >= NHC.G
 
 /** C: include/display.h — the `glyph_is_ridden_male_monster(glyph)` macro body */
 export function glyph_is_ridden_male_monster(glyph) { return ((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0); }
+
+/** C: include/display.h — the `glyph_is_statue(glyph)` macro body */
+export function glyph_is_statue(glyph) { return (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? 1 : 0); }
 
 /** C: include/display.h — the `glyph_is_swallow(glyph)` macro body */
 export function glyph_is_swallow(glyph) { return ((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0); }
@@ -281,8 +332,35 @@ export function glyph_is_trap(glyph) { return ((glyph) >= ((NHC.GLYPH_CMAP_B_OFF
 /** C: include/display.h — the `glyph_is_warning(glyph)` macro body */
 export function glyph_is_warning(glyph) { return ((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < ((NHC.GLYPH_WARNING_OFF + 6) | 0) ? 1 : 0); }
 
+/** C: include/display.h — the `glyph_to_body_corpsenm(glyph)` macro body */
+export function glyph_to_body_corpsenm(glyph) { return ((((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_BODY_PILETOP_OFF) | 0) : (((glyph) - NHC.GLYPH_BODY_OFF) | 0)); }
+
+/** C: include/display.h — the `glyph_to_explosion(glyph)` macro body */
+export function glyph_to_explosion(glyph) { return (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0); }
+
+/** C: include/display.h — the `glyph_to_mon(glyph)` macro body */
+export function glyph_to_mon(glyph) { return (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))); }
+
+/** C: include/display.h — the `glyph_to_obj(glyph)` macro body */
+export function glyph_to_obj(glyph) { return (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))); }
+
+/** C: include/display.h — the `glyph_to_statue_corpsenm(glyph)` macro body */
+export function glyph_to_statue_corpsenm(glyph) { return ((((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0) : ((((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? (((glyph) - NHC.GLYPH_STATUE_FEM_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? (((glyph) - NHC.GLYPH_STATUE_MALE_OFF) | 0) : NHC.MAX_GLYPH)))); }
+
+/** C: include/display.h — the `glyph_to_swallow(glyph)` macro body */
+export function glyph_to_swallow(glyph) { return (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0); }
+
+/** C: include/display.h — the `glyph_to_trap(glyph)` macro body */
+export function glyph_to_trap(glyph) { return (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) && (glyph) < (((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? ((((((((((glyph) - ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) + NHC.S_arrow_trap) | 0) - NHC.S_arrow_trap) | 0) + 1) | 0)) : NHC.MAX_GLYPH); }
+
+/** C: include/display.h — the `glyph_to_warning(glyph)` macro body */
+export function glyph_to_warning(glyph) { return (((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < ((NHC.GLYPH_WARNING_OFF + 6) | 0)) ? (((glyph) - NHC.GLYPH_WARNING_OFF) | 0) : 0); }
+
 /** C: include/obj.h — the `greatest_erosion(otmp)` macro body */
 export function greatest_erosion(otmp) { return (((cptr.ldI32o((otmp), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((otmp), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((otmp), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((otmp), $obj_oeroded2) & 3) | 0); }
+
+/** C: include/mondata.h — the `grounded(ptr)` macro body */
+export function grounded(ptr) { return (!((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT) && (!((cptr.ldU64o((ptr), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz))) ? 1 : 0); }
 
 /** C: include/mextra.h — the `has_ebones(mon)` macro body */
 export function has_ebones(mon) { return (cptr.ldPtro((mon), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_ebones)) ? 1 : 0); }
@@ -344,6 +422,9 @@ export function is_bat(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_BAT, 
 /** C: include/obj.h — the `is_blade(otmp)` macro body */
 export function is_blade(otmp) { return (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_DAGGER && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_SABER ? 1 : 0); }
 
+/** C: include/obj.h — the `is_blunt_weapon(o)` macro body */
+export function is_blunt_weapon(o) { return ((cptr.ld1so((o), $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((o), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((o), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE)) && ((((cptr.ldI32o2(objects, cptr.ldI16o((o), $obj_otyp), 120, $objclass_oc_dir) & 7) | 0) & NHM.WHACK) != 0) ? 1 : 0); }
+
 /** C: include/obj.h — the `is_boots(otmp)` macro body */
 export function is_boots(otmp) { return (cptr.ld1so(otmp, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS ? 1 : 0); }
 
@@ -385,6 +466,9 @@ export function is_corrodeable(otmp) { return (((cptr.ldI32o2(objects, cptr.ldI1
 
 /** C: include/objclass.h — the `is_crackable(otmp)` macro body */
 export function is_crackable(otmp) { return (((cptr.ldI32o2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS ? 1 : 0); }
+
+/** C: include/objclass.h — the `is_damageable(otmp)` macro body */
+export function is_damageable(otmp) { return ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS) ? 1 : 0); }
 
 /** C: include/mondata.h — the `is_dlord(ptr)` macro body */
 export function is_dlord(ptr) { return (((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) && ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) ? 1 : 0); }
@@ -473,6 +557,9 @@ export function is_poisonable(otmp) { return ((cptr.ld1so(otmp, $obj_oclass) == 
 /** C: include/obj.h — the `is_pole(otmp)` macro body */
 export function is_pole(otmp) { return ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_LANCE || is_art(otmp, NHC.ART_SNICKERSNEE)) ? 1 : 0); }
 
+/** C: include/mondata.h — the `is_reviver(ptr)` macro body */
+export function is_reviver(ptr) { return ((cptr.eq((ptr), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_TROLL ? 1 : 0); }
+
 /** C: include/mondata.h — the `is_rider(ptr)` macro body */
 export function is_rider(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_PESTILENCE, 96)) ? 1 : 0); }
 
@@ -515,6 +602,9 @@ export function is_xport(ttyp) { return ((ttyp) >= NHC.TELEP_TRAP && (ttyp) <= N
 /** C: include/monst.h — the `ismnum(x)` macro body */
 export function ismnum(x) { return ((x) >= NHC.LOW_PM && (x) < NHC.NUMMONS ? 1 : 0); }
 
+/** C: include/mondata.h — the `likes_fire(ptr)` macro body */
+export function likes_fire(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || (cptr.eq(ptr, cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SALAMANDER, 96))) ? 1 : 0); }
+
 /** C: include/mondata.h — the `likes_lava(ptr)` macro body */
 export function likes_lava(ptr) { return (cptr.eq(ptr, cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SALAMANDER, 96)) ? 1 : 0); }
 
@@ -530,8 +620,14 @@ export function matching_launcher(a, l) { return ((l) && cptr.ld1so2(objects, cp
 /** C: include/hack.h — the `max(a, b)` macro body */
 export function max(a, b) { return ((a) > (b) ? (a) : (b)); }
 
+/** C: include/obj.h — the `mhealup(obj)` macro body */
+export function mhealup(obj) { return ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE || cptr.ldI16o((obj), $obj_otyp) == NHC.EGG || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN) && cptr.ldI32o((obj), $obj_corpsenm) == NHC.PM_NURSE ? 1 : 0); }
+
 /** C: include/hack.h — the `min(x, y)` macro body */
 export function min(x, y) { return ((x) < (y) ? (x) : (y)); }
+
+/** C: include/obj.h — the `mlevelgain(obj)` macro body */
+export function mlevelgain(obj) { return ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE || cptr.ldI16o((obj), $obj_otyp) == NHC.EGG || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN) && cptr.ldI32o((obj), $obj_corpsenm) == NHC.PM_WRAITH ? 1 : 0); }
 
 /** C: include/monst.h — the `mon_perma_blind(mon)` macro body */
 export function mon_perma_blind(mon) { return (!(cptr.ldI32o(mon, $monst_mcansee) & 1) && !(cptr.ldI32o(mon, $monst_mblinded) & 127) ? 1 : 0); }
@@ -542,17 +638,26 @@ export function mon_resistancebits(mon) { return (cptr.ld1uo(cptr.ldPtro((mon), 
 /** C: include/monst.h — the `mundisplaceable(mon)` macro body */
 export function mundisplaceable(mon) { return ((cptr.ldI32o((mon), $monst_ispriest) & 1) | 0 || (cptr.ldI32o((mon), $monst_isshk) & 1) | 0 || (cptr.ldI32o((mon), $monst_isgd) & 1) | 0 || cptr.eq(cptr.ldPtro((mon), $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)) || cptr.ldI32o((mon), $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id) ? 1 : 0); }
 
+/** C: include/mondata.h — the `nonliving(ptr)` macro body */
+export function nonliving(ptr) { return (((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX) ? 1 : 0); }
+
 /** C: include/display.h — the `obj_is_generic(obj)` macro body */
 export function obj_is_generic(obj) { return (!(cptr.ldI32o((obj), $obj_dknown) & 1) && (cptr.ld1so((obj), $obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_SPELL))) ? 1 : 0); }
 
 /** C: include/obj.h — the `ofood(o)` macro body */
 export function ofood(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.CORPSE || cptr.ldI16o((o), $obj_otyp) == NHC.EGG || cptr.ldI16o((o), $obj_otyp) == NHC.TIN ? 1 : 0); }
 
+/** C: include/obj.h — the `pair_of(o)` macro body */
+export function pair_of(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.LENSES || (cptr.ld1so(o, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_GLOVES) || (cptr.ld1so(o, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS) ? 1 : 0); }
+
 /** C: include/mondata.h — the `passes_rocks(ptr)` macro body */
 export function passes_rocks(ptr) { return (((cptr.ldU64o((ptr), $permonst_mflags1) & 8n) != 0n) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1048576n) != 0n) ? 1 : 0); }
 
 /** C: include/mondata.h — the `pm_invisible(ptr)` macro body */
 export function pm_invisible(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_STALKER, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_BLACK_LIGHT, 96)) ? 1 : 0); }
+
+/** C: include/mondata.h — the `slimeproof(ptr)` macro body */
+export function slimeproof(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || (cptr.eq((ptr), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0); }
 
 /** C: include/engrave.h — the `spot_shows_engravings(x, y)` macro body */
 export function spot_shows_engravings(x, y) { return (cptr.ld1so3(svl, (x), 756, (y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR || cptr.ld1so3(svl, (x), 756, (y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ICE || cptr.ld1so3(svl, (x), 756, (y), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM ? 1 : 0); }
@@ -583,6 +688,9 @@ export function vampshifted(mon) { return ((cptr.ldI16o(((mon)), $monst_cham) ==
 
 /** C: include/mondata.h — the `vegan(ptr)` macro body */
 export function vegan(ptr) { return (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((ptr), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((ptr), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((ptr), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0); }
+
+/** C: include/mondata.h — the `vegetarian(ptr)` macro body */
+export function vegetarian(ptr) { return ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((ptr), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((ptr), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((ptr), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((ptr), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))) ? 1 : 0); }
 
 /** C: include/mondata.h — the `webmaker(ptr)` macro body */
 export function webmaker(ptr) { return (cptr.eq((ptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) ? 1 : 0); }

@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_boots, is_elven_weapon, is_gloves, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, matching_launcher, touch_petrifies } from './nhmacrofn.js';
+import { ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_elven_weapon, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, pair_of, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
@@ -318,7 +318,7 @@ function ready_ok(obj) {
     if (cptr.eq(obj, uwep.v) || (cptr.eq(obj, uswapwep.v) && cptr.ld1so(u, $you_twoweap)))
         return (cptr.ldI64o(obj, $obj_quan) == 1n) ? NHC.GETOBJ_DOWNPLAY : NHC.GETOBJ_SUGGEST;
     if (is_ammo(obj)) {
-        return ((uwep.v && (is_ammo(obj) && matching_launcher(obj, uwep.v))) || (uswapwep.v && (is_ammo(obj) && matching_launcher(obj, uswapwep.v)))) ? NHC.GETOBJ_SUGGEST : NHC.GETOBJ_DOWNPLAY;
+        return ((uwep.v && ammo_and_launcher(obj, uwep.v)) || (uswapwep.v && ammo_and_launcher(obj, uswapwep.v))) ? NHC.GETOBJ_SUGGEST : NHC.GETOBJ_DOWNPLAY;
     } else if (is_launcher(obj)) {
         return NHC.GETOBJ_DOWNPLAY;
     } else {
@@ -404,7 +404,7 @@ export function* dowield() {
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __sl30);
             } else {
-                let use_plural = schar((is_plural(uquiver.v) || (cptr.ldI16o((uquiver.v), $obj_otyp) == NHC.LENSES || is_gloves(uquiver.v) || is_boots(uquiver.v)) ? 1 : 0));
+                let use_plural = schar((is_plural(uquiver.v) || pair_of(uquiver.v) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl31, !use_plural ? __sl32 : __sl33, !use_plural ? __sl34 : __sl35);
             }
             if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) != 121) {
@@ -528,7 +528,7 @@ export function* doquiver_core(verb) {
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __sl48);
             } else {
-                let use_plural = schar((is_plural(uwep.v) || (cptr.ldI16o((uwep.v), $obj_otyp) == NHC.LENSES || is_gloves(uwep.v) || is_boots(uwep.v)) ? 1 : 0));
+                let use_plural = schar((is_plural(uwep.v) || pair_of(uwep.v) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl49, !use_plural ? __sl32 : __sl33, !use_plural ? __sl34 : __sl35);
             }
             if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) != 121) {
@@ -554,7 +554,7 @@ export function* doquiver_core(verb) {
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __sl48);
             } else {
-                let use_plural = schar((is_plural(uswapwep.v) || (cptr.ldI16o((uswapwep.v), $obj_otyp) == NHC.LENSES || is_gloves(uswapwep.v) || is_boots(uswapwep.v)) ? 1 : 0));
+                let use_plural = schar((is_plural(uswapwep.v) || pair_of(uswapwep.v) ? 1 : 0));
                 void cptr.sprintf(cptr.decay(qbuf), __sl54, !use_plural ? __sl55 : __sl56, cptr.ld1so(u, $you_twoweap) ? __sl57 : __sl58, !use_plural ? __sl34 : __sl35);
             }
             if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) != 121) {

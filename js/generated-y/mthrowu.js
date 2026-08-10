@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { BZ_VALID_ADTYP, canspotmon, eyecount, is_ammo, is_flimsy, is_launcher, is_mplayer, is_poisonable, is_pole, is_unicorn, is_vampshifter, matching_launcher, obj_is_generic, passes_rocks, stone_missile, touch_petrifies, weirdnonliving } from './nhmacrofn.js';
+import { BZ_VALID_ADTYP, ammo_and_launcher, canspotmon, eyecount, is_ammo, is_flimsy, is_launcher, is_mplayer, is_poisonable, is_pole, is_unicorn, is_vampshifter, matching_launcher, nonliving, obj_is_generic, passes_rocks, stone_missile, touch_petrifies } from './nhmacrofn.js';
 import { Acid_resistance, Blind, BlindedTimeout, Deaf, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Sleep_resistance, Stone_resistance, Stoned, U_AP_TYPE, Underwater, Upolyd, nh_delay_output } from './nhprop.js';
 import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { objects } from './objects.js';
@@ -459,7 +459,7 @@ export function m_has_launcher_and_ammo(mtmp) {
     if (mwep && is_launcher(mwep)) {
         let otmp;
         for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
-            if ((is_ammo(otmp) && matching_launcher(otmp, mwep)))
+            if (ammo_and_launcher(otmp, mwep))
                 return 1;
     }
     return 0;
@@ -570,9 +570,9 @@ function* monmulti(mtmp, otmp, mwep) {
             multishot++;
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ELVEN_ARROW && !(cptr.ldI32o(otmp, $obj_cursed) & 1))
             multishot++;
-        if (mwep && cptr.ldI16o(mwep, $obj_otyp) == NHC.ELVEN_BOW && (is_ammo(otmp) && matching_launcher(otmp, mwep)) && !(cptr.ldI32o(mwep, $obj_cursed) & 1))
+        if (mwep && cptr.ldI16o(mwep, $obj_otyp) == NHC.ELVEN_BOW && ammo_and_launcher(otmp, mwep) && !(cptr.ldI32o(mwep, $obj_cursed) & 1))
             multishot++;
-        if ((is_ammo(otmp) && matching_launcher(otmp, mwep)) && cptr.ld1so(mwep, $obj_spe) > 1)
+        if (ammo_and_launcher(otmp, mwep) && cptr.ld1so(mwep, $obj_spe) > 1)
             multishot = Number(BigInt.asIntN(32, BigInt(multishot) + BigInt((yield* rounddiv(BigInt(cptr.ld1so(mwep, $obj_spe)), 3)))));
         multishot = (rng_log_enabled() ? (rng_log_set_caller(__sl106, 238, __sl126), rnd(multishot)) : rnd(multishot));
         multishot = (multishot + multishot_class_bonus((cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)), otmp, mwep)) | 0;
@@ -602,7 +602,7 @@ function* monshoot(mtmp, otmp, mwep) {
             onm = (yield* singular(otmp, xname));
             onm = obj_is_pname(otmp) ? (yield* the(onm)) : (yield* an(onm));
         }
-        cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, schar(((is_ammo(otmp) && matching_launcher(otmp, mwep)) ? 1 : 0)));
+        cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, schar((ammo_and_launcher(otmp, mwep) ? 1 : 0)));
         void cptr.strcpy(cptr.decay(trgbuf), mtarg ? (yield* some_mon_nam(mtarg)) : __sl128);
         set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         (yield* pline(__sl129, (yield* Monnam(mtmp)), cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl130 : __sl131, onm, mtarg ? __sl132 : __sl128, cptr.decay(trgbuf)));
@@ -727,7 +727,7 @@ export function* ohitmon(mtmp, otmp, range, verbose) {
             cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - damage) | 0);
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                 if (vis || (verbose && !cptr.ldPtro(gm, $instance_globals_m_mtarget)))
-                    (yield* pline(__sl150, (yield* Monnam(mtmp)), ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) || is_vampshifter(mtmp) || !canspotmon(mtmp)) ? __sl151 : __sl152));
+                    (yield* pline(__sl150, (yield* Monnam(mtmp)), (nonliving(cptr.ldPtro(mtmp, $monst_data)) || is_vampshifter(mtmp) || !canspotmon(mtmp)) ? __sl151 : __sl152));
                 if (!cptr.ld1so(svc, $context_info_mon_moving) && (cptr.ldI16o(otmp, $obj_otyp) != NHC.BOULDER || range >= 0 || (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0))
                     (yield* xkilled(mtmp, NHM.XKILL_NOMSG));
                 else
@@ -1101,7 +1101,7 @@ export function* thrwmm(mtmp, mtarg) {
     if (!ispole && m_lined_up(mtarg, mtmp)) {
         let chance = (((NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my))) | 0) > 1 ? ((NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my))) | 0) : 1);
         if (!(cptr.ldI32o(mtarg, $monst_mflee) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl106, 997, __sl192), rn2(chance)) : rn2(chance))) {
-            if ((is_ammo(otmp) && matching_launcher(otmp, mwep)) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my)) > NHM.PET_MISSILE_RANGE2)
+            if (ammo_and_launcher(otmp, mwep) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my)) > NHM.PET_MISSILE_RANGE2)
                 return NHM.M_ATTK_MISS;
             cptr.stPtro(gm, $instance_globals_m_mtarget, mtarg);
             cptr.stPtro(gm, $instance_globals_m_marcher, mtmp);

@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_FURNITURE, Is_candle, age_is_relative, bimanual, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mcorpsenm, ignitable, is_axe, is_boots, is_flimsy, is_floater, is_gloves, is_graystone, is_pick, is_pole, is_rider, is_unicorn, is_vampshifter, is_wet_towel, is_whirly, m_next2u, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
+import { IS_FURNITURE, Is_candle, age_is_relative, bimanual, canspotmon, glyph_is_cmap, glyph_is_monster, glyph_is_statue, glyph_to_obj, has_mcorpsenm, ignitable, is_axe, is_boots, is_flimsy, is_floater, is_gloves, is_graystone, is_pick, is_pole, is_rider, is_unicorn, is_vampshifter, is_wet_towel, is_whirly, m_next2u, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Blinded, BlindedTimeout, Conflict, Deaf, EJumping, Flying, Free_action, Fumbling, Glib, HBlinded, HConfusion, HDeaf, HHallucination, HJumping, HStun, Half_physical_damage, Hallucination, Jumping, Levitation, Passes_walls, Protection_from_shape_changers, See_invisible, Sick, Slimed, Stone_resistance, Stoned, Strangled, Ugender, Underwater, Upolyd, Vomiting, Wounded_legs, create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { bhit, bhitm, bhito, bhitpile, get_obj_location, obj_resists, release_hold, zappable, zapsetup, zapwrapup, zapyourself } from './zap.js';
 import { c_color_names, c_common_strings, c_obj_colors, cg, disp, flags, gb, gc, gh, gi, gj, gm, gn, go, gp, gs, gt, gu, gv, gy, hands_obj, iflags, svc, svd, svl, svm, u, uarmg, ublindf, uchain, uwep, xdir, ydir, ynchars } from './decl.js';
@@ -3168,9 +3168,9 @@ function find_poleable_mon(pos) {
             if (!get_valid_polearm_position(x, y))
                 continue;
             glyph = glyph_at(x, y);
-            if (!impaired && ((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) && (mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (cptr.ld1so(mtmp, $monst_mtame) || ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && cptr.ld1so(flags, $flag_confirm))))
+            if (!impaired && glyph_is_monster(glyph) && (mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (cptr.ld1so(mtmp, $monst_mtame) || ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && cptr.ld1so(flags, $flag_confirm))))
                 continue;
-            if ((((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) || ((glyph) == NHC.GLYPH_INVIS_OFF) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)))) && (!(((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || impaired)) {
+            if ((glyph_is_monster(glyph) || ((glyph) == NHC.GLYPH_INVIS_OFF) || glyph_is_statue(glyph)) && (!glyph_is_statue(glyph) || impaired)) {
                 if (cptr.ldI16(mpos))
                     return 0;
                 cptr.stI16(mpos, x), cptr.stI16o(mpos, $nhcoord_y, y);
@@ -3187,7 +3187,7 @@ function find_poleable_mon(pos) {
 function get_valid_polearm_position(x, y) {
     let glyph;
     glyph = glyph_at(x, y);
-    return schar((isok(x, y) && dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) >= cptr.ldI32(gp) && dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(gp, $instance_globals_p_polearm_range_max) && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) && (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) || ((glyph) == NHC.GLYPH_INVIS_OFF) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)))))) ? 1 : 0));
+    return schar((isok(x, y) && dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) >= cptr.ldI32(gp) && dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(gp, $instance_globals_p_polearm_range_max) && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) && (glyph_is_monster(glyph) || ((glyph) == NHC.GLYPH_INVIS_OFF) || glyph_is_statue(glyph)))) ? 1 : 0));
 }
 
 /** C ref: apply.c:3334 — @param {CInt} on_off */
@@ -3299,7 +3299,7 @@ export function* use_pole(obj, autohit) {
         else
             (yield* pline(__sl455));
         return NHM.ECMD_FAIL;
-    } else if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && !(((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) || ((glyph) == NHC.GLYPH_INVIS_OFF) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))))) {
+    } else if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && !(glyph_is_monster(glyph) || ((glyph) == NHC.GLYPH_INVIS_OFF) || glyph_is_statue(glyph))) {
         (yield* You(cptr.decay(cant_see_spot)));
         return NHM.ECMD_FAIL;
     } else if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.COULD_SEE) != 0)) {
@@ -3329,7 +3329,7 @@ export function* use_pole(obj, autohit) {
             }
         }
         void (yield* thitmonst(mtmp, uwep.v));
-    } else if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) && sobj_at(NHC.STATUE, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+    } else if (glyph_is_statue(glyph) && sobj_at(NHC.STATUE, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
         let t = t_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
         if (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP && (yield* activate_statue_trap(t, cptr.ldI16o(t, $trap_tx), cptr.ldI16o(t, $trap_ty), 0))) {
             ;
@@ -3339,7 +3339,7 @@ export function* use_pole(obj, autohit) {
         }
     } else {
         void (yield* unmap_invisible(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
-        if ((((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) ? (((glyph) - (glyph_is_piletop_generic_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) ? (((glyph) - (glyph_is_normal_piletop_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) == NHC.BOULDER && sobj_at(NHC.BOULDER, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+        if (glyph_to_obj(glyph) == NHC.BOULDER && sobj_at(NHC.BOULDER, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
             (yield* pline(cptr.decay(thump), __sl459));
             (yield* wake_nearto(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 25));
         } else if (!accessible(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || ((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 756, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 756, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR)) {

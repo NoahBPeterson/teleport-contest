@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_FURNITURE, IS_TREE, IS_WALL, bimanual, greatest_erosion, is_axe, is_floater, is_hole, is_magical_trap, is_pick, is_pit, is_watch, is_whirly, undestroyable_trap } from './nhmacrofn.js';
+import { IS_FURNITURE, IS_TREE, IS_WALL, bimanual, greatest_erosion, grounded, is_axe, is_floater, is_hole, is_magical_trap, is_pick, is_pit, is_watch, is_whirly, undestroyable_trap } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Fumbling, Half_physical_damage, Hallucination, Invis, Levitation, Underwater, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { WIN_MESSAGE, disp, flags, gd, gm, gn, go, gu, gv, gy, iflags, svc, svd, svl, svm, u, uarmf, uarmh, uball, uchain, uwep, xdir, ydir } from './decl.js';
 import { cmd_from_dir, cmdq_add_ec, cmdq_add_key, confdir, dxdy_moveok, getdir, isok, movecmd, set_occupation, xytodir } from './cmd.js';
@@ -957,7 +957,7 @@ export function* digactualhole(x, y, madeby, ttyp) {
             if (newobjs)
                 (yield* impact_drop(null, x, y, 0));
             if (mtmp) {
-                if (!(!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) && !is_floater(cptr.ldPtro(mtmp, $monst_data)) && (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz)))) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize) >= NHM.MZ_HUGE)
+                if (!grounded(cptr.ldPtro(mtmp, $monst_data)) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize) >= NHM.MZ_HUGE)
                     return;
                 if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
                     return;

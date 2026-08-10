@@ -12,7 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
-import { glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_a, glyph_is_cmap_altar, glyph_is_cmap_b, glyph_is_cmap_c, glyph_is_cmap_gehennom, glyph_is_cmap_knox, glyph_is_cmap_main, glyph_is_cmap_mines, glyph_is_cmap_sokoban, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_explosion, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_warning } from './nhmacrofn.js';
+import { glyph_is_body, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_a, glyph_is_cmap_altar, glyph_is_cmap_b, glyph_is_cmap_c, glyph_is_cmap_gehennom, glyph_is_cmap_knox, glyph_is_cmap_main, glyph_is_cmap_mines, glyph_is_cmap_sokoban, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_explosion, glyph_is_fem_statue, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue, glyph_is_male_statue_piletop, glyph_is_monster, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_object, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_statue, glyph_is_swallow, glyph_is_warning, glyph_to_body_corpsenm, glyph_to_explosion, glyph_to_mon, glyph_to_obj, glyph_to_statue_corpsenm, glyph_to_swallow } from './nhmacrofn.js';
 import { gc, gs, iflags } from './decl.js';
 import { add_custom_urep_entry, set_map_u, unicode_val } from './utf8map.js';
 import { nh_snprintf, strncmpi, unicodeval_to_utf8str } from './hacklib.js';
@@ -320,9 +320,9 @@ export function glyph_to_cmap(glyph) {
     else if (glyph_is_cmap_zap(glyph))
         return ((((glyph - NHC.GLYPH_ZAP_OFF) | 0) % 4) + NHC.S_vbeam) | 0;
     else if (glyph_is_swallow(glyph))
-        return ((glyph_is_swallow(glyph) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0) + NHC.S_sw_tl) | 0;
+        return (glyph_to_swallow(glyph) + NHC.S_sw_tl) | 0;
     else if (glyph_is_explosion(glyph))
-        return ((glyph_is_explosion(glyph) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
+        return (glyph_to_explosion(glyph) + NHC.S_expl_tl) | 0;
     else
         return NHC.MAXPCHARS;
 }
@@ -344,11 +344,11 @@ function* glyph_find_core(id, findwhat) {
                         do_callback = 1;
                     break;
                     case NHC.find_pm:
-                    if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) && cptr.ld1so2(mons, (glyph_is_normal_female_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 96, $permonst_mlet) == cptr.ldI32o(findwhat, $find_struct_val))
+                    if (glyph_is_monster(glyph) && cptr.ld1so2(mons, glyph_to_mon(glyph), 96, $permonst_mlet) == cptr.ldI32o(findwhat, $find_struct_val))
                         do_callback = 1;
                     break;
                     case NHC.find_oc:
-                    if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))) && (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) ? (((glyph) - (glyph_is_piletop_generic_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) ? (((glyph) - (glyph_is_normal_piletop_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) == cptr.ldI32o(findwhat, $find_struct_val))
+                    if (glyph_is_object(glyph) && glyph_to_obj(glyph) == cptr.ldI32o(findwhat, $find_struct_val))
                         do_callback = 1;
                     break;
                     case NHC.find_glyph:
@@ -840,9 +840,9 @@ function* parse_id(id, findwhat) {
                 skip_base = 0;
                 skip_this_one = 0;
                 cptr.st1o(cptr.decay(buf[0]), 0, cptr.st1o(cptr.decay(buf[1]), 0, cptr.st1o(cptr.decay(buf[2]), 0, cptr.st1o(cptr.decay(buf[3]), 0, 0, 1), 1), 1), 1);
-                if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
+                if (glyph_is_monster(glyph)) {
                     buf2 = __sl8;
-                    buf3 = cptr.ldPtro2(monsdump, (glyph_is_normal_female_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 16, $enum_dump_nm);
+                    buf3 = cptr.ldPtro2(monsdump, glyph_to_mon(glyph), 16, $enum_dump_nm);
                     if (glyph_is_normal_male_monster(glyph)) {
                         buf2 = __sl9;
                     } else if (glyph_is_normal_female_monster(glyph)) {
@@ -863,20 +863,20 @@ function* parse_id(id, findwhat) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))) {
+                } else if (glyph_is_body(glyph)) {
                     buf2 = glyph_is_body_piletop(glyph) ? __sl18 : __sl19;
-                    buf3 = cptr.ldPtro2(monsdump, (glyph_is_body_piletop(glyph) ? (((glyph) - NHC.GLYPH_BODY_PILETOP_OFF) | 0) : (((glyph) - NHC.GLYPH_BODY_OFF) | 0)), 16, $enum_dump_nm);
+                    buf3 = cptr.ldPtro2(monsdump, glyph_to_body_corpsenm(glyph), 16, $enum_dump_nm);
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)))) {
-                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __sl20 : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)) ? __sl21 : (glyph_is_male_statue_piletop(glyph) ? __sl22 : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) ? __sl23 : __sl8)));
-                    buf3 = cptr.ldPtro2(monsdump, (glyph_is_fem_statue_piletop(glyph) ? (((glyph) - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0) : (glyph_is_male_statue_piletop(glyph) ? (((glyph) - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)) ? (((glyph) - NHC.GLYPH_STATUE_FEM_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) ? (((glyph) - NHC.GLYPH_STATUE_MALE_OFF) | 0) : NHC.MAX_GLYPH)))), 16, $enum_dump_nm);
+                } else if (glyph_is_statue(glyph)) {
+                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __sl20 : (glyph_is_fem_statue(glyph) ? __sl21 : (glyph_is_male_statue_piletop(glyph) ? __sl22 : (glyph_is_male_statue(glyph) ? __sl23 : __sl8)));
+                    buf3 = cptr.ldPtro2(monsdump, glyph_to_statue_corpsenm(glyph), 16, $enum_dump_nm);
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
-                    i = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) ? (((glyph) - (glyph_is_piletop_generic_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) ? (((glyph) - (glyph_is_normal_piletop_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
+                } else if (glyph_is_object(glyph)) {
+                    i = glyph_to_obj(glyph);
                     if (((i > NHC.SCR_STINKING_CLOUD) && (i < NHC.SCR_MAIL)) || ((i > NHC.WAN_LIGHTNING) && (i < NHC.GOLD_PIECE)))
                         skip_this_one = 1;
                     if (!skip_this_one) {
@@ -951,7 +951,7 @@ function* parse_id(id, findwhat) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
                     } else if (glyph_is_swallow(glyph)) {
                         j = (glyph - NHC.GLYPH_SWALLOW_OFF) | 0;
-                        cmap = (glyph_is_swallow(glyph) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0);
+                        cmap = glyph_to_swallow(glyph);
                         mnum = (j / ((((NHC.S_sw_br - NHC.S_sw_tl) | 0) + 1) | 0)) | 0;
                         void cptr.strcpy(cptr.decay(buf[3]), __sl45);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtro2(monsdump, mnum, 16, $enum_dump_nm));
@@ -963,7 +963,7 @@ function* parse_id(id, findwhat) {
                         let expl;
                         j = (glyph - NHC.GLYPH_EXPLODE_OFF) | 0;
                         expl = (j / ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) | 0;
-                        cmap = ((glyph_is_explosion(glyph) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
+                        cmap = (glyph_to_explosion(glyph) + NHC.S_expl_tl) | 0;
                         i = (cmap - NHC.S_expl_tl) | 0;
                         nh_snprintf(__sl41, 1082, cptr.decay(buf[2]), 128n, __sl47, cptr.ldPtro(__static_parse_id_expl_type_texts, expl, 8));
                         buf2 = cptr.decay(buf[2]);

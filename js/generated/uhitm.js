@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { bimanual, canspotmon, cant_drown, cantwield, completelyburns, completelyrots, flaming, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_warning, greatest_erosion, helpless, is_ammo, is_axe, is_blade, is_flimsy, is_floater, is_launcher, is_longworm, is_missile, is_plural, is_poisonable, is_pole, is_rider, is_shield, is_vampshifter, is_watch, is_weptool, is_wet_towel, is_whirly, ismnum, m_next2u, matching_launcher, passes_rocks, stone_missile, touch_petrifies, troll_baned, weirdnonliving } from './nhmacrofn.js';
+import { ammo_and_launcher, bimanual, canspotmon, cant_drown, cantwield, completelyburns, completelyrots, flaming, glyph_is_cmap, glyph_is_monster, glyph_is_object, glyph_is_warning, glyph_to_mon, greatest_erosion, helpless, is_ammo, is_axe, is_blade, is_blunt_weapon, is_flimsy, is_floater, is_launcher, is_longworm, is_missile, is_plural, is_poisonable, is_pole, is_rider, is_shield, is_vampshifter, is_watch, is_weptool, is_wet_towel, is_whirly, ismnum, m_next2u, nonliving, passes_rocks, slimeproof, stone_missile, touch_petrifies, troll_baned } from './nhmacrofn.js';
 import { Acid_resistance, Amphibious, Antimagic, Blind, Blind_telepat, BlindedTimeout, Breathless, Cold_resistance, Deaf, Detect_monsters, Drain_resistance, Fire_resistance, Flying, Free_action, Fumbling, HConfusion, HFast, HStun, Half_physical_damage, Hallucination, Invisible, Levitation, Luck, Protection_from_shape_changers, Punished, SYSOPT_SEDUCE, See_invisible, Shock_resistance, Sick, Sleep_resistance, Slimed, Slow_digestion, Stone_resistance, Stoned, Swimming, Teleport_control, Unchanging, Underwater, Upolyd, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, disp, flags, ga, gb, gc, gi, gm, gn, go, gs, gt, gu, gv, gy, svc, svd, svk, svl, svm, svr, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uright, uswapwep, uwep, xdir, ydir } from './decl.js';
 import { cloneu, could_seduce, diseasemu, doseduce, getmattk, hitmsg, magic_negation, mdamageu, mpoisons_subj, mtrapped_in_pit, u_slip_free, u_slow_down } from './mhitu.js';
@@ -1226,7 +1226,7 @@ function hmon_hitmon_weapon_melee(hmd, mon, obj) {
             cptr.st1o(hmd, $_hitmon_data_train_weapon_skill, 1);
     }
     if (cptr.ldI32o(hmd, $_hitmon_data_thrown) == NHC.HMON_THROWN && (is_ammo(obj) || is_missile(obj))) {
-        if ((is_ammo(obj) && matching_launcher(obj, uwep.v))) {
+        if (ammo_and_launcher(obj, uwep.v)) {
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && cptr.ldI16o(obj, $obj_otyp) == NHC.YA && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.YUMI)
                 (cptr.stI32(hmd, cptr.ldI32(hmd) + 1)) - (1);
             else if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) && cptr.ldI16o(obj, $obj_otyp) == NHC.ELVEN_ARROW && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.ELVEN_BOW)
@@ -1242,7 +1242,7 @@ function hmon_hitmon_weapon_melee(hmd, mon, obj) {
 
 /** C ref: uhitm.c:1070 — @param {CPtr} hmd @param {CPtr} mon @param {CPtr} obj */
 function hmon_hitmon_weapon(hmd, mon, obj) {
-    if (is_launcher(obj) || (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && (is_missile(obj) || is_ammo(obj))) || (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && !cptr.ldPtro(u, $you_usteed) && is_pole(obj) && !is_art(obj, NHC.ART_SNICKERSNEE)) || (is_ammo(obj) && (cptr.ldI32o(hmd, $_hitmon_data_thrown) != NHC.HMON_THROWN || !(is_ammo(obj) && matching_launcher(obj, uwep.v))))) {
+    if (is_launcher(obj) || (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && (is_missile(obj) || is_ammo(obj))) || (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && !cptr.ldPtro(u, $you_usteed) && is_pole(obj) && !is_art(obj, NHC.ART_SNICKERSNEE)) || (is_ammo(obj) && (cptr.ldI32o(hmd, $_hitmon_data_thrown) != NHC.HMON_THROWN || !ammo_and_launcher(obj, uwep.v)))) {
         hmon_hitmon_weapon_ranged(hmd, mon, obj);
     } else {
         hmon_hitmon_weapon_melee(hmd, mon, obj);
@@ -1518,7 +1518,7 @@ function hmon_hitmon_dmg_recalc(hmd, obj) {
     let absbonus;
     if (cptr.ld1so(hmd, $_hitmon_data_get_dmg_bonus)) {
         dmgbonus = cptr.ld1so(u, $you_udaminc);
-        if (cptr.ldI32o(hmd, $_hitmon_data_thrown) != NHC.HMON_THROWN || !obj || !uwep.v || !(is_ammo(obj) && matching_launcher(obj, uwep.v))) {
+        if (cptr.ldI32o(hmd, $_hitmon_data_thrown) != NHC.HMON_THROWN || !obj || !uwep.v || !ammo_and_launcher(obj, uwep.v)) {
             strbonus = dbon();
             absbonus = Math.abs(strbonus);
             if (cptr.ldI32o(hmd, $_hitmon_data_twohits))
@@ -1530,7 +1530,7 @@ function hmon_hitmon_dmg_recalc(hmd, obj) {
     }
     if (cptr.ld1so(hmd, $_hitmon_data_use_weapon_skill)) {
         let skillwep = obj;
-        if (((obj) && is_ammo(obj)) && (is_ammo(obj) && matching_launcher(obj, uwep.v)))
+        if (((obj) && is_ammo(obj)) && ammo_and_launcher(obj, uwep.v))
             skillwep = uwep.v;
         dmgbonus = (dmgbonus + weapon_dam_bonus(skillwep)) | 0;
         if (cptr.ld1so(hmd, $_hitmon_data_train_weapon_skill)) {
@@ -2131,7 +2131,7 @@ export function mhitm_ad_drli(magr, mattk, mdef, mhm) {
             }
             cptr.stI32o(mdef, $monst_mhp, (cptr.ldI32o(mdef, $monst_mhp) - cptr.ldI32(mhm)) | 0);
             if ((cptr.ldI32o((mdef), $monst_mhp) < 1) || !cptr.ld1uo(mdef, $monst_m_lev)) {
-                pline(__sl151, Monnam(mdef), (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mdef, $monst_data))) ? __sl152 : __sl153);
+                pline(__sl151, Monnam(mdef), nonliving(cptr.ldPtro(mdef, $monst_data)) ? __sl152 : __sl153);
                 xkilled(mdef, NHM.XKILL_NOMSG);
             } else
                 (cptr.st1o(mdef, $monst_m_lev, cptr.ld1uo(mdef, $monst_m_lev) + -1)) - (-1);
@@ -2938,7 +2938,7 @@ export function mhitm_ad_slim(magr, mattk, mdef, mhm) {
     if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (negated)
             return;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3537, __sl255), rn2(4)) : rn2(4)) && !(cptr.eq((pd), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(pd) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3537, __sl255), rn2(4)) : rn2(4)) && !slimeproof(pd)) {
             if (!munslime(mdef, 1) && !(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
                 You(__sl256, mon_nam(mdef));
                 if (newcham(mdef, cptr.add(mons, NHC.PM_GREEN_SLIME, 96), NHM.NO_NC_FLAGS))
@@ -2973,7 +2973,7 @@ export function mhitm_ad_slim(magr, mattk, mdef, mhm) {
     } else {
         if (negated)
             return;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3579, __sl255), rn2(4)) : rn2(4)) && !(cptr.eq((pd), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(pd) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 3579, __sl255), rn2(4)) : rn2(4)) && !slimeproof(pd)) {
             if (!munslime(mdef, 0) && !(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
                 let ncflags = NHM.NO_NC_FLAGS;
                 if (cptr.ld1so(gv, $instance_globals_v_vis) && canseemon(mdef))
@@ -4353,7 +4353,7 @@ export function mhitm_knockback(magr, mdef, mattk, hitflags, weapon_used) {
         return 0;
     if (!(cptr.ld1uo(cptr.ldPtro(magr, $monst_data), $permonst_msize) > ((cptr.ld1uo(cptr.ldPtro(mdef, $monst_data), $permonst_msize) + 1) | 0)))
         return 0;
-    if (wep && (is_flimsy(wep) || !((cptr.ld1so((wep), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(wep)) && ((((cptr.ldI32o2(objects, cptr.ldI16o((wep), $obj_otyp), 120, $objclass_oc_dir) & 7) | 0) & NHM.WHACK) != 0))))
+    if (wep && (is_flimsy(wep) || !is_blunt_weapon(wep)))
         return 0;
     if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 1048576n) != 0n))
         return 0;
@@ -5159,7 +5159,7 @@ export function that_is_a_mimic(mtmp, mimic_flags) {
             let sym = glyph_to_cmap(glyph);
             if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && sym == NHC.S_trapped_chest))
                 nh_snprintf(__sl447, 6227, cptr.decay(fmtbuf), 256n, __sl448, cptr.ldPtro2(defsyms, sym, 24, $symdef_explanation));
-        } else if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
+        } else if (glyph_is_object(glyph)) {
             let fakeobj;
             let otmp_name;
             let otmp = cptr.box(null);
@@ -5170,9 +5170,9 @@ export function that_is_a_mimic(mtmp, mimic_flags) {
                 cptr.st1o(otmp.v, $obj_where, NHM.OBJ_FREE);
                 dealloc_obj(otmp.v);
             }
-        } else if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
+        } else if (glyph_is_monster(glyph)) {
             let mtmp_name;
-            let mndx = (glyph_is_normal_female_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS))))))));
+            let mndx = glyph_to_mon(glyph);
             (__builtin_expect(BigInt((!(mndx >= NHC.LOW_PM && mndx <= NHC.HIGH_PM))), 0n) ? __assert_rtn(__sl447, __sl0, 6247, __sl454) : void 0);
             mtmp_name = pmname(cptr.add(mons, mndx, 96), Mgender(mtmp));
             nh_snprintf(__sl447, 6250, cptr.decay(fmtbuf), 256n, __sl455, mtmp_name);

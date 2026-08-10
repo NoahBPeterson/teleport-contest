@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_FURNITURE, IS_TREE, IS_WALL, canspotmon, ceiling_hider, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_warning, has_mgivenname, helpless, is_blade, is_door_mappear, is_flimsy, is_floater, is_pick, is_pit, is_rider, is_weptool, is_whirly, likes_lava, m_next2u, mundisplaceable } from './nhmacrofn.js';
+import { IS_FURNITURE, IS_TREE, IS_WALL, canspotmon, ceiling_hider, glyph_is_cmap, glyph_is_monster, glyph_is_statue, glyph_is_warning, glyph_to_obj, grounded, has_mgivenname, helpless, is_blade, is_door_mappear, is_flimsy, is_floater, is_pick, is_pit, is_rider, is_weptool, is_whirly, likes_lava, m_next2u, mundisplaceable } from './nhmacrofn.js';
 import { Amphibious, BFlying, BLevitation, Blind, Breathless, Cold_resistance, Conflict, Deaf, EFlying, ELevitation, EWounded_legs, Fire_resistance, Flying, Fumbling, HConfusion, HFlying, HFumbling, HLevitation, HStun, Half_physical_damage, Hallucination, Levitation, ParanoidSwim, ParanoidTrap, Passes_walls, Protection_from_shape_changers, Punished, Sokoban, Stealth, Swimming, U_AP_TYPE, Ugender, Unchanging, Underwater, Upolyd, Warning, nh_delay_output, raw_print, sokoban_dnum } from './nhprop.js';
 import { a11y, c_common_strings, cg, decl_globals_init, dirs_ord, disp, flags, ga, gb, gc, gd, gi, gk, gm, gn, gt, gu, gv, gw, gy, iflags, svc, svd, svi, svk, svl, svm, svp, svq, svr, u, uarmf, uarmh, uball, uleft, uright, uswapwep, uwep, xdir, ydir } from './decl.js';
 import { mons } from './monst.js';
@@ -711,7 +711,7 @@ function* moverock_core(sx, sy) {
     let costly;
     let firstboulder = 1;
     while ((otmp = sobj_at(NHC.BOULDER, sx, sy)) !== null) {
-        if (Blind() && (((((glyph_at(sx, sy)) >= NHC.GLYPH_BODY_OFF) && ((glyph_at(sx, sy)) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph_at(sx, sy))) ? NHC.CORPSE : ((((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph_at(sx, sy)) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph_at(sx, sy))) || ((((glyph_at(sx, sy)) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph_at(sx, sy)) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph_at(sx, sy)))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph_at(sx, sy)) || glyph_is_piletop_generic_obj(glyph_at(sx, sy))) ? (((glyph_at(sx, sy)) - (glyph_is_piletop_generic_obj(glyph_at(sx, sy)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph_at(sx, sy)) == NHC.GLYPH_OBJ_OFF || ((glyph_at(sx, sy)) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph_at(sx, sy)) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph_at(sx, sy))) ? (((glyph_at(sx, sy)) - (glyph_is_normal_piletop_obj(glyph_at(sx, sy)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) != NHC.BOULDER) {
+        if (Blind() && glyph_to_obj(glyph_at(sx, sy)) != NHC.BOULDER) {
             (yield* pline(__sl18));
             (yield* map_object(otmp, 1));
             nomul(0);
@@ -1705,7 +1705,7 @@ export function u_locomotion(def) {
 
 /** C ref: hack.c:1833 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function u_simple_floortyp(x, y) {
-    let u_in_air = schar((Levitation() || Flying() || !(!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1n) != 0n) && !is_floater(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz)))) ? 1 : 0));
+    let u_in_air = schar((Levitation() || Flying() || !grounded(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
     if (is_waterwall(x, y))
         return NHC.WATER;
     if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL)
@@ -1959,9 +1959,9 @@ function* domove_fight_empty(x, y) {
             }
             if (!Underwater()) {
                 boulder = sobj_at(NHC.BOULDER, x, y);
-                if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || (Hallucination() && ((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))))
+                if (glyph_is_statue(glyph) || (Hallucination() && glyph_is_monster(glyph)))
                     boulder = sobj_at(NHC.STATUE, x, y);
-                if (cptr.ld1so(svc, $context_info_forcefight) && uwep.v && dig_typ(uwep.v, x, y) && !((glyph) == NHC.GLYPH_INVIS_OFF) && !((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
+                if (cptr.ld1so(svc, $context_info_forcefight) && uwep.v && dig_typ(uwep.v, x, y) && !((glyph) == NHC.GLYPH_INVIS_OFF) && !glyph_is_monster(glyph)) {
                     void (yield* use_pick_axe2(uwep.v));
                     return 1;
                 }
@@ -2609,7 +2609,7 @@ export function* pooleffects(newspot) {
         }
     }
     if (!cptr.ldPtro(u, $you_ustuck) && !Levitation() && !Flying() && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-        if (cptr.ldPtro(u, $you_usteed) && !(!((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 1n) != 0n) && !is_floater(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && (!((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz))))) {
+        if (cptr.ldPtro(u, $you_usteed) && !grounded(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data))) {
             return 0;
         } else if (cptr.ldPtro(u, $you_usteed)) {
             (yield* dismount_steed(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ? NHC.DISMOUNT_FELL : NHC.DISMOUNT_GENERIC));

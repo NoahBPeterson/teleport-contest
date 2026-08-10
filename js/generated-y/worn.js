@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_dragon_mail, Is_dragon_scales, WrappingAllowed, cantweararm, greatest_erosion, has_mcorpsenm, is_boots, is_cloak, is_elven_armor, is_flimsy, is_gloves, is_helmet, is_shield, is_shirt, is_suit, is_weptool, is_whirly, touch_petrifies } from './nhmacrofn.js';
+import { ARM_BONUS, Is_dragon_mail, Is_dragon_scales, WrappingAllowed, cantweararm, has_mcorpsenm, is_boots, is_cloak, is_elven_armor, is_flimsy, is_gloves, is_helmet, is_shield, is_shirt, is_suit, is_weptool, is_whirly, touch_petrifies } from './nhmacrofn.js';
 import { ETelepat, See_invisible, Stone_resistance } from './nhprop.js';
 import { c_color_names, c_common_strings, disp, flags, gb, gi, gm, go, gu, gv, gy, iflags, svc, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { objects } from './objects.js';
@@ -704,7 +704,7 @@ export function find_mac(mon) {
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_GUARDING)
                 base = (base - 2) | 0;
             else
-                base = (base - ((((cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((obj), $obj_spe)) | 0) - ((greatest_erosion(obj)) < (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(obj)) : (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                base = (base - ARM_BONUS(obj)) | 0;
         }
     }
     if (Math.abs(base) > NHM.AC_MAX)
@@ -810,7 +810,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
             }
             if (cptr.ldI64o(obj, $obj_owornmask))
                 continue;
-            if (best && (((((((cptr.ld1so2(objects, cptr.ldI16o((best), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((best), $obj_spe)) | 0) - ((greatest_erosion(best)) < (cptr.ld1so2(objects, cptr.ldI16o((best), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(best)) : (cptr.ld1so2(objects, cptr.ldI16o((best), $obj_otyp), 120, $objclass_oc_oc1)))) | 0) + extra_pref(mon, best)) | 0) >= ((((((cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((obj), $obj_spe)) | 0) - ((greatest_erosion(obj)) < (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(obj)) : (cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_oc1)))) | 0) + extra_pref(mon, obj)) | 0)))
+            if (best && (((ARM_BONUS(best) + extra_pref(mon, best)) | 0) >= ((ARM_BONUS(obj) + extra_pref(mon, obj)) | 0)))
                 continue;
             best = obj;
         }

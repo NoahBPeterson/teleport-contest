@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, IS_DRAWBRIDGE, IS_LAVA, IS_POOL, IS_WALL, emits_light, glyph_is_cmap, is_floater, is_hole, is_pit, is_vampshifter, ismnum, likes_lava, max, min, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
+import { Align2amask, IS_DRAWBRIDGE, IS_LAVA, IS_POOL, IS_WALL, emits_light, glyph_is_cmap, is_floater, is_hole, is_pit, is_vampshifter, ismnum, likes_fire, max, min, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
 import { Protection_from_shape_changers, Punished } from './nhprop.js';
 import { cg, emptystr, gc, gd, gf, gi, gl, gm, gn, gr, gs, gt, gu, gx, gy, head_engr, iflags, svc, svd, sve, svi, svl, svm, svn, svr, u, uball, uchain } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
@@ -2073,7 +2073,7 @@ function pm_to_humidity(pm) {
         loc |= 6;
     if (((cptr.ldU64o((pm), $permonst_mflags1) & 8n) != 0n) || (cptr.ld1so((pm), $permonst_mlet) == NHC.S_GHOST))
         loc |= NHM.SOLID;
-    if ((cptr.eq((pm), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((pm), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || likes_lava(pm)))
+    if (likes_fire(pm))
         loc |= NHM.HOT;
     return loc;
 }

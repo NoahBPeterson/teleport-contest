@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_candle, Is_container, Is_dragon_scales, Is_mbag, Is_pudding, bimanual, has_omailcmd, has_omid, has_omonst, has_oname, is_corrodeable, is_crackable, is_multigen, is_poisonable, is_rider, ismnum } from './nhmacrofn.js';
+import { Is_candle, Is_container, Is_dragon_scales, Is_mbag, Is_pudding, bimanual, has_omailcmd, has_omid, has_omonst, has_oname, is_corrodeable, is_crackable, is_damageable, is_multigen, is_poisonable, is_rider, ismnum } from './nhmacrofn.js';
 import { Blind, Hallucination } from './nhprop.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { c_common_strings, cg, flags, gb, gc, gi, gk, gm, go, gt, gu, gv, gz, hands_obj, iflags, program_state, svb, svc, svd, svl, svm, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
@@ -536,7 +536,7 @@ export function free_omailcmd(otmp) {
 function may_generate_eroded(otmp) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n && !cptr.ld1so(gi, $instance_globals_i_in_mklev))
         return 0;
-    if ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0 || !erosion_matters(otmp) || !((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp)))
+    if ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0 || !erosion_matters(otmp) || !is_damageable(otmp))
         return 0;
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WORM_TOOTH || cptr.ldI16o(otmp, $obj_otyp) == NHC.UNICORN_HORN)
         return 0;

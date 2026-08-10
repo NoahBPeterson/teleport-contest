@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_candle, Is_container, Is_pudding, SURFACE_AT, greatest_erosion, has_omailcmd, has_omid, has_omonst, has_oname, is_ammo, is_boots, is_gloves, is_missile, is_pit, is_plural, is_pole, is_rider, is_wet_towel, matching_launcher, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
+import { Is_candle, Is_container, Is_pudding, SURFACE_AT, ammo_and_launcher, greatest_erosion, has_omailcmd, has_omid, has_omonst, has_oname, is_ammo, is_gloves, is_missile, is_pit, is_plural, is_pole, is_reviver, is_wet_towel, obj_is_generic, pair_of, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Fumbling, Hallucination, Stone_resistance, ULEFTY, URIGHTY, Underwater, Upolyd, clear_nhwindow, create_nhwindow, ctrl_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, message_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MESSAGE, c_common_strings, cg, disp, flags, gc, gd, gi, gl, go, gp, gs, gt, gu, gy, hands_obj, iflags, program_state, quitchars, svc, svd, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep, ynNaqchars, yn_number, ynaqchars, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -1274,7 +1274,7 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
                     obj = splitobj(obj, oquan);
                 break __lbl_drop_it;
             } else {
-                if (cptr.ld1so(flags, $flag_autoquiver) && !uquiver.v && !cptr.ldI64o(obj, $obj_owornmask) && (is_missile(obj) || (is_ammo(obj) && matching_launcher(obj, uwep.v)) || (is_ammo(obj) && matching_launcher(obj, uswapwep.v))))
+                if (cptr.ld1so(flags, $flag_autoquiver) && !uquiver.v && !cptr.ldI64o(obj, $obj_owornmask) && (is_missile(obj) || ammo_and_launcher(obj, uwep.v) || ammo_and_launcher(obj, uswapwep.v)))
                     setuqwep(obj);
                 if (hold_msg || drop_fmt)
                     prinv(hold_msg, obj, oquan);
@@ -3652,7 +3652,7 @@ export function mergable(otmp, obj) {
         if (cptr.ldI32o(obj, $obj_corpsenm) != cptr.ldI32o(otmp, $obj_corpsenm))
             return 0;
     }
-    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, $obj_timed) || cptr.ldI16o(otmp, $obj_timed))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.LOW_PM && (is_rider(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) || cptr.ld1so((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_TROLL)))
+    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, $obj_timed) || cptr.ldI16o(otmp, $obj_timed))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.LOW_PM && is_reviver(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))))
         return 0;
     if (Is_candle(obj) && cptr.ldI64o(obj, $obj_age) / 25n != cptr.ldI64o(otmp, $obj_age) / 25n)
         return 0;
@@ -4357,7 +4357,7 @@ export function display_binventory(x, y, as_if_seen) {
             let more_than_1 = schar(is_plural(obj));
             There(__sl316, more_than_1 ? __sl153 : __sl154, doname(obj), seen_liquid);
             n2 = 1;
-            if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LENSES || is_gloves(obj) || is_boots(obj)))
+            if (pair_of(obj))
                 more_than_1 = 1;
             underwhat = more_than_1 ? __sl317 : __sl318;
         } else {

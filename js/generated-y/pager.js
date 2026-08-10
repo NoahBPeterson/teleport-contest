@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { SURFACE_AT, ceiling_hider, engraving_to_defsym, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_trap, glyph_is_warning, has_mcorpsenm, is_cmap_drawbridge, is_cmap_engraving, is_cmap_trap, is_obj_mappear } from './nhmacrofn.js';
+import { SURFACE_AT, ceiling_hider, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, engraving_to_defsym, glyph_is_body, glyph_is_cmap, glyph_is_monster, glyph_is_object, glyph_is_statue, glyph_is_trap, glyph_is_warning, glyph_to_body_corpsenm, glyph_to_obj, glyph_to_statue_corpsenm, glyph_to_trap, glyph_to_warning, has_mcorpsenm, is_cmap_drawbridge, is_cmap_engraving, is_cmap_trap, is_obj_mappear } from './nhmacrofn.js';
 import { Blind, Detect_monsters, EDetect_monsters, EHalluc_resistance, Hallucination, Infravision, Invis, Invisible, Levitation, Punished, U_AP_TYPE, Ugender, Unblind_telepat, Upolyd, create_nhwindow, destroy_nhwindow, display_file, display_nhwindow, end_menu, putmixed, putstr, sokoban_dnum, start_menu, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, cg, flags, gd, gf, gi, go, gs, gu, gv, gw, gy, iflags, program_state, svc, svd, svl, svp, u, uball, ynchars } from './decl.js';
 import { copynchars, digit, dist2, eos, lcase, mungspaces, nh_snprintf, strip_newline, strkitten, strncmpi, strstri, strsubst, tabexpand, upstart, visctrl } from './hacklib.js';
@@ -524,7 +524,7 @@ export function* mhidden_description(mon, mhid_flags, outbuf) {
                 if (incl_article)
                     what = (yield* an(what));
                 void cptr.strcat(outbuf, what);
-            } else if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
+            } else if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && glyph_is_object(glyph)) {
                 __go_objfrommap = true; break __skip_objfrommap;
             } else {
                 void cptr.strcat(outbuf, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
@@ -542,7 +542,7 @@ export function* mhidden_description(mon, mhid_flags, outbuf) {
             void cptr.strcpy(outbuf, __sl13);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
                 void cptr.strcat(outbuf, __sl14);
-                if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))))
+                if (glyph_is_object(glyph))
                     { __go_objfrommap = true; break __skip_objfrommap; }
                 void cptr.strcat(outbuf, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
             } else if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 256n) != 0n)) {
@@ -581,7 +581,7 @@ export function* object_from_map(glyph, x, y, obj_p) {
     let mimic_obj = 0;
     let mtmp;
     let otmp;
-    let glyphotyp = (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))) ? (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) ? (((glyph) - (glyph_is_piletop_generic_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) ? (((glyph) - (glyph_is_normal_piletop_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) : (glyph_is_cmap(glyph) ? (sobj_at(NHC.CHEST, x, y) ? NHC.CHEST : NHC.LARGE_BOX) : NHC.STRANGE_OBJECT);
+    let glyphotyp = glyph_is_object(glyph) ? glyph_to_obj(glyph) : (glyph_is_cmap(glyph) ? (sobj_at(NHC.CHEST, x, y) ? NHC.CHEST : NHC.LARGE_BOX) : NHC.STRANGE_OBJECT);
     cptr.stPtr(obj_p, null);
     if ((otmp = sobj_at(glyphotyp, x, y)) === null)
         for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); otmp; otmp = cptr.ldPtr(otmp))
@@ -611,10 +611,10 @@ export function* object_from_map(glyph, x, y, obj_p) {
                 cptr.st1o(otmp, $obj_spe, schar((cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm))));
             else
                 cptr.stI32o(otmp, $obj_corpsenm, (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)));
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))) {
-            cptr.stI32o(otmp, $obj_corpsenm, (glyph_is_body_piletop(glyph) ? (((glyph) - NHC.GLYPH_BODY_PILETOP_OFF) | 0) : (((glyph) - NHC.GLYPH_BODY_OFF) | 0)));
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE && (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)))) {
-            cptr.stI32o(otmp, $obj_corpsenm, (glyph_is_fem_statue_piletop(glyph) ? (((glyph) - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0) : (glyph_is_male_statue_piletop(glyph) ? (((glyph) - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph)) ? (((glyph) - NHC.GLYPH_STATUE_FEM_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) ? (((glyph) - NHC.GLYPH_STATUE_MALE_OFF) | 0) : NHC.MAX_GLYPH)))));
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && glyph_is_body(glyph)) {
+            cptr.stI32o(otmp, $obj_corpsenm, glyph_to_body_corpsenm(glyph));
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE && glyph_is_statue(glyph)) {
+            cptr.stI32o(otmp, $obj_corpsenm, glyph_to_statue_corpsenm(glyph));
         }
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LEASH)
             cptr.stI32o(otmp, $obj_corpsenm, 0);
@@ -850,20 +850,20 @@ function* lookat(x, y, buf, monbuf) {
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         void cptr.sprintf(buf, __sl85, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck))));
         pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
-    } else if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
+    } else if (glyph_is_monster(glyph)) {
         if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
             (yield* look_at_monster(buf, monbuf, mtmp, x, y));
             pm = cptr.ldPtro(mtmp, $monst_data);
         } else if (Hallucination()) {
             void cptr.strcpy(buf, (yield* rndmonnam(null)));
         }
-    } else if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
+    } else if (glyph_is_object(glyph)) {
         (yield* look_at_object(buf, x, y, glyph));
     } else if (glyph_is_trap(glyph)) {
-        let tnum = (glyph_is_trap(glyph) ? ((((((((((glyph) - ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) + NHC.S_arrow_trap) | 0) - NHC.S_arrow_trap) | 0) + 1) | 0)) : NHC.MAX_GLYPH);
+        let tnum = glyph_to_trap(glyph);
         (yield* trap_description(buf, tnum, x, y));
     } else if (glyph_is_warning(glyph)) {
-        let warnindx = (glyph_is_warning(glyph) ? (((glyph) - NHC.GLYPH_WARNING_OFF) | 0) : 0);
+        let warnindx = glyph_to_warning(glyph);
         void cptr.strcpy(buf, cptr.ldPtro2(def_warnsyms, warnindx, 24, $symdef_explanation));
     } else if (((glyph) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.strcpy(buf, cptr.decay(invisexplain));
@@ -1208,7 +1208,7 @@ function* add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap
         }
         cptr.stPtr(firstmatch, x_str);
         found = 1;
-    } else if (!(cptr.ld1s(hit_trap) && is_cmap_trap(idx)) && !(found >= 3 && is_cmap_drawbridge(idx)) && (idx != NHC.S_vibrating_square || In_hell(cptr.add(u, $you_uz)) || (glyph_is_trap(glyph) && (glyph_is_trap(glyph) ? ((((((((((glyph) - ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) + NHC.S_arrow_trap) | 0) - NHC.S_arrow_trap) | 0) + 1) | 0)) : NHC.MAX_GLYPH) == NHC.VIBRATING_SQUARE))) {
+    } else if (!(cptr.ld1s(hit_trap) && is_cmap_trap(idx)) && !(found >= 3 && is_cmap_drawbridge(idx)) && (idx != NHC.S_vibrating_square || In_hell(cptr.add(u, $you_uz)) || (glyph_is_trap(glyph) && glyph_to_trap(glyph) == NHC.VIBRATING_SQUARE))) {
         found = (found + (yield* append_str(out_str, (article == 2) ? (yield* the(x_str)) : ((article == 1) ? (yield* an(x_str)) : x_str)))) | 0;
         if (is_cmap_trap(idx) && idx != NHC.S_vibrating_square)
             cptr.st1(hit_trap, 1);
@@ -1321,12 +1321,12 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
             if (!bouldersym)
                 bouldersym = uchar(cptr.ld1so(def_oc_syms, NHC.ROCK_CLASS, 24));
             for (i = 1; i < NHC.MAXOCLASSES; i++) {
-                if ((i != NHC.ROCK_CLASS) ? (sym == (looked ? cptr.ld1uo2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms) : cptr.ld1so(def_oc_syms, i, 24))) : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || sym == bouldersym ? 1 : 0)) {
+                if ((i != NHC.ROCK_CLASS) ? (sym == (looked ? cptr.ld1uo2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms) : cptr.ld1so(def_oc_syms, i, 24))) : (glyph_is_statue(glyph) || sym == bouldersym ? 1 : 0)) {
                     oc_ptr = cptr.ldPtro2(def_oc_syms, i, 24, $class_sym_explain);
                     if (i == NHC.ROCK_CLASS && !strcmp(oc_ptr, __sl158)) {
                         if (sym == bouldersym)
                             oc_ptr = __sl159;
-                        else if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))))
+                        else if (glyph_is_statue(glyph))
                             oc_ptr = __sl160;
                         else if (looked)
                             continue;
@@ -1731,7 +1731,7 @@ function* look_all(nearby, do_mons) {
             cptr.st1o(cptr.decay(lookbuf), 0, 0, 1);
             glyph = glyph_at(x, y);
             if (do_mons) {
-                if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
+                if (glyph_is_monster(glyph)) {
                     let mtmp;
                     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters()))) {
                         void (yield* self_lookat(cptr.decay(lookbuf)));
@@ -1744,12 +1744,12 @@ function* look_all(nearby, do_mons) {
                     void cptr.strcpy(cptr.decay(lookbuf), cptr.decay(invisexplain));
                     ++count;
                 } else if (glyph_is_warning(glyph)) {
-                    let warnindx = (glyph_is_warning(glyph) ? (((glyph) - NHC.GLYPH_WARNING_OFF) | 0) : 0);
+                    let warnindx = glyph_to_warning(glyph);
                     void cptr.strcpy(cptr.decay(lookbuf), cptr.ldPtro2(def_warnsyms, warnindx, 24, $symdef_explanation));
                     ++count;
                 }
             } else {
-                if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
+                if (glyph_is_object(glyph)) {
                     (yield* look_at_object(cptr.decay(lookbuf), x, y, glyph));
                     ++count;
                 }
@@ -1808,7 +1808,7 @@ function* look_traps(nearby) {
             cptr.st1o(cptr.decay(lookbuf), 0, 0, 1);
             glyph = glyph_at(x, y);
             if (glyph_is_trap(glyph)) {
-                tnum = (glyph_is_trap(glyph) ? ((((((((((glyph) - ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) + NHC.S_arrow_trap) | 0) - NHC.S_arrow_trap) | 0) + 1) | 0)) : NHC.MAX_GLYPH);
+                tnum = glyph_to_trap(glyph);
                 (yield* trap_description(cptr.decay(lookbuf), tnum, x, y));
                 ++count;
             } else if ((t = t_at(x, y)) !== null && (cptr.ldI32o(t, $trap_tseen) & 1) | 0 && ((!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0))) {
@@ -1883,7 +1883,7 @@ function* look_engrs(nearby) {
                 ++count;
             } else {
                 nh_snprintf(__sl216, 2190, eos(cptr.decay(lookbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(lookbuf))), __sl204, encglyph(glyph));
-                glyph = is_headstone ? (((((NHC.S_grave) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((engraving_to_defsym(e)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((engraving_to_defsym(e)) <= NHC.S_trwall) ? (((((engraving_to_defsym(e)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((engraving_to_defsym(e)) < NHC.S_altar) ? (((((engraving_to_defsym(e)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((engraving_to_defsym(e)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((engraving_to_defsym(e)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((engraving_to_defsym(e)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((engraving_to_defsym(e)) <= NHC.S_goodpos) ? (((((engraving_to_defsym(e)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+                glyph = is_headstone ? (((((NHC.S_grave) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((engraving_to_defsym(e)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((engraving_to_defsym(e)) <= NHC.S_trwall) ? (((((engraving_to_defsym(e)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((engraving_to_defsym(e)) < NHC.S_altar) ? cmap_a_to_glyph(e) : (((engraving_to_defsym(e)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((engraving_to_defsym(e)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(e) : (((engraving_to_defsym(e)) <= NHC.S_goodpos) ? cmap_c_to_glyph(e) : NHC.MAX_GLYPH))))));
                 ++count;
             }
             if (cptr.ld1s(cptr.decay(lookbuf))) {
@@ -2007,7 +2007,7 @@ export function* doidtrap() {
     x = i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0));
     y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0));
     glyph = glyph_at(x, y);
-    if (glyph_is_trap(glyph) && ((tt = (glyph_is_trap(glyph) ? ((((((((((glyph) - ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) + NHC.S_arrow_trap) | 0) - NHC.S_arrow_trap) | 0) + 1) | 0)) : NHC.MAX_GLYPH)) == NHC.BEAR_TRAP || tt == NHC.TRAPPED_DOOR || tt == NHC.TRAPPED_CHEST)) {
+    if (glyph_is_trap(glyph) && ((tt = glyph_to_trap(glyph)) == NHC.BEAR_TRAP || tt == NHC.TRAPPED_DOOR || tt == NHC.TRAPPED_CHEST)) {
         let chesttrap = trapped_chest_at(tt, x, y);
         if (chesttrap || trapped_door_at(tt, x, y)) {
             (yield* pline(__sl235, chesttrap ? __sl236 : __sl237));

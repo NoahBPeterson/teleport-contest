@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, emits_light, flaming, has_edog, has_oname, helpless, is_metallic, is_rider, is_vampshifter, ismnum, likes_lava, max, ofood, touch_petrifies, vegan } from './nhmacrofn.js';
+import { canspotmon, emits_light, flesh_petrifies, has_edog, has_oname, helpless, is_metallic, is_rider, is_vampshifter, ismnum, likes_fire, max, ofood, slimeproof, vegan } from './nhmacrofn.js';
 import { Aggravate_monster, Conflict, Hallucination, Upolyd } from './nhprop.js';
 import { makemon, mbirth_limit, newmextra, rndmonst_adj, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -859,7 +859,7 @@ export function* dogfood(mon, obj) {
         fptr = cptr.add(mons, (ismnum(fx)) ? fx : NHC.NUMMONS, 96);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(fptr))
             return NHC.TABU;
-        if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) && (touch_petrifies(fptr) || cptr.eq((fptr), cptr.add(mons, NHC.PM_MEDUSA, 96))) && !(yield* Resists_Elem(mon, NHC.STONE_RES)))
+        if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) && flesh_petrifies(fptr) && !(yield* Resists_Elem(mon, NHC.STONE_RES)))
             return NHC.POISON;
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY && cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_KILLER_BEE, 96))) {
             let mtmp = find_pmmonst(NHC.PM_QUEEN_BEE);
@@ -884,7 +884,7 @@ export function* dogfood(mon, obj) {
             case NHC.ENORMOUS_MEATBALL:
             return carni ? NHC.DOGFOOD : NHC.MANFOOD;
             case NHC.EGG:
-            if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK && !(cptr.eq((mptr), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((mptr), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || likes_lava(mptr)))
+            if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK && !likes_fire(mptr))
                 return NHC.POISON;
             return carni ? NHC.CADAVER : NHC.MANFOOD;
             case NHC.CORPSE:
@@ -899,7 +899,7 @@ export function* dogfood(mon, obj) {
             else
                 return carni ? NHC.CADAVER : NHC.MANFOOD;
             case NHC.GLOB_OF_GREEN_SLIME:
-            return (starving || (cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(cptr.ldPtro(mon, $monst_data)) || (cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) == NHC.S_GHOST))) ? NHC.ACCFOOD : NHC.POISON;
+            return (starving || slimeproof(cptr.ldPtro(mon, $monst_data))) ? NHC.ACCFOOD : NHC.POISON;
             case NHC.CLOVE_OF_GARLIC:
             return (((cptr.ldU64o((mptr), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mon)) ? NHC.TABU : ((herbi || starving) ? NHC.ACCFOOD : NHC.MANFOOD);
             case NHC.TIN:

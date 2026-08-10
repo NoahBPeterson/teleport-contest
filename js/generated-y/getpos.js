@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water } from './nhmacrofn.js';
+import { glyph_is_cmap, glyph_is_monster, glyph_is_object, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water } from './nhmacrofn.js';
 import { clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
@@ -504,9 +504,9 @@ export function* gather_locs_interesting(x, y, gloc) {
     switch (gloc) {
         default:
         case NHC.GLOC_MONS:
-        return schar((((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
+        return schar((glyph_is_monster(glyph) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
         case NHC.GLOC_OBJS:
-        return schar(((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
+        return schar((glyph_is_object(glyph) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
         case NHC.GLOC_DOOR:
         return schar((glyph_is_cmap(glyph) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor) ? 1 : 0));
         case NHC.GLOC_EXPLORE:

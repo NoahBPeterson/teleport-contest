@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_AIR, IS_FURNITURE, IS_TREE, IS_WALL, Is_box, Is_container, bimanual, canspotmon, ceiling_hider, fixed_tele_trap, flaming, has_mgivenname, has_omonst, has_oname, helpless, is_blade, is_corrodeable, is_crackable, is_floater, is_hole, is_pit, is_plural, is_unicorn, is_vampshifter, is_wet_towel, is_whirly, ismnum, likes_lava, m_next2u, min, obj_is_generic, passes_rocks, pm_invisible, stone_missile, touch_petrifies, undestroyable_trap, webmaker, weirdnonliving } from './nhmacrofn.js';
+import { IS_AIR, IS_FURNITURE, IS_TREE, IS_WALL, Is_box, Is_container, Waterproof_container, bimanual, canspotmon, ceiling_hider, fixed_tele_trap, flaming, grounded, has_mgivenname, has_omonst, has_oname, helpless, is_blade, is_corrodeable, is_crackable, is_floater, is_hole, is_pit, is_plural, is_unicorn, is_vampshifter, is_wet_towel, is_whirly, ismnum, likes_lava, m_next2u, min, nonliving, obj_is_generic, passes_rocks, pm_invisible, stone_missile, touch_petrifies, undestroyable_trap, webmaker } from './nhmacrofn.js';
 import { Amphibious, Antimagic, BFlying, BLevitation, Blind, Breathless, Deaf, Drain_resistance, EInvis, Fire_resistance, Flying, Free_action, Fumbling, HConfusion, HHallucination, HInvis, HStun, Half_physical_damage, Half_spell_damage, Halluc_resistance, Hallucination, Invis, Lev_at_will, Levitation, Lifesaved, Luck, Passes_walls, Punished, Role_switch, See_invisible, Shock_resistance, Sleep_resistance, Slimed, Sokoban, Stone_resistance, Swimming, Teleport_control, Teleportation, Unchanging, Underwater, Upolyd, clear_nhwindow, discover, display_nhwindow, nh_delay_output, sokoban_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, cg, disp, flags, ga, gb, gf, gi, gk, gl, gm, gn, go, gs, gt, gu, gv, gx, gy, iflags, materialnm, svc, svd, svk, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uswapwep, uwep, vowels, xdir, ydir, ynqchars } from './decl.js';
 import { carrying, consume_obj_charge, currency, delobj, getobj, nxtobj, prinv, sobj_at, stackobj, update_inventory, useup, useupall } from './invent.js';
@@ -1473,7 +1473,7 @@ export function* animate_statue(statue, x, y, cause, fail_reason) {
         cptr.stI32o(mon, $monst_mpeaceful, 0);
         set_malign(mon);
     }
-    comes_to_life = !canspotmon(mon) ? __sl79 : (golem_xform ? __sl80 : (((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mon, $monst_data))) || is_vampshifter(mon)) ? __sl81 : __sl82));
+    comes_to_life = !canspotmon(mon) ? __sl79 : (golem_xform ? __sl80 : ((nonliving(cptr.ldPtro(mon, $monst_data)) || is_vampshifter(mon)) ? __sl81 : __sl82));
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || cause == NHM.ANIMATE_SPELL) {
         shkp = (yield* shop_keeper(cptr.ld1s((yield* in_rooms(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), NHC.SHOPBASE)))));
         void cptr.sprintf(cptr.decay(statuename), __sl83, (yield* shk_your(cptr.decay(tmpbuf), statue)), (cause == NHM.ANIMATE_SPELL && (!cptr.eq(mon, shkp) || (cptr.ld1so((statue), $obj_where) == NHM.OBJ_INVENT))) ? (yield* xname(statue)) : __sl84);
@@ -2369,7 +2369,7 @@ function* trapeffect_pit(mtmp, trap, trflags) {
         let mptr = cptr.ldPtro(mtmp, $monst_data);
         let fallverb;
         fallverb = __sl159;
-        if (!(!((cptr.ldU64o((mptr), $permonst_mflags1) & 1n) != 0n) && !is_floater(mptr) && (!((cptr.ldU64o((mptr), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz)))) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5)) {
+        if (!grounded(mptr) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5)) {
             if (forcetrap && !Sokoban()) {
                 if (in_sight) {
                     (yield* seetrap(trap));
@@ -2418,7 +2418,7 @@ function* trapeffect_hole(mtmp, trap, trflags) {
             (yield* impossible(__sl206, (yield* trapname(tt, 1))));
             return NHC.Trap_Effect_Finished;
         }
-        if (!(!((cptr.ldU64o((mptr), $permonst_mflags1) & 1n) != 0n) && !is_floater(mptr) && (!((cptr.ldU64o((mptr), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz)))) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5) || cptr.ld1uo(mptr, $permonst_msize) >= NHM.MZ_HUGE) {
+        if (!grounded(mptr) || ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5) || cptr.ld1uo(mptr, $permonst_msize) >= NHM.MZ_HUGE) {
             if (forcetrap && !Sokoban()) {
                 if (in_sight) {
                     (yield* seetrap(trap));
@@ -4432,14 +4432,14 @@ export function* water_damage(obj, ostr, force) {
             }
         }
         return NHM.ER_GREASED;
-    } else if (Is_container(obj) && (!(cptr.ldI16o((obj), $obj_otyp) == NHC.OILSKIN_SACK || cptr.ldI16o((obj), $obj_otyp) == NHC.ICE_BOX || Is_box(obj)) || ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl11, 4752, __sl432), rn2(3)) : rn2(3))))) {
+    } else if (Is_container(obj) && (!Waterproof_container(obj) || ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl11, 4752, __sl432), rn2(3)) : rn2(3))))) {
         if (in_invent) {
             (yield* pline(__sl434, hliquid(__sl435), ostr));
             cptr.st1o(gm, $instance_globals_m_mentioned_water, schar((!Hallucination())));
         }
         (yield* water_damage_chain(cptr.ldPtro(obj, $obj_cobj), 0));
         return NHM.ER_DAMAGED;
-    } else if ((cptr.ldI16o((obj), $obj_otyp) == NHC.OILSKIN_SACK || cptr.ldI16o((obj), $obj_otyp) == NHC.ICE_BOX || Is_box(obj))) {
+    } else if (Waterproof_container(obj)) {
         if (in_invent && !Blind() && !Underwater()) {
             (yield* pline_The(__sl436, hliquid(__sl435), ostr));
             cptr.st1o(gm, $instance_globals_m_mentioned_water, schar((!Hallucination())));

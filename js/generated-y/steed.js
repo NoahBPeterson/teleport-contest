@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, cant_drown, greatest_erosion, has_mgivenname, helpless, is_floater, is_metallic, is_pole, is_whirly, likes_lava, touch_petrifies } from './nhmacrofn.js';
+import { canspotmon, cant_drown, greatest_erosion, grounded, has_mgivenname, helpless, is_floater, is_metallic, is_pole, is_whirly, likes_lava, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Flying, Fumbling, Glib, HConfusion, HStun, HWounded_legs, Half_physical_damage, Hallucination, Lev_at_will, Levitation, Punished, Stealth, Stone_resistance, Underwater, Upolyd, Wounded_legs, wizard } from './nhprop.js';
 import { You, You_cant, Your, impossible, pline } from './pline.js';
 import { Mgender, Monnam, YMonnam, a_monnam, hliquid, minimal_monnam, mon_nam, monverbself, pmname, x_monnam, y_monnam } from './do_name.js';
@@ -670,7 +670,7 @@ export function* dismount_steed(reason) {
         }
         if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !cptr.ldPtro(u, $you_ustuck) && have_spot) {
             let mdat = cptr.ldPtro(mtmp, $monst_data);
-            if ((!((cptr.ldU64o((mdat), $permonst_mflags1) & 1n) != 0n) && !is_floater(mdat) && (!((cptr.ldU64o((mdat), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz))))) {
+            if (grounded(mdat)) {
                 if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     if (!Underwater())
                         (yield* pline(__sl72, (yield* Monnam(mtmp)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));

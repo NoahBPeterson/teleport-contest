@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { WrappingAllowed, bimanual, cant_drown, cantweararm, greatest_erosion, is_boots, is_cloak, is_corrodeable, is_crackable, is_flimsy, is_gloves, is_helmet, is_metallic, is_shield, is_shirt, is_suit, is_sword, touch_petrifies } from './nhmacrofn.js';
+import { ARM_BONUS, WrappingAllowed, bimanual, cant_drown, cantweararm, is_boots, is_cloak, is_corrodeable, is_crackable, is_damageable, is_flimsy, is_gloves, is_helmet, is_metallic, is_shield, is_shirt, is_suit, is_sword, touch_petrifies } from './nhmacrofn.js';
 import { BInvis, BLevitation, BStealth, Blind, Blind_telepat, Breathless, Detect_monsters, EInvis, ESleepy, EStealth, Fast, Flying, Glib, HFast, HFumbling, HInvis, HLevitation, HProtection, HSee_invisible, HSleepy, HStealth, Hallucination, Invis, Invisible, Levitation, ParanoidRemove, Protection_from_shape_changers, Punished, See_invisible, Slimed, Stone_resistance, Strangled, Swimming, ULEFTY, URIGHTY, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, ga, gi, gm, gn, gu, gw, gy, iflags, program_state, rightleftchars, svc, svd, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { Tobjnam, Yname2, an, ansimpleoname, boots_simple_name, cloak_simple_name, corpse_xname, doname, erosion_matters, gloves_simple_name, helm_simple_name, killer_xname, makeplural, makesingular, obj_is_pname, otense, safe_typename, shield_simple_name, shirt_simple_name, simpleonames, suit_simple_name, the, thesimpleoname, vtense, xname, yname } from './objnam.js';
@@ -2235,19 +2235,19 @@ export function doputon() {
 export function find_ac() {
     let uac = cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), 96, $permonst_ac);
     if (uarm.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarm.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarm.v), $obj_spe)) | 0) - ((greatest_erosion(uarm.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarm.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarm.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarm.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarm.v)) | 0;
     if (uarmc.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarmc.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarmc.v), $obj_spe)) | 0) - ((greatest_erosion(uarmc.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarmc.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarmc.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarmc.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarmc.v)) | 0;
     if (uarmh.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarmh.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarmh.v), $obj_spe)) | 0) - ((greatest_erosion(uarmh.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarmh.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarmh.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarmh.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarmh.v)) | 0;
     if (uarmf.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarmf.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarmf.v), $obj_spe)) | 0) - ((greatest_erosion(uarmf.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarmf.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarmf.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarmf.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarmf.v)) | 0;
     if (uarms.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarms.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarms.v), $obj_spe)) | 0) - ((greatest_erosion(uarms.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarms.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarms.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarms.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarms.v)) | 0;
     if (uarmg.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarmg.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarmg.v), $obj_spe)) | 0) - ((greatest_erosion(uarmg.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarmg.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarmg.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarmg.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarmg.v)) | 0;
     if (uarmu.v)
-        uac = (uac - ((((cptr.ld1so2(objects, cptr.ldI16o((uarmu.v), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((uarmu.v), $obj_spe)) | 0) - ((greatest_erosion(uarmu.v)) < (cptr.ld1so2(objects, cptr.ldI16o((uarmu.v), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(uarmu.v)) : (cptr.ld1so2(objects, cptr.ldI16o((uarmu.v), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+        uac = (uac - ARM_BONUS(uarmu.v)) | 0;
     if (uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION)
         uac = (uac - cptr.ld1so(uleft.v, $obj_spe)) | 0;
     if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION)
@@ -2850,7 +2850,7 @@ export function destroy_arm() {
         return 0;
     for (i = 0; i < hits; i++) {
         otmp = cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__sl14, 3297, __sl211), rn2(idx)) : rn2(idx)), 8);
-        if (erosion_matters(otmp) && ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp)) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
+        if (erosion_matters(otmp) && is_damageable(otmp) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);
             if (erosion != -1) {
                 let r = erode_obj(otmp, xname(otmp), erosion, 10);

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_TREE, canspotmon, flaming, helpless, is_pole, is_rider, is_vampshifter, is_whirly, ismnum, touch_petrifies, troll_baned } from './nhmacrofn.js';
+import { IS_TREE, canspotmon, flaming, helpless, is_pole, is_rider, is_vampshifter, is_whirly, ismnum, slimeproof, touch_petrifies, troll_baned } from './nhmacrofn.js';
 import { Antimagic, Blind, Conflict, Deaf, Passes_walls, Unchanging } from './nhprop.js';
 import { dist2, distmin, nh_snprintf, s_suffix, strNsubst, strncmpi, strsubst } from './hacklib.js';
 import { c_common_strings, flags, gb, gf, gl, gm, gn, gs, gv, gy, gz, iflags, svl, svm, u } from './decl.js';
@@ -905,7 +905,7 @@ function mdamagem(magr, mdef, mattk, mwep, dieroll) {
         if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST) {
             if (ismnum(cptr.ldI16o(mdef, $monst_cham))) {
                 void newcham(magr, null, NHM.NC_SHOW_MSG);
-            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) && !(cptr.eq((pa), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(pa) || (cptr.ld1so((pa), $permonst_mlet) == NHC.S_GHOST))) {
+            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) && !slimeproof(pa)) {
                 void newcham(magr, cptr.add(mons, NHC.PM_GREEN_SLIME, 96), NHM.NC_SHOW_MSG);
             } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_WRAITH, 96))) {
                 void grow_up(magr, null);

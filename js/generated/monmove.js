@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_candle, Is_container, SURFACE_AT, canspotmon, corpse_eater, has_edog, helpless, is_axe, is_cloak, is_floater, is_gloves, is_lminion, is_mind_flayer, is_pick, is_pit, is_rider, is_shirt, is_unicorn, is_vampshifter, is_watch, m_cansee, m_next2u, telepathic, touch_petrifies, webmaker } from './nhmacrofn.js';
+import { Is_candle, Is_container, SURFACE_AT, canspotmon, corpse_eater, grounded, has_edog, helpless, is_axe, is_cloak, is_gloves, is_lminion, is_mind_flayer, is_pick, is_pit, is_rider, is_shirt, is_unicorn, is_vampshifter, is_watch, m_cansee, m_next2u, telepathic, touch_petrifies, webmaker } from './nhmacrofn.js';
 import { Aggravate_monster, Blind_telepat, Conflict, Deaf, Displaced, Half_spell_damage, Hallucination, Invis, Protection_from_shape_changers, Sokoban, Stealth, U_AP_TYPE, Underwater, Upolyd, display_nhwindow } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, flags, gb, gi, gk, gm, gn, go, gv, gy, svc, svd, svl, svm, u, uarm, uball, uchain, uwep } from './decl.js';
 import { canseemon, newsym, sensemon, swallowed } from './display.js';
@@ -738,7 +738,7 @@ export function dochug(mtmp) {
             case NHM.MMOVE_MOVED:
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && !m_next2u(mtmp))
                 unstuck(mtmp);
-            if ((!((cptr.ldU64o((mdat), $permonst_mflags1) & 1n) != 0n) && !is_floater(mdat) && (!((cptr.ldU64o((mdat), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz)))))
+            if (grounded(mdat))
                 disturb_buried_zombies(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             if (helpless(mtmp))
                 return 0;

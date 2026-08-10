@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, glyph_is_body_piletop, glyph_is_fem_statue_piletop, glyph_is_male_statue_piletop, glyph_is_normal_generic_obj, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, is_mplayer, is_plural, is_rider, ismnum, m_next2u } from './nhmacrofn.js';
+import { canspotmon, glyph_is_object, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, is_mplayer, is_plural, is_rider, ismnum, m_next2u } from './nhmacrofn.js';
 import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
@@ -886,7 +886,7 @@ function* namefloorobj() {
         obj.v = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects));
     } else {
         glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-        if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))))
+        if (glyph_is_object(glyph))
             fakeobj = (yield* object_from_map(glyph, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), obj));
     }
     if (!obj.v) {

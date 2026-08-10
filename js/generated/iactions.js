@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel, matching_launcher } from './nhmacrofn.js';
+import { Is_container, ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
 import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
@@ -525,7 +525,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, cptr.decay(buf));
     }
     if (cptr.eq(otmp, uquiver.v)) {
-        let shoot = schar((is_ammo(otmp) && matching_launcher(otmp, uwep.v) ? 1 : 0));
+        let shoot = schar(ammo_and_launcher(otmp, uwep.v));
         void cptr.sprintf(cptr.decay(buf), __sl82, shoot ? __sl83 : __sl84, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl55 : __sl26);
         if (shoot) {
             (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__sl85, __sl86, 456, __sl87) : void 0);
@@ -572,7 +572,7 @@ export function itemactions(otmp) {
         ia_addmenu(win, NHC.IA_QUAFF_OBJ, 113, cptr.decay(buf));
     }
     if ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS) && !cptr.eq(otmp, uquiver.v)) {
-        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28, (is_ammo(otmp) && matching_launcher(otmp, uwep.v)) ? __sl107 : __sl108);
+        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28, ammo_and_launcher(otmp, uwep.v) ? __sl107 : __sl108);
         ia_addmenu(win, NHC.IA_QUIVER_OBJ, 81, cptr.decay(buf));
     }
     if (item_reading_classification(otmp, cptr.decay(buf)) == NHC.IA_READ_OBJ)
@@ -587,7 +587,7 @@ export function itemactions(otmp) {
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && is_graystone(otmp))
         ia_addmenu(win, NHC.IA_RUB_OBJ, 82, __sl115);
     if (!already_worn) {
-        let shoot = schar((is_ammo(otmp) && matching_launcher(otmp, uwep.v) ? 1 : 0));
+        let shoot = schar(ammo_and_launcher(otmp, uwep.v));
         void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __sl81 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.GOLD_PIECE) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16o(otmp, $obj_otyp) != NHC.GOLD_PIECE || cptr.ldI64o(otmp, $obj_quan) == 1n)) ? __sl117 : __sl10);
         ia_addmenu(win, NHC.IA_THROW_OBJ, 116, cptr.decay(buf));
     }

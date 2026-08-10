@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DISTANCE_ATTK_TYPE, Is_dragon_mail, Is_dragon_scales, canspotmon, completelyburns, completelyrots, is_floater, is_longworm, is_mind_flayer, is_rider, is_unicorn, is_vampshifter, is_weptool, is_whirly, m_cansee, mon_perma_blind, mon_resistancebits } from './nhmacrofn.js';
+import { DISTANCE_ATTK_TYPE, Is_dragon_armor, canspotmon, completelyburns, completelyrots, is_floater, is_longworm, is_mind_flayer, is_rider, is_unicorn, is_vampshifter, is_weptool, is_whirly, m_cansee, mon_perma_blind, mon_resistancebits } from './nhmacrofn.js';
 import { Blind, Blnd_resist, EBlinded, Hallucination, Invis, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { cg, gi, gm, gu, gv, gy, svl, svm, u, uarm, ublindf, uwep } from './decl.js';
 import { mons } from './monst.js';
@@ -276,7 +276,7 @@ export function* defended(mon, adtyp) {
     } else {
         o = is_you ? uarm.v : (yield* which_armor(mon, 1n));
     }
-    if (o && (Is_dragon_scales(o) || Is_dragon_mail(o)) && defends(adtyp, o))
+    if (o && Is_dragon_armor(o) && defends(adtyp, o))
         return 1;
     return 0;
 }

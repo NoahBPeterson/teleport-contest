@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, Is_dragon_mail, Is_dragon_scales, canspotmon, glyph_is_trap, is_dlord, is_dprince, is_mplayer, ismnum, weirdnonliving } from './nhmacrofn.js';
+import { Is_container, Is_dragon_armor, Is_dragon_mail, canspotmon, glyph_is_trap, is_dlord, is_dprince, is_mplayer, ismnum, nonliving } from './nhmacrofn.js';
 import { Antimagic, BInvis, Blind, BlindedTimeout, Cold_resistance, Drain_resistance, ELevitation, Fire_resistance, HBlinded, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Poison_resistance, Role_switch, Shock_resistance, Sick, Slimed, Stone_resistance, Upolyd, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu, tutorial_dnum } from './nhprop.js';
 import { aligns } from './role.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, iflags, program_state, svb, svc, svd, svl, svm, svn, svq, u, uarmg, uleft, uright, uswapwep, uwep } from './decl.js';
@@ -1566,7 +1566,7 @@ export function defends(adtyp, otmp) {
         return 0;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
         return schar((cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == adtyp));
-    if ((Is_dragon_scales(otmp) || Is_dragon_mail(otmp))) {
+    if (Is_dragon_armor(otmp)) {
         let otyp = cptr.ldI16o(otmp, $obj_otyp);
         if (Is_dragon_mail(otmp))
             otyp = (otyp + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)) | 0;
@@ -2283,7 +2283,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         }
     }
     if (spec_ability(otmp, 256n)) {
-        let life = (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mdef, $monst_data))) ? __sl124 : __sl125;
+        let life = nonliving(cptr.ldPtro(mdef, $monst_data)) ? __sl124 : __sl125;
         if (!youdefend) {
             let m_lev = cptr.ld1uo(mdef, $monst_m_lev);
             let mhpmax = cptr.ldI32o(mdef, $monst_mhpmax);

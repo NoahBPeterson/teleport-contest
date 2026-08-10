@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, bimanual, canspotmon, ceiling_hider, has_omid, has_omonst, is_hole, is_pick, is_pit, is_plural, is_rider, is_vampshifter, is_whirly, ofood, touch_petrifies, weirdnonliving } from './nhmacrofn.js';
+import { Align2amask, bimanual, canspotmon, ceiling_hider, has_omid, has_omonst, is_hole, is_pick, is_pit, is_plural, is_reviver, is_rider, is_vampshifter, is_whirly, nonliving, ofood, touch_petrifies } from './nhmacrofn.js';
 import { BLevitation, Blind, BlindedTimeout, Deaf, ELevitation, EWounded_legs, Fire_resistance, Flying, Fumbling, HBlinded, HLevitation, HWounded_legs, Half_physical_damage, Hallucination, Levitation, Luck, Passes_walls, Punished, Sick, Slimed, Stoned, Strangled, Underwater, Upolyd, Wounded_legs, mark_synch, sokoban_dnum, tutorial_dnum, wizard } from './nhprop.js';
 import { a11y, c_color_names, c_common_strings, disp, flags, ga, gb, gd, gf, gi, gl, gm, gu, gv, gy, iflags, nhcb_counts, nhcb_name, program_state, svc, svd, svh, svl, svm, svn, svp, svq, svu, u, uball, uchain, uquiver, uswapwep, uwep, ynchars } from './decl.js';
 import { fix_shop_damage, is_unpaid, obfree, sellobj, sellobj_state, stolen_value } from './shk.js';
@@ -567,7 +567,7 @@ export function* flooreffects(obj, x, y, verb) {
                             cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - damage) | 0);
                             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                                 if (canspotmon(mtmp))
-                                    (yield* pline(__sl24, (yield* Monnam(mtmp)), ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) || is_vampshifter(mtmp)) ? __sl25 : __sl26));
+                                    (yield* pline(__sl24, (yield* Monnam(mtmp)), (nonliving(cptr.ldPtro(mtmp, $monst_data)) || is_vampshifter(mtmp)) ? __sl25 : __sl26));
                                 (yield* mondied(mtmp));
                             }
                         } else {
@@ -1935,7 +1935,7 @@ export function* revive_corpse(corpse) {
     let corpsey = cptr.box(0);
     where = i16(cptr.ld1so(corpse, $obj_where));
     montype = cptr.ldI32o(corpse, $obj_corpsenm);
-    is_zomb = schar((cptr.ld1so2(mons, montype, 96, $permonst_mlet) == NHC.S_ZOMBIE || (where == NHM.OBJ_BURIED && (is_rider(cptr.add(mons, montype, 96)) || cptr.ld1so((cptr.add(mons, montype, 96)), $permonst_mlet) == NHC.S_TROLL)) ? 1 : 0));
+    is_zomb = schar((cptr.ld1so2(mons, montype, 96, $permonst_mlet) == NHC.S_ZOMBIE || (where == NHM.OBJ_BURIED && is_reviver(cptr.add(mons, montype, 96))) ? 1 : 0));
     is_uwep = schar((cptr.eq(corpse, uwep.v)));
     chewed = schar((cptr.ldI32o(corpse, $obj_oeaten) != 0));
     void cptr.strcpy(cptr.decay(cname), (yield* corpse_xname(corpse, chewed ? __sl220 : null, NHM.CXN_SINGULAR)));

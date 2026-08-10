@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_WALL, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mgivenname, weirdnonliving } from './nhmacrofn.js';
+import { IS_WALL, canspotmon, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_monster, glyph_is_object, glyph_to_mon, glyph_to_obj, has_mgivenname, nonliving } from './nhmacrofn.js';
 import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
@@ -549,11 +549,11 @@ export function wiz_kill() {
             let adjs = tame ? (!seen ? __sl11 : __sl12) : (!seen ? __sl13 : null);
             let Mn = x_monnam(mtmp, articl, adjs, flgs, 0);
             if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
-                You(__sl14, (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) ? __sl15 : __sl16, Mn);
+                You(__sl14, nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl15 : __sl16, Mn);
                 xkilled(mtmp, NHM.XKILL_NOMSG);
             } else {
                 cptr.st1o(svc, $context_info_mon_moving, 1);
-                pline(__sl17, upstart(Mn), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) ? __sl18 : __sl19);
+                pline(__sl17, upstart(Mn), nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl18 : __sl19);
                 monkilled(mtmp, null, NHM.AD_PHYS);
                 cptr.st1o(svc, $context_info_mon_moving, 0);
             }
@@ -1028,7 +1028,7 @@ export function wiz_smell() {
                 You(__sl88, body_part(NHC.ARM));
             if (!usmellmon(mptr))
                 pline(__sl89, is_you ? __sl90 : __sl91);
-            if (!((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))))
+            if (!glyph_is_monster(glyph))
                 map_invisible(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
         } else {
             You(__sl92);
@@ -1684,8 +1684,8 @@ export function wiz_display_macros() {
                 putstr()(win, 0, cptr.decay(buf));
             }
         }
-        if (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph)))) {
-            test = (glyph_is_normal_female_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS))))))));
+        if (glyph_is_monster(glyph)) {
+            test = glyph_to_mon(glyph);
             if (test < 0 || test >= NHC.NUMMONS) {
                 if (!trouble++)
                     putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
@@ -1693,8 +1693,8 @@ export function wiz_display_macros() {
                 putstr()(win, 0, cptr.decay(buf));
             }
         }
-        if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) {
-            test = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) ? NHC.STATUE : ((glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) ? (((glyph) - (glyph_is_piletop_generic_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) ? (((glyph) - (glyph_is_normal_piletop_obj(glyph) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
+        if (glyph_is_object(glyph)) {
+            test = glyph_to_obj(glyph);
             if (test < 0 || test > NHC.NUM_OBJECTS) {
                 if (!trouble++)
                     putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));

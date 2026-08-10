@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_TREE, befriend_with_obj, canspotmon, eyecount, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, greatest_erosion, has_mgivenname, has_oname, helpless, is_ammo, is_axe, is_blade, is_crackable, is_hole, is_missile, is_pick, is_pit, is_pole, is_spear, is_sword, is_unicorn, is_weptool, is_wet_towel, is_whirly, ismnum, matching_launcher, min, obj_is_generic, passes_rocks, stone_missile, touch_petrifies } from './nhmacrofn.js';
+import { IS_TREE, ammo_and_launcher, befriend_with_obj, canspotmon, eyecount, glyph_is_monster, greatest_erosion, has_mgivenname, has_oname, helpless, is_ammo, is_axe, is_blade, is_crackable, is_hole, is_missile, is_pick, is_pit, is_pole, is_spear, is_sword, is_unicorn, is_weptool, is_wet_towel, is_whirly, ismnum, matching_launcher, min, obj_is_generic, passes_rocks, stone_missile, touch_petrifies } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Deaf, EWwalking, Flying, Fumbling, HConfusion, HStun, Half_gas_damage, Half_physical_damage, Hallucination, Levitation, Luck, Passes_walls, Punished, Race_switch, Role_switch, Sokoban, Stone_resistance, Underwater, Upolyd, nh_delay_output } from './nhprop.js';
 import { objects } from './objects.js';
 import { c_common_strings, flags, gb, gc, gh, gi, gk, gm, gn, go, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svq, u, uarm, uarmc, uarmg, uarmh, uarmu, uball, ublindf, uchain, uquiver, uswapwep, uwep } from './decl.js';
@@ -424,10 +424,10 @@ function throw_obj(obj, shotlimit) {
                     default:
                     break;
                 }
-                if (uwep.v && is_quest_artifact(uwep.v) && (is_ammo(obj) && matching_launcher(obj, uwep.v)))
+                if (uwep.v && is_quest_artifact(uwep.v) && ammo_and_launcher(obj, uwep.v))
                     ++multishot;
             }
-            if (multishot > 1 && skill == -22 && (is_ammo(obj) && matching_launcher(obj, uwep.v)) && (acurrstr()) < ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME) ? 16 : 18))
+            if (multishot > 1 && skill == -22 && ammo_and_launcher(obj, uwep.v) && (acurrstr()) < ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME) ? 16 : 18))
                 multishot = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 231, __sl7), rnd(multishot)) : rnd(multishot));
             multishot = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 233, __sl7), rnd(multishot)) : rnd(multishot));
             if (BigInt(multishot) > cptr.ldI64o(obj, $obj_quan))
@@ -435,7 +435,7 @@ function throw_obj(obj, shotlimit) {
             if (shotlimit > 0 && multishot > shotlimit)
                 multishot = shotlimit;
         }
-        cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, schar(((is_ammo(obj) && matching_launcher(obj, uwep.v)) ? 1 : 0)));
+        cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, schar((ammo_and_launcher(obj, uwep.v) ? 1 : 0)));
         if (multishot > 1 || shotlimit > 0) {
             You(__sl8, cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl9 : __sl0, multishot, (multishot == 1) ? singular(obj, xname) : xname(obj));
         }
@@ -532,16 +532,16 @@ function autoquiver() {
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK || (cptr.ldI16o(otmp, $obj_otyp) == NHC.FLINT && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0) || (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0)) {
             if ((uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_SLING))
                 oammo = otmp;
-            else if ((is_ammo(otmp) && matching_launcher(otmp, uswapwep.v)))
+            else if (ammo_and_launcher(otmp, uswapwep.v))
                 altammo = otmp;
             else if (!omisc)
                 omisc = otmp;
         } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS) {
             ;
         } else if (is_ammo(otmp)) {
-            if ((is_ammo(otmp) && matching_launcher(otmp, uwep.v)))
+            if (ammo_and_launcher(otmp, uwep.v))
                 oammo = otmp;
-            else if ((is_ammo(otmp) && matching_launcher(otmp, uswapwep.v)))
+            else if (ammo_and_launcher(otmp, uswapwep.v))
                 altammo = otmp;
             else
                 omisc = otmp;
@@ -576,7 +576,7 @@ function find_launcher(ammo) {
     for (oX = null, otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)
             continue;
-        if ((is_ammo(ammo) && matching_launcher(ammo, otmp))) {
+        if (ammo_and_launcher(ammo, otmp)) {
             if ((cptr.ldI32o(otmp, $obj_bknown) & 1))
                 return otmp;
             if (!oX)
@@ -636,9 +636,9 @@ export function dofire() {
         let olauncher;
         if (uwep.v && is_pole(uwep.v) && could_pole_mon())
             return use_pole(uwep.v, 1);
-        if ((is_ammo(uquiver.v) && matching_launcher(uquiver.v, uwep.v))) {
+        if (ammo_and_launcher(uquiver.v, uwep.v)) {
             obj = uquiver.v;
-        } else if ((is_ammo(uquiver.v) && matching_launcher(uquiver.v, uswapwep.v))) {
+        } else if (ammo_and_launcher(uquiver.v, uswapwep.v)) {
             cmdq_add_ec(NHC.CQ_CANNED, doswapweapon);
             cmdq_add_ec(NHC.CQ_CANNED, dofire);
             return res;
@@ -840,7 +840,7 @@ export function hurtle_step(arg, x, y) {
         let glyph = glyph_at(x, y);
         cptr.stI32o(mon, $monst_mundetected, 0);
         mnam = x_monnam(mon, NHM.ARTICLE_A, null, ((has_mgivenname(mon) ? NHM.SUPPRESS_SADDLE : 0) | NHM.AUGMENT_IT), 0);
-        if (!((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) && !((glyph) == NHC.GLYPH_INVIS_OFF))
+        if (!glyph_is_monster(glyph) && !((glyph) == NHC.GLYPH_INVIS_OFF))
             You(__sl46, mnam, (cptr.ldPtro2(genders, pronoun_gender(mon, 3), 48, $Gender_him)));
         else
             You(__sl47, mnam);
@@ -1316,7 +1316,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
     if (((cptr.ldI32o(obj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj.v, $obj_greased) & 1) | 0) && (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1526, __sl91), rn2(7)) : rn2(7))) {
         let slipok = 1;
-        if ((is_ammo(obj.v) && matching_launcher(obj.v, uwep.v))) {
+        if (ammo_and_launcher(obj.v, uwep.v)) {
             pline(__sl92, Tobjnam(obj.v, __sl93));
         } else {
             if ((cptr.ldI32o(obj.v, $obj_greased) & 1) | 0 || throwing_weapon(obj.v))
@@ -1376,7 +1376,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
             return;
         }
     } else {
-        crossbowing = schar(((is_ammo(obj.v) && matching_launcher(obj.v, uwep.v)) && weapon_type(uwep.v) == NHC.P_CROSSBOW ? 1 : 0));
+        crossbowing = schar((ammo_and_launcher(obj.v, uwep.v) && weapon_type(uwep.v) == NHC.P_CROSSBOW ? 1 : 0));
         urange = ((crossbowing ? 18 : (acurrstr())) / 2) | 0;
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.HEAVY_IRON_BALL)
             range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt), 100)) | 0)) | 0;
@@ -1391,7 +1391,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
         if (range < 1)
             range = 1;
         if (is_ammo(obj.v)) {
-            if ((is_ammo(obj.v) && matching_launcher(obj.v, uwep.v))) {
+            if (ammo_and_launcher(obj.v, uwep.v)) {
                 if (crossbowing)
                     range = NHM.BOLT_LIM;
                 else
@@ -1724,7 +1724,7 @@ export function thitmonst(mon, obj) {
         if (hmode == NHC.HMON_KICKED) {
             tmp = (tmp - (is_ammo(obj) ? 5 : 3)) | 0;
         } else if (is_ammo(obj)) {
-            if (!(is_ammo(obj) && matching_launcher(obj, uwep.v))) {
+            if (!ammo_and_launcher(obj, uwep.v)) {
                 tmp = (tmp - 4) | 0;
             } else {
                 tmp = (tmp + ((cptr.ld1so(uwep.v, $obj_spe) - greatest_erosion(uwep.v)) | 0)) | 0;

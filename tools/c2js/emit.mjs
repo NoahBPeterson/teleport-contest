@@ -1900,6 +1900,24 @@ export class Emitter {
    * re-checked per site) and HOW MANY TIMES the argument runs.
    */
   macroFnHelper(def, n, opts, fn) {
+    // Everything this decision looks at is emitted FLAT — with the
+    // function-like tier suppressed for every node underneath, which is exactly
+    // the emission the tier-off build produces. That is the yardstick the audit
+    // needs, and using the tier's own output instead was a bug with a cost:
+    // `glyph_is_object`'s body is four nested macros, the outer emission named
+    // them and the captured body (already flat, so helpers stay leaves) did
+    // not, so back-substitution could never reproduce it and the OUTER macro —
+    // the one whose call collapses twenty `glyph_at` evaluations into one —
+    // was refused at every site while its leaves were named. Comparing flat to
+    // flat lets the outermost macro win, which is both the readable spelling
+    // and the one call.
+    const saveFlat = this.inMacroFn;
+    this.inMacroFn = true;
+    try { return this.macroFnHelperFlat(def, n, opts, fn); }
+    finally { this.inMacroFn = saveFlat; }
+  }
+
+  macroFnHelperFlat(def, n, opts, fn) {
     // emitExpr walks a node more than once (the inline emission, the helper
     // body, the fallback), so count each expansion where it is first decided
     const fresh = !MFN_SEEN.has(n);
@@ -1914,7 +1932,8 @@ export class Emitter {
     // mapping from call-site order to parameter order is not one this can trust
     if (!groups || groups.length !== def.params.length) { tally('refusedArity'); return null; }
 
-    // the inline emission: what this site produces today, and the yardstick
+    // the flat inline emission: what this site produces with the tier off, and
+    // the yardstick everything below is checked against
     const S = fn.call(this, n, opts);
     if (S.rep !== 'val') { tally('refusedRep'); return null; }
 

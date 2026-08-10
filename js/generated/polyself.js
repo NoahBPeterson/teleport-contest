@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_dragon_mail, Is_dragon_scales, WrappingAllowed, canspotmon, cantwield, could_twoweap, eggs_in_water, emits_light, flaming, helpless, is_bat, is_flimsy, is_floater, is_mind_flayer, is_placeholder, is_sword, is_unicorn, is_vampshifter, is_whirly, ismnum, likes_lava, pm_invisible, telepathic, touch_petrifies, webmaker, weirdnonliving } from './nhmacrofn.js';
+import { Is_dragon_armor, Is_dragon_scales, WrappingAllowed, canspotmon, cantwield, could_twoweap, eggs_in_water, emits_light, flaming, helpless, is_bat, is_flimsy, is_floater, is_mind_flayer, is_placeholder, is_sword, is_unicorn, is_vampshifter, is_whirly, ismnum, likes_lava, nonliving, pm_invisible, telepathic, touch_petrifies, webmaker, weirdnonliving } from './nhmacrofn.js';
 import { Blind, EFlying, ELevitation, Flying, Free_action, HConfusion, HFlying, HLevitation, HStun, Hallucination, Invis, Levitation, Passes_walls, Polymorph_control, Protection_from_shape_changers, Punished, Role_switch, See_invisible, Sick, Slimed, Stone_resistance, Stoned, Strangled, Swimming, U_AP_TYPE, Ugender, Unchanging, Upolyd, wizard } from './nhprop.js';
 import { mons } from './monst.js';
 import { c_common_strings, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uskin, uswapwep, uwep, ynchars } from './decl.js';
@@ -917,7 +917,7 @@ export function polyself(psflags) {
         low_control = schar(((psflags & NHC.POLY_LOW_CTRL) != 0));
         monsterpoly = schar(((psflags & NHC.POLY_MONSTER) != 0));
         formrevert = schar(((psflags & NHC.POLY_REVERT) != 0));
-        draconian = schar((uarm.v && (Is_dragon_scales(uarm.v) || Is_dragon_mail(uarm.v)) ? 1 : 0));
+        draconian = schar((uarm.v && Is_dragon_armor(uarm.v) ? 1 : 0));
         iswere = schar((ismnum(cptr.ldI32o(u, $you_ulycn))));
         isvamp = schar(((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)) ? 1 : 0));
         controllable_poly = schar((Polymorph_control() && !(HStun() || (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
@@ -2576,7 +2576,7 @@ export function ugenocided() {
 
 /** C ref: polyself.c:2273 @returns {CPtr} */
 export function udeadinside() {
-    return !(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? __sl352 : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl353 : __sl354);
+    return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl352 : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl353 : __sl354);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

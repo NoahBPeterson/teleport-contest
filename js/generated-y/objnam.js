@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, CAN_OVERWRITE_TERRAIN, IS_FURNITURE, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, bimanual, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_gloves, is_missile, is_plural, is_poisonable, is_shield, is_weptool, is_wet_towel, ismnum } from './nhmacrofn.js';
+import { Align2amask, CAN_OVERWRITE_TERRAIN, IS_FURNITURE, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, bimanual, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_damageable, is_gloves, is_missile, is_plural, is_poisonable, is_shield, is_weptool, is_wet_towel, ismnum } from './nhmacrofn.js';
 import { Blind, EHalluc_resistance, EWarn_of_mon, Flying, Glib, Levitation, Luck, URIGHTY, wizard } from './nhprop.js';
 import { impossible, pline } from './pline.js';
 import { copynchars, digit, dist2, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, ordin, s_suffix, str_start_is, strcasecpy, strncmpi, strstri, strsubst, upstart } from './hacklib.js';
@@ -1676,7 +1676,7 @@ function add_erosion_words(obj, prefix) {
     let iscrys = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSKNIFE));
     let rknown;
     rknown = schar(((cptr.ldI32o(iflags, $instance_flags_override_ID) == 0) ? (cptr.ldI32o(obj, $obj_rknown) & 1) | 0 : 1));
-    if (!((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(obj) || is_rottable(obj) || is_corrodeable(obj) || is_crackable(obj)) && !iscrys)
+    if (!is_damageable(obj) && !iscrys)
         return;
     if ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 && !iscrys) {
         switch ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) {
@@ -2229,7 +2229,7 @@ export function not_fully_identified(otmp) {
     if ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0 || (cptr.ld1so(otmp, $obj_oclass) != NHC.ARMOR_CLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(otmp) && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS))
         return 0;
     else
-        return schar(((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp) ? 1 : 0));
+        return schar(is_damageable(otmp));
 }
 
 /** C ref: objnam.c:1824 — @param {CPtr} otmp @param {CPtr} adjective @param {CUInt} cxn_flags @returns {CPtr} */
@@ -4891,7 +4891,7 @@ export function* readobjnam(bp, no_wish) {
                 cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, cptr.ldI32o(d, $_readobjnam_data_eroded) >>> 0);
             if (cptr.ldI32o(d, $_readobjnam_data_eroded2) && (is_corrodeable(cptr.ldPtr(d)) || is_rottable(cptr.ldPtr(d))))
                 cptr.stI32o(cptr.ldPtr(d), $obj_oeroded2, cptr.ldI32o(d, $_readobjnam_data_eroded2) >>> 0);
-            if (cptr.ldI32o(d, $_readobjnam_data_erodeproof) && (((((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(cptr.ldPtr(d)) || is_rottable(cptr.ldPtr(d)) || is_corrodeable(cptr.ldPtr(d)) || is_crackable(cptr.ldPtr(d))) || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.CRYSKNIFE))
+            if (cptr.ldI32o(d, $_readobjnam_data_erodeproof) && (is_damageable(cptr.ldPtr(d)) || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.CRYSKNIFE))
                 cptr.stI32o(cptr.ldPtr(d), $obj_oerodeproof, (Luck() >= 0 || wizard() ? 1 : 0) >>> 0);
         }
         if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WAND_CLASS) {

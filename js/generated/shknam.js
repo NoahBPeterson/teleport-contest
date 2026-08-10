@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { has_eshk, ismnum, vegan } from './nhmacrofn.js';
+import { has_eshk, ismnum, vegetarian } from './nhmacrofn.js';
 import { Hallucination, display_nhwindow, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
@@ -1109,7 +1109,7 @@ function veggy_item(obj, otyp) {
         if (otyp == NHC.TIN && corpsenm == NHC.NON_PM)
             return schar((cptr.ld1so(obj, $obj_spe) == 1));
         if (otyp == NHC.TIN || otyp == NHC.CORPSE)
-            return schar((ismnum(corpsenm) && (vegan(cptr.add(mons, corpsenm, 96)) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 1 : 0));
+            return schar((ismnum(corpsenm) && vegetarian(cptr.add(mons, corpsenm, 96)) ? 1 : 0));
     }
     return 0;
 }

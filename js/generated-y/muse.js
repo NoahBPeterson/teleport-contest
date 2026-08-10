@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, Is_dragon_mail, Is_dragon_scales, Is_mbag, SchroedingersBox, bimanual, canspotmon, flaming, helpless, is_Vlad, is_bat, is_floater, is_hole, is_pit, is_plural, is_unicorn, is_vampshifter, ismnum, m_next2u, touch_petrifies, weirdnonliving } from './nhmacrofn.js';
+import { Is_container, Is_dragon_mail, Is_dragon_scales, Is_mbag, SchroedingersBox, bimanual, canspotmon, helpless, is_Vlad, is_bat, is_floater, is_hole, is_pit, is_plural, is_unicorn, is_vampshifter, ismnum, m_next2u, nonliving, slimeproof, touch_petrifies } from './nhmacrofn.js';
 import { Antimagic, Blind, BlindedTimeout, Deaf, EReflecting, Half_spell_damage, Hallucination, See_invisible, Sokoban, Teleport_control, U_AP_TYPE, Ugender, Upolyd, cliparound, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, c_color_names, c_common_strings, cg, flags, gb, gc, gm, gn, gt, gu, gv, gy, gz, hands_obj, iflags, svc, svd, svl, svm, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uskin, uswapwep, uwep } from './decl.js';
 import { discover_object, objdescr_is, observe_object } from './o_init.js';
@@ -2262,7 +2262,7 @@ export function rnd_misc_item(mtmp) {
         return 0;
     if (difficulty < 6 && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2666, __sl147), rn2(30)) : rn2(30)))
         return (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2667, __sl147), rn2(6)) : rn2(6)) ? NHC.POT_POLYMORPH : NHC.WAN_POLYMORPH;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2669, __sl147), rn2(40)) : rn2(40)) && !(((cptr.ldU64o((pm), $permonst_mflags2) & 2n) != 0n) || cptr.eq((pm), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(pm)) && !is_vampshifter(mtmp))
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2669, __sl147), rn2(40)) : rn2(40)) && !nonliving(pm) && !is_vampshifter(mtmp))
         return NHC.AMULET_OF_LIFE_SAVING;
     switch ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2672, __sl147), rn2(3)) : rn2(3))) {
         case 0:
@@ -2314,7 +2314,7 @@ export function* searches_for_item(mon, obj) {
         break;
         case NHC.AMULET_CLASS:
         if (typ == NHC.AMULET_OF_LIFE_SAVING)
-            return schar((!((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mon, $monst_data))) || is_vampshifter(mon))));
+            return schar((!(nonliving(cptr.ldPtro(mon, $monst_data)) || is_vampshifter(mon))));
         if (typ == NHC.AMULET_OF_REFLECTION || typ == NHC.AMULET_OF_GUARDING)
             return 1;
         break;
@@ -2493,7 +2493,7 @@ function cures_stoning(mon, obj, tinok) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID)
         return 1;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME)
-        return schar((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(cptr.ldPtro(mon, $monst_data)) || (cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
+        return schar(slimeproof(cptr.ldPtro(mon, $monst_data)));
     if (cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE && (cptr.ldI16o(obj, $obj_otyp) != NHC.TIN || !tinok))
         return 0;
     if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.NON_PM)
@@ -2524,7 +2524,7 @@ export function* munslime(mon, by_you) {
     let obj;
     let odummy = cptr.alloc(216);
     let mptr = cptr.ldPtro(mon, $monst_data);
-    if ((cptr.eq((mptr), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(mptr) || (cptr.ld1so((mptr), $permonst_mlet) == NHC.S_GHOST)))
+    if (slimeproof(mptr))
         return 0;
     if (cptr.ldI32o(mon, $monst_meating) || helpless(mon))
         return 0;
@@ -2650,7 +2650,7 @@ function* muse_unslime(mon, obj, trap, by_you) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1)) {
             if (by_you) {
                 if (vis)
-                    (yield* pline_mon(mon, __sl184, (yield* Monnam(mon)), (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mon, $monst_data))) ? __sl185 : __sl186));
+                    (yield* pline_mon(mon, __sl184, (yield* Monnam(mon)), nonliving(cptr.ldPtro(mon, $monst_data)) ? __sl185 : __sl186));
                 (yield* xkilled(mon, 5));
             } else
                 (yield* monkilled(mon, __sl187, NHM.AD_FIRE));

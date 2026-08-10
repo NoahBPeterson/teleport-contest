@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, eyecount, is_ammo, is_boots, is_corrodeable, is_gloves, is_plural, is_poisonable, is_vampshifter, is_weptool, ismnum, likes_lava, mon_perma_blind } from './nhmacrofn.js';
+import { canspotmon, eyecount, is_ammo, is_corrodeable, is_plural, is_poisonable, is_vampshifter, is_weptool, ismnum, likes_fire, mon_perma_blind, pair_of } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, BBlinded, BInvis, BLevitation, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only, Cold_resistance, Deaf, Detect_monsters, EBlinded, EHalluc_resistance, EWarn_of_mon, Fast, Fire_resistance, Fixed_abil, Free_action, Glib, HBlinded, HConfusion, HDeaf, HDetect_monsters, HFast, HHallucination, HInvis, HSee_invisible, HStun, Half_gas_damage, Half_physical_damage, Halluc_resistance, Hallucination, Infravision, Invis, Invisible, Levitation, PermaBlind, Poison_resistance, Protection_from_shape_changers, Punished, See_invisible, Sick, Sleep_resistance, Slimed, Stoned, Strangled, U_AP_TYPE, Unchanging, Underwater, Upolyd, Very_fast, Vomiting, Wounded_legs, display_nhwindow } from './nhprop.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, cg, disp, flags, gm, gn, gp, gu, gv, gy, hands_obj, iflags, svc, svd, svl, svm, u, uarmc, uarmg, uarmh, uball, ublindf, uwep, ynchars } from './decl.js';
 import { erode_obj, fire_damage, float_up, unconscious, water_damage } from './trap.js';
@@ -1341,7 +1341,7 @@ function peffect_oil(otmp) {
     let good_for_you = 0;
     let vulnerable;
     if ((cptr.ldI32o(otmp, $obj_lamplit) & 1)) {
-        if ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+        if (likes_fire(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             pline(__sl144);
             good_for_you = 1;
         } else {
@@ -2282,7 +2282,7 @@ export function dodip() {
     if (inaccessible_equipment(obj, __sl239, 0))
         return NHM.ECMD_OK;
     is_hands = schar((cptr.eq(obj, hands_obj)));
-    shortestname = (is_hands || is_plural(obj) || (cptr.ldI16o((obj), $obj_otyp) == NHC.LENSES || is_gloves(obj) || is_boots(obj))) ? __sl240 : __sl241;
+    shortestname = (is_hands || is_plural(obj) || pair_of(obj)) ? __sl240 : __sl241;
     drink_ok_extra = 0;
     if (is_hands) {
         nh_snprintf(__sl242, 2299, cptr.decay(obuf), 128n, __sl243, makeplural(body_part(NHC.HAND)));

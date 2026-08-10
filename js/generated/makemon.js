@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, IS_WALL, canspotmon, emits_light, greatest_erosion, has_edog, has_emin, has_mcorpsenm, has_mgivenname, is_bat, is_dprince, is_floater, is_lminion, is_mplayer, is_ndemon, is_placeholder, is_rider, is_sword, is_unicorn, is_whirly, weirdnonliving } from './nhmacrofn.js';
+import { ARM_BONUS, Align2amask, IS_WALL, canspotmon, emits_light, has_edog, has_emin, has_mcorpsenm, has_mgivenname, is_bat, is_dprince, is_floater, is_lminion, is_mplayer, is_ndemon, is_placeholder, is_rider, is_sword, is_unicorn, is_whirly, nonliving } from './nhmacrofn.js';
 import { Blind, Protection_from_shape_changers, quest_dnum, raw_print, sokoban_dnum, wizard } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gs, gu, gv, iflags, svc, svd, svl, svm, svq, svr, u, uwep } from './decl.js';
 import { In_V_tower, In_hell, In_mines, In_quest, Is_special, depth, level_difficulty, on_level } from './dungeon.js';
@@ -693,7 +693,7 @@ function m_initinv(mtmp) {
             else
                 otmp = mongets(mtmp, NHC.LEATHER_ARMOR);
             if (otmp) {
-                mac = (mac + ((((cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((otmp), $obj_spe)) | 0) - ((greatest_erosion(otmp)) < (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(otmp)) : (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
@@ -702,7 +702,7 @@ function m_initinv(mtmp) {
             else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 654, __sl7), rn2(2)) : rn2(2)))
                 otmp = mongets(mtmp, NHC.DENTED_POT);
             if (otmp) {
-                mac = (mac + ((((cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((otmp), $obj_spe)) | 0) - ((greatest_erosion(otmp)) < (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(otmp)) : (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
@@ -711,7 +711,7 @@ function m_initinv(mtmp) {
             else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 661, __sl7), rn2(2)) : rn2(2)))
                 otmp = mongets(mtmp, NHC.LARGE_SHIELD);
             if (otmp) {
-                mac = (mac + ((((cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((otmp), $obj_spe)) | 0) - ((greatest_erosion(otmp)) < (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(otmp)) : (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
@@ -720,7 +720,7 @@ function m_initinv(mtmp) {
             else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 668, __sl7), rn2(2)) : rn2(2)))
                 otmp = mongets(mtmp, NHC.HIGH_BOOTS);
             if (otmp) {
-                mac = (mac + ((((cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((otmp), $obj_spe)) | 0) - ((greatest_erosion(otmp)) < (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(otmp)) : (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
@@ -729,7 +729,7 @@ function m_initinv(mtmp) {
             else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 675, __sl7), rn2(2)) : rn2(2)))
                 otmp = mongets(mtmp, NHC.LEATHER_CLOAK);
             if (otmp) {
-                mac = (mac + ((((cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1) + cptr.ld1so((otmp), $obj_spe)) | 0) - ((greatest_erosion(otmp)) < (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)) ? (greatest_erosion(otmp)) : (cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_oc1)))) | 0)) | 0;
+                mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
@@ -1771,7 +1771,7 @@ export function grow_up(mtmp, victim) {
         fem = (((cptr.ldU64o((ptr), $permonst_mflags2) & 65536n) != 0n) ? 0 : (((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n) ? 1 : (cptr.ldI32o(mtmp, $monst_female) & 1) | 0)) >>> 0;
         if (cptr.ld1uo2(svm, newtype, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
             if (canspotmon(mtmp))
-                pline(__sl43, mon_nam(mtmp), an(pmname(ptr, Mgender(mtmp))), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)), (((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(ptr)) ? __sl44 : __sl45);
+                pline(__sl43, mon_nam(mtmp), an(pmname(ptr, Mgender(mtmp))), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)), nonliving(ptr) ? __sl44 : __sl45);
             set_mon_data(mtmp, ptr);
             mondied(mtmp);
             return null;

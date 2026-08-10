@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_WALL, canspotmon, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_emin, helpless, is_lminion, is_mplayer, is_vampshifter, is_weptool } from './nhmacrofn.js';
+import { IS_WALL, canspotmon, glyph_is_statue, glyph_to_mon, has_emin, helpless, is_lminion, is_mplayer, is_vampshifter, is_weptool } from './nhmacrofn.js';
 import { Blind, Conflict, Deaf, Hallucination, Invis, Race_switch, SYSOPT_SEDUCE, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { c_common_strings, flags, ga, gc, gi, gm, gn, gu, gv, gy, iflags, svc, svd, svl, svm, svq, svr, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uwep } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -998,7 +998,7 @@ function mon_is_gecko(mon) {
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)))
         return 0;
     glyph = glyph_at(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
-    return schar(((glyph_is_normal_female_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(glyph) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(glyph) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(glyph) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(glyph) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))) == NHC.PM_GECKO));
+    return schar((glyph_to_mon(glyph) == NHC.PM_GECKO));
 }
 
 const __static_domonnoise_vampmsg = cptr.alloc(2 * 8);
@@ -1636,7 +1636,7 @@ export function tiphat() {
         vismon = (mtmp && canseemon(mtmp) ? 1 : 0);
         glyph = glyph_at(i16(x), i16(y));
         unseen = ((glyph) == NHC.GLYPH_INVIS_OFF);
-        statue = ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || (!vismon && !unseen && (otmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null && cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) ? 1 : 0);
+        statue = (glyph_is_statue(glyph) || (!vismon && !unseen && (otmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null && cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) ? 1 : 0);
         if (vismon && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
             vismon = 0, mtmp = null;
         if (vismon || unseen || (statue && Hallucination()) || (range == 1 && mtmp && responsive_mon_at(x, y) && !(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT)) || !(accessible(i16(x), i16(y)) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS))
