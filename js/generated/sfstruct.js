@@ -1435,3 +1435,20 @@ export function mread(fd, buf, len) {
 function sfstruct_read_error() {
     ;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 6 bindings: 3 rebound+refilled, 0 rebound, 3 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(historical_sfo_procs), S(historical_sfi_procs), S(restoreinfo), S(bw_sticky), S(bw_buffered), S(bw_FILE)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("sfstruct.js: __resetState before __captureState");
+    historical_sfo_procs = P(r[0]);
+    historical_sfi_procs = P(r[1]);
+    restoreinfo = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+}
+// --- END c2js reset block ---

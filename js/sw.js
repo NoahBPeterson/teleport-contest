@@ -53,18 +53,55 @@ const RETRY = '-2';
 const PROBE_PARAM = '__nhprobe';
 const PROBE_ALIVE = '__nh_sw_alive__';
 
-const waiters = [];   // pending resolve() callbacks, oldest first
-const keys = [];      // keys that arrived while nobody was waiting
+// One lane per engine realm, not one queue for the page.
+//
+// js/boot/interactive.mjs no longer tries the transports one after another: it
+// starts them together and plays whichever comes up first (a rung that fails by
+// *hanging* used to cost the page every later rung's timeout before it could
+// paint anything). So more than one engine realm can be parked on /js/__nhkey
+// at the same time, and a single queue would hand the player's keystroke to
+// whichever realm happened to ask last — including one the driver has already
+// abandoned, which is a keystroke that simply disappears.
+//
+// Each realm carries a token (`?t=<token>` on the key URL, `token` on the
+// message) and gets a queue of its own. A key posted for a token nobody is
+// waiting on waits in that token's lane; a key posted for a lane that was
+// closed goes nowhere, which is the correct fate for a key aimed at a realm
+// that is no longer playing.
+const lanes = new Map();      // token -> { waiters: [], keys: [] }
+
+function lane(token) {
+    const t = token || '';
+    let l = lanes.get(t);
+    if (!l) { l = { waiters: [], keys: [] }; lanes.set(t, l); }
+    return l;
+}
 
 self.addEventListener('install', (e) => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('message', (e) => {
     const m = e.data;
-    if (!m || m.type !== 'nhkey') return;
-    const w = waiters.shift();
-    if (w) w(String(m.code));
-    else keys.push(String(m.code));
+    if (!m) return;
+    if (m.type === 'nhkey') {
+        const l = lane(m.token);
+        const w = l.waiters.shift();
+        if (w) w(String(m.code));
+        else l.keys.push(String(m.code));
+        return;
+    }
+    // The driver has finished with this realm — a rung that lost the boot race,
+    // or the engine of a game that has ended. Answer anything it has parked
+    // here with EOF so it unwinds out of getchar() and lets its worker go,
+    // rather than sitting on a request for the full 20 s park. This is the only
+    // way to retire a SharedWorker: it has no terminate(), so the engine has to
+    // be told to stop waiting.
+    if (m.type === 'nhclose') {
+        const l = lanes.get(m.token || '');
+        if (!l) return;
+        lanes.delete(m.token || '');
+        for (const w of l.waiters.splice(0, l.waiters.length)) w('-1');
+    }
 });
 
 const plain = (body) => new Response(body, {
@@ -80,6 +117,8 @@ self.addEventListener('fetch', (e) => {
 
     if (!url.pathname.endsWith(KEY_PATH)) return;   // everything else: network
 
+    const l = lane(url.searchParams.get('t'));
+
     e.respondWith(new Promise((resolve) => {
         const answer = (body) => resolve(plain(body));
         // Hand over everything queued, not just the next key. A round-trip
@@ -88,13 +127,18 @@ self.addEventListener('fetch', (e) => {
         // SharedArrayBuffer; a player holding a movement key (or a harness
         // injecting keys faster than the game consumes them) pays it once for
         // the whole burst instead of once per key.
-        if (keys.length) { const batch = keys.splice(0, keys.length); return answer(batch.join(',')); }
+        if (l.keys.length) { const batch = l.keys.splice(0, l.keys.length); return answer(batch.join(',')); }
         const timer = setTimeout(() => {
-            const i = waiters.indexOf(deliver);
-            if (i >= 0) waiters.splice(i, 1);
+            const i = l.waiters.indexOf(deliver);
+            if (i >= 0) l.waiters.splice(i, 1);
+            // A lane nobody is parked on and nobody has typed into is a realm
+            // that has gone away without saying so (a closed tab, a reload).
+            // Drop it, or a long-lived service worker accumulates one dead lane
+            // per page view.
+            if (!l.waiters.length && !l.keys.length) lanes.delete(url.searchParams.get('t') || '');
             answer(RETRY);
         }, 20000);
         const deliver = (body) => { clearTimeout(timer); answer(body); };
-        waiters.push(deliver);
+        l.waiters.push(deliver);
     }));
 });

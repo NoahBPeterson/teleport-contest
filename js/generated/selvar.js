@@ -748,3 +748,16 @@ export function selection_force_newsyms(sel) {
             if (selection_getpoint(x, y, sel))
                 newsym_force(x, y);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 0 rebound+refilled, 1 rebound, 1 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(selection_flood_check_func), S(__static_selection_floodfill_floodfill_stack_overrun)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("selvar.js: __resetState before __captureState");
+    selection_flood_check_func = P(r[0]);
+    P(r[1]);
+}
+// --- END c2js reset block ---

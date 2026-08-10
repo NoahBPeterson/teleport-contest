@@ -63,3 +63,15 @@ export function regex_free(re) {
     regfree(re);
     cptr.free(re);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(regex_id)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("posixregex.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

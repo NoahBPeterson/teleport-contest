@@ -147,17 +147,42 @@ export function eq(a, b) {
 
 // numeric identity for pointer→integer casts ((size_t)p, point2uint): stable
 // within a run, NOT a C address — suitable for hash seeds and integer compares
-const __bufIds = new WeakMap();
+// `let`, not `const`: putting a graph back (see __resetState at the foot of
+// this file) has to REPLACE this map, because a second game must be able to
+// touch a buffer for the "first" time again.
+let __bufIds = new WeakMap();
 let __nextBufId = 1;
+// Ordered log of the keys that were given an id BEFORE the pristine snapshot
+// was taken — i.e. during module-graph evaluation. Null once the snapshot has
+// been taken, which both stops the logging and stops it retaining anything.
+//
+// Measured, on the graph as it stands: this log is EMPTY. Nothing in the 176
+// generated modules takes an address at evaluation time (`cptr.lit` allocates
+// but never calls addr), so `__nextBufId` is still 1 when the last module
+// finishes. The log exists anyway because that is a property of today's
+// emitted code and not of the design: if a future graph ever does take an
+// address at evaluation time, replaying this prefix is what keeps a reset
+// numbering identical to a fresh realm's, and its absence would be a silent
+// parity bug rather than a loud one.
+let __bufIdLog = [];
 /** @param {CPtr|null} p @returns {bigint} */
 export function addr(p) {
   if (p === null || p === undefined) return 0n;
   if (typeof p !== 'object' && typeof p !== 'function') return BigInt(p) || 0n;
-  if (p.isBox) { let id = __bufIds.get(p); if (!id) { id = __nextBufId++ * (1 << 26); __bufIds.set(p, id); } return BigInt(id); }
+  if (p.isBox) { let id = __bufIds.get(p); if (!id) { id = __newBufId(p); } return BigInt(id); }
   const key = p.buf !== undefined ? p.buf : p; // function designators: identity
   let base = __bufIds.get(key);
-  if (!base) { base = __nextBufId++ * (1 << 26); __bufIds.set(key, base); }
+  if (!base) { base = __newBufId(key); }
   return BigInt(base + (p.off || 0));
+}
+
+// Out of line: this runs a few hundred times a session, against addr()'s tens
+// of thousands, and keeping it out of addr's body leaves that body inlinable.
+function __newBufId(key) {
+  const id = __nextBufId++ * (1 << 26);
+  __bufIds.set(key, id);
+  if (__bufIdLog !== null) __bufIdLog.push(key);
+  return id;
 }
 
 // ------------------------------------------------------- scalar load/store ----
@@ -1281,4 +1306,104 @@ export function write(fd, buf, n) {
   if (!f || !f.writeBuf) return -1n;
   for (let i = 0; i < n; i++) f.writeBuf.push(buf.buf[buf.off + i]);
   return BigInt(n);
+}
+
+// ---------------------------------------------------------------------------
+// Letting a spent graph go.
+//
+// __ptrRegistry above is append-only by construction: an id is an index into
+// it, so an entry can never be reused or dropped while the ids are still live.
+// That is the right trade for a game that runs once and exits, and it is a
+// problem for a process that plays many games in a row. Node's yieldable rung
+// (js/boot/main-thread-engine.mjs) forks a copy of this module per game because
+// that is the only per-game freshness a `node --permission` sandbox allows —
+// no worker to terminate, no child to exit — and a forked module graph can
+// never be unloaded, so everything it can still reach is in the heap for the
+// life of the process. frozen/playability_runner.mjs plays the whole corpus
+// that way, in one process.
+//
+// Most of what a spent graph holds is the graph, and that is not negotiable.
+// What is negotiable is the state below, which no longer means anything once
+// the game that filled it is over: every pointer it ever stored through a
+// struct field, including everything C freed long ago, and whatever the VFS
+// was still holding open.
+//
+// The one precondition, and it is absolute: the game must be over and its
+// module graph must never run again. A live game whose pointer table has been
+// dropped reads garbage back out of every pointer field it has stored. That is
+// why this is named like the internal it is and why its only caller is an
+// engine tearing a finished game down.
+export function __releaseSpentGraph() {
+    __ptrRegistry.length = 0;
+    __intPtrs.clear();
+    __fmtCache.clear();
+    __fds.clear();
+}
+
+// ---------------------------------------------------------------------------
+// Letting a graph run again.
+//
+// The counterpart to __releaseSpentGraph, and a stricter thing: releasing only
+// has to free memory, whereas this has to leave the module in a state a fresh
+// realm would be indistinguishable from. js/generated/__reset.js drives it
+// alongside the per-module __resetState()s that put the C globals back; see
+// js/boot/reset-realm.mjs for why any of this exists.
+//
+// The hard part is identity, not bytes. Two of the things below are numbering
+// schemes whose output C can see:
+//
+//   __ptrRegistry — a stored pointer's id IS its index here, so the id a given
+//     pointer gets depends on how many pointers were stored before it. A fresh
+//     realm's second segment starts numbering from wherever *evaluation* left
+//     off (9,956 entries, all from top-level `stPtro` initialisers), not from
+//     wherever the previous game left off. Truncating to the captured length
+//     reproduces that exactly: the entries below it are the same objects the
+//     same initialisers put there, and the arenas holding those ids have been
+//     restored to the same bytes.
+//
+//   __bufIds / __nextBufId — addr()'s ids are handed out on first touch, and
+//     they are not decorative: the transpiled Lua reads them as the string-hash
+//     seed for a lua_State (generated/lstate.js), as math.random's seed
+//     (lmathlib.js), and as the hash that decides table slot placement and
+//     therefore `next()` iteration order (ltable.js). NetHack generates levels
+//     through that VM. A reset that left this map populated would give the
+//     second game different Lua seeds and a different table iteration order
+//     than a fresh realm — a divergence that would surface as a differently
+//     generated dungeon, far from its cause. So the map is replaced outright
+//     and the counter goes back to its captured value, which makes the second
+//     game's first touch a first touch again.
+let __capture = null;
+
+/** Record the pristine state. Called once, by js/generated/__reset.js. */
+export function __captureState() {
+    __capture = {
+        nextBufId: __nextBufId,
+        bufIdLog: __bufIdLog === null ? [] : __bufIdLog,
+        ptrRegistryLen: __ptrRegistry.length,
+    };
+    __bufIdLog = null;
+}
+
+/** Put this module back to what __captureState() recorded. */
+export function __resetState() {
+    const c = __capture;
+    if (c === null) throw new Error('cptr: __resetState() before __captureState()');
+    __ptrRegistry.length = c.ptrRegistryLen;
+    __intPtrs.clear();
+    __fmtCache.clear();
+    __fds.clear();
+    __nextFd = 100;
+    // A closure over the finished run's VFS, overlay and stdout sink. The next
+    // boot installs its own (harness.mjs calls setFdHooks), but leaving this
+    // one here would let anything that reached cptr.read/write in between write
+    // into a spent game, and would retain that game's whole overlay meanwhile.
+    __fdHooks = null;
+    __bufIds = new WeakMap();
+    __nextBufId = 1;
+    // Empty in practice; see __bufIdLog. Replaying it in order is what makes
+    // the invariant "ids are assigned in first-touch order from 1" survive a
+    // graph that does take addresses at evaluation time.
+    for (const k of c.bufIdLog) __newBufId(k);
+    __bufIdLog = null;
+    __nextBufId = c.nextBufId;
 }

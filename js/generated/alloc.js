@@ -78,3 +78,16 @@ export function FITSuint_(ull, file, line) {
         panic(__sl4, file, line);
     return uret;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 0 rebound+refilled, 1 rebound, 1 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(ptrbuf), S(ptrbufidx)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("alloc.js: __resetState before __captureState");
+    P(r[0]);
+    ptrbufidx = P(r[1]);
+}
+// --- END c2js reset block ---

@@ -1349,3 +1349,19 @@ export function NH_abort(why) {
     panictrace_setsignals(0);
     abort();
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 5 bindings: 0 rebound+refilled, 2 rebound, 3 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(deaths), S(ends), S(Schroedingers_cat), S(death_fixups), S(__static_NH_abort_aborting)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("end.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    Schroedingers_cat = P(r[2]);
+    P(r[3]);
+    __static_NH_abort_aborting = P(r[4]);
+}
+// --- END c2js reset block ---

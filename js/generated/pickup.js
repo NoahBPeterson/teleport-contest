@@ -3163,3 +3163,24 @@ function tipcontainer_checks(box, targetbox, allowempty) {
     }
     return NHC.TIPCHECK_OK;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 10 bindings: 0 rebound+refilled, 2 rebound, 8 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(slightloadpfx), S(moderateloadpfx), S(nearloadpfx), S(overloadpfx), S(__static_add_valid_menu_class_vmc_count), S(__static_autopick_testobj_costly), S(__static_observe_quantum_cat_sc), S(__static_explain_container_prompt_explaintext), S(__static_in_or_out_menu_lootchars), S(__static_in_or_out_menu_abc_chars)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("pickup.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    __static_add_valid_menu_class_vmc_count = P(r[4]);
+    __static_autopick_testobj_costly = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+}
+// --- END c2js reset block ---

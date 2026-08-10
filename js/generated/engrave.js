@@ -1529,3 +1529,16 @@ const blind_writing = [[68, 102, 109, 105, 98, 101, 34, 69, 123, 113, 101, 109, 
 function blengr() {
     return cptr.decay(blind_writing[(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1767, __sl193), rn2(blind_writing.length)) : rn2(blind_writing.length))]);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 0 rebound+refilled, 0 rebound, 2 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(rubouts), S(blind_writing)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("engrave.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+}
+// --- END c2js reset block ---

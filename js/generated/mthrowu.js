@@ -1417,3 +1417,19 @@ export function hits_bars(obj_p, x, y, barsx, barsy, always_hit, whodidit) {
     }
     return hits;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 5 bindings: 0 rebound+refilled, 1 rebound, 4 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(breathwep), S(hallublasts), S(__static_return_from_mtoss_do_not_annoy), S(__static_hit_bars_se), S(__static_hit_bars_barsounds)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mthrowu.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    __static_return_from_mtoss_do_not_annoy = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+}
+// --- END c2js reset block ---

@@ -2040,3 +2040,20 @@ function mk_knox_portal(x, y) {
     } while (0);
     place_branch(br, x, y);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 6 bindings: 1 rebound+refilled, 1 rebound, 4 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(trap_engravings), S(__static_clear_level_structures_zerorm), S(__static_fill_ordinary_room_supply_items), S(__static_fill_ordinary_room_extra_classes), S(__static_mktrap_mktrap_err), S(__static_generate_stairs_gen_stairs_panic)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mklev.js: __resetState before __captureState");
+    P(r[0]);
+    __static_clear_level_structures_zerorm = P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    __static_mktrap_mktrap_err = P(r[4]);
+    P(r[5]);
+}
+// --- END c2js reset block ---

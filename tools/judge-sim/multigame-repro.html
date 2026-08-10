@@ -1,0 +1,124 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>judge-sim multi-game repro</title>
+<div id="game-container"></div>
+<pre id="out">starting…</pre>
+<script type="module">
+// multigame-repro.html — two INTERACTIVE games, one page, no reload.
+//
+// tools/judge-sim/viewer-repro.html covers the same shape on the *scoring*
+// path (one import of js/jsmain.js, many runSegment calls). This covers it on
+// the interactive path, which nothing here could reach before: index.html plays
+// exactly one game and its "play again" button is a location.reload(), so the
+// only driver that would ever build a second NethackGame in a live page is
+// somebody else's — the judge's session loop, if it really does drive many
+// sessions through one page.
+//
+// The question it exists to answer is specific. js/boot/main-thread-engine.mjs
+// runs the transpiled engine in THIS realm, and C file-scope state is global:
+// a second game in the same realm would resume the first one's dungeon. That
+// must not be what happens. What must happen is one of
+//
+//   - a fresh worker transport takes game 2 (a page with workers), or
+//   - ReplayEngine takes it in throwaway worker realms (no transport), or
+//   - a clean, explained error (no workers at all),
+//
+// and never a game booted on top of a spent arena. `claimed` in
+// main-thread-engine.mjs is the guard; this page is the proof.
+//
+//   ?games=2&seed=8000&seed2=4500&keys=...   driven by playability.mjs --multigame
+//
+// Everything it learns is POSTed to /__sim/result. It narrates itself with
+// console.log('[repro] …'), which playability.mjs filters out of the console
+// tally exactly as it does for viewer-repro.html — any OTHER console line is a
+// real one and fails the run.
+
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log('[repro] ' + s); };
+
+const params = new URLSearchParams(location.search);
+const games = Number(params.get('games') || 2);
+const keys = params.get('keys') || '   lljjhhkk ';
+const datetime = params.get('datetime') || '20240101120000';
+const rc = params.get('rc') || 'OPTIONS=name:Bench\nOPTIONS=role:Valkyrie\nOPTIONS=race:human\n'
+    + 'OPTIONS=gender:female\nOPTIONS=align:neutral\nOPTIONS=!tutorial\nOPTIONS=runmode:walk\n';
+
+// ?workerless=1 stages the realm this rung exists for: a browser with no
+// Worker constructor at all. Staged by deleting the globals rather than by a
+// CSP header, because a CSP violation is a console line and the console tally
+// is part of what this page is checking. Everything downstream sees exactly
+// what such a browser presents — `new Worker` throwing — so no transport can
+// prepare, ReplayEngine cannot make a fresh realm, and the main-thread rung is
+// the only engine in the tree that can host game 1 at all.
+if (params.get('workerless') === '1') {
+    for (const k of ['Worker', 'SharedWorker']) {
+        try { Object.defineProperty(globalThis, k, { value: undefined, configurable: true }); } catch { /* frozen */ }
+    }
+    log('workerless: Worker and SharedWorker removed');
+}
+
+const report = { games: [], error: null };
+try {
+    const [{ GameDisplay }, { NethackGame }, { game }, { moveloop_core }] = await Promise.all([
+        import('/js/game_display.js'),
+        import('/js/jsmain.js'),
+        import('/js/gstate.js'),
+        import('/js/allmain.js'),
+    ]);
+
+    for (let i = 1; i <= games; i++) {
+        const entry = { n: i, mode: null, error: null, frames: 0, moves: 0, top: null, status: null };
+        try {
+            const display = new GameDisplay('game-container');
+            display.flags = { color: true };
+            const nhGame = new NethackGame({
+                seed: Number(params.get(i === 1 ? 'seed' : 'seed2') || (i === 1 ? 8000 : 4500)),
+                datetime, nethackrc: rc, storage: null,
+            });
+            nhGame._pendingDisplay = display;
+            game.nhDisplay = display;
+            const t0 = performance.now();
+            await nhGame.start();
+            entry.start_to_frame_ms = Math.round(performance.now() - t0);
+            entry.mode = nhGame.engine && nhGame.engine.mode;
+            // index.html pumps this loop for the life of the game and it is
+            // what actually moves keys in and frames out; a driver that only
+            // dispatches keydowns waits forever. Deliberately not awaited, and
+            // re-entered per game because game.program_state is replaced by
+            // start().
+            const pump = (async () => {
+                try { for (;;) { await moveloop_core(); if (game.program_state?.gameover) break; } }
+                catch (e) { /* the game ended, or the engine was stopped */ }
+            })();
+            // Drive it like a player: one keydown, wait for the frame it paints.
+            for (const ch of keys) {
+                const waited = new Promise((res) => { display.onFrame = () => { display.onFrame = null; res(); }; });
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: ch, bubbles: true }));
+                await waited;
+                entry.moves++;
+                if (game.program_state?.gameover) break;
+            }
+            entry.frames = display.frames;
+            let top = '', status = '';
+            for (let c = 0; c < 80; c++) { top += display.grid[0][c].ch; status += display.grid[22][c].ch; }
+            entry.top = top.trimEnd();
+            entry.status = status.trimEnd();
+            await nhGame.stop();
+            await Promise.race([pump, new Promise((r) => setTimeout(r, 500))]);
+            log(`game ${i}: mode=${entry.mode} moves=${entry.moves} status=${JSON.stringify(entry.status)}`);
+        } catch (e) {
+            // The contract for a game that cannot be hosted: an explained
+            // error, caught here rather than thrown at the console. Whether it
+            // *is* explained is what the assertions in playability.mjs check.
+            entry.error = String((e && e.message) || e);
+            log(`game ${i}: ERROR ${entry.error}`);
+        }
+        report.games.push(entry);
+    }
+} catch (e) {
+    report.error = String((e && e.stack) || e);
+    log('FATAL ' + report.error);
+}
+await fetch('/__sim/result', { method: 'POST', body: JSON.stringify(report, null, 2) });
+log('posted result');
+</script>

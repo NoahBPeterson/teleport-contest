@@ -2704,3 +2704,20 @@ export function speed_up(duration) {
     exercise(NHC.A_DEX, 1);
     incr_itimeout(cptr.add(cptr.add(cptr.add(u, 112), NHC.FAST, 24), 16), Number(BigInt.asIntN(32, duration)));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 6 bindings: 0 rebound+refilled, 1 rebound, 5 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(drink_ok_extra), S(vismsg), S(eyemsg), S(bottlenames), S(hbottlenames), S(__static_dodip_Dip_)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("potion.js: __resetState before __captureState");
+    drink_ok_extra = P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+}
+// --- END c2js reset block ---

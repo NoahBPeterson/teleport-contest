@@ -375,3 +375,23 @@ export function shuffle_int_array(indices, count) {
         cptr.stI32o(indices, iswap, temp, 4);
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 9 bindings: 0 rebound+refilled, 7 rebound, 2 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__rngLog), S(has_strong_rngseed), S(rng_logfile), S(rng_log_disp), S(rng_call_count), S(rng_caller_file), S(rng_caller_line), S(rng_caller_func), S(rnglist)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("rnd.js: __resetState before __captureState");
+    P(r[0]);
+    has_strong_rngseed = P(r[1]);
+    rng_logfile = P(r[2]);
+    rng_log_disp = P(r[3]);
+    rng_call_count = P(r[4]);
+    rng_caller_file = P(r[5]);
+    rng_caller_line = P(r[6]);
+    rng_caller_func = P(r[7]);
+    P(r[8]);
+}
+// --- END c2js reset block ---

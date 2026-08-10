@@ -759,3 +759,18 @@ export function teleport_state_dump() {
     fprintf(tp_sdfp, __sl56);
     fflush(tp_sdfp);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 4 bindings: 0 rebound+refilled, 4 rebound, 0 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(mvl_wtcap), S(mvl_change), S(tp_sdfp), S(tp_sdinit)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("allmain.js: __resetState before __captureState");
+    mvl_wtcap = P(r[0]);
+    mvl_change = P(r[1]);
+    tp_sdfp = P(r[2]);
+    tp_sdinit = P(r[3]);
+}
+// --- END c2js reset block ---

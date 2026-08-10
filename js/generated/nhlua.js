@@ -2708,3 +2708,41 @@ function nhlL_newstate(sbi, name) {
     }
     return L;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 27 bindings: 0 rebound+refilled, 2 rebound, 25 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(nhcore_call_names), S(nhcore_call_available), S(luapat), S(__static_nhl_get_timertype_timerstr), S(char2typ), S(__static_nhl_menu_pickX), S(__static_nhl_lua_rnglog_ctx_enabled_enabled), S(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf), S(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf), S(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf), S(__static_get_table_boolean_boolstr), S(nhl_functions), S(nhl_consts), S(__static_nhl_meta_u_index_ustruct), S(nhl_u_functions), S(ct_base_base), S(ct_base_error), S(ct_base_meta), S(ct_base_iffy), S(ct_base_unsafe), S(ct_debug_debug), S(ct_debug_safe), S(ct_os_time), S(ct_os_files)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("nhlua.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    luapat = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    __static_nhl_lua_rnglog_ctx_enabled_enabled = P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+    P(r[25]);
+    P(r[26]);
+}
+// --- END c2js reset block ---

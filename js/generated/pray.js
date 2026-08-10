@@ -2266,3 +2266,24 @@ function blocked_boulder(dx, dy) {
         return 1;
     return 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 10 bindings: 0 rebound+refilled, 3 rebound, 7 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(Moloch), S(godvoices), S(turn_undead_range), S(turn_undead_msg_cnt), S(__static_fix_worst_trouble_leftglow), S(__static_fix_worst_trouble_rightglow), S(__static_pleased_msg), S(__static_offer_real_amulet_cloud_of_smoke), S(__static_dopray_forcesuccess), S(hallu_gods)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("pray.js: __resetState before __captureState");
+    Moloch = P(r[0]);
+    P(r[1]);
+    turn_undead_range = P(r[2]);
+    turn_undead_msg_cnt = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+}
+// --- END c2js reset block ---

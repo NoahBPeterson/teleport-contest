@@ -583,3 +583,17 @@ export function tty_putmsghistory(msg, restoring_msghist) {
         __static_tty_putmsghistory_initd = 0;
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 3 bindings: 0 rebound+refilled, 3 rebound, 0 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(snapshot_mesgs), S(__static_tty_getmsghistory_nxtidx), S(__static_tty_putmsghistory_initd)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("topl.js: __resetState before __captureState");
+    snapshot_mesgs = P(r[0]);
+    __static_tty_getmsghistory_nxtidx = P(r[1]);
+    __static_tty_putmsghistory_initd = P(r[2]);
+}
+// --- END c2js reset block ---

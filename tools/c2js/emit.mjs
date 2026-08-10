@@ -444,7 +444,15 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 // ------------------------------------------------------------- emitter ----
 
 // bump when emitter behavior changes (invalidates incremental emission)
-export const EMIT_VERSION = 8;
+//
+// 9: C2JS_RESET=1 appends a reset block to each generated module
+//    (tools/c2js/resetify.mjs). The block is a post-pass over emit.mjs's
+//    output, so nothing emit.mjs *does* changed — but the incremental path
+//    decides whether to rewrite a module by comparing this version, and a
+//    module it skips keeps the reset block belonging to its previous
+//    contents. Bumping forces the full re-emit that keeps blocks and
+//    declarations in step.
+export const EMIT_VERSION = 9;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths }) {

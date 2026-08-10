@@ -792,3 +792,26 @@ export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szp
     }
     return __static_what_datamodel_is_this_unknown;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 12 bindings: 0 rebound+refilled, 6 rebound, 6 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(nh_qsort_base), S(nh_qsort_size), S(nh_qsort_cmp_fn), S(__static_s_suffix_buf), S(__static_ing_suffix_vowel), S(__static_ing_suffix_buf), S(__static_visctrl_visctrl_bufs), S(__static_visctrl_nbuf), S(__static_sitoa_buf), S(dm), S(__static_datamodel_unknown), S(__static_what_datamodel_is_this_unknown)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("hacklib.js: __resetState before __captureState");
+    nh_qsort_base = P(r[0]);
+    nh_qsort_size = P(r[1]);
+    nh_qsort_cmp_fn = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    __static_visctrl_nbuf = P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    __static_datamodel_unknown = P(r[10]);
+    __static_what_datamodel_is_this_unknown = P(r[11]);
+}
+// --- END c2js reset block ---

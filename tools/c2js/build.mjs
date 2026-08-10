@@ -499,5 +499,74 @@ function buildAll() {
   console.log(`\nfull report: ${path.relative(repoRoot, reportPath)}`);
 }
 
-if (process.argv[2] === '--all') buildAll();
-else buildSingle(process.argv[2]);
+/**
+ * C2JS_YIELD=1 — additionally emit the yieldable build.
+ *
+ * The yield build is a whole-program rewrite of the emitter's output (every
+ * function that can reach a blocking keystroke read becomes a generator), so
+ * it necessarily runs AFTER all 176 modules exist and can see all of them at
+ * once; it is a separate pass, not a mode inside emit.mjs. Two consequences
+ * that matter:
+ *
+ *   - the synchronous build in js/generated/ is produced by exactly the same
+ *     code with the flag on or off — the flag adds work after that directory
+ *     is final, and cannot alter a byte of it;
+ *   - the rewrite sees the hand-written runtime preludes that assemble()
+ *     inlines verbatim, which emit.mjs never does.
+ *
+ * See tools/c2js/yieldify.mjs and docs/NOTES-async-engine.md.
+ */
+async function maybeYield() {
+  if (!process.env.C2JS_YIELD) return;
+  console.log('\nC2JS_YIELD=1 — emitting the yieldable build');
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'yieldify.mjs'), '--check'], { stdio: 'inherit' });
+}
+
+/**
+ * C2JS_RESET=1 — additionally emit the reset functions.
+ *
+ * Same shape as C2JS_YIELD and for the same reasons: the pass needs all 176
+ * modules to exist (it writes a barrel over them), and it needs to see the
+ * hand-written runtime preludes that assemble() inlines verbatim — rnd.js's
+ * `__rngLog`, the scored RNG log, is declared in one of them and emit.mjs
+ * never sees it.
+ *
+ * Unlike the yield build, this one writes *into* js/generated/ rather than
+ * beside it, because module-scope state can only be reset from inside the
+ * module that owns it. It appends a delimited block to each module's tail and
+ * touches nothing above it, and it strips any previous block before appending,
+ * so it is idempotent and `--strip` is an exact inverse. With the flag off the
+ * pass does not run, so the scored build is byte-for-byte what it was.
+ *
+ * BOTH BUILDS. The yieldable build in js/generated-y/ needs the same treatment
+ * — js/boot/main-thread-engine.mjs is the interactive rung a `node --permission`
+ * sandbox lands on, and it plays a whole corpus in one process — so the pass is
+ * run once per directory. It cannot be inherited through yieldify: that rewrite
+ * would turn `__captureState`'s calls to its own `S` parameter into
+ * `(yield* Y.icall(S(x)))` and leave the barrel calling generators. yieldify
+ * therefore strips the block on the way through (tools/c2js/callgraph.mjs), so
+ * js/generated-y/ is byte-identical whichever order the two flags are set in,
+ * and this pass appends to it afterwards. That also fixes the order below:
+ * maybeYield rewrites the whole of js/generated-y/ from scratch, so it must run
+ * BEFORE the reset pass writes into it.
+ *
+ * See tools/c2js/resetify.mjs, tools/c2js/reset-census.mjs and
+ * js/boot/reset-realm.mjs.
+ */
+async function maybeReset() {
+  if (!process.env.C2JS_RESET) return;
+  console.log('\nC2JS_RESET=1 — emitting per-module __resetState() + the reset barrel');
+  const { execFileSync } = await import('node:child_process');
+  for (const dir of ['js/generated', 'js/generated-y']) {
+    execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'resetify.mjs'), '--dir', dir],
+      { stdio: 'inherit' });
+  }
+}
+const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
+
+// buildAll/buildSingle may or may not return a promise depending on the path
+// taken; normalise before chaining so the hook can never mask a build failure
+// or, worse, invent one after a build that succeeded.
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset);
+else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

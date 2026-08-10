@@ -4382,3 +4382,37 @@ export function perm_invent_toggled(negated) {
     cptr.stI32o(gp, 228, NHC.toggling_not);
     in_perm_invent_toggled = 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 23 bindings: 3 rebound+refilled, 3 rebound, 17 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(wri_info), S(perminv_flags), S(in_perm_invent_toggled), S(venom_inv), S(inuse_headers), S(__static_loot_classify_def_srt_order), S(__static_loot_classify_armcat), S(__static_sortloot_zerosli), S(currencies), S(__static_getobj_only_one), S(safeq_xprn_ctx), S(removeables), S(__static_xprname_li), S(__static_display_pickinv_not_carrying_anything), S(__static_display_pickinv_not_using_anything), S(__static_display_pickinv_only_carrying_gold), S(__static_dotypeinv_prompt), S(__static_dfeature_at_altbuf), S(names), S(oth_symbols), S(oth_names), S(__static_adjust_split_Amount), S(__static_sync_perminvent_wri)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("invent.js: __resetState before __captureState");
+    wri_info = P(r[0]);
+    perminv_flags = P(r[1]);
+    in_perm_invent_toggled = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    __static_sortloot_zerosli = P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    safeq_xprn_ctx = P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    __static_sync_perminvent_wri = P(r[22]);
+}
+// --- END c2js reset block ---

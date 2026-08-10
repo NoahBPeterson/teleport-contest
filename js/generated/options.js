@@ -12896,3 +12896,82 @@ export function disregard_this_option(optidx) {
     if (optidx >= 0 && optidx < NHC.OPTCOUNT ? 1 : 0)
         cptr.st1o2(allopt, optidx, 104, 99, 1);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 68 bindings: 0 rebound+refilled, 7 rebound, 61 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(allopt_init), S(allopt), S(empty_optstr), S(duplicate), S(using_alias), S(give_opt_msg), S(opt_set_in_config), S(roleoptvals), S(OptS_type), S(def_inv_order), S(none), S(randomrole), S(to_be_done), S(defopt), S(defbrief), S(paranoia), S(menutype), S(msgwind), S(unlocktypes), S(burdentype), S(runmodes), S(sortltype), S(perminv_modes), S(objsymvals), S(default_menu_cmd_info), S(n_currently_set), S(roleopt2opt), S(__static_optfn_autounlock_plus), S(__static_optfn_disclose_valid_settings), S(__static_optfn_menu_objsyms_alt5), S(__static_optfn_mouse_support_mousemodes), S(__static_optfn_number_pad_numpadmodes), S(__static_optfn_sortvanquished_vanqmodes), S(__static_optfn_whatis_coord_gpcoords), S(wcnames), S(wcshortnames), S(wcolors_opt), S(__static_handler_disclose_disclosure_names), S(__static_handler_number_pad_npchoices), S(__static_handler_windowborders_windowborders_text), S(__static_escapes_oct), S(__static_escapes_dec), S(__static_allopt_array_init_options_array_inited_already), S(__static_parsebindings_mousebtn_names), S(msgtype_names), S(__static_msgtype_add_re_error), S(__static_test_regex_pattern_def_errmsg), S(__static_parse_role_opt_neg_opt), S(__static_collect_menu_keys_scroll_keys), S(__static_get_option_value_retbuf), S(__static_doset_simple_menu_fmtstr_tab_doset_simple), S(__static_term_for_boolean_booleanterms), S(__static_doset_fmtstr_tab_doset), S(__static_doset_helptext), S(__static_show_menu_controls_hardcoded), S(__static_show_menu_controls_mc_fmt), S(__static_show_menu_controls_mc_altfmt), S(__static_handle_add_list_remove_action_titles), S(__static_add_autopickup_exception_APE_regex_error), S(__static_add_autopickup_exception_APE_syntax_error), S(opt_intro), S(opt_epilog), S(__static_next_opt_buf), S(wc_options), S(wc2_options), S(fgp), S(bgp), S(options_set_window_colors_flag)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("options.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    duplicate = P(r[3]);
+    using_alias = P(r[4]);
+    give_opt_msg = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+    P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    P(r[32]);
+    P(r[33]);
+    P(r[34]);
+    P(r[35]);
+    P(r[36]);
+    P(r[37]);
+    P(r[38]);
+    P(r[39]);
+    P(r[40]);
+    P(r[41]);
+    __static_allopt_array_init_options_array_inited_already = P(r[42]);
+    P(r[43]);
+    P(r[44]);
+    __static_msgtype_add_re_error = P(r[45]);
+    P(r[46]);
+    P(r[47]);
+    P(r[48]);
+    P(r[49]);
+    P(r[50]);
+    P(r[51]);
+    P(r[52]);
+    P(r[53]);
+    P(r[54]);
+    P(r[55]);
+    P(r[56]);
+    P(r[57]);
+    P(r[58]);
+    P(r[59]);
+    P(r[60]);
+    P(r[61]);
+    __static_next_opt_buf = P(r[62]);
+    P(r[63]);
+    P(r[64]);
+    P(r[65]);
+    P(r[66]);
+    options_set_window_colors_flag = P(r[67]);
+}
+// --- END c2js reset block ---

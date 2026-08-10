@@ -4292,3 +4292,19 @@ export function flash_mon(mtmp) {
     cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, 120), my, 8), mx, uchar(saveviz));
     newsym(mx, my);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 5 bindings: 0 rebound+refilled, 3 rebound, 2 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_vamprises_door_smashed), S(__static_vamprises_door_go_boom), S(__static_elemental_clog_msgmv), S(itermonarr), S(itermonsiz)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mon.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    __static_elemental_clog_msgmv = P(r[2]);
+    itermonarr = P(r[3]);
+    itermonsiz = P(r[4]);
+}
+// --- END c2js reset block ---

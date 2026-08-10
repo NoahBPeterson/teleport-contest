@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Teleport Coding Challenge — port NetHack C to JavaScript.">
+<meta name="theme-color" content="#f9f7f1">
+<title>The Teleport Coding Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --color-bg: #f9f7f1;
+    --color-text: #333;
+    --color-text-muted: #666;
+    --color-accent: #6b2c2c;
+    --color-accent-dark: #4a2020;
+    --color-terminal-bg: #000;
+    --color-terminal-border: #2a2a2a;
+    --font-serif: 'EB Garamond', Georgia, serif;
+    --font-mono: "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", monospace;
+    --game-font-size: 16;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2em 1em;
+}
+
+h1 {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: var(--color-accent-dark);
+    margin-bottom: 0.3em;
+    letter-spacing: 0.02em;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5em;
+    text-align: center;
+    line-height: 1.5;
+}
+.subtitle a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+    font-style: normal;
+}
+.subtitle a:hover { text-decoration: underline; }
+
+#game-container {
+    border: 2px solid var(--color-terminal-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 0.8em;
+}
+
+.toolbar {
+    margin-bottom: 1em;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+    display: flex;
+    gap: 0.5em;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.toolbar button {
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0.25em 0.7em;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    color: var(--color-text);
+    cursor: pointer;
+}
+.toolbar button:hover { background: #eee; }
+.toolbar button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+#game-over-panel {
+    display: none;
+    margin: 0.5em 0 1em 0;
+    padding: 1em 1.5em;
+    border: 1px solid #bbb;
+    background: #fff;
+    border-radius: 4px;
+    text-align: center;
+    max-width: 50em;
+}
+
+#game-over-panel.visible { display: block; }
+
+#game-over-panel h2 {
+    font-size: 1.3em;
+    color: var(--color-accent-dark);
+    margin-bottom: 0.4em;
+}
+
+#game-over-panel pre {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--color-text);
+    background: #f5f1e8;
+    padding: 0.6em;
+    margin: 0.5em 0 0.8em 0;
+    text-align: left;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.info {
+    font-size: 0.95em;
+    color: var(--color-text-muted);
+    text-align: center;
+    line-height: 1.6;
+    max-width: 50em;
+}
+
+.info a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.info a:hover { text-decoration: underline; }
+
+.controls {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+    margin-top: 0.8em;
+}
+
+kbd {
+    display: inline-block;
+    padding: 0.1em 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 #aaa;
+}
+</style>
+<!-- PLAY_NODE_SHIMS — injected so contestant code that targets Node
+     still loads in a browser. Calls into shimmed APIs throw a clearer
+     error from their call site. -->
+<script type="importmap">
+{ "imports": {
+    "module":           "/shim/node-builtins.mjs",
+    "node:module":      "/shim/node-builtins.mjs",
+    "fs":               "/shim/node-builtins.mjs",
+    "node:fs":          "/shim/node-builtins.mjs",
+    "fs/promises":      "/shim/node-builtins.mjs",
+    "node:fs/promises": "/shim/node-builtins.mjs",
+    "path":             "/shim/node-builtins.mjs",
+    "node:path":        "/shim/node-builtins.mjs",
+    "url":              "/shim/node-builtins.mjs",
+    "node:url":         "/shim/node-builtins.mjs",
+    "os":               "/shim/node-builtins.mjs",
+    "node:os":          "/shim/node-builtins.mjs",
+    "process":          "/shim/node-builtins.mjs",
+    "node:process":     "/shim/node-builtins.mjs"
+} }
+</script>
+<script>
+(function () {
+    if (typeof globalThis.process !== 'undefined') return;
+    const fail = (n) => () => {
+        throw new Error(n + ' was called in the browser; this fork uses Node-only APIs');
+    };
+    globalThis.process = {
+        env: {}, argv: [], platform: 'browser', version: 'browser',
+        versions: { node: '0.0.0' },
+        cwd: () => '/',
+        nextTick: (fn, ...a) => Promise.resolve().then(() => fn(...a)),
+        stdout: { write: (s) => console.log(String(s)) },
+        stderr: { write: (s) => console.error(String(s)) },
+        exit:  fail('process.exit()'),
+        kill:  fail('process.kill()'),
+        chdir: fail('process.chdir()'),
+    };
+})();
+</script>
+</head>
+<body>
+
+<h1>The Teleport Coding Challenge</h1>
+<p class="subtitle" id="play-subtitle">
+    JavaScript port of NetHack 5.0.<br>
+    <a href="https://mazesofmenace.ai/guidebook/">NetHack Guidebook</a> &middot;
+    <a href="https://mazesofmenace.ai/spoilers/">Traveler&rsquo;s Companion to NetHack</a> &middot;
+    <a href="https://mazesofmenace.ai/nethackrc/">Edit nethackrc options</a>
+</p>
+
+<div id="game-container"></div>
+
+<div class="toolbar">
+    <button id="save-btn" type="button" title="Send 'S' to the game (NetHack save & quit)">Save game</button>
+    <button id="new-game-btn" type="button" title="Reload page with a new random seed">New game</button>
+    <button id="clear-saves-btn" type="button" title="Delete this fork's save files from localStorage">Clear saved games</button>
+</div>
+
+<div id="game-over-panel">
+    <h2>Game over</h2>
+    <pre id="game-over-record"></pre>
+    <button id="play-again-btn" type="button">Play again</button>
+</div>
+
+<div class="info">
+    Click the terminal to focus.
+    Move with <kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd><kbd>y</kbd><kbd>u</kbd><kbd>b</kbd><kbd>n</kbd>
+    or arrow keys.<br>
+    <a href="https://mazesofmenace.ai/leaderboard/">Leaderboard</a> &middot;
+    <a href="https://github.com/davidbau/teleport-contest">Source &amp; Rules</a> &middot;
+    <a href="https://mazesofmenace.ai">Mazes of Menace</a>
+</div>
+
+<script type="module">
+// Bootstrap order matters:
+//   1. Fetch snapshot.json so we know the fork's owner.
+//   2. Set window.__TELEPORT_VFS_PREFIX = 'vfs:<owner>:' so the canonical
+//      storage.js (loaded by the contestant's modules) namespaces this
+//      fork's saves into localStorage['vfs:<owner>:<path>'] instead of
+//      colliding with other forks at the bare 'vfs:<path>' prefix.
+//   3. Dynamic-import the contestant's modules (which read the prefix
+//      at module top-level).
+// All four steps live in the same async block so static imports never
+// race with the prefix setup.
+
+const NETHACKRC_KEY = 'teleport:nethackrc';
+
+// Fallback applied when localStorage['teleport:nethackrc'] is unset —
+// so a first-time visitor gets sensible options without needing to
+// stop by /nethackrc/ first. KEEP IN SYNC with mazesofmenace/nethackrc/
+// editor.js DEFAULT_RC; the editor saves the same string to localStorage
+// on first visit.
+const DEFAULT_RC = `# .nethackrc — Teleport Coding Challenge
+#
+# These options apply to every fork in /play/.
+# Visit /nethackrc/ to edit.
+
+# Uncomment any of these to fix your character; otherwise NetHack
+# prompts at the start of each game.
+# OPTIONS=name:Hero
+# OPTIONS=role:random
+# OPTIONS=race:random
+# OPTIONS=gender:random
+# OPTIONS=align:random
+
+OPTIONS=!tutorial
+OPTIONS=color,hilite_pet,sortpack
+OPTIONS=showexp,showscore,time
+OPTIONS=mention_walls,autodescribe
+OPTIONS=symset:DECGraphics
+# Restore travel-friendly glyphs that DECgraphics overrides:
+# sink defaults to '{' (collides with fountain); altar defaults to 'π'.
+SYMBOLS=S_sink:#
+SYMBOLS=S_altar:_
+OPTIONS=pickup_types:$
+OPTIONS=runmode:walk
+OPTIONS=disclose:+i +a +v +g +c +o
+`;
+
+const snap = await fetch('./snapshot.json', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null);
+
+if (snap?.owner) window.__TELEPORT_VFS_PREFIX = `vfs:${snap.owner}:`;
+
+if (snap?.owner && snap?.fork) {
+    const el = document.getElementById('play-subtitle');
+    if (el) el.innerHTML =
+        'JavaScript port of NetHack 5.0 submitted by ' +
+        '<a href="https://github.com/' + snap.fork + '"><strong>' +
+        snap.owner + '</strong></a>.<br>' +
+        '<a href="https://github.com/' + snap.fork + '">GitHub source</a> &middot; ' +
+        '<a href="https://mazesofmenace.ai/guidebook/">NetHack Guidebook</a> &middot; ' +
+        '<a href="https://mazesofmenace.ai/spoilers/">Traveler&rsquo;s Companion to NetHack</a> &middot; ' +
+        '<a href="https://mazesofmenace.ai/nethackrc/">Edit nethackrc options</a>';
+}
+
+const [
+    { GameDisplay },
+    { NethackGame },
+    { game },
+    { moveloop_core },
+    { vfsReadFile },
+] = await Promise.all([
+    import('./js/game_display.js'),
+    import('./js/jsmain.js'),
+    import('./js/gstate.js'),
+    import('./js/allmain.js'),
+    import('./js/storage.js'),
+]);
+
+function loadNethackrc() {
+    try {
+        const stored = localStorage.getItem(NETHACKRC_KEY);
+        if (stored && stored.trim()) return stored;
+    } catch (e) { /* fall through */ }
+    return DEFAULT_RC;
+}
+
+function showGameOver() {
+    const panel = document.getElementById('game-over-panel');
+    const recordPre = document.getElementById('game-over-record');
+    if (!panel || !recordPre) return;
+    let text = '';
+    try {
+        const recordContent = vfsReadFile('/record');
+        if (recordContent) {
+            // Most recent line at the top.
+            text = String(recordContent).split('\n').filter(Boolean).slice(-5).reverse().join('\n');
+        }
+    } catch (e) { /* ignore */ }
+    recordPre.textContent = text || '(no record file)';
+    panel.classList.add('visible');
+}
+
+function clearSavesForThisFork() {
+    if (typeof localStorage === 'undefined') return 0;
+    const prefix = window.__TELEPORT_VFS_PREFIX || 'vfs:';
+    const toDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(prefix)) toDelete.push(k);
+    }
+    for (const k of toDelete) localStorage.removeItem(k);
+    return toDelete.length;
+}
+
+// Per-fork localStorage view shaped like the Web Storage API.
+// Contestants who built their persistence layer against the
+// `InMemoryStorage` Map shape (the same shape the judge sandbox
+// uses across multi-segment sessions) get free browser persistence
+// when we hand them one of these as `nhGame._storage`. Keys
+// starting with the contestant-conventional `vfs:` prefix are
+// rewritten to `vfs:<owner>:` so each fork's saves stay isolated
+// in the same browser; non-`vfs:` keys pass through unchanged.
+class FrontalLocalStorage {
+    constructor(forkPrefix) {
+        this._prefix = forkPrefix;       // e.g. 'vfs:serteal:'
+        this._strip = 'vfs:';
+    }
+    _xform(key) {
+        if (typeof key === 'string' && key.startsWith(this._strip)) {
+            return this._prefix + key.slice(this._strip.length);
+        }
+        return key;
+    }
+    _untransform(key) {
+        if (typeof key === 'string' && key.startsWith(this._prefix)) {
+            return this._strip + key.slice(this._prefix.length);
+        }
+        return null;
+    }
+    getItem(key) { return localStorage.getItem(this._xform(key)); }
+    setItem(key, val) { localStorage.setItem(this._xform(key), String(val)); }
+    removeItem(key) { localStorage.removeItem(this._xform(key)); }
+    get length() {
+        let n = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith(this._prefix)) n++;
+        }
+        return n;
+    }
+    key(i) {
+        let n = 0;
+        for (let j = 0; j < localStorage.length; j++) {
+            const k = localStorage.key(j);
+            if (k && k.startsWith(this._prefix)) {
+                if (n === i) return this._strip + k.slice(this._prefix.length);
+                n++;
+            }
+        }
+        return null;
+    }
+}
+
+async function main() {
+    const display = new GameDisplay('game-container');
+    display.flags = { color: true };
+
+    const seed = Math.floor(Math.random() * 10000);
+    const nethackrc = loadNethackrc();
+
+    display.putstr(0, 0, `Starting NetHack with seed ${seed}...`);
+    let stored = null;
+    try { stored = localStorage.getItem(NETHACKRC_KEY); } catch (e) { /* ignore */ }
+    if (stored && stored.trim()) {
+        display.putstr(0, 1, `Using your saved .nethackrc options.`);
+    } else {
+        display.putstr(0, 1, `Using default options — visit /nethackrc/ to edit.`);
+    }
+    display.putstr(0, 3, 'Click here and press any key.');
+
+    await display.readKey();
+    display.clearScreen();
+
+    // Build a per-fork localStorage view and attach it as the
+    // contestant's `_storage`. Contestants whose persistence layer
+    // reads `nhGame._storage` (matching the InMemoryStorage Map shape
+    // the judge sandbox uses across multi-segment sessions) now get
+    // browser save/restore for free, namespaced under
+    // localStorage[`vfs:<owner>:<path>`]. The wrapper survives
+    // contestant designs that re-build NethackGame on every keypress
+    // because it lives on `window` and we re-attach it via
+    // `_pendingStorage` so it propagates into each new instance.
+    const forkPrefix = window.__TELEPORT_VFS_PREFIX || 'vfs:';
+    const persistentStorage = new FrontalLocalStorage(forkPrefix);
+    window.__TELEPORT_STORAGE = persistentStorage;
+
+    const nhGame = new NethackGame({ seed, nethackrc, storage: persistentStorage });
+    nhGame._storage = persistentStorage;
+    nhGame._pendingStorage = persistentStorage;
+    nhGame._pendingDisplay = display;
+    game.nhDisplay = display;
+
+    // Wire toolbar. The terminal installs its keydown handler on
+    // `document`, so any button that holds focus also receives those
+    // keys — and <button>s activate on Space/Enter by default. That
+    // turns the next Space after a save click into a second save
+    // click. We defang both halves: preventDefault on mousedown so
+    // clicking a button never shifts focus away from the page, and
+    // an explicit blur() in the click handler in case the focus did
+    // shift (touch, keyboard activation, etc.).
+    function wireToolbarButton(btn, onActivate) {
+        if (!btn) return;
+        btn.addEventListener('mousedown', (e) => e.preventDefault());
+        btn.addEventListener('click', (e) => {
+            try { btn.blur(); } catch (_) { /* noop */ }
+            onActivate(e);
+        });
+    }
+
+    wireToolbarButton(document.getElementById('save-btn'), () => {
+        // Send NetHack's save & quit command. Works for forks that
+        // implement dosave; silently does nothing for forks that don't.
+        // Capital S triggers dosave, then 'y' confirms.
+        display.pushKey('S'.charCodeAt(0));
+        display.pushKey('y'.charCodeAt(0));
+    });
+
+    wireToolbarButton(document.getElementById('new-game-btn'),
+                      () => location.reload());
+
+    wireToolbarButton(document.getElementById('clear-saves-btn'), () => {
+        if (!confirm('Delete this fork\'s saved games from your browser? '
+                     + 'Any in-progress save will be lost.')) return;
+        const n = clearSavesForThisFork();
+        alert(`Removed ${n} VFS entries for this fork.`);
+    });
+
+    wireToolbarButton(document.getElementById('play-again-btn'),
+                      () => location.reload());
+
+    await nhGame.start();
+
+    for (;;) {
+        await moveloop_core();
+        if (game.program_state?.gameover) break;
+    }
+    showGameOver();
+}
+
+main().catch(e => {
+    console.error(e);
+    const c = document.getElementById('game-container');
+    if (c) c.textContent = 'Error: ' + (e && e.message ? e.message : e);
+});
+</script>
+</body>
+</html>
