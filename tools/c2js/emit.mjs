@@ -523,12 +523,32 @@ export const MACRO_MODULE = './nhmacro.js';
 //
 // Accessor FUNCTIONS (`M.data(mtmp)`) were the other candidate and were
 // rejected: a field read is the hottest shape in the port, and a call per read
-// is a cost the A/B slope guard would have had to absorb, where a namespace
-// load of an immutable binding is one V8 folds.  See docs/NOTES-readability.md.
+// is a cost the slope guard would have had to absorb.
+//
+// A site spells the offset as `$monst_data`, a module-scope `const` the file
+// binds once from the shared table:
+//
+//     import * as FLD from './nhfield.js';
+//     const $monst_data = FLD.monst_data, ...;
+//
+// Not `FLD.monst_data` at the site, which is what this first shipped as and
+// what the A/B rejected: V8 constant-folds a module-scope `const`, and does
+// not fold a module-namespace load — measured at +8.1% on the corpus over
+// 150k sites, and 0.0% once bound locally.  The single source of truth is
+// still nhfield.js; the local binding is a fold hint, not a second table.
+//
+// The `$` prefix is not decoration: it makes the name collision-proof by
+// construction, because a C identifier cannot contain `$`.  That matters twice
+// — nothing the emitter emits for a C local can shadow the binding, and the
+// address algebra's NAMED_INTS lookup (which is keyed by the emitted string)
+// can never mistake some file's local variable for a constant offset.
 //
 // C2JS_FIELDNAMES=0 restores bare integer offsets (the A/B baseline).
 export const FIELD_NS = 'FLD';
 export const FIELD_MODULE = './nhfield.js';
+export const FIELD_PREFIX = '$';
+const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
+const FIELD_STATS = { named: 0, unnamed: 0 };
 
 // -------------------------------------------- named macro-body helpers ----
 //
@@ -564,7 +584,7 @@ export const PROP_MODULE = './nhprop.js';
 const MACRO_FNS = process.env.C2JS_MACROFNS !== '0';
 /** name -> { code, free: [names] } for every helper any emitter has captured */
 export const MACRO_HELPERS = new Map();
-const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refusedLocal: 0 };
+const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0 };
 
 // A helper body may contain only pure loads off module-scope storage: no
 // calls but cptr.*, no assignment, no ++/--, no interned string literal (which
@@ -573,10 +593,19 @@ const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refused
 // so its emission differs per site and could never be shared anyway.
 const HELPER_CALLEE = /([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\(/g;
 const HELPER_IDENT = /(^|[^.\w$'"])([A-Za-z_$][\w$]*)/g;
-const HELPER_WORDS = new Set(['cptr', CONST_NS, MACRO_NS, FIELD_NS, 'BigInt', 'Math', 'null', 'true', 'false',
+const HELPER_WORDS = new Set(['cptr', CONST_NS, MACRO_NS, 'BigInt', 'Math', 'null', 'true', 'false',
   'asIntN', 'asUintN', 'imul', 'undefined']);
-const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
-const FIELD_STATS = { named: 0, unnamed: 0 };
+
+// C2JS_READ_STATS=1 reports what the readability tier named and what it left
+// alone — the counterpart of C2JS_SYM_STATS for roadmap 1.11.
+if (process.env.C2JS_READ_STATS) {
+  process.on('exit', () => process.stderr.write(
+    `bool ctx:      ${BOOL_STATS.elided} logical results emitted bare, ${BOOL_STATS.kept} kept the \`? 1 : 0\`\n`
+    + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
+    + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
+    + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch\n`));
+}
+
 // spelling files we will trust: NetHack's own headers, as the compile
 // database spells them.  System headers and clang's `<scratch space>` are
 // not ours to name.
@@ -593,7 +622,14 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 //    module it skips keeps the reset block belonging to its previous
 //    contents. Bumping forces the full re-emit that keeps blocks and
 //    declarations in step.
-export const EMIT_VERSION = 9;
+// 10. The readability tier (roadmap 1.11): `? 1 : 0` elision in truth
+//    position, named field offsets (nhfield.js) and macro-body helpers
+//    (nhprop.js). Two of those depend on tables build.mjs computes, and one
+//    on a corpus-wide capture whose *first* emitter fixes each helper's body,
+//    so a partially skipped emit would mix two vocabularies. The incremental
+//    path keys on emit.mjs's mtime alone, which build.mjs changes do not
+//    move; the version is what invalidates them.
+export const EMIT_VERSION = 10;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -611,7 +647,7 @@ export class Emitter {
     // corpus-wide "record_field" -> byte offset that nhfield.js exports;
     // empty in single-file mode, where offsets stay bare integers
     this.fieldOffsets = fieldOffsets instanceof Map ? fieldOffsets : new Map(fieldOffsets || []);
-    this.usesFields = false;
+    this.fieldRefs = new Set(); // field offsets this file binds at module scope
     // "header.h:bodyStartOffset" -> {name, end} for object-like #defines with
     // an expression body, which become nhprop.js helpers; empty in single-file
     // mode, where a macro body keeps inlining at every site
@@ -1330,6 +1366,7 @@ export class Emitter {
       const id = m[2];
       if (HELPER_WORDS.has(id) || /^\d/.test(id)) continue;
       if (code[m.index + m[1].length + id.length] === '(') continue; // callee, already checked
+      if (id.startsWith(FIELD_PREFIX)) continue; // a field offset; nhprop.js binds its own
       if (this.localNames?.has(id)) return null; // could be a shadowing local
       if (this.refs.get(id) === 'FunctionDecl') return null; // a function designator, not storage
       free.add(id);
@@ -1623,8 +1660,8 @@ export class Emitter {
     const name = `${recName}_${fieldName}`;
     if (this.fieldOffsets.get(name) !== off) { FIELD_STATS.unnamed++; return String(off); }
     FIELD_STATS.named++;
-    this.usesFields = true;
-    return namedInt(`${FIELD_NS}.${name}`, off);
+    this.fieldRefs.add(name);
+    return namedInt(FIELD_PREFIX + name, off);
   }
 
   expr_MemberExpr(n) {

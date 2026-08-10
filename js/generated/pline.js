@@ -25,6 +25,41 @@ import { livelog_add, paniclog } from './files.js';
 import { sysopt } from './sys.js';
 import { submit_web_report } from './report.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $accessibility_data_msg_loc = FLD.accessibility_data_msg_loc,
+    $gamelog_line_flags = FLD.gamelog_line_flags, $gamelog_line_next = FLD.gamelog_line_next,
+    $gamelog_line_text = FLD.gamelog_line_text,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_flags_debug_prevent_pline = FLD.instance_flags_debug_prevent_pline,
+    $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_e_early_raw_messages = FLD.instance_globals_e_early_raw_messages,
+    $instance_globals_g_gamelog = FLD.instance_globals_g_gamelog,
+    $instance_globals_m_multi = FLD.instance_globals_m_multi,
+    $instance_globals_p_pline_flags = FLD.instance_globals_p_pline_flags,
+    $instance_globals_p_prevmsg = FLD.instance_globals_p_prevmsg,
+    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+    $instance_globals_s_saved_plines = FLD.instance_globals_s_saved_plines,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+    $instance_globals_y_you_buf = FLD.instance_globals_y_you_buf,
+    $instance_globals_y_you_buf_siz = FLD.instance_globals_y_you_buf_siz,
+    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_mx = FLD.monst_mx,
+    $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y, $prop_blocked = FLD.prop_blocked,
+    $prop_intrinsic = FLD.prop_intrinsic, $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load,
+    $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_in_impossible = FLD.sinfo_in_impossible,
+    $sinfo_in_sanity_check = FLD.sinfo_in_sanity_check,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing, $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl,
+    $sysopt_s_msghandler = FLD.sysopt_s_msghandler, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_wincap2 = FLD.window_procs_wincap2, $you_uinwater = FLD.you_uinwater,
+    $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Unknown command");
 const __sl1 = cptr.lit(": ");
@@ -62,8 +97,8 @@ const __sl32 = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
 
 /** C ref: pline.c:22 — @param {CPtr} line */
 export function dumplogmsg(line) {
-    let indx = cptr.ldI32o(gs, FLD.instance_globals_s_saved_pline_index);
-    let oldest = cptr.ldPtro2(gs, indx, 8, FLD.instance_globals_s_saved_plines);
+    let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
+    let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);
     if (!cptr.strncmp(line, __sl0, 15n))
         return;
     if (oldest && cptr.strlen(oldest) >= cptr.strlen(line)) {
@@ -71,28 +106,28 @@ export function dumplogmsg(line) {
     } else {
         if (oldest)
             cptr.free(oldest);
-        cptr.stPtro2(gs, indx, 8, FLD.instance_globals_s_saved_plines, dupstr(line));
+        cptr.stPtro2(gs, indx, 8, $instance_globals_s_saved_plines, dupstr(line));
     }
-    cptr.stI32o(gs, FLD.instance_globals_s_saved_pline_index, u32mod(((indx + 1) >>> 0), NHM.DUMPLOG_MSG_COUNT));
+    cptr.stI32o(gs, $instance_globals_s_saved_pline_index, u32mod(((indx + 1) >>> 0), NHM.DUMPLOG_MSG_COUNT));
 }
 
 /** C ref: pline.c:52 */
 export function dumplogfreemessages() {
     let i;
     for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; ++i)
-        if (cptr.ldPtro2(gs, i, 8, FLD.instance_globals_s_saved_plines))
-            cptr.free(cptr.ldPtro2(gs, i, 8, FLD.instance_globals_s_saved_plines)), cptr.stPtro2(gs, i, 8, FLD.instance_globals_s_saved_plines, null);
-    cptr.stI32o(gs, FLD.instance_globals_s_saved_pline_index, 0);
+        if (cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines))
+            cptr.free(cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines)), cptr.stPtro2(gs, i, 8, $instance_globals_s_saved_plines, null);
+    cptr.stI32o(gs, $instance_globals_s_saved_pline_index, 0);
 }
 
 /** C ref: pline.c:65 — @param {CPtr} line */
 function putmesg(line) {
     let attr = NHM.ATR_NONE;
-    if (cptr.ld1so(iflags, FLD.instance_flags_debug_prevent_pline))
+    if (cptr.ld1so(iflags, $instance_flags_debug_prevent_pline))
         return;
-    if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & 16384n) != 0n)
+    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 16384n) != 0n)
         attr |= NHM.ATR_URGENT;
-    if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & 32768n) != 0n)
+    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 32768n) != 0n)
         attr |= NHM.ATR_NOHISTORY;
     putstr()(WIN_MESSAGE.v, attr, line);
     ;
@@ -100,15 +135,15 @@ function putmesg(line) {
 
 /** C ref: pline.c:84 — @param {CInt} dir */
 export function set_msg_dir(dir) {
-    dirtocoord(cptr.add(a11y, FLD.accessibility_data_msg_loc), dir);
-    cptr.stI16o(a11y, FLD.accessibility_data_msg_loc, cptr.ldI16o(a11y, FLD.accessibility_data_msg_loc) + cptr.ldI16(u));
-    cptr.stI16o(a11y, FLD.accessibility_data_msg_loc + FLD.nhcoord_y, cptr.ldI16o(a11y, FLD.accessibility_data_msg_loc + FLD.nhcoord_y) + cptr.ldI16o(u, FLD.you_uy));
+    dirtocoord(cptr.add(a11y, $accessibility_data_msg_loc), dir);
+    cptr.stI16o(a11y, $accessibility_data_msg_loc, cptr.ldI16o(a11y, $accessibility_data_msg_loc) + cptr.ldI16(u));
+    cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, cptr.ldI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y) + cptr.ldI16o(u, $you_uy));
 }
 
 /** C ref: pline.c:93 — @param {CInt} x @param {CInt} y */
 export function set_msg_xy(x, y) {
-    cptr.stI16o(a11y, FLD.accessibility_data_msg_loc, x);
-    cptr.stI16o(a11y, FLD.accessibility_data_msg_loc + FLD.nhcoord_y, y);
+    cptr.stI16o(a11y, $accessibility_data_msg_loc, x);
+    cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, y);
 }
 
 /** C ref: pline.c:104 — @param {CPtr} line */
@@ -140,10 +175,10 @@ export function pline_xy(x, y, line, ...__va) {
 /** C ref: pline.c:138 — @param {CPtr} mtmp @param {CPtr} line */
 export function pline_mon(mtmp, line, ...__va) {
     let the_args;
-    if (cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst)))
+    if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
         set_msg_xy(0, 0);
     else
-        set_msg_xy(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my));
+        set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     the_args = cptr.vaList(__va);
     vpline(line, the_args);
     the_args = null;
@@ -159,19 +194,19 @@ function vpline(line, the_args) {
     let no_repeat;
     let a11y_mesgxy = cptr.alloc(4);
     __lbl_pline_done: {
-        cptr.memcpy(a11y_mesgxy, cptr.add(a11y, FLD.accessibility_data_msg_loc), 4);
-        cptr.stI16o(a11y, FLD.accessibility_data_msg_loc, cptr.stI16o(a11y, FLD.accessibility_data_msg_loc + FLD.nhcoord_y, 0));
+        cptr.memcpy(a11y_mesgxy, cptr.add(a11y, $accessibility_data_msg_loc), 4);
+        cptr.stI16o(a11y, $accessibility_data_msg_loc, cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0));
         if (!line || !cptr.ld1s(line))
             return;
-        if (cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+        if (cptr.ldI32o(program_state, $sinfo_done_hup))
             return;
-        if (cptr.ldI32o(program_state, FLD.sinfo_wizkit_wishing))
+        if (cptr.ldI32o(program_state, $sinfo_wizkit_wishing))
             return;
-        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, FLD.nhcoord_y))) {
+        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, $nhcoord_y))) {
             let tmp;
             let dirstr;
             let dirstrbuf = new Uint8Array(128);
-            dirstr = coord_desc(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, FLD.nhcoord_y), cptr.decay(dirstrbuf), schar(((cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 110) ? 102 : cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords))));
+            dirstr = coord_desc(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, $nhcoord_y), cptr.decay(dirstrbuf), schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? 102 : cptr.ldI32o(iflags, $instance_flags_getpos_coords))));
             tmp = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(line) + 3n) + cptr.strlen(dirstr)))));
             void cptr.strcpy(tmp, dirstr);
             void cptr.strcat(tmp, __sl1);
@@ -202,31 +237,31 @@ function vpline(line, the_args) {
             line = cptr.decay(pbuf);
         }
         msgtyp = NHM.MSGTYP_NORMAL;
-        if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
+        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             dumplogmsg(line);
-        if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
+        if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, $instance_flags_window_inited)) {
             raw_print()(line);
-            cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
+            cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
         }
-        no_repeat = schar((((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.PLINE_NOREPEAT) >>> 0) ? 1 : 0));
-        if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
+        no_repeat = schar((((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.PLINE_NOREPEAT) >>> 0) ? 1 : 0));
+        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, FLD.instance_globals_p_prevmsg)))))
+            if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, $instance_globals_p_prevmsg)))))
                 break __lbl_pline_done;
         }
-        if (cptr.ld1so(gv, FLD.instance_globals_v_vision_full_recalc)) {
+        if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc)) {
             let tmp_in_pline = __static_vpline_in_pline;
             __static_vpline_in_pline = 0;
             vision_recalc(0);
             __static_vpline_in_pline = tmp_in_pline;
         }
         if (cptr.ldI16(u))
-            flush_screen(((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.NO_CURS_ON_U) >>> 0) ? 0 : 1);
+            flush_screen(((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.NO_CURS_ON_U) >>> 0) ? 0 : 1);
         putmesg(line);
         execplinehandler(line);
-        cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
-        void __builtin___strncpy_chk(cptr.add(gp, FLD.instance_globals_p_prevmsg), line, 256n, __builtin_object_size(cptr.add(gp, FLD.instance_globals_p_prevmsg), 1)), cptr.st1o2(gp, 255, 1, FLD.instance_globals_p_prevmsg, 0);
+        cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
+        void __builtin___strncpy_chk(cptr.add(gp, $instance_globals_p_prevmsg), line, 256n, __builtin_object_size(cptr.add(gp, $instance_globals_p_prevmsg), 1)), cptr.st1o2(gp, 255, 1, $instance_globals_p_prevmsg, 0);
         if (msgtyp == NHM.MSGTYP_STOP)
             display_nhwindow()(WIN_MESSAGE.v, 1);
     }
@@ -237,9 +272,9 @@ function vpline(line, the_args) {
 export function custompline(pflags, line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, pflags);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, pflags);
     vpline(line, the_args);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, 0);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
     the_args = null;
 }
 
@@ -247,9 +282,9 @@ export function custompline(pflags, line, ...__va) {
 export function urgent_pline(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
     vpline(line, the_args);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, 0);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
     the_args = null;
 }
 
@@ -257,28 +292,28 @@ export function urgent_pline(line, ...__va) {
 export function Norep(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, NHM.PLINE_NOREPEAT);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.PLINE_NOREPEAT);
     vpline(line, the_args);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, 0);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
     the_args = null;
 }
 
 /** C ref: pline.c:339 — @param {CInt} siz @returns {CPtr} */
 function You_buf(siz) {
-    if (siz > cptr.ldI32o(gy, FLD.instance_globals_y_you_buf_siz)) {
-        if (cptr.ldPtro(gy, FLD.instance_globals_y_you_buf))
-            cptr.free(cptr.ldPtro(gy, FLD.instance_globals_y_you_buf));
-        cptr.stI32o(gy, FLD.instance_globals_y_you_buf_siz, (siz + 10) | 0);
-        cptr.stPtro(gy, FLD.instance_globals_y_you_buf, alloc(cptr.ldI32o(gy, FLD.instance_globals_y_you_buf_siz) >>> 0));
+    if (siz > cptr.ldI32o(gy, $instance_globals_y_you_buf_siz)) {
+        if (cptr.ldPtro(gy, $instance_globals_y_you_buf))
+            cptr.free(cptr.ldPtro(gy, $instance_globals_y_you_buf));
+        cptr.stI32o(gy, $instance_globals_y_you_buf_siz, (siz + 10) | 0);
+        cptr.stPtro(gy, $instance_globals_y_you_buf, alloc(cptr.ldI32o(gy, $instance_globals_y_you_buf_siz) >>> 0));
     }
-    return cptr.ldPtro(gy, FLD.instance_globals_y_you_buf);
+    return cptr.ldPtro(gy, $instance_globals_y_you_buf);
 }
 
 /** C ref: pline.c:351 */
 export function free_youbuf() {
-    if (cptr.ldPtro(gy, FLD.instance_globals_y_you_buf))
-        cptr.free(cptr.ldPtro(gy, FLD.instance_globals_y_you_buf)), cptr.stPtro(gy, FLD.instance_globals_y_you_buf, null);
-    cptr.stI32o(gy, FLD.instance_globals_y_you_buf_siz, 0);
+    if (cptr.ldPtro(gy, $instance_globals_y_you_buf))
+        cptr.free(cptr.ldPtro(gy, $instance_globals_y_you_buf)), cptr.stPtro(gy, $instance_globals_y_you_buf, null);
+    cptr.stI32o(gy, $instance_globals_y_you_buf_siz, 0);
 }
 
 /** C ref: pline.c:366 — @param {CPtr} line */
@@ -304,7 +339,7 @@ export function You_feel(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
+    if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl5);
     else
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl6);
@@ -343,12 +378,12 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if ((Deaf() && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
+    if ((Deaf() && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
         return;
     the_args = cptr.vaList(__va);
     if (Underwater())
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n)))))), __sl10);
-    else if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
+    else if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl11);
     else
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl12);
@@ -361,7 +396,7 @@ export function You_see(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
+    if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
     else if (Blind())
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
@@ -376,31 +411,31 @@ export function verbalize(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) | NHM.PLINE_VERBALIZE);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, cptr.ldI32o(gp, $instance_globals_p_pline_flags) | NHM.PLINE_VERBALIZE);
     tmp = You_buf(Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n))));
     void cptr.strcpy(tmp, __sl16);
     void cptr.strcat(tmp, line);
     void cptr.strcat(tmp, __sl16);
     vpline(tmp, the_args);
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & 4294967279);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, cptr.ldI32o(gp, $instance_globals_p_pline_flags) & 4294967279);
     the_args = null;
 }
 
 /** C ref: pline.c:495 — @param {CLongLong} glflags @param {CLongLong} gltime @param {CPtr} str */
 export function gamelog_add(glflags, gltime, str) {
     let tmp;
-    let lst = cptr.ldPtro(gg, FLD.instance_globals_g_gamelog);
+    let lst = cptr.ldPtro(gg, $instance_globals_g_gamelog);
     tmp = alloc(32);
     cptr.stI64(tmp, gltime);
-    cptr.stI64o(tmp, FLD.gamelog_line_flags, glflags);
-    cptr.stPtro(tmp, FLD.gamelog_line_text, dupstr(str));
-    cptr.stPtro(tmp, FLD.gamelog_line_next, null);
-    while (lst && cptr.ldPtro(lst, FLD.gamelog_line_next))
-        lst = cptr.ldPtro(lst, FLD.gamelog_line_next);
+    cptr.stI64o(tmp, $gamelog_line_flags, glflags);
+    cptr.stPtro(tmp, $gamelog_line_text, dupstr(str));
+    cptr.stPtro(tmp, $gamelog_line_next, null);
+    while (lst && cptr.ldPtro(lst, $gamelog_line_next))
+        lst = cptr.ldPtro(lst, $gamelog_line_next);
     if (!lst)
-        cptr.stPtro(gg, FLD.instance_globals_g_gamelog, tmp);
+        cptr.stPtro(gg, $instance_globals_g_gamelog, tmp);
     else
-        cptr.stPtro(lst, FLD.gamelog_line_next, tmp);
+        cptr.stPtro(lst, $gamelog_line_next, tmp);
 }
 
 /** C ref: pline.c:514 — @param {CLongLong} ll_type @param {CPtr} line */
@@ -410,7 +445,7 @@ export function livelog_printf(ll_type, line, ...__va) {
     the_args = cptr.vaList(__va);
     void cptr.vsnprintf(cptr.decay(gamelogbuf), 512n, line, the_args);
     the_args = null;
-    gamelog_add(ll_type, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves), cptr.decay(gamelogbuf));
+    gamelog_add(ll_type, cptr.ldI64o(svm, $instance_globals_saved_m_moves), cptr.decay(gamelogbuf));
     strNsubst(cptr.decay(gamelogbuf), __sl17, __sl18, 0);
     livelog_add(ll_type, cptr.decay(gamelogbuf));
 }
@@ -421,8 +456,8 @@ export function raw_printf(line, ...__va) {
     the_args = cptr.vaList(__va);
     vraw_printf(line, the_args);
     the_args = null;
-    if (!cptr.ldI32o(program_state, FLD.sinfo_beyond_savefile_load))
-        (cptr.stI32o(ge, FLD.instance_globals_e_early_raw_messages, cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages) + 1)) - (1);
+    if (!cptr.ldI32o(program_state, $sinfo_beyond_savefile_load))
+        (cptr.stI32o(ge, $instance_globals_e_early_raw_messages, cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1)) - (1);
 }
 
 /** C ref: pline.c:563 — @param {CPtr} line @param {CPtr} the_args */
@@ -439,8 +474,8 @@ function vraw_printf(line, the_args) {
     }
     raw_print()(line);
     execplinehandler(line);
-    if (!cptr.ldI32o(program_state, FLD.sinfo_beyond_savefile_load))
-        (cptr.stI32o(ge, FLD.instance_globals_e_early_raw_messages, cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages) + 1)) - (1);
+    if (!cptr.ldI32o(program_state, $sinfo_beyond_savefile_load))
+        (cptr.stI32o(ge, $instance_globals_e_early_raw_messages, cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1)) - (1);
 }
 
 /** C ref: pline.c:584 — @param {CPtr} s */
@@ -449,38 +484,38 @@ export function impossible(s, ...__va) {
     let pbuf = new Uint8Array(1280);
     let pbuf2 = new Uint8Array(256);
     the_args = cptr.vaList(__va);
-    if (cptr.ldI32o(program_state, FLD.sinfo_in_impossible))
+    if (cptr.ldI32o(program_state, $sinfo_in_impossible))
         panic(__sl19);
-    cptr.stI32o(program_state, FLD.sinfo_in_impossible, 1);
+    cptr.stI32o(program_state, $sinfo_in_impossible, 1);
     void cptr.vsnprintf(cptr.decay(pbuf), 1280n, s, the_args);
     the_args = null;
     cptr.st1o(cptr.decay(pbuf), 255, 0, 1);
     paniclog(__sl20, cptr.decay(pbuf));
-    if (cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer) == NHC.fuzzer_impossible_panic)
+    if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) == NHC.fuzzer_impossible_panic)
         panic(__sl21, cptr.decay(pbuf));
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
     pline(__sl21, cptr.decay(pbuf));
-    cptr.stI32o(gp, FLD.instance_globals_p_pline_flags, 0);
-    if (cptr.ldI32o(program_state, FLD.sinfo_in_sanity_check)) {
-        cptr.stI32o(program_state, FLD.sinfo_in_impossible, 0);
+    cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
+    if (cptr.ldI32o(program_state, $sinfo_in_sanity_check)) {
+        cptr.stI32o(program_state, $sinfo_in_impossible, 0);
         return;
     }
     void cptr.strcpy(cptr.decay(pbuf2), __sl22);
-    if (cptr.ldI32o(program_state, FLD.sinfo_something_worth_saving))
+    if (cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         void cptr.strcat(cptr.decay(pbuf2), __sl23);
     pline(__sl21, cptr.decay(pbuf2));
     pline(__sl24, __sl25);
     if (cptr.ldPtr(sysopt)) {
         pline(__sl26, cptr.ldPtr(sysopt));
     }
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl)) {
+    if (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl)) {
         let report = schar((121 == yn_function(__sl27, cptr.decay(ynchars), 110, 0)));
         raw_print()(__sl28);
         if (report) {
             submit_web_report(1, __sl29, cptr.decay(pbuf));
         }
     }
-    cptr.stI32o(program_state, FLD.sinfo_in_impossible, 0);
+    cptr.stI32o(program_state, $sinfo_in_impossible, 0);
 }
 
 /** C ref: pline.c:638 — signed char */
@@ -490,18 +525,18 @@ let use_pline_handler = 1;
 function execplinehandler(line) {
     let f;
     let args = cptr.alloc(3 * 8);
-    if (!use_pline_handler || !cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler))
+    if (!use_pline_handler || !cptr.ldPtro(sysopt, $sysopt_s_msghandler))
         return;
     f = fork();
     if (f == 0) {
-        cptr.stPtro(args, 0, cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler), 8);
+        cptr.stPtro(args, 0, cptr.ldPtro(sysopt, $sysopt_s_msghandler), 8);
         cptr.stPtro(args, 1, line, 8);
         cptr.stPtro(args, 2, null, 8);
         void setgid(getgid());
         void setuid(getuid());
         void execv(cptr.ldPtro(args, 0, 8), args);
         perror(null);
-        void fprintf(__stderrp, __sl30, cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler));
+        void fprintf(__stderrp, __sl30, cptr.ldPtro(sysopt, $sysopt_s_msghandler));
         nh_terminate(1);
     } else if (f > 0) {
         let status = cptr.box(0);

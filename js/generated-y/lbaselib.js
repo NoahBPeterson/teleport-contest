@@ -14,6 +14,10 @@ import { lua_callk, lua_concat, lua_copy, lua_error, lua_gc, lua_geti, lua_getme
 import { luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checkstack, luaL_checktype, luaL_error, luaL_getmetafield, luaL_loadbufferx, luaL_loadfilex, luaL_optinteger, luaL_optlstring, luaL_setfuncs, luaL_tolstring, luaL_typeerror, luaL_where } from './lauxlib.js';
 import { digit } from './hacklib.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $luaL_Reg_func = FLD.luaL_Reg_func;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("\t");
 const __sl1 = cptr.lit("\n");
@@ -543,57 +547,57 @@ function* luaB_tostring(L) {
 /** C ref: lbaselib.c:506 — luaL_Reg[26] */
 const base_funcs = cptr.alloc(26 * 16);
 cptr.stPtro(base_funcs, 0, __sl26);
-cptr.stPtro(base_funcs, 0 + FLD.luaL_Reg_func, luaB_assert);
+cptr.stPtro(base_funcs, 0 + $luaL_Reg_func, luaB_assert);
 cptr.stPtro(base_funcs, 16, __sl27);
-cptr.stPtro(base_funcs, 16 + FLD.luaL_Reg_func, luaB_collectgarbage);
+cptr.stPtro(base_funcs, 16 + $luaL_Reg_func, luaB_collectgarbage);
 cptr.stPtro(base_funcs, 32, __sl28);
-cptr.stPtro(base_funcs, 32 + FLD.luaL_Reg_func, luaB_dofile);
+cptr.stPtro(base_funcs, 32 + $luaL_Reg_func, luaB_dofile);
 cptr.stPtro(base_funcs, 48, __sl29);
-cptr.stPtro(base_funcs, 48 + FLD.luaL_Reg_func, luaB_error);
+cptr.stPtro(base_funcs, 48 + $luaL_Reg_func, luaB_error);
 cptr.stPtro(base_funcs, 64, __sl30);
-cptr.stPtro(base_funcs, 64 + FLD.luaL_Reg_func, luaB_getmetatable);
+cptr.stPtro(base_funcs, 64 + $luaL_Reg_func, luaB_getmetatable);
 cptr.stPtro(base_funcs, 80, __sl31);
-cptr.stPtro(base_funcs, 80 + FLD.luaL_Reg_func, luaB_ipairs);
+cptr.stPtro(base_funcs, 80 + $luaL_Reg_func, luaB_ipairs);
 cptr.stPtro(base_funcs, 96, __sl32);
-cptr.stPtro(base_funcs, 96 + FLD.luaL_Reg_func, luaB_loadfile);
+cptr.stPtro(base_funcs, 96 + $luaL_Reg_func, luaB_loadfile);
 cptr.stPtro(base_funcs, 112, __sl33);
-cptr.stPtro(base_funcs, 112 + FLD.luaL_Reg_func, luaB_load);
+cptr.stPtro(base_funcs, 112 + $luaL_Reg_func, luaB_load);
 cptr.stPtro(base_funcs, 128, __sl34);
-cptr.stPtro(base_funcs, 128 + FLD.luaL_Reg_func, luaB_next);
+cptr.stPtro(base_funcs, 128 + $luaL_Reg_func, luaB_next);
 cptr.stPtro(base_funcs, 144, __sl35);
-cptr.stPtro(base_funcs, 144 + FLD.luaL_Reg_func, luaB_pairs);
+cptr.stPtro(base_funcs, 144 + $luaL_Reg_func, luaB_pairs);
 cptr.stPtro(base_funcs, 160, __sl36);
-cptr.stPtro(base_funcs, 160 + FLD.luaL_Reg_func, luaB_pcall);
+cptr.stPtro(base_funcs, 160 + $luaL_Reg_func, luaB_pcall);
 cptr.stPtro(base_funcs, 176, __sl37);
-cptr.stPtro(base_funcs, 176 + FLD.luaL_Reg_func, luaB_print);
+cptr.stPtro(base_funcs, 176 + $luaL_Reg_func, luaB_print);
 cptr.stPtro(base_funcs, 192, __sl38);
-cptr.stPtro(base_funcs, 192 + FLD.luaL_Reg_func, luaB_warn);
+cptr.stPtro(base_funcs, 192 + $luaL_Reg_func, luaB_warn);
 cptr.stPtro(base_funcs, 208, __sl39);
-cptr.stPtro(base_funcs, 208 + FLD.luaL_Reg_func, luaB_rawequal);
+cptr.stPtro(base_funcs, 208 + $luaL_Reg_func, luaB_rawequal);
 cptr.stPtro(base_funcs, 224, __sl40);
-cptr.stPtro(base_funcs, 224 + FLD.luaL_Reg_func, luaB_rawlen);
+cptr.stPtro(base_funcs, 224 + $luaL_Reg_func, luaB_rawlen);
 cptr.stPtro(base_funcs, 240, __sl41);
-cptr.stPtro(base_funcs, 240 + FLD.luaL_Reg_func, luaB_rawget);
+cptr.stPtro(base_funcs, 240 + $luaL_Reg_func, luaB_rawget);
 cptr.stPtro(base_funcs, 256, __sl42);
-cptr.stPtro(base_funcs, 256 + FLD.luaL_Reg_func, luaB_rawset);
+cptr.stPtro(base_funcs, 256 + $luaL_Reg_func, luaB_rawset);
 cptr.stPtro(base_funcs, 272, __sl43);
-cptr.stPtro(base_funcs, 272 + FLD.luaL_Reg_func, luaB_select);
+cptr.stPtro(base_funcs, 272 + $luaL_Reg_func, luaB_select);
 cptr.stPtro(base_funcs, 288, __sl44);
-cptr.stPtro(base_funcs, 288 + FLD.luaL_Reg_func, luaB_setmetatable);
+cptr.stPtro(base_funcs, 288 + $luaL_Reg_func, luaB_setmetatable);
 cptr.stPtro(base_funcs, 304, __sl45);
-cptr.stPtro(base_funcs, 304 + FLD.luaL_Reg_func, luaB_tonumber);
+cptr.stPtro(base_funcs, 304 + $luaL_Reg_func, luaB_tonumber);
 cptr.stPtro(base_funcs, 320, __sl46);
-cptr.stPtro(base_funcs, 320 + FLD.luaL_Reg_func, luaB_tostring);
+cptr.stPtro(base_funcs, 320 + $luaL_Reg_func, luaB_tostring);
 cptr.stPtro(base_funcs, 336, __sl47);
-cptr.stPtro(base_funcs, 336 + FLD.luaL_Reg_func, luaB_type);
+cptr.stPtro(base_funcs, 336 + $luaL_Reg_func, luaB_type);
 cptr.stPtro(base_funcs, 352, __sl48);
-cptr.stPtro(base_funcs, 352 + FLD.luaL_Reg_func, luaB_xpcall);
+cptr.stPtro(base_funcs, 352 + $luaL_Reg_func, luaB_xpcall);
 cptr.stPtro(base_funcs, 368, __sl49);
-cptr.stPtro(base_funcs, 368 + FLD.luaL_Reg_func, null);
+cptr.stPtro(base_funcs, 368 + $luaL_Reg_func, null);
 cptr.stPtro(base_funcs, 384, __sl50);
-cptr.stPtro(base_funcs, 384 + FLD.luaL_Reg_func, null);
+cptr.stPtro(base_funcs, 384 + $luaL_Reg_func, null);
 cptr.stPtro(base_funcs, 400, null);
-cptr.stPtro(base_funcs, 400 + FLD.luaL_Reg_func, null);
+cptr.stPtro(base_funcs, 400 + $luaL_Reg_func, null);
 
 /** C ref: lbaselib.c:537 — @param {CPtr} L @returns {CInt} */
 export function* luaopen_base(L) {

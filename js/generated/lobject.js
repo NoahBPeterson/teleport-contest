@@ -14,6 +14,12 @@ import { d } from './rnd.js';
 import { luaS_newlstr } from './lstring.js';
 import { luaG_runerror } from './ldebug.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $BuffFS_blen = FLD.BuffFS_blen, $BuffFS_pushed = FLD.BuffFS_pushed, $BuffFS_space = FLD.BuffFS_space,
+    $TString_contents = FLD.TString_contents, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
+    $lua_State_top = FLD.lua_State_top;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit(".xXnN");
 const __sl1 = cptr.lit("%lld");
@@ -110,11 +116,11 @@ export function luaO_rawarith(L, op, p1, p2, res) {
         {
             let i1 = cptr.box(0n);
             let i2 = cptr.box(0n);
-            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, NHC.F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, NHC.F2Ieq))) {
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, NHC.F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, NHC.F2Ieq))) {
                 {
                     let io = (res);
                     cptr.stI64(((io)), (intarith(L, op, i1.v, i2.v)));
-                    (cptr.st1o((io), FLD.TValue_tt_, 3));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
                 return 1;
@@ -126,11 +132,11 @@ export function luaO_rawarith(L, op, p1, p2, res) {
         {
             let n1;
             let n2;
-            if ((((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
+            if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
                 {
                     let io = (res);
                     cptr.stF64(((io)), (numarith(L, op, n1, n2)));
-                    (cptr.st1o((io), FLD.TValue_tt_, 19));
+                    (cptr.st1o((io), $TValue_tt_, 19));
                 }
                 ;
                 return 1;
@@ -141,19 +147,19 @@ export function luaO_rawarith(L, op, p1, p2, res) {
         {
             let n1;
             let n2;
-            if (((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 3) && ((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 3)) {
+            if (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) {
                 {
                     let io = (res);
                     cptr.stI64(((io)), (intarith(L, op, (cptr.ldI64(((p1)))), (cptr.ldI64(((p2)))))));
-                    (cptr.st1o((io), FLD.TValue_tt_, 3));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
                 return 1;
-            } else if ((((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), FLD.TValue_tt_)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), FLD.TValue_tt_)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
+            } else if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
                 {
                     let io = (res);
                     cptr.stF64(((io)), (numarith(L, op, n1, n2)));
-                    (cptr.st1o((io), FLD.TValue_tt_, 19));
+                    (cptr.st1o((io), $TValue_tt_, 19));
                 }
                 ;
                 return 1;
@@ -264,14 +270,14 @@ export function luaO_str2num(s, o) {
         {
             let io = (o);
             cptr.stI64(((io)), (i.v));
-            (cptr.st1o((io), FLD.TValue_tt_, 3));
+            (cptr.st1o((io), $TValue_tt_, 3));
         }
         ;
     } else if (!cptr.eq((e = l_str2d(s, n)), (null))) {
         {
             let io = (o);
             cptr.stF64(((io)), (n.v));
-            (cptr.st1o((io), FLD.TValue_tt_, 19));
+            (cptr.st1o((io), $TValue_tt_, 19));
         }
         ;
     } else
@@ -301,7 +307,7 @@ export function luaO_utf8esc(buff, x) {
 function tostringbuff(obj, buff) {
     let len;
     (void 0);
-    if (((cptr.ld1uo(((obj)), FLD.TValue_tt_)) == 3))
+    if (((cptr.ld1uo(((obj)), $TValue_tt_)) == 3))
         len = cptr.snprintf((buff), 44n, __sl1, ((cptr.ldI64(((obj))))));
     else {
         len = cptr.snprintf((buff), 44n, __sl2, ((cptr.ldF64(((obj))))));
@@ -321,7 +327,7 @@ export function luaO_tostring(L, obj) {
         let io = (obj);
         let x_ = (luaS_newlstr(L, cptr.decay(buff), BigInt.asUintN(64, BigInt(len))));
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(x_, FLD.TString_tt)) | 64)))));
+        (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
         (void L, (void 0));
     }
     ;
@@ -335,33 +341,33 @@ export function luaO_tostring(L, obj) {
 function pushstr(buff, str, lstr) {
     let L = cptr.ldPtr(buff);
     {
-        let io = (((cptr.ldPtro(L, FLD.lua_State_top))));
+        let io = (((cptr.ldPtro(L, $lua_State_top))));
         let x_ = (luaS_newlstr(L, str, lstr));
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(x_, FLD.TString_tt)) | 64)))));
+        (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
         (void L, (void 0));
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
-    if (!cptr.ldI32o(buff, FLD.BuffFS_pushed))
-        cptr.stI32o(buff, FLD.BuffFS_pushed, 1);
+    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    if (!cptr.ldI32o(buff, $BuffFS_pushed))
+        cptr.stI32o(buff, $BuffFS_pushed, 1);
     else
         luaV_concat(L, 2);
 }
 
 /** C ref: lobject.c:428 — @param {CPtr} buff */
 function clearbuff(buff) {
-    pushstr(buff, cptr.add(buff, FLD.BuffFS_space), BigInt.asUintN(64, BigInt(cptr.ldI32o(buff, FLD.BuffFS_blen))));
-    cptr.stI32o(buff, FLD.BuffFS_blen, 0);
+    pushstr(buff, cptr.add(buff, $BuffFS_space), BigInt.asUintN(64, BigInt(cptr.ldI32o(buff, $BuffFS_blen))));
+    cptr.stI32o(buff, $BuffFS_blen, 0);
 }
 
 /** C ref: lobject.c:438 — @param {CPtr} buff @param {CInt} sz @returns {CPtr} */
 function getbuff(buff, sz) {
     (void 0);
     (void 0);
-    if (sz > ((199 - cptr.ldI32o(buff, FLD.BuffFS_blen)) | 0))
+    if (sz > ((199 - cptr.ldI32o(buff, $BuffFS_blen)) | 0))
         clearbuff(buff);
-    return cptr.add(cptr.add(buff, FLD.BuffFS_space), cptr.ldI32o(buff, FLD.BuffFS_blen));
+    return cptr.add(cptr.add(buff, $BuffFS_space), cptr.ldI32o(buff, $BuffFS_blen));
 }
 
 /** C ref: lobject.c:453 — @param {CPtr} buff @param {CPtr} str @param {CLongLong} slen */
@@ -369,7 +375,7 @@ function addstr2buff(buff, str, slen) {
     if (slen <= 199n) {
         let bf = getbuff(buff, (Number(BigInt.asIntN(32, ((slen))))));
         cptr.memcpy(bf, str, slen);
-        (cptr.stI32o((buff), FLD.BuffFS_blen, (cptr.ldI32o((buff), FLD.BuffFS_blen) + ((Number(BigInt.asIntN(32, ((slen))))))) | 0));
+        (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + ((Number(BigInt.asIntN(32, ((slen))))))) | 0));
     } else {
         clearbuff(buff);
         pushstr(buff, str, slen);
@@ -380,14 +386,14 @@ function addstr2buff(buff, str, slen) {
 function addnum2buff(buff, num) {
     let numbuff = getbuff(buff, 44);
     let len = tostringbuff(num, numbuff);
-    (cptr.stI32o((buff), FLD.BuffFS_blen, (cptr.ldI32o((buff), FLD.BuffFS_blen) + (len)) | 0));
+    (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
 }
 
 /** C ref: lobject.c:480 — @param {CPtr} L @param {CPtr} fmt @param {CPtr} argp @returns {CPtr} */
 export function luaO_pushvfstring(L, fmt, argp) {
     let buff = cptr.alloc(216);
     let e;
-    cptr.stI32o(buff, FLD.BuffFS_pushed, cptr.stI32o(buff, FLD.BuffFS_blen, 0));
+    cptr.stI32o(buff, $BuffFS_pushed, cptr.stI32o(buff, $BuffFS_blen, 0));
     cptr.stPtr(buff, L);
     while (!cptr.eq((e = cptr.strchr(fmt, 37)), (null))) {
         addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt)));
@@ -412,7 +418,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
                 {
                     let io = (num);
                     cptr.stI64(((io)), BigInt((cptr.vaArg(argp, 'i32'))));
-                    (cptr.st1o((io), FLD.TValue_tt_, 3));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
                 addnum2buff(buff, num);
@@ -424,7 +430,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
                 {
                     let io = (num);
                     cptr.stI64(((io)), (((cptr.vaArg(argp, 'i64')))));
-                    (cptr.st1o((io), FLD.TValue_tt_, 3));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
                 addnum2buff(buff, num);
@@ -436,7 +442,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
                 {
                     let io = (num);
                     cptr.stF64(((io)), ((((cptr.vaArg(argp, 'f64'))))));
-                    (cptr.st1o((io), FLD.TValue_tt_, 19));
+                    (cptr.st1o((io), $TValue_tt_, 19));
                 }
                 ;
                 addnum2buff(buff, num);
@@ -448,7 +454,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
                 let bf = getbuff(buff, sz);
                 let p = cptr.vaArg(argp, 'ptr');
                 let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __sl5, p);
-                (cptr.stI32o((buff), FLD.BuffFS_blen, (cptr.ldI32o((buff), FLD.BuffFS_blen) + (len)) | 0));
+                (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
                 break;
             }
             case 85:
@@ -473,7 +479,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
     addstr2buff(buff, fmt, cptr.strlen(fmt));
     clearbuff(buff);
     (void 0);
-    return (cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(1), 16))))))))))))), FLD.TString_contents));
+    return (cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))))), $TString_contents));
 }
 
 /** C ref: lobject.c:549 — @param {CPtr} L @param {CPtr} fmt @returns {CPtr} */

@@ -22,6 +22,10 @@ import { luaopen_debug } from './ldblib.js';
 import { luaL_requiref } from './lauxlib.js';
 import { lua_settop } from './lapi.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $luaL_Reg_func = FLD.luaL_Reg_func;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("_G");
 const __sl1 = cptr.lit("package");
@@ -37,33 +41,33 @@ const __sl9 = cptr.lit("debug");
 /** C ref: linit.c:42 — luaL_Reg[11] */
 const loadedlibs = cptr.alloc(11 * 16);
 cptr.stPtro(loadedlibs, 0, __sl0);
-cptr.stPtro(loadedlibs, 0 + FLD.luaL_Reg_func, luaopen_base);
+cptr.stPtro(loadedlibs, 0 + $luaL_Reg_func, luaopen_base);
 cptr.stPtro(loadedlibs, 16, __sl1);
-cptr.stPtro(loadedlibs, 16 + FLD.luaL_Reg_func, luaopen_package);
+cptr.stPtro(loadedlibs, 16 + $luaL_Reg_func, luaopen_package);
 cptr.stPtro(loadedlibs, 32, __sl2);
-cptr.stPtro(loadedlibs, 32 + FLD.luaL_Reg_func, luaopen_coroutine);
+cptr.stPtro(loadedlibs, 32 + $luaL_Reg_func, luaopen_coroutine);
 cptr.stPtro(loadedlibs, 48, __sl3);
-cptr.stPtro(loadedlibs, 48 + FLD.luaL_Reg_func, luaopen_table);
+cptr.stPtro(loadedlibs, 48 + $luaL_Reg_func, luaopen_table);
 cptr.stPtro(loadedlibs, 64, __sl4);
-cptr.stPtro(loadedlibs, 64 + FLD.luaL_Reg_func, luaopen_io);
+cptr.stPtro(loadedlibs, 64 + $luaL_Reg_func, luaopen_io);
 cptr.stPtro(loadedlibs, 80, __sl5);
-cptr.stPtro(loadedlibs, 80 + FLD.luaL_Reg_func, luaopen_os);
+cptr.stPtro(loadedlibs, 80 + $luaL_Reg_func, luaopen_os);
 cptr.stPtro(loadedlibs, 96, __sl6);
-cptr.stPtro(loadedlibs, 96 + FLD.luaL_Reg_func, luaopen_string);
+cptr.stPtro(loadedlibs, 96 + $luaL_Reg_func, luaopen_string);
 cptr.stPtro(loadedlibs, 112, __sl7);
-cptr.stPtro(loadedlibs, 112 + FLD.luaL_Reg_func, luaopen_math);
+cptr.stPtro(loadedlibs, 112 + $luaL_Reg_func, luaopen_math);
 cptr.stPtro(loadedlibs, 128, __sl8);
-cptr.stPtro(loadedlibs, 128 + FLD.luaL_Reg_func, luaopen_utf8);
+cptr.stPtro(loadedlibs, 128 + $luaL_Reg_func, luaopen_utf8);
 cptr.stPtro(loadedlibs, 144, __sl9);
-cptr.stPtro(loadedlibs, 144 + FLD.luaL_Reg_func, luaopen_debug);
+cptr.stPtro(loadedlibs, 144 + $luaL_Reg_func, luaopen_debug);
 cptr.stPtro(loadedlibs, 160, null);
-cptr.stPtro(loadedlibs, 160 + FLD.luaL_Reg_func, null);
+cptr.stPtro(loadedlibs, 160 + $luaL_Reg_func, null);
 
 /** C ref: linit.c:57 — @param {CPtr} L */
 export function* luaL_openlibs(L) {
     let lib;
-    for (lib = loadedlibs; cptr.ldPtro(lib, FLD.luaL_Reg_func); lib = cptr.add(lib, 1, 16)) {
-        (yield* luaL_requiref(L, cptr.ldPtr(lib), cptr.ldPtro(lib, FLD.luaL_Reg_func), 1));
+    for (lib = loadedlibs; cptr.ldPtro(lib, $luaL_Reg_func); lib = cptr.add(lib, 1, 16)) {
+        (yield* luaL_requiref(L, cptr.ldPtr(lib), cptr.ldPtro(lib, $luaL_Reg_func), 1));
         (yield* lua_settop(L, -2));
     }
 }

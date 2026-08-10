@@ -32,6 +32,59 @@ import { set_corpsenm } from './mkobj.js';
 import { christen_monst, oname } from './do_name.js';
 import { canseemon } from './display.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_filecode,
+    $Race_filecode = FLD.Race_filecode, $Role_filecode = FLD.Role_filecode, $Role_mnum = FLD.Role_mnum,
+    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+    $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
+    $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level, $flag_bones = FLD.flag_bones,
+    $flag_debug = FLD.flag_debug, $flag_end_around = FLD.flag_end_around, $flag_end_own = FLD.flag_end_own,
+    $flag_end_top = FLD.flag_end_top, $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
+    $flag_initgend = FLD.flag_initgend, $instance_flags_toptenwin = FLD.instance_flags_toptenwin,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_m_multi = FLD.instance_globals_m_multi,
+    $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
+    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_t_toptenwin = FLD.instance_globals_t_toptenwin,
+    $instance_globals_u_urace = FLD.instance_globals_u_urace,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole, $kinfo_format = FLD.kinfo_format,
+    $kinfo_name = FLD.kinfo_name, $monst_female = FLD.monst_female, $obj_spe = FLD.obj_spe,
+    $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_panicking = FLD.sinfo_panicking,
+    $sinfo_stopprint = FLD.sinfo_stopprint, $sysopt_s_entrymax = FLD.sysopt_s_entrymax,
+    $sysopt_s_pers_is_uid = FLD.sysopt_s_pers_is_uid, $sysopt_s_persmax = FLD.sysopt_s_persmax,
+    $sysopt_s_pointsmin = FLD.sysopt_s_pointsmin, $sysopt_s_tt_oname_maxrank = FLD.sysopt_s_tt_oname_maxrank,
+    $toptenentry_birthdate = FLD.toptenentry_birthdate, $toptenentry_death = FLD.toptenentry_death,
+    $toptenentry_deathdate = FLD.toptenentry_deathdate, $toptenentry_deathdnum = FLD.toptenentry_deathdnum,
+    $toptenentry_deathlev = FLD.toptenentry_deathlev, $toptenentry_deaths = FLD.toptenentry_deaths,
+    $toptenentry_hp = FLD.toptenentry_hp, $toptenentry_maxhp = FLD.toptenentry_maxhp,
+    $toptenentry_maxlvl = FLD.toptenentry_maxlvl, $toptenentry_name = FLD.toptenentry_name,
+    $toptenentry_patchlevel = FLD.toptenentry_patchlevel, $toptenentry_plalign = FLD.toptenentry_plalign,
+    $toptenentry_plgend = FLD.toptenentry_plgend, $toptenentry_plrace = FLD.toptenentry_plrace,
+    $toptenentry_plrole = FLD.toptenentry_plrole, $toptenentry_points = FLD.toptenentry_points,
+    $toptenentry_uid = FLD.toptenentry_uid, $toptenentry_ver_major = FLD.toptenentry_ver_major,
+    $toptenentry_ver_minor = FLD.toptenentry_ver_minor, $u_conduct_food = FLD.u_conduct_food,
+    $u_conduct_gnostic = FLD.u_conduct_gnostic, $u_conduct_killer = FLD.u_conduct_killer,
+    $u_conduct_literate = FLD.u_conduct_literate, $u_conduct_pets = FLD.u_conduct_pets,
+    $u_conduct_polypiles = FLD.u_conduct_polypiles, $u_conduct_polyselfs = FLD.u_conduct_polyselfs,
+    $u_conduct_sokocheat = FLD.u_conduct_sokocheat, $u_conduct_unvegan = FLD.u_conduct_unvegan,
+    $u_conduct_weaphit = FLD.u_conduct_weaphit, $u_conduct_wisharti = FLD.u_conduct_wisharti,
+    $u_conduct_wishes = FLD.u_conduct_wishes, $u_realtime_finish_time = FLD.u_realtime_finish_time,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $u_roleplay_nudist = FLD.u_roleplay_nudist,
+    $u_roleplay_numbones = FLD.u_roleplay_numbones, $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls,
+    $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
+    $you_uachieved = FLD.you_uachieved, $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
+    $you_uconduct = FLD.you_uconduct, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+    $you_umortality = FLD.you_umortality, $you_urexp = FLD.you_urexp, $you_uroleplay = FLD.you_uroleplay,
+    $you_uz = FLD.you_uz;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("bad killer format? (%d)");
 const __sl1 = cptr.lit("formatkiller");
@@ -233,11 +286,11 @@ cptr.stPtro(__static_formatkiller_killed_by_prefix, 120, __sl14); /** C ref: top
 export function formatkiller(buf, siz, how, incl_helpless) {
     let l;
     let c;
-    let kname = cptr.add(svk, FLD.kinfo_name);
+    let kname = cptr.add(svk, $kinfo_name);
     cptr.st1o(buf, 0, 0);
-    switch (cptr.ldI32o(svk, FLD.kinfo_format)) {
+    switch (cptr.ldI32o(svk, $kinfo_format)) {
         default:
-        impossible(__sl0, cptr.ldI32o(svk, FLD.kinfo_format));
+        impossible(__sl0, cptr.ldI32o(svk, $kinfo_format));
         // @FallThrough
         ;
         case NHM.NO_KILLER_PREFIX:
@@ -265,9 +318,9 @@ export function formatkiller(buf, siz, how, incl_helpless) {
         cptr.st1(cptr.postinc(() => buf, (v) => { buf = v; }), c);
     }
     cptr.st1(buf, 0);
-    if (incl_helpless && cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n) {
-        if (cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason) && BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason)) + 9n) <= BigInt(siz >>> 0))
-            void cptr.sprintf(buf, __sl2, cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason));
+    if (incl_helpless && cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
+        if (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(gm, $instance_globals_m_multi_reason)) + 9n) <= BigInt(siz >>> 0))
+            void cptr.sprintf(buf, __sl2, cptr.ldPtro(gm, $instance_globals_m_multi_reason));
         else if (17n <= BigInt(siz >>> 0))
             void cptr.strcpy(buf, __sl3);
     }
@@ -275,18 +328,18 @@ export function formatkiller(buf, siz, how, incl_helpless) {
 
 /** C ref: topten.c:165 — @param {CPtr} x */
 function topten_print(x) {
-    if (cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin) == -1)
+    if (cptr.ldI32o(gt, $instance_globals_t_toptenwin) == -1)
         raw_print()(x);
     else
-        putstr()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_NONE, x);
+        putstr()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), NHM.ATR_NONE, x);
 }
 
 /** C ref: topten.c:174 — @param {CPtr} x */
 function topten_print_bold(x) {
-    if (cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin) == -1)
+    if (cptr.ldI32o(gt, $instance_globals_t_toptenwin) == -1)
         raw_print_bold()(x);
     else
-        putstr()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_BOLD, x);
+        putstr()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), NHM.ATR_BOLD, x);
 }
 
 /** C ref: topten.c:183 — @param {CPtr} lev @returns {CInt} */
@@ -315,8 +368,8 @@ function readentry(rfile, tt) {
     let s4 = new Uint8Array(129);
     let s5 = new Uint8Array(129);
     let s6 = new Uint8Array(129);
-    if (fscanf(rfile, cptr.decay(__static_readentry_fmt), cptr.add(tt, FLD.toptenentry_ver_major), cptr.add(tt, FLD.toptenentry_ver_minor), cptr.add(tt, FLD.toptenentry_patchlevel), cptr.add(tt, FLD.toptenentry_points), cptr.add(tt, FLD.toptenentry_deathdnum), cptr.add(tt, FLD.toptenentry_deathlev), cptr.add(tt, FLD.toptenentry_maxlvl), cptr.add(tt, FLD.toptenentry_hp), cptr.add(tt, FLD.toptenentry_maxhp), cptr.add(tt, FLD.toptenentry_deaths), cptr.add(tt, FLD.toptenentry_deathdate), cptr.add(tt, FLD.toptenentry_birthdate), cptr.add(tt, FLD.toptenentry_uid)) != 13) {
-        cptr.stI64o(tt, FLD.toptenentry_points, 0n);
+    if (fscanf(rfile, cptr.decay(__static_readentry_fmt), cptr.add(tt, $toptenentry_ver_major), cptr.add(tt, $toptenentry_ver_minor), cptr.add(tt, $toptenentry_patchlevel), cptr.add(tt, $toptenentry_points), cptr.add(tt, $toptenentry_deathdnum), cptr.add(tt, $toptenentry_deathlev), cptr.add(tt, $toptenentry_maxlvl), cptr.add(tt, $toptenentry_hp), cptr.add(tt, $toptenentry_maxhp), cptr.add(tt, $toptenentry_deaths), cptr.add(tt, $toptenentry_deathdate), cptr.add(tt, $toptenentry_birthdate), cptr.add(tt, $toptenentry_uid)) != 13) {
+        cptr.stI64o(tt, $toptenentry_points, 0n);
         discardexcess(rfile);
     } else {
         if (!fgets(cptr.decay(inbuf), 129, rfile)) {
@@ -325,35 +378,35 @@ function readentry(rfile, tt) {
             void cptr.strcpy(cptr.add(cptr.decay(inbuf), 127n, 1), __sl15);
             discardexcess(rfile);
         }
-        if (cptr.ldI32o(tt, FLD.toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, FLD.toptenentry_ver_major) == 3 && cptr.ldI32o(tt, FLD.toptenentry_ver_minor) < 3)) {
+        if (cptr.ldI32o(tt, $toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, $toptenentry_ver_major) == 3 && cptr.ldI32o(tt, $toptenentry_ver_minor) < 3)) {
             let i;
-            if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt32), cptr.add(tt, FLD.toptenentry_plrole), cptr.add(tt, FLD.toptenentry_plgend), cptr.decay(s1), cptr.decay(s2)) == 4) {
-                cptr.st1o2(tt, 1, 1, FLD.toptenentry_plrole, cptr.st1o2(tt, 1, 1, FLD.toptenentry_plgend, 0));
-                copynchars(cptr.add(tt, FLD.toptenentry_name), cptr.decay(s1), 10);
-                copynchars(cptr.add(tt, FLD.toptenentry_death), cptr.decay(s2), 100);
+            if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt32), cptr.add(tt, $toptenentry_plrole), cptr.add(tt, $toptenentry_plgend), cptr.decay(s1), cptr.decay(s2)) == 4) {
+                cptr.st1o2(tt, 1, 1, $toptenentry_plrole, cptr.st1o2(tt, 1, 1, $toptenentry_plgend, 0));
+                copynchars(cptr.add(tt, $toptenentry_name), cptr.decay(s1), 10);
+                copynchars(cptr.add(tt, $toptenentry_death), cptr.decay(s2), 100);
             } else
-                cptr.stI64o(tt, FLD.toptenentry_points, 0n);
-            cptr.st1o2(tt, 1, 1, FLD.toptenentry_plrole, 0);
-            if ((i = str2role(cptr.add(tt, FLD.toptenentry_plrole))) >= 0)
-                void cptr.strcpy(cptr.add(tt, FLD.toptenentry_plrole), cptr.ldPtro2(roles, i, 312, FLD.Role_filecode));
-            void cptr.strcpy(cptr.add(tt, FLD.toptenentry_plrace), __sl16);
-            void cptr.strcpy(cptr.add(tt, FLD.toptenentry_plgend), (cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend) == 77) ? __sl17 : __sl18);
-            void cptr.strcpy(cptr.add(tt, FLD.toptenentry_plalign), __sl16);
+                cptr.stI64o(tt, $toptenentry_points, 0n);
+            cptr.st1o2(tt, 1, 1, $toptenentry_plrole, 0);
+            if ((i = str2role(cptr.add(tt, $toptenentry_plrole))) >= 0)
+                void cptr.strcpy(cptr.add(tt, $toptenentry_plrole), cptr.ldPtro2(roles, i, 312, $Role_filecode));
+            void cptr.strcpy(cptr.add(tt, $toptenentry_plrace), __sl16);
+            void cptr.strcpy(cptr.add(tt, $toptenentry_plgend), (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77) ? __sl17 : __sl18);
+            void cptr.strcpy(cptr.add(tt, $toptenentry_plalign), __sl16);
         } else if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt33), cptr.decay(s1), cptr.decay(s2), cptr.decay(s3), cptr.decay(s4), cptr.decay(s5), cptr.decay(s6)) == 6) {
-            copynchars(cptr.add(tt, FLD.toptenentry_plrole), cptr.decay(s1), 3);
-            copynchars(cptr.add(tt, FLD.toptenentry_plrace), cptr.decay(s2), 3);
-            copynchars(cptr.add(tt, FLD.toptenentry_plgend), cptr.decay(s3), 3);
-            copynchars(cptr.add(tt, FLD.toptenentry_plalign), cptr.decay(s4), 3);
-            copynchars(cptr.add(tt, FLD.toptenentry_name), cptr.decay(s5), 10);
-            copynchars(cptr.add(tt, FLD.toptenentry_death), cptr.decay(s6), 100);
+            copynchars(cptr.add(tt, $toptenentry_plrole), cptr.decay(s1), 3);
+            copynchars(cptr.add(tt, $toptenentry_plrace), cptr.decay(s2), 3);
+            copynchars(cptr.add(tt, $toptenentry_plgend), cptr.decay(s3), 3);
+            copynchars(cptr.add(tt, $toptenentry_plalign), cptr.decay(s4), 3);
+            copynchars(cptr.add(tt, $toptenentry_name), cptr.decay(s5), 10);
+            copynchars(cptr.add(tt, $toptenentry_death), cptr.decay(s6), 100);
         } else
-            cptr.stI64o(tt, FLD.toptenentry_points, 0n);
+            cptr.stI64o(tt, $toptenentry_points, 0n);
     }
-    if (cptr.ldI64o(tt, FLD.toptenentry_points) > 0n) {
-        if (cptr.ldI64o(tt, FLD.toptenentry_birthdate) < 19000000n)
-            cptr.stI64o(tt, FLD.toptenentry_birthdate, cptr.ldI64o(tt, FLD.toptenentry_birthdate) + 19000000n);
-        if (cptr.ldI64o(tt, FLD.toptenentry_deathdate) < 19000000n)
-            cptr.stI64o(tt, FLD.toptenentry_deathdate, cptr.ldI64o(tt, FLD.toptenentry_deathdate) + 19000000n);
+    if (cptr.ldI64o(tt, $toptenentry_points) > 0n) {
+        if (cptr.ldI64o(tt, $toptenentry_birthdate) < 19000000n)
+            cptr.stI64o(tt, $toptenentry_birthdate, cptr.ldI64o(tt, $toptenentry_birthdate) + 19000000n);
+        if (cptr.ldI64o(tt, $toptenentry_deathdate) < 19000000n)
+            cptr.stI64o(tt, $toptenentry_deathdate, cptr.ldI64o(tt, $toptenentry_deathdate) + 19000000n);
     }
 }
 
@@ -364,12 +417,12 @@ const __static_writeentry_fmtX = cptr.bytes("%s,%s\n"); /** C ref: topten.c:307 
 
 /** C ref: topten.c:301 — @param {CPtr} rfile @param {CPtr} tt */
 function writeentry(rfile, tt) {
-    void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32o(tt, FLD.toptenentry_ver_major), cptr.ldI32o(tt, FLD.toptenentry_ver_minor), cptr.ldI32o(tt, FLD.toptenentry_patchlevel), cptr.ldI64o(tt, FLD.toptenentry_points), cptr.ldI32o(tt, FLD.toptenentry_deathdnum), cptr.ldI32o(tt, FLD.toptenentry_deathlev), cptr.ldI32o(tt, FLD.toptenentry_maxlvl), cptr.ldI32o(tt, FLD.toptenentry_hp), cptr.ldI32o(tt, FLD.toptenentry_maxhp), cptr.ldI32o(tt, FLD.toptenentry_deaths), cptr.ldI64o(tt, FLD.toptenentry_deathdate), cptr.ldI64o(tt, FLD.toptenentry_birthdate), cptr.ldI32o(tt, FLD.toptenentry_uid));
-    if (cptr.ldI32o(tt, FLD.toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, FLD.toptenentry_ver_major) == 3 && cptr.ldI32o(tt, FLD.toptenentry_ver_minor) < 3))
-        void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plrole), cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend));
+    void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32o(tt, $toptenentry_ver_major), cptr.ldI32o(tt, $toptenentry_ver_minor), cptr.ldI32o(tt, $toptenentry_patchlevel), cptr.ldI64o(tt, $toptenentry_points), cptr.ldI32o(tt, $toptenentry_deathdnum), cptr.ldI32o(tt, $toptenentry_deathlev), cptr.ldI32o(tt, $toptenentry_maxlvl), cptr.ldI32o(tt, $toptenentry_hp), cptr.ldI32o(tt, $toptenentry_maxhp), cptr.ldI32o(tt, $toptenentry_deaths), cptr.ldI64o(tt, $toptenentry_deathdate), cptr.ldI64o(tt, $toptenentry_birthdate), cptr.ldI32o(tt, $toptenentry_uid));
+    if (cptr.ldI32o(tt, $toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, $toptenentry_ver_major) == 3 && cptr.ldI32o(tt, $toptenentry_ver_minor) < 3))
+        void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1so2(tt, 0, 1, $toptenentry_plrole), cptr.ld1so2(tt, 0, 1, $toptenentry_plgend));
     else
-        void fprintf(rfile, cptr.decay(__static_writeentry_fmt33), cptr.add(tt, FLD.toptenentry_plrole), cptr.add(tt, FLD.toptenentry_plrace), cptr.add(tt, FLD.toptenentry_plgend), cptr.add(tt, FLD.toptenentry_plalign));
-    void fprintf(rfile, cptr.decay(__static_writeentry_fmtX), onlyspace(cptr.add(tt, FLD.toptenentry_name)) ? __sl19 : cptr.add(tt, FLD.toptenentry_name), cptr.add(tt, FLD.toptenentry_death));
+        void fprintf(rfile, cptr.decay(__static_writeentry_fmt33), cptr.add(tt, $toptenentry_plrole), cptr.add(tt, $toptenentry_plrace), cptr.add(tt, $toptenentry_plgend), cptr.add(tt, $toptenentry_plalign));
+    void fprintf(rfile, cptr.decay(__static_writeentry_fmtX), onlyspace(cptr.add(tt, $toptenentry_name)) ? __sl19 : cptr.add(tt, $toptenentry_name), cptr.add(tt, $toptenentry_death));
 }
 
 /** C ref: topten.c:340 — @param {CPtr} rfile @param {CPtr} tt @param {CInt} how */
@@ -377,27 +430,27 @@ function writexlentry(rfile, tt, how) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(101);
     let achbuf = new Uint8Array(1280);
-    void cptr.sprintf(cptr.decay(buf), __sl20, cptr.ldI32o(tt, FLD.toptenentry_ver_major), cptr.ldI32o(tt, FLD.toptenentry_ver_minor), cptr.ldI32o(tt, FLD.toptenentry_patchlevel));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl21, 9, cptr.ldI64o(tt, FLD.toptenentry_points), 9, cptr.ldI32o(tt, FLD.toptenentry_deathdnum), 9, cptr.ldI32o(tt, FLD.toptenentry_deathlev));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl22, 9, cptr.ldI32o(tt, FLD.toptenentry_maxlvl), 9, cptr.ldI32o(tt, FLD.toptenentry_hp), 9, cptr.ldI32o(tt, FLD.toptenentry_maxhp));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl23, 9, cptr.ldI32o(tt, FLD.toptenentry_deaths), 9, cptr.ldI64o(tt, FLD.toptenentry_deathdate), 9, cptr.ldI64o(tt, FLD.toptenentry_birthdate), 9, cptr.ldI32o(tt, FLD.toptenentry_uid));
+    void cptr.sprintf(cptr.decay(buf), __sl20, cptr.ldI32o(tt, $toptenentry_ver_major), cptr.ldI32o(tt, $toptenentry_ver_minor), cptr.ldI32o(tt, $toptenentry_patchlevel));
+    void cptr.sprintf(eos(cptr.decay(buf)), __sl21, 9, cptr.ldI64o(tt, $toptenentry_points), 9, cptr.ldI32o(tt, $toptenentry_deathdnum), 9, cptr.ldI32o(tt, $toptenentry_deathlev));
+    void cptr.sprintf(eos(cptr.decay(buf)), __sl22, 9, cptr.ldI32o(tt, $toptenentry_maxlvl), 9, cptr.ldI32o(tt, $toptenentry_hp), 9, cptr.ldI32o(tt, $toptenentry_maxhp));
+    void cptr.sprintf(eos(cptr.decay(buf)), __sl23, 9, cptr.ldI32o(tt, $toptenentry_deaths), 9, cptr.ldI64o(tt, $toptenentry_deathdate), 9, cptr.ldI64o(tt, $toptenentry_birthdate), 9, cptr.ldI32o(tt, $toptenentry_uid));
     void fprintf(rfile, __sl24, cptr.decay(buf));
-    void cptr.sprintf(cptr.decay(buf), __sl25, 9, cptr.add(tt, FLD.toptenentry_plrole), 9, cptr.add(tt, FLD.toptenentry_plrace), 9, cptr.add(tt, FLD.toptenentry_plgend), 9, cptr.add(tt, FLD.toptenentry_plalign));
+    void cptr.sprintf(cptr.decay(buf), __sl25, 9, cptr.add(tt, $toptenentry_plrole), 9, cptr.add(tt, $toptenentry_plrace), 9, cptr.add(tt, $toptenentry_plgend), 9, cptr.add(tt, $toptenentry_plalign));
     formatkiller(cptr.decay(tmpbuf), 101, how, 0);
     void fprintf(rfile, __sl26, cptr.decay(buf), 9, svp, 9, cptr.decay(tmpbuf));
-    if (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n)
-        void fprintf(rfile, __sl27, 9, cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason) ? cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason) : __sl28);
-    void fprintf(rfile, __sl29, 9, encodeconduct(), 9, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves), 9, encodeachieve(0));
+    if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
+        void fprintf(rfile, __sl27, 9, cptr.ldPtro(gm, $instance_globals_m_multi_reason) ? cptr.ldPtro(gm, $instance_globals_m_multi_reason) : __sl28);
+    void fprintf(rfile, __sl29, 9, encodeconduct(), 9, cptr.ldI64o(svm, $instance_globals_saved_m_moves), 9, encodeachieve(0));
     void fprintf(rfile, __sl30, 9, encode_extended_achievements(cptr.decay(achbuf)));
     void fprintf(rfile, __sl31, 9, encode_extended_conducts(cptr.decay(buf)));
-    void fprintf(rfile, __sl32, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64o(urealtime, FLD.u_realtime_finish_time)));
-    void fprintf(rfile, __sl33, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, FLD.flag_initgend), 48, FLD.Gender_filecode), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, FLD.you_ualignbase)) | 0, 32, FLD.Align_filecode));
+    void fprintf(rfile, __sl32, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64o(urealtime, $u_realtime_finish_time)));
+    void fprintf(rfile, __sl33, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, $flag_initgend), 48, $Gender_filecode), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) | 0, 32, $Align_filecode));
     void fprintf(rfile, __sl34, 9, encodexlogflags());
-    void fprintf(rfile, __sl35, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, FLD.instance_globals_i_invent)) + hidden_gold(1)));
-    void fprintf(rfile, __sl36, 9, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wishes));
-    void fprintf(rfile, __sl37, 9, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wisharti));
-    void fprintf(rfile, __sl38, 9, cptr.ldI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numbones));
-    void fprintf(rfile, __sl39, 9, cptr.ldI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numrerolls));
+    void fprintf(rfile, __sl35, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) + hidden_gold(1)));
+    void fprintf(rfile, __sl36, 9, cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes));
+    void fprintf(rfile, __sl37, 9, cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti));
+    void fprintf(rfile, __sl38, 9, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones));
+    void fprintf(rfile, __sl39, 9, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls));
     void fprintf(rfile, __sl15);
 }
 
@@ -408,9 +461,9 @@ function encodexlogflags() {
         e |= 1n;
     if (discover())
         e |= 2n;
-    if (!cptr.ldI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numbones))
+    if (!cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones))
         e |= 4n;
-    if (cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_reroll))
+    if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_reroll))
         e |= 8n;
     return e;
 }
@@ -418,33 +471,33 @@ function encodexlogflags() {
 /** C ref: topten.c:411 @returns {CLongLong} */
 function encodeconduct() {
     let e = 0n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_food))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))
         e |= 1n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_unvegan))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan))
         e |= 2n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct))
+    if (!cptr.ldI64o(u, $you_uconduct))
         e |= 4n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_gnostic))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic))
         e |= 8n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_weaphit))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit))
         e |= 16n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_killer))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_killer))
         e |= 32n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_literate))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate))
         e |= 64n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_polypiles))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles))
         e |= 128n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_polyselfs))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs))
         e |= 256n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wishes))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes))
         e |= 512n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wisharti))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti))
         e |= 1024n;
     if (!num_genocides())
         e |= 2048n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_sokocheat) && sokoban_in_play())
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat) && sokoban_in_play())
         e |= 4096n;
-    if (!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_pets))
+    if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))
         e |= 8192n;
     return e;
 }
@@ -456,8 +509,8 @@ function encodeachieve(secondlong) {
     let offset;
     let r = 0n;
     offset = secondlong ? 31 : 0;
-    for (i = 0; cptr.ld1so2(u, i, 1, FLD.you_uachieved); ++i) {
-        achidx = (cptr.ld1so2(u, i, 1, FLD.you_uachieved) - offset) | 0;
+    for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i) {
+        achidx = (cptr.ld1so2(u, i, 1, $you_uachieved) - offset) | 0;
         if (achidx > 0 && achidx < 32)
             r |= 1n << BigInt(((achidx - 1) | 0));
     }
@@ -482,8 +535,8 @@ function encode_extended_achievements(buf) {
     let achidx;
     let absidx;
     cptr.st1o(buf, 0, 0);
-    for (i = 0; cptr.ld1so2(u, i, 1, FLD.you_uachieved); i++) {
-        achidx = cptr.ld1so2(u, i, 1, FLD.you_uachieved);
+    for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); i++) {
+        achidx = cptr.ld1so2(u, i, 1, $you_uachieved);
         absidx = Math.abs(achidx);
         switch (absidx) {
             case NHC.ACH_UWIN:
@@ -572,34 +625,34 @@ function encode_extended_achievements(buf) {
 /** C ref: topten.c:584 — @param {CPtr} buf @returns {CPtr} */
 function encode_extended_conducts(buf) {
     cptr.st1o(buf, 0, 0);
-    add_achieveX(buf, __sl64, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_food))));
-    add_achieveX(buf, __sl65, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_unvegan))));
-    add_achieveX(buf, __sl66, schar((!cptr.ldI64o(u, FLD.you_uconduct))));
-    add_achieveX(buf, __sl67, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_gnostic))));
-    add_achieveX(buf, __sl68, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_weaphit))));
-    add_achieveX(buf, __sl69, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_killer))));
-    add_achieveX(buf, __sl70, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_literate))));
-    add_achieveX(buf, __sl71, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_polypiles))));
-    add_achieveX(buf, __sl72, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_polyselfs))));
-    add_achieveX(buf, __sl73, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wishes))));
-    add_achieveX(buf, __sl74, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_wisharti))));
+    add_achieveX(buf, __sl64, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))));
+    add_achieveX(buf, __sl65, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan))));
+    add_achieveX(buf, __sl66, schar((!cptr.ldI64o(u, $you_uconduct))));
+    add_achieveX(buf, __sl67, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic))));
+    add_achieveX(buf, __sl68, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit))));
+    add_achieveX(buf, __sl69, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_killer))));
+    add_achieveX(buf, __sl70, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate))));
+    add_achieveX(buf, __sl71, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles))));
+    add_achieveX(buf, __sl72, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs))));
+    add_achieveX(buf, __sl73, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes))));
+    add_achieveX(buf, __sl74, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti))));
     add_achieveX(buf, __sl75, schar((!num_genocides())));
     if (sokoban_in_play())
-        add_achieveX(buf, __sl76, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_sokocheat))));
-    add_achieveX(buf, __sl77, cptr.ld1so(u, FLD.you_uroleplay));
-    add_achieveX(buf, __sl78, cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf));
-    add_achieveX(buf, __sl79, cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_nudist));
-    add_achieveX(buf, __sl80, cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_pauper));
-    add_achieveX(buf, __sl81, schar((!cptr.ld1so(flags, FLD.flag_bones))));
-    add_achieveX(buf, __sl82, schar((!cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_pets))));
-    add_achieveX(buf, __sl83, schar((!cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_reroll))));
+        add_achieveX(buf, __sl76, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat))));
+    add_achieveX(buf, __sl77, cptr.ld1so(u, $you_uroleplay));
+    add_achieveX(buf, __sl78, cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf));
+    add_achieveX(buf, __sl79, cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist));
+    add_achieveX(buf, __sl80, cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper));
+    add_achieveX(buf, __sl81, schar((!cptr.ld1so(flags, $flag_bones))));
+    add_achieveX(buf, __sl82, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))));
+    add_achieveX(buf, __sl83, schar((!cptr.ld1so(u, $you_uroleplay + $u_roleplay_reroll))));
     return buf;
 }
 
 /** C ref: topten.c:615 — @param {CPtr} tt */
 function free_ttlist(tt) {
     let ttnext;
-    while (cptr.ldI64o(tt, FLD.toptenentry_points) > 0n) {
+    while (cptr.ldI64o(tt, $toptenentry_points) > 0n) {
         ttnext = cptr.ldPtr(tt);
         cptr.free((tt));
         tt = ttnext;
@@ -619,43 +672,43 @@ export function topten(how, when) {
     let rank;
     let rank0 = -1;
     let rank1 = 0;
-    let occ_cnt = cptr.ldI32o(sysopt, FLD.sysopt_s_persmax);
+    let occ_cnt = cptr.ldI32o(sysopt, $sysopt_s_persmax);
     let flg = 0;
     let t0_used;
     let skip_scores;
     __lbl_destroywin: {
     __lbl_showwin: {
-        if (cptr.ldI32o(program_state, FLD.sinfo_panicking))
+        if (cptr.ldI32o(program_state, $sinfo_panicking))
             return;
-        if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-            cptr.stI32o(gt, FLD.instance_globals_t_toptenwin, create_nhwindow()(NHM.NHW_TEXT));
+        if (cptr.ld1so(iflags, $instance_flags_toptenwin)) {
+            cptr.stI32o(gt, $instance_globals_t_toptenwin, create_nhwindow()(NHM.NHW_TEXT));
         }
         t0_used = 0;
         t0 = alloc(208);
         cptr.memcpy(t0, zerott, 208);
-        cptr.stI32o(t0, FLD.toptenentry_ver_major, NHM.VERSION_MAJOR);
-        cptr.stI32o(t0, FLD.toptenentry_ver_minor, NHM.VERSION_MINOR);
-        cptr.stI32o(t0, FLD.toptenentry_patchlevel, NHM.PATCHLEVEL);
-        cptr.stI64o(t0, FLD.toptenentry_points, cptr.ldI64o(u, FLD.you_urexp));
-        cptr.stI32o(t0, FLD.toptenentry_deathdnum, cptr.ldI16o(u, FLD.you_uz));
-        cptr.stI32o(t0, FLD.toptenentry_deathlev, observable_depth(cptr.add(u, FLD.you_uz)));
-        cptr.stI32o(t0, FLD.toptenentry_maxlvl, deepest_lev_reached(1));
-        cptr.stI32o(t0, FLD.toptenentry_hp, cptr.ldI32o(u, FLD.you_uhp));
-        cptr.stI32o(t0, FLD.toptenentry_maxhp, cptr.ldI32o(u, FLD.you_uhpmax));
-        cptr.stI32o(t0, FLD.toptenentry_deaths, cptr.ldI32o(u, FLD.you_umortality));
-        cptr.stI32o(t0, FLD.toptenentry_uid, uid);
-        copynchars(cptr.add(t0, FLD.toptenentry_plrole), cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.Role_filecode), 3);
-        copynchars(cptr.add(t0, FLD.toptenentry_plrace), cptr.ldPtro(gu, FLD.instance_globals_u_urace + FLD.Race_filecode), 3);
-        copynchars(cptr.add(t0, FLD.toptenentry_plgend), cptr.ldPtro2(genders, cptr.ld1so(flags, FLD.flag_female), 48, FLD.Gender_filecode), 3);
-        copynchars(cptr.add(t0, FLD.toptenentry_plalign), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, FLD.you_ualign)) | 0, 32, FLD.Align_filecode), 3);
-        copynchars(cptr.add(t0, FLD.toptenentry_name), svp, 10);
-        formatkiller(cptr.add(t0, FLD.toptenentry_death), 101, how, 1);
-        cptr.stI64o(t0, FLD.toptenentry_birthdate, yyyymmdd(ubirthday.v));
-        cptr.stI64o(t0, FLD.toptenentry_deathdate, yyyymmdd(when));
+        cptr.stI32o(t0, $toptenentry_ver_major, NHM.VERSION_MAJOR);
+        cptr.stI32o(t0, $toptenentry_ver_minor, NHM.VERSION_MINOR);
+        cptr.stI32o(t0, $toptenentry_patchlevel, NHM.PATCHLEVEL);
+        cptr.stI64o(t0, $toptenentry_points, cptr.ldI64o(u, $you_urexp));
+        cptr.stI32o(t0, $toptenentry_deathdnum, cptr.ldI16o(u, $you_uz));
+        cptr.stI32o(t0, $toptenentry_deathlev, observable_depth(cptr.add(u, $you_uz)));
+        cptr.stI32o(t0, $toptenentry_maxlvl, deepest_lev_reached(1));
+        cptr.stI32o(t0, $toptenentry_hp, cptr.ldI32o(u, $you_uhp));
+        cptr.stI32o(t0, $toptenentry_maxhp, cptr.ldI32o(u, $you_uhpmax));
+        cptr.stI32o(t0, $toptenentry_deaths, cptr.ldI32o(u, $you_umortality));
+        cptr.stI32o(t0, $toptenentry_uid, uid);
+        copynchars(cptr.add(t0, $toptenentry_plrole), cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), 3);
+        copynchars(cptr.add(t0, $toptenentry_plrace), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), 3);
+        copynchars(cptr.add(t0, $toptenentry_plgend), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), 3);
+        copynchars(cptr.add(t0, $toptenentry_plalign), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode), 3);
+        copynchars(cptr.add(t0, $toptenentry_name), svp, 10);
+        formatkiller(cptr.add(t0, $toptenentry_death), 101, how, 1);
+        cptr.stI64o(t0, $toptenentry_birthdate, yyyymmdd(ubirthday.v));
+        cptr.stI64o(t0, $toptenentry_deathdate, yyyymmdd(when));
         cptr.stPtr(t0, null);
         if (lock_file(__sl84, NHM.SCOREPREFIX, 10)) {
             if (!(lfile = fopen_datafile(__sl84, __sl85, NHM.SCOREPREFIX))) {
-                if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+                if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                     raw_print()(__sl86);
             } else {
                 writeentry(lfile, t0);
@@ -665,7 +718,7 @@ export function topten(how, when) {
         }
         if (lock_file(__sl87, NHM.SCOREPREFIX, 10)) {
             if (!(xlfile = fopen_datafile(__sl87, __sl85, NHM.SCOREPREFIX))) {
-                if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+                if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                     raw_print()(__sl88);
             } else {
                 writexlentry(xlfile, t0, how);
@@ -675,7 +728,7 @@ export function topten(how, when) {
         }
         if (wizard() || discover()) {
             if (how != NHC.PANICKED)
-                if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup)) {
+                if (!cptr.ldI32o(program_state, $sinfo_done_hup)) {
                     let pbuf = new Uint8Array(256);
                     topten_print(__sl14);
                     void cptr.sprintf(cptr.decay(pbuf), __sl89, wizard() ? __sl90 : __sl91);
@@ -687,22 +740,22 @@ export function topten(how, when) {
             break __lbl_destroywin;
         rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
         if (!rfile) {
-            if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+            if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                 raw_print()(__sl94);
             unlock_file(__sl92);
             break __lbl_destroywin;
         }
-        if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+        if (!cptr.ldI32o(program_state, $sinfo_done_hup))
             topten_print(__sl14);
-        if (cptr.ldI64o(t0, FLD.toptenentry_points) < BigInt(cptr.ldI32o(sysopt, FLD.sysopt_s_pointsmin)))
-            cptr.stI64o(t0, FLD.toptenentry_points, 0n);
+        if (cptr.ldI64o(t0, $toptenentry_points) < BigInt(cptr.ldI32o(sysopt, $sysopt_s_pointsmin)))
+            cptr.stI64o(t0, $toptenentry_points, 0n);
         t1 = (tt_head = alloc(208));
         tprev = null;
         for (rank = 1; ; ) {
             readentry(rfile, t1);
-            if (cptr.ldI64o(t1, FLD.toptenentry_points) < BigInt(cptr.ldI32o(sysopt, FLD.sysopt_s_pointsmin)))
-                cptr.stI64o(t1, FLD.toptenentry_points, 0n);
-            if (rank0 < 0 && cptr.ldI64o(t1, FLD.toptenentry_points) < cptr.ldI64o(t0, FLD.toptenentry_points)) {
+            if (cptr.ldI64o(t1, $toptenentry_points) < BigInt(cptr.ldI32o(sysopt, $sysopt_s_pointsmin)))
+                cptr.stI64o(t1, $toptenentry_points, 0n);
+            if (rank0 < 0 && cptr.ldI64o(t1, $toptenentry_points) < cptr.ldI64o(t0, $toptenentry_points)) {
                 rank0 = rank++;
                 if (tprev === null)
                     tt_head = t0;
@@ -714,15 +767,15 @@ export function topten(how, when) {
                 flg++;
             } else
                 tprev = t1;
-            if (cptr.ldI64o(t1, FLD.toptenentry_points) == 0n)
+            if (cptr.ldI64o(t1, $toptenentry_points) == 0n)
                 break;
-            if ((cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, FLD.toptenentry_uid) == cptr.ldI32o(t0, FLD.toptenentry_uid) : cptr.strncmp(cptr.add(t1, FLD.toptenentry_name), cptr.add(t0, FLD.toptenentry_name), 10n) == 0) && !cptr.strncmp(cptr.add(t1, FLD.toptenentry_plrole), cptr.add(t0, FLD.toptenentry_plrole), 3n) && --occ_cnt <= 0) {
+            if ((cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, $toptenentry_uid) == cptr.ldI32o(t0, $toptenentry_uid) : cptr.strncmp(cptr.add(t1, $toptenentry_name), cptr.add(t0, $toptenentry_name), 10n) == 0) && !cptr.strncmp(cptr.add(t1, $toptenentry_plrole), cptr.add(t0, $toptenentry_plrole), 3n) && --occ_cnt <= 0) {
                 if (rank0 < 0) {
                     rank0 = 0;
                     rank1 = rank;
-                    if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup)) {
+                    if (!cptr.ldI32o(program_state, $sinfo_done_hup)) {
                         let pbuf = new Uint8Array(256);
-                        void cptr.sprintf(cptr.decay(pbuf), __sl95, cptr.ldI64o(t1, FLD.toptenentry_points));
+                        void cptr.sprintf(cptr.decay(pbuf), __sl95, cptr.ldI64o(t1, $toptenentry_points));
                         topten_print(cptr.decay(pbuf));
                         topten_print(__sl14);
                     }
@@ -732,51 +785,51 @@ export function topten(how, when) {
                     continue;
                 }
             }
-            if (rank <= cptr.ldI32o(sysopt, FLD.sysopt_s_entrymax)) {
+            if (rank <= cptr.ldI32o(sysopt, $sysopt_s_entrymax)) {
                 cptr.stPtr(t1, alloc(208));
                 t1 = cptr.ldPtr(t1);
                 rank++;
             }
-            if (rank > cptr.ldI32o(sysopt, FLD.sysopt_s_entrymax)) {
-                cptr.stI64o(t1, FLD.toptenentry_points, 0n);
+            if (rank > cptr.ldI32o(sysopt, $sysopt_s_entrymax)) {
+                cptr.stI64o(t1, $toptenentry_points, 0n);
                 break;
             }
         }
         if (flg) {
             void fclose(rfile);
             if (!(rfile = fopen_datafile(__sl92, __sl96, NHM.SCOREPREFIX))) {
-                if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
+                if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                     raw_print()(__sl97);
                 unlock_file(__sl92);
                 free_ttlist(tt_head);
                 break __lbl_destroywin;
             }
-            if (!cptr.ldI32o(program_state, FLD.sinfo_stopprint))
+            if (!cptr.ldI32o(program_state, $sinfo_stopprint))
                 if (rank0 > 0) {
                     if (rank0 <= 10) {
                         topten_print(__sl98);
                     } else {
                         let pbuf = new Uint8Array(256);
-                        void cptr.sprintf(cptr.decay(pbuf), __sl99, rank0, ordin(rank0), cptr.ldI32o(sysopt, FLD.sysopt_s_entrymax));
+                        void cptr.sprintf(cptr.decay(pbuf), __sl99, rank0, ordin(rank0), cptr.ldI32o(sysopt, $sysopt_s_entrymax));
                         topten_print(cptr.decay(pbuf));
                     }
                     topten_print(__sl14);
                 }
         }
-        skip_scores = schar((!cptr.ldI32o(flags, FLD.flag_end_top) && !cptr.ldI32o(flags, FLD.flag_end_around) && !cptr.ld1so(flags, FLD.flag_end_own) ? 1 : 0));
+        skip_scores = schar((!cptr.ldI32o(flags, $flag_end_top) && !cptr.ldI32o(flags, $flag_end_around) && !cptr.ld1so(flags, $flag_end_own) ? 1 : 0));
         if (rank0 == 0)
             rank0 = rank1;
         if (rank0 <= 0)
             rank0 = rank;
-        if (!skip_scores && !cptr.ldI32o(program_state, FLD.sinfo_stopprint))
+        if (!skip_scores && !cptr.ldI32o(program_state, $sinfo_stopprint))
             outheader();
-        for (t1 = tt_head, rank = 1; cptr.ldI64o(t1, FLD.toptenentry_points) != 0n; t1 = cptr.ldPtr(t1), ++rank) {
+        for (t1 = tt_head, rank = 1; cptr.ldI64o(t1, $toptenentry_points) != 0n; t1 = cptr.ldPtr(t1), ++rank) {
             if (flg)
                 writeentry(rfile, t1);
-            if (skip_scores || cptr.ldI32o(program_state, FLD.sinfo_stopprint))
+            if (skip_scores || cptr.ldI32o(program_state, $sinfo_stopprint))
                 continue;
-            if (rank <= cptr.ldI32o(flags, FLD.flag_end_top) || (rank >= ((rank0 - cptr.ldI32o(flags, FLD.flag_end_around)) | 0) && rank <= ((rank0 + cptr.ldI32o(flags, FLD.flag_end_around)) | 0)) || (cptr.ld1so(flags, FLD.flag_end_own) && (cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, FLD.toptenentry_uid) == cptr.ldI32o(t0, FLD.toptenentry_uid) : !cptr.strncmp(cptr.add(t1, FLD.toptenentry_name), cptr.add(t0, FLD.toptenentry_name), 10n)))) {
-                if (rank == ((rank0 - cptr.ldI32o(flags, FLD.flag_end_around)) | 0) && rank0 > ((((cptr.ldI32o(flags, FLD.flag_end_top) + cptr.ldI32o(flags, FLD.flag_end_around)) | 0) + 1) | 0) && !cptr.ld1so(flags, FLD.flag_end_own))
+            if (rank <= cptr.ldI32o(flags, $flag_end_top) || (rank >= ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) && rank <= ((rank0 + cptr.ldI32o(flags, $flag_end_around)) | 0)) || (cptr.ld1so(flags, $flag_end_own) && (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, $toptenentry_uid) == cptr.ldI32o(t0, $toptenentry_uid) : !cptr.strncmp(cptr.add(t1, $toptenentry_name), cptr.add(t0, $toptenentry_name), 10n)))) {
+                if (rank == ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) && rank0 > ((((cptr.ldI32o(flags, $flag_end_top) + cptr.ldI32o(flags, $flag_end_around)) | 0) + 1) | 0) && !cptr.ld1so(flags, $flag_end_own))
                     topten_print(__sl14);
                 if (rank != rank0) {
                     outentry(rank, t1, 0);
@@ -789,15 +842,15 @@ export function topten(how, when) {
             }
         }
         if (rank0 >= rank)
-            if (!skip_scores && !cptr.ldI32o(program_state, FLD.sinfo_stopprint))
+            if (!skip_scores && !cptr.ldI32o(program_state, $sinfo_stopprint))
                 outentry(0, t0, 1);
         void fclose(rfile);
         unlock_file(__sl92);
         free_ttlist(tt_head);
     }
-        if (!cptr.ldI32o(program_state, FLD.sinfo_stopprint)) {
-            if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-                display_nhwindow()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), 1);
+        if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
+            if (cptr.ld1so(iflags, $instance_flags_toptenwin)) {
+                display_nhwindow()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), 1);
             } else {
                 ;
             }
@@ -805,9 +858,9 @@ export function topten(how, when) {
     }
     if (!t0_used)
         cptr.free((t0));
-    if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-        destroy_nhwindow()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin));
-        cptr.stI32o(gt, FLD.instance_globals_t_toptenwin, -1);
+    if (cptr.ld1so(iflags, $instance_flags_toptenwin)) {
+        destroy_nhwindow()(cptr.ldI32o(gt, $instance_globals_t_toptenwin));
+        cptr.stI32o(gt, $instance_globals_t_toptenwin, -1);
     }
 }
 
@@ -837,44 +890,44 @@ function outentry(rank, t1, so) {
         void cptr.sprintf(eos(cptr.decay(linebuf)), __sl102, rank);
     else
         void cptr.strcat(cptr.decay(linebuf), __sl103);
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl104, cptr.ldI64o(t1, FLD.toptenentry_points) ? cptr.ldI64o(t1, FLD.toptenentry_points) : cptr.ldI64o(u, FLD.you_urexp), cptr.add(t1, FLD.toptenentry_name));
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, FLD.toptenentry_plrole));
-    if (cptr.ld1so2(t1, 0, 1, FLD.toptenentry_plrace) != 63)
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, FLD.toptenentry_plrace));
-    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, FLD.toptenentry_plgend));
-    if (cptr.ld1so2(t1, 0, 1, FLD.toptenentry_plalign) != 63)
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl106, cptr.add(t1, FLD.toptenentry_plalign));
+    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl104, cptr.ldI64o(t1, $toptenentry_points) ? cptr.ldI64o(t1, $toptenentry_points) : cptr.ldI64o(u, $you_urexp), cptr.add(t1, $toptenentry_name));
+    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, $toptenentry_plrole));
+    if (cptr.ld1so2(t1, 0, 1, $toptenentry_plrace) != 63)
+        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, $toptenentry_plrace));
+    void cptr.sprintf(eos(cptr.decay(linebuf)), __sl105, cptr.add(t1, $toptenentry_plgend));
+    if (cptr.ld1so2(t1, 0, 1, $toptenentry_plalign) != 63)
+        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl106, cptr.add(t1, $toptenentry_plalign));
     else
         void cptr.strcat(cptr.decay(linebuf), __sl63);
-    if (!cptr.strncmp(__sl107, cptr.add(t1, FLD.toptenentry_death), 7n)) {
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl108, !cptr.strncmp(__sl109, cptr.add(t1, FLD.toptenentry_death + 7), 2n) ? cptr.add(t1, FLD.toptenentry_death + 7 + 2) : __sl14, cptr.ldI32o(t1, FLD.toptenentry_maxlvl));
+    if (!cptr.strncmp(__sl107, cptr.add(t1, $toptenentry_death), 7n)) {
+        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl108, !cptr.strncmp(__sl109, cptr.add(t1, $toptenentry_death + 7), 2n) ? cptr.add(t1, $toptenentry_death + 7 + 2) : __sl14, cptr.ldI32o(t1, $toptenentry_maxlvl));
         if ((bp = cptr.strchr(cptr.decay(linebuf), 41)) !== null)
-            cptr.st1(bp, schar(((cptr.ldI32o(t1, FLD.toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) ? 0 : 32)));
+            cptr.st1(bp, schar(((cptr.ldI32o(t1, $toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 32)));
         second_line = 0;
-    } else if (!cptr.strncmp(__sl41, cptr.add(t1, FLD.toptenentry_death), 8n)) {
-        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl110, (cptr.ld1so2(t1, 0, 1, FLD.toptenentry_plgend) == 70) ? __sl111 : __sl14);
+    } else if (!cptr.strncmp(__sl41, cptr.add(t1, $toptenentry_death), 8n)) {
+        void cptr.sprintf(eos(cptr.decay(linebuf)), __sl110, (cptr.ld1so2(t1, 0, 1, $toptenentry_plgend) == 70) ? __sl111 : __sl14);
         second_line = 0;
     } else {
-        if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl112, 4n)) {
+        if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl112, 4n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl112);
             second_line = 0;
-        } else if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl113, 10n)) {
+        } else if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl113, 10n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl114);
             second_line = 0;
-        } else if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl115, 6n)) {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl116, (cptr.ld1so2(t1, 0, 1, FLD.toptenentry_plgend) == 70) ? __sl117 : __sl118);
-        } else if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl119, 8n)) {
+        } else if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl115, 6n)) {
+            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl116, (cptr.ld1so2(t1, 0, 1, $toptenentry_plgend) == 70) ? __sl117 : __sl118);
+        } else if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl119, 8n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl120);
-        } else if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl121, 7n)) {
+        } else if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl121, 7n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl122);
-        } else if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl12, 13n)) {
+        } else if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl12, 13n)) {
             void cptr.strcat(cptr.decay(linebuf), __sl123);
         } else
             void cptr.strcat(cptr.decay(linebuf), __sl124);
-        if (cptr.ldI32o(t1, FLD.toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) {
+        if (cptr.ldI32o(t1, $toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) {
             let arg;
             let fmt = __sl125;
-            switch (cptr.ldI32o(t1, FLD.toptenentry_deathlev)) {
+            switch (cptr.ldI32o(t1, $toptenentry_deathlev)) {
                 case -5:
                 fmt = __sl126;
                 arg = __sl127;
@@ -897,26 +950,26 @@ function outentry(rank, t1, so) {
             }
             void cptr.sprintf(eos(cptr.decay(linebuf)), fmt, arg);
         } else {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl133, cptr.add(svd, cptr.ldI32o(t1, FLD.toptenentry_deathdnum), 112));
-            if (cptr.ldI32o(t1, FLD.toptenentry_deathdnum) != cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level))))
-                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl134, cptr.ldI32o(t1, FLD.toptenentry_deathlev));
-            if (cptr.ldI32o(t1, FLD.toptenentry_deathlev) != cptr.ldI32o(t1, FLD.toptenentry_maxlvl))
-                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl135, cptr.ldI32o(t1, FLD.toptenentry_maxlvl));
+            void cptr.sprintf(eos(cptr.decay(linebuf)), __sl133, cptr.add(svd, cptr.ldI32o(t1, $toptenentry_deathdnum), 112));
+            if (cptr.ldI32o(t1, $toptenentry_deathdnum) != cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))
+                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl134, cptr.ldI32o(t1, $toptenentry_deathlev));
+            if (cptr.ldI32o(t1, $toptenentry_deathlev) != cptr.ldI32o(t1, $toptenentry_maxlvl))
+                void cptr.sprintf(eos(cptr.decay(linebuf)), __sl135, cptr.ldI32o(t1, $toptenentry_maxlvl));
         }
-        if (!cptr.strncmp(cptr.add(t1, FLD.toptenentry_death), __sl136, 5n))
-            void cptr.strcat(cptr.decay(linebuf), cptr.add(t1, FLD.toptenentry_death + 4));
+        if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __sl136, 5n))
+            void cptr.strcat(cptr.decay(linebuf), cptr.add(t1, $toptenentry_death + 4));
     }
     void cptr.strcat(cptr.decay(linebuf), __sl137);
     if (second_line) {
         bp = eos(cptr.decay(linebuf));
-        void cptr.sprintf(bp, __sl138, highc(cptr.ld1s((cptr.add(t1, FLD.toptenentry_death)))), cptr.add(t1, FLD.toptenentry_death + 1));
+        void cptr.sprintf(bp, __sl138, highc(cptr.ld1s((cptr.add(t1, $toptenentry_death)))), cptr.add(t1, $toptenentry_death + 1));
         void strsubst(bp, __sl139, __sl140);
     }
     lngr = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(linebuf))));
-    if (cptr.ldI32o(t1, FLD.toptenentry_hp) <= 0)
+    if (cptr.ldI32o(t1, $toptenentry_hp) <= 0)
         cptr.st1o(cptr.decay(hpbuf), 0, 45, 1), cptr.st1o(cptr.decay(hpbuf), 1, 0, 1);
     else
-        void cptr.sprintf(cptr.decay(hpbuf), __sl141, cptr.ldI32o(t1, FLD.toptenentry_hp));
+        void cptr.sprintf(cptr.decay(hpbuf), __sl141, cptr.ldI32o(t1, $toptenentry_hp));
     hppos = 70;
     while (lngr >= hppos) {
         for (bp = eos(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos)); bp = cptr.add(bp, -1))
@@ -946,7 +999,7 @@ function outentry(rank, t1, so) {
         while (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), hppos)) < 0)
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
         void cptr.strcpy(bp, cptr.decay(hpbuf));
-        void cptr.sprintf(eos(bp), __sl145, (cptr.ldI32o(t1, FLD.toptenentry_maxhp) < 10) ? __sl146 : ((cptr.ldI32o(t1, FLD.toptenentry_maxhp) < 100) ? __sl63 : __sl14), cptr.ldI32o(t1, FLD.toptenentry_maxhp));
+        void cptr.sprintf(eos(bp), __sl145, (cptr.ldI32o(t1, $toptenentry_maxhp) < 10) ? __sl146 : ((cptr.ldI32o(t1, $toptenentry_maxhp) < 100) ? __sl63 : __sl14), cptr.ldI32o(t1, $toptenentry_maxhp));
     }
     if (so) {
         bp = eos(cptr.decay(linebuf));
@@ -963,9 +1016,9 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
     let arg;
     let nxt;
     let i;
-    if (current_ver && (cptr.ldI32o(t1, FLD.toptenentry_ver_major) != NHM.VERSION_MAJOR || cptr.ldI32o(t1, FLD.toptenentry_ver_minor) != NHM.VERSION_MINOR || cptr.ldI32o(t1, FLD.toptenentry_patchlevel) != NHM.PATCHLEVEL))
+    if (current_ver && (cptr.ldI32o(t1, $toptenentry_ver_major) != NHM.VERSION_MAJOR || cptr.ldI32o(t1, $toptenentry_ver_minor) != NHM.VERSION_MINOR || cptr.ldI32o(t1, $toptenentry_patchlevel) != NHM.PATCHLEVEL))
         return 0;
-    if (cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid) && !playerct && cptr.ldI32o(t1, FLD.toptenentry_uid) == uid)
+    if (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) && !playerct && cptr.ldI32o(t1, $toptenentry_uid) == uid)
         return 1;
     for (i = 0; i < playerct; i++) {
         arg = cptr.ldPtro(players, i, 8);
@@ -973,10 +1026,10 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
             arg = cptr.add(arg, 2);
         if (cptr.ld1so(arg, 0) == 45 && cptr.strchr(__sl147, cptr.ld1so(arg, 1)) && !cptr.ld1so(arg, 2) && ((i + 1) | 0) < playerct) {
             nxt = cptr.ldPtro(players, (i + 1) | 0, 8);
-            if ((cptr.ld1so(arg, 1) == 112 && str2role(nxt) == str2role(cptr.add(t1, FLD.toptenentry_plrole))) || (cptr.ld1so(arg, 1) == 114 && str2race(nxt) == str2race(cptr.add(t1, FLD.toptenentry_plrace))) || (cptr.ld1so(arg, 1) == 117 && (!strcmp(nxt, __sl148) || !cptr.strncmp(cptr.add(t1, FLD.toptenentry_name), nxt, 10n))))
+            if ((cptr.ld1so(arg, 1) == 112 && str2role(nxt) == str2role(cptr.add(t1, $toptenentry_plrole))) || (cptr.ld1so(arg, 1) == 114 && str2race(nxt) == str2race(cptr.add(t1, $toptenentry_plrace))) || (cptr.ld1so(arg, 1) == 117 && (!strcmp(nxt, __sl148) || !cptr.strncmp(cptr.add(t1, $toptenentry_name), nxt, 10n))))
                 return 1;
             i++;
-        } else if (!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, FLD.toptenentry_name), arg, 10n) || (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == cptr.ld1so2(t1, 0, 1, FLD.toptenentry_plrole) && !cptr.ld1so(arg, 2)) || (digit(cptr.ld1so(arg, 0)) && rank <= atoi(arg)))
+        } else if (!strcmp(arg, __sl148) || !cptr.strncmp(cptr.add(t1, $toptenentry_name), arg, 10n) || (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == cptr.ld1so2(t1, 0, 1, $toptenentry_plrole) && !cptr.ld1so(arg, 2)) || (digit(cptr.ld1so(arg, 0)) && rank <= atoi(arg)))
             return 1;
     }
     return 0;
@@ -1008,7 +1061,7 @@ export function prscore(argc, argv) {
         raw_print()(__sl94);
         return;
     }
-    if (cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz1_level)), FLD.d_level_dlevel) == 0) {
+    if (cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) == 0) {
         ;
         init_dungeons();
         init_done = 1;
@@ -1025,7 +1078,7 @@ export function prscore(argc, argv) {
         argv = cptr.add(argv, 1, 8);
     }
     if (argc <= 1) {
-        if (cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid)) {
+        if (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid)) {
             uid = getuid() | 0;
             playerct = 0;
             players = null;
@@ -1044,7 +1097,7 @@ export function prscore(argc, argv) {
     t1 = (tt_head = alloc(208));
     for (rank = 1; ; rank++) {
         readentry(rfile, t1);
-        if (cptr.ldI64o(t1, FLD.toptenentry_points) == 0n)
+        if (cptr.ldI64o(t1, $toptenentry_points) == 0n)
             break;
         if (!match_found && score_wanted(current_ver, rank, t1, playerct, players, uid))
             match_found = 1;
@@ -1059,7 +1112,7 @@ export function prscore(argc, argv) {
     if (match_found) {
         outheader();
         t1 = tt_head;
-        for (rank = 1; cptr.ldI64o(t1, FLD.toptenentry_points) != 0n; rank++, t1 = cptr.ldPtr(t1)) {
+        for (rank = 1; cptr.ldI64o(t1, $toptenentry_points) != 0n; rank++, t1 = cptr.ldPtr(t1)) {
             if (score_wanted(current_ver, rank, t1, playerct, players, uid))
                 void outentry(rank, t1, 0);
         }
@@ -1105,9 +1158,9 @@ export function prscore(argc, argv) {
 function classmon(plch) {
     let i;
     for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
-        if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, 312, FLD.Role_filecode), 3n)) {
-            if (cptr.ldI16o2(roles, i, 312, FLD.Role_mnum) != NHC.NON_PM)
-                return cptr.ldI16o2(roles, i, 312, FLD.Role_mnum);
+        if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, 312, $Role_filecode), 3n)) {
+            if (cptr.ldI16o2(roles, i, 312, $Role_mnum) != NHC.NON_PM)
+                return cptr.ldI16o2(roles, i, 312, $Role_mnum);
             else
                 return NHC.PM_HUMAN;
         }
@@ -1132,14 +1185,14 @@ export function get_rnd_toptenentry() {
         return null;
     }
     tt = __static_get_rnd_toptenentry_tt_buf;
-    rank = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1395, __sl167), rnd(cptr.ldI32o(sysopt, FLD.sysopt_s_tt_oname_maxrank))) : rnd(cptr.ldI32o(sysopt, FLD.sysopt_s_tt_oname_maxrank)));
+    rank = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1395, __sl167), rnd(cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank))) : rnd(cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank)));
     __lbl_pickentry: while (true) {
         for (i = rank; i; i--) {
             readentry(rfile, tt);
-            if (cptr.ldI64o(tt, FLD.toptenentry_points) == 0n)
+            if (cptr.ldI64o(tt, $toptenentry_points) == 0n)
                 break;
         }
-        if (cptr.ldI64o(tt, FLD.toptenentry_points) == 0n) {
+        if (cptr.ldI64o(tt, $toptenentry_points) == 0n) {
             if (rank > 1) {
                 rank = 1;
                 rewind(rfile);
@@ -1161,12 +1214,12 @@ export function tt_oname(otmp) {
     tt = get_rnd_toptenentry();
     if (!tt)
         return null;
-    set_corpsenm(otmp, classmon(cptr.add(tt, FLD.toptenentry_plrole)));
-    if (cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend) == 70)
-        cptr.st1o(otmp, FLD.obj_spe, NHM.CORPSTAT_FEMALE);
-    else if (cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend) == 77)
-        cptr.st1o(otmp, FLD.obj_spe, NHM.CORPSTAT_MALE);
-    otmp = oname(otmp, cptr.add(tt, FLD.toptenentry_name), NHM.ONAME_NO_FLAGS);
+    set_corpsenm(otmp, classmon(cptr.add(tt, $toptenentry_plrole)));
+    if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
+        cptr.st1o(otmp, $obj_spe, NHM.CORPSTAT_FEMALE);
+    else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
+        cptr.st1o(otmp, $obj_spe, NHM.CORPSTAT_MALE);
+    otmp = oname(otmp, cptr.add(tt, $toptenentry_name), NHM.ONAME_NO_FLAGS);
     return otmp;
 }
 
@@ -1177,13 +1230,13 @@ export function tt_doppel(mon) {
     if (!tt)
         ret = (((rng_log_enabled() ? (rng_log_set_caller(__sl166, 1450, __sl168), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
-        if (cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend) == 70)
-            cptr.stI32o(mon, FLD.monst_female, 1);
-        else if (cptr.ld1so2(tt, 0, 1, FLD.toptenentry_plgend) == 77)
-            cptr.stI32o(mon, FLD.monst_female, 0);
-        ret = classmon(cptr.add(tt, FLD.toptenentry_plrole));
+        if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
+            cptr.stI32o(mon, $monst_female, 1);
+        else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
+            cptr.stI32o(mon, $monst_female, 0);
+        ret = classmon(cptr.add(tt, $toptenentry_plrole));
         if (canseemon(mon))
-            christen_monst(mon, cptr.add(tt, FLD.toptenentry_name));
+            christen_monst(mon, cptr.add(tt, $toptenentry_name));
     }
     return ret;
 }

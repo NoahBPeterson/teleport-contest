@@ -33,6 +33,33 @@ import { mons } from './monst.js';
 import { canseemon } from './display.js';
 import { angry_guards, monnear, setmangry } from './mon.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1, $branch_end2 = FLD.branch_end2,
+    $context_info_mon_moving = FLD.context_info_mon_moving, $d_level_dlevel = FLD.d_level_dlevel,
+    $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
+    $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
+    $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
+    $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum, $flag_debug = FLD.flag_debug,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+    $monst_data = FLD.monst_data, $monst_m_id = FLD.monst_m_id, $monst_mcanmove = FLD.monst_mcanmove,
+    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
+    $monst_mstrategy = FLD.monst_mstrategy, $obj_otyp = FLD.obj_otyp, $permonst_msound = FLD.permonst_msound,
+    $prop_intrinsic = FLD.prop_intrinsic, $q_score_cheater = FLD.q_score_cheater,
+    $q_score_first_locate = FLD.q_score_first_locate, $q_score_got_quest = FLD.q_score_got_quest,
+    $q_score_got_thanks = FLD.q_score_got_thanks, $q_score_in_battle = FLD.q_score_in_battle,
+    $q_score_killed_leader = FLD.q_score_killed_leader, $q_score_killed_nemesis = FLD.q_score_killed_nemesis,
+    $q_score_leader_m_id = FLD.q_score_leader_m_id, $q_score_made_goal = FLD.q_score_made_goal,
+    $q_score_met_leader = FLD.q_score_met_leader, $q_score_met_nemesis = FLD.q_score_met_nemesis,
+    $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
+    $q_score_touched_artifact = FLD.q_score_touched_artifact, $trap_ttyp = FLD.trap_ttyp,
+    $u_event_qcompleted = FLD.u_event_qcompleted, $u_event_qexpelled = FLD.u_event_qexpelled,
+    $u_have_questart = FLD.u_have_questart, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent,
+    $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
+    $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("firsttime");
 const __sl1 = cptr.lit("nexttime");
@@ -85,8 +112,8 @@ function* on_start() {
     if (!((cptr.ldI32(svq) & 1))) {
         (yield* qt_pager(__sl0));
         cptr.stI32(svq, 1);
-    } else if ((cptr.ldI16o(u, FLD.you_uz0) != cptr.ldI16o(u, FLD.you_uz)) || (cptr.ldI16o(u, FLD.you_uz0 + FLD.d_level_dlevel) < cptr.ldI16o(u, FLD.you_uz + FLD.d_level_dlevel))) {
-        if ((((cptr.ldI32o(svq, FLD.q_score_not_ready) & 7)) | 0) <= 2)
+    } else if ((cptr.ldI16o(u, $you_uz0) != cptr.ldI16o(u, $you_uz)) || (cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel))) {
+        if ((((cptr.ldI32o(svq, $q_score_not_ready) & 7)) | 0) <= 2)
             (yield* qt_pager(__sl1));
         else
             (yield* qt_pager(__sl2));
@@ -95,13 +122,13 @@ function* on_start() {
 
 /** C ref: quest.c:40 */
 function* on_locate() {
-    let from_above = schar((cptr.ldI16o(u, FLD.you_uz0 + FLD.d_level_dlevel) < cptr.ldI16o(u, FLD.you_uz + FLD.d_level_dlevel)));
-    if (((cptr.ldI32o(svq, FLD.q_score_killed_nemesis) & 1))) {
+    let from_above = schar((cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
+    if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         return;
-    } else if (!((cptr.ldI32o(svq, FLD.q_score_first_locate) & 1))) {
+    } else if (!((cptr.ldI32o(svq, $q_score_first_locate) & 1))) {
         if (from_above)
             (yield* qt_pager(__sl3));
-        cptr.stI32o(svq, FLD.q_score_first_locate, 1);
+        cptr.stI32o(svq, $q_score_first_locate, 1);
     } else {
         if (from_above)
             (yield* qt_pager(__sl4));
@@ -110,55 +137,55 @@ function* on_locate() {
 
 /** C ref: quest.c:62 */
 function* on_goal() {
-    if (((cptr.ldI32o(svq, FLD.q_score_killed_nemesis) & 1))) {
+    if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         return;
-    } else if (!((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7))) {
+    } else if (!((cptr.ldI32o(svq, $q_score_made_goal) & 7))) {
         (yield* qt_pager(__sl5));
-        cptr.stI32o(svq, FLD.q_score_made_goal, 1);
+        cptr.stI32o(svq, $q_score_made_goal, 1);
     } else {
         let whichobjchains = 82;
         let qarti = find_quest_artifact(whichobjchains);
         (yield* qt_pager(qarti ? __sl6 : __sl7));
-        if ((((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7)) | 0) < 7)
-            (cptr.stI32o(svq, FLD.q_score_made_goal, cptr.ldI32o(svq, FLD.q_score_made_goal) + 1)) - (1);
+        if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
+            (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
     }
 }
 
 /** C ref: quest.c:90 */
 export function* onquest() {
-    if ((cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_qcompleted) & 1) | 0 || (on_level(cptr.add(u, FLD.you_uz0), cptr.add(u, FLD.you_uz))))
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 || (on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz))))
         return;
-    if (!Is_special(cptr.add(u, FLD.you_uz)))
+    if (!Is_special(cptr.add(u, $you_uz)))
         return;
-    if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level)))))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))))
         (yield* on_start());
-    else if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qlocate_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qlocate_level)))))
+    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))))
         (yield* on_locate());
-    else if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_nemesis_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_nemesis_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_nemesis_level)))))
+    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))))
         (yield* on_goal());
     return;
 }
 
 /** C ref: quest.c:107 */
 export function* nemdead() {
-    if (!((cptr.ldI32o(svq, FLD.q_score_killed_nemesis) & 1))) {
-        cptr.stI32o(svq, FLD.q_score_killed_nemesis, 1);
+    if (!((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
+        cptr.stI32o(svq, $q_score_killed_nemesis, 1);
         (yield* qt_pager(__sl8));
     }
 }
 
 /** C ref: quest.c:116 */
 export function leaddead() {
-    if (!((cptr.ldI32o(svq, FLD.q_score_killed_leader) & 1))) {
-        cptr.stI32o(svq, FLD.q_score_killed_leader, 1);
+    if (!((cptr.ldI32o(svq, $q_score_killed_leader) & 1))) {
+        cptr.stI32o(svq, $q_score_killed_leader, 1);
     }
 }
 
 /** C ref: quest.c:125 — @param {CPtr} obj */
 export function* artitouch(obj) {
-    if (!((cptr.ldI32o(svq, FLD.q_score_touched_artifact) & 1))) {
+    if (!((cptr.ldI32o(svq, $q_score_touched_artifact) & 1))) {
         (yield* observe_object(obj));
-        cptr.stI32o(svq, FLD.q_score_touched_artifact, 1);
+        cptr.stI32o(svq, $q_score_touched_artifact, 1);
         (yield* qt_pager(__sl9));
         (yield* exercise(NHC.A_WIS, 1));
     }
@@ -166,30 +193,30 @@ export function* artitouch(obj) {
 
 /** C ref: quest.c:140 @returns {CInt} */
 export function* ok_to_quest() {
-    return schar((((((cptr.ldI32o(svq, FLD.q_score_got_quest) & 1)) | 0 || ((cptr.ldI32o(svq, FLD.q_score_got_thanks) & 1)) | 0) && (yield* is_pure(0)) > 0) || ((cptr.ldI32o(svq, FLD.q_score_killed_leader) & 1)) | 0 ? 1 : 0));
+    return schar((((((cptr.ldI32o(svq, $q_score_got_quest) & 1)) | 0 || ((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) | 0) && (yield* is_pure(0)) > 0) || ((cptr.ldI32o(svq, $q_score_killed_leader) & 1)) | 0 ? 1 : 0));
 }
 
 /** C ref: quest.c:147 @returns {CInt} */
 function not_capable() {
-    return schar((cptr.ldI32o(u, FLD.you_ulevel) < NHM.MIN_QUEST_LEVEL));
+    return schar((cptr.ldI32o(u, $you_ulevel) < NHM.MIN_QUEST_LEVEL));
 }
 
 /** C ref: quest.c:153 — @param {CInt} talk @returns {CInt} */
 function* is_pure(talk) {
     let purity;
-    let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, FLD.you_ualignbase);
+    let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase);
     if (wizard() && talk) {
-        if (cptr.ld1so(u, FLD.you_ualign) != original_alignment) {
-            (yield* You(__sl10, align_str(cptr.ld1so(u, FLD.you_ualign)), align_str(original_alignment)));
-        } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, FLD.you_ualignbase) != original_alignment) {
+        if (cptr.ld1so(u, $you_ualign) != original_alignment) {
+            (yield* You(__sl10, align_str(cptr.ld1so(u, $you_ualign)), align_str(original_alignment)));
+        } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) {
             (yield* You(__sl11));
-        } else if (cptr.ldI32o(u, FLD.you_ualign + FLD.align_record) < NHM.MIN_QUEST_ALIGN) {
-            (yield* You(__sl12, cptr.ldI32o(u, FLD.you_ualign + FLD.align_record), NHM.MIN_QUEST_ALIGN));
+        } else if (cptr.ldI32o(u, $you_ualign + $align_record) < NHM.MIN_QUEST_ALIGN) {
+            (yield* You(__sl12, cptr.ldI32o(u, $you_ualign + $align_record), NHM.MIN_QUEST_ALIGN));
             if ((yield* yn_function(__sl13, null, 121, 1)) == 121)
-                cptr.stI32o(u, FLD.you_ualign + FLD.align_record, NHM.MIN_QUEST_ALIGN);
+                cptr.stI32o(u, $you_ualign + $align_record, NHM.MIN_QUEST_ALIGN);
         }
     }
-    purity = (cptr.ldI32o(u, FLD.you_ualign + FLD.align_record) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, FLD.you_ualign) == original_alignment && cptr.ld1so2(u, NHM.A_CURRENT, 1, FLD.you_ualignbase) == original_alignment) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, FLD.you_ualignbase) != original_alignment) ? -1 : 0);
+    purity = (cptr.ldI32o(u, $you_ualign + $align_record) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, $you_ualign) == original_alignment && cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == original_alignment) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -198,19 +225,19 @@ function* expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = (cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_qexpelled) & 1) | 0 ? NHC.UTOTYPE_NONE : NHC.UTOTYPE_PORTAL;
+    let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? NHC.UTOTYPE_NONE : NHC.UTOTYPE_PORTAL;
     br = (yield* dungeon_branch(__sl14));
-    dest = (cptr.ldI16o(br, FLD.branch_end1) == cptr.ldI16o(u, FLD.you_uz)) ? cptr.add(br, FLD.branch_end2) : cptr.add(br, FLD.branch_end1);
+    dest = (cptr.ldI16o(br, $branch_end1) == cptr.ldI16o(u, $you_uz)) ? cptr.add(br, $branch_end2) : cptr.add(br, $branch_end1);
     if (seal)
         portal_flag |= NHC.UTOTYPE_RMPORTAL;
     nomul(0);
     (yield* schedule_goto(dest, portal_flag, null, null));
     if (seal) {
-        let reexpelled = (cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_qexpelled) & 1) | 0;
-        cptr.stI32o(u, FLD.you_uevent + FLD.u_event_qexpelled, 1);
+        let reexpelled = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0;
+        cptr.stI32o(u, $you_uevent + $u_event_qexpelled, 1);
         remdun_mapseen(quest_dnum());
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-            if (((cptr.ldI32o(t, FLD.trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+            if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 break;
         if (t)
             (yield* deltrap(t));
@@ -226,29 +253,29 @@ export function* finish_quest(obj) {
         if (Deaf())
             return;
         (yield* fully_identify_obj(obj));
-        if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.AMULET_OF_YENDOR) {
+        if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
             (yield* qt_pager(__sl16));
-        } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR) {
+        } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR) {
             (yield* verbalize(__sl17));
         } else {
             (yield* verbalize(__sl18, (yield* the((yield* xname(obj))))));
         }
         return;
     }
-    if ((cptr.ldI32o(u, FLD.you_uhave) & 1)) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         (yield* qt_pager(__sl16));
         if ((otmp = carrying(NHC.AMULET_OF_YENDOR)) !== null) {
             (yield* fully_identify_obj(otmp));
             (yield* update_inventory());
         }
     } else {
-        (yield* qt_pager(!((cptr.ldI32o(svq, FLD.q_score_got_thanks) & 1)) ? __sl19 : __sl20));
+        (yield* qt_pager(!((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) ? __sl19 : __sl20));
         if ((otmp = carrying(NHC.BELL_OF_OPENING)) === null)
             (yield* com_pager(__sl21));
     }
-    cptr.stI32o(svq, FLD.q_score_got_thanks, 1);
+    cptr.stI32o(svq, $q_score_got_thanks, 1);
     if (obj) {
-        cptr.stI32o(u, FLD.you_uevent + FLD.u_event_qcompleted, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_qcompleted, 1);
         (yield* fully_identify_obj(obj));
         (yield* update_inventory());
     }
@@ -256,53 +283,53 @@ export function* finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr} mtmp */
 function* chat_with_leader(mtmp) {
-    if (!(cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1) || ((cptr.ldI32o(svq, FLD.q_score_pissed_off) & 1)) | 0)
+    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
         return;
-    if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1) | 0 && !((cptr.ldI32o(svq, FLD.q_score_met_nemesis) & 1)))
-        cptr.stI32o(svq, FLD.q_score_cheater, 1);
-    if (((cptr.ldI32o(svq, FLD.q_score_got_thanks) & 1))) {
-        if ((cptr.ldI32o(u, FLD.you_uhave) & 1))
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
+        cptr.stI32o(svq, $q_score_cheater, 1);
+    if (((cptr.ldI32o(svq, $q_score_got_thanks) & 1))) {
+        if ((cptr.ldI32o(u, $you_uhave) & 1))
             (yield* finish_quest(null));
         else
             (yield* qt_pager(__sl22));
-    } else if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1)) {
+    } else if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1)) {
         let otmp;
-        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (is_quest_artifact(otmp))
                 break;
         (yield* finish_quest(otmp));
-    } else if (((cptr.ldI32o(svq, FLD.q_score_got_quest) & 1))) {
+    } else if (((cptr.ldI32o(svq, $q_score_got_quest) & 1))) {
         (yield* qt_pager(__sl23));
     } else {
         let purity = 0;
-        if (!((cptr.ldI32o(svq, FLD.q_score_met_leader) & 1))) {
+        if (!((cptr.ldI32o(svq, $q_score_met_leader) & 1))) {
             (yield* qt_pager(__sl24));
-            cptr.stI32o(svq, FLD.q_score_met_leader, 1);
-            cptr.stI32o(svq, FLD.q_score_not_ready, 0);
+            cptr.stI32o(svq, $q_score_met_leader, 1);
+            cptr.stI32o(svq, $q_score_not_ready, 0);
         } else
             (yield* qt_pager(__sl25));
-        if (!on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level)))
+        if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
             return;
         if (not_capable()) {
             (yield* qt_pager(__sl26));
             (yield* exercise(NHC.A_WIS, 1));
             (yield* expulsion(0));
         } else if ((purity = (yield* is_pure(1))) < 0) {
-            if (!((cptr.ldI32o(svq, FLD.q_score_pissed_off) & 1))) {
+            if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
                 (yield* com_pager(__sl27));
-                cptr.stI32o(svq, FLD.q_score_pissed_off, 1);
+                cptr.stI32o(svq, $q_score_pissed_off, 1);
                 (yield* expulsion(0));
                 (yield* livelog_printf(2n, __sl28, (yield* noit_mon_nam(mtmp))));
             }
         } else if (purity == 0) {
             (yield* qt_pager(__sl29));
-            cptr.stI32o(svq, FLD.q_score_not_ready, 1);
+            cptr.stI32o(svq, $q_score_not_ready, 1);
             (yield* exercise(NHC.A_WIS, 1));
             (yield* expulsion(0));
         } else {
             (yield* qt_pager(__sl30));
             (yield* exercise(NHC.A_WIS, 1));
-            cptr.stI32o(svq, FLD.q_score_got_quest, 1);
+            cptr.stI32o(svq, $q_score_got_quest, 1);
             (yield* livelog_printf(2n, __sl31, (yield* noit_mon_nam(mtmp))));
         }
     }
@@ -310,57 +337,57 @@ function* chat_with_leader(mtmp) {
 
 /** C ref: quest.c:371 — @param {CPtr} mtmp */
 export function* leader_speaks(mtmp) {
-    if (!(cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1)) {
-        if (!((cptr.ldI32o(svq, FLD.q_score_pissed_off) & 1))) {
+    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+        if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
             (yield* qt_pager(__sl32));
         }
-        cptr.stI32o(svq, FLD.q_score_pissed_off, 1);
-        cptr.stU64o(mtmp, FLD.monst_mstrategy, cptr.ldU64o(mtmp, FLD.monst_mstrategy) & 18446744072904245247n);
+        cptr.stI32o(svq, $q_score_pissed_off, 1);
+        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
     }
-    if (!on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level)))
+    if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
         return;
-    if (!((cptr.ldI32o(svq, FLD.q_score_pissed_off) & 1)))
+    if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
         (yield* chat_with_leader(mtmp));
 }
 
 /** C ref: quest.c:394 */
 function* chat_with_nemesis() {
     (yield* qt_pager(__sl33));
-    if (!((cptr.ldI32o(svq, FLD.q_score_met_nemesis) & 1)))
-        ((cptr.stI32o(svq, FLD.q_score_met_nemesis, cptr.ldI32o(svq, FLD.q_score_met_nemesis) + 1)) - (1));
+    if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
+        ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) - (1));
 }
 
 /** C ref: quest.c:403 */
 export function* nemesis_speaks() {
-    if (!((cptr.ldI32o(svq, FLD.q_score_in_battle) & 1))) {
-        if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1))
+    if (!((cptr.ldI32o(svq, $q_score_in_battle) & 1))) {
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
             (yield* qt_pager(__sl34));
-        else if ((((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, FLD.q_score_met_nemesis) & 1)))
+        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
             (yield* qt_pager(__sl35));
-        else if ((((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7)) | 0) < 4)
+        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 4)
             (yield* qt_pager(__sl36));
-        else if ((((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7)) | 0) < 7)
+        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (yield* qt_pager(__sl37));
         else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 414, __sl39), rn2(5)) : rn2(5)))
             (yield* qt_pager(__sl33));
-        if ((((cptr.ldI32o(svq, FLD.q_score_made_goal) & 7)) | 0) < 7)
-            (cptr.stI32o(svq, FLD.q_score_made_goal, cptr.ldI32o(svq, FLD.q_score_made_goal) + 1)) - (1);
-        cptr.stI32o(svq, FLD.q_score_met_nemesis, 1);
+        if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
+            (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
+        cptr.stI32o(svq, $q_score_met_nemesis, 1);
     } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 420, __sl39), rn2(5)) : rn2(5)))
         (yield* qt_pager(__sl33));
 }
 
 /** C ref: quest.c:426 — @param {CInt} mx @param {CInt} my */
 export function* nemesis_stinks(mx, my) {
-    let save_mon_moving = cptr.ld1so(svc, FLD.context_info_mon_moving);
-    cptr.st1o(svc, FLD.context_info_mon_moving, 1);
+    let save_mon_moving = cptr.ld1so(svc, $context_info_mon_moving);
+    cptr.st1o(svc, $context_info_mon_moving, 1);
     (yield* create_gas_cloud(mx, my, 5, 8));
-    cptr.st1o(svc, FLD.context_info_mon_moving, save_mon_moving);
+    cptr.st1o(svc, $context_info_mon_moving, save_mon_moving);
 }
 
 /** C ref: quest.c:441 */
 function* chat_with_guardian() {
-    if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1) | 0 && ((cptr.ldI32o(svq, FLD.q_score_killed_nemesis) & 1)) | 0)
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
         (yield* qt_pager(__sl40));
     else
         (yield* qt_pager(__sl41));
@@ -368,13 +395,13 @@ function* chat_with_guardian() {
 
 /** C ref: quest.c:451 — @param {CPtr} mtmp */
 function* prisoner_speaks(mtmp) {
-    if (cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, FLD.monst_mstrategy) & 805306368n)) {
+    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         if (canseemon(mtmp))
             (yield* pline(__sl42, (yield* Monnam(mtmp))));
         ;
         (yield* verbalize(__sl43));
-        cptr.stU64o(mtmp, FLD.monst_mstrategy, cptr.ldU64o(mtmp, FLD.monst_mstrategy) & 18446744072904245247n);
-        cptr.stI32o(mtmp, FLD.monst_mpeaceful, 1);
+        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
+        cptr.stI32o(mtmp, $monst_mpeaceful, 1);
         adjalign(3);
         void (yield* angry_guards(0));
     }
@@ -383,13 +410,13 @@ function* prisoner_speaks(mtmp) {
 
 /** C ref: quest.c:473 — @param {CPtr} mtmp */
 export function* quest_chat(mtmp) {
-    if (cptr.ldI32o(mtmp, FLD.monst_m_id) == (cptr.ldI32o(svq, FLD.q_score_leader_m_id))) {
+    if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
         (yield* chat_with_leader(mtmp));
-        if (((cptr.ldI32o(svq, FLD.q_score_pissed_off) & 1)))
+        if (((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
             (yield* setmangry(mtmp, 0));
         return;
     }
-    switch (cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound)) {
+    switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_NEMESIS:
         (yield* chat_with_nemesis());
         break;
@@ -403,11 +430,11 @@ export function* quest_chat(mtmp) {
 
 /** C ref: quest.c:495 — @param {CPtr} mtmp */
 export function* quest_talk(mtmp) {
-    if (cptr.ldI32o(mtmp, FLD.monst_m_id) == (cptr.ldI32o(svq, FLD.q_score_leader_m_id))) {
+    if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
         (yield* leader_speaks(mtmp));
         return;
     }
-    switch (cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound)) {
+    switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_NEMESIS:
         (yield* nemesis_speaks());
         break;
@@ -421,6 +448,6 @@ export function* quest_talk(mtmp) {
 
 /** C ref: quest.c:514 — @param {CPtr} mtmp */
 export function quest_stat_check(mtmp) {
-    if (cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_NEMESIS)
-        cptr.stI32o(svq, FLD.q_score_in_battle, (!((cptr.ldI32o((mtmp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), FLD.monst_mcanmove) & 1)) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) ? 1 : 0) >>> 0);
+    if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
+        cptr.stI32o(svq, $q_score_in_battle, (!((cptr.ldI32o((mtmp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), $monst_mcanmove) & 1)) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0);
 }

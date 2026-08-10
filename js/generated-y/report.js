@@ -21,6 +21,16 @@ import { copynchars, nh_snprintf, strsubst } from './hacklib.js';
 import { pline, raw_printf } from './pline.js';
 import { NH_abort } from './end.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
+    $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
+    $instance_globals_c_crash_urlmax = FLD.instance_globals_c_crash_urlmax,
+    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+    $instance_globals_s_saved_plines = FLD.instance_globals_s_saved_plines,
+    $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl, $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath,
+    $sysopt_s_greppath = FLD.sysopt_s_greppath, $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("unknown");
 const __sl1 = cptr.lit("_-.~");
@@ -180,17 +190,17 @@ let mark = null;
 /** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
 export function* submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax)));
+        urem.v = (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;
-        if (!cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))
+        if (!cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
             return 0;
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl), BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, $sysopt_s_crashreporturl), BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -232,7 +242,7 @@ export function* submit_web_report(cos, msg, why) {
         if ((yield* swr_add_uricoded(getversionstring(cptr.decay(temp2), 200n), uend, urem, mark)))
             break __lbl_full;
         ;
-        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_name)) {
+        if (cptr.ldPtro(gc, $instance_globals_c_crash_name)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl7)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -242,11 +252,11 @@ export function* submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if ((yield* swr_add_uricoded(cptr.ldPtro(gc, FLD.instance_globals_c_crash_name), uend, urem, mark)))
+            if ((yield* swr_add_uricoded(cptr.ldPtro(gc, $instance_globals_c_crash_name), uend, urem, mark)))
                 break __lbl_full;
             ;
         }
-        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_email)) {
+        if (cptr.ldPtro(gc, $instance_globals_c_crash_email)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl8)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -256,7 +266,7 @@ export function* submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if ((yield* swr_add_uricoded(cptr.ldPtro(gc, FLD.instance_globals_c_crash_email), uend, urem, mark)))
+            if ((yield* swr_add_uricoded(cptr.ldPtro(gc, $instance_globals_c_crash_email), uend, urem, mark)))
                 break __lbl_full;
             ;
         }
@@ -366,7 +376,7 @@ export function* submit_web_report(cos, msg, why) {
 /** C ref: report.c:461 @returns {CInt} */
 export function* dobugreport() {
     if (!(yield* submit_web_report(2, null, __sl19))) {
-        (yield* pline(__sl20, (cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl) : __sl21));
+        (yield* pline(__sl20, (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) : __sl21));
     }
     return NHM.ECMD_OK;
 }
@@ -392,8 +402,8 @@ export function* NH_panictrace_libc() {
 
 /** C ref: report.c:529 @returns {CInt} */
 export function* NH_panictrace_gdb() {
-    let gdbpath = cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath);
-    let greppath = cptr.ldPtro(sysopt, FLD.sysopt_s_greppath);
+    let gdbpath = cptr.ldPtro(sysopt, $sysopt_s_gdbpath);
+    let greppath = cptr.ldPtro(sysopt, $sysopt_s_greppath);
     let buf = new Uint8Array(256);
     let gdb;
     if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0)
@@ -420,13 +430,13 @@ export function get_saved_pline(lineno) {
     let limit = NHM.DUMPLOG_MSG_COUNT;
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
-    p = u32mod(((cptr.ldI32o(gs, FLD.instance_globals_s_saved_pline_index) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
+    p = u32mod(((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
     while (limit--) {
-        if (cptr.ldPtro2(gs, p, 8, FLD.instance_globals_s_saved_plines)) {
+        if (cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines)) {
             if (lineno--) {
                 p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
-                return cptr.ldPtro2(gs, p, 8, FLD.instance_globals_s_saved_plines);
+                return cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines);
             }
         }
     }

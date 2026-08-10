@@ -11,6 +11,15 @@ import { datamodel, eos, nh_snprintf } from './hacklib.js';
 import { dupstr } from './alloc.js';
 import { free_nomakedefs, populate_nomakedefs } from './date.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $soundlib_information_Url = FLD.soundlib_information_Url,
+    $soundlib_information_text_id = FLD.soundlib_information_text_id,
+    $soundlib_information_valid = FLD.soundlib_information_valid,
+    $version_info_entity_count = FLD.version_info_entity_count,
+    $version_info_feature_set = FLD.version_info_feature_set,
+    $win_information_name = FLD.win_information_name, $win_information_valid = FLD.win_information_valid;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");
 const __sl1 = cptr.lit("Excalibur");
@@ -179,24 +188,24 @@ const opt_indent = cptr.bytes("    ");
 /** C ref: mdlib.c:112 — struct win_information[2] */
 const window_opts = cptr.alloc(2 * 24);
 cptr.stPtro(window_opts, 0, __sl34);
-cptr.stPtro(window_opts, 0 + FLD.win_information_name, __sl35);
-cptr.st1o(window_opts, 0 + FLD.win_information_valid, 1);
+cptr.stPtro(window_opts, 0 + $win_information_name, __sl35);
+cptr.st1o(window_opts, 0 + $win_information_valid, 1);
 cptr.stPtro(window_opts, 24, null);
-cptr.stPtro(window_opts, 24 + FLD.win_information_name, null);
-cptr.st1o(window_opts, 24 + FLD.win_information_valid, 0);
+cptr.stPtro(window_opts, 24 + $win_information_name, null);
+cptr.st1o(window_opts, 24 + $win_information_valid, 0);
 
 /** C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5) */
 
 /** C ref: mdlib.c:184 — struct soundlib_information[2] */
 const soundlib_opts = cptr.alloc(2 * 32);
 cptr.stI32o(soundlib_opts, 0, NHC.soundlib_nosound);
-cptr.stPtro(soundlib_opts, 0 + FLD.soundlib_information_text_id, __sl36);
-cptr.stPtro(soundlib_opts, 0 + FLD.soundlib_information_Url, __sl0);
-cptr.st1o(soundlib_opts, 0 + FLD.soundlib_information_valid, 0);
+cptr.stPtro(soundlib_opts, 0 + $soundlib_information_text_id, __sl36);
+cptr.stPtro(soundlib_opts, 0 + $soundlib_information_Url, __sl0);
+cptr.st1o(soundlib_opts, 0 + $soundlib_information_valid, 0);
 cptr.stI32o(soundlib_opts, 32, 0);
-cptr.stPtro(soundlib_opts, 32 + FLD.soundlib_information_text_id, null);
-cptr.stPtro(soundlib_opts, 32 + FLD.soundlib_information_Url, null);
-cptr.st1o(soundlib_opts, 32 + FLD.soundlib_information_valid, 0);
+cptr.stPtro(soundlib_opts, 32 + $soundlib_information_text_id, null);
+cptr.stPtro(soundlib_opts, 32 + $soundlib_information_Url, null);
+cptr.st1o(soundlib_opts, 32 + $soundlib_information_valid, 0);
 
 /** C ref: mdlib.c:236 @returns {CLongLong} */
 export function md_ignored_features() {
@@ -207,14 +216,14 @@ export function md_ignored_features() {
 function make_version() {
     let i;
     cptr.stU64(version, 83886080n);
-    cptr.stU64o(version, FLD.version_info_feature_set, 393280n);
+    cptr.stU64o(version, $version_info_feature_set, 393280n);
     for (i = 1; cptr.ldPtro(artifact_names, i, 8); i++)
         continue;
-    cptr.stU64o(version, FLD.version_info_entity_count, BigInt.asUintN(64, BigInt(((i - 1) | 0))));
+    cptr.stU64o(version, $version_info_entity_count, BigInt.asUintN(64, BigInt(((i - 1) | 0))));
     i = NHC.NUM_OBJECTS;
-    cptr.stU64o(version, FLD.version_info_entity_count, (cptr.ldU64o(version, FLD.version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
     i = NHC.NUMMONS;
-    cptr.stU64o(version, FLD.version_info_entity_count, (cptr.ldU64o(version, FLD.version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
     return;
 }
 
@@ -288,7 +297,7 @@ function count_and_validate_winopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1o2(window_opts, i, 24, FLD.win_information_valid, 1);
+        cptr.st1o2(window_opts, i, 24, $win_information_valid, 1);
     }
     return cnt;
 }
@@ -299,7 +308,7 @@ function count_and_validate_soundlibopts() {
     let cnt = 0;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
-        cptr.st1o2(soundlib_opts, i, 32, FLD.soundlib_information_valid, 1);
+        cptr.st1o2(soundlib_opts, i, 32, $soundlib_information_valid, 1);
     }
     return cnt;
 }
@@ -371,11 +380,11 @@ function build_options() {
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
-        if (!cptr.ld1so2(window_opts, i, 24, FLD.win_information_valid))
+        if (!cptr.ld1so2(window_opts, i, 24, $win_information_valid))
             continue;
         void cptr.sprintf(cptr.decay(buf), __sl83, cptr.ldPtro(window_opts, i, 24));
-        if (strcmp(cptr.ldPtro2(window_opts, i, 24, FLD.win_information_name), cptr.ldPtro(window_opts, i, 24)))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl84, cptr.ldPtro2(window_opts, i, 24, FLD.win_information_name));
+        if (strcmp(cptr.ldPtro2(window_opts, i, 24, $win_information_name), cptr.ldPtro(window_opts, i, 24)))
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl84, cptr.ldPtro2(window_opts, i, 24, $win_information_name));
         void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __sl41 : ((winsyscnt == 2 && cnt == 0) ? __sl85 : ((cnt == ((winsyscnt - 2) | 0)) ? __sl86 : __sl80)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;
@@ -395,9 +404,9 @@ function build_options() {
     length.v = 81;
     for (i = 0; i < ((2 - 1) | 0); i++) {
         let soundlib;
-        if (!cptr.ld1so2(soundlib_opts, i, 32, FLD.soundlib_information_valid))
+        if (!cptr.ld1so2(soundlib_opts, i, 32, $soundlib_information_valid))
             continue;
-        soundlib = cptr.ldPtro2(soundlib_opts, i, 32, FLD.soundlib_information_text_id);
+        soundlib = cptr.ldPtro2(soundlib_opts, i, 32, $soundlib_information_text_id);
         if (!cptr.strncmp(soundlib, __sl89, 9n))
             soundlib = cptr.add(soundlib, 9);
         void cptr.sprintf(cptr.decay(buf), __sl83, soundlib);

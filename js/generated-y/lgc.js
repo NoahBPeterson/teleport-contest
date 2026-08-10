@@ -20,27 +20,79 @@ import { luaF_freeproto, luaF_unlinkupval } from './lfunc.js';
 import { luaE_freethread, luaE_setdebt, luaE_warnerror } from './lstate.js';
 import { luaS_clearcache, luaS_remove, luaS_resize } from './lstring.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $CClosure_gclist = FLD.CClosure_gclist, $CClosure_nupvalues = FLD.CClosure_nupvalues,
+    $CClosure_upvalue = FLD.CClosure_upvalue, $CallInfo_callstatus = FLD.CallInfo_callstatus,
+    $GCObject_marked = FLD.GCObject_marked, $GCObject_tt = FLD.GCObject_tt,
+    $LClosure_gclist = FLD.LClosure_gclist, $LClosure_nupvalues = FLD.LClosure_nupvalues,
+    $LClosure_p = FLD.LClosure_p, $LClosure_upvals = FLD.LClosure_upvals,
+    $NodeKey_key_tt = FLD.NodeKey_key_tt, $NodeKey_key_val = FLD.NodeKey_key_val,
+    $Proto_gclist = FLD.Proto_gclist, $Proto_k = FLD.Proto_k, $Proto_locvars = FLD.Proto_locvars,
+    $Proto_marked = FLD.Proto_marked, $Proto_p = FLD.Proto_p, $Proto_sizek = FLD.Proto_sizek,
+    $Proto_sizelocvars = FLD.Proto_sizelocvars, $Proto_sizep = FLD.Proto_sizep,
+    $Proto_sizeupvalues = FLD.Proto_sizeupvalues, $Proto_source = FLD.Proto_source,
+    $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
+    $TString_marked = FLD.TString_marked, $TString_shrlen = FLD.TString_shrlen, $TString_u = FLD.TString_u,
+    $TValue_tt_ = FLD.TValue_tt_, $Table_alimit = FLD.Table_alimit, $Table_array = FLD.Table_array,
+    $Table_flags = FLD.Table_flags, $Table_gclist = FLD.Table_gclist, $Table_lastfree = FLD.Table_lastfree,
+    $Table_lsizenode = FLD.Table_lsizenode, $Table_marked = FLD.Table_marked,
+    $Table_metatable = FLD.Table_metatable, $Table_node = FLD.Table_node, $Udata_gclist = FLD.Udata_gclist,
+    $Udata_len = FLD.Udata_len, $Udata_marked = FLD.Udata_marked, $Udata_metatable = FLD.Udata_metatable,
+    $Udata_nuvalue = FLD.Udata_nuvalue, $Udata_uv = FLD.Udata_uv, $UpVal_marked = FLD.UpVal_marked,
+    $UpVal_u = FLD.UpVal_u, $UpVal_v = FLD.UpVal_v, $global_State_GCdebt = FLD.global_State_GCdebt,
+    $global_State_GCestimate = FLD.global_State_GCestimate, $global_State_allgc = FLD.global_State_allgc,
+    $global_State_allweak = FLD.global_State_allweak,
+    $global_State_currentwhite = FLD.global_State_currentwhite,
+    $global_State_ephemeron = FLD.global_State_ephemeron, $global_State_finobj = FLD.global_State_finobj,
+    $global_State_finobjold1 = FLD.global_State_finobjold1,
+    $global_State_finobjrold = FLD.global_State_finobjrold,
+    $global_State_finobjsur = FLD.global_State_finobjsur,
+    $global_State_firstold1 = FLD.global_State_firstold1, $global_State_fixedgc = FLD.global_State_fixedgc,
+    $global_State_gcemergency = FLD.global_State_gcemergency, $global_State_gckind = FLD.global_State_gckind,
+    $global_State_gcpause = FLD.global_State_gcpause, $global_State_gcstate = FLD.global_State_gcstate,
+    $global_State_gcstepmul = FLD.global_State_gcstepmul,
+    $global_State_gcstepsize = FLD.global_State_gcstepsize,
+    $global_State_gcstopem = FLD.global_State_gcstopem, $global_State_gcstp = FLD.global_State_gcstp,
+    $global_State_genmajormul = FLD.global_State_genmajormul,
+    $global_State_genminormul = FLD.global_State_genminormul, $global_State_gray = FLD.global_State_gray,
+    $global_State_grayagain = FLD.global_State_grayagain,
+    $global_State_l_registry = FLD.global_State_l_registry,
+    $global_State_lastatomic = FLD.global_State_lastatomic,
+    $global_State_mainthread = FLD.global_State_mainthread, $global_State_mt = FLD.global_State_mt,
+    $global_State_old1 = FLD.global_State_old1, $global_State_reallyold = FLD.global_State_reallyold,
+    $global_State_strt = FLD.global_State_strt, $global_State_survival = FLD.global_State_survival,
+    $global_State_sweepgc = FLD.global_State_sweepgc, $global_State_tmname = FLD.global_State_tmname,
+    $global_State_tobefnz = FLD.global_State_tobefnz, $global_State_totalbytes = FLD.global_State_totalbytes,
+    $global_State_twups = FLD.global_State_twups, $global_State_weak = FLD.global_State_weak,
+    $lua_State_allowhook = FLD.lua_State_allowhook, $lua_State_ci = FLD.lua_State_ci,
+    $lua_State_gclist = FLD.lua_State_gclist, $lua_State_l_G = FLD.lua_State_l_G,
+    $lua_State_marked = FLD.lua_State_marked, $lua_State_openupval = FLD.lua_State_openupval,
+    $lua_State_stack = FLD.lua_State_stack, $lua_State_stack_last = FLD.lua_State_stack_last,
+    $lua_State_top = FLD.lua_State_top, $lua_State_twups = FLD.lua_State_twups,
+    $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("__gc");
 
 /** C ref: lgc.c:125 — @param {CPtr} o @returns {CPtr} */
 function getgclist(o) {
-    switch (cptr.ld1uo(o, FLD.GCObject_tt)) {
+    switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
-        return cptr.add((((((o))))), FLD.Table_gclist);
+        return cptr.add((((((o))))), $Table_gclist);
         case 6:
-        return cptr.add((((((o))))), FLD.LClosure_gclist);
+        return cptr.add((((((o))))), $LClosure_gclist);
         case 38:
-        return cptr.add((((((o))))), FLD.CClosure_gclist);
+        return cptr.add((((((o))))), $CClosure_gclist);
         case 8:
-        return cptr.add((((((o))))), FLD.lua_State_gclist);
+        return cptr.add((((((o))))), $lua_State_gclist);
         case 10:
-        return cptr.add((((((o))))), FLD.Proto_gclist);
+        return cptr.add((((((o))))), $Proto_gclist);
         case 7:
         {
             let u = (((((o)))));
             (void 0);
-            return cptr.add(u, FLD.Udata_gclist);
+            return cptr.add(u, $Udata_gclist);
         }
         default:
         (void 0);
@@ -53,81 +105,81 @@ function linkgclist_(o, pnext, list) {
     (void 0);
     cptr.stPtr(pnext, cptr.ldPtr(list));
     cptr.stPtr(list, o);
-    (cptr.st1o(o, FLD.GCObject_marked, cptr.ld1uo(o, FLD.GCObject_marked) & 199));
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
 }
 
 /** C ref: lgc.c:171 — @param {CPtr} n */
 function clearkey(n) {
     (void 0);
-    if (((cptr.ld1uo((n), FLD.NodeKey_key_tt)) & 64))
-        (cptr.st1o((n), FLD.NodeKey_key_tt, 11));
+    if (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64))
+        (cptr.st1o((n), $NodeKey_key_tt, 11));
 }
 
 /** C ref: lgc.c:185 — @param {CPtr} g @param {CPtr} o @returns {CInt} */
 function iscleared(g, o) {
     if (cptr.eq(o, (null)))
         return 0;
-    else if (((cptr.ld1uo(o, FLD.GCObject_tt)) & 15) == 4) {
+    else if (((cptr.ld1uo(o, $GCObject_tt)) & 15) == 4) {
         {
-            if (((cptr.ld1uo((o), FLD.GCObject_marked)) & 24))
+            if (((cptr.ld1uo((o), $GCObject_marked)) & 24))
                 reallymarkobject(g, ((((o)))));
         }
         ;
         return 0;
     } else
-        return ((cptr.ld1uo((o), FLD.GCObject_marked)) & 24);
+        return ((cptr.ld1uo((o), $GCObject_marked)) & 24);
 }
 
 /** C ref: lgc.c:208 — @param {CPtr} L @param {CPtr} o @param {CPtr} v */
 export function luaC_barrier_(L, o, v) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
-    if ((cptr.ld1uo((g), FLD.global_State_gcstate) <= 2)) {
+    if ((cptr.ld1uo((g), $global_State_gcstate) <= 2)) {
         reallymarkobject(g, v);
-        if (((cptr.ld1uo((o), FLD.GCObject_marked) & 7) > 1)) {
+        if (((cptr.ld1uo((o), $GCObject_marked) & 7) > 1)) {
             (void 0);
-            (cptr.st1o((v), FLD.GCObject_marked, (uchar((((cptr.ld1uo((v), FLD.GCObject_marked) & -8) | 2))))));
+            (cptr.st1o((v), $GCObject_marked, (uchar((((cptr.ld1uo((v), $GCObject_marked) & -8) | 2))))));
         }
     } else {
         (void 0);
-        if (cptr.ld1uo(g, FLD.global_State_gckind) == 0)
-            (cptr.st1o(o, FLD.GCObject_marked, (uchar((((cptr.ld1uo(o, FLD.GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))))))))));
+        if (cptr.ld1uo(g, $global_State_gckind) == 0)
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
     }
 }
 
 /** C ref: lgc.c:230 — @param {CPtr} L @param {CPtr} o */
 export function luaC_barrierback_(L, o) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
     (void 0);
-    if ((cptr.ld1uo((o), FLD.GCObject_marked) & 7) == 6)
-        (cptr.st1o(o, FLD.GCObject_marked, cptr.ld1uo(o, FLD.GCObject_marked) & 199));
+    if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
+        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
     else
-        linkgclist_(((((o)))), getgclist(o), cptr.add(g, FLD.global_State_grayagain));
-    if (((cptr.ld1uo((o), FLD.GCObject_marked) & 7) > 1))
-        (cptr.st1o((o), FLD.GCObject_marked, (uchar((((cptr.ld1uo((o), FLD.GCObject_marked) & -8) | 5))))));
+        linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));
+    if (((cptr.ld1uo((o), $GCObject_marked) & 7) > 1))
+        (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 5))))));
 }
 
 /** C ref: lgc.c:243 — @param {CPtr} L @param {CPtr} o */
 export function luaC_fix(L, o) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
-    (cptr.st1o(o, FLD.GCObject_marked, cptr.ld1uo(o, FLD.GCObject_marked) & 199));
-    (cptr.st1o((o), FLD.GCObject_marked, (uchar((((cptr.ld1uo((o), FLD.GCObject_marked) & -8) | 4))))));
-    cptr.stPtro(g, FLD.global_State_allgc, cptr.ldPtr(o));
-    cptr.stPtr(o, cptr.ldPtro(g, FLD.global_State_fixedgc));
-    cptr.stPtro(g, FLD.global_State_fixedgc, o);
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
+    (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 4))))));
+    cptr.stPtro(g, $global_State_allgc, cptr.ldPtr(o));
+    cptr.stPtr(o, cptr.ldPtro(g, $global_State_fixedgc));
+    cptr.stPtro(g, $global_State_fixedgc, o);
 }
 
 /** C ref: lgc.c:258 — @param {CPtr} L @param {CInt} tt @param {CLongLong} sz @param {CLongLong} offset @returns {CPtr} */
 export function* luaC_newobjdt(L, tt, sz, offset) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let p = ((((yield* luaM_malloc_(L, (sz), ((tt) & 15))))));
     let o = ((cptr.add(p, offset)));
-    cptr.st1o(o, FLD.GCObject_marked, (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24)))));
-    cptr.st1o(o, FLD.GCObject_tt, uchar(tt));
-    cptr.stPtr(o, cptr.ldPtro(g, FLD.global_State_allgc));
-    cptr.stPtro(g, FLD.global_State_allgc, o);
+    cptr.st1o(o, $GCObject_marked, (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24)))));
+    cptr.st1o(o, $GCObject_tt, uchar(tt));
+    cptr.stPtr(o, cptr.ldPtro(g, $global_State_allgc));
+    cptr.stPtro(g, $global_State_allgc, o);
     return o;
 }
 
@@ -138,24 +190,24 @@ export function* luaC_newobj(L, tt, sz) {
 
 /** C ref: lgc.c:297 — @param {CPtr} g @param {CPtr} o */
 function reallymarkobject(g, o) {
-    switch (cptr.ld1uo(o, FLD.GCObject_tt)) {
+    switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 4:
         case 20:
         {
-            (cptr.st1o(o, FLD.GCObject_marked, (uchar((((cptr.ld1uo(o, FLD.GCObject_marked) & -25) | 32))))));
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -25) | 32))))));
             break;
         }
         case 9:
         {
             let uv = (((((o)))));
-            if ((!cptr.eq(cptr.ldPtro((uv), FLD.UpVal_v), cptr.add((uv), FLD.UpVal_u))))
-                (cptr.st1o(uv, FLD.UpVal_marked, cptr.ld1uo(uv, FLD.UpVal_marked) & 199));
+            if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
+                (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));
             else
-                (cptr.st1o(uv, FLD.UpVal_marked, (uchar((((cptr.ld1uo(uv, FLD.UpVal_marked) & -25) | 32))))));
+                (cptr.st1o(uv, $UpVal_marked, (uchar((((cptr.ld1uo(uv, $UpVal_marked) & -25) | 32))))));
             {
-                (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-                if ((((cptr.ld1uo((cptr.ldPtro(uv, FLD.UpVal_v)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, FLD.UpVal_v)))))), FLD.GCObject_marked)) & 24)))
-                    reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, FLD.UpVal_v))))));
+                (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+                if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))), $GCObject_marked)) & 24)))
+                    reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
             }
             ;
             break;
@@ -163,16 +215,16 @@ function reallymarkobject(g, o) {
         case 7:
         {
             let u = (((((o)))));
-            if (cptr.ldU16o(u, FLD.Udata_nuvalue) == 0) {
+            if (cptr.ldU16o(u, $Udata_nuvalue) == 0) {
                 {
-                    if (cptr.ldPtro(u, FLD.Udata_metatable)) {
-                        if (((cptr.ld1uo((cptr.ldPtro(u, FLD.Udata_metatable)), FLD.Table_marked)) & 24))
-                            reallymarkobject(g, ((((cptr.ldPtro(u, FLD.Udata_metatable))))));
+                    if (cptr.ldPtro(u, $Udata_metatable)) {
+                        if (((cptr.ld1uo((cptr.ldPtro(u, $Udata_metatable)), $Table_marked)) & 24))
+                            reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));
                     }
                     ;
                 }
                 ;
-                (cptr.st1o(u, FLD.Udata_marked, (uchar((((cptr.ld1uo(u, FLD.Udata_marked) & -25) | 32))))));
+                (cptr.st1o(u, $Udata_marked, (uchar((((cptr.ld1uo(u, $Udata_marked) & -25) | 32))))));
                 break;
             }
         }
@@ -182,7 +234,7 @@ function reallymarkobject(g, o) {
         case 8:
         case 10:
         {
-            linkgclist_(((((o)))), getgclist(o), cptr.add(g, FLD.global_State_gray));
+            linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_gray));
             break;
         }
         default:
@@ -195,9 +247,9 @@ function reallymarkobject(g, o) {
 function markmt(g) {
     let i;
     for (i = 0; i < 9; i++) {
-        if (cptr.ldPtro2(g, i, 8, FLD.global_State_mt)) {
-            if (((cptr.ld1uo((cptr.ldPtro2(g, i, 8, FLD.global_State_mt)), FLD.Table_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro2(g, i, 8, FLD.global_State_mt))))));
+        if (cptr.ldPtro2(g, i, 8, $global_State_mt)) {
+            if (((cptr.ld1uo((cptr.ldPtro2(g, i, 8, $global_State_mt)), $Table_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro2(g, i, 8, $global_State_mt))))));
         }
         ;
     }
@@ -208,10 +260,10 @@ function markmt(g) {
 function markbeingfnz(g) {
     let o;
     let count = 0n;
-    for (o = cptr.ldPtro(g, FLD.global_State_tobefnz); !cptr.eq(o, (null)); o = cptr.ldPtr(o)) {
+    for (o = cptr.ldPtro(g, $global_State_tobefnz); !cptr.eq(o, (null)); o = cptr.ldPtr(o)) {
         count++;
         {
-            if (((cptr.ld1uo((o), FLD.GCObject_marked)) & 24))
+            if (((cptr.ld1uo((o), $GCObject_marked)) & 24))
                 reallymarkobject(g, ((((o)))));
         }
         ;
@@ -222,26 +274,26 @@ function markbeingfnz(g) {
 /** C ref: lgc.c:367 — @param {CPtr} g @returns {CInt} */
 function remarkupvals(g) {
     let thread;
-    let p = cptr.add(g, FLD.global_State_twups);
+    let p = cptr.add(g, $global_State_twups);
     let work = 0;
     while (!cptr.eq((thread = cptr.ldPtr(p)), (null))) {
         work++;
-        if (!((cptr.ld1uo((thread), FLD.lua_State_marked)) & 24) && !cptr.eq(cptr.ldPtro(thread, FLD.lua_State_openupval), (null)))
-            p = cptr.add(thread, FLD.lua_State_twups);
+        if (!((cptr.ld1uo((thread), $lua_State_marked)) & 24) && !cptr.eq(cptr.ldPtro(thread, $lua_State_openupval), (null)))
+            p = cptr.add(thread, $lua_State_twups);
         else {
             let uv;
             (void 0);
-            cptr.stPtr(p, cptr.ldPtro(thread, FLD.lua_State_twups));
-            cptr.stPtro(thread, FLD.lua_State_twups, thread);
-            for (uv = cptr.ldPtro(thread, FLD.lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, FLD.UpVal_u)) {
+            cptr.stPtr(p, cptr.ldPtro(thread, $lua_State_twups));
+            cptr.stPtro(thread, $lua_State_twups, thread);
+            for (uv = cptr.ldPtro(thread, $lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, $UpVal_u)) {
                 (void 0);
                 work++;
-                if (!((cptr.ld1uo((uv), FLD.UpVal_marked)) & 24)) {
+                if (!((cptr.ld1uo((uv), $UpVal_marked)) & 24)) {
                     (void 0);
                     {
-                        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-                        if ((((cptr.ld1uo((cptr.ldPtro(uv, FLD.UpVal_v)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, FLD.UpVal_v)))))), FLD.GCObject_marked)) & 24)))
-                            reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, FLD.UpVal_v))))));
+                        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+                        if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))), $GCObject_marked)) & 24)))
+                            reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
                     }
                     ;
                 }
@@ -253,22 +305,22 @@ function remarkupvals(g) {
 
 /** C ref: lgc.c:394 — @param {CPtr} g */
 function cleargraylists(g) {
-    cptr.stPtro(g, FLD.global_State_gray, cptr.stPtro(g, FLD.global_State_grayagain, null));
-    cptr.stPtro(g, FLD.global_State_weak, cptr.stPtro(g, FLD.global_State_allweak, cptr.stPtro(g, FLD.global_State_ephemeron, null)));
+    cptr.stPtro(g, $global_State_gray, cptr.stPtro(g, $global_State_grayagain, null));
+    cptr.stPtro(g, $global_State_weak, cptr.stPtro(g, $global_State_allweak, cptr.stPtro(g, $global_State_ephemeron, null)));
 }
 
 /** C ref: lgc.c:403 — @param {CPtr} g */
 function restartcollection(g) {
     cleargraylists(g);
     {
-        if (((cptr.ld1uo((cptr.ldPtro(g, FLD.global_State_mainthread)), FLD.lua_State_marked)) & 24))
-            reallymarkobject(g, ((((cptr.ldPtro(g, FLD.global_State_mainthread))))));
+        if (((cptr.ld1uo((cptr.ldPtro(g, $global_State_mainthread)), $lua_State_marked)) & 24))
+            reallymarkobject(g, ((((cptr.ldPtro(g, $global_State_mainthread))))));
     }
     ;
     {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(g, FLD.global_State_l_registry)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, FLD.global_State_l_registry)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, FLD.global_State_l_registry))))));
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(g, $global_State_l_registry)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, $global_State_l_registry)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, $global_State_l_registry))))));
     }
     ;
     markmt(g);
@@ -278,35 +330,35 @@ function restartcollection(g) {
 /** C ref: lgc.c:430 — @param {CPtr} g @param {CPtr} o */
 function genlink(g, o) {
     (void 0);
-    if ((cptr.ld1uo((o), FLD.GCObject_marked) & 7) == 5) {
-        linkgclist_(((((o)))), getgclist(o), cptr.add(g, FLD.global_State_grayagain));
-    } else if ((cptr.ld1uo((o), FLD.GCObject_marked) & 7) == 6)
-        (cptr.st1o((o), FLD.GCObject_marked, cptr.ld1uo((o), FLD.GCObject_marked) ^ 2));
+    if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 5) {
+        linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));
+    } else if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
+        (cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) ^ 2));
 }
 
 /** C ref: lgc.c:446 — @param {CPtr} g @param {CPtr} h */
 function traverseweakvalue(g, h) {
     let n;
-    let limit = (cptr.add(cptr.ldPtro((h), FLD.Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), FLD.Table_lsizenode))))))))), 24));
-    let hasclears = (cptr.ldI32o(h, FLD.Table_alimit) > 0);
-    for (n = (cptr.add(cptr.ldPtro((h), FLD.Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-        if ((((((cptr.ld1uo(((((n)))), FLD.TValue_tt_))) & 15)) == 0))
+    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
+    let hasclears = (cptr.ldI32o(h, $Table_alimit) > 0);
+    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+        if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
         else {
             (void 0);
             {
-                if (((cptr.ld1uo((n), FLD.NodeKey_key_tt)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val))))), FLD.GCObject_marked)) & 24))
-                    reallymarkobject(g, (cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val)))));
+                if (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), $NodeKey_key_val))))), $GCObject_marked)) & 24))
+                    reallymarkobject(g, (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))));
             }
             ;
-            if (!hasclears && iscleared(g, (((cptr.ld1uo((((n))), FLD.TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
+            if (!hasclears && iscleared(g, (((cptr.ld1uo((((n))), $TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
                 hasclears = 1;
         }
     }
-    if (cptr.ld1uo(g, FLD.global_State_gcstate) == 2 && hasclears)
-        linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_weak));
+    if (cptr.ld1uo(g, $global_State_gcstate) == 2 && hasclears)
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_weak));
     else
-        linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_grayagain));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));
 }
 
 /** C ref: lgc.c:480 — @param {CPtr} g @param {CPtr} h @param {CInt} inv @returns {CInt} */
@@ -316,32 +368,32 @@ function traverseephemeron(g, h, inv) {
     let hasww = 0;
     let i;
     let asize = luaH_realasize(h);
-    let nsize = ((1 << (cptr.ld1uo((h), FLD.Table_lsizenode)))) >>> 0;
+    let nsize = ((1 << (cptr.ld1uo((h), $Table_lsizenode)))) >>> 0;
     for (i = 0; i < asize; i++) {
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16)))))), FLD.GCObject_marked)) & 24))) {
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)))))), $GCObject_marked)) & 24))) {
             marked = 1;
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16))))));
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16))))));
         }
     }
     for (i = 0; i < nsize; i++) {
-        let n = inv ? (cptr.add(cptr.ldPtro((h), FLD.Table_node), (((nsize - 1) >>> 0) - i) >>> 0, 24)) : (cptr.add(cptr.ldPtro((h), FLD.Table_node), i, 24));
-        if ((((((cptr.ld1uo(((((n)))), FLD.TValue_tt_))) & 15)) == 0))
+        let n = inv ? (cptr.add(cptr.ldPtro((h), $Table_node), (((nsize - 1) >>> 0) - i) >>> 0, 24)) : (cptr.add(cptr.ldPtro((h), $Table_node), i, 24));
+        if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
-        else if (iscleared(g, (((cptr.ld1uo((n), FLD.NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val)))) : null))) {
+        else if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null))) {
             hasclears = 1;
-            if ((((cptr.ld1uo((((n))), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), FLD.GCObject_marked)) & 24)))
+            if ((((cptr.ld1uo((((n))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), $GCObject_marked)) & 24)))
                 hasww = 1;
-        } else if ((((cptr.ld1uo((((n))), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), FLD.GCObject_marked)) & 24))) {
+        } else if ((((cptr.ld1uo((((n))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), $GCObject_marked)) & 24))) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((((n)))))));
         }
     }
-    if (cptr.ld1uo(g, FLD.global_State_gcstate) == 0)
-        linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_grayagain));
+    if (cptr.ld1uo(g, $global_State_gcstate) == 0)
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));
     else if (hasww)
-        linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_ephemeron));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_ephemeron));
     else if (hasclears)
-        linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_allweak));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));
     else
         genlink(g, ((((h)))));
     return marked;
@@ -350,28 +402,28 @@ function traverseephemeron(g, h, inv) {
 /** C ref: lgc.c:523 — @param {CPtr} g @param {CPtr} h */
 function traversestrongtable(g, h) {
     let n;
-    let limit = (cptr.add(cptr.ldPtro((h), FLD.Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), FLD.Table_lsizenode))))))))), 24));
+    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
     let i;
     let asize = luaH_realasize(h);
     for (i = 0; i < asize; i++) {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16))))));
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16))))));
     }
     ;
-    for (n = (cptr.add(cptr.ldPtro((h), FLD.Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-        if ((((((cptr.ld1uo(((((n)))), FLD.TValue_tt_))) & 15)) == 0))
+    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+        if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
         else {
             (void 0);
             {
-                if (((cptr.ld1uo((n), FLD.NodeKey_key_tt)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val))))), FLD.GCObject_marked)) & 24))
-                    reallymarkobject(g, (cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val)))));
+                if (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), $NodeKey_key_val))))), $GCObject_marked)) & 24))
+                    reallymarkobject(g, (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))));
             }
             ;
             {
-                (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-                if ((((cptr.ld1uo((((n))), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), FLD.GCObject_marked)) & 24)))
+                (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+                if ((((cptr.ld1uo((((n))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), $GCObject_marked)) & 24)))
                     reallymarkobject(g, (cptr.ldPtr(((((n)))))));
             }
             ;
@@ -384,169 +436,169 @@ function traversestrongtable(g, h) {
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
-    let mode = (cptr.eq((cptr.ldPtro(h, FLD.Table_metatable)), (null)) ? null : (((cptr.ld1uo((cptr.ldPtro(h, FLD.Table_metatable)), FLD.Table_flags) & ((1 << (NHC.TM_MODE)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtro(h, FLD.Table_metatable), NHC.TM_MODE, cptr.ldPtro2((g), NHC.TM_MODE, 8, FLD.global_State_tmname))));
+    let mode = (cptr.eq((cptr.ldPtro(h, $Table_metatable)), (null)) ? null : (((cptr.ld1uo((cptr.ldPtro(h, $Table_metatable)), $Table_flags) & ((1 << (NHC.TM_MODE)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtro(h, $Table_metatable), NHC.TM_MODE, cptr.ldPtro2((g), NHC.TM_MODE, 8, $global_State_tmname))));
     let smode;
     {
-        if (cptr.ldPtro(h, FLD.Table_metatable)) {
-            if (((cptr.ld1uo((cptr.ldPtro(h, FLD.Table_metatable)), FLD.Table_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(h, FLD.Table_metatable))))));
+        if (cptr.ldPtro(h, $Table_metatable)) {
+            if (((cptr.ld1uo((cptr.ldPtro(h, $Table_metatable)), $Table_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(h, $Table_metatable))))));
         }
         ;
     }
     ;
-    if (mode && ((cptr.ld1uo(((mode)), FLD.TValue_tt_)) == 68) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), FLD.TString_contents)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), FLD.TString_contents)), 118)))), (weakkey || weakvalue ? 1 : 0))) {
+    if (mode && ((cptr.ld1uo(((mode)), $TValue_tt_)) == 68) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), $TString_contents)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), $TString_contents)), 118)))), (weakkey || weakvalue ? 1 : 0))) {
         if (!weakkey)
             traverseweakvalue(g, h);
         else if (!weakvalue)
             traverseephemeron(g, h, 0);
         else
-            linkgclist_(((((h)))), cptr.add((h), FLD.Table_gclist), cptr.add(g, FLD.global_State_allweak));
+            linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));
     } else
         traversestrongtable(g, h);
-    return BigInt(((((1 + cptr.ldI32o(h, FLD.Table_alimit)) >>> 0) + (Math.imul(2, ((cptr.eq(cptr.ldPtro((h), FLD.Table_lastfree), (null))) ? 0 : ((1 << (cptr.ld1uo((h), FLD.Table_lsizenode)))))) >>> 0)) >>> 0) >>> 0);
+    return BigInt(((((1 + cptr.ldI32o(h, $Table_alimit)) >>> 0) + (Math.imul(2, ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null))) ? 0 : ((1 << (cptr.ld1uo((h), $Table_lsizenode)))))) >>> 0)) >>> 0) >>> 0);
 }
 
 /** C ref: lgc.c:565 — @param {CPtr} g @param {CPtr} u @returns {CInt} */
 function traverseudata(g, u) {
     let i;
     {
-        if (cptr.ldPtro(u, FLD.Udata_metatable)) {
-            if (((cptr.ld1uo((cptr.ldPtro(u, FLD.Udata_metatable)), FLD.Table_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(u, FLD.Udata_metatable))))));
+        if (cptr.ldPtro(u, $Udata_metatable)) {
+            if (((cptr.ld1uo((cptr.ldPtro(u, $Udata_metatable)), $Table_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));
         }
         ;
     }
     ;
-    for (i = 0; i < cptr.ldU16o(u, FLD.Udata_nuvalue); i++) {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(u, FLD.Udata_uv), i, 16)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, FLD.Udata_uv), i, 16)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, FLD.Udata_uv), i, 16))))));
+    for (i = 0; i < cptr.ldU16o(u, $Udata_nuvalue); i++) {
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(cptr.add(u, $Udata_uv), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, 16)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, 16))))));
     }
     ;
     genlink(g, ((((u)))));
-    return (1 + cptr.ldU16o(u, FLD.Udata_nuvalue)) | 0;
+    return (1 + cptr.ldU16o(u, $Udata_nuvalue)) | 0;
 }
 
 /** C ref: lgc.c:580 — @param {CPtr} g @param {CPtr} f @returns {CInt} */
 function traverseproto(g, f) {
     let i;
     {
-        if (cptr.ldPtro(f, FLD.Proto_source)) {
-            if (((cptr.ld1uo((cptr.ldPtro(f, FLD.Proto_source)), FLD.TString_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(f, FLD.Proto_source))))));
+        if (cptr.ldPtro(f, $Proto_source)) {
+            if (((cptr.ld1uo((cptr.ldPtro(f, $Proto_source)), $TString_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(f, $Proto_source))))));
         }
         ;
     }
     ;
-    for (i = 0; i < cptr.ldI32o(f, FLD.Proto_sizek); i++) {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, FLD.Proto_k), i, 16)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, FLD.Proto_k), i, 16)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(f, FLD.Proto_k), i, 16))))));
+    for (i = 0; i < cptr.ldI32o(f, $Proto_sizek); i++) {
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16))))));
     }
     ;
-    for (i = 0; i < cptr.ldI32o(f, FLD.Proto_sizeupvalues); i++) {
-        if (cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16)), FLD.TString_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16))))));
+    for (i = 0; i < cptr.ldI32o(f, $Proto_sizeupvalues); i++) {
+        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)), $TString_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16))))));
         }
         ;
     }
     ;
-    for (i = 0; i < cptr.ldI32o(f, FLD.Proto_sizep); i++) {
-        if (cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_p), i, 8)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_p), i, 8)), FLD.Proto_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_p), i, 8))))));
+    for (i = 0; i < cptr.ldI32o(f, $Proto_sizep); i++) {
+        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)), $Proto_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8))))));
         }
         ;
     }
     ;
-    for (i = 0; i < cptr.ldI32o(f, FLD.Proto_sizelocvars); i++) {
-        if (cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_locvars), i, 16)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_locvars), i, 16)), FLD.TString_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_locvars), i, 16))))));
+    for (i = 0; i < cptr.ldI32o(f, $Proto_sizelocvars); i++) {
+        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)), $TString_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16))))));
         }
         ;
     }
     ;
-    return (((((((1 + cptr.ldI32o(f, FLD.Proto_sizek)) | 0) + cptr.ldI32o(f, FLD.Proto_sizeupvalues)) | 0) + cptr.ldI32o(f, FLD.Proto_sizep)) | 0) + cptr.ldI32o(f, FLD.Proto_sizelocvars)) | 0;
+    return (((((((1 + cptr.ldI32o(f, $Proto_sizek)) | 0) + cptr.ldI32o(f, $Proto_sizeupvalues)) | 0) + cptr.ldI32o(f, $Proto_sizep)) | 0) + cptr.ldI32o(f, $Proto_sizelocvars)) | 0;
 }
 
 /** C ref: lgc.c:595 — @param {CPtr} g @param {CPtr} cl @returns {CInt} */
 function traverseCclosure(g, cl) {
     let i;
-    for (i = 0; i < cptr.ld1uo(cl, FLD.CClosure_nupvalues); i++) {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, FLD.CClosure_upvalue), i, 16)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, FLD.CClosure_upvalue), i, 16)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, FLD.CClosure_upvalue), i, 16))))));
+    for (i = 0; i < cptr.ld1uo(cl, $CClosure_nupvalues); i++) {
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16))))));
     }
     ;
-    return (1 + cptr.ld1uo(cl, FLD.CClosure_nupvalues)) | 0;
+    return (1 + cptr.ld1uo(cl, $CClosure_nupvalues)) | 0;
 }
 
 /** C ref: lgc.c:606 — @param {CPtr} g @param {CPtr} cl @returns {CInt} */
 function traverseLclosure(g, cl) {
     let i;
     {
-        if (cptr.ldPtro(cl, FLD.LClosure_p)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cl, FLD.LClosure_p)), FLD.Proto_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cl, FLD.LClosure_p))))));
+        if (cptr.ldPtro(cl, $LClosure_p)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cl, $LClosure_p))))));
         }
         ;
     }
     ;
-    for (i = 0; i < cptr.ld1uo(cl, FLD.LClosure_nupvalues); i++) {
-        let uv = cptr.ldPtro2(cl, i, 8, FLD.LClosure_upvals);
+    for (i = 0; i < cptr.ld1uo(cl, $LClosure_nupvalues); i++) {
+        let uv = cptr.ldPtro2(cl, i, 8, $LClosure_upvals);
         {
             if (uv) {
-                if (((cptr.ld1uo((uv), FLD.UpVal_marked)) & 24))
+                if (((cptr.ld1uo((uv), $UpVal_marked)) & 24))
                     reallymarkobject(g, ((((uv)))));
             }
             ;
         }
         ;
     }
-    return (1 + cptr.ld1uo(cl, FLD.LClosure_nupvalues)) | 0;
+    return (1 + cptr.ld1uo(cl, $LClosure_nupvalues)) | 0;
 }
 
 /** C ref: lgc.c:629 — @param {CPtr} g @param {CPtr} th @returns {CInt} */
 function* traversethread(g, th) {
     let uv;
-    let o = cptr.ldPtro(th, FLD.lua_State_stack);
-    if (((cptr.ld1uo((th), FLD.lua_State_marked) & 7) > 1) || cptr.ld1uo(g, FLD.global_State_gcstate) == 0)
-        linkgclist_(((((th)))), cptr.add((th), FLD.lua_State_gclist), cptr.add(g, FLD.global_State_grayagain));
+    let o = cptr.ldPtro(th, $lua_State_stack);
+    if (((cptr.ld1uo((th), $lua_State_marked) & 7) > 1) || cptr.ld1uo(g, $global_State_gcstate) == 0)
+        linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));
     if (cptr.eq(o, (null)))
         return 1;
     (void 0);
-    for (; cptr.cmp(o, cptr.ldPtro(th, FLD.lua_State_top)) < 0; o = cptr.add(o, 1, 16)) {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((((o))), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((o))))))), FLD.GCObject_marked)) & 24)))
+    for (; cptr.cmp(o, cptr.ldPtro(th, $lua_State_top)) < 0; o = cptr.add(o, 1, 16)) {
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((((o))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((o))))))), $GCObject_marked)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((((o)))))));
     }
     ;
-    for (uv = cptr.ldPtro(th, FLD.lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, FLD.UpVal_u)) {
-        if (((cptr.ld1uo((uv), FLD.UpVal_marked)) & 24))
+    for (uv = cptr.ldPtro(th, $lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, $UpVal_u)) {
+        if (((cptr.ld1uo((uv), $UpVal_marked)) & 24))
             reallymarkobject(g, ((((uv)))));
     }
     ;
-    if (cptr.ld1uo(g, FLD.global_State_gcstate) == 2) {
-        if (!cptr.ld1uo(g, FLD.global_State_gcemergency))
+    if (cptr.ld1uo(g, $global_State_gcstate) == 2) {
+        if (!cptr.ld1uo(g, $global_State_gcemergency))
             (yield* luaD_shrinkstack(th));
-        for (o = cptr.ldPtro(th, FLD.lua_State_top); cptr.cmp(o, cptr.add(cptr.ldPtro(th, FLD.lua_State_stack_last), 5, 16)) < 0; o = cptr.add(o, 1, 16))
-            (cptr.st1o((((o))), FLD.TValue_tt_, 0));
-        if (!(!cptr.eq(cptr.ldPtro(th, FLD.lua_State_twups), th)) && !cptr.eq(cptr.ldPtro(th, FLD.lua_State_openupval), (null))) {
-            cptr.stPtro(th, FLD.lua_State_twups, cptr.ldPtro(g, FLD.global_State_twups));
-            cptr.stPtro(g, FLD.global_State_twups, th);
+        for (o = cptr.ldPtro(th, $lua_State_top); cptr.cmp(o, cptr.add(cptr.ldPtro(th, $lua_State_stack_last), 5, 16)) < 0; o = cptr.add(o, 1, 16))
+            (cptr.st1o((((o))), $TValue_tt_, 0));
+        if (!(!cptr.eq(cptr.ldPtro(th, $lua_State_twups), th)) && !cptr.eq(cptr.ldPtro(th, $lua_State_openupval), (null))) {
+            cptr.stPtro(th, $lua_State_twups, cptr.ldPtro(g, $global_State_twups));
+            cptr.stPtro(g, $global_State_twups, th);
         }
     }
-    return (1 + (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((th), FLD.lua_State_stack_last), cptr.ldPtro((th), FLD.lua_State_stack)) / 16n)))))) | 0;
+    return (1 + (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((th), $lua_State_stack_last), cptr.ldPtro((th), $lua_State_stack)) / 16n)))))) | 0;
 }
 
 /** C ref: lgc.c:660 — @param {CPtr} g @returns {*} */
 function* propagatemark(g) {
-    let o = cptr.ldPtro(g, FLD.global_State_gray);
-    ((cptr.st1o((o), FLD.GCObject_marked, cptr.ld1uo((o), FLD.GCObject_marked) | 32)));
-    cptr.stPtro(g, FLD.global_State_gray, cptr.ldPtr(getgclist(o)));
-    switch (cptr.ld1uo(o, FLD.GCObject_tt)) {
+    let o = cptr.ldPtro(g, $global_State_gray);
+    ((cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) | 32)));
+    cptr.stPtro(g, $global_State_gray, cptr.ldPtr(getgclist(o)));
+    switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
         return traversetable(g, (((((o))))));
         case 7:
@@ -568,7 +620,7 @@ function* propagatemark(g) {
 /** C ref: lgc.c:676 — @param {CPtr} g @returns {*} */
 function* propagateall(g) {
     let tot = 0n;
-    while (cptr.ldPtro(g, FLD.global_State_gray))
+    while (cptr.ldPtro(g, $global_State_gray))
         tot += (yield* propagatemark(g));
     return tot;
 }
@@ -579,13 +631,13 @@ function* convergeephemerons(g) {
     let dir = 0;
     do {
         let w;
-        let next = cptr.ldPtro(g, FLD.global_State_ephemeron);
-        cptr.stPtro(g, FLD.global_State_ephemeron, null);
+        let next = cptr.ldPtro(g, $global_State_ephemeron);
+        cptr.stPtro(g, $global_State_ephemeron, null);
         changed = 0;
         while (!cptr.eq((w = next), (null))) {
             let h = (((((w)))));
-            next = cptr.ldPtro(h, FLD.Table_gclist);
-            ((cptr.st1o((h), FLD.Table_marked, cptr.ld1uo((h), FLD.Table_marked) | 32)));
+            next = cptr.ldPtro(h, $Table_gclist);
+            ((cptr.st1o((h), $Table_marked, cptr.ld1uo((h), $Table_marked) | 32)));
             if (traverseephemeron(g, h, dir)) {
                 (yield* propagateall(g));
                 changed = 1;
@@ -597,14 +649,14 @@ function* convergeephemerons(g) {
 
 /** C ref: lgc.c:725 — @param {CPtr} g @param {CPtr} l */
 function clearbykeys(g, l) {
-    for (; l; l = cptr.ldPtro((((((l))))), FLD.Table_gclist)) {
+    for (; l; l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
-        let limit = (cptr.add(cptr.ldPtro((h), FLD.Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), FLD.Table_lsizenode))))))))), 24));
+        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
         let n;
-        for (n = (cptr.add(cptr.ldPtro((h), FLD.Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-            if (iscleared(g, (((cptr.ld1uo((n), FLD.NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), FLD.NodeKey_key_val)))) : null)))
-                (cptr.st1o((((n))), FLD.TValue_tt_, 16));
-            if ((((((cptr.ld1uo(((((n)))), FLD.TValue_tt_))) & 15)) == 0))
+        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+            if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null)))
+                (cptr.st1o((((n))), $TValue_tt_, 16));
+            if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
                 clearkey(n);
         }
     }
@@ -612,21 +664,21 @@ function clearbykeys(g, l) {
 
 /** C ref: lgc.c:744 — @param {CPtr} g @param {CPtr} l @param {CPtr} f */
 function clearbyvalues(g, l, f) {
-    for (; !cptr.eq(l, f); l = cptr.ldPtro((((((l))))), FLD.Table_gclist)) {
+    for (; !cptr.eq(l, f); l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
         let n;
-        let limit = (cptr.add(cptr.ldPtro((h), FLD.Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), FLD.Table_lsizenode))))))))), 24));
+        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
         let i;
         let asize = luaH_realasize(h);
         for (i = 0; i < asize; i++) {
-            let o = cptr.add(cptr.ldPtro(h, FLD.Table_array), i, 16);
-            if (iscleared(g, (((cptr.ld1uo((o), FLD.TValue_tt_)) & 64) ? (cptr.ldPtr(((o)))) : null)))
-                (cptr.st1o((o), FLD.TValue_tt_, 16));
+            let o = cptr.add(cptr.ldPtro(h, $Table_array), i, 16);
+            if (iscleared(g, (((cptr.ld1uo((o), $TValue_tt_)) & 64) ? (cptr.ldPtr(((o)))) : null)))
+                (cptr.st1o((o), $TValue_tt_, 16));
         }
-        for (n = (cptr.add(cptr.ldPtro((h), FLD.Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
-            if (iscleared(g, (((cptr.ld1uo((((n))), FLD.TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
-                (cptr.st1o((((n))), FLD.TValue_tt_, 16));
-            if ((((((cptr.ld1uo(((((n)))), FLD.TValue_tt_))) & 15)) == 0))
+        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+            if (iscleared(g, (((cptr.ld1uo((((n))), $TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
+                (cptr.st1o((((n))), $TValue_tt_, 16));
+            if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
                 clearkey(n);
         }
     }
@@ -634,14 +686,14 @@ function clearbyvalues(g, l, f) {
 
 /** C ref: lgc.c:765 — @param {CPtr} L @param {CPtr} uv */
 function* freeupval(L, uv) {
-    if ((!cptr.eq(cptr.ldPtro((uv), FLD.UpVal_v), cptr.add((uv), FLD.UpVal_u))))
+    if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
         luaF_unlinkupval(uv);
     (yield* luaM_free_(L, (uv), 40n));
 }
 
 /** C ref: lgc.c:772 — @param {CPtr} L @param {CPtr} o */
 function* freeobj(L, o) {
-    switch (cptr.ld1uo(o, FLD.GCObject_tt)) {
+    switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 10:
         (yield* luaF_freeproto(L, (((((o)))))));
         break;
@@ -651,13 +703,13 @@ function* freeobj(L, o) {
         case 6:
         {
             let cl = (((((o)))));
-            (yield* luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(8, (cptr.ld1uo(cl, FLD.LClosure_nupvalues)))) | 0))))));
+            (yield* luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(8, (cptr.ld1uo(cl, $LClosure_nupvalues)))) | 0))))));
             break;
         }
         case 38:
         {
             let cl = (((((o)))));
-            (yield* luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(16, (cptr.ld1uo(cl, FLD.CClosure_nupvalues)))) | 0))))));
+            (yield* luaM_free_(L, (cl), BigInt.asUintN(64, BigInt(((((32) + Math.imul(16, (cptr.ld1uo(cl, $CClosure_nupvalues)))) | 0))))));
             break;
         }
         case 5:
@@ -669,20 +721,20 @@ function* freeobj(L, o) {
         case 7:
         {
             let u = (((((o)))));
-            (yield* luaM_free_(L, (o), ((BigInt.asUintN(64, ((cptr.ldU16o(u, FLD.Udata_nuvalue)) == 0 ? 24n : BigInt.asUintN(64, 24n + (BigInt.asUintN(64, 16n * BigInt((cptr.ldU16o(u, FLD.Udata_nuvalue)) >>> 0))))) + (cptr.ldU64o(u, FLD.Udata_len)))))));
+            (yield* luaM_free_(L, (o), ((BigInt.asUintN(64, ((cptr.ldU16o(u, $Udata_nuvalue)) == 0 ? 24n : BigInt.asUintN(64, 24n + (BigInt.asUintN(64, 16n * BigInt((cptr.ldU16o(u, $Udata_nuvalue)) >>> 0))))) + (cptr.ldU64o(u, $Udata_len)))))));
             break;
         }
         case 4:
         {
             let ts = (((((o)))));
             luaS_remove(L, ts);
-            (yield* luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((cptr.ld1uo(ts, FLD.TString_shrlen)) + 1) | 0))) * 1n))))));
+            (yield* luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))) * 1n))))));
             break;
         }
         case 20:
         {
             let ts = (((((o)))));
-            (yield* luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (cptr.ldU64o(ts, FLD.TString_u)) + 1n)) * 1n))))));
+            (yield* luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (cptr.ldU64o(ts, $TString_u)) + 1n)) * 1n))))));
             break;
         }
         default:
@@ -692,18 +744,18 @@ function* freeobj(L, o) {
 
 /** C ref: lgc.c:824 — @param {CPtr} L @param {CPtr} p @param {CInt} countin @param {CPtr} countout @returns {CPtr} */
 function* sweeplist(L, p, countin, countout) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    let ow = (cptr.ld1uo((g), FLD.global_State_currentwhite) ^ 24);
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    let ow = (cptr.ld1uo((g), $global_State_currentwhite) ^ 24);
     let i;
-    let white = (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))));
+    let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
     for (i = 0; !cptr.eq(cptr.ldPtr(p), (null)) && i < countin; i++) {
         let curr = cptr.ldPtr(p);
-        let marked = cptr.ld1uo(curr, FLD.GCObject_marked);
+        let marked = cptr.ld1uo(curr, $GCObject_marked);
         if (((marked) & (ow))) {
             cptr.stPtr(p, cptr.ldPtr(curr));
             (yield* freeobj(L, curr));
         } else {
-            cptr.st1o(curr, FLD.GCObject_marked, (uchar((((marked & -64) | white)))));
+            cptr.st1o(curr, $GCObject_marked, (uchar((((marked & -64) | white)))));
             p = curr;
         }
     }
@@ -723,39 +775,39 @@ function* sweeptolive(L, p) {
 
 /** C ref: lgc.c:871 — @param {CPtr} L @param {CPtr} g */
 function* checkSizes(L, g) {
-    if (!cptr.ld1uo(g, FLD.global_State_gcemergency)) {
-        if (cptr.ldI32o(g, FLD.global_State_strt + FLD.stringtable_nuse) < ((cptr.ldI32o(g, FLD.global_State_strt + FLD.stringtable_size) / 4) | 0)) {
-            let olddebt = cptr.ldI64o(g, FLD.global_State_GCdebt);
-            (yield* luaS_resize(L, (cptr.ldI32o(g, FLD.global_State_strt + FLD.stringtable_size) / 2) | 0));
-            cptr.stU64o(g, FLD.global_State_GCestimate, cptr.ldU64o(g, FLD.global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, FLD.global_State_GCdebt) - olddebt)));
+    if (!cptr.ld1uo(g, $global_State_gcemergency)) {
+        if (cptr.ldI32o(g, $global_State_strt + $stringtable_nuse) < ((cptr.ldI32o(g, $global_State_strt + $stringtable_size) / 4) | 0)) {
+            let olddebt = cptr.ldI64o(g, $global_State_GCdebt);
+            (yield* luaS_resize(L, (cptr.ldI32o(g, $global_State_strt + $stringtable_size) / 2) | 0));
+            cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));
         }
     }
 }
 
 /** C ref: lgc.c:886 — @param {CPtr} g @returns {CPtr} */
 function udata2finalize(g) {
-    let o = cptr.ldPtro(g, FLD.global_State_tobefnz);
+    let o = cptr.ldPtro(g, $global_State_tobefnz);
     (void 0);
-    cptr.stPtro(g, FLD.global_State_tobefnz, cptr.ldPtr(o));
-    cptr.stPtr(o, cptr.ldPtro(g, FLD.global_State_allgc));
-    cptr.stPtro(g, FLD.global_State_allgc, o);
-    (cptr.st1o(o, FLD.GCObject_marked, cptr.ld1uo(o, FLD.GCObject_marked) & 191));
-    if ((3 <= cptr.ld1uo((g), FLD.global_State_gcstate) && cptr.ld1uo((g), FLD.global_State_gcstate) <= 6))
-        (cptr.st1o(o, FLD.GCObject_marked, (uchar((((cptr.ld1uo(o, FLD.GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))))))))));
-    else if ((cptr.ld1uo((o), FLD.GCObject_marked) & 7) == 3)
-        cptr.stPtro(g, FLD.global_State_firstold1, o);
+    cptr.stPtro(g, $global_State_tobefnz, cptr.ldPtr(o));
+    cptr.stPtr(o, cptr.ldPtro(g, $global_State_allgc));
+    cptr.stPtro(g, $global_State_allgc, o);
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 191));
+    if ((3 <= cptr.ld1uo((g), $global_State_gcstate) && cptr.ld1uo((g), $global_State_gcstate) <= 6))
+        (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
+    else if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 3)
+        cptr.stPtro(g, $global_State_firstold1, o);
     return o;
 }
 
 /** C ref: lgc.c:901 — @param {CPtr} L @param {CPtr} ud */
 function* dothecall(L, ud) {
     (void (ud));
-    (yield* luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(2), 16), 0));
+    (yield* luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16), 0));
 }
 
 /** C ref: lgc.c:907 — @param {CPtr} L */
 function* GCTM(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let tm;
     let v = cptr.alloc(16);
     (void 0);
@@ -763,59 +815,59 @@ function* GCTM(L) {
         let io = (v);
         let i_g = (udata2finalize(g));
         cptr.stPtr(((io)), i_g);
-        (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(i_g, FLD.GCObject_tt)) | 64)))));
+        (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(i_g, $GCObject_tt)) | 64)))));
     }
     ;
     tm = luaT_gettmbyobj(L, v, NHC.TM_GC);
-    if (!(((((cptr.ld1uo(((tm)), FLD.TValue_tt_))) & 15)) == 0)) {
+    if (!(((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) {
         let status;
-        let oldah = cptr.ld1uo(L, FLD.lua_State_allowhook);
-        let oldgcstp = cptr.ld1uo(g, FLD.global_State_gcstp);
-        cptr.st1o(g, FLD.global_State_gcstp, cptr.ld1uo(g, FLD.global_State_gcstp) | 2);
-        cptr.st1o(L, FLD.lua_State_allowhook, 0);
+        let oldah = cptr.ld1uo(L, $lua_State_allowhook);
+        let oldgcstp = cptr.ld1uo(g, $global_State_gcstp);
+        cptr.st1o(g, $global_State_gcstp, cptr.ld1uo(g, $global_State_gcstp) | 2);
+        cptr.st1o(L, $lua_State_allowhook, 0);
         {
-            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16))));
+            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
             let io2 = (tm);
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
             (void L, (void 0));
             (void 0);
         }
         ;
         {
-            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16))));
+            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
             let io2 = (v);
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
             (void L, (void 0));
             (void 0);
         }
         ;
-        cptr.stI16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus) | 128);
-        status = (yield* luaD_pcall(L, dothecall, (null), (cptr.diff((((cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(2), 16)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))), 0n));
-        cptr.stI16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus) & -129);
-        cptr.st1o(L, FLD.lua_State_allowhook, oldah);
-        cptr.st1o(g, FLD.global_State_gcstp, uchar(oldgcstp));
+        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 128);
+        status = (yield* luaD_pcall(L, dothecall, (null), (cptr.diff((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16)))), (((cptr.ldPtro(L, $lua_State_stack)))))), 0n));
+        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -129);
+        cptr.st1o(L, $lua_State_allowhook, oldah);
+        cptr.st1o(g, $global_State_gcstp, uchar(oldgcstp));
         if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
             (yield* luaE_warnerror(L, __sl0));
-            cptr.postdec(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
+            cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
         }
     }
 }
 
 /** C ref: lgc.c:938 — @param {CPtr} L @param {CInt} n @returns {CInt} */
 function* runafewfinalizers(L, n) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let i;
-    for (i = 0; i < n && cptr.ldPtro(g, FLD.global_State_tobefnz); i++)
+    for (i = 0; i < n && cptr.ldPtro(g, $global_State_tobefnz); i++)
         (yield* GCTM(L));
     return i;
 }
 
 /** C ref: lgc.c:950 — @param {CPtr} L */
 function* callallpendingfinalizers(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    while (cptr.ldPtro(g, FLD.global_State_tobefnz))
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    while (cptr.ldPtro(g, $global_State_tobefnz))
         (yield* GCTM(L));
 }
 
@@ -829,15 +881,15 @@ function findlast(p) {
 /** C ref: lgc.c:974 — @param {CPtr} g @param {CInt} all */
 function separatetobefnz(g, all) {
     let curr;
-    let p = cptr.add(g, FLD.global_State_finobj);
-    let lastnext = findlast(cptr.add(g, FLD.global_State_tobefnz));
-    while (!cptr.eq((curr = cptr.ldPtr(p)), cptr.ldPtro(g, FLD.global_State_finobjold1))) {
+    let p = cptr.add(g, $global_State_finobj);
+    let lastnext = findlast(cptr.add(g, $global_State_tobefnz));
+    while (!cptr.eq((curr = cptr.ldPtr(p)), cptr.ldPtro(g, $global_State_finobjold1))) {
         (void 0);
-        if (!(((cptr.ld1uo((curr), FLD.GCObject_marked)) & 24) || all))
+        if (!(((cptr.ld1uo((curr), $GCObject_marked)) & 24) || all))
             p = curr;
         else {
-            if (cptr.eq(curr, cptr.ldPtro(g, FLD.global_State_finobjsur)))
-                cptr.stPtro(g, FLD.global_State_finobjsur, cptr.ldPtr(curr));
+            if (cptr.eq(curr, cptr.ldPtro(g, $global_State_finobjsur)))
+                cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtr(curr));
             cptr.stPtr(p, cptr.ldPtr(curr));
             cptr.stPtr(curr, cptr.ldPtr(lastnext));
             cptr.stPtr(lastnext, curr);
@@ -854,31 +906,31 @@ function checkpointer(p, o) {
 
 /** C ref: lgc.c:1007 — @param {CPtr} g @param {CPtr} o */
 function correctpointers(g, o) {
-    checkpointer(cptr.add(g, FLD.global_State_survival), o);
-    checkpointer(cptr.add(g, FLD.global_State_old1), o);
-    checkpointer(cptr.add(g, FLD.global_State_reallyold), o);
-    checkpointer(cptr.add(g, FLD.global_State_firstold1), o);
+    checkpointer(cptr.add(g, $global_State_survival), o);
+    checkpointer(cptr.add(g, $global_State_old1), o);
+    checkpointer(cptr.add(g, $global_State_reallyold), o);
+    checkpointer(cptr.add(g, $global_State_firstold1), o);
 }
 
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function* luaC_checkfinalizer(L, o, mt) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    if (((cptr.ld1uo((o), FLD.GCObject_marked)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), FLD.Table_flags) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, FLD.global_State_tmname)))), (null)) || (cptr.ld1uo(g, FLD.global_State_gcstp) & 4))
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    if (((cptr.ld1uo((o), $GCObject_marked)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), $Table_flags) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, $global_State_tmname)))), (null)) || (cptr.ld1uo(g, $global_State_gcstp) & 4))
         return;
     else {
         let p;
-        if ((3 <= cptr.ld1uo((g), FLD.global_State_gcstate) && cptr.ld1uo((g), FLD.global_State_gcstate) <= 6)) {
-            (cptr.st1o(o, FLD.GCObject_marked, (uchar((((cptr.ld1uo(o, FLD.GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))))))))));
-            if (cptr.eq(cptr.ldPtro(g, FLD.global_State_sweepgc), o))
-                cptr.stPtro(g, FLD.global_State_sweepgc, (yield* sweeptolive(L, cptr.ldPtro(g, FLD.global_State_sweepgc))));
+        if ((3 <= cptr.ld1uo((g), $global_State_gcstate) && cptr.ld1uo((g), $global_State_gcstate) <= 6)) {
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
+            if (cptr.eq(cptr.ldPtro(g, $global_State_sweepgc), o))
+                cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.ldPtro(g, $global_State_sweepgc))));
         } else
             correctpointers(g, o);
-        for (p = cptr.add(g, FLD.global_State_allgc); !cptr.eq(cptr.ldPtr(p), o); p = (cptr.ldPtr(p))) {
+        for (p = cptr.add(g, $global_State_allgc); !cptr.eq(cptr.ldPtr(p), o); p = (cptr.ldPtr(p))) {
         }
         cptr.stPtr(p, cptr.ldPtr(o));
-        cptr.stPtr(o, cptr.ldPtro(g, FLD.global_State_finobj));
-        cptr.stPtro(g, FLD.global_State_finobj, o);
-        (cptr.st1o(o, FLD.GCObject_marked, cptr.ld1uo(o, FLD.GCObject_marked) | 64));
+        cptr.stPtr(o, cptr.ldPtro(g, $global_State_finobj));
+        cptr.stPtro(g, $global_State_finobj, o);
+        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) | 64));
     }
 }
 
@@ -886,11 +938,11 @@ export function* luaC_checkfinalizer(L, o, mt) {
 function setpause(g) {
     let threshold;
     let debt;
-    let pause = (Math.imul((cptr.ld1uo(g, FLD.global_State_gcpause)), 4));
-    let estimate = BigInt.asIntN(64, (cptr.ldU64o(g, FLD.global_State_GCestimate) / 100n));
+    let pause = (Math.imul((cptr.ld1uo(g, $global_State_gcpause)), 4));
+    let estimate = BigInt.asIntN(64, (cptr.ldU64o(g, $global_State_GCestimate) / 100n));
     (void 0);
     threshold = (BigInt(pause) < 9223372036854775807n / estimate) ? BigInt.asIntN(64, estimate * BigInt(pause)) : 9223372036854775807n;
-    debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))) - BigInt.asUintN(64, threshold)));
+    debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) - BigInt.asUintN(64, threshold)));
     if (debt > 0n)
         debt = 0n;
     luaE_setdebt(g, debt);
@@ -899,21 +951,21 @@ function setpause(g) {
 /** C ref: lgc.c:1079 — @param {CPtr} L @param {CPtr} p */
 function* sweep2old(L, p) {
     let curr;
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     while (!cptr.eq((curr = cptr.ldPtr(p)), (null))) {
-        if (((cptr.ld1uo((curr), FLD.GCObject_marked)) & 24)) {
+        if (((cptr.ld1uo((curr), $GCObject_marked)) & 24)) {
             (void 0);
             cptr.stPtr(p, cptr.ldPtr(curr));
             (yield* freeobj(L, curr));
         } else {
-            (cptr.st1o((curr), FLD.GCObject_marked, (uchar((((cptr.ld1uo((curr), FLD.GCObject_marked) & -8) | 4))))));
-            if (cptr.ld1uo(curr, FLD.GCObject_tt) == 8) {
+            (cptr.st1o((curr), $GCObject_marked, (uchar((((cptr.ld1uo((curr), $GCObject_marked) & -8) | 4))))));
+            if (cptr.ld1uo(curr, $GCObject_tt) == 8) {
                 let th = (((((curr)))));
-                linkgclist_(((((th)))), cptr.add((th), FLD.lua_State_gclist), cptr.add(g, FLD.global_State_grayagain));
-            } else if (cptr.ld1uo(curr, FLD.GCObject_tt) == 9 && (!cptr.eq(cptr.ldPtro(((((((curr)))))), FLD.UpVal_v), cptr.add(((((((curr)))))), FLD.UpVal_u))))
-                (cptr.st1o(curr, FLD.GCObject_marked, cptr.ld1uo(curr, FLD.GCObject_marked) & 199));
+                linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));
+            } else if (cptr.ld1uo(curr, $GCObject_tt) == 9 && (!cptr.eq(cptr.ldPtro(((((((curr)))))), $UpVal_v), cptr.add(((((((curr)))))), $UpVal_u))))
+                (cptr.st1o(curr, $GCObject_marked, cptr.ld1uo(curr, $GCObject_marked) & 199));
             else
-                ((cptr.st1o((curr), FLD.GCObject_marked, cptr.ld1uo((curr), FLD.GCObject_marked) | 32)));
+                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
             p = curr;
         }
     }
@@ -923,20 +975,20 @@ const __static_sweepgen_nextage = [1, 3, 3, 4, 4, 5, 6]; /** C ref: lgc.c:1117 �
 
 /** C ref: lgc.c:1115 — @param {CPtr} L @param {CPtr} g @param {CPtr} p @param {CPtr} limit @param {CPtr} pfirstold1 @returns {CPtr} */
 function* sweepgen(L, g, p, limit, pfirstold1) {
-    let white = (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))));
+    let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
     let curr;
     while (!cptr.eq((curr = cptr.ldPtr(p)), limit)) {
-        if (((cptr.ld1uo((curr), FLD.GCObject_marked)) & 24)) {
+        if (((cptr.ld1uo((curr), $GCObject_marked)) & 24)) {
             (void 0);
             cptr.stPtr(p, cptr.ldPtr(curr));
             (yield* freeobj(L, curr));
         } else {
-            if ((cptr.ld1uo((curr), FLD.GCObject_marked) & 7) == 0) {
-                let marked = cptr.ld1uo(curr, FLD.GCObject_marked) & -64;
-                cptr.st1o(curr, FLD.GCObject_marked, (uchar(((marked | 1 | white)))));
+            if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 0) {
+                let marked = cptr.ld1uo(curr, $GCObject_marked) & -64;
+                cptr.st1o(curr, $GCObject_marked, (uchar(((marked | 1 | white)))));
             } else {
-                (cptr.st1o((curr), FLD.GCObject_marked, (uchar((((cptr.ld1uo((curr), FLD.GCObject_marked) & -8) | cptr.ld1uo(cptr.decay(__static_sweepgen_nextage), (cptr.ld1uo((curr), FLD.GCObject_marked) & 7), 1)))))));
-                if ((cptr.ld1uo((curr), FLD.GCObject_marked) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)))
+                (cptr.st1o((curr), $GCObject_marked, (uchar((((cptr.ld1uo((curr), $GCObject_marked) & -8) | cptr.ld1uo(cptr.decay(__static_sweepgen_nextage), (cptr.ld1uo((curr), $GCObject_marked) & 7), 1)))))));
+                if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)))
                     cptr.stPtr(pfirstold1, curr);
             }
             p = curr;
@@ -947,9 +999,9 @@ function* sweepgen(L, g, p, limit, pfirstold1) {
 
 /** C ref: lgc.c:1156 — @param {CPtr} g @param {CPtr} p */
 function whitelist(g, p) {
-    let white = (uchar(((cptr.ld1uo((g), FLD.global_State_currentwhite) & 24))));
+    let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
     for (; !cptr.eq(p, (null)); p = cptr.ldPtr(p))
-        cptr.st1o(p, FLD.GCObject_marked, (uchar((((cptr.ld1uo(p, FLD.GCObject_marked) & -64) | white)))));
+        cptr.st1o(p, $GCObject_marked, (uchar((((cptr.ld1uo(p, $GCObject_marked) & -64) | white)))));
 }
 
 /** C ref: lgc.c:1172 — @param {CPtr} p @returns {CPtr} */
@@ -959,21 +1011,21 @@ function correctgraylist(p) {
         let next = getgclist(curr);
         __lbl_remain: {
         __lbl_remove: {
-            if (((cptr.ld1uo((curr), FLD.GCObject_marked)) & 24))
+            if (((cptr.ld1uo((curr), $GCObject_marked)) & 24))
                 break __lbl_remove;
-            else if ((cptr.ld1uo((curr), FLD.GCObject_marked) & 7) == 5) {
+            else if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 5) {
                 (void 0);
-                ((cptr.st1o((curr), FLD.GCObject_marked, cptr.ld1uo((curr), FLD.GCObject_marked) | 32)));
-                (cptr.st1o((curr), FLD.GCObject_marked, cptr.ld1uo((curr), FLD.GCObject_marked) ^ 3));
+                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
+                (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 3));
                 break __lbl_remain;
-            } else if (cptr.ld1uo(curr, FLD.GCObject_tt) == 8) {
+            } else if (cptr.ld1uo(curr, $GCObject_tt) == 8) {
                 (void 0);
                 break __lbl_remain;
             } else {
                 (void 0);
-                if ((cptr.ld1uo((curr), FLD.GCObject_marked) & 7) == 6)
-                    (cptr.st1o((curr), FLD.GCObject_marked, cptr.ld1uo((curr), FLD.GCObject_marked) ^ 2));
-                ((cptr.st1o((curr), FLD.GCObject_marked, cptr.ld1uo((curr), FLD.GCObject_marked) | 32)));
+                if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 6)
+                    (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 2));
+                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
                 break __lbl_remove;
             }
         }
@@ -988,15 +1040,15 @@ function correctgraylist(p) {
 
 /** C ref: lgc.c:1205 — @param {CPtr} g */
 function correctgraylists(g) {
-    let list = correctgraylist(cptr.add(g, FLD.global_State_grayagain));
-    cptr.stPtr(list, cptr.ldPtro(g, FLD.global_State_weak));
-    cptr.stPtro(g, FLD.global_State_weak, null);
+    let list = correctgraylist(cptr.add(g, $global_State_grayagain));
+    cptr.stPtr(list, cptr.ldPtro(g, $global_State_weak));
+    cptr.stPtro(g, $global_State_weak, null);
     list = correctgraylist(list);
-    cptr.stPtr(list, cptr.ldPtro(g, FLD.global_State_allweak));
-    cptr.stPtro(g, FLD.global_State_allweak, null);
+    cptr.stPtr(list, cptr.ldPtro(g, $global_State_allweak));
+    cptr.stPtro(g, $global_State_allweak, null);
     list = correctgraylist(list);
-    cptr.stPtr(list, cptr.ldPtro(g, FLD.global_State_ephemeron));
-    cptr.stPtro(g, FLD.global_State_ephemeron, null);
+    cptr.stPtr(list, cptr.ldPtro(g, $global_State_ephemeron));
+    cptr.stPtro(g, $global_State_ephemeron, null);
     correctgraylist(list);
 }
 
@@ -1004,10 +1056,10 @@ function correctgraylists(g) {
 function markold(g, from, to) {
     let p;
     for (p = from; !cptr.eq(p, to); p = cptr.ldPtr(p)) {
-        if ((cptr.ld1uo((p), FLD.GCObject_marked) & 7) == 3) {
+        if ((cptr.ld1uo((p), $GCObject_marked) & 7) == 3) {
             (void 0);
-            (cptr.st1o((p), FLD.GCObject_marked, cptr.ld1uo((p), FLD.GCObject_marked) ^ 7));
-            if (((cptr.ld1uo((p), FLD.GCObject_marked)) & 32))
+            (cptr.st1o((p), $GCObject_marked, cptr.ld1uo((p), $GCObject_marked) ^ 7));
+            if (((cptr.ld1uo((p), $GCObject_marked)) & 32))
                 reallymarkobject(g, p);
         }
     }
@@ -1017,8 +1069,8 @@ function markold(g, from, to) {
 function* finishgencycle(L, g) {
     correctgraylists(g);
     (yield* checkSizes(L, g));
-    cptr.st1o(g, FLD.global_State_gcstate, 0);
-    if (!cptr.ld1uo(g, FLD.global_State_gcemergency))
+    cptr.st1o(g, $global_State_gcstate, 0);
+    if (!cptr.ld1uo(g, $global_State_gcemergency))
         (yield* callallpendingfinalizers(L));
 }
 
@@ -1027,48 +1079,48 @@ function* youngcollection(L, g) {
     let psurvival;
     let dummy = cptr.box(0);
     (void 0);
-    if (cptr.ldPtro(g, FLD.global_State_firstold1)) {
-        markold(g, cptr.ldPtro(g, FLD.global_State_firstold1), cptr.ldPtro(g, FLD.global_State_reallyold));
-        cptr.stPtro(g, FLD.global_State_firstold1, null);
+    if (cptr.ldPtro(g, $global_State_firstold1)) {
+        markold(g, cptr.ldPtro(g, $global_State_firstold1), cptr.ldPtro(g, $global_State_reallyold));
+        cptr.stPtro(g, $global_State_firstold1, null);
     }
-    markold(g, cptr.ldPtro(g, FLD.global_State_finobj), cptr.ldPtro(g, FLD.global_State_finobjrold));
-    markold(g, cptr.ldPtro(g, FLD.global_State_tobefnz), null);
+    markold(g, cptr.ldPtro(g, $global_State_finobj), cptr.ldPtro(g, $global_State_finobjrold));
+    markold(g, cptr.ldPtro(g, $global_State_tobefnz), null);
     (yield* atomic(L));
-    cptr.st1o(g, FLD.global_State_gcstate, 3);
-    psurvival = (yield* sweepgen(L, g, cptr.add(g, FLD.global_State_allgc), cptr.ldPtro(g, FLD.global_State_survival), cptr.add(g, FLD.global_State_firstold1)));
-    (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, FLD.global_State_old1), cptr.add(g, FLD.global_State_firstold1)));
-    cptr.stPtro(g, FLD.global_State_reallyold, cptr.ldPtro(g, FLD.global_State_old1));
-    cptr.stPtro(g, FLD.global_State_old1, cptr.ldPtr(psurvival));
-    cptr.stPtro(g, FLD.global_State_survival, cptr.ldPtro(g, FLD.global_State_allgc));
+    cptr.st1o(g, $global_State_gcstate, 3);
+    psurvival = (yield* sweepgen(L, g, cptr.add(g, $global_State_allgc), cptr.ldPtro(g, $global_State_survival), cptr.add(g, $global_State_firstold1)));
+    (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, $global_State_old1), cptr.add(g, $global_State_firstold1)));
+    cptr.stPtro(g, $global_State_reallyold, cptr.ldPtro(g, $global_State_old1));
+    cptr.stPtro(g, $global_State_old1, cptr.ldPtr(psurvival));
+    cptr.stPtro(g, $global_State_survival, cptr.ldPtro(g, $global_State_allgc));
     dummy.v = null;
-    psurvival = (yield* sweepgen(L, g, cptr.add(g, FLD.global_State_finobj), cptr.ldPtro(g, FLD.global_State_finobjsur), dummy));
-    (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, FLD.global_State_finobjold1), dummy));
-    cptr.stPtro(g, FLD.global_State_finobjrold, cptr.ldPtro(g, FLD.global_State_finobjold1));
-    cptr.stPtro(g, FLD.global_State_finobjold1, cptr.ldPtr(psurvival));
-    cptr.stPtro(g, FLD.global_State_finobjsur, cptr.ldPtro(g, FLD.global_State_finobj));
-    (yield* sweepgen(L, g, cptr.add(g, FLD.global_State_tobefnz), null, dummy));
+    psurvival = (yield* sweepgen(L, g, cptr.add(g, $global_State_finobj), cptr.ldPtro(g, $global_State_finobjsur), dummy));
+    (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, $global_State_finobjold1), dummy));
+    cptr.stPtro(g, $global_State_finobjrold, cptr.ldPtro(g, $global_State_finobjold1));
+    cptr.stPtro(g, $global_State_finobjold1, cptr.ldPtr(psurvival));
+    cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtro(g, $global_State_finobj));
+    (yield* sweepgen(L, g, cptr.add(g, $global_State_tobefnz), null, dummy));
     (yield* finishgencycle(L, g));
 }
 
 /** C ref: lgc.c:1292 — @param {CPtr} L @param {CPtr} g */
 function* atomic2gen(L, g) {
     cleargraylists(g);
-    cptr.st1o(g, FLD.global_State_gcstate, 3);
-    (yield* sweep2old(L, cptr.add(g, FLD.global_State_allgc)));
-    cptr.stPtro(g, FLD.global_State_reallyold, cptr.stPtro(g, FLD.global_State_old1, cptr.stPtro(g, FLD.global_State_survival, cptr.ldPtro(g, FLD.global_State_allgc))));
-    cptr.stPtro(g, FLD.global_State_firstold1, null);
-    (yield* sweep2old(L, cptr.add(g, FLD.global_State_finobj)));
-    cptr.stPtro(g, FLD.global_State_finobjrold, cptr.stPtro(g, FLD.global_State_finobjold1, cptr.stPtro(g, FLD.global_State_finobjsur, cptr.ldPtro(g, FLD.global_State_finobj))));
-    (yield* sweep2old(L, cptr.add(g, FLD.global_State_tobefnz)));
-    cptr.st1o(g, FLD.global_State_gckind, 1);
-    cptr.stU64o(g, FLD.global_State_lastatomic, 0n);
-    cptr.stU64o(g, FLD.global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))));
+    cptr.st1o(g, $global_State_gcstate, 3);
+    (yield* sweep2old(L, cptr.add(g, $global_State_allgc)));
+    cptr.stPtro(g, $global_State_reallyold, cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_survival, cptr.ldPtro(g, $global_State_allgc))));
+    cptr.stPtro(g, $global_State_firstold1, null);
+    (yield* sweep2old(L, cptr.add(g, $global_State_finobj)));
+    cptr.stPtro(g, $global_State_finobjrold, cptr.stPtro(g, $global_State_finobjold1, cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtro(g, $global_State_finobj))));
+    (yield* sweep2old(L, cptr.add(g, $global_State_tobefnz)));
+    cptr.st1o(g, $global_State_gckind, 1);
+    cptr.stU64o(g, $global_State_lastatomic, 0n);
+    cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
     (yield* finishgencycle(L, g));
 }
 
 /** C ref: lgc.c:1318 — @param {CPtr} g */
 function setminordebt(g) {
-    luaE_setdebt(g, -(BigInt.asIntN(64, (BigInt.asIntN(64, (((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))) / 100n)))) * BigInt(cptr.ld1uo(g, FLD.global_State_genminormul) >>> 0))));
+    luaE_setdebt(g, -(BigInt.asIntN(64, (BigInt.asIntN(64, (((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) / 100n)))) * BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0))));
 }
 
 /** C ref: lgc.c:1329 — @param {CPtr} L @param {CPtr} g @returns {*} */
@@ -1084,26 +1136,26 @@ function* entergen(L, g) {
 
 /** C ref: lgc.c:1345 — @param {CPtr} g */
 function enterinc(g) {
-    whitelist(g, cptr.ldPtro(g, FLD.global_State_allgc));
-    cptr.stPtro(g, FLD.global_State_reallyold, cptr.stPtro(g, FLD.global_State_old1, cptr.stPtro(g, FLD.global_State_survival, null)));
-    whitelist(g, cptr.ldPtro(g, FLD.global_State_finobj));
-    whitelist(g, cptr.ldPtro(g, FLD.global_State_tobefnz));
-    cptr.stPtro(g, FLD.global_State_finobjrold, cptr.stPtro(g, FLD.global_State_finobjold1, cptr.stPtro(g, FLD.global_State_finobjsur, null)));
-    cptr.st1o(g, FLD.global_State_gcstate, 8);
-    cptr.st1o(g, FLD.global_State_gckind, 0);
-    cptr.stU64o(g, FLD.global_State_lastatomic, 0n);
+    whitelist(g, cptr.ldPtro(g, $global_State_allgc));
+    cptr.stPtro(g, $global_State_reallyold, cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_survival, null)));
+    whitelist(g, cptr.ldPtro(g, $global_State_finobj));
+    whitelist(g, cptr.ldPtro(g, $global_State_tobefnz));
+    cptr.stPtro(g, $global_State_finobjrold, cptr.stPtro(g, $global_State_finobjold1, cptr.stPtro(g, $global_State_finobjsur, null)));
+    cptr.st1o(g, $global_State_gcstate, 8);
+    cptr.st1o(g, $global_State_gckind, 0);
+    cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
 /** C ref: lgc.c:1360 — @param {CPtr} L @param {CInt} newmode */
 export function* luaC_changemode(L, newmode) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    if (newmode != cptr.ld1uo(g, FLD.global_State_gckind)) {
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    if (newmode != cptr.ld1uo(g, $global_State_gckind)) {
         if (newmode == 1)
             (yield* entergen(L, g));
         else
             enterinc(g);
     }
-    cptr.stU64o(g, FLD.global_State_lastatomic, 0n);
+    cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
 /** C ref: lgc.c:1375 — @param {CPtr} L @param {CPtr} g @returns {*} */
@@ -1115,8 +1167,8 @@ function* fullgen(L, g) {
 /** C ref: lgc.c:1402 — @param {CPtr} L @param {CPtr} g */
 function* stepgenfull(L, g) {
     let newatomic;
-    let lastatomic = cptr.ldU64o(g, FLD.global_State_lastatomic);
-    if (cptr.ld1uo(g, FLD.global_State_gckind) == 1)
+    let lastatomic = cptr.ldU64o(g, $global_State_lastatomic);
+    if (cptr.ld1uo(g, $global_State_gckind) == 1)
         enterinc(g);
     (yield* luaC_runtilstate(L, 1));
     newatomic = (yield* atomic(L));
@@ -1124,33 +1176,33 @@ function* stepgenfull(L, g) {
         (yield* atomic2gen(L, g));
         setminordebt(g);
     } else {
-        cptr.stU64o(g, FLD.global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))));
+        cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
         (yield* entersweep(L));
         (yield* luaC_runtilstate(L, 256));
         setpause(g);
-        cptr.stU64o(g, FLD.global_State_lastatomic, newatomic);
+        cptr.stU64o(g, $global_State_lastatomic, newatomic);
     }
 }
 
 /** C ref: lgc.c:1442 — @param {CPtr} L @param {CPtr} g */
 function* genstep(L, g) {
-    if (cptr.ldU64o(g, FLD.global_State_lastatomic) != 0n)
+    if (cptr.ldU64o(g, $global_State_lastatomic) != 0n)
         (yield* stepgenfull(L, g));
     else {
-        let majorbase = cptr.ldU64o(g, FLD.global_State_GCestimate);
-        let majorinc = BigInt.asUintN(64, (majorbase / 100n) * BigInt.asUintN(64, BigInt((Math.imul((cptr.ld1uo(g, FLD.global_State_genmajormul)), 4)))));
-        if (cptr.ldI64o(g, FLD.global_State_GCdebt) > 0n && (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))) > BigInt.asUintN(64, majorbase + majorinc)) {
+        let majorbase = cptr.ldU64o(g, $global_State_GCestimate);
+        let majorinc = BigInt.asUintN(64, (majorbase / 100n) * BigInt.asUintN(64, BigInt((Math.imul((cptr.ld1uo(g, $global_State_genmajormul)), 4)))));
+        if (cptr.ldI64o(g, $global_State_GCdebt) > 0n && (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) > BigInt.asUintN(64, majorbase + majorinc)) {
             let numobjs = (yield* fullgen(L, g));
-            if ((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))) < BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
+            if ((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) < BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
                 (void 0);
             } else {
-                cptr.stU64o(g, FLD.global_State_lastatomic, numobjs);
+                cptr.stU64o(g, $global_State_lastatomic, numobjs);
                 setpause(g);
             }
         } else {
             (yield* youngcollection(L, g));
             setminordebt(g);
-            cptr.stU64o(g, FLD.global_State_GCestimate, majorbase);
+            cptr.stU64o(g, $global_State_GCestimate, majorbase);
         }
     }
     (void 0);
@@ -1158,10 +1210,10 @@ function* genstep(L, g) {
 
 /** C ref: lgc.c:1486 — @param {CPtr} L */
 function* entersweep(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    cptr.st1o(g, FLD.global_State_gcstate, 3);
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    cptr.st1o(g, $global_State_gcstate, 3);
     (void 0);
-    cptr.stPtro(g, FLD.global_State_sweepgc, (yield* sweeptolive(L, cptr.add(g, FLD.global_State_allgc))));
+    cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.add(g, $global_State_allgc))));
 }
 
 /** C ref: lgc.c:1498 — @param {CPtr} L @param {CPtr} p @param {CPtr} limit */
@@ -1175,98 +1227,98 @@ function* deletelist(L, p, limit) {
 
 /** C ref: lgc.c:1511 — @param {CPtr} L */
 export function* luaC_freeallobjects(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    cptr.st1o(g, FLD.global_State_gcstp, 4);
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    cptr.st1o(g, $global_State_gcstp, 4);
     (yield* luaC_changemode(L, 0));
     separatetobefnz(g, 1);
     (void 0);
     (yield* callallpendingfinalizers(L));
-    (yield* deletelist(L, cptr.ldPtro(g, FLD.global_State_allgc), ((((cptr.ldPtro(g, FLD.global_State_mainthread)))))));
+    (yield* deletelist(L, cptr.ldPtro(g, $global_State_allgc), ((((cptr.ldPtro(g, $global_State_mainthread)))))));
     (void 0);
-    (yield* deletelist(L, cptr.ldPtro(g, FLD.global_State_fixedgc), null));
+    (yield* deletelist(L, cptr.ldPtro(g, $global_State_fixedgc), null));
     (void 0);
 }
 
 /** C ref: lgc.c:1525 — @param {CPtr} L @returns {*} */
 function* atomic(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let work = 0n;
     let origweak;
     let origall;
-    let grayagain = cptr.ldPtro(g, FLD.global_State_grayagain);
-    cptr.stPtro(g, FLD.global_State_grayagain, null);
+    let grayagain = cptr.ldPtro(g, $global_State_grayagain);
+    cptr.stPtro(g, $global_State_grayagain, null);
     (void 0);
     (void 0);
-    cptr.st1o(g, FLD.global_State_gcstate, 2);
+    cptr.st1o(g, $global_State_gcstate, 2);
     {
-        if (((cptr.ld1uo((L), FLD.lua_State_marked)) & 24))
+        if (((cptr.ld1uo((L), $lua_State_marked)) & 24))
             reallymarkobject(g, ((((L)))));
     }
     ;
     {
-        (void cptr.ldPtro(g, FLD.global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(g, FLD.global_State_l_registry)), FLD.TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, FLD.global_State_l_registry)))))), FLD.GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, FLD.global_State_l_registry))))));
+        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+        if ((((cptr.ld1uo((cptr.add(g, $global_State_l_registry)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, $global_State_l_registry)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, $global_State_l_registry))))));
     }
     ;
     markmt(g);
     work += (yield* propagateall(g));
     work += BigInt.asUintN(64, BigInt(remarkupvals(g)));
     work += (yield* propagateall(g));
-    cptr.stPtro(g, FLD.global_State_gray, grayagain);
+    cptr.stPtro(g, $global_State_gray, grayagain);
     work += (yield* propagateall(g));
     (yield* convergeephemerons(g));
-    clearbyvalues(g, cptr.ldPtro(g, FLD.global_State_weak), null);
-    clearbyvalues(g, cptr.ldPtro(g, FLD.global_State_allweak), null);
-    origweak = cptr.ldPtro(g, FLD.global_State_weak);
-    origall = cptr.ldPtro(g, FLD.global_State_allweak);
+    clearbyvalues(g, cptr.ldPtro(g, $global_State_weak), null);
+    clearbyvalues(g, cptr.ldPtro(g, $global_State_allweak), null);
+    origweak = cptr.ldPtro(g, $global_State_weak);
+    origall = cptr.ldPtro(g, $global_State_allweak);
     separatetobefnz(g, 0);
     work += markbeingfnz(g);
     work += (yield* propagateall(g));
     (yield* convergeephemerons(g));
-    clearbykeys(g, cptr.ldPtro(g, FLD.global_State_ephemeron));
-    clearbykeys(g, cptr.ldPtro(g, FLD.global_State_allweak));
-    clearbyvalues(g, cptr.ldPtro(g, FLD.global_State_weak), origweak);
-    clearbyvalues(g, cptr.ldPtro(g, FLD.global_State_allweak), origall);
+    clearbykeys(g, cptr.ldPtro(g, $global_State_ephemeron));
+    clearbykeys(g, cptr.ldPtro(g, $global_State_allweak));
+    clearbyvalues(g, cptr.ldPtro(g, $global_State_weak), origweak);
+    clearbyvalues(g, cptr.ldPtro(g, $global_State_allweak), origall);
     luaS_clearcache(g);
-    cptr.st1o(g, FLD.global_State_currentwhite, (uchar((((cptr.ld1uo((g), FLD.global_State_currentwhite) ^ 24))))));
+    cptr.st1o(g, $global_State_currentwhite, (uchar((((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))));
     (void 0);
     return work;
 }
 
 /** C ref: lgc.c:1568 — @param {CPtr} L @param {CPtr} g @param {CInt} nextstate @param {CPtr} nextlist @returns {CInt} */
 function* sweepstep(L, g, nextstate, nextlist) {
-    if (cptr.ldPtro(g, FLD.global_State_sweepgc)) {
-        let olddebt = cptr.ldI64o(g, FLD.global_State_GCdebt);
+    if (cptr.ldPtro(g, $global_State_sweepgc)) {
+        let olddebt = cptr.ldI64o(g, $global_State_GCdebt);
         let count = cptr.box(0);
-        cptr.stPtro(g, FLD.global_State_sweepgc, (yield* sweeplist(L, cptr.ldPtro(g, FLD.global_State_sweepgc), 100, count)));
-        cptr.stU64o(g, FLD.global_State_GCestimate, cptr.ldU64o(g, FLD.global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, FLD.global_State_GCdebt) - olddebt)));
+        cptr.stPtro(g, $global_State_sweepgc, (yield* sweeplist(L, cptr.ldPtro(g, $global_State_sweepgc), 100, count)));
+        cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));
         return count.v;
     } else {
-        cptr.st1o(g, FLD.global_State_gcstate, uchar(nextstate));
-        cptr.stPtro(g, FLD.global_State_sweepgc, nextlist);
+        cptr.st1o(g, $global_State_gcstate, uchar(nextstate));
+        cptr.stPtro(g, $global_State_sweepgc, nextlist);
         return 0;
     }
 }
 
 /** C ref: lgc.c:1585 — @param {CPtr} L @returns {*} */
 function* singlestep(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let work;
     (void 0);
-    cptr.st1o(g, FLD.global_State_gcstopem, 1);
-    switch (cptr.ld1uo(g, FLD.global_State_gcstate)) {
+    cptr.st1o(g, $global_State_gcstopem, 1);
+    switch (cptr.ld1uo(g, $global_State_gcstate)) {
         case 8:
         {
             restartcollection(g);
-            cptr.st1o(g, FLD.global_State_gcstate, 0);
+            cptr.st1o(g, $global_State_gcstate, 0);
             work = 1n;
             break;
         }
         case 0:
         {
-            if (cptr.eq(cptr.ldPtro(g, FLD.global_State_gray), (null))) {
-                cptr.st1o(g, FLD.global_State_gcstate, 1);
+            if (cptr.eq(cptr.ldPtro(g, $global_State_gray), (null))) {
+                cptr.st1o(g, $global_State_gcstate, 1);
                 work = 0n;
             } else
                 work = (yield* propagatemark(g));
@@ -1276,17 +1328,17 @@ function* singlestep(L) {
         {
             work = (yield* atomic(L));
             (yield* entersweep(L));
-            cptr.stU64o(g, FLD.global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), FLD.global_State_totalbytes) + cptr.ldI64o((g), FLD.global_State_GCdebt))))));
+            cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
             break;
         }
         case 3:
         {
-            work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 4, cptr.add(g, FLD.global_State_finobj)))));
+            work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 4, cptr.add(g, $global_State_finobj)))));
             break;
         }
         case 4:
         {
-            work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 5, cptr.add(g, FLD.global_State_tobefnz)))));
+            work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 5, cptr.add(g, $global_State_tobefnz)))));
             break;
         }
         case 5:
@@ -1297,17 +1349,17 @@ function* singlestep(L) {
         case 6:
         {
             (yield* checkSizes(L, g));
-            cptr.st1o(g, FLD.global_State_gcstate, 7);
+            cptr.st1o(g, $global_State_gcstate, 7);
             work = 0n;
             break;
         }
         case 7:
         {
-            if (cptr.ldPtro(g, FLD.global_State_tobefnz) && !cptr.ld1uo(g, FLD.global_State_gcemergency)) {
-                cptr.st1o(g, FLD.global_State_gcstopem, 0);
+            if (cptr.ldPtro(g, $global_State_tobefnz) && !cptr.ld1uo(g, $global_State_gcemergency)) {
+                cptr.st1o(g, $global_State_gcstopem, 0);
                 work = BigInt.asUintN(64, BigInt(Math.imul((yield* runafewfinalizers(L, 10)), 50)));
             } else {
-                cptr.st1o(g, FLD.global_State_gcstate, 8);
+                cptr.st1o(g, $global_State_gcstate, 8);
                 work = 0n;
             }
             break;
@@ -1316,27 +1368,27 @@ function* singlestep(L) {
         (void 0);
         return 0n;
     }
-    cptr.st1o(g, FLD.global_State_gcstopem, 0);
+    cptr.st1o(g, $global_State_gcstopem, 0);
     return work;
 }
 
 /** C ref: lgc.c:1652 — @param {CPtr} L @param {CInt} statesmask */
 export function* luaC_runtilstate(L, statesmask) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    while (!((statesmask) & ((1 << (cptr.ld1uo(g, FLD.global_State_gcstate))))))
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    while (!((statesmask) & ((1 << (cptr.ld1uo(g, $global_State_gcstate))))))
         (yield* singlestep(L));
 }
 
 /** C ref: lgc.c:1667 — @param {CPtr} L @param {CPtr} g */
 function* incstep(L, g) {
-    let stepmul = ((Math.imul((cptr.ld1uo(g, FLD.global_State_gcstepmul)), 4)) | 1);
-    let debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.ldI64o(g, FLD.global_State_GCdebt)) / 16n) * BigInt.asUintN(64, BigInt(stepmul))));
-    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1uo(g, FLD.global_State_gcstepsize) >>> 0) <= 62n) ? BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, FLD.global_State_gcstepsize)))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : 9223372036854775807n));
+    let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);
+    let debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) * BigInt.asUintN(64, BigInt(stepmul))));
+    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n) ? BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : 9223372036854775807n));
     do {
         let work = (yield* singlestep(L));
         debt -= BigInt.asIntN(64, work);
-    } while (debt > -stepsize && cptr.ld1uo(g, FLD.global_State_gcstate) != 8);
-    if (cptr.ld1uo(g, FLD.global_State_gcstate) == 8)
+    } while (debt > -stepsize && cptr.ld1uo(g, $global_State_gcstate) != 8);
+    if (cptr.ld1uo(g, $global_State_gcstate) == 8)
         setpause(g);
     else {
         debt = BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n));
@@ -1346,11 +1398,11 @@ function* incstep(L, g) {
 
 /** C ref: lgc.c:1690 — @param {CPtr} L */
 export function* luaC_step(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    if (!(cptr.ld1uo((g), FLD.global_State_gcstp) == 0))
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    if (!(cptr.ld1uo((g), $global_State_gcstp) == 0))
         luaE_setdebt(g, -2000n);
     else {
-        if ((cptr.ld1uo(g, FLD.global_State_gckind) == 1 || cptr.ldU64o(g, FLD.global_State_lastatomic) != 0n))
+        if ((cptr.ld1uo(g, $global_State_gckind) == 1 || cptr.ldU64o(g, $global_State_lastatomic) != 0n))
             (yield* genstep(L, g));
         else
             (yield* incstep(L, g));
@@ -1359,11 +1411,11 @@ export function* luaC_step(L) {
 
 /** C ref: lgc.c:1710 — @param {CPtr} L @param {CPtr} g */
 function* fullinc(L, g) {
-    if ((cptr.ld1uo((g), FLD.global_State_gcstate) <= 2))
+    if ((cptr.ld1uo((g), $global_State_gcstate) <= 2))
         (yield* entersweep(L));
     (yield* luaC_runtilstate(L, 256));
     (yield* luaC_runtilstate(L, 1));
-    cptr.st1o(g, FLD.global_State_gcstate, 1);
+    cptr.st1o(g, $global_State_gcstate, 1);
     (yield* luaC_runtilstate(L, 128));
     (void 0);
     (yield* luaC_runtilstate(L, 256));
@@ -1372,14 +1424,14 @@ function* fullinc(L, g) {
 
 /** C ref: lgc.c:1730 — @param {CPtr} L @param {CInt} isemergency */
 export function* luaC_fullgc(L, isemergency) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
-    cptr.st1o(g, FLD.global_State_gcemergency, uchar(isemergency));
-    if (cptr.ld1uo(g, FLD.global_State_gckind) == 0)
+    cptr.st1o(g, $global_State_gcemergency, uchar(isemergency));
+    if (cptr.ld1uo(g, $global_State_gckind) == 0)
         (yield* fullinc(L, g));
     else
         (yield* fullgen(L, g));
-    cptr.st1o(g, FLD.global_State_gcemergency, 0);
+    cptr.st1o(g, $global_State_gcemergency, 0);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

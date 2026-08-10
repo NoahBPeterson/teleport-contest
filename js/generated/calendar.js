@@ -10,6 +10,12 @@ import { nh_getenv } from './options.js';
 import { nh_snprintf } from './hacklib.js';
 import { d } from './rnd.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $tm_tm_hour = FLD.tm_tm_hour, $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min,
+    $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday,
+    $tm_tm_year = FLD.tm_tm_year;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("NETHACK_FIXED_DATETIME");
 const __sl1 = cptr.lit("yyyymmddhhmmss");
@@ -36,7 +42,7 @@ function getlt() {
 
 /** C ref: calendar.c:55 @returns {CInt} */
 export function getyear() {
-    return ((1900 + cptr.ldI32o(getlt(), FLD.tm_tm_year)) | 0);
+    return ((1900 + cptr.ldI32o(getlt(), $tm_tm_year)) | 0);
 }
 
 /** C ref: calendar.c:62 — @param {CLongLong} date @returns {CLongLong} */
@@ -48,12 +54,12 @@ export function yyyymmdd(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    if (cptr.ldI32o(lt, FLD.tm_tm_year) < 70)
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_year)) + 2000n);
+    if (cptr.ldI32o(lt, $tm_tm_year) < 70)
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_year)) + 1900n);
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, FLD.tm_tm_mon) + 1) | 0)));
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, FLD.tm_tm_mday)));
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0)));
+    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, $tm_tm_mday)));
     return datenum;
 }
 
@@ -66,7 +72,7 @@ export function hhmmss(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_hour)) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_min)) * 100n)) + BigInt(cptr.ldI32(lt)));
+    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n)) + BigInt(cptr.ldI32(lt)));
     return timenum;
 }
 
@@ -81,11 +87,11 @@ export function yyyymmddhhmmss(date) {
         lt = getlt();
     else
         lt = localtime(date);
-    if (cptr.ldI32o(lt, FLD.tm_tm_year) < 70)
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_year)) + 2000n);
+    if (cptr.ldI32o(lt, $tm_tm_year) < 70)
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
-        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, FLD.tm_tm_year)) + 1900n);
-    nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32o(lt, FLD.tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, FLD.tm_tm_mday), cptr.ldI32o(lt, FLD.tm_tm_hour), cptr.ldI32o(lt, FLD.tm_tm_min), cptr.ldI32(lt));
+        datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
+    nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, $tm_tm_mday), cptr.ldI32o(lt, $tm_tm_hour), cptr.ldI32o(lt, $tm_tm_min), cptr.ldI32(lt));
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
 
@@ -134,11 +140,11 @@ export function time_from_yyyymmddhhmmss(buf) {
         lt = localtime(now);
         if (lt) {
             cptr.memcpy(t, lt, 56);
-            cptr.stI32o(t, FLD.tm_tm_year, (atoi(cptr.decay(y)) - 1900) | 0);
-            cptr.stI32o(t, FLD.tm_tm_mon, (atoi(cptr.decay(mo)) - 1) | 0);
-            cptr.stI32o(t, FLD.tm_tm_mday, atoi(cptr.decay(md)));
-            cptr.stI32o(t, FLD.tm_tm_hour, atoi(cptr.decay(h)));
-            cptr.stI32o(t, FLD.tm_tm_min, atoi(cptr.decay(mi)));
+            cptr.stI32o(t, $tm_tm_year, (atoi(cptr.decay(y)) - 1900) | 0);
+            cptr.stI32o(t, $tm_tm_mon, (atoi(cptr.decay(mo)) - 1) | 0);
+            cptr.stI32o(t, $tm_tm_mday, atoi(cptr.decay(md)));
+            cptr.stI32o(t, $tm_tm_hour, atoi(cptr.decay(h)));
+            cptr.stI32o(t, $tm_tm_min, atoi(cptr.decay(mi)));
             cptr.stI32(t, atoi(cptr.decay(s)));
             timeresult = mktime(t);
         }
@@ -156,8 +162,8 @@ export function phase_of_the_moon() {
     let epact;
     let diy;
     let goldn;
-    diy = cptr.ldI32o(lt, FLD.tm_tm_yday);
-    goldn = ((cptr.ldI32o(lt, FLD.tm_tm_year) % 19) + 1) | 0;
+    diy = cptr.ldI32o(lt, $tm_tm_yday);
+    goldn = ((cptr.ldI32o(lt, $tm_tm_year) % 19) + 1) | 0;
     epact = ((Math.imul(11, goldn) + 18) | 0) % 30;
     if ((epact == 25 && goldn > 11) || epact == 24)
         epact++;
@@ -167,18 +173,18 @@ export function phase_of_the_moon() {
 /** C ref: calendar.c:215 @returns {CInt} */
 export function friday_13th() {
     let lt = getlt();
-    return schar((cptr.ldI32o(lt, FLD.tm_tm_wday) == 5 && cptr.ldI32o(lt, FLD.tm_tm_mday) == 13 ? 1 : 0));
+    return schar((cptr.ldI32o(lt, $tm_tm_wday) == 5 && cptr.ldI32o(lt, $tm_tm_mday) == 13 ? 1 : 0));
 }
 
 /** C ref: calendar.c:224 @returns {CInt} */
 export function night() {
-    let hour = cptr.ldI32o(getlt(), FLD.tm_tm_hour);
+    let hour = cptr.ldI32o(getlt(), $tm_tm_hour);
     return (hour < 6 || hour > 21 ? 1 : 0);
 }
 
 /** C ref: calendar.c:232 @returns {CInt} */
 export function midnight() {
-    return (cptr.ldI32o(getlt(), FLD.tm_tm_hour) == 0);
+    return (cptr.ldI32o(getlt(), $tm_tm_hour) == 0);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

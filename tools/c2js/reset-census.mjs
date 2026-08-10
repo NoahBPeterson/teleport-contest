@@ -323,9 +323,12 @@ function classify(toks, moduleNames) {
     if (toks.length === 1 && (first.v === 'true' || first.v === 'false' || first.v === 'undefined')) {
         return { kind: KIND.BOOLSTR, detail: first.v };
     }
-    // NHC.FOO / NHM.BAR — a named constant from the merged constant modules.
+    // NHC.FOO / NHM.BAR / FLD.baz — a named constant from one of the merged
+    // constant modules. FLD is the struct field offset table (roadmap 1.11):
+    // a module binds the offsets it uses as `const $rec_field = FLD.rec_field`
+    // so V8 folds them, and those bindings are as immutable as the others.
     if (first.t === 'id' && txt(1) === '.' && toks.length === 3
-        && (first.v === 'NHC' || first.v === 'NHM')) {
+        && (first.v === 'NHC' || first.v === 'NHM' || first.v === 'FLD')) {
         return { kind: KIND.CONSTREF, detail: `${first.v}.${txt(2)}` };
     }
     // A bare reference to another module-level binding.
@@ -633,8 +636,19 @@ async function main(argv) {
             + String(e.count).padStart(6) + '  ' + String(e.let).padStart(5) + '  '
             + String(e.const).padStart(5) + '  ' + String(e.modules.size).padStart(7) + '\n');
     }
-    const resettable = order.filter(([k]) => STRATEGY[k] !== 'none' && STRATEGY[k] !== 'unknown')
-        .reduce((n, [, e]) => n + e.count, 0);
+    // Count what resetify will actually emit, not what the strategy column
+    // suggests: planFor() drops a `const` scalar, whose binding cannot be
+    // rebound and whose contents are a number. Since roadmap 1.11 there are
+    // 13k of those — the per-module `const $rec_field = FLD.rec_field` fold
+    // hints — and counting them here would have made the plan look 2.6x
+    // bigger than the 1,395 bindings resetify reports.
+    let resettable = 0;
+    for (const [, decls] of modules) {
+        for (const d of decls) {
+            if (d.kind === KIND.LIT || d.kind === KIND.OTHER) continue;
+            if (d.declKw !== 'const' || STRATEGY[d.kind] === 'snapshot') resettable++;
+        }
+    }
     const ignored = (byKind.get(KIND.LIT) || { count: 0 }).count;
 
     // A hand-written directory does not derive; it signs. Anything the manifest

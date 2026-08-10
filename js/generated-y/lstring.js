@@ -15,14 +15,26 @@ import { luaC_fix, luaC_fullgc, luaC_newobj } from './lgc.js';
 import { luaD_throw } from './ldo.js';
 import { u } from './decl.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $TString_contents = FLD.TString_contents, $TString_extra = FLD.TString_extra,
+    $TString_hash = FLD.TString_hash, $TString_marked = FLD.TString_marked,
+    $TString_shrlen = FLD.TString_shrlen, $TString_u = FLD.TString_u, $TValue_tt_ = FLD.TValue_tt_,
+    $Udata_len = FLD.Udata_len, $Udata_metatable = FLD.Udata_metatable, $Udata_nuvalue = FLD.Udata_nuvalue,
+    $Udata_uv = FLD.Udata_uv, $global_State_currentwhite = FLD.global_State_currentwhite,
+    $global_State_memerrmsg = FLD.global_State_memerrmsg, $global_State_seed = FLD.global_State_seed,
+    $global_State_strcache = FLD.global_State_strcache, $global_State_strt = FLD.global_State_strt,
+    $lua_State_l_G = FLD.lua_State_l_G, $stringtable_nuse = FLD.stringtable_nuse,
+    $stringtable_size = FLD.stringtable_size;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("not enough memory");
 
 /** C ref: lstring.c:34 — @param {CPtr} a @param {CPtr} b @returns {CInt} */
 export function luaS_eqlngstr(a, b) {
-    let len = cptr.ldU64o(a, FLD.TString_u);
+    let len = cptr.ldU64o(a, $TString_u);
     (void 0);
-    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, FLD.TString_u)) && (memcmp((cptr.add((a), FLD.TString_contents)), (cptr.add((b), FLD.TString_contents)), len) == 0)) ? 1 : 0;
+    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, $TString_u)) && (memcmp((cptr.add((a), $TString_contents)), (cptr.add((b), $TString_contents)), len) == 0)) ? 1 : 0;
 }
 
 /** C ref: lstring.c:43 — @param {CPtr} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
@@ -36,12 +48,12 @@ export function luaS_hash(str, l, seed) {
 /** C ref: lstring.c:51 — @param {CPtr} ts @returns {CUInt} */
 export function luaS_hashlongstr(ts) {
     (void 0);
-    if (cptr.ld1uo(ts, FLD.TString_extra) == 0) {
-        let len = cptr.ldU64o(ts, FLD.TString_u);
-        cptr.stI32o(ts, FLD.TString_hash, luaS_hash((cptr.add((ts), FLD.TString_contents)), len, cptr.ldI32o(ts, FLD.TString_hash)));
-        cptr.st1o(ts, FLD.TString_extra, 1);
+    if (cptr.ld1uo(ts, $TString_extra) == 0) {
+        let len = cptr.ldU64o(ts, $TString_u);
+        cptr.stI32o(ts, $TString_hash, luaS_hash((cptr.add((ts), $TString_contents)), len, cptr.ldI32o(ts, $TString_hash)));
+        cptr.st1o(ts, $TString_extra, 1);
     }
-    return cptr.ldI32o(ts, FLD.TString_hash);
+    return cptr.ldI32o(ts, $TString_hash);
 }
 
 /** C ref: lstring.c:62 — @param {CPtr} vect @param {CInt} osize @param {CInt} nsize */
@@ -53,9 +65,9 @@ function tablerehash(vect, osize, nsize) {
         let p = cptr.ldPtro(vect, i, 8);
         cptr.stPtro(vect, i, null, 8);
         while (p) {
-            let hnext = cptr.ldPtro(p, FLD.TString_u);
-            let h = ((((((((cptr.ldI32o(p, FLD.TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;
-            cptr.stPtro(p, FLD.TString_u, cptr.ldPtro(vect, h, 8));
+            let hnext = cptr.ldPtro(p, $TString_u);
+            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;
+            cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));
             cptr.stPtro(vect, h, p, 8);
             p = hnext;
         }
@@ -64,8 +76,8 @@ function tablerehash(vect, osize, nsize) {
 
 /** C ref: lstring.c:85 — @param {CPtr} L @param {CInt} nsize */
 export function* luaS_resize(L, nsize) {
-    let tb = cptr.add((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_strt);
-    let osize = cptr.ldI32o(tb, FLD.stringtable_size);
+    let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
+    let osize = cptr.ldI32o(tb, $stringtable_size);
     let newvect;
     if (nsize < osize)
         tablerehash(cptr.ldPtr(tb), osize, nsize);
@@ -75,7 +87,7 @@ export function* luaS_resize(L, nsize) {
             tablerehash(cptr.ldPtr(tb), nsize, osize);
     } else {
         cptr.stPtr(tb, newvect);
-        cptr.stI32o(tb, FLD.stringtable_size, nsize);
+        cptr.stI32o(tb, $stringtable_size, nsize);
         if (nsize > osize)
             tablerehash(newvect, osize, nsize);
     }
@@ -87,25 +99,25 @@ export function luaS_clearcache(g) {
     let j;
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++) {
-            if (((cptr.ld1uo((cptr.ldPtro3(g, i, 16, j, 8, FLD.global_State_strcache)), FLD.TString_marked)) & 24))
-                cptr.stPtro3(g, i, 16, j, 8, FLD.global_State_strcache, cptr.ldPtro(g, FLD.global_State_memerrmsg));
+            if (((cptr.ld1uo((cptr.ldPtro3(g, i, 16, j, 8, $global_State_strcache)), $TString_marked)) & 24))
+                cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));
         }
 }
 
 /** C ref: lstring.c:123 — @param {CPtr} L */
 export function* luaS_init(L) {
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
     let i;
     let j;
-    let tb = cptr.add((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_strt);
+    let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     cptr.stPtr(tb, (((yield* luaM_malloc_(L, 1024n, 0)))));
     tablerehash(cptr.ldPtr(tb), 0, 128);
-    cptr.stI32o(tb, FLD.stringtable_size, 128);
-    cptr.stPtro(g, FLD.global_State_memerrmsg, ((yield* luaS_newlstr(L, __sl0, BigInt.asUintN(64, (18n / 1n) - 1n)))));
-    luaC_fix(L, ((((cptr.ldPtro(g, FLD.global_State_memerrmsg))))));
+    cptr.stI32o(tb, $stringtable_size, 128);
+    cptr.stPtro(g, $global_State_memerrmsg, ((yield* luaS_newlstr(L, __sl0, BigInt.asUintN(64, (18n / 1n) - 1n)))));
+    luaC_fix(L, ((((cptr.ldPtro(g, $global_State_memerrmsg))))));
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)
-            cptr.stPtro3(g, i, 16, j, 8, FLD.global_State_strcache, cptr.ldPtro(g, FLD.global_State_memerrmsg));
+            cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));
 }
 
 /** C ref: lstring.c:143 — @param {CPtr} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr} */
@@ -116,66 +128,66 @@ function* createstrobj(L, l, tag, h) {
     totalsize = (BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (l) + 1n)) * 1n)));
     o = (yield* luaC_newobj(L, tag, totalsize));
     ts = (((((o)))));
-    cptr.stI32o(ts, FLD.TString_hash, h);
-    cptr.st1o(ts, FLD.TString_extra, 0);
-    cptr.st1o((cptr.add((ts), FLD.TString_contents)), l, 0, 1);
+    cptr.stI32o(ts, $TString_hash, h);
+    cptr.st1o(ts, $TString_extra, 0);
+    cptr.st1o((cptr.add((ts), $TString_contents)), l, 0, 1);
     return ts;
 }
 
 /** C ref: lstring.c:157 — @param {CPtr} L @param {CLongLong} l @returns {CPtr} */
 export function* luaS_createlngstrobj(L, l) {
-    let ts = (yield* createstrobj(L, l, 20, cptr.ldI32o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_seed)));
-    cptr.stU64o(ts, FLD.TString_u, l);
-    cptr.st1o(ts, FLD.TString_shrlen, 255);
+    let ts = (yield* createstrobj(L, l, 20, cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_seed)));
+    cptr.stU64o(ts, $TString_u, l);
+    cptr.st1o(ts, $TString_shrlen, 255);
     return ts;
 }
 
 /** C ref: lstring.c:165 — @param {CPtr} L @param {CPtr} ts */
 export function luaS_remove(L, ts) {
-    let tb = cptr.add((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_strt);
-    let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32o(ts, FLD.TString_hash)) & (((cptr.ldI32o(tb, FLD.stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+    let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
+    let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32o(ts, $TString_hash)) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     while (!cptr.eq(cptr.ldPtr(p), ts))
-        p = cptr.add((cptr.ldPtr(p)), FLD.TString_u);
-    cptr.stPtr(p, cptr.ldPtro((cptr.ldPtr(p)), FLD.TString_u));
-    (cptr.stI32o(tb, FLD.stringtable_nuse, cptr.ldI32o(tb, FLD.stringtable_nuse) + -1)) - (-1);
+        p = cptr.add((cptr.ldPtr(p)), $TString_u);
+    cptr.stPtr(p, cptr.ldPtro((cptr.ldPtr(p)), $TString_u));
+    (cptr.stI32o(tb, $stringtable_nuse, cptr.ldI32o(tb, $stringtable_nuse) + -1)) - (-1);
 }
 
 /** C ref: lstring.c:175 — @param {CPtr} L @param {CPtr} tb */
 function* growstrtab(L, tb) {
-    if ((__builtin_expect(BigInt(((cptr.ldI32o(tb, FLD.stringtable_nuse) == 2147483647) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.ldI32o(tb, $stringtable_nuse) == 2147483647) != 0)), 0n))) {
         (yield* luaC_fullgc(L, 1));
-        if (cptr.ldI32o(tb, FLD.stringtable_nuse) == 2147483647)
+        if (cptr.ldI32o(tb, $stringtable_nuse) == 2147483647)
             (yield* luaD_throw(L, 4));
     }
-    if (cptr.ldI32o(tb, FLD.stringtable_size) <= 1073741823)
-        (yield* luaS_resize(L, Math.imul(cptr.ldI32o(tb, FLD.stringtable_size), 2)));
+    if (cptr.ldI32o(tb, $stringtable_size) <= 1073741823)
+        (yield* luaS_resize(L, Math.imul(cptr.ldI32o(tb, $stringtable_size), 2)));
 }
 
 /** C ref: lstring.c:189 — @param {CPtr} L @param {CPtr} str @param {CLongLong} l @returns {CPtr} */
 function* internshrstr(L, str, l) {
     let ts;
-    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
-    let tb = cptr.add(g, FLD.global_State_strt);
-    let h = luaS_hash(str, l, cptr.ldI32o(g, FLD.global_State_seed));
-    let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, FLD.stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+    let g = (cptr.ldPtro(L, $lua_State_l_G));
+    let tb = cptr.add(g, $global_State_strt);
+    let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed));
+    let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     (void 0);
-    for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, FLD.TString_u)) {
-        if (l == BigInt(cptr.ld1uo(ts, FLD.TString_shrlen) >>> 0) && (memcmp(str, (cptr.add((ts), FLD.TString_contents)), BigInt.asUintN(64, l * 1n)) == 0)) {
-            if (((cptr.ld1uo((ts), FLD.TString_marked)) & ((cptr.ld1uo((g), FLD.global_State_currentwhite) ^ 24))))
-                (cptr.st1o((ts), FLD.TString_marked, cptr.ld1uo((ts), FLD.TString_marked) ^ 24));
+    for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, $TString_u)) {
+        if (l == BigInt(cptr.ld1uo(ts, $TString_shrlen) >>> 0) && (memcmp(str, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, l * 1n)) == 0)) {
+            if (((cptr.ld1uo((ts), $TString_marked)) & ((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))
+                (cptr.st1o((ts), $TString_marked, cptr.ld1uo((ts), $TString_marked) ^ 24));
             return ts;
         }
     }
-    if (cptr.ldI32o(tb, FLD.stringtable_nuse) >= cptr.ldI32o(tb, FLD.stringtable_size)) {
+    if (cptr.ldI32o(tb, $stringtable_nuse) >= cptr.ldI32o(tb, $stringtable_size)) {
         (yield* growstrtab(L, tb));
-        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, FLD.stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     }
     ts = (yield* createstrobj(L, l, 4, h));
-    cptr.st1o(ts, FLD.TString_shrlen, (Number(BigInt.asUintN(8, ((l))))));
-    cptr.memcpy((cptr.add((ts), FLD.TString_contents)), str, BigInt.asUintN(64, l * 1n));
-    cptr.stPtro(ts, FLD.TString_u, cptr.ldPtr(list));
+    cptr.st1o(ts, $TString_shrlen, (Number(BigInt.asUintN(8, ((l))))));
+    cptr.memcpy((cptr.add((ts), $TString_contents)), str, BigInt.asUintN(64, l * 1n));
+    cptr.stPtro(ts, $TString_u, cptr.ldPtr(list));
     cptr.stPtr(list, ts);
-    (cptr.stI32o(tb, FLD.stringtable_nuse, cptr.ldI32o(tb, FLD.stringtable_nuse) + 1)) - (1);
+    (cptr.stI32o(tb, $stringtable_nuse, cptr.ldI32o(tb, $stringtable_nuse) + 1)) - (1);
     return ts;
 }
 
@@ -188,7 +200,7 @@ export function* luaS_newlstr(L, str, l) {
         if ((__builtin_expect(BigInt(((BigInt.asUintN(64, l * 1n) >= 9223372036854775775n) != 0)), 0n)))
             (yield* luaM_toobig(L));
         ts = (yield* luaS_createlngstrobj(L, l));
-        cptr.memcpy((cptr.add((ts), FLD.TString_contents)), str, BigInt.asUintN(64, l * 1n));
+        cptr.memcpy((cptr.add((ts), $TString_contents)), str, BigInt.asUintN(64, l * 1n));
         return ts;
     }
 }
@@ -197,9 +209,9 @@ export function* luaS_newlstr(L, str, l) {
 export function* luaS_new(L, str) {
     let i = u32mod((Number(BigInt.asUintN(32, (cptr.addr((str)) & 4294967295n)))), 53);
     let j;
-    let p = cptr.add(cptr.add((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_strcache), i, 16);
+    let p = cptr.add(cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strcache), i, 16);
     for (j = 0; j < 2; j++) {
-        if (strcmp(str, (cptr.add((cptr.ldPtro(p, j, 8)), FLD.TString_contents))) == 0)
+        if (strcmp(str, (cptr.add((cptr.ldPtro(p, j, 8)), $TString_contents))) == 0)
             return cptr.ldPtro(p, j, 8);
     }
     for (j = 1; j > 0; j--)
@@ -217,10 +229,10 @@ export function* luaS_newudata(L, s, nuvalue) {
         (yield* luaM_toobig(L));
     o = (yield* luaC_newobj(L, 7, (BigInt.asUintN(64, ((nuvalue) == 0 ? 32n : BigInt.asUintN(64, 40n + (BigInt.asUintN(64, 16n * BigInt.asUintN(64, BigInt((nuvalue))))))) + (s)))));
     u = (((((o)))));
-    cptr.stU64o(u, FLD.Udata_len, s);
-    cptr.stI16o(u, FLD.Udata_nuvalue, u16(nuvalue));
-    cptr.stPtro(u, FLD.Udata_metatable, null);
+    cptr.stU64o(u, $Udata_len, s);
+    cptr.stI16o(u, $Udata_nuvalue, u16(nuvalue));
+    cptr.stPtro(u, $Udata_metatable, null);
     for (i = 0; i < nuvalue; i++)
-        (cptr.st1o((cptr.add(cptr.add(u, FLD.Udata_uv), i, 16)), FLD.TValue_tt_, 0));
+        (cptr.st1o((cptr.add(cptr.add(u, $Udata_uv), i, 16)), $TValue_tt_, 0));
     return u;
 }

@@ -17,6 +17,12 @@ import { formatkiller } from './topten.js';
 import { yyyymmdd } from './calendar.js';
 import { windowprocs } from './windows.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $instance_globals_d_done_money = FLD.instance_globals_d_done_money,
+    $instance_globals_r_rip = FLD.instance_globals_r_rip,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("                       ----------");
 const __sl1 = cptr.lit("                      /          \\");
@@ -57,7 +63,7 @@ function* center(line, text) {
     let ip;
     let op;
     ip = text;
-    op = cptr.add(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_rip), line, 8), BigInt.asUintN(64, 28n - ((BigInt.asUintN(64, cptr.strlen(text) + 1n)) >> 1n)));
+    op = cptr.add(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_rip), line, 8), BigInt.asUintN(64, 28n - ((BigInt.asUintN(64, cptr.strlen(text) + 1n)) >> 1n)));
     while (cptr.ld1s(ip))
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => ip, (v) => { ip = v; })));
 }
@@ -71,13 +77,13 @@ export function* genl_outrip(tmpwin, how, when) {
     let line;
     let year;
     let cash;
-    cptr.stPtro(gr, FLD.instance_globals_r_rip, dp = (yield* alloc(128)));
+    cptr.stPtro(gr, $instance_globals_r_rip, dp = (yield* alloc(128)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); ++x)
         cptr.stPtro(dp, x, (yield* dupstr(cptr.ldPtro(rip_txt, x, 8))), 8);
     cptr.stPtro(dp, x, null, 8);
     void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
     (yield* center(6, cptr.decay(buf)));
-    cash = ((cptr.ldI64o(gd, FLD.instance_globals_d_done_money)) > 0n ? (cptr.ldI64o(gd, FLD.instance_globals_d_done_money)) : 0n);
+    cash = ((cptr.ldI64o(gd, $instance_globals_d_done_money)) > 0n ? (cptr.ldI64o(gd, $instance_globals_d_done_money)) : 0n);
     if (cash > 999999999n)
         cash = 999999999n;
     void cptr.sprintf(cptr.decay(buf), __sl11, cash);
@@ -112,10 +118,10 @@ export function* genl_outrip(tmpwin, how, when) {
     (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
     (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); x++) {
-        cptr.free(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_rip), x, 8));
+        cptr.free(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_rip), x, 8));
     }
-    cptr.free(cptr.ldPtro(gr, FLD.instance_globals_r_rip));
-    cptr.stPtro(gr, FLD.instance_globals_r_rip, null);
+    cptr.free(cptr.ldPtro(gr, $instance_globals_r_rip));
+    cptr.stPtro(gr, $instance_globals_r_rip, null);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

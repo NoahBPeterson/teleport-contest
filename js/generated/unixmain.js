@@ -32,6 +32,31 @@ import { sysopt } from './sys.js';
 import { error } from './unixtty.js';
 import { getnow } from './calendar.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore, $flag_initrace = FLD.flag_initrace,
+    $flag_initrole = FLD.flag_initrole, $flag_randomall = FLD.flag_randomall,
+    $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
+    $instance_flags_explore_error_flag = FLD.instance_flags_explore_error_flag,
+    $instance_flags_news = FLD.instance_flags_news,
+    $instance_flags_renameinprogress = FLD.instance_flags_renameinprogress,
+    $instance_flags_wiz_error_flag = FLD.instance_flags_wiz_error_flag,
+    $instance_globals_e_early_raw_messages = FLD.instance_globals_e_early_raw_messages,
+    $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
+    $instance_globals_l_loglua = FLD.instance_globals_l_loglua,
+    $instance_globals_p_plnamelen = FLD.instance_globals_p_plnamelen,
+    $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
+    $instance_globals_saved_n_nhuuid = FLD.instance_globals_saved_n_nhuuid,
+    $passwd_pw_uid = FLD.passwd_pw_uid, $sinfo_early_options = FLD.sinfo_early_options,
+    $sinfo_in_self_recover = FLD.sinfo_in_self_recover, $sinfo_preserve_locks = FLD.sinfo_preserve_locks,
+    $sysopt_s_check_plname = FLD.sysopt_s_check_plname, $sysopt_s_explorers = FLD.sysopt_s_explorers,
+    $sysopt_s_maxplayers = FLD.sysopt_s_maxplayers, $sysopt_s_wizards = FLD.sysopt_s_wizards,
+    $window_procs_win_display_file = FLD.window_procs_win_display_file,
+    $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
+    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+    $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print, $you_uhp = FLD.you_uhp;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("/");
 const __sl1 = cptr.lit(".app/Contents/MacOS/");
@@ -128,25 +153,25 @@ export function main(argc, argv) {
     dir.v = nh_getenv(__sl4);
     if (!dir.v)
         dir.v = nh_getenv(__sl5);
-    cptr.stI32o(program_state, FLD.sinfo_early_options, 1);
+    cptr.stI32o(program_state, $sinfo_early_options, 1);
     early_options(argc, argv, dir);
-    cptr.stI32o(program_state, FLD.sinfo_early_options, 0);
+    cptr.stI32o(program_state, $sinfo_early_options, 0);
     chdirx(dir.v, 1);
     initoptions();
     ARGV0.v = cptr.ldPtr(gh);
     panictrace_setsignals(1);
     exact_username = whoami();
-    cptr.stI32o(u, FLD.you_uhp, 1);
-    cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 1);
+    cptr.stI32o(u, $you_uhp, 1);
+    cptr.stI32o(program_state, $sinfo_preserve_locks, 1);
     sethanguphandler(hangup);
     process_options(argc.v, argv.v);
     init_nhwindows()(argc, argv.v);
     getmailstatus();
     set_playmode();
-    cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, exact_username ? Number(BigInt.asIntN(32, cptr.strlen(svp))) : 0);
+    cptr.stI32o(gp, $instance_globals_p_plnamelen, exact_username ? Number(BigInt.asIntN(32, cptr.strlen(svp))) : 0);
     plnamesuffix();
     if (wizard()) {
-        cptr.stI32o(gl, FLD.instance_globals_l_locknum, 0);
+        cptr.stI32o(gl, $instance_globals_l_locknum, 0);
     } else {
         void signal(3, 1);
         void signal(2, 1);
@@ -157,17 +182,17 @@ export function main(argc, argv) {
     __lbl_attempt_restore: while (true) {
         if (cptr.ld1s(svp)) {
             getlock();
-            cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 0);
+            cptr.stI32o(program_state, $sinfo_preserve_locks, 0);
         }
         if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null) {
-            let fq_save = fqname(cptr.add(gs, FLD.instance_globals_s_SAVEF), NHM.SAVEPREFIX, 1);
+            let fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 1);
             void chmod(fq_save, 0);
             void signal(2, done1);
-            if (cptr.ld1so(iflags, FLD.instance_flags_news)) {
+            if (cptr.ld1so(iflags, $instance_flags_news)) {
                 display_file()(__sl6, 0);
-                cptr.st1o(iflags, FLD.instance_flags_news, 0);
+                cptr.st1o(iflags, $instance_flags_news, 0);
             }
-            if (cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages))
+            if (cptr.ldI32o(ge, $instance_globals_e_early_raw_messages))
                 raw_print()(__sl7);
             else
                 pline(__sl7);
@@ -184,20 +209,20 @@ export function main(argc, argv) {
                     }
                 }
             }
-            if (cptr.ldI32o(program_state, FLD.sinfo_in_self_recover)) {
-                cptr.stI32o(program_state, FLD.sinfo_in_self_recover, 0);
+            if (cptr.ldI32o(program_state, $sinfo_in_self_recover)) {
+                cptr.stI32o(program_state, $sinfo_in_self_recover, 0);
             }
         }
         if (!resuming) {
             let neednewlock = schar((!cptr.ld1s(svp)));
-            if (!cptr.ld1so(iflags, FLD.instance_flags_renameinprogress) || cptr.ld1s(iflags) || neednewlock) {
+            if (!cptr.ld1so(iflags, $instance_flags_renameinprogress) || cptr.ld1s(iflags) || neednewlock) {
                 if (!plsel_once)
                     player_selection()();
                 plsel_once = 1;
                 if (neednewlock && cptr.ld1s(svp))
                     continue __lbl_attempt_restore;
-                if (cptr.ld1so(iflags, FLD.instance_flags_renameinprogress)) {
-                    if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum)) {
+                if (cptr.ld1so(iflags, $instance_flags_renameinprogress)) {
+                    if (!cptr.ldI32o(gl, $instance_globals_l_locknum)) {
                         delete_levelfile(0);
                         getlock();
                     }
@@ -238,7 +263,7 @@ function process_options(argc, argv) {
             case 68:
             case 100:
             if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) || !strncmpi((arg), (__sl11), -1)) {
-                cptr.st1o(flags, FLD.flag_debug, 1), cptr.st1o(flags, FLD.flag_explore, 0);
+                cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
             } else if (!strncmpi(arg, __sl12, l)) {
                 load_symset(__sl13, NHC.PRIMARYSET);
                 switch_symbols(1);
@@ -247,26 +272,26 @@ function process_options(argc, argv) {
             }
             break;
             case 88:
-            cptr.st1o(flags, FLD.flag_explore, 1), cptr.st1o(flags, FLD.flag_debug, 0);
+            cptr.st1o(flags, $flag_explore, 1), cptr.st1o(flags, $flag_debug, 0);
             break;
             case 110:
             if (!cptr.ld1so(arg, 2) || !strcmp(arg, __sl15)) {
-                cptr.st1o(iflags, FLD.instance_flags_news, 0);
+                cptr.st1o(iflags, $instance_flags_news, 0);
                 break;
             } else if (!strcmp(arg, __sl16)) {
-                cptr.st1o(iflags, FLD.instance_flags_news, 1);
+                cptr.st1o(iflags, $instance_flags_news, 1);
                 break;
             }
             break;
             case 117:
             if (cptr.ld1so(arg, 2)) {
                 void __builtin___strncpy_chk(svp, cptr.add(arg, 2), 31n, __builtin_object_size(svp, 1));
-                cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, 0);
+                cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 void __builtin___strncpy_chk(svp, cptr.ldPtro(argv, 0, 8), 31n, __builtin_object_size(svp, 1));
-                cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, 0);
+                cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);
             } else {
                 config_error_add(__sl17);
             }
@@ -283,41 +308,41 @@ function process_options(argc, argv) {
             break;
             case 108:
             if (!cptr.strncmp(arg, __sl21, 7n)) {
-                cptr.stI32o(gl, FLD.instance_globals_l_loglua, 1);
+                cptr.stI32o(gl, $instance_globals_l_loglua, 1);
             } else
                 config_error_add(__sl14, origarg);
             break;
             case 112:
             if (cptr.ld1so(arg, 2)) {
                 if ((i = str2role(cptr.add(arg, 2))) >= 0)
-                    cptr.stI32o(flags, FLD.flag_initrole, i);
+                    cptr.stI32o(flags, $flag_initrole, i);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 if ((i = str2role(cptr.ldPtro(argv, 0, 8))) >= 0)
-                    cptr.stI32o(flags, FLD.flag_initrole, i);
+                    cptr.stI32o(flags, $flag_initrole, i);
             }
             break;
             case 114:
             if (cptr.ld1so(arg, 2)) {
                 if ((i = str2race(cptr.add(arg, 2))) >= 0)
-                    cptr.stI32o(flags, FLD.flag_initrace, i);
+                    cptr.stI32o(flags, $flag_initrace, i);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 if ((i = str2race(cptr.ldPtro(argv, 0, 8))) >= 0)
-                    cptr.stI32o(flags, FLD.flag_initrace, i);
+                    cptr.stI32o(flags, $flag_initrace, i);
             }
             break;
             case 64:
-            cptr.stI32o(flags, FLD.flag_randomall, 1);
+            cptr.stI32o(flags, $flag_randomall, 1);
             break;
             case 45:
             config_error_add(__sl14, origarg);
             break;
             default:
             if ((i = str2role(cptr.add(cptr.ldPtro(argv, 0, 8), 1))) >= 0) {
-                cptr.stI32o(flags, FLD.flag_initrole, i);
+                cptr.stI32o(flags, $flag_initrole, i);
                 break;
             }
         }
@@ -327,8 +352,8 @@ function process_options(argc, argv) {
         let mx_ok = schar((mxplyrs > 0));
         config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtro(argv, 1, 8), mx_ok ? __sl24 : __sl25);
     }
-    if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum) || (cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers) && cptr.ldI32o(gl, FLD.instance_globals_l_locknum) > cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers)))
-        cptr.stI32o(gl, FLD.instance_globals_l_locknum, cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers));
+    if (!cptr.ldI32o(gl, $instance_globals_l_locknum) || (cptr.ldI32o(sysopt, $sysopt_s_maxplayers) && cptr.ldI32o(gl, $instance_globals_l_locknum) > cptr.ldI32o(sysopt, $sysopt_s_maxplayers)))
+        cptr.stI32o(gl, $instance_globals_l_locknum, cptr.ldI32o(sysopt, $sysopt_s_maxplayers));
     config_error_done();
     return;
 }
@@ -379,40 +404,40 @@ export function sethanguphandler(handler) {
 
 /** C ref: unixmain.c:629 @returns {CInt} */
 export function authorize_wizard_mode() {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 0)) {
-        if (check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards)))
+    if (cptr.ldPtro(sysopt, $sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_wizards), 0)) {
+        if (check_user_string(cptr.ldPtro(sysopt, $sysopt_s_wizards)))
             return 1;
     }
-    cptr.st1o(iflags, FLD.instance_flags_wiz_error_flag, 1);
+    cptr.st1o(iflags, $instance_flags_wiz_error_flag, 1);
     return 0;
 }
 
 /** C ref: unixmain.c:641 @returns {CInt} */
 export function authorize_explore_mode() {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_explorers) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers), 0)) {
-        if (check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers)))
+    if (cptr.ldPtro(sysopt, $sysopt_s_explorers) && cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_explorers), 0)) {
+        if (check_user_string(cptr.ldPtro(sysopt, $sysopt_s_explorers)))
             return 1;
     }
-    cptr.st1o(iflags, FLD.instance_flags_explore_error_flag, 1);
+    cptr.st1o(iflags, $instance_flags_explore_error_flag, 1);
     return 0;
 }
 
 /** C ref: unixmain.c:656 */
 function wd_message() {
-    if (cptr.ld1so(iflags, FLD.instance_flags_wiz_error_flag)) {
-        if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 0)) {
-            let tmp = build_english_list(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards));
-            pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 32) ? __sl31 : __sl24, tmp);
+    if (cptr.ld1so(iflags, $instance_flags_wiz_error_flag)) {
+        if (cptr.ldPtro(sysopt, $sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_wizards), 0)) {
+            let tmp = build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards));
+            pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, $sysopt_s_wizards), 32) ? __sl31 : __sl24, tmp);
             cptr.free(tmp);
         } else {
             You(__sl32);
         }
-        cptr.st1o(flags, FLD.flag_debug, 0);
-        if (!cptr.ld1so(iflags, FLD.instance_flags_explore_error_flag))
+        cptr.st1o(flags, $flag_debug, 0);
+        if (!cptr.ld1so(iflags, $instance_flags_explore_error_flag))
             pline(__sl33);
-    } else if (cptr.ld1so(iflags, FLD.instance_flags_explore_error_flag)) {
+    } else if (cptr.ld1so(iflags, $instance_flags_explore_error_flag)) {
         You(__sl34);
-        cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
+        cptr.st1o(flags, $flag_explore, cptr.st1o(iflags, $instance_flags_deferred_X, 0));
     } else if (discover())
         You(__sl35);
 }
@@ -439,7 +464,7 @@ export function check_user_string(optstr) {
     let pwname = null;
     if (cptr.ld1so(optstr, 0) == 42)
         return 1;
-    if (cptr.ldI32o(sysopt, FLD.sysopt_s_check_plname))
+    if (cptr.ldI32o(sysopt, $sysopt_s_check_plname))
         pwname = svp;
     else if ((pw = get_unix_pw()) !== null)
         pwname = cptr.ldPtr(pw);
@@ -477,14 +502,14 @@ function get_unix_pw() {
     user = getlogin();
     if (user) {
         __static_get_unix_pw_pw = getpwnam(user);
-        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, FLD.passwd_pw_uid) != uid))
+        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) != uid))
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
         user = nh_getenv(__sl28);
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
-            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, FLD.passwd_pw_uid) != uid))
+            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) != uid))
                 __static_get_unix_pw_pw = null;
         }
         if (__static_get_unix_pw_pw === null) {
@@ -571,7 +596,7 @@ export function get_nhuuid() {
 export function free_nhuuid() {
     let i;
     for (i = 0; i < Number(BigInt.asIntN(32, (37n / 1n))); i++) {
-        cptr.st1o2(svn, i, 1, FLD.instance_globals_saved_n_nhuuid, 0);
+        cptr.st1o2(svn, i, 1, $instance_globals_saved_n_nhuuid, 0);
     }
 }
 

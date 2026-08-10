@@ -24,6 +24,19 @@ import { done1, nh_terminate } from './end.js';
 import { sysopt } from './sys.js';
 import { check_user_string } from './unixmain.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $flag_debug = FLD.flag_debug, $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_l_lock = FLD.instance_globals_l_lock,
+    $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
+    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $stat_st_mtimespec = FLD.stat_st_mtimespec,
+    $sysopt_s_shellers = FLD.sysopt_s_shellers,
+    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("tty");
 const __sl1 = cptr.lit("NOMUX_MARKERS");
@@ -61,7 +74,7 @@ function veryold(fd) {
     if (fstat(fd, buf))
         return 0;
     void time(date);
-    if (BigInt.asIntN(64, date.v - cptr.ldI64o(buf, FLD.stat_st_mtimespec)) < 259200n) {
+    if (BigInt.asIntN(64, date.v - cptr.ldI64o(buf, $stat_st_mtimespec)) < 259200n) {
         let lockedpid = cptr.box(0);
         if (BigInt.asUintN(64, cptr.read(fd, lockedpid, 4n)) != 4n)
             return 0;
@@ -73,13 +86,13 @@ function veryold(fd) {
 /** C ref: unixunix.c:80 @returns {CInt} */
 function eraseoldlocks() {
     let i;
-    cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 0);
+    cptr.stI32o(program_state, $sinfo_preserve_locks, 0);
     for (i = 1; i <= 513; i++) {
-        set_levelfile_name(cptr.add(gl, FLD.instance_globals_l_lock), i);
-        void unlink(fqname(cptr.add(gl, FLD.instance_globals_l_lock), NHM.LEVELPREFIX, 0));
+        set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), i);
+        void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
     }
-    set_levelfile_name(cptr.add(gl, FLD.instance_globals_l_lock), 0);
-    if (unlink(fqname(cptr.add(gl, FLD.instance_globals_l_lock), NHM.LEVELPREFIX, 0)))
+    set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
+    if (unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0)))
         return 0;
     return 1;
 }
@@ -101,16 +114,16 @@ export function* getlock() {
             (yield* Y.icall(wait_synch()()));
             (yield* error(__sl4, __sl5));
         }
-        if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum))
-            void cptr.sprintf(cptr.add(gl, FLD.instance_globals_l_lock), __sl6, getuid(), svp);
-        regularize(cptr.add(gl, FLD.instance_globals_l_lock));
-        set_levelfile_name(cptr.add(gl, FLD.instance_globals_l_lock), 0);
-        if (cptr.ldI32o(gl, FLD.instance_globals_l_locknum)) {
-            if (cptr.ldI32o(gl, FLD.instance_globals_l_locknum) > 25)
-                cptr.stI32o(gl, FLD.instance_globals_l_locknum, 25);
+        if (!cptr.ldI32o(gl, $instance_globals_l_locknum))
+            void cptr.sprintf(cptr.add(gl, $instance_globals_l_lock), __sl6, getuid(), svp);
+        regularize(cptr.add(gl, $instance_globals_l_lock));
+        set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
+        if (cptr.ldI32o(gl, $instance_globals_l_locknum)) {
+            if (cptr.ldI32o(gl, $instance_globals_l_locknum) > 25)
+                cptr.stI32o(gl, $instance_globals_l_locknum, 25);
             do {
-                cptr.st1o2(gl, 0, 1, FLD.instance_globals_l_lock, schar(((97 + i++) | 0)));
-                fq_lock = fqname(cptr.add(gl, FLD.instance_globals_l_lock), NHM.LEVELPREFIX, 0);
+                cptr.st1o2(gl, 0, 1, $instance_globals_l_lock, schar(((97 + i++) | 0)));
+                fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
                 if ((fd = open(fq_lock, 0)) == -1) {
                     if ((cptr.ldI32(__error())) == 2)
                         break __lbl_gotlock;
@@ -122,11 +135,11 @@ export function* getlock() {
                 void close(fd);
                 if (too_old && eraseoldlocks())
                     break __lbl_gotlock;
-            } while (i < cptr.ldI32o(gl, FLD.instance_globals_l_locknum));
+            } while (i < cptr.ldI32o(gl, $instance_globals_l_locknum));
             (yield* unlock_file(__sl3));
             (yield* error(__sl8));
         } else {
-            fq_lock = fqname(cptr.add(gl, FLD.instance_globals_l_lock), NHM.LEVELPREFIX, 0);
+            fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
             if ((fd = open(fq_lock, 0)) == -1) {
                 if ((cptr.ldI32(__error())) == 2)
                     break __lbl_gotlock;
@@ -139,7 +152,7 @@ export function* getlock() {
             if (too_old && eraseoldlocks())
                 break __lbl_gotlock;
             (yield* unlock_file(__sl3));
-            if (cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
+            if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
                 c = (yield* yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1));
             } else {
                 void (yield* raw_printf(__sl9, cptr.decay(__static_getlock_destroy_old_game_prompt)));
@@ -186,7 +199,7 @@ export function* ask_about_panic_save() {
     let c = 0;
     (yield* pline(__sl14));
     (yield* pline(__sl15));
-    if (cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
+    if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
         c = (yield* yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __sl16, 110, 0));
     } else {
         (yield* raw_printf(__sl17, cptr.decay(__static_ask_about_panic_save_Instead_prompt)));
@@ -201,7 +214,7 @@ export function* ask_about_panic_save() {
     if (c != 121) {
         delete_levelfile(0);
         (yield* unlock_file(__sl3));
-        if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
+        if (cptr.ld1so(iflags, $instance_flags_window_inited))
             (yield* Y.icall(exit_nhwindows()(null)));
         (yield* nh_terminate(0));
     }
@@ -218,7 +231,7 @@ export function regularize(s) {
 /** C ref: unixunix.c:344 @returns {CInt} */
 export function* dosh() {
     let str;
-    if (!cptr.ldPtro(sysopt, FLD.sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers))) {
+    if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
         (yield* Norep(__sl19));
         return 0;
     }

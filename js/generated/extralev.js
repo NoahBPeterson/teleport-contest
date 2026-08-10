@@ -18,6 +18,19 @@ import { mons } from './monst.js';
 import { christen_monst, roguename } from './do_name.js';
 import { curse, mksobj_at, weight } from './mkobj.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $instance_globals_r_r = FLD.instance_globals_r_r,
+    $instance_globals_s_smeq = FLD.instance_globals_s_smeq,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
+    $monst_msleeping = FLD.monst_msleeping, $obj_known = FLD.obj_known,
+    $obj_oerodeproof = FLD.obj_oerodeproof, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan,
+    $obj_spe = FLD.obj_spe, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+    $rogueroom_doortable = FLD.rogueroom_doortable, $rogueroom_dx = FLD.rogueroom_dx,
+    $rogueroom_dy = FLD.rogueroom_dy, $rogueroom_nroom = FLD.rogueroom_nroom,
+    $rogueroom_real = FLD.rogueroom_real, $rogueroom_rly = FLD.rogueroom_rly;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/extralev.c");
 const __sl1 = cptr.lit("roguejoin");
@@ -66,21 +79,21 @@ function roguecorr(x, y, dir) {
     let tox;
     let toy;
     if (dir == 2) {
-        cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & -3);
-        if (!cptr.ld1so3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real)) {
-            fromx = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r);
-            fromy = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly);
+        cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & -3);
+        if (!cptr.ld1so3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real)) {
+            fromx = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r);
+            fromy = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly);
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
         } else {
-            fromx = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)))) | 0));
-            fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)) | 0));
+            fromx = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)))) | 0));
+            fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) <= NHC.DBWALL))
+            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
                 impossible(__sl3, fromx, fromy);
-            dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_nroom), 224));
-            cptr.stI32o3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_NODOOR);
+            dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_nroom), 224));
+            cptr.stI32o3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
             fromy++;
         }
         if (y >= 2) {
@@ -88,41 +101,41 @@ function roguecorr(x, y, dir) {
             return;
         }
         y++;
-        cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & -2);
-        if (!cptr.ld1so3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real)) {
-            tox = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r);
-            toy = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly);
+        cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & -2);
+        if (!cptr.ld1so3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real)) {
+            tox = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r);
+            toy = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly);
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
         } else {
-            tox = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 79, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)))) | 0));
-            toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly) - 1) | 0));
+            tox = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 79, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)))) | 0));
+            toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly) - 1) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) && (cptr.ld1so3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) <= NHC.DBWALL))
+            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
                 impossible(__sl5, tox, toy);
-            dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_nroom), 224));
-            cptr.stI32o3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_NODOOR);
+            dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_nroom), 224));
+            cptr.stI32o3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
             toy--;
         }
         roguejoin(fromx, fromy, tox, toy, 0);
         return;
     } else if (dir == 8) {
-        cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & -9);
-        if (!cptr.ld1so3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real)) {
-            fromx = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r);
-            fromy = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly);
+        cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & -9);
+        if (!cptr.ld1so3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real)) {
+            fromx = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r);
+            fromy = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly);
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
         } else {
-            fromx = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)) | 0));
-            fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 100, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)))) | 0));
+            fromx = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)) | 0));
+            fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 100, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)))) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) <= NHC.DBWALL))
+            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
                 impossible(__sl3, fromx, fromy);
-            dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_nroom), 224));
-            cptr.stI32o3(svl, fromx, 756, fromy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_NODOOR);
+            dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_nroom), 224));
+            cptr.stI32o3(svl, fromx, 756, fromy, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
             fromx++;
         }
         if (x >= 2) {
@@ -130,21 +143,21 @@ function roguecorr(x, y, dir) {
             return;
         }
         x++;
-        cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & -5);
-        if (!cptr.ld1so3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real)) {
-            tox = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r);
-            toy = cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly);
+        cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & -5);
+        if (!cptr.ld1so3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real)) {
+            tox = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r);
+            toy = cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly);
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
         } else {
-            tox = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r) - 1) | 0));
-            toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 122, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)))) | 0));
+            tox = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r) - 1) | 0));
+            toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 122, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)))) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) && (cptr.ld1so3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) <= NHC.DBWALL))
+            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
                 impossible(__sl7, tox, toy);
-            dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_nroom), 224));
-            cptr.stI32o3(svl, tox, 756, toy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_NODOOR);
+            dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_nroom), 224));
+            cptr.stI32o3(svl, tox, 756, toy, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
             tox--;
         }
         roguejoin(fromx, fromy, tox, toy, 1);
@@ -160,37 +173,37 @@ function miniwalk(x, y) {
     let dirs = cptr.alloc(4 * 4);
     while (1) {
         q = 0;
-        if (x > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable)) & 4)) && (!cptr.ld1uo3(gr, (x - 1) | 0, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10))))
+        if (x > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable)) & 4)) && (!cptr.ld1uo3(gr, (x - 1) | 0, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 0, 4);
-        if (x < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable)) & 8)) && (!cptr.ld1uo3(gr, (x + 1) | 0, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10))))
+        if (x < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable)) & 8)) && (!cptr.ld1uo3(gr, (x + 1) | 0, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 1, 4);
-        if (y > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable)) & 1)) && (!cptr.ld1uo3(gr, x, 48, (y - 1) | 0, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10))))
+        if (y > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable)) & 1)) && (!cptr.ld1uo3(gr, x, 48, (y - 1) | 0, 16, $instance_globals_r_r + $rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 2, 4);
-        if (y < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable)) & 2)) && (!cptr.ld1uo3(gr, x, 48, (y + 1) | 0, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10))))
+        if (y < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable)) & 2)) && (!cptr.ld1uo3(gr, x, 48, (y + 1) | 0, 16, $instance_globals_r_r + $rogueroom_doortable) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 3, 4);
         if (!q)
             return;
         dir = cptr.ldI32o(dirs, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 164, __sl9), rn2(q)) : rn2(q)), 4);
         switch (dir) {
             case 0:
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 4);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 4);
             x--;
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 8);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 8);
             break;
             case 1:
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 8);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 8);
             x++;
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 4);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 4);
             break;
             case 2:
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 1);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 1);
             y--;
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 2);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 2);
             break;
             case 3:
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 2);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 2);
             y++;
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) | 1);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) | 1);
             break;
         }
         miniwalk(x, y);
@@ -201,50 +214,50 @@ function miniwalk(x, y) {
 export function makeroguerooms() {
     let x;
     let y;
-    cptr.stI32o(svn, FLD.instance_globals_saved_n_nroom, 0);
+    cptr.stI32o(svn, $instance_globals_saved_n_nroom, 0);
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom) || (x < 2 && y < 2))) {
-                cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real, 0);
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) || (x < 2 && y < 2))) {
+                cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real, 0);
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r + $rogueroom_rly, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
             } else {
-                cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real, 1);
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r, i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl10), rnd((((23 - cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)) | 0) + 1) | 0)) : rnd((((23 - cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)) | 0) + 1) | 0))));
-                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly, i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 234, __sl10), rnd((((((y == 2) ? 5 : 4) - cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)) | 0) + 1) | 0)) : rnd((((((y == 2) ? 5 : 4) - cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)) | 0) + 1) | 0))));
-                (cptr.stI32o(svn, FLD.instance_globals_saved_n_nroom, cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom) + 1)) - (1);
+                cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real, 1);
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r + $rogueroom_dx, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r + $rogueroom_dy, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r, i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl10), rnd((((23 - cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)) | 0) + 1) | 0)) : rnd((((23 - cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)) | 0) + 1) | 0))));
+                cptr.stI16o2(cptr.add(gr, x, 48), y, 16, $instance_globals_r_r + $rogueroom_rly, i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 234, __sl10), rnd((((((y == 2) ? 5 : 4) - cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)) | 0) + 1) | 0)) : rnd((((((y == 2) ? 5 : 4) - cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)) | 0) + 1) | 0))));
+                (cptr.stI32o(svn, $instance_globals_saved_n_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + 1)) - (1);
             }
-            cptr.st1o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable, 0);
+            cptr.st1o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable, 0);
         }
     miniwalk(i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 239, __sl10), rn2(3)) : rn2(3))), i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 239, __sl10), rn2(3)) : rn2(3))));
-    cptr.stI32o(svn, FLD.instance_globals_saved_n_nroom, 0);
+    cptr.stI32o(svn, $instance_globals_saved_n_nroom, 0);
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
-            if (cptr.ld1so3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_real)) {
+            if (cptr.ld1so3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_real)) {
                 let lowx;
                 let lowy;
                 let hix;
                 let hiy;
-                cptr.stI32o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_nroom, cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom));
-                cptr.stI32o2(gs, cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom), 4, FLD.instance_globals_s_smeq, cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom));
-                lowx = i16(((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r)) | 0));
-                lowy = i16(((Math.imul(7, y) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly)) | 0));
-                hix = i16(((((((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dx)) | 0) - 1) | 0));
-                hiy = i16(((((((Math.imul(7, y) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_rly)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_dy)) | 0) - 1) | 0));
+                cptr.stI32o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
+                cptr.stI32o2(gs, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 4, $instance_globals_s_smeq, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
+                lowx = i16(((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r)) | 0));
+                lowy = i16(((Math.imul(7, y) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly)) | 0));
+                hix = i16(((((((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dx)) | 0) - 1) | 0));
+                hiy = i16(((((((Math.imul(7, y) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_rly)) | 0) + cptr.ldI16o3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_dy)) | 0) - 1) | 0));
                 add_room(lowx, lowy, hix, hiy, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl10), rn2(7)) : rn2(7)))), NHC.OROOM, 0);
             }
         }
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
-            if (cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & 2)
+            if (cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & 2)
                 roguecorr(x, y, 2);
-            if (cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & 8)
+            if (cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & 8)
                 roguecorr(x, y, 8);
-            if (cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & 4)
+            if (cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & 4)
                 impossible(__sl11, x, y);
-            if (cptr.ld1uo3(gr, x, 48, y, 16, FLD.instance_globals_r_r + FLD.rogueroom_doortable) & 1)
+            if (cptr.ld1uo3(gr, x, 48, y, 16, $instance_globals_r_r + $rogueroom_doortable) & 1)
                 impossible(__sl12, x, y);
         }
 }
@@ -252,9 +265,9 @@ export function makeroguerooms() {
 /** C ref: extralev.c:278 — @param {CInt} x @param {CInt} y */
 export function corr(x, y) {
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 280, __sl13), rn2(50)) : rn2(50))) {
-        cptr.st1o3(svl, x, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ, NHC.CORR);
+        cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
     } else {
-        cptr.st1o3(svl, x, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ, NHC.SCORR);
+        cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.SCORR);
     }
 }
 
@@ -265,59 +278,59 @@ export function makerogueghost() {
     let croom;
     let x;
     let y;
-    if (!cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom))
+    if (!cptr.ldI32o(svn, $instance_globals_saved_n_nroom))
         return;
-    croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 297, __sl14), rn2(cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom))), 224);
+    croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 297, __sl14), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224);
     x = i16(somex(croom));
     y = i16(somey(croom));
     if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, 96), x, y, NHM.NO_MM_FLAGS)))
         return;
-    cptr.stI32o(ghost, FLD.monst_msleeping, 1);
+    cptr.stI32o(ghost, $monst_msleeping, 1);
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 306, __sl14), rn2(4)) : rn2(4))) {
         ghostobj = mksobj_at(NHC.FOOD_RATION, x, y, 0, 0);
-        cptr.stI64o(ghostobj, FLD.obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
-        cptr.stI32o(ghostobj, FLD.obj_owt, weight(ghostobj) >>> 0);
+        cptr.stI64o(ghostobj, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 308, __sl14), rnd(7)) : rnd(7))));
+        cptr.stI32o(ghostobj, $obj_owt, weight(ghostobj) >>> 0);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl14), rn2(2)) : rn2(2))) {
         ghostobj = mksobj_at(NHC.MACE, x, y, 0, 0);
-        cptr.st1o(ghostobj, FLD.obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl14), rnd(3)) : rnd(3))));
+        cptr.st1o(ghostobj, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl14), rnd(3)) : rnd(3))));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
         ghostobj = mksobj_at(NHC.TWO_HANDED_SWORD, x, y, 0, 0);
-        cptr.st1o(ghostobj, FLD.obj_spe, schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 318, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
+        cptr.st1o(ghostobj, $obj_spe, schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 318, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 319, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     }
     ghostobj = mksobj_at(NHC.BOW, x, y, 0, 0);
-    cptr.st1o(ghostobj, FLD.obj_spe, 1);
+    cptr.st1o(ghostobj, $obj_spe, 1);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 324, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
     ghostobj = mksobj_at(NHC.ARROW, x, y, 0, 0);
-    cptr.st1o(ghostobj, FLD.obj_spe, 0);
-    cptr.stI64o(ghostobj, FLD.obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + 25) | 0)));
-    cptr.stI32o(ghostobj, FLD.obj_owt, weight(ghostobj) >>> 0);
+    cptr.st1o(ghostobj, $obj_spe, 0);
+    cptr.stI64o(ghostobj, $obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 329, __sl14), rn2(10)) : rn2(10)) + 25) | 0)));
+    cptr.stI32o(ghostobj, $obj_owt, weight(ghostobj) >>> 0);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 331, __sl14), rn2(4)) : rn2(4)))
         curse(ghostobj);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 334, __sl14), rn2(2)) : rn2(2))) {
         ghostobj = mksobj_at(NHC.RING_MAIL, x, y, 0, 0);
-        cptr.st1o(ghostobj, FLD.obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 336, __sl14), rn2(3)) : rn2(3))));
+        cptr.st1o(ghostobj, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 336, __sl14), rn2(3)) : rn2(3))));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 337, __sl14), rn2(3)) : rn2(3)))
-            cptr.stI32o(ghostobj, FLD.obj_oerodeproof, 1);
+            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 339, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     } else {
         ghostobj = mksobj_at(NHC.PLATE_MAIL, x, y, 0, 0);
-        cptr.st1o(ghostobj, FLD.obj_spe, schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 343, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
+        cptr.st1o(ghostobj, $obj_spe, schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 343, __sl14), rnd(5)) : rnd(5)) - 2) | 0)));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 344, __sl14), rn2(3)) : rn2(3)))
-            cptr.stI32o(ghostobj, FLD.obj_oerodeproof, 1);
+            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 346, __sl14), rn2(4)) : rn2(4)))
             curse(ghostobj);
     }
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 349, __sl14), rn2(2)) : rn2(2))) {
         ghostobj = mksobj_at(NHC.FAKE_AMULET_OF_YENDOR, x, y, 1, 0);
-        cptr.stI32o(ghostobj, FLD.obj_known, 1);
+        cptr.stI32o(ghostobj, $obj_known, 1);
     }
 }

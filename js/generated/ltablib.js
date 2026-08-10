@@ -10,6 +10,10 @@ import { lua_callk, lua_checkstack, lua_compare, lua_createtable, lua_geti, lua_
 import { luaL_addlstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checktype, luaL_checkversion_, luaL_error, luaL_len, luaL_optinteger, luaL_optlstring, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 import { rnd } from './rnd.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $luaL_Reg_func = FLD.luaL_Reg_func;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("__index");
 const __sl1 = cptr.lit("__newindex");
@@ -319,21 +323,21 @@ function sort(L) {
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
 const tab_funcs = cptr.alloc(8 * 16);
 cptr.stPtro(tab_funcs, 0, __sl13);
-cptr.stPtro(tab_funcs, 0 + FLD.luaL_Reg_func, tconcat);
+cptr.stPtro(tab_funcs, 0 + $luaL_Reg_func, tconcat);
 cptr.stPtro(tab_funcs, 16, __sl14);
-cptr.stPtro(tab_funcs, 16 + FLD.luaL_Reg_func, tinsert);
+cptr.stPtro(tab_funcs, 16 + $luaL_Reg_func, tinsert);
 cptr.stPtro(tab_funcs, 32, __sl15);
-cptr.stPtro(tab_funcs, 32 + FLD.luaL_Reg_func, tpack);
+cptr.stPtro(tab_funcs, 32 + $luaL_Reg_func, tpack);
 cptr.stPtro(tab_funcs, 48, __sl16);
-cptr.stPtro(tab_funcs, 48 + FLD.luaL_Reg_func, tunpack);
+cptr.stPtro(tab_funcs, 48 + $luaL_Reg_func, tunpack);
 cptr.stPtro(tab_funcs, 64, __sl17);
-cptr.stPtro(tab_funcs, 64 + FLD.luaL_Reg_func, tremove);
+cptr.stPtro(tab_funcs, 64 + $luaL_Reg_func, tremove);
 cptr.stPtro(tab_funcs, 80, __sl18);
-cptr.stPtro(tab_funcs, 80 + FLD.luaL_Reg_func, tmove);
+cptr.stPtro(tab_funcs, 80 + $luaL_Reg_func, tmove);
 cptr.stPtro(tab_funcs, 96, __sl19);
-cptr.stPtro(tab_funcs, 96 + FLD.luaL_Reg_func, sort);
+cptr.stPtro(tab_funcs, 96 + $luaL_Reg_func, sort);
 cptr.stPtro(tab_funcs, 112, null);
-cptr.stPtro(tab_funcs, 112 + FLD.luaL_Reg_func, null);
+cptr.stPtro(tab_funcs, 112 + $luaL_Reg_func, null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {

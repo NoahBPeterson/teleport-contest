@@ -22,6 +22,87 @@ import { debugcore } from './files.js';
 import { regex_match } from './posixregex.js';
 import { cmdq_pop } from './cmd.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $_cmd_queue_key = FLD._cmd_queue_key, $class_sym_explain = FLD.class_sym_explain,
+    $classic_representation_symidx = FLD.classic_representation_symidx,
+    $color_and_attr_attr = FLD.color_and_attr_attr, $color_attr_attr = FLD.color_attr_attr,
+    $const_globals_zeroany = FLD.const_globals_zeroany, $context_info_rndencode = FLD.context_info_rndencode,
+    $flag_pickup = FLD.flag_pickup, $from_core_invmode = FLD.from_core_invmode,
+    $from_core_menu_promptstyle = FLD.from_core_menu_promptstyle,
+    $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyphinfo_gm = FLD.glyphinfo_gm,
+    $glyphinfo_ttychar = FLD.glyphinfo_ttychar, $instance_flags_altmeta = FLD.instance_flags_altmeta,
+    $instance_flags_in_dumplog = FLD.instance_flags_in_dumplog,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+    $instance_flags_menuinvertmode = FLD.instance_flags_menuinvertmode,
+    $instance_flags_raw_printed = FLD.instance_flags_raw_printed,
+    $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
+    $instance_flags_wc_color = FLD.instance_flags_wc_color,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_b_bot_disabled = FLD.instance_globals_b_bot_disabled,
+    $instance_globals_l_last_winchoice = FLD.instance_globals_l_last_winchoice,
+    $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
+    $instance_globals_o_opt_need_promptstyle = FLD.instance_globals_o_opt_need_promptstyle,
+    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+    $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
+    $menucoloring_next = FLD.menucoloring_next, $sinfo_in_getlin = FLD.sinfo_in_getlin,
+    $to_core_active = FLD.to_core_active, $to_core_havecols = FLD.to_core_havecols,
+    $to_core_haverows = FLD.to_core_haverows, $to_core_maxslot = FLD.to_core_maxslot,
+    $to_core_needcols = FLD.to_core_needcols, $to_core_needrows = FLD.to_core_needrows,
+    $to_core_use_update_inventory = FLD.to_core_use_update_inventory,
+    $win_choices_ini_routine = FLD.win_choices_ini_routine,
+    $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
+    $window_procs_has_color = FLD.window_procs_has_color,
+    $window_procs_win_add_menu = FLD.window_procs_win_add_menu,
+    $window_procs_win_askname = FLD.window_procs_win_askname,
+    $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
+    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_ctrl_nhwindow = FLD.window_procs_win_ctrl_nhwindow,
+    $window_procs_win_curs = FLD.window_procs_win_curs,
+    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_file = FLD.window_procs_win_display_file,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
+    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+    $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
+    $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
+    $window_procs_win_getlin = FLD.window_procs_win_getlin,
+    $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
+    $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
+    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+    $window_procs_win_message_menu = FLD.window_procs_win_message_menu,
+    $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
+    $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
+    $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
+    $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
+    $window_procs_win_outrip = FLD.window_procs_win_outrip,
+    $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
+    $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
+    $window_procs_win_print_glyph = FLD.window_procs_win_print_glyph,
+    $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
+    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
+    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+    $window_procs_win_select_menu = FLD.window_procs_win_select_menu,
+    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+    $window_procs_win_status_enablefield = FLD.window_procs_win_status_enablefield,
+    $window_procs_win_status_finish = FLD.window_procs_win_status_finish,
+    $window_procs_win_status_init = FLD.window_procs_win_status_init,
+    $window_procs_win_status_update = FLD.window_procs_win_status_update,
+    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+    $window_procs_win_update_inventory = FLD.window_procs_win_update_inventory,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+    $window_procs_win_yn_function = FLD.window_procs_win_yn_function,
+    $window_procs_wincap = FLD.window_procs_wincap, $window_procs_wincap2 = FLD.window_procs_wincap2,
+    $window_procs_wp_id = FLD.window_procs_wp_id;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("tty");
 const __sl1 = cptr.lit("No window types supported?");
@@ -76,9 +157,9 @@ export let windowprocs = cptr.alloc(416);
 /** C ref: windows.c:98 — struct win_choices[2] */
 const winchoices = cptr.alloc(2 * 16);
 cptr.stPtro(winchoices, 0, tty_procs);
-cptr.stPtro(winchoices, 0 + FLD.win_choices_ini_routine, win_tty_init);
+cptr.stPtro(winchoices, 0 + $win_choices_ini_routine, win_tty_init);
 cptr.stPtro(winchoices, 16, null);
-cptr.stPtro(winchoices, 16 + FLD.win_choices_ini_routine, null);
+cptr.stPtro(winchoices, 16 + $win_choices_ini_routine, null);
 
 /** C ref: windows.c:193 @returns {CInt} */
 export function genl_can_suspend_no() {
@@ -94,7 +175,7 @@ export function genl_can_suspend_yes() {
 function def_raw_print(s) {
     puts(s);
     if (cptr.ld1s(s))
-        (cptr.stI32o(iflags, FLD.instance_flags_raw_printed, cptr.ldI32o(iflags, FLD.instance_flags_raw_printed) + 1)) - (1);
+        (cptr.stI32o(iflags, $instance_flags_raw_printed, cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1)) - (1);
 }
 
 /** C ref: windows.c:215 */
@@ -106,7 +187,7 @@ function def_wait_synch() {
 export function check_tty_wincap(wincap) {
     let wc = win_choices_find(__sl0);
     if (wc)
-        return schar(((cptr.ldU64o(cptr.ldPtr(wc), FLD.window_procs_wincap) & wincap) == wincap));
+        return schar(((cptr.ldU64o(cptr.ldPtr(wc), $window_procs_wincap) & wincap) == wincap));
     return 0;
 }
 
@@ -114,7 +195,7 @@ export function check_tty_wincap(wincap) {
 export function check_tty_wincap2(wincap2) {
     let wc = win_choices_find(__sl0);
     if (wc)
-        return schar(((cptr.ldU64o(cptr.ldPtr(wc), FLD.window_procs_wincap2) & wincap2) == wincap2));
+        return schar(((cptr.ldU64o(cptr.ldPtr(wc), $window_procs_wincap2) & wincap2) == wincap2));
     return 0;
 }
 
@@ -140,18 +221,18 @@ export function choose_windows(s) {
             continue;
         if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1)) {
             cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, 16), 416);
-            if (cptr.ldPtro(gl, FLD.instance_globals_l_last_winchoice) && cptr.ldPtro(cptr.ldPtro(gl, FLD.instance_globals_l_last_winchoice), FLD.win_choices_ini_routine))
-                (cptr.ldPtro(cptr.ldPtro(gl, FLD.instance_globals_l_last_winchoice), FLD.win_choices_ini_routine))(NHM.WININIT_UNDO);
-            if (cptr.ldPtro2(winchoices, i, 16, FLD.win_choices_ini_routine))
-                (cptr.ldPtro2(winchoices, i, 16, FLD.win_choices_ini_routine))(NHM.WININIT);
-            cptr.stPtro(gl, FLD.instance_globals_l_last_winchoice, cptr.add(winchoices, i, 16));
+            if (cptr.ldPtro(gl, $instance_globals_l_last_winchoice) && cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))
+                (cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))(NHM.WININIT_UNDO);
+            if (cptr.ldPtro2(winchoices, i, 16, $win_choices_ini_routine))
+                (cptr.ldPtro2(winchoices, i, 16, $win_choices_ini_routine))(NHM.WININIT);
+            cptr.stPtro(gl, $instance_globals_l_last_winchoice, cptr.add(winchoices, i, 16));
             return;
         }
     }
-    if (!cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))
-        cptr.stPtro(windowprocs, FLD.window_procs_win_raw_print, def_raw_print);
-    if (!cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))
-        cptr.stPtro(windowprocs, FLD.window_procs_win_wait_synch, def_wait_synch);
+    if (!cptr.ldPtro(windowprocs, $window_procs_win_raw_print))
+        cptr.stPtro(windowprocs, $window_procs_win_raw_print, def_raw_print);
+    if (!cptr.ldPtro(windowprocs, $window_procs_win_wait_synch))
+        cptr.stPtro(windowprocs, $window_procs_win_wait_synch, def_wait_synch);
     if (!cptr.ldPtro(winchoices, 0, 16)) {
         raw_printf(__sl1);
         nh_terminate(1);
@@ -180,7 +261,7 @@ export function choose_windows(s) {
     }
     if (tmps)
         cptr.free(tmps);
-    if (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print) === def_raw_print)
+    if (cptr.ldPtro(windowprocs, $window_procs_win_raw_print) === def_raw_print)
         nh_terminate(0);
 }
 
@@ -210,71 +291,71 @@ export function genl_putmsghistory(msg, is_restoring) {
 /** C ref: windows.c:562 — struct window_procs */
 let hup_procs = cptr.alloc(416);
 cptr.stPtr(hup_procs, __sl8);
-cptr.stI32o(hup_procs, FLD.window_procs_wp_id, NHC.wp_hup);
-cptr.stU64o(hup_procs, FLD.window_procs_wincap, 0n);
-cptr.stU64o(hup_procs, FLD.window_procs_wincap2, 0n);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 0, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 1, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 2, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 3, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 4, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 5, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 6, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 7, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 8, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 9, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 10, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 11, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 12, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 13, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 14, 0);
-cptr.st1o(hup_procs, FLD.window_procs_has_color + 15, 0);
-cptr.stPtro(hup_procs, FLD.window_procs_win_init_nhwindows, hup_init_nhwindows);
-cptr.stPtro(hup_procs, FLD.window_procs_win_player_selection, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_askname, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_get_nh_event, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_exit_nhwindows, hup_exit_nhwindows);
-cptr.stPtro(hup_procs, FLD.window_procs_win_suspend_nhwindows, hup_void_fdecl_constchar_p);
-cptr.stPtro(hup_procs, FLD.window_procs_win_resume_nhwindows, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_create_nhwindow, hup_create_nhwindow);
-cptr.stPtro(hup_procs, FLD.window_procs_win_clear_nhwindow, hup_void_fdecl_winid);
-cptr.stPtro(hup_procs, FLD.window_procs_win_display_nhwindow, hup_display_nhwindow);
-cptr.stPtro(hup_procs, FLD.window_procs_win_destroy_nhwindow, hup_void_fdecl_winid);
-cptr.stPtro(hup_procs, FLD.window_procs_win_curs, hup_curs);
-cptr.stPtro(hup_procs, FLD.window_procs_win_putstr, hup_putstr);
-cptr.stPtro(hup_procs, FLD.window_procs_win_putmixed, hup_putstr);
-cptr.stPtro(hup_procs, FLD.window_procs_win_display_file, hup_display_file);
-cptr.stPtro(hup_procs, FLD.window_procs_win_start_menu, hup_void_fdecl_winid_ulong);
-cptr.stPtro(hup_procs, FLD.window_procs_win_add_menu, hup_add_menu);
-cptr.stPtro(hup_procs, FLD.window_procs_win_end_menu, hup_end_menu);
-cptr.stPtro(hup_procs, FLD.window_procs_win_select_menu, hup_select_menu);
-cptr.stPtro(hup_procs, FLD.window_procs_win_message_menu, genl_message_menu);
-cptr.stPtro(hup_procs, FLD.window_procs_win_mark_synch, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_wait_synch, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_cliparound, hup_cliparound);
-cptr.stPtro(hup_procs, FLD.window_procs_win_print_glyph, hup_print_glyph);
-cptr.stPtro(hup_procs, FLD.window_procs_win_raw_print, hup_void_fdecl_constchar_p);
-cptr.stPtro(hup_procs, FLD.window_procs_win_raw_print_bold, hup_void_fdecl_constchar_p);
-cptr.stPtro(hup_procs, FLD.window_procs_win_nhgetch, hup_nhgetch);
-cptr.stPtro(hup_procs, FLD.window_procs_win_nh_poskey, hup_nh_poskey);
-cptr.stPtro(hup_procs, FLD.window_procs_win_nhbell, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_doprev_message, hup_int_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_yn_function, hup_yn_function);
-cptr.stPtro(hup_procs, FLD.window_procs_win_getlin, hup_getlin);
-cptr.stPtro(hup_procs, FLD.window_procs_win_get_ext_cmd, hup_int_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_number_pad, hup_void_fdecl_int);
-cptr.stPtro(hup_procs, FLD.window_procs_win_delay_output, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_outrip, hup_outrip);
-cptr.stPtro(hup_procs, FLD.window_procs_win_preference_update, genl_preference_update);
-cptr.stPtro(hup_procs, FLD.window_procs_win_getmsghistory, genl_getmsghistory);
-cptr.stPtro(hup_procs, FLD.window_procs_win_putmsghistory, genl_putmsghistory);
-cptr.stPtro(hup_procs, FLD.window_procs_win_status_init, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_status_finish, hup_void_ndecl);
-cptr.stPtro(hup_procs, FLD.window_procs_win_status_enablefield, genl_status_enablefield);
-cptr.stPtro(hup_procs, FLD.window_procs_win_status_update, hup_status_update);
-cptr.stPtro(hup_procs, FLD.window_procs_win_can_suspend, genl_can_suspend_no);
-cptr.stPtro(hup_procs, FLD.window_procs_win_update_inventory, hup_void_fdecl_int);
-cptr.stPtro(hup_procs, FLD.window_procs_win_ctrl_nhwindow, hup_ctrl_nhwindow);
+cptr.stI32o(hup_procs, $window_procs_wp_id, NHC.wp_hup);
+cptr.stU64o(hup_procs, $window_procs_wincap, 0n);
+cptr.stU64o(hup_procs, $window_procs_wincap2, 0n);
+cptr.st1o(hup_procs, $window_procs_has_color + 0, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 1, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 2, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 3, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 4, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 5, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 6, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 7, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 8, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 9, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 10, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 11, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 12, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 13, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 14, 0);
+cptr.st1o(hup_procs, $window_procs_has_color + 15, 0);
+cptr.stPtro(hup_procs, $window_procs_win_init_nhwindows, hup_init_nhwindows);
+cptr.stPtro(hup_procs, $window_procs_win_player_selection, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_askname, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_get_nh_event, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_exit_nhwindows, hup_exit_nhwindows);
+cptr.stPtro(hup_procs, $window_procs_win_suspend_nhwindows, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, $window_procs_win_resume_nhwindows, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_create_nhwindow, hup_create_nhwindow);
+cptr.stPtro(hup_procs, $window_procs_win_clear_nhwindow, hup_void_fdecl_winid);
+cptr.stPtro(hup_procs, $window_procs_win_display_nhwindow, hup_display_nhwindow);
+cptr.stPtro(hup_procs, $window_procs_win_destroy_nhwindow, hup_void_fdecl_winid);
+cptr.stPtro(hup_procs, $window_procs_win_curs, hup_curs);
+cptr.stPtro(hup_procs, $window_procs_win_putstr, hup_putstr);
+cptr.stPtro(hup_procs, $window_procs_win_putmixed, hup_putstr);
+cptr.stPtro(hup_procs, $window_procs_win_display_file, hup_display_file);
+cptr.stPtro(hup_procs, $window_procs_win_start_menu, hup_void_fdecl_winid_ulong);
+cptr.stPtro(hup_procs, $window_procs_win_add_menu, hup_add_menu);
+cptr.stPtro(hup_procs, $window_procs_win_end_menu, hup_end_menu);
+cptr.stPtro(hup_procs, $window_procs_win_select_menu, hup_select_menu);
+cptr.stPtro(hup_procs, $window_procs_win_message_menu, genl_message_menu);
+cptr.stPtro(hup_procs, $window_procs_win_mark_synch, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_wait_synch, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_cliparound, hup_cliparound);
+cptr.stPtro(hup_procs, $window_procs_win_print_glyph, hup_print_glyph);
+cptr.stPtro(hup_procs, $window_procs_win_raw_print, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, $window_procs_win_raw_print_bold, hup_void_fdecl_constchar_p);
+cptr.stPtro(hup_procs, $window_procs_win_nhgetch, hup_nhgetch);
+cptr.stPtro(hup_procs, $window_procs_win_nh_poskey, hup_nh_poskey);
+cptr.stPtro(hup_procs, $window_procs_win_nhbell, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_doprev_message, hup_int_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_yn_function, hup_yn_function);
+cptr.stPtro(hup_procs, $window_procs_win_getlin, hup_getlin);
+cptr.stPtro(hup_procs, $window_procs_win_get_ext_cmd, hup_int_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_number_pad, hup_void_fdecl_int);
+cptr.stPtro(hup_procs, $window_procs_win_delay_output, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_outrip, hup_outrip);
+cptr.stPtro(hup_procs, $window_procs_win_preference_update, genl_preference_update);
+cptr.stPtro(hup_procs, $window_procs_win_getmsghistory, genl_getmsghistory);
+cptr.stPtro(hup_procs, $window_procs_win_putmsghistory, genl_putmsghistory);
+cptr.stPtro(hup_procs, $window_procs_win_status_init, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_status_finish, hup_void_ndecl);
+cptr.stPtro(hup_procs, $window_procs_win_status_enablefield, genl_status_enablefield);
+cptr.stPtro(hup_procs, $window_procs_win_status_update, hup_status_update);
+cptr.stPtro(hup_procs, $window_procs_win_can_suspend, genl_can_suspend_no);
+cptr.stPtro(hup_procs, $window_procs_win_update_inventory, hup_void_fdecl_int);
+cptr.stPtro(hup_procs, $window_procs_win_ctrl_nhwindow, hup_ctrl_nhwindow);
 
 /** C ref: windows.c:611 — void (*)( char *) */
 let previnterface_exit_nhwindows = null;
@@ -282,14 +363,14 @@ let previnterface_exit_nhwindows = null;
 /** C ref: windows.c:615 */
 export function nhwindows_hangup() {
     let previnterface_getmsghistory = null;
-    cptr.st1o(iflags, FLD.instance_flags_altmeta, 0);
-    if (cptr.ld1so(iflags, FLD.instance_flags_window_inited) && cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows) !== hup_exit_nhwindows)
-        previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows);
-    if (cptr.ldPtro(windowprocs, FLD.window_procs_win_getmsghistory) !== cptr.ldPtro(hup_procs, FLD.window_procs_win_getmsghistory))
-        previnterface_getmsghistory = cptr.ldPtro(windowprocs, FLD.window_procs_win_getmsghistory);
+    cptr.st1o(iflags, $instance_flags_altmeta, 0);
+    if (cptr.ld1so(iflags, $instance_flags_window_inited) && cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows) !== hup_exit_nhwindows)
+        previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows);
+    if (cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory) !== cptr.ldPtro(hup_procs, $window_procs_win_getmsghistory))
+        previnterface_getmsghistory = cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory);
     cptr.memcpy(windowprocs, hup_procs, 416);
     if (previnterface_getmsghistory)
-        cptr.stPtro(windowprocs, FLD.window_procs_win_getmsghistory, previnterface_getmsghistory);
+        cptr.stPtro(windowprocs, $window_procs_win_getmsghistory, previnterface_getmsghistory);
 }
 
 /** C ref: windows.c:643 — @param {CPtr} lastgasp */
@@ -299,7 +380,7 @@ function hup_exit_nhwindows(lastgasp) {
         (previnterface_exit_nhwindows)(lastgasp);
         previnterface_exit_nhwindows = null;
     }
-    cptr.st1o(iflags, FLD.instance_flags_window_inited, 0);
+    cptr.st1o(iflags, $instance_flags_window_inited, 0);
 }
 
 /** C ref: windows.c:657 @returns {CInt} */
@@ -326,7 +407,7 @@ function hup_getlin(prompt, outbuf) {
 
 /** C ref: windows.c:690 — @param {CPtr} argc_p @param {CPtr} argv */
 function hup_init_nhwindows(argc_p, argv) {
-    cptr.st1o(iflags, FLD.instance_flags_window_inited, 1);
+    cptr.st1o(iflags, $instance_flags_window_inited, 1);
 }
 
 /** C ref: windows.c:697 — @param {CInt} type @returns {*} */
@@ -556,7 +637,7 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     let fieldlist;
     let nb;
     let text = ptr;
-    cptr.stU64o(windowprocs, FLD.window_procs_wincap2, cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) | 128n);
+    cptr.stU64o(windowprocs, $window_procs_wincap2, cptr.ldU64o(windowprocs, $window_procs_wincap2) | 128n);
     if (idx >= 0) {
         if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
             return;
@@ -741,48 +822,48 @@ function dump_select_menu(win, how, item) {
 export function dump_redirect(onoff_flag) {
     if (dumplog_file) {
         if (onoff_flag) {
-            cptr.stPtro(windowprocs, FLD.window_procs_win_create_nhwindow, dump_create_nhwindow);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_clear_nhwindow, dump_clear_nhwindow);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_display_nhwindow, dump_display_nhwindow);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow, dump_destroy_nhwindow);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_start_menu, dump_start_menu);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_add_menu, dump_add_menu);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_end_menu, dump_end_menu);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_select_menu, dump_select_menu);
-            cptr.stPtro(windowprocs, FLD.window_procs_win_putstr, dump_putstr);
+            cptr.stPtro(windowprocs, $window_procs_win_create_nhwindow, dump_create_nhwindow);
+            cptr.stPtro(windowprocs, $window_procs_win_clear_nhwindow, dump_clear_nhwindow);
+            cptr.stPtro(windowprocs, $window_procs_win_display_nhwindow, dump_display_nhwindow);
+            cptr.stPtro(windowprocs, $window_procs_win_destroy_nhwindow, dump_destroy_nhwindow);
+            cptr.stPtro(windowprocs, $window_procs_win_start_menu, dump_start_menu);
+            cptr.stPtro(windowprocs, $window_procs_win_add_menu, dump_add_menu);
+            cptr.stPtro(windowprocs, $window_procs_win_end_menu, dump_end_menu);
+            cptr.stPtro(windowprocs, $window_procs_win_select_menu, dump_select_menu);
+            cptr.stPtro(windowprocs, $window_procs_win_putstr, dump_putstr);
         } else {
             cptr.memcpy(windowprocs, dumplog_windowprocs_backup, 416);
         }
-        cptr.st1o(iflags, FLD.instance_flags_in_dumplog, onoff_flag);
+        cptr.st1o(iflags, $instance_flags_in_dumplog, onoff_flag);
     } else {
-        cptr.st1o(iflags, FLD.instance_flags_in_dumplog, 0);
+        cptr.st1o(iflags, $instance_flags_in_dumplog, 0);
     }
 }
 
 /** C ref: windows.c:1397 — @param {CInt} color @returns {CInt} */
 export function has_color(color) {
-    return (cptr.ld1so(iflags, FLD.instance_flags_wc_color) && cptr.ldPtr(windowprocs) && (cptr.ldU64o(windowprocs, FLD.window_procs_wincap) & 1n) && cptr.ld1so2(windowprocs, color, 1, FLD.window_procs_has_color) ? 1 : 0);
+    return (cptr.ld1so(iflags, $instance_flags_wc_color) && cptr.ldPtr(windowprocs) && (cptr.ldU64o(windowprocs, $window_procs_wincap) & 1n) && cptr.ld1so2(windowprocs, color, 1, $window_procs_has_color) ? 1 : 0);
 }
 
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
 export function glyph2ttychar(glyph) {
     let glyphinfo = cptr.alloc(48);
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32o(glyphinfo, FLD.glyphinfo_ttychar);
+    return cptr.ldI32o(glyphinfo, $glyphinfo_ttychar);
 }
 
 /** C ref: windows.c:1419 — @param {CInt} glyph @returns {CInt} */
 export function glyph2symidx(glyph) {
     let glyphinfo = cptr.alloc(48);
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32o(glyphinfo, FLD.glyphinfo_gm + FLD.glyph_map_entry_sym + FLD.classic_representation_symidx);
+    return cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
 }
 
 const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 — char[20] (function-static) */
 
 /** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr} */
 export function encglyph(glyph) {
-    void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __sl29, cptr.ldI32o(svc, FLD.context_info_rndencode), glyph);
+    void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __sl29, cptr.ldI32o(svc, $context_info_rndencode), glyph);
     return cptr.decay(__static_encglyph_encbuf);
 }
 
@@ -799,7 +880,7 @@ export function decode_glyph(str, glyph_ptr) {
         } else
             break;
     }
-    if (rndchk == cptr.ldI32o(svc, FLD.context_info_rndencode)) {
+    if (rndchk == cptr.ldI32o(svc, $context_info_rndencode)) {
         cptr.stI32(glyph_ptr, dcount = 0);
         for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
             if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
@@ -831,8 +912,8 @@ export function decode_mixed(buf, str) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    so = cptr.ldI32o(glyphinfo, FLD.glyphinfo_gm + FLD.glyph_map_entry_sym + FLD.classic_representation_symidx);
-                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, FLD.instance_globals_s_showsyms)));
+                    so = cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
+                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms)));
                     continue;
                 } else {
                     str = save_str;
@@ -878,9 +959,9 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
     let skipinvert = schar((((itemflags & NHM.MENU_ITEMFLAGS_SKIPINVERT) >>> 0) != 0));
     if (!skipinvert)
         return 1;
-    if (cptr.ldI32o(iflags, FLD.instance_flags_menuinvertmode) == 2) {
+    if (cptr.ldI32o(iflags, $instance_flags_menuinvertmode) == 2) {
         return 0;
-    } else if (cptr.ldI32o(iflags, FLD.instance_flags_menuinvertmode) == 1) {
+    } else if (cptr.ldI32o(iflags, $instance_flags_menuinvertmode) == 1) {
         return schar((is_selected ? 1 : 0));
     }
     return 1;
@@ -919,7 +1000,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     if (!class_list || !class_select)
         return 0;
     next_accelerator = 97;
-    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
     while (cptr.ld1s(class_list)) {
@@ -931,7 +1012,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 61)) {
                 panic(__sl32, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro2(def_monsyms, idx, 24, FLD.class_sym_explain);
+            text = cptr.ldPtro2(def_monsyms, idx, 24, $class_sym_explain);
             accelerator = cptr.ld1s(class_list);
             void cptr.sprintf(cptr.decay(buf), __sl7, text);
             break;
@@ -940,7 +1021,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 18)) {
                 panic(__sl33, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro2(def_oc_syms, idx, 24, FLD.class_sym_explain);
+            text = cptr.ldPtro2(def_oc_syms, idx, 24, $class_sym_explain);
             accelerator = next_accelerator;
             void cptr.sprintf(cptr.decay(buf), __sl34, cptr.ld1s(class_list), text);
             break;
@@ -966,13 +1047,13 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     }
     if (category == 1 && next_accelerator <= 122) {
         add_menu_str(win, __sl4);
-        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, 32);
         void cptr.sprintf(cptr.decay(buf), __sl34, schar(cptr.ldI32(any)), __sl36);
         add_menu(win, nul_glyphinfo.v, any, 65, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT);
         if (!strcmp(prompt, __sl37)) {
             add_menu_str(win, __sl38);
-            add_menu_str(win, cptr.ld1so(flags, FLD.flag_pickup) ? __sl39 : __sl40);
+            add_menu_str(win, cptr.ld1so(flags, $flag_pickup) ? __sl39 : __sl40);
         }
     }
     end_menu()(win, prompt);
@@ -1003,25 +1084,25 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
 /** C ref: windows.c:1765 — struct win_request_info_t */
 export let zerowri = cptr.alloc(48);
 cptr.stI64(zerowri, 0n);
-cptr.st1o(zerowri, FLD.to_core_active, 0);
-cptr.st1o(zerowri, FLD.to_core_use_update_inventory, 0);
-cptr.stI32o(zerowri, FLD.to_core_maxslot, 0);
-cptr.stI32o(zerowri, FLD.to_core_needrows, 0);
-cptr.stI32o(zerowri, FLD.to_core_needcols, 0);
-cptr.stI32o(zerowri, FLD.to_core_haverows, 0);
-cptr.stI32o(zerowri, FLD.to_core_havecols, 0);
-cptr.stI32o(zerowri, FLD.win_request_info_t_fromcore, 0);
-cptr.stI32o(zerowri, FLD.win_request_info_t_fromcore + FLD.from_core_invmode, 0);
-cptr.stI32o(zerowri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle, NHM.NO_COLOR);
-cptr.stI32o(zerowri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle + FLD.color_and_attr_attr, NHM.ATR_NONE);
+cptr.st1o(zerowri, $to_core_active, 0);
+cptr.st1o(zerowri, $to_core_use_update_inventory, 0);
+cptr.stI32o(zerowri, $to_core_maxslot, 0);
+cptr.stI32o(zerowri, $to_core_needrows, 0);
+cptr.stI32o(zerowri, $to_core_needcols, 0);
+cptr.stI32o(zerowri, $to_core_haverows, 0);
+cptr.stI32o(zerowri, $to_core_havecols, 0);
+cptr.stI32o(zerowri, $win_request_info_t_fromcore, 0);
+cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_invmode, 0);
+cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, NHM.NO_COLOR);
+cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, NHM.ATR_NONE);
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr} style */
 export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
-    cptr.stI32o(wri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle, cptr.ldI32(style));
-    cptr.stI32o(wri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle + FLD.color_and_attr_attr, cptr.ldI32o(style, FLD.color_attr_attr));
+    cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, cptr.ldI32(style));
+    cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, cptr.ldI32o(style, $color_attr_attr));
     void ctrl_nhwindow()(window, NHC.set_menu_promptstyle, wri);
-    cptr.st1o(go, FLD.instance_globals_o_opt_need_promptstyle, 0);
+    cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 0);
 }
 
 /** C ref: windows.c:1785 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr} str @param {CUInt} itemflags */
@@ -1031,26 +1112,26 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
     if (!str) {
         do {
             if (debugcore(__sl41, 1)) {
-                let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
+                let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl42);
-                cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
+                cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         } while (0);
         return;
     }
-    if (cptr.ld1so(iflags, FLD.instance_flags_use_menu_color)) {
+    if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {
         if (((itemflags & NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS) >>> 0) == 0)
             void get_menu_coloring(str, color, attr);
     }
     itemflags &= ~NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS;
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_add_menu))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
+    (cptr.ldPtro(windowprocs, $window_procs_win_add_menu))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
 }
 
 /** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr} buf */
 export function add_menu_heading(tmpwin, buf) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-    let attr = cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr);
-    let color = cptr.ldI32o(iflags, FLD.instance_flags_menu_headings);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    let attr = cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr);
+    let color = cptr.ldI32o(iflags, $instance_flags_menu_headings);
     if (cptr.ldI32(program_state))
         attr = NHM.ATR_NONE, color = NHM.NO_COLOR;
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
@@ -1058,18 +1139,18 @@ export function add_menu_heading(tmpwin, buf) {
 
 /** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr} buf */
 export function add_menu_str(tmpwin, buf) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE);
 }
 
 /** C ref: windows.c:1841 — @param {CPtr} str @param {CPtr} color @param {CPtr} attr @returns {CInt} */
 function get_menu_coloring(str, color, attr) {
     let tmpmc;
-    if (cptr.ld1so(iflags, FLD.instance_flags_use_menu_color))
-        for (tmpmc = cptr.ldPtro(gm, FLD.instance_globals_m_menu_colorings); tmpmc; tmpmc = cptr.ldPtro(tmpmc, FLD.menucoloring_next))
+    if (cptr.ld1so(iflags, $instance_flags_use_menu_color))
+        for (tmpmc = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmpmc; tmpmc = cptr.ldPtro(tmpmc, $menucoloring_next))
             if (regex_match(str, cptr.ldPtr(tmpmc))) {
-                cptr.stI32(color, cptr.ldI32o(tmpmc, FLD.menucoloring_color));
-                cptr.stI32(attr, cptr.ldI32o(tmpmc, FLD.menucoloring_attr));
+                cptr.stI32(color, cptr.ldI32o(tmpmc, $menucoloring_color));
+                cptr.stI32(attr, cptr.ldI32o(tmpmc, $menucoloring_attr));
                 return 1;
             }
     return 0;
@@ -1078,25 +1159,25 @@ function get_menu_coloring(str, color, attr) {
 /** C ref: windows.c:1856 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
 export function select_menu(window, how, menu_list) {
     let reslt;
-    let old_bot_disabled = cptr.ld1so(gb, FLD.instance_globals_b_bot_disabled);
-    cptr.st1o(gb, FLD.instance_globals_b_bot_disabled, 1);
-    reslt = (cptr.ldPtro(windowprocs, FLD.window_procs_win_select_menu))(window, how, menu_list);
-    cptr.st1o(gb, FLD.instance_globals_b_bot_disabled, old_bot_disabled);
+    let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
+    cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
+    reslt = (cptr.ldPtro(windowprocs, $window_procs_win_select_menu))(window, how, menu_list);
+    cptr.st1o(gb, $instance_globals_b_bot_disabled, old_bot_disabled);
     return reslt;
 }
 
 /** C ref: windows.c:1868 — @param {CPtr} query @param {CPtr} bufp */
 export function getlin(query, bufp) {
-    let old_bot_disabled = cptr.ld1so(gb, FLD.instance_globals_b_bot_disabled);
+    let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
     let obufp = bufp;
     let got_cmdq = 0;
     let cmdq = null;
     while ((cmdq = cmdq_pop()) !== null) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             got_cmdq = 1;
-            cptr.st1(bufp, schar(((cptr.ld1so(cmdq, FLD._cmd_queue_key) != 10) ? cptr.ld1so(cmdq, FLD._cmd_queue_key) : 0)));
+            cptr.st1(bufp, schar(((cptr.ld1so(cmdq, $_cmd_queue_key) != 10) ? cptr.ld1so(cmdq, $_cmd_queue_key) : 0)));
             bufp = cptr.add(bufp, 1);
-            if (cptr.ld1so(cmdq, FLD._cmd_queue_key) == 10)
+            if (cptr.ld1so(cmdq, $_cmd_queue_key) == 10)
                 break;
         } else {
             break;
@@ -1111,11 +1192,11 @@ export function getlin(query, bufp) {
         pline(__sl43, query, obufp);
         return;
     }
-    cptr.stI32o(program_state, FLD.sinfo_in_getlin, 1);
-    cptr.st1o(gb, FLD.instance_globals_b_bot_disabled, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_getlin))(query, bufp);
-    cptr.st1o(gb, FLD.instance_globals_b_bot_disabled, old_bot_disabled);
-    cptr.stI32o(program_state, FLD.sinfo_in_getlin, 0);
+    cptr.stI32o(program_state, $sinfo_in_getlin, 1);
+    cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
+    (cptr.ldPtro(windowprocs, $window_procs_win_getlin))(query, bufp);
+    cptr.st1o(gb, $instance_globals_b_bot_disabled, old_bot_disabled);
+    cptr.stI32o(program_state, $sinfo_in_getlin, 0);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

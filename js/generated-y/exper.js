@@ -27,6 +27,29 @@ import { monhp_per_lvl } from './makemon.js';
 import { rehumanize } from './polyself.js';
 import { achieve_rank, count_achievements, record_achievement } from './insight.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
+    $RoleAdvance_hirnd = FLD.RoleAdvance_hirnd, $RoleAdvance_inrnd = FLD.RoleAdvance_inrnd,
+    $RoleAdvance_lofix = FLD.RoleAdvance_lofix, $RoleAdvance_lornd = FLD.RoleAdvance_lornd,
+    $Role_enadv = FLD.Role_enadv, $Role_mnum = FLD.Role_mnum, $Role_xlev = FLD.Role_xlev,
+    $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd, $attack_damn = FLD.attack_damn,
+    $flag_beginner = FLD.flag_beginner, $flag_showexp = FLD.flag_showexp,
+    $instance_globals_u_urace = FLD.instance_globals_u_urace,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole,
+    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_format = FLD.kinfo_format,
+    $kinfo_name = FLD.kinfo_name, $monst_data = FLD.monst_data, $monst_m_lev = FLD.monst_m_lev,
+    $monst_mcloned = FLD.monst_mcloned, $monst_mrevived = FLD.monst_mrevived,
+    $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
+    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+    $permonst_mmove = FLD.permonst_mmove, $prop_intrinsic = FLD.prop_intrinsic, $you_mh = FLD.you_mh,
+    $you_mhmax = FLD.you_mhmax, $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc,
+    $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_uexp = FLD.you_uexp,
+    $you_uhp = FLD.you_uhp, $you_uhpinc = FLD.you_uhpinc, $you_uhpmax = FLD.you_uhpmax,
+    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_ulevelpeak = FLD.you_ulevelpeak,
+    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
+    $you_urexp = FLD.you_urexp;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/exper.c");
 const __sl1 = cptr.lit("newpw");
@@ -78,29 +101,29 @@ export function newpw() {
     let en = 0;
     let enrnd;
     let enfix;
-    if (cptr.ldI32o(u, FLD.you_ulevel) == 0) {
-        en = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv)) | 0;
-        if (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd)))) | 0;
-        if (cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd)))) | 0;
+    if (cptr.ldI32o(u, $you_ulevel) == 0) {
+        en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
+        if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd)))) | 0;
+        if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd)))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
-        if (cptr.ldI32o(u, FLD.you_ulevel) < cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_xlev)) {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_lornd) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_lornd)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_lofix) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_lofix)) | 0;
+        if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
+            enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd)) | 0)) | 0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix)) | 0;
         } else {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_hirnd) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_hirnd)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_hifix) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_hifix)) | 0;
+            enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd)) | 0)) | 0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) | 0;
         }
         en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 64, __sl1), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
-    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV) {
-        cptr.stI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_ueninc, i16(en));
+    if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV) {
+        cptr.stI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc, i16(en));
     } else {
-        let lim = schar(((4 - ((cptr.ldI32o(u, FLD.you_uenmax) / 200) | 0)) | 0));
+        let lim = schar(((4 - ((cptr.ldI32o(u, $you_uenmax) / 200) | 0)) | 0));
         lim = schar(((lim) > 1 ? (lim) : 1));
         if (en > lim)
             en = lim;
@@ -110,17 +133,17 @@ export function newpw() {
 
 /** C ref: exper.c:85 — @param {CPtr} mtmp @param {CInt} nk @returns {CInt} */
 export function experience(mtmp, nk) {
-    let ptr = cptr.ldPtro(mtmp, FLD.monst_data);
+    let ptr = cptr.ldPtro(mtmp, $monst_data);
     let i;
     let tmp;
     let tmp2;
-    tmp = (1 + Math.imul(cptr.ld1uo(mtmp, FLD.monst_m_lev), cptr.ld1uo(mtmp, FLD.monst_m_lev))) | 0;
+    tmp = (1 + Math.imul(cptr.ld1uo(mtmp, $monst_m_lev), cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
     if ((i = find_mac(mtmp)) < 3)
         tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
-    if (cptr.ld1so(ptr, FLD.permonst_mmove) > NHM.NORMAL_SPEED)
-        tmp = (tmp + ((cptr.ld1so(ptr, FLD.permonst_mmove) > 18) ? 5 : 3)) | 0;
+    if (cptr.ld1so(ptr, $permonst_mmove) > NHM.NORMAL_SPEED)
+        tmp = (tmp + ((cptr.ld1so(ptr, $permonst_mmove) > 18) ? 5 : 3)) | 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk);
         if (tmp2 > NHM.AT_BUTT) {
             if (tmp2 == NHM.AT_WEAP)
                 tmp = (tmp + 5) | 0;
@@ -131,25 +154,25 @@ export function experience(mtmp, nk) {
         }
     }
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_adtyp);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp);
         if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND)
-            tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, FLD.monst_m_lev))) | 0;
+            tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
         else if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_SLIM))
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
-            tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
-        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damd), cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damn))) > 23)
-            tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
-        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, FLD.permonst_mlet) == NHC.S_EEL && !Amphibious())
+            tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
+        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damn))) > 23)
+            tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
+        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
     }
-    if (((cptr.ldU64o((ptr), FLD.permonst_mflags2) & 33554432n) != 0n))
-        tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, FLD.monst_m_lev)))) | 0;
-    if (cptr.ld1uo(mtmp, FLD.monst_m_lev) > 8)
+    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n))
+        tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, $monst_m_lev)))) | 0;
+    if (cptr.ld1uo(mtmp, $monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;
-    if (cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
+    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
         tmp = 1;
-    if ((cptr.ldI32o(mtmp, FLD.monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, FLD.monst_mcloned) & 1) | 0) {
+    if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;
@@ -162,8 +185,8 @@ export function experience(mtmp, nk) {
 
 /** C ref: exper.c:169 — @param {CInt} exper @param {CInt} rexp */
 export function* more_experienced(exper, rexp) {
-    let oldexp = cptr.ldI64o(u, FLD.you_uexp);
-    let oldrexp = cptr.ldI64o(u, FLD.you_urexp);
+    let oldexp = cptr.ldI64o(u, $you_uexp);
+    let oldrexp = cptr.ldI64o(u, $you_urexp);
     let newexp = BigInt.asIntN(64, oldexp + BigInt(exper));
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
     let newrexp = BigInt.asIntN(64, oldrexp + rexpincr);
@@ -172,17 +195,17 @@ export function* more_experienced(exper, rexp) {
     if (newrexp < 0n && rexpincr > 0n)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
-        cptr.stI64o(u, FLD.you_uexp, newexp);
-        if (cptr.ld1so(flags, FLD.flag_showexp))
+        cptr.stI64o(u, $you_uexp, newexp);
+        if (cptr.ld1so(flags, $flag_showexp))
             cptr.st1(disp, 1);
         if (!cptr.ld1s(disp) && (yield* exp_percent_changing()))
             cptr.st1(disp, 1);
     }
     if (newrexp != oldrexp) {
-        cptr.stI64o(u, FLD.you_urexp, newrexp);
+        cptr.stI64o(u, $you_urexp, newrexp);
     }
-    if (cptr.ldI64o(u, FLD.you_urexp) >= BigInt(((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD) ? 1000 : 2000)))
-        cptr.st1o(flags, FLD.flag_beginner, 0);
+    if (cptr.ldI64o(u, $you_urexp) >= BigInt(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 1000 : 2000)))
+        cptr.st1o(flags, $flag_beginner, 0);
 }
 
 /** C ref: exper.c:207 — @param {CPtr} drainer */
@@ -192,57 +215,57 @@ export function* losexp(drainer) {
     let olduhpmax;
     if (drainer && !strcmp(drainer, __sl2))
         drainer = null;
-    else if ((yield* resists_drli(cptr.add(gy, FLD.instance_globals_y_youmonst))))
+    else if ((yield* resists_drli(cptr.add(gy, $instance_globals_y_youmonst))))
         return;
-    if (cptr.ldI32o(u, FLD.you_ulevel) > 1 || drainer)
-        (yield* pline(__sl3, Goodbye(), cptr.ldI32o(u, FLD.you_ulevel)));
-    if (cptr.ldI32o(u, FLD.you_ulevel) > 1) {
-        cptr.stI32o(u, FLD.you_ulevel, (cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0);
-        (yield* adjabil((cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0, cptr.ldI32o(u, FLD.you_ulevel)));
-        (yield* livelog_printf(4096n, __sl4, (cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0));
+    if (cptr.ldI32o(u, $you_ulevel) > 1 || drainer)
+        (yield* pline(__sl3, Goodbye(), cptr.ldI32o(u, $you_ulevel)));
+    if (cptr.ldI32o(u, $you_ulevel) > 1) {
+        cptr.stI32o(u, $you_ulevel, (cptr.ldI32o(u, $you_ulevel) - 1) | 0);
+        (yield* adjabil((cptr.ldI32o(u, $you_ulevel) + 1) | 0, cptr.ldI32o(u, $you_ulevel)));
+        (yield* livelog_printf(4096n, __sl4, (cptr.ldI32o(u, $you_ulevel) + 1) | 0));
         ;
     } else {
         if (drainer) {
-            cptr.stI32o(svk, FLD.kinfo_format, NHM.KILLED_BY);
-            if (!cptr.eq(cptr.add(svk, FLD.kinfo_name), drainer))
-                void cptr.strcpy(cptr.add(svk, FLD.kinfo_name), drainer);
+            cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+            if (!cptr.eq(cptr.add(svk, $kinfo_name), drainer))
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), drainer);
             (yield* done(NHC.DIED));
         }
-        if (cptr.ldI32o(u, FLD.you_ulevel) > 1)
+        if (cptr.ldI32o(u, $you_ulevel) > 1)
             return;
-        cptr.stI64o(u, FLD.you_uexp, 0n);
+        cptr.stI64o(u, $you_uexp, 0n);
         (yield* livelog_printf(4096n, __sl5));
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, FLD.you_ulevel) >= 0 && cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
-    olduhpmax = cptr.ldI32o(u, FLD.you_uhpmax);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    olduhpmax = cptr.ldI32o(u, $you_uhpmax);
     uhpmin = minuhpmax(10);
-    num = cptr.ldI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_uhpinc);
-    cptr.stI32o(u, FLD.you_uhpmax, (cptr.ldI32o(u, FLD.you_uhpmax) - num) | 0);
-    if (cptr.ldI32o(u, FLD.you_uhpmax) < uhpmin)
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_uhpinc);
+    cptr.stI32o(u, $you_uhpmax, (cptr.ldI32o(u, $you_uhpmax) - num) | 0);
+    if (cptr.ldI32o(u, $you_uhpmax) < uhpmin)
         setuhpmax(uhpmin, 1);
-    if (cptr.ldI32o(u, FLD.you_uhpmax) > olduhpmax)
+    if (cptr.ldI32o(u, $you_uhpmax) > olduhpmax)
         setuhpmax(olduhpmax, 1);
-    cptr.stI32o(u, FLD.you_uhp, (cptr.ldI32o(u, FLD.you_uhp) - num) | 0);
-    if (cptr.ldI32o(u, FLD.you_uhp) < 1)
-        cptr.stI32o(u, FLD.you_uhp, 1);
-    else if (cptr.ldI32o(u, FLD.you_uhp) > cptr.ldI32o(u, FLD.you_uhpmax))
-        cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhpmax));
-    num = cptr.ldI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_ueninc);
-    cptr.stI32o(u, FLD.you_uenmax, (cptr.ldI32o(u, FLD.you_uenmax) - num) | 0);
-    if (cptr.ldI32o(u, FLD.you_uenmax) < 0)
-        cptr.stI32o(u, FLD.you_uenmax, 0);
-    cptr.stI32o(u, FLD.you_uen, (cptr.ldI32o(u, FLD.you_uen) - num) | 0);
-    if (cptr.ldI32o(u, FLD.you_uen) < 0)
-        cptr.stI32o(u, FLD.you_uen, 0);
-    else if (cptr.ldI32o(u, FLD.you_uen) > cptr.ldI32o(u, FLD.you_uenmax))
-        cptr.stI32o(u, FLD.you_uen, cptr.ldI32o(u, FLD.you_uenmax));
-    if (cptr.ldI64o(u, FLD.you_uexp) > 0n)
-        cptr.stI64o(u, FLD.you_uexp, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, FLD.you_ulevel)) - 1n));
+    cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) - num) | 0);
+    if (cptr.ldI32o(u, $you_uhp) < 1)
+        cptr.stI32o(u, $you_uhp, 1);
+    else if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax))
+        cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc);
+    cptr.stI32o(u, $you_uenmax, (cptr.ldI32o(u, $you_uenmax) - num) | 0);
+    if (cptr.ldI32o(u, $you_uenmax) < 0)
+        cptr.stI32o(u, $you_uenmax, 0);
+    cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - num) | 0);
+    if (cptr.ldI32o(u, $you_uen) < 0)
+        cptr.stI32o(u, $you_uen, 0);
+    else if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
+        cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
+    if (cptr.ldI64o(u, $you_uexp) > 0n)
+        cptr.stI64o(u, $you_uexp, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, $you_ulevel)) - 1n));
     if (Upolyd()) {
-        num = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
-        cptr.stI32o(u, FLD.you_mhmax, (cptr.ldI32o(u, FLD.you_mhmax) - num) | 0);
-        cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) - num) | 0);
-        if (cptr.ldI32o(u, FLD.you_mh) <= 0)
+        num = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
+        cptr.stI32o(u, $you_mhmax, (cptr.ldI32o(u, $you_mhmax) - num) | 0);
+        cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) - num) | 0);
+        if (cptr.ldI32o(u, $you_mh) <= 0)
             (yield* rehumanize());
     }
     cptr.st1(disp, 1);
@@ -250,7 +273,7 @@ export function* losexp(drainer) {
 
 /** C ref: exper.c:300 */
 export function* newexplevel() {
-    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV && cptr.ldI64o(u, FLD.you_uexp) >= newuexp(cptr.ldI32o(u, FLD.you_ulevel)))
+    if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV && cptr.ldI64o(u, $you_uexp) >= newuexp(cptr.ldI32o(u, $you_ulevel)))
         (yield* pluslvl(1));
 }
 
@@ -261,43 +284,43 @@ export function* pluslvl(incr) {
     if (!incr)
         (yield* You_feel(__sl9));
     if (Upolyd()) {
-        hpinc = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
-        cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) + hpinc) | 0);
-        setuhpmax(cptr.ldI32o(u, FLD.you_mhmax), 0);
+        hpinc = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
+        cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + hpinc) | 0);
+        setuhpmax(cptr.ldI32o(u, $you_mhmax), 0);
     }
     hpinc = newhp();
-    cptr.stI32o(u, FLD.you_uhp, (cptr.ldI32o(u, FLD.you_uhp) + hpinc) | 0);
-    setuhpmax((cptr.ldI32o(u, FLD.you_uhpmax) + hpinc) | 0, 1);
+    cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + hpinc) | 0);
+    setuhpmax((cptr.ldI32o(u, $you_uhpmax) + hpinc) | 0, 1);
     eninc = newpw();
-    cptr.stI32o(u, FLD.you_uenmax, (cptr.ldI32o(u, FLD.you_uenmax) + eninc) | 0);
-    if (cptr.ldI32o(u, FLD.you_uenmax) > cptr.ldI32o(u, FLD.you_uenpeak))
-        cptr.stI32o(u, FLD.you_uenpeak, cptr.ldI32o(u, FLD.you_uenmax));
-    cptr.stI32o(u, FLD.you_uen, (cptr.ldI32o(u, FLD.you_uen) + eninc) | 0);
-    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV) {
+    cptr.stI32o(u, $you_uenmax, (cptr.ldI32o(u, $you_uenmax) + eninc) | 0);
+    if (cptr.ldI32o(u, $you_uenmax) > cptr.ldI32o(u, $you_uenpeak))
+        cptr.stI32o(u, $you_uenpeak, cptr.ldI32o(u, $you_uenmax));
+    cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + eninc) | 0);
+    if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV) {
         let old_ach_cnt;
         let newrank;
-        let oldrank = xlev_to_rank(cptr.ldI32o(u, FLD.you_ulevel));
+        let oldrank = xlev_to_rank(cptr.ldI32o(u, $you_ulevel));
         if (incr) {
-            let tmp = newuexp((cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0);
-            if (cptr.ldI64o(u, FLD.you_uexp) >= tmp)
-                cptr.stI64o(u, FLD.you_uexp, BigInt.asIntN(64, tmp - 1n));
+            let tmp = newuexp((cptr.ldI32o(u, $you_ulevel) + 1) | 0);
+            if (cptr.ldI64o(u, $you_uexp) >= tmp)
+                cptr.stI64o(u, $you_uexp, BigInt.asIntN(64, tmp - 1n));
         } else {
-            cptr.stI64o(u, FLD.you_uexp, newuexp(cptr.ldI32o(u, FLD.you_ulevel)));
+            cptr.stI64o(u, $you_uexp, newuexp(cptr.ldI32o(u, $you_ulevel)));
         }
-        cptr.stI32o(u, FLD.you_ulevel, cptr.ldI32o(u, FLD.you_ulevel) + 1);
-        (yield* pline(__sl10, (cptr.ldI32o(u, FLD.you_ulevelmax) < cptr.ldI32o(u, FLD.you_ulevel)) ? __sl11 : __sl12, cptr.ldI32o(u, FLD.you_ulevel)));
-        if (cptr.ldI32o(u, FLD.you_ulevelmax) < cptr.ldI32o(u, FLD.you_ulevel))
-            cptr.stI32o(u, FLD.you_ulevelmax, cptr.ldI32o(u, FLD.you_ulevel));
-        (yield* adjabil((cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0, cptr.ldI32o(u, FLD.you_ulevel)));
+        cptr.stI32o(u, $you_ulevel, cptr.ldI32o(u, $you_ulevel) + 1);
+        (yield* pline(__sl10, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __sl11 : __sl12, cptr.ldI32o(u, $you_ulevel)));
+        if (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel))
+            cptr.stI32o(u, $you_ulevelmax, cptr.ldI32o(u, $you_ulevel));
+        (yield* adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel)));
         ;
         old_ach_cnt = count_achievements();
-        newrank = xlev_to_rank(cptr.ldI32o(u, FLD.you_ulevel));
+        newrank = xlev_to_rank(cptr.ldI32o(u, $you_ulevel));
         if (newrank > oldrank)
             (yield* record_achievement(achieve_rank(newrank)));
         if (count_achievements() == old_ach_cnt)
-            (yield* livelog_printf(4096n, __sl13, (cptr.ldI32o(u, FLD.you_ulevel) <= cptr.ldI32o(u, FLD.you_ulevelpeak)) ? __sl14 : __sl11, cptr.ldI32o(u, FLD.you_ulevel)));
-        if (cptr.ldI32o(u, FLD.you_ulevel) > cptr.ldI32o(u, FLD.you_ulevelpeak))
-            cptr.stI32o(u, FLD.you_ulevelpeak, cptr.ldI32o(u, FLD.you_ulevel));
+            (yield* livelog_printf(4096n, __sl13, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __sl14 : __sl11, cptr.ldI32o(u, $you_ulevel)));
+        if (cptr.ldI32o(u, $you_ulevel) > cptr.ldI32o(u, $you_ulevelpeak))
+            cptr.stI32o(u, $you_ulevelpeak, cptr.ldI32o(u, $you_ulevel));
     }
     cptr.st1(disp, 1);
 }
@@ -309,16 +332,16 @@ export function rndexp(gaining) {
     let diff;
     let factor;
     let result;
-    minexp = (cptr.ldI32o(u, FLD.you_ulevel) == 1) ? 0n : newuexp((cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0);
-    maxexp = newuexp(cptr.ldI32o(u, FLD.you_ulevel));
+    minexp = (cptr.ldI32o(u, $you_ulevel) == 1) ? 0n : newuexp((cptr.ldI32o(u, $you_ulevel) - 1) | 0);
+    maxexp = newuexp(cptr.ldI32o(u, $you_ulevel));
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
-    if (cptr.ldI32o(u, FLD.you_ulevel) == NHM.MAXULEV && gaining) {
-        result += (BigInt.asIntN(64, cptr.ldI64o(u, FLD.you_uexp) - minexp));
-        if (result < cptr.ldI64o(u, FLD.you_uexp))
-            result = cptr.ldI64o(u, FLD.you_uexp);
+    if (cptr.ldI32o(u, $you_ulevel) == NHM.MAXULEV && gaining) {
+        result += (BigInt.asIntN(64, cptr.ldI64o(u, $you_uexp) - minexp));
+        if (result < cptr.ldI64o(u, $you_uexp))
+            result = cptr.ldI64o(u, $you_uexp);
     }
     return result;
 }

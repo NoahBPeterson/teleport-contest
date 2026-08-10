@@ -29,6 +29,31 @@ import { mons } from './monst.js';
 import { the_unique_pm } from './objnam.js';
 import { debugcore } from './files.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_globals_f_false_rumor_end = FLD.instance_globals_f_false_rumor_end,
+    $instance_globals_f_false_rumor_size = FLD.instance_globals_f_false_rumor_size,
+    $instance_globals_f_false_rumor_start = FLD.instance_globals_f_false_rumor_start,
+    $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_m_multi = FLD.instance_globals_m_multi,
+    $instance_globals_o_oracle_flg = FLD.instance_globals_o_oracle_flg,
+    $instance_globals_saved_o_oracle_loc = FLD.instance_globals_saved_o_oracle_loc,
+    $instance_globals_t_true_rumor_end = FLD.instance_globals_t_true_rumor_end,
+    $instance_globals_t_true_rumor_size = FLD.instance_globals_t_true_rumor_size,
+    $instance_globals_t_true_rumor_start = FLD.instance_globals_t_true_rumor_start,
+    $monst_mpeaceful = FLD.monst_mpeaceful, $permonst_geno = FLD.permonst_geno,
+    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $u_event_major_oracle = FLD.u_event_major_oracle,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uevent = FLD.you_uevent,
+    $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("rumors");
 const __sl1 = cptr.lit("r");
@@ -128,11 +153,11 @@ function init_rumors(fp) {
     let line = new Uint8Array(256);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, FLD.instance_globals_t_true_rumor_size), cptr.add(gt, FLD.instance_globals_t_true_rumor_start), false_count, cptr.add(gf, FLD.instance_globals_f_false_rumor_size), cptr.add(gf, FLD.instance_globals_f_false_rumor_start), eof_offset) == 7 && cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) > 0n && cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size) > 0n) {
-        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)) + cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size)));
-        cptr.stI64o(gf, FLD.instance_globals_f_false_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)) + cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size)));
+    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, $instance_globals_t_true_rumor_size), cptr.add(gt, $instance_globals_t_true_rumor_start), false_count, cptr.add(gf, $instance_globals_f_false_rumor_size), cptr.add(gf, $instance_globals_f_false_rumor_start), eof_offset) == 7 && cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) > 0n && cptr.ldI64o(gf, $instance_globals_f_false_rumor_size) > 0n) {
+        cptr.stI64o(gt, $instance_globals_t_true_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)) + cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
+        cptr.stI64o(gf, $instance_globals_f_false_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)) + cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
     } else {
-        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
+        cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);
         void fclose(fp);
     }
 }
@@ -147,7 +172,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
     let line = new Uint8Array(256);
     let marklen = Number(BigInt.asIntN(32, cptr.strlen(__static_getrumor_cookie_marker)));
     cptr.st1o(rumor_buf, 0, 0);
-    if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n)
+    if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n)
         return rumor_buf;
     rumors = fopen(__sl0, __sl1);
     if (rumors) {
@@ -155,9 +180,9 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
         let adjtruth;
         do {
             cptr.st1o(rumor_buf, 0, 0);
-            if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) == 0n) {
+            if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) == 0n) {
                 init_rumors(rumors);
-                if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
+                if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n) {
                     void cptr.sprintf(rumor_buf, __sl2, __sl0);
                     return rumor_buf;
                 }
@@ -165,13 +190,13 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
             switch (adjtruth = (truth + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 151, __sl4), rn2(2)) : rn2(2))) | 0) {
                 case 2:
                 case 1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start));
-                ending = cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end);
+                beginning = BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start));
+                ending = cptr.ldI64o(gt, $instance_globals_t_true_rumor_end);
                 break;
                 case 0:
                 case -1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start));
-                ending = cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end);
+                beginning = BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start));
+                ending = cptr.ldI64o(gf, $instance_globals_f_false_rumor_end);
                 break;
                 default:
                 impossible(__sl5);
@@ -182,11 +207,11 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
         void fclose(rumors);
         if (count >= 50)
             impossible(__sl7);
-        else if (!cptr.ld1so(gi, FLD.instance_globals_i_in_mklev))
+        else if (!cptr.ld1so(gi, $instance_globals_i_in_mklev))
             exercise(NHC.A_WIS, schar((adjtruth > 0)));
     } else {
         couldnt_open_file(__sl0);
-        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
+        cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);
     }
     if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
         let src = cptr.add(rumor_buf, marklen);
@@ -210,56 +235,56 @@ export function rumor_check() {
         let line = new Uint8Array(256);
         let xbuf = new Uint8Array(256);
         let rumor_buf = new Uint8Array(256);
-        rumors = (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) >= 0n) ? fopen(__sl0, __sl1) : null;
+        rumors = (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) >= 0n) ? fopen(__sl0, __sl1) : null;
         if (rumors) {
             let ftell_rumor_start = 0n;
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) == 0n) {
+            if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) == 0n) {
                 init_rumors(rumors);
-                if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
+                if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n) {
                     rumors = null;
                     { __go_no_rumors = true; break __skip_no_rumors; }
                 }
             }
             tmpwin.v = create_nhwindow()(NHM.NHW_TEXT);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, $instance_globals_t_true_rumor_start), cptr.ldI64o(gt, $instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, $instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, $instance_globals_f_false_rumor_start), cptr.ldI64o(gf, $instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, $instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), 0);
+            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end))
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, $instance_globals_t_true_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), 0);
+            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end))
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, $instance_globals_f_false_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             void fclose(rumors);
-        } else if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
+        } else if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n) {
             __go_no_rumors = true; break __skip_no_rumors;
         } else {
             couldnt_open_file(__sl0);
-            cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
+            cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);
         }
     }
     if (__go_no_rumors) {
@@ -455,10 +480,10 @@ function init_oracles(fp) {
     void fgets(cptr.decay(line), 256, fp);
     if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0) {
         cptr.stI32(svo, cnt.v >>> 0);
-        cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)))));
+        cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)))));
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
-            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8));
+            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8));
         }
     }
     return;
@@ -467,22 +492,22 @@ function init_oracles(fp) {
 /** C ref: rumors.c:598 — @param {CPtr} nhfp */
 export function save_oracles(nhfp) {
     let i;
-    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & 3)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         sfo_unsigned(nhfp, svo, __sl44);
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-                sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8), __sl45);
+                sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __sl45);
                 ;
             }
         }
     }
-    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & NHM.FREEING)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         if (cptr.ldI32(svo)) {
-            cptr.stI32(svo, 0), cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 0);
+            cptr.stI32(svo, 0), cptr.stI32o(go, $instance_globals_o_oracle_flg, 0);
         }
-        if (cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc)) {
-            cptr.free(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc));
-            cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, null);
+        if (cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc)) {
+            cptr.free(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc));
+            cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, null);
         }
     }
 }
@@ -493,12 +518,12 @@ export function restore_oracles(nhfp) {
     sfi_unsigned(nhfp, svo, __sl44);
     ;
     if (cptr.ldI32(svo)) {
-        cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)))));
+        cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)))));
         for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-            sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8), __sl45);
+            sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __sl45);
             ;
         }
-        cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 1);
+        cptr.stI32o(go, $instance_globals_o_oracle_flg, 1);
     }
 }
 
@@ -510,23 +535,23 @@ export function outoracle(special, delphi) {
     let endp;
     let line = new Uint8Array(80);
     let xbuf = new Uint8Array(256);
-    if (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) < 0 || (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
+    if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0 || (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
         return;
     oracles = fopen(__sl46, __sl1);
     if (oracles) {
         __lbl_close_oracles: {
-            if (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) == 0) {
+            if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) == 0) {
                 init_oracles(oracles);
-                cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 1);
+                cptr.stI32o(go, $instance_globals_o_oracle_flg, 1);
                 if (cptr.ldI32(svo) == 0)
                     break __lbl_close_oracles;
             }
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;
             oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl3, 665, __sl47), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
-            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
+            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
-                cptr.stU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
+                cptr.stU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
             tmpwin = create_nhwindow()(NHM.NHW_TEXT);
             if (delphi)
                 putstr()(tmpwin, 0, special ? __sl48 : __sl49);
@@ -544,7 +569,7 @@ export function outoracle(special, delphi) {
         void fclose(oracles);
     } else {
         couldnt_open_file(__sl46);
-        cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, -1);
+        cptr.stI32o(go, $instance_globals_o_oracle_flg, -1);
     }
 }
 
@@ -553,15 +578,15 @@ export function doconsult(oracl) {
     let umoney;
     let u_pay;
     let minor_cost = 50;
-    let major_cost = (500 + Math.imul(50, cptr.ldI32o(u, FLD.you_ulevel))) | 0;
+    let major_cost = (500 + Math.imul(50, cptr.ldI32o(u, $you_ulevel))) | 0;
     let add_xpts;
     let qbuf = new Uint8Array(128);
-    cptr.stI64o(gm, FLD.instance_globals_m_multi, 0n);
-    umoney = money_cnt(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+    cptr.stI64o(gm, $instance_globals_m_multi, 0n);
+    umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (!oracl) {
         There(__sl52);
         return NHM.ECMD_OK;
-    } else if (!(cptr.ldI32o(oracl, FLD.monst_mpeaceful) & 1)) {
+    } else if (!(cptr.ldI32o(oracl, $monst_mpeaceful) & 1)) {
         pline(__sl53, Monnam(oracl));
         return NHM.ECMD_OK;
     } else if (!umoney) {
@@ -581,7 +606,7 @@ export function doconsult(oracl) {
         u_pay = minor_cost;
         break;
         case 110:
-        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) < 0))
+        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
             return NHM.ECMD_OK;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, currency(BigInt(major_cost)));
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
@@ -591,20 +616,20 @@ export function doconsult(oracl) {
     }
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, 1);
-    if (!(cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1) && !(cptr.ldI32o(u, FLD.you_uevent) & 1))
+    if (!(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) && !(cptr.ldI32o(u, $you_uevent) & 1))
         record_achievement(NHC.ACH_ORCL);
     add_xpts = 0;
     if (u_pay == minor_cost) {
         outrumor(1, NHM.BY_ORACLE);
-        if (!(cptr.ldI32o(u, FLD.you_uevent) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
-        cptr.stI32o(u, FLD.you_uevent, 1);
+        if (!(cptr.ldI32o(u, $you_uevent) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
+        cptr.stI32o(u, $you_uevent, 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
         outoracle(cheapskate, 1);
-        if (!cheapskate && !(cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, FLD.you_uevent) & 1) | 0 ? 25 : 10)) | 0;
-        cptr.stI32o(u, FLD.you_uevent + FLD.u_event_major_oracle, 1);
+        if (!cheapskate && !(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32o(u, $you_uevent) & 1) | 0 ? 25 : 10)) | 0;
+        cptr.stI32o(u, $you_uevent + $u_event_major_oracle, 1);
         exercise(NHC.A_WIS, schar((!cheapskate)));
     }
     if (add_xpts) {
@@ -616,11 +641,11 @@ export function doconsult(oracl) {
 
 /** C ref: rumors.c:770 — @param {CPtr} filename */
 function couldnt_open_file(filename) {
-    let save_something = cptr.ldI32o(program_state, FLD.sinfo_something_worth_saving);
-    if (!cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer))
-        cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 0);
+    let save_something = cptr.ldI32o(program_state, $sinfo_something_worth_saving);
+    if (!cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
+        cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
     impossible(__sl58, filename);
-    cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, save_something);
+    cptr.stI32o(program_state, $sinfo_something_worth_saving, save_something);
 }
 
 /** C ref: rumors.c:791 — @param {CPtr} word @returns {CInt} */
@@ -660,7 +685,7 @@ function init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
-            if ((cptr.ldU16o(mptr, FLD.permonst_geno) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
+            if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
                 continue;
             for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
                 nam = cptr.ldPtro(mptr, mgend, 8);

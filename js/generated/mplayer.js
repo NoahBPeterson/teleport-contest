@@ -25,6 +25,22 @@ import { m_dowear } from './worn.js';
 import { rnd_defensive_item, rnd_misc_item, rnd_offensive_item } from './muse.js';
 import { set_mon_data } from './mondata.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Role_mnum = FLD.Role_mnum, $const_globals_zeromonst = FLD.const_globals_zeromonst,
+    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level, $dlevel_t_monlist = FLD.dlevel_t_monlist,
+    $dlevel_t_monsters = FLD.dlevel_t_monsters,
+    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole, $monst_data = FLD.monst_data,
+    $monst_female = FLD.monst_female, $monst_m_lev = FLD.monst_m_lev, $monst_mextra = FLD.monst_mextra,
+    $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mpeaceful = FLD.monst_mpeaceful,
+    $obj_greased = FLD.obj_greased, $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+    $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
+    $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
+    $objclass_oc_merge = FLD.objclass_oc_merge, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_pmidx = FLD.permonst_pmidx, $you_uz = FLD.you_uz;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Alex");
 const __sl1 = cptr.lit("Dave");
@@ -157,10 +173,10 @@ function dev_name() {
     do {
         match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
-        for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
+        for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            if (!((cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), FLD.monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), FLD.monst_mextra))))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), FLD.monst_mextra))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
+            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
                 match = 1;
                 break;
             }
@@ -174,7 +190,7 @@ function dev_name() {
 
 /** C ref: mplayer.c:72 — @param {CPtr} mtmp @param {CPtr} nam */
 function get_mplname(mtmp, nam) {
-    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags2) & 131072n) != 0n));
+    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 131072n) != 0n));
     let devnam;
     devnam = dev_name();
     if (!devnam)
@@ -184,11 +200,11 @@ function get_mplname(mtmp, nam) {
     else
         void cptr.strcpy(nam, devnam);
     if (fmlkind || !strcmp(nam, __sl6))
-        cptr.stI32o(mtmp, FLD.monst_female, 1);
+        cptr.stI32o(mtmp, $monst_female, 1);
     else
-        cptr.stI32o(mtmp, FLD.monst_female, 0);
+        cptr.stI32o(mtmp, $monst_female, 0);
     void cptr.strcat(nam, __sl46);
-    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, FLD.monst_m_lev), (cptr.ldI32o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_pmidx)), schar((cptr.ldI32o(mtmp, FLD.monst_female) & 1))));
+    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, $monst_m_lev), (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)), schar((cptr.ldI32o(mtmp, $monst_female) & 1))));
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
@@ -197,14 +213,14 @@ function mk_mplayer_armor(mon, typ) {
     if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = mksobj(typ, 0, 0);
-    cptr.stI32o(obj, FLD.obj_oeroded, cptr.stI32o(obj, FLD.obj_oeroded2, 0));
+    cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 103, __sl47), rn2(3)) : rn2(3)))
-        cptr.stI32o(obj, FLD.obj_oerodeproof, 1);
+        cptr.stI32o(obj, $obj_oerodeproof, 1);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 105, __sl47), rn2(3)) : rn2(3)))
         curse(obj);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 107, __sl47), rn2(3)) : rn2(3)))
         bless(obj);
-    cptr.st1o(obj, FLD.obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
+    cptr.st1o(obj, $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
     void mpickobj(mon, obj);
 }
 
@@ -214,9 +230,9 @@ export function mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
         return (null);
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null))
-        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters)), 5);
-    if (!(cptr.ldI16((cptr.add(u, FLD.you_uz))) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))))
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
+        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), 5);
+    if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         special = 0;
     if ((mtmp = makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n))))) !== null) {
         let weapon;
@@ -226,21 +242,21 @@ export function mk_mplayer(ptr, x, y, special) {
         let shield;
         let quan;
         let otmp;
-        cptr.st1o(mtmp, FLD.monst_m_lev, uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
-        cptr.stI32o(mtmp, FLD.monst_mhp, cptr.stI32o(mtmp, FLD.monst_mhpmax, ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1uo(mtmp, FLD.monst_m_lev)), 10)) : d((cptr.ld1uo(mtmp, FLD.monst_m_lev)), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
+        cptr.st1o(mtmp, $monst_m_lev, uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
+        cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) : d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = christen_monst(mtmp, cptr.decay(nam));
             void mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR);
         }
-        cptr.stI32o(mtmp, FLD.monst_mpeaceful, 0);
+        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
         set_malign(mtmp);
         weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 150, __sl48), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
         armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
         cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
         helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
         shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
-        switch ((cptr.ldI32o((ptr), FLD.permonst_pmidx))) {
+        switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
             case NHC.PM_ARCHEOLOGIST:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 161, __sl48), rn2(2)) : rn2(2)))
                 weapon = NHC.BULLWHIP;
@@ -336,19 +352,19 @@ export function mk_mplayer(ptr, x, y, special) {
         }
         if (weapon != NHC.STRANGE_OBJECT) {
             otmp = mksobj(weapon, 1, 0);
-            cptr.stI32o(otmp, FLD.obj_oeroded, cptr.stI32o(otmp, FLD.obj_oeroded2, 0));
-            cptr.st1o(otmp, FLD.obj_spe, schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
+            cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
+            cptr.st1o(otmp, $obj_spe, schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 260, __sl48), rn2(3)) : rn2(3)))
-                cptr.stI32o(otmp, FLD.obj_oerodeproof, 1);
+                cptr.stI32o(otmp, $obj_oerodeproof, 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
-                cptr.stI32o(otmp, FLD.obj_greased, 1);
+                cptr.stI32o(otmp, $obj_greased, 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)))
                 otmp = mk_artifact(otmp, -128, 99, 0);
-            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, FLD.obj_oartifact) && monmightthrowwep(otmp))
-                cptr.stI64o(otmp, FLD.obj_quan, cptr.ldI64o(otmp, FLD.obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8)) : rn2((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8))));
-            cptr.stI32o(otmp, FLD.obj_owt, weight(otmp) >>> 0);
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, $obj_oartifact) && monmightthrowwep(otmp))
+                cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8)) : rn2((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8))));
+            cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
-                cptr.st1o(otmp, FLD.obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
+                cptr.st1o(otmp, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
             void mpickobj(mtmp, otmp);
         }
         if (special) {
@@ -392,7 +408,7 @@ export function create_mplayers(num, special) {
     let x;
     let y;
     let fakemon = cptr.alloc(320);
-    cptr.memcpy(fakemon, cptr.add(cg, FLD.const_globals_zeromonst), 320);
+    cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
     while (num) {
         let tryct = 0;
         pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
@@ -419,10 +435,10 @@ cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __sl58); /** C ref: mplay
 
 /** C ref: mplayer.c:356 — @param {CPtr} mtmp */
 export function mplayer_talk(mtmp) {
-    if ((cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1))
+    if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         return;
     ;
-    verbalize(__sl51, cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8));
+    verbalize(__sl51, cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

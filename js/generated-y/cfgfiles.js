@@ -34,6 +34,59 @@ import { parsesymbols, switch_symbols } from './symbols.js';
 import { lua_createtable, lua_pushinteger, lua_settable } from './lapi.js';
 import { nhl_add_table_entry_int, nhl_add_table_entry_str } from './nhlua.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $_cnf_parser_state_buf = FLD._cnf_parser_state_buf,
+    $_cnf_parser_state_cont = FLD._cnf_parser_state_cont, $_cnf_parser_state_ep = FLD._cnf_parser_state_ep,
+    $_cnf_parser_state_inbufsz = FLD._cnf_parser_state_inbufsz,
+    $_cnf_parser_state_morelines = FLD._cnf_parser_state_morelines,
+    $_cnf_parser_state_pbreak = FLD._cnf_parser_state_pbreak,
+    $_cnf_parser_state_rv = FLD._cnf_parser_state_rv, $_cnf_parser_state_skip = FLD._cnf_parser_state_skip,
+    $_config_error_errmsg_errormsg = FLD._config_error_errmsg_errormsg,
+    $_config_error_errmsg_next = FLD._config_error_errmsg_next,
+    $_config_error_frame_fromfile = FLD._config_error_frame_fromfile,
+    $_config_error_frame_next = FLD._config_error_frame_next,
+    $_config_error_frame_num_errors = FLD._config_error_frame_num_errors,
+    $_config_error_frame_origline = FLD._config_error_frame_origline,
+    $_config_error_frame_origline_shown = FLD._config_error_frame_origline_shown,
+    $_config_error_frame_secure = FLD._config_error_frame_secure,
+    $_config_error_frame_source = FLD._config_error_frame_source, $flag_initrole = FLD.flag_initrole,
+    $flag_suppress_alert = FLD.flag_suppress_alert, $instance_flags_in_lua = FLD.instance_flags_in_lua,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_flags_parse_config_file_src = FLD.instance_flags_parse_config_file_src,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_c_catname = FLD.instance_globals_c_catname,
+    $instance_globals_c_cmdline_rcfile = FLD.instance_globals_c_cmdline_rcfile,
+    $instance_globals_c_config_section_chosen = FLD.instance_globals_c_config_section_chosen,
+    $instance_globals_c_config_section_current = FLD.instance_globals_c_config_section_current,
+    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+    $instance_globals_d_dogname = FLD.instance_globals_d_dogname,
+    $instance_globals_n_no_sound_notified = FLD.instance_globals_n_no_sound_notified,
+    $instance_globals_o_opt_phase = FLD.instance_globals_o_opt_phase,
+    $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
+    $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
+    $match_config_line_stmt_fn = FLD.match_config_line_stmt_fn,
+    $match_config_line_stmt_len = FLD.match_config_line_stmt_len,
+    $match_config_line_stmt_origbuf = FLD.match_config_line_stmt_origbuf,
+    $match_config_line_stmt_syscnf_only = FLD.match_config_line_stmt_syscnf_only,
+    $sinfo_config_error_ready = FLD.sinfo_config_error_ready, $strbuf_str = FLD.strbuf_str,
+    $sysopt_s_accessibility = FLD.sysopt_s_accessibility, $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
+    $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
+    $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid,
+    $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl, $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles,
+    $sysopt_s_entrymax = FLD.sysopt_s_entrymax, $sysopt_s_env_dbgfl = FLD.sysopt_s_env_dbgfl,
+    $sysopt_s_explorers = FLD.sysopt_s_explorers, $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
+    $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath, $sysopt_s_genericusers = FLD.sysopt_s_genericusers,
+    $sysopt_s_greppath = FLD.sysopt_s_greppath, $sysopt_s_hideusage = FLD.sysopt_s_hideusage,
+    $sysopt_s_livelog = FLD.sysopt_s_livelog, $sysopt_s_maxplayers = FLD.sysopt_s_maxplayers,
+    $sysopt_s_msghandler = FLD.sysopt_s_msghandler, $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
+    $sysopt_s_panictrace_libc = FLD.sysopt_s_panictrace_libc,
+    $sysopt_s_pers_is_uid = FLD.sysopt_s_pers_is_uid, $sysopt_s_persmax = FLD.sysopt_s_persmax,
+    $sysopt_s_pointsmin = FLD.sysopt_s_pointsmin, $sysopt_s_recover = FLD.sysopt_s_recover,
+    $sysopt_s_seduce = FLD.sysopt_s_seduce, $sysopt_s_shellers = FLD.sysopt_s_shellers,
+    $sysopt_s_tt_oname_maxrank = FLD.sysopt_s_tt_oname_maxrank, $sysopt_s_wizards = FLD.sysopt_s_wizards,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit(".nethackrc");
 const __sl1 = cptr.lit("Strange, could not figure out config file name.");
@@ -197,7 +250,7 @@ export function* do_write_config_file() {
         (yield* pline(__sl1));
         return NHM.ECMD_OK;
     }
-    if (cptr.ldU64o(flags, FLD.flag_suppress_alert) < 50790400n) {
+    if (cptr.ldU64o(flags, $flag_suppress_alert) < 50790400n) {
         (yield* pline(__sl2));
         (yield* Y.icall(wait_synch()()));
         (yield* pline(__sl3));
@@ -215,8 +268,8 @@ export function* do_write_config_file() {
         let buf = cptr.alloc(272);
         strbuf_init(buf);
         (yield* all_options_strbuf(buf));
-        len = cptr.strlen(cptr.ldPtro(buf, FLD.strbuf_str));
-        wrote = fwrite(cptr.ldPtro(buf, FLD.strbuf_str), 1n, len, fp);
+        len = cptr.strlen(cptr.ldPtro(buf, $strbuf_str));
+        wrote = fwrite(cptr.ldPtro(buf, $strbuf_str), 1n, len, fp);
         fclose(fp);
         strbuf_empty(buf);
         if (wrote != len)
@@ -380,13 +433,13 @@ function choose_random_part(str, sep) {
 
 /** C ref: cfgfiles.c:507 */
 function free_config_sections() {
-    if (cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen)) {
-        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen));
-        cptr.stPtro(gc, FLD.instance_globals_c_config_section_chosen, null);
+    if (cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)) {
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_chosen));
+        cptr.stPtro(gc, $instance_globals_c_config_section_chosen, null);
     }
-    if (cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current)) {
-        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current));
-        cptr.stPtro(gc, FLD.instance_globals_c_config_section_current, null);
+    if (cptr.ldPtro(gc, $instance_globals_c_config_section_current)) {
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_current));
+        cptr.stPtro(gc, $instance_globals_c_config_section_current, null);
     }
 }
 
@@ -413,37 +466,37 @@ function* is_config_section(str) {
 function* handle_config_section(buf) {
     let sect = (yield* is_config_section(buf));
     if (sect) {
-        if (cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current))
-            cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current)), cptr.stPtro(gc, FLD.instance_globals_c_config_section_current, null);
-        if (!cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen)) {
+        if (cptr.ldPtro(gc, $instance_globals_c_config_section_current))
+            cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_current)), cptr.stPtro(gc, $instance_globals_c_config_section_current, null);
+        if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)) {
             (yield* config_error_add(__sl22, sect));
             return 1;
         }
         if (cptr.ld1s(sect)) {
-            cptr.stPtro(gc, FLD.instance_globals_c_config_section_current, (yield* dupstr(sect)));
+            cptr.stPtro(gc, $instance_globals_c_config_section_current, (yield* dupstr(sect)));
             do {
                 if ((yield* debugcore(__sl20, 1))) {
-                    let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
-                    (yield* pline(__sl23, cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current)));
-                    cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
+                    let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
+                    (yield* pline(__sl23, cptr.ldPtro(gc, $instance_globals_c_config_section_current)));
+                    cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             } while (0);
         } else {
             free_config_sections();
             do {
                 if ((yield* debugcore(__sl20, 1))) {
-                    let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
+                    let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     (yield* pline(__sl24));
-                    cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
+                    cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             } while (0);
         }
         return 1;
     }
-    if (cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current)) {
-        if (!cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen))
+    if (cptr.ldPtro(gc, $instance_globals_c_config_section_current)) {
+        if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen))
             return 1;
-        if (strcmp(cptr.ldPtro(gc, FLD.instance_globals_c_config_section_current), cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen)))
+        if (strcmp(cptr.ldPtro(gc, $instance_globals_c_config_section_current), cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)))
             return 1;
     }
     return 0;
@@ -553,65 +606,65 @@ function cnf_line_NAME(bufp) {
 function* cnf_line_ROLE(bufp) {
     let len;
     if ((len = (yield* str2role(bufp))) >= 0)
-        cptr.stI32o(flags, FLD.flag_initrole, len);
+        cptr.stI32o(flags, $flag_initrole, len);
     return 1;
 }
 
 /** C ref: cfgfiles.c:778 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_dogname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gd, FLD.instance_globals_d_dogname), bufp, 62n, __builtin_object_size(cptr.add(gd, FLD.instance_globals_d_dogname), 1));
+    void __builtin___strncpy_chk(cptr.add(gd, $instance_globals_d_dogname), bufp, 62n, __builtin_object_size(cptr.add(gd, $instance_globals_d_dogname), 1));
     return 1;
 }
 
 /** C ref: cfgfiles.c:785 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_catname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gc, FLD.instance_globals_c_catname), bufp, 62n, __builtin_object_size(cptr.add(gc, FLD.instance_globals_c_catname), 1));
+    void __builtin___strncpy_chk(cptr.add(gc, $instance_globals_c_catname), bufp, 62n, __builtin_object_size(cptr.add(gc, $instance_globals_c_catname), 1));
     return 1;
 }
 
 /** C ref: cfgfiles.c:795 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_WIZARDS(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards));
-    cptr.stPtro(sysopt, FLD.sysopt_s_wizards, (yield* dupstr(bufp)));
-    if (cptr.strlen(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards)) && strcmp(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), __sl25)) {
-        if (cptr.ldPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list))
-            cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list));
-        cptr.stPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list, (yield* build_english_list(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards))));
+    if (cptr.ldPtro(sysopt, $sysopt_s_wizards))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_wizards));
+    cptr.stPtro(sysopt, $sysopt_s_wizards, (yield* dupstr(bufp)));
+    if (cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_wizards)) && strcmp(cptr.ldPtro(sysopt, $sysopt_s_wizards), __sl25)) {
+        if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list))
+            cptr.free(cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list));
+        cptr.stPtro(sysopt, $sysopt_s_fmtd_wizard_list, (yield* build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards))));
     }
     return 1;
 }
 
 /** C ref: cfgfiles.c:812 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_SHELLERS(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_shellers))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers));
-    cptr.stPtro(sysopt, FLD.sysopt_s_shellers, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_shellers))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_shellers));
+    cptr.stPtro(sysopt, $sysopt_s_shellers, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:821 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_MSGHANDLER(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler));
-    cptr.stPtro(sysopt, FLD.sysopt_s_msghandler, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_msghandler))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_msghandler));
+    cptr.stPtro(sysopt, $sysopt_s_msghandler, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:830 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_EXPLORERS(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_explorers))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers));
-    cptr.stPtro(sysopt, FLD.sysopt_s_explorers, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_explorers))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_explorers));
+    cptr.stPtro(sysopt, $sysopt_s_explorers, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:839 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_DEBUGFILES(bufp) {
-    if (!cptr.ldI32o(sysopt, FLD.sysopt_s_env_dbgfl)) {
-        if (cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles))
-            cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles));
-        cptr.stPtro(sysopt, FLD.sysopt_s_debugfiles, (yield* dupstr(bufp)));
+    if (!cptr.ldI32o(sysopt, $sysopt_s_env_dbgfl)) {
+        if (cptr.ldPtro(sysopt, $sysopt_s_debugfiles))
+            cptr.free(cptr.ldPtro(sysopt, $sysopt_s_debugfiles));
+        cptr.stPtro(sysopt, $sysopt_s_debugfiles, (yield* dupstr(bufp)));
     }
     return 1;
 }
@@ -624,16 +677,16 @@ function cnf_line_DUMPLOGFILE(bufp) {
 
 /** C ref: cfgfiles.c:865 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_GENERICUSERS(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_genericusers))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_genericusers));
-    cptr.stPtro(sysopt, FLD.sysopt_s_genericusers, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_genericusers))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_genericusers));
+    cptr.stPtro(sysopt, $sysopt_s_genericusers, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:874 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_BONES_POOLS(bufp) {
     let n = atoi(bufp);
-    cptr.stI32o(sysopt, FLD.sysopt_s_bones_pools, (n <= 0) ? 0 : ((n) < 10 ? (n) : 10));
+    cptr.stI32o(sysopt, $sysopt_s_bones_pools, (n <= 0) ? 0 : ((n) < 10 ? (n) : 10));
     return 1;
 }
 
@@ -647,44 +700,44 @@ function* cnf_line_SUPPORT(bufp) {
 
 /** C ref: cfgfiles.c:897 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_RECOVER(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_recover))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_recover));
-    cptr.stPtro(sysopt, FLD.sysopt_s_recover, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_recover))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_recover));
+    cptr.stPtro(sysopt, $sysopt_s_recover, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:906 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_CHECK_SAVE_UID(bufp) {
     let n = atoi(bufp);
-    cptr.stI32o(sysopt, FLD.sysopt_s_check_save_uid, n);
+    cptr.stI32o(sysopt, $sysopt_s_check_save_uid, n);
     return 1;
 }
 
 /** C ref: cfgfiles.c:915 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_CHECK_PLNAME(bufp) {
     let n = atoi(bufp);
-    cptr.stI32o(sysopt, FLD.sysopt_s_check_plname, n);
+    cptr.stI32o(sysopt, $sysopt_s_check_plname, n);
     return 1;
 }
 
 /** C ref: cfgfiles.c:924 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_SEDUCE(bufp) {
     let n = !!atoi(bufp);
-    let src = cptr.ldI32o(iflags, FLD.instance_flags_parse_config_file_src);
+    let src = cptr.ldI32o(iflags, $instance_flags_parse_config_file_src);
     let in_sysconf = schar((src == NHC.set_in_sysconf));
-    if (!in_sysconf && !cptr.ldI32o(sysopt, FLD.sysopt_s_seduce) && n != 0) {
+    if (!in_sysconf && !cptr.ldI32o(sysopt, $sysopt_s_seduce) && n != 0) {
         (yield* config_error_add(__sl26));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_seduce, n);
-    sysopt_seduce_set(cptr.ldI32o(sysopt, FLD.sysopt_s_seduce));
+    cptr.stI32o(sysopt, $sysopt_s_seduce, n);
+    sysopt_seduce_set(cptr.ldI32o(sysopt, $sysopt_s_seduce));
     return 1;
 }
 
 /** C ref: cfgfiles.c:946 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_HIDEUSAGE(bufp) {
     let n = !!atoi(bufp);
-    cptr.stI32o(sysopt, FLD.sysopt_s_hideusage, n);
+    cptr.stI32o(sysopt, $sysopt_s_hideusage, n);
     return 1;
 }
 
@@ -695,7 +748,7 @@ function* cnf_line_MAXPLAYERS(bufp) {
         (yield* config_error_add(__sl27));
         n = 5;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_maxplayers, n);
+    cptr.stI32o(sysopt, $sysopt_s_maxplayers, n);
     return 1;
 }
 
@@ -706,7 +759,7 @@ function* cnf_line_PERSMAX(bufp) {
         (yield* config_error_add(__sl28));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_persmax, n);
+    cptr.stI32o(sysopt, $sysopt_s_persmax, n);
     return 1;
 }
 
@@ -717,7 +770,7 @@ function* cnf_line_PERS_IS_UID(bufp) {
         (yield* config_error_add(__sl29));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_pers_is_uid, n);
+    cptr.stI32o(sysopt, $sysopt_s_pers_is_uid, n);
     return 1;
 }
 
@@ -728,7 +781,7 @@ function* cnf_line_ENTRYMAX(bufp) {
         (yield* config_error_add(__sl30));
         n = 10;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_entrymax, n);
+    cptr.stI32o(sysopt, $sysopt_s_entrymax, n);
     return 1;
 }
 
@@ -739,7 +792,7 @@ function* cnf_line_POINTSMIN(bufp) {
         (yield* config_error_add(__sl31));
         n = 100;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_pointsmin, n);
+    cptr.stI32o(sysopt, $sysopt_s_pointsmin, n);
     return 1;
 }
 
@@ -750,7 +803,7 @@ function* cnf_line_MAX_STATUENAME_RANK(bufp) {
         (yield* config_error_add(__sl32));
         n = 10;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_tt_oname_maxrank, n);
+    cptr.stI32o(sysopt, $sysopt_s_tt_oname_maxrank, n);
     return 1;
 }
 
@@ -761,7 +814,7 @@ function* cnf_line_LIVELOG(bufp) {
         (yield* config_error_add(__sl33));
         return 0;
     }
-    cptr.stI64o(sysopt, FLD.sysopt_s_livelog, L);
+    cptr.stI64o(sysopt, $sysopt_s_livelog, L);
     return 1;
 }
 
@@ -772,7 +825,7 @@ function* cnf_line_PANICTRACE_LIBC(bufp) {
         (yield* config_error_add(__sl34));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_panictrace_libc, n);
+    cptr.stI32o(sysopt, $sysopt_s_panictrace_libc, n);
     return 1;
 }
 
@@ -783,7 +836,7 @@ function* cnf_line_PANICTRACE_GDB(bufp) {
         (yield* config_error_add(__sl35));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_panictrace_gdb, n);
+    cptr.stI32o(sysopt, $sysopt_s_panictrace_gdb, n);
     return 1;
 }
 
@@ -793,9 +846,9 @@ function* cnf_line_GDBPATH(bufp) {
         (yield* config_error_add(__sl36));
         return 0;
     }
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath));
-    cptr.stPtro(sysopt, FLD.sysopt_s_gdbpath, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_gdbpath))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_gdbpath));
+    cptr.stPtro(sysopt, $sysopt_s_gdbpath, (yield* dupstr(bufp)));
     return 1;
 }
 
@@ -805,17 +858,17 @@ function* cnf_line_GREPPATH(bufp) {
         (yield* config_error_add(__sl37));
         return 0;
     }
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_greppath))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_greppath));
-    cptr.stPtro(sysopt, FLD.sysopt_s_greppath, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_greppath))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_greppath));
+    cptr.stPtro(sysopt, $sysopt_s_greppath, (yield* dupstr(bufp)));
     return 1;
 }
 
 /** C ref: cfgfiles.c:1112 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_CRASHREPORTURL(bufp) {
-    if (cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))
-        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl));
-    cptr.stPtro(sysopt, FLD.sysopt_s_crashreporturl, (yield* dupstr(bufp)));
+    if (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
+        cptr.free(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl));
+    cptr.stPtro(sysopt, $sysopt_s_crashreporturl, (yield* dupstr(bufp)));
     return 1;
 }
 
@@ -826,7 +879,7 @@ function* cnf_line_ACCESSIBILITY(bufp) {
         (yield* config_error_add(__sl38));
         n = 0;
     }
-    cptr.stI32o(sysopt, FLD.sysopt_s_accessibility, n);
+    cptr.stI32o(sysopt, $sysopt_s_accessibility, n);
     return 1;
 }
 
@@ -839,7 +892,7 @@ function* cnf_line_PORTABLE_DEVICE_PATHS(bufp) {
 
 /** C ref: cfgfiles.c:1156 — @param {CPtr} bufp @returns {CInt} */
 function* cnf_line_BOULDER(bufp) {
-    void (yield* get_uchars(bufp, cptr.add(cptr.add(go, FLD.instance_globals_o_ov_primary_syms), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), 1, 1, __sl40));
+    void (yield* get_uchars(bufp, cptr.add(cptr.add(go, $instance_globals_o_ov_primary_syms), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), 1, 1, __sl40));
     return 1;
 }
 
@@ -884,7 +937,7 @@ function* cnf_line_SYMBOLS(bufp) {
 
 /** C ref: cfgfiles.c:1214 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_WIZKIT(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gw, FLD.instance_globals_w_wizkit), bufp, 127n, __builtin_object_size(cptr.add(gw, FLD.instance_globals_w_wizkit), 1));
+    void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), bufp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
     return 1;
 }
 
@@ -919,307 +972,307 @@ function cnf_line_QT_COMPACT(bufp) {
 /** C ref: cfgfiles.c:1309 — struct match_config_line_stmt[59] */
 const config_line_stmt = cptr.alloc(59 * 24);
 cptr.stPtro(config_line_stmt, 0, __sl44);
-cptr.stI32o(config_line_stmt, 0 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 0 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 0 + FLD.match_config_line_stmt_origbuf, 1);
-cptr.stPtro(config_line_stmt, 0 + FLD.match_config_line_stmt_fn, cnf_line_OPTIONS);
+cptr.stI32o(config_line_stmt, 0 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 0 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 0 + $match_config_line_stmt_origbuf, 1);
+cptr.stPtro(config_line_stmt, 0 + $match_config_line_stmt_fn, cnf_line_OPTIONS);
 cptr.stPtro(config_line_stmt, 24, __sl45);
-cptr.stI32o(config_line_stmt, 24 + FLD.match_config_line_stmt_len, 5);
-cptr.st1o(config_line_stmt, 24 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 24 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 24 + FLD.match_config_line_stmt_fn, cnf_line_AUTOPICKUP_EXCEPTION);
+cptr.stI32o(config_line_stmt, 24 + $match_config_line_stmt_len, 5);
+cptr.st1o(config_line_stmt, 24 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 24 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 24 + $match_config_line_stmt_fn, cnf_line_AUTOPICKUP_EXCEPTION);
 cptr.stPtro(config_line_stmt, 48, __sl46);
-cptr.stI32o(config_line_stmt, 48 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 48 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 48 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 48 + FLD.match_config_line_stmt_fn, cnf_line_BINDINGS);
+cptr.stI32o(config_line_stmt, 48 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 48 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 48 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 48 + $match_config_line_stmt_fn, cnf_line_BINDINGS);
 cptr.stPtro(config_line_stmt, 72, __sl47);
-cptr.stI32o(config_line_stmt, 72 + FLD.match_config_line_stmt_len, 5);
-cptr.st1o(config_line_stmt, 72 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 72 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 72 + FLD.match_config_line_stmt_fn, cnf_line_AUTOCOMPLETE);
+cptr.stI32o(config_line_stmt, 72 + $match_config_line_stmt_len, 5);
+cptr.st1o(config_line_stmt, 72 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 72 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 72 + $match_config_line_stmt_fn, cnf_line_AUTOCOMPLETE);
 cptr.stPtro(config_line_stmt, 96, __sl48);
-cptr.stI32o(config_line_stmt, 96 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 96 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 96 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 96 + FLD.match_config_line_stmt_fn, cnf_line_MSGTYPE);
+cptr.stI32o(config_line_stmt, 96 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 96 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 96 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 96 + $match_config_line_stmt_fn, cnf_line_MSGTYPE);
 cptr.stPtro(config_line_stmt, 120, __sl49);
-cptr.stI32o(config_line_stmt, 120 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 120 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 120 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 120 + FLD.match_config_line_stmt_fn, cnf_line_HACKDIR);
+cptr.stI32o(config_line_stmt, 120 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 120 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 120 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 120 + $match_config_line_stmt_fn, cnf_line_HACKDIR);
 cptr.stPtro(config_line_stmt, 144, __sl50);
-cptr.stI32o(config_line_stmt, 144 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 144 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 144 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 144 + FLD.match_config_line_stmt_fn, cnf_line_LEVELDIR);
+cptr.stI32o(config_line_stmt, 144 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 144 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 144 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 144 + $match_config_line_stmt_fn, cnf_line_LEVELDIR);
 cptr.stPtro(config_line_stmt, 168, __sl51);
-cptr.stI32o(config_line_stmt, 168 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 168 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 168 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 168 + FLD.match_config_line_stmt_fn, cnf_line_LEVELDIR);
+cptr.stI32o(config_line_stmt, 168 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 168 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 168 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 168 + $match_config_line_stmt_fn, cnf_line_LEVELDIR);
 cptr.stPtro(config_line_stmt, 192, __sl52);
-cptr.stI32o(config_line_stmt, 192 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 192 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 192 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 192 + FLD.match_config_line_stmt_fn, cnf_line_SAVEDIR);
+cptr.stI32o(config_line_stmt, 192 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 192 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 192 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 192 + $match_config_line_stmt_fn, cnf_line_SAVEDIR);
 cptr.stPtro(config_line_stmt, 216, __sl53);
-cptr.stI32o(config_line_stmt, 216 + FLD.match_config_line_stmt_len, 5);
-cptr.st1o(config_line_stmt, 216 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 216 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 216 + FLD.match_config_line_stmt_fn, cnf_line_BONESDIR);
+cptr.stI32o(config_line_stmt, 216 + $match_config_line_stmt_len, 5);
+cptr.st1o(config_line_stmt, 216 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 216 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 216 + $match_config_line_stmt_fn, cnf_line_BONESDIR);
 cptr.stPtro(config_line_stmt, 240, __sl54);
-cptr.stI32o(config_line_stmt, 240 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 240 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 240 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 240 + FLD.match_config_line_stmt_fn, cnf_line_DATADIR);
+cptr.stI32o(config_line_stmt, 240 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 240 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 240 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 240 + $match_config_line_stmt_fn, cnf_line_DATADIR);
 cptr.stPtro(config_line_stmt, 264, __sl55);
-cptr.stI32o(config_line_stmt, 264 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 264 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 264 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 264 + FLD.match_config_line_stmt_fn, cnf_line_SCOREDIR);
+cptr.stI32o(config_line_stmt, 264 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 264 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 264 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 264 + $match_config_line_stmt_fn, cnf_line_SCOREDIR);
 cptr.stPtro(config_line_stmt, 288, __sl56);
-cptr.stI32o(config_line_stmt, 288 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 288 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 288 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 288 + FLD.match_config_line_stmt_fn, cnf_line_LOCKDIR);
+cptr.stI32o(config_line_stmt, 288 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 288 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 288 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 288 + $match_config_line_stmt_fn, cnf_line_LOCKDIR);
 cptr.stPtro(config_line_stmt, 312, __sl57);
-cptr.stI32o(config_line_stmt, 312 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 312 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 312 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 312 + FLD.match_config_line_stmt_fn, cnf_line_CONFIGDIR);
+cptr.stI32o(config_line_stmt, 312 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 312 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 312 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 312 + $match_config_line_stmt_fn, cnf_line_CONFIGDIR);
 cptr.stPtro(config_line_stmt, 336, __sl58);
-cptr.stI32o(config_line_stmt, 336 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 336 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 336 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 336 + FLD.match_config_line_stmt_fn, cnf_line_TROUBLEDIR);
+cptr.stI32o(config_line_stmt, 336 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 336 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 336 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 336 + $match_config_line_stmt_fn, cnf_line_TROUBLEDIR);
 cptr.stPtro(config_line_stmt, 360, __sl59);
-cptr.stI32o(config_line_stmt, 360 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 360 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 360 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 360 + FLD.match_config_line_stmt_fn, cnf_line_NAME);
+cptr.stI32o(config_line_stmt, 360 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 360 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 360 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 360 + $match_config_line_stmt_fn, cnf_line_NAME);
 cptr.stPtro(config_line_stmt, 384, __sl60);
-cptr.stI32o(config_line_stmt, 384 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 384 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 384 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 384 + FLD.match_config_line_stmt_fn, cnf_line_ROLE);
+cptr.stI32o(config_line_stmt, 384 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 384 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 384 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 384 + $match_config_line_stmt_fn, cnf_line_ROLE);
 cptr.stPtro(config_line_stmt, 408, __sl61);
-cptr.stI32o(config_line_stmt, 408 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 408 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 408 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 408 + FLD.match_config_line_stmt_fn, cnf_line_ROLE);
+cptr.stI32o(config_line_stmt, 408 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 408 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 408 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 408 + $match_config_line_stmt_fn, cnf_line_ROLE);
 cptr.stPtro(config_line_stmt, 432, __sl62);
-cptr.stI32o(config_line_stmt, 432 + FLD.match_config_line_stmt_len, 3);
-cptr.st1o(config_line_stmt, 432 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 432 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 432 + FLD.match_config_line_stmt_fn, cnf_line_dogname);
+cptr.stI32o(config_line_stmt, 432 + $match_config_line_stmt_len, 3);
+cptr.st1o(config_line_stmt, 432 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 432 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 432 + $match_config_line_stmt_fn, cnf_line_dogname);
 cptr.stPtro(config_line_stmt, 456, __sl63);
-cptr.stI32o(config_line_stmt, 456 + FLD.match_config_line_stmt_len, 3);
-cptr.st1o(config_line_stmt, 456 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 456 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 456 + FLD.match_config_line_stmt_fn, cnf_line_catname);
+cptr.stI32o(config_line_stmt, 456 + $match_config_line_stmt_len, 3);
+cptr.st1o(config_line_stmt, 456 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 456 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 456 + $match_config_line_stmt_fn, cnf_line_catname);
 cptr.stPtro(config_line_stmt, 480, __sl64);
-cptr.stI32o(config_line_stmt, 480 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 480 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 480 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 480 + FLD.match_config_line_stmt_fn, cnf_line_WIZARDS);
+cptr.stI32o(config_line_stmt, 480 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 480 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 480 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 480 + $match_config_line_stmt_fn, cnf_line_WIZARDS);
 cptr.stPtro(config_line_stmt, 504, __sl65);
-cptr.stI32o(config_line_stmt, 504 + FLD.match_config_line_stmt_len, 8);
-cptr.st1o(config_line_stmt, 504 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 504 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 504 + FLD.match_config_line_stmt_fn, cnf_line_SHELLERS);
+cptr.stI32o(config_line_stmt, 504 + $match_config_line_stmt_len, 8);
+cptr.st1o(config_line_stmt, 504 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 504 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 504 + $match_config_line_stmt_fn, cnf_line_SHELLERS);
 cptr.stPtro(config_line_stmt, 528, __sl66);
-cptr.stI32o(config_line_stmt, 528 + FLD.match_config_line_stmt_len, 9);
-cptr.st1o(config_line_stmt, 528 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 528 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 528 + FLD.match_config_line_stmt_fn, cnf_line_MSGHANDLER);
+cptr.stI32o(config_line_stmt, 528 + $match_config_line_stmt_len, 9);
+cptr.st1o(config_line_stmt, 528 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 528 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 528 + $match_config_line_stmt_fn, cnf_line_MSGHANDLER);
 cptr.stPtro(config_line_stmt, 552, __sl67);
-cptr.stI32o(config_line_stmt, 552 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 552 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 552 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 552 + FLD.match_config_line_stmt_fn, cnf_line_EXPLORERS);
+cptr.stI32o(config_line_stmt, 552 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 552 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 552 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 552 + $match_config_line_stmt_fn, cnf_line_EXPLORERS);
 cptr.stPtro(config_line_stmt, 576, __sl68);
-cptr.stI32o(config_line_stmt, 576 + FLD.match_config_line_stmt_len, 5);
-cptr.st1o(config_line_stmt, 576 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 576 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 576 + FLD.match_config_line_stmt_fn, cnf_line_DEBUGFILES);
+cptr.stI32o(config_line_stmt, 576 + $match_config_line_stmt_len, 5);
+cptr.st1o(config_line_stmt, 576 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 576 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 576 + $match_config_line_stmt_fn, cnf_line_DEBUGFILES);
 cptr.stPtro(config_line_stmt, 600, __sl69);
-cptr.stI32o(config_line_stmt, 600 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 600 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 600 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 600 + FLD.match_config_line_stmt_fn, cnf_line_DUMPLOGFILE);
+cptr.stI32o(config_line_stmt, 600 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 600 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 600 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 600 + $match_config_line_stmt_fn, cnf_line_DUMPLOGFILE);
 cptr.stPtro(config_line_stmt, 624, __sl70);
-cptr.stI32o(config_line_stmt, 624 + FLD.match_config_line_stmt_len, 12);
-cptr.st1o(config_line_stmt, 624 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 624 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 624 + FLD.match_config_line_stmt_fn, cnf_line_GENERICUSERS);
+cptr.stI32o(config_line_stmt, 624 + $match_config_line_stmt_len, 12);
+cptr.st1o(config_line_stmt, 624 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 624 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 624 + $match_config_line_stmt_fn, cnf_line_GENERICUSERS);
 cptr.stPtro(config_line_stmt, 648, __sl71);
-cptr.stI32o(config_line_stmt, 648 + FLD.match_config_line_stmt_len, 10);
-cptr.st1o(config_line_stmt, 648 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 648 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 648 + FLD.match_config_line_stmt_fn, cnf_line_BONES_POOLS);
+cptr.stI32o(config_line_stmt, 648 + $match_config_line_stmt_len, 10);
+cptr.st1o(config_line_stmt, 648 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 648 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 648 + $match_config_line_stmt_fn, cnf_line_BONES_POOLS);
 cptr.stPtro(config_line_stmt, 672, __sl72);
-cptr.stI32o(config_line_stmt, 672 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 672 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 672 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 672 + FLD.match_config_line_stmt_fn, cnf_line_SUPPORT);
+cptr.stI32o(config_line_stmt, 672 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 672 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 672 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 672 + $match_config_line_stmt_fn, cnf_line_SUPPORT);
 cptr.stPtro(config_line_stmt, 696, __sl73);
-cptr.stI32o(config_line_stmt, 696 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 696 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 696 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 696 + FLD.match_config_line_stmt_fn, cnf_line_RECOVER);
+cptr.stI32o(config_line_stmt, 696 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 696 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 696 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 696 + $match_config_line_stmt_fn, cnf_line_RECOVER);
 cptr.stPtro(config_line_stmt, 720, __sl74);
-cptr.stI32o(config_line_stmt, 720 + FLD.match_config_line_stmt_len, 14);
-cptr.st1o(config_line_stmt, 720 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 720 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 720 + FLD.match_config_line_stmt_fn, cnf_line_CHECK_SAVE_UID);
+cptr.stI32o(config_line_stmt, 720 + $match_config_line_stmt_len, 14);
+cptr.st1o(config_line_stmt, 720 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 720 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 720 + $match_config_line_stmt_fn, cnf_line_CHECK_SAVE_UID);
 cptr.stPtro(config_line_stmt, 744, __sl75);
-cptr.stI32o(config_line_stmt, 744 + FLD.match_config_line_stmt_len, 12);
-cptr.st1o(config_line_stmt, 744 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 744 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 744 + FLD.match_config_line_stmt_fn, cnf_line_CHECK_PLNAME);
+cptr.stI32o(config_line_stmt, 744 + $match_config_line_stmt_len, 12);
+cptr.st1o(config_line_stmt, 744 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 744 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 744 + $match_config_line_stmt_fn, cnf_line_CHECK_PLNAME);
 cptr.stPtro(config_line_stmt, 768, __sl76);
-cptr.stI32o(config_line_stmt, 768 + FLD.match_config_line_stmt_len, 6);
-cptr.st1o(config_line_stmt, 768 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 768 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 768 + FLD.match_config_line_stmt_fn, cnf_line_SEDUCE);
+cptr.stI32o(config_line_stmt, 768 + $match_config_line_stmt_len, 6);
+cptr.st1o(config_line_stmt, 768 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 768 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 768 + $match_config_line_stmt_fn, cnf_line_SEDUCE);
 cptr.stPtro(config_line_stmt, 792, __sl77);
-cptr.stI32o(config_line_stmt, 792 + FLD.match_config_line_stmt_len, 9);
-cptr.st1o(config_line_stmt, 792 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 792 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 792 + FLD.match_config_line_stmt_fn, cnf_line_HIDEUSAGE);
+cptr.stI32o(config_line_stmt, 792 + $match_config_line_stmt_len, 9);
+cptr.st1o(config_line_stmt, 792 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 792 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 792 + $match_config_line_stmt_fn, cnf_line_HIDEUSAGE);
 cptr.stPtro(config_line_stmt, 816, __sl78);
-cptr.stI32o(config_line_stmt, 816 + FLD.match_config_line_stmt_len, 10);
-cptr.st1o(config_line_stmt, 816 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 816 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 816 + FLD.match_config_line_stmt_fn, cnf_line_MAXPLAYERS);
+cptr.stI32o(config_line_stmt, 816 + $match_config_line_stmt_len, 10);
+cptr.st1o(config_line_stmt, 816 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 816 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 816 + $match_config_line_stmt_fn, cnf_line_MAXPLAYERS);
 cptr.stPtro(config_line_stmt, 840, __sl79);
-cptr.stI32o(config_line_stmt, 840 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 840 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 840 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 840 + FLD.match_config_line_stmt_fn, cnf_line_PERSMAX);
+cptr.stI32o(config_line_stmt, 840 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 840 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 840 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 840 + $match_config_line_stmt_fn, cnf_line_PERSMAX);
 cptr.stPtro(config_line_stmt, 864, __sl80);
-cptr.stI32o(config_line_stmt, 864 + FLD.match_config_line_stmt_len, 11);
-cptr.st1o(config_line_stmt, 864 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 864 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 864 + FLD.match_config_line_stmt_fn, cnf_line_PERS_IS_UID);
+cptr.stI32o(config_line_stmt, 864 + $match_config_line_stmt_len, 11);
+cptr.st1o(config_line_stmt, 864 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 864 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 864 + $match_config_line_stmt_fn, cnf_line_PERS_IS_UID);
 cptr.stPtro(config_line_stmt, 888, __sl81);
-cptr.stI32o(config_line_stmt, 888 + FLD.match_config_line_stmt_len, 8);
-cptr.st1o(config_line_stmt, 888 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 888 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 888 + FLD.match_config_line_stmt_fn, cnf_line_ENTRYMAX);
+cptr.stI32o(config_line_stmt, 888 + $match_config_line_stmt_len, 8);
+cptr.st1o(config_line_stmt, 888 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 888 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 888 + $match_config_line_stmt_fn, cnf_line_ENTRYMAX);
 cptr.stPtro(config_line_stmt, 912, __sl82);
-cptr.stI32o(config_line_stmt, 912 + FLD.match_config_line_stmt_len, 9);
-cptr.st1o(config_line_stmt, 912 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 912 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 912 + FLD.match_config_line_stmt_fn, cnf_line_POINTSMIN);
+cptr.stI32o(config_line_stmt, 912 + $match_config_line_stmt_len, 9);
+cptr.st1o(config_line_stmt, 912 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 912 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 912 + $match_config_line_stmt_fn, cnf_line_POINTSMIN);
 cptr.stPtro(config_line_stmt, 936, __sl83);
-cptr.stI32o(config_line_stmt, 936 + FLD.match_config_line_stmt_len, 10);
-cptr.st1o(config_line_stmt, 936 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 936 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 936 + FLD.match_config_line_stmt_fn, cnf_line_MAX_STATUENAME_RANK);
+cptr.stI32o(config_line_stmt, 936 + $match_config_line_stmt_len, 10);
+cptr.st1o(config_line_stmt, 936 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 936 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 936 + $match_config_line_stmt_fn, cnf_line_MAX_STATUENAME_RANK);
 cptr.stPtro(config_line_stmt, 960, __sl84);
-cptr.stI32o(config_line_stmt, 960 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 960 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 960 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 960 + FLD.match_config_line_stmt_fn, cnf_line_LIVELOG);
+cptr.stI32o(config_line_stmt, 960 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 960 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 960 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 960 + $match_config_line_stmt_fn, cnf_line_LIVELOG);
 cptr.stPtro(config_line_stmt, 984, __sl85);
-cptr.stI32o(config_line_stmt, 984 + FLD.match_config_line_stmt_len, 15);
-cptr.st1o(config_line_stmt, 984 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 984 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 984 + FLD.match_config_line_stmt_fn, cnf_line_PANICTRACE_LIBC);
+cptr.stI32o(config_line_stmt, 984 + $match_config_line_stmt_len, 15);
+cptr.st1o(config_line_stmt, 984 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 984 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 984 + $match_config_line_stmt_fn, cnf_line_PANICTRACE_LIBC);
 cptr.stPtro(config_line_stmt, 1008, __sl86);
-cptr.stI32o(config_line_stmt, 1008 + FLD.match_config_line_stmt_len, 14);
-cptr.st1o(config_line_stmt, 1008 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1008 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1008 + FLD.match_config_line_stmt_fn, cnf_line_PANICTRACE_GDB);
+cptr.stI32o(config_line_stmt, 1008 + $match_config_line_stmt_len, 14);
+cptr.st1o(config_line_stmt, 1008 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1008 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1008 + $match_config_line_stmt_fn, cnf_line_PANICTRACE_GDB);
 cptr.stPtro(config_line_stmt, 1032, __sl87);
-cptr.stI32o(config_line_stmt, 1032 + FLD.match_config_line_stmt_len, 13);
-cptr.st1o(config_line_stmt, 1032 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1032 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1032 + FLD.match_config_line_stmt_fn, cnf_line_CRASHREPORTURL);
+cptr.stI32o(config_line_stmt, 1032 + $match_config_line_stmt_len, 13);
+cptr.st1o(config_line_stmt, 1032 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1032 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1032 + $match_config_line_stmt_fn, cnf_line_CRASHREPORTURL);
 cptr.stPtro(config_line_stmt, 1056, __sl88);
-cptr.stI32o(config_line_stmt, 1056 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 1056 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1056 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1056 + FLD.match_config_line_stmt_fn, cnf_line_GDBPATH);
+cptr.stI32o(config_line_stmt, 1056 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 1056 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1056 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1056 + $match_config_line_stmt_fn, cnf_line_GDBPATH);
 cptr.stPtro(config_line_stmt, 1080, __sl89);
-cptr.stI32o(config_line_stmt, 1080 + FLD.match_config_line_stmt_len, 7);
-cptr.st1o(config_line_stmt, 1080 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1080 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1080 + FLD.match_config_line_stmt_fn, cnf_line_GREPPATH);
+cptr.stI32o(config_line_stmt, 1080 + $match_config_line_stmt_len, 7);
+cptr.st1o(config_line_stmt, 1080 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1080 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1080 + $match_config_line_stmt_fn, cnf_line_GREPPATH);
 cptr.stPtro(config_line_stmt, 1104, __sl90);
-cptr.stI32o(config_line_stmt, 1104 + FLD.match_config_line_stmt_len, 13);
-cptr.st1o(config_line_stmt, 1104 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1104 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1104 + FLD.match_config_line_stmt_fn, cnf_line_ACCESSIBILITY);
+cptr.stI32o(config_line_stmt, 1104 + $match_config_line_stmt_len, 13);
+cptr.st1o(config_line_stmt, 1104 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1104 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1104 + $match_config_line_stmt_fn, cnf_line_ACCESSIBILITY);
 cptr.stPtro(config_line_stmt, 1128, __sl91);
-cptr.stI32o(config_line_stmt, 1128 + FLD.match_config_line_stmt_len, 8);
-cptr.st1o(config_line_stmt, 1128 + FLD.match_config_line_stmt_syscnf_only, 1);
-cptr.st1o(config_line_stmt, 1128 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1128 + FLD.match_config_line_stmt_fn, cnf_line_PORTABLE_DEVICE_PATHS);
+cptr.stI32o(config_line_stmt, 1128 + $match_config_line_stmt_len, 8);
+cptr.st1o(config_line_stmt, 1128 + $match_config_line_stmt_syscnf_only, 1);
+cptr.st1o(config_line_stmt, 1128 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1128 + $match_config_line_stmt_fn, cnf_line_PORTABLE_DEVICE_PATHS);
 cptr.stPtro(config_line_stmt, 1152, __sl40);
-cptr.stI32o(config_line_stmt, 1152 + FLD.match_config_line_stmt_len, 3);
-cptr.st1o(config_line_stmt, 1152 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1152 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1152 + FLD.match_config_line_stmt_fn, cnf_line_BOULDER);
+cptr.stI32o(config_line_stmt, 1152 + $match_config_line_stmt_len, 3);
+cptr.st1o(config_line_stmt, 1152 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1152 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1152 + $match_config_line_stmt_fn, cnf_line_BOULDER);
 cptr.stPtro(config_line_stmt, 1176, __sl92);
-cptr.stI32o(config_line_stmt, 1176 + FLD.match_config_line_stmt_len, 9);
-cptr.st1o(config_line_stmt, 1176 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1176 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1176 + FLD.match_config_line_stmt_fn, cnf_line_MENUCOLOR);
+cptr.stI32o(config_line_stmt, 1176 + $match_config_line_stmt_len, 9);
+cptr.st1o(config_line_stmt, 1176 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1176 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1176 + $match_config_line_stmt_fn, cnf_line_MENUCOLOR);
 cptr.stPtro(config_line_stmt, 1200, __sl93);
-cptr.stI32o(config_line_stmt, 1200 + FLD.match_config_line_stmt_len, 6);
-cptr.st1o(config_line_stmt, 1200 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1200 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1200 + FLD.match_config_line_stmt_fn, cnf_line_HILITE_STATUS);
+cptr.stI32o(config_line_stmt, 1200 + $match_config_line_stmt_len, 6);
+cptr.st1o(config_line_stmt, 1200 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1200 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1200 + $match_config_line_stmt_fn, cnf_line_HILITE_STATUS);
 cptr.stPtro(config_line_stmt, 1224, __sl41);
-cptr.stI32o(config_line_stmt, 1224 + FLD.match_config_line_stmt_len, 5);
-cptr.st1o(config_line_stmt, 1224 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1224 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1224 + FLD.match_config_line_stmt_fn, cnf_line_WARNINGS);
+cptr.stI32o(config_line_stmt, 1224 + $match_config_line_stmt_len, 5);
+cptr.st1o(config_line_stmt, 1224 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1224 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1224 + $match_config_line_stmt_fn, cnf_line_WARNINGS);
 cptr.stPtro(config_line_stmt, 1248, __sl94);
-cptr.stI32o(config_line_stmt, 1248 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 1248 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1248 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1248 + FLD.match_config_line_stmt_fn, cnf_line_ROGUESYMBOLS);
+cptr.stI32o(config_line_stmt, 1248 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 1248 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1248 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1248 + $match_config_line_stmt_fn, cnf_line_ROGUESYMBOLS);
 cptr.stPtro(config_line_stmt, 1272, __sl95);
-cptr.stI32o(config_line_stmt, 1272 + FLD.match_config_line_stmt_len, 4);
-cptr.st1o(config_line_stmt, 1272 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1272 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1272 + FLD.match_config_line_stmt_fn, cnf_line_SYMBOLS);
+cptr.stI32o(config_line_stmt, 1272 + $match_config_line_stmt_len, 4);
+cptr.st1o(config_line_stmt, 1272 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1272 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1272 + $match_config_line_stmt_fn, cnf_line_SYMBOLS);
 cptr.stPtro(config_line_stmt, 1296, __sl96);
-cptr.stI32o(config_line_stmt, 1296 + FLD.match_config_line_stmt_len, 6);
-cptr.st1o(config_line_stmt, 1296 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1296 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1296 + FLD.match_config_line_stmt_fn, cnf_line_WIZKIT);
+cptr.stI32o(config_line_stmt, 1296 + $match_config_line_stmt_len, 6);
+cptr.st1o(config_line_stmt, 1296 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1296 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1296 + $match_config_line_stmt_fn, cnf_line_WIZKIT);
 cptr.stPtro(config_line_stmt, 1320, __sl97);
-cptr.stI32o(config_line_stmt, 1320 + FLD.match_config_line_stmt_len, 12);
-cptr.st1o(config_line_stmt, 1320 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1320 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1320 + FLD.match_config_line_stmt_fn, cnf_line_QT_TILEWIDTH);
+cptr.stI32o(config_line_stmt, 1320 + $match_config_line_stmt_len, 12);
+cptr.st1o(config_line_stmt, 1320 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1320 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1320 + $match_config_line_stmt_fn, cnf_line_QT_TILEWIDTH);
 cptr.stPtro(config_line_stmt, 1344, __sl98);
-cptr.stI32o(config_line_stmt, 1344 + FLD.match_config_line_stmt_len, 13);
-cptr.st1o(config_line_stmt, 1344 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1344 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1344 + FLD.match_config_line_stmt_fn, cnf_line_QT_TILEHEIGHT);
+cptr.stI32o(config_line_stmt, 1344 + $match_config_line_stmt_len, 13);
+cptr.st1o(config_line_stmt, 1344 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1344 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1344 + $match_config_line_stmt_fn, cnf_line_QT_TILEHEIGHT);
 cptr.stPtro(config_line_stmt, 1368, __sl99);
-cptr.stI32o(config_line_stmt, 1368 + FLD.match_config_line_stmt_len, 11);
-cptr.st1o(config_line_stmt, 1368 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1368 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1368 + FLD.match_config_line_stmt_fn, cnf_line_QT_FONTSIZE);
+cptr.stI32o(config_line_stmt, 1368 + $match_config_line_stmt_len, 11);
+cptr.st1o(config_line_stmt, 1368 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1368 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1368 + $match_config_line_stmt_fn, cnf_line_QT_FONTSIZE);
 cptr.stPtro(config_line_stmt, 1392, __sl100);
-cptr.stI32o(config_line_stmt, 1392 + FLD.match_config_line_stmt_len, 10);
-cptr.st1o(config_line_stmt, 1392 + FLD.match_config_line_stmt_syscnf_only, 0);
-cptr.st1o(config_line_stmt, 1392 + FLD.match_config_line_stmt_origbuf, 0);
-cptr.stPtro(config_line_stmt, 1392 + FLD.match_config_line_stmt_fn, cnf_line_QT_COMPACT);
+cptr.stI32o(config_line_stmt, 1392 + $match_config_line_stmt_len, 10);
+cptr.st1o(config_line_stmt, 1392 + $match_config_line_stmt_syscnf_only, 0);
+cptr.st1o(config_line_stmt, 1392 + $match_config_line_stmt_origbuf, 0);
+cptr.stPtro(config_line_stmt, 1392 + $match_config_line_stmt_fn, cnf_line_QT_COMPACT);
 
 /** C ref: cfgfiles.c:1386 — boolean[59] */
 const disregarded_config_lines = new Uint8Array(59);
 
 /** C ref: cfgfiles.c:1389 — @param {CPtr} origbuf @returns {CInt} */
 export function* parse_config_line(origbuf) {
-    let src = cptr.ldI32o(iflags, FLD.instance_flags_parse_config_file_src);
+    let src = cptr.ldI32o(iflags, $instance_flags_parse_config_file_src);
     let in_sysconf = schar((src == NHC.set_in_sysconf));
     let bufp;
     let buf = new Uint8Array(1024);
@@ -1239,12 +1292,12 @@ export function* parse_config_line(origbuf) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1so2(config_line_stmt, i, 24, FLD.match_config_line_stmt_syscnf_only) && !in_sysconf)
+        if (cptr.ld1so2(config_line_stmt, i, 24, $match_config_line_stmt_syscnf_only) && !in_sysconf)
             continue;
-        if ((yield* match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o2(config_line_stmt, i, 24, FLD.match_config_line_stmt_len), 1))) {
-            let parm = cptr.ld1so2(config_line_stmt, i, 24, FLD.match_config_line_stmt_origbuf) ? origbuf : bufp;
+        if ((yield* match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o2(config_line_stmt, i, 24, $match_config_line_stmt_len), 1))) {
+            let parm = cptr.ld1so2(config_line_stmt, i, 24, $match_config_line_stmt_origbuf) ? origbuf : bufp;
             if (!cptr.ld1so(cptr.decay(disregarded_config_lines), i, 1))
-                return (yield* Y.icall(cptr.ldPtro2(config_line_stmt, i, 24, FLD.match_config_line_stmt_fn)(parm)));
+                return (yield* Y.icall(cptr.ldPtro2(config_line_stmt, i, 24, $match_config_line_stmt_fn)(parm)));
         }
     }
     if (!ignore_errors_on_unmatched)
@@ -1266,19 +1319,19 @@ let config_error_msg = null;
 export function* config_error_init(from_file, sourcename, secure) {
     let tmp = (yield* alloc(1304));
     cptr.stI32(tmp, 0);
-    cptr.stI32o(tmp, FLD._config_error_frame_num_errors, 0);
-    cptr.st1o(tmp, FLD._config_error_frame_origline_shown, 0);
-    cptr.st1o(tmp, FLD._config_error_frame_fromfile, from_file);
-    cptr.st1o(tmp, FLD._config_error_frame_secure, secure);
-    cptr.st1o2(tmp, 0, 1, FLD._config_error_frame_origline, 0);
+    cptr.stI32o(tmp, $_config_error_frame_num_errors, 0);
+    cptr.st1o(tmp, $_config_error_frame_origline_shown, 0);
+    cptr.st1o(tmp, $_config_error_frame_fromfile, from_file);
+    cptr.st1o(tmp, $_config_error_frame_secure, secure);
+    cptr.st1o2(tmp, 0, 1, $_config_error_frame_origline, 0);
     if (sourcename && cptr.ld1so(sourcename, 0)) {
-        void __builtin___strncpy_chk(cptr.add(tmp, FLD._config_error_frame_source), sourcename, 255n, __builtin_object_size(cptr.add(tmp, FLD._config_error_frame_source), 1));
-        cptr.st1o2(tmp, 255n, 1, FLD._config_error_frame_source, 0);
+        void __builtin___strncpy_chk(cptr.add(tmp, $_config_error_frame_source), sourcename, 255n, __builtin_object_size(cptr.add(tmp, $_config_error_frame_source), 1));
+        cptr.st1o2(tmp, 255n, 1, $_config_error_frame_source, 0);
     } else
-        cptr.st1o2(tmp, 0, 1, FLD._config_error_frame_source, 0);
-    cptr.stPtro(tmp, FLD._config_error_frame_next, config_error_data);
+        cptr.st1o2(tmp, 0, 1, $_config_error_frame_source, 0);
+    cptr.stPtro(tmp, $_config_error_frame_next, config_error_data);
     config_error_data = tmp;
-    cptr.stI32o(program_state, FLD.sinfo_config_error_ready, 1);
+    cptr.stI32o(program_state, $sinfo_config_error_ready, 1);
 }
 
 /** C ref: cfgfiles.c:1493 — @param {CPtr} line @returns {CInt} */
@@ -1286,15 +1339,15 @@ function config_error_nextline(line) {
     let ced = config_error_data;
     if (!ced)
         return 0;
-    if (cptr.ldI32o(ced, FLD._config_error_frame_num_errors) && cptr.ld1so(ced, FLD._config_error_frame_secure))
+    if (cptr.ldI32o(ced, $_config_error_frame_num_errors) && cptr.ld1so(ced, $_config_error_frame_secure))
         return 0;
     (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
-    cptr.st1o(ced, FLD._config_error_frame_origline_shown, 0);
+    cptr.st1o(ced, $_config_error_frame_origline_shown, 0);
     if (line && cptr.ld1so(line, 0)) {
-        void __builtin___strncpy_chk(cptr.add(ced, FLD._config_error_frame_origline), line, 1023n, __builtin_object_size(cptr.add(ced, FLD._config_error_frame_origline), 1));
-        cptr.st1o2(ced, 1023n, 1, FLD._config_error_frame_origline, 0);
+        void __builtin___strncpy_chk(cptr.add(ced, $_config_error_frame_origline), line, 1023n, __builtin_object_size(cptr.add(ced, $_config_error_frame_origline), 1));
+        cptr.st1o2(ced, 1023n, 1, $_config_error_frame_origline, 0);
     } else
-        cptr.st1o2(ced, 0, 1, FLD._config_error_frame_origline, 0);
+        cptr.st1o2(ced, 0, 1, $_config_error_frame_origline, 0);
     return 1;
 }
 
@@ -1308,11 +1361,11 @@ export function* l_get_config_errors(L) {
         (yield* lua_pushinteger(L, BigInt((idx++))));
         (yield* lua_createtable(L, 0, 0));
         (yield* nhl_add_table_entry_int(L, __sl103, BigInt(cptr.ldI32(dat))));
-        (yield* nhl_add_table_entry_str(L, __sl104, cptr.ldPtro(dat, FLD._config_error_errmsg_errormsg)));
+        (yield* nhl_add_table_entry_str(L, __sl104, cptr.ldPtro(dat, $_config_error_errmsg_errormsg)));
         (yield* lua_settable(L, -3));
-        tmp = cptr.ldPtro(dat, FLD._config_error_errmsg_next);
-        cptr.free(cptr.ldPtro(dat, FLD._config_error_errmsg_errormsg));
-        cptr.stPtro(dat, FLD._config_error_errmsg_errormsg, null);
+        tmp = cptr.ldPtro(dat, $_config_error_errmsg_next);
+        cptr.free(cptr.ldPtro(dat, $_config_error_errmsg_errormsg));
+        cptr.stPtro(dat, $_config_error_errmsg_errormsg, null);
         cptr.free(dat);
         dat = tmp;
     }
@@ -1328,29 +1381,29 @@ export function* config_erradd(buf) {
         buf = __sl105;
     punct = cptr.add(c_eos(buf), -(1));
     punct = cptr.strchr(__sl106, cptr.ld1s(punct)) ? __sl17 : __sl107;
-    if (!cptr.ldI32o(program_state, FLD.sinfo_config_error_ready)) {
-        (yield* pline(__sl108, !cptr.ld1so(iflags, FLD.instance_flags_window_inited) ? __sl109 : __sl17, buf, punct));
+    if (!cptr.ldI32o(program_state, $sinfo_config_error_ready)) {
+        (yield* pline(__sl108, !cptr.ld1so(iflags, $instance_flags_window_inited) ? __sl109 : __sl17, buf, punct));
         (yield* Y.icall(wait_synch()()));
         return;
     }
-    if (cptr.ld1so(iflags, FLD.instance_flags_in_lua)) {
+    if (cptr.ld1so(iflags, $instance_flags_in_lua)) {
         let dat = (yield* alloc(24));
-        cptr.stPtro(dat, FLD._config_error_errmsg_next, config_error_msg);
+        cptr.stPtro(dat, $_config_error_errmsg_next, config_error_msg);
         cptr.stI32(dat, cptr.ldI32(config_error_data));
-        cptr.stPtro(dat, FLD._config_error_errmsg_errormsg, (yield* dupstr(buf)));
+        cptr.stPtro(dat, $_config_error_errmsg_errormsg, (yield* dupstr(buf)));
         config_error_msg = dat;
         return;
     }
-    (cptr.stI32o(config_error_data, FLD._config_error_frame_num_errors, cptr.ldI32o(config_error_data, FLD._config_error_frame_num_errors) + 1)) - (1);
-    if (!cptr.ld1so(config_error_data, FLD._config_error_frame_origline_shown) && !cptr.ld1so(config_error_data, FLD._config_error_frame_secure)) {
-        (yield* pline(__sl110, cptr.add(config_error_data, FLD._config_error_frame_origline)));
-        cptr.st1o(config_error_data, FLD._config_error_frame_origline_shown, 1);
+    (cptr.stI32o(config_error_data, $_config_error_frame_num_errors, cptr.ldI32o(config_error_data, $_config_error_frame_num_errors) + 1)) - (1);
+    if (!cptr.ld1so(config_error_data, $_config_error_frame_origline_shown) && !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
+        (yield* pline(__sl110, cptr.add(config_error_data, $_config_error_frame_origline)));
+        cptr.st1o(config_error_data, $_config_error_frame_origline_shown, 1);
     }
-    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1so(config_error_data, FLD._config_error_frame_secure)) {
+    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
         void cptr.sprintf(cptr.decay(lineno), __sl111, cptr.ldI32(config_error_data));
     } else
         cptr.st1o(cptr.decay(lineno), 0, 0, 1);
-    (yield* pline(__sl112, cptr.ld1so(config_error_data, FLD._config_error_frame_secure) ? __sl113 : __sl114, cptr.decay(lineno), buf, punct));
+    (yield* pline(__sl112, cptr.ld1so(config_error_data, $_config_error_frame_secure) ? __sl113 : __sl114, cptr.decay(lineno), buf, punct));
 }
 
 /** C ref: cfgfiles.c:1592 @returns {CInt} */
@@ -1359,19 +1412,19 @@ export function* config_error_done() {
     let tmp = config_error_data;
     if (!config_error_data)
         return 0;
-    n = cptr.ldI32o(config_error_data, FLD._config_error_frame_num_errors);
-    if (cptr.ldI32o(gn, FLD.instance_globals_n_no_sound_notified) > 0) {
-        n = (n + ((cptr.ldI32o(gn, FLD.instance_globals_n_no_sound_notified) - 1) | 0)) | 0;
-        cptr.stI32o(gn, FLD.instance_globals_n_no_sound_notified, 0);
+    n = cptr.ldI32o(config_error_data, $_config_error_frame_num_errors);
+    if (cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) > 0) {
+        n = (n + ((cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) - 1) | 0)) | 0;
+        cptr.stI32o(gn, $instance_globals_n_no_sound_notified, 0);
     }
     if (n) {
-        let cmdline = schar((!strcmp(cptr.add(config_error_data, FLD._config_error_frame_source), __sl115)));
-        (yield* pline(__sl116, n, (((n) == 1) ? __sl17 : __sl117), cmdline ? __sl118 : __sl119, cptr.ld1so(config_error_data, FLD._config_error_frame_source) ? cptr.add(config_error_data, FLD._config_error_frame_source) : cptr.decay(configfile)));
+        let cmdline = schar((!strcmp(cptr.add(config_error_data, $_config_error_frame_source), __sl115)));
+        (yield* pline(__sl116, n, (((n) == 1) ? __sl17 : __sl117), cmdline ? __sl118 : __sl119, cptr.ld1so(config_error_data, $_config_error_frame_source) ? cptr.add(config_error_data, $_config_error_frame_source) : cptr.decay(configfile)));
         (yield* Y.icall(wait_synch()()));
     }
-    config_error_data = cptr.ldPtro(tmp, FLD._config_error_frame_next);
+    config_error_data = cptr.ldPtro(tmp, $_config_error_frame_next);
     cptr.free(tmp);
-    cptr.stI32o(program_state, FLD.sinfo_config_error_ready, (config_error_data !== null));
+    cptr.stI32o(program_state, $sinfo_config_error_ready, (config_error_data !== null));
     return n;
 }
 
@@ -1383,7 +1436,7 @@ export function* read_config_file(filename, src) {
         return 0;
     reset_duplicate_opt_detection();
     free_config_sections();
-    cptr.stI32o(iflags, FLD.instance_flags_parse_config_file_src, src);
+    cptr.stI32o(iflags, $instance_flags_parse_config_file_src, src);
     rv = (yield* parse_conf_file(fp, parse_config_line));
     void fclose(fp);
     free_config_sections();
@@ -1395,114 +1448,114 @@ export function* read_config_file(filename, src) {
 
 /** C ref: cfgfiles.c:1662 — @param {CPtr} parser */
 function* cnf_parser_init(parser) {
-    cptr.stI32o(parser, FLD._cnf_parser_state_rv, 1);
-    cptr.stPtro(parser, FLD._cnf_parser_state_ep, cptr.stPtro(parser, FLD._cnf_parser_state_buf, null));
-    cptr.st1o(parser, FLD._cnf_parser_state_skip, 0);
-    cptr.st1o(parser, FLD._cnf_parser_state_morelines, 0);
-    cptr.stI32o(parser, FLD._cnf_parser_state_inbufsz, 1024);
-    cptr.stPtr(parser, (yield* alloc(cptr.ldI32o(parser, FLD._cnf_parser_state_inbufsz))));
-    cptr.st1o(parser, FLD._cnf_parser_state_cont, 0);
-    cptr.st1o(parser, FLD._cnf_parser_state_pbreak, 0);
-    __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32o(parser, FLD._cnf_parser_state_inbufsz) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
+    cptr.stI32o(parser, $_cnf_parser_state_rv, 1);
+    cptr.stPtro(parser, $_cnf_parser_state_ep, cptr.stPtro(parser, $_cnf_parser_state_buf, null));
+    cptr.st1o(parser, $_cnf_parser_state_skip, 0);
+    cptr.st1o(parser, $_cnf_parser_state_morelines, 0);
+    cptr.stI32o(parser, $_cnf_parser_state_inbufsz, 1024);
+    cptr.stPtr(parser, (yield* alloc(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz))));
+    cptr.st1o(parser, $_cnf_parser_state_cont, 0);
+    cptr.st1o(parser, $_cnf_parser_state_pbreak, 0);
+    __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
 }
 
 /** C ref: cfgfiles.c:1677 — @param {CPtr} parser */
 function cnf_parser_done(parser) {
-    cptr.stPtro(parser, FLD._cnf_parser_state_ep, null);
+    cptr.stPtro(parser, $_cnf_parser_state_ep, null);
     if (cptr.ldPtr(parser))
         cptr.free(cptr.ldPtr(parser)), cptr.stPtr(parser, null);
-    if (cptr.ldPtro(parser, FLD._cnf_parser_state_buf))
-        cptr.free(cptr.ldPtro(parser, FLD._cnf_parser_state_buf)), cptr.stPtro(parser, FLD._cnf_parser_state_buf, null);
+    if (cptr.ldPtro(parser, $_cnf_parser_state_buf))
+        cptr.free(cptr.ldPtro(parser, $_cnf_parser_state_buf)), cptr.stPtro(parser, $_cnf_parser_state_buf, null);
 }
 
 /** C ref: cfgfiles.c:1693 — @param {CPtr} p @param {CPtr} proc */
 function* parse_conf_buf(p, proc) {
-    cptr.st1o(p, FLD._cnf_parser_state_cont, 0);
-    cptr.st1o(p, FLD._cnf_parser_state_pbreak, 0);
-    cptr.stPtro(p, FLD._cnf_parser_state_ep, cptr.strchr(cptr.ldPtr(p), 10));
-    if (cptr.ld1so(p, FLD._cnf_parser_state_skip)) {
-        if (cptr.ldPtro(p, FLD._cnf_parser_state_ep))
-            cptr.st1o(p, FLD._cnf_parser_state_skip, 0);
+    cptr.st1o(p, $_cnf_parser_state_cont, 0);
+    cptr.st1o(p, $_cnf_parser_state_pbreak, 0);
+    cptr.stPtro(p, $_cnf_parser_state_ep, cptr.strchr(cptr.ldPtr(p), 10));
+    if (cptr.ld1so(p, $_cnf_parser_state_skip)) {
+        if (cptr.ldPtro(p, $_cnf_parser_state_ep))
+            cptr.st1o(p, $_cnf_parser_state_skip, 0);
     } else {
-        if (!cptr.ldPtro(p, FLD._cnf_parser_state_ep)) {
-            if (cptr.strlen(cptr.ldPtr(p)) < BigInt(((cptr.ldI32o(p, FLD._cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
-                cptr.stPtro(p, FLD._cnf_parser_state_ep, eos(cptr.ldPtr(p)));
+        if (!cptr.ldPtro(p, $_cnf_parser_state_ep)) {
+            if (cptr.strlen(cptr.ldPtr(p)) < BigInt(((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
+                cptr.stPtro(p, $_cnf_parser_state_ep, eos(cptr.ldPtr(p)));
             } else {
                 (yield* config_error_add(__sl120));
-                cptr.st1o(p, FLD._cnf_parser_state_skip, 1);
+                cptr.st1o(p, $_cnf_parser_state_skip, 1);
             }
         } else {
-            cptr.st1(cptr.ldPtro(p, FLD._cnf_parser_state_ep), 0);
+            cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);
         }
-        if (cptr.ldPtro(p, FLD._cnf_parser_state_ep)) {
+        if (cptr.ldPtro(p, $_cnf_parser_state_ep)) {
             let tmpbuf = null;
             let len;
             let ignoreline = 0;
             let oldline = 0;
-            cptr.st1o(p, FLD._cnf_parser_state_morelines, schar((cptr.cmp(cptr.predec(() => cptr.ldPtro(p, FLD._cnf_parser_state_ep), (v) => { cptr.stPtro(p, FLD._cnf_parser_state_ep, v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 92 ? 1 : 0)));
-            if (cptr.ld1so(p, FLD._cnf_parser_state_morelines))
-                cptr.st1(cptr.ldPtro(p, FLD._cnf_parser_state_ep), 0);
-            while (cptr.cmp(cptr.ldPtro(p, FLD._cnf_parser_state_ep), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 9 || cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 13))
-                cptr.st1(cptr.postdec(() => cptr.ldPtro(p, FLD._cnf_parser_state_ep), (v) => { cptr.stPtro(p, FLD._cnf_parser_state_ep, v); }), 0);
+            cptr.st1o(p, $_cnf_parser_state_morelines, schar((cptr.cmp(cptr.predec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 92 ? 1 : 0)));
+            if (cptr.ld1so(p, $_cnf_parser_state_morelines))
+                cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);
+            while (cptr.cmp(cptr.ldPtro(p, $_cnf_parser_state_ep), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 13))
+                cptr.st1(cptr.postdec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), 0);
             if (!config_error_nextline(cptr.ldPtr(p))) {
-                cptr.stI32o(p, FLD._cnf_parser_state_rv, 0);
-                if (cptr.ldPtro(p, FLD._cnf_parser_state_buf))
-                    cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
-                cptr.st1o(p, FLD._cnf_parser_state_pbreak, 1);
+                cptr.stI32o(p, $_cnf_parser_state_rv, 0);
+                if (cptr.ldPtro(p, $_cnf_parser_state_buf))
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                cptr.st1o(p, $_cnf_parser_state_pbreak, 1);
                 return;
             }
-            cptr.stPtro(p, FLD._cnf_parser_state_ep, cptr.ldPtr(p));
-            while (cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 9)
-                cptr.preinc(() => cptr.ldPtro(p, FLD._cnf_parser_state_ep), (v) => { cptr.stPtro(p, FLD._cnf_parser_state_ep, v); });
-            if (!cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) || cptr.ld1s(cptr.ldPtro(p, FLD._cnf_parser_state_ep)) == 35)
+            cptr.stPtro(p, $_cnf_parser_state_ep, cptr.ldPtr(p));
+            while (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9)
+                cptr.preinc(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); });
+            if (!cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 35)
                 ignoreline = 1;
-            if (cptr.ldPtro(p, FLD._cnf_parser_state_buf))
+            if (cptr.ldPtro(p, $_cnf_parser_state_buf))
                 oldline = 1;
             if (!ignoreline) {
-                len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, FLD._cnf_parser_state_ep)))) + 1) | 0;
-                if (cptr.ldPtro(p, FLD._cnf_parser_state_buf))
-                    len = (len + ((Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, FLD._cnf_parser_state_buf)))) + 1) | 0)) | 0;
+                len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep)))) + 1) | 0;
+                if (cptr.ldPtro(p, $_cnf_parser_state_buf))
+                    len = (len + ((Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)))) + 1) | 0)) | 0;
                 tmpbuf = (yield* alloc(len >>> 0));
                 cptr.st1(tmpbuf, 0);
-                if (cptr.ldPtro(p, FLD._cnf_parser_state_buf)) {
-                    void cptr.strcat(cptr.strcpy(tmpbuf, cptr.ldPtro(p, FLD._cnf_parser_state_buf)), __sl121);
-                    cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
+                if (cptr.ldPtro(p, $_cnf_parser_state_buf)) {
+                    void cptr.strcat(cptr.strcpy(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_buf)), __sl121);
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 }
-                cptr.stPtro(p, FLD._cnf_parser_state_buf, cptr.strcat(tmpbuf, cptr.ldPtro(p, FLD._cnf_parser_state_ep)));
-                if (cptr.strlen(cptr.ldPtro(p, FLD._cnf_parser_state_buf)) >= BigInt(cptr.ldI32o(p, FLD._cnf_parser_state_inbufsz) >>> 0))
-                    cptr.st1o(cptr.ldPtro(p, FLD._cnf_parser_state_buf), (cptr.ldI32o(p, FLD._cnf_parser_state_inbufsz) - 1) >>> 0, 0);
+                cptr.stPtro(p, $_cnf_parser_state_buf, cptr.strcat(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_ep)));
+                if (cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)) >= BigInt(cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0))
+                    cptr.st1o(cptr.ldPtro(p, $_cnf_parser_state_buf), (cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 1) >>> 0, 0);
             }
-            if (cptr.ld1so(p, FLD._cnf_parser_state_morelines) || (ignoreline && !oldline))
+            if (cptr.ld1so(p, $_cnf_parser_state_morelines) || (ignoreline && !oldline))
                 return;
-            if ((yield* handle_config_section(cptr.ldPtro(p, FLD._cnf_parser_state_buf)))) {
-                cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
+            if ((yield* handle_config_section(cptr.ldPtro(p, $_cnf_parser_state_buf)))) {
+                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
-            if ((yield* match_optname(cptr.ldPtro(p, FLD._cnf_parser_state_buf), __sl122, 6, 1))) {
+            if ((yield* match_optname(cptr.ldPtro(p, $_cnf_parser_state_buf), __sl122, 6, 1))) {
                 let section;
-                let bufp = find_optparam(cptr.ldPtro(p, FLD._cnf_parser_state_buf));
+                let bufp = find_optparam(cptr.ldPtro(p, $_cnf_parser_state_buf));
                 if (!bufp) {
                     (yield* config_error_add(__sl123));
-                    cptr.stI32o(p, FLD._cnf_parser_state_rv, 0);
-                    cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
+                    cptr.stI32o(p, $_cnf_parser_state_rv, 0);
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                     return;
                 }
                 bufp = cptr.add(bufp, 1);
-                if (cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen))
-                    cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_config_section_chosen)), cptr.stPtro(gc, FLD.instance_globals_c_config_section_chosen, null);
+                if (cptr.ldPtro(gc, $instance_globals_c_config_section_chosen))
+                    cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)), cptr.stPtro(gc, $instance_globals_c_config_section_chosen, null);
                 section = choose_random_part(bufp, 44);
                 if (section) {
-                    cptr.stPtro(gc, FLD.instance_globals_c_config_section_chosen, (yield* dupstr(section)));
+                    cptr.stPtro(gc, $instance_globals_c_config_section_chosen, (yield* dupstr(section)));
                 } else {
                     (yield* config_error_add(__sl124));
-                    cptr.stI32o(p, FLD._cnf_parser_state_rv, 0);
+                    cptr.stI32o(p, $_cnf_parser_state_rv, 0);
                 }
-                cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
+                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
-            if (!(yield* Y.icall((proc)(cptr.ldPtro(p, FLD._cnf_parser_state_buf)))))
-                cptr.stI32o(p, FLD._cnf_parser_state_rv, 0);
-            cptr.free(cptr.ldPtro(p, FLD._cnf_parser_state_buf)), cptr.stPtro(p, FLD._cnf_parser_state_buf, null);
+            if (!(yield* Y.icall((proc)(cptr.ldPtro(p, $_cnf_parser_state_buf)))))
+                cptr.stI32o(p, $_cnf_parser_state_rv, 0);
+            cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
         }
     }
 }
@@ -1516,7 +1569,7 @@ export function* parse_conf_str(str, proc) {
     (yield* config_error_init(0, __sl125, 0));
     while (str && cptr.ld1s(str)) {
         len = 0n;
-        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32o(parser, FLD._cnf_parser_state_inbufsz) - 1) >>> 0) >>> 0)) {
+        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) - 1) >>> 0) >>> 0)) {
             cptr.st1o(cptr.ldPtr(parser), len, cptr.ld1s(str));
             len++;
             str = cptr.add(str, 1);
@@ -1525,13 +1578,13 @@ export function* parse_conf_str(str, proc) {
         }
         cptr.st1o(cptr.ldPtr(parser), len, 0);
         (yield* parse_conf_buf(parser, proc));
-        if (cptr.ld1so(parser, FLD._cnf_parser_state_pbreak))
+        if (cptr.ld1so(parser, $_cnf_parser_state_pbreak))
             break;
     }
     cnf_parser_done(parser);
     free_config_sections();
     (yield* config_error_done());
-    return schar(cptr.ldI32o(parser, FLD._cnf_parser_state_rv));
+    return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
 
 /** C ref: cfgfiles.c:1844 — @param {CPtr} fp @param {CPtr} proc @returns {CInt} */
@@ -1539,14 +1592,14 @@ export function* parse_conf_file(fp, proc) {
     let parser = cptr.alloc(40);
     (yield* cnf_parser_init(parser));
     free_config_sections();
-    while (fgets(cptr.ldPtr(parser), cptr.ldI32o(parser, FLD._cnf_parser_state_inbufsz) | 0, fp)) {
+    while (fgets(cptr.ldPtr(parser), cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) | 0, fp)) {
         (yield* parse_conf_buf(parser, proc));
-        if (cptr.ld1so(parser, FLD._cnf_parser_state_pbreak))
+        if (cptr.ld1so(parser, $_cnf_parser_state_pbreak))
             break;
     }
     cnf_parser_done(parser);
     free_config_sections();
-    return schar(cptr.ldI32o(parser, FLD._cnf_parser_state_rv));
+    return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
 
 /** C ref: cfgfiles.c:1865 — @param {CPtr} str */
@@ -1574,16 +1627,16 @@ export function* rcfile() {
     let envname;
     let namesrc;
     let nameval;
-    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.environ_opt);
+    cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.environ_opt);
     envname = __sl126;
     opts = getenv(envname);
     if (!opts) {
         envname = __sl127;
         opts = getenv(envname);
     }
-    if (cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_rcfile)) {
+    if (cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)) {
         namesrc = __sl115;
-        nameval = cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_rcfile);
+        nameval = cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile);
         xtraopts = opts;
         if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64))
             xtraopts = null;
@@ -1597,7 +1650,7 @@ export function* rcfile() {
         nameval = (namesrc = null);
         xtraopts = opts;
     }
-    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.rc_file_opt);
+    cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.rc_file_opt);
     if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128) {
         (yield* config_error_init(1, namesrc, 0));
         (yield* config_error_add(__sl128, nameval));
@@ -1608,13 +1661,13 @@ export function* rcfile() {
     void (yield* read_config_file(nameval, NHC.set_in_config));
     (yield* config_error_done());
     if (xtraopts) {
-        cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.environ_opt);
+        cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.environ_opt);
         (yield* config_error_init(0, envname, 0));
         void (yield* parseoptions(xtraopts, 1, 0));
         (yield* config_error_done());
     }
-    if (cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_rcfile))
-        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_rcfile)), cptr.stPtro(gc, FLD.instance_globals_c_cmdline_rcfile, null);
+    if (cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile))
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)), cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, null);
 }
 
 /** C ref: cfgfiles.c:1960 */
@@ -1688,7 +1741,7 @@ export function* assure_syscf_file() {
         close(fd);
         return;
     }
-    if (cptr.ld1so(gd, FLD.instance_globals_d_deferred_showpaths))
+    if (cptr.ld1so(gd, $instance_globals_d_deferred_showpaths))
         (yield* do_deferred_showpaths(1));
     (yield* raw_printf(__sl130));
     exit(1);

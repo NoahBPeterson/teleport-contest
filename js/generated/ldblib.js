@@ -10,6 +10,17 @@ import { luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, lua
 import { lua_gethook, lua_gethookcount, lua_gethookmask, lua_getinfo, lua_getlocal, lua_getstack, lua_sethook, lua_setlocal } from './ldebug.js';
 import { lua_setcstacklimit } from './lstate.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $luaL_Reg_func = FLD.luaL_Reg_func, $lua_Debug_currentline = FLD.lua_Debug_currentline,
+    $lua_Debug_ftransfer = FLD.lua_Debug_ftransfer, $lua_Debug_istailcall = FLD.lua_Debug_istailcall,
+    $lua_Debug_isvararg = FLD.lua_Debug_isvararg, $lua_Debug_lastlinedefined = FLD.lua_Debug_lastlinedefined,
+    $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
+    $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
+    $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
+    $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
+    $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("_HOOKKEY");
 const __sl1 = cptr.lit("stack overflow");
@@ -184,30 +195,30 @@ function db_getinfo(L) {
         return luaL_argerror(L, (arg.v + 2) | 0, __sl6);
     lua_createtable(L, 0, 0);
     if (cptr.strchr(options, 83)) {
-        lua_pushlstring(L, cptr.ldPtro(ar, FLD.lua_Debug_source), cptr.ldU64o(ar, FLD.lua_Debug_srclen));
+        lua_pushlstring(L, cptr.ldPtro(ar, $lua_Debug_source), cptr.ldU64o(ar, $lua_Debug_srclen));
         lua_setfield(L, -2, __sl7);
-        settabss(L, __sl8, cptr.add(ar, FLD.lua_Debug_short_src));
-        settabsi(L, __sl9, cptr.ldI32o(ar, FLD.lua_Debug_linedefined));
-        settabsi(L, __sl10, cptr.ldI32o(ar, FLD.lua_Debug_lastlinedefined));
-        settabss(L, __sl11, cptr.ldPtro(ar, FLD.lua_Debug_what));
+        settabss(L, __sl8, cptr.add(ar, $lua_Debug_short_src));
+        settabsi(L, __sl9, cptr.ldI32o(ar, $lua_Debug_linedefined));
+        settabsi(L, __sl10, cptr.ldI32o(ar, $lua_Debug_lastlinedefined));
+        settabss(L, __sl11, cptr.ldPtro(ar, $lua_Debug_what));
     }
     if (cptr.strchr(options, 108))
-        settabsi(L, __sl12, cptr.ldI32o(ar, FLD.lua_Debug_currentline));
+        settabsi(L, __sl12, cptr.ldI32o(ar, $lua_Debug_currentline));
     if (cptr.strchr(options, 117)) {
-        settabsi(L, __sl13, cptr.ld1uo(ar, FLD.lua_Debug_nups));
-        settabsi(L, __sl14, cptr.ld1uo(ar, FLD.lua_Debug_nparams));
-        settabsb(L, __sl15, cptr.ld1so(ar, FLD.lua_Debug_isvararg));
+        settabsi(L, __sl13, cptr.ld1uo(ar, $lua_Debug_nups));
+        settabsi(L, __sl14, cptr.ld1uo(ar, $lua_Debug_nparams));
+        settabsb(L, __sl15, cptr.ld1so(ar, $lua_Debug_isvararg));
     }
     if (cptr.strchr(options, 110)) {
-        settabss(L, __sl16, cptr.ldPtro(ar, FLD.lua_Debug_name));
-        settabss(L, __sl17, cptr.ldPtro(ar, FLD.lua_Debug_namewhat));
+        settabss(L, __sl16, cptr.ldPtro(ar, $lua_Debug_name));
+        settabss(L, __sl17, cptr.ldPtro(ar, $lua_Debug_namewhat));
     }
     if (cptr.strchr(options, 114)) {
-        settabsi(L, __sl18, cptr.ldU16o(ar, FLD.lua_Debug_ftransfer));
-        settabsi(L, __sl19, cptr.ldU16o(ar, FLD.lua_Debug_ntransfer));
+        settabsi(L, __sl18, cptr.ldU16o(ar, $lua_Debug_ftransfer));
+        settabsi(L, __sl19, cptr.ldU16o(ar, $lua_Debug_ntransfer));
     }
     if (cptr.strchr(options, 116))
-        settabsb(L, __sl20, cptr.ld1so(ar, FLD.lua_Debug_istailcall));
+        settabsb(L, __sl20, cptr.ld1so(ar, $lua_Debug_istailcall));
     if (cptr.strchr(options, 76))
         treatstackoption(L, L1, __sl21);
     if (cptr.strchr(options, 102))
@@ -337,8 +348,8 @@ function hookf(L, ar) {
     lua_pushthread(L);
     if (lua_rawget(L, -2) == 6) {
         lua_pushstring(L, cptr.ldPtro(__static_hookf_hooknames, cptr.ldI32(ar), 8));
-        if (cptr.ldI32o(ar, FLD.lua_Debug_currentline) >= 0)
-            lua_pushinteger(L, BigInt(cptr.ldI32o(ar, FLD.lua_Debug_currentline)));
+        if (cptr.ldI32o(ar, $lua_Debug_currentline) >= 0)
+            lua_pushinteger(L, BigInt(cptr.ldI32o(ar, $lua_Debug_currentline)));
         else
             lua_pushnil(L);
         (void 0);
@@ -470,41 +481,41 @@ function db_setcstacklimit(L) {
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
 const dblib = cptr.alloc(18 * 16);
 cptr.stPtro(dblib, 0, __sl39);
-cptr.stPtro(dblib, 0 + FLD.luaL_Reg_func, db_debug);
+cptr.stPtro(dblib, 0 + $luaL_Reg_func, db_debug);
 cptr.stPtro(dblib, 16, __sl40);
-cptr.stPtro(dblib, 16 + FLD.luaL_Reg_func, db_getuservalue);
+cptr.stPtro(dblib, 16 + $luaL_Reg_func, db_getuservalue);
 cptr.stPtro(dblib, 32, __sl41);
-cptr.stPtro(dblib, 32 + FLD.luaL_Reg_func, db_gethook);
+cptr.stPtro(dblib, 32 + $luaL_Reg_func, db_gethook);
 cptr.stPtro(dblib, 48, __sl42);
-cptr.stPtro(dblib, 48 + FLD.luaL_Reg_func, db_getinfo);
+cptr.stPtro(dblib, 48 + $luaL_Reg_func, db_getinfo);
 cptr.stPtro(dblib, 64, __sl43);
-cptr.stPtro(dblib, 64 + FLD.luaL_Reg_func, db_getlocal);
+cptr.stPtro(dblib, 64 + $luaL_Reg_func, db_getlocal);
 cptr.stPtro(dblib, 80, __sl44);
-cptr.stPtro(dblib, 80 + FLD.luaL_Reg_func, db_getregistry);
+cptr.stPtro(dblib, 80 + $luaL_Reg_func, db_getregistry);
 cptr.stPtro(dblib, 96, __sl45);
-cptr.stPtro(dblib, 96 + FLD.luaL_Reg_func, db_getmetatable);
+cptr.stPtro(dblib, 96 + $luaL_Reg_func, db_getmetatable);
 cptr.stPtro(dblib, 112, __sl46);
-cptr.stPtro(dblib, 112 + FLD.luaL_Reg_func, db_getupvalue);
+cptr.stPtro(dblib, 112 + $luaL_Reg_func, db_getupvalue);
 cptr.stPtro(dblib, 128, __sl47);
-cptr.stPtro(dblib, 128 + FLD.luaL_Reg_func, db_upvaluejoin);
+cptr.stPtro(dblib, 128 + $luaL_Reg_func, db_upvaluejoin);
 cptr.stPtro(dblib, 144, __sl48);
-cptr.stPtro(dblib, 144 + FLD.luaL_Reg_func, db_upvalueid);
+cptr.stPtro(dblib, 144 + $luaL_Reg_func, db_upvalueid);
 cptr.stPtro(dblib, 160, __sl49);
-cptr.stPtro(dblib, 160 + FLD.luaL_Reg_func, db_setuservalue);
+cptr.stPtro(dblib, 160 + $luaL_Reg_func, db_setuservalue);
 cptr.stPtro(dblib, 176, __sl50);
-cptr.stPtro(dblib, 176 + FLD.luaL_Reg_func, db_sethook);
+cptr.stPtro(dblib, 176 + $luaL_Reg_func, db_sethook);
 cptr.stPtro(dblib, 192, __sl51);
-cptr.stPtro(dblib, 192 + FLD.luaL_Reg_func, db_setlocal);
+cptr.stPtro(dblib, 192 + $luaL_Reg_func, db_setlocal);
 cptr.stPtro(dblib, 208, __sl52);
-cptr.stPtro(dblib, 208 + FLD.luaL_Reg_func, db_setmetatable);
+cptr.stPtro(dblib, 208 + $luaL_Reg_func, db_setmetatable);
 cptr.stPtro(dblib, 224, __sl53);
-cptr.stPtro(dblib, 224 + FLD.luaL_Reg_func, db_setupvalue);
+cptr.stPtro(dblib, 224 + $luaL_Reg_func, db_setupvalue);
 cptr.stPtro(dblib, 240, __sl54);
-cptr.stPtro(dblib, 240 + FLD.luaL_Reg_func, db_traceback);
+cptr.stPtro(dblib, 240 + $luaL_Reg_func, db_traceback);
 cptr.stPtro(dblib, 256, __sl55);
-cptr.stPtro(dblib, 256 + FLD.luaL_Reg_func, db_setcstacklimit);
+cptr.stPtro(dblib, 256 + $luaL_Reg_func, db_setcstacklimit);
 cptr.stPtro(dblib, 272, null);
-cptr.stPtro(dblib, 272 + FLD.luaL_Reg_func, null);
+cptr.stPtro(dblib, 272 + $luaL_Reg_func, null);
 
 /** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
 export function luaopen_debug(L) {

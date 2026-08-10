@@ -7,28 +7,32 @@ import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $ZIO_L = FLD.ZIO_L, $ZIO_data = FLD.ZIO_data, $ZIO_p = FLD.ZIO_p, $ZIO_reader = FLD.ZIO_reader;
+
 /** C ref: lzio.c:23 — @param {CPtr} z @returns {CInt} */
 export function luaZ_fill(z) {
     let size = cptr.box(0n);
-    let L = cptr.ldPtro(z, FLD.ZIO_L);
+    let L = cptr.ldPtro(z, $ZIO_L);
     let buff;
     (void 0);
-    buff = cptr.ldPtro(z, FLD.ZIO_reader)(L, cptr.ldPtro(z, FLD.ZIO_data), size);
+    buff = cptr.ldPtro(z, $ZIO_reader)(L, cptr.ldPtro(z, $ZIO_data), size);
     (void 0);
     if (cptr.eq(buff, (null)) || size.v == 0n)
         return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));
-    cptr.stPtro(z, FLD.ZIO_p, buff);
-    return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtro(z, FLD.ZIO_p), (v) => { cptr.stPtro(z, FLD.ZIO_p, v); })))))));
+    cptr.stPtro(z, $ZIO_p, buff);
+    return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtro(z, $ZIO_p), (v) => { cptr.stPtro(z, $ZIO_p, v); })))))));
 }
 
 /** C ref: lzio.c:38 — @param {CPtr} L @param {CPtr} z @param {CPtr} reader @param {CPtr} data */
 export function luaZ_init(L, z, reader, data) {
-    cptr.stPtro(z, FLD.ZIO_L, L);
-    cptr.stPtro(z, FLD.ZIO_reader, reader);
-    cptr.stPtro(z, FLD.ZIO_data, data);
+    cptr.stPtro(z, $ZIO_L, L);
+    cptr.stPtro(z, $ZIO_reader, reader);
+    cptr.stPtro(z, $ZIO_data, data);
     cptr.stU64(z, 0n);
-    cptr.stPtro(z, FLD.ZIO_p, null);
+    cptr.stPtro(z, $ZIO_p, null);
 }
 
 /** C ref: lzio.c:48 — @param {CPtr} z @param {CPtr} b @param {CLongLong} n @returns {*} */
@@ -40,13 +44,13 @@ export function luaZ_read(z, b, n) {
                 return n;
             else {
                 (cptr.stU64(z, cptr.ldU64(z) + 1n)) - (1n);
-                cptr.postdec(() => cptr.ldPtro(z, FLD.ZIO_p), (v) => { cptr.stPtro(z, FLD.ZIO_p, v); });
+                cptr.postdec(() => cptr.ldPtro(z, $ZIO_p), (v) => { cptr.stPtro(z, $ZIO_p, v); });
             }
         }
         m = (n <= cptr.ldU64(z)) ? n : cptr.ldU64(z);
-        cptr.memcpy(b, cptr.ldPtro(z, FLD.ZIO_p), m);
+        cptr.memcpy(b, cptr.ldPtro(z, $ZIO_p), m);
         cptr.stU64(z, cptr.ldU64(z) - m);
-        cptr.stPtro(z, FLD.ZIO_p, cptr.add(cptr.ldPtro(z, FLD.ZIO_p), m));
+        cptr.stPtro(z, $ZIO_p, cptr.add(cptr.ldPtro(z, $ZIO_p), m));
         b = cptr.add(b, m);
         n -= m;
     }

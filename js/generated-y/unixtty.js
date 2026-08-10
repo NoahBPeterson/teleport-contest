@@ -19,6 +19,16 @@ import { windowprocs } from './windows.js';
 import { term_end_screen, term_start_screen } from './termcap.js';
 import { iflags } from './decl.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $instance_flags_cbreak = FLD.instance_flags_cbreak, $instance_flags_echo = FLD.instance_flags_echo,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited, $termios_c_cc = FLD.termios_c_cc,
+    $termios_c_cflag = FLD.termios_c_cflag, $termios_c_lflag = FLD.termios_c_lflag,
+    $termios_c_oflag = FLD.termios_c_oflag,
+    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_wp_id = FLD.window_procs_wp_id;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("NOMUX_MARKERS");
 const __sl1 = cptr.lit("NetHack (setctty)");
@@ -97,19 +107,19 @@ export function gettty() {
             perror(__sl2);
     }
     if (getenv(__sl0)) {
-        cptr.st1o2(inittyb, 3, 1, FLD.termios_c_cc, 127);
-        cptr.st1o2(inittyb, 5, 1, FLD.termios_c_cc, 21);
-        cptr.st1o2(inittyb, 8, 1, FLD.termios_c_cc, 3);
+        cptr.st1o2(inittyb, 3, 1, $termios_c_cc, 127);
+        cptr.st1o2(inittyb, 5, 1, $termios_c_cc, 21);
+        cptr.st1o2(inittyb, 8, 1, $termios_c_cc, 3);
     }
     cptr.memcpy(curttyb, inittyb, 72);
     cptr.memcpy(curttyb, inittyb, 72);
     ospeed.v = i16((speednum(cfgetospeed(inittyb))));
-    erase_char = schar(cptr.ld1uo2(inittyb, 3, 1, FLD.termios_c_cc));
-    kill_char = schar(cptr.ld1uo2(inittyb, 5, 1, FLD.termios_c_cc));
-    intr_char = schar(cptr.ld1uo2(inittyb, 8, 1, FLD.termios_c_cc));
+    erase_char = schar(cptr.ld1uo2(inittyb, 3, 1, $termios_c_cc));
+    kill_char = schar(cptr.ld1uo2(inittyb, 5, 1, $termios_c_cc));
+    intr_char = schar(cptr.ld1uo2(inittyb, 8, 1, $termios_c_cc));
     getioctls();
-    if (cptr.ldU64o(curttyb, FLD.termios_c_oflag) & 4n) {
-        cptr.stU64o(curttyb, FLD.termios_c_oflag, cptr.ldU64o(curttyb, FLD.termios_c_oflag) & 18446744073709551611n);
+    if (cptr.ldU64o(curttyb, $termios_c_oflag) & 4n) {
+        cptr.stU64o(curttyb, $termios_c_oflag, cptr.ldU64o(curttyb, $termios_c_oflag) & 18446744073709551611n);
         setctty();
     }
     settty_needed = 1;
@@ -117,7 +127,7 @@ export function gettty() {
 
 /** C ref: unixtty.c:247 — @param {CPtr} s */
 export function* settty(s) {
-    if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty))
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty))
         (yield* term_end_screen());
     if (s)
         (yield* Y.icall(raw_print()(s)));
@@ -125,8 +135,8 @@ export function* settty(s) {
         if (!getenv(__sl0))
             perror(__sl3);
     }
-    cptr.st1o(iflags, FLD.instance_flags_echo, schar(((cptr.ldU64o(inittyb, FLD.termios_c_lflag) & 8n) ? NHM.ON : NHM.OFF)));
-    cptr.st1o(iflags, FLD.instance_flags_cbreak, schar(((!(cptr.ldU64o(inittyb, FLD.termios_c_lflag) & 256n)) ? NHM.ON : NHM.OFF)));
+    cptr.st1o(iflags, $instance_flags_echo, schar(((cptr.ldU64o(inittyb, $termios_c_lflag) & 8n) ? NHM.ON : NHM.OFF)));
+    cptr.st1o(iflags, $instance_flags_cbreak, schar(((!(cptr.ldU64o(inittyb, $termios_c_lflag) & 256n)) ? NHM.ON : NHM.OFF)));
     cptr.stU64(curttyb, cptr.ldU64(curttyb) | 32n);
     setioctls();
     settty_needed = 0;
@@ -139,49 +149,49 @@ export function setftty() {
     let change = 0;
     ef = 0;
     cf = 0;
-    cptr.st1o(iflags, FLD.instance_flags_cbreak, NHM.ON);
-    cptr.st1o(iflags, FLD.instance_flags_echo, NHM.OFF);
-    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, FLD.termios_c_lflag) & 8n))) != ef) {
-        cptr.stU64o(curttyb, FLD.termios_c_lflag, cptr.ldU64o(curttyb, FLD.termios_c_lflag) & 18446744073709551607n);
+    cptr.st1o(iflags, $instance_flags_cbreak, NHM.ON);
+    cptr.st1o(iflags, $instance_flags_echo, NHM.OFF);
+    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 8n))) != ef) {
+        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551607n);
         change++;
     }
-    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, FLD.termios_c_lflag) & 256n))) != cf) {
-        cptr.stU64o(curttyb, FLD.termios_c_lflag, cptr.ldU64o(curttyb, FLD.termios_c_lflag) & 18446744073709551359n);
-        cptr.stU64o(curttyb, FLD.termios_c_lflag, cptr.ldU64o(curttyb, FLD.termios_c_lflag) | BigInt(cf >>> 0));
-        cptr.st1o2(curttyb, 16, 1, FLD.termios_c_cc, 1);
-        cptr.st1o2(curttyb, 17, 1, FLD.termios_c_cc, 0);
-        cptr.st1o2(curttyb, 10, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1o2(curttyb, 11, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1o2(curttyb, 6, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1o2(curttyb, 15, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1o2(curttyb, 4, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
-        cptr.st1o2(curttyb, 14, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+    if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 256n))) != cf) {
+        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551359n);
+        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) | BigInt(cf >>> 0));
+        cptr.st1o2(curttyb, 16, 1, $termios_c_cc, 1);
+        cptr.st1o2(curttyb, 17, 1, $termios_c_cc, 0);
+        cptr.st1o2(curttyb, 10, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 11, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 6, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 15, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 4, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 14, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         change++;
     }
-    if (!(cptr.ldU64o((inittyb), FLD.termios_c_cflag) & 512n))
+    if (!(cptr.ldU64o((inittyb), $termios_c_cflag) & 512n))
         cptr.stU64(curttyb, cptr.ldU64(curttyb) & 18446744073709551583n);
-    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, FLD.termios_c_cc) != 3) {
-        cptr.st1o2(curttyb, 8, 1, FLD.termios_c_cc, 3);
+    if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
+        cptr.st1o2(curttyb, 8, 1, $termios_c_cc, 3);
         change++;
     }
     if (change)
         setctty();
-    if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty))
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty))
         term_start_screen();
 }
 
 /** C ref: unixtty.c:338 */
 export function intron() {
-    if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, FLD.termios_c_cc) != 3) {
-        cptr.st1o2(curttyb, 8, 1, FLD.termios_c_cc, 3);
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
+        cptr.st1o2(curttyb, 8, 1, $termios_c_cc, 3);
         setctty();
     }
 }
 
 /** C ref: unixtty.c:350 */
 export function introff() {
-    if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) && BigInt(cptr.ld1uo2(curttyb, 8, 1, FLD.termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
-        cptr.st1o2(curttyb, 8, 1, FLD.termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
+        cptr.st1o2(curttyb, 8, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }
 }
@@ -190,7 +200,7 @@ export function introff() {
 export function* error(s, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
-    if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
+    if (cptr.ld1so(iflags, $instance_flags_window_inited))
         (yield* Y.icall(exit_nhwindows()(null)));
     if (settty_needed)
         (yield* settty(null));

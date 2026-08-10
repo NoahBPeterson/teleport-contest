@@ -21,6 +21,25 @@ import { digit, nh_snprintf } from './hacklib.js';
 import { decgraphics_mode_callback, utf8graphics_mode_callback } from './symbols.js';
 import { teleport_state_dump } from './allmain.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayDesc_cury,
+    $cmd_num_pad = FLD.cmd_num_pad, $flag_null = FLD.flag_null, $flag_silent = FLD.flag_silent,
+    $instance_flags_colorcount = FLD.instance_flags_colorcount,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_flags_wc2_darkgray = FLD.instance_flags_wc2_darkgray,
+    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+    $instance_globals_s_symset = FLD.instance_globals_s_symset,
+    $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+    $nomux_cell_attr = FLD.nomux_cell_attr, $nomux_cell_decgfx = FLD.nomux_cell_decgfx,
+    $nomux_cell_fg = FLD.nomux_cell_fg, $symsetentry_handling = FLD.symsetentry_handling,
+    $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
+    $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI, $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD,
+    $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE, $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI,
+    $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND, $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE,
+    $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US, $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("TERM");
 const __sl1 = cptr.lit("Can't get TERM.");
@@ -96,13 +115,13 @@ const __sl69 = cptr.lit("\x1b[38;5;%dm");
 /** C ref: termcap.c:37 — struct tc_lcl_data */
 export let tc_lcl_data = cptr.alloc(64);
 cptr.stPtr(tc_lcl_data, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_ND, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_CD, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US, null);
-cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE, null);
-cptr.st1o(tc_lcl_data, FLD.tc_lcl_data_tc_ul_hack, 0);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_ND, null);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, null);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, null);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, null);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, null);
+cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, null);
+cptr.st1o(tc_lcl_data, $tc_lcl_data_tc_ul_hack, 0);
 
 /** C ref: termcap.c:39 — char * */
 let nh_VI = null;
@@ -213,7 +232,7 @@ export function* term_startup(wid, hgt) {
     tptr = (yield* alloc(1024));
     tbufptr.v = cptr.decay(tbuf);
     if (!cptr.strncmp(term, __sl2, 4n))
-        cptr.st1o(flags, FLD.flag_null, 0);
+        cptr.st1o(flags, $flag_null, 0);
     if (tgetent(tptr, term) < 1) {
         let buf = new Uint8Array(256);
         void __builtin___strncpy_chk(cptr.decay(buf), term, 228n, __builtin_object_size(cptr.decay(buf), 1));
@@ -227,16 +246,16 @@ export function* term_startup(wid, hgt) {
     }
     HO = (tgetstr((__sl7), tbufptr));
     if (!CO())
-        cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO, tgetnum((__sl8)));
+        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO, tgetnum((__sl8)));
     if (!LI())
-        cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI, tgetnum((__sl9)));
+        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI, tgetnum((__sl9)));
     if (CO() < NHM.COLNO || LI() < 24)
         setclipped();
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_ND, (tgetstr((__sl10), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_ND, (tgetstr((__sl10), tbufptr)));
     if (tgetflag((__sl11)))
         (yield* error(__sl12));
     if (tgetflag((__sl13)))
-        cptr.st1o(tc_lcl_data, FLD.tc_lcl_data_tc_ul_hack, 1);
+        cptr.st1o(tc_lcl_data, $tc_lcl_data_tc_ul_hack, 1);
     CE = (tgetstr((__sl14), tbufptr));
     UP = (tgetstr((__sl15), tbufptr));
     XD = (tgetstr((__sl16), tbufptr));
@@ -248,13 +267,13 @@ export function* term_startup(wid, hgt) {
     }
     SO = (tgetstr((__sl20), tbufptr));
     SE = (tgetstr((__sl21), tbufptr));
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US, (tgetstr((__sl22), tbufptr)));
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE, (tgetstr((__sl23), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, (tgetstr((__sl22), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, (tgetstr((__sl23), tbufptr)));
     ZH = (tgetstr((__sl24), tbufptr));
     ZR = (tgetstr((__sl25), tbufptr));
     SG = tgetnum((__sl26));
     if (!SO || !SE || (SG > 0))
-        SO = (SE = cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US, cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE, cptr.decay(nullstr))));
+        SO = (SE = cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, cptr.decay(nullstr))));
     TI = (tgetstr((__sl27), tbufptr));
     TE = (tgetstr((__sl28), tbufptr));
     VS = (VE = cptr.decay(nullstr));
@@ -277,14 +296,14 @@ export function* term_startup(wid, hgt) {
     nh_Ic = (tgetstr((__sl39), tbufptr));
     for (i = 0; digit(cptr.ld1so(SO, i)); ++i)
         continue;
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI, (yield* dupstr(cptr.add(SO, i))));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, (yield* dupstr(cptr.add(SO, i))));
     for (i = 0; digit(cptr.ld1so(ME, i)); ++i)
         continue;
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE, (yield* dupstr(cptr.add(ME, i))));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, (yield* dupstr(cptr.add(ME, i))));
     dynamic_HIHE = 1;
-    cptr.stPtro(gt, FLD.instance_globals_t_tc_gbl_data, (tgetstr((__sl40), tbufptr)));
-    cptr.stPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE, (tgetstr((__sl41), tbufptr)));
-    cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_CD, (tgetstr((__sl42), tbufptr)));
+    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, (tgetstr((__sl40), tbufptr)));
+    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, (tgetstr((__sl41), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, (tgetstr((__sl42), tbufptr)));
     (yield* init_hilite());
     cptr.stI32(wid, CO());
     cptr.stI32(hgt, LI());
@@ -293,18 +312,18 @@ export function* term_startup(wid, hgt) {
     if (Number(BigInt.asIntN(32, (cptr.diff(tbufptr.v, cptr.decay(tbuf))))) > 512)
         (yield* error(__sl45));
     cptr.free(tptr);
-    if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI) && cptr.strlen(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI)) < 16n)
-        void cptr.strcpy(cptr.decay(tty_standout_on), cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI));
-    if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE) && cptr.strlen(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE)) < 16n)
-        void cptr.strcpy(cptr.decay(tty_standout_off), cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE));
+    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) && cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)) < 16n)
+        void cptr.strcpy(cptr.decay(tty_standout_on), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI));
+    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) && cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)) < 16n)
+        void cptr.strcpy(cptr.decay(tty_standout_off), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE));
 }
 
 /** C ref: termcap.c:342 */
 export function term_shutdown() {
     kill_hilite();
     if (dynamic_HIHE) {
-        cptr.free(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI)), cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI, null);
-        cptr.free(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE)), cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE, null);
+        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)), cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, null);
+        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)), cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, null);
         dynamic_HIHE = 0;
     }
     return;
@@ -334,19 +353,19 @@ const __static_tty_decgraphics_termcap_fixup_numMode = cptr.bytes("\x1b>"); /** 
 
 /** C ref: termcap.c:388 */
 function tty_decgraphics_termcap_fixup() {
-    if (!cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data))
-        cptr.stPtro(gt, FLD.instance_globals_t_tc_gbl_data, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlN));
-    if (!cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE))
-        cptr.stPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO));
+    if (!cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data))
+        cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlN));
+    if (!cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE))
+        cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO));
     if (!KS)
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) == NHC.H_DEC)) {
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC)) {
         xputs(__sl46);
-        xputs(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE));
+        xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
     }
-    let ae = cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE);
+    let ae = cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE);
     if (digit(cptr.ld1s(ae))) {
         do
             ae = cptr.add(ae, 1);
@@ -359,20 +378,20 @@ function tty_decgraphics_termcap_fixup() {
         if (cptr.ld1s(ae) == 42)
             ae = cptr.add(ae, 1);
     }
-    if ((cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE) && cptr.strstr(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE), ae)) || (ME && cptr.strstr(ME, ae)))
+    if ((cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) && cptr.strstr(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE), ae)) || (ME && cptr.strstr(ME, ae)))
         HE_resets_AS.v = 1;
-    xputs(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE));
+    xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
 }
 
 /** C ref: termcap.c:511 */
 export function term_start_screen() {
     xputs(TI);
     xputs(VS);
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) == NHC.H_DEC))
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC))
         tty_decgraphics_termcap_fixup();
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
     utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
-    if (cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_num_pad))
+    if (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
         tty_number_pad(1);
 }
 
@@ -385,11 +404,11 @@ export function* term_end_screen() {
 
 /** C ref: termcap.c:559 — @param {CInt} x @param {CInt} y */
 export function* nocmov(x, y) {
-    if (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) > y) {
+    if (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > y) {
         if (UP) {
-            while (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) > y) {
+            while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > y) {
                 xputs(UP);
-                (cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cury, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + -1)) - (-1);
+                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + -1)) - (-1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
@@ -397,35 +416,35 @@ export function* nocmov(x, y) {
             (yield* home());
             (yield* tty_curs(BASE_WINDOW, (x + 1) | 0, y));
         }
-    } else if (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) < y) {
+    } else if (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) < y) {
         if (XD) {
-            while (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) < y) {
+            while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) < y) {
                 xputs(XD);
-                (cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cury, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + 1)) - (1);
+                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1)) - (1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
         } else {
-            while (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) < y) {
+            while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) < y) {
                 void xputc(10);
-                cptr.stI16o(ttyDisplay, FLD.DisplayDesc_curx, 0);
-                (cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cury, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + 1)) - (1);
+                cptr.stI16o(ttyDisplay, $DisplayDesc_curx, 0);
+                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1)) - (1);
             }
         }
     }
-    if (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) < x) {
-        if (!cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_ND)) {
+    if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) < x) {
+        if (!cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_ND)) {
             cmov(x, y);
         } else {
-            while (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) < x) {
-                xputs(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_ND));
-                (cptr.stI16o(ttyDisplay, FLD.DisplayDesc_curx, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + 1)) - (1);
+            while (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) < x) {
+                xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_ND));
+                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
             }
         }
-    } else if (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) > x) {
-        while (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) > x) {
+    } else if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > x) {
+        while (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > x) {
             xputs(BC);
-            (cptr.stI16o(ttyDisplay, FLD.DisplayDesc_curx, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + -1)) - (-1);
+            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
         }
     }
 }
@@ -433,8 +452,8 @@ export function* nocmov(x, y) {
 /** C ref: termcap.c:608 — @param {CInt} x @param {CInt} y */
 export function cmov(x, y) {
     xputs(tgoto(cptr.ldPtr(tc_lcl_data), x, y));
-    cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cury, i16(y));
-    cptr.stI16o(ttyDisplay, FLD.DisplayDesc_curx, i16(x));
+    cptr.stI16o(ttyDisplay, $DisplayDesc_cury, i16(y));
+    cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(x));
 }
 
 /** C ref: termcap.c:617 — @param {CInt} c @returns {CInt} */
@@ -510,9 +529,9 @@ export function nomux_clear_screen() {
     for (r = 0; r < 24; r++)
         for (c = 0; c < 80; c++) {
             cptr.st1o(cptr.decay(nomux_buf[r]), c, 32, 4);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, FLD.nomux_cell_fg, 7);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, FLD.nomux_cell_attr, 0);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, FLD.nomux_cell_decgfx, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_fg, 7);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_attr, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_decgfx, 0);
         }
 }
 
@@ -523,9 +542,9 @@ export function nomux_clear_to_eol(row, col) {
         return;
     for (c = (col < 0 ? 0 : col); c < 80; c++) {
         cptr.st1o(cptr.decay(nomux_buf[row]), c, 32, 4);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, FLD.nomux_cell_fg, 7);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, FLD.nomux_cell_attr, 0);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, FLD.nomux_cell_decgfx, 0);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_fg, 7);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_attr, 0);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_decgfx, 0);
     }
 }
 
@@ -535,13 +554,13 @@ export function nomux_putch(ch) {
     let col;
     if (!ttyDisplay || ch < 32)
         return;
-    row = cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury);
-    col = cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx);
+    row = cptr.ldI16o(ttyDisplay, $DisplayDesc_cury);
+    col = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
     if (row >= 0 && row < 24 && col >= 0 && col < 80) {
         cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), 4);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, FLD.nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, FLD.nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, FLD.nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_fg, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_attr, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_decgfx, nomux_decgfx_cur);
     }
 }
 
@@ -567,7 +586,7 @@ export function nomux_end_attr() {
 
 /** C ref: termcap.c:784 — @param {CInt} color */
 export function nomux_set_fg(color) {
-    if (color == NHM.CLR_BLACK && cptr.ld1so(iflags, FLD.instance_flags_wc2_darkgray))
+    if (color == NHM.CLR_BLACK && cptr.ld1so(iflags, $instance_flags_wc2_darkgray))
         color = 8;
     nomux_fg_cur = uchar(((color < 0 || color >= 16) ? 7 : uchar(color)));
 }
@@ -601,14 +620,14 @@ export function* nomux_capture_screen() {
         cur_fg = 7;
         cur_attr = 0;
         end = 79;
-        while (end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, FLD.nomux_cell_attr) == 0 && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, FLD.nomux_cell_fg) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, FLD.nomux_cell_fg) == 0))
+        while (end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_attr) == 0 && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_fg) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_fg) == 0))
             end--;
         let in_dec = 0;
         for (col = 0; col <= end; col++) {
             let c = cptr.add(cptr.decay(nomux_buf[row]), col, 4);
             let ch = schar((cptr.ld1s(c) ? cptr.ld1s(c) : 32));
-            let fg = cptr.ld1uo(c, FLD.nomux_cell_fg) ? cptr.ld1uo(c, FLD.nomux_cell_fg) : 7;
-            let at = cptr.ld1uo(c, FLD.nomux_cell_attr);
+            let fg = cptr.ld1uo(c, $nomux_cell_fg) ? cptr.ld1uo(c, $nomux_cell_fg) : 7;
+            let at = cptr.ld1uo(c, $nomux_cell_attr);
             if (at != cur_attr) {
                 if ((at & 1) && !(cur_attr & 1))
                     p = cptr.add(p, cptr.sprintf(p, __sl51));
@@ -632,10 +651,10 @@ export function* nomux_capture_screen() {
                 }
                 cur_fg = fg;
             }
-            if (cptr.ld1uo(c, FLD.nomux_cell_decgfx) && !in_dec) {
+            if (cptr.ld1uo(c, $nomux_cell_decgfx) && !in_dec) {
                 cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), 14);
                 in_dec = 1;
-            } else if (!cptr.ld1uo(c, FLD.nomux_cell_decgfx) && in_dec) {
+            } else if (!cptr.ld1uo(c, $nomux_cell_decgfx) && in_dec) {
                 cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), 15);
                 in_dec = 0;
             }
@@ -689,9 +708,9 @@ function nomux_raw_putch(ch) {
         return;
     if (nomux_raw_row >= 0 && nomux_raw_row < 24 && nomux_raw_col >= 0 && nomux_raw_col < 80) {
         cptr.st1o(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, schar(ch), 4);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, FLD.nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, FLD.nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, FLD.nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_fg, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_attr, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_decgfx, nomux_decgfx_cur);
     }
     nomux_raw_col++;
 }
@@ -725,8 +744,8 @@ export function nomux_get_cursor(cx, cy) {
         cptr.stI32(cy, nomux_raw_row);
         return;
     }
-    cptr.stI32(cx, ttyDisplay ? cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) : 0);
-    cptr.stI32(cy, ttyDisplay ? cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) : 0);
+    cptr.stI32(cx, ttyDisplay ? cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) : 0);
+    cptr.stI32(cy, ttyDisplay ? cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) : 0);
 }
 
 /** C ref: termcap.c:972 — @param {CPtr} s */
@@ -738,14 +757,14 @@ export function xputs(s) {
 export function* cl_end() {
     if (CE) {
         xputs(CE);
-        nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx));
+        nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx));
     } else {
-        let cx = (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + 1) | 0;
+        let cx = (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0;
         while (cx < CO()) {
             void xputc(32);
             cx++;
         }
-        (yield* tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury)));
+        (yield* tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)));
     }
 }
 
@@ -767,7 +786,7 @@ export function* home() {
         xputs(tgoto(cptr.ldPtr(tc_lcl_data), 0, 0));
     else
         (yield* tty_curs(BASE_WINDOW, 1, 0));
-    cptr.stI16o(ttyDisplay, FLD.DisplayDesc_curx, cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cury, 0));
+    cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.stI16o(ttyDisplay, $DisplayDesc_cury, 0));
 }
 
 /** C ref: termcap.c:1034 */
@@ -789,7 +808,7 @@ export function backsp() {
 
 /** C ref: termcap.c:1092 */
 export function tty_nhbell() {
-    if (cptr.ld1so(flags, FLD.flag_silent))
+    if (cptr.ld1so(flags, $flag_silent))
         return;
     void putchar(7);
     void fflush(__stdoutp);
@@ -798,15 +817,15 @@ export function tty_nhbell() {
 /** C ref: termcap.c:1103 */
 export function graph_on() {
     nomux_decgfx_cur = 1;
-    if (cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data))
-        xputs(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data));
+    if (cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data))
+        xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data));
 }
 
 /** C ref: termcap.c:1113 */
 export function graph_off() {
     nomux_decgfx_cur = 0;
-    if (cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE))
-        xputs(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE));
+    if (cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE))
+        xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
 }
 
 /** C ref: termcap.c:1128 — short[15] */
@@ -838,18 +857,18 @@ export function* tty_delay_output() {
             no_delay_env = getenv(__sl61);
         __static_tty_delay_output_no_delay = (no_delay_env && cptr.ld1s(no_delay_env) && cptr.ld1s(no_delay_env) != 48 ? 1 : 0);
     }
-    if (__static_tty_delay_output_no_delay || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)) {
+    if (__static_tty_delay_output_no_delay || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
         void fflush(__stdoutp);
         (yield* nomux_capture_write_screen());
         return;
     }
-    if (cptr.ld1so(flags, FLD.flag_null)) {
+    if (cptr.ld1so(flags, $flag_null)) {
         tputs(__sl62, 1, xputc);
     } else if (ospeed.v > 0 && ospeed.v < 15 && cptr.ldPtr(tc_lcl_data)) {
-        let cmlen = Number(BigInt.asIntN(32, cptr.strlen(tgoto(cptr.ldPtr(tc_lcl_data), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury)))));
+        let cmlen = Number(BigInt.asIntN(32, cptr.strlen(tgoto(cptr.ldPtr(tc_lcl_data), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx), cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)))));
         let i = (500 + ((cptr.ldI16o(tmspc10, ospeed.v, 2) / 2) | 0)) | 0;
         while (i > 0) {
-            cmov(cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury));
+            cmov(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx), cptr.ldI16o(ttyDisplay, $DisplayDesc_cury));
             i = (i - Math.imul(cmlen, cptr.ldI16o(tmspc10, ospeed.v, 2))) | 0;
         }
     }
@@ -857,23 +876,23 @@ export function* tty_delay_output() {
 
 /** C ref: termcap.c:1206 */
 export function* cl_eos() {
-    if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_CD)) {
-        xputs(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_CD));
+    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_CD)) {
+        xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_CD));
         {
             let r;
-            nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx));
-            for (r = (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + 1) | 0; r < 24; r++)
+            nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx));
+            for (r = (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1) | 0; r < 24; r++)
                 nomux_clear_to_eol(r, 0);
         }
     } else {
-        let cy = (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + 1) | 0;
+        let cy = (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1) | 0;
         while (cy <= ((LI() - 2) | 0)) {
             (yield* cl_end());
             void xputc(10);
             cy++;
         }
         (yield* cl_end());
-        (yield* tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury)));
+        (yield* tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)));
     }
 }
 
@@ -914,25 +933,25 @@ function* init_hilite() {
     let setf;
     let scratch;
     colors = tgetnum((__sl63));
-    cptr.stI32o(iflags, FLD.instance_flags_colorcount, colors >>> 0);
+    cptr.stI32o(iflags, $instance_flags_colorcount, colors >>> 0);
     let md_len = 0;
     if (colors < 8 || !MD || !cptr.ld1s(MD) || ((setf = tgetstr((__sl64), null)) === null && (setf = tgetstr((__sl65), null)) === null)) {
-        cptr.stPtro(hilites, NHM.CLR_BLACK, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_RED, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_GREEN, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BROWN, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BLUE, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_MAGENTA, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_CYAN, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BLACK, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_RED, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_GREEN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BROWN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BLUE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_MAGENTA, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_CYAN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_GRAY, cptr.decay(nilstring), 8);
         cptr.stPtro(hilites, NHM.NO_COLOR, cptr.decay(nilstring), 8);
-        cptr.stPtro(hilites, NHM.CLR_ORANGE, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BRIGHT_GREEN, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_YELLOW, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BRIGHT_BLUE, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BRIGHT_MAGENTA, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BRIGHT_CYAN, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_WHITE, cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_ORANGE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BRIGHT_GREEN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_YELLOW, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BRIGHT_BLUE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BRIGHT_MAGENTA, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_BRIGHT_CYAN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(hilites, NHM.CLR_WHITE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         return;
     }
     if (colors >= 16) {
@@ -967,7 +986,7 @@ function* init_hilite() {
     }
     cptr.stPtro(hilites, NHM.CLR_GRAY, cptr.decay(nilstring), 8);
     cptr.stPtro(hilites, NHM.NO_COLOR, cptr.decay(nilstring), 8);
-    if (cptr.ld1so(iflags, FLD.instance_flags_wc2_darkgray)) {
+    if (cptr.ld1so(iflags, $instance_flags_wc2_darkgray)) {
         if (colors >= 16) {
             scratch = tparm(setf, 8);
             cptr.stPtro(hilites, NHM.CLR_BLACK, (yield* dupstr(scratch)), 8);
@@ -985,7 +1004,7 @@ function* init_hilite() {
 /** C ref: termcap.c:1409 */
 function kill_hilite() {
     let c;
-    if (cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI)))
+    if (cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)))
         return;
     if (cptr.ldPtro(hilites, NHM.CLR_BLACK, 8)) {
         if (!cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(hilites, NHM.CLR_BLUE, 8)))
@@ -1042,7 +1061,7 @@ function s_atr2str(n) {
                 return MB;
         } else {
             if (nh_US())
-                return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US);
+                return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US);
         }
         // @FallThrough
         ;
@@ -1050,7 +1069,7 @@ function s_atr2str(n) {
         if (MD && cptr.ld1s(MD))
             return MD;
         if (nh_HI())
-            return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI);
+            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI);
         break;
         case NHM.ATR_INVERSE:
         if (MR && cptr.ld1s(MR))
@@ -1074,13 +1093,13 @@ function e_atr2str(n) {
         ;
         case NHM.ATR_ULINE:
         if (nh_UE())
-            return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE);
+            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_UE);
         // @FallThrough
         ;
         case NHM.ATR_BOLD:
         case NHM.ATR_BLINK:
         if (nh_HE())
-            return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE);
+            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE);
         // @FallThrough
         ;
         case NHM.ATR_DIM:
@@ -1094,7 +1113,7 @@ function e_atr2str(n) {
 
 /** C ref: termcap.c:1781 — @param {CInt} msk @returns {CInt} */
 export function term_attr_fixup(msk) {
-    if ((msk & NHC.HL_ULINE) && (!cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US) || !cptr.ld1s(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US)))) {
+    if ((msk & NHC.HL_ULINE) && (!cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US) || !cptr.ld1s(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US)))) {
         msk |= NHC.HL_BOLD;
         msk &= -17;
     }
@@ -1130,21 +1149,21 @@ export function term_end_attr(attr) {
 
 /** C ref: termcap.c:1831 */
 export function term_start_raw_bold() {
-    let soOn = cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI) ? cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI) : cptr.decay(tty_standout_on);
+    let soOn = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) : cptr.decay(tty_standout_on);
     if (cptr.ld1s(soOn))
         xputs(soOn);
 }
 
 /** C ref: termcap.c:1841 */
 export function term_end_raw_bold() {
-    let soOff = cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE) ? cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE) : cptr.decay(tty_standout_off);
+    let soOff = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) : cptr.decay(tty_standout_off);
     if (cptr.ld1s(soOff))
         xputs(soOff);
 }
 
 /** C ref: termcap.c:1850 */
 export function term_end_color() {
-    xputs(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE));
+    xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE));
     nomux_end_fg();
     nomux_end_attr();
 }
@@ -1153,7 +1172,7 @@ export function term_end_color() {
 export function term_start_color(color) {
     nomux_set_fg(color);
     if (color == NHM.NO_COLOR)
-        xputs(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE));
+        xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE));
     else if (color < NHM.CLR_MAX && cptr.ldPtro(hilites, color, 8) && cptr.ld1s(cptr.ldPtro(hilites, color, 8)))
         xputs(cptr.ldPtro(hilites, color, 8));
 }
@@ -1197,7 +1216,7 @@ function emit256(color256idx) {
 /** C ref: termcap.c:1970 — @param {CUInt} customcolor @param {CUInt} color256idx */
 export function term_start_extracolor(customcolor, color256idx) {
     let mcolor = BigInt(((customcolor & 16777215) >>> 0) >>> 0);
-    if (cptr.ldI32o(iflags, FLD.instance_flags_colorcount) == 256)
+    if (cptr.ldI32o(iflags, $instance_flags_colorcount) == 256)
         emit256(color256idx);
     else
         emit24bit(mcolor);

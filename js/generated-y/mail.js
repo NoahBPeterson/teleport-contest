@@ -37,6 +37,29 @@ import { mongone } from './mon.js';
 import { child } from './unixunix.js';
 import { nh_terminate } from './end.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind, $coord_y = FLD.coord_y,
+    $dlevel_t_monsters = FLD.dlevel_t_monsters, $flag_biff = FLD.flag_biff,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+    $instance_globals_v_viz_rmax = FLD.instance_globals_v_viz_rmax,
+    $instance_globals_v_viz_rmin = FLD.instance_globals_v_viz_rmin,
+    $mail_info_display_txt = FLD.mail_info_display_txt, $mail_info_object_nam = FLD.mail_info_object_nam,
+    $mail_info_response_cmd = FLD.mail_info_response_cmd, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
+    $nhcoord_y = FLD.nhcoord_y, $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+    $rm_typ = FLD.rm_typ, $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
+    $stairway_tolev = FLD.stairway_tolev, $stat_st_mtimespec = FLD.stat_st_mtimespec,
+    $stat_st_size = FLD.stat_st_size, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_uprops = FLD.you_uprops,
+    $you_uroleplay = FLD.you_uroleplay, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
+    $you_uz = FLD.you_uz;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("MAIL");
 const __sl1 = cptr.lit("/usr/mail/");
@@ -93,13 +116,13 @@ export function* getmailstatus() {
     }
     do {
         if ((yield* debugcore(__sl2, 1))) {
-            let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
+            let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl3, mailbox ? 34 : 60, mailbox ? mailbox : __sl4, mailbox ? 34 : 62));
-            cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
+            cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     } while (0);
     if (mailbox && stat(mailbox, omstat)) {
-        cptr.stI64o(omstat, FLD.stat_st_mtimespec, 0n);
+        cptr.stI64o(omstat, $stat_st_mtimespec, 0n);
     }
 }
 
@@ -110,43 +133,43 @@ function* md_start(startp) {
     let lax;
     let dd;
     let max_distance;
-    let stway = cptr.ldPtro(gs, FLD.instance_globals_s_stairs);
+    let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     if (Blind() && !Blind_telepat()) {
-        if (!(yield* enexto(startp, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), null)))
+        if (!(yield* enexto(startp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), null)))
             return 0;
         return 1;
     }
     while (stway) {
-        if (cptr.ldI16o(stway, FLD.stairway_tolev) == cptr.ldI16o(u, FLD.you_uz) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(stway, FLD.stairway_sy), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0)) {
+        if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(stway, $stairway_sy), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0)) {
             cptr.stI16(startp, cptr.ldI16(stway));
-            cptr.stI16o(startp, FLD.coord_y, cptr.ldI16o(stway, FLD.stairway_sy));
+            cptr.stI16o(startp, $coord_y, cptr.ldI16o(stway, $stairway_sy));
             return 1;
         }
-        stway = cptr.ldPtro(stway, FLD.stairway_next);
+        stway = cptr.ldPtro(stway, $stairway_next);
     }
     lax = 0;
     max_distance = -1;
     __lbl_retry: while (true) {
         for (row = 0; row < NHM.ROWNO; row++) {
-            if (cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmin), row, 2) < cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmax), row, 2)) {
-                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmin), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+            if (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2) < cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) {
+                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                 if (dd > max_distance) {
                     if (lax) {
                         max_distance = dd;
-                        cptr.stI16o(startp, FLD.coord_y, i16(row));
-                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmin), row, 2));
-                    } else if ((yield* enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmin), row, 2), i16(row), null)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(testcc, FLD.nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(testcc, FLD.nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
+                        cptr.stI16o(startp, $coord_y, i16(row));
+                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2));
+                    } else if ((yield* enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), i16(row), null)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
                 }
-                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmax), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                 if (dd > max_distance) {
                     if (lax) {
                         max_distance = dd;
-                        cptr.stI16o(startp, FLD.coord_y, i16(row));
-                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmax), row, 2));
-                    } else if ((yield* enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, FLD.instance_globals_v_viz_rmax), row, 2), i16(row), null)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(testcc, FLD.nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(testcc, FLD.nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
+                        cptr.stI16o(startp, $coord_y, i16(row));
+                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2));
+                    } else if ((yield* enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), i16(row), null)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -172,19 +195,19 @@ function* md_stop(stopp, startp) {
     let distance;
     let min_distance = -1;
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
-        for (y = i16(((cptr.ldI16o(u, FLD.you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, FLD.you_uy) + 1) | 0); y++) {
-            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)))
+        for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++) {
+            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
-            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null)) {
-                distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, FLD.coord_y)));
+            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
+                distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
                 if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 261, __sl5), rn2(2)) : rn2(2)))) {
                     cptr.stI16(stopp, x);
-                    cptr.stI16o(stopp, FLD.coord_y, y);
+                    cptr.stI16o(stopp, $coord_y, y);
                     min_distance = distance;
                 }
             }
         }
-    if (min_distance < 0 && !(yield* enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96))))
+    if (min_distance < 0 && !(yield* enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96))))
         return 0;
     return 1;
 }
@@ -200,21 +223,21 @@ function* md_rush(md, tx, ty) {
     let mon;
     let dx;
     let dy;
-    let fx = cptr.ldI16o(md, FLD.monst_mx);
-    let fy = cptr.ldI16o(md, FLD.monst_my);
+    let fx = cptr.ldI16o(md, $monst_mx);
+    let fy = cptr.ldI16o(md, $monst_my);
     let nfx = fx;
     let nfy = fy;
     let d1;
     let d2;
-    if (cptr.eq((cptr.ldPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters)), md)) {
-        cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
+    if (cptr.eq((cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), md)) {
+        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* newsym(i16(fx), i16(fy)));
     }
     while (1) {
         d1 = dist2(i16(fx), i16(fy), i16(tx), i16(ty));
         for (dx = -1; dx <= 1; dx++)
             for (dy = -1; dy <= 1; dy++)
-                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, 756, (fy + dy) | 0, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) <= NHC.DBWALL)) {
+                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, 756, (fy + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
                     d2 = dist2(i16(((fx + dx) | 0)), i16(((fy + dy) | 0)), i16(tx), i16(ty));
                     if (d2 < d1) {
                         d1 = d2;
@@ -228,42 +251,42 @@ function* md_rush(md, tx, ty) {
         fy = nfy;
         if (fx == tx && fy == ty)
             break;
-        mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters));
+        mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         if (!Deaf()) {
             ;
             if (mon)
                 (yield* verbalize(__sl9, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__sl2, 340, __sl10), rn2(3)) : rn2(3)), 8))));
-            else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, FLD.you_uy)))
+            else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, $you_uy)))
                 (yield* verbalize(__sl11));
         }
         if (mon)
-            cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
+            cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* place_monster(md, i16(fx), i16(fy)));
         (yield* newsym(i16(fx), i16(fy)));
         (yield* flush_screen(0));
         (yield* Y.icall(nh_delay_output()()));
-        cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
+        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         if (mon) {
-            if ((cptr.ldI16o(mon, FLD.monst_mx) != fx) || (cptr.ldI16o(mon, FLD.monst_my) != fy))
-                cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, mon);
+            if ((cptr.ldI16o(mon, $monst_mx) != fx) || (cptr.ldI16o(mon, $monst_my) != fy))
+                cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mon);
             else
                 (yield* place_monster(mon, i16(fx), i16(fy)));
         }
         (yield* newsym(i16(fx), i16(fy)));
     }
-    if ((mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) !== null) {
-        cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
+    if ((mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* place_monster(md, i16(fx), i16(fy)));
         (yield* newsym(i16(fx), i16(fy)));
         if (!Deaf()) {
             ;
             (yield* verbalize(__sl12));
         } else {
-            (yield* pline(__sl13, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
+            (yield* pline(__sl13, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
         }
-        cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
-        if ((cptr.ldI16o(mon, FLD.monst_mx) != fx) || (cptr.ldI16o(mon, FLD.monst_my) != fy))
-            cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, mon);
+        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+        if ((cptr.ldI16o(mon, $monst_mx) != fx) || (cptr.ldI16o(mon, $monst_my) != fy))
+            cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mon);
         else
             (yield* place_monster(mon, i16(fx), i16(fy)));
         (yield* newsym(i16(fx), i16(fy)));
@@ -286,24 +309,24 @@ function* newmail(info) {
     __lbl_go_back: {
         if (!(yield* md_start(start)) || !(yield* md_stop(stop, start)))
             break __lbl_give_up;
-        if (!(md = (yield* makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, 96), cptr.ldI16(start), cptr.ldI16o(start, FLD.nhcoord_y), NHM.NO_MM_FLAGS))))
+        if (!(md = (yield* makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, 96), cptr.ldI16(start), cptr.ldI16o(start, $nhcoord_y), NHM.NO_MM_FLAGS))))
             break __lbl_give_up;
-        if (!(yield* md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, FLD.nhcoord_y))))
+        if (!(yield* md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, $nhcoord_y))))
             break __lbl_go_back;
         message_seen = 1;
         if (!Deaf()) {
             ;
-            (yield* verbalize(__sl14, Hello(md), svp, cptr.ldPtro(info, FLD.mail_info_display_txt)));
+            (yield* verbalize(__sl14, Hello(md), svp, cptr.ldPtro(info, $mail_info_display_txt)));
         } else {
-            (yield* pline(__sl15, cptr.ldPtro(info, FLD.mail_info_display_txt)));
+            (yield* pline(__sl15, cptr.ldPtro(info, $mail_info_display_txt)));
         }
         if (cptr.ldI32(info)) {
             let obj = (yield* mksobj(NHC.SCR_MAIL, 0, 0));
-            if (cptr.ldPtro(info, FLD.mail_info_object_nam))
-                obj = (yield* oname(obj, cptr.ldPtro(info, FLD.mail_info_object_nam), NHM.ONAME_NO_FLAGS));
-            if (cptr.ldPtro(info, FLD.mail_info_response_cmd))
-                (yield* new_omailcmd(obj, cptr.ldPtro(info, FLD.mail_info_response_cmd)));
-            if (!(dist2((cptr.ldI16o((md), FLD.monst_mx)), (cptr.ldI16o((md), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 2)) {
+            if (cptr.ldPtro(info, $mail_info_object_nam))
+                obj = (yield* oname(obj, cptr.ldPtro(info, $mail_info_object_nam), NHM.ONAME_NO_FLAGS));
+            if (cptr.ldPtro(info, $mail_info_response_cmd))
+                (yield* new_omailcmd(obj, cptr.ldPtro(info, $mail_info_response_cmd)));
+            if (!(dist2((cptr.ldI16o((md), $monst_mx)), (cptr.ldI16o((md), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
                 if (!Deaf()) {
                     ;
                     (yield* verbalize(__sl16));
@@ -316,30 +339,30 @@ function* newmail(info) {
             (void (obj));
         }
     }
-        if (!(yield* md_rush(md, cptr.ldI16(start), cptr.ldI16o(start, FLD.nhcoord_y))))
-            cptr.stI16o(md, FLD.monst_mx, cptr.stI16o(md, FLD.monst_my, 0));
+        if (!(yield* md_rush(md, cptr.ldI16(start), cptr.ldI16o(start, $nhcoord_y))))
+            cptr.stI16o(md, $monst_mx, cptr.stI16o(md, $monst_my, 0));
         (yield* mongone(md));
     }
     if (!message_seen && cptr.ldI32(info) == NHM.MSG_OTHER)
-        (yield* pline(__sl18, cptr.ldPtro(info, FLD.mail_info_display_txt)));
+        (yield* pline(__sl18, cptr.ldPtro(info, $mail_info_display_txt)));
 }
 
 let __static_ckmailstatus_deliver = cptr.alloc(32); /** C ref: mail.c:571 — struct mail_info (function-static) */
 cptr.stI32(__static_ckmailstatus_deliver, NHM.MSG_MAIL);
-cptr.stPtro(__static_ckmailstatus_deliver, FLD.mail_info_display_txt, __sl19);
-cptr.stPtro(__static_ckmailstatus_deliver, FLD.mail_info_object_nam, null);
-cptr.stPtro(__static_ckmailstatus_deliver, FLD.mail_info_response_cmd, null);
+cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_display_txt, __sl19);
+cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_object_nam, null);
+cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_response_cmd, null);
 
 /** C ref: mail.c:550 */
 export function* ckmailstatus() {
     ck_server_admin_msg();
-    if (!mailbox || (cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 || !cptr.ld1so(flags, FLD.flag_biff) || cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) < BigInt.asIntN(64, laststattime + 50n))
+    if (!mailbox || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || !cptr.ld1so(flags, $flag_biff) || cptr.ldI64o(svm, $instance_globals_saved_m_moves) < BigInt.asIntN(64, laststattime + 50n))
         return;
-    laststattime = cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves);
+    laststattime = cptr.ldI64o(svm, $instance_globals_saved_m_moves);
     if (stat(mailbox, nmstat)) {
-        cptr.stI64o(nmstat, FLD.stat_st_mtimespec, 0n);
-    } else if (cptr.ldI64o(nmstat, FLD.stat_st_mtimespec) > cptr.ldI64o(omstat, FLD.stat_st_mtimespec)) {
-        if (cptr.ldI64o(nmstat, FLD.stat_st_size)) {
+        cptr.stI64o(nmstat, $stat_st_mtimespec, 0n);
+    } else if (cptr.ldI64o(nmstat, $stat_st_mtimespec) > cptr.ldI64o(omstat, $stat_st_mtimespec)) {
+        if (cptr.ldI64o(nmstat, $stat_st_size)) {
             (yield* newmail(__static_ckmailstatus_deliver));
         }
         (yield* getmailstatus());
@@ -353,7 +376,7 @@ export function ck_server_admin_msg() {
 /** C ref: mail.c:704 — @param {CPtr} otmp */
 export function* readmail(otmp) {
     let mr = null;
-    if (cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer))
+    if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         return;
     (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     if (!(mr = nh_getenv(__sl20)))

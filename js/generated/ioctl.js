@@ -12,6 +12,15 @@ import { check_user_string } from './unixmain.js';
 import { Norep, pline } from './pline.js';
 import { windowprocs } from './windows.js';
 
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+    $sysopt_s_shellers = FLD.sysopt_s_shellers, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
+    $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
+    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+    $winsize_ws_col = FLD.winsize_ws_col;
+
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Suspend command not available.");
 const __sl1 = cptr.lit("I don't think your shell has job control.");
@@ -24,9 +33,9 @@ export function getwindowsz() {
     let ttsz = cptr.alloc(8);
     if (ioctl(fileno(__stdinp), 1074295912n, ttsz) != -1) {
         if (cptr.ldU16(ttsz))
-            cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI, cptr.ldU16(ttsz));
-        if (cptr.ldU16o(ttsz, FLD.winsize_ws_col))
-            cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO, cptr.ldU16o(ttsz, FLD.winsize_ws_col));
+            cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI, cptr.ldU16(ttsz));
+        if (cptr.ldU16o(ttsz, $winsize_ws_col))
+            cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO, cptr.ldU16o(ttsz, $winsize_ws_col));
     }
 }
 
@@ -43,7 +52,7 @@ export function setioctls() {
 
 /** C ref: ioctl.c:161 @returns {CInt} */
 export function dosuspend() {
-    if (!cptr.ldPtro(sysopt, FLD.sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers))) {
+    if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
         Norep(__sl0);
         return 0;
     }

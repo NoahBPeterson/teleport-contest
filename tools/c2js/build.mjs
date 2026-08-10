@@ -21,7 +21,7 @@ import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
 import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
-import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, PROP_MODULE, MACRO_HELPERS, JS_RESERVED } from './emit.mjs';
+import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_HELPERS, JS_RESERVED } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -447,10 +447,11 @@ function writePropModule(symbols) {
       `export function ${n}() { return ${h.code}; }`].join('\n');
   });
   const text = bodies.join('\n\n');
+  const fieldRefs = new Set([...text.matchAll(new RegExp(`\\${FIELD_PREFIX}([A-Za-z_][A-Za-z0-9_]*)`, 'g'))].map((m) => m[1]));
   const imports = ["import * as cptr from '../cptr.js';"];
   if (new RegExp(`\\b${CONST_NS}\\.`).test(text)) imports.push(`import * as ${CONST_NS} from '${CONST_MODULE}';`);
   if (new RegExp(`\\b${MACRO_NS}\\.`).test(text)) imports.push(`import * as ${MACRO_NS} from '${MACRO_MODULE}';`);
-  if (new RegExp(`\\b${FIELD_NS}\\.`).test(text)) imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
+  if (fieldRefs.size) imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
   for (const [file, vars] of [...byFile].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
     imports.push(`import { ${[...vars].sort().join(', ')} } from './${file}.js';`);
   }
@@ -472,11 +473,41 @@ function writePropModule(symbols) {
     '',
     ...imports,
     '',
+    ...(fieldRefs.size ? [fieldPreamble(fieldRefs, null, base), ''] : []),
     text,
     '',
   ];
   fs.writeFileSync(path.join(outDir, base), lines.join('\n'));
   console.log(`nhprop: ${names.length} macro-body helpers exported (${MACRO_HELPERS.size} captured)`);
+}
+
+/**
+ * The module-scope bindings for the struct field offsets a file uses.
+ *
+ * A site spells the offset `$monst_data` rather than `FLD.monst_data` because
+ * V8 constant-folds a module-scope `const` and does not fold a namespace load
+ * — worth 8.1% of the corpus per-move time over 150k sites (see
+ * docs/NOTES-readability.md §2). The values still come from nhfield.js; this
+ * is a fold hint, not a second table.
+ *
+ * The `$` prefix cannot collide with anything the emitter emits for C code,
+ * since a C identifier cannot contain `$`; the assertion is kept anyway.
+ */
+function fieldPreamble(refs, declared, where) {
+  if (!refs.size) return null;
+  const names = [...refs].sort();
+  const clash = names.filter((n) => declared && declared.has(FIELD_PREFIX + n));
+  if (clash.length) throw new Error(`field-offset binding(s) collide with a declaration in ${where}: ${clash.join(', ')}`);
+  const lines = ['// struct field offsets used below, bound at module scope so V8 folds them',
+    `// (values from ${FIELD_MODULE}, which is the whole table)`];
+  let cur = 'const ';
+  for (let i = 0; i < names.length; i++) {
+    const piece = `${FIELD_PREFIX}${names[i]} = ${FIELD_NS}.${names[i]}${i === names.length - 1 ? ';' : ','}`;
+    if (cur !== 'const ' && cur.length + piece.length > 110) { lines.push(cur.trimEnd()); cur = '    '; }
+    cur += piece + ' ';
+  }
+  lines.push(cur.trimEnd());
+  return lines.join('\n');
 }
 
 /** assemble a generated module from emitter output (+ optional prelude/imports) */
@@ -512,7 +543,7 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
     if (bare) throw new Error(`macro-constant prefix ${MACRO_NS} collides with an emitted identifier in ${name}.c`);
     imports.push(`import * as ${MACRO_NS} from '${MACRO_MODULE}';`);
   }
-  if (emitter.usesFields) {
+  if (emitter.fieldRefs.size) {
     const bare = (bodyText + (prelude || '')).match(new RegExp(`\\b${FIELD_NS}\\b(?!\\.)`, 'g'));
     if (bare) throw new Error(`field-offset prefix ${FIELD_NS} collides with an emitted identifier in ${name}.c`);
     imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
@@ -529,12 +560,14 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
     imports.push(`import { ${names.sort().join(', ')} } from './${file}.js';`);
   }
 
+  const fieldTable = fieldPreamble(emitter.fieldRefs, emitter.declared, `${name}.c`);
+
   const stringTable = emitter.stringList.length
     ? ['// string literals (C char* uses decay to CPtr into these static buffers)',
       ...emitter.stringList.map((raw, i) => `const __sl${i} = cptr.lit(${raw});`)].join('\n')
     : null;
 
-  return [header, '', ...imports, '', ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
+  return [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
 }
 
 function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
