@@ -87,7 +87,7 @@ const $Gender_his = FLD.Gender_his, $align_record = FLD.align_record, $d_level_d
     $you_urooms0 = FLD.you_urooms0, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/priest.c");
+const __sl0 = cptr.lit("priest.c");
 const __sl1 = cptr.lit("move_special");
 const __sl2 = cptr.lit("pri_move");
 const __sl3 = cptr.lit("displaced image doesn't fool %s!");
@@ -161,8 +161,7 @@ const __sl70 = cptr.lit("%s roars in anger:  \"Thou shalt suffer!\"");
 const __sl71 = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
 const __sl72 = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
 const __sl73 = cptr.lit("angry_priest");
-const __sl74 = cptr.lit("priest.c");
-const __sl75 = cptr.lit("has_emin(priest)");
+const __sl74 = cptr.lit("has_emin(priest)");
 
 /** C ref: priest.c:16 — @param {CPtr} mtmp */
 export function newepri(mtmp) {
@@ -822,7 +821,7 @@ export function angry_priest() {
                 newemin(priest);
             cptr.stI32o(priest, $monst_ispriest, 0);
             cptr.stI32o(priest, $monst_isminion, 1);
-            (__builtin_expect(BigInt((!((cptr.ldPtro((priest), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)))))), 0n) ? __assert_rtn(__sl73, __sl74, 902, __sl75) : void 0);
+            (__builtin_expect(BigInt((!((cptr.ldPtro((priest), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)))))), 0n) ? __assert_rtn(__sl73, __sl0, 902, __sl74) : void 0);
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_min_align, cptr.ld1so(eprip, $epri_shralign));
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_renegade, 0);
             free_epri(priest);

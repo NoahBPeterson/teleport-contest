@@ -117,7 +117,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NhRegion_player_flags = FLD.NhRegion_play
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mkmaze.c");
+const __sl0 = cptr.lit("mkmaze.c");
 const __sl1 = cptr.lit("set_levltyp_lit");
 const __sl2 = cptr.lit("wall_cleanup: bad bounds (%d,%d) to (%d,%d)");
 const __sl3 = cptr.lit("wall_extends: bad bounds (%d,%d) to (%d,%d)");

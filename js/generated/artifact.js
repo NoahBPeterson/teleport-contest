@@ -172,171 +172,170 @@ const __sl32 = cptr.lit("The Orb of Fate");
 const __sl33 = cptr.lit("The Eye of the Aethiopica");
 const __sl34 = cptr.lit("artiexist");
 const __sl35 = cptr.lit("artidisco");
-const __sl36 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/artifact.c");
+const __sl36 = cptr.lit("artifact.c");
 const __sl37 = cptr.lit("mk_artifact");
-const __sl38 = cptr.lit("artifact.c");
-const __sl39 = cptr.lit("otmp != 0");
-const __sl40 = cptr.lit("the ");
-const __sl41 = cptr.lit(" -");
-const __sl42 = cptr.lit("found_artifact: invalid artifact index! (%d)");
-const __sl43 = cptr.lit("found_artifact: artifact doesn't exist yet? (%d)");
-const __sl44 = cptr.lit(" in a shop");
-const __sl45 = cptr.lit(" on the floor");
-const __sl46 = cptr.lit(" in a container");
-const __sl47 = cptr.lit(" carried by a monster");
-const __sl48 = cptr.lit("found %s%s");
-const __sl49 = cptr.lit("invalid artifact origin: %4o");
-const __sl50 = cptr.lit("touch_artifact");
-const __sl51 = cptr.lit("are blasted by %s power!");
-const __sl52 = cptr.lit("touching %s");
-const __sl53 = cptr.lit("%s your grasp!");
-const __sl54 = cptr.lit("evade");
-const __sl55 = cptr.lit("%s beyond your control!");
-const __sl56 = cptr.lit("are");
-const __sl57 = cptr.lit("spec_applies");
-const __sl58 = cptr.lit("Weird weapon special attack.");
-const __sl59 = cptr.lit("spec_abon");
-const __sl60 = cptr.lit("spec_dbon");
-const __sl61 = cptr.lit("couldn't discover artifact (%d)");
-const __sl62 = cptr.lit("Artifacts");
-const __sl63 = cptr.lit("unaligned");
-const __sl64 = cptr.lit("non-aligned");
-const __sl65 = cptr.lit("  %s [%s %s]");
-const __sl66 = cptr.lit("dump_artifact_info");
-const __sl67 = cptr.lit("[%s%s%s%s%s%s%s%s%s]");
-const __sl68 = cptr.lit("exists;");
-const __sl69 = cptr.lit(" hero knows;");
-const __sl70 = cptr.lit(" gift");
-const __sl71 = cptr.lit(" wish");
-const __sl72 = cptr.lit(" named");
-const __sl73 = cptr.lit(" viadip");
-const __sl74 = cptr.lit(" lvldef");
-const __sl75 = cptr.lit(" bones");
-const __sl76 = cptr.lit(" random");
-const __sl77 = cptr.lit("  %-36.36s%s");
-const __sl78 = cptr.lit("probe");
-const __sl79 = cptr.lit("stun");
-const __sl80 = cptr.lit("scare");
-const __sl81 = cptr.lit("cancel");
-const __sl82 = cptr.lit("prod");
-const __sl83 = cptr.lit("amaze");
-const __sl84 = cptr.lit("tickle");
-const __sl85 = cptr.lit("purge");
-const __sl86 = cptr.lit("Mb_hit");
-const __sl87 = cptr.lit("magic-absorbing blade %s %s!");
-const __sl88 = cptr.lit("lose magical energy!");
-const __sl89 = cptr.lit("absorb magical energy!");
-const __sl90 = cptr.lit("being scared stiff");
-const __sl91 = cptr.lit("release %s!");
-const __sl92 = cptr.lit("%s is insightful.");
-const __sl93 = cptr.lit("%s %s!");
-const __sl94 = cptr.lit("resist");
-const __sl95 = cptr.lit("stunned");
-const __sl96 = cptr.lit(" and ");
-const __sl97 = cptr.lit("confused");
-const __sl98 = cptr.lit("%s %s %s%c");
-const __sl99 = cptr.lit("attacking yourself with weapon?");
-const __sl100 = cptr.lit("fiery blade %s %s%c");
-const __sl101 = cptr.lit("hits");
-const __sl102 = cptr.lit("vaporizes part of");
-const __sl103 = cptr.lit("burns");
-const __sl104 = cptr.lit("artifact_hit");
-const __sl105 = cptr.lit("ice-cold blade %s %s%c");
-const __sl106 = cptr.lit("freezes");
-const __sl107 = cptr.lit("massive hammer hits%s %s%c");
-const __sl108 = cptr.lit("!  Lightning strikes");
-const __sl109 = cptr.lit("imaginary widget hits%s %s%c");
-const __sl110 = cptr.lit("!  A hail of magic missiles strikes");
-const __sl111 = cptr.lit("The razor-sharp blade");
-const __sl112 = cptr.lit("slice %s wide open!");
-const __sl113 = cptr.lit("slice deeply into %s!");
-const __sl114 = cptr.lit("%s cuts deeply into %s!");
-const __sl115 = cptr.lit("%s cuts %s in half!");
-const __sl116 = cptr.lit("%s cuts deeply into you!");
-const __sl117 = cptr.lit("%s cuts you in half!");
-const __sl118 = cptr.lit("Somehow, you miss %s wildly.");
-const __sl119 = cptr.lit("Somehow, %s misses wildly.");
-const __sl120 = cptr.lit("%s slices through %s %s.");
-const __sl121 = cptr.lit("Good job Henry, but that wasn't Anne.");
-const __sl122 = cptr.lit("Somehow, %s misses you wildly.");
-const __sl123 = cptr.lit("%s slices through your %s.");
-const __sl124 = cptr.lit("you");
-const __sl125 = cptr.lit("animating force");
-const __sl126 = cptr.lit("life");
-const __sl127 = cptr.lit("%s blade draws the %s from %s!");
-const __sl128 = cptr.lit("%s draws the %s from %s!");
-const __sl129 = cptr.lit("magr != 0");
-const __sl130 = cptr.lit("an %s drain your %s!");
-const __sl131 = cptr.lit("unholy blade");
-const __sl132 = cptr.lit("object");
-const __sl133 = cptr.lit("%s blade drains your %s!");
-const __sl134 = cptr.lit("%s drains your %s!");
-const __sl135 = cptr.lit("life drainage");
-const __sl136 = cptr.lit("%s beheads %s!");
-const __sl137 = cptr.lit("%s decapitates %s!");
-const __sl138 = cptr.lit("invoke");
-const __sl139 = cptr.lit("a surge of power, but nothing seems to happen.");
-const __sl140 = cptr.lit("better.");
-const __sl141 = cptr.lit("%sbetter.");
-const __sl142 = cptr.lit("slightly ");
-const __sl143 = cptr.lit("re-energized.");
-const __sl144 = cptr.lit("charge");
-const __sl145 = cptr.lit("Open a portal to which dungeon?");
-const __sl146 = cptr.lit("very disoriented for a moment.");
-const __sl147 = cptr.lit("are surrounded by a shimmering sphere!");
-const __sl148 = cptr.lit("weightless for a moment.");
-const __sl149 = cptr.lit("invoke_create_ammo");
-const __sl150 = cptr.lit("Suddenly %s out.");
-const __sl151 = cptr.lit("fall");
-const __sl152 = cptr.lit("invoke_banish");
-const __sl153 = cptr.lit("%s %s %s in a cloud of brimstone!");
-const __sl154 = cptr.lit("Most of the");
-const __sl155 = cptr.lit("Some of the");
-const __sl156 = cptr.lit("The");
-const __sl157 = cptr.lit("disappear");
-const __sl158 = cptr.lit("invoke_fling_poison");
-const __sl159 = cptr.lit("%s");
-const __sl160 = cptr.lit("It is lit here now.");
-const __sl161 = cptr.lit("invoke_blinding_ray");
-const __sl162 = cptr.lit("that %s %s ignoring you.");
-const __sl163 = cptr.lit("arti_invoke_cost");
-const __sl164 = cptr.lit("drained...");
-const __sl165 = cptr.lit("arti_invoke without obj");
-const __sl166 = cptr.lit("Unknown invoke power %d.");
-const __sl167 = cptr.lit("arti_invoke");
-const __sl168 = cptr.lit("like a rabble-rouser.");
-const __sl169 = cptr.lit("the tension decrease around you.");
-const __sl170 = cptr.lit("body takes on a %s transparency...");
-const __sl171 = cptr.lit("normal");
-const __sl172 = cptr.lit("strange");
-const __sl173 = cptr.lit("body seems to unfade...");
-const __sl174 = cptr.lit("NetHack rumors file closed for renovation.");
-const __sl175 = cptr.lit("%s:");
-const __sl176 = cptr.lit("whisper");
-const __sl177 = cptr.lit("quiver");
-const __sl178 = cptr.lit("flicker");
-const __sl179 = cptr.lit("glimmer");
-const __sl180 = cptr.lit("gleam");
-const __sl181 = cptr.lit("ing");
-const __sl182 = cptr.lit("%s is %s.");
-const __sl183 = cptr.lit("%s %s slightly.");
-const __sl184 = cptr.lit("%s stops %s.");
-const __sl185 = cptr.lit("handle %s%s!");
-const __sl186 = cptr.lit(" anymore");
-const __sl187 = cptr.lit("a silver ring");
-const __sl188 = cptr.lit("a silver wand");
-const __sl189 = cptr.lit("retouch_object");
-const __sl190 = cptr.lit("handling %s");
-const __sl191 = cptr.lit("%s to the %s.");
-const __sl192 = cptr.lit("After losing your gloves, you");
-const __sl193 = cptr.lit("Key feels %s%c");
-const __sl194 = cptr.lit("cool");
-const __sl195 = cptr.lit("slightly warm");
-const __sl196 = cptr.lit("warm");
-const __sl197 = cptr.lit("very warm");
-const __sl198 = cptr.lit("hot");
-const __sl199 = cptr.lit("very hot");
-const __sl200 = cptr.lit("like fire");
+const __sl38 = cptr.lit("otmp != 0");
+const __sl39 = cptr.lit("the ");
+const __sl40 = cptr.lit(" -");
+const __sl41 = cptr.lit("found_artifact: invalid artifact index! (%d)");
+const __sl42 = cptr.lit("found_artifact: artifact doesn't exist yet? (%d)");
+const __sl43 = cptr.lit(" in a shop");
+const __sl44 = cptr.lit(" on the floor");
+const __sl45 = cptr.lit(" in a container");
+const __sl46 = cptr.lit(" carried by a monster");
+const __sl47 = cptr.lit("found %s%s");
+const __sl48 = cptr.lit("invalid artifact origin: %4o");
+const __sl49 = cptr.lit("touch_artifact");
+const __sl50 = cptr.lit("are blasted by %s power!");
+const __sl51 = cptr.lit("touching %s");
+const __sl52 = cptr.lit("%s your grasp!");
+const __sl53 = cptr.lit("evade");
+const __sl54 = cptr.lit("%s beyond your control!");
+const __sl55 = cptr.lit("are");
+const __sl56 = cptr.lit("spec_applies");
+const __sl57 = cptr.lit("Weird weapon special attack.");
+const __sl58 = cptr.lit("spec_abon");
+const __sl59 = cptr.lit("spec_dbon");
+const __sl60 = cptr.lit("couldn't discover artifact (%d)");
+const __sl61 = cptr.lit("Artifacts");
+const __sl62 = cptr.lit("unaligned");
+const __sl63 = cptr.lit("non-aligned");
+const __sl64 = cptr.lit("  %s [%s %s]");
+const __sl65 = cptr.lit("dump_artifact_info");
+const __sl66 = cptr.lit("[%s%s%s%s%s%s%s%s%s]");
+const __sl67 = cptr.lit("exists;");
+const __sl68 = cptr.lit(" hero knows;");
+const __sl69 = cptr.lit(" gift");
+const __sl70 = cptr.lit(" wish");
+const __sl71 = cptr.lit(" named");
+const __sl72 = cptr.lit(" viadip");
+const __sl73 = cptr.lit(" lvldef");
+const __sl74 = cptr.lit(" bones");
+const __sl75 = cptr.lit(" random");
+const __sl76 = cptr.lit("  %-36.36s%s");
+const __sl77 = cptr.lit("probe");
+const __sl78 = cptr.lit("stun");
+const __sl79 = cptr.lit("scare");
+const __sl80 = cptr.lit("cancel");
+const __sl81 = cptr.lit("prod");
+const __sl82 = cptr.lit("amaze");
+const __sl83 = cptr.lit("tickle");
+const __sl84 = cptr.lit("purge");
+const __sl85 = cptr.lit("Mb_hit");
+const __sl86 = cptr.lit("magic-absorbing blade %s %s!");
+const __sl87 = cptr.lit("lose magical energy!");
+const __sl88 = cptr.lit("absorb magical energy!");
+const __sl89 = cptr.lit("being scared stiff");
+const __sl90 = cptr.lit("release %s!");
+const __sl91 = cptr.lit("%s is insightful.");
+const __sl92 = cptr.lit("%s %s!");
+const __sl93 = cptr.lit("resist");
+const __sl94 = cptr.lit("stunned");
+const __sl95 = cptr.lit(" and ");
+const __sl96 = cptr.lit("confused");
+const __sl97 = cptr.lit("%s %s %s%c");
+const __sl98 = cptr.lit("attacking yourself with weapon?");
+const __sl99 = cptr.lit("fiery blade %s %s%c");
+const __sl100 = cptr.lit("hits");
+const __sl101 = cptr.lit("vaporizes part of");
+const __sl102 = cptr.lit("burns");
+const __sl103 = cptr.lit("artifact_hit");
+const __sl104 = cptr.lit("ice-cold blade %s %s%c");
+const __sl105 = cptr.lit("freezes");
+const __sl106 = cptr.lit("massive hammer hits%s %s%c");
+const __sl107 = cptr.lit("!  Lightning strikes");
+const __sl108 = cptr.lit("imaginary widget hits%s %s%c");
+const __sl109 = cptr.lit("!  A hail of magic missiles strikes");
+const __sl110 = cptr.lit("The razor-sharp blade");
+const __sl111 = cptr.lit("slice %s wide open!");
+const __sl112 = cptr.lit("slice deeply into %s!");
+const __sl113 = cptr.lit("%s cuts deeply into %s!");
+const __sl114 = cptr.lit("%s cuts %s in half!");
+const __sl115 = cptr.lit("%s cuts deeply into you!");
+const __sl116 = cptr.lit("%s cuts you in half!");
+const __sl117 = cptr.lit("Somehow, you miss %s wildly.");
+const __sl118 = cptr.lit("Somehow, %s misses wildly.");
+const __sl119 = cptr.lit("%s slices through %s %s.");
+const __sl120 = cptr.lit("Good job Henry, but that wasn't Anne.");
+const __sl121 = cptr.lit("Somehow, %s misses you wildly.");
+const __sl122 = cptr.lit("%s slices through your %s.");
+const __sl123 = cptr.lit("you");
+const __sl124 = cptr.lit("animating force");
+const __sl125 = cptr.lit("life");
+const __sl126 = cptr.lit("%s blade draws the %s from %s!");
+const __sl127 = cptr.lit("%s draws the %s from %s!");
+const __sl128 = cptr.lit("magr != 0");
+const __sl129 = cptr.lit("an %s drain your %s!");
+const __sl130 = cptr.lit("unholy blade");
+const __sl131 = cptr.lit("object");
+const __sl132 = cptr.lit("%s blade drains your %s!");
+const __sl133 = cptr.lit("%s drains your %s!");
+const __sl134 = cptr.lit("life drainage");
+const __sl135 = cptr.lit("%s beheads %s!");
+const __sl136 = cptr.lit("%s decapitates %s!");
+const __sl137 = cptr.lit("invoke");
+const __sl138 = cptr.lit("a surge of power, but nothing seems to happen.");
+const __sl139 = cptr.lit("better.");
+const __sl140 = cptr.lit("%sbetter.");
+const __sl141 = cptr.lit("slightly ");
+const __sl142 = cptr.lit("re-energized.");
+const __sl143 = cptr.lit("charge");
+const __sl144 = cptr.lit("Open a portal to which dungeon?");
+const __sl145 = cptr.lit("very disoriented for a moment.");
+const __sl146 = cptr.lit("are surrounded by a shimmering sphere!");
+const __sl147 = cptr.lit("weightless for a moment.");
+const __sl148 = cptr.lit("invoke_create_ammo");
+const __sl149 = cptr.lit("Suddenly %s out.");
+const __sl150 = cptr.lit("fall");
+const __sl151 = cptr.lit("invoke_banish");
+const __sl152 = cptr.lit("%s %s %s in a cloud of brimstone!");
+const __sl153 = cptr.lit("Most of the");
+const __sl154 = cptr.lit("Some of the");
+const __sl155 = cptr.lit("The");
+const __sl156 = cptr.lit("disappear");
+const __sl157 = cptr.lit("invoke_fling_poison");
+const __sl158 = cptr.lit("%s");
+const __sl159 = cptr.lit("It is lit here now.");
+const __sl160 = cptr.lit("invoke_blinding_ray");
+const __sl161 = cptr.lit("that %s %s ignoring you.");
+const __sl162 = cptr.lit("arti_invoke_cost");
+const __sl163 = cptr.lit("drained...");
+const __sl164 = cptr.lit("arti_invoke without obj");
+const __sl165 = cptr.lit("Unknown invoke power %d.");
+const __sl166 = cptr.lit("arti_invoke");
+const __sl167 = cptr.lit("like a rabble-rouser.");
+const __sl168 = cptr.lit("the tension decrease around you.");
+const __sl169 = cptr.lit("body takes on a %s transparency...");
+const __sl170 = cptr.lit("normal");
+const __sl171 = cptr.lit("strange");
+const __sl172 = cptr.lit("body seems to unfade...");
+const __sl173 = cptr.lit("NetHack rumors file closed for renovation.");
+const __sl174 = cptr.lit("%s:");
+const __sl175 = cptr.lit("whisper");
+const __sl176 = cptr.lit("quiver");
+const __sl177 = cptr.lit("flicker");
+const __sl178 = cptr.lit("glimmer");
+const __sl179 = cptr.lit("gleam");
+const __sl180 = cptr.lit("ing");
+const __sl181 = cptr.lit("%s is %s.");
+const __sl182 = cptr.lit("%s %s slightly.");
+const __sl183 = cptr.lit("%s stops %s.");
+const __sl184 = cptr.lit("handle %s%s!");
+const __sl185 = cptr.lit(" anymore");
+const __sl186 = cptr.lit("a silver ring");
+const __sl187 = cptr.lit("a silver wand");
+const __sl188 = cptr.lit("retouch_object");
+const __sl189 = cptr.lit("handling %s");
+const __sl190 = cptr.lit("%s to the %s.");
+const __sl191 = cptr.lit("After losing your gloves, you");
+const __sl192 = cptr.lit("Key feels %s%c");
+const __sl193 = cptr.lit("cool");
+const __sl194 = cptr.lit("slightly warm");
+const __sl195 = cptr.lit("warm");
+const __sl196 = cptr.lit("very warm");
+const __sl197 = cptr.lit("hot");
+const __sl198 = cptr.lit("very hot");
+const __sl199 = cptr.lit("like fire");
 
 /** C ref: artifact.c:46 — struct artifact[35] */
 const artilist = cptr.alloc(35 * 80);
@@ -1333,7 +1332,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
                 dispose_of_orig_obj(otmp);
             otmp = artiobj;
         }
-        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__sl37, __sl38, 278, __sl39) : void 0);
+        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__sl37, __sl36, 278, __sl38) : void 0);
         cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
         otmp = oname(otmp, cptr.ldPtro(a, $artifact_name), NHM.ONAME_NO_FLAGS);
         cptr.st1o(otmp, $obj_oartifact, schar(m));
@@ -1367,13 +1366,13 @@ function dispose_of_orig_obj(obj) {
 export function artifact_name(name, otyp_p, fuzzy) {
     let a;
     let aname;
-    if (!strncmpi(name, __sl40, 4))
+    if (!strncmpi(name, __sl39, 4))
         name = cptr.add(name, 4);
     for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80)) {
         aname = cptr.ldPtro(a, $artifact_name);
-        if (!strncmpi(aname, __sl40, 4))
+        if (!strncmpi(aname, __sl39, 4))
             aname = cptr.add(aname, 4);
-        if (!fuzzy ? !strncmpi((name), (aname), -1) : fuzzymatch(name, aname, __sl41, 1)) {
+        if (!fuzzy ? !strncmpi((name), (aname), -1) : fuzzymatch(name, aname, __sl40, 1)) {
             if (otyp_p)
                 cptr.stI16(otyp_p, cptr.ldI16(a));
             return cptr.ldPtro(a, $artifact_name);
@@ -1419,9 +1418,9 @@ export function artifact_exists(otmp, name, mod, flgs) {
 /** C ref: artifact.c:409 — @param {CInt} a */
 export function found_artifact(a) {
     if (a < 1 || a > NHC.NROFARTIFACTS)
-        impossible(__sl42, a);
+        impossible(__sl41, a);
     else if (!(cptr.ldI32o(artiexist, a, 36) & 1))
-        impossible(__sl43, a);
+        impossible(__sl42, a);
     else
         cptr.stI32o2(artiexist, a, 36, $arti_info_found, 1);
 }
@@ -1432,8 +1431,8 @@ export function find_artifact(otmp) {
     if (a && !(cptr.ldI32o2(artiexist, a, 36, $arti_info_found) & 1)) {
         let where;
         found_artifact(a);
-        where = ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) ? ((inside_shop(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)) != NHM.NO_ROOM) ? __sl44 : __sl45) : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED) ? __sl46 : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_MINVENT) ? __sl47 : __sl0)));
-        livelog_printf(64n, __sl48, bare_artifactname(otmp), where);
+        where = ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) ? ((inside_shop(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)) != NHM.NO_ROOM) ? __sl43 : __sl44) : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED) ? __sl45 : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_MINVENT) ? __sl46 : __sl0)));
+        livelog_printf(64n, __sl47, bare_artifactname(otmp), where);
     }
 }
 
@@ -1472,7 +1471,7 @@ export function artifact_origin(arti, aflags) {
         if (((aflags & NHM.ONAME_RANDOM) >>> 0) != 0)
             cptr.stI32o2(artiexist, a, 36, $arti_info_rndm, 1), ++ct;
         if (ct != 1)
-            impossible(__sl49, aflags);
+            impossible(__sl48, aflags);
     }
 }
 
@@ -1526,7 +1525,7 @@ export function restrict_name(otmp, name) {
     let ocls = cptr.ld1so2(objects, otyp, 120, $objclass_oc_class);
     if (!cptr.ld1s(name))
         return 0;
-    if (!strncmpi(name, __sl40, 4))
+    if (!strncmpi(name, __sl39, 4))
         name = cptr.add(name, 4);
     void __builtin___memset_chk(cptr.decay(sametype), 0, 481n, __builtin_object_size(cptr.decay(sametype), 0));
     cptr.st1o(cptr.decay(sametype), otyp, 1, 1);
@@ -1543,7 +1542,7 @@ export function restrict_name(otmp, name) {
         if (!cptr.ld1so(cptr.decay(sametype), cptr.ldI16(a), 1))
             continue;
         aname = cptr.ldPtro(a, $artifact_name);
-        if (!strncmpi(aname, __sl40, 4))
+        if (!strncmpi(aname, __sl39, 4))
             aname = cptr.add(aname, 4);
         if (!strcmp(aname, name))
             return schar(((cptr.ldU64o(a, $artifact_spfx) & 3n) != 0n || cptr.ldI64o(otmp, $obj_quan) > 1n ? 1 : 0));
@@ -1798,27 +1797,27 @@ export function touch_artifact(obj, mon) {
     }
     if (!badalign)
         badalign = bane_applies(oart, mon);
-    if (((badclass || badalign) && self_willed) || (badalign && (!yours || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 945, __sl50), rn2(4)) : rn2(4))))) {
+    if (((badclass || badalign) && self_willed) || (badalign && (!yours || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 945, __sl49), rn2(4)) : rn2(4))))) {
         let dmg;
         let tmp;
         let buf = new Uint8Array(256);
         if (!yours)
             return 0;
-        You(__sl51, s_suffix(the(xname(obj))));
+        You(__sl50, s_suffix(the(xname(obj))));
         touch_blasted = 1;
-        dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 953, __sl50), d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)))) : d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4))));
+        dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 953, __sl49), d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)))) : d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4))));
         if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 956, __sl50), rnd(10)) : rnd(10)), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
-        void cptr.sprintf(cptr.decay(buf), __sl52, cptr.ldPtro(oart, $artifact_name));
+            tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 956, __sl49), rnd(10)) : rnd(10)), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+        void cptr.sprintf(cptr.decay(buf), __sl51, cptr.ldPtro(oart, $artifact_name));
         losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);
         exercise(NHC.A_WIS, 0);
     }
     if (badclass && badalign && self_willed) {
         if (yours) {
             if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
-                pline(__sl53, Tobjnam(obj, __sl54));
+                pline(__sl52, Tobjnam(obj, __sl53));
             else
-                pline(__sl55, Tobjnam(obj, __sl56));
+                pline(__sl54, Tobjnam(obj, __sl55));
         }
         return 0;
     }
@@ -1877,7 +1876,7 @@ function spec_applies(weap, mtmp) {
             return !(yours ? Shock_resistance() : Resists_Elem(mtmp, NHC.SHOCK_RES));
             case NHM.AD_MAGM:
             case NHM.AD_STUN:
-            return !(yours ? Antimagic() : ((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1048, __sl57), rn2(100)) : rn2(100)) < cptr.ld1so(ptr, $permonst_mr)));
+            return !(yours ? Antimagic() : ((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1048, __sl56), rn2(100)) : rn2(100)) < cptr.ld1so(ptr, $permonst_mr)));
             case NHM.AD_DRST:
             return !(yours ? Poison_resistance() : Resists_Elem(mtmp, NHC.POISON_RES));
             case NHM.AD_DRLI:
@@ -1885,7 +1884,7 @@ function spec_applies(weap, mtmp) {
             case NHM.AD_STON:
             return !(yours ? Stone_resistance() : Resists_Elem(mtmp, NHC.STONE_RES));
             default:
-            impossible(__sl58);
+            impossible(__sl57);
         }
     }
     return 0;
@@ -1903,7 +1902,7 @@ export function spec_m2(otmp) {
 export function spec_abon(otmp, mon) {
     let weap = get_artifact(otmp);
     if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)) && cptr.ld1uo(weap, $artifact_attk + $attack_damn) && spec_applies(weap, mon))
-        return (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1085, __sl59), rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn))) : rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn)));
+        return (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1085, __sl58), rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn))) : rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn)));
     return 0;
 }
 
@@ -1917,7 +1916,7 @@ export function spec_dbon(otmp, mon, tmp) {
     else
         cptr.stI32(gs, spec_applies(weap, mon));
     if (cptr.ldI32(gs))
-        return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1107, __sl60), rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd))) : rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd))) : ((tmp) > 1 ? (tmp) : 1);
+        return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1107, __sl59), rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd))) : rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd))) : ((tmp) > 1 ? (tmp) : 1);
     return 0;
 }
 
@@ -1929,7 +1928,7 @@ export function discover_artifact(m) {
             cptr.stI16o(artidisco, i, m, 2);
             return;
         }
-    impossible(__sl61, m);
+    impossible(__sl60, m);
 }
 
 /** C ref: artifact.c:1131 — @param {CInt} m @returns {CInt} */
@@ -1956,13 +1955,13 @@ export function disp_artifact_discoveries(tmpwin) {
         if (tmpwin == -1)
             continue;
         if (i == 0)
-            putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl62);
+            putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl61);
         m = cptr.ldI16o(artidisco, i, 2);
         otyp = cptr.ldI16o(artilist, m, 80);
         algnstr = align_str(cptr.ld1so2(artilist, m, 80, $artifact_alignment));
-        if (!strcmp(algnstr, __sl63))
-            algnstr = __sl64;
-        void cptr.sprintf(cptr.decay(buf), __sl65, artiname(m), algnstr, simple_typename(otyp));
+        if (!strcmp(algnstr, __sl62))
+            algnstr = __sl63;
+        void cptr.sprintf(cptr.decay(buf), __sl64, artiname(m), algnstr, simple_typename(otyp));
         putstr()(tmpwin, 0, cptr.decay(buf));
     }
     return i;
@@ -1973,10 +1972,10 @@ export function dump_artifact_info(tmpwin) {
     let m;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
-    putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl62);
+    putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl61);
     for (m = 1; m <= NHC.NROFARTIFACTS; ++m) {
-        nh_snprintf(__sl66, 1197, cptr.decay(buf2), 256n, __sl67, (cptr.ldI32o(artiexist, m, 36) & 1) | 0 ? __sl68 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_found) & 1) | 0 ? __sl69 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_gift) & 1) | 0 ? __sl70 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_wish) & 1) | 0 ? __sl71 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_named) & 1) | 0 ? __sl72 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_viadip) & 1) | 0 ? __sl73 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_lvldef) & 1) | 0 ? __sl74 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_bones) & 1) | 0 ? __sl75 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_rndm) & 1) | 0 ? __sl76 : __sl0);
-        nh_snprintf(__sl66, 1204, cptr.decay(buf), 256n, __sl77, artiname(m), cptr.decay(buf2));
+        nh_snprintf(__sl65, 1197, cptr.decay(buf2), 256n, __sl66, (cptr.ldI32o(artiexist, m, 36) & 1) | 0 ? __sl67 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_found) & 1) | 0 ? __sl68 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_gift) & 1) | 0 ? __sl69 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_wish) & 1) | 0 ? __sl70 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_named) & 1) | 0 ? __sl71 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_viadip) & 1) | 0 ? __sl72 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_lvldef) & 1) | 0 ? __sl73 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_bones) & 1) | 0 ? __sl74 : __sl0, (cptr.ldI32o2(artiexist, m, 36, $arti_info_rndm) & 1) | 0 ? __sl75 : __sl0);
+        nh_snprintf(__sl65, 1204, cptr.decay(buf), 256n, __sl76, artiname(m), cptr.decay(buf2));
         putstr()(tmpwin, 0, cptr.decay(buf));
     }
     return;
@@ -1991,14 +1990,14 @@ export const NUM_MB_INDICES = 4;
 
 /** C ref: artifact.c:1242 — char *[2][4] */
 const mb_verb = (function () { const flat = new Uint8Array(2 * 4 * 8); const a = []; for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(mb_verb[0]), 0, __sl78);
-cptr.stPtro(cptr.decay(mb_verb[0]), 8, __sl79);
-cptr.stPtro(cptr.decay(mb_verb[0]), 16, __sl80);
-cptr.stPtro(cptr.decay(mb_verb[0]), 24, __sl81);
-cptr.stPtro(cptr.decay(mb_verb[1]), 0, __sl82);
-cptr.stPtro(cptr.decay(mb_verb[1]), 8, __sl83);
-cptr.stPtro(cptr.decay(mb_verb[1]), 16, __sl84);
-cptr.stPtro(cptr.decay(mb_verb[1]), 24, __sl85);
+cptr.stPtro(cptr.decay(mb_verb[0]), 0, __sl77);
+cptr.stPtro(cptr.decay(mb_verb[0]), 8, __sl78);
+cptr.stPtro(cptr.decay(mb_verb[0]), 16, __sl79);
+cptr.stPtro(cptr.decay(mb_verb[0]), 24, __sl80);
+cptr.stPtro(cptr.decay(mb_verb[1]), 0, __sl81);
+cptr.stPtro(cptr.decay(mb_verb[1]), 8, __sl82);
+cptr.stPtro(cptr.decay(mb_verb[1]), 16, __sl83);
+cptr.stPtro(cptr.decay(mb_verb[1]), 24, __sl84);
 
 /** C ref: artifact.c:1249 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mb @param {CPtr} dmgptr @param {CInt} dieroll @param {CInt} vis @param {CPtr} hittee @returns {CInt} */
 function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
@@ -2018,25 +2017,25 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         scare_dieroll = (scare_dieroll / (1 << ((cptr.ld1so(mb, $obj_spe) / 3) | 0))) | 0;
     if (!cptr.ldI32(gs))
         dieroll = (dieroll + 1) | 0;
-    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1277, __sl86), rn2(cptr.ldI32(gs) ? 11 : 7)) : rn2(cptr.ldI32(gs) ? 11 : 7))));
+    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1277, __sl85), rn2(cptr.ldI32(gs) ? 11 : 7)) : rn2(cptr.ldI32(gs) ? 11 : 7))));
     attack_indx = NHC.MB_INDEX_PROBE;
-    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1287, __sl86), rnd(4)) : rnd(4))) | 0);
+    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1287, __sl85), rnd(4)) : rnd(4))) | 0);
     if (do_stun) {
         attack_indx = NHC.MB_INDEX_STUN;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1290, __sl86), rnd(4)) : rnd(4))) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1290, __sl85), rnd(4)) : rnd(4))) | 0);
     }
     if (dieroll <= scare_dieroll) {
         attack_indx = NHC.MB_INDEX_SCARE;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1294, __sl86), rnd(4)) : rnd(4))) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1294, __sl85), rnd(4)) : rnd(4))) | 0);
     }
     if (dieroll <= ((scare_dieroll / 2) | 0)) {
         attack_indx = NHC.MB_INDEX_CANCEL;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1298, __sl86), rnd(4)) : rnd(4))) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1298, __sl85), rnd(4)) : rnd(4))) | 0);
     }
     verb = cptr.ldPtro(cptr.decay(mb_verb[!!Hallucination() ? 1 : 0]), attack_indx, 8);
     if (youattack || youdefend || vis) {
         result = 1;
-        pline_The(__sl87, vtense(null, verb), hittee);
+        pline_The(__sl86, vtense(null, verb), hittee);
         if (attack_indx == NHC.MB_INDEX_PROBE && !(canseemon(mdef) || sensemon(mdef)))
             map_invisible(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my));
     }
@@ -2055,7 +2054,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                     if (cptr.ldI32o(u, $you_uen) > 0)
                         (cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uen) + -1)) - (-1);
                     cptr.st1(disp, 1);
-                    You(__sl88);
+                    You(__sl87);
                 }
             } else {
                 if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), old_mdat))
@@ -2068,7 +2067,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                         cptr.stI32o(u, $you_uenpeak, cptr.ldI32o(u, $you_uenmax));
                     (cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uen) + 1)) - (1);
                     cptr.st1(disp, 1);
-                    You(__sl89);
+                    You(__sl88);
                 }
             }
         }
@@ -2079,15 +2078,15 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                 resisted = 1;
             } else {
                 nomul(-3);
-                cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl90);
+                cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl89);
                 cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl0);
                 if (magr && cptr.eq(magr, cptr.ldPtro(u, $you_ustuck)) && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                     set_ustuck(null);
-                    You(__sl91, mon_nam(magr));
+                    You(__sl90, mon_nam(magr));
                 }
             }
         } else {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1368, __sl86), rn2(2)) : rn2(2)) && resist(mdef, NHC.WEAPON_CLASS, 0, NHM.NOTELL))
+            if ((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1368, __sl85), rn2(2)) : rn2(2)) && resist(mdef, NHC.WEAPON_CLASS, 0, NHM.NOTELL))
                 resisted = 1;
             else
                 monflee(mdef, 3, 0, schar((cptr.ldI32o(mdef, $monst_mhp) > cptr.ldI32(dmgptr))));
@@ -2099,8 +2098,8 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         do_stun = 1;
         break;
         case NHC.MB_INDEX_PROBE:
-        if (youattack && (cptr.ld1so(mb, $obj_spe) == 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1382, __sl86), rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))) : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
-            pline_The(__sl92, verb);
+        if (youattack && (cptr.ld1so(mb, $obj_spe) == 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1382, __sl85), rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))) : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
+            pline_The(__sl91, verb);
             probe_monster(mdef);
         }
         break;
@@ -2113,7 +2112,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         if (attack_indx == NHC.MB_INDEX_STUN)
             do_stun = 0;
     }
-    do_confuse = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1400, __sl86), rn2(12)) : rn2(12))));
+    do_confuse = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1400, __sl85), rn2(12)) : rn2(12))));
     if (do_confuse) {
         if (youdefend)
             make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + 4n), 0);
@@ -2124,19 +2123,19 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     if (youattack || youdefend || vis) {
         void upstart(hittee);
         if (resisted) {
-            pline(__sl93, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __sl94));
+            pline(__sl92, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __sl93));
             shieldeff(i16((youdefend ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx))), i16((youdefend ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my))));
         }
         if ((do_stun || do_confuse) && cptr.ld1so(flags, $flag_verbose)) {
             let buf = new Uint8Array(256);
             cptr.st1o(cptr.decay(buf), 0, 0, 1);
             if (do_stun)
-                void cptr.strcat(cptr.decay(buf), __sl95);
+                void cptr.strcat(cptr.decay(buf), __sl94);
             if (do_stun && do_confuse)
-                void cptr.strcat(cptr.decay(buf), __sl96);
+                void cptr.strcat(cptr.decay(buf), __sl95);
             if (do_confuse)
-                void cptr.strcat(cptr.decay(buf), __sl97);
-            pline(__sl98, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __sl56), cptr.decay(buf), (do_stun && do_confuse) ? 33 : 46);
+                void cptr.strcat(cptr.decay(buf), __sl96);
+            pline(__sl97, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __sl55), cptr.decay(buf), (do_stun && do_confuse) ? 33 : 46);
         }
     }
     return result;
@@ -2144,8 +2143,8 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
 
 const __static_artifact_hit_you = cptr.bytes("you"); /** C ref: artifact.c:1461 — char[4] (function-static) */
 const __static_artifact_hit_behead_msg = cptr.alloc(2 * 8);
-cptr.stPtro(__static_artifact_hit_behead_msg, 0, __sl136);
-cptr.stPtro(__static_artifact_hit_behead_msg, 8, __sl137); /** C ref: artifact.c:1597 — char *[2] (function-static) */
+cptr.stPtro(__static_artifact_hit_behead_msg, 0, __sl135);
+cptr.stPtro(__static_artifact_hit_behead_msg, 8, __sl136); /** C ref: artifact.c:1597 — char *[2] (function-static) */
 
 /** C ref: artifact.c:1447 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} otmp @param {CPtr} dmgptr @param {CInt} dieroll @returns {CInt} */
 export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
@@ -2158,14 +2157,14 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     void cptr.strcpy(cptr.decay(hittee), youdefend ? cptr.decay(__static_artifact_hit_you) : mon_nam(mdef));
     cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + spec_dbon(otmp, mdef, cptr.ldI32(dmgptr))) | 0);
     if (youattack && youdefend) {
-        impossible(__sl99);
+        impossible(__sl98);
         return 0;
     }
     realizes_damage = schar((youdefend || vis || (youattack && cptr.eq(mdef, cptr.ldPtro(u, $you_ustuck))) ? 1 : 0));
     if (attacks(NHM.AD_FIRE, otmp)) {
         if (realizes_damage)
-            pline_The(__sl100, !cptr.ldI32(gs) ? __sl101 : ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_WATER_ELEMENTAL, 96))) ? __sl102 : __sl103), cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1491, __sl104), rn2(4)) : rn2(4))) {
+            pline_The(__sl99, !cptr.ldI32(gs) ? __sl100 : ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_WATER_ELEMENTAL, 96))) ? __sl101 : __sl102), cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1491, __sl103), rn2(4)) : rn2(4))) {
             let itemdmg = destroy_items(mdef, NHM.AD_FIRE, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
@@ -2177,8 +2176,8 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_COLD, otmp)) {
         if (realizes_damage)
-            pline_The(__sl105, !cptr.ldI32(gs) ? __sl101 : __sl106, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1506, __sl104), rn2(4)) : rn2(4))) {
+            pline_The(__sl104, !cptr.ldI32(gs) ? __sl100 : __sl105, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1506, __sl103), rn2(4)) : rn2(4))) {
             let itemdmg = destroy_items(mdef, NHM.AD_COLD, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
@@ -2187,10 +2186,10 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_ELEC, otmp)) {
         if (realizes_damage)
-            pline_The(__sl107, !cptr.ldI32(gs) ? __sl0 : __sl108, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(__sl106, !cptr.ldI32(gs) ? __sl0 : __sl107, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         if (cptr.ldI32(gs))
             wake_nearto(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my), 16);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1520, __sl104), rn2(5)) : rn2(5))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1520, __sl103), rn2(5)) : rn2(5))) {
             let itemdmg = destroy_items(mdef, NHM.AD_ELEC, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
@@ -2199,7 +2198,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_MAGM, otmp)) {
         if (realizes_damage)
-            pline_The(__sl109, !cptr.ldI32(gs) ? __sl0 : __sl110, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(__sl108, !cptr.ldI32(gs) ? __sl0 : __sl109, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         return realizes_damage;
     }
     if (attacks(NHM.AD_STUN, otmp) && dieroll <= 8) {
@@ -2210,9 +2209,9 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (spec_ability(otmp, 1024n)) {
         if (is_art(otmp, NHC.ART_TSURUGI_OF_MURAMASA) && dieroll == 1) {
-            wepdesc = __sl111;
+            wepdesc = __sl110;
             if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
-                You(__sl112, mon_nam(mdef));
+                You(__sl111, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
                 return 1;
             }
@@ -2221,24 +2220,24 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     return 0;
                 if ((cptr.ld1uo((cptr.ldPtro(mdef, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
                     if (youattack)
-                        You(__sl113, mon_nam(mdef));
+                        You(__sl112, mon_nam(mdef));
                     else if (vis)
-                        pline(__sl114, Monnam(magr), cptr.decay(hittee));
+                        pline(__sl113, Monnam(magr), cptr.decay(hittee));
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
-                pline(__sl115, wepdesc, mon_nam(mdef));
+                pline(__sl114, wepdesc, mon_nam(mdef));
                 observe_object(otmp);
                 return 1;
             } else {
                 if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
-                    pline(__sl116, magr ? Monnam(magr) : wepdesc);
+                    pline(__sl115, magr ? Monnam(magr) : wepdesc);
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
-                pline(__sl117, wepdesc);
+                pline(__sl116, wepdesc);
                 observe_object(otmp);
                 return 1;
             }
@@ -2249,41 +2248,41 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (!youdefend) {
                 if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 32768n) == 0n) || cptr.ld1so(gn, $instance_globals_n_notonhead) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                     if (youattack)
-                        pline(__sl118, mon_nam(mdef));
+                        pline(__sl117, mon_nam(mdef));
                     else if (vis)
-                        pline(__sl119, mon_nam(magr));
+                        pline(__sl118, mon_nam(magr));
                     cptr.stI32(dmgptr, 0);
                     return schar((youattack || vis ? 1 : 0));
                 }
                 if ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
-                    pline(__sl120, wepdesc, s_suffix(mon_nam(mdef)), mbodypart(mdef, NHC.NECK));
+                    pline(__sl119, wepdesc, s_suffix(mon_nam(mdef)), mbodypart(mdef, NHC.NECK));
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
-                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1618, __sl104), rn2(2)) : rn2(2)), 8), wepdesc, mon_nam(mdef));
+                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1618, __sl103), rn2(2)) : rn2(2)), 8), wepdesc, mon_nam(mdef));
                 if (Hallucination() && !cptr.ld1so(flags, $flag_female))
-                    pline(__sl121);
+                    pline(__sl120);
                 observe_object(otmp);
                 return 1;
             } else {
                 if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 32768n) == 0n)) {
-                    pline(__sl122, magr ? mon_nam(magr) : wepdesc);
+                    pline(__sl121, magr ? mon_nam(magr) : wepdesc);
                     cptr.stI32(dmgptr, 0);
                     return 1;
                 }
                 if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
-                    pline(__sl123, wepdesc, body_part(NHC.NECK));
+                    pline(__sl122, wepdesc, body_part(NHC.NECK));
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
-                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1638, __sl104), rn2(2)) : rn2(2)), 8), wepdesc, __sl124);
+                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl36, 1638, __sl103), rn2(2)) : rn2(2)), 8), wepdesc, __sl123);
                 observe_object(otmp);
                 return 1;
             }
         }
     }
     if (spec_ability(otmp, 256n)) {
-        let life = (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl125 : __sl126;
+        let life = (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl124 : __sl125;
         if (!youdefend) {
             let m_lev = cptr.ld1uo(mdef, $monst_m_lev);
             let mhpmax = cptr.ldI32o(mdef, $monst_mhpmax);
@@ -2293,9 +2292,9 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (vis) {
                 let otmpname = distant_name(otmp, xname);
                 if (is_art(otmp, NHC.ART_STORMBRINGER))
-                    pline_The(__sl127, hcolor(cptr.ldPtr(c_color_names)), life, mon_nam(mdef));
+                    pline_The(__sl126, hcolor(cptr.ldPtr(c_color_names)), life, mon_nam(mdef));
                 else
-                    pline(__sl128, The(otmpname), life, mon_nam(mdef));
+                    pline(__sl127, The(otmpname), life, mon_nam(mdef));
             }
             if (cptr.ld1uo(mdef, $monst_m_lev) == 0) {
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
@@ -2309,7 +2308,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 if (youattack) {
                     healup(drain, 0, 0, 0);
                 } else {
-                    (__builtin_expect(BigInt((!(magr !== null))), 0n) ? __assert_rtn(__sl104, __sl38, 1688, __sl129) : void 0);
+                    (__builtin_expect(BigInt((!(magr !== null))), 0n) ? __assert_rtn(__sl103, __sl36, 1688, __sl128) : void 0);
                     healmon(magr, drain, 0);
                 }
             }
@@ -2317,15 +2316,15 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         } else {
             let oldhpmax = cptr.ldI32o(u, $you_uhpmax);
             if (Blind()) {
-                You_feel(__sl130, is_art(otmp, NHC.ART_STORMBRINGER) ? __sl131 : __sl132, life);
+                You_feel(__sl129, is_art(otmp, NHC.ART_STORMBRINGER) ? __sl130 : __sl131, life);
             } else {
                 let otmpname = distant_name(otmp, xname);
                 if (is_art(otmp, NHC.ART_STORMBRINGER))
-                    pline_The(__sl133, hcolor(cptr.ldPtr(c_color_names)), life);
+                    pline_The(__sl132, hcolor(cptr.ldPtr(c_color_names)), life);
                 else
-                    pline(__sl134, The(otmpname), life);
+                    pline(__sl133, The(otmpname), life);
             }
-            losexp(__sl135);
+            losexp(__sl134);
             if (magr && cptr.ldI32o(magr, $monst_mhp) < cptr.ldI32o(magr, $monst_mhpmax)) {
                 healmon(magr, (((Math.abs((oldhpmax - cptr.ldI32o(u, $you_uhpmax)) | 0) + 1) | 0) / 2) | 0, 0);
             }
@@ -2349,7 +2348,7 @@ function invoke_ok(obj) {
 /** C ref: artifact.c:1749 @returns {CInt} */
 export function doinvoke() {
     let obj = cptr.box(0);
-    obj.v = getobj(__sl138, invoke_ok, NHM.GETOBJ_PROMPT);
+    obj.v = getobj(__sl137, invoke_ok, NHM.GETOBJ_PROMPT);
     if (!obj.v)
         return NHM.ECMD_CANCEL;
     if (!retouch_object(obj, 0))
@@ -2360,7 +2359,7 @@ export function doinvoke() {
 /** C ref: artifact.c:1762 — @param {CPtr} obj */
 function nothing_special(obj) {
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
-        You_feel(__sl139);
+        You_feel(__sl138);
 }
 
 /** C ref: artifact.c:1769 — @param {CPtr} obj @returns {CInt} */
@@ -2379,9 +2378,9 @@ function invoke_healing(obj) {
     if (Upolyd())
         healamt = (((((cptr.ldI32o(u, $you_mhmax) + 1) | 0) - cptr.ldI32o(u, $you_mh)) | 0) / 2) | 0;
     if (healamt || Sick() || Slimed() || BigInt((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0)) > creamed)
-        You_feel(__sl140);
+        You_feel(__sl139);
     if (healamt || Sick() || Slimed() || BlindedTimeout() > creamed)
-        You_feel(__sl141, (!healamt && !Sick() && !Slimed() && (HBlinded() & -16777216n) != 0n) ? __sl142 : __sl0);
+        You_feel(__sl140, (!healamt && !Sick() && !Slimed() && (HBlinded() & -16777216n) != 0n) ? __sl141 : __sl0);
     else {
         nothing_special(obj);
         return NHM.ECMD_TIME;
@@ -2412,7 +2411,7 @@ function invoke_energy_boost(obj) {
     if (epboost) {
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + epboost) | 0);
         cptr.st1(disp, 1);
-        You_feel(__sl143);
+        You_feel(__sl142);
     } else {
         nothing_special(obj);
         return NHM.ECMD_TIME;
@@ -2432,7 +2431,7 @@ function invoke_untrap(obj) {
 /** C ref: artifact.c:1848 — @param {CPtr} obj @returns {CInt} */
 function invoke_charge_obj(obj) {
     let oart = get_artifact(obj);
-    let otmp = getobj(__sl144, charge_ok, 3);
+    let otmp = getobj(__sl143, charge_ok, 3);
     let b_effect;
     if (!otmp) {
         cptr.stI64o(obj, $obj_age, 0n);
@@ -2465,7 +2464,7 @@ function invoke_create_portal(obj) {
         num_ok_dungeons++;
         last_ok_dungeon = i;
     }
-    end_menu()(tmpwin, __sl145);
+    end_menu()(tmpwin, __sl144);
     if (num_ok_dungeons > 1) {
         let selected = cptr.box(0);
         let n;
@@ -2486,12 +2485,12 @@ function invoke_create_portal(obj) {
     else
         cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, 112, $dungeon_dunlev_ureached));
     if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) || !next_to_u()) {
-        You_feel(__sl146);
+        You_feel(__sl145);
     } else {
         if (!Blind())
-            You(__sl147);
+            You(__sl146);
         else
-            You_feel(__sl148);
+            You_feel(__sl147);
         goto_level(newlev, 0, 0, 0);
     }
     return NHM.ECMD_TIME;
@@ -2511,14 +2510,14 @@ function invoke_create_ammo(obj) {
     if ((cptr.ldI32o(obj, $obj_blessed) & 1)) {
         if (cptr.ld1so(otmp, $obj_spe) < 0)
             cptr.st1o(otmp, $obj_spe, 0);
-        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1949, __sl149), rnd(10)) : rnd(10))));
+        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1949, __sl148), rnd(10)) : rnd(10))));
     } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
         if (cptr.ld1so(otmp, $obj_spe) > 0)
             cptr.st1o(otmp, $obj_spe, 0);
     } else
-        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1954, __sl149), rnd(5)) : rnd(5))));
+        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1954, __sl148), rnd(5)) : rnd(5))));
     cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
-    otmp = hold_another_object(otmp, __sl150, aobjnam(otmp, __sl151), null);
+    otmp = hold_another_object(otmp, __sl149, aobjnam(otmp, __sl150), null);
     (void (otmp));
     return NHM.ECMD_TIME;
 }
@@ -2549,10 +2548,10 @@ function invoke_banish(obj) {
         if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1024n) != 0n)))
             chance++;
         cptr.stI32o(mtmp, $monst_msleeping, cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0))));
-        if (chance <= 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1992, __sl152), rn2(chance)) : rn2(chance))) {
+        if (chance <= 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1992, __sl151), rn2(chance)) : rn2(chance))) {
             if (!In_hell(cptr.add(u, $you_uz))) {
                 nvanished++;
-                cptr.stI16o(dest, $d_level_dlevel, i16((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1996, __sl152), rn2(dunlevs_in_dungeon(dest))) : rn2(dunlevs_in_dungeon(dest)))));
+                cptr.stI16o(dest, $d_level_dlevel, i16((rng_log_enabled() ? (rng_log_set_caller(__sl36, 1996, __sl151), rn2(dunlevs_in_dungeon(dest))) : rn2(dunlevs_in_dungeon(dest)))));
                 migrate_mon(mtmp, ledger_no(dest), NHM.MIGR_RANDOM);
             } else {
                 u_teleport_mon(mtmp, 0);
@@ -2565,7 +2564,7 @@ function invoke_banish(obj) {
         let subject = cptr.bytes("demons");
         if (nvanished == 1)
             cptr.st1((cptr.add(eos(cptr.decay(subject)), -(1))), 0);
-        pline(__sl153, nstayed ? ((nvanished > nstayed) ? __sl154 : __sl155) : __sl156, cptr.decay(subject), vtense(cptr.decay(subject), __sl157));
+        pline(__sl152, nstayed ? ((nvanished > nstayed) ? __sl153 : __sl154) : __sl155, cptr.decay(subject), vtense(cptr.decay(subject), __sl156));
     }
     return NHM.ECMD_TIME;
 }
@@ -2573,12 +2572,12 @@ function invoke_banish(obj) {
 /** C ref: artifact.c:2022 — @param {CPtr} obj @returns {CInt} */
 function invoke_fling_poison(obj) {
     if (getdir(null)) {
-        let venom = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2025, __sl158), rn2(2)) : rn2(2)) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
+        let venom = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2025, __sl157), rn2(2)) : rn2(2)) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
         let otmp = mksobj(venom, 1, 0);
         cptr.st1o(otmp, $obj_spe, 1);
         throwit(otmp, 0n, 0, null);
     } else {
-        pline(__sl159, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
+        pline(__sl158, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         cptr.stI64o(obj, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         return NHM.ECMD_CANCEL;
     }
@@ -2604,17 +2603,17 @@ function invoke_blinding_ray(obj) {
             do_blinding_ray(obj);
         } else if (cptr.ldI32o(u, $you_dz)) {
             litroom(1, obj);
-            pline(__sl159, ((!Blind() && (cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 && !(cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_waslit) & 1)) ? __sl160 : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)));
+            pline(__sl158, ((!Blind() && (cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 && !(cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_waslit) & 1)) ? __sl159 : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)));
         } else {
             let vulnerable = schar((cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN));
             let damg = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 15 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 10 : 5);
             if (vulnerable)
                 void lightdamage(obj, 1, Math.imul(2, damg));
-            if (!flashburn(BigInt(((damg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2075, __sl161), rnd(damg)) : rnd(damg))) | 0)), 0) && !vulnerable)
-                pline(__sl159, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+            if (!flashburn(BigInt(((damg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2075, __sl160), rnd(damg)) : rnd(damg))) | 0)), 0) && !vulnerable)
+                pline(__sl158, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
         }
     } else {
-        pline(__sl159, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
+        pline(__sl158, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         cptr.stI64o(obj, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         return NHM.ECMD_CANCEL;
     }
@@ -2635,16 +2634,16 @@ function arti_invoke_cost(obj) {
     if (cptr.ldI64o(obj, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         let pw_cost = arti_invoke_cost_pw(obj);
         if (pw_cost < 0 || cptr.ldI32o(u, $you_uen) < pw_cost) {
-            You_feel(__sl162, the(xname(obj)), otense(obj, __sl56));
-            cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl163), d(3, 10)) : d(3, 10))));
+            You_feel(__sl161, the(xname(obj)), otense(obj, __sl55));
+            cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2116, __sl162), d(3, 10)) : d(3, 10))));
             return 0;
         } else {
-            You_feel(__sl164);
+            You_feel(__sl163);
             cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - pw_cost) | 0);
             cptr.st1(disp, 1);
         }
     } else {
-        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2125, __sl163), rnz(100)) : rnz(100)))));
+        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2125, __sl162), rnz(100)) : rnz(100)))));
     }
     return 1;
 }
@@ -2655,7 +2654,7 @@ function arti_invoke(obj) {
     let oart;
     let res = NHM.ECMD_OK;
     if (!obj.v) {
-        impossible(__sl165);
+        impossible(__sl164);
         return NHM.ECMD_OK;
     }
     oart = get_artifact(obj.v);
@@ -2663,7 +2662,7 @@ function arti_invoke(obj) {
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.CRYSTAL_BALL)
             use_crystal_ball(obj);
         else
-            pline(__sl159, cptr.ldPtr(c_common_strings));
+            pline(__sl158, cptr.ldPtr(c_common_strings));
         return NHM.ECMD_TIME;
     }
     if (cptr.ld1uo(oart, $artifact_inv_prop) > NHC.LAST_PROP) {
@@ -2713,7 +2712,7 @@ function arti_invoke(obj) {
             res = invoke_blinding_ray(obj.v);
             break;
             default:
-            impossible(__sl166, cptr.ld1uo(oart, $artifact_inv_prop));
+            impossible(__sl165, cptr.ld1uo(oart, $artifact_inv_prop));
             break;
         }
         return res;
@@ -2723,11 +2722,11 @@ function arti_invoke(obj) {
         let on = schar(((eprop & 8192n) != 0n));
         if (on && cptr.ldI64o(obj.v, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
             cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), 24, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), 24, $you_uprops) ^ 8192n);
-            You_feel(__sl162, the(xname(obj.v)), otense(obj.v, __sl56));
-            cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl167), d(3, 10)) : d(3, 10))));
+            You_feel(__sl161, the(xname(obj.v)), otense(obj.v, __sl55));
+            cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2189, __sl166), d(3, 10)) : d(3, 10))));
             return NHM.ECMD_TIME;
         } else if (!on) {
-            cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2194, __sl167), rnz(100)) : rnz(100)))));
+            cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl36, 2194, __sl166), rnz(100)) : rnz(100)))));
         }
         if ((eprop & -8193n) || iprop) {
             nothing_special(obj.v);
@@ -2736,9 +2735,9 @@ function arti_invoke(obj) {
         switch (cptr.ld1uo(oart, $artifact_inv_prop)) {
             case NHC.CONFLICT:
             if (on)
-                You_feel(__sl168);
+                You_feel(__sl167);
             else
-                You_feel(__sl169);
+                You_feel(__sl168);
             break;
             case NHC.LEVITATION:
             if (on) {
@@ -2754,9 +2753,9 @@ function arti_invoke(obj) {
             }
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if (on)
-                Your(__sl170, Hallucination() ? __sl171 : __sl172);
+                Your(__sl169, Hallucination() ? __sl170 : __sl171);
             else
-                Your(__sl173);
+                Your(__sl172);
             break;
         }
     }
@@ -2794,10 +2793,10 @@ export function arti_speak(obj) {
         return NHM.ECMD_OK;
     line = getrumor(bcsign(obj), cptr.decay(buf), 1);
     if (!cptr.ld1s(line))
-        line = __sl174;
-    pline(__sl175, Tobjnam(obj, __sl176));
+        line = __sl173;
+    pline(__sl174, Tobjnam(obj, __sl175));
     ;
-    verbalize(__sl159, line);
+    verbalize(__sl158, line);
     return NHM.ECMD_TIME;
 }
 
@@ -2911,10 +2910,10 @@ export function glow_color(arti_indx) {
 
 /** C ref: artifact.c:2436 — char *[4] */
 const glow_verbs = cptr.alloc(4 * 8);
-cptr.stPtro(glow_verbs, 0, __sl177);
-cptr.stPtro(glow_verbs, 8, __sl178);
-cptr.stPtro(glow_verbs, 16, __sl179);
-cptr.stPtro(glow_verbs, 24, __sl180);
+cptr.stPtro(glow_verbs, 0, __sl176);
+cptr.stPtro(glow_verbs, 8, __sl177);
+cptr.stPtro(glow_verbs, 16, __sl178);
+cptr.stPtro(glow_verbs, 24, __sl179);
 
 /** C ref: artifact.c:2442 — @param {CInt} count @returns {CInt} */
 function glow_strength(count) {
@@ -2927,7 +2926,7 @@ const __static_glow_verb_resbuf = new Uint8Array(20); /** C ref: artifact.c:2454
 export function glow_verb(count, ingsfx) {
     void cptr.strcpy(cptr.decay(__static_glow_verb_resbuf), cptr.ldPtro(glow_verbs, glow_strength(count), 8));
     if (ingsfx)
-        void cptr.strcat(cptr.decay(__static_glow_verb_resbuf), __sl181);
+        void cptr.strcat(cptr.decay(__static_glow_verb_resbuf), __sl180);
     return cptr.decay(__static_glow_verb_resbuf);
 }
 
@@ -2937,15 +2936,15 @@ export function Sting_effects(orc_count) {
         let oldstr = glow_strength(cptr.ldI32(gw));
         let newstr = glow_strength(orc_count);
         if (orc_count == -1 && cptr.ldI32(gw) > 0) {
-            pline(__sl182, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
+            pline(__sl181, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
         } else if (newstr > 0 && newstr != oldstr) {
             maybe_lvltport_feedback();
             if (!Blind())
-                pline(__sl98, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, 0)), glow_color(cptr.ld1so(uwep.v, $obj_oartifact)), (newstr > oldstr) ? 33 : 46);
+                pline(__sl97, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, 0)), glow_color(cptr.ld1so(uwep.v, $obj_oartifact)), (newstr > oldstr) ? 33 : 46);
             else if (oldstr == 0)
-                pline(__sl183, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, 0)));
+                pline(__sl182, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, 0)));
         } else if (orc_count == 0 && cptr.ldI32(gw) > 0) {
-            pline(__sl184, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
+            pline(__sl183, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
         }
     }
 }
@@ -2964,20 +2963,20 @@ export function retouch_object(objp, loseit) {
         let bane = bane_applies(get_artifact(obj), cptr.add(gy, $instance_globals_y_youmonst));
         if (!ag && !bane)
             return 1;
-        You_cant(__sl185, yname(obj), cptr.ldI64o(obj, $obj_owornmask) ? __sl186 : __sl0);
+        You_cant(__sl184, yname(obj), cptr.ldI64o(obj, $obj_owornmask) ? __sl185 : __sl0);
         if (!touch_blasted) {
             let what = killer_xname(obj);
             if (ag && !cptr.ld1so(obj, $obj_oartifact) && !bane) {
                 if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS)
-                    what = __sl187;
+                    what = __sl186;
                 else if (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS)
-                    what = __sl188;
+                    what = __sl187;
             }
             if (ag)
-                tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2552, __sl189), rnd(10)) : rnd(10)), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+                tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2552, __sl188), rnd(10)) : rnd(10)), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
             if (bane)
-                dmg = (dmg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2554, __sl189), rnd(10)) : rnd(10))) | 0;
-            void cptr.sprintf(cptr.decay(buf), __sl190, what);
+                dmg = (dmg + (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2554, __sl188), rnd(10)) : rnd(10))) | 0;
+            void cptr.sprintf(cptr.decay(buf), __sl189, what);
             losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);
             exercise(NHC.A_CON, 0);
         }
@@ -2997,7 +2996,7 @@ export function retouch_object(objp, loseit) {
             hitfloor(obj, 1);
         } else {
             if (!((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
-                pline(__sl191, Tobjnam(obj, __sl151), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                pline(__sl190, Tobjnam(obj, __sl150), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             dropx(obj);
         }
         cptr.stPtr(objp, obj = null);
@@ -3059,7 +3058,7 @@ export function retouch_equipment(dropflag) {
     if (had_rings != ((!!uleft.v + !!uright.v) | 0) && uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
         uncurse(uarmg.v);
     if (had_gloves && !uarmg.v)
-        selftouch(__sl192);
+        selftouch(__sl191);
     if (!--__static_retouch_equipment_nesting)
         clear_bypasses();
 }
@@ -3098,13 +3097,13 @@ function count_surround_traps(x, y) {
 }
 
 const __static_mkot_trap_warn_heat = cptr.alloc(7 * 8);
-cptr.stPtro(__static_mkot_trap_warn_heat, 0, __sl194);
-cptr.stPtro(__static_mkot_trap_warn_heat, 8, __sl195);
-cptr.stPtro(__static_mkot_trap_warn_heat, 16, __sl196);
-cptr.stPtro(__static_mkot_trap_warn_heat, 24, __sl197);
-cptr.stPtro(__static_mkot_trap_warn_heat, 32, __sl198);
-cptr.stPtro(__static_mkot_trap_warn_heat, 40, __sl199);
-cptr.stPtro(__static_mkot_trap_warn_heat, 48, __sl200); /** C ref: artifact.c:2755 — char *[7] (function-static) */
+cptr.stPtro(__static_mkot_trap_warn_heat, 0, __sl193);
+cptr.stPtro(__static_mkot_trap_warn_heat, 8, __sl194);
+cptr.stPtro(__static_mkot_trap_warn_heat, 16, __sl195);
+cptr.stPtro(__static_mkot_trap_warn_heat, 24, __sl196);
+cptr.stPtro(__static_mkot_trap_warn_heat, 32, __sl197);
+cptr.stPtro(__static_mkot_trap_warn_heat, 40, __sl198);
+cptr.stPtro(__static_mkot_trap_warn_heat, 48, __sl199); /** C ref: artifact.c:2755 — char *[7] (function-static) */
 
 /** C ref: artifact.c:2753 */
 export function mkot_trap_warn() {
@@ -3113,7 +3112,7 @@ export function mkot_trap_warn() {
         let ntraps = count_surround_traps(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (ntraps != cptr.ldI32(gm)) {
             idx = ((ntraps) < ((7 - 1) | 0) ? (ntraps) : ((7 - 1) | 0));
-            pline_The(__sl193, cptr.ldPtro(__static_mkot_trap_warn_heat, idx, 8), (ntraps > 3) ? 33 : 46);
+            pline_The(__sl192, cptr.ldPtro(__static_mkot_trap_warn_heat, idx, 8), (ntraps > 3) ? 33 : 46);
         }
         cptr.stI32(gm, ntraps);
     } else

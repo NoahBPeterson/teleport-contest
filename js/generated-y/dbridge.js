@@ -70,7 +70,7 @@ const $Gender_he = FLD.Gender_he, $context_info_mon_moving = FLD.context_info_mo
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("bad direction in create_drawbridge");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/dbridge.c");
+const __sl1 = cptr.lit("dbridge.c");
 const __sl2 = cptr.lit("entitycnt = %d");
 const __sl3 = cptr.lit("you");
 const __sl4 = cptr.lit("You");

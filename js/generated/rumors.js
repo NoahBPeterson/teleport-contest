@@ -58,7 +58,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
 const __sl0 = cptr.lit("rumors");
 const __sl1 = cptr.lit("r");
 const __sl2 = cptr.lit("Error reading \"%.80s\".");
-const __sl3 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/rumors.c");
+const __sl3 = cptr.lit("rumors.c");
 const __sl4 = cptr.lit("getrumor");
 const __sl5 = cptr.lit("strange truth value for rumor");
 const __sl6 = cptr.lit("Oops...");
@@ -115,11 +115,10 @@ const __sl56 = cptr.lit("don't even have enough gold for that!");
 const __sl57 = cptr.lit("\"Then dost thou desire a major one?\" (%d %s)");
 const __sl58 = cptr.lit("Can't open '%s' file.");
 const __sl59 = cptr.lit("CapitalMon");
-const __sl60 = cptr.lit("rumors.c");
-const __sl61 = cptr.lit("CapMons != 0");
-const __sl62 = cptr.lit("CapMons");
-const __sl63 = cptr.lit("Capitalized monster type names normally preceded by \"the\":");
-const __sl64 = cptr.lit("  %.77s");
+const __sl60 = cptr.lit("CapMons != 0");
+const __sl61 = cptr.lit("CapMons");
+const __sl62 = cptr.lit("Capitalized monster type names normally preceded by \"the\":");
+const __sl63 = cptr.lit("  %.77s");
 
 /** C ref: rumors.c:56 — unsigned int */
 let CapMonstCnt = 0;
@@ -658,7 +657,7 @@ export function CapitalMon(word) {
         return 0;
     if (!CapMons)
         init_CapMons();
-    (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__sl59, __sl60, 803, __sl61) : void 0);
+    (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__sl59, __sl3, 803, __sl60) : void 0);
     wln = Number(BigInt.asUintN(32, cptr.strlen(word)));
     for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
         nam = cptr.ldPtro(CapMons, i, 8);
@@ -729,13 +728,13 @@ function init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (wizard() && debugcore(__sl62, 0)) {
+    if (wizard() && debugcore(__sl61, 0)) {
         let buf = new Uint8Array(256);
         let i;
         let tmpwin = create_nhwindow()(NHM.NHW_TEXT);
-        putstr()(tmpwin, 0, __sl63);
+        putstr()(tmpwin, 0, __sl62);
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
-            void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtro(CapMons, i, 8));
+            void cptr.sprintf(cptr.decay(buf), __sl63, cptr.ldPtro(CapMons, i, 8));
             putstr()(tmpwin, 0, cptr.decay(buf));
         }
         display_nhwindow()(tmpwin, 1);

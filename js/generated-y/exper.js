@@ -51,22 +51,21 @@ const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
     $you_urexp = FLD.you_urexp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/exper.c");
+const __sl0 = cptr.lit("exper.c");
 const __sl1 = cptr.lit("newpw");
 const __sl2 = cptr.lit("#levelchange");
 const __sl3 = cptr.lit("%s level %d.");
 const __sl4 = cptr.lit("lost experience level %d");
 const __sl5 = cptr.lit("lost all experience");
 const __sl6 = cptr.lit("losexp");
-const __sl7 = cptr.lit("exper.c");
-const __sl8 = cptr.lit("u.ulevel >= 0 && u.ulevel < MAXULEV");
-const __sl9 = cptr.lit("more experienced.");
-const __sl10 = cptr.lit("Welcome %sto experience level %d.");
-const __sl11 = cptr.lit("");
-const __sl12 = cptr.lit("back ");
-const __sl13 = cptr.lit("%sgained experience level %d");
-const __sl14 = cptr.lit("re");
-const __sl15 = cptr.lit("rndexp");
+const __sl7 = cptr.lit("u.ulevel >= 0 && u.ulevel < MAXULEV");
+const __sl8 = cptr.lit("more experienced.");
+const __sl9 = cptr.lit("Welcome %sto experience level %d.");
+const __sl10 = cptr.lit("");
+const __sl11 = cptr.lit("back ");
+const __sl12 = cptr.lit("%sgained experience level %d");
+const __sl13 = cptr.lit("re");
+const __sl14 = cptr.lit("rndexp");
 
 /** C ref: exper.c:14 — @param {CInt} lev @returns {CLongLong} */
 export function newuexp(lev) {
@@ -236,7 +235,7 @@ export function* losexp(drainer) {
         cptr.stI64o(u, $you_uexp, 0n);
         (yield* livelog_printf(4096n, __sl5));
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl0, 247, __sl7) : void 0);
     olduhpmax = cptr.ldI32o(u, $you_uhpmax);
     uhpmin = minuhpmax(10);
     num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_uhpinc);
@@ -282,7 +281,7 @@ export function* pluslvl(incr) {
     let hpinc;
     let eninc;
     if (!incr)
-        (yield* You_feel(__sl9));
+        (yield* You_feel(__sl8));
     if (Upolyd()) {
         hpinc = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
         cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + hpinc) | 0);
@@ -308,7 +307,7 @@ export function* pluslvl(incr) {
             cptr.stI64o(u, $you_uexp, newuexp(cptr.ldI32o(u, $you_ulevel)));
         }
         cptr.stI32o(u, $you_ulevel, cptr.ldI32o(u, $you_ulevel) + 1);
-        (yield* pline(__sl10, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __sl11 : __sl12, cptr.ldI32o(u, $you_ulevel)));
+        (yield* pline(__sl9, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __sl10 : __sl11, cptr.ldI32o(u, $you_ulevel)));
         if (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel))
             cptr.stI32o(u, $you_ulevelmax, cptr.ldI32o(u, $you_ulevel));
         (yield* adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel)));
@@ -318,7 +317,7 @@ export function* pluslvl(incr) {
         if (newrank > oldrank)
             (yield* record_achievement(achieve_rank(newrank)));
         if (count_achievements() == old_ach_cnt)
-            (yield* livelog_printf(4096n, __sl13, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __sl14 : __sl11, cptr.ldI32o(u, $you_ulevel)));
+            (yield* livelog_printf(4096n, __sl12, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __sl13 : __sl10, cptr.ldI32o(u, $you_ulevel)));
         if (cptr.ldI32o(u, $you_ulevel) > cptr.ldI32o(u, $you_ulevelpeak))
             cptr.stI32o(u, $you_ulevelpeak, cptr.ldI32o(u, $you_ulevel));
     }
@@ -337,7 +336,7 @@ export function rndexp(gaining) {
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
+    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl14), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
     if (cptr.ldI32o(u, $you_ulevel) == NHM.MAXULEV && gaining) {
         result += (BigInt.asIntN(64, cptr.ldI64o(u, $you_uexp) - minexp));
         if (result < cptr.ldI64o(u, $you_uexp))

@@ -126,7 +126,7 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $align_record = 
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("%s.");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/dokick.c");
+const __sl1 = cptr.lit("dokick.c");
 const __sl2 = cptr.lit("kickdmg");
 const __sl3 = cptr.lit("%s reels from the blow.");
 const __sl4 = cptr.lit("kick_monster");

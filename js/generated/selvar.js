@@ -30,7 +30,7 @@ const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.N
     $selectionvar_map = FLD.selectionvar_map, $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/selvar.c");
+const __sl0 = cptr.lit("selvar.c");
 const __sl1 = cptr.lit("selection_filter_percent");
 const __sl2 = cptr.lit("selection_filter_mapchar");
 const __sl3 = cptr.lit("selection_rndcoord");

@@ -117,7 +117,7 @@ const $NhRegion_glyph = FLD.NhRegion_glyph, $Race_mnum = FLD.Race_mnum,
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/detect.c");
+const __sl0 = cptr.lit("detect.c");
 const __sl1 = cptr.lit("trapped_chest_at");
 const __sl2 = cptr.lit("trapped_door_at");
 const __sl3 = cptr.lit("You feel like a million %s!");

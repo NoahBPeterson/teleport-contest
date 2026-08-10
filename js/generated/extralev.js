@@ -32,7 +32,7 @@ const $instance_globals_r_r = FLD.instance_globals_r_r,
     $rogueroom_real = FLD.rogueroom_real, $rogueroom_rly = FLD.rogueroom_rly;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/extralev.c");
+const __sl0 = cptr.lit("extralev.c");
 const __sl1 = cptr.lit("roguejoin");
 const __sl2 = cptr.lit("roguecorr");
 const __sl3 = cptr.lit("down: no wall at %d,%d?");

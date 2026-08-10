@@ -26,6 +26,149 @@ import { fileURLToPath } from 'node:url';
 
 const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 
+// --------------------------------------------------------- __FILE__ hygiene --
+
+/**
+ * `__FILE__` spells the path the compiler was *given*, not a canonical one.
+ *
+ * NetHack expands `__FILE__` at every allocation and every panic:
+ *
+ *     #define nhalloc(p)   nhalloc_((p), __FILE__, (int) __LINE__)   global.h:336
+ *     panic/impossible/debugcore                                     global.h:471
+ *
+ * `ast-dump.mjs` invokes clang with an ABSOLUTE path to the .c file (it runs
+ * one TU at a time from a shared cache), so clang expanded `__FILE__` to that
+ * absolute path and 94 of this machine's directory layouts were interned into
+ * the shipped output. The C recorder never printed such a string, so a session
+ * that panics or trips an assert would diverge — and a fresh clone elsewhere
+ * would rebuild different bytes, which is the reproducibility property Phase 2
+ * is scored on.
+ *
+ * GROUND TRUTH, read out of the built recorder rather than assumed. NetHack's
+ * `src/Makefile` compiles with make's cwd in `src/` and passes `$<`:
+ *
+ *     $(TARGETPFX)%.o : %.c                                     src/Makefile:459
+ *             $(TARGET_CC) $(TARGET_CFLAGS) -c -o $@ $<         src/Makefile:460
+ *
+ * so `$<` is the prerequisite as written — `dbridge.c` for a file in `src/`,
+ * `../win/tty/wintty.c` for the two tty files, whose rules name them by that
+ * relative path (src/Makefile:1183, :1186). The linked binary agrees exactly:
+ * `strings src/nethack` yields 98 bare basenames plus precisely two slashed
+ * paths, `../win/tty/topl.c` and `../win/tty/wintty.c`, and **zero** strings
+ * containing an absolute path. `otool -s __TEXT __cstring src/dbridge.o` shows
+ * the literal `dbridge.c` in the runtime string section (not merely in DWARF).
+ *
+ * That is the same relation clang was handed here: `compileCwdFor()` already
+ * passes `src/` as the dump cwd, exactly mirroring make's. So the C build's
+ * spelling is recovered by re-relativizing to the compile cwd — no table of
+ * special cases, and `../win/tty/wintty.c` falls out on its own.
+ *
+ * Applied at `cStringToJs`, the single point every C string literal passes
+ * through, so it covers interned `__slN` literals, `cptr.bytes` initializers
+ * and struct-field `strcpy` sources alike.
+ *
+ * Guarded three ways so a genuine game string can never be caught: the literal
+ * must be an absolute path, must end in `.c`/`.h`, and must name a file that
+ * actually exists on disk. NetHack has absolute-path strings (`/dev/urandom`,
+ * HACKDIR defaults) but none that is an extant C source file.
+ */
+// C2JS_FILEHYGIENE=0 restores the raw clang spelling, reproducing the trees as
+// they stood before this pass — the A/B baseline, and the only way to get an
+// absolute path back into js/generated.
+const FILE_HYGIENE = process.env.C2JS_FILEHYGIENE !== '0';
+
+const SRC_PATH_SPELLING = new Map(); // `${cwd}\0${abs}` -> relative spelling | null
+
+function canonPath(p) {
+  try { return fs.realpathSync(p); } catch { return path.resolve(p); }
+}
+
+/** the compile-cwd-relative spelling of an absolute source path, or null if it names no file */
+function spellingOf(abs, compileCwd) {
+  const key = compileCwd + '\0' + abs;
+  let s = SRC_PATH_SPELLING.get(key);
+  if (s === undefined) {
+    s = fs.existsSync(abs) ? path.relative(canonPath(compileCwd), canonPath(abs)) : null;
+    SRC_PATH_SPELLING.set(key, s);
+  }
+  return s;
+}
+
+export function sourcePathSpelling(raw, compileCwd) {
+  // raw is clang's literal text, quotes included; a path carries no escapes
+  if (!FILE_HYGIENE) return raw;
+  if (!compileCwd || raw.length < 6 || raw[0] !== '"' || raw[1] !== '/') return raw;
+  const body = raw.slice(1, -1);
+  if (!body.endsWith('.c') && !body.endsWith('.h')) return raw;
+  if (body.includes('\\') || body.includes('"')) return raw;
+  const spelling = spellingOf(body, compileCwd);
+  return spelling === null ? raw : `"${spelling}"`;
+}
+
+/**
+ * The same leak by a second route: clang spells an anonymous record as
+ * `struct (unnamed struct at <path>:LINE:COL)`, and `<path>` is again the
+ * absolute path the AST dump was given. Eighteen of those reach `/** C ref: *\/`
+ * comments. They are comments rather than literals so no session can print
+ * one, but they carry the same directory layout and make the same fresh clone
+ * rebuild different bytes, so they get the same treatment.
+ *
+ * Applied ONLY to the comment copy of a type spelling: `recordNameOf` and the
+ * `anonByLoc` recovery at `:LINE:COL` match against the raw `desugar()` output,
+ * and rewriting what those see is a correctness question rather than a
+ * cosmetic one.
+ */
+function relativizeSourcePaths(text, compileCwd) {
+  if (!FILE_HYGIENE) return text;
+  if (!compileCwd || typeof text !== 'string' || !text.includes('/')) return text;
+  return text.replace(/\/[^\s():"]*\.[ch]\b/g, (p) => spellingOf(p, compileCwd) ?? p);
+}
+
+/**
+ * The invariant the above buys, asserted over finished module text so it also
+ * covers anything a later pass splices in.
+ *
+ * "Contains no absolute path" would be too strong to be true: `loslib.c` really
+ * does define `LUA_TMPNAMTEMPLATE "/tmp/lua_XXXXXX"`, and the recorder binary
+ * really does contain that string, so emitting it is parity, not a leak. What
+ * must never appear is a path that describes THIS checkout — that is both the
+ * privacy defect and the reason a fresh clone would rebuild different bytes.
+ * So the test is two-part and each part is exact:
+ *
+ *   1. no occurrence of this repo's own root, or of the canonical (symlink-
+ *      resolved) root the ASTs were dumped from — the two spellings under which
+ *      a leak can reach the output;
+ *   2. no occurrence of a home directory at all. `strings` on the built
+ *      recorder finds zero `/Users/` and zero `/home/`, so any such byte here
+ *      came from the transpiler and not from NetHack.
+ *
+ * Both parts hold in a clone at any path, which is what makes this a gate a
+ * contributor can run rather than a description of one machine.
+ */
+const HYGIENE_ROOTS = (() => {
+  const repo = path.resolve(TOOLS_DIR, '../..');
+  const roots = new Set([repo, canonPath(repo)]);
+  const rec = path.join(repo, 'nethack-c/recorder');
+  if (fs.existsSync(rec)) { roots.add(rec); roots.add(canonPath(rec)); }
+  return [...roots];
+})();
+
+export function assertNoAbsolutePaths(text, where) {
+  if (!FILE_HYGIENE) return; // the baseline build is knowingly not hygienic
+  const home = text.match(/\/(?:Users|home)\/[A-Za-z0-9._-]+(?:\/[^\s"'`)\]]*)?/);
+  if (home) {
+    throw new Error(`${where}: emitted output carries the home directory ${home[0]} — ` +
+      `__FILE__ normalization (emit.mjs sourcePathSpelling / typeNote) did not reach it`);
+  }
+  for (const root of HYGIENE_ROOTS) {
+    const at = text.indexOf(root);
+    if (at >= 0) {
+      throw new Error(`${where}: emitted output carries this checkout's own path ` +
+        `${text.slice(at, at + root.length + 40).split('\n')[0]} — the build is not reproducible elsewhere`);
+    }
+  }
+}
+
 // ---------------------------------------------------------------- types ----
 
 const INT_RE = /^(signed |unsigned )?(char|short|int|long|long long)$/;
@@ -657,7 +800,7 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 //    so a partially skipped emit would mix two vocabularies. The incremental
 //    path keys on emit.mjs's mtime alone, which build.mjs changes do not
 //    move; the version is what invalidates them.
-export const EMIT_VERSION = 10;
+export const EMIT_VERSION = 11;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -853,8 +996,12 @@ export class Emitter {
     return off !== undefined ? `${this.fileName}:${this.lineOf(off)}` : this.fileName;
   }
 
+  /** a type spelling as it goes into a comment — machine paths relativized */
+  typeNote(q) { return relativizeSourcePaths(q, this.compileCwd); }
+
   /** convert a raw C string literal to a strict-mode-legal JS literal */
   cStringToJs(raw) {
+    raw = sourcePathSpelling(raw, this.compileCwd);
     // raw includes the surrounding quotes; rewrite octal escapes to hex
     return raw.replace(/\\(\\|[0-7]{1,3}|x[0-9a-fA-F]+|u[0-9a-fA-F]{4}|.)/g, (m, esc) => {
       if (esc === '\\') return '\\\\';
@@ -4280,24 +4427,24 @@ export class Emitter {
     if (parseType(q).cls === 'record' && !q.includes('*') && !this.isEnumType(q)) {
       const recName = this.recordNameForType(q);
       const size = this.layoutOf(recName).size;
-      let out = `let ${name} = ${this.cptrCall('alloc', String(size))}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      let out = `let ${name} = ${this.cptrCall('alloc', String(size))}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
       if (init) out += "\n" + this.recordInitStores(name, recName, init).join("\n");
       return out;
     }
     if (arrayParts(q)) {
       const arr = arrayParts(q);
-      if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      if (init && init.kind === 'StringLiteral') return `const ${name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
       const packed = this.emitBytePackedArray(name, q, init, `const ${name} = `);
-      if (packed) return packed.join('\n') + ` /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
-      if (init) return `const ${name} = ${this.emitExpr(init).code}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
-      return `const ${name} = ${this.arrayStorage(q)}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+      if (packed) return packed.join('\n') + ` /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
+      if (init) return `const ${name} = ${this.emitExpr(init).code}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
+      return `const ${name} = ${this.arrayStorage(q)}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
     }
     const initCode = init ? this.emitExpr(init).code : q.includes('*') ? 'null' : '0';
     if (this.boxedVars?.has(name)) { // address-taken static: the box is its address
       this.usesCptr = true;
-      return `let ${name} = ${this.cptrCall('box', initCode)}; /** C ref: ${this.cref(d)} — ${q} (function-static, boxed) */`;
+      return `let ${name} = ${this.cptrCall('box', initCode)}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static, boxed) */`;
     }
-    return `let ${name} = ${initCode}; /** C ref: ${this.cref(d)} — ${q} (function-static) */`;
+    return `let ${name} = ${initCode}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
   }
 
   emitFunction(d) {
@@ -4500,7 +4647,7 @@ export class Emitter {
     d = { ...d, name: jsName(d.name) };
     const q = desugar(d.type);
     const init = (d.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
-    const lines = [`/** C ref: ${this.cref(d)} — ${q} */`];
+    const lines = [`/** C ref: ${this.cref(d)} — ${this.typeNote(q)} */`];
     const exp = d.storageClass === 'static' ? '' : 'export ';
     if (parseType(q).cls === 'record' && !q.includes('*') && this.recordNameForType(q) && !this.isEnumType(q)) {
       this.recordGlobals.add(d.name);

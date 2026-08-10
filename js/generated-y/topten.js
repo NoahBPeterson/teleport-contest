@@ -257,7 +257,7 @@ const __sl162 = cptr.lit("Usage: %s -s [-v] <playertypes> [maxrank] [playernames
 const __sl163 = cptr.lit("Player types are: [-p role] [-r race]");
 const __sl164 = cptr.lit("E");
 const __sl165 = cptr.lit("What weird role is this? (%s)");
-const __sl166 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/topten.c");
+const __sl166 = cptr.lit("topten.c");
 const __sl167 = cptr.lit("get_rnd_toptenentry");
 const __sl168 = cptr.lit("tt_doppel");
 

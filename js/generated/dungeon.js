@@ -177,7 +177,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum, $Role_filecode
     $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/dungeon.c");
+const __sl0 = cptr.lit("dungeon.c");
 const __sl1 = cptr.lit("\n#%d \"%s\" (%s):\n");
 const __sl2 = cptr.lit("    num_dunlevs %d, dunlev_ureached %d\n");
 const __sl3 = cptr.lit("    depth_start %d, ledger_start %d\n");

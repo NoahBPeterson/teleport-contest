@@ -1137,7 +1137,7 @@ function getbinopr(op) {
 
 /** C ref: lparser.c:1236 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: lparser.c:1239 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/lib/lua-5.4.8/src/lparser.c:1236:14)[21] */
+/** C ref: lparser.c:1239 — struct (unnamed struct at lparser.c:1236:14)[21] */
 const priority = cptr.alloc(21 * 2);
 cptr.st1o(priority, 0, 10);
 cptr.st1o(priority, 1, 10);

@@ -59,7 +59,7 @@ const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_water_level = FLD.dg
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Startled, you drop the iron ball.");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/ball.c");
+const __sl1 = cptr.lit("ball.c");
 const __sl2 = cptr.lit("ballfall");
 const __sl3 = cptr.lit("iron ball falls on your %s.");
 const __sl4 = cptr.lit("Fortunately, you are wearing a hard helmet.");

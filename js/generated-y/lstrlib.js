@@ -1443,7 +1443,7 @@ function* str_format(L) {
 
 /** C ref: lstrlib.c:1409 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: lstrlib.c:1412 — union (unnamed at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/lib/lua-5.4.8/src/lstrlib.c:1409:14) */
+/** C ref: lstrlib.c:1412 — union (unnamed at lstrlib.c:1409:14) */
 let nativeendian = cptr.alloc(4);
 cptr.stI32(nativeendian, 1);
 

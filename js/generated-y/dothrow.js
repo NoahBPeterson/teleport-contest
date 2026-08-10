@@ -159,152 +159,151 @@ const __sl2 = cptr.lit("It's too heavy.");
 const __sl3 = cptr.lit("cannot throw an object at yourself.");
 const __sl4 = cptr.lit("throw %s with your bare %s.");
 const __sl5 = cptr.lit("throwing %s bare-handed");
-const __sl6 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/dothrow.c");
+const __sl6 = cptr.lit("dothrow.c");
 const __sl7 = cptr.lit("throw_obj");
 const __sl8 = cptr.lit("%s %d %s.");
 const __sl9 = cptr.lit("shoot");
-const __sl10 = cptr.lit("dothrow.c");
-const __sl11 = cptr.lit("obj != NULL");
-const __sl12 = cptr.lit("are physically incapable of throwing or shooting anything.");
-const __sl13 = cptr.lit("throw or shoot without hands.");
-const __sl14 = cptr.lit("have no ammunition readied.");
-const __sl15 = cptr.lit("You ready:");
-const __sl16 = cptr.lit("have nothing appropriate for your quiver.");
-const __sl17 = cptr.lit("fire");
-const __sl18 = cptr.lit("stop %s after the %d%s %s.");
-const __sl19 = cptr.lit("firing");
-const __sl20 = cptr.lit("throwing");
-const __sl21 = cptr.lit("shot");
-const __sl22 = cptr.lit("toss");
-const __sl23 = cptr.lit("strike");
-const __sl24 = cptr.lit("hit");
-const __sl25 = cptr.lit("trap door");
-const __sl26 = cptr.lit("edge of the hole");
-const __sl27 = cptr.lit("edge of the pit");
-const __sl28 = cptr.lit("%s %s the %s.");
-const __sl29 = cptr.lit("the spirits holding you back.");
-const __sl30 = cptr.lit("bumping into a tree");
-const __sl31 = cptr.lit("bumping into a wall");
-const __sl32 = cptr.lit("bumping into a door frame");
-const __sl33 = cptr.lit("bumping into a closed door");
-const __sl34 = cptr.lit("hit the door frame!");
-const __sl35 = cptr.lit("Ouch!");
-const __sl36 = cptr.lit("crashing into iron bars");
-const __sl37 = cptr.lit("crash into some iron bars.  Ouch!");
-const __sl38 = cptr.lit("bumping into a boulder");
-const __sl39 = cptr.lit("bump into a %s.  Ouch!");
-const __sl40 = cptr.lit("touching the edge of the universe");
-const __sl41 = cptr.lit("smack into something!");
-const __sl42 = cptr.lit("wedging into a narrow crevice");
-const __sl43 = cptr.lit("%sget forcefully wedged into a crevice.");
-const __sl44 = cptr.lit("and all your belongings ");
-const __sl45 = cptr.lit("");
-const __sl46 = cptr.lit("hurtle_step");
-const __sl47 = cptr.lit("find %s by bumping into %s.");
-const __sl48 = cptr.lit("bump into %s.");
-const __sl49 = cptr.lit("bumping into %s");
-const __sl50 = cptr.lit("come to an abrupt halt!");
-const __sl51 = cptr.lit("You move over %s.");
-const __sl52 = cptr.lit("moat");
-const __sl53 = cptr.lit("pool");
-const __sl54 = cptr.lit("You move over some lava.");
-const __sl55 = cptr.lit("The ground vibrates as you pass it.");
-const __sl56 = cptr.lit("pass right over %s.");
-const __sl57 = cptr.lit("%s bumps into %s.");
-const __sl58 = cptr.lit("%s bumps into you.");
-const __sl59 = cptr.lit("mhurtle_step");
-const __sl60 = cptr.lit("being hit by %s");
-const __sl61 = cptr.lit("hurtling");
-const __sl62 = cptr.lit("a tug from the iron ball.");
-const __sl63 = cptr.lit("are anchored by the %s.");
-const __sl64 = cptr.lit("web");
-const __sl65 = cptr.lit("lava");
-const __sl66 = cptr.lit("buried ball");
-const __sl67 = cptr.lit("trap");
-const __sl68 = cptr.lit("moving through the air");
-const __sl69 = cptr.lit("%s in the opposite direction.");
-const __sl70 = cptr.lit("hurtle");
-const __sl71 = cptr.lit("float");
-const __sl72 = cptr.lit("%s doesn't budge!");
-const __sl73 = cptr.lit("flies up into");
-const __sl74 = cptr.lit("%s hits the %s.");
-const __sl75 = cptr.lit("hits");
-const __sl76 = cptr.lit("almost hits");
-const __sl77 = cptr.lit("%s %s the %s, then falls back on top of your %s.");
-const __sl78 = cptr.lit("toss_up");
-const __sl79 = cptr.lit("%s fails to protect you.");
-const __sl80 = cptr.lit("elementary physics");
-const __sl81 = cptr.lit("turn to stone.");
-const __sl82 = cptr.lit("You've got it all over your %s!");
-const __sl83 = cptr.lit("It blinds you!");
-const __sl84 = cptr.lit("%s");
-const __sl85 = cptr.lit("It doesn't hurt.");
-const __sl86 = cptr.lit("Fortunately, you are wearing a hard helmet.");
-const __sl87 = cptr.lit("Unfortunately, you are wearing %s.");
-const __sl88 = cptr.lit("%s does not protect you.");
-const __sl89 = cptr.lit("silver sears you!");
-const __sl90 = cptr.lit(" but doesn't hurt.");
-const __sl91 = cptr.lit("falling object");
-const __sl92 = cptr.lit("throwit");
-const __sl93 = cptr.lit("%s!");
-const __sl94 = cptr.lit("misfire");
-const __sl95 = cptr.lit("%s as you throw it!");
-const __sl96 = cptr.lit("slip");
-const __sl97 = cptr.lit("have so little stamina, %s drops from your grasp.");
-const __sl98 = cptr.lit("%s the %s and returns to your hand!");
-const __sl99 = cptr.lit("You aren't wielding %s, so you throw your %s by %s.");
-const __sl100 = cptr.lit("%s to your hand!");
-const __sl101 = cptr.lit("return");
-const __sl102 = cptr.lit("%s lands %s your %s.");
-const __sl103 = cptr.lit("%s back to you, landing %s your %s.");
-const __sl104 = cptr.lit("beneath");
-const __sl105 = cptr.lit("at");
-const __sl106 = cptr.lit("%s your %s!");
-const __sl107 = cptr.lit("%s back toward you, hitting your %s!");
-const __sl108 = cptr.lit("fly");
-const __sl109 = cptr.lit("%s to return!");
-const __sl110 = cptr.lit("fail");
-const __sl111 = cptr.lit("Splash!");
-const __sl112 = cptr.lit("Plop!");
-const __sl113 = cptr.lit("fall");
-const __sl114 = cptr.lit("%s snatches up %s.");
-const __sl115 = cptr.lit("omon_adj");
-const __sl116 = cptr.lit("%s %s.");
-const __sl117 = cptr.lit("miss");
-const __sl118 = cptr.lit("tmiss");
-const __sl119 = cptr.lit("should_mulch_missile");
-const __sl120 = cptr.lit("Unknown type of gloves (%d)");
-const __sl121 = cptr.lit("%s catches and drops %s.");
-const __sl122 = cptr.lit("%s catches %s.");
-const __sl123 = cptr.lit("%s part in this is finished.");
-const __sl124 = cptr.lit("We will guard it in case it is ever needed again, %s forbid.");
-const __sl125 = cptr.lit("%s %s %s back to you.");
-const __sl126 = cptr.lit("hands");
-const __sl127 = cptr.lit("tosses");
-const __sl128 = cptr.lit("thitmonst");
-const __sl129 = cptr.lit(" entrails");
-const __sl130 = cptr.lit(" currents");
-const __sl131 = cptr.lit("%s into %s%s.");
-const __sl132 = cptr.lit("vanish");
-const __sl133 = cptr.lit("gem_accept");
-const __sl134 = cptr.lit("release_camera_demon");
-const __sl135 = cptr.lit("%s is released!");
-const __sl136 = cptr.lit("The picture-painting demon");
-const __sl137 = cptr.lit("smell a peculiar odor...");
-const __sl138 = cptr.lit("water");
-const __sl139 = cptr.lit("breakobj");
-const __sl140 = cptr.lit("breaking odd object (%d)?");
-const __sl141 = cptr.lit(" into a thousand pieces");
-const __sl142 = cptr.lit("%s shatter!");
-const __sl143 = cptr.lit("%s shatter%s%s!");
-const __sl144 = cptr.lit("s");
-const __sl145 = cptr.lit("Splat!");
-const __sl146 = cptr.lit("What a mess!");
-const __sl147 = cptr.lit("cannot throw gold at yourself.");
-const __sl148 = cptr.lit("gold disappears into %s.");
-const __sl149 = cptr.lit("gold hits the %s, then falls back on top of your %s.");
-const __sl150 = cptr.lit("Fortunately, you are wearing %s!");
-const __sl151 = cptr.lit("gold hits the %s.");
+const __sl10 = cptr.lit("obj != NULL");
+const __sl11 = cptr.lit("are physically incapable of throwing or shooting anything.");
+const __sl12 = cptr.lit("throw or shoot without hands.");
+const __sl13 = cptr.lit("have no ammunition readied.");
+const __sl14 = cptr.lit("You ready:");
+const __sl15 = cptr.lit("have nothing appropriate for your quiver.");
+const __sl16 = cptr.lit("fire");
+const __sl17 = cptr.lit("stop %s after the %d%s %s.");
+const __sl18 = cptr.lit("firing");
+const __sl19 = cptr.lit("throwing");
+const __sl20 = cptr.lit("shot");
+const __sl21 = cptr.lit("toss");
+const __sl22 = cptr.lit("strike");
+const __sl23 = cptr.lit("hit");
+const __sl24 = cptr.lit("trap door");
+const __sl25 = cptr.lit("edge of the hole");
+const __sl26 = cptr.lit("edge of the pit");
+const __sl27 = cptr.lit("%s %s the %s.");
+const __sl28 = cptr.lit("the spirits holding you back.");
+const __sl29 = cptr.lit("bumping into a tree");
+const __sl30 = cptr.lit("bumping into a wall");
+const __sl31 = cptr.lit("bumping into a door frame");
+const __sl32 = cptr.lit("bumping into a closed door");
+const __sl33 = cptr.lit("hit the door frame!");
+const __sl34 = cptr.lit("Ouch!");
+const __sl35 = cptr.lit("crashing into iron bars");
+const __sl36 = cptr.lit("crash into some iron bars.  Ouch!");
+const __sl37 = cptr.lit("bumping into a boulder");
+const __sl38 = cptr.lit("bump into a %s.  Ouch!");
+const __sl39 = cptr.lit("touching the edge of the universe");
+const __sl40 = cptr.lit("smack into something!");
+const __sl41 = cptr.lit("wedging into a narrow crevice");
+const __sl42 = cptr.lit("%sget forcefully wedged into a crevice.");
+const __sl43 = cptr.lit("and all your belongings ");
+const __sl44 = cptr.lit("");
+const __sl45 = cptr.lit("hurtle_step");
+const __sl46 = cptr.lit("find %s by bumping into %s.");
+const __sl47 = cptr.lit("bump into %s.");
+const __sl48 = cptr.lit("bumping into %s");
+const __sl49 = cptr.lit("come to an abrupt halt!");
+const __sl50 = cptr.lit("You move over %s.");
+const __sl51 = cptr.lit("moat");
+const __sl52 = cptr.lit("pool");
+const __sl53 = cptr.lit("You move over some lava.");
+const __sl54 = cptr.lit("The ground vibrates as you pass it.");
+const __sl55 = cptr.lit("pass right over %s.");
+const __sl56 = cptr.lit("%s bumps into %s.");
+const __sl57 = cptr.lit("%s bumps into you.");
+const __sl58 = cptr.lit("mhurtle_step");
+const __sl59 = cptr.lit("being hit by %s");
+const __sl60 = cptr.lit("hurtling");
+const __sl61 = cptr.lit("a tug from the iron ball.");
+const __sl62 = cptr.lit("are anchored by the %s.");
+const __sl63 = cptr.lit("web");
+const __sl64 = cptr.lit("lava");
+const __sl65 = cptr.lit("buried ball");
+const __sl66 = cptr.lit("trap");
+const __sl67 = cptr.lit("moving through the air");
+const __sl68 = cptr.lit("%s in the opposite direction.");
+const __sl69 = cptr.lit("hurtle");
+const __sl70 = cptr.lit("float");
+const __sl71 = cptr.lit("%s doesn't budge!");
+const __sl72 = cptr.lit("flies up into");
+const __sl73 = cptr.lit("%s hits the %s.");
+const __sl74 = cptr.lit("hits");
+const __sl75 = cptr.lit("almost hits");
+const __sl76 = cptr.lit("%s %s the %s, then falls back on top of your %s.");
+const __sl77 = cptr.lit("toss_up");
+const __sl78 = cptr.lit("%s fails to protect you.");
+const __sl79 = cptr.lit("elementary physics");
+const __sl80 = cptr.lit("turn to stone.");
+const __sl81 = cptr.lit("You've got it all over your %s!");
+const __sl82 = cptr.lit("It blinds you!");
+const __sl83 = cptr.lit("%s");
+const __sl84 = cptr.lit("It doesn't hurt.");
+const __sl85 = cptr.lit("Fortunately, you are wearing a hard helmet.");
+const __sl86 = cptr.lit("Unfortunately, you are wearing %s.");
+const __sl87 = cptr.lit("%s does not protect you.");
+const __sl88 = cptr.lit("silver sears you!");
+const __sl89 = cptr.lit(" but doesn't hurt.");
+const __sl90 = cptr.lit("falling object");
+const __sl91 = cptr.lit("throwit");
+const __sl92 = cptr.lit("%s!");
+const __sl93 = cptr.lit("misfire");
+const __sl94 = cptr.lit("%s as you throw it!");
+const __sl95 = cptr.lit("slip");
+const __sl96 = cptr.lit("have so little stamina, %s drops from your grasp.");
+const __sl97 = cptr.lit("%s the %s and returns to your hand!");
+const __sl98 = cptr.lit("You aren't wielding %s, so you throw your %s by %s.");
+const __sl99 = cptr.lit("%s to your hand!");
+const __sl100 = cptr.lit("return");
+const __sl101 = cptr.lit("%s lands %s your %s.");
+const __sl102 = cptr.lit("%s back to you, landing %s your %s.");
+const __sl103 = cptr.lit("beneath");
+const __sl104 = cptr.lit("at");
+const __sl105 = cptr.lit("%s your %s!");
+const __sl106 = cptr.lit("%s back toward you, hitting your %s!");
+const __sl107 = cptr.lit("fly");
+const __sl108 = cptr.lit("%s to return!");
+const __sl109 = cptr.lit("fail");
+const __sl110 = cptr.lit("Splash!");
+const __sl111 = cptr.lit("Plop!");
+const __sl112 = cptr.lit("fall");
+const __sl113 = cptr.lit("%s snatches up %s.");
+const __sl114 = cptr.lit("omon_adj");
+const __sl115 = cptr.lit("%s %s.");
+const __sl116 = cptr.lit("miss");
+const __sl117 = cptr.lit("tmiss");
+const __sl118 = cptr.lit("should_mulch_missile");
+const __sl119 = cptr.lit("Unknown type of gloves (%d)");
+const __sl120 = cptr.lit("%s catches and drops %s.");
+const __sl121 = cptr.lit("%s catches %s.");
+const __sl122 = cptr.lit("%s part in this is finished.");
+const __sl123 = cptr.lit("We will guard it in case it is ever needed again, %s forbid.");
+const __sl124 = cptr.lit("%s %s %s back to you.");
+const __sl125 = cptr.lit("hands");
+const __sl126 = cptr.lit("tosses");
+const __sl127 = cptr.lit("thitmonst");
+const __sl128 = cptr.lit(" entrails");
+const __sl129 = cptr.lit(" currents");
+const __sl130 = cptr.lit("%s into %s%s.");
+const __sl131 = cptr.lit("vanish");
+const __sl132 = cptr.lit("gem_accept");
+const __sl133 = cptr.lit("release_camera_demon");
+const __sl134 = cptr.lit("%s is released!");
+const __sl135 = cptr.lit("The picture-painting demon");
+const __sl136 = cptr.lit("smell a peculiar odor...");
+const __sl137 = cptr.lit("water");
+const __sl138 = cptr.lit("breakobj");
+const __sl139 = cptr.lit("breaking odd object (%d)?");
+const __sl140 = cptr.lit(" into a thousand pieces");
+const __sl141 = cptr.lit("%s shatter!");
+const __sl142 = cptr.lit("%s shatter%s%s!");
+const __sl143 = cptr.lit("s");
+const __sl144 = cptr.lit("Splat!");
+const __sl145 = cptr.lit("What a mess!");
+const __sl146 = cptr.lit("cannot throw gold at yourself.");
+const __sl147 = cptr.lit("gold disappears into %s.");
+const __sl148 = cptr.lit("gold hits the %s, then falls back on top of your %s.");
+const __sl149 = cptr.lit("Fortunately, you are wearing %s!");
+const __sl150 = cptr.lit("gold hits the %s.");
 
 /** C ref: dothrow.c:39 — @param {CInt} pm @param {CPtr} ammo @param {CPtr} launcher @returns {CInt} */
 export function multishot_class_bonus(pm, ammo, launcher) {
@@ -450,7 +449,7 @@ function* throw_obj(obj, shotlimit) {
         cptr.stI32o(gm, $instance_globals_m_m_shot, multishot);
         for (cptr.stI32o(gm, $instance_globals_m_m_shot + $multishot_i, 1); cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) <= cptr.ldI32o(gm, $instance_globals_m_m_shot); (cptr.stI32o(gm, $instance_globals_m_m_shot + $multishot_i, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) + 1)) - (1)) {
             twoweap = cptr.ld1so(u, $you_twoweap);
-            (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl10, 256, __sl11) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl6, 256, __sl10) : void 0);
             if (cptr.ldI64o(obj, $obj_quan) > 1n) {
                 otmp = (yield* splitobj(obj, 1n));
             } else {
@@ -480,10 +479,10 @@ function* ok_to_throw(shotlimit_p) {
     cptr.stI32(shotlimit_p, (Number(BigInt.asIntN(32, ((cptr.ldI64o(gc, $instance_globals_c_command_count)) < 0n ? 0n : ((cptr.ldI64o(gc, $instance_globals_c_command_count)) > 32767n ? 32767n : (cptr.ldI64o(gc, $instance_globals_c_command_count))))))));
     cptr.stI64o(gm, $instance_globals_m_multi, 0n);
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2048n) != 0n)) {
-        (yield* You(__sl12));
+        (yield* You(__sl11));
         return 0;
     } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        (yield* You_cant(__sl13));
+        (yield* You_cant(__sl12));
         return 0;
     }
     if ((yield* check_capacity(null)))
@@ -616,23 +615,23 @@ export function* dofire() {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dofire));
                 return NHM.ECMD_OK;
             } else {
-                (yield* You(__sl14));
+                (yield* You(__sl13));
             }
         } else {
             (yield* autoquiver());
             obj = uquiver.v;
             if (obj) {
                 cptr.stI64o(uquiver.v, $obj_owornmask, cptr.ldI64o(uquiver.v, $obj_owornmask) & (-513n));
-                (yield* prinv(__sl15, obj, 0n));
+                (yield* prinv(__sl14, obj, 0n));
                 cptr.stI64o(uquiver.v, $obj_owornmask, cptr.ldI64o(uquiver.v, $obj_owornmask) | 512n);
             } else {
-                (yield* You(__sl16));
+                (yield* You(__sl15));
             }
         }
     }
     if (!obj) {
         cptr.stI32(gi, 0);
-        res = (yield* doquiver_core(__sl17));
+        res = (yield* doquiver_core(__sl16));
         if (res != NHM.ECMD_OK && res != NHM.ECMD_TIME)
             return res;
         obj = uquiver.v;
@@ -664,7 +663,7 @@ export function* dofire() {
 export function* endmultishot(verbose) {
     if (cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) < cptr.ldI32o(gm, $instance_globals_m_m_shot)) {
         if (verbose && !cptr.ld1so(svc, $context_info_mon_moving)) {
-            (yield* You(__sl18, cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl19 : __sl20, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i), ordin(cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i)), cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl21 : __sl22));
+            (yield* You(__sl17, cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl18 : __sl19, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i), ordin(cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i)), cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __sl20 : __sl21));
         }
         cptr.stI32o(gm, $instance_globals_m_m_shot, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i));
     }
@@ -679,26 +678,26 @@ export function* hitfloor(obj, verbosely) {
     if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
         (yield* doaltarobj(obj));
     } else if (verbosely) {
-        let verb = (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING) ? __sl23 : __sl24;
+        let verb = (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING) ? __sl22 : __sl23;
         let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (t && (cptr.ldI32o(t, $trap_tseen) & 1) | 0) {
             switch ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) {
                 case NHC.TRAPDOOR:
-                surf = __sl25;
+                surf = __sl24;
                 break;
                 case NHC.HOLE:
-                surf = __sl26;
+                surf = __sl25;
                 break;
                 case NHC.PIT:
                 case NHC.SPIKED_PIT:
-                surf = __sl27;
+                surf = __sl26;
                 break;
                 default:
                 break;
             }
         }
-        (yield* pline(__sl28, (yield* Doname2(obj)), (yield* otense(obj, verb)), surf));
+        (yield* pline(__sl27, (yield* Doname2(obj)), (yield* otense(obj, verb)), surf));
     }
     if ((yield* hero_breaks(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.BRK_FROM_INV)))
         return;
@@ -796,7 +795,7 @@ export function* hurtle_step(arg, x, y) {
     let ltyp;
     let dmg = 0;
     if (!isok(x, y)) {
-        (yield* You_feel(__sl29));
+        (yield* You_feel(__sl28));
         return 0;
     } else if (!(yield* in_out_region(x, y))) {
         return 0;
@@ -813,28 +812,28 @@ export function* hurtle_step(arg, x, y) {
         let open_door = schar((((ltyp) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN) != 0 ? 1 : 0));
         let odoor_diag = schar((open_door && diagonal ? 1 : 0));
         if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y) || odoor_diag) {
-            why = ((ltyp) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (ltyp) == NHC.STONE)) ? __sl30 : (((ltyp) < NHC.POOL) ? __sl31 : (odoor_diag ? __sl32 : __sl33));
+            why = ((ltyp) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (ltyp) == NHC.STONE)) ? __sl29 : (((ltyp) < NHC.POOL) ? __sl30 : (odoor_diag ? __sl31 : __sl32));
             if (odoor_diag)
-                (yield* You(__sl34));
-            (yield* pline(__sl35));
+                (yield* You(__sl33));
+            (yield* pline(__sl34));
         } else if (ltyp == NHC.IRONBARS) {
-            why = __sl36;
-            (yield* You(__sl37));
+            why = __sl35;
+            (yield* You(__sl36));
         } else if ((obj = sobj_at(NHC.BOULDER, x, y)) !== null) {
-            why = __sl38;
-            (yield* You(__sl39, (yield* xname(obj))));
+            why = __sl37;
+            (yield* You(__sl38, (yield* xname(obj))));
         } else if (!may_pass) {
-            why = __sl40;
-            (yield* You(__sl41));
+            why = __sl39;
+            (yield* You(__sl40));
         } else if (diagonal && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16(u), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy))) {
             let too_much = schar((cptr.ldPtro(gi, $instance_globals_i_invent) && (((inv_weight() + weight_cap()) | 0) > NHC.WT_TOOMUCH_DIAGONAL) ? 1 : 0));
             if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) || too_much) {
-                why = __sl42;
-                (yield* You(__sl43, too_much ? __sl44 : __sl45));
+                why = __sl41;
+                (yield* You(__sl42, too_much ? __sl43 : __sl44));
             }
         }
         if (why) {
-            dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 835, __sl46), rnd((2 + cptr.ldI32(range)) | 0)) : rnd((2 + cptr.ldI32(range)) | 0));
+            dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 835, __sl45), rnd((2 + cptr.ldI32(range)) | 0)) : rnd((2 + cptr.ldI32(range)) | 0));
             (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), why, NHM.KILLED_BY));
             (yield* wake_nearto(x, y, 10));
             return 0;
@@ -846,15 +845,15 @@ export function* hurtle_step(arg, x, y) {
         cptr.stI32o(mon, $monst_mundetected, 0);
         mnam = (yield* x_monnam(mon, NHM.ARTICLE_A, null, (((cptr.ldPtro((mon), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mon), $monst_mextra)))) ? NHM.SUPPRESS_SADDLE : 0) | NHM.AUGMENT_IT), 0));
         if (!((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)))) && !((glyph) == NHC.GLYPH_INVIS_OFF))
-            (yield* You(__sl47, mnam, (cptr.ldPtro2(genders, pronoun_gender(mon, 3), 48, $Gender_him))));
+            (yield* You(__sl46, mnam, (cptr.ldPtro2(genders, pronoun_gender(mon, 3), 48, $Gender_him))));
         else
-            (yield* You(__sl48, mnam));
+            (yield* You(__sl47, mnam));
         (yield* wakeup(mon, 0));
         if (!(canseemon(mon) || sensemon(mon)))
             (yield* map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         (yield* setmangry(mon, 0));
         if ((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !uarmu.v && !uarm.v && !uarmc.v) {
-            void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl49, (yield* an(pmname(cptr.ldPtro(mon, $monst_data), NHC.NEUTRAL))));
+            void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl48, (yield* an(pmname(cptr.ldPtro(mon, $monst_data), NHC.NEUTRAL))));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
         }
         if ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !(yield* which_armor(mon, 67n))) {
@@ -865,7 +864,7 @@ export function* hurtle_step(arg, x, y) {
     }
     if (((cptr.ldI16(u) - x) | 0) && ((cptr.ldI16o(u, $you_uy) - y) | 0) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16(u), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy))) {
         if (Sokoban()) {
-            (yield* You(__sl50));
+            (yield* You(__sl49));
             return 0;
         }
     }
@@ -894,10 +893,10 @@ export function* hurtle_step(arg, x, y) {
             void (yield* drown());
             return 0;
         } else if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !stopping_short) {
-            (yield* Norep(__sl51, (yield* an(is_moat(x, y) ? __sl52 : __sl53))));
+            (yield* Norep(__sl50, (yield* an(is_moat(x, y) ? __sl51 : __sl52))));
         }
     } else if (is_lava(x, y) && !stopping_short) {
-        (yield* Norep(__sl54));
+        (yield* Norep(__sl53));
     }
     if ((ttmp = t_at(x, y)) !== null) {
         if (stopping_short) {
@@ -906,7 +905,7 @@ export function* hurtle_step(arg, x, y) {
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
             return 0;
         } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE) {
-            (yield* pline(__sl55));
+            (yield* pline(__sl54));
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
         } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP) {
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
@@ -917,7 +916,7 @@ export function* hurtle_step(arg, x, y) {
             return 1;
         } else {
             if ((cptr.ldI32o(ttmp, $trap_tseen) & 1))
-                (yield* You(__sl56, (yield* an((yield* trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 0))))));
+                (yield* You(__sl55, (yield* an((yield* trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 0))))));
         }
     }
     if (cptr.stI32(range, cptr.ldI32(range) + -1) < 0)
@@ -967,7 +966,7 @@ function* mhurtle_step(arg, x, y) {
     }
     if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && !cptr.eq(mtmp, mon)) {
         if (canseemon(mon) || canseemon(mtmp))
-            (yield* pline(__sl57, (yield* Monnam(mon)), (yield* a_monnam(mtmp))));
+            (yield* pline(__sl56, (yield* Monnam(mon)), (yield* a_monnam(mtmp))));
         (yield* wakeup(mtmp, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
         if ((cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !(yield* which_armor(mon, 67n))) {
             (yield* minstapetrify(mon, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
@@ -978,14 +977,14 @@ function* mhurtle_step(arg, x, y) {
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         }
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
-        (yield* pline(__sl58, (yield* Some_Monnam(mon))));
+        (yield* pline(__sl57, (yield* Some_Monnam(mon))));
         (yield* stop_occupation());
         if (Upolyd() && (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !(yield* which_armor(mon, 67n))) {
             (yield* minstapetrify(mon, 1));
             (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         }
         if ((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !(uarmu.v || uarm.v || uarmc.v)) {
-            nh_snprintf(__sl59, 1061, cptr.add(svk, $kinfo_name), 256n, __sl60, (yield* x_monnam(mon, cptr.ld1so(mon, $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_A, __sl61, 63, 0)));
+            nh_snprintf(__sl58, 1061, cptr.add(svk, $kinfo_name), 256n, __sl59, (yield* x_monnam(mon, cptr.ld1so(mon, $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_A, __sl60, 63, 0)));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
@@ -999,11 +998,11 @@ export function* hurtle(dx, dy, range, verbose) {
     let uc = cptr.alloc(4);
     let cc = cptr.alloc(4);
     if (Punished() && !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
-        (yield* You_feel(__sl62));
+        (yield* You_feel(__sl61));
         nomul(0);
         return;
     } else if (cptr.ldI32o(u, $you_utrap)) {
-        (yield* You(__sl63, (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) ? __sl64 : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) ? hliquid(__sl65) : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) ? surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) ? __sl66 : __sl67)))));
+        (yield* You(__sl62, (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) ? __sl63 : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) ? hliquid(__sl64) : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) ? surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) ? __sl65 : __sl66)))));
         nomul(0);
         return;
     }
@@ -1012,10 +1011,10 @@ export function* hurtle(dx, dy, range, verbose) {
     if (!range.v || (!dx && !dy) || cptr.ldPtro(u, $you_ustuck))
         return;
     nomul(-range.v);
-    cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl68);
-    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl45);
+    cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl67);
+    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl44);
     if (verbose)
-        (yield* You(__sl69, (range.v > 1) ? __sl70 : __sl71));
+        (yield* You(__sl68, (range.v > 1) ? __sl69 : __sl70));
     (yield* endmultishot(1));
     cptr.stI16(uc, cptr.ldI16(u));
     cptr.stI16o(uc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
@@ -1033,7 +1032,7 @@ export function* mhurtle(mon, dx, dy, range) {
     cptr.stI32o(mon, $monst_mstun, 1);
     if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >= NHM.MZ_HUGE || cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) || (cptr.ldI32o(mon, $monst_mtrapped) & 1) | 0) {
         if (canseemon(mon))
-            (yield* pline(__sl72, (yield* Monnam(mon))));
+            (yield* pline(__sl71, (yield* Monnam(mon))));
         return;
     }
     dx = sgn(dx);
@@ -1123,10 +1122,10 @@ function* toss_up(obj, hitsroof) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let petrifier = schar(((otyp == NHC.EGG || otyp == NHC.CORPSE) && ((cptr.ldI32o(obj, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(obj, $obj_corpsenm)) < NHC.NUMMONS) && (cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) ? 1 : 0));
     if (!has_ceiling(cptr.add(u, $you_uz))) {
-        action = __sl73;
+        action = __sl72;
     } else if (hitsroof) {
         if (breaktest(obj)) {
-            (yield* pline(__sl74, (yield* Doname2(obj)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
+            (yield* pline(__sl73, (yield* Doname2(obj)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
             (yield* breakmsg(obj, schar((!Blind()))));
             if (!(yield* breakobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1, 1))) {
                 (yield* hitfloor(obj, 0));
@@ -1135,16 +1134,16 @@ function* toss_up(obj, hitsroof) {
             }
             return 0;
         }
-        action = __sl75;
+        action = __sl74;
     } else {
-        action = __sl76;
+        action = __sl75;
     }
-    (yield* pline(__sl77, (yield* Doname2(obj)), action, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
+    (yield* pline(__sl76, (yield* Doname2(obj)), action, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
         (yield* potionhit(cptr.add(gy, $instance_globals_y_youmonst), obj, NHM.POTHIT_HERO_THROW));
     } else if (breaktest(obj)) {
         let blindinc;
-        blindinc = ((otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM) && (yield* can_blnd(cptr.add(gy, $instance_globals_y_youmonst), cptr.add(gy, $instance_globals_y_youmonst), NHM.AT_WEAP, obj))) ? (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1298, __sl78), rnd(25)) : rnd(25)) : 0;
+        blindinc = ((otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM) && (yield* can_blnd(cptr.add(gy, $instance_globals_y_youmonst), cptr.add(gy, $instance_globals_y_youmonst), NHM.AT_WEAP, obj))) ? (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1298, __sl77), rnd(25)) : rnd(25)) : 0;
         (yield* breakmsg(obj, schar((!Blind()))));
         if ((yield* breakobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1, 1)))
             obj = null;
@@ -1152,11 +1151,11 @@ function* toss_up(obj, hitsroof) {
             case NHC.EGG:
             if (petrifier && !Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
                 if (uarmh.v)
-                    (yield* Your(__sl79, helm_simple_name(uarmh.v)));
+                    (yield* Your(__sl78, helm_simple_name(uarmh.v)));
                 {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl80);
-                    (yield* You(__sl81));
+                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl79);
+                    (yield* You(__sl80));
                     if (obj)
                         (yield* dropy(obj));
                     cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
@@ -1168,14 +1167,14 @@ function* toss_up(obj, hitsroof) {
             ;
             case NHC.CREAM_PIE:
             case NHC.BLINDING_VENOM:
-            (yield* pline(__sl82, (yield* body_part(NHC.FACE))));
+            (yield* pline(__sl81, (yield* body_part(NHC.FACE))));
             if (blindinc) {
                 if (otyp == NHC.BLINDING_VENOM && !Blind())
-                    (yield* pline(__sl83));
+                    (yield* pline(__sl82));
                 cptr.stI32o(u, $you_ucreamed, (cptr.ldI32o(u, $you_ucreamed) + (blindinc >>> 0)) | 0);
                 (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(blindinc)), 0));
                 if (!Blind())
-                    (yield* Your(__sl84, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears)));
+                    (yield* Your(__sl83, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears)));
             }
             break;
             default:
@@ -1186,7 +1185,7 @@ function* toss_up(obj, hitsroof) {
         (yield* hitfloor(obj, 0));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     } else if (harmless_missile(obj)) {
-        (yield* pline(__sl85));
+        (yield* pline(__sl84));
         (yield* hitfloor(obj, 0));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     } else {
@@ -1197,18 +1196,18 @@ function* toss_up(obj, hitsroof) {
         let artimsg = 0;
         let dmg = cptr.box((yield* dmgval(obj, cptr.add(gy, $instance_globals_y_youmonst))));
         if (cptr.ld1so(obj, $obj_oartifact) && !harmless)
-            artimsg = (yield* artifact_hit(null, cptr.add(gy, $instance_globals_y_youmonst), obj, dmg, (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1354, __sl78), rn2(18)) : rn2(18)) + 2) | 0)));
+            artimsg = (yield* artifact_hit(null, cptr.add(gy, $instance_globals_y_youmonst), obj, dmg, (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1354, __sl77), rn2(18)) : rn2(18)) + 2) | 0)));
         if (!dmg.v) {
             dmg.v = ((((cptr.ldI32o(obj, $obj_owt) | 0) + ((NHC.WT_TO_DMG - 1) | 0)) | 0) / NHC.WT_TO_DMG) | 0;
-            dmg.v = (dmg.v <= 1) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1358, __sl78), rnd(dmg.v)) : rnd(dmg.v));
+            dmg.v = (dmg.v <= 1) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1358, __sl77), rnd(dmg.v)) : rnd(dmg.v));
             if (dmg.v > 6)
                 dmg.v = 6;
             if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SHADE, 96)) && !is_silver)
                 dmg.v = 0;
             if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(cptr.add(gy, $instance_globals_y_youmonst)))
-                dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1370, __sl78), rnd(4)) : rnd(4))) | 0;
+                dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1370, __sl77), rnd(4)) : rnd(4))) | 0;
             if (is_silver && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-                dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1372, __sl78), rnd(20)) : rnd(20))) | 0;
+                dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1372, __sl77), rnd(20)) : rnd(20))) | 0;
         }
         if (dmg.v > 1 && less_damage)
             dmg.v = 1;
@@ -1221,19 +1220,19 @@ function* toss_up(obj, hitsroof) {
             if ((less_damage && dmg.v < (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) || harmless) {
                 if (!artimsg) {
                     if (!harmless)
-                        (yield* pline(__sl86));
+                        (yield* pline(__sl85));
                     else
-                        (yield* pline(__sl87, (yield* an(helm_simple_name(uarmh.v)))));
+                        (yield* pline(__sl86, (yield* an(helm_simple_name(uarmh.v)))));
                 }
             } else if (!petrifier) {
                 if (cptr.ld1so(flags, $flag_verbose))
-                    (yield* Your(__sl88, helm_simple_name(uarmh.v)));
+                    (yield* Your(__sl87, helm_simple_name(uarmh.v)));
             }
             harmless = 0;
         } else if (petrifier && !Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl80);
-            (yield* You(__sl81));
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl79);
+            (yield* You(__sl80));
             if (obj)
                 (yield* dropy(obj));
             cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
@@ -1241,13 +1240,13 @@ function* toss_up(obj, hitsroof) {
             return schar((obj ? 1 : 0));
         }
         if (is_silver && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-            (yield* pline_The(__sl89));
+            (yield* pline_The(__sl88));
         if (harmless)
-            (yield* hit((yield* thesimpleoname(obj)), cptr.add(gy, $instance_globals_y_youmonst), __sl90));
+            (yield* hit((yield* thesimpleoname(obj)), cptr.add(gy, $instance_globals_y_youmonst), __sl89));
         (yield* hitfloor(obj, 1));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
         if (!harmless)
-            (yield* losehp(dmg.v, __sl91, NHM.KILLED_BY_AN));
+            (yield* losehp(dmg.v, __sl90, NHM.KILLED_BY_AN));
     }
     return 1;
 }
@@ -1319,26 +1318,26 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
     let impaired = schar((HConfusion() || HStun() || Blind() || Hallucination() || Fumbling() ? 1 : 0));
     let tethered_weapon = schar((arw && (cptr.ldI32o(arw, $throw_and_return_weapon_tethered) & 1) | 0 && (wep_mask & 256n) != 0n ? 1 : 0));
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-    if (((cptr.ldI32o(obj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj.v, $obj_greased) & 1) | 0) && (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1526, __sl92), rn2(7)) : rn2(7))) {
+    if (((cptr.ldI32o(obj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj.v, $obj_greased) & 1) | 0) && (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1526, __sl91), rn2(7)) : rn2(7))) {
         let slipok = 1;
         if ((((cptr.ld1so(obj.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj.v, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) && ((uwep.v) && cptr.ld1so2(objects, cptr.ldI16o((obj.v), $obj_otyp), 120, $objclass_oc_subtyp) == -cptr.ld1so2(objects, cptr.ldI16o((uwep.v), $obj_otyp), 120, $objclass_oc_subtyp)))) {
-            (yield* pline(__sl93, (yield* Tobjnam(obj.v, __sl94))));
+            (yield* pline(__sl92, (yield* Tobjnam(obj.v, __sl93))));
         } else {
             if ((cptr.ldI32o(obj.v, $obj_greased) & 1) | 0 || throwing_weapon(obj.v))
-                (yield* pline(__sl95, (yield* Tobjnam(obj.v, __sl96))));
+                (yield* pline(__sl94, (yield* Tobjnam(obj.v, __sl95))));
             else
                 slipok = 0;
         }
         if (slipok) {
-            cptr.stI32o(u, $you_dx, ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1541, __sl92), rn2(3)) : rn2(3)) - 1) | 0);
-            cptr.stI32o(u, $you_dy, ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1542, __sl92), rn2(3)) : rn2(3)) - 1) | 0);
+            cptr.stI32o(u, $you_dx, ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1541, __sl91), rn2(3)) : rn2(3)) - 1) | 0);
+            cptr.stI32o(u, $you_dy, ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1542, __sl91), rn2(3)) : rn2(3)) - 1) | 0);
             if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy))
                 cptr.stI32o(u, $you_dz, 1);
             impaired = 1;
         }
     }
     if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || (cptr.ldI32o(u, $you_dz) < 1)) && calc_capacity(cptr.ldI32o(obj.v, $obj_owt) | 0) > NHC.SLT_ENCUMBER && (Upolyd() ? (cptr.ldI32o(u, $you_mh) < 5 && cptr.ldI32o(u, $you_mh) != cptr.ldI32o(u, $you_mhmax) ? 1 : 0) : (cptr.ldI32o(u, $you_uhp) < 10 && cptr.ldI32o(u, $you_uhp) != cptr.ldI32o(u, $you_uhpmax) ? 1 : 0)) && cptr.ldI32o(obj.v, $obj_owt) > (Math.imul((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)), 2)) >>> 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
-        (yield* You(__sl97, (yield* the((yield* xname(obj.v))))));
+        (yield* You(__sl96, (yield* the((yield* xname(obj.v))))));
         (yield* exercise(NHC.A_CON, 0));
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
         cptr.stI32o(u, $you_dz, 1);
@@ -1358,11 +1357,11 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             (yield* tmp_at(-3, i16(((cptr.ldI16o((obj.v), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj.v), $obj_corpsenm) + (((cptr.ld1so((obj.v), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj.v), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj.v), $obj_corpsenm) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((obj.v), $obj_dknown) & 1) && (cptr.ld1so((obj.v), $obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((obj.v), $obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((obj.v), $obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((obj.v), $obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((obj.v), $obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((obj.v), $obj_oclass) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj.v), $obj_otyp) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)))))))));
     } else if (cptr.ldI32o(u, $you_dz)) {
         if (cptr.ldI32o(u, $you_dz) < 0 && cptr.ldPtro(iflags, $instance_flags_returning_missile) && !impaired) {
-            (yield* pline(__sl98, (yield* Tobjnam(obj.v, __sl24)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
+            (yield* pline(__sl97, (yield* Tobjnam(obj.v, __sl23)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
             obj.v = (yield* return_throw_to_inv(obj.v, wep_mask, twoweap, oldslot));
         } else if (cptr.ldI32o(u, $you_dz) < 0) {
-            void (yield* toss_up(obj.v, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1589, __sl92), rn2(5)) : rn2(5)) && !Underwater() ? 1 : 0))));
-        } else if (cptr.ldI32o(u, $you_dz) > 0 && cptr.ldPtro(u, $you_usteed) && cptr.ld1so(obj.v, $obj_oclass) == NHC.POTION_CLASS && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1591, __sl92), rn2(6)) : rn2(6))) {
+            void (yield* toss_up(obj.v, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1589, __sl91), rn2(5)) : rn2(5)) && !Underwater() ? 1 : 0))));
+        } else if (cptr.ldI32o(u, $you_dz) > 0 && cptr.ldPtro(u, $you_usteed) && cptr.ld1so(obj.v, $obj_oclass) == NHC.POTION_CLASS && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1591, __sl91), rn2(6)) : rn2(6))) {
             (yield* potionhit(cptr.ldPtro(u, $you_usteed), obj.v, NHM.POTHIT_HERO_THROW));
         } else {
             (yield* hitfloor(obj.v, 1));
@@ -1403,7 +1402,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                     range++;
             } else if (cptr.ld1so(obj.v, $obj_oclass) != NHC.GEM_CLASS) {
                 range = (range / 2) | 0;
-                (yield* pline(__sl99, (yield* an(skill_name(weapon_type(obj.v)))), (yield* weapon_descr(obj.v)), (yield* body_part(NHC.HAND))));
+                (yield* pline(__sl98, (yield* an(skill_name(weapon_type(obj.v)))), (yield* weapon_descr(obj.v)), (yield* body_part(NHC.HAND))));
             }
         }
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) {
@@ -1447,13 +1446,13 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         return;
     } else {
         if (cptr.ldPtro(iflags, $instance_flags_returning_missile)) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1711, __sl92), rn2(100)) : rn2(100))) {
+            if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1711, __sl91), rn2(100)) : rn2(100))) {
                 if (tethered_weapon)
                     (yield* tmp_at(-7, -1));
                 else
                     (yield* sho_obj_return_to_u(obj.v));
-                if (!impaired && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1717, __sl92), rn2(100)) : rn2(100))) {
-                    (yield* pline(__sl100, (yield* Tobjnam(obj.v, __sl101))));
+                if (!impaired && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1717, __sl91), rn2(100)) : rn2(100))) {
+                    (yield* pline(__sl99, (yield* Tobjnam(obj.v, __sl100))));
                     obj.v = (yield* addinv_before(obj.v, oldslot));
                     (yield* encumber_msg());
                     if (cptr.ldI64o(obj.v, $obj_owornmask) & 512n)
@@ -1463,12 +1462,12 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0))
                         (yield* newsym(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
                 } else {
-                    let dmg = cptr.box((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1730, __sl92), rn2(2)) : rn2(2)));
+                    let dmg = cptr.box((rng_log_enabled() ? (rng_log_set_caller(__sl6, 1730, __sl91), rn2(2)) : rn2(2)));
                     if (!dmg.v) {
-                        (yield* pline(Blind() ? __sl102 : __sl103, Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_Something) : (yield* Tobjnam(obj.v, __sl101)), Levitation() ? __sl104 : __sl105, (yield* makeplural((yield* body_part(NHC.FOOT))))));
+                        (yield* pline(Blind() ? __sl101 : __sl102, Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_Something) : (yield* Tobjnam(obj.v, __sl100)), Levitation() ? __sl103 : __sl104, (yield* makeplural((yield* body_part(NHC.FOOT))))));
                     } else {
-                        dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1739, __sl92), rnd(3)) : rnd(3))) | 0;
-                        (yield* pline(Blind() ? __sl106 : __sl107, (yield* Tobjnam(obj.v, Blind() ? __sl24 : __sl108)), (yield* body_part(NHC.ARM))));
+                        dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1739, __sl91), rnd(3)) : rnd(3))) | 0;
+                        (yield* pline(Blind() ? __sl105 : __sl106, (yield* Tobjnam(obj.v, Blind() ? __sl23 : __sl107)), (yield* body_part(NHC.ARM))));
                         if (cptr.ld1so(obj.v, $obj_oartifact))
                             void (yield* artifact_hit(null, cptr.add(gy, $instance_globals_y_youmonst), obj.v, dmg, 0));
                         (yield* losehp(((Half_physical_damage()) ? (((((dmg.v) + 1) | 0) / 2) | 0) : (dmg.v)), (yield* killer_xname(obj.v)), NHM.KILLED_BY));
@@ -1485,7 +1484,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             } else {
                 if (tethered_weapon)
                     (yield* tmp_at(-7, 0));
-                (yield* pline(__sl109, (yield* Tobjnam(obj.v, __sl110))));
+                (yield* pline(__sl108, (yield* Tobjnam(obj.v, __sl109))));
                 if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
                     (yield* swallowit(obj.v));
                     return;
@@ -1506,17 +1505,17 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         if (!Deaf() && !Underwater()) {
             if (is_pool(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || (is_lava(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) && !is_flammable(obj.v))) {
                 ;
-                (yield* pline(((yield* weight(obj.v)) > NHC.WT_SPLASH_THRESHOLD) ? __sl111 : __sl112));
+                (yield* pline(((yield* weight(obj.v)) > NHC.WT_SPLASH_THRESHOLD) ? __sl110 : __sl111));
             }
         }
-        if ((yield* flooreffects(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __sl113))) {
+        if ((yield* flooreffects(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __sl112))) {
             throwit_return(1);
             return;
         }
         (yield* obj_no_longer_held(obj.v));
         if (mon && (cptr.ldI32o(mon, $monst_isshk) & 1) | 0 && ((cptr.ld1so(obj.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE)) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0))
-                (yield* pline(__sl114, (yield* Monnam(mon)), (yield* the((yield* xname(obj.v))))));
+                (yield* pline(__sl113, (yield* Monnam(mon)), (yield* the((yield* xname(obj.v))))));
             if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj.v, $obj_unpaid) & 1) | 0)
                 (yield* check_shop_obj(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 0));
             void (yield* mpickobj(mon, obj.v));
@@ -1592,7 +1591,7 @@ export function* omon_adj(mon, obj, mon_notices) {
     }
     if (!(cptr.ldI32o(mon, $monst_mcanmove) & 1) || !cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove)) {
         tmp = (tmp + 4) | 0;
-        if (mon_notices && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1926, __sl115), rn2(10)) : rn2(10))) {
+        if (mon_notices && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1926, __sl114), rn2(10)) : rn2(10))) {
             cptr.stI32o(mon, $monst_mcanmove, 1);
             cptr.stI32o(mon, $monst_mfrozen, 0);
         }
@@ -1617,10 +1616,10 @@ export function* omon_adj(mon, obj, mon_notices) {
 function* tmiss(obj, mon, maybe_wakeup) {
     let missile = (yield* mshot_xname(obj));
     if (!canseemon(mon) || ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER))
-        (yield* pline(__sl116, (yield* The(missile)), (yield* otense(obj, __sl117))));
+        (yield* pline(__sl115, (yield* The(missile)), (yield* otense(obj, __sl116))));
     else
         (yield* miss(missile, mon));
-    if (maybe_wakeup && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1964, __sl118), rn2(3)) : rn2(3)))
+    if (maybe_wakeup && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1964, __sl117), rn2(3)) : rn2(3)))
         (yield* wakeup(mon, 1));
     return;
 }
@@ -1632,10 +1631,10 @@ export function should_mulch_missile(obj) {
     if (!obj || !(((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -23)) || cptr.ldI16o(obj, $obj_otyp) == NHC.BOOMERANG || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_magic) & 1) | 0)
         return 0;
     chance = (((3 + (((cptr.ldI32o((obj), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((obj), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0)) | 0) - cptr.ld1so(obj, $obj_spe)) | 0;
-    broken = schar((chance > 1 ? (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1991, __sl119), rn2(chance)) : rn2(chance)) : !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1991, __sl119), rn2(4)) : rn2(4))));
-    if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && (cptr.ld1so(svc, $context_info_mon_moving) ? !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1992, __sl119), rn2(3)) : rn2(3)) : !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1992, __sl119), rnl(4)) : rnl(4))))
+    broken = schar((chance > 1 ? (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1991, __sl118), rn2(chance)) : rn2(chance)) : !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1991, __sl118), rn2(4)) : rn2(4))));
+    if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && (cptr.ld1so(svc, $context_info_mon_moving) ? !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1992, __sl118), rn2(3)) : rn2(3)) : !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1992, __sl118), rnl(4)) : rnl(4))))
         broken = 0;
-    if (((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_tough) & 1) | 0) || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1998, __sl119), rn2(2)) : rn2(2)))
+    if (((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_tough) & 1) | 0) || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1998, __sl118), rn2(2)) : rn2(2)))
         broken = 0;
     return broken;
 }
@@ -1674,7 +1673,7 @@ export function* thitmonst(mon, obj) {
             case NHC.GAUNTLETS_OF_DEXTERITY:
             break;
             default:
-            (yield* impossible(__sl120, cptr.ldI16o(uarmg.v, $obj_otyp)));
+            (yield* impossible(__sl119, cptr.ldI16o(uarmg.v, $obj_otyp)));
             break;
         }
     }
@@ -1689,10 +1688,10 @@ export function* thitmonst(mon, obj) {
             (yield* tmiss(obj, mon, 0));
             return 0;
         } else if (cptr.ld1so(mon, $monst_mtame)) {
-            (yield* pline(__sl121, (yield* Monnam(mon)), (yield* the((yield* xname(obj))))));
+            (yield* pline(__sl120, (yield* Monnam(mon)), (yield* the((yield* xname(obj))))));
             return 0;
         } else {
-            (yield* pline(__sl122, (yield* Monnam(mon)), (yield* the((yield* xname(obj))))));
+            (yield* pline(__sl121, (yield* Monnam(mon)), (yield* the((yield* xname(obj))))));
             return (yield* gem_accept(mon, obj));
         }
     }
@@ -1700,12 +1699,12 @@ export function* thitmonst(mon, obj) {
         cptr.stI32o(mon, $monst_msleeping, 0);
         cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744072904245247n);
         if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
-            (yield* pline(__sl122, (yield* Some_Monnam(mon)), (yield* the((yield* xname(obj))))));
+            (yield* pline(__sl121, (yield* Some_Monnam(mon)), (yield* the((yield* xname(obj))))));
             if (((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_unique) & 1) | 0 && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR) || !(cptr.ldI32o(mon, $monst_mpeaceful) & 1)) {
                 if ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 && !Deaf()) {
                     (yield* fully_identify_obj(obj));
-                    (yield* verbalize(__sl123, (yield* s_suffix((yield* The((yield* xname(obj))))))));
-                    (yield* verbalize(__sl124, (yield* align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)))));
+                    (yield* verbalize(__sl122, (yield* s_suffix((yield* The((yield* xname(obj))))))));
+                    (yield* verbalize(__sl123, (yield* align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)))));
                 }
                 if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                     (yield* check_shop_obj(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), 0));
@@ -1713,7 +1712,7 @@ export function* thitmonst(mon, obj) {
             } else {
                 let next2u = monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                 (yield* finish_quest(obj));
-                (yield* pline(__sl125, (yield* Some_Monnam(mon)), (next2u ? __sl126 : __sl127), (yield* the((yield* xname(obj))))));
+                (yield* pline(__sl124, (yield* Some_Monnam(mon)), (next2u ? __sl125 : __sl126), (yield* the((yield* xname(obj))))));
                 if (!next2u)
                     (yield* sho_obj_return_to_u(obj));
                 obj = (yield* addinv(obj));
@@ -1724,7 +1723,7 @@ export function* thitmonst(mon, obj) {
         }
         return 0;
     }
-    dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2152, __sl128), rnd(20)) : rnd(20));
+    dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2152, __sl127), rnd(20)) : rnd(20));
     if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
         if (hmode == NHC.HMON_KICKED) {
             tmp = (tmp - (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) ? 5 : 3)) | 0;
@@ -1796,10 +1795,10 @@ export function* thitmonst(mon, obj) {
         } else {
             (yield* tmiss(obj, mon, 1));
         }
-    } else if ((otyp == NHC.EGG || otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM || otyp == NHC.ACID_VENOM) && (guaranteed_hit || (acurr(NHC.A_DEX)) > (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2258, __sl128), rnd(25)) : rnd(25)))) {
+    } else if ((otyp == NHC.EGG || otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM || otyp == NHC.ACID_VENOM) && (guaranteed_hit || (acurr(NHC.A_DEX)) > (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2258, __sl127), rnd(25)) : rnd(25)))) {
         void (yield* hmon(mon, obj, hmode, dieroll));
         return 1;
-    } else if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS && (guaranteed_hit || (acurr(NHC.A_DEX)) > (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2263, __sl128), rnd(25)) : rnd(25)))) {
+    } else if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS && (guaranteed_hit || (acurr(NHC.A_DEX)) > (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2263, __sl127), rnd(25)) : rnd(25)))) {
         (yield* potionhit(mon, obj, NHM.POTHIT_HERO_THROW));
         return 1;
     } else if (((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MONKEY, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_APE, 96))) ? cptr.ldI16o((obj), $obj_otyp) == NHC.BANANA : (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4194304n) != 0n) && cptr.ld1so((obj), $obj_oclass) == NHC.FOOD_CLASS && (cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) != NHC.S_UNICORN || ((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.VEGGY || (cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE && cptr.ldI32o((obj), $obj_corpsenm) == NHC.PM_LICHEN)) ? 1 : 0)) || (cptr.ld1so(mon, $monst_mtame) && (yield* dogfood(mon, obj)) <= NHC.ACCFOOD)) {
@@ -1824,11 +1823,11 @@ export function* thitmonst(mon, obj) {
                 }
             }
         }
-        void cptr.strcpy(cptr.decay(trail), (dmgtype_fromattack((md), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl129 : ((cptr.ld1so((md), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((md), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))) ? __sl130 : __sl45));
+        void cptr.strcpy(cptr.decay(trail), (dmgtype_fromattack((md), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl128 : ((cptr.ld1so((md), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((md), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))) ? __sl129 : __sl44));
         monname = (yield* mon_nam(mon));
         if (cptr.ld1s(cptr.decay(trail)))
             monname = (yield* s_suffix(monname));
-        (yield* pline(__sl131, (yield* Tobjnam(obj, __sl132)), monname, cptr.decay(trail)));
+        (yield* pline(__sl130, (yield* Tobjnam(obj, __sl131)), monname, cptr.decay(trail)));
     } else {
         (yield* tmiss(obj, mon, 1));
     }
@@ -1858,7 +1857,7 @@ function* gem_accept(mon, obj) {
                     change_luck(5);
                 } else {
                     void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_maybeluck));
-                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2334, __sl133), rn2(7)) : rn2(7)) - 3) | 0)));
+                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2334, __sl132), rn2(7)) : rn2(7)) - 3) | 0)));
                 }
             } else {
                 void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_nogood));
@@ -1871,7 +1870,7 @@ function* gem_accept(mon, obj) {
                     change_luck(2);
                 } else {
                     void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_maybeluck));
-                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2349, __sl133), rn2(3)) : rn2(3)) - 1) | 0)));
+                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2349, __sl132), rn2(3)) : rn2(3)) - 1) | 0)));
                 }
             } else {
                 void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_nogood));
@@ -1884,7 +1883,7 @@ function* gem_accept(mon, obj) {
                     change_luck(1);
                 } else {
                     void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_maybeluck));
-                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2364, __sl133), rn2(3)) : rn2(3)) - 1) | 0)));
+                    change_luck(schar((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 2364, __sl132), rn2(3)) : rn2(3)) - 1) | 0)));
                 }
             } else {
                 void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_noluck));
@@ -1897,7 +1896,7 @@ function* gem_accept(mon, obj) {
         ret = 1;
     }
     if (!Blind())
-        (yield* pline(__sl84, cptr.decay(buf)));
+        (yield* pline(__sl83, cptr.decay(buf)));
     if (!(yield* tele_restrict(mon)))
         void (yield* rloc(mon, NHM.RLOC_MSG));
     return ret;
@@ -1928,9 +1927,9 @@ export function* breaks(obj, x, y) {
 /** C ref: dothrow.c:2457 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
 export function* release_camera_demon(obj, x, y) {
     let mtmp;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl6, 2460, __sl134), rn2(3)) : rn2(3)) && (mtmp = (yield* makemon(cptr.add(mons, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2461, __sl134), rn2(3)) : rn2(3)) ? NHC.PM_HOMUNCULUS : NHC.PM_IMP, 96), x, y, NHM.MM_NOMSG))) !== null) {
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl6, 2460, __sl133), rn2(3)) : rn2(3)) && (mtmp = (yield* makemon(cptr.add(mons, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2461, __sl133), rn2(3)) : rn2(3)) ? NHC.PM_HOMUNCULUS : NHC.PM_IMP, 96), x, y, NHM.MM_NOMSG))) !== null) {
         if ((canseemon(mtmp) || sensemon(mtmp)))
-            (yield* pline(__sl135, Hallucination() ? (yield* An((yield* rndmonnam(null)))) : __sl136));
+            (yield* pline(__sl134, Hallucination() ? (yield* An((yield* rndmonnam(null)))) : __sl135));
         cptr.stI32o(mtmp, $monst_mpeaceful, (!(cptr.ldI32o(obj, $obj_cursed) & 1)) >>> 0);
         set_malign(mtmp);
     }
@@ -1955,12 +1954,12 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
             if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n)) {
                 if (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER && !Half_gas_damage()) {
                     if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n)) {
-                        (yield* You(__sl137));
+                        (yield* You(__sl136));
                     } else {
                         let eyes = (yield* body_part(NHC.EYE));
                         if ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) != 1)
                             eyes = (yield* makeplural(eyes));
-                        (yield* Your(__sl116, eyes, (yield* vtense(eyes, __sl138))));
+                        (yield* Your(__sl115, eyes, (yield* vtense(eyes, __sl137))));
                     }
                 }
                 (yield* potionbreathe(obj));
@@ -2003,7 +2002,7 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
     if (!fracture)
         (yield* delobj(obj));
     if (explosion)
-        (yield* explode(x, y, -11, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2572, __sl139), d(3, 6)) : d(3, 6)), 0, NHC.EXPL_FIERY));
+        (yield* explode(x, y, -11, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2572, __sl138), d(3, 6)) : d(3, 6)), 0, NHC.EXPL_FIERY));
     return 1;
 }
 
@@ -2035,37 +2034,37 @@ function* breakmsg(obj, in_view) {
     let to_pieces;
     if ((((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((obj), $obj_oclass) == NHC.ARMOR_CLASS))
         return;
-    to_pieces = __sl45;
+    to_pieces = __sl44;
     switch (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS ? NHC.POT_WATER : cptr.ldI16o(obj, $obj_otyp)) {
         default:
         if (cptr.ld1so(obj, $obj_oclass) != NHC.WAND_CLASS)
-            (yield* impossible(__sl140, cptr.ldI16o(obj, $obj_otyp)));
+            (yield* impossible(__sl139, cptr.ldI16o(obj, $obj_otyp)));
         // @FallThrough
         ;
         case NHC.LENSES:
         case NHC.MIRROR:
         case NHC.CRYSTAL_BALL:
         case NHC.EXPENSIVE_CAMERA:
-        to_pieces = __sl141;
+        to_pieces = __sl140;
         // @FallThrough
         ;
         case NHC.POT_WATER:
         if (!in_view)
-            (yield* You_hear(__sl142, cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
+            (yield* You_hear(__sl141, cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
         else
-            (yield* pline(__sl143, (yield* Doname2(obj)), (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl144 : __sl45, to_pieces));
+            (yield* pline(__sl142, (yield* Doname2(obj)), (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl143 : __sl44, to_pieces));
         break;
         case NHC.EGG:
         case NHC.MELON:
-        (yield* pline(__sl145));
+        (yield* pline(__sl144));
         break;
         case NHC.CREAM_PIE:
         if (in_view)
-            (yield* pline(__sl146));
+            (yield* pline(__sl145));
         break;
         case NHC.ACID_VENOM:
         case NHC.BLINDING_VENOM:
-        (yield* pline(__sl111));
+        (yield* pline(__sl110));
         break;
     }
 }
@@ -2078,7 +2077,7 @@ function* throw_gold(obj) {
     let ody;
     let mon;
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
-        (yield* You(__sl147));
+        (yield* You(__sl146));
         if (cptr.ldI32o(obj.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) || cptr.ldI32o(obj.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
             void (yield* unsplitobj(obj.v));
         return NHM.ECMD_CANCEL;
@@ -2087,16 +2086,16 @@ function* throw_gold(obj) {
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let swallower = (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)));
         if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null))
-            swallower = cptr.strcat((yield* s_suffix(swallower)), __sl129);
-        (yield* pline_The(__sl148, swallower));
+            swallower = cptr.strcat((yield* s_suffix(swallower)), __sl128);
+        (yield* pline_The(__sl147, swallower));
         (yield* add_to_minv(cptr.ldPtro(u, $you_ustuck), obj.v));
         return NHM.ECMD_TIME;
     }
     if (cptr.ldI32o(u, $you_dz)) {
         if (cptr.ldI32o(u, $you_dz) < 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !Underwater() && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
-            (yield* pline_The(__sl149, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
+            (yield* pline_The(__sl148, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
             if (uarmh.v)
-                (yield* pline(__sl150, (yield* an(helm_simple_name(uarmh.v)))));
+                (yield* pline(__sl149, (yield* an(helm_simple_name(uarmh.v)))));
         }
         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16(u));
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
@@ -2120,10 +2119,10 @@ function* throw_gold(obj) {
             }
         }
     }
-    if ((yield* flooreffects(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __sl113)))
+    if ((yield* flooreffects(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __sl112)))
         return NHM.ECMD_TIME;
     if (cptr.ldI32o(u, $you_dz) > 0)
-        (yield* pline_The(__sl151, surface(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))));
+        (yield* pline_The(__sl150, surface(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))));
     (yield* place_object(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
     if (cptr.ld1so(u, $you_ushops))
         (yield* sellobj(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));

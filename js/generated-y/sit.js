@@ -91,7 +91,7 @@ const $Gender_his = FLD.Gender_his, $c_common_strings_c_Never_mind = FLD.c_commo
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("a strange sensation.");
 const __sl1 = cptr.lit("notice you have no gold!");
-const __sl2 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/sit.c");
+const __sl2 = cptr.lit("sit.c");
 const __sl3 = cptr.lit("throne_sit_effect");
 const __sl4 = cptr.lit("Throne sit effect (1..13) [0=random]");
 const __sl5 = cptr.lit("%s");

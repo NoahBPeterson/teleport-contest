@@ -242,7 +242,7 @@ const __sl0 = cptr.lit("outside mapfrag (%i,%i), wanted (%i,%i)");
 const __sl1 = cptr.lit("mapfragment error");
 const __sl2 = cptr.lit("mapfragment needs to have odd height and width");
 const __sl3 = cptr.lit("mapfragment center must be valid terrain");
-const __sl4 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/sp_lev.c");
+const __sl4 = cptr.lit("sp_lev.c");
 const __sl5 = cptr.lit("lvlfill_swamp");
 const __sl6 = cptr.lit("flip_level_rnd");
 const __sl7 = cptr.lit("rnddoor");
@@ -3758,7 +3758,7 @@ export function lspo_mineralize(L) {
 
 /** C ref: sp_lev.c:3957 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: sp_lev.c:3960 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/sp_lev.c:3957:14)[27] */
+/** C ref: sp_lev.c:3960 — struct (unnamed struct at sp_lev.c:3957:14)[27] */
 const room_types = cptr.alloc(27 * 16);
 cptr.stPtro(room_types, 0, __sl193);
 cptr.stI32o(room_types, 8, NHC.OROOM);
@@ -4112,7 +4112,7 @@ export function lspo_altar(L) {
 
 /** C ref: sp_lev.c:4320 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: sp_lev.c:4323 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/sp_lev.c:4320:14)[25] */
+/** C ref: sp_lev.c:4323 — struct (unnamed struct at sp_lev.c:4320:14)[25] */
 const trap_types = cptr.alloc(25 * 16);
 cptr.stPtro(trap_types, 0, __sl245);
 cptr.stI32o(trap_types, 8, NHC.ARROW_TRAP);

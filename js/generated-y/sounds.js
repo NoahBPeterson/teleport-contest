@@ -118,7 +118,7 @@ const $Gender_his = FLD.Gender_his, $Race_individual = FLD.Race_individual, $Rac
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/sounds.c");
+const __sl0 = cptr.lit("sounds.c");
 const __sl1 = cptr.lit("throne_mon_sound");
 const __sl2 = cptr.lit("%s");
 const __sl3 = cptr.lit("the tones of courtly conversation.");

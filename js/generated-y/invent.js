@@ -225,7 +225,7 @@ const __sl46 = cptr.lit("sporebuck");
 const __sl47 = cptr.lit("Triganic Pu");
 const __sl48 = cptr.lit("woolong");
 const __sl49 = cptr.lit("zorkmid");
-const __sl50 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/invent.c");
+const __sl50 = cptr.lit("invent.c");
 const __sl51 = cptr.lit("currency");
 const __sl52 = cptr.lit("take off");
 const __sl53 = cptr.lit("remove");
@@ -307,202 +307,201 @@ const __sl128 = cptr.lit(" (%ld in total).");
 const __sl129 = cptr.lit("%s%s%s%s");
 const __sl130 = cptr.lit("%c - %.*s%s");
 const __sl131 = cptr.lit("xprname");
-const __sl132 = cptr.lit("invent.c");
-const __sl133 = cptr.lit("obj != NULL");
-const __sl134 = cptr.lit("%c%6ld %.50s");
-const __sl135 = cptr.lit("%c - %-45.*s%s");
-const __sl136 = cptr.lit(".");
-const __sl137 = cptr.lit("Debug Identify");
-const __sl138 = cptr.lit(" -- unidentified or partially identified item%s");
-const __sl139 = cptr.lit("s");
-const __sl140 = cptr.lit("(all items are permanently identified already)");
-const __sl141 = cptr.lit("select %s to permanently identify");
-const __sl142 = cptr.lit("it");
-const __sl143 = cptr.lit("any or all of them");
-const __sl144 = cptr.lit(" (%s for all)");
-const __sl145 = cptr.lit("In use");
-const __sl146 = cptr.lit("Inventory in use");
-const __sl147 = cptr.lit("%s %s (no weapon)");
-const __sl148 = cptr.lit("(list everything)");
-const __sl149 = cptr.lit("(list likely candidates)");
-const __sl150 = cptr.lit("Special");
-const __sl151 = cptr.lit("Inventory letters used:");
-const __sl152 = cptr.lit("%s contents");
-const __sl153 = cptr.lit("Total:");
-const __sl154 = cptr.lit("are");
-const __sl155 = cptr.lit("is");
-const __sl156 = cptr.lit("on the floor");
-const __sl157 = cptr.lit("under the floor");
-const __sl158 = cptr.lit("on or under the floor");
-const __sl159 = cptr.lit("aren't carrying any unpaid items but there %s %d %s.");
-const __sl160 = cptr.lit("(There %s %d more unpaid object%s %s.)");
-const __sl161 = cptr.lit("BUCX");
-const __sl162 = cptr.lit("aren't carrying anything.");
-const __sl163 = cptr.lit("No used-up objects%s.");
-const __sl164 = cptr.lit(" on your shopping bill");
-const __sl165 = cptr.lit("are not carrying any unpaid objects.");
-const __sl166 = cptr.lit("known to be blessed ");
-const __sl167 = cptr.lit("known to be uncursed ");
-const __sl168 = cptr.lit("known to be cursed ");
-const __sl169 = cptr.lit(" whose blessed/uncursed/cursed status is unknown");
-const __sl170 = cptr.lit(" that were just picked up");
-const __sl171 = cptr.lit("such ");
-const __sl172 = cptr.lit("have no %sobjects%s.");
-const __sl173 = cptr.lit("Items %s");
-const __sl174 = cptr.lit(":");
-const __sl175 = cptr.lit("broken door");
-const __sl176 = cptr.lit("open drawbridge portcullis");
-const __sl177 = cptr.lit("pool of water");
-const __sl178 = cptr.lit("%saltar to %s (%s)");
-const __sl179 = cptr.lit("high ");
-const __sl180 = cptr.lit("set of iron bars");
-const __sl181 = cptr.lit("feel");
-const __sl182 = cptr.lit("see");
-const __sl183 = cptr.lit("Contents of %s %s");
-const __sl184 = cptr.lit("%s to %s what is lying in %s.");
-const __sl185 = cptr.lit("try");
-const __sl186 = cptr.lit("look around");
-const __sl187 = cptr.lit("You feel");
-const __sl188 = cptr.lit("%s no objects here.");
-const __sl189 = cptr.lit("a %s cloud");
-const __sl190 = cptr.lit("poison gas");
-const __sl191 = cptr.lit("vapor");
-const __sl192 = cptr.lit("is %s%s%s here.");
-const __sl193 = cptr.lit("altar ");
-const __sl194 = cptr.lit("try to feel what is here.");
-const __sl195 = cptr.lit("try to feel what is on it.");
-const __sl196 = cptr.lit("lying beneath you");
-const __sl197 = cptr.lit("lying here on the ");
-const __sl198 = cptr.lit("try to feel what is %s%s.");
-const __sl199 = cptr.lit("floating here");
-const __sl200 = cptr.lit("But you can't reach it!");
-const __sl201 = cptr.lit("molten lava");
-const __sl202 = cptr.lit("iron bars");
-const __sl203 = cptr.lit("ice");
-const __sl204 = cptr.lit("frozen ");
-const __sl205 = cptr.lit(" ice");
-const __sl206 = cptr.lit("There %s %s here.");
-const __sl207 = cptr.lit("is %s object here.");
-const __sl208 = cptr.lit("another");
-const __sl209 = cptr.lit("an");
-const __sl210 = cptr.lit("are %s%s objects here.");
-const __sl211 = cptr.lit("two");
-const __sl212 = cptr.lit("a few");
-const __sl213 = cptr.lit("several");
-const __sl214 = cptr.lit("many");
-const __sl215 = cptr.lit(" more");
-const __sl216 = cptr.lit("%s %s%s.");
-const __sl217 = cptr.lit("Including");
-const __sl218 = cptr.lit("They're");
-const __sl219 = cptr.lit("It's");
-const __sl220 = cptr.lit(", unfortunately");
-const __sl221 = cptr.lit("%s here %s.");
-const __sl222 = cptr.lit("%s that %s here:");
-const __sl223 = cptr.lit("Other things");
-const __sl224 = cptr.lit("Things");
-const __sl225 = cptr.lit("you feel");
-const __sl226 = cptr.lit("%s...");
-const __sl227 = cptr.lit("touched %s with your bare %s.");
-const __sl228 = cptr.lit("Touching %s is a fatal mistake...");
-const __sl229 = cptr.lit("touching %s bare-handed");
-const __sl230 = cptr.lit("Your wallet is empty");
-const __sl231 = cptr.lit("Your wallet contains %ld %s");
-const __sl232 = cptr.lit(", %s you have %ld %s stashed away in your pack");
-const __sl233 = cptr.lit("and");
-const __sl234 = cptr.lit("but");
-const __sl235 = cptr.lit("more");
-const __sl236 = cptr.lit("are carrying a total of %ld %s.");
-const __sl237 = cptr.lit("have no money.");
-const __sl238 = cptr.lit("are %s.");
-const __sl239 = cptr.lit("are not wearing any armor.");
-const __sl240 = cptr.lit("set of ");
-const __sl241 = cptr.lit(" dragon ");
-const __sl242 = cptr.lit("are not wearing armor but have %s embedded in your skin.");
-const __sl243 = cptr.lit("are not wearing any rings.");
-const __sl244 = cptr.lit("Ring");
-const __sl245 = cptr.lit("Rings");
-const __sl246 = cptr.lit("Amulet");
-const __sl247 = cptr.lit("are not using any tools.");
-const __sl248 = cptr.lit("are not wearing or wielding anything.");
-const __sl249 = cptr.lit("Illegal objects");
-const __sl250 = cptr.lit("Weapons");
-const __sl251 = cptr.lit("Armor");
-const __sl252 = cptr.lit("Amulets");
-const __sl253 = cptr.lit("Tools");
-const __sl254 = cptr.lit("Comestibles");
-const __sl255 = cptr.lit("Potions");
-const __sl256 = cptr.lit("Scrolls");
-const __sl257 = cptr.lit("Spellbooks");
-const __sl258 = cptr.lit("Wands");
-const __sl259 = cptr.lit("Coins");
-const __sl260 = cptr.lit("Gems/Stones");
-const __sl261 = cptr.lit("Boulders/Statues");
-const __sl262 = cptr.lit("Iron balls");
-const __sl263 = cptr.lit("Chains");
-const __sl264 = cptr.lit("Venoms");
-const __sl265 = cptr.lit("Bagged/Boxed items");
-const __sl266 = cptr.lit("  ('%c')");
-const __sl267 = cptr.lit("let_to_name");
-const __sl268 = cptr.lit("Unpaid ");
-const __sl269 = cptr.lit("%s: %s%s%s");
-const __sl270 = cptr.lit("gold in wrong slots");
-const __sl271 = cptr.lit("gold in wrong slot");
-const __sl272 = cptr.lit("multiple gold stacks");
-const __sl273 = cptr.lit("aren't carrying anything %s.");
-const __sl274 = cptr.lit("to adjust");
-const __sl275 = cptr.lit("adjustable");
-const __sl276 = cptr.lit("adjust");
-const __sl277 = cptr.lit("split");
-const __sl278 = cptr.lit("Split off how many?");
-const __sl279 = cptr.lit("%s at least 1.");
-const __sl280 = cptr.lit("%s less than %ld.");
-const __sl281 = cptr.lit("Adjust letter");
-const __sl282 = cptr.lit("Split %ld");
-const __sl283 = cptr.lit(" to what [%s]%s?");
-const __sl284 = cptr.lit(" (? see used letters)");
-const __sl285 = cptr.lit("Only gold coins may be moved into the '%c' slot.");
-const __sl286 = cptr.lit("Select an inventory slot letter.");
-const __sl287 = cptr.lit("Collecting:");
-const __sl288 = cptr.lit("Moving:");
-const __sl289 = cptr.lit("Splitting:");
-const __sl290 = cptr.lit("Merging:");
-const __sl291 = cptr.lit("Swapping:");
-const __sl292 = cptr.lit("Splitting and merging:");
-const __sl293 = cptr.lit("pack is too full.");
-const __sl294 = cptr.lit("%s %s:");
-const __sl295 = cptr.lit("possessions");
-const __sl296 = cptr.lit("armament");
-const __sl297 = cptr.lit("(none)");
-const __sl298 = cptr.lit(" locked");
-const __sl299 = cptr.lit(" unlocked");
-const __sl300 = cptr.lit(" locked ");
-const __sl301 = cptr.lit(" trapped locked ");
-const __sl302 = cptr.lit(" unlocked ");
-const __sl303 = cptr.lit(" trapped unlocked ");
-const __sl304 = cptr.lit("an trapped ");
-const __sl305 = cptr.lit("a trapped ");
-const __sl306 = cptr.lit("a ");
-const __sl307 = cptr.lit("an ");
-const __sl308 = cptr.lit("the ");
-const __sl309 = cptr.lit("the trapped ");
-const __sl310 = cptr.lit("trapped ");
-const __sl311 = cptr.lit("Contents of ");
-const __sl312 = cptr.lit("that");
-const __sl313 = cptr.lit("(empty)");
-const __sl314 = cptr.lit("here");
-const __sl315 = cptr.lit("water");
-const __sl316 = cptr.lit("lava");
-const __sl317 = cptr.lit("%s %s under the %s here.");
-const __sl318 = cptr.lit("under them");
-const __sl319 = cptr.lit("beneath it");
-const __sl320 = cptr.lit("Things that are under the %s here:");
-const __sl321 = cptr.lit("beneath them");
-const __sl322 = cptr.lit("Things that are buried %s:");
-const __sl323 = cptr.lit("perm_invent");
-const __sl324 = cptr.lit("perminv_mode");
-const __sl325 = cptr.lit("tty perm_invent");
-const __sl326 = cptr.lit("%s could not be enabled.");
-const __sl327 = cptr.lit("%s needs a terminal that is at least %dx%d, yours is %dx%d.");
+const __sl132 = cptr.lit("obj != NULL");
+const __sl133 = cptr.lit("%c%6ld %.50s");
+const __sl134 = cptr.lit("%c - %-45.*s%s");
+const __sl135 = cptr.lit(".");
+const __sl136 = cptr.lit("Debug Identify");
+const __sl137 = cptr.lit(" -- unidentified or partially identified item%s");
+const __sl138 = cptr.lit("s");
+const __sl139 = cptr.lit("(all items are permanently identified already)");
+const __sl140 = cptr.lit("select %s to permanently identify");
+const __sl141 = cptr.lit("it");
+const __sl142 = cptr.lit("any or all of them");
+const __sl143 = cptr.lit(" (%s for all)");
+const __sl144 = cptr.lit("In use");
+const __sl145 = cptr.lit("Inventory in use");
+const __sl146 = cptr.lit("%s %s (no weapon)");
+const __sl147 = cptr.lit("(list everything)");
+const __sl148 = cptr.lit("(list likely candidates)");
+const __sl149 = cptr.lit("Special");
+const __sl150 = cptr.lit("Inventory letters used:");
+const __sl151 = cptr.lit("%s contents");
+const __sl152 = cptr.lit("Total:");
+const __sl153 = cptr.lit("are");
+const __sl154 = cptr.lit("is");
+const __sl155 = cptr.lit("on the floor");
+const __sl156 = cptr.lit("under the floor");
+const __sl157 = cptr.lit("on or under the floor");
+const __sl158 = cptr.lit("aren't carrying any unpaid items but there %s %d %s.");
+const __sl159 = cptr.lit("(There %s %d more unpaid object%s %s.)");
+const __sl160 = cptr.lit("BUCX");
+const __sl161 = cptr.lit("aren't carrying anything.");
+const __sl162 = cptr.lit("No used-up objects%s.");
+const __sl163 = cptr.lit(" on your shopping bill");
+const __sl164 = cptr.lit("are not carrying any unpaid objects.");
+const __sl165 = cptr.lit("known to be blessed ");
+const __sl166 = cptr.lit("known to be uncursed ");
+const __sl167 = cptr.lit("known to be cursed ");
+const __sl168 = cptr.lit(" whose blessed/uncursed/cursed status is unknown");
+const __sl169 = cptr.lit(" that were just picked up");
+const __sl170 = cptr.lit("such ");
+const __sl171 = cptr.lit("have no %sobjects%s.");
+const __sl172 = cptr.lit("Items %s");
+const __sl173 = cptr.lit(":");
+const __sl174 = cptr.lit("broken door");
+const __sl175 = cptr.lit("open drawbridge portcullis");
+const __sl176 = cptr.lit("pool of water");
+const __sl177 = cptr.lit("%saltar to %s (%s)");
+const __sl178 = cptr.lit("high ");
+const __sl179 = cptr.lit("set of iron bars");
+const __sl180 = cptr.lit("feel");
+const __sl181 = cptr.lit("see");
+const __sl182 = cptr.lit("Contents of %s %s");
+const __sl183 = cptr.lit("%s to %s what is lying in %s.");
+const __sl184 = cptr.lit("try");
+const __sl185 = cptr.lit("look around");
+const __sl186 = cptr.lit("You feel");
+const __sl187 = cptr.lit("%s no objects here.");
+const __sl188 = cptr.lit("a %s cloud");
+const __sl189 = cptr.lit("poison gas");
+const __sl190 = cptr.lit("vapor");
+const __sl191 = cptr.lit("is %s%s%s here.");
+const __sl192 = cptr.lit("altar ");
+const __sl193 = cptr.lit("try to feel what is here.");
+const __sl194 = cptr.lit("try to feel what is on it.");
+const __sl195 = cptr.lit("lying beneath you");
+const __sl196 = cptr.lit("lying here on the ");
+const __sl197 = cptr.lit("try to feel what is %s%s.");
+const __sl198 = cptr.lit("floating here");
+const __sl199 = cptr.lit("But you can't reach it!");
+const __sl200 = cptr.lit("molten lava");
+const __sl201 = cptr.lit("iron bars");
+const __sl202 = cptr.lit("ice");
+const __sl203 = cptr.lit("frozen ");
+const __sl204 = cptr.lit(" ice");
+const __sl205 = cptr.lit("There %s %s here.");
+const __sl206 = cptr.lit("is %s object here.");
+const __sl207 = cptr.lit("another");
+const __sl208 = cptr.lit("an");
+const __sl209 = cptr.lit("are %s%s objects here.");
+const __sl210 = cptr.lit("two");
+const __sl211 = cptr.lit("a few");
+const __sl212 = cptr.lit("several");
+const __sl213 = cptr.lit("many");
+const __sl214 = cptr.lit(" more");
+const __sl215 = cptr.lit("%s %s%s.");
+const __sl216 = cptr.lit("Including");
+const __sl217 = cptr.lit("They're");
+const __sl218 = cptr.lit("It's");
+const __sl219 = cptr.lit(", unfortunately");
+const __sl220 = cptr.lit("%s here %s.");
+const __sl221 = cptr.lit("%s that %s here:");
+const __sl222 = cptr.lit("Other things");
+const __sl223 = cptr.lit("Things");
+const __sl224 = cptr.lit("you feel");
+const __sl225 = cptr.lit("%s...");
+const __sl226 = cptr.lit("touched %s with your bare %s.");
+const __sl227 = cptr.lit("Touching %s is a fatal mistake...");
+const __sl228 = cptr.lit("touching %s bare-handed");
+const __sl229 = cptr.lit("Your wallet is empty");
+const __sl230 = cptr.lit("Your wallet contains %ld %s");
+const __sl231 = cptr.lit(", %s you have %ld %s stashed away in your pack");
+const __sl232 = cptr.lit("and");
+const __sl233 = cptr.lit("but");
+const __sl234 = cptr.lit("more");
+const __sl235 = cptr.lit("are carrying a total of %ld %s.");
+const __sl236 = cptr.lit("have no money.");
+const __sl237 = cptr.lit("are %s.");
+const __sl238 = cptr.lit("are not wearing any armor.");
+const __sl239 = cptr.lit("set of ");
+const __sl240 = cptr.lit(" dragon ");
+const __sl241 = cptr.lit("are not wearing armor but have %s embedded in your skin.");
+const __sl242 = cptr.lit("are not wearing any rings.");
+const __sl243 = cptr.lit("Ring");
+const __sl244 = cptr.lit("Rings");
+const __sl245 = cptr.lit("Amulet");
+const __sl246 = cptr.lit("are not using any tools.");
+const __sl247 = cptr.lit("are not wearing or wielding anything.");
+const __sl248 = cptr.lit("Illegal objects");
+const __sl249 = cptr.lit("Weapons");
+const __sl250 = cptr.lit("Armor");
+const __sl251 = cptr.lit("Amulets");
+const __sl252 = cptr.lit("Tools");
+const __sl253 = cptr.lit("Comestibles");
+const __sl254 = cptr.lit("Potions");
+const __sl255 = cptr.lit("Scrolls");
+const __sl256 = cptr.lit("Spellbooks");
+const __sl257 = cptr.lit("Wands");
+const __sl258 = cptr.lit("Coins");
+const __sl259 = cptr.lit("Gems/Stones");
+const __sl260 = cptr.lit("Boulders/Statues");
+const __sl261 = cptr.lit("Iron balls");
+const __sl262 = cptr.lit("Chains");
+const __sl263 = cptr.lit("Venoms");
+const __sl264 = cptr.lit("Bagged/Boxed items");
+const __sl265 = cptr.lit("  ('%c')");
+const __sl266 = cptr.lit("let_to_name");
+const __sl267 = cptr.lit("Unpaid ");
+const __sl268 = cptr.lit("%s: %s%s%s");
+const __sl269 = cptr.lit("gold in wrong slots");
+const __sl270 = cptr.lit("gold in wrong slot");
+const __sl271 = cptr.lit("multiple gold stacks");
+const __sl272 = cptr.lit("aren't carrying anything %s.");
+const __sl273 = cptr.lit("to adjust");
+const __sl274 = cptr.lit("adjustable");
+const __sl275 = cptr.lit("adjust");
+const __sl276 = cptr.lit("split");
+const __sl277 = cptr.lit("Split off how many?");
+const __sl278 = cptr.lit("%s at least 1.");
+const __sl279 = cptr.lit("%s less than %ld.");
+const __sl280 = cptr.lit("Adjust letter");
+const __sl281 = cptr.lit("Split %ld");
+const __sl282 = cptr.lit(" to what [%s]%s?");
+const __sl283 = cptr.lit(" (? see used letters)");
+const __sl284 = cptr.lit("Only gold coins may be moved into the '%c' slot.");
+const __sl285 = cptr.lit("Select an inventory slot letter.");
+const __sl286 = cptr.lit("Collecting:");
+const __sl287 = cptr.lit("Moving:");
+const __sl288 = cptr.lit("Splitting:");
+const __sl289 = cptr.lit("Merging:");
+const __sl290 = cptr.lit("Swapping:");
+const __sl291 = cptr.lit("Splitting and merging:");
+const __sl292 = cptr.lit("pack is too full.");
+const __sl293 = cptr.lit("%s %s:");
+const __sl294 = cptr.lit("possessions");
+const __sl295 = cptr.lit("armament");
+const __sl296 = cptr.lit("(none)");
+const __sl297 = cptr.lit(" locked");
+const __sl298 = cptr.lit(" unlocked");
+const __sl299 = cptr.lit(" locked ");
+const __sl300 = cptr.lit(" trapped locked ");
+const __sl301 = cptr.lit(" unlocked ");
+const __sl302 = cptr.lit(" trapped unlocked ");
+const __sl303 = cptr.lit("an trapped ");
+const __sl304 = cptr.lit("a trapped ");
+const __sl305 = cptr.lit("a ");
+const __sl306 = cptr.lit("an ");
+const __sl307 = cptr.lit("the ");
+const __sl308 = cptr.lit("the trapped ");
+const __sl309 = cptr.lit("trapped ");
+const __sl310 = cptr.lit("Contents of ");
+const __sl311 = cptr.lit("that");
+const __sl312 = cptr.lit("(empty)");
+const __sl313 = cptr.lit("here");
+const __sl314 = cptr.lit("water");
+const __sl315 = cptr.lit("lava");
+const __sl316 = cptr.lit("%s %s under the %s here.");
+const __sl317 = cptr.lit("under them");
+const __sl318 = cptr.lit("beneath it");
+const __sl319 = cptr.lit("Things that are under the %s here:");
+const __sl320 = cptr.lit("beneath them");
+const __sl321 = cptr.lit("Things that are buried %s:");
+const __sl322 = cptr.lit("perm_invent");
+const __sl323 = cptr.lit("perminv_mode");
+const __sl324 = cptr.lit("tty perm_invent");
+const __sl325 = cptr.lit("%s could not be enabled.");
+const __sl326 = cptr.lit("%s needs a terminal that is at least %dx%d, yours is %dx%d.");
 
 /** C ref: invent.c:44 — struct win_request_info_t */
 let wri_info = cptr.alloc(48);
@@ -2591,23 +2590,23 @@ export function* xprname(obj, txt, let$, dot, cost, quan) {
     }
     fmt = __sl130;
     if (!txt) {
-        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl131, __sl132, 2923, __sl133) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl131, __sl50, 2923, __sl132) : void 0);
         txt = (yield* doname(obj));
     }
     txtlen = Number(BigInt.asIntN(32, cptr.strlen(txt)));
     if (cost != 0n || let$ == 42) {
         if (dot && use_invlet)
             let$ = cptr.ld1so(obj, $obj_invlet);
-        void cptr.sprintf(cptr.decay(suffix), __sl134, cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32, cost, (yield* currency(cost)));
+        void cptr.sprintf(cptr.decay(suffix), __sl133, cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32, cost, (yield* currency(cost)));
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
-            fmt = __sl135;
+            fmt = __sl134;
             if (txtlen < 45)
                 txtlen = 45;
         }
     } else {
         if (use_invlet)
             let$ = cptr.ld1so(obj, $obj_invlet);
-        void cptr.strcpy(cptr.decay(suffix), dot ? __sl136 : __sl0);
+        void cptr.strcpy(cptr.decay(suffix), dot ? __sl135 : __sl0);
     }
     sfxlen = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(suffix))));
     if (txtlen > ((255 - ((4 + sfxlen) | 0)) | 0))
@@ -2789,18 +2788,18 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
         let unid_cnt;
         let prompt = new Uint8Array(128);
         unid_cnt = count_unidentified(cptr.ldPtro(gi, $instance_globals_i_invent));
-        void cptr.sprintf(cptr.decay(prompt), __sl137);
+        void cptr.sprintf(cptr.decay(prompt), __sl136);
         if (unid_cnt)
-            void cptr.sprintf(eos(cptr.decay(prompt)), __sl138, (((unid_cnt) == 1) ? __sl0 : __sl139));
+            void cptr.sprintf(eos(cptr.decay(prompt)), __sl137, (((unid_cnt) == 1) ? __sl0 : __sl138));
         (yield* add_menu_str(win, cptr.decay(prompt)));
         if (!unid_cnt) {
-            (yield* add_menu_str(win, __sl140));
+            (yield* add_menu_str(win, __sl139));
             gotsomething = 1;
         } else {
             cptr.stPtr(any, wizid_fakeobj);
-            void cptr.sprintf(cptr.decay(prompt), __sl141, (unid_cnt == 1) ? __sl142 : __sl143);
+            void cptr.sprintf(cptr.decay(prompt), __sl140, (unid_cnt == 1) ? __sl141 : __sl142);
             if (unid_cnt > 1)
-                void cptr.sprintf(eos(cptr.decay(prompt)), __sl144, visctrl(schar(cptr.ldI32o(iflags, $instance_flags_override_ID))));
+                void cptr.sprintf(eos(cptr.decay(prompt)), __sl143, visctrl(schar(cptr.ldI32o(iflags, $instance_flags_override_ID))));
             (yield* add_menu(win, nul_glyphinfo.v, any, 95, schar(cptr.ldI32o(iflags, $instance_flags_override_ID)), NHM.ATR_NONE, clr, cptr.decay(prompt), NHM.MENU_ITEMFLAGS_SKIPINVERT));
             gotsomething = 1;
         }
@@ -2824,7 +2823,7 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
                     continue;
                 if (inuse_only) {
                     if (!inusecount++)
-                        (yield* add_menu_heading(win, doing_perm_invent ? __sl145 : __sl146));
+                        (yield* add_menu_heading(win, doing_perm_invent ? __sl144 : __sl145));
                 } else if (doing_perm_invent && !show_gold) {
                     if (cptr.ld1so(otmp, $obj_invlet) == NHC.GOLD_SYM && !cptr.ldI64o(otmp, $obj_owornmask)) {
                         skipped_gold = 1;
@@ -2847,7 +2846,7 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
                 if (cptr.eq(otmp, inuse_fakeobj)) {
                     let barehands = new Uint8Array(128);
                     formattedobj = (yield* makeplural((yield* body_part(NHC.HAND))));
-                    void cptr.sprintf(cptr.decay(barehands), __sl147, uarmg.v ? __sl68 : __sl69, formattedobj);
+                    void cptr.sprintf(cptr.decay(barehands), __sl146, uarmg.v ? __sl68 : __sl69, formattedobj);
                     (yield* add_menu(win, nul_glyphinfo.v, any, ilet, 0, NHM.ATR_NONE, clr, cptr.decay(barehands), NHM.MENU_ITEMFLAGS_NONE));
                 } else {
                     tmpglyph = ((cptr.ldI16o((otmp), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), $obj_corpsenm) + (((cptr.ld1so((otmp), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), $obj_corpsenm) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), $obj_dknown) & 1) && (cptr.ld1so((otmp), $obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), $obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), $obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), $obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), $obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), $obj_oclass) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), $obj_otyp) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
@@ -2874,13 +2873,13 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             if ((allowxtra && !usextra) || (lets && Number(BigInt.asIntN(32, cptr.strlen(lets))) < inv_cnt(1))) {
                 cptr.st1(any, 42);
-                menutext = __sl148;
+                menutext = __sl147;
             } else if (!lets) {
                 cptr.st1(any, 63);
-                menutext = __sl149;
+                menutext = __sl148;
             }
             if (menutext) {
-                (yield* add_menu_heading(win, __sl150));
+                (yield* add_menu_heading(win, __sl149));
                 (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, menutext, NHM.MENU_ITEMFLAGS_NONE));
                 gotsomething = 1;
             }
@@ -2988,7 +2987,7 @@ function* display_used_invlets(avoidlet) {
                 continue;
             invdone = 1;
         }
-        (yield* Y.icall(end_menu()(win, __sl151)));
+        (yield* Y.icall(end_menu()(win, __sl150)));
         n = (yield* select_menu(win, NHM.PICK_ONE, selected));
         if (n > 0) {
             ret = cptr.ld1so(selected.v, 0, 24);
@@ -3149,7 +3148,7 @@ function* dounpaid(count, floorcount, buriedcount) {
                 }
                 if (!(cptr.ldI32o(otmp, $obj_cknown) & 1)) {
                     let contbuf = new Uint8Array(256);
-                    void cptr.sprintf(cptr.decay(contbuf), __sl152, (yield* s_suffix((yield* xname(otmp)))));
+                    void cptr.sprintf(cptr.decay(contbuf), __sl151, (yield* s_suffix((yield* xname(otmp)))));
                     (yield* Y.icall(putstr()(win, 0, (yield* xprname(null, cptr.decay(contbuf), 62, 1, contcost, 0n)))));
                 }
             }
@@ -3157,17 +3156,17 @@ function* dounpaid(count, floorcount, buriedcount) {
     }
     if (count > 0) {
         (yield* Y.icall(putstr()(win, 0, __sl0)));
-        (yield* Y.icall(putstr()(win, 0, (yield* xprname(null, __sl153, 42, 0, totcost, 0n)))));
+        (yield* Y.icall(putstr()(win, 0, (yield* xprname(null, __sl152, 42, 0, totcost, 0n)))));
     }
     if (xtracount > 0) {
         let buf = new Uint8Array(256);
-        let floorverb = (xtracount > 1) ? __sl154 : __sl155;
-        let where = (buriedcount == 0) ? __sl156 : ((floorcount == 0) ? __sl157 : __sl158);
+        let floorverb = (xtracount > 1) ? __sl153 : __sl154;
+        let where = (buriedcount == 0) ? __sl155 : ((floorcount == 0) ? __sl156 : __sl157);
         if (!count) {
-            (yield* You(__sl159, floorverb, xtracount, where));
+            (yield* You(__sl158, floorverb, xtracount, where));
         } else {
             (yield* Y.icall(putstr()(win, 0, __sl0)));
-            void cptr.sprintf(cptr.decay(buf), __sl160, floorverb, xtracount, (((xtracount) == 1) ? __sl0 : __sl139), where);
+            void cptr.sprintf(cptr.decay(buf), __sl159, floorverb, xtracount, (((xtracount) == 1) ? __sl0 : __sl138), where);
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
@@ -3183,7 +3182,7 @@ function this_type_only(obj) {
     if (cptr.ldI32o(gt, $instance_globals_t_this_type) == 80) {
         res = schar((cptr.ldI32o(obj, $obj_pickup_prev) & 1));
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
-        if (cptr.ldI32o(gt, $instance_globals_t_this_type) && cptr.strchr(__sl161, cptr.ldI32o(gt, $instance_globals_t_this_type)))
+        if (cptr.ldI32o(gt, $instance_globals_t_this_type) && cptr.strchr(__sl160, cptr.ldI32o(gt, $instance_globals_t_this_type)))
             res = schar((cptr.ldI32o(gt, $instance_globals_t_this_type) == (cptr.ld1so(flags, $flag_goldX) ? 88 : 85)));
     } else {
         switch (cptr.ldI32o(gt, $instance_globals_t_this_type)) {
@@ -3238,7 +3237,7 @@ export function* dotypeinv() {
         cptr.stI32o(gt, $instance_globals_t_this_type, 0);
         cptr.stPtro(gt, $instance_globals_t_this_title, null);
         if (!cptr.ldPtro(gi, $instance_globals_i_invent) && !billx) {
-            (yield* You(__sl162));
+            (yield* You(__sl161));
             break __lbl_doI_done;
         }
         cptr.st1o(cptr.decay(title), 0, 0, 1);
@@ -3332,14 +3331,14 @@ export function* dotypeinv() {
             if (billx)
                 void (yield* doinvbill(1));
             else
-                (yield* pline(__sl163, any_unpaid ? __sl164 : __sl0));
+                (yield* pline(__sl162, any_unpaid ? __sl163 : __sl0));
             break __lbl_doI_done;
         }
         if (c == 117 || (c == 85 && any_unpaid && !ucnt.v)) {
             if (any_unpaid)
                 (yield* dounpaid(u_carried, u_floor, u_buried));
             else
-                (yield* You(__sl165));
+                (yield* You(__sl164));
             break __lbl_doI_done;
         }
         if (cptr.strchr(__sl102, c))
@@ -3348,35 +3347,35 @@ export function* dotypeinv() {
             oclass = def_char_to_objclass(c);
         switch (c) {
             case 66:
-            before = __sl166;
+            before = __sl165;
             break;
             case 85:
-            before = __sl167;
+            before = __sl166;
             break;
             case 67:
-            before = __sl168;
+            before = __sl167;
             break;
             case 88:
-            after = __sl169;
+            after = __sl168;
             break;
             case 80:
-            after = __sl170;
+            after = __sl169;
             break;
             default:
-            before = __sl171;
+            before = __sl170;
             break;
         }
         if (traditional) {
             if (cptr.cmp(cptr.strchr(cptr.decay(types), c), cptr.strchr(cptr.decay(types), 27)) > 0) {
-                (yield* You(__sl172, before, after));
+                (yield* You(__sl171, before, after));
                 break __lbl_doI_done;
             }
             cptr.stI32o(gt, $instance_globals_t_this_type, oclass);
         }
         if (cptr.strchr(__sl102, c)) {
-            void cptr.sprintf(cptr.decay(title), __sl173, (before && cptr.ld1s(before)) ? before : after);
+            void cptr.sprintf(cptr.decay(title), __sl172, (before && cptr.ld1s(before)) ? before : after);
             void (yield* mungspaces(cptr.decay(title)));
-            void cptr.strcat(cptr.decay(title), __sl174);
+            void cptr.strcat(cptr.decay(title), __sl173);
             cptr.stPtro(gt, $instance_globals_t_this_title, cptr.decay(title));
         }
         if ((yield* query_objlist(null, cptr.add(gi, $instance_globals_i_invent), ((cptr.ld1so(flags, $flag_invlet_constant) ? NHM.USE_INVLET : 0) | NHM.INVORDER_SORT | NHM.INCLUDE_VENOM), pick_list, NHM.PICK_ONE, this_type_only)) > 0) {
@@ -3408,14 +3407,14 @@ export function* dfeature_at(x, y, buf) {
             cmap = NHC.S_vodoor;
             break;
             case NHM.D_BROKEN:
-            dfeature = __sl175;
+            dfeature = __sl174;
             break;
             default:
             cmap = NHC.S_vcdoor;
             break;
         }
         if (is_drawbridge_wall(x, y) >= 0)
-            dfeature = __sl176, cmap = -1;
+            dfeature = __sl175, cmap = -1;
     } else if (((ltyp) == NHC.FOUNTAIN))
         cmap = NHC.S_fountain;
     else if (((ltyp) == NHC.THRONE))
@@ -3425,11 +3424,11 @@ export function* dfeature_at(x, y, buf) {
     else if (is_ice(x, y))
         dfeature = ice_descr(x, y, cptr.decay(__static_dfeature_at_altbuf)), cmap = -1;
     else if (is_pool(x, y))
-        dfeature = __sl177;
+        dfeature = __sl176;
     else if (((ltyp) == NHC.SINK))
         cmap = NHC.S_sink;
     else if (((ltyp) == NHC.ALTAR)) {
-        void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __sl178, (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __sl179 : __sl0, (yield* a_gname()), align_str((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
+        void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __sl177, (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __sl178 : __sl0, (yield* a_gname()), align_str((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
         dfeature = cptr.decay(__static_dfeature_at_altbuf);
     } else if (stway) {
         dfeature = stairs_description(stway, cptr.decay(__static_dfeature_at_altbuf), 1);
@@ -3442,7 +3441,7 @@ export function* dfeature_at(x, y, buf) {
     else if (ltyp == NHC.TREE)
         cmap = NHC.S_tree;
     else if (ltyp == NHC.IRONBARS)
-        dfeature = __sl180;
+        dfeature = __sl179;
     if (cmap >= 0)
         dfeature = cptr.ldPtro2(defsyms, cmap, 24, $symdef_explanation);
     if (dfeature)
@@ -3454,7 +3453,7 @@ export function* dfeature_at(x, y, buf) {
 export function* look_here(obj_cnt, lookhere_flags) {
     let otmp;
     let trap;
-    let verb = Blind() ? __sl181 : __sl182;
+    let verb = Blind() ? __sl180 : __sl181;
     let dfeature = null;
     let fbuf = new Uint8Array(256);
     let fbuf2 = new Uint8Array(256);
@@ -3466,8 +3465,8 @@ export function* look_here(obj_cnt, lookhere_flags) {
     skip_objects = schar((cptr.ldI32o(flags, $flag_pile_limit) > 0 && obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit) ? 1 : 0));
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
-        void cptr.sprintf(cptr.decay(fbuf), __sl183, (yield* s_suffix((yield* mon_nam(mtmp)))), (yield* mbodypart(mtmp, NHC.STOMACH)));
-        (yield* You(__sl184, Blind() ? __sl185 : __sl186, verb, cptr.add(cptr.decay(fbuf), 12, 1)));
+        void cptr.sprintf(cptr.decay(fbuf), __sl182, (yield* s_suffix((yield* mon_nam(mtmp)))), (yield* mbodypart(mtmp, NHC.STOMACH)));
+        (yield* You(__sl183, Blind() ? __sl184 : __sl185, verb, cptr.add(cptr.decay(fbuf), 12, 1)));
         otmp = cptr.ldPtro(mtmp, $monst_minvent);
         if (otmp) {
             for (; otmp; otmp = cptr.ldPtr(otmp)) {
@@ -3475,11 +3474,11 @@ export function* look_here(obj_cnt, lookhere_flags) {
                     (yield* feel_cockatrice(otmp, 0));
             }
             if (Blind())
-                void cptr.strcpy(cptr.decay(fbuf), __sl187);
-            void cptr.strcat(cptr.decay(fbuf), __sl174);
+                void cptr.strcpy(cptr.decay(fbuf), __sl186);
+            void cptr.strcat(cptr.decay(fbuf), __sl173);
             void (yield* display_minventory(mtmp, 8, cptr.decay(fbuf)));
         } else {
-            (yield* You(__sl188, verb));
+            (yield* You(__sl187, verb));
         }
         return (!!Blind() ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
@@ -3488,55 +3487,55 @@ export function* look_here(obj_cnt, lookhere_flags) {
         let regbuf = new Uint8Array(128);
         cptr.st1o(cptr.decay(regbuf), 0, 0, 1);
         if ((reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null)
-            void cptr.sprintf(cptr.decay(regbuf), __sl189, reg_damg(reg) ? __sl190 : __sl191);
+            void cptr.sprintf(cptr.decay(regbuf), __sl188, reg_damg(reg) ? __sl189 : __sl190);
         if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && !(cptr.ldI32o(trap, $trap_tseen) & 1))
             trap = (null);
         if (reg || trap)
-            (yield* There(__sl192, reg ? cptr.decay(regbuf) : __sl0, (reg && trap) ? __sl88 : __sl0, trap ? (yield* an((yield* trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)))) : __sl0));
+            (yield* There(__sl191, reg ? cptr.decay(regbuf) : __sl0, (reg && trap) ? __sl88 : __sl0, trap ? (yield* an((yield* trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)))) : __sl0));
     }
     otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
     dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2)));
-    if (dfeature && !strcmp(dfeature, __sl177) && ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
+    if (dfeature && !strcmp(dfeature, __sl176) && ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         dfeature = null;
     if (Blind()) {
         let drift = schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
-        if (dfeature && !cptr.strncmp(dfeature, __sl193, 6n)) {
-            (yield* You(__sl194));
+        if (dfeature && !cptr.strncmp(dfeature, __sl192, 6n)) {
+            (yield* You(__sl193));
         } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ICE) {
             if (!cptr.ld1so(flags, $flag_mention_decor) || cptr.ld1so(iflags, $instance_flags_prev_decor) == NHC.ICE)
                 (yield* force_decor(0));
-            (yield* You(__sl195));
+            (yield* You(__sl194));
             skip_dfeature = 1;
         } else {
             let cant_reach = schar((!can_reach_floor(1)));
             let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-            let where = cant_reach ? __sl196 : __sl197;
+            let where = cant_reach ? __sl195 : __sl196;
             let onwhat = cant_reach ? __sl0 : surf;
-            (yield* You(__sl198, drift ? __sl199 : where, drift ? __sl0 : onwhat));
+            (yield* You(__sl197, drift ? __sl198 : where, drift ? __sl0 : onwhat));
             if (dfeature && !drift && !strcmp(dfeature, surf))
                 skip_dfeature = 1;
         }
         trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (!can_reach_floor(schar((trap && ((((cptr.ldI32o(trap, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(trap, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) ? 1 : 0)))) {
-            (yield* pline(__sl200));
+            (yield* pline(__sl199));
             return NHM.ECMD_OK;
         }
     }
     if (dfeature && !skip_dfeature) {
         let p;
         let article = 1;
-        if (!strcmp(dfeature, __sl201) || !strcmp(dfeature, __sl202) || !strcmp(dfeature, __sl203) || !cptr.strncmp(dfeature, __sl204, 7n) || ((p = cptr.strchr(dfeature, 32)) !== null && !(yield* strncmpi((p), (__sl205), -1))))
+        if (!strcmp(dfeature, __sl200) || !strcmp(dfeature, __sl201) || !strcmp(dfeature, __sl202) || !cptr.strncmp(dfeature, __sl203, 7n) || ((p = cptr.strchr(dfeature, 32)) !== null && !(yield* strncmpi((p), (__sl204), -1))))
             article = 0;
         if (article == 1)
             dfeature = (yield* an(dfeature));
-        void cptr.sprintf(cptr.decay(fbuf), __sl206, (yield* vtense(dfeature, __sl154)), dfeature);
+        void cptr.sprintf(cptr.decay(fbuf), __sl205, (yield* vtense(dfeature, __sl153)), dfeature);
     }
     if (!otmp || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater())) {
         if (dfeature && !skip_dfeature)
             (yield* pline(__sl82, cptr.decay(fbuf)));
         (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         if (!skip_objects && (Blind() || !dfeature))
-            (yield* You(__sl188, verb));
+            (yield* You(__sl187, verb));
         return (!!Blind() ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
     if (skip_objects) {
@@ -3544,12 +3543,12 @@ export function* look_here(obj_cnt, lookhere_flags) {
             (yield* pline(__sl82, cptr.decay(fbuf)));
         (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         if (obj_cnt == 1 && cptr.ldI64o(otmp, $obj_quan) == 1n)
-            (yield* There(__sl207, picked_some ? __sl208 : __sl209));
+            (yield* There(__sl206, picked_some ? __sl207 : __sl208));
         else
-            (yield* There(__sl210, (obj_cnt == 2) ? __sl211 : ((obj_cnt < 5) ? __sl212 : ((obj_cnt < 10) ? __sl213 : __sl214)), picked_some ? __sl215 : __sl0));
+            (yield* There(__sl209, (obj_cnt == 2) ? __sl210 : ((obj_cnt < 5) ? __sl211 : ((obj_cnt < 10) ? __sl212 : __sl213)), picked_some ? __sl214 : __sl0));
         for (; otmp; otmp = cptr.ldPtro(otmp, $obj_v))
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
-                (yield* pline(__sl216, (obj_cnt > 1) ? __sl217 : ((cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl218 : __sl219), (yield* corpse_xname(otmp, null, NHM.CXN_ARTICLE)), poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl0 : __sl220));
+                (yield* pline(__sl215, (obj_cnt > 1) ? __sl216 : ((cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl217 : __sl218), (yield* corpse_xname(otmp, null, NHM.CXN_ARTICLE)), poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl0 : __sl219));
                 (yield* feel_cockatrice(otmp, 0));
                 break;
             }
@@ -3557,7 +3556,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
         if (dfeature && !skip_dfeature)
             (yield* pline(__sl82, cptr.decay(fbuf)));
         (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        (yield* You(__sl221, verb, (yield* doname_with_price(otmp))));
+        (yield* You(__sl220, verb, (yield* doname_with_price(otmp))));
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_ONE_ITEM_HERE);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
             (yield* feel_cockatrice(otmp, 0));
@@ -3569,12 +3568,12 @@ export function* look_here(obj_cnt, lookhere_flags) {
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(fbuf))));
             (yield* Y.icall(putstr()(tmpwin, 0, __sl0)));
         }
-        void cptr.sprintf(cptr.decay(buf), __sl222, picked_some ? __sl223 : __sl224, Blind() ? __sl225 : __sl154);
+        void cptr.sprintf(cptr.decay(buf), __sl221, picked_some ? __sl222 : __sl223, Blind() ? __sl224 : __sl153);
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
         for (; otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
                 felt_cockatrice = 1;
-                void cptr.sprintf(cptr.decay(buf), __sl226, (yield* doname(otmp)));
+                void cptr.sprintf(cptr.decay(buf), __sl225, (yield* doname(otmp)));
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 break;
             }
@@ -3611,10 +3610,10 @@ export function* feel_cockatrice(otmp, force_touch) {
     if (will_feel_cockatrice(otmp, force_touch)) {
         void cptr.strcpy(cptr.decay(kbuf), (yield* corpse_xname(otmp, null, NHM.CXN_PFX_THE)));
         if (poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
-            (yield* You(__sl227, cptr.decay(kbuf), (yield* makeplural((yield* body_part(NHC.HAND))))));
+            (yield* You(__sl226, cptr.decay(kbuf), (yield* makeplural((yield* body_part(NHC.HAND))))));
         else
-            (yield* pline(__sl228, cptr.decay(kbuf)));
-        void cptr.sprintf(cptr.decay(kbuf), __sl229, (yield* killer_xname(otmp)));
+            (yield* pline(__sl227, cptr.decay(kbuf)));
+        void cptr.sprintf(cptr.decay(kbuf), __sl228, (yield* killer_xname(otmp)));
         (yield* instapetrify(cptr.decay(kbuf)));
     }
 }
@@ -3689,20 +3688,20 @@ export function* doprgold() {
     if (cptr.ld1so(flags, $flag_verbose)) {
         let buf = new Uint8Array(256);
         if (!umoney) {
-            void cptr.strcpy(cptr.decay(buf), __sl230);
+            void cptr.strcpy(cptr.decay(buf), __sl229);
         } else {
-            void cptr.sprintf(cptr.decay(buf), __sl231, umoney, (yield* currency(umoney)));
+            void cptr.sprintf(cptr.decay(buf), __sl230, umoney, (yield* currency(umoney)));
         }
         if (hmoney) {
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl232, umoney ? __sl233 : __sl234, hmoney, umoney ? __sl235 : (yield* currency(hmoney)));
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl231, umoney ? __sl232 : __sl233, hmoney, umoney ? __sl234 : (yield* currency(hmoney)));
         }
         (yield* pline(__sl89, cptr.decay(buf)));
     } else {
         let total = BigInt.asIntN(64, umoney + hmoney);
         if (total)
-            (yield* You(__sl236, total, (yield* currency(total))));
+            (yield* You(__sl235, total, (yield* currency(total))));
         else
-            (yield* You(__sl237));
+            (yield* You(__sl236));
     }
     (yield* shopper_financial_report());
     if (umoney && cptr.ld1so(iflags, $instance_flags_menu_requested)) {
@@ -3715,7 +3714,7 @@ export function* doprgold() {
 /** C ref: invent.c:4550 @returns {CInt} */
 export function* doprwep() {
     if (!uwep.v) {
-        (yield* You(__sl238, empty_handed()));
+        (yield* You(__sl237, empty_handed()));
     } else if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
         (yield* prinv(null, uwep.v, 0n));
         if (cptr.ld1so(u, $you_twoweap))
@@ -3737,18 +3736,18 @@ export function* doprwep() {
 /** C ref: invent.c:4578 — @param {CInt} report_uskin */
 function* noarmor(report_uskin) {
     if (!uskin.v || !report_uskin) {
-        (yield* You(__sl239));
+        (yield* You(__sl238));
     } else {
         let p;
         let uskinname;
         let buf = new Uint8Array(256);
         uskinname = cptr.strcpy(cptr.decay(buf), (yield* simpleonames(uskin.v)));
-        if (!(yield* strncmpi(uskinname, __sl240, 7)))
+        if (!(yield* strncmpi(uskinname, __sl239, 7)))
             uskinname = cptr.add(uskinname, 7);
-        if ((p = (yield* strstri(uskinname, __sl241))) !== null)
+        if ((p = (yield* strstri(uskinname, __sl240))) !== null)
             while ((cptr.st1o(p, 1, cptr.ld1so(p, 8))) != 0)
                 p = cptr.add(p, 1);
-        (yield* You(__sl242, uskinname));
+        (yield* You(__sl241, uskinname));
     }
 }
 
@@ -3782,7 +3781,7 @@ export function* doprarm() {
 /** C ref: invent.c:4642 @returns {CInt} */
 export function* doprring() {
     if (!uleft.v && !uright.v) {
-        (yield* You(__sl243));
+        (yield* You(__sl242));
     } else {
         let lets = new Uint8Array(3);
         let use_inuse_mode = 0;
@@ -3800,7 +3799,7 @@ export function* doprring() {
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
         if (ct > 1 || cptr.ld1so(iflags, $instance_flags_menu_requested))
             use_inuse_mode = 1;
-        void (yield* dispinv_with_action(cptr.decay(lets), use_inuse_mode, (ct == 1) ? __sl244 : __sl245));
+        void (yield* dispinv_with_action(cptr.decay(lets), use_inuse_mode, (ct == 1) ? __sl243 : __sl244));
     }
     return NHM.ECMD_OK;
 }
@@ -3812,7 +3811,7 @@ export function* dopramulet() {
     } else {
         let lets = new Uint8Array(2);
         cptr.st1o(cptr.decay(lets), 0, obj_to_let(uamul.v), 1), cptr.st1o(cptr.decay(lets), 1, 0, 1);
-        void (yield* dispinv_with_action(cptr.decay(lets), 1, __sl246));
+        void (yield* dispinv_with_action(cptr.decay(lets), 1, __sl245));
     }
     return NHM.ECMD_OK;
 }
@@ -3839,7 +3838,7 @@ export function* doprtool() {
         }
     cptr.st1o(cptr.decay(lets), ct, 0, 1);
     if (!ct)
-        (yield* You(__sl247));
+        (yield* You(__sl246));
     else
         void (yield* dispinv_with_action(cptr.decay(lets), 1, null));
     return NHM.ECMD_OK;
@@ -3855,7 +3854,7 @@ export function* doprinuse() {
             break;
         }
     if (!ct)
-        (yield* You(__sl248));
+        (yield* You(__sl247));
     else
         void (yield* dispinv_with_action(null, 1, null));
     return NHM.ECMD_OK;
@@ -3883,34 +3882,34 @@ export function* useupf(obj, numused) {
 /** C ref: invent.c:4789 — char *[18] */
 const names = cptr.alloc(18 * 8);
 cptr.stPtro(names, 0, null);
-cptr.stPtro(names, 8, __sl249);
-cptr.stPtro(names, 16, __sl250);
-cptr.stPtro(names, 24, __sl251);
-cptr.stPtro(names, 32, __sl245);
-cptr.stPtro(names, 40, __sl252);
-cptr.stPtro(names, 48, __sl253);
-cptr.stPtro(names, 56, __sl254);
-cptr.stPtro(names, 64, __sl255);
-cptr.stPtro(names, 72, __sl256);
-cptr.stPtro(names, 80, __sl257);
-cptr.stPtro(names, 88, __sl258);
-cptr.stPtro(names, 96, __sl259);
-cptr.stPtro(names, 104, __sl260);
-cptr.stPtro(names, 112, __sl261);
-cptr.stPtro(names, 120, __sl262);
-cptr.stPtro(names, 128, __sl263);
-cptr.stPtro(names, 136, __sl264);
+cptr.stPtro(names, 8, __sl248);
+cptr.stPtro(names, 16, __sl249);
+cptr.stPtro(names, 24, __sl250);
+cptr.stPtro(names, 32, __sl244);
+cptr.stPtro(names, 40, __sl251);
+cptr.stPtro(names, 48, __sl252);
+cptr.stPtro(names, 56, __sl253);
+cptr.stPtro(names, 64, __sl254);
+cptr.stPtro(names, 72, __sl255);
+cptr.stPtro(names, 80, __sl256);
+cptr.stPtro(names, 88, __sl257);
+cptr.stPtro(names, 96, __sl258);
+cptr.stPtro(names, 104, __sl259);
+cptr.stPtro(names, 112, __sl260);
+cptr.stPtro(names, 120, __sl261);
+cptr.stPtro(names, 128, __sl262);
+cptr.stPtro(names, 136, __sl263);
 
 /** C ref: invent.c:4794 — char[2] */
 const oth_symbols = [62, 0];
 
 /** C ref: invent.c:4795 — char *[1] */
 const oth_names = cptr.alloc(1 * 8);
-cptr.stPtro(oth_names, 0, __sl265);
+cptr.stPtro(oth_names, 0, __sl264);
 
 /** C ref: invent.c:4800 — @param {CInt} let @param {CInt} unpaid @param {CInt} showsym @returns {CPtr} */
 export function* let_to_name(let$, unpaid, showsym) {
-    let ocsymfmt = __sl266;
+    let ocsymfmt = __sl265;
     let invbuf_sympadding = 8;
     let class_name;
     let pos;
@@ -3922,7 +3921,7 @@ export function* let_to_name(let$, unpaid, showsym) {
         class_name = cptr.ldPtro(oth_names, cptr.diff(pos, cptr.decay(oth_symbols)), 8);
     else
         class_name = cptr.ldPtro(names, NHC.ILLOBJ_CLASS, 8);
-    len = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt((yield* Strlen_(class_name, __sl267, 4816)) >>> 0) + (unpaid ? 8n : 1n)) + BigInt((oclass ? (((yield* Strlen_(ocsymfmt, __sl267, 4817)) + (invbuf_sympadding >>> 0)) >>> 0) : 0) >>> 0))));
+    len = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt((yield* Strlen_(class_name, __sl266, 4816)) >>> 0) + (unpaid ? 8n : 1n)) + BigInt((oclass ? (((yield* Strlen_(ocsymfmt, __sl266, 4817)) + (invbuf_sympadding >>> 0)) >>> 0) : 0) >>> 0))));
     if (len > cptr.ldI32o(gi, $instance_globals_i_invbufsiz)) {
         if (cptr.ldPtro(gi, $instance_globals_i_invbuf))
             cptr.free(cptr.ldPtro(gi, $instance_globals_i_invbuf));
@@ -3930,12 +3929,12 @@ export function* let_to_name(let$, unpaid, showsym) {
         cptr.stPtro(gi, $instance_globals_i_invbuf, (yield* alloc(cptr.ldI32o(gi, $instance_globals_i_invbufsiz))));
     }
     if (unpaid)
-        void cptr.strcat(cptr.strcpy(cptr.ldPtro(gi, $instance_globals_i_invbuf), __sl268), class_name);
+        void cptr.strcat(cptr.strcpy(cptr.ldPtro(gi, $instance_globals_i_invbuf), __sl267), class_name);
     else
         void cptr.strcpy(cptr.ldPtro(gi, $instance_globals_i_invbuf), class_name);
     if ((oclass != 0) && showsym) {
         let bp = eos(cptr.ldPtro(gi, $instance_globals_i_invbuf));
-        let mlen = (((invbuf_sympadding >>> 0) - (yield* Strlen_(class_name, __sl267, 4830))) >>> 0) | 0;
+        let mlen = (((invbuf_sympadding >>> 0) - (yield* Strlen_(class_name, __sl266, 4830))) >>> 0) | 0;
         while (--mlen > 0) {
             cptr.st1(bp, 32);
             bp = cptr.add(bp, 1);
@@ -3993,7 +3992,7 @@ export function* check_invent_gold(why) {
                 ++wrongslot;
         }
     if (goldstacks > 1 || wrongslot > 0) {
-        (yield* impossible(__sl269, why, (wrongslot > 1) ? __sl270 : ((wrongslot > 0) ? __sl271 : __sl0), (wrongslot > 0 && goldstacks > 1) ? __sl88 : __sl0, (goldstacks > 1) ? __sl272 : __sl0));
+        (yield* impossible(__sl268, why, (wrongslot > 1) ? __sl269 : ((wrongslot > 0) ? __sl270 : __sl0), (wrongslot > 0 && goldstacks > 1) ? __sl88 : __sl0, (goldstacks > 1) ? __sl271 : __sl0));
         return 1;
     }
     return 0;
@@ -4018,13 +4017,13 @@ export function* doorganize() {
     let adjust_filter;
     let obj;
     if (!cptr.ldPtro(gi, $instance_globals_i_invent) || (cptr.ld1so(cptr.ldPtro(gi, $instance_globals_i_invent), $obj_oclass) == NHC.COIN_CLASS && cptr.ld1so(cptr.ldPtro(gi, $instance_globals_i_invent), $obj_invlet) == NHC.GOLD_SYM && !cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent)))) {
-        (yield* You(__sl273, !cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl274 : __sl275));
+        (yield* You(__sl272, !cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl273 : __sl274));
         return NHM.ECMD_OK;
     }
     if (!cptr.ld1so(flags, $flag_invlet_constant))
         reassign();
-    adjust_filter = (yield* check_invent_gold(__sl276)) ? adjust_gold_ok : adjust_ok;
-    obj = (yield* getobj(__sl276, adjust_filter, 3));
+    adjust_filter = (yield* check_invent_gold(__sl275)) ? adjust_gold_ok : adjust_ok;
+    obj = (yield* getobj(__sl275, adjust_filter, 3));
     return (yield* doorganize_core(obj));
 }
 
@@ -4036,13 +4035,13 @@ export function* adjust_split() {
     let splitamount = cptr.box(0n);
     let let$;
     let dig = 0;
-    obj = (yield* getobj(__sl277, adjust_ok, NHM.GETOBJ_NOFLAGS));
+    obj = (yield* getobj(__sl276, adjust_ok, NHM.GETOBJ_NOFLAGS));
     if (!obj || cptr.ldI64o(obj, $obj_quan) < 2n || cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE)
         return NHM.ECMD_FAIL;
     if (cptr.ldI64o(obj, $obj_quan) == 2n) {
         splitamount.v = 1n;
     } else {
-        dig = (yield* yn_function(__sl278, null, 0, 1));
+        dig = (yield* yn_function(__sl277, null, 0, 1));
         if (!digit(dig)) {
             (yield* pline(__sl82, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
             return NHM.ECMD_CANCEL;
@@ -4055,9 +4054,9 @@ export function* adjust_split() {
     }
     if (splitamount.v < 1n || splitamount.v >= cptr.ldI64o(obj, $obj_quan)) {
         if (splitamount.v < 1n)
-            (yield* pline(__sl279, cptr.decay(__static_adjust_split_Amount)));
+            (yield* pline(__sl278, cptr.decay(__static_adjust_split_Amount)));
         else
-            (yield* pline(__sl280, cptr.decay(__static_adjust_split_Amount), cptr.ldI64o(obj, $obj_quan)));
+            (yield* pline(__sl279, cptr.decay(__static_adjust_split_Amount), cptr.ldI64o(obj, $obj_quan)));
         return NHM.ECMD_CANCEL;
     }
     obj = (yield* splitobj(obj, splitamount.v));
@@ -4118,10 +4117,10 @@ function* doorganize_core(obj) {
     if (cur > 5)
         compactify(cptr.decay(lets));
     if (!splitting.v)
-        void cptr.strcpy(cptr.decay(qbuf), __sl281);
+        void cptr.strcpy(cptr.decay(qbuf), __sl280);
     else
-        void cptr.sprintf(cptr.decay(qbuf), __sl282, cptr.ldI64o(obj.v, $obj_quan));
-    void cptr.sprintf(eos(cptr.decay(qbuf)), __sl283, cptr.decay(lets), cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl284 : __sl0);
+        void cptr.sprintf(cptr.decay(qbuf), __sl281, cptr.ldI64o(obj.v, $obj_quan));
+    void cptr.sprintf(eos(cptr.decay(qbuf)), __sl282, cptr.decay(lets), cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl283 : __sl0);
     for (trycnt = 1; ; ++trycnt) {
         let$ = schar((!isgold ? (yield* yn_function(cptr.decay(qbuf), null, 0, 1)) : NHC.GOLD_SYM));
         if (let$ == 63 || let$ == 42) {
@@ -4144,7 +4143,7 @@ function* doorganize_core(obj) {
                 (yield* pline(__sl82, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
             return NHM.ECMD_OK;
         } else if (let$ == NHC.GOLD_SYM && cptr.ld1so(obj.v, $obj_oclass) != NHC.COIN_CLASS) {
-            (yield* pline(__sl285, NHC.GOLD_SYM));
+            (yield* pline(__sl284, NHC.GOLD_SYM));
             ever_mind = 1;
             {
                 if (splitting.v)
@@ -4164,10 +4163,10 @@ function* doorganize_core(obj) {
                     (yield* pline(__sl82, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
                 return NHM.ECMD_OK;
             }
-        (yield* pline(__sl286));
+        (yield* pline(__sl285));
     }
     collect = schar((let$ == cptr.ld1so(obj.v, $obj_invlet)));
-    adj_type = collect ? __sl287 : (!splitting.v ? __sl288 : __sl289);
+    adj_type = collect ? __sl286 : (!splitting.v ? __sl287 : __sl288);
     (yield* extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent)));
     for (otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; ) {
         otmpname = (cptr.ldPtro((otmp.v), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp.v), $obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((otmp.v), $obj_oextra))) : null;
@@ -4181,14 +4180,14 @@ function* doorganize_core(obj) {
             }
         } else if (cptr.ld1so(otmp.v, $obj_invlet) == let$) {
             if ((!otmpname || (objname && !strcmp(objname, otmpname))) && (yield* merged(otmp, obj))) {
-                adj_type = __sl290;
+                adj_type = __sl289;
                 obj.v = otmp.v;
                 otmp.v = cptr.ldPtr(otmp.v);
                 (yield* extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent)));
                 break;
             }
             if (!splitting.v) {
-                adj_type = __sl291;
+                adj_type = __sl290;
                 cptr.st1o(otmp.v, $obj_invlet, cptr.ld1so(obj.v, $obj_invlet));
             } else {
                 if (objname && !cptr.ld1so(obj.v, $obj_oartifact))
@@ -4201,12 +4200,12 @@ function* doorganize_core(obj) {
                         cptr.free(objname), objname = null;
                 }
                 if ((yield* merged(otmp, obj))) {
-                    adj_type = __sl292;
+                    adj_type = __sl291;
                     obj.v = otmp.v;
                     (yield* extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent)));
                 } else if (inv_cnt(0) >= NHC.invlet_basic) {
                     void (yield* merged(splitting, obj));
-                    (yield* Your(__sl293));
+                    (yield* Your(__sl292));
                     return NHM.ECMD_OK;
                 } else {
                     bumped = otmp.v;
@@ -4231,7 +4230,7 @@ function* doorganize_core(obj) {
     }
     (yield* prinv(adj_type, obj.v, 0n));
     if (bumped)
-        (yield* prinv(__sl288, bumped, 0n));
+        (yield* prinv(__sl287, bumped, 0n));
     if (splitting.v)
         clear_splitobjs();
     (yield* update_inventory());
@@ -4270,7 +4269,7 @@ export function* display_minventory(mon, dflags, title) {
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);
     let have_any = (have_inv || incl_hero ? 1 : 0);
     let pickings = (dflags & NHM.MINV_PICKMASK);
-    void cptr.sprintf(cptr.decay(tmp), __sl294, (yield* s_suffix((yield* noit_Monnam(mon)))), do_all ? __sl295 : __sl296);
+    void cptr.sprintf(cptr.decay(tmp), __sl293, (yield* s_suffix((yield* noit_Monnam(mon)))), do_all ? __sl294 : __sl295);
     if (do_all ? have_any : (cptr.ldI64o(mon, $monst_misc_worn_check) || (cptr.ldPtro((mon), $monst_mw)) ? 1 : 0)) {
         cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.ldPtro(mon, $monst_data));
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
@@ -4278,7 +4277,7 @@ export function* display_minventory(mon, dflags, title) {
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
         cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96));
     } else {
-        (yield* invdisp_nothing(title ? title : cptr.decay(tmp), __sl297));
+        (yield* invdisp_nothing(title ? title : cptr.decay(tmp), __sl296));
         n = 0;
     }
     if (n > 0) {
@@ -4293,13 +4292,13 @@ export function* display_minventory(mon, dflags, title) {
 function* cinv_doname(obj) {
     let result = (yield* doname(obj));
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
-        let p = (yield* strstri(result, __sl298));
-        let q = (yield* strstri(result, __sl299));
+        let p = (yield* strstri(result, __sl297));
+        let q = (yield* strstri(result, __sl298));
         if (p && (!q || cptr.cmp(p, q) < 0))
-            void strsubst(p, __sl300, __sl301);
+            void strsubst(p, __sl299, __sl300);
         else if (q)
-            void strsubst(q, __sl302, __sl303);
-        void strsubst(result, __sl304, __sl305);
+            void strsubst(q, __sl301, __sl302);
+        void strsubst(result, __sl303, __sl304);
     }
     return result;
 }
@@ -4308,14 +4307,14 @@ function* cinv_doname(obj) {
 function* cinv_ansimpleoname(obj) {
     let result = (yield* ansimpleoname(obj));
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1)) {
-        if (cptr.strncmp(result, __sl306, 2n))
-            void strsubst(result, __sl306, __sl305);
-        else if (cptr.strncmp(result, __sl307, 3n))
-            void strsubst(result, __sl307, __sl304);
-        else if (cptr.strncmp(result, __sl308, 4n))
-            void strsubst(result, __sl308, __sl309);
+        if (cptr.strncmp(result, __sl305, 2n))
+            void strsubst(result, __sl305, __sl304);
+        else if (cptr.strncmp(result, __sl306, 3n))
+            void strsubst(result, __sl306, __sl303);
+        else if (cptr.strncmp(result, __sl307, 4n))
+            void strsubst(result, __sl307, __sl308);
         else
-            void strsubst(result, __sl0, __sl310);
+            void strsubst(result, __sl0, __sl309);
     }
     return result;
 }
@@ -4326,11 +4325,11 @@ export function* display_cinventory(obj) {
     let qbuf = new Uint8Array(128);
     let n;
     let selected = cptr.box(null);
-    void (yield* safe_qbuf(cptr.decay(qbuf), __sl311, __sl174, obj, cinv_doname, cinv_ansimpleoname, __sl312));
+    void (yield* safe_qbuf(cptr.decay(qbuf), __sl310, __sl173, obj, cinv_doname, cinv_ansimpleoname, __sl311));
     if (cptr.ldPtro(obj, $obj_cobj)) {
         n = (yield* query_objlist(cptr.decay(qbuf), cptr.add(obj, $obj_cobj), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, allow_all));
     } else {
-        (yield* invdisp_nothing(cptr.decay(qbuf), __sl313));
+        (yield* invdisp_nothing(cptr.decay(qbuf), __sl312));
         n = 0;
     }
     if (n > 0) {
@@ -4351,27 +4350,27 @@ function only_here(obj) {
 export function* display_binventory(x, y, as_if_seen) {
     let obj;
     let qbuf = new Uint8Array(128);
-    let underwhat = __sl314;
+    let underwhat = __sl313;
     let selected = cptr.box(null);
     let n;
     let n2 = 0;
     if (is_pool_or_lava(x, y) && !Underwater() && (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
-        let real_liquid = is_pool(x, y) ? __sl315 : __sl316;
+        let real_liquid = is_pool(x, y) ? __sl314 : __sl315;
         let seen_liquid = hliquid(real_liquid);
         if (!cptr.ldPtro(obj, $obj_v)) {
             let more_than_1 = schar((cptr.ldI64o((obj), $obj_quan) != 1n || (cptr.ld1so((obj), $obj_oartifact) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD)) ? 1 : 0));
-            (yield* There(__sl317, more_than_1 ? __sl154 : __sl155, (yield* doname(obj)), seen_liquid));
+            (yield* There(__sl316, more_than_1 ? __sl153 : __sl154, (yield* doname(obj)), seen_liquid));
             n2 = 1;
             if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LENSES || (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_GLOVES) || (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS)))
                 more_than_1 = 1;
-            underwhat = more_than_1 ? __sl318 : __sl319;
+            underwhat = more_than_1 ? __sl317 : __sl318;
         } else {
-            void cptr.sprintf(cptr.decay(qbuf), __sl320, seen_liquid);
+            void cptr.sprintf(cptr.decay(qbuf), __sl319, seen_liquid);
             if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objects), x, 168), y, 8), NHM.BY_NEXTHERE, selected, NHM.PICK_NONE, allow_all)) > 0)
                 cptr.free(selected.v), selected.v = null;
             for (n2 = 0; obj; obj = cptr.ldPtro(obj, $obj_v))
                 ++n2;
-            underwhat = __sl321;
+            underwhat = __sl320;
         }
     }
     for (n = 0, obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); obj; obj = cptr.ldPtr(obj))
@@ -4383,7 +4382,7 @@ export function* display_binventory(x, y, as_if_seen) {
     if (n) {
         cptr.stI16o(go, $instance_globals_o_only, x);
         cptr.stI16o(go, $instance_globals_o_only + $nhcoord_y, y);
-        void cptr.sprintf(cptr.decay(qbuf), __sl322, underwhat);
+        void cptr.sprintf(cptr.decay(qbuf), __sl321, underwhat);
         if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, only_here)) > 0)
             cptr.free(selected.v);
         cptr.stI16o(go, $instance_globals_o_only, cptr.stI16o(go, $instance_globals_o_only + $nhcoord_y, 0));
@@ -4428,15 +4427,15 @@ export function* sync_perminvent() {
                 }
                 if ((cptr.ldI64(__static_sync_perminvent_wri) & 6n) != 0n) {
                     if ((cptr.ldI64(__static_sync_perminvent_wri) & 4n) != 0n) {
+                        (yield* set_option_mod_status(__sl322, NHC.set_gameview));
                         (yield* set_option_mod_status(__sl323, NHC.set_gameview));
-                        (yield* set_option_mod_status(__sl324, NHC.set_gameview));
                     }
                     cptr.st1o(iflags, $instance_flags_perm_invent, 0);
                     if (WIN_INVEN.v != -1)
                         (yield* Y.icall(destroy_nhwindow()(WIN_INVEN.v))), WIN_INVEN.v = -1;
-                    wport_id = (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ? __sl325 : __sl323;
-                    (yield* pline(__sl326, wport_id));
-                    (yield* pline(__sl327, wport_id, cptr.ldI32o(__static_sync_perminvent_wri, $to_core_needrows), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_needcols), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_haverows), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_havecols)));
+                    wport_id = (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ? __sl324 : __sl322;
+                    (yield* pline(__sl325, wport_id));
+                    (yield* pline(__sl326, wport_id, cptr.ldI32o(__static_sync_perminvent_wri, $to_core_needrows), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_needcols), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_haverows), cptr.ldI32o(__static_sync_perminvent_wri, $to_core_havecols)));
                     (yield* Y.icall(wait_synch()()));
                     return;
                 }

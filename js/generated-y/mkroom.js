@@ -69,7 +69,7 @@ const $coord_y = FLD.coord_y, $dgn_topology_d_astral_level = FLD.dgn_topology_d_
 const __sl0 = cptr.lit("Tried to make a room of type %d.");
 const __sl1 = cptr.lit("SHOPTYPE");
 const __sl2 = cptr.lit("rooms[] not closed by -1?");
-const __sl3 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mkroom.c");
+const __sl3 = cptr.lit("mkroom.c");
 const __sl4 = cptr.lit("mkshop");
 const __sl5 = cptr.lit("pick_room");
 const __sl6 = cptr.lit("mk_zoo_thronemon");
@@ -691,7 +691,7 @@ export function* courtmon() {
 
 /** C ref: mkroom.c:807 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: mkroom.c:810 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mkroom.c:807:14)[4] */
+/** C ref: mkroom.c:810 — struct (unnamed struct at mkroom.c:807:14)[4] */
 const squadprob = cptr.alloc(4 * 8);
 cptr.stI32o(squadprob, 0, NHC.PM_SOLDIER);
 cptr.stI32o(squadprob, 4, 80);

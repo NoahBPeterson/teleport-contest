@@ -78,7 +78,7 @@ const $context_info_made_amulet = FLD.context_info_made_amulet,
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/wizard.c");
+const __sl0 = cptr.lit("wizard.c");
 const __sl1 = cptr.lit("amulet");
 const __sl2 = cptr.lit("%s hot!");
 const __sl3 = cptr.lit("feel");

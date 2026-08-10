@@ -710,7 +710,7 @@ cptr.stI32o(__static_getpos_pick_chars_def, 12, NHC.LOOK_QUICK);
 cptr.stI32o(__static_getpos_pick_chars_def, 16, NHC.NHKF_GETPOS_PICK_O);
 cptr.stI32o(__static_getpos_pick_chars_def, 20, NHC.LOOK_ONCE);
 cptr.stI32o(__static_getpos_pick_chars_def, 24, NHC.NHKF_GETPOS_PICK_V);
-cptr.stI32o(__static_getpos_pick_chars_def, 28, NHC.LOOK_VERBOSE); /** C ref: getpos.c:775 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/getpos.c:773:12)[4] (function-static) */
+cptr.stI32o(__static_getpos_pick_chars_def, 28, NHC.LOOK_VERBOSE); /** C ref: getpos.c:775 — struct (unnamed struct at getpos.c:773:12)[4] (function-static) */
 const __static_getpos_mMoOdDxX_def = cptr.alloc(12 * 4);
 cptr.stI32o(__static_getpos_mMoOdDxX_def, 0, NHC.NHKF_GETPOS_MON_NEXT);
 cptr.stI32o(__static_getpos_mMoOdDxX_def, 4, NHC.NHKF_GETPOS_MON_PREV);

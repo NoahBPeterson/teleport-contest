@@ -84,7 +84,7 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("are floating high above the %s.");
 const __sl1 = cptr.lit("are trapped in the %s.");
-const __sl2 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/fountain.c");
+const __sl2 = cptr.lit("fountain.c");
 const __sl3 = cptr.lit("dowatersnakes");
 const __sl4 = cptr.lit("An endless stream of %s pours forth!");
 const __sl5 = cptr.lit("snakes");

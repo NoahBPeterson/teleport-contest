@@ -143,7 +143,7 @@ const __sl6 = cptr.lit("KABOOM!!  You see a door explode.");
 const __sl7 = cptr.lit("a %s explosion.");
 const __sl8 = cptr.lit("distant");
 const __sl9 = cptr.lit("nearby");
-const __sl10 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/monmove.c");
+const __sl10 = cptr.lit("monmove.c");
 const __sl11 = cptr.lit("mb_trapped");
 const __sl12 = cptr.lit("%s angrily %s %s %s!");
 const __sl13 = cptr.lit("shakes");
@@ -211,11 +211,10 @@ const __sl74 = cptr.lit("between");
 const __sl75 = cptr.lit("m_move");
 const __sl76 = cptr.lit("unknown shk/gd/pri_move return value (%d)");
 const __sl77 = cptr.lit("I'm late!");
-const __sl78 = cptr.lit("monmove.c");
-const __sl79 = cptr.lit("IndexOk(chi, mfp.info)");
-const __sl80 = cptr.lit("m_move_aggress");
-const __sl81 = cptr.lit("set_apparxy");
-const __sl82 = cptr.lit("undesirable_disp");
+const __sl78 = cptr.lit("IndexOk(chi, mfp.info)");
+const __sl79 = cptr.lit("m_move_aggress");
+const __sl80 = cptr.lit("set_apparxy");
+const __sl81 = cptr.lit("undesirable_disp");
 
 /** C ref: monmove.c:33 — @param {CPtr} mtmp @param {CInt} omx @param {CInt} omy */
 function msg_mon_movement(mtmp, omx, omy) {
@@ -1438,7 +1437,7 @@ export function m_move(mtmp, after) {
             return NHM.MMOVE_DONE;
         if (mmoved.v == NHM.MMOVE_MOVED && m_digweapon_check(mtmp, nix, niy))
             return NHM.MMOVE_DONE;
-        (__builtin_expect(BigInt((!(((chi) >= 0 && (chi) < Number(BigInt.asIntN(32, (72n / 8n))))))), 0n) ? __assert_rtn(__sl75, __sl78, 2005, __sl79) : void 0);
+        (__builtin_expect(BigInt((!(((chi) >= 0 && (chi) < Number(BigInt.asIntN(32, (72n / 8n))))))), 0n) ? __assert_rtn(__sl75, __sl10, 2005, __sl78) : void 0);
         if (cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 262144n) {
             nix = cptr.ldI16o(mtmp, $monst_mux);
             niy = cptr.ldI16o(mtmp, $monst_muy);
@@ -1498,7 +1497,7 @@ export function m_move_aggress(mtmp, x, y) {
     }
     if ((mstatus & NHM.M_ATTK_AGR_DIED) || (cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return NHM.MMOVE_DIED;
-    if ((mstatus & 3) == NHM.M_ATTK_HIT && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2104, __sl80), rn2(4)) : rn2(4)) && cptr.ldI16o(mtmp2, $monst_movement) > (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2104, __sl80), rn2(NHM.NORMAL_SPEED)) : rn2(NHM.NORMAL_SPEED))) {
+    if ((mstatus & 3) == NHM.M_ATTK_HIT && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2104, __sl79), rn2(4)) : rn2(4)) && cptr.ldI16o(mtmp2, $monst_movement) > (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2104, __sl79), rn2(NHM.NORMAL_SPEED)) : rn2(NHM.NORMAL_SPEED))) {
         if (cptr.ldI16o(mtmp2, $monst_movement) > NHM.NORMAL_SPEED)
             cptr.stI16o(mtmp2, $monst_movement, cptr.ldI16o(mtmp2, $monst_movement) - NHM.NORMAL_SPEED);
         else
@@ -1582,7 +1581,7 @@ export function set_apparxy(mtmp) {
         cptr.stI16o(mtmp, $monst_muy, cptr.ldI16o(u, $you_uy));
         return;
     }
-    gotu = schar((notseen ? !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 2239, __sl81), rn2(3)) : rn2(3)) : (notthere ? !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 2239, __sl81), rn2(4)) : rn2(4)) : 0)));
+    gotu = schar((notseen ? !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 2239, __sl80), rn2(3)) : rn2(3)) : (notthere ? !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 2239, __sl80), rn2(4)) : rn2(4)) : 0)));
     if (!gotu) {
         let try_cnt = 0;
         do {
@@ -1591,8 +1590,8 @@ export function set_apparxy(mtmp) {
                 my = cptr.ldI16o(u, $you_uy);
                 break;
             }
-            mx = i16(((((cptr.ldI16(u) - displ) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2250, __sl81), rn2((Math.imul(2, displ) + 1) | 0)) : rn2((Math.imul(2, displ) + 1) | 0))) | 0));
-            my = i16(((((cptr.ldI16o(u, $you_uy) - displ) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2251, __sl81), rn2((Math.imul(2, displ) + 1) | 0)) : rn2((Math.imul(2, displ) + 1) | 0))) | 0));
+            mx = i16(((((cptr.ldI16(u) - displ) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2250, __sl80), rn2((Math.imul(2, displ) + 1) | 0)) : rn2((Math.imul(2, displ) + 1) | 0))) | 0));
+            my = i16(((((cptr.ldI16o(u, $you_uy) - displ) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2251, __sl80), rn2((Math.imul(2, displ) + 1) | 0)) : rn2((Math.imul(2, displ) + 1) | 0))) | 0));
         } while (!isok(mx, my) || (displ != 2 && mx == cptr.ldI16o(mtmp, $monst_mx) && my == cptr.ldI16o(mtmp, $monst_my)) || ((mx != cptr.ldI16(u) || my != cptr.ldI16o(u, $you_uy)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n) && !(accessible(mx, my) || (closed_door(mx, my) && (can_ooze(mtmp) || can_fog(mtmp))))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), my, 8), mx) & NHM.COULD_SEE) != 0));
     } else {
         mx = cptr.ldI16(u);
@@ -1607,11 +1606,11 @@ export function undesirable_disp(mtmp, x, y) {
     let is_pet = schar((cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1) ? 1 : 0));
     let trap = t_at(x, y);
     if (is_pet) {
-        if (trap && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2287, __sl82), rn2(40)) : rn2(40)))
+        if (trap && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2287, __sl81), rn2(40)) : rn2(40)))
             return 1;
         if (cursed_object_at(x, y))
             return 1;
-    } else if (trap && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2294, __sl82), rn2(40)) : rn2(40)) && mon_knows_traps(mtmp, (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0)) {
+    } else if (trap && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 2294, __sl81), rn2(40)) : rn2(40)) && mon_knows_traps(mtmp, (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0)) {
         return 1;
     }
     if (!accessible(x, y) && !(is_pool(x, y) && is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))))

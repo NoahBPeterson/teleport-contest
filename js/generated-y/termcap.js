@@ -898,7 +898,7 @@ export function* cl_eos() {
 
 /** C ref: termcap.c:1293 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: termcap.c:1294 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/win/tty/termcap.c:1292:7)[6] */
+/** C ref: termcap.c:1294 — struct (unnamed struct at ../win/tty/termcap.c:1292:7)[6] */
 export const ti_map = cptr.alloc(6 * 12);
 cptr.stI32o(ti_map, 0, 1);
 cptr.stI32o(ti_map, 4, NHM.CLR_RED);

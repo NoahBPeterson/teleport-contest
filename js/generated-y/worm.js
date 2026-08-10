@@ -44,7 +44,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $context_info_mon_moving = FLD.context_inf
     $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/worm.c");
+const __sl0 = cptr.lit("worm.c");
 const __sl1 = cptr.lit("worm_move");
 const __sl2 = cptr.lit("worm_nomove");
 const __sl3 = cptr.lit("wormgone: wormno is 0");

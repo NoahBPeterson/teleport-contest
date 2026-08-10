@@ -80,7 +80,7 @@ const $Align_value = FLD.Align_value, $Race_mnum = FLD.Race_mnum, $Role_mnum = F
     $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/u_init.c");
+const __sl0 = cptr.lit("u_init.c");
 const __sl1 = cptr.lit("u_init_role");
 const __sl2 = cptr.lit("u_init_race");
 const __sl3 = cptr.lit("u_init_misc");

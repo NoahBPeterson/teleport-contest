@@ -240,7 +240,7 @@ const __sl77 = cptr.lit("release %s.");
 const __sl78 = cptr.lit("%s releases you.");
 const __sl79 = cptr.lit("%s%s (worth %ld %s and %ld points)");
 const __sl80 = cptr.lit("The ");
-const __sl81 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/end.c");
+const __sl81 = cptr.lit("end.c");
 const __sl82 = cptr.lit("fuzzer_savelife");
 const __sl83 = cptr.lit("But wait...");
 const __sl84 = cptr.lit("medallion %s!");
@@ -498,7 +498,7 @@ export function done_in_by(mtmp, how) {
 
 /** C ref: end.c:350 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: end.c:353 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/end.c:350:14)[2] */
+/** C ref: end.c:353 — struct (unnamed struct at end.c:350:14)[2] */
 const death_fixups = cptr.alloc(2 * 24);
 cptr.stI32o(death_fixups, 0, NHC.STONING);
 cptr.stI32o(death_fixups, 4, 1);

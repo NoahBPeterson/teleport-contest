@@ -249,25 +249,24 @@ const __sl79 = cptr.lit("lev-level_flags");
 const __sl80 = cptr.lit("lev-doors_alloc");
 const __sl81 = cptr.lit("lev-doors");
 const __sl82 = cptr.lit("trap");
-const __sl83 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/restore.c");
-const __sl84 = cptr.lit("getlev");
-const __sl85 = cptr.lit("getlev: need portal but none found");
-const __sl86 = cptr.lit("plname-size");
-const __sl87 = cptr.lit("plname");
-const __sl88 = cptr.lit("bubbles-bbubbly");
-const __sl89 = cptr.lit("gamelog-length");
-const __sl90 = cptr.lit("restore_gamelog: msg too big (%d)");
-const __sl91 = cptr.lit("gamelog-gamelog_text");
-const __sl92 = cptr.lit("gamelog-gamelog_line");
-const __sl93 = cptr.lit("msghistory-length");
-const __sl94 = cptr.lit("restore_msghistory: msg too big (%d)");
-const __sl95 = cptr.lit("msghistory-msg");
-const __sl96 = cptr.lit("Read %d messages from savefile.");
-const __sl97 = cptr.lit("Select one of your saved games");
-const __sl98 = cptr.lit("%.*s");
-const __sl99 = cptr.lit("%c %.*s");
-const __sl100 = cptr.lit("Start a new character");
-const __sl101 = cptr.lit("Never mind (quit)");
+const __sl83 = cptr.lit("getlev");
+const __sl84 = cptr.lit("getlev: need portal but none found");
+const __sl85 = cptr.lit("plname-size");
+const __sl86 = cptr.lit("plname");
+const __sl87 = cptr.lit("bubbles-bbubbly");
+const __sl88 = cptr.lit("gamelog-length");
+const __sl89 = cptr.lit("restore_gamelog: msg too big (%d)");
+const __sl90 = cptr.lit("gamelog-gamelog_text");
+const __sl91 = cptr.lit("gamelog-gamelog_line");
+const __sl92 = cptr.lit("msghistory-length");
+const __sl93 = cptr.lit("restore_msghistory: msg too big (%d)");
+const __sl94 = cptr.lit("msghistory-msg");
+const __sl95 = cptr.lit("Read %d messages from savefile.");
+const __sl96 = cptr.lit("Select one of your saved games");
+const __sl97 = cptr.lit("%.*s");
+const __sl98 = cptr.lit("%c %.*s");
+const __sl99 = cptr.lit("Start a new character");
+const __sl100 = cptr.lit("Never mind (quit)");
 
 /** C ref: restore.c:45 — struct bucket { next, map } (memory model v0.5) */
 
@@ -1029,7 +1028,7 @@ export function getlev(nhfp, pid, lev) {
             mon_catchup_elapsed_time(mtmp, elapsed);
         }
         restore_cham(mtmp);
-        if (ghostly || (elapsed > 0n && elapsed > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl83, 1219, __sl84), rnd(10)) : rnd(10)))))
+        if (ghostly || (elapsed > 0n && elapsed > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl14, 1219, __sl83), rnd(10)) : rnd(10)))))
             hide_monst(mtmp);
     }
     restdamage(nhfp);
@@ -1079,7 +1078,7 @@ export function getlev(nhfp, pid, lev) {
                     if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                         break;
                 if (!trap)
-                    panic(__sl85);
+                    panic(__sl84);
                 assign_level(cptr.add(trap, $trap_dst), ltmp);
                 break;
             }
@@ -1123,9 +1122,9 @@ export function get_plname_from_file(nhfp, outbuf, name_only) {
     let plbuf = new Uint8Array(49);
     let pltmpsiz = cptr.box(0);
     cptr.st1o(cptr.decay(plbuf), 0, 0, 1);
-    sfi_int(nhfp, pltmpsiz, __sl86);
+    sfi_int(nhfp, pltmpsiz, __sl85);
     ;
-    sfi_char(nhfp, cptr.decay(plbuf), __sl87, pltmpsiz.v);
+    sfi_char(nhfp, cptr.decay(plbuf), __sl86, pltmpsiz.v);
     if (!name_only)
         cptr.st1(eos(cptr.decay(plbuf)), 45);
     void cptr.memcpy(outbuf, cptr.decay(plbuf), 49n);
@@ -1136,7 +1135,7 @@ export function get_plname_from_file(nhfp, outbuf, name_only) {
 function rest_bubbles(nhfp) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
-    sfi_xint8(nhfp, bbubbly, __sl88);
+    sfi_xint8(nhfp, bbubbly, __sl87);
     ;
     if (bbubbly.v)
         restore_waterlevel(nhfp);
@@ -1148,15 +1147,15 @@ function restore_gamelog(nhfp) {
     let msg = new Uint8Array(512);
     let tmp = cptr.alloc(32); cptr.stI64(tmp, 0n);
     while (1) {
-        sfi_int(nhfp, slen, __sl89);
+        sfi_int(nhfp, slen, __sl88);
         ;
         if (slen.v == -1)
             break;
         if (slen.v > 511)
-            panic(__sl90, slen.v);
-        sfi_char(nhfp, cptr.decay(msg), __sl91, slen.v);
+            panic(__sl89, slen.v);
+        sfi_char(nhfp, cptr.decay(msg), __sl90, slen.v);
         cptr.st1o(cptr.decay(msg), slen.v, 0, 1);
-        sfi_gamelog_line(nhfp, tmp, __sl92);
+        sfi_gamelog_line(nhfp, tmp, __sl91);
         gamelog_add(cptr.ldI64o(tmp, $gamelog_line_flags), cptr.ldI64(tmp), cptr.decay(msg));
     }
 }
@@ -1167,13 +1166,13 @@ function restore_msghistory(nhfp) {
     let msgcount = 0;
     let msg = new Uint8Array(256);
     while (1) {
-        sfi_int(nhfp, msgsize, __sl93);
+        sfi_int(nhfp, msgsize, __sl92);
         ;
         if (msgsize.v == -1)
             break;
         if (msgsize.v > 255)
-            panic(__sl94, msgsize.v);
-        sfi_char(nhfp, cptr.decay(msg), __sl95, msgsize.v);
+            panic(__sl93, msgsize.v);
+        sfi_char(nhfp, cptr.decay(msg), __sl94, msgsize.v);
         cptr.st1o(cptr.decay(msg), msgsize.v, 0, 1);
         putmsghistory()(cptr.decay(msg), 1);
         ++msgcount;
@@ -1181,9 +1180,9 @@ function restore_msghistory(nhfp) {
     if (msgcount)
         putmsghistory()(null, 1);
     do {
-        if (debugcore(__sl83, 1)) {
+        if (debugcore(__sl14, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            pline(__sl96, msgcount);
+            pline(__sl95, msgcount);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     } while (0);
@@ -1281,7 +1280,7 @@ export function restore_menu(bannerwin) {
                 add_menu_str(tmpwin, copyright_banner_line(k));
             add_menu_str(tmpwin, __sl69);
         }
-        add_menu_str(tmpwin, __sl97);
+        add_menu_str(tmpwin, __sl96);
         for (all_normal = 1, k = 0; all_normal && cptr.ldPtro(saved, k, 8); ++k) {
             next = cptr.ldPtro(saved, k, 8);
             mode = cptr.ld1so(next, 48);
@@ -1293,17 +1292,17 @@ export function restore_menu(bannerwin) {
             next = cptr.ldPtro(saved, k, 8);
             mode = cptr.ld1so(next, 48);
             if (all_normal)
-                void cptr.sprintf(cptr.decay(menutext), __sl98, 48, next);
+                void cptr.sprintf(cptr.decay(menutext), __sl97, 48, next);
             else
-                void cptr.sprintf(cptr.decay(menutext), __sl99, mode, 48, next);
+                void cptr.sprintf(cptr.decay(menutext), __sl98, mode, 48, next);
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(menutext), NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
         }
         clet = (k <= 13) ? 110 : ((k <= 39) ? 78 : 0);
         cptr.stI32(any, -1);
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __sl100, NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __sl99, NHM.MENU_ITEMFLAGS_NONE);
         clet = (((k + 1) | 0) <= 16 && clet == 110) ? 113 : ((((k + 1) | 0) <= 42 && clet == 78) ? 81 : 0);
         cptr.stI32(any, -2);
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __sl101, NHM.MENU_ITEMFLAGS_SELECTED);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __sl100, NHM.MENU_ITEMFLAGS_SELECTED);
         end_menu()(tmpwin, null);
         if (select_menu(tmpwin, NHM.PICK_ONE, chosen_game) > 0) {
             ch = cptr.ldI32(chosen_game.v);

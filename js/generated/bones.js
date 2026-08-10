@@ -117,7 +117,7 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/bones.c");
+const __sl0 = cptr.lit("bones.c");
 const __sl1 = cptr.lit("give_to_nearby_mon");
 const __sl2 = cptr.lit("drop_upon_death");
 const __sl3 = cptr.lit("can_make_bones");

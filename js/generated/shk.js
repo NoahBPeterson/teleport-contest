@@ -211,7 +211,7 @@ const __sl43 = cptr.lit("Invisible customers are not welcome!");
 const __sl44 = cptr.lit("%s stands firm as if %s knows you are there.");
 const __sl45 = cptr.lit("So, %s, you dare return to %s %s?!");
 const __sl46 = cptr.lit("%s seems %s over your return to %s %s!");
-const __sl47 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/shk.c");
+const __sl47 = cptr.lit("shk.c");
 const __sl48 = cptr.lit("u_entered_shop");
 const __sl49 = cptr.lit("Back again, %s?  I've got my %s on you.");
 const __sl50 = cptr.lit("atmosphere at %s %s seems unwelcoming.");
@@ -275,335 +275,334 @@ const __sl107 = cptr.lit("Pay for which items?");
 const __sl108 = cptr.lit("appears to be no shopkeeper here to receive your payment.");
 const __sl109 = cptr.lit("see...");
 const __sl110 = cptr.lit("dopay");
-const __sl111 = cptr.lit("shk.c");
-const __sl112 = cptr.lit("shkp != NULL");
-const __sl113 = cptr.lit("%s is not near enough to receive your payment.");
-const __sl114 = cptr.lit("Pay whom?");
-const __sl115 = cptr.lit("the creature you want to pay");
-const __sl116 = cptr.lit("Try again...");
-const __sl117 = cptr.lit("are generous to yourself.");
-const __sl118 = cptr.lit("can't %s anyone there.");
-const __sl119 = cptr.lit("see");
-const __sl120 = cptr.lit("sense");
-const __sl121 = cptr.lit("is no one there to receive your payment.");
-const __sl122 = cptr.lit("%s is not interested in your payment.");
-const __sl123 = cptr.lit("%s is too far to receive your payment.");
-const __sl124 = cptr.lit("dopay: null shkp.");
-const __sl125 = cptr.lit("seems to be napping");
-const __sl126 = cptr.lit("doesn't respond");
-const __sl127 = cptr.lit("do not owe %s anything.");
-const __sl128 = cptr.lit("%shave no gold.");
-const __sl129 = cptr.lit("seem to ");
-const __sl130 = cptr.lit("But you have some gold stashed away.");
-const __sl131 = cptr.lit("give %s the %ld gold piece%s %s asked for.");
-const __sl132 = cptr.lit("give %s all your%s gold.");
-const __sl133 = cptr.lit(" openly kept");
-const __sl134 = cptr.lit("But you have hidden gold!");
-const __sl135 = cptr.lit("Unfortunately, %s doesn't look satisfied.");
-const __sl136 = cptr.lit(" seem to");
-const __sl137 = cptr.lit("%s is after blood, not gold!");
-const __sl138 = cptr.lit("But since %s shop has been robbed recently,");
-const __sl139 = cptr.lit("you %scompensate %s for %s losses.");
-const __sl140 = cptr.lit("partially ");
-const __sl141 = cptr.lit("%s is after your hide, not your gold!");
-const __sl142 = cptr.lit("try to appease %s by giving %s 1000 gold pieces.");
-const __sl143 = cptr.lit("angry");
-const __sl144 = cptr.lit("But %s is as angry as ever.");
-const __sl145 = cptr.lit("dopay: not to shopkeeper?");
-const __sl146 = cptr.lit("You owe %s %ld %s ");
-const __sl147 = cptr.lit("you picked up in the store.");
-const __sl148 = cptr.lit("for gold picked up and the use of merchandise.");
-const __sl149 = cptr.lit("for the use of merchandise.");
-const __sl150 = cptr.lit("%s");
-const __sl151 = cptr.lit("But you don't%s have enough gold%s.");
-const __sl152 = cptr.lit(" or credit");
-const __sl153 = cptr.lit("debt is covered by your credit.");
-const __sl154 = cptr.lit("pay that debt.");
-const __sl155 = cptr.lit("That debt is partially offset by your credit.");
-const __sl156 = cptr.lit("pay the remainder.");
-const __sl157 = cptr.lit("Thank you for shopping in %s %s%s");
-const __sl158 = cptr.lit("%s nods%s at you for shopping in %s %s%s");
-const __sl159 = cptr.lit(" appreciatively");
-const __sl160 = cptr.lit("%shave no gold or credit%s.");
-const __sl161 = cptr.lit(" left");
-const __sl162 = cptr.lit("don't have enough gold to buy%s the item%s %s.");
-const __sl163 = cptr.lit(" any of");
-const __sl164 = cptr.lit("you've picked");
-const __sl165 = cptr.lit("on your bill");
-const __sl166 = cptr.lit("Maybe you have some gold stashed away?");
-const __sl167 = cptr.lit("Itemized billing?");
-const __sl168 = cptr.lit("ynq m");
-const __sl169 = cptr.lit("You need to remove any unpaid items from that %s and buy them separately.");
-const __sl170 = cptr.lit("Paid object on bill??");
-const __sl171 = cptr.lit(" for %ld %s.  Pay?");
-const __sl172 = cptr.lit("that");
-const __sl173 = cptr.lit("those");
-const __sl174 = cptr.lit("paid for %s at a cost of %ld gold piece%s.%s");
-const __sl175 = cptr.lit("bought %s for %ld gold piece%s.%s");
-const __sl176 = cptr.lit("Can't find contained item on shop bill (#%d).");
-const __sl177 = cptr.lit("Buying %s contents: item #%u disappeared from bill.");
-const __sl178 = cptr.lit("Buying %s contents failed unexpectedly (#%u %d).");
-const __sl179 = cptr.lit("reject_purchase");
-const __sl180 = cptr.lit("intact_quan < billed_quan");
-const __sl181 = cptr.lit("the one%s in %s");
-const __sl182 = cptr.lit("these");
-const __sl183 = cptr.lit("this one");
-const __sl184 = cptr.lit("%s for the other %s before buying %s.");
-const __sl185 = cptr.lit("Pay");
-const __sl186 = cptr.lit("Please pay");
-const __sl187 = cptr.lit("%s %s%s your bill for the other %s first.");
-const __sl188 = cptr.lit("angrily ");
-const __sl189 = cptr.lit("motions to");
-const __sl190 = cptr.lit("%shave no gold or credit left.");
-const __sl191 = cptr.lit("don't%s have gold%s enough to pay for %s.");
-const __sl192 = cptr.lit("inherits");
-const __sl193 = cptr.lit(", shakes %s %s,");
-const __sl194 = cptr.lit("%s %slooks at your corpse%s and %s.");
-const __sl195 = cptr.lit("wakes up, ");
-const __sl196 = cptr.lit("disappears");
-const __sl197 = cptr.lit("sighs");
-const __sl198 = cptr.lit("%s gratefully inherits all your possessions.");
-const __sl199 = cptr.lit("wakes up and ");
-const __sl200 = cptr.lit("comes and ");
-const __sl201 = cptr.lit("takes");
-const __sl202 = cptr.lit("%s %s all your possessions.");
-const __sl203 = cptr.lit("%s %s the %ld %s %sowed %s.");
-const __sl204 = cptr.lit("you ");
-const __sl205 = cptr.lit("finish_paybill: bad location <%d,%d>.");
-const __sl206 = cptr.lit("bad glass gem %d?");
-const __sl207 = cptr.lit("%s seems %s that you want to sell that.");
-const __sl208 = cptr.lit("horrified");
-const __sl209 = cptr.lit("concerned");
-const __sl210 = cptr.lit("No thanks, I'd hang onto that if I were you.");
-const __sl211 = cptr.lit("You'll need %d%s candle%s to go along with it.");
-const __sl212 = cptr.lit(" more");
-const __sl213 = cptr.lit("I won't stock that.  Take it out of here!");
-const __sl214 = cptr.lit("%s shakes %s %s in refusal.");
-const __sl215 = cptr.lit("unpaid_cost: object wasn't on any bill.");
-const __sl216 = cptr.lit("got that for free!");
-const __sl217 = cptr.lit("add_to_billobjs: obj not free");
-const __sl218 = cptr.lit("%%s; you %s");
-const __sl219 = cptr.lit("them");
-const __sl220 = cptr.lit("it");
-const __sl221 = cptr.lit("%s has no interest in %s.");
-const __sl222 = cptr.lit("%s will cost you %ld %s%s.");
-const __sl223 = cptr.lit(" each");
-const __sl224 = cptr.lit("\"For you,");
-const __sl225 = cptr.lit(" scum;");
-const __sl226 = cptr.lit("; only");
-const __sl227 = cptr.lit("%s %ld %s %s %s%s.\"");
-const __sl228 = cptr.lit("per");
-const __sl229 = cptr.lit("for the contents of this");
-const __sl230 = cptr.lit("for this");
-const __sl231 = cptr.lit("list price of %s%s%s is %ld %s%s.");
-const __sl232 = cptr.lit("%s does not notice.");
-const __sl233 = cptr.lit("append_honorific");
-const __sl234 = cptr.lit(" dark lady");
-const __sl235 = cptr.lit(" dark lord");
-const __sl236 = cptr.lit(" hiril");
-const __sl237 = cptr.lit(" hir");
-const __sl238 = cptr.lit(" creature");
-const __sl239 = cptr.lit(" lady");
-const __sl240 = cptr.lit(" sir");
-const __sl241 = cptr.lit("good");
-const __sl242 = cptr.lit("honored");
-const __sl243 = cptr.lit("most gracious");
-const __sl244 = cptr.lit("esteemed");
-const __sl245 = cptr.lit("most renowned and sacred");
-const __sl246 = cptr.lit("splitbill: no resident shopkeeper??");
-const __sl247 = cptr.lit("splitbill: not on bill?");
-const __sl248 = cptr.lit("Negative quantity on bill??");
-const __sl249 = cptr.lit("Zero quantity on bill??");
-const __sl250 = cptr.lit("sub_one_frombill: unpaid object not on bill");
-const __sl251 = cptr.lit("stolen_container");
-const __sl252 = cptr.lit("stolen_value");
-const __sl253 = cptr.lit("have %ld %s credit remaining.");
-const __sl254 = cptr.lit("have no credit remaining.");
-const __sl255 = cptr.lit("still ");
-const __sl256 = cptr.lit("%sowe %s %ld %s");
-const __sl257 = cptr.lit(" for %s%sits contents");
-const __sl258 = cptr.lit("it and ");
-const __sl259 = cptr.lit("some of ");
-const __sl260 = cptr.lit(" for %s");
-const __sl261 = cptr.lit("%s!");
-const __sl262 = cptr.lit("%s booms: \"%s, you are a thief!\"");
-const __sl263 = cptr.lit("You hear a scream, \"Thief!\"");
-const __sl264 = cptr.lit("debt is %spaid off.");
-const __sl265 = cptr.lit("debt is paid off.");
-const __sl266 = cptr.lit("have %sestablished %ld %s credit.");
-const __sl267 = cptr.lit("re-");
-const __sl268 = cptr.lit("%ld %s added%s to your credit; total is now %ld %s.");
-const __sl269 = cptr.lit(" back");
-const __sl270 = cptr.lit("Thank you, scum!");
-const __sl271 = cptr.lit("%s smirks with satisfaction.");
-const __sl272 = cptr.lit("%s seems uninterested.");
-const __sl273 = cptr.lit("Thank you for your contribution to restock this recently plundered shop.");
-const __sl274 = cptr.lit("%s seems uninterested%s.");
-const __sl275 = cptr.lit(" in the rest");
-const __sl276 = cptr.lit("%s cannot pay you at present.");
-const __sl277 = cptr.lit("Will you accept %ld %s in credit for ");
-const __sl278 = cptr.lit("?");
-const __sl279 = cptr.lit("traded %s for %ld zorkmid%s in %scredit.");
-const __sl280 = cptr.lit("relinquish %s and acquire %ld zorkmid%s in %scredit.");
-const __sl281 = cptr.lit("additional ");
-const __sl282 = cptr.lit("%s offers%s %ld gold piece%s for %s%s ");
-const __sl283 = cptr.lit(" only");
-const __sl284 = cptr.lit("your item in ");
-const __sl285 = cptr.lit("your items in ");
-const __sl286 = cptr.lit("the");
-const __sl287 = cptr.lit("your");
-const __sl288 = cptr.lit("%s.  Sell %s?");
-const __sl289 = cptr.lit(" and item inside");
-const __sl290 = cptr.lit(" and items inside");
-const __sl291 = cptr.lit("sold some items inside %s for %ld gold piece%s.%s");
-const __sl292 = cptr.lit("sold %s for %ld gold piece%s.%s");
-const __sl293 = cptr.lit("relinquish %s and receive %ld gold piece%s in compensation.%s");
-const __sl294 = cptr.lit("invalid sell response");
-const __sl295 = cptr.lit("doinvbill: no shopkeeper?");
-const __sl296 = cptr.lit("Unpaid articles already used up:");
-const __sl297 = cptr.lit("Bad shopkeeper administration.");
-const __sl298 = cptr.lit("usage charges and/or other fees");
-const __sl299 = cptr.lit("Total:");
-const __sl300 = cptr.lit("Out of my way, scum!");
-const __sl301 = cptr.lit("%s nimbly%s catches %s.");
-const __sl302 = cptr.lit(" reaches over and");
-const __sl303 = cptr.lit("%s whispers %s.");
-const __sl304 = cptr.lit("an incantation");
-const __sl305 = cptr.lit("something");
-const __sl306 = cptr.lit("someone muttering an incantation.");
-const __sl307 = cptr.lit("Get your junk out of my wall!");
-const __sl308 = cptr.lit("litter_scatter");
-const __sl309 = cptr.lit("%s untraps %s.");
-const __sl310 = cptr.lit("The %s vanishes.");
-const __sl311 = cptr.lit("The %s is filled in.");
-const __sl312 = cptr.lit("Suddenly, a section of the wall closes up!");
-const __sl313 = cptr.lit("Suddenly, the shop door reappears!");
-const __sl314 = cptr.lit("more claustrophobic than before.");
-const __sl315 = cptr.lit("repair_damage");
-const __sl316 = cptr.lit("The dungeon acoustics noticeably change.");
-const __sl317 = cptr.lit("displaced image doesn't fool %s!");
-const __sl318 = cptr.lit("%s, %s!  I was looking for %s.");
-const __sl319 = cptr.lit("%s, %s!  Didn't you forget to pay?");
-const __sl320 = cptr.lit("%s holds out %s upturned %s.");
-const __sl321 = cptr.lit("shk_move");
-const __sl322 = cptr.lit("%s doesn't like customers who don't pay.");
-const __sl323 = cptr.lit("grabs");
-const __sl324 = cptr.lit("like a common thief.");
-const __sl325 = cptr.lit("Be careful, %s, or you might fall through the floor.");
-const __sl326 = cptr.lit("madam");
-const __sl327 = cptr.lit("sir");
-const __sl328 = cptr.lit("%s, do not damage the floor here!");
-const __sl329 = cptr.lit("Madam");
-const __sl330 = cptr.lit("Sir");
-const __sl331 = cptr.lit("knocks off");
-const __sl332 = cptr.lit("%s curses you in anger and frustration!");
-const __sl333 = cptr.lit("%s %s, and %s your backpack!");
-const __sl334 = cptr.lit("leap");
-const __sl335 = cptr.lit("%s %s your backpack!");
-const __sl336 = cptr.lit("makekops");
-const __sl337 = cptr.lit("dig into");
-const __sl338 = cptr.lit("damage");
-const __sl339 = cptr.lit("How dare you %s my %s?");
-const __sl340 = cptr.lit("shop");
-const __sl341 = cptr.lit("door");
-const __sl342 = cptr.lit("%s is %s that you decided to %s %s %s!");
-const __sl343 = cptr.lit("getcad");
-const __sl344 = cptr.lit("%s shouts:");
-const __sl345 = cptr.lit("Who dared %s my %s?");
-const __sl346 = cptr.lit("%s is %s that someone decided to %s %s %s!");
-const __sl347 = cptr.lit("pay_for_damage");
-const __sl348 = cptr.lit("%s leaps towards you!");
-const __sl349 = cptr.lit("an angry voice:");
-const __sl350 = cptr.lit("invisibility does not fool %s!");
-const __sl351 = cptr.lit("%sYou did %ld %s worth of damage!%s  Pay?");
-const __sl352 = cptr.lit("\"");
-const __sl353 = cptr.lit("Mollified, %s accepts your restitution.");
-const __sl354 = cptr.lit("appears");
-const __sl355 = cptr.lit("shifts location");
-const __sl356 = cptr.lit("Oh, yes!  You'll pay!");
-const __sl357 = cptr.lit("%s lunges %s %s toward your %s!");
-const __sl358 = cptr.lit("Fine goods for sale:");
-const __sl359 = cptr.lit("no charge");
-const __sl360 = cptr.lit("%ld %s%s");
-const __sl361 = cptr.lit("%s%s, %s");
-const __sl362 = cptr.lit("%s%s");
-const __sl363 = cptr.lit("%s, price %ld %s%s%s");
-const __sl364 = cptr.lit("shk_embellish");
-const __sl365 = cptr.lit(", gourmets' delight!");
-const __sl366 = cptr.lit(", painstakingly developed!");
-const __sl367 = cptr.lit(", superb craftsmanship!");
-const __sl368 = cptr.lit(", finest quality.");
-const __sl369 = cptr.lit(", an excellent choice.");
-const __sl370 = cptr.lit(", a real bargain.");
-const __sl371 = cptr.lit(", one of a kind!");
-const __sl372 = cptr.lit("%s says: 'These shopping malls give me a headache.'");
-const __sl373 = cptr.lit("%s says: 'Slow down.  Think clearly.'");
-const __sl374 = cptr.lit("%s says: 'You need to take things one at a time.'");
-const __sl375 = cptr.lit("%s says: 'I don't like poofy coffee... give me Colombian Supremo.'");
-const __sl376 = cptr.lit("%s says that getting the devteam's agreement on anything is difficult.");
-const __sl377 = cptr.lit("%s says that he has noticed those who serve their deity will prosper.");
-const __sl378 = cptr.lit("%s says: 'Don't try to steal from me - I have friends in high places!'");
-const __sl379 = cptr.lit("%s says: 'You may well need something from this shop in the future.'");
-const __sl380 = cptr.lit("%s comments about the Valley of the Dead as being a gateway.");
-const __sl381 = cptr.lit("%s asks whether you've seen any untended shops recently.");
-const __sl382 = cptr.lit("%s %s how much %s dislikes %s customers.");
-const __sl383 = cptr.lit("mentions");
-const __sl384 = cptr.lit("indicates");
-const __sl385 = cptr.lit("non-paying");
-const __sl386 = cptr.lit("rude");
-const __sl387 = cptr.lit("%s %s!  I was looking for %s.");
-const __sl388 = cptr.lit("%s %s!  Didn't you forget to pay?");
-const __sl389 = cptr.lit("%s taps you on the %s.");
-const __sl390 = cptr.lit("%s %s that your bill comes to %ld %s.");
-const __sl391 = cptr.lit("says");
-const __sl392 = cptr.lit("%s %s that you owe %s %ld %s.");
-const __sl393 = cptr.lit("reminds you");
-const __sl394 = cptr.lit("%s encourages you to use your %ld %s of credit.");
-const __sl395 = cptr.lit("%s %s about a recent robbery.");
-const __sl396 = cptr.lit("complains");
-const __sl397 = cptr.lit("indicates concern");
-const __sl398 = cptr.lit("%s %s that %s is watching you carefully.");
-const __sl399 = cptr.lit("warns you");
-const __sl400 = cptr.lit("%s %s that business is bad.");
-const __sl401 = cptr.lit("%s %s that business is good.");
-const __sl402 = cptr.lit("shk_chat");
-const __sl403 = cptr.lit("%s talks about the problem of shoplifters.");
-const __sl404 = cptr.lit("Kop%s (disappointed) vanish%s into thin air.");
-const __sl405 = cptr.lit("es");
-const __sl406 = cptr.lit("%sYou owe%s %ld %s.");
-const __sl407 = cptr.lit("This is no free library, %s!  ");
-const __sl408 = cptr.lit("check_unpaid_usage");
-const __sl409 = cptr.lit(" an additional");
-const __sl410 = cptr.lit("%s%sThat will cost you %ld %s (Yendorian Fuel Tax).");
-const __sl411 = cptr.lit("%s%sEmptying that will cost you %ld %s.");
-const __sl412 = cptr.lit("Whoa!  ");
-const __sl413 = cptr.lit("Watch it!  ");
-const __sl414 = cptr.lit("%s%sUsage fee, %ld %s.");
-const __sl415 = cptr.lit("Hey!  ");
-const __sl416 = cptr.lit("Ahem.  ");
-const __sl417 = cptr.lit("credit is reduced by %ld %s.");
-const __sl418 = cptr.lit("credit is erased.");
-const __sl419 = cptr.lit("debt increases by %ld %s.");
-const __sl420 = cptr.lit("%s%s blocks your way!");
-const __sl421 = cptr.lit(" senses your motion and");
-const __sl422 = cptr.lit("cad");
-const __sl423 = cptr.lit("minx");
-const __sl424 = cptr.lit("beast");
-const __sl425 = cptr.lit("fiend");
-const __sl426 = cptr.lit("cad: unknown gender");
-const __sl427 = cptr.lit("thing");
-const __sl428 = cptr.lit("\"%s!  ");
-const __sl429 = cptr.lit("globby_bill_fixup called for non-globby object");
-const __sl430 = cptr.lit("donated %s %spays off your debt.");
-const __sl431 = cptr.lit("%s established %ld %s credit.");
-const __sl432 = cptr.lit("%s added %ld %s %s %ld %s.");
-const __sl433 = cptr.lit("to your credit; total is now");
-const __sl434 = cptr.lit("You owe me %ld %s for my %s that you %s with your%s");
-const __sl435 = cptr.lit("had the audacity to mix");
-const __sl436 = cptr.lit("just mixed");
-const __sl437 = cptr.lit(" stinking batch!");
-const __sl438 = cptr.lit("s.");
-const __sl439 = cptr.lit("You set it, you buy it!");
+const __sl111 = cptr.lit("shkp != NULL");
+const __sl112 = cptr.lit("%s is not near enough to receive your payment.");
+const __sl113 = cptr.lit("Pay whom?");
+const __sl114 = cptr.lit("the creature you want to pay");
+const __sl115 = cptr.lit("Try again...");
+const __sl116 = cptr.lit("are generous to yourself.");
+const __sl117 = cptr.lit("can't %s anyone there.");
+const __sl118 = cptr.lit("see");
+const __sl119 = cptr.lit("sense");
+const __sl120 = cptr.lit("is no one there to receive your payment.");
+const __sl121 = cptr.lit("%s is not interested in your payment.");
+const __sl122 = cptr.lit("%s is too far to receive your payment.");
+const __sl123 = cptr.lit("dopay: null shkp.");
+const __sl124 = cptr.lit("seems to be napping");
+const __sl125 = cptr.lit("doesn't respond");
+const __sl126 = cptr.lit("do not owe %s anything.");
+const __sl127 = cptr.lit("%shave no gold.");
+const __sl128 = cptr.lit("seem to ");
+const __sl129 = cptr.lit("But you have some gold stashed away.");
+const __sl130 = cptr.lit("give %s the %ld gold piece%s %s asked for.");
+const __sl131 = cptr.lit("give %s all your%s gold.");
+const __sl132 = cptr.lit(" openly kept");
+const __sl133 = cptr.lit("But you have hidden gold!");
+const __sl134 = cptr.lit("Unfortunately, %s doesn't look satisfied.");
+const __sl135 = cptr.lit(" seem to");
+const __sl136 = cptr.lit("%s is after blood, not gold!");
+const __sl137 = cptr.lit("But since %s shop has been robbed recently,");
+const __sl138 = cptr.lit("you %scompensate %s for %s losses.");
+const __sl139 = cptr.lit("partially ");
+const __sl140 = cptr.lit("%s is after your hide, not your gold!");
+const __sl141 = cptr.lit("try to appease %s by giving %s 1000 gold pieces.");
+const __sl142 = cptr.lit("angry");
+const __sl143 = cptr.lit("But %s is as angry as ever.");
+const __sl144 = cptr.lit("dopay: not to shopkeeper?");
+const __sl145 = cptr.lit("You owe %s %ld %s ");
+const __sl146 = cptr.lit("you picked up in the store.");
+const __sl147 = cptr.lit("for gold picked up and the use of merchandise.");
+const __sl148 = cptr.lit("for the use of merchandise.");
+const __sl149 = cptr.lit("%s");
+const __sl150 = cptr.lit("But you don't%s have enough gold%s.");
+const __sl151 = cptr.lit(" or credit");
+const __sl152 = cptr.lit("debt is covered by your credit.");
+const __sl153 = cptr.lit("pay that debt.");
+const __sl154 = cptr.lit("That debt is partially offset by your credit.");
+const __sl155 = cptr.lit("pay the remainder.");
+const __sl156 = cptr.lit("Thank you for shopping in %s %s%s");
+const __sl157 = cptr.lit("%s nods%s at you for shopping in %s %s%s");
+const __sl158 = cptr.lit(" appreciatively");
+const __sl159 = cptr.lit("%shave no gold or credit%s.");
+const __sl160 = cptr.lit(" left");
+const __sl161 = cptr.lit("don't have enough gold to buy%s the item%s %s.");
+const __sl162 = cptr.lit(" any of");
+const __sl163 = cptr.lit("you've picked");
+const __sl164 = cptr.lit("on your bill");
+const __sl165 = cptr.lit("Maybe you have some gold stashed away?");
+const __sl166 = cptr.lit("Itemized billing?");
+const __sl167 = cptr.lit("ynq m");
+const __sl168 = cptr.lit("You need to remove any unpaid items from that %s and buy them separately.");
+const __sl169 = cptr.lit("Paid object on bill??");
+const __sl170 = cptr.lit(" for %ld %s.  Pay?");
+const __sl171 = cptr.lit("that");
+const __sl172 = cptr.lit("those");
+const __sl173 = cptr.lit("paid for %s at a cost of %ld gold piece%s.%s");
+const __sl174 = cptr.lit("bought %s for %ld gold piece%s.%s");
+const __sl175 = cptr.lit("Can't find contained item on shop bill (#%d).");
+const __sl176 = cptr.lit("Buying %s contents: item #%u disappeared from bill.");
+const __sl177 = cptr.lit("Buying %s contents failed unexpectedly (#%u %d).");
+const __sl178 = cptr.lit("reject_purchase");
+const __sl179 = cptr.lit("intact_quan < billed_quan");
+const __sl180 = cptr.lit("the one%s in %s");
+const __sl181 = cptr.lit("these");
+const __sl182 = cptr.lit("this one");
+const __sl183 = cptr.lit("%s for the other %s before buying %s.");
+const __sl184 = cptr.lit("Pay");
+const __sl185 = cptr.lit("Please pay");
+const __sl186 = cptr.lit("%s %s%s your bill for the other %s first.");
+const __sl187 = cptr.lit("angrily ");
+const __sl188 = cptr.lit("motions to");
+const __sl189 = cptr.lit("%shave no gold or credit left.");
+const __sl190 = cptr.lit("don't%s have gold%s enough to pay for %s.");
+const __sl191 = cptr.lit("inherits");
+const __sl192 = cptr.lit(", shakes %s %s,");
+const __sl193 = cptr.lit("%s %slooks at your corpse%s and %s.");
+const __sl194 = cptr.lit("wakes up, ");
+const __sl195 = cptr.lit("disappears");
+const __sl196 = cptr.lit("sighs");
+const __sl197 = cptr.lit("%s gratefully inherits all your possessions.");
+const __sl198 = cptr.lit("wakes up and ");
+const __sl199 = cptr.lit("comes and ");
+const __sl200 = cptr.lit("takes");
+const __sl201 = cptr.lit("%s %s all your possessions.");
+const __sl202 = cptr.lit("%s %s the %ld %s %sowed %s.");
+const __sl203 = cptr.lit("you ");
+const __sl204 = cptr.lit("finish_paybill: bad location <%d,%d>.");
+const __sl205 = cptr.lit("bad glass gem %d?");
+const __sl206 = cptr.lit("%s seems %s that you want to sell that.");
+const __sl207 = cptr.lit("horrified");
+const __sl208 = cptr.lit("concerned");
+const __sl209 = cptr.lit("No thanks, I'd hang onto that if I were you.");
+const __sl210 = cptr.lit("You'll need %d%s candle%s to go along with it.");
+const __sl211 = cptr.lit(" more");
+const __sl212 = cptr.lit("I won't stock that.  Take it out of here!");
+const __sl213 = cptr.lit("%s shakes %s %s in refusal.");
+const __sl214 = cptr.lit("unpaid_cost: object wasn't on any bill.");
+const __sl215 = cptr.lit("got that for free!");
+const __sl216 = cptr.lit("add_to_billobjs: obj not free");
+const __sl217 = cptr.lit("%%s; you %s");
+const __sl218 = cptr.lit("them");
+const __sl219 = cptr.lit("it");
+const __sl220 = cptr.lit("%s has no interest in %s.");
+const __sl221 = cptr.lit("%s will cost you %ld %s%s.");
+const __sl222 = cptr.lit(" each");
+const __sl223 = cptr.lit("\"For you,");
+const __sl224 = cptr.lit(" scum;");
+const __sl225 = cptr.lit("; only");
+const __sl226 = cptr.lit("%s %ld %s %s %s%s.\"");
+const __sl227 = cptr.lit("per");
+const __sl228 = cptr.lit("for the contents of this");
+const __sl229 = cptr.lit("for this");
+const __sl230 = cptr.lit("list price of %s%s%s is %ld %s%s.");
+const __sl231 = cptr.lit("%s does not notice.");
+const __sl232 = cptr.lit("append_honorific");
+const __sl233 = cptr.lit(" dark lady");
+const __sl234 = cptr.lit(" dark lord");
+const __sl235 = cptr.lit(" hiril");
+const __sl236 = cptr.lit(" hir");
+const __sl237 = cptr.lit(" creature");
+const __sl238 = cptr.lit(" lady");
+const __sl239 = cptr.lit(" sir");
+const __sl240 = cptr.lit("good");
+const __sl241 = cptr.lit("honored");
+const __sl242 = cptr.lit("most gracious");
+const __sl243 = cptr.lit("esteemed");
+const __sl244 = cptr.lit("most renowned and sacred");
+const __sl245 = cptr.lit("splitbill: no resident shopkeeper??");
+const __sl246 = cptr.lit("splitbill: not on bill?");
+const __sl247 = cptr.lit("Negative quantity on bill??");
+const __sl248 = cptr.lit("Zero quantity on bill??");
+const __sl249 = cptr.lit("sub_one_frombill: unpaid object not on bill");
+const __sl250 = cptr.lit("stolen_container");
+const __sl251 = cptr.lit("stolen_value");
+const __sl252 = cptr.lit("have %ld %s credit remaining.");
+const __sl253 = cptr.lit("have no credit remaining.");
+const __sl254 = cptr.lit("still ");
+const __sl255 = cptr.lit("%sowe %s %ld %s");
+const __sl256 = cptr.lit(" for %s%sits contents");
+const __sl257 = cptr.lit("it and ");
+const __sl258 = cptr.lit("some of ");
+const __sl259 = cptr.lit(" for %s");
+const __sl260 = cptr.lit("%s!");
+const __sl261 = cptr.lit("%s booms: \"%s, you are a thief!\"");
+const __sl262 = cptr.lit("You hear a scream, \"Thief!\"");
+const __sl263 = cptr.lit("debt is %spaid off.");
+const __sl264 = cptr.lit("debt is paid off.");
+const __sl265 = cptr.lit("have %sestablished %ld %s credit.");
+const __sl266 = cptr.lit("re-");
+const __sl267 = cptr.lit("%ld %s added%s to your credit; total is now %ld %s.");
+const __sl268 = cptr.lit(" back");
+const __sl269 = cptr.lit("Thank you, scum!");
+const __sl270 = cptr.lit("%s smirks with satisfaction.");
+const __sl271 = cptr.lit("%s seems uninterested.");
+const __sl272 = cptr.lit("Thank you for your contribution to restock this recently plundered shop.");
+const __sl273 = cptr.lit("%s seems uninterested%s.");
+const __sl274 = cptr.lit(" in the rest");
+const __sl275 = cptr.lit("%s cannot pay you at present.");
+const __sl276 = cptr.lit("Will you accept %ld %s in credit for ");
+const __sl277 = cptr.lit("?");
+const __sl278 = cptr.lit("traded %s for %ld zorkmid%s in %scredit.");
+const __sl279 = cptr.lit("relinquish %s and acquire %ld zorkmid%s in %scredit.");
+const __sl280 = cptr.lit("additional ");
+const __sl281 = cptr.lit("%s offers%s %ld gold piece%s for %s%s ");
+const __sl282 = cptr.lit(" only");
+const __sl283 = cptr.lit("your item in ");
+const __sl284 = cptr.lit("your items in ");
+const __sl285 = cptr.lit("the");
+const __sl286 = cptr.lit("your");
+const __sl287 = cptr.lit("%s.  Sell %s?");
+const __sl288 = cptr.lit(" and item inside");
+const __sl289 = cptr.lit(" and items inside");
+const __sl290 = cptr.lit("sold some items inside %s for %ld gold piece%s.%s");
+const __sl291 = cptr.lit("sold %s for %ld gold piece%s.%s");
+const __sl292 = cptr.lit("relinquish %s and receive %ld gold piece%s in compensation.%s");
+const __sl293 = cptr.lit("invalid sell response");
+const __sl294 = cptr.lit("doinvbill: no shopkeeper?");
+const __sl295 = cptr.lit("Unpaid articles already used up:");
+const __sl296 = cptr.lit("Bad shopkeeper administration.");
+const __sl297 = cptr.lit("usage charges and/or other fees");
+const __sl298 = cptr.lit("Total:");
+const __sl299 = cptr.lit("Out of my way, scum!");
+const __sl300 = cptr.lit("%s nimbly%s catches %s.");
+const __sl301 = cptr.lit(" reaches over and");
+const __sl302 = cptr.lit("%s whispers %s.");
+const __sl303 = cptr.lit("an incantation");
+const __sl304 = cptr.lit("something");
+const __sl305 = cptr.lit("someone muttering an incantation.");
+const __sl306 = cptr.lit("Get your junk out of my wall!");
+const __sl307 = cptr.lit("litter_scatter");
+const __sl308 = cptr.lit("%s untraps %s.");
+const __sl309 = cptr.lit("The %s vanishes.");
+const __sl310 = cptr.lit("The %s is filled in.");
+const __sl311 = cptr.lit("Suddenly, a section of the wall closes up!");
+const __sl312 = cptr.lit("Suddenly, the shop door reappears!");
+const __sl313 = cptr.lit("more claustrophobic than before.");
+const __sl314 = cptr.lit("repair_damage");
+const __sl315 = cptr.lit("The dungeon acoustics noticeably change.");
+const __sl316 = cptr.lit("displaced image doesn't fool %s!");
+const __sl317 = cptr.lit("%s, %s!  I was looking for %s.");
+const __sl318 = cptr.lit("%s, %s!  Didn't you forget to pay?");
+const __sl319 = cptr.lit("%s holds out %s upturned %s.");
+const __sl320 = cptr.lit("shk_move");
+const __sl321 = cptr.lit("%s doesn't like customers who don't pay.");
+const __sl322 = cptr.lit("grabs");
+const __sl323 = cptr.lit("like a common thief.");
+const __sl324 = cptr.lit("Be careful, %s, or you might fall through the floor.");
+const __sl325 = cptr.lit("madam");
+const __sl326 = cptr.lit("sir");
+const __sl327 = cptr.lit("%s, do not damage the floor here!");
+const __sl328 = cptr.lit("Madam");
+const __sl329 = cptr.lit("Sir");
+const __sl330 = cptr.lit("knocks off");
+const __sl331 = cptr.lit("%s curses you in anger and frustration!");
+const __sl332 = cptr.lit("%s %s, and %s your backpack!");
+const __sl333 = cptr.lit("leap");
+const __sl334 = cptr.lit("%s %s your backpack!");
+const __sl335 = cptr.lit("makekops");
+const __sl336 = cptr.lit("dig into");
+const __sl337 = cptr.lit("damage");
+const __sl338 = cptr.lit("How dare you %s my %s?");
+const __sl339 = cptr.lit("shop");
+const __sl340 = cptr.lit("door");
+const __sl341 = cptr.lit("%s is %s that you decided to %s %s %s!");
+const __sl342 = cptr.lit("getcad");
+const __sl343 = cptr.lit("%s shouts:");
+const __sl344 = cptr.lit("Who dared %s my %s?");
+const __sl345 = cptr.lit("%s is %s that someone decided to %s %s %s!");
+const __sl346 = cptr.lit("pay_for_damage");
+const __sl347 = cptr.lit("%s leaps towards you!");
+const __sl348 = cptr.lit("an angry voice:");
+const __sl349 = cptr.lit("invisibility does not fool %s!");
+const __sl350 = cptr.lit("%sYou did %ld %s worth of damage!%s  Pay?");
+const __sl351 = cptr.lit("\"");
+const __sl352 = cptr.lit("Mollified, %s accepts your restitution.");
+const __sl353 = cptr.lit("appears");
+const __sl354 = cptr.lit("shifts location");
+const __sl355 = cptr.lit("Oh, yes!  You'll pay!");
+const __sl356 = cptr.lit("%s lunges %s %s toward your %s!");
+const __sl357 = cptr.lit("Fine goods for sale:");
+const __sl358 = cptr.lit("no charge");
+const __sl359 = cptr.lit("%ld %s%s");
+const __sl360 = cptr.lit("%s%s, %s");
+const __sl361 = cptr.lit("%s%s");
+const __sl362 = cptr.lit("%s, price %ld %s%s%s");
+const __sl363 = cptr.lit("shk_embellish");
+const __sl364 = cptr.lit(", gourmets' delight!");
+const __sl365 = cptr.lit(", painstakingly developed!");
+const __sl366 = cptr.lit(", superb craftsmanship!");
+const __sl367 = cptr.lit(", finest quality.");
+const __sl368 = cptr.lit(", an excellent choice.");
+const __sl369 = cptr.lit(", a real bargain.");
+const __sl370 = cptr.lit(", one of a kind!");
+const __sl371 = cptr.lit("%s says: 'These shopping malls give me a headache.'");
+const __sl372 = cptr.lit("%s says: 'Slow down.  Think clearly.'");
+const __sl373 = cptr.lit("%s says: 'You need to take things one at a time.'");
+const __sl374 = cptr.lit("%s says: 'I don't like poofy coffee... give me Colombian Supremo.'");
+const __sl375 = cptr.lit("%s says that getting the devteam's agreement on anything is difficult.");
+const __sl376 = cptr.lit("%s says that he has noticed those who serve their deity will prosper.");
+const __sl377 = cptr.lit("%s says: 'Don't try to steal from me - I have friends in high places!'");
+const __sl378 = cptr.lit("%s says: 'You may well need something from this shop in the future.'");
+const __sl379 = cptr.lit("%s comments about the Valley of the Dead as being a gateway.");
+const __sl380 = cptr.lit("%s asks whether you've seen any untended shops recently.");
+const __sl381 = cptr.lit("%s %s how much %s dislikes %s customers.");
+const __sl382 = cptr.lit("mentions");
+const __sl383 = cptr.lit("indicates");
+const __sl384 = cptr.lit("non-paying");
+const __sl385 = cptr.lit("rude");
+const __sl386 = cptr.lit("%s %s!  I was looking for %s.");
+const __sl387 = cptr.lit("%s %s!  Didn't you forget to pay?");
+const __sl388 = cptr.lit("%s taps you on the %s.");
+const __sl389 = cptr.lit("%s %s that your bill comes to %ld %s.");
+const __sl390 = cptr.lit("says");
+const __sl391 = cptr.lit("%s %s that you owe %s %ld %s.");
+const __sl392 = cptr.lit("reminds you");
+const __sl393 = cptr.lit("%s encourages you to use your %ld %s of credit.");
+const __sl394 = cptr.lit("%s %s about a recent robbery.");
+const __sl395 = cptr.lit("complains");
+const __sl396 = cptr.lit("indicates concern");
+const __sl397 = cptr.lit("%s %s that %s is watching you carefully.");
+const __sl398 = cptr.lit("warns you");
+const __sl399 = cptr.lit("%s %s that business is bad.");
+const __sl400 = cptr.lit("%s %s that business is good.");
+const __sl401 = cptr.lit("shk_chat");
+const __sl402 = cptr.lit("%s talks about the problem of shoplifters.");
+const __sl403 = cptr.lit("Kop%s (disappointed) vanish%s into thin air.");
+const __sl404 = cptr.lit("es");
+const __sl405 = cptr.lit("%sYou owe%s %ld %s.");
+const __sl406 = cptr.lit("This is no free library, %s!  ");
+const __sl407 = cptr.lit("check_unpaid_usage");
+const __sl408 = cptr.lit(" an additional");
+const __sl409 = cptr.lit("%s%sThat will cost you %ld %s (Yendorian Fuel Tax).");
+const __sl410 = cptr.lit("%s%sEmptying that will cost you %ld %s.");
+const __sl411 = cptr.lit("Whoa!  ");
+const __sl412 = cptr.lit("Watch it!  ");
+const __sl413 = cptr.lit("%s%sUsage fee, %ld %s.");
+const __sl414 = cptr.lit("Hey!  ");
+const __sl415 = cptr.lit("Ahem.  ");
+const __sl416 = cptr.lit("credit is reduced by %ld %s.");
+const __sl417 = cptr.lit("credit is erased.");
+const __sl418 = cptr.lit("debt increases by %ld %s.");
+const __sl419 = cptr.lit("%s%s blocks your way!");
+const __sl420 = cptr.lit(" senses your motion and");
+const __sl421 = cptr.lit("cad");
+const __sl422 = cptr.lit("minx");
+const __sl423 = cptr.lit("beast");
+const __sl424 = cptr.lit("fiend");
+const __sl425 = cptr.lit("cad: unknown gender");
+const __sl426 = cptr.lit("thing");
+const __sl427 = cptr.lit("\"%s!  ");
+const __sl428 = cptr.lit("globby_bill_fixup called for non-globby object");
+const __sl429 = cptr.lit("donated %s %spays off your debt.");
+const __sl430 = cptr.lit("%s established %ld %s credit.");
+const __sl431 = cptr.lit("%s added %ld %s %s %ld %s.");
+const __sl432 = cptr.lit("to your credit; total is now");
+const __sl433 = cptr.lit("You owe me %ld %s for my %s that you %s with your%s");
+const __sl434 = cptr.lit("had the audacity to mix");
+const __sl435 = cptr.lit("just mixed");
+const __sl436 = cptr.lit(" stinking batch!");
+const __sl437 = cptr.lit("s.");
+const __sl438 = cptr.lit("You set it, you buy it!");
 
 /** C ref: shk.c:22 — enum */
 export const FullyUsedUp = 1;
@@ -1809,9 +1808,9 @@ export function dopay() {
             for (shkp = next_shkp(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist), 0); shkp; shkp = next_shkp(cptr.ldPtr(shkp), 0))
                 if ((canseemon(shkp) || sensemon(shkp)))
                     break;
-            (__builtin_expect(BigInt((!(!cptr.eq(shkp, (null))))), 0n) ? __assert_rtn(__sl110, __sl111, 1805, __sl112) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(shkp, (null))))), 0n) ? __assert_rtn(__sl110, __sl47, 1805, __sl111) : void 0);
             if (!cptr.eq(shkp, resident) && !(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
-                pline(__sl113, Shknam(shkp));
+                pline(__sl112, Shknam(shkp));
                 return NHM.ECMD_OK;
             }
         } else {
@@ -1819,36 +1818,36 @@ export function dopay() {
             let cc = cptr.alloc(4);
             let cx;
             let cy;
-            pline(__sl114);
+            pline(__sl113);
             cptr.stI16(cc, cptr.ldI16(u));
             cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-            if (getpos(cc, 1, __sl115) < 0)
+            if (getpos(cc, 1, __sl114) < 0)
                 return NHM.ECMD_CANCEL;
             cx = cptr.ldI16(cc);
             cy = cptr.ldI16o(cc, $nhcoord_y);
             if (cx < 0) {
-                pline(__sl116);
+                pline(__sl115);
                 return NHM.ECMD_OK;
             }
             if (((cx) == cptr.ldI16(u) && (cy) == cptr.ldI16o(u, $you_uy))) {
-                You(__sl117);
+                You(__sl116);
                 return NHM.ECMD_OK;
             }
             mtmp = (cptr.ldPtro3(svl, cx, 168, cy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
             if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) && (!mtmp || !(canseemon(mtmp) || sensemon(mtmp)))) {
-                You(__sl118, !Blind() ? __sl119 : __sl120);
+                You(__sl117, !Blind() ? __sl118 : __sl119);
                 return NHM.ECMD_OK;
             }
             if (!mtmp) {
-                There(__sl121);
+                There(__sl120);
                 return NHM.ECMD_OK;
             }
             if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
-                pline(__sl122, Monnam(mtmp));
+                pline(__sl121, Monnam(mtmp));
                 return NHM.ECMD_OK;
             }
             if (!cptr.eq(mtmp, resident) && !(dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
-                pline(__sl123, Shknam(mtmp));
+                pline(__sl122, Shknam(mtmp));
                 return NHM.ECMD_OK;
             }
             shkp = mtmp;
@@ -1857,7 +1856,7 @@ export function dopay() {
             do {
                 if (debugcore(__sl47, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    pline(__sl124);
+                    pline(__sl123);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             } while (0);
@@ -1869,29 +1868,29 @@ export function dopay() {
     if (ltmp || cptr.ldI32o(eshkp, $eshk_billct) || cptr.ldI64o(eshkp, $eshk_debit))
         rouse_shk(shkp, 1);
     if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1))) {
-        pline(__sl92, Shknam(shkp), (rng_log_enabled() ? (rng_log_set_caller(__sl47, 1865, __sl110), rn2(2)) : rn2(2)) ? __sl125 : __sl126);
+        pline(__sl92, Shknam(shkp), (rng_log_enabled() ? (rng_log_set_caller(__sl47, 1865, __sl110), rn2(2)) : rn2(2)) ? __sl124 : __sl125);
         return NHM.ECMD_OK;
     }
     if (!cptr.eq(shkp, resident) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0) {
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         if (!ltmp) {
-            You(__sl127, shkname(shkp));
+            You(__sl126, shkname(shkp));
         } else if (!umoney) {
-            You(__sl128, stashed_gold ? __sl129 : __sl8);
+            You(__sl127, stashed_gold ? __sl128 : __sl8);
             if (stashed_gold)
-                pline(__sl130);
+                pline(__sl129);
         } else {
             if (umoney > ltmp) {
-                You(__sl131, shkname(shkp), ltmp, (((ltmp) == 1n) ? __sl8 : __sl61), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
+                You(__sl130, shkname(shkp), ltmp, (((ltmp) == 1n) ? __sl8 : __sl61), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
                 pay(ltmp, shkp);
             } else {
-                You(__sl132, shkname(shkp), stashed_gold ? __sl133 : __sl8);
+                You(__sl131, shkname(shkp), stashed_gold ? __sl132 : __sl8);
                 pay(umoney, shkp);
                 if (stashed_gold)
-                    pline(__sl134);
+                    pline(__sl133);
             }
             if ((umoney < ltmp / 2n) || (umoney < ltmp && stashed_gold))
-                pline(__sl135, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
+                pline(__sl134, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
             else
                 make_happy_shk(shkp, 0);
         }
@@ -1900,42 +1899,42 @@ export function dopay() {
     if (!cptr.ldI32o(eshkp, $eshk_billct) && !cptr.ldI64o(eshkp, $eshk_debit)) {
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         if (!ltmp && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0) {
-            You(__sl127, shkname(shkp));
+            You(__sl126, shkname(shkp));
             if (!umoney)
-                pline(cptr.decay(no_money), stashed_gold ? __sl136 : __sl8);
+                pline(cptr.decay(no_money), stashed_gold ? __sl135 : __sl8);
         } else if (ltmp) {
-            pline(__sl137, shkname(shkp));
+            pline(__sl136, shkname(shkp));
             if (umoney < ltmp / 2n || (umoney < ltmp && stashed_gold)) {
                 if (!umoney)
-                    pline(cptr.decay(no_money), stashed_gold ? __sl136 : __sl8);
+                    pline(cptr.decay(no_money), stashed_gold ? __sl135 : __sl8);
                 else
                     pline(cptr.decay(not_enough_money), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
                 return NHM.ECMD_TIME;
             }
-            pline(__sl138, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)));
-            pline(__sl139, (umoney < ltmp) ? __sl140 : __sl8, shkname(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)));
+            pline(__sl137, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)));
+            pline(__sl138, (umoney < ltmp) ? __sl139 : __sl8, shkname(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)));
             pay(umoney < ltmp ? umoney : ltmp, shkp);
             make_happy_shk(shkp, 0);
         } else {
-            pline(__sl141, Shknam(shkp));
+            pline(__sl140, Shknam(shkp));
             if (umoney < 1000n) {
                 if (!umoney)
-                    pline(cptr.decay(no_money), stashed_gold ? __sl136 : __sl8);
+                    pline(cptr.decay(no_money), stashed_gold ? __sl135 : __sl8);
                 else
                     pline(cptr.decay(not_enough_money), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
                 return NHM.ECMD_TIME;
             }
-            You(__sl142, (canseemon(shkp) || sensemon(shkp)) ? x_monnam(shkp, NHM.ARTICLE_THE, __sl143, 0, 0) : shkname(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
+            You(__sl141, (canseemon(shkp) || sensemon(shkp)) ? x_monnam(shkp, NHM.ARTICLE_THE, __sl142, 0, 0) : shkname(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
             pay(1000n, shkp);
             if (cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n) || (rng_log_enabled() ? (rng_log_set_caller(__sl47, 1938, __sl110), rn2(3)) : rn2(3)))
                 make_happy_shk(shkp, 0);
             else
-                pline(__sl144, shkname(shkp));
+                pline(__sl143, shkname(shkp));
         }
         return NHM.ECMD_TIME;
     }
     if (!cptr.eq(shkp, resident)) {
-        impossible(__sl145);
+        impossible(__sl144);
         if (resident)
             setpaid(resident);
         return NHM.ECMD_OK;
@@ -1945,30 +1944,30 @@ export function dopay() {
         let loan = cptr.ldI64o(eshkp, $eshk_loan);
         let sbuf = new Uint8Array(256);
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
-        void cptr.sprintf(cptr.decay(sbuf), __sl146, shkname(shkp), dtmp, currency(dtmp));
+        void cptr.sprintf(cptr.decay(sbuf), __sl145, shkname(shkp), dtmp, currency(dtmp));
         if (loan) {
             if (loan == dtmp)
-                void cptr.strcat(cptr.decay(sbuf), __sl147);
+                void cptr.strcat(cptr.decay(sbuf), __sl146);
             else
-                void cptr.strcat(cptr.decay(sbuf), __sl148);
+                void cptr.strcat(cptr.decay(sbuf), __sl147);
         } else {
-            void cptr.strcat(cptr.decay(sbuf), __sl149);
+            void cptr.strcat(cptr.decay(sbuf), __sl148);
         }
-        pline(__sl150, cptr.decay(sbuf));
+        pline(__sl149, cptr.decay(sbuf));
         if (BigInt.asIntN(64, umoney + cptr.ldI64o(eshkp, $eshk_credit)) < dtmp) {
-            pline(__sl151, stashed_gold ? __sl136 : __sl8, cptr.ldI64o(eshkp, $eshk_credit) ? __sl152 : __sl8);
+            pline(__sl150, stashed_gold ? __sl135 : __sl8, cptr.ldI64o(eshkp, $eshk_credit) ? __sl151 : __sl8);
             return NHM.ECMD_TIME;
         } else {
             if (cptr.ldI64o(eshkp, $eshk_credit) >= dtmp) {
                 cptr.stI64o(eshkp, $eshk_credit, cptr.ldI64o(eshkp, $eshk_credit) - dtmp);
                 cptr.stI64o(eshkp, $eshk_debit, 0n);
                 cptr.stI64o(eshkp, $eshk_loan, 0n);
-                Your(__sl153);
+                Your(__sl152);
             } else if (!cptr.ldI64o(eshkp, $eshk_credit)) {
                 money2mon(shkp, dtmp);
                 cptr.stI64o(eshkp, $eshk_debit, 0n);
                 cptr.stI64o(eshkp, $eshk_loan, 0n);
-                You(__sl154);
+                You(__sl153);
                 cptr.st1(disp, 1);
             } else {
                 dtmp -= cptr.ldI64o(eshkp, $eshk_credit);
@@ -1976,8 +1975,8 @@ export function dopay() {
                 money2mon(shkp, dtmp);
                 cptr.stI64o(eshkp, $eshk_debit, 0n);
                 cptr.stI64o(eshkp, $eshk_loan, 0n);
-                pline(__sl155);
-                You(__sl156);
+                pline(__sl154);
+                You(__sl155);
                 cptr.st1(disp, 1);
             }
             paid.v = 1;
@@ -1992,9 +1991,9 @@ export function dopay() {
     if (pay_done && !(!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) && paid.v) {
         if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
-            verbalize(__sl157, s_suffix(shkname(shkp)), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, $eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl29 : __sl28);
+            verbalize(__sl156, s_suffix(shkname(shkp)), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, $eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl29 : __sl28);
         } else {
-            pline(__sl158, Shknam(shkp), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl159 : __sl8, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, $eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl29 : __sl28);
+            pline(__sl157, Shknam(shkp), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl158 : __sl8, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, $eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl29 : __sl28);
         }
     }
     if (paid.v)
@@ -2025,7 +2024,7 @@ function pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (!umoney && !cptr.ldI64o(eshkp, $eshk_credit)) {
-        You(__sl160, stashed_gold ? __sl129 : __sl8, cptr.ld1s(paid_p) ? __sl161 : __sl8);
+        You(__sl159, stashed_gold ? __sl128 : __sl8, cptr.ld1s(paid_p) ? __sl160 : __sl8);
         return 1;
     }
     bp = cptr.ldPtro(eshkp, $eshk_bill_p);
@@ -2033,9 +2032,9 @@ function pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
     ebillct = cptr.ldI32o(eshkp, $eshk_billct);
     more_than_one = schar((ebillct > 1 || cptr.ldI64o(otmp, $obj_quan) < cptr.ldI64o(bp, $bill_x_bquan) || cptr.ld1so2(ibill, 0, 32, $sortbill_item_usedup) == NHC.UndisclosedContainer ? 1 : 0));
     if ((BigInt.asIntN(64, umoney + cptr.ldI64o(eshkp, $eshk_credit))) < cheapest_item(ibillct, ibill)) {
-        You(__sl162, more_than_one ? __sl163 : __sl8, (((more_than_one ? 2 : 1) == 1) ? __sl8 : __sl61), (ebillct > 1) ? __sl164 : __sl165);
+        You(__sl161, more_than_one ? __sl162 : __sl8, (((more_than_one ? 2 : 1) == 1) ? __sl8 : __sl61), (ebillct > 1) ? __sl163 : __sl164);
         if (stashed_gold)
-            pline(__sl166);
+            pline(__sl165);
         return 1;
     }
     via_menu = schar((cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL));
@@ -2049,7 +2048,7 @@ function pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
             itemize = 0;
             via_menu = 0;
         } else {
-            iprompt = !more_than_one ? 121 : yn_function(__sl167, __sl168, 113, 1);
+            iprompt = !more_than_one ? 121 : yn_function(__sl166, __sl167, 113, 1);
             if (iprompt == 113)
                 return 1;
             itemize = schar((iprompt == 121));
@@ -2066,7 +2065,7 @@ function pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
                 buy = 1;
             } else {
                 if (boxbag_result == 2)
-                    verbalize(__sl169, simpleonames(otmp));
+                    verbalize(__sl168, simpleonames(otmp));
                 buy = 0;
             }
         } else {
@@ -2132,7 +2131,7 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
     let buy;
     let consumed = schar((which == 0));
     if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) && !cptr.ld1so(bp, $bill_x_useup) && !((cptr.ldPtro((obj), $obj_cobj) !== null) && unpaid_cost(obj, NHC.COST_CONTENTS))) {
-        impossible(__sl170);
+        impossible(__sl169);
         return 1;
     }
     if (itemize && insufficient_funds(shkp, obj, 0n)) {
@@ -2153,8 +2152,8 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
     if (itemize) {
         let qbuf = new Uint8Array(256);
         let qsfx = new Uint8Array(256);
-        void cptr.sprintf(cptr.decay(qsfx), __sl171, ltmp, currency(ltmp));
-        void safe_qbuf(cptr.decay(qbuf), null, cptr.decay(qsfx), obj, (quan == 1n) ? Doname2 : doname, ansimpleoname, (quan == 1n) ? __sl172 : __sl173);
+        void cptr.sprintf(cptr.decay(qsfx), __sl170, ltmp, currency(ltmp));
+        void safe_qbuf(cptr.decay(qbuf), null, cptr.decay(qsfx), obj, (quan == 1n) ? Doname2 : doname, ansimpleoname, (quan == 1n) ? __sl171 : __sl172);
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) == 110) {
             buy = -1;
         }
@@ -2169,7 +2168,7 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
     if (buy == 1) {
         pay(ltmp, shkp);
         if (!unseen)
-            shk_names_obj(shkp, obj, consumed ? __sl174 : __sl175, ltmp, __sl8);
+            shk_names_obj(shkp, obj, consumed ? __sl173 : __sl174, ltmp, __sl8);
     }
     cptr.stI64o(obj, $obj_quan, save_quan);
     (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
@@ -2200,7 +2199,7 @@ function buy_container(shkp, indx, ibillct, ibill) {
         bp = cptr.add(cptr.ldPtro(eshkp, $eshk_bill_p), i, 24);
         otmp = bp_to_obj(bp);
         if (!otmp) {
-            impossible(__sl176, cptr.ldI32(bp));
+            impossible(__sl175, cptr.ldI32(bp));
             return 2;
         }
         if (cptr.ld1so(otmp, $obj_where) != NHM.OBJ_CONTAINED && !(cptr.ldPtro((otmp), $obj_cobj) !== null))
@@ -2224,13 +2223,13 @@ function buy_container(shkp, indx, ibillct, ibill) {
             if (cptr.ldI32(bp) == boid)
                 break;
         if (i == ebillct) {
-            impossible(__sl177, simpleonames(container), boid);
+            impossible(__sl176, simpleonames(container), boid);
             return 2;
         }
         otmp = bp_to_obj(bp);
         buy = dopayobj(shkp, bp, otmp, 1, 0, sightunseen);
         if (buy != 1) {
-            impossible(__sl178, simpleonames(container), cptr.ldI32o(otmp, $obj_o_id), buy);
+            impossible(__sl177, simpleonames(container), cptr.ldI32o(otmp, $obj_o_id), buy);
             continue;
         }
         cptr.stI64o2(ibill, indx, 32, $sortbill_item_cost, cptr.ldI64o2(ibill, indx, 32, $sortbill_item_cost) - (BigInt.asIntN(64, cptr.ldI64o(bp, $bill_x_price) * cptr.ldI64o(bp, $bill_x_bquan))));
@@ -2240,7 +2239,7 @@ function buy_container(shkp, indx, ibillct, ibill) {
     if (buycount && sightunseen) {
         if (unpaidcontainer)
             cptr.stI32o(container, $obj_unpaid, cptr.stI32o(container, $obj_no_charge, 1));
-        shk_names_obj(shkp, container, __sl175, totalcost, __sl8);
+        shk_names_obj(shkp, container, __sl174, totalcost, __sl8);
         cptr.stI32o(container, $obj_unpaid, cptr.stI32o(container, $obj_no_charge, 0));
     }
     return buycount ? 0 : 2;
@@ -2249,18 +2248,18 @@ function buy_container(shkp, indx, ibillct, ibill) {
 /** C ref: shk.c:2419 — @param {CPtr} shkp @param {CPtr} obj @param {CLongLong} billed_quan */
 function reject_purchase(shkp, obj, billed_quan) {
     let intact_quan = cptr.ldI64o(obj, $obj_quan);
-    (__builtin_expect(BigInt((!(intact_quan < billed_quan))), 0n) ? __assert_rtn(__sl179, __sl111, 2426, __sl180) : void 0);
+    (__builtin_expect(BigInt((!(intact_quan < billed_quan))), 0n) ? __assert_rtn(__sl178, __sl47, 2426, __sl179) : void 0);
     cptr.stI64o(obj, $obj_quan, BigInt.asIntN(64, billed_quan - intact_quan));
     if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         let which = new Uint8Array(256);
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_CONTAINED)
-            nh_snprintf(__sl179, 2434, cptr.decay(which), 256n, __sl181, (((intact_quan) == 1n) ? __sl8 : __sl61), thesimpleoname(cptr.ldPtro(obj, $obj_v)));
+            nh_snprintf(__sl178, 2434, cptr.decay(which), 256n, __sl180, (((intact_quan) == 1n) ? __sl8 : __sl61), thesimpleoname(cptr.ldPtro(obj, $obj_v)));
         else
-            void cptr.sprintf(cptr.decay(which), __sl150, (intact_quan > 1n) ? __sl182 : __sl183);
+            void cptr.sprintf(cptr.decay(which), __sl149, (intact_quan > 1n) ? __sl181 : __sl182);
         ;
-        verbalize(__sl184, (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __sl185 : __sl186, simpleonames(obj), cptr.decay(which));
+        verbalize(__sl183, (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __sl184 : __sl185, simpleonames(obj), cptr.decay(which));
     } else {
-        pline(__sl187, Shknam(shkp), (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __sl188 : __sl8, ((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? __sl189 : __sl26, simpleonames(obj));
+        pline(__sl186, Shknam(shkp), (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __sl187 : __sl8, ((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? __sl188 : __sl26, simpleonames(obj));
     }
     cptr.stI64o(obj, $obj_quan, intact_quan);
 }
@@ -2272,12 +2271,12 @@ function insufficient_funds(shkp, item, cost) {
     let ecredit = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_credit);
     if (!cost && BigInt.asIntN(64, umoney + ecredit) == 0n) {
         stashed_gold = hidden_gold(1);
-        You(__sl190, (stashed_gold > 0n) ? __sl129 : __sl8);
+        You(__sl189, (stashed_gold > 0n) ? __sl128 : __sl8);
         return 1;
     }
     if (cost && BigInt.asIntN(64, umoney + ecredit) < cost) {
         stashed_gold = hidden_gold(1);
-        You(__sl191, (stashed_gold > 0n) ? __sl136 : __sl8, (ecredit > 0n) ? __sl152 : __sl8, paydoname(item));
+        You(__sl190, (stashed_gold > 0n) ? __sl135 : __sl8, (ecredit > 0n) ? __sl151 : __sl8, paydoname(item));
         return 1;
     }
     return 0;
@@ -2354,9 +2353,9 @@ function inherits(shkp, numsk, croaked, silently) {
         if (numsk > 1) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(shkp, $monst_my), 8), cptr.ldI16o(shkp, $monst_mx)) & NHM.IN_SIGHT) != 0) && croaked && !silently) {
                 cptr.st1o(cptr.decay(takes), 0, 0, 1);
-                if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 32768n) == 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 2600, __sl192), rn2(2)) : rn2(2)))
-                    void cptr.sprintf(cptr.decay(takes), __sl193, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HEAD));
-                pline(__sl194, Shknam(shkp), ((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) ? __sl195 : __sl8, cptr.decay(takes), !inhishop(shkp) ? __sl196 : __sl197);
+                if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 32768n) == 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 2600, __sl191), rn2(2)) : rn2(2)))
+                    void cptr.sprintf(cptr.decay(takes), __sl192, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HEAD));
+                pline(__sl193, Shknam(shkp), ((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) ? __sl194 : __sl8, cptr.decay(takes), !inhishop(shkp) ? __sl195 : __sl196);
             }
             taken = uinshop;
             { __go_skip = true; break __skip_skip; }
@@ -2364,7 +2363,7 @@ function inherits(shkp, numsk, croaked, silently) {
         if (uinshop && inhishop(shkp) && !cptr.ldI32o(eshkp, $eshk_billct) && !cptr.ldI64o(eshkp, $eshk_robbed) && !cptr.ldI64o(eshkp, $eshk_debit) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 && !cptr.ld1so(eshkp, $eshk_following) && cptr.ldI32o(u, $you_ugrave_arise) < NHC.LOW_PM) {
             taken = schar((cptr.ldPtro(gi, $instance_globals_i_invent) !== null));
             if (taken && !silently)
-                pline(__sl198, Shknam(shkp));
+                pline(__sl197, Shknam(shkp));
             {
                 setpaid(shkp);
                 if (taken)
@@ -2385,10 +2384,10 @@ function inherits(shkp, numsk, croaked, silently) {
             umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
             cptr.st1o(cptr.decay(takes), 0, 0, 1);
             if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)))
-                void cptr.strcat(cptr.decay(takes), __sl199);
+                void cptr.strcat(cptr.decay(takes), __sl198);
             if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
-                void cptr.strcat(cptr.decay(takes), __sl200);
-            void cptr.strcat(cptr.decay(takes), __sl201);
+                void cptr.strcat(cptr.decay(takes), __sl199);
+            void cptr.strcat(cptr.decay(takes), __sl200);
             if (loss > umoney || !loss || uinshop) {
                 cptr.stI64o(eshkp, $eshk_robbed, cptr.ldI64o(eshkp, $eshk_robbed) - umoney);
                 if (cptr.ldI64o(eshkp, $eshk_robbed) < 0n)
@@ -2398,13 +2397,13 @@ function inherits(shkp, numsk, croaked, silently) {
                     cptr.st1(disp, 1);
                 }
                 if (!silently)
-                    pline(__sl202, Shknam(shkp), cptr.decay(takes));
+                    pline(__sl201, Shknam(shkp), cptr.decay(takes));
                 taken = 1;
             } else {
                 money2mon(shkp, loss);
                 cptr.st1(disp, 1);
                 if (!silently)
-                    pline(__sl203, Shknam(shkp), cptr.decay(takes), loss, currency(loss), cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n) ? __sl8 : __sl204, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
+                    pline(__sl202, Shknam(shkp), cptr.decay(takes), loss, currency(loss), cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n) ? __sl8 : __sl203, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)));
                 pacify_shk(shkp, 0);
                 cptr.st1o(eshkp, $eshk_following, 0);
                 cptr.stI64o(eshkp, $eshk_robbed, 0n);
@@ -2452,7 +2451,7 @@ export function finish_paybill() {
     let oy = cptr.ldI16o(gr, $instance_globals_r_repo + $repo_location + $nhcoord_y);
     if (!isok(i16(ox), i16(oy))) {
         if (shkp)
-            impossible(__sl205, ox, oy);
+            impossible(__sl204, ox, oy);
         ox = cptr.ldI16(u) ? cptr.ldI16(u) : cptr.ldI16o(u, $you_ux0);
         oy = cptr.ldI16(u) ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(u, $you_uy0);
     }
@@ -2586,7 +2585,7 @@ function get_cost(obj, shkp) {
                 i = pseudorand ? NHC.AMETHYST : NHC.FLUORITE;
                 break;
                 default:
-                impossible(__sl206, cptr.ldI16o(obj, $obj_otyp));
+                impossible(__sl205, cptr.ldI16o(obj, $obj_otyp));
                 i = NHC.STRANGE_OBJECT;
                 break;
             }
@@ -2702,21 +2701,21 @@ function special_stock(obj, shkp, quietly) {
         if (!quietly) {
             if (is_izchak(shkp, 1) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
                 if (Deaf() || (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
-                    pline(__sl207, Shknam(shkp), (cptr.ld1so(obj, $obj_spe) < 7) ? __sl208 : __sl209);
+                    pline(__sl206, Shknam(shkp), (cptr.ld1so(obj, $obj_spe) < 7) ? __sl207 : __sl208);
                 } else {
                     ;
-                    verbalize(__sl210);
+                    verbalize(__sl209);
                     if (cptr.ld1so(obj, $obj_spe) < 7) {
                         ;
-                        verbalize(__sl211, ((7 - cptr.ld1so(obj, $obj_spe)) | 0), (cptr.ld1so(obj, $obj_spe) > 0) ? __sl212 : __sl8, ((((7 - cptr.ld1so(obj, $obj_spe)) | 0) == 1) ? __sl8 : __sl61));
+                        verbalize(__sl210, ((7 - cptr.ld1so(obj, $obj_spe)) | 0), (cptr.ld1so(obj, $obj_spe) > 0) ? __sl211 : __sl8, ((((7 - cptr.ld1so(obj, $obj_spe)) | 0) == 1) ? __sl8 : __sl61));
                     }
                 }
             } else {
                 if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
-                    verbalize(__sl213);
+                    verbalize(__sl212);
                 } else {
-                    pline(__sl214, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HEAD));
+                    pline(__sl213, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HEAD));
                 }
             }
         }
@@ -2820,7 +2819,7 @@ export function unpaid_cost(unp_obj, cost_type) {
         }
     }
     if (!shkp || ((cptr.ldI32o(unp_obj, $obj_unpaid) & 1) | 0 && !bp))
-        impossible(__sl215);
+        impossible(__sl214);
     return amt;
 }
 
@@ -2837,7 +2836,7 @@ function add_one_tobill(obj, dummy, shkp) {
     if (!billable(shkp, obj, cptr.ld1so(u, $you_ushops), 1)) {
         unbilled = 1;
     } else if (cptr.ldI32o(eshkp, $eshk_billct) == NHM.BILLSZ) {
-        You(__sl216);
+        You(__sl215);
         unbilled = 1;
     }
     if (unbilled) {
@@ -2868,7 +2867,7 @@ function add_one_tobill(obj, dummy, shkp) {
 /** C ref: shk.c:3366 — @param {CPtr} obj */
 function add_to_billobjs(obj) {
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE)
-        panic(__sl217);
+        panic(__sl216);
     if (cptr.ldI16o(obj, $obj_timed))
         obj_stop_timers(obj);
     cptr.stPtr(obj, cptr.ldPtro(gb, $instance_globals_b_billobjs));
@@ -2905,9 +2904,9 @@ function shk_names_obj(shkp, obj, fmt, amt, arg) {
     }
     obj_name = paydoname(obj);
     if (was_unknown) {
-        void cptr.sprintf(cptr.decay(fmtbuf), __sl218, fmt);
+        void cptr.sprintf(cptr.decay(fmtbuf), __sl217, fmt);
         cptr.st1o(obj_name, 0, highc(cptr.ld1so(obj_name, 0)));
-        pline(cptr.decay(fmtbuf), obj_name, (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl219 : __sl220, amt, (((amt) == 1n) ? __sl8 : __sl61), arg);
+        pline(cptr.decay(fmtbuf), obj_name, (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl218 : __sl219, amt, (((amt) == 1n) ? __sl8 : __sl61), arg);
     } else {
         You(fmt, obj_name, amt, (((amt) == 1n) ? __sl8 : __sl61), arg);
     }
@@ -2953,7 +2952,7 @@ export function addtobill(obj, ininv, dummy, silent) {
         return;
     } else if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_billct) == NHM.BILLSZ) {
         if (!silent)
-            You(__sl216);
+            You(__sl215);
         return;
     }
     ltmp = (cltmp = (gltmp = 0n));
@@ -2991,52 +2990,52 @@ export function addtobill(obj, ininv, dummy, silent) {
     if (!Deaf() && !(((cptr.ldI32o((shkp.v), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp.v), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp.v), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) && !silent) {
         let buf = new Uint8Array(256);
         if (!ltmp) {
-            pline(__sl221, Shknam(shkp.v), the(xname(obj)));
+            pline(__sl220, Shknam(shkp.v), the(xname(obj)));
             return;
         }
         if (!ininv) {
-            pline(__sl222, The(xname(obj)), ltmp, currency(ltmp), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl223 : __sl8);
+            pline(__sl221, The(xname(obj)), ltmp, currency(ltmp), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl222 : __sl8);
         } else {
             let save_quan = cptr.ldI64o(obj, $obj_quan);
-            void cptr.strcpy(cptr.decay(buf), __sl224);
+            void cptr.strcpy(cptr.decay(buf), __sl223);
             if ((!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1)))) {
-                void cptr.strcat(cptr.decay(buf), __sl225);
+                void cptr.strcat(cptr.decay(buf), __sl224);
             } else if (!cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_surcharge)) {
                 void cptr.strcat(cptr.decay(buf), __sl14);
                 append_honorific(cptr.decay(buf));
-                void cptr.strcat(cptr.decay(buf), __sl226);
+                void cptr.strcat(cptr.decay(buf), __sl225);
             }
             cptr.stI64o(obj, $obj_quan, 1n);
             set_voice(shkp.v, 0, 80, 0);
-            pline(__sl227, cptr.decay(buf), ltmp, currency(ltmp), (save_quan > 1n) ? __sl228 : ((contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1)) ? __sl229 : __sl230), xname(obj), (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) ? cptr.decay(and_its_contents) : __sl8);
+            pline(__sl226, cptr.decay(buf), ltmp, currency(ltmp), (save_quan > 1n) ? __sl227 : ((contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1)) ? __sl228 : __sl229), xname(obj), (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) ? cptr.decay(and_its_contents) : __sl8);
             cptr.stI64o(obj, $obj_quan, save_quan);
         }
     } else if (!silent) {
         if (ltmp) {
             set_voice(shkp.v, 0, 80, 0);
-            pline_The(__sl231, (contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1)) ? cptr.decay(the_contents_of) : __sl8, the(xname(obj)), (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) ? cptr.decay(and_its_contents) : __sl8, ltmp, currency(ltmp), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl223 : __sl8);
+            pline_The(__sl230, (contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1)) ? cptr.decay(the_contents_of) : __sl8, the(xname(obj)), (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) ? cptr.decay(and_its_contents) : __sl8, ltmp, currency(ltmp), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl222 : __sl8);
         } else {
-            pline(__sl232, Shknam(shkp.v));
+            pline(__sl231, Shknam(shkp.v));
         }
     }
 }
 
 const __static_append_honorific_honored = cptr.alloc(5 * 8);
-cptr.stPtro(__static_append_honorific_honored, 0, __sl241);
-cptr.stPtro(__static_append_honorific_honored, 8, __sl242);
-cptr.stPtro(__static_append_honorific_honored, 16, __sl243);
-cptr.stPtro(__static_append_honorific_honored, 24, __sl244);
-cptr.stPtro(__static_append_honorific_honored, 32, __sl245); /** C ref: shk.c:3606 — char *[5] (function-static) */
+cptr.stPtro(__static_append_honorific_honored, 0, __sl240);
+cptr.stPtro(__static_append_honorific_honored, 8, __sl241);
+cptr.stPtro(__static_append_honorific_honored, 16, __sl242);
+cptr.stPtro(__static_append_honorific_honored, 24, __sl243);
+cptr.stPtro(__static_append_honorific_honored, 32, __sl244); /** C ref: shk.c:3606 — char *[5] (function-static) */
 
 /** C ref: shk.c:3602 — @param {CPtr} buf */
 function append_honorific(buf) {
-    void cptr.strcat(buf, cptr.ldPtro(__static_append_honorific_honored, ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 3611, __sl233), rn2((5 - 1) | 0)) : rn2((5 - 1) | 0)) + ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0)) | 0, 8));
+    void cptr.strcat(buf, cptr.ldPtro(__static_append_honorific_honored, ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 3611, __sl232), rn2((5 - 1) | 0)) : rn2((5 - 1) | 0)) + ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0)) | 0, 8));
     if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE))
-        void cptr.strcat(buf, (cptr.ld1so(flags, $flag_female)) ? __sl234 : __sl235);
+        void cptr.strcat(buf, (cptr.ld1so(flags, $flag_female)) ? __sl233 : __sl234);
     else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
-        void cptr.strcat(buf, (cptr.ld1so(flags, $flag_female)) ? __sl236 : __sl237);
+        void cptr.strcat(buf, (cptr.ld1so(flags, $flag_female)) ? __sl235 : __sl236);
     else
-        void cptr.strcat(buf, !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8n) != 0n) ? __sl238 : ((cptr.ld1so(flags, $flag_female)) ? __sl239 : __sl240));
+        void cptr.strcat(buf, !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8n) != 0n) ? __sl237 : ((cptr.ld1so(flags, $flag_female)) ? __sl238 : __sl239));
 }
 
 /** C ref: shk.c:3623 — @param {CPtr} obj @param {CPtr} otmp */
@@ -3045,19 +3044,19 @@ export function splitbill(obj, otmp) {
     let tmp;
     let shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
     if (!shkp || !inhishop(shkp)) {
-        impossible(__sl246);
+        impossible(__sl245);
         return;
     }
     bp = onbill(obj, shkp, 0);
     if (!bp) {
-        impossible(__sl247);
+        impossible(__sl246);
         return;
     }
     if (cptr.ldI64o(bp, $bill_x_bquan) < cptr.ldI64o(otmp, $obj_quan)) {
-        impossible(__sl248);
+        impossible(__sl247);
     }
     if (cptr.ldI64o(bp, $bill_x_bquan) == cptr.ldI64o(otmp, $obj_quan)) {
-        impossible(__sl249);
+        impossible(__sl248);
     }
     cptr.stI64o(bp, $bill_x_bquan, cptr.ldI64o(bp, $bill_x_bquan) - cptr.ldI64o(otmp, $obj_quan));
     if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) == NHM.BILLSZ) {
@@ -3097,7 +3096,7 @@ function sub_one_frombill(obj, shkp) {
         cptr.memcpy(bp, cptr.add(cptr.ldPtro(eshkp, $eshk_bill_p), cptr.ldI32o(eshkp, $eshk_billct), 24), 24);
         return;
     } else if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
-        impossible(__sl250);
+        impossible(__sl249);
         cptr.stI32o(obj, $obj_unpaid, 0);
     }
 }
@@ -3130,7 +3129,7 @@ function stolen_container(obj, shkp, price, ininv) {
         if (!billable(shkp, otmp, cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_shoproom), 1)) {
             if ((bp = onbill(otmp, shkp.v, 0)) === null)
                 continue;
-            (__builtin_expect(BigInt((!(!cptr.eq(shkp.v, (null))))), 0n) ? __assert_rtn(__sl251, __sl111, 3732, __sl112) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(shkp.v, (null))))), 0n) ? __assert_rtn(__sl250, __sl47, 3732, __sl111) : void 0);
             billamt = BigInt.asIntN(64, cptr.ldI64o(bp, $bill_x_bquan) * cptr.ldI64o(bp, $bill_x_price));
             sub_one_frombill(otmp, shkp.v);
         }
@@ -3168,7 +3167,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
     shkp.v = null;
     if (!billable(shkp, obj, roomno, 1)) {
         if ((bp = onbill(obj, shkp.v, 0)) !== null) {
-            (__builtin_expect(BigInt((!(!cptr.eq(shkp.v, (null))))), 0n) ? __assert_rtn(__sl252, __sl111, 3786, __sl112) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(shkp.v, (null))))), 0n) ? __assert_rtn(__sl251, __sl47, 3786, __sl111) : void 0);
             billamt = BigInt.asIntN(64, cptr.ldI64o(bp, $bill_x_bquan) * cptr.ldI64o(bp, $bill_x_price));
             sub_one_frombill(obj, shkp.v);
         }
@@ -3204,28 +3203,28 @@ export function stolen_value(obj, x, y, peaceful, silent) {
             let still = __sl8;
             if (credit_use) {
                 if (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_credit)) {
-                    You(__sl253, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_credit), currency(cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_credit)));
+                    You(__sl252, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_credit), currency(cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_credit)));
                     return value;
                 } else if (!value) {
-                    You(__sl254);
+                    You(__sl253);
                     return 0n;
                 }
-                still = __sl255;
+                still = __sl254;
             }
-            void cptr.sprintf(cptr.decay(buf), __sl256, still, shkname(shkp.v), value, currency(value));
+            void cptr.sprintf(cptr.decay(buf), __sl255, still, shkname(shkp.v), value, currency(value));
             if (u_count)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl257, was_unpaid ? __sl258 : __sl8, (c_count > u_count) ? __sl259 : __sl8);
+                void cptr.sprintf(eos(cptr.decay(buf)), __sl256, was_unpaid ? __sl257 : __sl8, (c_count > u_count) ? __sl258 : __sl8);
             else if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl260, (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl219 : __sl220);
-            You(__sl261, cptr.decay(buf));
+                void cptr.sprintf(eos(cptr.decay(buf)), __sl259, (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl218 : __sl219);
+            You(__sl260, cptr.decay(buf));
         }
     } else {
         cptr.stI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_robbed, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)), $eshk_robbed) + value);
         if (!silent) {
             if (canseemon(shkp.v)) {
-                Norep(__sl262, Shknam(shkp.v), svp);
+                Norep(__sl261, Shknam(shkp.v), svp);
             } else if (!Deaf()) {
-                Norep(__sl263);
+                Norep(__sl262);
             }
         }
         hot_pursuit(shkp.v);
@@ -3245,19 +3244,19 @@ export function donate_gold(gltmp, shkp, selling) {
                 cptr.stI64o(eshkp, $eshk_loan, 0n);
         }
         cptr.stI64o(eshkp, $eshk_debit, cptr.ldI64o(eshkp, $eshk_debit) - gltmp);
-        Your(__sl264, cptr.ldI64o(eshkp, $eshk_debit) ? __sl140 : __sl8);
+        Your(__sl263, cptr.ldI64o(eshkp, $eshk_debit) ? __sl139 : __sl8);
     } else {
         let delta = BigInt.asIntN(64, gltmp - cptr.ldI64o(eshkp, $eshk_debit));
         cptr.stI64o(eshkp, $eshk_credit, cptr.ldI64o(eshkp, $eshk_credit) + delta);
         if (cptr.ldI64o(eshkp, $eshk_debit)) {
             cptr.stI64o(eshkp, $eshk_debit, 0n);
             cptr.stI64o(eshkp, $eshk_loan, 0n);
-            Your(__sl265);
+            Your(__sl264);
         }
         if (cptr.ldI64o(eshkp, $eshk_credit) == delta)
-            You(__sl266, !selling ? __sl267 : __sl8, delta, currency(delta));
+            You(__sl265, !selling ? __sl266 : __sl8, delta, currency(delta));
         else
-            pline(__sl268, delta, currency(delta), !selling ? __sl269 : __sl8, cptr.ldI64o(eshkp, $eshk_credit), currency(cptr.ldI64o(eshkp, $eshk_credit)));
+            pline(__sl267, delta, currency(delta), !selling ? __sl268 : __sl8, cptr.ldI64o(eshkp, $eshk_credit), currency(cptr.ldI64o(eshkp, $eshk_credit)));
     }
 }
 
@@ -3307,9 +3306,9 @@ export function sellobj(obj, x, y) {
     if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
         if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
-            verbalize(__sl270);
+            verbalize(__sl269);
         } else {
-            pline(__sl271, Shknam(shkp));
+            pline(__sl270, Shknam(shkp));
         }
         subfrombill(obj, shkp);
         return;
@@ -3325,7 +3324,7 @@ export function sellobj(obj, x, y) {
         } else
             cptr.stI32o(obj, $obj_no_charge, 1);
         if (!unpaid && (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_DONTSELL) && !special_stock(obj, shkp, 0))
-            pline(__sl272, Shknam(shkp));
+            pline(__sl271, Shknam(shkp));
         return;
     }
     if (cptr.ldI64o(eshkp, $eshk_robbed)) {
@@ -3337,7 +3336,7 @@ export function sellobj(obj, x, y) {
             cptr.stI64o(eshkp, $eshk_robbed, 0n);
         if (offer && !Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
-            verbalize(__sl273);
+            verbalize(__sl272);
         }
         subfrombill(obj, shkp);
         return;
@@ -3358,7 +3357,7 @@ export function sellobj(obj, x, y) {
         }
     }
     if ((!saleitem && !(container && cltmp > 0n)) || cptr.ldI32o(eshkp, $eshk_billct) == NHM.BILLSZ || cptr.ld1so(obj, $obj_oclass) == NHC.BALL_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.CHAIN_CLASS || offer == 0n || (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(obj, $obj_oeaten)) || ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE) && cptr.ldI64o(obj, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost))))) {
-        pline(__sl274, Shknam(shkp), cgold ? __sl275 : __sl8);
+        pline(__sl273, Shknam(shkp), cgold ? __sl274 : __sl8);
         if (container)
             dropped_container(obj, shkp, 0);
         cptr.stI32o(obj, $obj_no_charge, 1);
@@ -3372,10 +3371,10 @@ export function sellobj(obj, x, y) {
         if (cptr.ldI32o(gs, $instance_globals_s_sell_how) == NHM.SELL_NORMAL || cptr.ld1so(ga, $instance_globals_a_auto_credit)) {
             c = cptr.st1o(gs, $instance_globals_s_sell_response, 121);
         } else if (cptr.ld1so(gs, $instance_globals_s_sell_response) != 110) {
-            pline(__sl276, Shknam(shkp));
-            void cptr.sprintf(cptr.decay(qbuf), __sl277, tmpcr, currency(tmpcr));
+            pline(__sl275, Shknam(shkp));
+            void cptr.sprintf(cptr.decay(qbuf), __sl276, tmpcr, currency(tmpcr));
             record_price_quote(cptr.ldI16o(obj, $obj_otyp), BigInt.asUintN(64, (tmpcr / cptr.ldI64o(obj, $obj_quan))), 0);
-            c = yn_function(safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl278, obj, doname, thesimpleoname, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl172 : __sl173), cptr.decay(ynaqchars), 121, 1);
+            c = yn_function(safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl277, obj, doname, thesimpleoname, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl171 : __sl172), cptr.decay(ynaqchars), 121, 1);
             if (c == 97) {
                 c = 121;
                 cptr.st1o(ga, $instance_globals_a_auto_credit, 1);
@@ -3383,7 +3382,7 @@ export function sellobj(obj, x, y) {
         } else
             c = 110;
         if (c == 121) {
-            shk_names_obj(shkp, obj, ((cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL) ? __sl279 : __sl280), tmpcr, (cptr.ldI64o(eshkp, $eshk_credit) > 0n) ? __sl281 : __sl8);
+            shk_names_obj(shkp, obj, ((cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL) ? __sl278 : __sl279), tmpcr, (cptr.ldI64o(eshkp, $eshk_credit) > 0n) ? __sl280 : __sl8);
             cptr.stI64o(eshkp, $eshk_credit, cptr.ldI64o(eshkp, $eshk_credit) + tmpcr);
             if (container)
                 dropped_container(obj, shkp, 1);
@@ -3412,11 +3411,11 @@ export function sellobj(obj, x, y) {
                 yourc = BigInt.asIntN(64, count_contents(obj, 1, 1, 1, 1) - shksc);
                 only_partially_your_contents = schar((shksc && yourc ? 1 : 0));
             }
-            void cptr.sprintf(cptr.decay(qbuf), __sl282, Shknam(shkp), short_funds ? __sl283 : __sl8, offer, (((offer) == 1n) ? __sl8 : __sl61), (cltmp && !ltmp) ? ((yourc == 1n) ? __sl284 : __sl285) : __sl8, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __sl286 : __sl287);
+            void cptr.sprintf(cptr.decay(qbuf), __sl281, Shknam(shkp), short_funds ? __sl282 : __sl8, offer, (((offer) == 1n) ? __sl8 : __sl61), (cltmp && !ltmp) ? ((yourc == 1n) ? __sl283 : __sl284) : __sl8, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __sl285 : __sl286);
             one = schar((!ltmp ? (yourc == 1n) : (cptr.ldI64o(obj, $obj_quan) == 1n && !cltmp ? 1 : 0)));
-            void cptr.sprintf(cptr.decay(qsfx), __sl288, (cltmp && ltmp) ? (only_partially_your_contents ? ((yourc == 1n) ? __sl289 : __sl290) : cptr.decay(and_its_contents)) : __sl8, one ? __sl220 : __sl219);
+            void cptr.sprintf(cptr.decay(qsfx), __sl287, (cltmp && ltmp) ? (only_partially_your_contents ? ((yourc == 1n) ? __sl288 : __sl289) : cptr.decay(and_its_contents)) : __sl8, one ? __sl219 : __sl218);
             record_price_quote(cptr.ldI16o(obj, $obj_otyp), BigInt.asUintN(64, (offer / cptr.ldI64o(obj, $obj_quan))), 0);
-            void safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), cptr.decay(qsfx), obj, xname, simpleonames, one ? __sl172 : __sl173);
+            void safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), cptr.decay(qsfx), obj, xname, simpleonames, one ? __sl171 : __sl172);
         } else
             cptr.st1o(cptr.decay(qbuf), 0, 0, 1);
         switch (cptr.ld1so(gs, $instance_globals_s_sell_response) ? cptr.ld1so(gs, $instance_globals_s_sell_response) : yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 110, 1)) {
@@ -3442,10 +3441,10 @@ export function sellobj(obj, x, y) {
                 cptr.stI32o(obj, $obj_no_charge, 1);
             subfrombill(obj, shkp);
             pay(-offer, shkp);
-            shk_names_obj(shkp, obj, (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL) ? ((!ltmp && cltmp && only_partially_your_contents) ? __sl291 : __sl292) : __sl293, offer, __sl8);
+            shk_names_obj(shkp, obj, (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL) ? ((!ltmp && cltmp && only_partially_your_contents) ? __sl290 : __sl291) : __sl292, offer, __sl8);
             break;
             default:
-            impossible(__sl294);
+            impossible(__sl293);
         }
     }
 }
@@ -3464,7 +3463,7 @@ export function doinvbill(mode) {
         shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
         if (!shkp || !inhishop(shkp)) {
             if (mode != 0)
-                impossible(__sl295);
+                impossible(__sl294);
             return 0;
         }
         eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
@@ -3476,13 +3475,13 @@ export function doinvbill(mode) {
             return cnt;
         }
         datawin = create_nhwindow()(NHM.NHW_MENU);
-        putstr()(datawin, 0, __sl296);
+        putstr()(datawin, 0, __sl295);
         putstr()(datawin, 0, __sl8);
         totused = 0n;
         for (bp = cptr.ldPtro(eshkp, $eshk_bill_p), end_bp = cptr.add(cptr.ldPtro(eshkp, $eshk_bill_p), cptr.ldI32o(eshkp, $eshk_billct), 24); cptr.cmp(bp, end_bp) < 0; bp = cptr.add(bp, 1, 24)) {
             obj = bp_to_obj(bp);
             if (!obj) {
-                impossible(__sl297);
+                impossible(__sl296);
                 break __lbl_quit;
             }
             if (cptr.ld1so(bp, $bill_x_useup) || cptr.ldI64o(bp, $bill_x_bquan) > cptr.ldI64o(obj, $obj_quan)) {
@@ -3503,10 +3502,10 @@ export function doinvbill(mode) {
             if (totused)
                 putstr()(datawin, 0, __sl8);
             totused += cptr.ldI64o(eshkp, $eshk_debit);
-            buf_p = xprname(null, __sl298, NHC.GOLD_SYM, 0, cptr.ldI64o(eshkp, $eshk_debit), 0n);
+            buf_p = xprname(null, __sl297, NHC.GOLD_SYM, 0, cptr.ldI64o(eshkp, $eshk_debit), 0n);
             putstr()(datawin, 0, buf_p);
         }
-        buf_p = xprname(null, __sl299, 42, 0, totused, 0n);
+        buf_p = xprname(null, __sl298, 42, 0, totused, 0n);
         putstr()(datawin, 0, __sl8);
         putstr()(datawin, 0, buf_p);
         display_nhwindow()(datawin, 0);
@@ -3582,10 +3581,10 @@ export function shkcatch(obj, x, y) {
     if (!((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ld1so(u, $you_ushops) != cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom) || !inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && dist2(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), x, y) < 3 && (cptr.ldI16o(shkp, $monst_mx) != x || cptr.ldI16o(shkp, $monst_my) != y)) {
         if (mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG) == 2 && !Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
-            verbalize(__sl300);
+            verbalize(__sl299);
         }
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
-            pline(__sl301, Shknam(shkp), (x == cptr.ldI16o(shkp, $monst_mx) && y == cptr.ldI16o(shkp, $monst_my)) ? __sl8 : __sl302, the(xname(obj)));
+            pline(__sl300, Shknam(shkp), (x == cptr.ldI16o(shkp, $monst_mx) && y == cptr.ldI16o(shkp, $monst_my)) ? __sl8 : __sl301, the(xname(obj)));
             if (!(canseemon(shkp) || sensemon(shkp)))
                 map_invisible(x, y);
             nh_delay_output()();
@@ -3729,10 +3728,10 @@ function shk_fixes_damage(shkp) {
         return;
     shk_closeby = schar((dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 16));
     if (canseemon(shkp)) {
-        pline(__sl303, Shknam(shkp), shk_closeby ? __sl304 : __sl305);
+        pline(__sl302, Shknam(shkp), shk_closeby ? __sl303 : __sl304);
     } else if (!Deaf() && shk_closeby) {
         ;
-        You_hear(__sl306);
+        You_hear(__sl305);
     }
     void repair_damage(shkp, dam, 0);
     discard_damage_struct(dam);
@@ -3768,7 +3767,7 @@ function litter_scatter(litter, x, y, shkp) {
         if (Punished() && !(cptr.ldI32o(u, $you_uswallow) & 1) && ((cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y) || (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uball.v, $obj_ox) == x && cptr.ldI16o(uball.v, $obj_oy) == y))) {
             if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
-                verbalize(__sl307);
+                verbalize(__sl306);
             }
             unplacebc();
             placebc();
@@ -3779,7 +3778,7 @@ function litter_scatter(litter, x, y, shkp) {
                 obfree(otmp, null);
             } else {
                 let trylimit = 10;
-                let i = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 4661, __sl308), rn2(9)) : rn2(9));
+                let i = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 4661, __sl307), rn2(9)) : rn2(9));
                 let ix;
                 let iy;
                 do {
@@ -3842,9 +3841,9 @@ function repair_damage(shkp, tmp_dam, catchup) {
             cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
             if (!catchup) {
                 if (canseemon(shkp) && dist2(x, y, cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my)) <= 2)
-                    pline(__sl309, Shknam(shkp), ansimpleoname(otmp));
+                    pline(__sl308, Shknam(shkp), ansimpleoname(otmp));
                 else if ((cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(ttmp, $trap_ty), 8), cptr.ldI16o(ttmp, $trap_tx)) & NHM.IN_SIGHT) != 0))
-                    pline(__sl310, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
+                    pline(__sl309, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
             }
             void mpickobj(shkp, otmp);
             break;
@@ -3852,11 +3851,11 @@ function repair_damage(shkp, tmp_dam, catchup) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
             if (!catchup && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(ttmp, $trap_ty), 8), cptr.ldI16o(ttmp, $trap_tx)) & NHM.IN_SIGHT) != 0))
-                pline(__sl311, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
+                pline(__sl310, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
             break;
             default:
             if (!catchup && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(ttmp, $trap_ty), 8), cptr.ldI16o(ttmp, $trap_tx)) & NHM.IN_SIGHT) != 0))
-                pline(__sl310, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
+                pline(__sl309, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
             break;
         }
         deltrap(ttmp);
@@ -3886,16 +3885,16 @@ function repair_damage(shkp, tmp_dam, catchup) {
     if (seeit) {
         if (((cptr.ld1so(tmp_dam, $damage_typ)) && (cptr.ld1so(tmp_dam, $damage_typ)) <= NHC.DBWALL)) {
             cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
-            pline(__sl312);
+            pline(__sl311);
         } else if (((cptr.ld1so(tmp_dam, $damage_typ)) == NHC.DOOR)) {
-            pline(__sl313);
+            pline(__sl312);
         }
         newsym(x, y);
     } else if (((cptr.ld1so(tmp_dam, $damage_typ)) && (cptr.ld1so(tmp_dam, $damage_typ)) <= NHC.DBWALL)) {
         if (inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom))
-            You_feel(__sl314);
-        else if (!Deaf() && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4833, __sl315), rn2(10)) : rn2(10)))
-            Norep(__sl316);
+            You_feel(__sl313);
+        else if (!Deaf() && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4833, __sl314), rn2(10)) : rn2(10)))
+            Norep(__sl315);
     }
     if (stop_picking)
         stop_occupation();
@@ -3944,7 +3943,7 @@ export function shk_move(shkp) {
     if ((udist = dist2((omx), (omy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) < 3 && (!cptr.eq(cptr.ldPtro(shkp, $monst_data), cptr.add(mons, NHC.PM_GRID_BUG, 96)) || (omx == cptr.ldI16(u) || omy == cptr.ldI16o(u, $you_uy)))) {
         if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) || (Conflict() && !resist_conflict(shkp))) {
             if (Displaced())
-                Your(__sl317, shkname(shkp));
+                Your(__sl316, shkname(shkp));
             void mattacku(shkp);
             return 0;
         }
@@ -3952,7 +3951,7 @@ export function shk_move(shkp) {
             if (cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n)) {
                 if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
-                    verbalize(__sl318, Hello(shkp), svp, cptr.add(eshkp, $eshk_customer));
+                    verbalize(__sl317, Hello(shkp), svp, cptr.add(eshkp, $eshk_customer));
                 }
                 cptr.st1o(eshkp, $eshk_following, 0);
                 return 0;
@@ -3960,13 +3959,13 @@ export function shk_move(shkp) {
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > BigInt.asIntN(64, cptr.ldI64o(gf, $instance_globals_f_followmsg) + 4n)) {
                 if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
-                    verbalize(__sl319, Hello(shkp), svp);
+                    verbalize(__sl318, Hello(shkp), svp);
                 } else {
-                    pline(__sl320, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HAND));
+                    pline(__sl319, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HAND));
                 }
                 cptr.stI64o(gf, $instance_globals_f_followmsg, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4924, __sl321), rn2(9)) : rn2(9))) {
-                    pline(__sl322, Shknam(shkp));
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4924, __sl320), rn2(9)) : rn2(9))) {
+                    pline(__sl321, Shknam(shkp));
                     rile_shk(shkp);
                 }
             }
@@ -4036,12 +4035,12 @@ export function is_fshk(mtmp) {
 export function shopdig(fall) {
     let shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
     let lang;
-    let grabs = __sl323;
+    let grabs = __sl322;
     if (!shkp)
         return;
     if (!inhishop(shkp)) {
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT)) {
-            You_feel(__sl324);
+            You_feel(__sl323);
             adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
         }
         return;
@@ -4058,35 +4057,35 @@ export function shopdig(fall) {
             if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-                    verbalize(__sl325, cptr.ld1so(flags, $flag_female) ? __sl326 : __sl327);
+                    verbalize(__sl324, cptr.ld1so(flags, $flag_female) ? __sl325 : __sl326);
                 } else {
-                    verbalize(__sl328, cptr.ld1so(flags, $flag_female) ? __sl329 : __sl330);
+                    verbalize(__sl327, cptr.ld1so(flags, $flag_female) ? __sl328 : __sl329);
                 }
             }
         }
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT)) {
-            You_feel(__sl324);
+            You_feel(__sl323);
             adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
         }
     } else if (!um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 5) && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit))) {
         let obj;
         let obj2;
         if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-            grabs = __sl331;
+            grabs = __sl330;
         }
         if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
             mnexto(shkp, NHM.RLOC_MSG);
             if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
                 if (lang == 2)
-                    pline(__sl332, Shknam(shkp));
+                    pline(__sl331, Shknam(shkp));
                 else if (lang == 1)
                     growl(shkp);
                 rile_shk(shkp);
                 return;
             } else
-                pline(__sl333, Shknam(shkp), makeplural(locomotion(cptr.ldPtro(shkp, $monst_data), __sl334)), grabs);
+                pline(__sl332, Shknam(shkp), makeplural(locomotion(cptr.ldPtro(shkp, $monst_data), __sl333)), grabs);
         } else
-            pline(__sl335, Shknam(shkp), grabs);
+            pline(__sl334, Shknam(shkp), grabs);
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = obj2) {
             obj2 = cptr.ldPtr(obj);
             if ((cptr.ldI64o(obj, $obj_owornmask) & -1537n) != 0n || (cptr.eq(obj, uswapwep.v) && cptr.ld1so(u, $you_twoweap)) || (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm)))
@@ -4113,7 +4112,7 @@ function makekops(mm) {
     let cnt;
     let mndx;
     let k;
-    cptr.stI32o(k_cnt, 0, cnt = (Math.abs(depth(cptr.add(u, $you_uz))) + (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5119, __sl336), rnd(5)) : rnd(5))) | 0, 4);
+    cptr.stI32o(k_cnt, 0, cnt = (Math.abs(depth(cptr.add(u, $you_uz))) + (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5119, __sl335), rnd(5)) : rnd(5))) | 0, 4);
     cptr.stI32o(k_cnt, 1, (((cnt / 3) | 0) + 1) | 0, 4);
     cptr.stI32o(k_cnt, 2, ((cnt / 6) | 0), 4);
     cptr.stI32o(k_cnt, 3, ((cnt / 9) | 0), 4);
@@ -4131,24 +4130,24 @@ function makekops(mm) {
 
 /** C ref: shk.c:5138 — @param {CPtr} shkp @param {CPtr} dmgstr @param {CInt} x @param {CInt} y @param {CInt} uinshp @param {CInt} animal @param {CInt} pursue */
 function getcad(shkp, dmgstr, x, y, uinshp, animal, pursue) {
-    let dugwall = schar((!strcmp(dmgstr, __sl337) || !strcmp(dmgstr, __sl338) ? 1 : 0));
+    let dugwall = schar((!strcmp(dmgstr, __sl336) || !strcmp(dmgstr, __sl337) ? 1 : 0));
     if ((((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         if (animal && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)))
             yelp(shkp);
     } else if (pursue || uinshp || !um_dist(x, y, 1)) {
         if (!Deaf()) {
             ;
-            verbalize(__sl339, dmgstr, dugwall ? __sl340 : __sl341);
+            verbalize(__sl338, dmgstr, dugwall ? __sl339 : __sl340);
         } else {
-            pline(__sl342, Shknam(shkp), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5155, __sl343), rn2(3)) : rn2(3)), 8), dmgstr, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), dugwall ? __sl340 : __sl341);
+            pline(__sl341, Shknam(shkp), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5155, __sl342), rn2(3)) : rn2(3)), 8), dmgstr, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), dugwall ? __sl339 : __sl340);
         }
     } else {
         if (!Deaf()) {
-            pline(__sl344, Shknam(shkp));
+            pline(__sl343, Shknam(shkp));
             ;
-            verbalize(__sl345, dmgstr, dugwall ? __sl340 : __sl341);
+            verbalize(__sl344, dmgstr, dugwall ? __sl339 : __sl340);
         } else {
-            pline(__sl346, Shknam(shkp), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5166, __sl343), rn2(3)) : rn2(3)), 8), dmgstr, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), dugwall ? __sl340 : __sl341);
+            pline(__sl345, Shknam(shkp), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5166, __sl342), rn2(3)) : rn2(3)), 8), dmgstr, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), dugwall ? __sl339 : __sl340);
         }
     }
     hot_pursuit(shkp);
@@ -4195,7 +4194,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
             if (shk_distance > nearest_shk)
                 continue;
             if ((shk_distance == nearest_shk) && picks) {
-                if ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 5218, __sl347), rn2(++picks)) : rn2(++picks)))
+                if ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 5218, __sl346), rn2(++picks)) : rn2(++picks)))
                     continue;
             } else
                 picks = 1;
@@ -4225,7 +4224,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
     }
     if (uinshp) {
         if (um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 1) && !um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 3)) {
-            pline(__sl348, Shknam(shkp));
+            pline(__sl347, Shknam(shkp));
             mnexto(shkp, NHM.RLOC_NOMSG);
         }
         pursue = um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 1);
@@ -4237,9 +4236,9 @@ export function pay_for_damage(dmgstr, cant_mollify) {
         if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
             if (!animal) {
                 if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
-                    You_hear(__sl349);
+                    You_hear(__sl348);
                     ;
-                    verbalize(__sl300);
+                    verbalize(__sl299);
                 }
                 wait_synch()();
                 void sleep(1);
@@ -4249,13 +4248,13 @@ export function pay_for_damage(dmgstr, cant_mollify) {
         }
         void mnearto(shkp, x, y, 1, NHM.RLOC_MSG);
     }
-    if ((um_dist(x, y, 1) && !uinshp) || cant_mollify || (BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) + cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_credit))) < cost_of_damage || !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5297, __sl347), rn2(50)) : rn2(50))) {
+    if ((um_dist(x, y, 1) && !uinshp) || cant_mollify || (BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) + cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_credit))) < cost_of_damage || !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5297, __sl346), rn2(50)) : rn2(50))) {
         getcad(shkp, dmgstr, x, y, uinshp, animal, pursue);
         return;
     }
     if (Invis())
-        Your(__sl350, shkname(shkp));
-    void cptr.sprintf(cptr.decay(qbuf), __sl351, !animal ? cad(1) : __sl8, cost_of_damage, currency(cost_of_damage), !animal ? __sl352 : __sl8);
+        Your(__sl349, shkname(shkp));
+    void cptr.sprintf(cptr.decay(qbuf), __sl350, !animal ? cad(1) : __sl8, cost_of_damage, currency(cost_of_damage), !animal ? __sl351 : __sl8);
     if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 110) {
         let is_seen;
         let was_seen = schar(canseemon(shkp));
@@ -4267,22 +4266,22 @@ export function pay_for_damage(dmgstr, cant_mollify) {
             money2mon(shkp, cost_of_damage);
             cptr.st1(disp, 1);
         }
-        pline(__sl353, shkname(shkp));
+        pline(__sl352, shkname(shkp));
         home_shk(shkp, 0);
         pacify_shk(shkp, 0);
         if (cptr.ldI16o(shkp, $monst_mx) != sx || cptr.ldI16o(shkp, $monst_my) != sy) {
             if (was_outside && (canseemon(shkp) || sensemon(shkp)))
                 pline(__sl95, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)));
             else if ((is_seen = schar(canseemon(shkp))) == 1 || was_seen)
-                pline(__sl92, Shknam(shkp), !was_seen ? __sl354 : (is_seen ? __sl355 : __sl196));
+                pline(__sl92, Shknam(shkp), !was_seen ? __sl353 : (is_seen ? __sl354 : __sl195));
         }
     } else {
         if (!animal) {
             if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
-                verbalize(__sl356);
+                verbalize(__sl355);
             } else {
-                pline(__sl357, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HAND), body_part(NHC.NECK));
+                pline(__sl356, Shknam(shkp), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), mbodypart(shkp, NHC.HAND), body_part(NHC.NECK));
             }
         } else
             growl(shkp);
@@ -4340,7 +4339,7 @@ export function price_quote(first_obj) {
     if (!shkp || !inhishop(shkp))
         return;
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
-    putstr()(tmpwin, 0, __sl358);
+    putstr()(tmpwin, 0, __sl357);
     putstr()(tmpwin, 0, __sl8);
     for (otmp = first_obj; otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
@@ -4352,12 +4351,12 @@ export function price_quote(first_obj) {
         if ((cptr.ldI32o(otmp, $obj_globby) & 1))
             cost *= get_pricing_units(otmp);
         if (!cost) {
-            void cptr.strcpy(cptr.decay(price), __sl359);
+            void cptr.strcpy(cptr.decay(price), __sl358);
             contentsonly = 0;
         } else {
-            void cptr.sprintf(cptr.decay(price), __sl360, cost, currency(cost), (cptr.ldI64o(otmp, $obj_quan)) > 1n ? __sl223 : __sl8);
+            void cptr.sprintf(cptr.decay(price), __sl359, cost, currency(cost), (cptr.ldI64o(otmp, $obj_quan)) > 1n ? __sl222 : __sl8);
         }
-        void cptr.sprintf(cptr.decay(buf), __sl361, contentsonly ? cptr.decay(the_contents_of) : __sl8, doname(otmp), cptr.decay(price));
+        void cptr.sprintf(cptr.decay(buf), __sl360, contentsonly ? cptr.decay(the_contents_of) : __sl8, doname(otmp), cptr.decay(price));
         putstr()(tmpwin, 0, cptr.decay(buf)), cnt++;
     }
     if (cnt > 1) {
@@ -4365,11 +4364,11 @@ export function price_quote(first_obj) {
     } else if (cnt == 1) {
         if (!cost) {
             ;
-            verbalize(__sl261, upstart(cptr.decay(buf)));
+            verbalize(__sl260, upstart(cptr.decay(buf)));
         } else {
-            void cptr.sprintf(cptr.decay(buf), __sl362, contentsonly ? cptr.decay(the_contents_of) : __sl8, doname(first_obj));
+            void cptr.sprintf(cptr.decay(buf), __sl361, contentsonly ? cptr.decay(the_contents_of) : __sl8, doname(first_obj));
             ;
-            verbalize(__sl363, upstart(cptr.decay(buf)), cost, currency(cost), (cptr.ldI64o(first_obj, $obj_quan) > 1n) ? __sl223 : __sl8, contentsonly ? __sl28 : shk_embellish(first_obj, cost));
+            verbalize(__sl362, upstart(cptr.decay(buf)), cost, currency(cost), (cptr.ldI64o(first_obj, $obj_quan) > 1n) ? __sl222 : __sl8, contentsonly ? __sl28 : shk_embellish(first_obj, cost));
         }
     }
     destroy_nhwindow()(tmpwin);
@@ -4377,9 +4376,9 @@ export function price_quote(first_obj) {
 
 /** C ref: shk.c:5468 — @param {CPtr} itm @param {CLongLong} cost @returns {CPtr} */
 function shk_embellish(itm, cost) {
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5470, __sl364), rn2(3)) : rn2(3))) {
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5470, __sl363), rn2(3)) : rn2(3))) {
         let o;
-        let choice = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5471, __sl364), rn2(5)) : rn2(5));
+        let choice = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5471, __sl363), rn2(5)) : rn2(5));
         if (choice == 0)
             choice = (cost < 100n ? 1 : (cost < 500n ? 2 : 3));
         switch (choice) {
@@ -4389,84 +4388,84 @@ function shk_embellish(itm, cost) {
             else
                 o = cptr.ld1so(itm, $obj_oclass);
             if (o == NHC.FOOD_CLASS)
-                return __sl365;
+                return __sl364;
             if ((cptr.ldI32o2(objects, cptr.ldI16o(itm, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 ? (cptr.ldI32o2(objects, cptr.ldI16o(itm, $obj_otyp), 120, $objclass_oc_magic) & 1) | 0 : (o == NHC.AMULET_CLASS || o == NHC.RING_CLASS || o == NHC.WAND_CLASS || o == NHC.POTION_CLASS || o == NHC.SCROLL_CLASS || o == NHC.SPBOOK_CLASS ? 1 : 0))
-                return __sl366;
-            return __sl367;
+                return __sl365;
+            return __sl366;
             case 3:
-            return __sl368;
+            return __sl367;
             case 2:
-            return __sl369;
+            return __sl368;
             case 1:
-            return __sl370;
+            return __sl369;
             default:
             break;
         }
     } else if (cptr.ld1so(itm, $obj_oartifact)) {
-        return __sl371;
+        return __sl370;
     }
     return __sl28;
 }
 
 /** C ref: shk.c:5508 — char *[9] */
 const Izchak_speaks = cptr.alloc(9 * 8);
-cptr.stPtro(Izchak_speaks, 0, __sl372);
-cptr.stPtro(Izchak_speaks, 8, __sl373);
-cptr.stPtro(Izchak_speaks, 16, __sl374);
-cptr.stPtro(Izchak_speaks, 24, __sl375);
-cptr.stPtro(Izchak_speaks, 32, __sl376);
-cptr.stPtro(Izchak_speaks, 40, __sl377);
-cptr.stPtro(Izchak_speaks, 48, __sl378);
-cptr.stPtro(Izchak_speaks, 56, __sl379);
-cptr.stPtro(Izchak_speaks, 64, __sl380);
+cptr.stPtro(Izchak_speaks, 0, __sl371);
+cptr.stPtro(Izchak_speaks, 8, __sl372);
+cptr.stPtro(Izchak_speaks, 16, __sl373);
+cptr.stPtro(Izchak_speaks, 24, __sl374);
+cptr.stPtro(Izchak_speaks, 32, __sl375);
+cptr.stPtro(Izchak_speaks, 40, __sl376);
+cptr.stPtro(Izchak_speaks, 48, __sl377);
+cptr.stPtro(Izchak_speaks, 56, __sl378);
+cptr.stPtro(Izchak_speaks, 64, __sl379);
 
 /** C ref: shk.c:5521 — @param {CPtr} shkp */
 export function shk_chat(shkp) {
     let eshk;
     let shkmoney;
     if (!(cptr.ldI32o(shkp, $monst_isshk) & 1)) {
-        pline(__sl381, Monnam(shkp));
+        pline(__sl380, Monnam(shkp));
         return;
     }
     eshk = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
-        pline(__sl382, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl383 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)), cptr.ldI64o(eshk, $eshk_robbed) ? __sl385 : __sl386);
+        pline(__sl381, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl382 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)), cptr.ldI64o(eshk, $eshk_robbed) ? __sl384 : __sl385);
     } else if (cptr.ld1so(eshk, $eshk_following)) {
         if (cptr.strncmp(cptr.add(eshk, $eshk_customer), svp, 32n)) {
             if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
-                verbalize(__sl387, Hello(shkp), svp, cptr.add(eshk, $eshk_customer));
+                verbalize(__sl386, Hello(shkp), svp, cptr.add(eshk, $eshk_customer));
             }
             cptr.st1o(eshk, $eshk_following, 0);
         } else {
             if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
-                verbalize(__sl388, Hello(shkp), svp);
+                verbalize(__sl387, Hello(shkp), svp);
             } else {
-                pline(__sl389, Shknam(shkp), body_part(NHC.ARM));
+                pline(__sl388, Shknam(shkp), body_part(NHC.ARM));
             }
         }
     } else if (cptr.ldI32o(eshk, $eshk_billct)) {
         let total = BigInt.asIntN(64, addupbill(shkp) + cptr.ldI64o(eshk, $eshk_debit));
-        pline(__sl390, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384, total, currency(total));
+        pline(__sl389, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383, total, currency(total));
     } else if (cptr.ldI64o(eshk, $eshk_debit)) {
-        pline(__sl392, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl393 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)), cptr.ldI64o(eshk, $eshk_debit), currency(cptr.ldI64o(eshk, $eshk_debit)));
+        pline(__sl391, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl392 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)), cptr.ldI64o(eshk, $eshk_debit), currency(cptr.ldI64o(eshk, $eshk_debit)));
     } else if (cptr.ldI64o(eshk, $eshk_credit)) {
-        pline(__sl394, Shknam(shkp), cptr.ldI64o(eshk, $eshk_credit), currency(cptr.ldI64o(eshk, $eshk_credit)));
+        pline(__sl393, Shknam(shkp), cptr.ldI64o(eshk, $eshk_credit), currency(cptr.ldI64o(eshk, $eshk_credit)));
     } else if (cptr.ldI64o(eshk, $eshk_robbed)) {
-        pline(__sl395, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl397);
+        pline(__sl394, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl396);
     } else if (cptr.ld1so(eshk, $eshk_surcharge)) {
-        pline(__sl398, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl399 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
+        pline(__sl397, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl398 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)));
     } else if ((shkmoney = money_cnt(cptr.ldPtro(shkp, $monst_minvent))) < 50n) {
-        pline(__sl400, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl384);
+        pline(__sl399, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl383);
     } else if (shkmoney > 4000n) {
-        pline(__sl401, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384);
+        pline(__sl400, Shknam(shkp), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383);
     } else if (is_izchak(shkp, 0)) {
         if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
-            pline(cptr.ldPtro(Izchak_speaks, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5596, __sl402), rn2(9)) : rn2(9)), 8), shkname(shkp));
+            pline(cptr.ldPtro(Izchak_speaks, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5596, __sl401), rn2(9)) : rn2(9)), 8), shkname(shkp));
     } else {
         if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
-            pline(__sl403, Shknam(shkp));
+            pline(__sl402, Shknam(shkp));
     }
 }
 
@@ -4486,7 +4485,7 @@ function kops_gone(silent) {
         }
     }
     if (cnt && !silent)
-        pline_The(__sl404, (((cnt) == 1) ? __sl8 : __sl61), (cnt == 1) ? __sl405 : __sl8);
+        pline_The(__sl403, (((cnt) == 1) ? __sl8 : __sl61), (cnt == 1) ? __sl404 : __sl8);
 }
 
 /** C ref: shk.c:5627 — @param {CPtr} shkp @param {CPtr} otmp @param {CInt} altusage @returns {CLongLong} */
@@ -4535,24 +4534,24 @@ export function check_unpaid_usage(otmp, altusage) {
         return;
     arg1 = (arg2 = __sl8);
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS) {
-        fmt = __sl406;
-        void cptr.sprintf(cptr.decay(buf), __sl407, cad(0));
-        arg1 = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5708, __sl408), rn2(2)) : rn2(2)) ? cptr.decay(buf) : __sl8;
-        arg2 = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) > 0n ? __sl409 : __sl8;
+        fmt = __sl405;
+        void cptr.sprintf(cptr.decay(buf), __sl406, cad(0));
+        arg1 = (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5708, __sl407), rn2(2)) : rn2(2)) ? cptr.decay(buf) : __sl8;
+        arg2 = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) > 0n ? __sl408 : __sl8;
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL) {
-        fmt = __sl410;
+        fmt = __sl409;
     } else if (altusage && (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY)) {
-        fmt = __sl411;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5715, __sl408), rn2(3)) : rn2(3)))
+        fmt = __sl410;
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5715, __sl407), rn2(3)) : rn2(3)))
+            arg1 = __sl411;
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5717, __sl407), rn2(3)) : rn2(3)))
             arg1 = __sl412;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5717, __sl408), rn2(3)) : rn2(3)))
-            arg1 = __sl413;
     } else {
-        fmt = __sl414;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5721, __sl408), rn2(3)) : rn2(3)))
-            arg1 = __sl415;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5723, __sl408), rn2(3)) : rn2(3)))
-            arg2 = __sl416;
+        fmt = __sl413;
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5721, __sl407), rn2(3)) : rn2(3)))
+            arg1 = __sl414;
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5723, __sl407), rn2(3)) : rn2(3)))
+            arg2 = __sl415;
     }
     if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         ;
@@ -4581,18 +4580,18 @@ export function costly_gold(x, y, amount, silent) {
     if (cptr.ldI64o(eshkp, $eshk_credit) >= amount) {
         if (!silent) {
             if (cptr.ldI64o(eshkp, $eshk_credit) > amount)
-                Your(__sl417, amount, currency(amount));
+                Your(__sl416, amount, currency(amount));
             else
-                Your(__sl418);
+                Your(__sl417);
         }
         cptr.stI64o(eshkp, $eshk_credit, cptr.ldI64o(eshkp, $eshk_credit) - amount);
     } else {
         delta = BigInt.asIntN(64, amount - cptr.ldI64o(eshkp, $eshk_credit));
         if (!silent) {
             if (cptr.ldI64o(eshkp, $eshk_credit))
-                Your(__sl418);
+                Your(__sl417);
             if (cptr.ldI64o(eshkp, $eshk_debit))
-                Your(__sl419, delta, currency(delta));
+                Your(__sl418, delta, currency(delta));
             else
                 You(__sl77, shkname(shkp), delta, currency(delta));
         }
@@ -4616,7 +4615,7 @@ export function block_door(x, y) {
     if (!shkp || !inhishop(shkp))
         return 0;
     if (cptr.ldI16o(shkp, $monst_mx) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk) && cptr.ldI16o(shkp, $monst_my) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y) && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd) == x && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd + $nhcoord_y) == y && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) || cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_robbed))) {
-        pline(__sl420, Shknam(shkp), Invis() ? __sl421 : __sl8);
+        pline(__sl419, Shknam(shkp), Invis() ? __sl420 : __sl8);
         return 1;
     }
     return 0;
@@ -4641,7 +4640,7 @@ export function block_entry(x, y) {
     sx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk);
     sy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y);
     if (cptr.ldI16o(shkp, $monst_mx) == sx && cptr.ldI16o(shkp, $monst_my) == sy && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (x == ((sx - 1) | 0) || x == ((sx + 1) | 0) || y == ((sy - 1) | 0) || y == ((sy + 1) | 0)) && (Invis() || carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || cptr.ldPtro(u, $you_usteed))) {
-        pline(__sl420, Shknam(shkp), Invis() ? __sl421 : __sl8);
+        pline(__sl419, Shknam(shkp), Invis() ? __sl420 : __sl8);
         return 1;
     }
     return 0;
@@ -4654,7 +4653,7 @@ export function shk_your(buf, obj) {
     if (chk_pm && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mflags2) & 524288n) != 0n))
         return buf;
     else if (chk_pm && the_unique_pm(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))
-        void cptr.strcpy(buf, __sl286);
+        void cptr.strcpy(buf, __sl285);
     else if (!shk_owns(buf, obj) && !mon_owns(buf, obj))
         void cptr.strcpy(buf, cptr.ldPtro2(c_common_strings, (cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0, 8, $c_common_strings_c_the_your));
     return cptr.strcat(buf, __sl14);
@@ -4691,25 +4690,25 @@ function cad(altusage) {
     let res = null;
     switch (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 3 : poly_gender()) {
         case 0:
-        res = __sl422;
+        res = __sl421;
         break;
         case 1:
-        res = __sl423;
+        res = __sl422;
         break;
         case 2:
-        res = __sl424;
+        res = __sl423;
         break;
         case 3:
-        res = __sl425;
+        res = __sl424;
         break;
         default:
-        impossible(__sl426);
-        res = __sl427;
+        impossible(__sl425);
+        res = __sl426;
         break;
     }
     if (altusage) {
         let cadbuf = mon_nam(cptr.add(gy, $instance_globals_y_youmonst));
-        void cptr.sprintf(cadbuf, __sl428, res);
+        void cptr.sprintf(cadbuf, __sl427, res);
         cptr.st1o(cadbuf, 1, highc(cptr.ld1so(cadbuf, 1)));
         res = cadbuf;
     }
@@ -4728,7 +4727,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
     let per_unit_cost;
     let floor_absorber = schar((cptr.ld1so(obj_absorber, $obj_where) == NHM.OBJ_FLOOR));
     if (!(cptr.ldI32o(obj_absorber, $obj_globby) & 1))
-        impossible(__sl429);
+        impossible(__sl428);
     if (floor_absorber) {
         x = cptr.ldI16o(obj_absorber, $obj_ox), y = cptr.ldI16o(obj_absorber, $obj_oy);
     }
@@ -4772,19 +4771,19 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
                         cptr.stI64o(eshkp, $eshk_loan, 0n);
                 }
                 cptr.stI64o(eshkp, $eshk_debit, cptr.ldI64o(eshkp, $eshk_debit) - amount);
-                pline_The(__sl430, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), cptr.ldI64o(eshkp, $eshk_debit) ? __sl140 : __sl8);
+                pline_The(__sl429, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), cptr.ldI64o(eshkp, $eshk_debit) ? __sl139 : __sl8);
             } else {
                 let delta = BigInt.asIntN(64, amount - cptr.ldI64o(eshkp, $eshk_debit));
                 cptr.stI64o(eshkp, $eshk_credit, cptr.ldI64o(eshkp, $eshk_credit) + delta);
                 if (cptr.ldI64o(eshkp, $eshk_debit)) {
                     cptr.stI64o(eshkp, $eshk_debit, 0n);
                     cptr.stI64o(eshkp, $eshk_loan, 0n);
-                    Your(__sl265);
+                    Your(__sl264);
                 }
                 if (cptr.ldI64o(eshkp, $eshk_credit) == delta)
-                    pline_The(__sl431, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), delta, currency(delta));
+                    pline_The(__sl430, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), delta, currency(delta));
                 else
-                    pline_The(__sl432, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), delta, currency(delta), __sl433, cptr.ldI64o(eshkp, $eshk_credit), currency(cptr.ldI64o(eshkp, $eshk_credit)));
+                    pline_The(__sl431, obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), delta, currency(delta), __sl432, cptr.ldI64o(eshkp, $eshk_credit), currency(cptr.ldI64o(eshkp, $eshk_credit)));
             }
         }
         return;
@@ -4796,7 +4795,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
         amount = cptr.ldI64o(bp, $bill_x_price);
         bill_dummy_object(obj_absorbed);
         ;
-        verbalize(__sl434, amount, currency(amount), obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))) ? __sl435 : __sl436, (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))) ? __sl437 : __sl438);
+        verbalize(__sl433, amount, currency(amount), obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)), (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))) ? __sl434 : __sl435, (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))) ? __sl436 : __sl437);
         return;
     }
     return;
@@ -4809,7 +4808,7 @@ export function use_unpaid_trapobj(otmp, x, y) {
             let shkp = find_objowner(otmp, x, y);
             if (shkp && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
-                verbalize(__sl439);
+                verbalize(__sl438);
             }
         }
         bill_dummy_object(otmp);

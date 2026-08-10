@@ -173,7 +173,7 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Using your camera underwater would void the warranty.");
 const __sl1 = cptr.lit("%s");
-const __sl2 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/apply.c");
+const __sl2 = cptr.lit("apply.c");
 const __sl3 = cptr.lit("use_camera");
 const __sl4 = cptr.lit("take a picture of %s %s.");
 const __sl5 = cptr.lit("take a picture of the %s.");

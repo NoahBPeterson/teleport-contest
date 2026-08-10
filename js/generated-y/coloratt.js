@@ -1910,7 +1910,7 @@ export function set_map_customcolor(gmap, nhcolor) {
 
 /** C ref: coloratt.c:885 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: coloratt.c:888 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/coloratt.c:885:8)[240] */
+/** C ref: coloratt.c:888 — struct (unnamed struct at coloratt.c:885:8)[240] */
 const color_256_definitions = cptr.alloc(240 * 8);
 cptr.stI32o(color_256_definitions, 0, 16);
 cptr.stI32o(color_256_definitions, 4, 0);

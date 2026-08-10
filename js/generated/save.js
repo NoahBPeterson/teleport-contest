@@ -242,8 +242,7 @@ const __sl86 = cptr.lit("plname");
 const __sl87 = cptr.lit("save_msghistory");
 const __sl88 = cptr.lit("msghistory-length");
 const __sl89 = cptr.lit("msghistory-msg");
-const __sl90 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/save.c");
-const __sl91 = cptr.lit("Stored %d messages into savefile.");
+const __sl90 = cptr.lit("Stored %d messages into savefile.");
 
 /** C ref: save.c:43 @returns {CInt} */
 export function dosave() {
@@ -1023,9 +1022,9 @@ function save_msghistory(nhfp) {
         sfo_int(nhfp, minusone, __sl88);
     }
     do {
-        if (debugcore(__sl90, 1)) {
+        if (debugcore(__sl83, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            pline(__sl91, msgcount);
+            pline(__sl90, msgcount);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     } while (0);

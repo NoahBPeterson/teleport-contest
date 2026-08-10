@@ -106,7 +106,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $_doengrave_ctx_adding = FLD._doengrave_ct
     $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/engrave.c");
+const __sl0 = cptr.lit("engrave.c");
 const __sl1 = cptr.lit("random_engraving");
 const __sl2 = cptr.lit("engrave");
 const __sl3 = cptr.lit("^");
@@ -315,7 +315,7 @@ export function* random_engraving(outbuf, pristine_copy) {
 
 /** C ref: engrave.c:66 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: engrave.c:69 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/engrave.c:66:14)[48] */
+/** C ref: engrave.c:69 — struct (unnamed struct at engrave.c:66:14)[48] */
 const rubouts = cptr.alloc(48 * 16);
 cptr.st1o(rubouts, 0, 65);
 cptr.stPtro(rubouts, 8, __sl3);

@@ -117,7 +117,7 @@ const __sl34 = cptr.lit("hardy");
 const __sl35 = cptr.lit("awake");
 const __sl36 = cptr.lit("tired");
 const __sl37 = cptr.lit("cap constricts briefly, then relaxes again.");
-const __sl38 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/attrib.c");
+const __sl38 = cptr.lit("attrib.c");
 const __sl39 = cptr.lit("adjattrib");
 const __sl40 = cptr.lit("You're %s as %s as you can get.");
 const __sl41 = cptr.lit("currently");
@@ -204,19 +204,18 @@ const __sl121 = cptr.lit("%s!");
 const __sl122 = cptr.lit("less %s!");
 const __sl123 = cptr.lit("newhp");
 const __sl124 = cptr.lit("acurr");
-const __sl125 = cptr.lit("attrib.c");
-const __sl126 = cptr.lit("chridx >= 0 && chridx < A_MAX");
-const __sl127 = cptr.lit("permanently converted to %s");
-const __sl128 = cptr.lit("have a %ssense of a new direction.");
-const __sl129 = cptr.lit("sudden ");
-const __sl130 = cptr.lit("mind oscillates %s.");
-const __sl131 = cptr.lit("wildly");
-const __sl132 = cptr.lit("briefly");
-const __sl133 = cptr.lit("uchangealign");
-const __sl134 = cptr.lit("used a helm to turn %s");
-const __sl135 = cptr.lit("mind is %s.");
-const __sl136 = cptr.lit("much of a muchness");
-const __sl137 = cptr.lit("back in sync with your body");
+const __sl125 = cptr.lit("chridx >= 0 && chridx < A_MAX");
+const __sl126 = cptr.lit("permanently converted to %s");
+const __sl127 = cptr.lit("have a %ssense of a new direction.");
+const __sl128 = cptr.lit("sudden ");
+const __sl129 = cptr.lit("mind oscillates %s.");
+const __sl130 = cptr.lit("wildly");
+const __sl131 = cptr.lit("briefly");
+const __sl132 = cptr.lit("uchangealign");
+const __sl133 = cptr.lit("used a helm to turn %s");
+const __sl134 = cptr.lit("mind is %s.");
+const __sl135 = cptr.lit("much of a muchness");
+const __sl136 = cptr.lit("back in sync with your body");
 
 /** C ref: attrib.c:11 — char *[6] */
 const plusattr = cptr.alloc(6 * 8);
@@ -1368,7 +1367,7 @@ export function adjuhploss(loss, olduhp) {
 export function acurr(chridx) {
     let tmp;
     let result = 0;
-    (__builtin_expect(BigInt((!(chridx >= 0 && chridx < NHC.A_MAX))), 0n) ? __assert_rtn(__sl124, __sl125, 1204, __sl126) : void 0);
+    (__builtin_expect(BigInt((!(chridx >= 0 && chridx < NHC.A_MAX))), 0n) ? __assert_rtn(__sl124, __sl38, 1204, __sl125) : void 0);
     tmp = (((cptr.ld1so2(u, chridx, 1, $you_abon) + cptr.ld1so2(u, chridx, 1, $you_atemp)) | 0) + cptr.ld1so2(u, chridx, 1, $you_acurr)) | 0;
     if (chridx == NHC.A_STR) {
         if (tmp >= 125 || (uarmg.v && cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER))
@@ -1449,22 +1448,22 @@ export function* uchangealign(newalign, reason) {
     cptr.stI32o(u, $you_ublessed, 0);
     cptr.st1(disp, 1);
     if (reason == NHC.A_CG_CONVERT) {
-        (yield* livelog_printf(512n, __sl127, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj)));
+        (yield* livelog_printf(512n, __sl126, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj)));
         cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, schar(newalign));
         if (!uarmh.v || cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT)
             cptr.st1o(u, $you_ualign, cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase));
-        (yield* You(__sl128, (cptr.ld1so(u, $you_ualign) != oldalign) ? __sl129 : __sl18));
+        (yield* You(__sl127, (cptr.ld1so(u, $you_ualign) != oldalign) ? __sl128 : __sl18));
     } else {
         cptr.st1o(u, $you_ualign, schar(newalign));
         if (reason == NHC.A_CG_HELM_ON) {
             adjalign(-7);
-            (yield* Your(__sl130, Hallucination() ? __sl131 : __sl132));
-            (yield* make_confused(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1346, __sl133), rn2(2)) : rn2(2)) + 3) | 0)), 0));
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1347, __sl133), rn2(50)) : rn2(50)) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
+            (yield* Your(__sl129, Hallucination() ? __sl130 : __sl131));
+            (yield* make_confused(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1346, __sl132), rn2(2)) : rn2(2)) + 3) | 0)), 0));
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1347, __sl132), rn2(50)) : rn2(50)) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
                 (yield* summon_furies((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 1));
-            (yield* livelog_printf(512n, __sl134, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj)));
+            (yield* livelog_printf(512n, __sl133, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj)));
         } else if (reason == NHC.A_CG_HELM_OFF) {
-            (yield* Your(__sl135, Hallucination() ? __sl136 : __sl137));
+            (yield* Your(__sl134, Hallucination() ? __sl135 : __sl136));
         }
     }
     if (cptr.ld1so(u, $you_ualign) != oldalign) {

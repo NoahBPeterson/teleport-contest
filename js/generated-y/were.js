@@ -50,7 +50,7 @@ const $context_info_mon_moving = FLD.context_info_mon_moving, $flag_moonphase = 
     $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/were.c");
+const __sl0 = cptr.lit("were.c");
 const __sl1 = cptr.lit("were_change");
 const __sl2 = cptr.lit("wolf");
 const __sl3 = cptr.lit("jackal");

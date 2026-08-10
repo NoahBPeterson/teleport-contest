@@ -2194,7 +2194,7 @@ function domenucontrols() {
 
 /** C ref: pager.c:2830 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: pager.c:2833 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/pager.c:2830:14)[17] */
+/** C ref: pager.c:2833 — struct (unnamed struct at pager.c:2830:14)[17] */
 const help_menu_items = cptr.alloc(17 * 16);
 cptr.stPtro(help_menu_items, 0, hmenu_doextversion);
 cptr.stPtro(help_menu_items, 8, __sl269);

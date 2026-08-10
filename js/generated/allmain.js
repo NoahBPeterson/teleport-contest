@@ -175,7 +175,7 @@ const $Race_adj = FLD.Race_adj, $RoleName_f = FLD.RoleName_f, $Role_allow = FLD.
 const __sl0 = cptr.lit("are lucky!  Full moon tonight.");
 const __sl1 = cptr.lit("Be careful!  New moon tonight.");
 const __sl2 = cptr.lit("Watch out!  Bad things can happen on Friday the 13th.");
-const __sl3 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/allmain.c");
+const __sl3 = cptr.lit("allmain.c");
 const __sl4 = cptr.lit("moveloop_preamble");
 const __sl5 = cptr.lit("u_calc_moveamt");
 const __sl6 = cptr.lit("maybe_generate_rnd_mon");

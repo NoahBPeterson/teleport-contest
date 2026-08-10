@@ -134,7 +134,7 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum, $Role_spelarmr =
     $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/spell.c");
+const __sl0 = cptr.lit("spell.c");
 const __sl1 = cptr.lit("cursed_book");
 const __sl2 = cptr.lit("a wrenching sensation.");
 const __sl3 = cptr.lit("threatened.");

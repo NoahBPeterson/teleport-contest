@@ -182,7 +182,7 @@ const __sl30 = cptr.lit("Swallowed");
 const __sl31 = cptr.lit("Engulfed");
 const __sl32 = cptr.lit("pick yourself up!");
 const __sl33 = cptr.lit("pick %s up.");
-const __sl34 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/pickup.c");
+const __sl34 = cptr.lit("pickup.c");
 const __sl35 = cptr.lit("query_category: no single object match");
 const __sl36 = cptr.lit("Auto-select every item being worn or wielded");
 const __sl37 = cptr.lit("Auto-select every relevant item");
@@ -200,218 +200,217 @@ const __sl48 = cptr.lit("Items of unknown Bless/Curse status");
 const __sl49 = cptr.lit("Just picked up: %s");
 const __sl50 = cptr.lit("Items you just picked up");
 const __sl51 = cptr.lit("query_category");
-const __sl52 = cptr.lit("pickup.c");
-const __sl53 = cptr.lit("*pick_list != NULL");
-const __sl54 = cptr.lit("Really autoselect All?");
-const __sl55 = cptr.lit("No relevant items selected.");
-const __sl56 = cptr.lit("delta_cwt: obj not inside container?");
-const __sl57 = cptr.lit("in %s");
-const __sl58 = cptr.lit("carry");
-const __sl59 = cptr.lit("lying here");
-const __sl60 = cptr.lit("acquire");
-const __sl61 = cptr.lit("lift");
-const __sl62 = cptr.lit("can only %s %s of the %s %s.");
-const __sl63 = cptr.lit("one");
-const __sl64 = cptr.lit("some");
-const __sl65 = cptr.lit("you cannot ");
-const __sl66 = cptr.lit(" any more");
-const __sl67 = cptr.lit("it ");
-const __sl68 = cptr.lit("even one ");
-const __sl69 = cptr.lit("is too heavy for you to ");
-const __sl70 = cptr.lit("%s %s %s, but %s%s%s%s.");
-const __sl71 = cptr.lit("are");
-const __sl72 = cptr.lit("cannot get your %s around this %s.");
-const __sl73 = cptr.lit("are carrying too much stuff to pick up %s %s.");
-const __sl74 = cptr.lit("another");
-const __sl75 = cptr.lit("more");
-const __sl76 = cptr.lit("knapsack cannot accommodate any more items%s.");
-const __sl77 = cptr.lit(" (except gold)");
-const __sl78 = cptr.lit("%s %s ");
-const __sl79 = cptr.lit("lifting");
-const __sl80 = cptr.lit("removing");
-const __sl81 = cptr.lit(".  Continue?");
-const __sl82 = cptr.lit("pickup_object: count %ld > quan %ld?");
-const __sl83 = cptr.lit("scroll%s %s to dust as you %s %s up.");
-const __sl84 = cptr.lit("s");
-const __sl85 = cptr.lit("turn");
-const __sl86 = cptr.lit("raise");
-const __sl87 = cptr.lit("pick");
-const __sl88 = cptr.lit("it");
-const __sl89 = cptr.lit("them");
-const __sl90 = cptr.lit("%s %s");
-const __sl91 = cptr.lit("movements are slowed slightly because of your load.");
-const __sl92 = cptr.lit("rebalance your load.  Movement is difficult.");
-const __sl93 = cptr.lit("%s under your heavy load.  Movement is very hard.");
-const __sl94 = cptr.lit("stagger");
-const __sl95 = cptr.lit("%s move a handspan with this load!");
-const __sl96 = cptr.lit("can barely");
-const __sl97 = cptr.lit("can't even");
-const __sl98 = cptr.lit("movements are now unencumbered.");
-const __sl99 = cptr.lit("movements are only slowed slightly by your load.");
-const __sl100 = cptr.lit("rebalance your load.  Movement is still difficult.");
-const __sl101 = cptr.lit("%s under your load.  Movement is still very hard.");
-const __sl102 = cptr.lit("loot");
-const __sl103 = cptr.lit("tip");
-const __sl104 = cptr.lit("cannot %s things that are deep in the %s.");
-const __sl105 = cptr.lit("lava");
-const __sl106 = cptr.lit("water");
-const __sl107 = cptr.lit("Without limbs, you cannot %s anything.");
-const __sl108 = cptr.lit("Without a free %s, you cannot loot anything.");
-const __sl109 = cptr.lit("%s is locked.");
-const __sl110 = cptr.lit("Hmmm, %s turns out to be locked.");
-const __sl111 = cptr.lit("carefully open %s...");
-const __sl112 = cptr.lit("It develops a huge set of teeth and bites you!");
-const __sl113 = cptr.lit("do_loot_cont");
-const __sl114 = cptr.lit("carnivorous bag");
-const __sl115 = cptr.lit("don't find anything");
-const __sl116 = cptr.lit("have no hands!");
-const __sl117 = cptr.lit("doloot_core");
-const __sl118 = cptr.lit("Being confused, you find nothing to loot.");
-const __sl119 = cptr.lit("Loot which containers?");
-const __sl120 = cptr.lit("need to dig up the grave to effectively loot it...");
-const __sl121 = cptr.lit("Loot in what direction?");
-const __sl122 = cptr.lit("Invalid loot location");
-const __sl123 = cptr.lit("%s to loot on the %s.");
-const __sl124 = cptr.lit("loot anything %sthere with %s in the way.");
-const __sl125 = cptr.lit("else ");
-const __sl126 = cptr.lit("have to be at a container to loot it.");
-const __sl127 = cptr.lit("%s %s%shere to loot.");
-const __sl128 = cptr.lit("t");
-const __sl129 = cptr.lit("%s %s to loot.");
-const __sl130 = cptr.lit("there");
-const __sl131 = cptr.lit("reverse_loot");
-const __sl132 = cptr.lit("You find old loot:");
-const __sl133 = cptr.lit("Ok, now there is loot here.");
-const __sl134 = cptr.lit("Thank you for your contribution to reduce the debt.");
-const __sl135 = cptr.lit("The exchequer accepts your contribution.");
-const __sl136 = cptr.lit("drop %s.");
-const __sl137 = cptr.lit("Do you want to remove the saddle from %s?");
-const __sl138 = cptr.lit("do that without limbs.");
-const __sl139 = cptr.lit("can't.  The saddle seems to be stuck to %s.");
-const __sl140 = cptr.lit("take %s off of %s.");
-const __sl141 = cptr.lit("You drop %s!");
-const __sl142 = cptr.lit("loot_mon");
-const __sl143 = cptr.lit("mbag_explodes");
-const __sl144 = cptr.lit("is_boh_item_gone");
-const __sl145 = cptr.lit("<in> no gc.current_container?");
-const __sl146 = cptr.lit("must be kidding.");
-const __sl147 = cptr.lit("That would be an interesting topological exercise.");
-const __sl148 = cptr.lit("You cannot %s %s you are wearing.");
-const __sl149 = cptr.lit("refrigerate");
-const __sl150 = cptr.lit("stash");
-const __sl151 = cptr.lit("stone%s won't leave your person.");
-const __sl152 = cptr.lit("%s cannot be confined in such trappings.");
-const __sl153 = cptr.lit("%s attached to your pet.");
-const __sl154 = cptr.lit("cannot fit %s into %s.");
-const __sl155 = cptr.lit("just blew up %s bag of holding");
-const __sl156 = cptr.lit("As you put %s inside, you are blasted by a magical explosion!");
-const __sl157 = cptr.lit("in_container:  bag not found.");
-const __sl158 = cptr.lit("in_container");
-const __sl159 = cptr.lit("magical explosion");
-const __sl160 = cptr.lit("put %s into %s.");
-const __sl161 = cptr.lit("<out> no gc.current_container?");
-const __sl162 = cptr.lit("%s %s vanished!");
-const __sl163 = cptr.lit("have");
-const __sl164 = cptr.lit("%s %s disappear!");
-const __sl165 = cptr.lit("notice");
-const __sl166 = cptr.lit("see");
-const __sl167 = cptr.lit("observe_quantum_cat");
-const __sl168 = cptr.lit("think %s brushed your %s.");
-const __sl169 = cptr.lit("%s inside the box is still alive!");
-const __sl170 = cptr.lit("%s inside the box is dead!");
-const __sl171 = cptr.lit("housecat");
-const __sl172 = cptr.lit(" n ");
-const __sl173 = cptr.lit("Container actions:");
-const __sl174 = cptr.lit(" : -- Look: examine contents");
-const __sl175 = cptr.lit(" o -- Out: take things out");
-const __sl176 = cptr.lit(" i -- In: put things in");
-const __sl177 = cptr.lit(" b -- Both: first take things out, then put things in");
-const __sl178 = cptr.lit(" r -- Reversed: put things in, then take things out");
-const __sl179 = cptr.lit(" s -- Stash: put one item in");
-const __sl180 = cptr.lit(" n -- Next: loot next selected container");
-const __sl181 = cptr.lit(" q -- Quit: finished");
-const __sl182 = cptr.lit(" ? -- Help: display this text.");
-const __sl183 = cptr.lit("have no free %s.");
-const __sl184 = cptr.lit("%s locked.");
-const __sl185 = cptr.lit("must put it down to unlock.");
-const __sl186 = cptr.lit("open %s...");
-const __sl187 = cptr.lit("opening a container");
-const __sl188 = cptr.lit("owe %ld %s for lost merchandise.");
-const __sl189 = cptr.lit("%s is %sempty.");
-const __sl190 = cptr.lit("now ");
-const __sl191 = cptr.lit(" is empty.  Do what with it?");
-const __sl192 = cptr.lit("This");
-const __sl193 = cptr.lit("Do what with ");
-const __sl194 = cptr.lit(":");
-const __sl195 = cptr.lit("o");
-const __sl196 = cptr.lit("i");
-const __sl197 = cptr.lit("b");
-const __sl198 = cptr.lit("rs");
-const __sl199 = cptr.lit(" ");
-const __sl200 = cptr.lit("n");
-const __sl201 = cptr.lit("q");
-const __sl202 = cptr.lit(" or ?");
-const __sl203 = cptr.lit("\x1b");
-const __sl204 = cptr.lit("don't have anything%s to %s.");
-const __sl205 = cptr.lit(" else");
-const __sl206 = cptr.lit("put in");
-const __sl207 = cptr.lit("Put in");
-const __sl208 = cptr.lit("Take out");
-const __sl209 = cptr.lit("%s what type of objects?");
-const __sl210 = cptr.lit("%s what?");
-const __sl211 = cptr.lit("menu_loot");
-const __sl212 = cptr.lit("otmp != 0");
-const __sl213 = cptr.lit("Look inside %s");
-const __sl214 = cptr.lit("take %s out");
-const __sl215 = cptr.lit("put %s in");
-const __sl216 = cptr.lit("%stake out, then put in");
-const __sl217 = cptr.lit("both; ");
-const __sl218 = cptr.lit("%sput in, then take out");
-const __sl219 = cptr.lit("both reversed; ");
-const __sl220 = cptr.lit("stash one item into %s");
-const __sl221 = cptr.lit("loot next container");
-const __sl222 = cptr.lit("done");
-const __sl223 = cptr.lit("do nothing");
-const __sl224 = cptr.lit("tip something being carried");
-const __sl225 = cptr.lit("Tip which container?");
-const __sl226 = cptr.lit("You can't tip %s while carrying so much.");
-const __sl227 = cptr.lit("a container");
-const __sl228 = cptr.lit("There is ");
-const __sl229 = cptr.lit(" here, tip it?");
-const __sl230 = cptr.lit("container");
-const __sl231 = cptr.lit("wax");
-const __sl232 = cptr.lit("oil");
-const __sl233 = cptr.lit("grease");
-const __sl234 = cptr.lit("crumbs");
-const __sl235 = cptr.lit("venom");
-const __sl236 = cptr.lit(" and gradually %s");
-const __sl237 = cptr.lit("dissipate");
-const __sl238 = cptr.lit(" and immediately %s away");
-const __sl239 = cptr.lit("burn");
-const __sl240 = cptr.lit("Some %s %s onto the %s%s.");
-const __sl241 = cptr.lit("spill");
-const __sl242 = cptr.lit("%s %s securely sealed.");
-const __sl243 = cptr.lit("Nothing interesting happens.");
-const __sl244 = cptr.lit("%s into %s.");
-const __sl245 = cptr.lit("Objects tumble");
-const __sl246 = cptr.lit("An object tumbles");
-const __sl247 = cptr.lit("%s out%c");
-const __sl248 = cptr.lit("Objects spill");
-const __sl249 = cptr.lit("An object spills");
-const __sl250 = cptr.lit("just blew up %s bag of holding via tipping");
-const __sl251 = cptr.lit("As %s %s inside, you are blasted by a magical explosion!");
-const __sl252 = cptr.lit("tumble");
-const __sl253 = cptr.lit("tipcontainer");
-const __sl254 = cptr.lit("%s %s to the %s.");
-const __sl255 = cptr.lit("drop");
-const __sl256 = cptr.lit("%s%c");
-const __sl257 = cptr.lit("on the floor");
-const __sl258 = cptr.lit("%s%s");
-const __sl259 = cptr.lit("    ");
-const __sl260 = cptr.lit("Where to tip the contents of %s");
-const __sl261 = cptr.lit("tipping a container");
-const __sl262 = cptr.lit("%sbox is now empty.");
-const __sl263 = cptr.lit("%s is empty.");
+const __sl52 = cptr.lit("*pick_list != NULL");
+const __sl53 = cptr.lit("Really autoselect All?");
+const __sl54 = cptr.lit("No relevant items selected.");
+const __sl55 = cptr.lit("delta_cwt: obj not inside container?");
+const __sl56 = cptr.lit("in %s");
+const __sl57 = cptr.lit("carry");
+const __sl58 = cptr.lit("lying here");
+const __sl59 = cptr.lit("acquire");
+const __sl60 = cptr.lit("lift");
+const __sl61 = cptr.lit("can only %s %s of the %s %s.");
+const __sl62 = cptr.lit("one");
+const __sl63 = cptr.lit("some");
+const __sl64 = cptr.lit("you cannot ");
+const __sl65 = cptr.lit(" any more");
+const __sl66 = cptr.lit("it ");
+const __sl67 = cptr.lit("even one ");
+const __sl68 = cptr.lit("is too heavy for you to ");
+const __sl69 = cptr.lit("%s %s %s, but %s%s%s%s.");
+const __sl70 = cptr.lit("are");
+const __sl71 = cptr.lit("cannot get your %s around this %s.");
+const __sl72 = cptr.lit("are carrying too much stuff to pick up %s %s.");
+const __sl73 = cptr.lit("another");
+const __sl74 = cptr.lit("more");
+const __sl75 = cptr.lit("knapsack cannot accommodate any more items%s.");
+const __sl76 = cptr.lit(" (except gold)");
+const __sl77 = cptr.lit("%s %s ");
+const __sl78 = cptr.lit("lifting");
+const __sl79 = cptr.lit("removing");
+const __sl80 = cptr.lit(".  Continue?");
+const __sl81 = cptr.lit("pickup_object: count %ld > quan %ld?");
+const __sl82 = cptr.lit("scroll%s %s to dust as you %s %s up.");
+const __sl83 = cptr.lit("s");
+const __sl84 = cptr.lit("turn");
+const __sl85 = cptr.lit("raise");
+const __sl86 = cptr.lit("pick");
+const __sl87 = cptr.lit("it");
+const __sl88 = cptr.lit("them");
+const __sl89 = cptr.lit("%s %s");
+const __sl90 = cptr.lit("movements are slowed slightly because of your load.");
+const __sl91 = cptr.lit("rebalance your load.  Movement is difficult.");
+const __sl92 = cptr.lit("%s under your heavy load.  Movement is very hard.");
+const __sl93 = cptr.lit("stagger");
+const __sl94 = cptr.lit("%s move a handspan with this load!");
+const __sl95 = cptr.lit("can barely");
+const __sl96 = cptr.lit("can't even");
+const __sl97 = cptr.lit("movements are now unencumbered.");
+const __sl98 = cptr.lit("movements are only slowed slightly by your load.");
+const __sl99 = cptr.lit("rebalance your load.  Movement is still difficult.");
+const __sl100 = cptr.lit("%s under your load.  Movement is still very hard.");
+const __sl101 = cptr.lit("loot");
+const __sl102 = cptr.lit("tip");
+const __sl103 = cptr.lit("cannot %s things that are deep in the %s.");
+const __sl104 = cptr.lit("lava");
+const __sl105 = cptr.lit("water");
+const __sl106 = cptr.lit("Without limbs, you cannot %s anything.");
+const __sl107 = cptr.lit("Without a free %s, you cannot loot anything.");
+const __sl108 = cptr.lit("%s is locked.");
+const __sl109 = cptr.lit("Hmmm, %s turns out to be locked.");
+const __sl110 = cptr.lit("carefully open %s...");
+const __sl111 = cptr.lit("It develops a huge set of teeth and bites you!");
+const __sl112 = cptr.lit("do_loot_cont");
+const __sl113 = cptr.lit("carnivorous bag");
+const __sl114 = cptr.lit("don't find anything");
+const __sl115 = cptr.lit("have no hands!");
+const __sl116 = cptr.lit("doloot_core");
+const __sl117 = cptr.lit("Being confused, you find nothing to loot.");
+const __sl118 = cptr.lit("Loot which containers?");
+const __sl119 = cptr.lit("need to dig up the grave to effectively loot it...");
+const __sl120 = cptr.lit("Loot in what direction?");
+const __sl121 = cptr.lit("Invalid loot location");
+const __sl122 = cptr.lit("%s to loot on the %s.");
+const __sl123 = cptr.lit("loot anything %sthere with %s in the way.");
+const __sl124 = cptr.lit("else ");
+const __sl125 = cptr.lit("have to be at a container to loot it.");
+const __sl126 = cptr.lit("%s %s%shere to loot.");
+const __sl127 = cptr.lit("t");
+const __sl128 = cptr.lit("%s %s to loot.");
+const __sl129 = cptr.lit("there");
+const __sl130 = cptr.lit("reverse_loot");
+const __sl131 = cptr.lit("You find old loot:");
+const __sl132 = cptr.lit("Ok, now there is loot here.");
+const __sl133 = cptr.lit("Thank you for your contribution to reduce the debt.");
+const __sl134 = cptr.lit("The exchequer accepts your contribution.");
+const __sl135 = cptr.lit("drop %s.");
+const __sl136 = cptr.lit("Do you want to remove the saddle from %s?");
+const __sl137 = cptr.lit("do that without limbs.");
+const __sl138 = cptr.lit("can't.  The saddle seems to be stuck to %s.");
+const __sl139 = cptr.lit("take %s off of %s.");
+const __sl140 = cptr.lit("You drop %s!");
+const __sl141 = cptr.lit("loot_mon");
+const __sl142 = cptr.lit("mbag_explodes");
+const __sl143 = cptr.lit("is_boh_item_gone");
+const __sl144 = cptr.lit("<in> no gc.current_container?");
+const __sl145 = cptr.lit("must be kidding.");
+const __sl146 = cptr.lit("That would be an interesting topological exercise.");
+const __sl147 = cptr.lit("You cannot %s %s you are wearing.");
+const __sl148 = cptr.lit("refrigerate");
+const __sl149 = cptr.lit("stash");
+const __sl150 = cptr.lit("stone%s won't leave your person.");
+const __sl151 = cptr.lit("%s cannot be confined in such trappings.");
+const __sl152 = cptr.lit("%s attached to your pet.");
+const __sl153 = cptr.lit("cannot fit %s into %s.");
+const __sl154 = cptr.lit("just blew up %s bag of holding");
+const __sl155 = cptr.lit("As you put %s inside, you are blasted by a magical explosion!");
+const __sl156 = cptr.lit("in_container:  bag not found.");
+const __sl157 = cptr.lit("in_container");
+const __sl158 = cptr.lit("magical explosion");
+const __sl159 = cptr.lit("put %s into %s.");
+const __sl160 = cptr.lit("<out> no gc.current_container?");
+const __sl161 = cptr.lit("%s %s vanished!");
+const __sl162 = cptr.lit("have");
+const __sl163 = cptr.lit("%s %s disappear!");
+const __sl164 = cptr.lit("notice");
+const __sl165 = cptr.lit("see");
+const __sl166 = cptr.lit("observe_quantum_cat");
+const __sl167 = cptr.lit("think %s brushed your %s.");
+const __sl168 = cptr.lit("%s inside the box is still alive!");
+const __sl169 = cptr.lit("%s inside the box is dead!");
+const __sl170 = cptr.lit("housecat");
+const __sl171 = cptr.lit(" n ");
+const __sl172 = cptr.lit("Container actions:");
+const __sl173 = cptr.lit(" : -- Look: examine contents");
+const __sl174 = cptr.lit(" o -- Out: take things out");
+const __sl175 = cptr.lit(" i -- In: put things in");
+const __sl176 = cptr.lit(" b -- Both: first take things out, then put things in");
+const __sl177 = cptr.lit(" r -- Reversed: put things in, then take things out");
+const __sl178 = cptr.lit(" s -- Stash: put one item in");
+const __sl179 = cptr.lit(" n -- Next: loot next selected container");
+const __sl180 = cptr.lit(" q -- Quit: finished");
+const __sl181 = cptr.lit(" ? -- Help: display this text.");
+const __sl182 = cptr.lit("have no free %s.");
+const __sl183 = cptr.lit("%s locked.");
+const __sl184 = cptr.lit("must put it down to unlock.");
+const __sl185 = cptr.lit("open %s...");
+const __sl186 = cptr.lit("opening a container");
+const __sl187 = cptr.lit("owe %ld %s for lost merchandise.");
+const __sl188 = cptr.lit("%s is %sempty.");
+const __sl189 = cptr.lit("now ");
+const __sl190 = cptr.lit(" is empty.  Do what with it?");
+const __sl191 = cptr.lit("This");
+const __sl192 = cptr.lit("Do what with ");
+const __sl193 = cptr.lit(":");
+const __sl194 = cptr.lit("o");
+const __sl195 = cptr.lit("i");
+const __sl196 = cptr.lit("b");
+const __sl197 = cptr.lit("rs");
+const __sl198 = cptr.lit(" ");
+const __sl199 = cptr.lit("n");
+const __sl200 = cptr.lit("q");
+const __sl201 = cptr.lit(" or ?");
+const __sl202 = cptr.lit("\x1b");
+const __sl203 = cptr.lit("don't have anything%s to %s.");
+const __sl204 = cptr.lit(" else");
+const __sl205 = cptr.lit("put in");
+const __sl206 = cptr.lit("Put in");
+const __sl207 = cptr.lit("Take out");
+const __sl208 = cptr.lit("%s what type of objects?");
+const __sl209 = cptr.lit("%s what?");
+const __sl210 = cptr.lit("menu_loot");
+const __sl211 = cptr.lit("otmp != 0");
+const __sl212 = cptr.lit("Look inside %s");
+const __sl213 = cptr.lit("take %s out");
+const __sl214 = cptr.lit("put %s in");
+const __sl215 = cptr.lit("%stake out, then put in");
+const __sl216 = cptr.lit("both; ");
+const __sl217 = cptr.lit("%sput in, then take out");
+const __sl218 = cptr.lit("both reversed; ");
+const __sl219 = cptr.lit("stash one item into %s");
+const __sl220 = cptr.lit("loot next container");
+const __sl221 = cptr.lit("done");
+const __sl222 = cptr.lit("do nothing");
+const __sl223 = cptr.lit("tip something being carried");
+const __sl224 = cptr.lit("Tip which container?");
+const __sl225 = cptr.lit("You can't tip %s while carrying so much.");
+const __sl226 = cptr.lit("a container");
+const __sl227 = cptr.lit("There is ");
+const __sl228 = cptr.lit(" here, tip it?");
+const __sl229 = cptr.lit("container");
+const __sl230 = cptr.lit("wax");
+const __sl231 = cptr.lit("oil");
+const __sl232 = cptr.lit("grease");
+const __sl233 = cptr.lit("crumbs");
+const __sl234 = cptr.lit("venom");
+const __sl235 = cptr.lit(" and gradually %s");
+const __sl236 = cptr.lit("dissipate");
+const __sl237 = cptr.lit(" and immediately %s away");
+const __sl238 = cptr.lit("burn");
+const __sl239 = cptr.lit("Some %s %s onto the %s%s.");
+const __sl240 = cptr.lit("spill");
+const __sl241 = cptr.lit("%s %s securely sealed.");
+const __sl242 = cptr.lit("Nothing interesting happens.");
+const __sl243 = cptr.lit("%s into %s.");
+const __sl244 = cptr.lit("Objects tumble");
+const __sl245 = cptr.lit("An object tumbles");
+const __sl246 = cptr.lit("%s out%c");
+const __sl247 = cptr.lit("Objects spill");
+const __sl248 = cptr.lit("An object spills");
+const __sl249 = cptr.lit("just blew up %s bag of holding via tipping");
+const __sl250 = cptr.lit("As %s %s inside, you are blasted by a magical explosion!");
+const __sl251 = cptr.lit("tumble");
+const __sl252 = cptr.lit("tipcontainer");
+const __sl253 = cptr.lit("%s %s to the %s.");
+const __sl254 = cptr.lit("drop");
+const __sl255 = cptr.lit("%s%c");
+const __sl256 = cptr.lit("on the floor");
+const __sl257 = cptr.lit("%s%s");
+const __sl258 = cptr.lit("    ");
+const __sl259 = cptr.lit("Where to tip the contents of %s");
+const __sl260 = cptr.lit("tipping a container");
+const __sl261 = cptr.lit("%sbox is now empty.");
+const __sl262 = cptr.lit("%s is empty.");
 
 /** C ref: pickup.c:67 — char[26] */
 const slightloadpfx = cptr.bytes("You have a little trouble");
@@ -1368,14 +1367,14 @@ export function query_category(qstr, olist, qflags, pick_list, how) {
         end_menu()(win, qstr);
         n = select_menu(win, how, pick_list);
         if (n > 0) {
-            (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtr(pick_list), (null))))), 0n) ? __assert_rtn(__sl51, __sl52, 1451, __sl53) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtr(pick_list), (null))))), 0n) ? __assert_rtn(__sl51, __sl34, 1451, __sl52) : void 0);
         }
         if (n > 0 && verify_All) {
             let i;
             let j;
             for (i = 0; i < n; ++i)
                 if (cptr.ldI32o((cptr.ldPtr(pick_list)), i, 24) == 65) {
-                    switch (paranoid_ynq(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0)), __sl54, 1)) {
+                    switch (paranoid_ynq(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0)), __sl53, 1)) {
                         case 121:
                         break;
                         case 110:
@@ -1401,7 +1400,7 @@ export function query_category(qstr, olist, qflags, pick_list, how) {
         } else if (n == 1 && !verify_All && cptr.ldI32o((cptr.ldPtr(pick_list)), 0, 24) == 65) {
             n = 0;
             cptr.free(cptr.ldPtr(pick_list)), cptr.stPtr(pick_list, null);
-            pline(__sl55);
+            pline(__sl54);
         }
     }
     destroy_nhwindow()(win);
@@ -1447,7 +1446,7 @@ function delta_cwt(container, obj) {
         if (cptr.eq(cptr.ldPtr(prev), obj))
             break;
     if (!cptr.ldPtr(prev)) {
-        panic(__sl56);
+        panic(__sl55);
     } else {
         cptr.stPtr(prev, cptr.ldPtr(obj));
         nwt = weight(container);
@@ -1540,11 +1539,11 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     if (qq < count) {
         void cptr.strcpy(cptr.decay(obj_nambuf), doname(obj));
         if (container) {
-            void cptr.sprintf(cptr.decay(where), __sl57, the(xname(container)));
-            verb = __sl58;
+            void cptr.sprintf(cptr.decay(where), __sl56, the(xname(container)));
+            verb = __sl57;
         } else {
-            void cptr.strcpy(cptr.decay(where), __sl59);
-            verb = telekinesis ? __sl60 : __sl61;
+            void cptr.strcpy(cptr.decay(where), __sl58);
+            verb = telekinesis ? __sl59 : __sl60;
         }
     } else {
         cptr.st1(cptr.decay(obj_nambuf), cptr.st1(cptr.decay(where), 0));
@@ -1552,22 +1551,22 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     }
     if (qq > 0n) {
         if (qq < count)
-            You(__sl62, verb, (qq == 1n) ? __sl63 : __sl64, cptr.decay(obj_nambuf), cptr.decay(where));
+            You(__sl61, verb, (qq == 1n) ? __sl62 : __sl63, cptr.decay(obj_nambuf), cptr.decay(where));
         cptr.stI32(wt_after, wt);
         return qq;
     }
     if (!container)
         void cptr.strcpy(cptr.decay(where), __sl6);
     if (cptr.ldPtro(gi, $instance_globals_i_invent) || umoney) {
-        prefx1 = __sl65;
+        prefx1 = __sl64;
         prefx2 = __sl2;
-        suffx = __sl66;
+        suffx = __sl65;
     } else {
-        prefx1 = (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl67 : __sl68;
-        prefx2 = __sl69;
+        prefx1 = (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl66 : __sl67;
+        prefx2 = __sl68;
         suffx = __sl2;
     }
-    There(__sl70, otense(obj, __sl71), cptr.decay(obj_nambuf), cptr.decay(where), prefx1, prefx2, verb, suffx);
+    There(__sl69, otense(obj, __sl70), cptr.decay(obj_nambuf), cptr.decay(where), prefx1, prefx2, verb, suffx);
     return 0n;
 }
 
@@ -1579,20 +1578,20 @@ function lift_object(obj, container, cnt_p, telekinesis) {
     let prev_encumbr;
     let next_encumbr;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0) {
-        You(__sl72, body_part(NHC.HAND), xname(obj));
+        You(__sl71, body_part(NHC.HAND), xname(obj));
         return -1;
     }
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE || (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n))) {
         if (inv_cnt(0) < NHC.invlet_basic || !carrying(cptr.ldI16o(obj, $obj_otyp)) || merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj))
             return 1;
-        You(__sl73, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl74 : __sl75, xname(obj));
+        You(__sl72, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl73 : __sl74, xname(obj));
         return -1;
     }
     cptr.stI64(cnt_p, carry_count(obj, container, cptr.ldI64(cnt_p), telekinesis, old_wt, new_wt));
     if (cptr.ldI64(cnt_p) < 1n) {
         result = -1;
     } else if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)) {
-        Your(__sl76, nxtobj(obj, NHC.GOLD_PIECE, schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR))) ? __sl77 : __sl2);
+        Your(__sl75, nxtobj(obj, NHC.GOLD_PIECE, schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR))) ? __sl76 : __sl2);
         result = -1;
     } else {
         result = 1;
@@ -1607,8 +1606,8 @@ function lift_object(obj, container, cnt_p, telekinesis) {
                 let qbuf = new Uint8Array(256);
                 let savequan = cptr.ldI64o(obj, $obj_quan);
                 cptr.stI64o(obj, $obj_quan, cptr.ldI64(cnt_p));
-                void cptr.sprintf(cptr.decay(qbuf), __sl78, (next_encumbr >= NHC.EXT_ENCUMBER) ? cptr.decay(overloadpfx) : ((next_encumbr >= NHC.HVY_ENCUMBER) ? cptr.decay(nearloadpfx) : ((next_encumbr >= NHC.MOD_ENCUMBER) ? cptr.decay(moderateloadpfx) : cptr.decay(slightloadpfx))), !container ? __sl79 : __sl80);
-                void safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl81, obj, doname, ansimpleoname, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+                void cptr.sprintf(cptr.decay(qbuf), __sl77, (next_encumbr >= NHC.EXT_ENCUMBER) ? cptr.decay(overloadpfx) : ((next_encumbr >= NHC.HVY_ENCUMBER) ? cptr.decay(nearloadpfx) : ((next_encumbr >= NHC.MOD_ENCUMBER) ? cptr.decay(moderateloadpfx) : cptr.decay(slightloadpfx))), !container ? __sl78 : __sl79);
+                void safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl80, obj, doname, ansimpleoname, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
                 cptr.stI64o(obj, $obj_quan, savequan);
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
@@ -1634,7 +1633,7 @@ export function pickup_object(obj, count, telekinesis) {
     count = cptr.box(count);
     let res;
     if (cptr.ldI64o(obj, $obj_quan) < count.v) {
-        impossible(__sl82, count.v, cptr.ldI64o(obj, $obj_quan));
+        impossible(__sl81, count.v, cptr.ldI64o(obj, $obj_quan));
         return 0;
     }
     if (!Blind())
@@ -1661,7 +1660,7 @@ export function pickup_object(obj, count, telekinesis) {
         } else if (!cptr.ld1so(obj, $obj_spe) && !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
             cptr.st1o(obj, $obj_spe, 1);
         } else {
-            pline_The(__sl83, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl2 : __sl84), otense(obj, __sl85), telekinesis ? __sl86 : __sl87, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl88 : __sl89);
+            pline_The(__sl82, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl2 : __sl83), otense(obj, __sl84), telekinesis ? __sl85 : __sl86, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __sl87 : __sl88);
             trycall(obj);
             useupf(obj, cptr.ldI64o(obj, $obj_quan));
             return 1;
@@ -1677,7 +1676,7 @@ export function pickup_object(obj, count, telekinesis) {
     obj = pick_obj(obj);
     if (uwep.v && cptr.eq(uwep.v, obj))
         cptr.st1o(gm, $instance_globals_m_mrg_to_wielded, 1);
-    pickup_prinv(obj, count.v, __sl79);
+    pickup_prinv(obj, count.v, __sl78);
     if ((cptr.ldI32o(obj, $obj_ghostly) & 1))
         fix_ghostly_obj(obj);
     cptr.st1o(gm, $instance_globals_m_mrg_to_wielded, 0);
@@ -1726,7 +1725,7 @@ function pickup_prinv(obj, count, verb) {
         cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, nearload);
     }
     if (prefix)
-        void cptr.sprintf(cptr.decay(pbuf), __sl90, prefix, verb);
+        void cptr.sprintf(cptr.decay(pbuf), __sl89, prefix, verb);
     prinv(cptr.decay(pbuf), obj, count);
 }
 
@@ -1736,32 +1735,32 @@ export function encumber_msg() {
     if (cptr.ldI32o(go, $instance_globals_o_oldcap) < newcap) {
         switch (newcap) {
             case 1:
-            Your(__sl91);
+            Your(__sl90);
             break;
             case 2:
-            You(__sl92);
+            You(__sl91);
             break;
             case 3:
-            You(__sl93, stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __sl94));
+            You(__sl92, stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __sl93));
             break;
             default:
-            You(__sl95, newcap == 4 ? __sl96 : __sl97);
+            You(__sl94, newcap == 4 ? __sl95 : __sl96);
             break;
         }
         cptr.st1(disp, 1);
     } else if (cptr.ldI32o(go, $instance_globals_o_oldcap) > newcap) {
         switch (newcap) {
             case 0:
-            Your(__sl98);
+            Your(__sl97);
             break;
             case 1:
-            Your(__sl99);
+            Your(__sl98);
             break;
             case 2:
-            You(__sl100);
+            You(__sl99);
             break;
             case 3:
-            You(__sl101, stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __sl94));
+            You(__sl100, stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __sl93));
             break;
         }
         cptr.st1(disp, 1);
@@ -1787,7 +1786,7 @@ export function container_at(x, y, countem) {
 
 /** C ref: pickup.c:2041 — @param {CInt} x @param {CInt} y @param {CInt} looting @returns {CInt} */
 function able_to_loot(x, y, looting) {
-    let verb = looting ? __sl102 : __sl103;
+    let verb = looting ? __sl101 : __sl102;
     let t = t_at(x, y);
     if (!can_reach_floor(schar((t && ((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) ? 1 : 0)))) {
         if (cptr.ldPtro(u, $you_usteed) && (cptr.ldI16o2(u, NHC.P_RIDING, 6, $you_weapon_skills)) < NHC.P_BASIC)
@@ -1796,13 +1795,13 @@ function able_to_loot(x, y, looting) {
             cant_reach_floor(x, y, 0, 1, 0);
         return 0;
     } else if ((is_pool(x, y) && (looting || !Underwater())) || is_lava(x, y)) {
-        You(__sl104, verb, hliquid(is_lava(x, y) ? __sl105 : __sl106));
+        You(__sl103, verb, hliquid(is_lava(x, y) ? __sl104 : __sl105));
         return 0;
     } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-        pline(__sl107, verb);
+        pline(__sl106, verb);
         return 0;
     } else if (looting && !freehand()) {
-        pline(__sl108, body_part(NHC.HAND));
+        pline(__sl107, body_part(NHC.HAND));
         return 0;
     }
     return 1;
@@ -1832,9 +1831,9 @@ function do_loot_cont(cobjp, cindex, ccount) {
     if ((cptr.ldI32o(cobj, $obj_olocked) & 1)) {
         let res = NHM.ECMD_OK;
         if ((cptr.ldI32o(cobj, $obj_lknown) & 1))
-            pline(__sl109, The(xname(cobj)));
+            pline(__sl108, The(xname(cobj)));
         else
-            pline(__sl110, the(xname(cobj)));
+            pline(__sl109, the(xname(cobj)));
         cptr.stI32o(cobj, $obj_lknown, 1);
         if (cptr.ldI32o(flags, $flag_autounlock)) {
             let otmp;
@@ -1862,10 +1861,10 @@ function do_loot_cont(cobjp, cindex, ccount) {
     cptr.stI32o(cobj, $obj_lknown, 1);
     if (cptr.ldI16o(cobj, $obj_otyp) == NHC.BAG_OF_TRICKS) {
         let tmp;
-        You(__sl111, the(xname(cobj)));
-        pline(__sl112);
-        tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl34, 2155, __sl113), rnd(10)) : rnd(10));
-        losehp(((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp)), __sl114, NHM.KILLED_BY_AN);
+        You(__sl110, the(xname(cobj)));
+        pline(__sl111);
+        tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl34, 2155, __sl112), rnd(10)) : rnd(10));
+        losehp(((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp)), __sl113, NHM.KILLED_BY_AN);
         discover_object(NHC.BAG_OF_TRICKS, 1, 1, 1);
         cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
         return NHM.ECMD_TIME;
@@ -1893,7 +1892,7 @@ function doloot_core() {
         timepassed = 0;
         cc = cptr.alloc(4);
         underfoot = 1;
-        dont_find_anything = __sl115;
+        dont_find_anything = __sl114;
         prev_inquiry.v = 0;
         prev_loot.v = 0;
         num_conts = 0;
@@ -1903,14 +1902,14 @@ function doloot_core() {
             return NHM.ECMD_OK;
         }
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-            You(__sl116);
+            You(__sl115);
             return NHM.ECMD_OK;
         }
         if (HConfusion()) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2203, __sl117), rn2(6)) : rn2(6)) && reverse_loot())
+            if ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2203, __sl116), rn2(6)) : rn2(6)) && reverse_loot())
                 return NHM.ECMD_TIME;
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2205, __sl117), rn2(2)) : rn2(2))) {
-                pline(__sl118);
+            if ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2205, __sl116), rn2(2)) : rn2(2))) {
+                pline(__sl117);
                 return NHM.ECMD_TIME;
             }
         }
@@ -1949,7 +1948,7 @@ function doloot_core() {
                         cptr.stPtr(any, cobj.v);
                         add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, doname(cobj.v), NHM.MENU_ITEMFLAGS_NONE);
                     }
-                end_menu()(win, __sl119);
+                end_menu()(win, __sl118);
                 n = select_menu(win, NHM.PICK_ANY, pick_list);
                 destroy_nhwindow()(win);
                 if (n > 0) {
@@ -1979,7 +1978,7 @@ function doloot_core() {
                     c = 121;
             }
         } else if (((cptr.ld1so3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE)) {
-            You(__sl120);
+            You(__sl119);
         }
         __pc = 2;
         continue;
@@ -1990,7 +1989,7 @@ function doloot_core() {
         }
         case 6: {
         looted_mon = 0;
-        if (!get_adjacent_loc(__sl121, __sl122, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc))
+        if (!get_adjacent_loc(__sl120, __sl121, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc))
             return NHM.ECMD_OK;
         underfoot = schar(((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
         if (underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) { __pc = 9; continue; }
@@ -2001,7 +2000,7 @@ function doloot_core() {
         }
         case 8: {
         if (cptr.ldI32o(u, $you_dz) < 0) {
-            You(__sl123, dont_find_anything, ceiling(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
+            You(__sl122, dont_find_anything, ceiling(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
             return NHM.ECMD_TIME;
         }
         mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
@@ -2015,13 +2014,13 @@ function doloot_core() {
         if (!looted_mon) {
             if (!underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
                 if (mtmp) {
-                    You_cant(__sl124, prev_inquiry.v ? __sl125 : __sl2, mon_nam(mtmp));
+                    You_cant(__sl123, prev_inquiry.v ? __sl124 : __sl2, mon_nam(mtmp));
                     return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
                 } else {
-                    You(__sl126);
+                    You(__sl125);
                 }
             } else {
-                You(__sl127, dont_find_anything, (prev_inquiry.v || prev_loot.v) ? __sl125 : __sl2, !underfoot ? __sl128 : __sl2);
+                You(__sl126, dont_find_anything, (prev_inquiry.v || prev_loot.v) ? __sl124 : __sl2, !underfoot ? __sl127 : __sl2);
                 return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
             }
         }
@@ -2030,7 +2029,7 @@ function doloot_core() {
         }
         case 7: {
         if (c != 121 && c != 110) {
-            You(__sl129, dont_find_anything, underfoot ? __sl6 : __sl130);
+            You(__sl128, dont_find_anything, underfoot ? __sl6 : __sl129);
         }
         __pc = 5;
         continue;
@@ -2054,17 +2053,17 @@ function reverse_loot() {
     let n;
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2357, __sl131), rn2(3)) : rn2(3))) {
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2357, __sl130), rn2(3)) : rn2(3))) {
         for (n = inv_cnt(1), otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; --n, otmp = cptr.ldPtr(otmp))
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2361, __sl131), rn2((n + 1) | 0)) : rn2((n + 1) | 0))) {
-                prinv(__sl132, otmp, 0n);
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2361, __sl130), rn2((n + 1) | 0)) : rn2((n + 1) | 0))) {
+                prinv(__sl131, otmp, 0n);
                 return 1;
             }
         return 0;
     }
     for (goldob = cptr.ldPtro(gi, $instance_globals_i_invent); goldob; goldob = cptr.ldPtr(goldob))
         if (cptr.ld1so(goldob, $obj_oclass) == NHC.COIN_CLASS) {
-            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2371, __sl131), rnd(5)) : rnd(5))) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
+            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2371, __sl130), rnd(5)) : rnd(5))) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
             if (contribution < cptr.ldI64o(goldob, $obj_quan))
                 goldob = splitobj(goldob, contribution);
             break;
@@ -2075,7 +2074,7 @@ function reverse_loot() {
     if (!((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
         dropx(goldob);
         if (g_at(i16(x), i16(y)))
-            pline(__sl133);
+            pline(__sl132);
     } else {
         otmp = null;
         for (coffers = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); coffers; coffers = cptr.ldPtr(coffers))
@@ -2089,7 +2088,7 @@ function reverse_loot() {
             coffers = otmp;
         if (coffers) {
             ;
-            verbalize(__sl134);
+            verbalize(__sl133);
             freeinv(goldob);
             void add_to_container(coffers, goldob);
             cptr.stI32o(coffers, $obj_owt, weight(coffers) >>> 0);
@@ -2101,11 +2100,11 @@ function reverse_loot() {
         } else if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != NHM.T_LOOTED && (mon = makemon(courtmon(), i16(x), i16(y), NHM.NO_MM_FLAGS)) !== null) {
             freeinv(goldob);
             add_to_minv(mon, goldob);
-            pline(__sl135);
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2418, __sl131), rn2(10)) : rn2(10)))
+            pline(__sl134);
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2418, __sl130), rn2(10)) : rn2(10)))
                 cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.T_LOOTED);
         } else {
-            You(__sl136, doname(goldob));
+            You(__sl135, doname(goldob));
             dropx(goldob);
         }
     }
@@ -2121,22 +2120,22 @@ export function loot_mon(mtmp, passed_info, prev_loot) {
     if (mtmp && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && (otmp = which_armor(mtmp, 1048576n))) {
         if (passed_info)
             cptr.stI32(passed_info, 1);
-        void cptr.sprintf(cptr.decay(qbuf), __sl137, x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
+        void cptr.sprintf(cptr.decay(qbuf), __sl136, x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
         if ((c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1)) == 121) {
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-                You_cant(__sl138);
+                You_cant(__sl137);
                 return 0;
             }
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
-                You(__sl139, x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
+                You(__sl138, x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
                 return 1;
             }
             extract_from_minvent(mtmp, otmp, 1, 0);
             if (cptr.ld1so(flags, $flag_verbose))
-                You(__sl140, thesimpleoname(otmp), mon_nam(mtmp));
-            otmp = hold_another_object(otmp, __sl141, doname(otmp), null);
+                You(__sl139, thesimpleoname(otmp), mon_nam(mtmp));
+            otmp = hold_another_object(otmp, __sl140, doname(otmp), null);
             (void (otmp));
-            timepassed = (rng_log_enabled() ? (rng_log_set_caller(__sl34, 2467, __sl142), rnd(3)) : rnd(3));
+            timepassed = (rng_log_enabled() ? (rng_log_set_caller(__sl34, 2467, __sl141), rnd(3)) : rnd(3));
             if (prev_loot)
                 cptr.st1(prev_loot, 1);
         } else if (c == 113) {
@@ -2154,7 +2153,7 @@ export function loot_mon(mtmp, passed_info, prev_loot) {
 function mbag_explodes(obj, depthin) {
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS) && cptr.ld1so(obj, $obj_spe) <= 0)
         return 0;
-    if (((cptr.ldI16o((obj), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((obj), $obj_otyp) == NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2497, __sl143), rn2(1 << (depthin > 7 ? 7 : depthin))) : rn2(1 << (depthin > 7 ? 7 : depthin))) <= depthin))
+    if (((cptr.ldI16o((obj), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((obj), $obj_otyp) == NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && ((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2497, __sl142), rn2(1 << (depthin > 7 ? 7 : depthin))) : rn2(1 << (depthin > 7 ? 7 : depthin))) <= depthin))
         return 1;
     else if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         let otmp;
@@ -2167,7 +2166,7 @@ function mbag_explodes(obj, depthin) {
 
 /** C ref: pickup.c:2510 @returns {CInt} */
 function is_boh_item_gone() {
-    return schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2512, __sl144), rn2(13)) : rn2(13))));
+    return schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2512, __sl143), rn2(13)) : rn2(13))));
 }
 
 /** C ref: pickup.c:2518 — @param {CPtr} boh @param {CInt} on_floor */
@@ -2211,26 +2210,26 @@ function in_container(obj) {
     let was_unpaid = 0;
     let buf = new Uint8Array(256);
     if (!cptr.ldPtro(gc, $instance_globals_c_current_container)) {
-        impossible(__sl145);
+        impossible(__sl144);
         return 0;
     } else if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v)) {
-        You(__sl146);
+        You(__sl145);
         return 0;
     } else if (cptr.eq(obj, cptr.ldPtro(gc, $instance_globals_c_current_container))) {
-        pline(__sl147);
+        pline(__sl146);
         return 0;
     } else if (cptr.ldI64o(obj, $obj_owornmask) & 983167n) {
-        Norep(__sl148, (cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_otyp) == NHC.ICE_BOX) ? __sl149 : __sl150, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+        Norep(__sl147, (cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_otyp) == NHC.ICE_BOX) ? __sl148 : __sl149, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         return 0;
     } else if ((cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE) && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
         set_bknown(obj, 1);
-        pline_The(__sl151, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl2 : __sl84));
+        pline_The(__sl150, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl2 : __sl83));
         return 0;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        pline(__sl152, The(xname(obj)));
+        pline(__sl151, The(xname(obj)));
         return 0;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm) != 0) {
-        pline(__sl153, Tobjnam(obj, __sl71));
+        pline(__sl152, Tobjnam(obj, __sl70));
         return 0;
     } else if (cptr.eq(obj, uwep.v)) {
         if (welded(obj)) {
@@ -2249,7 +2248,7 @@ function in_container(obj) {
         return -1;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.ICE_BOX || (cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST) || cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER || (cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE && (cptr.ld1uo((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_msize) >= NHM.MZ_LARGE))) {
         void cptr.strcpy(cptr.decay(buf), the(xname(obj)));
-        You(__sl154, cptr.decay(buf), the(xname(cptr.ldPtro(gc, $instance_globals_c_current_container))));
+        You(__sl153, cptr.decay(buf), the(xname(cptr.ldPtro(gc, $instance_globals_c_current_container))));
         return 0;
     }
     freeinv(obj);
@@ -2278,8 +2277,8 @@ function in_container(obj) {
             void stop_timer(NHC.SHRINK_GLOB, obj_to_any(obj));
         }
     } else if ((cptr.ldI16o((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_otyp) == NHC.BAG_OF_TRICKS) && mbag_explodes(obj, 0)) {
-        livelog_printf(2n, __sl155, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
-        urgent_pline(__sl156, doname(obj));
+        livelog_printf(2n, __sl154, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
+        urgent_pline(__sl155, doname(obj));
         if (was_unpaid)
             addtobill(obj, 0, 0, 1);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_HOLDING)
@@ -2297,13 +2296,13 @@ function in_container(obj) {
         else if (obj_here(cptr.ldPtro(gc, $instance_globals_c_current_container), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             useupf(cptr.ldPtro(gc, $instance_globals_c_current_container), cptr.ldI64o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_quan));
         else
-            panic(__sl157);
-        losehp((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2692, __sl158), d(6, 6)) : d(6, 6)), __sl159, NHM.KILLED_BY_AN);
+            panic(__sl156);
+        losehp((rng_log_enabled() ? (rng_log_set_caller(__sl34, 2692, __sl157), d(6, 6)) : d(6, 6)), __sl158, NHM.KILLED_BY_AN);
         cptr.stPtro(gc, $instance_globals_c_current_container, null);
     }
     if (cptr.ldPtro(gc, $instance_globals_c_current_container)) {
         void cptr.strcpy(cptr.decay(buf), the(xname(cptr.ldPtro(gc, $instance_globals_c_current_container))));
-        You(__sl160, doname(obj), cptr.decay(buf));
+        You(__sl159, doname(obj), cptr.decay(buf));
         if (floor_container && cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
             sellobj(obj, cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_ox), cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_oy));
         void add_to_container(cptr.ldPtro(gc, $instance_globals_c_current_container), obj);
@@ -2325,7 +2324,7 @@ function out_container(obj) {
     let count = cptr.box(0n);
     let is_gold = schar((cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS));
     if (!cptr.ldPtro(gc, $instance_globals_c_current_container)) {
-        impossible(__sl161);
+        impossible(__sl160);
         return -1;
     } else if (is_gold) {
         cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
@@ -2351,7 +2350,7 @@ function out_container(obj) {
     if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE))
         pick_pick(obj);
     otmp = addinv(obj);
-    pickup_prinv(otmp, count.v, __sl80);
+    pickup_prinv(otmp, count.v, __sl79);
     if (is_gold) {
         bot();
     }
@@ -2379,9 +2378,9 @@ function mbag_item_gone(held, item, silent) {
     let loss = 0n;
     if (!silent) {
         if ((cptr.ldI32o(item, $obj_dknown) & 1))
-            pline(__sl162, Doname2(item), otense(item, __sl163));
+            pline(__sl161, Doname2(item), otense(item, __sl162));
         else
-            You(__sl164, Blind() ? __sl165 : __sl166, doname(item));
+            You(__sl163, Blind() ? __sl164 : __sl165, doname(item));
     }
     if (cptr.ld1so(u, $you_ushops) && (shkp = shop_keeper(cptr.ld1so(u, $you_ushops))) !== null) {
         if (held ? schar((cptr.ldI32o(item, $obj_unpaid) & 1)) : costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
@@ -2399,7 +2398,7 @@ export function observe_quantum_cat(box, makecat, givemsg) {
     let livecat = null;
     let ox = cptr.box(0);
     let oy = cptr.box(0);
-    let itsalive = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2832, __sl167), rn2(2)) : rn2(2))));
+    let itsalive = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2832, __sl166), rn2(2)) : rn2(2))));
     if (get_obj_location(box, ox, oy, 0))
         cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);
     deadcat = cptr.ldPtro(box, $obj_cobj);
@@ -2411,9 +2410,9 @@ export function observe_quantum_cat(box, makecat, givemsg) {
             set_malign(livecat);
             if (givemsg) {
                 if (!(canseemon(livecat) || sensemon(livecat)))
-                    You(__sl168, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), body_part(NHC.FOOT));
+                    You(__sl167, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), body_part(NHC.FOOT));
                 else
-                    pline(__sl169, Monnam(livecat));
+                    pline(__sl168, Monnam(livecat));
             }
             void christen_monst(livecat, cptr.decay(__static_observe_quantum_cat_sc));
             if (deadcat) {
@@ -2430,7 +2429,7 @@ export function observe_quantum_cat(box, makecat, givemsg) {
     } else {
         cptr.st1o(box, $obj_spe, 0);
         if (givemsg)
-            pline_The(__sl170, Hallucination() ? rndmonnam(null) : __sl171);
+            pline_The(__sl169, Hallucination() ? rndmonnam(null) : __sl170);
         if (deadcat) {
             cptr.stI64o(deadcat, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
             set_corpsenm(deadcat, NHC.PM_HOUSECAT);
@@ -2451,18 +2450,18 @@ export function container_gone(fn) {
 }
 
 const __static_explain_container_prompt_explaintext = cptr.alloc(14 * 8);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 0, __sl173);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 0, __sl172);
 cptr.stPtro(__static_explain_container_prompt_explaintext, 8, __sl2);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 16, __sl174);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 24, __sl175);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 32, __sl176);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 40, __sl177);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 48, __sl178);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 56, __sl179);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 16, __sl173);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 24, __sl174);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 32, __sl175);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 40, __sl176);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 48, __sl177);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 56, __sl178);
 cptr.stPtro(__static_explain_container_prompt_explaintext, 64, __sl2);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 72, __sl180);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 80, __sl181);
-cptr.stPtro(__static_explain_container_prompt_explaintext, 88, __sl182);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 72, __sl179);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 80, __sl180);
+cptr.stPtro(__static_explain_container_prompt_explaintext, 88, __sl181);
 cptr.stPtro(__static_explain_container_prompt_explaintext, 96, __sl2);
 cptr.stPtro(__static_explain_container_prompt_explaintext, 104, null); /** C ref: pickup.c:2913 — char *[14] (function-static) */
 
@@ -2472,7 +2471,7 @@ function explain_container_prompt(more_containers) {
     let win;
     if ((win = create_nhwindow()(NHM.NHW_TEXT)) != -1) {
         for (txtpp = __static_explain_container_prompt_explaintext; cptr.ldPtr(txtpp); txtpp = cptr.add(txtpp, 1, 8)) {
-            if (!more_containers && !cptr.strncmp(cptr.ldPtr(txtpp), __sl172, 3n))
+            if (!more_containers && !cptr.strncmp(cptr.ldPtr(txtpp), __sl171, 3n))
                 continue;
             putstr()(win, 0, cptr.ldPtr(txtpp));
         }
@@ -2484,10 +2483,10 @@ function explain_container_prompt(more_containers) {
 /** C ref: pickup.c:2943 @returns {CInt} */
 export function u_handsy() {
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You(__sl116);
+        You(__sl115);
         return 0;
     } else if (!freehand()) {
-        You(__sl183, body_part(NHC.HAND));
+        You(__sl182, body_part(NHC.HAND));
         return 0;
     }
     return 1;
@@ -2534,17 +2533,17 @@ export function use_container(objp, held, more_containers) {
                 update_inventory();
         }
         if ((cptr.ldI32o(obj, $obj_olocked) & 1)) {
-            pline(__sl184, Tobjnam(obj, __sl71));
+            pline(__sl183, Tobjnam(obj, __sl70));
             if (held)
-                You(__sl185);
+                You(__sl184);
             return NHM.ECMD_OK;
         } else if ((cptr.ldI32o(obj, $obj_otrapped) & 1)) {
             if (held)
-                You(__sl186, the(xname(obj)));
+                You(__sl185, the(xname(obj)));
             void chest_trap(obj, NHC.HAND, 0);
             if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
                 nomul(-1);
-                cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl187);
+                cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl186);
                 cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl2);
             }
             cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
@@ -2559,19 +2558,19 @@ export function use_container(objp, held, more_containers) {
         cursed_mbag = schar(((cptr.ldI16o((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_otyp) == NHC.BAG_OF_TRICKS) && (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cursed) & 1) | 0 && (cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null) ? 1 : 0));
         if (cursed_mbag && (loss = boh_loss(cptr.ldPtro(gc, $instance_globals_c_current_container), held)) != 0n) {
             used = NHM.ECMD_TIME;
-            You(__sl188, loss, currency(loss));
+            You(__sl187, loss, currency(loss));
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_owt, weight(cptr.ldPtro(gc, $instance_globals_c_current_container)) >>> 0);
         }
         inokay = schar((cptr.ldPtro(gi, $instance_globals_i_invent) !== null && (!cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), cptr.ldPtro(gc, $instance_globals_c_current_container)) || cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent))) ? 1 : 0));
         outokay = schar((cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null));
         if (!outokay)
-            void cptr.sprintf(cptr.decay(emptymsg), __sl189, Ysimple_name2(cptr.ldPtro(gc, $instance_globals_c_current_container)), (quantum_cat || cursed_mbag) ? __sl190 : __sl2);
+            void cptr.sprintf(cptr.decay(emptymsg), __sl188, Ysimple_name2(cptr.ldPtro(gc, $instance_globals_c_current_container)), (quantum_cat || cursed_mbag) ? __sl189 : __sl2);
         for (; ; ) {
             outmaybe = schar((outokay || !(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown) & 1) ? 1 : 0));
             if (!outmaybe)
-                void safe_qbuf(cptr.decay(qbuf), null, __sl191, cptr.ldPtro(gc, $instance_globals_c_current_container), Yname2, Ysimple_name2, __sl192);
+                void safe_qbuf(cptr.decay(qbuf), null, __sl190, cptr.ldPtro(gc, $instance_globals_c_current_container), Yname2, Ysimple_name2, __sl191);
             else
-                void safe_qbuf(cptr.decay(qbuf), __sl193, __sl28, cptr.ldPtro(gc, $instance_globals_c_current_container), yname, ysimple_name, __sl88);
+                void safe_qbuf(cptr.decay(qbuf), __sl192, __sl28, cptr.ldPtro(gc, $instance_globals_c_current_container), yname, ysimple_name, __sl87);
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_PARTIAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL) {
                 if (!inokay && !outmaybe) {
                     c = 98;
@@ -2580,20 +2579,20 @@ export function use_container(objp, held, more_containers) {
                 }
             } else {
                 cptr.st1o(cptr.decay(xbuf), 0, 0, 1);
-                void cptr.strcpy(cptr.decay(pbuf), __sl194);
-                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl195);
-                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl196);
-                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl197);
-                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl198);
-                void cptr.strcat(cptr.decay(pbuf), __sl199);
-                void cptr.strcat(more_containers ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl200);
-                void cptr.strcat(cptr.decay(pbuf), __sl201);
+                void cptr.strcpy(cptr.decay(pbuf), __sl193);
+                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl194);
+                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl195);
+                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl196);
+                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl197);
+                void cptr.strcat(cptr.decay(pbuf), __sl198);
+                void cptr.strcat(more_containers ? cptr.decay(pbuf) : cptr.decay(xbuf), __sl199);
+                void cptr.strcat(cptr.decay(pbuf), __sl200);
                 if (cptr.ld1so(iflags, $instance_flags_cmdassist))
-                    void cptr.strcat(cptr.decay(pbuf), __sl202);
+                    void cptr.strcat(cptr.decay(pbuf), __sl201);
                 else
                     void cptr.strcat(cptr.decay(xbuf), __sl28);
                 if (cptr.ld1s(cptr.decay(xbuf)))
-                    void cptr.strcat(cptr.strcat(cptr.decay(pbuf), __sl203), cptr.decay(xbuf));
+                    void cptr.strcat(cptr.strcat(cptr.decay(pbuf), __sl202), cptr.decay(xbuf));
                 c = yn_function(cptr.decay(qbuf), cptr.decay(pbuf), schar((more_containers ? 110 : 113)), 1);
             }
             if (c == 63) {
@@ -2630,7 +2629,7 @@ export function use_container(objp, held, more_containers) {
             inokay = schar((cptr.ldPtro(gi, $instance_globals_i_invent) && (!cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), cptr.ldPtro(gc, $instance_globals_c_current_container)) || cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent))) ? 1 : 0));
         }
         if ((loot_in || stash_one) && !inokay) {
-            You(__sl204, cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl205 : __sl2, stash_one ? __sl150 : __sl206);
+            You(__sl203, cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl204 : __sl2, stash_one ? __sl149 : __sl205);
             loot_in = (stash_one = 0);
         }
         if (loot_in) {
@@ -2641,7 +2640,7 @@ export function use_container(objp, held, more_containers) {
                 used |= (menu_loot(0, 1) > 0);
             add_valid_menu_class(0);
         } else if (stash_one) {
-            if ((otmp = getobj(__sl150, stash_ok, 3)) !== null) {
+            if ((otmp = getobj(__sl149, stash_ok, 3)) !== null) {
                 if (in_container(otmp)) {
                     used = 1;
                 } else {
@@ -2693,7 +2692,7 @@ function traditional_loot(put_in) {
     let used = NHM.ECMD_OK;
     let menu_on_request = cptr.box(0);
     if (put_in) {
-        action = __sl206;
+        action = __sl205;
         objlist = cptr.add(gi, $instance_globals_i_invent);
         actionfunc = in_container;
         checkfunc = ck_bag;
@@ -2723,7 +2722,7 @@ function menu_loot(retry, put_in) {
     let autopick = 0;
     let buf = new Uint8Array(256);
     let loot_justpicked = 0;
-    let action = put_in ? __sl207 : __sl208;
+    let action = put_in ? __sl206 : __sl207;
     let otmp;
     let otmp2;
     let pick_list = cptr.box(0);
@@ -2735,7 +2734,7 @@ function menu_loot(retry, put_in) {
         all_categories = schar((retry == -2));
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL) {
         all_categories = 0;
-        void cptr.sprintf(cptr.decay(buf), __sl209, action);
+        void cptr.sprintf(cptr.decay(buf), __sl208, action);
         mflags = 8100;
         n = query_category(cptr.decay(buf), put_in ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cobj), mflags, pick_list, NHM.PICK_ANY);
         if (!n)
@@ -2794,13 +2793,13 @@ function menu_loot(retry, put_in) {
             mflags |= NHM.JUSTPICKED;
         if (!put_in)
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown, 1);
-        void cptr.sprintf(cptr.decay(buf), __sl210, action);
+        void cptr.sprintf(cptr.decay(buf), __sl209, action);
         n = query_objlist(cptr.decay(buf), put_in ? cptr.add(gi, $instance_globals_i_invent) : cptr.add(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cobj), mflags, pick_list, NHM.PICK_ANY, all_categories ? allow_all : allow_category);
         if (n) {
             n_looted = n;
             for (i = 0; i < n; i++) {
                 otmp = cptr.ldPtro(pick_list.v, i, 24);
-                (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__sl211, __sl52, 3370, __sl212) : void 0);
+                (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__sl210, __sl34, 3370, __sl211) : void 0);
                 count = cptr.ldI64o2(pick_list.v, i, 24, $mi_count);
                 if (count > 0n && count < cptr.ldI64o(otmp, $obj_quan)) {
                     otmp = splitobj(otmp, count);
@@ -2838,38 +2837,38 @@ function in_or_out_menu(prompt, obj, outokay, inokay, alreadyused, more_containe
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
     cptr.stI32(any, 1);
-    void cptr.sprintf(cptr.decay(buf), __sl213, thesimpleoname(obj));
+    void cptr.sprintf(cptr.decay(buf), __sl212, thesimpleoname(obj));
     add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     if (outokay) {
         cptr.stI32(any, 2);
-        void cptr.sprintf(cptr.decay(buf), __sl214, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+        void cptr.sprintf(cptr.decay(buf), __sl213, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     if (inokay) {
         cptr.stI32(any, 3);
-        void cptr.sprintf(cptr.decay(buf), __sl215, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+        void cptr.sprintf(cptr.decay(buf), __sl214, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     if (outokay) {
         cptr.stI32(any, 4);
-        void cptr.sprintf(cptr.decay(buf), __sl216, inokay ? __sl217 : __sl2);
+        void cptr.sprintf(cptr.decay(buf), __sl215, inokay ? __sl216 : __sl2);
         add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     if (inokay) {
         cptr.stI32(any, 5);
-        void cptr.sprintf(cptr.decay(buf), __sl218, outokay ? __sl219 : __sl2);
+        void cptr.sprintf(cptr.decay(buf), __sl217, outokay ? __sl218 : __sl2);
         add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         cptr.stI32(any, 6);
-        void cptr.sprintf(cptr.decay(buf), __sl220, thesimpleoname(obj));
+        void cptr.sprintf(cptr.decay(buf), __sl219, thesimpleoname(obj));
         add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     add_menu_str(win, __sl2);
     if (more_containers) {
         cptr.stI32(any, 7);
-        add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, __sl221, NHM.MENU_ITEMFLAGS_SELECTED);
+        add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, __sl220, NHM.MENU_ITEMFLAGS_SELECTED);
     }
     cptr.stI32(any, 8);
-    void cptr.strcpy(cptr.decay(buf), alreadyused ? __sl222 : __sl223);
+    void cptr.strcpy(cptr.decay(buf), alreadyused ? __sl221 : __sl222);
     add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), more_containers ? NHM.MENU_ITEMFLAGS_NONE : NHM.MENU_ITEMFLAGS_SELECTED);
     end_menu()(win, prompt);
     n = select_menu(win, NHM.PICK_ONE, pick_list);
@@ -2919,9 +2918,9 @@ function choose_tip_container_menu() {
         add_menu_str(win, __sl2);
         cptr.stPtr(any, dummyobj);
         i = (i <= 8 && !cptr.ld1so(flags, $flag_lootabc)) ? 105 : 0;
-        add_menu(win, nul_glyphinfo.v, any, schar(i), 0, NHM.ATR_NONE, clr, __sl224, NHM.MENU_ITEMFLAGS_SELECTED);
+        add_menu(win, nul_glyphinfo.v, any, schar(i), 0, NHM.ATR_NONE, clr, __sl223, NHM.MENU_ITEMFLAGS_SELECTED);
     }
-    end_menu()(win, __sl225);
+    end_menu()(win, __sl224);
     n = select_menu(win, NHM.PICK_ONE, pick_list);
     destroy_nhwindow()(win);
     otmp = (n <= 0) ? null : cptr.ldPtro(pick_list.v, 0, 24);
@@ -2951,7 +2950,7 @@ export function dotip() {
     cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     boxes = container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1);
     if (boxes > 0 && (!cptr.ld1so(iflags, $instance_flags_menu_requested) || (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL && boxes > 1))) {
-        void cptr.sprintf(cptr.decay(buf), __sl226, !cptr.ld1so(flags, $flag_verbose) ? __sl227 : ((boxes > 1) ? __sl63 : __sl88));
+        void cptr.sprintf(cptr.decay(buf), __sl225, !cptr.ld1so(flags, $flag_verbose) ? __sl226 : ((boxes > 1) ? __sl62 : __sl87));
         if (!check_capacity(cptr.decay(buf)) && able_to_loot(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
             if (boxes > 1) {
                 let res;
@@ -2962,7 +2961,7 @@ export function dotip() {
                     nobj = cptr.ldPtro(cobj, $obj_v);
                     if (!(cptr.ldI16o((cobj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((cobj), $obj_otyp) <= NHC.BAG_OF_TRICKS))
                         continue;
-                    c = yn_function(safe_qbuf(cptr.decay(qbuf), __sl228, __sl229, cobj, doname, ansimpleoname, __sl230), cptr.decay(ynqchars), 113, 1);
+                    c = yn_function(safe_qbuf(cptr.decay(qbuf), __sl227, __sl228, cobj, doname, ansimpleoname, __sl229), cptr.decay(ynqchars), 113, 1);
                     if (c == 113)
                         return NHM.ECMD_OK;
                     if (c == 110)
@@ -2973,7 +2972,7 @@ export function dotip() {
             }
         }
     }
-    cobj = getobj(__sl103, tip_ok, NHM.GETOBJ_PROMPT);
+    cobj = getobj(__sl102, tip_ok, NHM.GETOBJ_PROMPT);
     if (!cobj)
         return NHM.ECMD_CANCEL;
     if ((cptr.ldI16o((cobj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((cobj), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(cobj, $obj_otyp) == NHC.HORN_OF_PLENTY) {
@@ -2981,34 +2980,34 @@ export function dotip() {
         return NHM.ECMD_TIME;
     }
     if ((cptr.ldI16o(cobj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cobj, $obj_otyp) == NHC.WAX_CANDLE) && (cptr.ldI32o(cobj, $obj_lamplit) & 1) | 0) {
-        spillage = __sl231;
+        spillage = __sl230;
     } else if ((cptr.ldI16o(cobj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(cobj, $obj_lamplit) & 1) | 0) || (cptr.ldI16o(cobj, $obj_otyp) == NHC.OIL_LAMP && cptr.ldI64o(cobj, $obj_age) != 0n) || (cptr.ldI16o(cobj, $obj_otyp) == NHC.MAGIC_LAMP && cptr.ld1so(cobj, $obj_spe) != 0)) {
-        spillage = __sl232;
+        spillage = __sl231;
     } else if (cptr.ldI16o(cobj, $obj_otyp) == NHC.CAN_OF_GREASE && cptr.ld1so(cobj, $obj_spe) > 0) {
-        spillage = __sl233;
+        spillage = __sl232;
     } else if (cptr.ldI16o(cobj, $obj_otyp) == NHC.FOOD_RATION || cptr.ldI16o(cobj, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(cobj, $obj_otyp) == NHC.LEMBAS_WAFER) {
-        spillage = __sl234;
+        spillage = __sl233;
     } else if (cptr.ld1so(cobj, $obj_oclass) == NHC.VENOM_CLASS) {
-        spillage = __sl235;
+        spillage = __sl234;
     }
     if (spillage) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-            void cptr.sprintf(cptr.decay(buf), __sl236, vtense(spillage, __sl237));
+            void cptr.sprintf(cptr.decay(buf), __sl235, vtense(spillage, __sl236));
         else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-            void cptr.sprintf(cptr.decay(buf), __sl238, vtense(spillage, __sl239));
-        pline(__sl240, spillage, vtense(spillage, __sl241), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), cptr.decay(buf));
+            void cptr.sprintf(cptr.decay(buf), __sl237, vtense(spillage, __sl238));
+        pline(__sl239, spillage, vtense(spillage, __sl240), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), cptr.decay(buf));
         if (cptr.ldI16o(cobj, $obj_otyp) == NHC.CAN_OF_GREASE && cptr.ld1so(cobj, $obj_spe) > 0) {
             consume_obj_charge(cobj, 1);
         }
         return NHM.ECMD_TIME;
     }
     if (cptr.ld1so(cobj, $obj_oclass) == NHC.POTION_CLASS)
-        pline_The(__sl242, xname(cobj), otense(cobj, __sl71));
+        pline_The(__sl241, xname(cobj), otense(cobj, __sl70));
     else if (uarmh.v && cptr.eq(cobj, uarmh.v))
         return tiphat() ? NHM.ECMD_TIME : NHM.ECMD_OK;
     else if (cptr.ldI16o(cobj, $obj_otyp) == NHC.STATUE)
-        pline(__sl243);
+        pline(__sl242);
     else
         pline(__sl1, cptr.ldPtr(c_common_strings));
     return NHM.ECMD_OK;
@@ -3055,9 +3054,9 @@ function tipcontainer(box) {
         terse = schar((!(highdrop || altarizing || costly_spot(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy)))));
         cptr.stI32o(box, $obj_cknown, 1);
         if (targetbox)
-            pline(__sl244, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __sl245 : __sl246, the(xname(targetbox)));
+            pline(__sl243, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __sl244 : __sl245, the(xname(targetbox)));
         else
-            pline(__sl247, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __sl248 : __sl249, terse ? 58 : 46);
+            pline(__sl246, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __sl247 : __sl248, terse ? 58 : 46);
         for (otmp = cptr.ldPtro(box, $obj_cobj); otmp; otmp = nobj) {
             nobj = cptr.ldPtr(otmp);
             obj_extract_self(otmp);
@@ -3075,8 +3074,8 @@ function tipcontainer(box) {
             }
             if (targetbox) {
                 if ((cptr.ldI16o((targetbox), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((targetbox), $obj_otyp) == NHC.BAG_OF_TRICKS) && mbag_explodes(otmp, 0)) {
-                    livelog_printf(2n, __sl250, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
-                    urgent_pline(__sl251, doname(otmp), otense(otmp, __sl252));
+                    livelog_printf(2n, __sl249, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
+                    urgent_pline(__sl250, doname(otmp), otense(otmp, __sl251));
                     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_HOLDING)
                         do_boh_explosion(otmp, schar((!srcheld)));
                     obfree(otmp, null);
@@ -3087,7 +3086,7 @@ function tipcontainer(box) {
                         useupf(targetbox, cptr.ldI64o(targetbox, $obj_quan));
                     targetbox = null;
                     nobj = null;
-                    losehp((rng_log_enabled() ? (rng_log_set_caller(__sl34, 3803, __sl253), d(6, 6)) : d(6, 6)), __sl159, NHM.KILLED_BY_AN);
+                    losehp((rng_log_enabled() ? (rng_log_set_caller(__sl34, 3803, __sl252), d(6, 6)) : d(6, 6)), __sl158, NHM.KILLED_BY_AN);
                 } else {
                     void add_to_container(targetbox, otmp);
                 }
@@ -3098,9 +3097,9 @@ function tipcontainer(box) {
                 if (altarizing) {
                     doaltarobj(otmp);
                 } else if (!terse) {
-                    pline(__sl254, Doname2(otmp), otense(otmp, __sl255), surface(ox.v, oy.v));
+                    pline(__sl253, Doname2(otmp), otense(otmp, __sl254), surface(ox.v, oy.v));
                 } else {
-                    pline(__sl256, doname(otmp), nobj ? 44 : 46);
+                    pline(__sl255, doname(otmp), nobj ? 44 : 46);
                     cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJNAM_ONLY);
                 }
                 cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_DROPPED);
@@ -3112,7 +3111,7 @@ function tipcontainer(box) {
                 (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
         }
         if (loss)
-            You(__sl188, loss, currency(loss));
+            You(__sl187, loss, currency(loss));
         cptr.stI32o(box, $obj_owt, weight(box) >>> 0);
         if (targetbox)
             cptr.stI32o(targetbox, $obj_owt, weight(targetbox) >>> 0);
@@ -3141,7 +3140,7 @@ function tipcontainer_gettarget(box, cancelled) {
     cptr.memcpy(dummyobj, cg, 216);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stPtr(any, dummyobj);
-    add_menu(win, nul_glyphinfo.v, any, 45, 0, NHM.ATR_NONE, clr, __sl257, NHM.MENU_ITEMFLAGS_SELECTED);
+    add_menu(win, nul_glyphinfo.v, any, 45, 0, NHM.ATR_NONE, clr, __sl256, NHM.MENU_ITEMFLAGS_SELECTED);
     add_menu_str(win, __sl2);
     n_conts = 0;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -3154,10 +3153,10 @@ function tipcontainer_gettarget(box, cancelled) {
         exclude_it = schar((!hands_available || ((cptr.ldI32o(otmp, $obj_olocked) & 1) | 0 && (cptr.ldI32o(otmp, $obj_lknown) & 1) | 0) ? 1 : 0));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stPtr(any, !exclude_it ? otmp : null);
-        void cptr.sprintf(cptr.decay(buf), __sl258, !exclude_it ? __sl2 : __sl259, doname(otmp));
+        void cptr.sprintf(cptr.decay(buf), __sl257, !exclude_it ? __sl2 : __sl258, doname(otmp));
         add_menu(win, nul_glyphinfo.v, any, schar((!exclude_it ? cptr.ld1so(otmp, $obj_invlet) : 0)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
-    void cptr.sprintf(cptr.decay(buf), __sl260, doname(box));
+    void cptr.sprintf(cptr.decay(buf), __sl259, doname(box));
     end_menu()(win, cptr.decay(buf));
     n = select_menu(win, NHM.PICK_ONE, pick_list);
     destroy_nhwindow()(win);
@@ -3187,13 +3186,13 @@ function tipcontainer_checks(box, targetbox, allowempty) {
             update_inventory();
     }
     if ((cptr.ldI32o(box, $obj_olocked) & 1)) {
-        pline(__sl109, upstart(thesimpleoname(box)));
+        pline(__sl108, upstart(thesimpleoname(box)));
         return NHC.TIPCHECK_LOCKED;
     } else if ((cptr.ldI32o(box, $obj_otrapped) & 1)) {
         void chest_trap(box, NHC.HAND, 0);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
             nomul(-1);
-            cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl261);
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl260);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl2);
         }
         return NHC.TIPCHECK_TRAPPED;
@@ -3234,14 +3233,14 @@ function tipcontainer_checks(box, targetbox, allowempty) {
         let empty_it = 0;
         observe_quantum_cat(box, 1, 1);
         if (!(cptr.ldPtro((box), $obj_cobj) !== null))
-            pline(__sl262, Shk_Your(cptr.decay(yourbuf), box));
+            pline(__sl261, Shk_Your(cptr.decay(yourbuf), box));
         else
             empty_it = 1;
         cptr.stI32o(box, $obj_cknown, 1);
         return (empty_it || allowempty) ? NHC.TIPCHECK_OK : NHC.TIPCHECK_EMPTY;
     } else if (!allowempty && !(cptr.ldPtro((box), $obj_cobj) !== null)) {
         cptr.stI32o(box, $obj_cknown, 1);
-        pline(__sl263, upstart(thesimpleoname(box)));
+        pline(__sl262, upstart(thesimpleoname(box)));
         return NHC.TIPCHECK_EMPTY;
     }
     return NHC.TIPCHECK_OK;

@@ -195,248 +195,247 @@ const __sl98 = cptr.lit("Stephan");
 const __sl99 = cptr.lit("Lance Braccus");
 const __sl100 = cptr.lit("Shadowhawk");
 const __sl101 = cptr.lit("Murphy");
-const __sl102 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/do_name.c");
-const __sl103 = cptr.lit("rndghostname");
-const __sl104 = cptr.lit("you");
-const __sl105 = cptr.lit("x_monnam");
-const __sl106 = cptr.lit("someone");
-const __sl107 = cptr.lit("something");
-const __sl108 = cptr.lit(" ");
-const __sl109 = cptr.lit(" the ");
-const __sl110 = cptr.lit("saddled ");
-const __sl111 = cptr.lit("%s ghost");
-const __sl112 = cptr.lit("%s called %s");
-const __sl113 = cptr.lit("your ");
-const __sl114 = cptr.lit("high priestess");
-const __sl115 = cptr.lit("high priest");
-const __sl116 = cptr.lit("himself");
-const __sl117 = cptr.lit("herself");
-const __sl118 = cptr.lit("itself");
-const __sl119 = cptr.lit("themselves");
-const __sl120 = cptr.lit("[Null monster]");
-const __sl121 = cptr.lit("[Null mon->data]");
-const __sl122 = cptr.lit("[Invalid mon->data %s < %s]");
-const __sl123 = cptr.lit("[Invalid mon->data %s >= %s]");
-const __sl124 = cptr.lit("%s <%d,%d>");
-const __sl125 = cptr.lit("%s%s <%d,%d>");
-const __sl126 = cptr.lit("tame ");
-const __sl127 = cptr.lit("peaceful ");
-const __sl128 = cptr.lit("{%s}");
-const __sl129 = cptr.lit("obj_pmname otyp:%i,corpsenm:%i");
-const __sl130 = cptr.lit("two-legged glorkum-seeker");
-const __sl131 = cptr.lit("bogusmon");
-const __sl132 = cptr.lit("bogon");
-const __sl133 = cptr.lit("-+=");
-const __sl134 = cptr.lit("ROGUEOPTS");
-const __sl135 = cptr.lit("name=");
-const __sl136 = cptr.lit("roguename");
-const __sl137 = cptr.lit("Michael Toy");
-const __sl138 = cptr.lit("Kenneth Arnold");
-const __sl139 = cptr.lit("Glenn Wichman");
-const __sl140 = cptr.lit("ultraviolet");
-const __sl141 = cptr.lit("infrared");
-const __sl142 = cptr.lit("bluish-orange");
-const __sl143 = cptr.lit("reddish-green");
-const __sl144 = cptr.lit("dark white");
-const __sl145 = cptr.lit("light black");
-const __sl146 = cptr.lit("sky blue-pink");
-const __sl147 = cptr.lit("pinkish-cyan");
-const __sl148 = cptr.lit("indigo-chartreuse");
-const __sl149 = cptr.lit("salty");
-const __sl150 = cptr.lit("sweet");
-const __sl151 = cptr.lit("sour");
-const __sl152 = cptr.lit("bitter");
-const __sl153 = cptr.lit("umami");
-const __sl154 = cptr.lit("striped");
-const __sl155 = cptr.lit("spiral");
-const __sl156 = cptr.lit("swirly");
-const __sl157 = cptr.lit("plaid");
-const __sl158 = cptr.lit("checkered");
-const __sl159 = cptr.lit("argyle");
-const __sl160 = cptr.lit("paisley");
-const __sl161 = cptr.lit("blotchy");
-const __sl162 = cptr.lit("guernsey-spotted");
-const __sl163 = cptr.lit("polka-dotted");
-const __sl164 = cptr.lit("square");
-const __sl165 = cptr.lit("round");
-const __sl166 = cptr.lit("triangular");
-const __sl167 = cptr.lit("cabernet");
-const __sl168 = cptr.lit("sangria");
-const __sl169 = cptr.lit("fuchsia");
-const __sl170 = cptr.lit("wisteria");
-const __sl171 = cptr.lit("lemon-lime");
-const __sl172 = cptr.lit("strawberry-banana");
-const __sl173 = cptr.lit("peppermint");
-const __sl174 = cptr.lit("romantic");
-const __sl175 = cptr.lit("incandescent");
-const __sl176 = cptr.lit("octarine");
-const __sl177 = cptr.lit("excitingly dull");
-const __sl178 = cptr.lit("mauve");
-const __sl179 = cptr.lit("electric");
-const __sl180 = cptr.lit("neon");
-const __sl181 = cptr.lit("fluorescent");
-const __sl182 = cptr.lit("phosphorescent");
-const __sl183 = cptr.lit("translucent");
-const __sl184 = cptr.lit("opaque");
-const __sl185 = cptr.lit("psychedelic");
-const __sl186 = cptr.lit("iridescent");
-const __sl187 = cptr.lit("rainbow-colored");
-const __sl188 = cptr.lit("polychromatic");
-const __sl189 = cptr.lit("colorless");
-const __sl190 = cptr.lit("colorless green");
-const __sl191 = cptr.lit("dancing");
-const __sl192 = cptr.lit("singing");
-const __sl193 = cptr.lit("loving");
-const __sl194 = cptr.lit("loudy");
-const __sl195 = cptr.lit("noisy");
-const __sl196 = cptr.lit("clattery");
-const __sl197 = cptr.lit("silent");
-const __sl198 = cptr.lit("apocyan");
-const __sl199 = cptr.lit("infra-pink");
-const __sl200 = cptr.lit("opalescent");
-const __sl201 = cptr.lit("violant");
-const __sl202 = cptr.lit("tuneless");
-const __sl203 = cptr.lit("viridian");
-const __sl204 = cptr.lit("aureolin");
-const __sl205 = cptr.lit("cinnabar");
-const __sl206 = cptr.lit("purpurin");
-const __sl207 = cptr.lit("gamboge");
-const __sl208 = cptr.lit("madder");
-const __sl209 = cptr.lit("bistre");
-const __sl210 = cptr.lit("ecru");
-const __sl211 = cptr.lit("fulvous");
-const __sl212 = cptr.lit("tekhelet");
-const __sl213 = cptr.lit("selective yellow");
-const __sl214 = cptr.lit("rndcolor");
-const __sl215 = cptr.lit("yoghurt");
-const __sl216 = cptr.lit("oobleck");
-const __sl217 = cptr.lit("clotted blood");
-const __sl218 = cptr.lit("diluted water");
-const __sl219 = cptr.lit("purified water");
-const __sl220 = cptr.lit("instant coffee");
-const __sl221 = cptr.lit("tea");
-const __sl222 = cptr.lit("herbal infusion");
-const __sl223 = cptr.lit("liquid rainbow");
-const __sl224 = cptr.lit("creamy foam");
-const __sl225 = cptr.lit("mulled wine");
-const __sl226 = cptr.lit("bouillon");
-const __sl227 = cptr.lit("nectar");
-const __sl228 = cptr.lit("grog");
-const __sl229 = cptr.lit("flubber");
-const __sl230 = cptr.lit("ketchup");
-const __sl231 = cptr.lit("slow light");
-const __sl232 = cptr.lit("oil");
-const __sl233 = cptr.lit("vinaigrette");
-const __sl234 = cptr.lit("liquid crystal");
-const __sl235 = cptr.lit("honey");
-const __sl236 = cptr.lit("caramel sauce");
-const __sl237 = cptr.lit("ink");
-const __sl238 = cptr.lit("aqueous humour");
-const __sl239 = cptr.lit("milk substitute");
-const __sl240 = cptr.lit("fruit juice");
-const __sl241 = cptr.lit("glowing lava");
-const __sl242 = cptr.lit("gastric acid");
-const __sl243 = cptr.lit("mineral water");
-const __sl244 = cptr.lit("cough syrup");
-const __sl245 = cptr.lit("quicksilver");
-const __sl246 = cptr.lit("sweet vitriol");
-const __sl247 = cptr.lit("grey goo");
-const __sl248 = cptr.lit("pink slime");
-const __sl249 = cptr.lit("cosmic latte");
-const __sl250 = cptr.lit("bone oil");
-const __sl251 = cptr.lit("custard");
-const __sl252 = cptr.lit("lard");
-const __sl253 = cptr.lit("vinegar");
-const __sl254 = cptr.lit("creosote");
-const __sl255 = cptr.lit("Carnivorous Vulgaris");
-const __sl256 = cptr.lit("Road-Runnerus Digestus");
-const __sl257 = cptr.lit("Eatibus Anythingus");
-const __sl258 = cptr.lit("Famishus-Famishus");
-const __sl259 = cptr.lit("Eatibus Almost Anythingus");
-const __sl260 = cptr.lit("Eatius Birdius");
-const __sl261 = cptr.lit("Famishius Fantasticus");
-const __sl262 = cptr.lit("Eternalii Famishiis");
-const __sl263 = cptr.lit("Famishus Vulgarus");
-const __sl264 = cptr.lit("Famishius Vulgaris Ingeniusi");
-const __sl265 = cptr.lit("Eatius-Slobbius");
-const __sl266 = cptr.lit("Hardheadipus Oedipus");
-const __sl267 = cptr.lit("Carnivorous Slobbius");
-const __sl268 = cptr.lit("Hard-Headipus Ravenus");
-const __sl269 = cptr.lit("Evereadii Eatibus");
-const __sl270 = cptr.lit("Apetitius Giganticus");
-const __sl271 = cptr.lit("Hungrii Flea-Bagius");
-const __sl272 = cptr.lit("Overconfidentii Vulgaris");
-const __sl273 = cptr.lit("Caninus Nervous Rex");
-const __sl274 = cptr.lit("Grotesques Appetitus");
-const __sl275 = cptr.lit("Nemesis Ridiculii");
-const __sl276 = cptr.lit("Canis latrans");
-const __sl277 = cptr.lit("%s - %s");
-const __sl278 = cptr.lit("rndorcname");
-const __sl279 = cptr.lit("%s%s");
-const __sl280 = cptr.lit("-");
-const __sl281 = cptr.lit("a");
-const __sl282 = cptr.lit("ai");
-const __sl283 = cptr.lit("og");
-const __sl284 = cptr.lit("u");
-const __sl285 = cptr.lit("gor");
-const __sl286 = cptr.lit("gris");
-const __sl287 = cptr.lit("un");
-const __sl288 = cptr.lit("bane");
-const __sl289 = cptr.lit("ruk");
-const __sl290 = cptr.lit("oth");
-const __sl291 = cptr.lit("ul");
-const __sl292 = cptr.lit("z");
-const __sl293 = cptr.lit("thos");
-const __sl294 = cptr.lit("akh");
-const __sl295 = cptr.lit("hai");
-const __sl296 = cptr.lit("%s of %s");
-const __sl297 = cptr.lit("The Colour of Magic");
-const __sl298 = cptr.lit("The Light Fantastic");
-const __sl299 = cptr.lit("Equal Rites");
-const __sl300 = cptr.lit("Mort");
-const __sl301 = cptr.lit("Sourcery");
-const __sl302 = cptr.lit("Wyrd Sisters");
-const __sl303 = cptr.lit("Pyramids");
-const __sl304 = cptr.lit("Guards! Guards!");
-const __sl305 = cptr.lit("Eric");
-const __sl306 = cptr.lit("Moving Pictures");
-const __sl307 = cptr.lit("Reaper Man");
-const __sl308 = cptr.lit("Witches Abroad");
-const __sl309 = cptr.lit("Small Gods");
-const __sl310 = cptr.lit("Lords and Ladies");
-const __sl311 = cptr.lit("Men at Arms");
-const __sl312 = cptr.lit("Soul Music");
-const __sl313 = cptr.lit("Interesting Times");
-const __sl314 = cptr.lit("Maskerade");
-const __sl315 = cptr.lit("Feet of Clay");
-const __sl316 = cptr.lit("Hogfather");
-const __sl317 = cptr.lit("Jingo");
-const __sl318 = cptr.lit("The Last Continent");
-const __sl319 = cptr.lit("Carpe Jugulum");
-const __sl320 = cptr.lit("The Fifth Elephant");
-const __sl321 = cptr.lit("The Truth");
-const __sl322 = cptr.lit("Thief of Time");
-const __sl323 = cptr.lit("The Last Hero");
-const __sl324 = cptr.lit("The Amazing Maurice and His Educated Rodents");
-const __sl325 = cptr.lit("Night Watch");
-const __sl326 = cptr.lit("The Wee Free Men");
-const __sl327 = cptr.lit("Monstrous Regiment");
-const __sl328 = cptr.lit("A Hat Full of Sky");
-const __sl329 = cptr.lit("Going Postal");
-const __sl330 = cptr.lit("Thud!");
-const __sl331 = cptr.lit("Wintersmith");
-const __sl332 = cptr.lit("Making Money");
-const __sl333 = cptr.lit("Unseen Academicals");
-const __sl334 = cptr.lit("I Shall Wear Midnight");
-const __sl335 = cptr.lit("Snuff");
-const __sl336 = cptr.lit("Raising Steam");
-const __sl337 = cptr.lit("The Shepherd's Crown");
-const __sl338 = cptr.lit("noveltitle");
-const __sl339 = cptr.lit("The Color of Magic");
-const __sl340 = cptr.lit("Sorcery");
-const __sl341 = cptr.lit("Masquerade");
-const __sl342 = cptr.lit("The Amazing Maurice");
-const __sl343 = cptr.lit("Thud");
+const __sl102 = cptr.lit("rndghostname");
+const __sl103 = cptr.lit("you");
+const __sl104 = cptr.lit("x_monnam");
+const __sl105 = cptr.lit("someone");
+const __sl106 = cptr.lit("something");
+const __sl107 = cptr.lit(" ");
+const __sl108 = cptr.lit(" the ");
+const __sl109 = cptr.lit("saddled ");
+const __sl110 = cptr.lit("%s ghost");
+const __sl111 = cptr.lit("%s called %s");
+const __sl112 = cptr.lit("your ");
+const __sl113 = cptr.lit("high priestess");
+const __sl114 = cptr.lit("high priest");
+const __sl115 = cptr.lit("himself");
+const __sl116 = cptr.lit("herself");
+const __sl117 = cptr.lit("itself");
+const __sl118 = cptr.lit("themselves");
+const __sl119 = cptr.lit("[Null monster]");
+const __sl120 = cptr.lit("[Null mon->data]");
+const __sl121 = cptr.lit("[Invalid mon->data %s < %s]");
+const __sl122 = cptr.lit("[Invalid mon->data %s >= %s]");
+const __sl123 = cptr.lit("%s <%d,%d>");
+const __sl124 = cptr.lit("%s%s <%d,%d>");
+const __sl125 = cptr.lit("tame ");
+const __sl126 = cptr.lit("peaceful ");
+const __sl127 = cptr.lit("{%s}");
+const __sl128 = cptr.lit("obj_pmname otyp:%i,corpsenm:%i");
+const __sl129 = cptr.lit("two-legged glorkum-seeker");
+const __sl130 = cptr.lit("bogusmon");
+const __sl131 = cptr.lit("bogon");
+const __sl132 = cptr.lit("-+=");
+const __sl133 = cptr.lit("ROGUEOPTS");
+const __sl134 = cptr.lit("name=");
+const __sl135 = cptr.lit("roguename");
+const __sl136 = cptr.lit("Michael Toy");
+const __sl137 = cptr.lit("Kenneth Arnold");
+const __sl138 = cptr.lit("Glenn Wichman");
+const __sl139 = cptr.lit("ultraviolet");
+const __sl140 = cptr.lit("infrared");
+const __sl141 = cptr.lit("bluish-orange");
+const __sl142 = cptr.lit("reddish-green");
+const __sl143 = cptr.lit("dark white");
+const __sl144 = cptr.lit("light black");
+const __sl145 = cptr.lit("sky blue-pink");
+const __sl146 = cptr.lit("pinkish-cyan");
+const __sl147 = cptr.lit("indigo-chartreuse");
+const __sl148 = cptr.lit("salty");
+const __sl149 = cptr.lit("sweet");
+const __sl150 = cptr.lit("sour");
+const __sl151 = cptr.lit("bitter");
+const __sl152 = cptr.lit("umami");
+const __sl153 = cptr.lit("striped");
+const __sl154 = cptr.lit("spiral");
+const __sl155 = cptr.lit("swirly");
+const __sl156 = cptr.lit("plaid");
+const __sl157 = cptr.lit("checkered");
+const __sl158 = cptr.lit("argyle");
+const __sl159 = cptr.lit("paisley");
+const __sl160 = cptr.lit("blotchy");
+const __sl161 = cptr.lit("guernsey-spotted");
+const __sl162 = cptr.lit("polka-dotted");
+const __sl163 = cptr.lit("square");
+const __sl164 = cptr.lit("round");
+const __sl165 = cptr.lit("triangular");
+const __sl166 = cptr.lit("cabernet");
+const __sl167 = cptr.lit("sangria");
+const __sl168 = cptr.lit("fuchsia");
+const __sl169 = cptr.lit("wisteria");
+const __sl170 = cptr.lit("lemon-lime");
+const __sl171 = cptr.lit("strawberry-banana");
+const __sl172 = cptr.lit("peppermint");
+const __sl173 = cptr.lit("romantic");
+const __sl174 = cptr.lit("incandescent");
+const __sl175 = cptr.lit("octarine");
+const __sl176 = cptr.lit("excitingly dull");
+const __sl177 = cptr.lit("mauve");
+const __sl178 = cptr.lit("electric");
+const __sl179 = cptr.lit("neon");
+const __sl180 = cptr.lit("fluorescent");
+const __sl181 = cptr.lit("phosphorescent");
+const __sl182 = cptr.lit("translucent");
+const __sl183 = cptr.lit("opaque");
+const __sl184 = cptr.lit("psychedelic");
+const __sl185 = cptr.lit("iridescent");
+const __sl186 = cptr.lit("rainbow-colored");
+const __sl187 = cptr.lit("polychromatic");
+const __sl188 = cptr.lit("colorless");
+const __sl189 = cptr.lit("colorless green");
+const __sl190 = cptr.lit("dancing");
+const __sl191 = cptr.lit("singing");
+const __sl192 = cptr.lit("loving");
+const __sl193 = cptr.lit("loudy");
+const __sl194 = cptr.lit("noisy");
+const __sl195 = cptr.lit("clattery");
+const __sl196 = cptr.lit("silent");
+const __sl197 = cptr.lit("apocyan");
+const __sl198 = cptr.lit("infra-pink");
+const __sl199 = cptr.lit("opalescent");
+const __sl200 = cptr.lit("violant");
+const __sl201 = cptr.lit("tuneless");
+const __sl202 = cptr.lit("viridian");
+const __sl203 = cptr.lit("aureolin");
+const __sl204 = cptr.lit("cinnabar");
+const __sl205 = cptr.lit("purpurin");
+const __sl206 = cptr.lit("gamboge");
+const __sl207 = cptr.lit("madder");
+const __sl208 = cptr.lit("bistre");
+const __sl209 = cptr.lit("ecru");
+const __sl210 = cptr.lit("fulvous");
+const __sl211 = cptr.lit("tekhelet");
+const __sl212 = cptr.lit("selective yellow");
+const __sl213 = cptr.lit("rndcolor");
+const __sl214 = cptr.lit("yoghurt");
+const __sl215 = cptr.lit("oobleck");
+const __sl216 = cptr.lit("clotted blood");
+const __sl217 = cptr.lit("diluted water");
+const __sl218 = cptr.lit("purified water");
+const __sl219 = cptr.lit("instant coffee");
+const __sl220 = cptr.lit("tea");
+const __sl221 = cptr.lit("herbal infusion");
+const __sl222 = cptr.lit("liquid rainbow");
+const __sl223 = cptr.lit("creamy foam");
+const __sl224 = cptr.lit("mulled wine");
+const __sl225 = cptr.lit("bouillon");
+const __sl226 = cptr.lit("nectar");
+const __sl227 = cptr.lit("grog");
+const __sl228 = cptr.lit("flubber");
+const __sl229 = cptr.lit("ketchup");
+const __sl230 = cptr.lit("slow light");
+const __sl231 = cptr.lit("oil");
+const __sl232 = cptr.lit("vinaigrette");
+const __sl233 = cptr.lit("liquid crystal");
+const __sl234 = cptr.lit("honey");
+const __sl235 = cptr.lit("caramel sauce");
+const __sl236 = cptr.lit("ink");
+const __sl237 = cptr.lit("aqueous humour");
+const __sl238 = cptr.lit("milk substitute");
+const __sl239 = cptr.lit("fruit juice");
+const __sl240 = cptr.lit("glowing lava");
+const __sl241 = cptr.lit("gastric acid");
+const __sl242 = cptr.lit("mineral water");
+const __sl243 = cptr.lit("cough syrup");
+const __sl244 = cptr.lit("quicksilver");
+const __sl245 = cptr.lit("sweet vitriol");
+const __sl246 = cptr.lit("grey goo");
+const __sl247 = cptr.lit("pink slime");
+const __sl248 = cptr.lit("cosmic latte");
+const __sl249 = cptr.lit("bone oil");
+const __sl250 = cptr.lit("custard");
+const __sl251 = cptr.lit("lard");
+const __sl252 = cptr.lit("vinegar");
+const __sl253 = cptr.lit("creosote");
+const __sl254 = cptr.lit("Carnivorous Vulgaris");
+const __sl255 = cptr.lit("Road-Runnerus Digestus");
+const __sl256 = cptr.lit("Eatibus Anythingus");
+const __sl257 = cptr.lit("Famishus-Famishus");
+const __sl258 = cptr.lit("Eatibus Almost Anythingus");
+const __sl259 = cptr.lit("Eatius Birdius");
+const __sl260 = cptr.lit("Famishius Fantasticus");
+const __sl261 = cptr.lit("Eternalii Famishiis");
+const __sl262 = cptr.lit("Famishus Vulgarus");
+const __sl263 = cptr.lit("Famishius Vulgaris Ingeniusi");
+const __sl264 = cptr.lit("Eatius-Slobbius");
+const __sl265 = cptr.lit("Hardheadipus Oedipus");
+const __sl266 = cptr.lit("Carnivorous Slobbius");
+const __sl267 = cptr.lit("Hard-Headipus Ravenus");
+const __sl268 = cptr.lit("Evereadii Eatibus");
+const __sl269 = cptr.lit("Apetitius Giganticus");
+const __sl270 = cptr.lit("Hungrii Flea-Bagius");
+const __sl271 = cptr.lit("Overconfidentii Vulgaris");
+const __sl272 = cptr.lit("Caninus Nervous Rex");
+const __sl273 = cptr.lit("Grotesques Appetitus");
+const __sl274 = cptr.lit("Nemesis Ridiculii");
+const __sl275 = cptr.lit("Canis latrans");
+const __sl276 = cptr.lit("%s - %s");
+const __sl277 = cptr.lit("rndorcname");
+const __sl278 = cptr.lit("%s%s");
+const __sl279 = cptr.lit("-");
+const __sl280 = cptr.lit("a");
+const __sl281 = cptr.lit("ai");
+const __sl282 = cptr.lit("og");
+const __sl283 = cptr.lit("u");
+const __sl284 = cptr.lit("gor");
+const __sl285 = cptr.lit("gris");
+const __sl286 = cptr.lit("un");
+const __sl287 = cptr.lit("bane");
+const __sl288 = cptr.lit("ruk");
+const __sl289 = cptr.lit("oth");
+const __sl290 = cptr.lit("ul");
+const __sl291 = cptr.lit("z");
+const __sl292 = cptr.lit("thos");
+const __sl293 = cptr.lit("akh");
+const __sl294 = cptr.lit("hai");
+const __sl295 = cptr.lit("%s of %s");
+const __sl296 = cptr.lit("The Colour of Magic");
+const __sl297 = cptr.lit("The Light Fantastic");
+const __sl298 = cptr.lit("Equal Rites");
+const __sl299 = cptr.lit("Mort");
+const __sl300 = cptr.lit("Sourcery");
+const __sl301 = cptr.lit("Wyrd Sisters");
+const __sl302 = cptr.lit("Pyramids");
+const __sl303 = cptr.lit("Guards! Guards!");
+const __sl304 = cptr.lit("Eric");
+const __sl305 = cptr.lit("Moving Pictures");
+const __sl306 = cptr.lit("Reaper Man");
+const __sl307 = cptr.lit("Witches Abroad");
+const __sl308 = cptr.lit("Small Gods");
+const __sl309 = cptr.lit("Lords and Ladies");
+const __sl310 = cptr.lit("Men at Arms");
+const __sl311 = cptr.lit("Soul Music");
+const __sl312 = cptr.lit("Interesting Times");
+const __sl313 = cptr.lit("Maskerade");
+const __sl314 = cptr.lit("Feet of Clay");
+const __sl315 = cptr.lit("Hogfather");
+const __sl316 = cptr.lit("Jingo");
+const __sl317 = cptr.lit("The Last Continent");
+const __sl318 = cptr.lit("Carpe Jugulum");
+const __sl319 = cptr.lit("The Fifth Elephant");
+const __sl320 = cptr.lit("The Truth");
+const __sl321 = cptr.lit("Thief of Time");
+const __sl322 = cptr.lit("The Last Hero");
+const __sl323 = cptr.lit("The Amazing Maurice and His Educated Rodents");
+const __sl324 = cptr.lit("Night Watch");
+const __sl325 = cptr.lit("The Wee Free Men");
+const __sl326 = cptr.lit("Monstrous Regiment");
+const __sl327 = cptr.lit("A Hat Full of Sky");
+const __sl328 = cptr.lit("Going Postal");
+const __sl329 = cptr.lit("Thud!");
+const __sl330 = cptr.lit("Wintersmith");
+const __sl331 = cptr.lit("Making Money");
+const __sl332 = cptr.lit("Unseen Academicals");
+const __sl333 = cptr.lit("I Shall Wear Midnight");
+const __sl334 = cptr.lit("Snuff");
+const __sl335 = cptr.lit("Raising Steam");
+const __sl336 = cptr.lit("The Shepherd's Crown");
+const __sl337 = cptr.lit("noveltitle");
+const __sl338 = cptr.lit("The Color of Magic");
+const __sl339 = cptr.lit("Sorcery");
+const __sl340 = cptr.lit("Masquerade");
+const __sl341 = cptr.lit("The Amazing Maurice");
+const __sl342 = cptr.lit("Thud");
 
 const __static_nextmbuf_bufs = (function () { const flat = new Uint8Array(5 * (256 * 1)); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (256 * 1), (r + 1) * (256 * 1))); a.buf = flat; return a; })(); /** C ref: do_name.c:22 — char[5][256] (function-static) */
 let __static_nextmbuf_bufidx = 0; /** C ref: do_name.c:23 — int (function-static) */
@@ -957,7 +956,7 @@ cptr.stPtro(ghostnames, 264, __sl101);
 
 /** C ref: do_name.c:772 @returns {CPtr} */
 export function rndghostname() {
-    return (rng_log_enabled() ? (rng_log_set_caller(__sl102, 774, __sl103), rn2(7)) : rn2(7)) ? cptr.ldPtro(ghostnames, (rng_log_enabled() ? (rng_log_set_caller(__sl102, 774, __sl103), rn2(34)) : rn2(34)), 8) : svp;
+    return (rng_log_enabled() ? (rng_log_set_caller(__sl33, 774, __sl102), rn2(7)) : rn2(7)) ? cptr.ldPtro(ghostnames, (rng_log_enabled() ? (rng_log_set_caller(__sl33, 774, __sl102), rn2(34)) : rn2(34)), 8) : svp;
 }
 
 /** C ref: do_name.c:827 — @param {CPtr} mtmp @param {CInt} article @param {CPtr} adjective @param {CInt} suppress @param {CInt} called @returns {CPtr} */
@@ -980,7 +979,7 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     let bp;
     let buf2 = new Uint8Array(256);
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
-        return cptr.strcpy(buf, __sl104);
+        return cptr.strcpy(buf, __sl103);
     if (cptr.ldI32(program_state))
         suppress |= NHM.SUPPRESS_HALLUCINATION;
     if (article == NHM.ARTICLE_YOUR && !cptr.ld1so(mtmp, $monst_mtame))
@@ -1000,7 +999,7 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     cptr.st1o(buf, 0, 0);
     if (do_it) {
         let s_one = schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 131072n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n) ? 1 : 0));
-        void cptr.strcpy(buf, !augment_it ? __sl67 : ((!do_hallu ? s_one : !(rng_log_enabled() ? (rng_log_set_caller(__sl102, 881, __sl105), rn2(2)) : rn2(2))) ? __sl106 : __sl107));
+        void cptr.strcpy(buf, !augment_it ? __sl67 : ((!do_hallu ? s_one : !(rng_log_enabled() ? (rng_log_set_caller(__sl33, 881, __sl104), rn2(2)) : rn2(2))) ? __sl105 : __sl106));
         return buf;
     }
     if (((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) && !do_mappear) {
@@ -1026,12 +1025,12 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !do_hallu && !do_mappear) {
         if (adjective && article == NHM.ARTICLE_THE) {
             void cptr.strcpy(buf, __sl6);
-            void cptr.strcat(cptr.strcat(buf, adjective), __sl108);
+            void cptr.strcat(cptr.strcat(buf, adjective), __sl107);
             void cptr.strcat(buf, (yield* shkname(mtmp)));
         } else {
             void cptr.strcat(buf, (yield* shkname(mtmp)));
             if (!cptr.eq(mdat, cptr.add(mons, NHC.PM_SHOPKEEPER, 96)) || do_invis) {
-                void cptr.strcat(buf, __sl109);
+                void cptr.strcat(buf, __sl108);
                 if (do_invis)
                     void cptr.strcat(buf, __sl7);
                 void cptr.strcat(buf, pm_name);
@@ -1040,11 +1039,11 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
         return buf;
     }
     if (adjective)
-        void cptr.strcat(cptr.strcat(buf, adjective), __sl108);
+        void cptr.strcat(cptr.strcat(buf, adjective), __sl107);
     if (do_invis)
         void cptr.strcat(buf, __sl7);
     if (do_saddle && (cptr.ldI64o(mtmp, $monst_misc_worn_check) & 1048576n) && !Blind() && !Hallucination())
-        void cptr.strcat(buf, __sl110);
+        void cptr.strcat(buf, __sl109);
     has_adjectives = schar((cptr.ld1so(buf, 0) != 0));
     if (do_hallu) {
         let rnamecode = cptr.box(0);
@@ -1054,12 +1053,12 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     } else if (do_name && (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) {
         let name = (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)));
         if (cptr.eq(mdat, cptr.add(mons, NHC.PM_GHOST, 96))) {
-            void cptr.sprintf(eos(buf), __sl111, (yield* s_suffix(name)));
+            void cptr.sprintf(eos(buf), __sl110, (yield* s_suffix(name)));
             name_at_start = 1;
         } else if (called) {
-            void cptr.sprintf(eos(buf), __sl112, pm_name, name);
+            void cptr.sprintf(eos(buf), __sl111, pm_name, name);
             name_at_start = schar(((cptr.ldU64o((mdat), $permonst_mflags2) & 524288n) != 0n));
-        } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)) && (bp = (yield* strstri(name, __sl109))) !== null) {
+        } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)) && (bp = (yield* strstri(name, __sl108))) !== null) {
             let pbuf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(pbuf), name);
             cptr.st1o(cptr.decay(pbuf), BigInt.asIntN(64, cptr.diff(bp, name) + 5n), 0, 1);
@@ -1094,7 +1093,7 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
     switch (article) {
         case NHM.ARTICLE_YOUR:
-        void cptr.strcpy(cptr.decay(buf2), __sl113);
+        void cptr.strcpy(cptr.decay(buf2), __sl112);
         break;
         case NHM.ARTICLE_THE:
         void cptr.strcpy(cptr.decay(buf2), __sl6);
@@ -1204,7 +1203,7 @@ export function* Amonnam(mtmp) {
 export function* distant_monnam(mon, article, outbuf) {
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __sl6 : __sl0);
-        void cptr.strcat(outbuf, (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __sl114 : __sl115);
+        void cptr.strcat(outbuf, (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __sl113 : __sl114);
     } else {
         void cptr.strcpy(outbuf, (yield* x_monnam(mon, article, null, 0, 1)));
     }
@@ -1220,17 +1219,17 @@ export function* mon_nam_too(mon, other_mon) {
         outbuf = nextmbuf();
         switch (pronoun_gender(mon, NHM.PRONOUN_HALLU)) {
             case 0:
-            void cptr.strcpy(outbuf, __sl116);
+            void cptr.strcpy(outbuf, __sl115);
             break;
             case 1:
-            void cptr.strcpy(outbuf, __sl117);
+            void cptr.strcpy(outbuf, __sl116);
             break;
             default:
             case 2:
-            void cptr.strcpy(outbuf, __sl118);
+            void cptr.strcpy(outbuf, __sl117);
             break;
             case 3:
-            void cptr.strcpy(outbuf, __sl119);
+            void cptr.strcpy(outbuf, __sl118);
             break;
         }
     }
@@ -1252,10 +1251,10 @@ export function* monverbself(mon, monnamtext, verb, othertext) {
                 cptr.st1o(monnamtext, 0, highc(cptr.ld1so(monnamtext, 0)));
         }
     }
-    void cptr.strcat(cptr.strcat(monnamtext, __sl108), verbs);
+    void cptr.strcat(cptr.strcat(monnamtext, __sl107), verbs);
     if (othertext && cptr.ld1s(othertext))
-        void cptr.strcat(cptr.strcat(monnamtext, __sl108), othertext);
-    void cptr.strcat(cptr.strcat(monnamtext, __sl108), cptr.decay(selfbuf));
+        void cptr.strcat(cptr.strcat(monnamtext, __sl107), othertext);
+    void cptr.strcat(cptr.strcat(monnamtext, __sl107), cptr.decay(selfbuf));
     return monnamtext;
 }
 
@@ -1264,19 +1263,19 @@ export function minimal_monnam(mon, ckloc) {
     let ptr;
     let outbuf = nextmbuf();
     if (!mon) {
-        void cptr.strcpy(outbuf, __sl120);
+        void cptr.strcpy(outbuf, __sl119);
     } else if ((ptr = cptr.ldPtro(mon, $monst_data)) === null) {
-        void cptr.strcpy(outbuf, __sl121);
+        void cptr.strcpy(outbuf, __sl120);
     } else if (cptr.cmp(ptr, cptr.add(mons, 0, 96)) < 0) {
-        void cptr.sprintf(outbuf, __sl122, fmt_ptr(cptr.ldPtro(mon, $monst_data)), fmt_ptr(cptr.add(mons, 0, 96)));
+        void cptr.sprintf(outbuf, __sl121, fmt_ptr(cptr.ldPtro(mon, $monst_data)), fmt_ptr(cptr.add(mons, 0, 96)));
     } else if (cptr.cmp(ptr, cptr.add(mons, NHC.NUMMONS, 96)) >= 0) {
-        void cptr.sprintf(outbuf, __sl123, fmt_ptr(cptr.ldPtro(mon, $monst_data)), fmt_ptr(cptr.add(mons, NHC.NUMMONS, 96)));
+        void cptr.sprintf(outbuf, __sl122, fmt_ptr(cptr.ldPtro(mon, $monst_data)), fmt_ptr(cptr.add(mons, NHC.NUMMONS, 96)));
     } else if (ckloc && cptr.eq(ptr, cptr.add(mons, NHC.PM_LONG_WORM, 96)) && cptr.ldI16o(mon, $monst_mx) && !cptr.eq(cptr.ldPtro3(svl, cptr.ldI16o(mon, $monst_mx), 168, cptr.ldI16o(mon, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters), mon)) {
-        void cptr.sprintf(outbuf, __sl124, pmname(cptr.add(mons, NHC.PM_LONG_WORM_TAIL, 96), Mgender(mon)), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
+        void cptr.sprintf(outbuf, __sl123, pmname(cptr.add(mons, NHC.PM_LONG_WORM_TAIL, 96), Mgender(mon)), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
     } else {
-        void cptr.sprintf(outbuf, __sl125, cptr.ld1so(mon, $monst_mtame) ? __sl126 : ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 ? __sl127 : __sl0), mon_pmname(mon), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
+        void cptr.sprintf(outbuf, __sl124, cptr.ld1so(mon, $monst_mtame) ? __sl125 : ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 ? __sl126 : __sl0), mon_pmname(mon), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
         if (cptr.ldI16o(mon, $monst_cham) != NHC.NON_PM)
-            void cptr.sprintf(eos(outbuf), __sl128, pmname(cptr.add(mons, cptr.ldI16o(mon, $monst_cham), 96), Mgender(mon)));
+            void cptr.sprintf(eos(outbuf), __sl127, pmname(cptr.add(mons, cptr.ldI16o(mon, $monst_cham), 96), Mgender(mon)));
     }
     return outbuf;
 }
@@ -1315,8 +1314,8 @@ export function* obj_pmname(obj) {
             mndx = NHC.PM_CLERIC;
         return pmname(cptr.add(mons, mndx, 96), mgend);
     }
-    (yield* impossible(__sl129, cptr.ldI16o(obj, $obj_otyp), cptr.ldI32o(obj, $obj_corpsenm)));
-    return __sl130;
+    (yield* impossible(__sl128, cptr.ldI16o(obj, $obj_otyp), cptr.ldI32o(obj, $obj_corpsenm)));
+    return __sl129;
 }
 
 /** C ref: do_name.c:1365 — char[6] */
@@ -1327,9 +1326,9 @@ export function* bogusmon(buf, code) {
     let mnam = buf;
     if (code)
         cptr.st1(code, 0);
-    (yield* get_rnd_text(__sl131, buf, rn2_on_display_rng, NHM.MD_PAD_BOGONS));
+    (yield* get_rnd_text(__sl130, buf, rn2_on_display_rng, NHM.MD_PAD_BOGONS));
     if (!cptr.ld1s(mnam)) {
-        void cptr.strcpy(buf, __sl132);
+        void cptr.strcpy(buf, __sl131);
     } else if (cptr.strchr(cptr.decay(bogon_codes), cptr.ld1s(mnam))) {
         if (code)
             cptr.st1(code, cptr.ld1s(mnam));
@@ -1361,101 +1360,101 @@ export function* rndmonnam(code) {
 export function bogon_is_pname(code) {
     if (!code)
         return 0;
-    return schar((cptr.strchr(__sl133, code) ? 1 : 0));
+    return schar((cptr.strchr(__sl132, code) ? 1 : 0));
 }
 
 /** C ref: do_name.c:1424 @returns {CPtr} */
 export function roguename() {
     let i;
     let opts;
-    if ((opts = nh_getenv(__sl134)) !== null) {
+    if ((opts = nh_getenv(__sl133)) !== null) {
         for (i = opts; cptr.ld1s(i); i = cptr.add(i, 1))
-            if (!cptr.strncmp(__sl135, i, 5n)) {
+            if (!cptr.strncmp(__sl134, i, 5n)) {
                 let j;
                 if ((j = cptr.strchr(cptr.add(i, 5), 44)) !== null)
                     cptr.st1(j, 0);
                 return cptr.add(i, 5);
             }
     }
-    return (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1437, __sl136), rn2(3)) : rn2(3)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl102, 1437, __sl136), rn2(2)) : rn2(2)) ? __sl137 : __sl138) : __sl139;
+    return (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1437, __sl135), rn2(3)) : rn2(3)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl33, 1437, __sl135), rn2(2)) : rn2(2)) ? __sl136 : __sl137) : __sl138;
 }
 
 /** C ref: do_name.c:1441 — char *[74] */
 const hcolors = cptr.alloc(74 * 8);
-cptr.stPtro(hcolors, 0, __sl140);
-cptr.stPtro(hcolors, 8, __sl141);
-cptr.stPtro(hcolors, 16, __sl142);
-cptr.stPtro(hcolors, 24, __sl143);
-cptr.stPtro(hcolors, 32, __sl144);
-cptr.stPtro(hcolors, 40, __sl145);
-cptr.stPtro(hcolors, 48, __sl146);
-cptr.stPtro(hcolors, 56, __sl147);
-cptr.stPtro(hcolors, 64, __sl148);
-cptr.stPtro(hcolors, 72, __sl149);
-cptr.stPtro(hcolors, 80, __sl150);
-cptr.stPtro(hcolors, 88, __sl151);
-cptr.stPtro(hcolors, 96, __sl152);
-cptr.stPtro(hcolors, 104, __sl153);
-cptr.stPtro(hcolors, 112, __sl154);
-cptr.stPtro(hcolors, 120, __sl155);
-cptr.stPtro(hcolors, 128, __sl156);
-cptr.stPtro(hcolors, 136, __sl157);
-cptr.stPtro(hcolors, 144, __sl158);
-cptr.stPtro(hcolors, 152, __sl159);
-cptr.stPtro(hcolors, 160, __sl160);
-cptr.stPtro(hcolors, 168, __sl161);
-cptr.stPtro(hcolors, 176, __sl162);
-cptr.stPtro(hcolors, 184, __sl163);
-cptr.stPtro(hcolors, 192, __sl164);
-cptr.stPtro(hcolors, 200, __sl165);
-cptr.stPtro(hcolors, 208, __sl166);
-cptr.stPtro(hcolors, 216, __sl167);
-cptr.stPtro(hcolors, 224, __sl168);
-cptr.stPtro(hcolors, 232, __sl169);
-cptr.stPtro(hcolors, 240, __sl170);
-cptr.stPtro(hcolors, 248, __sl171);
-cptr.stPtro(hcolors, 256, __sl172);
-cptr.stPtro(hcolors, 264, __sl173);
-cptr.stPtro(hcolors, 272, __sl174);
-cptr.stPtro(hcolors, 280, __sl175);
-cptr.stPtro(hcolors, 288, __sl176);
-cptr.stPtro(hcolors, 296, __sl177);
-cptr.stPtro(hcolors, 304, __sl178);
-cptr.stPtro(hcolors, 312, __sl179);
-cptr.stPtro(hcolors, 320, __sl180);
-cptr.stPtro(hcolors, 328, __sl181);
-cptr.stPtro(hcolors, 336, __sl182);
-cptr.stPtro(hcolors, 344, __sl183);
-cptr.stPtro(hcolors, 352, __sl184);
-cptr.stPtro(hcolors, 360, __sl185);
-cptr.stPtro(hcolors, 368, __sl186);
-cptr.stPtro(hcolors, 376, __sl187);
-cptr.stPtro(hcolors, 384, __sl188);
-cptr.stPtro(hcolors, 392, __sl189);
-cptr.stPtro(hcolors, 400, __sl190);
-cptr.stPtro(hcolors, 408, __sl191);
-cptr.stPtro(hcolors, 416, __sl192);
-cptr.stPtro(hcolors, 424, __sl193);
-cptr.stPtro(hcolors, 432, __sl194);
-cptr.stPtro(hcolors, 440, __sl195);
-cptr.stPtro(hcolors, 448, __sl196);
-cptr.stPtro(hcolors, 456, __sl197);
-cptr.stPtro(hcolors, 464, __sl198);
-cptr.stPtro(hcolors, 472, __sl199);
-cptr.stPtro(hcolors, 480, __sl200);
-cptr.stPtro(hcolors, 488, __sl201);
-cptr.stPtro(hcolors, 496, __sl202);
-cptr.stPtro(hcolors, 504, __sl203);
-cptr.stPtro(hcolors, 512, __sl204);
-cptr.stPtro(hcolors, 520, __sl205);
-cptr.stPtro(hcolors, 528, __sl206);
-cptr.stPtro(hcolors, 536, __sl207);
-cptr.stPtro(hcolors, 544, __sl208);
-cptr.stPtro(hcolors, 552, __sl209);
-cptr.stPtro(hcolors, 560, __sl210);
-cptr.stPtro(hcolors, 568, __sl211);
-cptr.stPtro(hcolors, 576, __sl212);
-cptr.stPtro(hcolors, 584, __sl213);
+cptr.stPtro(hcolors, 0, __sl139);
+cptr.stPtro(hcolors, 8, __sl140);
+cptr.stPtro(hcolors, 16, __sl141);
+cptr.stPtro(hcolors, 24, __sl142);
+cptr.stPtro(hcolors, 32, __sl143);
+cptr.stPtro(hcolors, 40, __sl144);
+cptr.stPtro(hcolors, 48, __sl145);
+cptr.stPtro(hcolors, 56, __sl146);
+cptr.stPtro(hcolors, 64, __sl147);
+cptr.stPtro(hcolors, 72, __sl148);
+cptr.stPtro(hcolors, 80, __sl149);
+cptr.stPtro(hcolors, 88, __sl150);
+cptr.stPtro(hcolors, 96, __sl151);
+cptr.stPtro(hcolors, 104, __sl152);
+cptr.stPtro(hcolors, 112, __sl153);
+cptr.stPtro(hcolors, 120, __sl154);
+cptr.stPtro(hcolors, 128, __sl155);
+cptr.stPtro(hcolors, 136, __sl156);
+cptr.stPtro(hcolors, 144, __sl157);
+cptr.stPtro(hcolors, 152, __sl158);
+cptr.stPtro(hcolors, 160, __sl159);
+cptr.stPtro(hcolors, 168, __sl160);
+cptr.stPtro(hcolors, 176, __sl161);
+cptr.stPtro(hcolors, 184, __sl162);
+cptr.stPtro(hcolors, 192, __sl163);
+cptr.stPtro(hcolors, 200, __sl164);
+cptr.stPtro(hcolors, 208, __sl165);
+cptr.stPtro(hcolors, 216, __sl166);
+cptr.stPtro(hcolors, 224, __sl167);
+cptr.stPtro(hcolors, 232, __sl168);
+cptr.stPtro(hcolors, 240, __sl169);
+cptr.stPtro(hcolors, 248, __sl170);
+cptr.stPtro(hcolors, 256, __sl171);
+cptr.stPtro(hcolors, 264, __sl172);
+cptr.stPtro(hcolors, 272, __sl173);
+cptr.stPtro(hcolors, 280, __sl174);
+cptr.stPtro(hcolors, 288, __sl175);
+cptr.stPtro(hcolors, 296, __sl176);
+cptr.stPtro(hcolors, 304, __sl177);
+cptr.stPtro(hcolors, 312, __sl178);
+cptr.stPtro(hcolors, 320, __sl179);
+cptr.stPtro(hcolors, 328, __sl180);
+cptr.stPtro(hcolors, 336, __sl181);
+cptr.stPtro(hcolors, 344, __sl182);
+cptr.stPtro(hcolors, 352, __sl183);
+cptr.stPtro(hcolors, 360, __sl184);
+cptr.stPtro(hcolors, 368, __sl185);
+cptr.stPtro(hcolors, 376, __sl186);
+cptr.stPtro(hcolors, 384, __sl187);
+cptr.stPtro(hcolors, 392, __sl188);
+cptr.stPtro(hcolors, 400, __sl189);
+cptr.stPtro(hcolors, 408, __sl190);
+cptr.stPtro(hcolors, 416, __sl191);
+cptr.stPtro(hcolors, 424, __sl192);
+cptr.stPtro(hcolors, 432, __sl193);
+cptr.stPtro(hcolors, 440, __sl194);
+cptr.stPtro(hcolors, 448, __sl195);
+cptr.stPtro(hcolors, 456, __sl196);
+cptr.stPtro(hcolors, 464, __sl197);
+cptr.stPtro(hcolors, 472, __sl198);
+cptr.stPtro(hcolors, 480, __sl199);
+cptr.stPtro(hcolors, 488, __sl200);
+cptr.stPtro(hcolors, 496, __sl201);
+cptr.stPtro(hcolors, 504, __sl202);
+cptr.stPtro(hcolors, 512, __sl203);
+cptr.stPtro(hcolors, 520, __sl204);
+cptr.stPtro(hcolors, 528, __sl205);
+cptr.stPtro(hcolors, 536, __sl206);
+cptr.stPtro(hcolors, 544, __sl207);
+cptr.stPtro(hcolors, 552, __sl208);
+cptr.stPtro(hcolors, 560, __sl209);
+cptr.stPtro(hcolors, 568, __sl210);
+cptr.stPtro(hcolors, 576, __sl211);
+cptr.stPtro(hcolors, 584, __sl212);
 
 /** C ref: do_name.c:1461 — @param {CPtr} colorpref @returns {CPtr} */
 export function hcolor(colorpref) {
@@ -1464,52 +1463,52 @@ export function hcolor(colorpref) {
 
 /** C ref: do_name.c:1470 @returns {CPtr} */
 export function rndcolor() {
-    let k = (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1472, __sl214), rn2(NHM.CLR_MAX)) : rn2(NHM.CLR_MAX));
-    return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __sl189 : cptr.ldPtro(c_obj_colors, k, 8));
+    let k = (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1472, __sl213), rn2(NHM.CLR_MAX)) : rn2(NHM.CLR_MAX));
+    return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __sl188 : cptr.ldPtro(c_obj_colors, k, 8));
 }
 
 /** C ref: do_name.c:1479 — char *[40] */
 const hliquids = cptr.alloc(40 * 8);
-cptr.stPtro(hliquids, 0, __sl215);
-cptr.stPtro(hliquids, 8, __sl216);
-cptr.stPtro(hliquids, 16, __sl217);
-cptr.stPtro(hliquids, 24, __sl218);
-cptr.stPtro(hliquids, 32, __sl219);
-cptr.stPtro(hliquids, 40, __sl220);
-cptr.stPtro(hliquids, 48, __sl221);
-cptr.stPtro(hliquids, 56, __sl222);
-cptr.stPtro(hliquids, 64, __sl223);
-cptr.stPtro(hliquids, 72, __sl224);
-cptr.stPtro(hliquids, 80, __sl225);
-cptr.stPtro(hliquids, 88, __sl226);
-cptr.stPtro(hliquids, 96, __sl227);
-cptr.stPtro(hliquids, 104, __sl228);
-cptr.stPtro(hliquids, 112, __sl229);
-cptr.stPtro(hliquids, 120, __sl230);
-cptr.stPtro(hliquids, 128, __sl231);
-cptr.stPtro(hliquids, 136, __sl232);
-cptr.stPtro(hliquids, 144, __sl233);
-cptr.stPtro(hliquids, 152, __sl234);
-cptr.stPtro(hliquids, 160, __sl235);
-cptr.stPtro(hliquids, 168, __sl236);
-cptr.stPtro(hliquids, 176, __sl237);
-cptr.stPtro(hliquids, 184, __sl238);
-cptr.stPtro(hliquids, 192, __sl239);
-cptr.stPtro(hliquids, 200, __sl240);
-cptr.stPtro(hliquids, 208, __sl241);
-cptr.stPtro(hliquids, 216, __sl242);
-cptr.stPtro(hliquids, 224, __sl243);
-cptr.stPtro(hliquids, 232, __sl244);
-cptr.stPtro(hliquids, 240, __sl245);
-cptr.stPtro(hliquids, 248, __sl246);
-cptr.stPtro(hliquids, 256, __sl247);
-cptr.stPtro(hliquids, 264, __sl248);
-cptr.stPtro(hliquids, 272, __sl249);
-cptr.stPtro(hliquids, 280, __sl250);
-cptr.stPtro(hliquids, 288, __sl251);
-cptr.stPtro(hliquids, 296, __sl252);
-cptr.stPtro(hliquids, 304, __sl253);
-cptr.stPtro(hliquids, 312, __sl254);
+cptr.stPtro(hliquids, 0, __sl214);
+cptr.stPtro(hliquids, 8, __sl215);
+cptr.stPtro(hliquids, 16, __sl216);
+cptr.stPtro(hliquids, 24, __sl217);
+cptr.stPtro(hliquids, 32, __sl218);
+cptr.stPtro(hliquids, 40, __sl219);
+cptr.stPtro(hliquids, 48, __sl220);
+cptr.stPtro(hliquids, 56, __sl221);
+cptr.stPtro(hliquids, 64, __sl222);
+cptr.stPtro(hliquids, 72, __sl223);
+cptr.stPtro(hliquids, 80, __sl224);
+cptr.stPtro(hliquids, 88, __sl225);
+cptr.stPtro(hliquids, 96, __sl226);
+cptr.stPtro(hliquids, 104, __sl227);
+cptr.stPtro(hliquids, 112, __sl228);
+cptr.stPtro(hliquids, 120, __sl229);
+cptr.stPtro(hliquids, 128, __sl230);
+cptr.stPtro(hliquids, 136, __sl231);
+cptr.stPtro(hliquids, 144, __sl232);
+cptr.stPtro(hliquids, 152, __sl233);
+cptr.stPtro(hliquids, 160, __sl234);
+cptr.stPtro(hliquids, 168, __sl235);
+cptr.stPtro(hliquids, 176, __sl236);
+cptr.stPtro(hliquids, 184, __sl237);
+cptr.stPtro(hliquids, 192, __sl238);
+cptr.stPtro(hliquids, 200, __sl239);
+cptr.stPtro(hliquids, 208, __sl240);
+cptr.stPtro(hliquids, 216, __sl241);
+cptr.stPtro(hliquids, 224, __sl242);
+cptr.stPtro(hliquids, 232, __sl243);
+cptr.stPtro(hliquids, 240, __sl244);
+cptr.stPtro(hliquids, 248, __sl245);
+cptr.stPtro(hliquids, 256, __sl246);
+cptr.stPtro(hliquids, 264, __sl247);
+cptr.stPtro(hliquids, 272, __sl248);
+cptr.stPtro(hliquids, 280, __sl249);
+cptr.stPtro(hliquids, 288, __sl250);
+cptr.stPtro(hliquids, 296, __sl251);
+cptr.stPtro(hliquids, 304, __sl252);
+cptr.stPtro(hliquids, 312, __sl253);
 
 /** C ref: do_name.c:1493 — @param {CPtr} liquidpref @returns {CPtr} */
 export function hliquid(liquidpref) {
@@ -1528,65 +1527,65 @@ export function hliquid(liquidpref) {
 
 /** C ref: do_name.c:1514 — char *[22] */
 const coynames = cptr.alloc(22 * 8);
-cptr.stPtro(coynames, 0, __sl255);
-cptr.stPtro(coynames, 8, __sl256);
-cptr.stPtro(coynames, 16, __sl257);
-cptr.stPtro(coynames, 24, __sl258);
-cptr.stPtro(coynames, 32, __sl259);
-cptr.stPtro(coynames, 40, __sl260);
-cptr.stPtro(coynames, 48, __sl261);
-cptr.stPtro(coynames, 56, __sl262);
-cptr.stPtro(coynames, 64, __sl263);
-cptr.stPtro(coynames, 72, __sl264);
-cptr.stPtro(coynames, 80, __sl265);
-cptr.stPtro(coynames, 88, __sl266);
-cptr.stPtro(coynames, 96, __sl267);
-cptr.stPtro(coynames, 104, __sl268);
-cptr.stPtro(coynames, 112, __sl269);
-cptr.stPtro(coynames, 120, __sl270);
-cptr.stPtro(coynames, 128, __sl271);
-cptr.stPtro(coynames, 136, __sl272);
-cptr.stPtro(coynames, 144, __sl273);
-cptr.stPtro(coynames, 152, __sl274);
-cptr.stPtro(coynames, 160, __sl275);
-cptr.stPtro(coynames, 168, __sl276);
+cptr.stPtro(coynames, 0, __sl254);
+cptr.stPtro(coynames, 8, __sl255);
+cptr.stPtro(coynames, 16, __sl256);
+cptr.stPtro(coynames, 24, __sl257);
+cptr.stPtro(coynames, 32, __sl258);
+cptr.stPtro(coynames, 40, __sl259);
+cptr.stPtro(coynames, 48, __sl260);
+cptr.stPtro(coynames, 56, __sl261);
+cptr.stPtro(coynames, 64, __sl262);
+cptr.stPtro(coynames, 72, __sl263);
+cptr.stPtro(coynames, 80, __sl264);
+cptr.stPtro(coynames, 88, __sl265);
+cptr.stPtro(coynames, 96, __sl266);
+cptr.stPtro(coynames, 104, __sl267);
+cptr.stPtro(coynames, 112, __sl268);
+cptr.stPtro(coynames, 120, __sl269);
+cptr.stPtro(coynames, 128, __sl270);
+cptr.stPtro(coynames, 136, __sl271);
+cptr.stPtro(coynames, 144, __sl272);
+cptr.stPtro(coynames, 152, __sl273);
+cptr.stPtro(coynames, 160, __sl274);
+cptr.stPtro(coynames, 168, __sl275);
 
 /** C ref: do_name.c:1526 — @param {CPtr} mtmp @param {CPtr} buf @returns {CPtr} */
 export function* coyotename(mtmp, buf) {
     if (mtmp && buf) {
-        void cptr.sprintf(buf, __sl277, (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1)), (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8) : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), ((22 - 1) | 0) >>> 0), 8));
+        void cptr.sprintf(buf, __sl276, (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1)), (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8) : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), ((22 - 1) | 0) >>> 0), 8));
     }
     return buf;
 }
 
 const __static_rndorcname_v = cptr.alloc(4 * 8);
-cptr.stPtro(__static_rndorcname_v, 0, __sl281);
-cptr.stPtro(__static_rndorcname_v, 8, __sl282);
-cptr.stPtro(__static_rndorcname_v, 16, __sl283);
-cptr.stPtro(__static_rndorcname_v, 24, __sl284); /** C ref: do_name.c:1540 — char *[4] (function-static) */
+cptr.stPtro(__static_rndorcname_v, 0, __sl280);
+cptr.stPtro(__static_rndorcname_v, 8, __sl281);
+cptr.stPtro(__static_rndorcname_v, 16, __sl282);
+cptr.stPtro(__static_rndorcname_v, 24, __sl283); /** C ref: do_name.c:1540 — char *[4] (function-static) */
 const __static_rndorcname_snd = cptr.alloc(11 * 8);
-cptr.stPtro(__static_rndorcname_snd, 0, __sl285);
-cptr.stPtro(__static_rndorcname_snd, 8, __sl286);
-cptr.stPtro(__static_rndorcname_snd, 16, __sl287);
-cptr.stPtro(__static_rndorcname_snd, 24, __sl288);
-cptr.stPtro(__static_rndorcname_snd, 32, __sl289);
-cptr.stPtro(__static_rndorcname_snd, 40, __sl290);
-cptr.stPtro(__static_rndorcname_snd, 48, __sl291);
-cptr.stPtro(__static_rndorcname_snd, 56, __sl292);
-cptr.stPtro(__static_rndorcname_snd, 64, __sl293);
-cptr.stPtro(__static_rndorcname_snd, 72, __sl294);
-cptr.stPtro(__static_rndorcname_snd, 80, __sl295); /** C ref: do_name.c:1541 — char *[11] (function-static) */
+cptr.stPtro(__static_rndorcname_snd, 0, __sl284);
+cptr.stPtro(__static_rndorcname_snd, 8, __sl285);
+cptr.stPtro(__static_rndorcname_snd, 16, __sl286);
+cptr.stPtro(__static_rndorcname_snd, 24, __sl287);
+cptr.stPtro(__static_rndorcname_snd, 32, __sl288);
+cptr.stPtro(__static_rndorcname_snd, 40, __sl289);
+cptr.stPtro(__static_rndorcname_snd, 48, __sl290);
+cptr.stPtro(__static_rndorcname_snd, 56, __sl291);
+cptr.stPtro(__static_rndorcname_snd, 64, __sl292);
+cptr.stPtro(__static_rndorcname_snd, 72, __sl293);
+cptr.stPtro(__static_rndorcname_snd, 80, __sl294); /** C ref: do_name.c:1541 — char *[11] (function-static) */
 
 /** C ref: do_name.c:1538 — @param {CPtr} s @returns {CPtr} */
 export function rndorcname(s) {
     let i;
-    let iend = (((rng_log_enabled() ? (rng_log_set_caller(__sl102, 1543, __sl278), rn2(2)) : rn2(2)) + 3) | 0);
-    let vstart = (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1543, __sl278), rn2(2)) : rn2(2));
+    let iend = (((rng_log_enabled() ? (rng_log_set_caller(__sl33, 1543, __sl277), rn2(2)) : rn2(2)) + 3) | 0);
+    let vstart = (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1543, __sl277), rn2(2)) : rn2(2));
     if (s) {
         cptr.st1(s, 0);
         for (i = 0; i < iend; ++i) {
             vstart = (1 - vstart) | 0;
-            void cptr.sprintf(eos(s), __sl279, (i > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl102, 1549, __sl278), rn2(30)) : rn2(30))) ? __sl280 : __sl0, vstart ? cptr.ldPtro(__static_rndorcname_v, (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl278), rn2(4)) : rn2(4)), 8) : cptr.ldPtro(__static_rndorcname_snd, (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1550, __sl278), rn2(11)) : rn2(11)), 8));
+            void cptr.sprintf(eos(s), __sl278, (i > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl33, 1549, __sl277), rn2(30)) : rn2(30))) ? __sl279 : __sl0, vstart ? cptr.ldPtro(__static_rndorcname_v, (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1550, __sl277), rn2(4)) : rn2(4)), 8) : cptr.ldPtro(__static_rndorcname_snd, (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1550, __sl277), rn2(11)) : rn2(11)), 8));
         }
     }
     return s;
@@ -1608,10 +1607,10 @@ export function* christen_orc(mtmp, gang, other) {
         let gbuf = new Uint8Array(256);
         let nameit = 0;
         if (gang) {
-            void cptr.sprintf(cptr.decay(buf), __sl296, upstart(orcname), upstart(cptr.strcpy(cptr.decay(gbuf), gang)));
+            void cptr.sprintf(cptr.decay(buf), __sl295, upstart(orcname), upstart(cptr.strcpy(cptr.decay(gbuf), gang)));
             nameit = 1;
         } else if (other) {
-            void cptr.sprintf(cptr.decay(buf), __sl279, upstart(orcname), other);
+            void cptr.sprintf(cptr.decay(buf), __sl278, upstart(orcname), other);
             nameit = 1;
         }
         if (nameit)
@@ -1622,53 +1621,53 @@ export function* christen_orc(mtmp, gang, other) {
 
 /** C ref: do_name.c:1591 — char *[41] */
 const sir_Terry_novels = cptr.alloc(41 * 8);
-cptr.stPtro(sir_Terry_novels, 0, __sl297);
-cptr.stPtro(sir_Terry_novels, 8, __sl298);
-cptr.stPtro(sir_Terry_novels, 16, __sl299);
-cptr.stPtro(sir_Terry_novels, 24, __sl300);
-cptr.stPtro(sir_Terry_novels, 32, __sl301);
-cptr.stPtro(sir_Terry_novels, 40, __sl302);
-cptr.stPtro(sir_Terry_novels, 48, __sl303);
-cptr.stPtro(sir_Terry_novels, 56, __sl304);
-cptr.stPtro(sir_Terry_novels, 64, __sl305);
-cptr.stPtro(sir_Terry_novels, 72, __sl306);
-cptr.stPtro(sir_Terry_novels, 80, __sl307);
-cptr.stPtro(sir_Terry_novels, 88, __sl308);
-cptr.stPtro(sir_Terry_novels, 96, __sl309);
-cptr.stPtro(sir_Terry_novels, 104, __sl310);
-cptr.stPtro(sir_Terry_novels, 112, __sl311);
-cptr.stPtro(sir_Terry_novels, 120, __sl312);
-cptr.stPtro(sir_Terry_novels, 128, __sl313);
-cptr.stPtro(sir_Terry_novels, 136, __sl314);
-cptr.stPtro(sir_Terry_novels, 144, __sl315);
-cptr.stPtro(sir_Terry_novels, 152, __sl316);
-cptr.stPtro(sir_Terry_novels, 160, __sl317);
-cptr.stPtro(sir_Terry_novels, 168, __sl318);
-cptr.stPtro(sir_Terry_novels, 176, __sl319);
-cptr.stPtro(sir_Terry_novels, 184, __sl320);
-cptr.stPtro(sir_Terry_novels, 192, __sl321);
-cptr.stPtro(sir_Terry_novels, 200, __sl322);
-cptr.stPtro(sir_Terry_novels, 208, __sl323);
-cptr.stPtro(sir_Terry_novels, 216, __sl324);
-cptr.stPtro(sir_Terry_novels, 224, __sl325);
-cptr.stPtro(sir_Terry_novels, 232, __sl326);
-cptr.stPtro(sir_Terry_novels, 240, __sl327);
-cptr.stPtro(sir_Terry_novels, 248, __sl328);
-cptr.stPtro(sir_Terry_novels, 256, __sl329);
-cptr.stPtro(sir_Terry_novels, 264, __sl330);
-cptr.stPtro(sir_Terry_novels, 272, __sl331);
-cptr.stPtro(sir_Terry_novels, 280, __sl332);
-cptr.stPtro(sir_Terry_novels, 288, __sl333);
-cptr.stPtro(sir_Terry_novels, 296, __sl334);
-cptr.stPtro(sir_Terry_novels, 304, __sl335);
-cptr.stPtro(sir_Terry_novels, 312, __sl336);
-cptr.stPtro(sir_Terry_novels, 320, __sl337);
+cptr.stPtro(sir_Terry_novels, 0, __sl296);
+cptr.stPtro(sir_Terry_novels, 8, __sl297);
+cptr.stPtro(sir_Terry_novels, 16, __sl298);
+cptr.stPtro(sir_Terry_novels, 24, __sl299);
+cptr.stPtro(sir_Terry_novels, 32, __sl300);
+cptr.stPtro(sir_Terry_novels, 40, __sl301);
+cptr.stPtro(sir_Terry_novels, 48, __sl302);
+cptr.stPtro(sir_Terry_novels, 56, __sl303);
+cptr.stPtro(sir_Terry_novels, 64, __sl304);
+cptr.stPtro(sir_Terry_novels, 72, __sl305);
+cptr.stPtro(sir_Terry_novels, 80, __sl306);
+cptr.stPtro(sir_Terry_novels, 88, __sl307);
+cptr.stPtro(sir_Terry_novels, 96, __sl308);
+cptr.stPtro(sir_Terry_novels, 104, __sl309);
+cptr.stPtro(sir_Terry_novels, 112, __sl310);
+cptr.stPtro(sir_Terry_novels, 120, __sl311);
+cptr.stPtro(sir_Terry_novels, 128, __sl312);
+cptr.stPtro(sir_Terry_novels, 136, __sl313);
+cptr.stPtro(sir_Terry_novels, 144, __sl314);
+cptr.stPtro(sir_Terry_novels, 152, __sl315);
+cptr.stPtro(sir_Terry_novels, 160, __sl316);
+cptr.stPtro(sir_Terry_novels, 168, __sl317);
+cptr.stPtro(sir_Terry_novels, 176, __sl318);
+cptr.stPtro(sir_Terry_novels, 184, __sl319);
+cptr.stPtro(sir_Terry_novels, 192, __sl320);
+cptr.stPtro(sir_Terry_novels, 200, __sl321);
+cptr.stPtro(sir_Terry_novels, 208, __sl322);
+cptr.stPtro(sir_Terry_novels, 216, __sl323);
+cptr.stPtro(sir_Terry_novels, 224, __sl324);
+cptr.stPtro(sir_Terry_novels, 232, __sl325);
+cptr.stPtro(sir_Terry_novels, 240, __sl326);
+cptr.stPtro(sir_Terry_novels, 248, __sl327);
+cptr.stPtro(sir_Terry_novels, 256, __sl328);
+cptr.stPtro(sir_Terry_novels, 264, __sl329);
+cptr.stPtro(sir_Terry_novels, 272, __sl330);
+cptr.stPtro(sir_Terry_novels, 280, __sl331);
+cptr.stPtro(sir_Terry_novels, 288, __sl332);
+cptr.stPtro(sir_Terry_novels, 296, __sl333);
+cptr.stPtro(sir_Terry_novels, 304, __sl334);
+cptr.stPtro(sir_Terry_novels, 312, __sl335);
+cptr.stPtro(sir_Terry_novels, 320, __sl336);
 
 /** C ref: do_name.c:1611 — @param {CPtr} novidx @returns {CPtr} */
 export function noveltitle(novidx) {
     let j;
     let k = 41;
-    j = (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1615, __sl338), rn2(k)) : rn2(k));
+    j = (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1615, __sl337), rn2(k)) : rn2(k));
     if (novidx) {
         if (cptr.ldI32(novidx) == -1)
             cptr.stI32(novidx, j);
@@ -1681,15 +1680,15 @@ export function noveltitle(novidx) {
 /** C ref: do_name.c:1627 — @param {CPtr} lookname @param {CPtr} idx @returns {CPtr} */
 export function* lookup_novel(lookname, idx) {
     let k;
-    if (!(yield* strncmpi(((yield* The(lookname))), (__sl339), -1)))
+    if (!(yield* strncmpi(((yield* The(lookname))), (__sl338), -1)))
         lookname = cptr.ldPtro(sir_Terry_novels, 0, 8);
-    else if (!(yield* strncmpi((lookname), (__sl340), -1)))
+    else if (!(yield* strncmpi((lookname), (__sl339), -1)))
         lookname = cptr.ldPtro(sir_Terry_novels, 4, 8);
-    else if (!(yield* strncmpi((lookname), (__sl341), -1)))
+    else if (!(yield* strncmpi((lookname), (__sl340), -1)))
         lookname = cptr.ldPtro(sir_Terry_novels, 17, 8);
-    else if (!(yield* strncmpi(((yield* The(lookname))), (__sl342), -1)))
+    else if (!(yield* strncmpi(((yield* The(lookname))), (__sl341), -1)))
         lookname = cptr.ldPtro(sir_Terry_novels, 27, 8);
-    else if (!(yield* strncmpi((lookname), (__sl343), -1)))
+    else if (!(yield* strncmpi((lookname), (__sl342), -1)))
         lookname = cptr.ldPtro(sir_Terry_novels, 33, 8);
     for (k = 0; k < 41; ++k) {
         if (!(yield* strncmpi((lookname), (cptr.ldPtro(sir_Terry_novels, k, 8)), -1)) || !(yield* strncmpi(((yield* The(lookname))), (cptr.ldPtro(sir_Terry_novels, k, 8)), -1))) {

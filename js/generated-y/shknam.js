@@ -444,29 +444,28 @@ const __sl365 = cptr.lit("vegetarian food shop");
 const __sl366 = cptr.lit("lighting store");
 const __sl367 = cptr.lit("lighting shop");
 const __sl368 = cptr.lit("shkveg no veggy objects");
-const __sl369 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/shknam.c");
+const __sl369 = cptr.lit("shknam.c");
 const __sl370 = cptr.lit("shkveg");
 const __sl371 = cptr.lit("shkveg probtype error, oclass=%d i=%d");
 const __sl372 = cptr.lit("mkshobj_at");
 const __sl373 = cptr.lit("+Izchak");
 const __sl374 = cptr.lit("nameshk");
-const __sl375 = cptr.lit("shknam.c");
-const __sl376 = cptr.lit("names_avail > 0");
-const __sl377 = cptr.lit("-Lucrezia");
-const __sl378 = cptr.lit("+Dirk");
-const __sl379 = cptr.lit("has_eshk(mtmp)");
-const __sl380 = cptr.lit("Where is shopdoor?");
-const __sl381 = cptr.lit("Room at (%d,%d),(%d,%d).");
-const __sl382 = cptr.lit("doormax=%d doorct=%d fdoor=%d");
-const __sl383 = cptr.lit("door [%d,%d]");
-const __sl384 = cptr.lit("shkinit");
-const __sl385 = cptr.lit("Closed for inventory");
-const __sl386 = cptr.lit("stock_room");
-const __sl387 = cptr.lit("get_shop_item");
-const __sl388 = cptr.lit("shkname: \"%s\" is not a shopkeeper.");
-const __sl389 = cptr.lit("shkname: shopkeeper \"%s\" lacks 'eshk' data.");
-const __sl390 = cptr.lit("shkname");
-const __sl391 = cptr.lit("Izchak");
+const __sl375 = cptr.lit("names_avail > 0");
+const __sl376 = cptr.lit("-Lucrezia");
+const __sl377 = cptr.lit("+Dirk");
+const __sl378 = cptr.lit("has_eshk(mtmp)");
+const __sl379 = cptr.lit("Where is shopdoor?");
+const __sl380 = cptr.lit("Room at (%d,%d),(%d,%d).");
+const __sl381 = cptr.lit("doormax=%d doorct=%d fdoor=%d");
+const __sl382 = cptr.lit("door [%d,%d]");
+const __sl383 = cptr.lit("shkinit");
+const __sl384 = cptr.lit("Closed for inventory");
+const __sl385 = cptr.lit("stock_room");
+const __sl386 = cptr.lit("get_shop_item");
+const __sl387 = cptr.lit("shkname: \"%s\" is not a shopkeeper.");
+const __sl388 = cptr.lit("shkname: shopkeeper \"%s\" lacks 'eshk' data.");
+const __sl389 = cptr.lit("shkname");
+const __sl390 = cptr.lit("Izchak");
 
 /** C ref: shknam.c:32 — char *[31] */
 const shkliquors = cptr.alloc(31 * 8);
@@ -1202,7 +1201,7 @@ function nameshk(shk, nlp) {
         cptr.stI32o(shk, $monst_female, (name_wanted & 1) >>> 0);
         for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
             continue;
-        (__builtin_expect(BigInt((!(names_avail > 0))), 0n) ? __assert_rtn(__sl374, __sl375, 514, __sl376) : void 0);
+        (__builtin_expect(BigInt((!(names_avail > 0))), 0n) ? __assert_rtn(__sl374, __sl369, 514, __sl375) : void 0);
         name_wanted = name_wanted % names_avail;
         for (trycnt = 0; trycnt < 50; trycnt++) {
             if (cptr.eq(nlp, shktools)) {
@@ -1218,7 +1217,7 @@ function nameshk(shk, nlp) {
                     continue;
                 continue;
             } else {
-                shname = (cptr.ldI32o(shk, $monst_female) & 1) | 0 ? __sl377 : __sl378;
+                shname = (cptr.ldI32o(shk, $monst_female) & 1) | 0 ? __sl376 : __sl377;
             }
             if (cptr.ld1s(shname) == 95 || cptr.ld1s(shname) == 45)
                 cptr.stI32o(shk, $monst_female, 1);
@@ -1227,7 +1226,7 @@ function nameshk(shk, nlp) {
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
                     continue;
-                (__builtin_expect(BigInt((!((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))))), 0n) ? __assert_rtn(__sl374, __sl375, 542, __sl379) : void 0);
+                (__builtin_expect(BigInt((!((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))))), 0n) ? __assert_rtn(__sl374, __sl369, 542, __sl378) : void 0);
                 if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname))
                     continue;
                 name_wanted = names_avail;
@@ -1307,11 +1306,11 @@ function* shkinit(shp, sroom) {
     if (sh < 0) {
         if (wizard()) {
             let j = cptr.ld1so(sroom, $mkroom_doorct);
-            (yield* impossible(__sl380));
-            (yield* pline(__sl381, cptr.ldI16(sroom), cptr.ldI16o(sroom, $mkroom_ly), cptr.ldI16o(sroom, $mkroom_hx), cptr.ldI16o(sroom, $mkroom_hy)));
-            (yield* pline(__sl382, cptr.ldI32(gd), cptr.ld1so(sroom, $mkroom_doorct), sh));
+            (yield* impossible(__sl379));
+            (yield* pline(__sl380, cptr.ldI16(sroom), cptr.ldI16o(sroom, $mkroom_ly), cptr.ldI16o(sroom, $mkroom_hx), cptr.ldI16o(sroom, $mkroom_hy)));
+            (yield* pline(__sl381, cptr.ldI32(gd), cptr.ld1so(sroom, $mkroom_doorct), sh));
             while (j--) {
-                (yield* pline(__sl383, cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4, $nhcoord_y)));
+                (yield* pline(__sl382, cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4, $nhcoord_y)));
                 sh++;
             }
             (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
@@ -1339,10 +1338,10 @@ function* shkinit(shp, sroom) {
     cptr.stI32o(eshkp, $eshk_billct, cptr.stI32o(eshkp, $eshk_visitct, 0));
     cptr.stPtro(eshkp, $eshk_bill_p, null);
     cptr.st1o2(eshkp, 0, 1, $eshk_customer, 0);
-    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl369, 682, __sl384), rnd(100)) : rnd(100)))))));
+    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl369, 682, __sl383), rnd(100)) : rnd(100)))))));
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings))
         void (yield* mongets(shk, NHC.TOUCHSTONE));
-    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 686, __sl384), rn2(2)) : rn2(2))) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 687, __sl384), rn2(5)) : rn2(5))))
+    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 686, __sl383), rn2(2)) : rn2(2))) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 687, __sl383), rn2(5)) : rn2(5))))
         void (yield* mongets(shk, NHC.SCR_CHARGING));
     nameshk(shk, cptr.ldPtro(shp, $shclass_shknms));
     return sh;
@@ -1396,7 +1395,7 @@ export function* stock_room(shp_indx, sroom) {
             n--;
         else if (inside_shop(i16(sx), i16(((sy - 1) | 0))))
             n++;
-        void cptr.sprintf(cptr.decay(buf), __sl385);
+        void cptr.sprintf(cptr.decay(buf), __sl384);
         (yield* make_engr_at(i16(m), i16(n), cptr.decay(buf), null, 0n, NHM.DUST));
         if (cptr.ld1so3(svl, m, 756, n, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR && cptr.ld1so3(svl, m, 756, n, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM)
             cptr.st1o3(svl, m, 756, n, 36, $instance_globals_saved_l_level + $rm_typ, schar(((Is_special(cptr.add(u, $you_uz)) || cptr.ld1s((yield* in_rooms(i16(m), i16(n), 0)))) ? NHC.ROOM : NHC.CORR)));
@@ -1406,7 +1405,7 @@ export function* stock_room(shp_indx, sroom) {
             for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++)
                 if (stock_room_goodpos(sroom, rmno, sh, sx, sy))
                     stockcount++;
-        specialspot = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 777, __sl386), rnd(stockcount)) : rnd(stockcount));
+        specialspot = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 777, __sl385), rnd(stockcount)) : rnd(stockcount));
         stockcount = 0;
     }
     for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
@@ -1444,7 +1443,7 @@ export function get_shop_item(type) {
     let shp = cptr.add(shtypes, type, 112);
     let i;
     let j;
-    for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 835, __sl387), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shp, i, 8, $shclass_iprobs)) | 0) > 0; i++)
+    for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 835, __sl386), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shp, i, 8, $shclass_iprobs)) | 0) > 0; i++)
         continue;
     return cptr.ldI32o2(shp, i, 8, $shclass_iprobs + $itp_itype);
 }
@@ -1464,9 +1463,9 @@ export function* shkname(mtmp) {
     nam = (yield* noit_mon_nam(mtmp));
     cptr.stI32o(mtmp, $monst_isshk, save_isshk);
     if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
-        (yield* impossible(__sl388, nam));
+        (yield* impossible(__sl387, nam));
     } else if (!(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))) {
-        (yield* panic(__sl389, nam));
+        (yield* panic(__sl388, nam));
     } else {
         let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
         if (Hallucination() && !cptr.ldI32(program_state)) {
@@ -1476,11 +1475,11 @@ export function* shkname(mtmp) {
                 if (cptr.ldI32o2(shtypes, num, 112, $shclass_prob) == 0)
                     break;
             if (num > 0) {
-                nlp = cptr.ldPtro2(shtypes, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 884, __sl390), rn2(num)) : rn2(num)), 112, $shclass_shknms);
+                nlp = cptr.ldPtro2(shtypes, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 884, __sl389), rn2(num)) : rn2(num)), 112, $shclass_shknms);
                 for (num = 0; cptr.ldPtro(nlp, num, 8); num++)
                     continue;
                 if (num > 0)
-                    shknm = cptr.ldPtro(nlp, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 888, __sl390), rn2(num)) : rn2(num)), 8);
+                    shknm = cptr.ldPtro(nlp, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 888, __sl389), rn2(num)) : rn2(num)), 8);
             }
         }
         if (!letter(cptr.ld1s(shknm)))
@@ -1508,7 +1507,7 @@ export function is_izchak(shkp, override_hallucination) {
     shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
     if (!letter(cptr.ld1s(shknm)))
         shknm = cptr.add(shknm, 1);
-    return schar((!strcmp(shknm, __sl391)));
+    return schar((!strcmp(shknm, __sl390)));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

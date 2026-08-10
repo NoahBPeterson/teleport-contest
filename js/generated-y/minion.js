@@ -73,7 +73,7 @@ const $align_record = FLD.align_record, $dgn_topology_d_astral_level = FLD.dgn_t
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("%s looks puzzled for a moment.");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/minion.c");
+const __sl1 = cptr.lit("minion.c");
 const __sl2 = cptr.lit("msummon");
 const __sl3 = cptr.lit("%s appears in a %s of %s!");
 const __sl4 = cptr.lit("summon_minion");

@@ -1158,7 +1158,7 @@ const __sl878 = cptr.lit("glob");
 const __sl879 = cptr.lit(" corpse");
 const __sl880 = cptr.lit(" egg");
 const __sl881 = cptr.lit("candied ");
-const __sl882 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/options.c");
+const __sl882 = cptr.lit("options.c");
 const __sl883 = cptr.lit("fruitadd");
 const __sl884 = cptr.lit("longest_option_name");
 const __sl885 = cptr.lit("%%-%us [%%s]");
@@ -1187,98 +1187,97 @@ const __sl907 = cptr.lit("Other settings:");
 const __sl908 = cptr.lit("Set what options?");
 const __sl909 = cptr.lit("optmenu");
 const __sl910 = cptr.lit("doset");
-const __sl911 = cptr.lit("options.c");
-const __sl912 = cptr.lit("IndexOk(opt_indx, allopt)");
-const __sl913 = cptr.lit("For a brief explanation of how this works, type '?' to select");
-const __sl914 = cptr.lit("the next menu choice, then press <enter> or <return>.");
-const __sl915 = cptr.lit("[To suppress this menu help, toggle off the 'cmdassist' option.]");
-const __sl916 = cptr.lit("menu_shift");
-const __sl917 = cptr.lit("Menu control keys:");
-const __sl918 = cptr.lit("%-7s %s");
-const __sl919 = cptr.lit("%s%-7s %s");
-const __sl920 = cptr.lit("Whole");
-const __sl921 = cptr.lit("Current");
-const __sl922 = cptr.lit(" Menu");
-const __sl923 = cptr.lit(" Page");
-const __sl924 = cptr.lit("Select");
-const __sl925 = cptr.lit("Invert");
-const __sl926 = cptr.lit("Deselect");
-const __sl927 = cptr.lit("Go to");
-const __sl928 = cptr.lit("Next page");
-const __sl929 = cptr.lit("Previous page");
-const __sl930 = cptr.lit("First page");
-const __sl931 = cptr.lit("Last page");
-const __sl932 = cptr.lit("Pan view");
-const __sl933 = cptr.lit("Right (perm_invent only)");
-const __sl934 = cptr.lit("Left");
-const __sl935 = cptr.lit("Search");
-const __sl936 = cptr.lit("Exter a target string and invert all matching entries");
-const __sl937 = cptr.lit("%9s  %-8s %s");
-const __sl938 = cptr.lit("Other ");
-const __sl939 = cptr.lit("Return");
-const __sl940 = cptr.lit("Accept current choice(s) and dismiss menu");
-const __sl941 = cptr.lit("Enter");
-const __sl942 = cptr.lit("Same as Return");
-const __sl943 = cptr.lit("Space");
-const __sl944 = cptr.lit("If not on last page, advance one page;");
-const __sl945 = cptr.lit("     ");
-const __sl946 = cptr.lit("when on last page, treat like Return");
-const __sl947 = cptr.lit("Escape");
-const __sl948 = cptr.lit("Cancel menu without making any choice(s)");
-const __sl949 = cptr.lit("Do what?");
-const __sl950 = cptr.lit("add new %s");
-const __sl951 = cptr.lit("list %s");
-const __sl952 = cptr.lit("remove existing %s");
-const __sl953 = cptr.lit("exit this menu");
-const __sl954 = cptr.lit("ON, for %s objects%s");
-const __sl955 = cptr.lit(", with one exception");
-const __sl956 = cptr.lit(", with some exceptions");
-const __sl957 = cptr.lit("OFF");
-const __sl958 = cptr.lit("Autopickup: %s.");
-const __sl959 = cptr.lit("\"<%253[^\"]\" %c");
-const __sl960 = cptr.lit("\">%253[^\"]\" %c");
-const __sl961 = cptr.lit("\"%253[^\"]\" %c");
-const __sl962 = cptr.lit("'\"\\");
-const __sl963 = cptr.lit("                 NetHack Options Help:");
-const __sl964 = cptr.lit("or use `NETHACKOPTIONS=\"<options>\"' in your environment");
-const __sl965 = cptr.lit("(<options> is a list of options separated by commas)");
-const __sl966 = cptr.lit("or press \"O\" while playing and use the menu.");
-const __sl967 = cptr.lit("Boolean options (which can be negated by prefixing them with '!' or \"no\"):");
-const __sl968 = cptr.lit("Some of the options can only be set before the game is started;");
-const __sl969 = cptr.lit("those items will not be selectable in the 'O' command's menu.");
-const __sl970 = cptr.lit("Some options are stored in a game's save file, and will keep saved");
-const __sl971 = cptr.lit("values when restoring that game even if you have updated your config-");
-const __sl972 = cptr.lit("uration file to change them.  Such changes will matter for new games.");
-const __sl973 = cptr.lit("The \"other settings\" can be set with 'O', but when set within the");
-const __sl974 = cptr.lit("configuration file they use their own directives rather than OPTIONS.");
-const __sl975 = cptr.lit("See NetHack's \"Guidebook\" for details.");
-const __sl976 = cptr.lit("option_help");
-const __sl977 = cptr.lit("Set options as OPTIONS=<options> in %s");
-const __sl978 = cptr.lit("Compound options:");
-const __sl979 = cptr.lit("`%s'");
-const __sl980 = cptr.lit("%-20s - %s%c");
-const __sl981 = cptr.lit("OPTIONS=");
-const __sl982 = cptr.lit("all_options_conds");
-const __sl983 = cptr.lit(",\\\n");
-const __sl984 = cptr.lit("%8s");
-const __sl985 = cptr.lit(",");
-const __sl986 = cptr.lit("\n");
-const __sl987 = cptr.lit("MENUCOLOR=\"%s\"=%s%s%s\n");
-const __sl988 = cptr.lit("MSGTYPE=%s \"%s\"\n");
-const __sl989 = cptr.lit("autopickup_exception=\"%c%s\"\n");
-const __sl990 = cptr.lit("# NetHack config, saved %s\n#\n");
-const __sl991 = cptr.lit("OPTIONS=%s%s\n");
-const __sl992 = cptr.lit("all_options_strbuf");
-const __sl993 = cptr.lit("OPTIONS=%s:%s");
-const __sl994 = cptr.lit("WIZKIT=%s\n");
-const __sl995 = cptr.lit("next_opt");
-const __sl996 = cptr.lit(", ");
-const __sl997 = cptr.lit("status hilite rules");
-const __sl998 = cptr.lit("set_option_mod_status: status out of range %d.");
-const __sl999 = cptr.lit("set_wc_option_mod_status: status out of range %d.");
-const __sl1000 = cptr.lit("set_wc2_option_mod_status: status out of range %d.");
-const __sl1001 = cptr.lit("windowcolors for %s windows specified multiple times");
-const __sl1002 = cptr.lit("windowcolors for unrecognized window type: %s");
+const __sl911 = cptr.lit("IndexOk(opt_indx, allopt)");
+const __sl912 = cptr.lit("For a brief explanation of how this works, type '?' to select");
+const __sl913 = cptr.lit("the next menu choice, then press <enter> or <return>.");
+const __sl914 = cptr.lit("[To suppress this menu help, toggle off the 'cmdassist' option.]");
+const __sl915 = cptr.lit("menu_shift");
+const __sl916 = cptr.lit("Menu control keys:");
+const __sl917 = cptr.lit("%-7s %s");
+const __sl918 = cptr.lit("%s%-7s %s");
+const __sl919 = cptr.lit("Whole");
+const __sl920 = cptr.lit("Current");
+const __sl921 = cptr.lit(" Menu");
+const __sl922 = cptr.lit(" Page");
+const __sl923 = cptr.lit("Select");
+const __sl924 = cptr.lit("Invert");
+const __sl925 = cptr.lit("Deselect");
+const __sl926 = cptr.lit("Go to");
+const __sl927 = cptr.lit("Next page");
+const __sl928 = cptr.lit("Previous page");
+const __sl929 = cptr.lit("First page");
+const __sl930 = cptr.lit("Last page");
+const __sl931 = cptr.lit("Pan view");
+const __sl932 = cptr.lit("Right (perm_invent only)");
+const __sl933 = cptr.lit("Left");
+const __sl934 = cptr.lit("Search");
+const __sl935 = cptr.lit("Exter a target string and invert all matching entries");
+const __sl936 = cptr.lit("%9s  %-8s %s");
+const __sl937 = cptr.lit("Other ");
+const __sl938 = cptr.lit("Return");
+const __sl939 = cptr.lit("Accept current choice(s) and dismiss menu");
+const __sl940 = cptr.lit("Enter");
+const __sl941 = cptr.lit("Same as Return");
+const __sl942 = cptr.lit("Space");
+const __sl943 = cptr.lit("If not on last page, advance one page;");
+const __sl944 = cptr.lit("     ");
+const __sl945 = cptr.lit("when on last page, treat like Return");
+const __sl946 = cptr.lit("Escape");
+const __sl947 = cptr.lit("Cancel menu without making any choice(s)");
+const __sl948 = cptr.lit("Do what?");
+const __sl949 = cptr.lit("add new %s");
+const __sl950 = cptr.lit("list %s");
+const __sl951 = cptr.lit("remove existing %s");
+const __sl952 = cptr.lit("exit this menu");
+const __sl953 = cptr.lit("ON, for %s objects%s");
+const __sl954 = cptr.lit(", with one exception");
+const __sl955 = cptr.lit(", with some exceptions");
+const __sl956 = cptr.lit("OFF");
+const __sl957 = cptr.lit("Autopickup: %s.");
+const __sl958 = cptr.lit("\"<%253[^\"]\" %c");
+const __sl959 = cptr.lit("\">%253[^\"]\" %c");
+const __sl960 = cptr.lit("\"%253[^\"]\" %c");
+const __sl961 = cptr.lit("'\"\\");
+const __sl962 = cptr.lit("                 NetHack Options Help:");
+const __sl963 = cptr.lit("or use `NETHACKOPTIONS=\"<options>\"' in your environment");
+const __sl964 = cptr.lit("(<options> is a list of options separated by commas)");
+const __sl965 = cptr.lit("or press \"O\" while playing and use the menu.");
+const __sl966 = cptr.lit("Boolean options (which can be negated by prefixing them with '!' or \"no\"):");
+const __sl967 = cptr.lit("Some of the options can only be set before the game is started;");
+const __sl968 = cptr.lit("those items will not be selectable in the 'O' command's menu.");
+const __sl969 = cptr.lit("Some options are stored in a game's save file, and will keep saved");
+const __sl970 = cptr.lit("values when restoring that game even if you have updated your config-");
+const __sl971 = cptr.lit("uration file to change them.  Such changes will matter for new games.");
+const __sl972 = cptr.lit("The \"other settings\" can be set with 'O', but when set within the");
+const __sl973 = cptr.lit("configuration file they use their own directives rather than OPTIONS.");
+const __sl974 = cptr.lit("See NetHack's \"Guidebook\" for details.");
+const __sl975 = cptr.lit("option_help");
+const __sl976 = cptr.lit("Set options as OPTIONS=<options> in %s");
+const __sl977 = cptr.lit("Compound options:");
+const __sl978 = cptr.lit("`%s'");
+const __sl979 = cptr.lit("%-20s - %s%c");
+const __sl980 = cptr.lit("OPTIONS=");
+const __sl981 = cptr.lit("all_options_conds");
+const __sl982 = cptr.lit(",\\\n");
+const __sl983 = cptr.lit("%8s");
+const __sl984 = cptr.lit(",");
+const __sl985 = cptr.lit("\n");
+const __sl986 = cptr.lit("MENUCOLOR=\"%s\"=%s%s%s\n");
+const __sl987 = cptr.lit("MSGTYPE=%s \"%s\"\n");
+const __sl988 = cptr.lit("autopickup_exception=\"%c%s\"\n");
+const __sl989 = cptr.lit("# NetHack config, saved %s\n#\n");
+const __sl990 = cptr.lit("OPTIONS=%s%s\n");
+const __sl991 = cptr.lit("all_options_strbuf");
+const __sl992 = cptr.lit("OPTIONS=%s:%s");
+const __sl993 = cptr.lit("WIZKIT=%s\n");
+const __sl994 = cptr.lit("next_opt");
+const __sl995 = cptr.lit(", ");
+const __sl996 = cptr.lit("status hilite rules");
+const __sl997 = cptr.lit("set_option_mod_status: status out of range %d.");
+const __sl998 = cptr.lit("set_wc_option_mod_status: status out of range %d.");
+const __sl999 = cptr.lit("set_wc2_option_mod_status: status out of range %d.");
+const __sl1000 = cptr.lit("windowcolors for %s windows specified multiple times");
+const __sl1001 = cptr.lit("windowcolors for unrecognized window type: %s");
 
 /** C ref: options.c:60 — struct allopt_t[218] */
 const allopt_init = cptr.alloc(218 * 104);
@@ -11217,7 +11216,7 @@ export function parsebindings(bindings) {
 
 /** C ref: options.c:7676 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: options.c:7680 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/options.c:7676:14)[6] */
+/** C ref: options.c:7680 — struct (unnamed struct at options.c:7676:14)[6] */
 const msgtype_names = cptr.alloc(6 * 24);
 cptr.stPtro(msgtype_names, 0, __sl843);
 cptr.st1o(msgtype_names, 8, NHM.MSGTYP_NORMAL);
@@ -12015,10 +12014,10 @@ function term_for_boolean(idx, b) {
 
 const __static_doset_fmtstr_tab_doset = cptr.bytes("%s%s\t[%s]"); /** C ref: options.c:8760 — char[10] (function-static) */
 const __static_doset_helptext = cptr.alloc(5 * 8);
-cptr.stPtro(__static_doset_helptext, 0, __sl913);
-cptr.stPtro(__static_doset_helptext, 8, __sl914);
+cptr.stPtro(__static_doset_helptext, 0, __sl912);
+cptr.stPtro(__static_doset_helptext, 8, __sl913);
 cptr.stPtro(__static_doset_helptext, 16, null);
-cptr.stPtro(__static_doset_helptext, 24, (__sl915));
+cptr.stPtro(__static_doset_helptext, 24, (__sl914));
 cptr.stPtro(__static_doset_helptext, 32, __sl491); /** C ref: options.c:8790 — char *[5] (function-static) */
 
 /** C ref: options.c:8758 @returns {CInt} */
@@ -12128,7 +12127,7 @@ export function doset() {
                 if (opt_indx < -1)
                     opt_indx++;
                 opt_indx = (opt_indx - indexoffset) | 0;
-                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__sl910, __sl911, 8924, __sl912) : void 0);
+                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__sl910, __sl882, 8924, __sl911) : void 0);
                 if (cptr.ldI32o2(allopt, opt_indx, 104, $allopt_t_opttyp) == NHC.BoolOpt) {
                     void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, $allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, opt_indx, 104));
                     void parseoptions(cptr.decay(buf), 0, 0);
@@ -12229,16 +12228,16 @@ function doset_add_menu(win, option, fmtstr, idx, indexoffset) {
 }
 
 const __static_show_menu_controls_hardcoded = cptr.alloc(6 * 16);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __sl939);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __sl940);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __sl941);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + $xtra_cntrls_desc, __sl942);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __sl943);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + $xtra_cntrls_desc, __sl944);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __sl945);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + $xtra_cntrls_desc, __sl946);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __sl947);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + $xtra_cntrls_desc, __sl948);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __sl938);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __sl939);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __sl940);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + $xtra_cntrls_desc, __sl941);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __sl942);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + $xtra_cntrls_desc, __sl943);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __sl944);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + $xtra_cntrls_desc, __sl945);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __sl946);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + $xtra_cntrls_desc, __sl947);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80, null);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80 + $xtra_cntrls_desc, null); /** C ref: options.c:9075 — struct xtra_cntrls[6] (function-static) */
 const __static_show_menu_controls_mc_fmt = cptr.bytes("%8s     %-6s %s"); /** C ref: options.c:9083 — char[16] (function-static) */
@@ -12250,12 +12249,12 @@ export function show_menu_controls(win, dolist) {
     let fmt;
     let arg;
     let xcp;
-    let has_menu_shift = wc2_supported(__sl916);
-    putstr()(win, 0, __sl917);
+    let has_menu_shift = wc2_supported(__sl915);
+    putstr()(win, 0, __sl916);
     if (dolist) {
         let i;
         let ch;
-        fmt = __sl918;
+        fmt = __sl917;
         for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc); i++) {
             ch = cptr.ld1so2(default_menu_cmd_info, i, 24, $menu_cmd_t_cmd);
             if ((ch == 125 || ch == 123) && !has_menu_shift)
@@ -12263,41 +12262,41 @@ export function show_menu_controls(win, dolist) {
             void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc));
             putstr()(win, 0, cptr.decay(buf));
         }
-        fmt = __sl919;
+        fmt = __sl918;
         arg = __sl491;
     } else {
         putstr()(win, 0, __sl491);
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl920, __sl921);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl919, __sl920);
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl922, __sl923);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl921, __sl922);
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl924, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl923, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl925, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl924, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl926, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl925, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
         putstr()(win, 0, cptr.decay(buf));
         putstr()(win, 0, __sl491);
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl927, visctrl(get_menu_cmd_key(62)), __sl928);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl926, visctrl(get_menu_cmd_key(62)), __sl927);
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(60)), __sl929);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(60)), __sl928);
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(94)), __sl930);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(94)), __sl929);
         putstr()(win, 0, cptr.decay(buf));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(124)), __sl931);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(124)), __sl930);
         putstr()(win, 0, cptr.decay(buf));
         if (has_menu_shift) {
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl932, visctrl(get_menu_cmd_key(125)), __sl933);
+            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl931, visctrl(get_menu_cmd_key(125)), __sl932);
             putstr()(win, 0, cptr.decay(buf));
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(123)), __sl934);
+            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(123)), __sl933);
             putstr()(win, 0, cptr.decay(buf));
         }
         putstr()(win, 0, __sl491);
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl935, visctrl(get_menu_cmd_key(58)), __sl936);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl934, visctrl(get_menu_cmd_key(58)), __sl935);
         putstr()(win, 0, cptr.decay(buf));
         putstr()(win, 0, __sl491);
-        fmt = __sl937;
-        arg = __sl938;
+        fmt = __sl936;
+        arg = __sl937;
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
         void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, $xtra_cntrls_desc));
@@ -12330,13 +12329,13 @@ function count_apes() {
 
 const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * 16);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 0, 97);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __sl950);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __sl949);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 16, 108);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + $action_desc, __sl951);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + $action_desc, __sl950);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 32, 114);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __sl952);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __sl951);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 48, 120);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __sl953); /** C ref: options.c:9217 — struct action[4] (function-static) */
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __sl952); /** C ref: options.c:9217 — struct action[4] (function-static) */
 
 /** C ref: options.c:9208 — @param {CPtr} optname @param {CInt} numtotal @returns {CInt} */
 function handle_add_list_remove(optname, numtotal) {
@@ -12358,7 +12357,7 @@ function handle_add_list_remove(optname, numtotal) {
         void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, $action_desc), (i == 1) ? makeplural(optname) : optname);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, 16), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    end_menu()(tmpwin, __sl949);
+    end_menu()(tmpwin, __sl948);
     if ((pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, pick_list)) > 0) {
         opt_idx = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
         if (pick_cnt > 1 && opt_idx == 3)
@@ -12377,11 +12376,11 @@ export function dotogglepickup() {
     cptr.st1o(flags, $flag_pickup, schar((!cptr.ld1so(flags, $flag_pickup))));
     if (cptr.ld1so(flags, $flag_pickup)) {
         oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl));
-        void cptr.sprintf(cptr.decay(buf), __sl954, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468, (cptr.ldPtro(ga, $instance_globals_a_apelist)) ? ((count_apes() == 1) ? __sl955 : __sl956) : __sl491);
+        void cptr.sprintf(cptr.decay(buf), __sl953, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468, (cptr.ldPtro(ga, $instance_globals_a_apelist)) ? ((count_apes() == 1) ? __sl954 : __sl955) : __sl491);
     } else {
-        void cptr.strcpy(cptr.decay(buf), __sl957);
+        void cptr.strcpy(cptr.decay(buf), __sl956);
     }
-    pline(__sl958, cptr.decay(buf));
+    pline(__sl957, cptr.decay(buf));
     return NHM.ECMD_OK;
 }
 
@@ -12411,9 +12410,9 @@ export function add_autopickup_exception(mapping) {
     let n;
     let grab = 0;
     end.v = 0;
-    if ((n = sscanf(mapping, __sl959, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
+    if ((n = sscanf(mapping, __sl958, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 1;
-    } else if ((n = sscanf(mapping, __sl960, cptr.decay(text), end)) == 1 || (n = sscanf(mapping, __sl961, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
+    } else if ((n = sscanf(mapping, __sl959, cptr.decay(text), end)) == 1 || (n = sscanf(mapping, __sl960, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 0;
     } else {
         config_error_add(__sl554, cptr.decay(__static_add_autopickup_exception_APE_syntax_error));
@@ -12481,7 +12480,7 @@ export function sym_val(strval) {
     } else if (cptr.ld1so(strval, 0) == 39) {
         if (cptr.ld1so(strval, 2) == 39 && !cptr.ld1so(strval, 3)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 1), 1);
-        } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__sl962, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
+        } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__sl961, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 2), 1);
         } else {
             let p;
@@ -12503,27 +12502,27 @@ export function sym_val(strval) {
 /** C ref: options.c:9429 — char *[10] */
 const opt_intro = cptr.alloc(10 * 8);
 cptr.stPtro(opt_intro, 0, __sl491);
-cptr.stPtro(opt_intro, 8, __sl963);
+cptr.stPtro(opt_intro, 8, __sl962);
 cptr.stPtro(opt_intro, 16, __sl491);
 cptr.stPtro(opt_intro, 24, null);
-cptr.stPtro(opt_intro, 32, __sl964);
-cptr.stPtro(opt_intro, 40, __sl965);
-cptr.stPtro(opt_intro, 48, __sl966);
+cptr.stPtro(opt_intro, 32, __sl963);
+cptr.stPtro(opt_intro, 40, __sl964);
+cptr.stPtro(opt_intro, 48, __sl965);
 cptr.stPtro(opt_intro, 56, __sl491);
-cptr.stPtro(opt_intro, 64, (__sl967));
+cptr.stPtro(opt_intro, 64, (__sl966));
 cptr.stPtro(opt_intro, 72, null);
 
 /** C ref: options.c:9448 — char *[10] */
 const opt_epilog = cptr.alloc(10 * 8);
 cptr.stPtro(opt_epilog, 0, __sl491);
-cptr.stPtro(opt_epilog, 8, __sl968);
-cptr.stPtro(opt_epilog, 16, __sl969);
-cptr.stPtro(opt_epilog, 24, __sl970);
-cptr.stPtro(opt_epilog, 32, __sl971);
-cptr.stPtro(opt_epilog, 40, __sl972);
-cptr.stPtro(opt_epilog, 48, __sl973);
-cptr.stPtro(opt_epilog, 56, __sl974);
-cptr.stPtro(opt_epilog, 64, __sl975);
+cptr.stPtro(opt_epilog, 8, __sl967);
+cptr.stPtro(opt_epilog, 16, __sl968);
+cptr.stPtro(opt_epilog, 24, __sl969);
+cptr.stPtro(opt_epilog, 32, __sl970);
+cptr.stPtro(opt_epilog, 40, __sl971);
+cptr.stPtro(opt_epilog, 48, __sl972);
+cptr.stPtro(opt_epilog, 56, __sl973);
+cptr.stPtro(opt_epilog, 64, __sl974);
 cptr.stPtro(opt_epilog, 72, null);
 
 /** C ref: options.c:9462 */
@@ -12534,7 +12533,7 @@ export function option_help() {
     let i;
     let datawin;
     datawin = create_nhwindow()(NHM.NHW_TEXT);
-    nh_snprintf(__sl976, 9471, cptr.decay(buf), 256n, __sl977, get_configfile());
+    nh_snprintf(__sl975, 9471, cptr.decay(buf), 256n, __sl976, get_configfile());
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
         putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8));
@@ -12549,7 +12548,7 @@ export function option_help() {
         next_opt(datawin, optname);
     }
     next_opt(datawin, __sl491);
-    putstr()(datawin, 0, __sl978);
+    putstr()(datawin, 0, __sl977);
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
         if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
@@ -12558,8 +12557,8 @@ export function option_help() {
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
-        void cptr.sprintf(cptr.decay(buf2), __sl979, optname);
-        nh_snprintf(__sl976, 9507, cptr.decay(buf), 256n, __sl980, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
+        void cptr.sprintf(cptr.decay(buf2), __sl978, optname);
+        nh_snprintf(__sl975, 9507, cptr.decay(buf), 256n, __sl979, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
         putstr()(datawin, 0, cptr.decay(buf));
     }
     putstr()(datawin, 0, __sl491);
@@ -12587,13 +12586,13 @@ function all_options_conds(sbuf) {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     while (opt_next_cond(idx, cptr.decay(nextcond))) {
         if (idx == 0) {
-            void cptr.strcpy(cptr.decay(buf), __sl981);
-        } else if ((((Strlen_(cptr.decay(buf), __sl982, 9568) + 1) >>> 0) + Strlen_(cptr.decay(nextcond), __sl982, 9568)) >>> 0 >= 75) {
-            void cptr.strcat(cptr.decay(buf), __sl983);
+            void cptr.strcpy(cptr.decay(buf), __sl980);
+        } else if ((((Strlen_(cptr.decay(buf), __sl981, 9568) + 1) >>> 0) + Strlen_(cptr.decay(nextcond), __sl981, 9568)) >>> 0 >= 75) {
+            void cptr.strcat(cptr.decay(buf), __sl982);
             strbuf_append(sbuf, cptr.decay(buf));
-            void cptr.sprintf(cptr.decay(buf), __sl984, __sl598);
+            void cptr.sprintf(cptr.decay(buf), __sl983, __sl598);
         } else if (cptr.ld1so(cptr.decay(nextcond), 0, 1) && gotone) {
-            void cptr.strcat(cptr.decay(buf), __sl985);
+            void cptr.strcat(cptr.decay(buf), __sl984);
         }
         if (cptr.ld1so(cptr.decay(nextcond), 0, 1)) {
             gotone = 1;
@@ -12601,8 +12600,8 @@ function all_options_conds(sbuf) {
         }
         ++idx;
     }
-    if (strcmp(cptr.decay(buf), __sl981)) {
-        void cptr.strcat(cptr.decay(buf), __sl986);
+    if (strcmp(cptr.decay(buf), __sl980)) {
+        void cptr.strcat(cptr.decay(buf), __sl985);
         strbuf_append(sbuf, cptr.decay(buf));
     }
 }
@@ -12625,7 +12624,7 @@ function all_options_menucolors(sbuf) {
         tmp = cptr.ldPtro(arr, (i - 1) | 0, 8);
         let sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
         let sclr = clr2colorname(cptr.ldI32o(tmp, $menucoloring_color));
-        void cptr.sprintf(cptr.decay(buf), __sl987, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
+        void cptr.sprintf(cptr.decay(buf), __sl986, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
         strbuf_append(sbuf, cptr.decay(buf));
     }
     cptr.free(arr);
@@ -12637,7 +12636,7 @@ function all_options_msgtypes(sbuf) {
     let buf = new Uint8Array(256);
     while (tmp) {
         let mtype = msgtype2name(cptr.ldI16(tmp));
-        void cptr.sprintf(cptr.decay(buf), __sl988, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
+        void cptr.sprintf(cptr.decay(buf), __sl987, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
         strbuf_append(sbuf, cptr.decay(buf));
         tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
     }
@@ -12648,7 +12647,7 @@ function all_options_apes(sbuf) {
     let tmp = cptr.ldPtro(ga, $instance_globals_a_apelist);
     let buf = new Uint8Array(256);
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __sl989, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
+        void cptr.sprintf(cptr.decay(buf), __sl988, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
         strbuf_append(sbuf, cptr.decay(buf));
         tmp = cptr.ldPtro(tmp, $autopickup_exception_next);
     }
@@ -12662,7 +12661,7 @@ export function all_options_strbuf(sbuf) {
     let bool_p;
     let i;
     strbuf_init(sbuf);
-    void cptr.sprintf(cptr.decay(tmp), __sl990, yyyymmddhhmmss(0n));
+    void cptr.sprintf(cptr.decay(tmp), __sl989, yyyymmddhhmmss(0n));
     strbuf_append(sbuf, cptr.decay(tmp));
     for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
         if (!cptr.ld1so(cptr.decay(opt_set_in_config), i, 1))
@@ -12673,7 +12672,7 @@ export function all_options_strbuf(sbuf) {
             if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                 break;
             if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, 104, $allopt_t_initval)) {
-                void cptr.sprintf(cptr.decay(tmp), __sl991, cptr.ld1s(bool_p) ? __sl491 : __sl613, name);
+                void cptr.sprintf(cptr.decay(tmp), __sl990, cptr.ld1s(bool_p) ? __sl491 : __sl613, name);
                 strbuf_append(sbuf, cptr.decay(tmp));
             }
             break;
@@ -12682,8 +12681,8 @@ export function all_options_strbuf(sbuf) {
                 break;
             buf2 = get_option_value(name, 1);
             if (buf2) {
-                nh_snprintf(__sl992, 9714, cptr.decay(tmp), 255n, __sl993, name, buf2);
-                void cptr.strcat(cptr.decay(tmp), __sl986);
+                nh_snprintf(__sl991, 9714, cptr.decay(tmp), 255n, __sl992, name, buf2);
+                void cptr.strcat(cptr.decay(tmp), __sl985);
                 strbuf_append(sbuf, cptr.decay(tmp));
             }
             break;
@@ -12701,7 +12700,7 @@ export function all_options_strbuf(sbuf) {
     all_options_autocomplete(sbuf);
     all_options_statushilites(sbuf);
     if (cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit)) {
-        void cptr.sprintf(cptr.decay(tmp), __sl994, cptr.add(gw, $instance_globals_w_wizkit));
+        void cptr.sprintf(cptr.decay(tmp), __sl993, cptr.add(gw, $instance_globals_w_wizkit));
         strbuf_append(sbuf, cptr.decay(tmp));
     }
 }
@@ -12720,7 +12719,7 @@ export function next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);
         i = NHM.COLNO;
     } else {
-        i = ((((Strlen_(__static_next_opt_buf, __sl995, 9770) + Strlen_(str, __sl995, 9770)) >>> 0) + 2) >>> 0) | 0;
+        i = ((((Strlen_(__static_next_opt_buf, __sl994, 9770) + Strlen_(str, __sl994, 9770)) >>> 0) + 2) >>> 0) | 0;
     }
     if (i > 78) {
         putstr()(datawin, 0, __static_next_opt_buf);
@@ -12728,7 +12727,7 @@ export function next_opt(datawin, str) {
     }
     if (cptr.ld1s(str)) {
         void cptr.strcat(__static_next_opt_buf, str);
-        void cptr.strcat(__static_next_opt_buf, __sl996);
+        void cptr.strcat(__static_next_opt_buf, __sl995);
     } else {
         putstr()(datawin, 0, str);
         cptr.free(__static_next_opt_buf), __static_next_opt_buf = null;
@@ -12819,13 +12818,13 @@ cptr.stPtro(wc2_options, 48, __sl157);
 cptr.stU64o(wc2_options, 48 + $wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc2_options, 64, __sl159);
 cptr.stU64o(wc2_options, 64 + $wc_Opt_wc_bit, 64n);
-cptr.stPtro(wc2_options, 80, __sl916);
+cptr.stPtro(wc2_options, 80, __sl915);
 cptr.stU64o(wc2_options, 80 + $wc_Opt_wc_bit, 65536n);
 cptr.stPtro(wc2_options, 96, __sl267);
 cptr.stU64o(wc2_options, 96 + $wc_Opt_wc_bit, 4096n);
 cptr.stPtro(wc2_options, 112, __sl327);
 cptr.stU64o(wc2_options, 112 + $wc_Opt_wc_bit, 2n);
-cptr.stPtro(wc2_options, 128, __sl997);
+cptr.stPtro(wc2_options, 128, __sl996);
 cptr.stU64o(wc2_options, 128 + $wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc2_options, 144, __sl351);
 cptr.stU64o(wc2_options, 144 + $wc_Opt_wc_bit, 8n);
@@ -12852,7 +12851,7 @@ cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 export function set_option_mod_status(optnam, status) {
     let k;
     if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
-        impossible(__sl998, status);
+        impossible(__sl997, status);
         return;
     }
     for (k = 0; cptr.ldPtro(allopt, k, 104); k++) {
@@ -12867,7 +12866,7 @@ export function set_option_mod_status(optnam, status) {
 export function set_wc_option_mod_status(optmask, status) {
     let k = 0;
     if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
-        impossible(__sl999, status);
+        impossible(__sl998, status);
         return;
     }
     while (cptr.ldPtro(wc_options, k, 16)) {
@@ -12903,7 +12902,7 @@ function wc_supported(optnam) {
 export function set_wc2_option_mod_status(optmask, status) {
     let k = 0;
     if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
-        impossible(__sl1000, status);
+        impossible(__sl999, status);
         return;
     }
     while (cptr.ldPtro(wc2_options, k, 16)) {
@@ -13041,14 +13040,14 @@ function wc_set_window_colors(op) {
                     cptr.stPtr(cptr.ldPtro(bgp, j, 8), dupstr((clr >= 0) ? wc_color_name(clr) : tbg));
                 }
                 if (cptr.ldI32o(wcolors_opt, j, 4) != 0) {
-                    config_error_add(__sl1001, cptr.ldPtro(wcnames, j, 8));
+                    config_error_add(__sl1000, cptr.ldPtro(wcnames, j, 8));
                 }
                 (cptr.stI32o(wcolors_opt, j, cptr.ldI32o(wcolors_opt, j, 4) + 1, 4)) - (1);
                 break;
             }
         }
         if (j == NHC.WC_COUNT) {
-            config_error_add(__sl1002, wn);
+            config_error_add(__sl1001, wn);
         }
     }
     options_set_window_colors_flag = 1;

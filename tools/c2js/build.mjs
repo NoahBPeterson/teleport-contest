@@ -21,7 +21,7 @@ import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
 import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
-import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_HELPERS, JS_RESERVED } from './emit.mjs';
+import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_HELPERS, JS_RESERVED, assertNoAbsolutePaths } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -567,7 +567,11 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
       ...emitter.stringList.map((raw, i) => `const __sl${i} = cptr.lit(${raw});`)].join('\n')
     : null;
 
-  return [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
+  const out = [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
+  // __FILE__ hygiene: nothing this machine knows about its own filesystem may
+  // reach the shipped tree (emit.mjs, sourcePathSpelling)
+  assertNoAbsolutePaths(out, `${name}.js`);
+  return out;
 }
 
 function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
@@ -868,10 +872,34 @@ async function maybeReset() {
       { stdio: 'inherit' });
   }
 }
+/**
+ * Final sweep: no emitted tree may carry an absolute machine path.
+ *
+ * assemble() asserts per-module as it writes, but three later passes splice
+ * text in that assemble() never sees — the sidecar modules (nhconst/nhmacro/
+ * nhfield/nhprop/nhmacrofn), yieldify's whole-program rewrite into
+ * js/generated-y/, and resetify's appended blocks. This runs last and reads
+ * the trees back off disk, so it is the assertion that actually covers what
+ * ships.
+ */
+function assertTreesHygienic() {
+  let checked = 0;
+  for (const dir of ['js/generated', 'js/generated-y']) {
+    const abs = path.join(repoRoot, dir);
+    if (!fs.existsSync(abs)) continue;
+    for (const f of fs.readdirSync(abs)) {
+      if (!f.endsWith('.js')) continue;
+      assertNoAbsolutePaths(fs.readFileSync(path.join(abs, f), 'utf8'), `${dir}/${f}`);
+      checked++;
+    }
+  }
+  console.log(`\nemit hygiene: ${checked} emitted modules carry no absolute machine path`);
+}
+
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 
 // buildAll/buildSingle may or may not return a promise depending on the path
 // taken; normalise before chaining so the hook can never mask a build failure
 // or, worse, invent one after a build that succeeded.
-if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset);
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset).then(assertTreesHygienic);
 else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

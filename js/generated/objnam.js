@@ -707,200 +707,199 @@ const __sl541 = cptr.lit("luck stone");
 const __sl542 = cptr.lit("load stone");
 const __sl543 = cptr.lit("touch stone");
 const __sl544 = cptr.lit("flintstone");
-const __sl545 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/objnam.c");
-const __sl546 = cptr.lit("rnd_otyp_by_wpnskill");
-const __sl547 = cptr.lit("rnd_otyp_by_namedesc");
-const __sl548 = cptr.lit("shiny");
-const __sl549 = cptr.lit("undiggable ");
-const __sl550 = cptr.lit("nondiggable ");
-const __sl551 = cptr.lit("unphaseable ");
-const __sl552 = cptr.lit("nonpasswall ");
-const __sl553 = cptr.lit("%s%s.");
-const __sl554 = cptr.lit(" to nowhere");
-const __sl555 = cptr.lit("Creation of %s failed.");
-const __sl556 = cptr.lit("fountain");
-const __sl557 = cptr.lit("magic ");
-const __sl558 = cptr.lit("A %sfountain.");
-const __sl559 = cptr.lit("throne");
-const __sl560 = cptr.lit("A throne.");
-const __sl561 = cptr.lit("sink");
-const __sl562 = cptr.lit("A sink.");
-const __sl563 = cptr.lit("pool");
-const __sl564 = cptr.lit("moat");
-const __sl565 = cptr.lit("wall of water");
-const __sl566 = cptr.lit("%s.");
-const __sl567 = cptr.lit("Moat");
-const __sl568 = cptr.lit("lava");
-const __sl569 = cptr.lit("wall of lava");
-const __sl570 = cptr.lit("A %s of molten lava.");
-const __sl571 = cptr.lit("wall");
-const __sl572 = cptr.lit("Lava");
-const __sl573 = cptr.lit("melting ");
-const __sl574 = cptr.lit("Ice");
-const __sl575 = cptr.lit("altar");
-const __sl576 = cptr.lit("chaotic ");
-const __sl577 = cptr.lit("neutral ");
-const __sl578 = cptr.lit("lawful ");
-const __sl579 = cptr.lit("unaligned ");
-const __sl580 = cptr.lit("wizterrainwish");
-const __sl581 = cptr.lit("%s altar.");
-const __sl582 = cptr.lit("grave");
-const __sl583 = cptr.lit("headstone");
-const __sl584 = cptr.lit("A %sgrave.");
-const __sl585 = cptr.lit("disturbed ");
-const __sl586 = cptr.lit("Can't place a grave here.");
-const __sl587 = cptr.lit("tree");
-const __sl588 = cptr.lit("A tree.");
-const __sl589 = cptr.lit("bars");
-const __sl590 = cptr.lit("Iron bars.");
-const __sl591 = cptr.lit("cloud");
-const __sl592 = cptr.lit("A cloud.");
-const __sl593 = cptr.lit("door");
-const __sl594 = cptr.lit("doorway");
-const __sl595 = cptr.lit("secret door");
-const __sl596 = cptr.lit("closed ");
-const __sl597 = cptr.lit("open ");
-const __sl598 = cptr.lit("doorless doorway");
-const __sl599 = cptr.lit("%s requires door or wall location.");
-const __sl600 = cptr.lit("A wall.");
-const __sl601 = cptr.lit("secret corridor");
-const __sl602 = cptr.lit("Secret corridor.");
-const __sl603 = cptr.lit("Secret corridor requires corridor location.");
-const __sl604 = cptr.lit("room");
-const __sl605 = cptr.lit("floor");
-const __sl606 = cptr.lit("ground");
-const __sl607 = cptr.lit("Room floor.");
-const __sl608 = cptr.lit("Floor");
-const __sl609 = cptr.lit("Room|floor|ground not allowed here.");
-const __sl610 = cptr.lit("%s %s the drawbridge.");
-const __sl611 = cptr.lit("in front of");
-const __sl612 = cptr.lit("under");
-const __sl613 = cptr.lit("0");
-const __sl614 = cptr.lit("erodeproof ");
-const __sl615 = cptr.lit("crackproof ");
-const __sl616 = cptr.lit("lit ");
-const __sl617 = cptr.lit("burning ");
-const __sl618 = cptr.lit("unlit ");
-const __sl619 = cptr.lit("extinguished ");
-const __sl620 = cptr.lit("readobjnam_preparse");
-const __sl621 = cptr.lit("unlabeled ");
-const __sl622 = cptr.lit("unlabelled ");
-const __sl623 = cptr.lit("blank ");
-const __sl624 = cptr.lit("untrapped ");
-const __sl625 = cptr.lit("doorless ");
-const __sl626 = cptr.lit("looted ");
-const __sl627 = cptr.lit("zombifying ");
-const __sl628 = cptr.lit("rusted ");
-const __sl629 = cptr.lit("burned ");
-const __sl630 = cptr.lit("partially eaten ");
-const __sl631 = cptr.lit("small ");
-const __sl632 = cptr.lit("glob");
-const __sl633 = cptr.lit(" glob");
-const __sl634 = cptr.lit("medium ");
-const __sl635 = cptr.lit("large ");
-const __sl636 = cptr.lit("real ");
-const __sl637 = cptr.lit("fake ");
-const __sl638 = cptr.lit("female ");
-const __sl639 = cptr.lit("male ");
-const __sl640 = cptr.lit("neuter ");
-const __sl641 = cptr.lit("corpse ");
-const __sl642 = cptr.lit("statue ");
-const __sl643 = cptr.lit("figurine ");
-const __sl644 = cptr.lit("of ");
-const __sl645 = cptr.lit("lit)");
-const __sl646 = cptr.lit(" labelled ");
-const __sl647 = cptr.lit(" of spinach");
-const __sl648 = cptr.lit("cheap ");
-const __sl649 = cptr.lit("plastic ");
-const __sl650 = cptr.lit("imitation ");
-const __sl651 = cptr.lit("pairs of ");
-const __sl652 = cptr.lit("sets of ");
-const __sl653 = cptr.lit("globs");
-const __sl654 = cptr.lit(" globs");
-const __sl655 = cptr.lit("glob of ");
-const __sl656 = cptr.lit("globs of ");
-const __sl657 = cptr.lit("readobjnam_postparse1");
-const __sl658 = cptr.lit("glob of %s");
-const __sl659 = cptr.lit("wand ");
-const __sl660 = cptr.lit("spellbook ");
-const __sl661 = cptr.lit("gauntlets ");
-const __sl662 = cptr.lit("gloves ");
-const __sl663 = cptr.lit("finger ");
-const __sl664 = cptr.lit("tin of ");
-const __sl665 = cptr.lit("spinach");
-const __sl666 = cptr.lit("samurai sword");
-const __sl667 = cptr.lit("wizard lock");
-const __sl668 = cptr.lit("death wand");
-const __sl669 = cptr.lit("master key");
-const __sl670 = cptr.lit("magenta");
-const __sl671 = cptr.lit("s ");
-const __sl672 = cptr.lit("es ");
-const __sl673 = cptr.lit("tricks");
-const __sl674 = cptr.lit("clothes");
-const __sl675 = cptr.lit("grey spell");
-const __sl676 = cptr.lit("armour");
-const __sl677 = cptr.lit("holy water");
-const __sl678 = cptr.lit("paperback");
-const __sl679 = cptr.lit(" book");
-const __sl680 = cptr.lit("orange");
-const __sl681 = cptr.lit("gold piece");
-const __sl682 = cptr.lit("zorkmid");
-const __sl683 = cptr.lit("gold");
-const __sl684 = cptr.lit("money");
-const __sl685 = cptr.lit("coin");
-const __sl686 = cptr.lit("enchant ");
-const __sl687 = cptr.lit("destroy ");
-const __sl688 = cptr.lit("detect food");
-const __sl689 = cptr.lit("food detection");
-const __sl690 = cptr.lit("ring mail");
-const __sl691 = cptr.lit("studded leather armor");
-const __sl692 = cptr.lit("leather armor");
-const __sl693 = cptr.lit("tooled horn");
-const __sl694 = cptr.lit("food ration");
-const __sl695 = cptr.lit("meat ring");
-const __sl696 = cptr.lit("versus poison ");
-const __sl697 = cptr.lit("bear");
-const __sl698 = cptr.lit("land");
-const __sl699 = cptr.lit("trap");
-const __sl700 = cptr.lit("mine");
-const __sl701 = cptr.lit(" object");
-const __sl702 = cptr.lit("looking glass");
-const __sl703 = cptr.lit(" glass");
-const __sl704 = cptr.lit("glass");
-const __sl705 = cptr.lit("broken");
-const __sl706 = cptr.lit("worthless ");
-const __sl707 = cptr.lit("piece of ");
-const __sl708 = cptr.lit("colored ");
-const __sl709 = cptr.lit("coloured ");
-const __sl710 = cptr.lit("readobjnam_postparse2");
-const __sl711 = cptr.lit("worthless piece of ");
-const __sl712 = cptr.lit("tin");
-const __sl713 = cptr.lit("mail");
-const __sl714 = cptr.lit(" mail");
-const __sl715 = cptr.lit("nothing");
-const __sl716 = cptr.lit("nil");
-const __sl717 = cptr.lit("none");
-const __sl718 = cptr.lit("polearm");
-const __sl719 = cptr.lit("hammer");
-const __sl720 = cptr.lit("readobjnam");
-const __sl721 = cptr.lit("Override glob weight limit?");
-const __sl722 = cptr.lit("For a moment, you feel %s in your %s, but it disappears!");
-const __sl723 = cptr.lit("rnd_class");
-const __sl724 = cptr.lit("unknown armor category (%s => %u)");
-const __sl725 = cptr.lit("dragon mail");
-const __sl726 = cptr.lit(" jacket");
-const __sl727 = cptr.lit("jacket");
-const __sl728 = cptr.lit("suit");
-const __sl729 = cptr.lit("robe");
-const __sl730 = cptr.lit("wrapping");
-const __sl731 = cptr.lit("smock");
-const __sl732 = cptr.lit("apron");
-const __sl733 = cptr.lit("whatcha-may-callit");
-const __sl734 = cptr.lit("safe_qbuf");
-const __sl735 = cptr.lit("endp != NULL");
-const __sl736 = cptr.lit("safe_qbuf: prefix too long (%u characters).");
-const __sl737 = cptr.lit("safe_qbuf: suffix too long (%u + %u characters).");
-const __sl738 = cptr.lit("safe_qbuf: filler too long (%u + %u + %u characters).");
+const __sl545 = cptr.lit("rnd_otyp_by_wpnskill");
+const __sl546 = cptr.lit("rnd_otyp_by_namedesc");
+const __sl547 = cptr.lit("shiny");
+const __sl548 = cptr.lit("undiggable ");
+const __sl549 = cptr.lit("nondiggable ");
+const __sl550 = cptr.lit("unphaseable ");
+const __sl551 = cptr.lit("nonpasswall ");
+const __sl552 = cptr.lit("%s%s.");
+const __sl553 = cptr.lit(" to nowhere");
+const __sl554 = cptr.lit("Creation of %s failed.");
+const __sl555 = cptr.lit("fountain");
+const __sl556 = cptr.lit("magic ");
+const __sl557 = cptr.lit("A %sfountain.");
+const __sl558 = cptr.lit("throne");
+const __sl559 = cptr.lit("A throne.");
+const __sl560 = cptr.lit("sink");
+const __sl561 = cptr.lit("A sink.");
+const __sl562 = cptr.lit("pool");
+const __sl563 = cptr.lit("moat");
+const __sl564 = cptr.lit("wall of water");
+const __sl565 = cptr.lit("%s.");
+const __sl566 = cptr.lit("Moat");
+const __sl567 = cptr.lit("lava");
+const __sl568 = cptr.lit("wall of lava");
+const __sl569 = cptr.lit("A %s of molten lava.");
+const __sl570 = cptr.lit("wall");
+const __sl571 = cptr.lit("Lava");
+const __sl572 = cptr.lit("melting ");
+const __sl573 = cptr.lit("Ice");
+const __sl574 = cptr.lit("altar");
+const __sl575 = cptr.lit("chaotic ");
+const __sl576 = cptr.lit("neutral ");
+const __sl577 = cptr.lit("lawful ");
+const __sl578 = cptr.lit("unaligned ");
+const __sl579 = cptr.lit("wizterrainwish");
+const __sl580 = cptr.lit("%s altar.");
+const __sl581 = cptr.lit("grave");
+const __sl582 = cptr.lit("headstone");
+const __sl583 = cptr.lit("A %sgrave.");
+const __sl584 = cptr.lit("disturbed ");
+const __sl585 = cptr.lit("Can't place a grave here.");
+const __sl586 = cptr.lit("tree");
+const __sl587 = cptr.lit("A tree.");
+const __sl588 = cptr.lit("bars");
+const __sl589 = cptr.lit("Iron bars.");
+const __sl590 = cptr.lit("cloud");
+const __sl591 = cptr.lit("A cloud.");
+const __sl592 = cptr.lit("door");
+const __sl593 = cptr.lit("doorway");
+const __sl594 = cptr.lit("secret door");
+const __sl595 = cptr.lit("closed ");
+const __sl596 = cptr.lit("open ");
+const __sl597 = cptr.lit("doorless doorway");
+const __sl598 = cptr.lit("%s requires door or wall location.");
+const __sl599 = cptr.lit("A wall.");
+const __sl600 = cptr.lit("secret corridor");
+const __sl601 = cptr.lit("Secret corridor.");
+const __sl602 = cptr.lit("Secret corridor requires corridor location.");
+const __sl603 = cptr.lit("room");
+const __sl604 = cptr.lit("floor");
+const __sl605 = cptr.lit("ground");
+const __sl606 = cptr.lit("Room floor.");
+const __sl607 = cptr.lit("Floor");
+const __sl608 = cptr.lit("Room|floor|ground not allowed here.");
+const __sl609 = cptr.lit("%s %s the drawbridge.");
+const __sl610 = cptr.lit("in front of");
+const __sl611 = cptr.lit("under");
+const __sl612 = cptr.lit("0");
+const __sl613 = cptr.lit("erodeproof ");
+const __sl614 = cptr.lit("crackproof ");
+const __sl615 = cptr.lit("lit ");
+const __sl616 = cptr.lit("burning ");
+const __sl617 = cptr.lit("unlit ");
+const __sl618 = cptr.lit("extinguished ");
+const __sl619 = cptr.lit("readobjnam_preparse");
+const __sl620 = cptr.lit("unlabeled ");
+const __sl621 = cptr.lit("unlabelled ");
+const __sl622 = cptr.lit("blank ");
+const __sl623 = cptr.lit("untrapped ");
+const __sl624 = cptr.lit("doorless ");
+const __sl625 = cptr.lit("looted ");
+const __sl626 = cptr.lit("zombifying ");
+const __sl627 = cptr.lit("rusted ");
+const __sl628 = cptr.lit("burned ");
+const __sl629 = cptr.lit("partially eaten ");
+const __sl630 = cptr.lit("small ");
+const __sl631 = cptr.lit("glob");
+const __sl632 = cptr.lit(" glob");
+const __sl633 = cptr.lit("medium ");
+const __sl634 = cptr.lit("large ");
+const __sl635 = cptr.lit("real ");
+const __sl636 = cptr.lit("fake ");
+const __sl637 = cptr.lit("female ");
+const __sl638 = cptr.lit("male ");
+const __sl639 = cptr.lit("neuter ");
+const __sl640 = cptr.lit("corpse ");
+const __sl641 = cptr.lit("statue ");
+const __sl642 = cptr.lit("figurine ");
+const __sl643 = cptr.lit("of ");
+const __sl644 = cptr.lit("lit)");
+const __sl645 = cptr.lit(" labelled ");
+const __sl646 = cptr.lit(" of spinach");
+const __sl647 = cptr.lit("cheap ");
+const __sl648 = cptr.lit("plastic ");
+const __sl649 = cptr.lit("imitation ");
+const __sl650 = cptr.lit("pairs of ");
+const __sl651 = cptr.lit("sets of ");
+const __sl652 = cptr.lit("globs");
+const __sl653 = cptr.lit(" globs");
+const __sl654 = cptr.lit("glob of ");
+const __sl655 = cptr.lit("globs of ");
+const __sl656 = cptr.lit("readobjnam_postparse1");
+const __sl657 = cptr.lit("glob of %s");
+const __sl658 = cptr.lit("wand ");
+const __sl659 = cptr.lit("spellbook ");
+const __sl660 = cptr.lit("gauntlets ");
+const __sl661 = cptr.lit("gloves ");
+const __sl662 = cptr.lit("finger ");
+const __sl663 = cptr.lit("tin of ");
+const __sl664 = cptr.lit("spinach");
+const __sl665 = cptr.lit("samurai sword");
+const __sl666 = cptr.lit("wizard lock");
+const __sl667 = cptr.lit("death wand");
+const __sl668 = cptr.lit("master key");
+const __sl669 = cptr.lit("magenta");
+const __sl670 = cptr.lit("s ");
+const __sl671 = cptr.lit("es ");
+const __sl672 = cptr.lit("tricks");
+const __sl673 = cptr.lit("clothes");
+const __sl674 = cptr.lit("grey spell");
+const __sl675 = cptr.lit("armour");
+const __sl676 = cptr.lit("holy water");
+const __sl677 = cptr.lit("paperback");
+const __sl678 = cptr.lit(" book");
+const __sl679 = cptr.lit("orange");
+const __sl680 = cptr.lit("gold piece");
+const __sl681 = cptr.lit("zorkmid");
+const __sl682 = cptr.lit("gold");
+const __sl683 = cptr.lit("money");
+const __sl684 = cptr.lit("coin");
+const __sl685 = cptr.lit("enchant ");
+const __sl686 = cptr.lit("destroy ");
+const __sl687 = cptr.lit("detect food");
+const __sl688 = cptr.lit("food detection");
+const __sl689 = cptr.lit("ring mail");
+const __sl690 = cptr.lit("studded leather armor");
+const __sl691 = cptr.lit("leather armor");
+const __sl692 = cptr.lit("tooled horn");
+const __sl693 = cptr.lit("food ration");
+const __sl694 = cptr.lit("meat ring");
+const __sl695 = cptr.lit("versus poison ");
+const __sl696 = cptr.lit("bear");
+const __sl697 = cptr.lit("land");
+const __sl698 = cptr.lit("trap");
+const __sl699 = cptr.lit("mine");
+const __sl700 = cptr.lit(" object");
+const __sl701 = cptr.lit("looking glass");
+const __sl702 = cptr.lit(" glass");
+const __sl703 = cptr.lit("glass");
+const __sl704 = cptr.lit("broken");
+const __sl705 = cptr.lit("worthless ");
+const __sl706 = cptr.lit("piece of ");
+const __sl707 = cptr.lit("colored ");
+const __sl708 = cptr.lit("coloured ");
+const __sl709 = cptr.lit("readobjnam_postparse2");
+const __sl710 = cptr.lit("worthless piece of ");
+const __sl711 = cptr.lit("tin");
+const __sl712 = cptr.lit("mail");
+const __sl713 = cptr.lit(" mail");
+const __sl714 = cptr.lit("nothing");
+const __sl715 = cptr.lit("nil");
+const __sl716 = cptr.lit("none");
+const __sl717 = cptr.lit("polearm");
+const __sl718 = cptr.lit("hammer");
+const __sl719 = cptr.lit("readobjnam");
+const __sl720 = cptr.lit("Override glob weight limit?");
+const __sl721 = cptr.lit("For a moment, you feel %s in your %s, but it disappears!");
+const __sl722 = cptr.lit("rnd_class");
+const __sl723 = cptr.lit("unknown armor category (%s => %u)");
+const __sl724 = cptr.lit("dragon mail");
+const __sl725 = cptr.lit(" jacket");
+const __sl726 = cptr.lit("jacket");
+const __sl727 = cptr.lit("suit");
+const __sl728 = cptr.lit("robe");
+const __sl729 = cptr.lit("wrapping");
+const __sl730 = cptr.lit("smock");
+const __sl731 = cptr.lit("apron");
+const __sl732 = cptr.lit("whatcha-may-callit");
+const __sl733 = cptr.lit("safe_qbuf");
+const __sl734 = cptr.lit("endp != NULL");
+const __sl735 = cptr.lit("safe_qbuf: prefix too long (%u characters).");
+const __sl736 = cptr.lit("safe_qbuf: suffix too long (%u + %u characters).");
+const __sl737 = cptr.lit("safe_qbuf: filler too long (%u + %u + %u characters).");
 
 /** C ref: objnam.c:13 — struct _readobjnam_data { otmp, bp, origbp, oclass, un, dn, actualn, name, p, cnt, spe, spesgn, typ, very, rechrg, blessed, uncursed, iscursed, ispoisoned, isgreased, eroded, eroded2, erodeproof, locked, unlocked, broken, real, fake, halfeaten, mntmp, contents, islit, unlabeled, ishistoric, isdiluted, trapped, doorless, open, closed, flags, tmp, tinv, tvariety, mgend, wetness, gsize, ftype, zombify, globbuf, fruitbuf } (memory model v0.5) */
 
@@ -3563,7 +3562,7 @@ function rnd_otyp_by_wpnskill(skill) {
             otyp = i16(i);
         }
     if (n > 0) {
-        n = (rng_log_enabled() ? (rng_log_set_caller(__sl545, 3444, __sl546), rn2(n)) : rn2(n));
+        n = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 3444, __sl545), rn2(n)) : rn2(n));
         for (i = cptr.ldI32o2(svb, NHC.WEAPON_CLASS, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, 120, $objclass_oc_class) == NHC.WEAPON_CLASS; i++)
             if (cptr.ld1so2(objects, i, 120, $objclass_oc_subtyp) == skill)
                 if (--n < 0)
@@ -3608,7 +3607,7 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
         }
     }
     if (n > 0 && maxprob) {
-        prob = (rng_log_enabled() ? (rng_log_set_caller(__sl545, 3522, __sl547), rn2(maxprob)) : rn2(maxprob));
+        prob = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 3522, __sl546), rn2(maxprob)) : rn2(maxprob));
         for (i = 0; i < ((n - 1) | 0); i++)
             if ((prob = (prob - ((cptr.ldI16o2(objects, cptr.ldI16o(validobjs, i, 2), 120, $objclass_oc_prob) + xtra_prob) | 0)) | 0) < 0)
                 break;
@@ -3619,15 +3618,15 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
 
 /** C ref: objnam.c:3532 — @param {CInt} oclass @returns {CInt} */
 export function shiny_obj(oclass) {
-    return rnd_otyp_by_namedesc(__sl548, oclass, 0);
+    return rnd_otyp_by_namedesc(__sl547, oclass, 0);
 }
 
 /** C ref: objnam.c:3539 — @param {CPtr} bp */
 function set_wallprop_from_str(bp) {
     let wall_prop = 0;
-    if (cptr.strstr(bp, __sl549) || cptr.strstr(bp, __sl550))
+    if (cptr.strstr(bp, __sl548) || cptr.strstr(bp, __sl549))
         wall_prop |= NHM.W_NONDIGGABLE;
-    if (cptr.strstr(bp, __sl551) || cptr.strstr(bp, __sl552))
+    if (cptr.strstr(bp, __sl550) || cptr.strstr(bp, __sl551))
         wall_prop |= NHM.W_NONPASSWALL;
     if (wall_prop)
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) | wall_prop);
@@ -3657,9 +3656,9 @@ function wizterrainwish(d) {
         if ((t = maketrap(x, y, trap)) !== null) {
             trap = (cptr.ldI32o(t, $trap_ttyp) & 31) | 0;
             tname = trapname(trap, 1);
-            pline(__sl553, An(tname), (trap != NHC.MAGIC_PORTAL) ? __sl13 : __sl554);
+            pline(__sl552, An(tname), (trap != NHC.MAGIC_PORTAL) ? __sl13 : __sl553);
         } else {
-            pline(__sl555, an(tname));
+            pline(__sl554, an(tname));
         }
         return hands_obj;
     }
@@ -3667,30 +3666,30 @@ function wizterrainwish(d) {
     oldtyp = cptr.ld1so(lev, $rm_typ);
     is_dbridge = schar((oldtyp == NHC.DRAWBRIDGE_DOWN || oldtyp == NHC.DRAWBRIDGE_UP ? 1 : 0));
     p = eos(bp);
-    if (!(cptr.cmp((cptr.add(p, -(8))), bp) < 0 || strncmpi(((cptr.add(p, -(8)))), (__sl556), -1))) {
+    if (!(cptr.cmp((cptr.add(p, -(8))), bp) < 0 || strncmpi(((cptr.add(p, -(8)))), (__sl555), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.FOUNTAIN);
         if (oldtyp != NHC.FOUNTAIN)
             cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? NHM.F_LOOTED : 0) >>> 0);
-        cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_blessed) || !strncmpi(bp, __sl557, 6) ? 1 : 0) >>> 0);
-        pline(__sl558, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl557 : __sl13);
+        cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_blessed) || !strncmpi(bp, __sl556, 6) ? 1 : 0) >>> 0);
+        pline(__sl557, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl556 : __sl13);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl559), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl558), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.THRONE);
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? NHM.T_LOOTED : 0) >>> 0);
-        pline(__sl560);
+        pline(__sl559);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl561), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl560), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.SINK);
         if (oldtyp != NHC.SINK)
             cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks));
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 7 : 0) >>> 0);
-        pline(__sl562);
+        pline(__sl561);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl564), -1)) || !(cptr.cmp((cptr.add(p, -(13))), bp) < 0 || strncmpi(((cptr.add(p, -(13)))), (__sl565), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl562), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) || !(cptr.cmp((cptr.add(p, -(13))), bp) < 0 || strncmpi(((cptr.add(p, -(13)))), (__sl564), -1))) {
         let save_prop;
         let new_water;
-        ltyp = (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) ? NHC.POOL : (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl564), -1)) ? NHC.MOAT : NHC.WATER)) >>> 0;
+        ltyp = (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl562), -1)) ? NHC.POOL : (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) ? NHC.MOAT : NHC.WATER)) >>> 0;
         if (!is_dbridge) {
             cptr.st1o(lev, $rm_typ, schar(ltyp));
             cptr.stI32o(lev, $rm_flags, 0);
@@ -3704,14 +3703,14 @@ function wizterrainwish(d) {
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, 1n);
             new_water = waterbody_name(x, y);
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, save_prop);
-            pline(__sl566, An(new_water));
+            pline(__sl565, An(new_water));
         } else {
-            dbterrainmesg(__sl567, x, y);
+            dbterrainmesg(__sl566, x, y);
         }
         water_damage_chain(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), 1);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl568), -1)) || !(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl569), -1))) {
-        ltyp = (!(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl569), -1)) ? NHC.LAVAWALL : NHC.LAVAPOOL) >>> 0;
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl567), -1)) || !(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl568), -1))) {
+        ltyp = (!(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl568), -1)) ? NHC.LAVAWALL : NHC.LAVAPOOL) >>> 0;
         if (!is_dbridge) {
             cptr.st1o(lev, $rm_typ, schar(ltyp));
             cptr.stI32o(lev, $rm_flags, 0);
@@ -3721,11 +3720,11 @@ function wizterrainwish(d) {
         }
         del_engr_at(x, y);
         if (!is_dbridge) {
-            pline(__sl570, (cptr.ld1so(lev, $rm_typ) == NHC.LAVAPOOL) ? __sl563 : __sl571);
+            pline(__sl569, (cptr.ld1so(lev, $rm_typ) == NHC.LAVAPOOL) ? __sl562 : __sl570);
             if (!(Levitation() || Flying()) || cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL)
                 pooleffects(0);
         } else {
-            dbterrainmesg(__sl572, x, y);
+            dbterrainmesg(__sl571, x, y);
         }
         fire_damage_chain(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), 1, 1, x, y);
         madeterrain = 1;
@@ -3738,64 +3737,64 @@ function wizterrainwish(d) {
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.DB_ICE);
         }
         del_engr_at(x, y);
-        if (!strncmpi(bp, __sl573, 8))
+        if (!strncmpi(bp, __sl572, 8))
             start_melt_ice_timeout(x, y, 0n);
         if (!is_dbridge) {
             let icebuf = new Uint8Array(40);
-            pline(__sl566, upstart(ice_descr(x, y, cptr.decay(icebuf))));
+            pline(__sl565, upstart(ice_descr(x, y, cptr.decay(icebuf))));
         } else {
-            dbterrainmesg(__sl574, x, y);
+            dbterrainmesg(__sl573, x, y);
         }
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl575), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl574), -1))) {
         let al;
         cptr.st1o(lev, $rm_typ, NHC.ALTAR);
-        if (!strncmpi(bp, __sl576, 8))
+        if (!strncmpi(bp, __sl575, 8))
             al = -1;
-        else if (!strncmpi(bp, __sl577, 8))
+        else if (!strncmpi(bp, __sl576, 8))
             al = NHM.A_NEUTRAL;
-        else if (!strncmpi(bp, __sl578, 7))
+        else if (!strncmpi(bp, __sl577, 7))
             al = NHM.A_LAWFUL;
-        else if (!strncmpi(bp, __sl579, 10))
+        else if (!strncmpi(bp, __sl578, 10))
             al = -128;
         else
-            al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl545, 3702, __sl580), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 3702, __sl580), rn2(3)) : rn2(3)) - 1) | 0)));
+            al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(3)) : rn2(3)) - 1) | 0)));
         cptr.stI32o(lev, $rm_flags, ((((al) == -128) ? NHM.AM_NONE : (((al) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((al) + 2) | 0))) >>> 0));
-        pline(__sl581, An(align_str(al)));
+        pline(__sl580, An(align_str(al)));
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl582), -1)) || !(cptr.cmp((cptr.add(p, -(9))), bp) < 0 || strncmpi(((cptr.add(p, -(9)))), (__sl583), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl581), -1)) || !(cptr.cmp((cptr.add(p, -(9))), bp) < 0 || strncmpi(((cptr.add(p, -(9)))), (__sl582), -1))) {
         make_grave(x, y, null);
         if (((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE)) {
             cptr.stI32o(lev, $rm_flags, 0);
             cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 1 : 0) >>> 0);
-            pline(__sl584, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl585 : __sl13);
+            pline(__sl583, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl584 : __sl13);
             madeterrain = 1;
         } else {
-            pline(__sl586);
+            pline(__sl585);
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl587), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl586), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.TREE);
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 3 : 0) >>> 0);
         set_wallprop_from_str(bp);
-        pline(__sl588);
+        pline(__sl587);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl589), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl588), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.IRONBARS);
         cptr.stI32o(lev, $rm_flags, 0);
         set_wallprop_from_str(bp);
-        pline(__sl590);
+        pline(__sl589);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl591), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl590), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.CLOUD);
         cptr.stI32o(lev, $rm_flags, 0);
-        pline(__sl592);
+        pline(__sl591);
         del_engr_at(x, y);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl593), -1)) || (cptr.ldI32o(d, $_readobjnam_data_doorless) && !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl594), -1)))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl592), -1)) || (cptr.ldI32o(d, $_readobjnam_data_doorless) && !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl593), -1)))) {
         let dbuf = new Uint8Array(40);
         let old_wall_info;
-        let secret = schar((!(cptr.cmp((cptr.add(p, -(11))), bp) < 0 || strncmpi(((cptr.add(p, -(11)))), (__sl595), -1))));
+        let secret = schar((!(cptr.cmp((cptr.add(p, -(11))), bp) < 0 || strncmpi(((cptr.add(p, -(11)))), (__sl594), -1))));
         if (cptr.ld1so(lev, $rm_typ) == NHC.DOOR || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || (((cptr.ld1so(lev, $rm_typ)) && (cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL) && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL) || cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
             old_wall_info = ((cptr.ld1so(lev, $rm_typ) != NHC.DOOR) ? (cptr.ldI32o(lev, $rm_flags) & 31) | 0 : 0) >>> 0;
             cptr.st1o(lev, $rm_typ, schar((secret ? NHC.SDOOR : NHC.DOOR)));
@@ -3817,27 +3816,27 @@ function wizterrainwish(d) {
             if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_LOCKED)
                 void cptr.strcat(cptr.decay(dbuf), __sl117);
             if (cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) {
-                void cptr.strcat(cptr.decay(dbuf), __sl595);
+                void cptr.strcat(cptr.decay(dbuf), __sl594);
             } else {
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_CLOSED)
-                    void cptr.strcat(cptr.decay(dbuf), __sl596);
+                    void cptr.strcat(cptr.decay(dbuf), __sl595);
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN)
-                    void cptr.strcat(cptr.decay(dbuf), __sl597);
+                    void cptr.strcat(cptr.decay(dbuf), __sl596);
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_BROKEN)
                     void cptr.strcat(cptr.decay(dbuf), __sl116);
                 if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -17) == NHM.D_NODOOR)
-                    void cptr.strcat(cptr.decay(dbuf), __sl598);
+                    void cptr.strcat(cptr.decay(dbuf), __sl597);
                 else
-                    void cptr.strcat(cptr.decay(dbuf), __sl593);
+                    void cptr.strcat(cptr.decay(dbuf), __sl592);
             }
-            pline(__sl566, upstart(an(cptr.decay(dbuf))));
+            pline(__sl565, upstart(an(cptr.decay(dbuf))));
             madeterrain = 1;
         } else {
-            void cptr.strcpy(cptr.decay(dbuf), secret ? __sl595 : __sl593);
-            pline(__sl599, upstart(cptr.decay(dbuf)));
+            void cptr.strcpy(cptr.decay(dbuf), secret ? __sl594 : __sl592);
+            pline(__sl598, upstart(cptr.decay(dbuf)));
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl571), -1)) && (cptr.eq(bp, cptr.add(p, -(4))) || cptr.ld1so(p, -5) == 32)) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl570), -1)) && (cptr.eq(bp, cptr.add(p, -(4))) || cptr.ld1so(p, -5) == 32)) {
         let wall = NHC.HWALL;
         if ((isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) - 1) | 0))) && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) || (isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) + 1) | 0))) && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)))
             wall = NHC.VWALL;
@@ -3846,21 +3845,21 @@ function wizterrainwish(d) {
         cptr.stI32o(lev, $rm_flags, 0);
         set_wallprop_from_str(bp);
         fix_wall_spines(i16((0 > ((cptr.ldI16(u) - 1) | 0) ? 0 : ((cptr.ldI16(u) - 1) | 0))), i16((0 > ((cptr.ldI16o(u, $you_uy) - 1) | 0) ? 0 : ((cptr.ldI16o(u, $you_uy) - 1) | 0))), i16((NHM.COLNO < ((cptr.ldI16(u) + 1) | 0) ? NHM.COLNO : ((cptr.ldI16(u) + 1) | 0))), i16((NHM.ROWNO < ((cptr.ldI16o(u, $you_uy) + 1) | 0) ? NHM.ROWNO : ((cptr.ldI16o(u, $you_uy) + 1) | 0))));
-        pline(__sl600);
-    } else if (!(cptr.cmp((cptr.add(p, -(15))), bp) < 0 || strncmpi(((cptr.add(p, -(15)))), (__sl601), -1))) {
+        pline(__sl599);
+    } else if (!(cptr.cmp((cptr.add(p, -(15))), bp) < 0 || strncmpi(((cptr.add(p, -(15)))), (__sl600), -1))) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CORR) {
             cptr.st1o(lev, $rm_typ, NHC.SCORR);
-            pline(__sl602);
+            pline(__sl601);
             madeterrain = 1;
         } else {
-            pline(__sl603);
+            pline(__sl602);
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl604), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl605), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl606), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl603), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl604), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl605), -1))) {
         if (oldtyp == NHC.ROOM || (((oldtyp) >= NHC.STAIRS && (oldtyp) <= NHC.ALTAR) && (cptr.ld1so(iflags, $instance_flags_debug_overwrite_stairs) || !((oldtyp) == NHC.LADDER || (oldtyp) == NHC.STAIRS))) || oldtyp == NHC.ICE || is_pool_or_lava(x, y)) {
             let t;
             cptr.st1o(lev, $rm_typ, NHC.ROOM);
-            pline(__sl607);
+            pline(__sl606);
             if (((oldtyp) >= NHC.STAIRS && (oldtyp) <= NHC.ALTAR))
                 count_level_features();
             if ((t = t_at(x, y)) !== null && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.MAGIC_PORTAL)
@@ -3869,10 +3868,10 @@ function wizterrainwish(d) {
         } else if (is_dbridge) {
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) & -29);
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.DB_FLOOR);
-            dbterrainmesg(__sl608, x, y);
+            dbterrainmesg(__sl607, x, y);
             madeterrain = 1;
         } else {
-            pline(__sl609);
+            pline(__sl608);
             badterrain = 1;
         }
     }
@@ -3903,7 +3902,7 @@ function wizterrainwish(d) {
 
 /** C ref: objnam.c:3920 — @param {CPtr} newtype @param {CInt} x @param {CInt} y */
 function dbterrainmesg(newtype, x, y) {
-    pline(__sl610, newtype, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? __sl611 : __sl612);
+    pline(__sl609, newtype, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? __sl610 : __sl611);
 }
 
 /** C ref: objnam.c:3933 — @param {CPtr} bp @param {CPtr} d */
@@ -3942,7 +3941,7 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_cnt, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl62, l = 4)) {
             ;
-        } else if (!cptr.ldI32o(d, $_readobjnam_data_cnt) && digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) && strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), __sl613)) {
+        } else if (!cptr.ldI32o(d, $_readobjnam_data_cnt) && digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) && strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), __sl612)) {
             cptr.stI32o(d, $_readobjnam_data_cnt, atoi(cptr.ldPtro(d, $_readobjnam_data_bp)));
             while (digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))))
                 cptr.postinc(() => cptr.ldPtro(d, $_readobjnam_data_bp), (v) => { cptr.stPtro(d, $_readobjnam_data_bp, v); });
@@ -3963,18 +3962,18 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_iscursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_uncursed, 0));
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl92, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_uncursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_iscursed, 0));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl101, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl614, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl102, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl100, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl103, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl105, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl104, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl615, l = 11)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl101, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl613, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl102, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl100, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl103, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl105, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl104, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl614, l = 11)) {
             cptr.stI32o(d, $_readobjnam_data_erodeproof, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl616, l = 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl617, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl615, l = 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl616, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl618, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl619, l = 13)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl617, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl618, l = 13)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 0);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl44, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl45, l = 4)) {
             if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl45, 4))
-                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4025, __sl620), rn2(3)) : rn2(3))) | 0);
+                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4025, __sl619), rn2(3)) : rn2(3))) | 0);
             else
-                cptr.stI32o(d, $_readobjnam_data_wetness, (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4027, __sl620), rnd(2)) : rnd(2)));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl621, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl622, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl623, l = 6)) {
+                cptr.stI32o(d, $_readobjnam_data_wetness, (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4027, __sl619), rnd(2)) : rnd(2)));
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl620, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl621, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl622, l = 6)) {
             cptr.stI32o(d, $_readobjnam_data_unlabeled, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl43, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_ispoisoned, 1);
@@ -3982,7 +3981,7 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_trapped, 0);
             if (wizard())
                 cptr.stI32o(d, $_readobjnam_data_trapped, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl624, l = 10)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl623, l = 10)) {
             cptr.stI32o(d, $_readobjnam_data_trapped, 2);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl117, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_closed, 1)), cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
@@ -3990,29 +3989,29 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_closed, 1)), cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl116, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_broken, 1), cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_doorless, 0)))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl597, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl596, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_open, 1), cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl596, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl595, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_closed, 1), cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl625, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl624, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_doorless, 1), cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_broken, 0)))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl626, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl585, l = 10)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl625, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl584, l = 10)) {
             cptr.stI32o(d, $_readobjnam_data_flags, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl119, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_isgreased, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl627, l = 11)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl626, l = 11)) {
             cptr.st1o(d, $_readobjnam_data_zombify, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl65, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_very, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl94, l = 11)) {
             cptr.stI32o(d, $_readobjnam_data_very, 2);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl95, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl628, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl97, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl629, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl96, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl95, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl627, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl97, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl628, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl96, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_eroded, (1 + cptr.ldI32o(d, $_readobjnam_data_very)) | 0);
             cptr.stI32o(d, $_readobjnam_data_very, 0);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl98, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl99, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_eroded2, (1 + cptr.ldI32o(d, $_readobjnam_data_very)) | 0);
             cptr.stI32o(d, $_readobjnam_data_very, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl54, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl630, l = 16)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl54, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl629, l = 16)) {
             cptr.stI32o(d, $_readobjnam_data_halfeaten, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl61, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_ishistoric, 1);
@@ -4020,33 +4019,33 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_isdiluted, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl112, l = 6)) {
             cptr.stI32o(d, $_readobjnam_data_contents, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl631, l = 6)) {
-            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl633))
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl630, l = 6)) {
+            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl631, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632))
                 break;
             cptr.stI32o(d, $_readobjnam_data_gsize, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl634, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl633, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_gsize, 2);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl635, l = 6)) {
-            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl633))
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl634, l = 6)) {
+            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl631, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632))
                 break;
             cptr.stI32o(d, $_readobjnam_data_gsize, (cptr.ldI32o(d, $_readobjnam_data_very) != 1) ? 3 : 4);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl636, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl635, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_real, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl637, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl636, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_fake, 1), cptr.stI32o(d, $_readobjnam_data_real, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl637, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.FEMALE);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, __sl13), l = 0;
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, l = 5)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl637, __sl13), l = 0;
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.MALE);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, __sl13), l = 0;
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl640, l = 7)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, __sl13), l = 0;
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.NEUTRAL);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl640, __sl13), l = 0;
-        } else if ((!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl641, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl642, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl643, l = 9)) && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl644, more_l = 3)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, __sl13), l = 0;
+        } else if ((!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl640, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl641, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl642, l = 9)) && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl643, more_l = 3)) {
             save_bp = cptr.ldPtro(d, $_readobjnam_data_bp);
             l = (l + more_l) | 0, more_l = 0;
             if (!strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl111, more_l = 2) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl180, more_l = 3) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl62, more_l = 4))
@@ -4070,7 +4069,7 @@ function readobjnam_parse_charges(d) {
             idx = -1;
         cptr.st1o(cptr.ldPtro(d, $_readobjnam_data_p), idx, 0);
         cptr.preinc(() => cptr.ldPtro(d, $_readobjnam_data_p), (v) => { cptr.stPtro(d, $_readobjnam_data_p, v); });
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_p), __sl645, 4)) {
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_p), __sl644, 4)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 1);
             cptr.stPtro(d, $_readobjnam_data_p, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 3));
         } else {
@@ -4127,21 +4126,21 @@ function readobjnam_postparse1(d) {
     if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl70))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 9));
-    } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl646))) !== null) {
+    } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl645))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 10));
     }
-    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl647))) !== null) {
+    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl646))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stI32o(d, $_readobjnam_data_contents, 2);
     }
     if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, NHC.AMULET_OF_YENDOR, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))))) !== null && (cptr.eq(cptr.ldPtro(d, $_readobjnam_data_p), cptr.ldPtro(d, $_readobjnam_data_bp)) || cptr.ld1so(cptr.ldPtro(d, $_readobjnam_data_p), -1) == 32)) {
         let s = cptr.ldPtro(d, $_readobjnam_data_bp);
-        if (!strncmpi(s, __sl648, 6))
+        if (!strncmpi(s, __sl647, 6))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 6);
-        if (!strncmpi(s, __sl649, 8))
+        if (!strncmpi(s, __sl648, 8))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 8);
-        if (!strncmpi(s, __sl650, 10))
+        if (!strncmpi(s, __sl649, 10))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 10);
         (void (s));
         cptr.stI32o(d, $_readobjnam_data_real, !cptr.ldI32o(d, $_readobjnam_data_fake));
@@ -4151,33 +4150,33 @@ function readobjnam_postparse1(d) {
     if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl26, 8)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 8));
         cptr.stI32o(d, $_readobjnam_data_cnt, Math.imul(cptr.ldI32o(d, $_readobjnam_data_cnt), 2));
-    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl651, 9)) {
+    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl650, 9)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 9));
         if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 1)
             cptr.stI32o(d, $_readobjnam_data_cnt, Math.imul(cptr.ldI32o(d, $_readobjnam_data_cnt), 2));
     } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl27, 7)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 7));
-    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl652, 8)) {
+    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl651, 8)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 8));
     }
     i = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(d, $_readobjnam_data_bp))));
     cptr.stPtro(d, $_readobjnam_data_p, null);
-    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl632), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5)))), (__sl633), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl653), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6)))), (__sl654), -1)) || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl655))) !== null || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl656))) !== null) {
+    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl631), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5)))), (__sl632), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl652), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6)))), (__sl653), -1)) || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl654))) !== null || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl655))) !== null) {
         cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(!cptr.ldPtro(d, $_readobjnam_data_p) ? cptr.ldPtro(d, $_readobjnam_data_bp) : (cptr.add(strstri(cptr.ldPtro(d, $_readobjnam_data_p), __sl34), 4)), null));
         if (cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM)
-            cptr.stI32o(d, $_readobjnam_data_mntmp, (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 4354, __sl657), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
-        if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 2 && strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl653))
+            cptr.stI32o(d, $_readobjnam_data_mntmp, (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 4354, __sl656), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
+        if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 2 && strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl652))
             cptr.stI32o(d, $_readobjnam_data_cnt, 2);
-        void cptr.sprintf(cptr.add(d, $_readobjnam_data_globbuf), __sl658, cptr.ldPtro3(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, NHC.NEUTRAL, 8, 0));
+        void cptr.sprintf(cptr.add(d, $_readobjnam_data_globbuf), __sl657, cptr.ldPtro3(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, NHC.NEUTRAL, 8, 0));
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(d, $_readobjnam_data_globbuf));
         cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);
         cptr.st1o(d, $_readobjnam_data_oclass, NHC.FOOD_CLASS);
         cptr.stPtro(d, $_readobjnam_data_actualn, cptr.ldPtro(d, $_readobjnam_data_bp)), cptr.stPtro(d, $_readobjnam_data_dn, null);
         return 1;
     } else {
-        if (!strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl659) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl660) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl661) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl662) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl663)) {
-            if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl664))) !== null) {
-                if (!strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 7)), (__sl665), -1)) {
+        if (!strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl658) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl659) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl660) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl661) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl662)) {
+            if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl663))) !== null) {
+                if (!strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 7)), (__sl664), -1)) {
                     cptr.stI32o(d, $_readobjnam_data_contents, 2);
                     cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);
                 } else {
@@ -4191,16 +4190,16 @@ function readobjnam_postparse1(d) {
                 cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         }
     }
-    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl666, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl667, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl668, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl669, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl1, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl670, 7)) {
+    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl665, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl666, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl667, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl668, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl1, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl669, 7)) {
         let rest = cptr.box(null);
         if (cptr.ldI32o(d, $_readobjnam_data_mntmp) < NHC.LOW_PM && cptr.strlen(cptr.ldPtro(d, $_readobjnam_data_bp)) > 2n && ((cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_monplus(cptr.ldPtro(d, $_readobjnam_data_bp), rest, cptr.add(d, $_readobjnam_data_mgend)))) >= NHC.LOW_PM)) {
             let obp = cptr.ldPtro(d, $_readobjnam_data_bp);
             cptr.stPtro(d, $_readobjnam_data_bp, rest.v);
             if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == 32) {
                 cptr.postinc(() => cptr.ldPtro(d, $_readobjnam_data_bp), (v) => { cptr.stPtro(d, $_readobjnam_data_bp, v); });
-            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl671, 2) || (cptr.cmp(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(d, $_readobjnam_data_origbp)) > 0 && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), -(1)), __sl177, 3))) {
+            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl670, 2) || (cptr.cmp(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(d, $_readobjnam_data_origbp)) > 0 && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), -(1)), __sl177, 3))) {
                 cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 2));
-            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl672, 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl176, 3)) {
+            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl671, 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl176, 3)) {
                 cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 3));
             } else if (!cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && !cptr.ldPtro(d, $_readobjnam_data_actualn) && !cptr.ldPtro(d, $_readobjnam_data_dn) && !cptr.ldPtro(d, $_readobjnam_data_un) && !cptr.ld1so(d, $_readobjnam_data_oclass)) {
                 cptr.stPtro(d, $_readobjnam_data_bp, obp);
@@ -4208,7 +4207,7 @@ function readobjnam_postparse1(d) {
             }
         }
     }
-    if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl673), -1) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl674), -1)) {
+    if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl672), -1) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl673), -1)) {
         let sng = makesingular(cptr.ldPtro(d, $_readobjnam_data_bp));
         if (strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), sng)) {
             if (cptr.ldI32o(d, $_readobjnam_data_cnt) == 1)
@@ -4225,9 +4224,9 @@ function readobjnam_postparse1(d) {
             }
             as = cptr.add(as, 1, 16);
         }
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl675, 10))
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl674, 10))
             cptr.st1((cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 2)), 97);
-        if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl676))) !== null) {
+        if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl675))) !== null) {
             cptr.stPtro(d, $_readobjnam_data_p, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 4));
             while ((cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), cptr.ld1s((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 1))))) != 0)
                 cptr.preinc(() => cptr.ldPtro(d, $_readobjnam_data_p), (v) => { cptr.stPtro(d, $_readobjnam_data_p, v); });
@@ -4239,7 +4238,7 @@ function readobjnam_postparse1(d) {
         return 2;
     }
     cptr.stPtro(d, $_readobjnam_data_p, eos(cptr.ldPtro(d, $_readobjnam_data_bp)));
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl677), -1))) {
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl676), -1))) {
         if (!(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), __sl440, 2)))
             cptr.stI32o(d, $_readobjnam_data_iscursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_uncursed, 0));
         else
@@ -4247,9 +4246,9 @@ function readobjnam_postparse1(d) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.POT_WATER);
         return 2;
     }
-    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl678, 9)) {
+    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl677, 9)) {
         let dbp = cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 9);
-        if (!cptr.ld1s(dbp) || !strncmpi(dbp, __sl679, 5)) {
+        if (!cptr.ld1s(dbp) || !strncmpi(dbp, __sl678, 5)) {
             cptr.stI32o(d, $_readobjnam_data_typ, NHC.SPE_NOVEL);
             return 2;
         } else {
@@ -4265,11 +4264,11 @@ function readobjnam_postparse1(d) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.SPE_BLANK_PAPER);
         return 2;
     }
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl680), -1)) && cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM) {
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl679), -1)) && cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.ORANGE);
         return 2;
     }
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl681), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7)))), (__sl682), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl683), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl684), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl685), -1) || cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == NHC.GOLD_SYM) {
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl680), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7)))), (__sl681), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl682), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl683), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl684), -1) || cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == NHC.GOLD_SYM) {
         if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 5000 && !wizard())
             cptr.stI32o(d, $_readobjnam_data_cnt, 5000);
         else if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 1)
@@ -4284,9 +4283,9 @@ function readobjnam_postparse1(d) {
         cptr.st1o(d, $_readobjnam_data_oclass, schar(i));
         return 4;
     }
-    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl686, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl687, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl688, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl689, 14) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl690, 9) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl691, 21) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl692, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl693, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl694, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl695, 9))
+    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl685, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl686, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl687, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl688, 14) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl689, 9) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl690, 21) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl691, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl692, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl693, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl694, 9))
         for (i = 0; i < 13; i++) {
-            let j = Strlen_(cptr.ldPtro(wrp, i, 8), __sl657, 4568) | 0;
+            let j = Strlen_(cptr.ldPtro(wrp, i, 8), __sl656, 4568) | 0;
             if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(wrp, i, 8), j)) {
                 cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), i, 1));
                 if (cptr.ld1so(d, $_readobjnam_data_oclass) != NHC.AMULET_CLASS) {
@@ -4308,7 +4307,7 @@ function readobjnam_postparse1(d) {
                     let k;
                     let l;
                     let amubuf = new Uint8Array(256);
-                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl696, 14)) {
+                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl695, 14)) {
                         cptr.stI32o(d, $_readobjnam_data_typ, NHC.AMULET_VERSUS_POISON);
                         return 2;
                     }
@@ -4326,14 +4325,14 @@ function readobjnam_postparse1(d) {
                 return 1;
             }
         }
-    if (wizard() && (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl697, 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl698, 4))) {
+    if (wizard() && (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl696, 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl697, 4))) {
         let beartrap = schar((lowc(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) == 98));
         let zp = cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 4);
         if (cptr.ld1s(zp) == 32)
             zp = cptr.add(zp, 1);
-        if (!strncmpi(zp, beartrap ? __sl699 : __sl700, 4)) {
+        if (!strncmpi(zp, beartrap ? __sl698 : __sl699, 4)) {
             zp = cptr.add(zp, 4);
-            if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 2 || !strncmpi((zp), (__sl701), -1)) {
+            if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 2 || !strncmpi((zp), (__sl700), -1)) {
                 cptr.stI32o(d, $_readobjnam_data_typ, beartrap ? NHC.BEARTRAP : NHC.LAND_MINE);
                 return 2;
             } else if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 1 || cptr.ld1s(zp) != 0) {
@@ -4358,31 +4357,31 @@ function readobjnam_postparse2(d) {
         cptr.st1o(d, $_readobjnam_data_oclass, NHC.GEM_CLASS);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.stPtro(d, $_readobjnam_data_actualn, cptr.ldPtro(d, $_readobjnam_data_bp)));
         return 1;
-    } else if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl702), -1)) {
+    } else if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl701), -1)) {
         ;
-    } else if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl703), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl704), -1)) {
+    } else if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl702), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl703), -1)) {
         let s = cptr.ldPtro(d, $_readobjnam_data_bp);
-        if (cptr.ldI32o(d, $_readobjnam_data_broken) || strstri(s, __sl705)) {
+        if (cptr.ldI32o(d, $_readobjnam_data_broken) || strstri(s, __sl704)) {
             cptr.stPtr(d, null);
             return 3;
         }
-        if (!strncmpi(s, __sl706, 10))
+        if (!strncmpi(s, __sl705, 10))
             s = cptr.add(s, 10);
-        if (!strncmpi(s, __sl707, 9))
+        if (!strncmpi(s, __sl706, 9))
             s = cptr.add(s, 9);
-        if (!strncmpi(s, __sl708, 8))
+        if (!strncmpi(s, __sl707, 8))
             s = cptr.add(s, 8);
-        else if (!strncmpi(s, __sl709, 9))
+        else if (!strncmpi(s, __sl708, 9))
             s = cptr.add(s, 9);
-        if (!strncmpi((s), (__sl704), -1)) {
-            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4705, __sl710), rn2(NHC.NUM_GLASS_GEMS)) : rn2(NHC.NUM_GLASS_GEMS))) | 0);
+        if (!strncmpi((s), (__sl703), -1)) {
+            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4705, __sl709), rn2(NHC.NUM_GLASS_GEMS)) : rn2(NHC.NUM_GLASS_GEMS))) | 0);
             if (cptr.ld1so2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_class) == NHC.GEM_CLASS)
                 return 2;
             else
                 cptr.stI32o(d, $_readobjnam_data_typ, 0);
         } else {
             let tbuf = new Uint8Array(256);
-            void cptr.strcpy(cptr.decay(tbuf), __sl711);
+            void cptr.strcpy(cptr.decay(tbuf), __sl710);
             void cptr.strcat(cptr.decay(tbuf), s);
             void cptr.strcpy(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.decay(tbuf));
         }
@@ -4404,7 +4403,7 @@ function readobjnam_postparse3(d) {
                 return 2;
             }
         }
-        if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_actualn)), (__sl712), -1)) {
+        if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_actualn)), (__sl711), -1)) {
             cptr.stI32o(d, $_readobjnam_data_typ, NHC.TIN);
             return 2;
         }
@@ -4422,11 +4421,11 @@ function readobjnam_postparse3(d) {
             j = cptr.add(j, 1, 16);
         }
     }
-    if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl713)) {
-        void cptr.strcat(cptr.ldPtro(d, $_readobjnam_data_bp), __sl714);
+    if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl712)) {
+        void cptr.strcat(cptr.ldPtro(d, $_readobjnam_data_bp), __sl713);
         return 6;
     }
-    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl665), -1)) {
+    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl664), -1)) {
         cptr.stI32o(d, $_readobjnam_data_contents, 2);
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.TIN);
         return 2;
@@ -4461,7 +4460,7 @@ function readobjnam_postparse3(d) {
                 iscursedf = 1;
             } else if (!strncmpi(fp, __sl92, l = 9)) {
                 uncursedf = 1;
-            } else if (!strncmpi(fp, __sl54, l = 13) || !strncmpi(fp, __sl630, l = 16)) {
+            } else if (!strncmpi(fp, __sl54, l = 13) || !strncmpi(fp, __sl629, l = 16)) {
                 halfeatenf = 1;
             } else
                 break;
@@ -4529,7 +4528,7 @@ export function readobjnam(bp, no_wish) {
         }
         case 6: {
         void mungspaces(bp);
-        if (!strncmpi((bp), (__sl715), -1) || !strncmpi((bp), (__sl716), -1) || !strncmpi((bp), (__sl717), -1))
+        if (!strncmpi((bp), (__sl714), -1) || !strncmpi((bp), (__sl715), -1) || !strncmpi((bp), (__sl716), -1))
             return no_wish;
         void cptr.strcpy(cptr.add(d, $_readobjnam_data_fruitbuf), bp);
         if (readobjnam_preparse(d)) { __pc = 9; continue; }
@@ -4662,7 +4661,7 @@ export function readobjnam(bp, no_wish) {
         __pc = 38; continue;
         }
         case 39: {
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl718, 7)) { __pc = 41; continue; }
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl717, 7)) { __pc = 41; continue; }
         __pc = 42; continue;
         }
         case 41: {
@@ -4670,7 +4669,7 @@ export function readobjnam(bp, no_wish) {
         { __pc = 5; continue; }
         }
         case 42: {
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl719, 6)) { __pc = 44; continue; }
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl718, 6)) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
@@ -4693,7 +4692,7 @@ export function readobjnam(bp, no_wish) {
         }
         case 4 /* any: */: {
         if (!cptr.ld1so(d, $_readobjnam_data_oclass))
-            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__sl545, 4996, __sl720), rn2(13)) : rn2(13)), 1));
+            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4996, __sl719), rn2(13)) : rn2(13)), 1));
         __pc = 5;
         continue;
         }
@@ -4735,16 +4734,16 @@ export function readobjnam(bp, no_wish) {
             if (cptr.ldI32o(d, $_readobjnam_data_gsize) > 1)
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) + (Math.imul(((5 + Math.imul(((cptr.ldI32o(d, $_readobjnam_data_gsize) - 2) | 0), 10)) | 0) >>> 0, cptr.ldI32o(cptr.ldPtr(d), $obj_owt)) >>> 0)) | 0);
             if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 1) {
-                rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5059, __sl720), rn2(5)) : rn2(5)) + 2) | 0);
+                rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5059, __sl719), rn2(5)) : rn2(5)) + 2) | 0);
                 if (rn1cnt > ((6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0))
                     rn1cnt = (6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0;
-                if (cptr.ldI32o(d, $_readobjnam_data_cnt) > rn1cnt && (!wizard() || cptr.ldI32o(program_state, $sinfo_wizkit_wishing) || yn_function(__sl721, cptr.decay(ynchars), 110, 1) != 121))
+                if (cptr.ldI32o(d, $_readobjnam_data_cnt) > rn1cnt && (!wizard() || cptr.ldI32o(program_state, $sinfo_wizkit_wishing) || yn_function(__sl720, cptr.decay(ynchars), 110, 1) != 121))
                     cptr.stI32o(d, $_readobjnam_data_cnt, rn1cnt);
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, Math.imul(cptr.ldI32o(cptr.ldPtr(d), $obj_owt), cptr.ldI32o(d, $_readobjnam_data_cnt) >>> 0));
             }
             cptr.stI32o(d, $_readobjnam_data_cnt, 0);
         } else if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 0) {
-            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5077, __sl720), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.WAX_CANDLE)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -23) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -20))))))
+            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5077, __sl719), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.WAX_CANDLE)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -23) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -20))))))
                 cptr.stI64o(cptr.ldPtr(d), $obj_quan, BigInt(cptr.ldI32o(d, $_readobjnam_data_cnt)));
         }
         if (cptr.ldI32o(d, $_readobjnam_data_islit) && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.OIL_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.MAGIC_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.BRASS_LANTERN || (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.WAX_CANDLE) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.POT_OIL)) {
@@ -4757,7 +4756,7 @@ export function readobjnam(bp, no_wish) {
         } else if (wizard()) {
             ;
         } else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((cptr.ldPtr(d)), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_charged) & 1) | 0)) {
-            if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5102, __sl720), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
+            if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5102, __sl719), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
                 cptr.stI32o(d, $_readobjnam_data_spe, 0);
             if (cptr.ldI32o(d, $_readobjnam_data_spe) > 2 && Luck() < 0)
                 cptr.stI32o(d, $_readobjnam_data_spesgn, -1);
@@ -4805,7 +4804,7 @@ export function readobjnam(bp, no_wish) {
                 P = (((cptr.ldI32o(d, $_readobjnam_data_mntmp)) >= NHC.LOW_PM && (cptr.ldI32o(d, $_readobjnam_data_mntmp)) < NHC.NUMMONS)) ? cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96) : null;
                 cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((!P ? NHM.CORPSTAT_RANDOM : (((cptr.ldU64o((P), $permonst_mflags2) & 262144n) != 0n) ? NHM.CORPSTAT_NEUTER : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.FEMALE && !((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n)) ? NHM.CORPSTAT_FEMALE : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.MALE && !((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_RANDOM))))));
                 if (P && cptr.ld1so(cptr.ldPtr(d), $obj_spe) == NHM.CORPSTAT_RANDOM)
-                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5163, __sl720), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
+                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5163, __sl719), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
                 if (cptr.ldI32o(d, $_readobjnam_data_ishistoric) && cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.STATUE)
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe) | NHM.CORPSTAT_HISTORIC);
                 break;
@@ -4819,7 +4818,7 @@ export function readobjnam(bp, no_wish) {
             break;
             case NHC.WAN_WISHING:
             if (!wizard()) {
-                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5182, __sl720), rn2(10)) : rn2(10)) ? -1 : 0)));
+                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5182, __sl719), rn2(10)) : rn2(10)) ? -1 : 0)));
                 break;
             }
             // @FallThrough
@@ -4847,7 +4846,7 @@ export function readobjnam(bp, no_wish) {
                     set_corpsenm(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_mntmp));
                 }
                 if (cptr.ld1so(d, $_readobjnam_data_zombify) && zombie_form(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96))) {
-                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5223, __sl720), rn2(5)) : rn2(5)) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
+                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5223, __sl719), rn2(5)) : rn2(5)) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
                 }
                 break;
                 case NHC.EGG:
@@ -4928,7 +4927,7 @@ export function readobjnam(bp, no_wish) {
             cptr.stI32o(cptr.ldPtr(d), $obj_greased, 1);
         if (cptr.ldI32o(d, $_readobjnam_data_isdiluted) && cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.POTION_CLASS)
             cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) != NHC.POT_WATER) >>> 0);
-        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && ((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5343, __sl720), rn2(4)) : rn2(4)) || wizard()))
+        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5343, __sl719), rn2(4)) : rn2(4)) || wizard()))
             set_tin_variety(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_tvariety));
         if (cptr.ldPtro(d, $_readobjnam_data_name)) {
             aname = artifact_name(cptr.ldPtro(d, $_readobjnam_data_name), objtyp, 1);
@@ -4944,11 +4943,11 @@ export function readobjnam(bp, no_wish) {
         }
         if (permapoisoned(cptr.ldPtr(d)))
             cptr.stI32o(cptr.ldPtr(d), $obj_otrapped, 1);
-        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5374, __sl720), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1)) && !wizard()) {
+        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5374, __sl719), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1)) && !wizard()) {
             artifact_exists(cptr.ldPtr(d), safe_oname(cptr.ldPtr(d)), 0, NHM.ONAME_NO_FLAGS);
             obfree(cptr.ldPtr(d), null);
             cptr.stPtr(d, hands_obj);
-            pline(__sl722, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), makeplural(body_part(NHC.HAND)));
+            pline(__sl721, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), makeplural(body_part(NHC.HAND)));
             return cptr.ldPtr(d);
         }
         if (cptr.ldI32o(d, $_readobjnam_data_halfeaten) && cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.FOOD_CLASS) {
@@ -4977,8 +4976,8 @@ export function rnd_class(first, last) {
         for (i = first; i <= last; i++)
             sum = (sum + cptr.ldI16o2(objects, i, 120, $objclass_oc_prob)) | 0;
         if (!sum)
-            return (((rng_log_enabled() ? (rng_log_set_caller(__sl545, 5411, __sl723), rn2((((last - first) | 0) + 1) | 0)) : rn2((((last - first) | 0) + 1) | 0)) + (first)) | 0);
-        x = (rng_log_enabled() ? (rng_log_set_caller(__sl545, 5413, __sl723), rnd(sum)) : rnd(sum));
+            return (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5411, __sl722), rn2((((last - first) | 0) + 1) | 0)) : rn2((((last - first) | 0) + 1) | 0)) + (first)) | 0);
+        x = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5413, __sl722), rnd(sum)) : rnd(sum));
         for (i = first; i <= last; i++)
             if ((x = (x - cptr.ldI16o2(objects, i, 120, $objclass_oc_prob)) | 0) <= 0)
                 return i;
@@ -5025,7 +5024,7 @@ export function armor_simple_name(armor) {
         break;
         default:
         result = simpleonames(armor);
-        impossible(__sl724, result, armcat);
+        impossible(__sl723, result, armcat);
         break;
     }
     return result;
@@ -5037,17 +5036,17 @@ export function suit_simple_name(suit) {
     let esuitp;
     if (suit) {
         if ((cptr.ldI16o((suit), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((suit), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL))
-            return __sl725;
+            return __sl724;
         else if ((cptr.ldI16o((suit), $obj_otyp) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16o((suit), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALES))
             return __sl495;
         suitnm = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(suit, $obj_otyp), 120))), 16));
         esuitp = eos(suitnm);
-        if (cptr.strlen(suitnm) > 5n && !strcmp(cptr.add(esuitp, -(5)), __sl714))
-            return __sl713;
-        else if (cptr.strlen(suitnm) > 7n && !strcmp(cptr.add(esuitp, -(7)), __sl726))
-            return __sl727;
+        if (cptr.strlen(suitnm) > 5n && !strcmp(cptr.add(esuitp, -(5)), __sl713))
+            return __sl712;
+        else if (cptr.strlen(suitnm) > 7n && !strcmp(cptr.add(esuitp, -(7)), __sl725))
+            return __sl726;
     }
-    return __sl728;
+    return __sl727;
 }
 
 /** C ref: objnam.c:5492 — @param {CPtr} cloak @returns {CPtr} */
@@ -5055,11 +5054,11 @@ export function cloak_simple_name(cloak) {
     if (cloak) {
         switch (cptr.ldI16o(cloak, $obj_otyp)) {
             case NHC.ROBE:
-            return __sl729;
+            return __sl728;
             case NHC.MUMMY_WRAPPING:
-            return __sl730;
+            return __sl729;
             case NHC.ALCHEMY_SMOCK:
-            return ((cptr.ldI32o2(objects, cptr.ldI16o(cloak, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 && (cptr.ldI32o(cloak, $obj_dknown) & 1) | 0) ? __sl731 : __sl732;
+            return ((cptr.ldI32o2(objects, cptr.ldI16o(cloak, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 && (cptr.ldI32o(cloak, $obj_dknown) & 1) | 0) ? __sl730 : __sl731;
             default:
             break;
         }
@@ -5120,11 +5119,11 @@ export function shirt_simple_name(shirt) {
 export function mimic_obj_name(mtmp) {
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
         if (cptr.ldI32o(mtmp, $monst_mappearance) == NHC.GOLD_PIECE)
-            return __sl683;
+            return __sl682;
         if (cptr.ldI32o(mtmp, $monst_mappearance) != NHC.STRANGE_OBJECT)
             return simple_typename(cptr.ldI32o(mtmp, $monst_mappearance) | 0);
     }
-    return __sl733;
+    return __sl732;
 }
 
 /** C ref: objnam.c:5624 — @param {CPtr} qbuf @param {CPtr} qprefix @param {CPtr} qsuffix @param {CPtr} obj @param {CPtr} func @param {CPtr} altfunc @param {CPtr} lastR @returns {CPtr} */
@@ -5138,13 +5137,13 @@ export function safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
     let len_lastR = Number(BigInt.asUintN(32, cptr.strlen(lastR)));
     lenlimit = 127;
     endp = cptr.add(qbuf, lenlimit);
-    (__builtin_expect(BigInt((!(!cptr.eq(endp, (null))))), 0n) ? __assert_rtn(__sl734, __sl107, 5642, __sl735) : void 0);
+    (__builtin_expect(BigInt((!(!cptr.eq(endp, (null))))), 0n) ? __assert_rtn(__sl733, __sl107, 5642, __sl734) : void 0);
     if (len_qpfx > lenlimit)
-        impossible(__sl736, len_qpfx);
+        impossible(__sl735, len_qpfx);
     else if ((len_qpfx + len_qsfx) >>> 0 > lenlimit)
-        impossible(__sl737, len_qpfx, len_qsfx);
+        impossible(__sl736, len_qpfx, len_qsfx);
     else if ((((len_qpfx + len_lastR) >>> 0) + len_qsfx) >>> 0 > lenlimit)
-        impossible(__sl738, len_qpfx, len_lastR, len_qsfx);
+        impossible(__sl737, len_qpfx, len_lastR, len_qsfx);
     if (cptr.eq(qbuf, qprefix)) {
         cptr.st1(endp, 0);
     } else if (qprefix) {

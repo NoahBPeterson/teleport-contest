@@ -262,188 +262,187 @@ const __sl137 = cptr.lit("nh.callback counts are wrong");
 const __sl138 = cptr.lit("nh_callback_rm");
 const __sl139 = cptr.lit("nh_callback_set");
 const __sl140 = cptr.lit("nhl_callback");
-const __sl141 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c");
+const __sl141 = cptr.lit("nhlua.c");
 const __sl142 = cptr.lit("gamestate: %d:%d (%c vs %c)");
 const __sl143 = cptr.lit("Resetting time to move #%ld.");
 const __sl144 = cptr.lit("nhl_gamestate");
-const __sl145 = cptr.lit("nhlua.c");
-const __sl146 = cptr.lit("gg.gmst_ubak != NULL");
-const __sl147 = cptr.lit("gg.gmst_disco != NULL");
-const __sl148 = cptr.lit("gg.gmst_mvitals != NULL");
-const __sl149 = cptr.lit("nhl_gamestate: inconsistent state (%s vs %s)");
-const __sl150 = cptr.lit("restore");
-const __sl151 = cptr.lit("save");
-const __sl152 = cptr.lit("already stored");
-const __sl153 = cptr.lit("not stored");
-const __sl154 = cptr.lit("test");
-const __sl155 = cptr.lit("getmap");
-const __sl156 = cptr.lit("gettrap");
-const __sl157 = cptr.lit("deltrap");
-const __sl158 = cptr.lit("has_timer_at");
-const __sl159 = cptr.lit("peek_timer_at");
-const __sl160 = cptr.lit("stop_timer_at");
-const __sl161 = cptr.lit("start_timer_at");
-const __sl162 = cptr.lit("abscoord");
-const __sl163 = cptr.lit("impossible");
-const __sl164 = cptr.lit("pline");
-const __sl165 = cptr.lit("verbalize");
-const __sl166 = cptr.lit("menu");
-const __sl167 = cptr.lit("getlin");
-const __sl168 = cptr.lit("eckey");
-const __sl169 = cptr.lit("callback");
-const __sl170 = cptr.lit("gamestate");
-const __sl171 = cptr.lit("makeplural");
-const __sl172 = cptr.lit("makesingular");
-const __sl173 = cptr.lit("s_suffix");
-const __sl174 = cptr.lit("ing_suffix");
-const __sl175 = cptr.lit("an");
-const __sl176 = cptr.lit("rn2");
-const __sl177 = cptr.lit("random");
-const __sl178 = cptr.lit("level_difficulty");
-const __sl179 = cptr.lit("is_genocided");
-const __sl180 = cptr.lit("debug_themerm");
-const __sl181 = cptr.lit("parse_config");
-const __sl182 = cptr.lit("get_config");
-const __sl183 = cptr.lit("get_config_errors");
-const __sl184 = cptr.lit("dnum_name");
-const __sl185 = cptr.lit("int_to_pmname");
-const __sl186 = cptr.lit("int_to_objname");
-const __sl187 = cptr.lit("variable");
-const __sl188 = cptr.lit("stairways");
-const __sl189 = cptr.lit("pushkey");
-const __sl190 = cptr.lit("doturn");
-const __sl191 = cptr.lit("debug_flags");
-const __sl192 = cptr.lit("flip_level");
-const __sl193 = cptr.lit("COLNO");
-const __sl194 = cptr.lit("ROWNO");
-const __sl195 = cptr.lit("NUMMONS");
-const __sl196 = cptr.lit("LOW_PM");
-const __sl197 = cptr.lit("HIGH_PM");
-const __sl198 = cptr.lit("FIRST_OBJECT");
-const __sl199 = cptr.lit("LAST_OBJECT");
-const __sl200 = cptr.lit("DLB");
-const __sl201 = cptr.lit("nhc");
-const __sl202 = cptr.lit("inventory");
-const __sl203 = cptr.lit("role");
-const __sl204 = cptr.lit("moves");
-const __sl205 = cptr.lit("uhave_amulet");
-const __sl206 = cptr.lit("depth");
-const __sl207 = cptr.lit("invocation_level");
-const __sl208 = cptr.lit("Unknown u table index");
-const __sl209 = cptr.lit("ux");
-const __sl210 = cptr.lit("uy");
-const __sl211 = cptr.lit("dx");
-const __sl212 = cptr.lit("dy");
-const __sl213 = cptr.lit("dz");
-const __sl214 = cptr.lit("ulevel");
-const __sl215 = cptr.lit("ulevelmax");
-const __sl216 = cptr.lit("uhunger");
-const __sl217 = cptr.lit("nv_range");
-const __sl218 = cptr.lit("xray_range");
-const __sl219 = cptr.lit("umonster");
-const __sl220 = cptr.lit("umonnum");
-const __sl221 = cptr.lit("mh");
-const __sl222 = cptr.lit("mhmax");
-const __sl223 = cptr.lit("mtimedone");
-const __sl224 = cptr.lit("uluck");
-const __sl225 = cptr.lit("uhp");
-const __sl226 = cptr.lit("uhpmax");
-const __sl227 = cptr.lit("uen");
-const __sl228 = cptr.lit("uenmax");
-const __sl229 = cptr.lit("Cannot set u table values");
-const __sl230 = cptr.lit("clear_inventory");
-const __sl231 = cptr.lit("giveobj");
-const __sl232 = cptr.lit("__index");
-const __sl233 = cptr.lit("__newindex");
-const __sl234 = cptr.lit("u");
-const __sl235 = cptr.lit("Lua time exceeded %d:%s");
-const __sl236 = cptr.lit("(unknown)");
-const __sl237 = cptr.lit("LUASTATS PCAL %d:%s %ld");
-const __sl238 = cptr.lit("LUASTATS PMEM %d:%s %lu");
-const __sl239 = cptr.lit("Lua error %d:%s %s");
-const __sl240 = cptr.lit("Lua error: %d:%s %s");
-const __sl241 = cptr.lit("nhl_loadlua");
-const __sl242 = cptr.lit("(%s)");
-const __sl243 = cptr.lit("r");
-const __sl244 = cptr.lit("nhl_loadlua: Error opening %s");
-const __sl245 = cptr.lit("(%s) line too long");
-const __sl246 = cptr.lit("luaL_loadbuffer: Error loading %s: %s");
-const __sl247 = cptr.lit("sandbox doesn't know this Lua version: this=%d != expected=%d ");
-const __sl248 = cptr.lit("nhl_init");
-const __sl249 = cptr.lit("nh");
-const __sl250 = cptr.lit("math");
-const __sl251 = cptr.lit("nhlib.lua");
-const __sl252 = cptr.lit("LUASTATS DONE %d:%s %ld");
-const __sl253 = cptr.lit("LUASTATS DMEM %d:%s %lu");
-const __sl254 = cptr.lit("_RELEASE");
-const __sl255 = cptr.lit("Lua 5.4.8");
-const __sl256 = cptr.lit("_VERSION");
-const __sl257 = cptr.lit("Lua 5.4");
-const __sl258 = cptr.lit("Lua");
-const __sl259 = cptr.lit("Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio");
-const __sl260 = cptr.lit("ipairs");
-const __sl261 = cptr.lit("next");
-const __sl262 = cptr.lit("pairs");
-const __sl263 = cptr.lit("pcall");
-const __sl264 = cptr.lit("select");
-const __sl265 = cptr.lit("tonumber");
-const __sl266 = cptr.lit("tostring");
-const __sl267 = cptr.lit("type");
-const __sl268 = cptr.lit("xpcall");
-const __sl269 = cptr.lit("assert");
-const __sl270 = cptr.lit("error");
-const __sl271 = cptr.lit("print");
-const __sl272 = cptr.lit("warn");
-const __sl273 = cptr.lit("getmetatable");
-const __sl274 = cptr.lit("rawequal");
-const __sl275 = cptr.lit("rawget");
-const __sl276 = cptr.lit("rawlen");
-const __sl277 = cptr.lit("rawset");
-const __sl278 = cptr.lit("setmetatable");
-const __sl279 = cptr.lit("collectgarbage");
-const __sl280 = cptr.lit("dofile");
-const __sl281 = cptr.lit("loadfile");
-const __sl282 = cptr.lit("load");
-const __sl283 = cptr.lit("debug");
-const __sl284 = cptr.lit("getuservalue");
-const __sl285 = cptr.lit("gethook");
-const __sl286 = cptr.lit("getinfo");
-const __sl287 = cptr.lit("getlocal");
-const __sl288 = cptr.lit("getregistry");
-const __sl289 = cptr.lit("getupvalue");
-const __sl290 = cptr.lit("upvaluejoin");
-const __sl291 = cptr.lit("upvalueid");
-const __sl292 = cptr.lit("setuservalue");
-const __sl293 = cptr.lit("sethook");
-const __sl294 = cptr.lit("setlocal");
-const __sl295 = cptr.lit("setupvalue");
-const __sl296 = cptr.lit("setcstacklimit");
-const __sl297 = cptr.lit("traceback");
-const __sl298 = cptr.lit("clock");
-const __sl299 = cptr.lit("date");
-const __sl300 = cptr.lit("difftime");
-const __sl301 = cptr.lit("time");
-const __sl302 = cptr.lit("execute");
-const __sl303 = cptr.lit("exit");
-const __sl304 = cptr.lit("getenv");
-const __sl305 = cptr.lit("remove");
-const __sl306 = cptr.lit("rename");
-const __sl307 = cptr.lit("setlocale");
-const __sl308 = cptr.lit("tmpname");
-const __sl309 = cptr.lit("org.nethack.nethack.sb.fs");
-const __sl310 = cptr.lit("_G");
-const __sl311 = cptr.lit("coroutine");
-const __sl312 = cptr.lit("table");
-const __sl313 = cptr.lit("os");
-const __sl314 = cptr.lit("string");
-const __sl315 = cptr.lit("NETHACK_SEED");
-const __sl316 = cptr.lit("randomseed");
-const __sl317 = cptr.lit("utf8");
-const __sl318 = cptr.lit("error object is not a string");
-const __sl319 = cptr.lit("unprotected error in call to Lua API (%s)\n");
-const __sl320 = cptr.lit("[lua]");
-const __sl321 = cptr.lit("NULL lua_newstate");
-const __sl322 = cptr.lit("steps and perpcall both non-zero");
+const __sl145 = cptr.lit("gg.gmst_ubak != NULL");
+const __sl146 = cptr.lit("gg.gmst_disco != NULL");
+const __sl147 = cptr.lit("gg.gmst_mvitals != NULL");
+const __sl148 = cptr.lit("nhl_gamestate: inconsistent state (%s vs %s)");
+const __sl149 = cptr.lit("restore");
+const __sl150 = cptr.lit("save");
+const __sl151 = cptr.lit("already stored");
+const __sl152 = cptr.lit("not stored");
+const __sl153 = cptr.lit("test");
+const __sl154 = cptr.lit("getmap");
+const __sl155 = cptr.lit("gettrap");
+const __sl156 = cptr.lit("deltrap");
+const __sl157 = cptr.lit("has_timer_at");
+const __sl158 = cptr.lit("peek_timer_at");
+const __sl159 = cptr.lit("stop_timer_at");
+const __sl160 = cptr.lit("start_timer_at");
+const __sl161 = cptr.lit("abscoord");
+const __sl162 = cptr.lit("impossible");
+const __sl163 = cptr.lit("pline");
+const __sl164 = cptr.lit("verbalize");
+const __sl165 = cptr.lit("menu");
+const __sl166 = cptr.lit("getlin");
+const __sl167 = cptr.lit("eckey");
+const __sl168 = cptr.lit("callback");
+const __sl169 = cptr.lit("gamestate");
+const __sl170 = cptr.lit("makeplural");
+const __sl171 = cptr.lit("makesingular");
+const __sl172 = cptr.lit("s_suffix");
+const __sl173 = cptr.lit("ing_suffix");
+const __sl174 = cptr.lit("an");
+const __sl175 = cptr.lit("rn2");
+const __sl176 = cptr.lit("random");
+const __sl177 = cptr.lit("level_difficulty");
+const __sl178 = cptr.lit("is_genocided");
+const __sl179 = cptr.lit("debug_themerm");
+const __sl180 = cptr.lit("parse_config");
+const __sl181 = cptr.lit("get_config");
+const __sl182 = cptr.lit("get_config_errors");
+const __sl183 = cptr.lit("dnum_name");
+const __sl184 = cptr.lit("int_to_pmname");
+const __sl185 = cptr.lit("int_to_objname");
+const __sl186 = cptr.lit("variable");
+const __sl187 = cptr.lit("stairways");
+const __sl188 = cptr.lit("pushkey");
+const __sl189 = cptr.lit("doturn");
+const __sl190 = cptr.lit("debug_flags");
+const __sl191 = cptr.lit("flip_level");
+const __sl192 = cptr.lit("COLNO");
+const __sl193 = cptr.lit("ROWNO");
+const __sl194 = cptr.lit("NUMMONS");
+const __sl195 = cptr.lit("LOW_PM");
+const __sl196 = cptr.lit("HIGH_PM");
+const __sl197 = cptr.lit("FIRST_OBJECT");
+const __sl198 = cptr.lit("LAST_OBJECT");
+const __sl199 = cptr.lit("DLB");
+const __sl200 = cptr.lit("nhc");
+const __sl201 = cptr.lit("inventory");
+const __sl202 = cptr.lit("role");
+const __sl203 = cptr.lit("moves");
+const __sl204 = cptr.lit("uhave_amulet");
+const __sl205 = cptr.lit("depth");
+const __sl206 = cptr.lit("invocation_level");
+const __sl207 = cptr.lit("Unknown u table index");
+const __sl208 = cptr.lit("ux");
+const __sl209 = cptr.lit("uy");
+const __sl210 = cptr.lit("dx");
+const __sl211 = cptr.lit("dy");
+const __sl212 = cptr.lit("dz");
+const __sl213 = cptr.lit("ulevel");
+const __sl214 = cptr.lit("ulevelmax");
+const __sl215 = cptr.lit("uhunger");
+const __sl216 = cptr.lit("nv_range");
+const __sl217 = cptr.lit("xray_range");
+const __sl218 = cptr.lit("umonster");
+const __sl219 = cptr.lit("umonnum");
+const __sl220 = cptr.lit("mh");
+const __sl221 = cptr.lit("mhmax");
+const __sl222 = cptr.lit("mtimedone");
+const __sl223 = cptr.lit("uluck");
+const __sl224 = cptr.lit("uhp");
+const __sl225 = cptr.lit("uhpmax");
+const __sl226 = cptr.lit("uen");
+const __sl227 = cptr.lit("uenmax");
+const __sl228 = cptr.lit("Cannot set u table values");
+const __sl229 = cptr.lit("clear_inventory");
+const __sl230 = cptr.lit("giveobj");
+const __sl231 = cptr.lit("__index");
+const __sl232 = cptr.lit("__newindex");
+const __sl233 = cptr.lit("u");
+const __sl234 = cptr.lit("Lua time exceeded %d:%s");
+const __sl235 = cptr.lit("(unknown)");
+const __sl236 = cptr.lit("LUASTATS PCAL %d:%s %ld");
+const __sl237 = cptr.lit("LUASTATS PMEM %d:%s %lu");
+const __sl238 = cptr.lit("Lua error %d:%s %s");
+const __sl239 = cptr.lit("Lua error: %d:%s %s");
+const __sl240 = cptr.lit("nhl_loadlua");
+const __sl241 = cptr.lit("(%s)");
+const __sl242 = cptr.lit("r");
+const __sl243 = cptr.lit("nhl_loadlua: Error opening %s");
+const __sl244 = cptr.lit("(%s) line too long");
+const __sl245 = cptr.lit("luaL_loadbuffer: Error loading %s: %s");
+const __sl246 = cptr.lit("sandbox doesn't know this Lua version: this=%d != expected=%d ");
+const __sl247 = cptr.lit("nhl_init");
+const __sl248 = cptr.lit("nh");
+const __sl249 = cptr.lit("math");
+const __sl250 = cptr.lit("nhlib.lua");
+const __sl251 = cptr.lit("LUASTATS DONE %d:%s %ld");
+const __sl252 = cptr.lit("LUASTATS DMEM %d:%s %lu");
+const __sl253 = cptr.lit("_RELEASE");
+const __sl254 = cptr.lit("Lua 5.4.8");
+const __sl255 = cptr.lit("_VERSION");
+const __sl256 = cptr.lit("Lua 5.4");
+const __sl257 = cptr.lit("Lua");
+const __sl258 = cptr.lit("Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio");
+const __sl259 = cptr.lit("ipairs");
+const __sl260 = cptr.lit("next");
+const __sl261 = cptr.lit("pairs");
+const __sl262 = cptr.lit("pcall");
+const __sl263 = cptr.lit("select");
+const __sl264 = cptr.lit("tonumber");
+const __sl265 = cptr.lit("tostring");
+const __sl266 = cptr.lit("type");
+const __sl267 = cptr.lit("xpcall");
+const __sl268 = cptr.lit("assert");
+const __sl269 = cptr.lit("error");
+const __sl270 = cptr.lit("print");
+const __sl271 = cptr.lit("warn");
+const __sl272 = cptr.lit("getmetatable");
+const __sl273 = cptr.lit("rawequal");
+const __sl274 = cptr.lit("rawget");
+const __sl275 = cptr.lit("rawlen");
+const __sl276 = cptr.lit("rawset");
+const __sl277 = cptr.lit("setmetatable");
+const __sl278 = cptr.lit("collectgarbage");
+const __sl279 = cptr.lit("dofile");
+const __sl280 = cptr.lit("loadfile");
+const __sl281 = cptr.lit("load");
+const __sl282 = cptr.lit("debug");
+const __sl283 = cptr.lit("getuservalue");
+const __sl284 = cptr.lit("gethook");
+const __sl285 = cptr.lit("getinfo");
+const __sl286 = cptr.lit("getlocal");
+const __sl287 = cptr.lit("getregistry");
+const __sl288 = cptr.lit("getupvalue");
+const __sl289 = cptr.lit("upvaluejoin");
+const __sl290 = cptr.lit("upvalueid");
+const __sl291 = cptr.lit("setuservalue");
+const __sl292 = cptr.lit("sethook");
+const __sl293 = cptr.lit("setlocal");
+const __sl294 = cptr.lit("setupvalue");
+const __sl295 = cptr.lit("setcstacklimit");
+const __sl296 = cptr.lit("traceback");
+const __sl297 = cptr.lit("clock");
+const __sl298 = cptr.lit("date");
+const __sl299 = cptr.lit("difftime");
+const __sl300 = cptr.lit("time");
+const __sl301 = cptr.lit("execute");
+const __sl302 = cptr.lit("exit");
+const __sl303 = cptr.lit("getenv");
+const __sl304 = cptr.lit("remove");
+const __sl305 = cptr.lit("rename");
+const __sl306 = cptr.lit("setlocale");
+const __sl307 = cptr.lit("tmpname");
+const __sl308 = cptr.lit("org.nethack.nethack.sb.fs");
+const __sl309 = cptr.lit("_G");
+const __sl310 = cptr.lit("coroutine");
+const __sl311 = cptr.lit("table");
+const __sl312 = cptr.lit("os");
+const __sl313 = cptr.lit("string");
+const __sl314 = cptr.lit("NETHACK_SEED");
+const __sl315 = cptr.lit("randomseed");
+const __sl316 = cptr.lit("utf8");
+const __sl317 = cptr.lit("error object is not a string");
+const __sl318 = cptr.lit("unprotected error in call to Lua API (%s)\n");
+const __sl319 = cptr.lit("[lua]");
+const __sl320 = cptr.lit("NULL lua_newstate");
+const __sl321 = cptr.lit("steps and perpcall both non-zero");
 
 /** C ref: nhlua.c:103 — char *[7] */
 const nhcore_call_names = cptr.alloc(7 * 8);
@@ -622,7 +621,7 @@ export function nhl_add_table_entry_region(L, name, x1, y1, x2, y2) {
 
 /** C ref: nhlua.c:342 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: nhlua.c:345 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:342:14)[35] */
+/** C ref: nhlua.c:345 — struct (unnamed struct at nhlua.c:342:14)[35] */
 const char2typ = cptr.alloc(35 * 2);
 cptr.st1o(char2typ, 0, 32);
 cptr.st1o(char2typ, 1, NHC.STONE);
@@ -1816,11 +1815,11 @@ function nhl_gamestate(L) {
             if (wornmask)
                 setworn(otmp, wornmask);
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1906, __sl146) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), (null))))), 0n) ? __assert_rtn(__sl144, __sl141, 1906, __sl145) : void 0);
         void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1908, __sl147) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))), 0n) ? __assert_rtn(__sl144, __sl141, 1908, __sl146) : void 0);
         void cptr.memcpy(cptr.add(svd, $instance_globals_saved_d_disco), cptr.ldPtro(gg, $instance_globals_g_gmst_disco), 962n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1911, __sl148) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))), 0n) ? __assert_rtn(__sl144, __sl141, 1911, __sl147) : void 0);
         void cptr.memcpy(cptr.add(svm, $instance_globals_saved_m_mvitals), cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), 4596n);
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
             if (cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname)) {
@@ -1853,7 +1852,7 @@ function nhl_gamestate(L) {
         void __builtin___memset_chk(svs, 0, 344n, __builtin_object_size(svs, 0));
         cptr.st1o(gg, $instance_globals_g_gmst_stored, 1);
     } else {
-        impossible(__sl149, reststate ? __sl150 : __sl151, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? __sl152 : __sl153);
+        impossible(__sl148, reststate ? __sl149 : __sl150, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? __sl151 : __sl152);
     }
     update_inventory();
     return 0;
@@ -1885,108 +1884,108 @@ export function tutorial(entering) {
 
 /** C ref: nhlua.c:2002 — struct luaL_Reg[41] */
 const nhl_functions = cptr.alloc(41 * 16);
-cptr.stPtro(nhl_functions, 0, __sl154);
+cptr.stPtro(nhl_functions, 0, __sl153);
 cptr.stPtro(nhl_functions, 0 + $luaL_Reg_func, nhl_test);
-cptr.stPtro(nhl_functions, 16, __sl155);
+cptr.stPtro(nhl_functions, 16, __sl154);
 cptr.stPtro(nhl_functions, 16 + $luaL_Reg_func, nhl_getmap);
-cptr.stPtro(nhl_functions, 32, __sl156);
+cptr.stPtro(nhl_functions, 32, __sl155);
 cptr.stPtro(nhl_functions, 32 + $luaL_Reg_func, nhl_gettrap);
-cptr.stPtro(nhl_functions, 48, __sl157);
+cptr.stPtro(nhl_functions, 48, __sl156);
 cptr.stPtro(nhl_functions, 48 + $luaL_Reg_func, nhl_deltrap);
-cptr.stPtro(nhl_functions, 64, __sl158);
+cptr.stPtro(nhl_functions, 64, __sl157);
 cptr.stPtro(nhl_functions, 64 + $luaL_Reg_func, nhl_timer_has_at);
-cptr.stPtro(nhl_functions, 80, __sl159);
+cptr.stPtro(nhl_functions, 80, __sl158);
 cptr.stPtro(nhl_functions, 80 + $luaL_Reg_func, nhl_timer_peek_at);
-cptr.stPtro(nhl_functions, 96, __sl160);
+cptr.stPtro(nhl_functions, 96, __sl159);
 cptr.stPtro(nhl_functions, 96 + $luaL_Reg_func, nhl_timer_stop_at);
-cptr.stPtro(nhl_functions, 112, __sl161);
+cptr.stPtro(nhl_functions, 112, __sl160);
 cptr.stPtro(nhl_functions, 112 + $luaL_Reg_func, nhl_timer_start_at);
-cptr.stPtro(nhl_functions, 128, __sl162);
+cptr.stPtro(nhl_functions, 128, __sl161);
 cptr.stPtro(nhl_functions, 128 + $luaL_Reg_func, nhl_abs_coord);
-cptr.stPtro(nhl_functions, 144, __sl163);
+cptr.stPtro(nhl_functions, 144, __sl162);
 cptr.stPtro(nhl_functions, 144 + $luaL_Reg_func, nhl_impossible);
-cptr.stPtro(nhl_functions, 160, __sl164);
+cptr.stPtro(nhl_functions, 160, __sl163);
 cptr.stPtro(nhl_functions, 160 + $luaL_Reg_func, nhl_pline);
-cptr.stPtro(nhl_functions, 176, __sl165);
+cptr.stPtro(nhl_functions, 176, __sl164);
 cptr.stPtro(nhl_functions, 176 + $luaL_Reg_func, nhl_verbalize);
-cptr.stPtro(nhl_functions, 192, __sl166);
+cptr.stPtro(nhl_functions, 192, __sl165);
 cptr.stPtro(nhl_functions, 192 + $luaL_Reg_func, nhl_menu);
 cptr.stPtro(nhl_functions, 208, __sl77);
 cptr.stPtro(nhl_functions, 208 + $luaL_Reg_func, nhl_text);
-cptr.stPtro(nhl_functions, 224, __sl167);
+cptr.stPtro(nhl_functions, 224, __sl166);
 cptr.stPtro(nhl_functions, 224 + $luaL_Reg_func, nhl_getlin);
-cptr.stPtro(nhl_functions, 240, __sl168);
+cptr.stPtro(nhl_functions, 240, __sl167);
 cptr.stPtro(nhl_functions, 240 + $luaL_Reg_func, nhl_get_cmd_key);
-cptr.stPtro(nhl_functions, 256, __sl169);
+cptr.stPtro(nhl_functions, 256, __sl168);
 cptr.stPtro(nhl_functions, 256 + $luaL_Reg_func, nhl_callback);
-cptr.stPtro(nhl_functions, 272, __sl170);
+cptr.stPtro(nhl_functions, 272, __sl169);
 cptr.stPtro(nhl_functions, 272 + $luaL_Reg_func, nhl_gamestate);
-cptr.stPtro(nhl_functions, 288, __sl171);
+cptr.stPtro(nhl_functions, 288, __sl170);
 cptr.stPtro(nhl_functions, 288 + $luaL_Reg_func, nhl_makeplural);
-cptr.stPtro(nhl_functions, 304, __sl172);
+cptr.stPtro(nhl_functions, 304, __sl171);
 cptr.stPtro(nhl_functions, 304 + $luaL_Reg_func, nhl_makesingular);
-cptr.stPtro(nhl_functions, 320, __sl173);
+cptr.stPtro(nhl_functions, 320, __sl172);
 cptr.stPtro(nhl_functions, 320 + $luaL_Reg_func, nhl_s_suffix);
-cptr.stPtro(nhl_functions, 336, __sl174);
+cptr.stPtro(nhl_functions, 336, __sl173);
 cptr.stPtro(nhl_functions, 336 + $luaL_Reg_func, nhl_ing_suffix);
-cptr.stPtro(nhl_functions, 352, __sl175);
+cptr.stPtro(nhl_functions, 352, __sl174);
 cptr.stPtro(nhl_functions, 352 + $luaL_Reg_func, nhl_an);
-cptr.stPtro(nhl_functions, 368, __sl176);
+cptr.stPtro(nhl_functions, 368, __sl175);
 cptr.stPtro(nhl_functions, 368 + $luaL_Reg_func, nhl_rn2);
-cptr.stPtro(nhl_functions, 384, __sl177);
+cptr.stPtro(nhl_functions, 384, __sl176);
 cptr.stPtro(nhl_functions, 384 + $luaL_Reg_func, nhl_random);
-cptr.stPtro(nhl_functions, 400, __sl178);
+cptr.stPtro(nhl_functions, 400, __sl177);
 cptr.stPtro(nhl_functions, 400 + $luaL_Reg_func, nhl_level_difficulty);
-cptr.stPtro(nhl_functions, 416, __sl179);
+cptr.stPtro(nhl_functions, 416, __sl178);
 cptr.stPtro(nhl_functions, 416 + $luaL_Reg_func, nhl_is_genocided);
-cptr.stPtro(nhl_functions, 432, __sl180);
+cptr.stPtro(nhl_functions, 432, __sl179);
 cptr.stPtro(nhl_functions, 432 + $luaL_Reg_func, nhl_get_debug_themerm_name);
-cptr.stPtro(nhl_functions, 448, __sl181);
+cptr.stPtro(nhl_functions, 448, __sl180);
 cptr.stPtro(nhl_functions, 448 + $luaL_Reg_func, nhl_parse_config);
-cptr.stPtro(nhl_functions, 464, __sl182);
+cptr.stPtro(nhl_functions, 464, __sl181);
 cptr.stPtro(nhl_functions, 464 + $luaL_Reg_func, nhl_get_config);
-cptr.stPtro(nhl_functions, 480, __sl183);
+cptr.stPtro(nhl_functions, 480, __sl182);
 cptr.stPtro(nhl_functions, 480 + $luaL_Reg_func, l_get_config_errors);
-cptr.stPtro(nhl_functions, 496, __sl184);
+cptr.stPtro(nhl_functions, 496, __sl183);
 cptr.stPtro(nhl_functions, 496 + $luaL_Reg_func, nhl_dnum_name);
-cptr.stPtro(nhl_functions, 512, __sl185);
+cptr.stPtro(nhl_functions, 512, __sl184);
 cptr.stPtro(nhl_functions, 512 + $luaL_Reg_func, nhl_int_to_pm_name);
-cptr.stPtro(nhl_functions, 528, __sl186);
+cptr.stPtro(nhl_functions, 528, __sl185);
 cptr.stPtro(nhl_functions, 528 + $luaL_Reg_func, nhl_int_to_obj_name);
-cptr.stPtro(nhl_functions, 544, __sl187);
+cptr.stPtro(nhl_functions, 544, __sl186);
 cptr.stPtro(nhl_functions, 544 + $luaL_Reg_func, nhl_variable);
-cptr.stPtro(nhl_functions, 560, __sl188);
+cptr.stPtro(nhl_functions, 560, __sl187);
 cptr.stPtro(nhl_functions, 560 + $luaL_Reg_func, nhl_stairways);
-cptr.stPtro(nhl_functions, 576, __sl189);
+cptr.stPtro(nhl_functions, 576, __sl188);
 cptr.stPtro(nhl_functions, 576 + $luaL_Reg_func, nhl_pushkey);
-cptr.stPtro(nhl_functions, 592, __sl190);
+cptr.stPtro(nhl_functions, 592, __sl189);
 cptr.stPtro(nhl_functions, 592 + $luaL_Reg_func, nhl_doturn);
-cptr.stPtro(nhl_functions, 608, __sl191);
+cptr.stPtro(nhl_functions, 608, __sl190);
 cptr.stPtro(nhl_functions, 608 + $luaL_Reg_func, nhl_debug_flags);
-cptr.stPtro(nhl_functions, 624, __sl192);
+cptr.stPtro(nhl_functions, 624, __sl191);
 cptr.stPtro(nhl_functions, 624 + $luaL_Reg_func, nhl_flip_level);
 cptr.stPtro(nhl_functions, 640, null);
 cptr.stPtro(nhl_functions, 640 + $luaL_Reg_func, null);
 
 /** C ref: nhlua.c:2057 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: nhlua.c:2060 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:2057:14)[9] */
+/** C ref: nhlua.c:2060 — struct (unnamed struct at nhlua.c:2057:14)[9] */
 const nhl_consts = cptr.alloc(9 * 16);
-cptr.stPtro(nhl_consts, 0, __sl193);
+cptr.stPtro(nhl_consts, 0, __sl192);
 cptr.stI64o(nhl_consts, 8, 80n);
-cptr.stPtro(nhl_consts, 16, __sl194);
+cptr.stPtro(nhl_consts, 16, __sl193);
 cptr.stI64o(nhl_consts, 24, 21n);
-cptr.stPtro(nhl_consts, 32, __sl195);
+cptr.stPtro(nhl_consts, 32, __sl194);
 cptr.stI64o(nhl_consts, 40, 383n);
-cptr.stPtro(nhl_consts, 48, __sl196);
+cptr.stPtro(nhl_consts, 48, __sl195);
 cptr.stI64o(nhl_consts, 56, 0n);
-cptr.stPtro(nhl_consts, 64, __sl197);
+cptr.stPtro(nhl_consts, 64, __sl196);
 cptr.stI64o(nhl_consts, 72, 382n);
-cptr.stPtro(nhl_consts, 80, __sl198);
+cptr.stPtro(nhl_consts, 80, __sl197);
 cptr.stI64o(nhl_consts, 88, 18n);
-cptr.stPtro(nhl_consts, 96, __sl199);
+cptr.stPtro(nhl_consts, 96, __sl198);
 cptr.stI64o(nhl_consts, 104, 480n);
-cptr.stPtro(nhl_consts, 112, __sl200);
+cptr.stPtro(nhl_consts, 112, __sl199);
 cptr.stI64o(nhl_consts, 120, 0n);
 cptr.stPtro(nhl_consts, 128, null);
 cptr.stI64o(nhl_consts, 136, 0n);
@@ -2000,7 +1999,7 @@ function init_nhc_data(L) {
         lua_pushinteger(L, cptr.ldI64o2(nhl_consts, i, 16, 8));
         lua_rawset(L, -3);
     }
-    lua_setglobal(L, __sl201);
+    lua_setglobal(L, __sl200);
 }
 
 /** C ref: nhlua.c:2094 — @param {CPtr} L @param {CInt} anytype @param {CPtr} src @returns {CInt} */
@@ -2024,19 +2023,19 @@ function nhl_push_anything(L, anytype, src) {
 }
 
 const __static_nhl_meta_u_index_ustruct = cptr.alloc(24 * 24);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 0, __sl209);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 0, __sl208);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 8, u);
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 16, NHC.ANY_UCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 24, __sl210);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 24, __sl209);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 32, cptr.add(u, $you_uy));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 40, NHC.ANY_UCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 48, __sl211);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 48, __sl210);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 56, cptr.add(u, $you_dx));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 64, NHC.ANY_SCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 72, __sl212);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 72, __sl211);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 80, cptr.add(u, $you_dy));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 88, NHC.ANY_SCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 96, __sl213);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 96, __sl212);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 104, cptr.add(u, $you_dz));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 112, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 120, __sl31);
@@ -2045,34 +2044,34 @@ cptr.stI32o(__static_nhl_meta_u_index_ustruct, 136, NHC.ANY_UCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 144, __sl32);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 152, cptr.add(u, $you_ty));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 160, NHC.ANY_UCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 168, __sl214);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 168, __sl213);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 176, cptr.add(u, $you_ulevel));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 184, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 192, __sl215);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 192, __sl214);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 200, cptr.add(u, $you_ulevelmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 208, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 216, __sl216);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 216, __sl215);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 224, cptr.add(u, $you_uhunger));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 232, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 240, __sl217);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 240, __sl216);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 248, cptr.add(u, $you_nv_range));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 256, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 264, __sl218);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 264, __sl217);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 272, cptr.add(u, $you_xray_range));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 280, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 288, __sl219);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 288, __sl218);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 296, cptr.add(u, $you_umonster));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 304, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 312, __sl220);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 312, __sl219);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 320, cptr.add(u, $you_umonnum));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 328, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 336, __sl221);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 336, __sl220);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 344, cptr.add(u, $you_mh));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 352, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 360, __sl222);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 360, __sl221);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 368, cptr.add(u, $you_mhmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 376, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 384, __sl223);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 384, __sl222);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 392, cptr.add(u, $you_mtimedone));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 400, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 408, __sl126);
@@ -2081,21 +2080,21 @@ cptr.stI32o(__static_nhl_meta_u_index_ustruct, 424, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 432, __sl125);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 440, cptr.add(u, $you_uz));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 448, NHC.ANY_SCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 456, __sl224);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 456, __sl223);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 464, cptr.add(u, $you_uluck));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 472, NHC.ANY_SCHAR);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 480, __sl225);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 480, __sl224);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 488, cptr.add(u, $you_uhp));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 496, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 504, __sl226);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 504, __sl225);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 512, cptr.add(u, $you_uhpmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 520, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 528, __sl227);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 528, __sl226);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 536, cptr.add(u, $you_uen));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 544, NHC.ANY_INT);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 552, __sl228);
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 552, __sl227);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 560, cptr.add(u, $you_uenmax));
-cptr.stI32o(__static_nhl_meta_u_index_ustruct, 568, NHC.ANY_INT); /** C ref: nhlua.c:2124 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:2120:18)[24] (function-static) */
+cptr.stI32o(__static_nhl_meta_u_index_ustruct, 568, NHC.ANY_INT); /** C ref: nhlua.c:2124 — struct (unnamed struct at nhlua.c:2120:18)[24] (function-static) */
 
 /** C ref: nhlua.c:2118 — @param {CPtr} L @returns {CInt} */
 function nhl_meta_u_index(L) {
@@ -2105,32 +2104,32 @@ function nhl_meta_u_index(L) {
         if (!strcmp(tkey, cptr.ldPtro(__static_nhl_meta_u_index_ustruct, i, 24))) {
             return nhl_push_anything(L, cptr.ldI32o2(__static_nhl_meta_u_index_ustruct, i, 24, 16), cptr.ldPtro2(__static_nhl_meta_u_index_ustruct, i, 24, 8));
         }
-    if (!strcmp(tkey, __sl202)) {
+    if (!strcmp(tkey, __sl201)) {
         nhl_push_obj(L, cptr.ldPtro(gi, $instance_globals_i_invent));
         return 1;
-    } else if (!strcmp(tkey, __sl203)) {
+    } else if (!strcmp(tkey, __sl202)) {
         lua_pushstring(L, cptr.ldPtro(gu, $instance_globals_u_urole));
         return 1;
-    } else if (!strcmp(tkey, __sl204)) {
+    } else if (!strcmp(tkey, __sl203)) {
         lua_pushinteger(L, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         return 1;
-    } else if (!strcmp(tkey, __sl205)) {
+    } else if (!strcmp(tkey, __sl204)) {
         lua_pushinteger(L, BigInt((cptr.ldI32o(u, $you_uhave) & 1) >>> 0));
         return 1;
-    } else if (!strcmp(tkey, __sl206)) {
+    } else if (!strcmp(tkey, __sl205)) {
         lua_pushinteger(L, BigInt(depth(cptr.add(u, $you_uz))));
         return 1;
-    } else if (!strcmp(tkey, __sl207)) {
+    } else if (!strcmp(tkey, __sl206)) {
         lua_pushboolean(L, Invocation_lev(cptr.add(u, $you_uz)));
         return 1;
     }
-    nhl_error(L, __sl208);
+    nhl_error(L, __sl207);
     return 0;
 }
 
 /** C ref: nhlua.c:2185 — @param {CPtr} L @returns {CInt} */
 function nhl_meta_u_newindex(L) {
-    nhl_error(L, __sl229);
+    nhl_error(L, __sl228);
     return 0;
 }
 
@@ -2148,9 +2147,9 @@ function nhl_u_giveobj(L) {
 
 /** C ref: nhlua.c:2210 — struct luaL_Reg[3] */
 const nhl_u_functions = cptr.alloc(3 * 16);
-cptr.stPtro(nhl_u_functions, 0, __sl230);
+cptr.stPtro(nhl_u_functions, 0, __sl229);
 cptr.stPtro(nhl_u_functions, 0 + $luaL_Reg_func, nhl_u_clear_inventory);
-cptr.stPtro(nhl_u_functions, 16, __sl231);
+cptr.stPtro(nhl_u_functions, 16, __sl230);
 cptr.stPtro(nhl_u_functions, 16 + $luaL_Reg_func, nhl_u_giveobj);
 cptr.stPtro(nhl_u_functions, 32, null);
 cptr.stPtro(nhl_u_functions, 32 + $luaL_Reg_func, null);
@@ -2161,11 +2160,11 @@ function init_u_data(L) {
     luaL_setfuncs(L, nhl_u_functions, 0);
     lua_createtable(L, 0, 0);
     lua_pushcclosure(L, (nhl_meta_u_index), 0);
-    lua_setfield(L, -2, __sl232);
+    lua_setfield(L, -2, __sl231);
     lua_pushcclosure(L, (nhl_meta_u_newindex), 0);
-    lua_setfield(L, -2, __sl233);
+    lua_setfield(L, -2, __sl232);
     lua_setmetatable(L, -2);
-    lua_setglobal(L, __sl234);
+    lua_setglobal(L, __sl233);
 }
 
 /** C ref: nhlua.c:2246 — @param {CPtr} L @returns {CInt} */
@@ -2199,13 +2198,13 @@ export function nhl_pcall(L, nargs, nresults, name) {
             let __sv1 = 0;
             try {
                 if (__sv1) {
-                    panic(__sl235, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236);
+                    panic(__sl234, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl235);
                 }
             } catch (__e1) {
                 if (!cjmp.matches(__e1, __sj1)) throw __e1;
                 __sv1 = cjmp.jbval(__e1);
                 if (__sv1) {
-                    panic(__sl235, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236);
+                    panic(__sl234, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl235);
                 }
             }
         }
@@ -2214,10 +2213,10 @@ export function nhl_pcall(L, nargs, nresults, name) {
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_perpcall) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
         let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
-        livelog_printf(32768n, __sl237, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic);
+        livelog_printf(32768n, __sl236, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic);
     }
     if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
-        livelog_printf(32768n, __sl238, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt(nhl_getmeminuse(L) >>> 0));
+        livelog_printf(32768n, __sl237, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt(nhl_getmeminuse(L) >>> 0));
     }
     return rv;
 }
@@ -2230,10 +2229,10 @@ export function nhl_pcall_handle(L, nargs, nresults, name, npa) {
         void lua_getallocf(L, nud);
         switch (npa) {
             case NHC.NHLpa_panic:
-            panic(__sl239, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236, lua_tolstring(L, -1, null));
+            panic(__sl238, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl235, lua_tolstring(L, -1, null));
             break;
             case NHC.NHLpa_impossible:
-            impossible(__sl240, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236, lua_tolstring(L, -1, null));
+            impossible(__sl239, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl235, lua_tolstring(L, -1, null));
             lua_settop(L, -2);
         }
     }
@@ -2255,18 +2254,18 @@ export function nhl_loadlua(L, fname) {
     let cnt;
     let llret;
     __lbl_give_up: {
-        altfname = alloc((Strlen_(fname, __sl241, 2347) + 3) >>> 0);
-        void cptr.sprintf(altfname, __sl242, fname);
-        fh = fopen(fname, __sl243);
+        altfname = alloc((Strlen_(fname, __sl240, 2347) + 3) >>> 0);
+        void cptr.sprintf(altfname, __sl241, fname);
+        fh = fopen(fname, __sl242);
         if (!fh) {
-            impossible(__sl244, altfname);
+            impossible(__sl243, altfname);
             ret = 0;
             break __lbl_give_up;
         }
         fseek(fh, 0n, 2);
         buflen = ftell(fh);
         fseek(fh, 0n, 0);
-        buf = (bufout = alloc(FITSint_(BigInt.asIntN(64, BigInt.asIntN(64, buflen + 1n) + 1n), __sl241, 2364) >>> 0));
+        buf = (bufout = alloc(FITSint_(BigInt.asIntN(64, BigInt.asIntN(64, buflen + 1n) + 1n), __sl240, 2364) >>> 0));
         cptr.st1o(buf, 0, 0);
         bufin = (bufout = buf);
         ct = 0n;
@@ -2296,7 +2295,7 @@ export function nhl_loadlua(L, fname) {
                     cptr.st1(p, 0);
                     bufin = p;
                 } else {
-                    impossible(__sl245, altfname);
+                    impossible(__sl244, altfname);
                     break __lbl_give_up;
                 }
             }
@@ -2305,7 +2304,7 @@ export function nhl_loadlua(L, fname) {
         void fclose(fh);
         llret = luaL_loadbufferx(L, buf, cptr.strlen(buf), altfname, null);
         if (llret != 0) {
-            impossible(__sl246, altfname, lua_tolstring(L, -1, null));
+            impossible(__sl245, altfname, lua_tolstring(L, -1, null));
             ret = 0;
             break __lbl_give_up;
         } else {
@@ -2325,26 +2324,26 @@ export function nhl_loadlua(L, fname) {
 /** C ref: nhlua.c:2449 — @param {CPtr} sbi @returns {CPtr} */
 export function nhl_init(sbi) {
     if (0) {
-        panic(__sl247, 50408, 50408);
+        panic(__sl246, 50408, 50408);
     }
-    let L = nhlL_newstate(sbi, __sl248);
+    let L = nhlL_newstate(sbi, __sl247);
     if (!L)
         return null;
     cptr.st1o(iflags, $instance_flags_in_lua, 1);
     nhlL_openlibs(L, cptr.ldI32(sbi));
     lua_createtable(L, 0, 0);
     luaL_setfuncs(L, nhl_functions, 0);
-    lua_setglobal(L, __sl249);
+    lua_setglobal(L, __sl248);
     init_nhc_data(L);
     init_u_data(L);
     l_selection_register(L);
     l_register_des(L);
     l_obj_register(L);
-    if (5 != lua_getglobal(L, __sl250)) {
+    if (5 != lua_getglobal(L, __sl249)) {
         lua_createtable(L, 0, 0);
-        lua_setglobal(L, __sl250);
+        lua_setglobal(L, __sl249);
     }
-    if (!nhl_loadlua(L, __sl251)) {
+    if (!nhl_loadlua(L, __sl250)) {
         nhl_done(L);
         return null;
     }
@@ -2359,10 +2358,10 @@ export function nhl_done(L) {
         if (cptr.ldI32o(gl, $instance_globals_l_loglua)) {
             if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_osteps)) {
                 let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
-                livelog_printf(32768n, __sl252, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic);
+                livelog_printf(32768n, __sl251, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic);
             }
             if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && !cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
-                livelog_printf(32768n, __sl253, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt(nhl_getmeminuse(L) >>> 0));
+                livelog_printf(32768n, __sl252, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt(nhl_getmeminuse(L) >>> 0));
             }
         }
         lua_close(L);
@@ -2398,20 +2397,20 @@ export function get_lua_version() {
         if (L) {
             let len = cptr.box(0n);
             let vs = null;
-            lua_getglobal(L, __sl254);
+            lua_getglobal(L, __sl253);
             if (lua_isstring(L, -1))
                 vs = lua_tolstring(L, -1, len);
             else
-                vs = __sl255, len.v = cptr.strlen(vs);
+                vs = __sl254, len.v = cptr.strlen(vs);
             if (!vs) {
-                lua_getglobal(L, __sl256);
+                lua_getglobal(L, __sl255);
                 if (lua_isstring(L, -1))
                     vs = lua_tolstring(L, -1, len);
                 else
-                    vs = __sl257, len.v = cptr.strlen(vs);
+                    vs = __sl256, len.v = cptr.strlen(vs);
             }
             if (vs && len.v < 20n) {
-                if (!strncmpi(vs, __sl258, 3)) {
+                if (!strncmpi(vs, __sl257, 3)) {
                     vs = cptr.add(vs, 3);
                     if (cptr.ld1s(vs) == 45 || cptr.ld1s(vs) == 32)
                         vs = cptr.add(vs, 1);
@@ -2421,7 +2420,7 @@ export function get_lua_version() {
         }
         nhl_done(L);
         if (1)
-            void cptr.strcpy(cptr.add(gl, $instance_globals_l_lua_copyright), __sl259);
+            void cptr.strcpy(cptr.add(gl, $instance_globals_l_lua_copyright), __sl258);
     }
     return cptr.add(gl, $instance_globals_l_lua_ver);
 }
@@ -2436,147 +2435,147 @@ export const EOT = 2;
 /** C ref: nhlua.c:2654 — struct e[10] */
 const ct_base_base = cptr.alloc(10 * 16);
 cptr.stI32o(ct_base_base, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 0 + $e_fnname, __sl260);
+cptr.stPtro(ct_base_base, 0 + $e_fnname, __sl259);
 cptr.stI32o(ct_base_base, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 16 + $e_fnname, __sl261);
+cptr.stPtro(ct_base_base, 16 + $e_fnname, __sl260);
 cptr.stI32o(ct_base_base, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 32 + $e_fnname, __sl262);
+cptr.stPtro(ct_base_base, 32 + $e_fnname, __sl261);
 cptr.stI32o(ct_base_base, 48, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 48 + $e_fnname, __sl263);
+cptr.stPtro(ct_base_base, 48 + $e_fnname, __sl262);
 cptr.stI32o(ct_base_base, 64, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 64 + $e_fnname, __sl264);
+cptr.stPtro(ct_base_base, 64 + $e_fnname, __sl263);
 cptr.stI32o(ct_base_base, 80, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 80 + $e_fnname, __sl265);
+cptr.stPtro(ct_base_base, 80 + $e_fnname, __sl264);
 cptr.stI32o(ct_base_base, 96, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 96 + $e_fnname, __sl266);
+cptr.stPtro(ct_base_base, 96 + $e_fnname, __sl265);
 cptr.stI32o(ct_base_base, 112, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 112 + $e_fnname, __sl267);
+cptr.stPtro(ct_base_base, 112 + $e_fnname, __sl266);
 cptr.stI32o(ct_base_base, 128, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 128 + $e_fnname, __sl268);
+cptr.stPtro(ct_base_base, 128 + $e_fnname, __sl267);
 cptr.stI32o(ct_base_base, 144, NHC.EOT);
 cptr.stPtro(ct_base_base, 144 + $e_fnname, null);
 
 /** C ref: nhlua.c:2668 — struct e[5] */
 const ct_base_error = cptr.alloc(5 * 16);
 cptr.stI32o(ct_base_error, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_error, 0 + $e_fnname, __sl269);
+cptr.stPtro(ct_base_error, 0 + $e_fnname, __sl268);
 cptr.stI32o(ct_base_error, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_error, 16 + $e_fnname, __sl270);
+cptr.stPtro(ct_base_error, 16 + $e_fnname, __sl269);
 cptr.stI32o(ct_base_error, 32, NHC.NEVER);
-cptr.stPtro(ct_base_error, 32 + $e_fnname, __sl271);
+cptr.stPtro(ct_base_error, 32 + $e_fnname, __sl270);
 cptr.stI32o(ct_base_error, 48, NHC.NEVER);
-cptr.stPtro(ct_base_error, 48 + $e_fnname, __sl272);
+cptr.stPtro(ct_base_error, 48 + $e_fnname, __sl271);
 cptr.stI32o(ct_base_error, 64, NHC.EOT);
 cptr.stPtro(ct_base_error, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2679 — struct e[7] */
 const ct_base_meta = cptr.alloc(7 * 16);
 cptr.stI32o(ct_base_meta, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 0 + $e_fnname, __sl273);
+cptr.stPtro(ct_base_meta, 0 + $e_fnname, __sl272);
 cptr.stI32o(ct_base_meta, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 16 + $e_fnname, __sl274);
+cptr.stPtro(ct_base_meta, 16 + $e_fnname, __sl273);
 cptr.stI32o(ct_base_meta, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 32 + $e_fnname, __sl275);
+cptr.stPtro(ct_base_meta, 32 + $e_fnname, __sl274);
 cptr.stI32o(ct_base_meta, 48, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 48 + $e_fnname, __sl276);
+cptr.stPtro(ct_base_meta, 48 + $e_fnname, __sl275);
 cptr.stI32o(ct_base_meta, 64, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 64 + $e_fnname, __sl277);
+cptr.stPtro(ct_base_meta, 64 + $e_fnname, __sl276);
 cptr.stI32o(ct_base_meta, 80, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 80 + $e_fnname, __sl278);
+cptr.stPtro(ct_base_meta, 80 + $e_fnname, __sl277);
 cptr.stI32o(ct_base_meta, 96, NHC.EOT);
 cptr.stPtro(ct_base_meta, 96 + $e_fnname, null);
 
 /** C ref: nhlua.c:2690 — struct e[2] */
 const ct_base_iffy = cptr.alloc(2 * 16);
 cptr.stI32o(ct_base_iffy, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_iffy, 0 + $e_fnname, __sl279);
+cptr.stPtro(ct_base_iffy, 0 + $e_fnname, __sl278);
 cptr.stI32o(ct_base_iffy, 16, NHC.EOT);
 cptr.stPtro(ct_base_iffy, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2698 — struct e[4] */
 const ct_base_unsafe = cptr.alloc(4 * 16);
 cptr.stI32o(ct_base_unsafe, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 0 + $e_fnname, __sl280);
+cptr.stPtro(ct_base_unsafe, 0 + $e_fnname, __sl279);
 cptr.stI32o(ct_base_unsafe, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 16 + $e_fnname, __sl281);
+cptr.stPtro(ct_base_unsafe, 16 + $e_fnname, __sl280);
 cptr.stI32o(ct_base_unsafe, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 32 + $e_fnname, __sl282);
+cptr.stPtro(ct_base_unsafe, 32 + $e_fnname, __sl281);
 cptr.stI32o(ct_base_unsafe, 48, NHC.EOT);
 cptr.stPtro(ct_base_unsafe, 48 + $e_fnname, null);
 
 /** C ref: nhlua.c:2713 — struct e[17] */
 const ct_debug_debug = cptr.alloc(17 * 16);
 cptr.stI32o(ct_debug_debug, 0, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 0 + $e_fnname, __sl283);
+cptr.stPtro(ct_debug_debug, 0 + $e_fnname, __sl282);
 cptr.stI32o(ct_debug_debug, 16, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 16 + $e_fnname, __sl284);
+cptr.stPtro(ct_debug_debug, 16 + $e_fnname, __sl283);
 cptr.stI32o(ct_debug_debug, 32, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 32 + $e_fnname, __sl285);
+cptr.stPtro(ct_debug_debug, 32 + $e_fnname, __sl284);
 cptr.stI32o(ct_debug_debug, 48, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 48 + $e_fnname, __sl286);
+cptr.stPtro(ct_debug_debug, 48 + $e_fnname, __sl285);
 cptr.stI32o(ct_debug_debug, 64, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 64 + $e_fnname, __sl287);
+cptr.stPtro(ct_debug_debug, 64 + $e_fnname, __sl286);
 cptr.stI32o(ct_debug_debug, 80, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 80 + $e_fnname, __sl288);
+cptr.stPtro(ct_debug_debug, 80 + $e_fnname, __sl287);
 cptr.stI32o(ct_debug_debug, 96, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 96 + $e_fnname, __sl273);
+cptr.stPtro(ct_debug_debug, 96 + $e_fnname, __sl272);
 cptr.stI32o(ct_debug_debug, 112, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 112 + $e_fnname, __sl289);
+cptr.stPtro(ct_debug_debug, 112 + $e_fnname, __sl288);
 cptr.stI32o(ct_debug_debug, 128, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 128 + $e_fnname, __sl290);
+cptr.stPtro(ct_debug_debug, 128 + $e_fnname, __sl289);
 cptr.stI32o(ct_debug_debug, 144, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 144 + $e_fnname, __sl291);
+cptr.stPtro(ct_debug_debug, 144 + $e_fnname, __sl290);
 cptr.stI32o(ct_debug_debug, 160, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 160 + $e_fnname, __sl292);
+cptr.stPtro(ct_debug_debug, 160 + $e_fnname, __sl291);
 cptr.stI32o(ct_debug_debug, 176, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 176 + $e_fnname, __sl293);
+cptr.stPtro(ct_debug_debug, 176 + $e_fnname, __sl292);
 cptr.stI32o(ct_debug_debug, 192, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 192 + $e_fnname, __sl294);
+cptr.stPtro(ct_debug_debug, 192 + $e_fnname, __sl293);
 cptr.stI32o(ct_debug_debug, 208, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 208 + $e_fnname, __sl278);
+cptr.stPtro(ct_debug_debug, 208 + $e_fnname, __sl277);
 cptr.stI32o(ct_debug_debug, 224, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 224 + $e_fnname, __sl295);
+cptr.stPtro(ct_debug_debug, 224 + $e_fnname, __sl294);
 cptr.stI32o(ct_debug_debug, 240, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 240 + $e_fnname, __sl296);
+cptr.stPtro(ct_debug_debug, 240 + $e_fnname, __sl295);
 cptr.stI32o(ct_debug_debug, 256, NHC.EOT);
 cptr.stPtro(ct_debug_debug, 256 + $e_fnname, null);
 
 /** C ref: nhlua.c:2732 — struct e[2] */
 const ct_debug_safe = cptr.alloc(2 * 16);
 cptr.stI32o(ct_debug_safe, 0, NHC.IFFLAG);
-cptr.stPtro(ct_debug_safe, 0 + $e_fnname, __sl297);
+cptr.stPtro(ct_debug_safe, 0 + $e_fnname, __sl296);
 cptr.stI32o(ct_debug_safe, 16, NHC.EOT);
 cptr.stPtro(ct_debug_safe, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2738 — struct e[5] */
 const ct_os_time = cptr.alloc(5 * 16);
 cptr.stI32o(ct_os_time, 0, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 0 + $e_fnname, __sl298);
+cptr.stPtro(ct_os_time, 0 + $e_fnname, __sl297);
 cptr.stI32o(ct_os_time, 16, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 16 + $e_fnname, __sl299);
+cptr.stPtro(ct_os_time, 16 + $e_fnname, __sl298);
 cptr.stI32o(ct_os_time, 32, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 32 + $e_fnname, __sl300);
+cptr.stPtro(ct_os_time, 32 + $e_fnname, __sl299);
 cptr.stI32o(ct_os_time, 48, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 48 + $e_fnname, __sl301);
+cptr.stPtro(ct_os_time, 48 + $e_fnname, __sl300);
 cptr.stI32o(ct_os_time, 64, NHC.EOT);
 cptr.stPtro(ct_os_time, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2746 — struct e[8] */
 const ct_os_files = cptr.alloc(8 * 16);
 cptr.stI32o(ct_os_files, 0, NHC.NEVER);
-cptr.stPtro(ct_os_files, 0 + $e_fnname, __sl302);
+cptr.stPtro(ct_os_files, 0 + $e_fnname, __sl301);
 cptr.stI32o(ct_os_files, 16, NHC.NEVER);
-cptr.stPtro(ct_os_files, 16 + $e_fnname, __sl303);
+cptr.stPtro(ct_os_files, 16 + $e_fnname, __sl302);
 cptr.stI32o(ct_os_files, 32, NHC.NEVER);
-cptr.stPtro(ct_os_files, 32 + $e_fnname, __sl304);
+cptr.stPtro(ct_os_files, 32 + $e_fnname, __sl303);
 cptr.stI32o(ct_os_files, 48, NHC.IFFLAG);
-cptr.stPtro(ct_os_files, 48 + $e_fnname, __sl305);
+cptr.stPtro(ct_os_files, 48 + $e_fnname, __sl304);
 cptr.stI32o(ct_os_files, 64, NHC.IFFLAG);
-cptr.stPtro(ct_os_files, 64 + $e_fnname, __sl306);
+cptr.stPtro(ct_os_files, 64 + $e_fnname, __sl305);
 cptr.stI32o(ct_os_files, 80, NHC.NEVER);
-cptr.stPtro(ct_os_files, 80 + $e_fnname, __sl307);
+cptr.stPtro(ct_os_files, 80 + $e_fnname, __sl306);
 cptr.stI32o(ct_os_files, 96, NHC.NEVER);
-cptr.stPtro(ct_os_files, 96 + $e_fnname, __sl308);
+cptr.stPtro(ct_os_files, 96 + $e_fnname, __sl307);
 cptr.stI32o(ct_os_files, 112, NHC.EOT);
 cptr.stPtro(ct_os_files, 112 + $e_fnname, null);
 
@@ -2601,11 +2600,11 @@ function end_luapat() {
 
 /** C ref: nhlua.c:2887 — @param {CPtr} L */
 export function nhl_pushhooked_open_table(L) {
-    let hot = lua_getfield(L, -1001000, __sl309);
+    let hot = lua_getfield(L, -1001000, __sl308);
     if (hot == -1) {
         lua_createtable(L, 0, 0);
         lua_pushvalue(L, -1);
-        lua_setfield(L, -1001000, __sl309);
+        lua_setfield(L, -1001000, __sl308);
     }
 }
 
@@ -2628,7 +2627,7 @@ function nhlL_openlibs(L, lflags) {
     }
     if ((lflags & NHM.NHL_SB_BASEMASK) >>> 0) {
         let baselib;
-        luaL_requiref(L, __sl310, luaopen_base, 1);
+        luaL_requiref(L, __sl309, luaopen_base, 1);
         baselib = lua_gettop(L);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_BASE_BASE) >>> 0), baselib, ct_base_base);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_BASE_ERROR) >>> 0), baselib, ct_base_error);
@@ -2638,32 +2637,32 @@ function nhlL_openlibs(L, lflags) {
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_COROUTINE) >>> 0) {
-        luaL_requiref(L, __sl311, luaopen_coroutine, 1);
+        luaL_requiref(L, __sl310, luaopen_coroutine, 1);
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_TABLE) >>> 0) {
-        luaL_requiref(L, __sl312, luaopen_table, 1);
+        luaL_requiref(L, __sl311, luaopen_table, 1);
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_OSMASK) >>> 0) {
         let oslib;
-        luaL_requiref(L, __sl313, luaopen_os, 1);
+        luaL_requiref(L, __sl312, luaopen_os, 1);
         oslib = lua_gettop(L);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_OS_TIME) >>> 0), oslib, ct_os_time);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_OS_FILES) >>> 0), oslib, ct_os_files);
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_STRING) >>> 0) {
-        luaL_requiref(L, __sl314, luaopen_string, 1);
+        luaL_requiref(L, __sl313, luaopen_string, 1);
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_MATH) >>> 0) {
-        luaL_requiref(L, __sl250, luaopen_math, 1);
+        luaL_requiref(L, __sl249, luaopen_math, 1);
         {
-            let env_seed = nh_getenv(__sl315);
+            let env_seed = nh_getenv(__sl314);
             if (env_seed) {
                 let seed = strtoul(env_seed, null, 10);
-                lua_getfield(L, -1, __sl316);
+                lua_getfield(L, -1, __sl315);
                 lua_pushinteger(L, BigInt.asIntN(64, seed));
                 lua_callk(L, 1, 0, 0n, null);
             }
@@ -2671,12 +2670,12 @@ function nhlL_openlibs(L, lflags) {
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_UTF8) >>> 0) {
-        luaL_requiref(L, __sl317, luaopen_utf8, 1);
+        luaL_requiref(L, __sl316, luaopen_utf8, 1);
         lua_settop(L, -2);
     }
     if ((lflags & NHM.NHL_SB_DBMASK) >>> 0) {
         let dblib;
-        luaL_requiref(L, __sl283, luaopen_debug, 1);
+        luaL_requiref(L, __sl282, luaopen_debug, 1);
         dblib = lua_gettop(L);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_DB_DB) >>> 0), dblib, ct_debug_debug);
         nhl_clearfromtable(L, !!((lflags & NHM.NHL_SB_DB_SAFE) >>> 0), dblib, ct_debug_safe);
@@ -2704,8 +2703,8 @@ function nhl_alloc(ud, ptr, osize, nsize) {
 function nhl_panic(L) {
     let msg = lua_tolstring(L, -1, null);
     if (cptr.eq(msg, (null)))
-        msg = __sl318;
-    panic(__sl319, msg);
+        msg = __sl317;
+    panic(__sl318, msg);
     return 0;
 }
 
@@ -2720,7 +2719,7 @@ function nhl_warn(userdata, msg_fragment, to_be_continued) {
         void __builtin___strncat_chk(cptr.add(gl, $instance_globals_l_lua_warnbuf), msg_fragment, fraglen, __builtin_object_size(cptr.add(gl, $instance_globals_l_lua_warnbuf), 1));
     }
     if (!to_be_continued) {
-        paniclog(__sl320, cptr.add(gl, $instance_globals_l_lua_warnbuf));
+        paniclog(__sl319, cptr.add(gl, $instance_globals_l_lua_warnbuf));
         cptr.st1o2(gl, 0, 1, $instance_globals_l_lua_warnbuf, 0);
     }
 }
@@ -2756,14 +2755,14 @@ function nhlL_newstate(sbi, name) {
     }
     let L = lua_newstate(nhl_alloc, nud);
     if (!L)
-        panic(__sl321);
+        panic(__sl320);
     if (nud)
         cptr.stPtr(nud, L);
     lua_atpanic(L, nhl_panic);
     lua_setwarnf(L, nhl_warn, L);
     if (nud && (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) || cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))) {
         if (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) && cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))
-            impossible(__sl322);
+            impossible(__sl321);
         if (cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
             cptr.stI32o(nud, $nhl_user_data_perpcall, cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall));
         } else {

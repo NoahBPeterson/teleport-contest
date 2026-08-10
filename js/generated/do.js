@@ -180,7 +180,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_structlevel = FLD.NHFILE_structlev
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("drop");
 const __sl1 = cptr.lit("Not a boulder?");
-const __sl2 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/do.c");
+const __sl2 = cptr.lit("do.c");
 const __sl3 = cptr.lit("boulder_hits_pool");
 const __sl4 = cptr.lit("you");
 const __sl5 = cptr.lit("%s %s %s into the %s.");

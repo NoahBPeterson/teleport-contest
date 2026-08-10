@@ -63,7 +63,7 @@ const $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind, $coord
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("MAIL");
 const __sl1 = cptr.lit("/usr/mail/");
-const __sl2 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mail.c");
+const __sl2 = cptr.lit("mail.c");
 const __sl3 = cptr.lit("mailbox=%c%s%c");
 const __sl4 = cptr.lit("null");
 const __sl5 = cptr.lit("md_stop");

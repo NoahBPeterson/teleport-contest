@@ -141,7 +141,7 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Elbereth");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/teleport.c");
+const __sl1 = cptr.lit("teleport.c");
 const __sl2 = cptr.lit("goodpos");
 const __sl3 = cptr.lit("enexto() called with null mdat");
 const __sl4 = cptr.lit("enexto(\"%s\",%d,%d,0x%08lx) failed");

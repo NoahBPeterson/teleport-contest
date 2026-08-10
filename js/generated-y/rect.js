@@ -22,7 +22,7 @@ const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.N
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Could not alloc rect");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/rect.c");
+const __sl1 = cptr.lit("rect.c");
 const __sl2 = cptr.lit("rnd_rect");
 const __sl3 = cptr.lit("n_rects may be too small.");
 

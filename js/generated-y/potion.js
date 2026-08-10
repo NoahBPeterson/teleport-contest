@@ -191,7 +191,7 @@ const __sl51 = cptr.lit("Drink the water around you?");
 const __sl52 = cptr.lit("Do you know what lives in this water?");
 const __sl53 = cptr.lit("drink");
 const __sl54 = cptr.lit("milky");
-const __sl55 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/potion.c");
+const __sl55 = cptr.lit("potion.c");
 const __sl56 = cptr.lit("dodrink");
 const __sl57 = cptr.lit("smoky");
 const __sl58 = cptr.lit("have a %s feeling for a moment, then it passes.");
@@ -447,12 +447,11 @@ const __sl307 = cptr.lit("You disturbed me, fool!");
 const __sl308 = cptr.lit(" from %s heat");
 const __sl309 = cptr.lit("multiply%s!");
 const __sl310 = cptr.lit("split_mon");
-const __sl311 = cptr.lit("potion.c");
-const __sl312 = cptr.lit("mon->mhpmax >= mon->mhp");
-const __sl313 = cptr.lit("%s multiplies%s!");
-const __sl314 = cptr.lit("are suddenly moving %sfaster.");
-const __sl315 = cptr.lit("much ");
-const __sl316 = cptr.lit("%s get new energy.");
+const __sl311 = cptr.lit("mon->mhpmax >= mon->mhp");
+const __sl312 = cptr.lit("%s multiplies%s!");
+const __sl313 = cptr.lit("are suddenly moving %sfaster.");
+const __sl314 = cptr.lit("much ");
+const __sl315 = cptr.lit("%s get new energy.");
 
 /** C ref: potion.c:52 — int */
 let drink_ok_extra = 0;
@@ -2730,11 +2729,11 @@ export function* split_mon(mon, mtmp) {
             cptr.stI32o(mon, $monst_mhp, cptr.ldI32o(mon, $monst_mhpmax));
         mtmp2 = (cptr.ldI32o(mon, $monst_mhp) > 1) ? (yield* clone_mon(mon, 0, 0)) : null;
         if (mtmp2) {
-            (__builtin_expect(BigInt((!(cptr.ldI32o(mon, $monst_mhpmax) >= cptr.ldI32o(mon, $monst_mhp)))), 0n) ? __assert_rtn(__sl310, __sl311, 2904, __sl312) : void 0);
+            (__builtin_expect(BigInt((!(cptr.ldI32o(mon, $monst_mhpmax) >= cptr.ldI32o(mon, $monst_mhp)))), 0n) ? __assert_rtn(__sl310, __sl55, 2904, __sl311) : void 0);
             cptr.stI32o(mtmp2, $monst_mhpmax, (cptr.ldI32o(mon, $monst_mhpmax) / 2) | 0);
             cptr.stI32o(mon, $monst_mhpmax, (cptr.ldI32o(mon, $monst_mhpmax) - cptr.ldI32o(mtmp2, $monst_mhpmax)) | 0);
             if ((canseemon(mon) || sensemon(mon)))
-                (yield* pline(__sl313, (yield* Monnam(mon)), cptr.decay(reason)));
+                (yield* pline(__sl312, (yield* Monnam(mon)), cptr.decay(reason)));
         }
     }
     return mtmp2;
@@ -2743,9 +2742,9 @@ export function* split_mon(mon, mtmp) {
 /** C ref: potion.c:2919 — @param {CLongLong} duration */
 export function* speed_up(duration) {
     if (!Very_fast())
-        (yield* You(__sl314, Fast() ? __sl82 : __sl315));
+        (yield* You(__sl313, Fast() ? __sl82 : __sl314));
     else
-        (yield* Your(__sl316, (yield* makeplural((yield* body_part(NHC.LEG))))));
+        (yield* Your(__sl315, (yield* makeplural((yield* body_part(NHC.LEG))))));
     (yield* exercise(NHC.A_DEX, 1));
     incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic), Number(BigInt.asIntN(32, duration)));
 }

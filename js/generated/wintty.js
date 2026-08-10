@@ -191,7 +191,7 @@ const __sl20 = cptr.lit("Search for:");
 const __sl21 = cptr.lit("*%s*");
 const __sl22 = cptr.lit("tty_display_nhwindow");
 const __sl23 = cptr.lit("ttyDisplay->toplin == TOPLINE_EMPTY");
-const __sl24 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/win/tty/wintty.c");
+const __sl24 = cptr.lit("../win/tty/wintty.c");
 const __sl25 = cptr.lit("tty_dismiss_nhwindow");
 const __sl26 = cptr.lit("tty_destroy_nhwindow");
 const __sl27 = cptr.lit("tty_curs");

@@ -45,7 +45,7 @@ const $dlevel_t_flags = FLD.dlevel_t_flags, $instance_globals_m_max_rx = FLD.ins
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/mkmap.c");
+const __sl0 = cptr.lit("mkmap.c");
 const __sl1 = cptr.lit("init_fill");
 const __sl2 = cptr.lit("No start/end room loc in join_map.");
 const __sl3 = cptr.lit("join_map");

@@ -72,7 +72,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Role_mnum = FLD.Role_mnum,
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Not enough gems? - first=%d j=%d LAST_GEM=%d");
-const __sl1 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/o_init.c");
+const __sl1 = cptr.lit("o_init.c");
 const __sl2 = cptr.lit("randomize_gem_colors");
 const __sl3 = cptr.lit("shuffle");
 const __sl4 = cptr.lit("init_objects: class for generic object #%d doesn't match (%d)");
@@ -112,28 +112,27 @@ const __sl37 = cptr.lit(" [%s]");
 const __sl38 = cptr.lit("  %s");
 const __sl39 = cptr.lit(" spellbook");
 const __sl40 = cptr.lit("disco_output_sorted");
-const __sl41 = cptr.lit("o_init.c");
-const __sl42 = cptr.lit("p != NULL");
-const __sl43 = cptr.lit("Discoveries, %s");
-const __sl44 = cptr.lit("Unique items or Relics");
-const __sl45 = cptr.lit("  ");
-const __sl46 = cptr.lit("* ");
-const __sl47 = cptr.lit("haven't discovered anything yet...");
-const __sl48 = cptr.lit("Discovered items");
-const __sl49 = cptr.lit("u");
-const __sl50 = cptr.lit("a");
-const __sl51 = cptr.lit("items");
-const __sl52 = cptr.lit("%s%c%c%c");
-const __sl53 = cptr.lit("aur");
-const __sl54 = cptr.lit("Dump information about all artifacts?");
-const __sl55 = cptr.lit("doclassdisco: invalid object class '%s'");
-const __sl56 = cptr.lit("Discovered %s in %s");
-const __sl57 = cptr.lit("order of discovery");
-const __sl58 = cptr.lit("'sortloot' order");
-const __sl59 = cptr.lit("alphabetical order");
-const __sl60 = cptr.lit("None of your discoveries can be assigned names...");
-const __sl61 = cptr.lit("Pick an object type to name");
-const __sl62 = cptr.lit("%c");
+const __sl41 = cptr.lit("p != NULL");
+const __sl42 = cptr.lit("Discoveries, %s");
+const __sl43 = cptr.lit("Unique items or Relics");
+const __sl44 = cptr.lit("  ");
+const __sl45 = cptr.lit("* ");
+const __sl46 = cptr.lit("haven't discovered anything yet...");
+const __sl47 = cptr.lit("Discovered items");
+const __sl48 = cptr.lit("u");
+const __sl49 = cptr.lit("a");
+const __sl50 = cptr.lit("items");
+const __sl51 = cptr.lit("%s%c%c%c");
+const __sl52 = cptr.lit("aur");
+const __sl53 = cptr.lit("Dump information about all artifacts?");
+const __sl54 = cptr.lit("doclassdisco: invalid object class '%s'");
+const __sl55 = cptr.lit("Discovered %s in %s");
+const __sl56 = cptr.lit("order of discovery");
+const __sl57 = cptr.lit("'sortloot' order");
+const __sl58 = cptr.lit("alphabetical order");
+const __sl59 = cptr.lit("None of your discoveries can be assigned names...");
+const __sl60 = cptr.lit("Pick an object type to name");
+const __sl61 = cptr.lit("%c");
 
 /** C ref: o_init.c:54 — @param {CPtr} dlev */
 function* setgemprobs(dlev) {
@@ -626,7 +625,7 @@ function* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort) {
     (yield* nh_deterministic_qsort((sorted_lines), BigInt.asUintN(64, BigInt((sorted_ct))), 8n, (discovered_cmp)));
     for (j = 0; j < sorted_ct; ++j) {
         p = cptr.ldPtro(sorted_lines, j, 8);
-        (__builtin_expect(BigInt((!(!cptr.eq(p, (null))))), 0n) ? __assert_rtn(__sl40, __sl41, 752, __sl42) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(p, (null))))), 0n) ? __assert_rtn(__sl40, __sl1, 752, __sl41) : void 0);
         if (lootsort) {
             cptr.st1o(p, 6, cptr.ld1so(p, 0));
             p = cptr.add(p, 6);
@@ -668,7 +667,7 @@ export function* dodiscovered() {
     lootsort = schar((cptr.ld1so(flags, $flag_discosort) == 115));
     sortindx = cptr.diff(cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort)), cptr.decay(disco_order_let));
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
-    void cptr.sprintf(cptr.decay(buf), __sl43, cptr.ldPtro(disco_orders_descr, sortindx, 8));
+    void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldPtro(disco_orders_descr, sortindx, 8));
     (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
     (yield* Y.icall(putstr()(tmpwin, 0, __sl9)));
     uniq_ct = 0;
@@ -676,7 +675,7 @@ export function* dodiscovered() {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
         if ((cptr.ldI32o2(objects, uidx, 120, $objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, 120, $objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
             if (!dis++)
-                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl44)));
+                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl43)));
             ++uniq_ct;
             disco_fmt_uniq(uidx, cptr.decay(buf));
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
@@ -704,7 +703,7 @@ export function* dodiscovered() {
                         prev_class = oclass;
                     }
                 }
-                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, 120, $objclass_oc_encountered) & 1) | 0 ? __sl45 : __sl46);
+                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, 120, $objclass_oc_encountered) & 1) | 0 ? __sl44 : __sl45);
                 if (lootsort)
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
@@ -716,11 +715,11 @@ export function* dodiscovered() {
         }
     }
     if (ct == 0) {
-        (yield* You(__sl47));
+        (yield* You(__sl46));
     } else {
         if (sorted_ct) {
             if ((uniq_ct || arti_ct) && alphabetized && !alphabyclass)
-                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl48)));
+                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __sl47)));
             (yield* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort));
         }
         (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
@@ -786,7 +785,7 @@ export function* doclassdisco() {
     for (i = 0; i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
         if ((cptr.ldI32o2(objects, uidx, 120, $objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, 120, $objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
-            void cptr.strcat(cptr.decay(discosyms), __sl49);
+            void cptr.strcat(cptr.decay(discosyms), __sl48);
             if (!traditional) {
                 cptr.stI32(any, 117);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 114, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_unique_items), NHM.MENU_ITEMFLAGS_NONE));
@@ -795,7 +794,7 @@ export function* doclassdisco() {
         }
     }
     if ((yield* disp_artifact_discoveries(-1)) > 0) {
-        void cptr.strcat(cptr.decay(discosyms), __sl50);
+        void cptr.strcat(cptr.decay(discosyms), __sl49);
         if (!traditional) {
             cptr.stI32(any, 97);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 0, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_artifact_items), NHM.MENU_ITEMFLAGS_NONE));
@@ -819,7 +818,7 @@ export function* doclassdisco() {
             }
     }
     if (!cptr.ld1so(cptr.decay(discosyms), 0, 1)) {
-        (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), __sl51));
+        (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), __sl50));
         if (tmpwin != -1)
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         return NHM.ECMD_OK;
@@ -827,9 +826,9 @@ export function* doclassdisco() {
     c = 0;
     if (traditional) {
         let allclasses_plustwo = new Uint8Array(21);
-        void cptr.sprintf(cptr.decay(allclasses_plustwo), __sl52, cptr.decay(allclasses), 97, 117, 114);
+        void cptr.sprintf(cptr.decay(allclasses_plustwo), __sl51, cptr.decay(allclasses), 97, 117, 114);
         for (s = cptr.decay(allclasses_plustwo), xtras = 0; cptr.ld1s(s); s = cptr.add(s, 1)) {
-            c = schar((cptr.strchr(__sl53, cptr.ld1s(s)) ? cptr.ld1s(s) : cptr.ld1so(def_oc_syms, cptr.ld1s(s), 24)));
+            c = schar((cptr.strchr(__sl52, cptr.ld1s(s)) ? cptr.ld1s(s) : cptr.ld1so(def_oc_syms, cptr.ld1s(s), 24)));
             if (!cptr.strchr(cptr.decay(discosyms), c)) {
                 if (!xtras++)
                     void (yield* strkitten(cptr.decay(discosyms), 27));
@@ -872,7 +871,7 @@ export function* doclassdisco() {
             (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), cptr.decay(__static_doclassdisco_unique_items)));
         break;
         case 97:
-        if (wizard() && (yield* yn_function(__sl54, cptr.decay(ynchars), 110, 1)) == 121) {
+        if (wizard() && (yield* yn_function(__sl53, cptr.decay(ynchars), 110, 1)) == 121) {
             (yield* dump_artifact_info(tmpwin));
             ct = NHC.NROFARTIFACTS;
             break;
@@ -884,14 +883,14 @@ export function* doclassdisco() {
         default:
         oclass = schar(def_char_to_objclass(c));
         if (oclass == NHC.MAXOCLASSES)
-            (yield* impossible(__sl55, visctrl(c)));
-        void cptr.sprintf(cptr.decay(buf), __sl56, (yield* let_to_name(oclass, 0, 0)), (cptr.ld1so(flags, $flag_discosort) == 111) ? __sl57 : ((cptr.ld1so(flags, $flag_discosort) == 115) ? __sl58 : __sl59));
+            (yield* impossible(__sl54, visctrl(c)));
+        void cptr.sprintf(cptr.decay(buf), __sl55, (yield* let_to_name(oclass, 0, 0)), (cptr.ld1so(flags, $flag_discosort) == 111) ? __sl56 : ((cptr.ld1so(flags, $flag_discosort) == 115) ? __sl57 : __sl58));
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
         sorted_ct = 0;
         for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i <= ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0); ++i) {
             if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 && interesting_to_discover(dis)) {
                 ++ct;
-                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, 120, $objclass_oc_encountered) & 1) | 0 ? __sl45 : __sl46);
+                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, 120, $objclass_oc_encountered) & 1) | 0 ? __sl44 : __sl45);
                 if (lootsort)
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
@@ -965,11 +964,11 @@ export function* rename_disco() {
         }
     }
     if (ct == 0) {
-        (yield* You(__sl47));
+        (yield* You(__sl46));
     } else if (mn == 0) {
-        (yield* pline(__sl60));
+        (yield* pline(__sl59));
     } else {
-        (yield* Y.icall(end_menu()(tmpwin, __sl61)));
+        (yield* Y.icall(end_menu()(tmpwin, __sl60)));
         dis = NHC.STRANGE_OBJECT;
         sl = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
         if (sl > 0) {
@@ -997,7 +996,7 @@ export function get_sortdisco(opts, cnf) {
     if (!p)
         cptr.st1o(flags, $flag_discosort, 111), p = cptr.decay(disco_order_let);
     if (cnf)
-        void cptr.sprintf(opts, __sl62, cptr.ld1so(flags, $flag_discosort));
+        void cptr.sprintf(opts, __sl61, cptr.ld1so(flags, $flag_discosort));
     else
         void cptr.strcpy(opts, cptr.ldPtro(disco_orders_descr, cptr.diff(p, cptr.decay(disco_order_let)), 8));
 }

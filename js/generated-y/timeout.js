@@ -212,7 +212,7 @@ const __sl80 = cptr.lit("feel incredibly sick.");
 const __sl81 = cptr.lit("are about to vomit.");
 const __sl82 = cptr.lit(" confused");
 const __sl83 = cptr.lit(" more confused");
-const __sl84 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/timeout.c");
+const __sl84 = cptr.lit("timeout.c");
 const __sl85 = cptr.lit("vomiting_dialogue");
 const __sl86 = cptr.lit(" think");
 const __sl87 = cptr.lit("can't seem to ");
@@ -426,30 +426,29 @@ const __sl294 = cptr.lit("turns");
 const __sl295 = cptr.lit("more turn");
 const __sl296 = cptr.lit("timer sanity: untimed obj %s, timer %lu");
 const __sl297 = cptr.lit("timer_sanity_check");
-const __sl298 = cptr.lit("timeout.c");
-const __sl299 = cptr.lit("top != NULL");
-const __sl300 = cptr.lit("timer sanity: can't locate obj %s [where=%d], timer %lu");
-const __sl301 = cptr.lit("timer sanity: obj %s [where=%d] located at <%d,%d>, timer %lu");
-const __sl302 = cptr.lit("timer sanity: unexpected monster timer %lu");
-const __sl303 = cptr.lit("x > 0 && x < COLNO && y >= 0 && y < ROWNO");
-const __sl304 = cptr.lit("timer sanity: melt timer %lu on non-ice %d <%d,%d>");
-const __sl305 = cptr.lit("timer sanity: spot timer %lu at <%d,%d>");
-const __sl306 = cptr.lit("timer sanity: unexpected global timer %lu");
-const __sl307 = cptr.lit("timer sanity: unknown timer %lu, type: %d");
-const __sl308 = cptr.lit("start_timer (%s: %d)");
-const __sl309 = cptr.lit("%s timer");
-const __sl310 = cptr.lit("Attempted to start duplicate %s, aborted.");
-const __sl311 = cptr.lit("obj_move_timers");
-const __sl312 = cptr.lit("timer");
-const __sl313 = cptr.lit("write_timer");
-const __sl314 = cptr.lit("obj_is_local");
-const __sl315 = cptr.lit("timer_is_local");
-const __sl316 = cptr.lit("timer-timer_id");
-const __sl317 = cptr.lit("timer-timer_count");
-const __sl318 = cptr.lit("relink_timers 1");
-const __sl319 = cptr.lit("can't find o_id %d");
-const __sl320 = cptr.lit("relink_timers: no monster timer implemented");
-const __sl321 = cptr.lit("relink_timers 2");
+const __sl298 = cptr.lit("top != NULL");
+const __sl299 = cptr.lit("timer sanity: can't locate obj %s [where=%d], timer %lu");
+const __sl300 = cptr.lit("timer sanity: obj %s [where=%d] located at <%d,%d>, timer %lu");
+const __sl301 = cptr.lit("timer sanity: unexpected monster timer %lu");
+const __sl302 = cptr.lit("x > 0 && x < COLNO && y >= 0 && y < ROWNO");
+const __sl303 = cptr.lit("timer sanity: melt timer %lu on non-ice %d <%d,%d>");
+const __sl304 = cptr.lit("timer sanity: spot timer %lu at <%d,%d>");
+const __sl305 = cptr.lit("timer sanity: unexpected global timer %lu");
+const __sl306 = cptr.lit("timer sanity: unknown timer %lu, type: %d");
+const __sl307 = cptr.lit("start_timer (%s: %d)");
+const __sl308 = cptr.lit("%s timer");
+const __sl309 = cptr.lit("Attempted to start duplicate %s, aborted.");
+const __sl310 = cptr.lit("obj_move_timers");
+const __sl311 = cptr.lit("timer");
+const __sl312 = cptr.lit("write_timer");
+const __sl313 = cptr.lit("obj_is_local");
+const __sl314 = cptr.lit("timer_is_local");
+const __sl315 = cptr.lit("timer-timer_id");
+const __sl316 = cptr.lit("timer-timer_count");
+const __sl317 = cptr.lit("relink_timers 1");
+const __sl318 = cptr.lit("can't find o_id %d");
+const __sl319 = cptr.lit("relink_timers: no monster timer implemented");
+const __sl320 = cptr.lit("relink_timers 2");
 
 /** C ref: timeout.c:27 — struct propname { prop_num, prop_name } (memory model v0.5) */
 
@@ -2037,18 +2036,18 @@ export function* timer_sanity_check() {
                 for (top = obj; top; top = cptr.ldPtro(top, $obj_v))
                     if ((owhere = cptr.ld1so(top, $obj_where)) != NHM.OBJ_CONTAINED)
                         break;
-                (__builtin_expect(BigInt((!(!cptr.eq(top, (null))))), 0n) ? __assert_rtn(__sl297, __sl298, 2156, __sl299) : void 0);
+                (__builtin_expect(BigInt((!(!cptr.eq(top, (null))))), 0n) ? __assert_rtn(__sl297, __sl84, 2156, __sl298) : void 0);
                 if (owhere == NHM.OBJ_MIGRATING || (owhere == NHM.OBJ_MINVENT && !mon_is_local(cptr.ldPtro(top, $obj_v)))) {
                     ;
                 } else if (!get_obj_location(obj, x, y, 3)) {
-                    (yield* impossible(__sl300, obj_adr, cptr.ld1so(obj, $obj_where), t_id));
+                    (yield* impossible(__sl299, obj_adr, cptr.ld1so(obj, $obj_where), t_id));
                 } else if (!isok(x.v, y.v)) {
-                    (yield* impossible(__sl301, obj_adr, cptr.ld1so(obj, $obj_where), x.v, y.v, t_id));
+                    (yield* impossible(__sl300, obj_adr, cptr.ld1so(obj, $obj_where), x.v, y.v, t_id));
                 }
                 break;
             }
             case NHC.TIMER_MONSTER:
-            (yield* impossible(__sl302, t_id));
+            (yield* impossible(__sl301, t_id));
             break;
             case NHC.TIMER_LEVEL:
             {
@@ -2056,19 +2055,19 @@ export function* timer_sanity_check() {
                 x.v = Number(BigInt.asIntN(16, ((lwhere >> 16n) & 65535n)));
                 y.v = Number(BigInt.asIntN(16, (lwhere & 65535n)));
                 if (isok(x.v, y.v)) {
-                    (__builtin_expect(BigInt((!(x.v > 0 && x.v < NHM.COLNO && y.v >= 0 && y.v < NHM.ROWNO))), 0n) ? __assert_rtn(__sl297, __sl298, 2188, __sl303) : void 0);
+                    (__builtin_expect(BigInt((!(x.v > 0 && x.v < NHM.COLNO && y.v >= 0 && y.v < NHM.ROWNO))), 0n) ? __assert_rtn(__sl297, __sl84, 2188, __sl302) : void 0);
                     if (cptr.ldI16o(curr, $timer_element_func_index) == NHC.MELT_ICE_AWAY && !is_ice(x.v, y.v) && !(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN && (((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_ICE))
-                        (yield* impossible(__sl304, t_id, cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ), x.v, y.v));
+                        (yield* impossible(__sl303, t_id, cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ), x.v, y.v));
                 } else {
-                    (yield* impossible(__sl305, t_id, x.v, y.v));
+                    (yield* impossible(__sl304, t_id, x.v, y.v));
                 }
                 break;
             }
             case NHC.TIMER_GLOBAL:
-            (yield* impossible(__sl306, t_id));
+            (yield* impossible(__sl305, t_id));
             break;
             default:
-            (yield* impossible(__sl307, t_id, cptr.ldI16o(curr, $timer_element_kind)));
+            (yield* impossible(__sl306, t_id, cptr.ldI16o(curr, $timer_element_kind)));
             break;
         }
     }
@@ -2093,14 +2092,14 @@ export function* start_timer(when, kind, func_index, arg) {
     let gnu;
     let dup;
     if (kind <= NHC.TIMER_NONE || kind >= NHC.NUM_TIMER_KINDS || func_index < 0 || func_index >= NHC.NUM_TIME_FUNCS)
-        (yield* panic(__sl308, (yield* kind_name(kind)), func_index));
+        (yield* panic(__sl307, (yield* kind_name(kind)), func_index));
     for (dup = cptr.ldPtro(gt, $instance_globals_t_timer_base); dup; dup = cptr.ldPtr(dup))
         if (cptr.ldI16o(dup, $timer_element_kind) == kind && cptr.ldI16o(dup, $timer_element_func_index) == func_index && cptr.eq(cptr.ldPtro(dup, $timer_element_arg), cptr.ldPtr(arg)))
             break;
     if (dup) {
         let idbuf = new Uint8Array(128);
-        void cptr.sprintf(cptr.decay(idbuf), __sl309, cptr.ldPtro2(timeout_funcs, func_index, 24, $ttable_name));
-        (yield* impossible(__sl310, cptr.decay(idbuf)));
+        void cptr.sprintf(cptr.decay(idbuf), __sl308, cptr.ldPtro2(timeout_funcs, func_index, 24, $ttable_name));
+        (yield* impossible(__sl309, cptr.decay(idbuf)));
         return 0;
     }
     gnu = (yield* alloc(48));
@@ -2158,7 +2157,7 @@ export function* obj_move_timers(src, dest) {
             count++;
         }
     if (count != cptr.ldI16o(src, $obj_timed))
-        (yield* panic(__sl311));
+        (yield* panic(__sl310));
     cptr.stI16o(src, $obj_timed, 0);
 }
 
@@ -2282,36 +2281,36 @@ function* write_timer(nhfp, timer) {
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
         case NHC.TIMER_GLOBAL:
         case NHC.TIMER_LEVEL:
-        (yield* sfo_fe(nhfp, timer, __sl312));
+        (yield* sfo_fe(nhfp, timer, __sl311));
         break;
         case NHC.TIMER_OBJECT:
         if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
-            (yield* sfo_fe(nhfp, timer, __sl312));
+            (yield* sfo_fe(nhfp, timer, __sl311));
         } else {
             cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
             cptr.memcpy(cptr.add(timer, $timer_element_arg), cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32o(timer, $timer_element_arg, cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id));
             cptr.stI32o(timer, $timer_element_needs_fixup, 1);
-            (yield* sfo_fe(nhfp, timer, __sl312));
+            (yield* sfo_fe(nhfp, timer, __sl311));
             cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
             cptr.stI32o(timer, $timer_element_needs_fixup, 0);
         }
         break;
         case NHC.TIMER_MONSTER:
         if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
-            (yield* sfo_fe(nhfp, timer, __sl312));
+            (yield* sfo_fe(nhfp, timer, __sl311));
         } else {
             cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
             cptr.memcpy(cptr.add(timer, $timer_element_arg), cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32o(timer, $timer_element_arg, cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id));
             cptr.stI32o(timer, $timer_element_needs_fixup, 1);
-            (yield* sfo_fe(nhfp, timer, __sl312));
+            (yield* sfo_fe(nhfp, timer, __sl311));
             cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
             cptr.stI32o(timer, $timer_element_needs_fixup, 0);
         }
         break;
         default:
-        (yield* panic(__sl313));
+        (yield* panic(__sl312));
         break;
     }
 }
@@ -2330,7 +2329,7 @@ export function* obj_is_local(obj) {
         case NHM.OBJ_MINVENT:
         return mon_is_local(cptr.ldPtro(obj, $obj_v));
     }
-    (yield* panic(__sl314));
+    (yield* panic(__sl313));
     return 0;
 }
 
@@ -2358,7 +2357,7 @@ function* timer_is_local(timer) {
         case NHC.TIMER_MONSTER:
         return mon_is_local(cptr.ldPtro(timer, $timer_element_arg));
     }
-    (yield* panic(__sl315));
+    (yield* panic(__sl314));
     return 0;
 }
 
@@ -2392,11 +2391,11 @@ export function* save_timers(nhfp, range) {
     let count = cptr.box(0);
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         if (range == NHM.RANGE_GLOBAL) {
-            (yield* sfo_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __sl316));
+            (yield* sfo_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __sl315));
             ;
         }
         count.v = (yield* maybe_write_timer(nhfp, range, 0));
-        (yield* sfo_int(nhfp, count, __sl317));
+        (yield* sfo_int(nhfp, count, __sl316));
         void (yield* maybe_write_timer(nhfp, range, 1));
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
@@ -2422,14 +2421,14 @@ export function* restore_timers(nhfp, range, adjust) {
     let curr;
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
     if (range == NHM.RANGE_GLOBAL) {
-        (yield* sfi_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __sl316));
+        (yield* sfi_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __sl315));
         ;
     }
-    (yield* sfi_int(nhfp, count, __sl317));
+    (yield* sfi_int(nhfp, count, __sl316));
     ;
     while (count.v-- > 0) {
         curr = (yield* alloc(48));
-        (yield* sfi_fe(nhfp, curr, __sl312));
+        (yield* sfi_fe(nhfp, curr, __sl311));
         if (ghostly)
             cptr.stI64o(curr, $timer_element_timeout, cptr.ldI64o(curr, $timer_element_timeout) + adjust);
         insert_timer(curr);
@@ -2456,17 +2455,17 @@ export function* relink_timers(ghostly) {
             if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT) {
                 if (ghostly) {
                     if (!lookup_id_mapping(cptr.ldI32o(curr, $timer_element_arg), nid))
-                        (yield* panic(__sl318));
+                        (yield* panic(__sl317));
                 } else
                     nid.v = cptr.ldI32o(curr, $timer_element_arg);
                 cptr.stPtro(curr, $timer_element_arg, find_oid(nid.v));
                 if (!cptr.ldPtro(curr, $timer_element_arg))
-                    (yield* panic(__sl319, nid.v));
+                    (yield* panic(__sl318, nid.v));
                 cptr.stI32o(curr, $timer_element_needs_fixup, 0);
             } else if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_MONSTER) {
-                (yield* panic(__sl320));
+                (yield* panic(__sl319));
             } else
-                (yield* panic(__sl321));
+                (yield* panic(__sl320));
         }
     }
 }

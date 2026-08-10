@@ -712,7 +712,7 @@ const __sl507 = cptr.lit("Game commands:");
 const __sl508 = cptr.lit("Debug mode commands:");
 const __sl509 = cptr.lit("#%s");
 const __sl510 = cptr.lit("cmdname_from_func");
-const __sl511 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/cmd.c");
+const __sl511 = cptr.lit("cmd.c");
 const __sl512 = cptr.lit("shortened %s: \"%s\"");
 const __sl513 = cptr.lit("getdir.self");
 const __sl514 = cptr.lit("getdir.self2");
@@ -3083,7 +3083,7 @@ cptr.stPtro(cptr.decay(move_funcs[9]), 16, doup);
 
 /** C ref: cmd.c:2086 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: cmd.c:2090 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/cmd.c:2086:14)[3] */
+/** C ref: cmd.c:2090 — struct (unnamed struct at cmd.c:2086:14)[3] */
 const misc_keys = cptr.alloc(3 * 24);
 cptr.stI32o(misc_keys, 0, NHC.NHKF_ESC);
 cptr.stPtro(misc_keys, 8, __sl446);
@@ -3906,7 +3906,7 @@ export function cmdname_from_func(fn, outbuf, fullname) {
 
 /** C ref: cmd.c:3157 — struct undefined {  } (memory model v0.5) */
 
-/** C ref: cmd.c:3161 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/cmd.c:3157:8)[29] */
+/** C ref: cmd.c:3161 — struct (unnamed struct at cmd.c:3157:8)[29] */
 const spkeys_binds = cptr.alloc(29 * 16);
 cptr.stI32o(spkeys_binds, 0, NHC.NHKF_ESC);
 cptr.st1o(spkeys_binds, 4, 27);
