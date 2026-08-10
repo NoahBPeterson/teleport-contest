@@ -1472,7 +1472,6 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
             }
         }
         return found;
-        break __lbl_check_monsters;
     }
 }
 
@@ -1528,8 +1527,6 @@ export function* do_look(mode, click_cc) {
         else
             cmdq_clear(NHC.CQ_CANNED);
         { __pc = 1; continue; }
-        __pc = 2;
-        continue;
         }
         case 2: {
         if (!clicklook) { __pc = 5; continue; }
@@ -1699,8 +1696,6 @@ export function* do_look(mode, click_cc) {
         } while (from_screen && !quick && ans != NHC.LOOK_ONCE && !clicklook);
         cptr.st1o(flags, $flag_verbose, save_verbose);
         return NHM.ECMD_OK;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

@@ -382,7 +382,6 @@ function get_uchars(bufp, list, modlist, size, name) {
                 wait_synch()();
                 return count;
             }
-            break;
             default:
             raw_printf(__sl19, name);
             wait_synch()();

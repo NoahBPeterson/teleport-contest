@@ -476,8 +476,6 @@ function deadbook(book2) {
         case 9: {
         You(__sl27, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         { __pc = 1; continue; }
-        __pc = 7;
-        continue;
         }
         case 7: {
         __pc = 4;
@@ -485,8 +483,6 @@ function deadbook(book2) {
         }
         case 4: {
         return;
-        __pc = 2;
-        continue;
         }
         case 2: {
         if ((cptr.ldI32o(book2, $obj_cursed) & 1)) { __pc = 11; continue; }
@@ -529,8 +525,6 @@ function deadbook(book2) {
         }
         case 10: {
         return;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

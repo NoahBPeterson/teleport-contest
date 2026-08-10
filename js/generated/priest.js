@@ -255,7 +255,6 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
             return 1;
         }
         return 0;
-        break;
     }
 }
 

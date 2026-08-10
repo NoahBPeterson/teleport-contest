@@ -237,7 +237,6 @@ export function main(argc, argv) {
         moveloop(resuming);
         exit(0);
         return 0;
-        break __lbl_attempt_restore;
     }
 }
 

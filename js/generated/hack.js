@@ -1455,7 +1455,6 @@ function findtravelpath(mode) {
                     continue __lbl_noguess;
                 }
                 return 0;
-                break __lbl_noguess;
             }
         }
     }

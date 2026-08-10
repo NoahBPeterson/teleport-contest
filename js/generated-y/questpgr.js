@@ -639,7 +639,6 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             cptr.free(fallback_msgid);
         (yield* nhl_done(L));
         return res;
-        break __lbl_tryagain;
     }
 }
 

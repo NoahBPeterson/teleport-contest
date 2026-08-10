@@ -1816,8 +1816,6 @@ function doname_base(obj, doname_flags) {
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             } while (0);
         { __pc = 3; continue; }
-        __pc = 6;
-        continue;
         }
         case 6: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
@@ -1853,8 +1851,6 @@ function doname_base(obj, doname_flags) {
             void cptr.sprintf(eos(cptr.decay(prefix)), __sl128, cptr.ld1so(obj, $obj_spe));
         }
         { __pc = 3; continue; }
-        __pc = 8;
-        continue;
         }
         case 8: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 1572864n) { __pc = 16; continue; }
@@ -1866,8 +1862,6 @@ function doname_base(obj, doname_flags) {
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
         } while (0);
         { __pc = 3; continue; }
-        __pc = 15;
-        continue;
         }
         case 15: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm) != 0) { __pc = 18; continue; }
@@ -1888,8 +1882,6 @@ function doname_base(obj, doname_flags) {
             cptr.stI32o(obj, $obj_corpsenm, 0);
         }
         { __pc = 3; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) { __pc = 20; continue; }
@@ -1903,8 +1895,6 @@ function doname_base(obj, doname_flags) {
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
         } while (0);
         { __pc = 3; continue; }
-        __pc = 19;
-        continue;
         }
         case 21: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN || (cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE)) { __pc = 23; continue; }
@@ -1929,8 +1919,6 @@ function doname_base(obj, doname_flags) {
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             } while (0);
         { __pc = 3; continue; }
-        __pc = 22;
-        continue;
         }
         case 22: {
         __pc = 19;
@@ -1942,13 +1930,9 @@ function doname_base(obj, doname_flags) {
         }
         case 25: {
         { __pc = 1; continue; }
-        __pc = 24;
-        continue;
         }
         case 24: {
         { __pc = 3; continue; }
-        __pc = 9;
-        continue;
         }
         case 9: {
         __pc = 1;
@@ -1961,8 +1945,6 @@ function doname_base(obj, doname_flags) {
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             } while (0);
         { __pc = 3; continue; }
-        __pc = 10;
-        continue;
         }
         case 10: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0)
@@ -1971,8 +1953,6 @@ function doname_base(obj, doname_flags) {
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             } while (0);
         { __pc = 3; continue; }
-        __pc = 11;
-        continue;
         }
         case 11: {
         __pc = 2;
@@ -1998,8 +1978,6 @@ function doname_base(obj, doname_flags) {
             void cptr.sprintf(eos(cptr.decay(prefix)), __sl128, cptr.ld1so(obj, $obj_spe));
         }
         { __pc = 3; continue; }
-        __pc = 12;
-        continue;
         }
         case 12: {
         if (cptr.ldI32o(obj, $obj_oeaten))
@@ -2040,8 +2018,6 @@ function doname_base(obj, doname_flags) {
         }
         case 33: {
         { __pc = 2; continue; }
-        __pc = 32;
-        continue;
         }
         case 32: {
         __pc = 29;
@@ -2053,8 +2029,6 @@ function doname_base(obj, doname_flags) {
         }
         case 26: {
         { __pc = 3; continue; }
-        __pc = 13;
-        continue;
         }
         case 13: {
         __pc = 14;
@@ -2068,8 +2042,6 @@ function doname_base(obj, doname_flags) {
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             } while (0);
         { __pc = 3; continue; }
-        __pc = 3;
-        continue;
         }
         case 3: {
         if ((cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) && wizard() && cptr.ld1so(iflags, $instance_flags_wizmgender)) {
@@ -2218,8 +2190,6 @@ function doname_base(obj, doname_flags) {
             }
         }
         return bp;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -4556,8 +4526,6 @@ export function readobjnam(bp, no_wish) {
         }
         case 7: {
         { __pc = 4; continue; }
-        __pc = 6;
-        continue;
         }
         case 6: {
         void mungspaces(bp);
@@ -4569,8 +4537,6 @@ export function readobjnam(bp, no_wish) {
         }
         case 9: {
         { __pc = 4; continue; }
-        __pc = 8;
-        continue;
         }
         case 8: {
         if (!cptr.ldI32o(d, $_readobjnam_data_cnt))
@@ -4591,33 +4557,21 @@ export function readobjnam(bp, no_wish) {
         }
         case 13: {
         { __pc = 10; continue; }
-        __pc = 14;
-        continue;
         }
         case 14: {
         { __pc = 2; continue; }
-        __pc = 15;
-        continue;
         }
         case 15: {
         { __pc = 5; continue; }
-        __pc = 16;
-        continue;
         }
         case 16: {
         return cptr.ldPtr(d);
-        __pc = 17;
-        continue;
         }
         case 17: {
         { __pc = 4; continue; }
-        __pc = 18;
-        continue;
         }
         case 18: {
         { __pc = 3; continue; }
-        __pc = 10;
-        continue;
         }
         case 10: {
         __pc = 1;
@@ -4639,33 +4593,21 @@ export function readobjnam(bp, no_wish) {
         }
         case 22: {
         { __pc = 19; continue; }
-        __pc = 23;
-        continue;
         }
         case 23: {
         { __pc = 2; continue; }
-        __pc = 24;
-        continue;
         }
         case 24: {
         { __pc = 5; continue; }
-        __pc = 25;
-        continue;
         }
         case 25: {
         return cptr.ldPtr(d);
-        __pc = 26;
-        continue;
         }
         case 26: {
         { __pc = 4; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         { __pc = 3; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         __pc = 2;
@@ -4688,38 +4630,24 @@ export function readobjnam(bp, no_wish) {
         }
         case 31: {
         { __pc = 28; continue; }
-        __pc = 32;
-        continue;
         }
         case 32: {
         { __pc = 2; continue; }
-        __pc = 33;
-        continue;
         }
         case 33: {
         { __pc = 5; continue; }
-        __pc = 34;
-        continue;
         }
         case 34: {
         return cptr.ldPtr(d);
-        __pc = 35;
-        continue;
         }
         case 35: {
         { __pc = 4; continue; }
-        __pc = 36;
-        continue;
         }
         case 36: {
         { __pc = 3; continue; }
-        __pc = 37;
-        continue;
         }
         case 37: {
         { __pc = 1; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         __pc = 3;
@@ -4740,8 +4668,6 @@ export function readobjnam(bp, no_wish) {
         case 41: {
         cptr.stI32o(d, $_readobjnam_data_typ, rnd_otyp_by_wpnskill(NHC.P_POLEARMS));
         { __pc = 5; continue; }
-        __pc = 40;
-        continue;
         }
         case 42: {
         if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl719, 6)) { __pc = 44; continue; }
@@ -4750,8 +4676,6 @@ export function readobjnam(bp, no_wish) {
         case 44: {
         cptr.stI32o(d, $_readobjnam_data_typ, rnd_otyp_by_wpnskill(NHC.P_HAMMER));
         { __pc = 5; continue; }
-        __pc = 43;
-        continue;
         }
         case 43: {
         __pc = 40;
@@ -4886,7 +4810,6 @@ export function readobjnam(bp, no_wish) {
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe) | NHM.CORPSTAT_HISTORIC);
                 break;
             }
-            ;
             case NHC.SCR_MAIL:
             cptr.st1o(cptr.ldPtr(d), $obj_spe, 1);
             break;
@@ -5039,8 +4962,6 @@ export function readobjnam(bp, no_wish) {
         if (cptr.ldI32o(d, $_readobjnam_data_very) && cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.HEAVY_IRON_BALL)
             cptr.stI32o(cptr.ldPtr(d), $obj_owt, (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) + NHC.WT_IRON_BALL_INCR) | 0);
         return cptr.ldPtr(d);
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

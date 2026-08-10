@@ -439,8 +439,6 @@ export function steal(mtmp, objnambuf) {
             pline(__sl39, cptr.decay(Monnambuf));
         }
         return 1;
-        __pc = 5;
-        continue;
         }
         case 5: {
         if (monkey_business || uarmg.v) { __pc = 8; continue; }
@@ -458,8 +456,6 @@ export function steal(mtmp, objnambuf) {
         case 11: {
         otmp = uleft.v;
         { __pc = 3; continue; }
-        __pc = 10;
-        continue;
         }
         case 12: {
         if (Adornment() & 262144n) { __pc = 14; continue; }
@@ -468,8 +464,6 @@ export function steal(mtmp, objnambuf) {
         case 14: {
         otmp = uright.v;
         { __pc = 3; continue; }
-        __pc = 13;
-        continue;
         }
         case 13: {
         __pc = 10;
@@ -493,8 +487,6 @@ export function steal(mtmp, objnambuf) {
         }
         case 16: {
         { __pc = 1; continue; }
-        __pc = 15;
-        continue;
         }
         case 15: {
         tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 421, __sl33), rn2(tmp)) : rn2(tmp));
@@ -533,13 +525,9 @@ export function steal(mtmp, objnambuf) {
         }
         case 20: {
         { __pc = 2; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         { __pc = 4; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         if (monkey_business) { __pc = 22; continue; }
@@ -562,8 +550,6 @@ export function steal(mtmp, objnambuf) {
         case 4 /* cant_take: */: {
         pline(__sl41, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __sl20 : __sl22, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? armor_simple_name(otmp) : yname(otmp));
         return !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl33), rn2((((inv_cnt(0) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt(0) / 5) | 0) + 2) | 0));
-        __pc = 23;
-        continue;
         }
         case 23: {
         __pc = 21;
@@ -579,8 +565,6 @@ export function steal(mtmp, objnambuf) {
         }
         case 28: {
         { __pc = 4; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         o_unleash(otmp);
@@ -618,8 +602,6 @@ export function steal(mtmp, objnambuf) {
         case 37: {
         worn_item_removal(mtmp, otmp);
         { __pc = 32; continue; }
-        __pc = 38;
-        continue;
         }
         case 38: {
         armordelay = cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay);
@@ -634,14 +616,10 @@ export function steal(mtmp, objnambuf) {
         }
         case 44: {
         { __pc = 4; continue; }
-        __pc = 43;
-        continue;
         }
         case 43: {
         worn_item_removal(mtmp, otmp);
         { __pc = 32; continue; }
-        __pc = 40;
-        continue;
         }
         case 42: {
         curssv = (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0;
@@ -668,8 +646,6 @@ export function steal(mtmp, objnambuf) {
         }
         case 40: {
         { __pc = 32; continue; }
-        __pc = 39;
-        continue;
         }
         case 39: {
         impossible(__sl55, cptr.ld1so(otmp, $obj_oclass));
@@ -714,8 +690,6 @@ export function steal(mtmp, objnambuf) {
             return -1;
         }
         return (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) ? 0 : 1;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

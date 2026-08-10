@@ -4264,7 +4264,6 @@ function* status_hilite_menu_add(origfld) {
                     }
                     reset_status_hilites();
                     return 1;
-                    break __lbl_choose_color;
                 }
                 break __lbl_choose_value;
             }
@@ -4484,7 +4483,6 @@ export function* status_hilite_menu() {
         if (countall > 0 && !cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             cptr.stI64o(iflags, $instance_flags_hilite_delta, 3n);
         return 1;
-        break __lbl_shlmenu_redo;
     }
 }
 

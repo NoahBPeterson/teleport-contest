@@ -1378,12 +1378,6 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
         if (complain)
             config_error_add(__sl8, origarg);
         return null;
-        if (complain)
-            config_error_add(__sl9, origarg);
-        return null;
-        if (complain)
-            config_error_add(__sl10, origarg);
-        return null;
     }
     if ((p = cptr.strchr(arg, 61)) === null)
         p = cptr.strchr(arg, 58);
@@ -1391,9 +1385,6 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
         {
             if (complain)
                 config_error_add(__sl9, origarg);
-            return null;
-            if (complain)
-                config_error_add(__sl10, origarg);
             return null;
         }
     l = Number(BigInt.asIntN(32, (p ? (cptr.diff(p, arg)) : BigInt.asIntN(64, cptr.strlen(arg)))));
@@ -1412,24 +1403,12 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
                 if (complain)
                     config_error_add(__sl8, origarg);
                 return null;
-                if (complain)
-                    config_error_add(__sl9, origarg);
-                return null;
-                if (complain)
-                    config_error_add(__sl10, origarg);
-                return null;
             }
         }
     } else {
         {
             if (complain)
                 config_error_add(__sl8, origarg);
-            return null;
-            if (complain)
-                config_error_add(__sl9, origarg);
-            return null;
-            if (complain)
-                config_error_add(__sl10, origarg);
             return null;
         }
     }

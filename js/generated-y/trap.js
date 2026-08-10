@@ -2062,8 +2062,6 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         (yield* pline(__sl148, A_gush_of_water_hits, (yield* body_part(NHC.HEAD))));
         void (yield* water_damage(uarmh.v, helm_simple_name(uarmh.v), 1));
         { __pc = 6; continue; }
-        __pc = 9;
-        continue;
         }
         case 9: {
         (yield* pline(__sl149, A_gush_of_water_hits, (yield* body_part(NHC.ARM))));
@@ -2072,8 +2070,6 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         }
         case 13: {
         { __pc = 6; continue; }
-        __pc = 12;
-        continue;
         }
         case 12: {
         if (cptr.ld1so(u, $you_twoweap) || (uwep.v && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0)))
@@ -2084,15 +2080,11 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         case 1 /* uglovecheck: */: {
         void (yield* water_damage(uarmg.v, (yield* gloves_simple_name(uarmg.v)), 1));
         { __pc = 6; continue; }
-        __pc = 10;
-        continue;
         }
         case 10: {
         (yield* pline(__sl151, A_gush_of_water_hits, (yield* body_part(NHC.ARM))));
         void (yield* water_damage(uwep.v, null, 1));
         { __pc = 1; continue; }
-        __pc = 11;
-        continue;
         }
         case 11: {
         (yield* pline(__sl152, A_gush_of_water_hits));
@@ -2140,8 +2132,6 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         target = (yield* which_armor(mtmp, 4n));
         void (yield* water_damage(target, helm_simple_name(target), 1));
         { __pc = 14; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         if (in_sight)
@@ -2152,8 +2142,6 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         }
         case 21: {
         { __pc = 14; continue; }
-        __pc = 20;
-        continue;
         }
         case 20: {
         target = (cptr.ldPtro((mtmp), $monst_mw));
@@ -2166,16 +2154,12 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
         target = (yield* which_armor(mtmp, 16n));
         void (yield* water_damage(target, (yield* gloves_simple_name(target)), 1));
         { __pc = 14; continue; }
-        __pc = 18;
-        continue;
         }
         case 18: {
         if (in_sight)
             (yield* pline_mon(mtmp, __sl157, A_gush_of_water_hits, (yield* mon_nam(mtmp)), (yield* mbodypart(mtmp, NHC.ARM))));
         void (yield* water_damage((cptr.ldPtro((mtmp), $monst_mw)), null, 1));
         { __pc = 2; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         if (in_sight)
@@ -2203,13 +2187,9 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
             void (yield* split_mon(mtmp, null));
         }
         return trapkilled ? NHC.Trap_Killed_Mon : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ? NHC.Trap_Caught_Mon : NHC.Trap_Effect_Finished);
-        __pc = 3;
-        continue;
         }
         case 3: {
         return NHC.Trap_Effect_Finished;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -3395,8 +3375,6 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
         }
         style &= -65;
         { __pc = 1; continue; }
-        __pc = 5;
-        continue;
         }
         case 5: {
         cptr.stI32o(singleobj.v, $obj_otrapped, 1);
@@ -3598,8 +3576,6 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
             return 1;
         }
         return 2;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

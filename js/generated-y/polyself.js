@@ -950,8 +950,6 @@ export function* polyself(psflags) {
         }
         case 7: {
         { __pc = 4; continue; }
-        __pc = 6;
-        continue;
         }
         case 6: {
         if (controllable_poly || forcecontrol) { __pc = 9; continue; }
@@ -982,8 +980,6 @@ export function* polyself(psflags) {
         case 15: {
         tryct = 0;
         { __pc = 12; continue; }
-        __pc = 14;
-        continue;
         }
         case 14: {
         class$ = 0;
@@ -1034,8 +1030,6 @@ export function* polyself(psflags) {
         (yield* rehumanize());
         old_light = 0;
         { __pc = 5; continue; }
-        __pc = 22;
-        continue;
         }
         case 24: {
         if (iswere && (were_beastie(mntmp.v) == cptr.ldI32o(u, $you_ulycn) || mntmp.v == counter_were(cptr.ldI32o(u, $you_ulycn)) || (Upolyd() && mntmp.v == NHC.PM_HUMAN))) { __pc = 26; continue; }
@@ -1043,8 +1037,6 @@ export function* polyself(psflags) {
         }
         case 26: {
         { __pc = 3; continue; }
-        __pc = 25;
-        continue;
         }
         case 27: {
         if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) && !(mntmp.v == NHC.PM_HUMAN || (((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && (cptr.ldU16o2(mons, mntmp.v, 96, $permonst_geno) & NHM.G_UNIQ) == 0) || mntmp.v == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum))) { __pc = 29; continue; }
@@ -1060,8 +1052,6 @@ export function* polyself(psflags) {
         }
         case 34: {
         { __pc = 1; continue; }
-        __pc = 33;
-        continue;
         }
         case 33: {
         ++tryct;
@@ -1080,8 +1070,6 @@ export function* polyself(psflags) {
         }
         case 30: {
         { __pc = 11; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         __pc = 25;
@@ -1108,8 +1096,6 @@ export function* polyself(psflags) {
         }
         case 36: {
         { __pc = 2; continue; }
-        __pc = 35;
-        continue;
         }
         case 35: {
         if (isvamp && (tryct <= 0 || mntmp.v == NHC.PM_WOLF || mntmp.v == NHC.PM_FOG_CLOUD || (cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_BAT, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_GIANT_BAT, 96)) || cptr.eq((cptr.add(mons, mntmp.v, 96)), cptr.add(mons, NHC.PM_VAMPIRE_BAT, 96))))) { __pc = 38; continue; }
@@ -1117,8 +1103,6 @@ export function* polyself(psflags) {
         }
         case 38: {
         { __pc = 4; continue; }
-        __pc = 37;
-        continue;
         }
         case 37: {
         __pc = 8;
@@ -1213,8 +1197,6 @@ export function* polyself(psflags) {
         else
             void (yield* polymon(mntmp.v));
         { __pc = 5; continue; }
-        __pc = 39;
-        continue;
         }
         case 39: {
         __pc = 8;

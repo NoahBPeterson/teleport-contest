@@ -1207,7 +1207,6 @@ export function* get_rnd_toptenentry() {
         }
         void fclose(rfile);
         return tt;
-        break __lbl_pickentry;
     }
 }
 

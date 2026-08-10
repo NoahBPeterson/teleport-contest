@@ -623,14 +623,10 @@ function match(ms, s, p) {
         else
             s = start_capture(ms, s, cptr.add(p, 1), -1);
         { __pc = 5; continue; }
-        __pc = 8;
-        continue;
         }
         case 8: {
         s = end_capture(ms, s, cptr.add(p, 1));
         { __pc = 5; continue; }
-        __pc = 9;
-        continue;
         }
         case 9: {
         if (!cptr.eq((cptr.add(p, 1)), cptr.ldPtro(ms, $MatchState_p_end))) { __pc = 13; continue; }
@@ -638,14 +634,10 @@ function match(ms, s, p) {
         }
         case 13: {
         { __pc = 2; continue; }
-        __pc = 12;
-        continue;
         }
         case 12: {
         s = (cptr.eq(s, cptr.ldPtro(ms, $MatchState_src_end))) ? s : null;
         { __pc = 5; continue; }
-        __pc = 10;
-        continue;
         }
         case 10: {
         let __sw15 = cptr.ld1s((cptr.add(p, 1)));
@@ -671,13 +663,9 @@ function match(ms, s, p) {
         case 30: {
         p = cptr.add(p, 4);
         { __pc = 1; continue; }
-        __pc = 29;
-        continue;
         }
         case 29: {
         { __pc = 14; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         p = cptr.add(p, 2);
@@ -691,14 +679,10 @@ function match(ms, s, p) {
         case 32: {
         p = ep;
         { __pc = 1; continue; }
-        __pc = 31;
-        continue;
         }
         case 31: {
         s = null;
         { __pc = 14; continue; }
-        __pc = 18;
-        continue;
         }
         case 18: {
         __pc = 19;
@@ -744,23 +728,15 @@ function match(ms, s, p) {
         case 34: {
         p = cptr.add(p, 2);
         { __pc = 1; continue; }
-        __pc = 33;
-        continue;
         }
         case 33: {
         { __pc = 14; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         { __pc = 2; continue; }
-        __pc = 14;
-        continue;
         }
         case 14: {
         { __pc = 5; continue; }
-        __pc = 11;
-        continue;
         }
         case 11: {
         __pc = 2;
@@ -778,8 +754,6 @@ function match(ms, s, p) {
         case 39: {
         p = cptr.add(ep, 1);
         { __pc = 1; continue; }
-        __pc = 38;
-        continue;
         }
         case 40: {
         s = null;
@@ -810,13 +784,9 @@ function match(ms, s, p) {
         case 50: {
         p = cptr.add(ep, 1);
         { __pc = 1; continue; }
-        __pc = 48;
-        continue;
         }
         case 48: {
         { __pc = 41; continue; }
-        __pc = 44;
-        continue;
         }
         case 44: {
         s = cptr.add(s, 1);
@@ -826,21 +796,15 @@ function match(ms, s, p) {
         case 45: {
         s = max_expand(ms, s, p, ep);
         { __pc = 41; continue; }
-        __pc = 46;
-        continue;
         }
         case 46: {
         s = min_expand(ms, s, p, ep);
         { __pc = 41; continue; }
-        __pc = 47;
-        continue;
         }
         case 47: {
         s = cptr.add(s, 1);
         p = ep;
         { __pc = 1; continue; }
-        __pc = 41;
-        continue;
         }
         case 41: {
         __pc = 35;
@@ -848,8 +812,6 @@ function match(ms, s, p) {
         }
         case 35: {
         { __pc = 5; continue; }
-        __pc = 5;
-        continue;
         }
         case 5: {
         __pc = 3;
@@ -858,8 +820,6 @@ function match(ms, s, p) {
         case 3: {
         (cptr.stI32o(ms, $MatchState_matchdepth, cptr.ldI32o(ms, $MatchState_matchdepth) + 1)) - (1);
         return s;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -1351,8 +1311,6 @@ function str_format(L) {
         checkformat(L, cptr.decay(form), __sl42, 0);
         nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), Number(BigInt.asIntN(32, luaL_checkinteger(L, arg))));
         { __pc = 11; continue; }
-        __pc = 14;
-        continue;
         }
         case 14: {
         __pc = 15;
@@ -1361,14 +1319,10 @@ function str_format(L) {
         case 15: {
         flags = __sl43;
         { __pc = 1; continue; }
-        __pc = 16;
-        continue;
         }
         case 16: {
         flags = __sl44;
         { __pc = 1; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         __pc = 18;
@@ -1389,8 +1343,6 @@ function str_format(L) {
         addlenmod(cptr.decay(form), __sl46);
         nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n);
         { __pc = 11; continue; }
-        __pc = 20;
-        continue;
         }
         case 20: {
         __pc = 21;
@@ -1401,8 +1353,6 @@ function str_format(L) {
         addlenmod(cptr.decay(form), __sl0);
         nb = (void L, cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), (luaL_checknumber(L, arg))));
         { __pc = 11; continue; }
-        __pc = 22;
-        continue;
         }
         case 22: {
         maxitem = 418;
@@ -1428,8 +1378,6 @@ function str_format(L) {
         addlenmod(cptr.decay(form), __sl0);
         nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n);
         { __pc = 11; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         p = lua_topointer(L, arg);
@@ -1440,16 +1388,12 @@ function str_format(L) {
         }
         nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), p);
         { __pc = 11; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         if (cptr.ld1so(cptr.decay(form), 2, 1) != 0)
             return luaL_error(L, __sl49);
         addliteral(L, b, arg);
         { __pc = 11; continue; }
-        __pc = 29;
-        continue;
         }
         case 29: {
         s = luaL_tolstring(L, arg, l);
@@ -1466,13 +1410,9 @@ function str_format(L) {
             }
         }
         { __pc = 11; continue; }
-        __pc = 30;
-        continue;
         }
         case 30: {
         return luaL_error(L, __sl51, cptr.decay(form));
-        __pc = 11;
-        continue;
         }
         case 11: {
         (void 0);
@@ -1491,8 +1431,6 @@ function str_format(L) {
         case 2: {
         luaL_pushresult(b);
         return 1;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

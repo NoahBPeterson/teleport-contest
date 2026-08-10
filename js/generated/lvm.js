@@ -943,8 +943,6 @@ export function luaV_execute(L, ci) {
         (void 0);
         (void 0);
         { __pc = __smNums[cptr.ldPtro(__static_luaV_execute_disptab, ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 8)]; continue; }
-        __pc = 3;
-        continue;
         }
         case 3 /* L_OP_MOVE: */: {
         ra = (cptr.add(base, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), 16));
@@ -2936,8 +2934,6 @@ export function luaV_execute(L, ci) {
         case 95: {
         ci = newci;
         { __pc = 1; continue; }
-        __pc = 93;
-        continue;
         }
         case 93: {
         if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -2972,16 +2968,12 @@ export function luaV_execute(L, ci) {
         }
         case 97: {
         { __pc = 1; continue; }
-        __pc = 96;
-        continue;
         }
         case 98: {
         cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
         luaD_poscall(L, ci, n);
         (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
         { __pc = 76; continue; }
-        __pc = 96;
-        continue;
         }
         case 96: {
         __pc = 73;
@@ -3014,8 +3006,6 @@ export function luaV_execute(L, ci) {
         luaD_poscall(L, ci, n);
         (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
         { __pc = 76; continue; }
-        __pc = 74;
-        continue;
         }
         case 74 /* L_OP_RETURN0: */: {
         if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
@@ -3031,8 +3021,6 @@ export function luaV_execute(L, ci) {
                 (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));
         }
         { __pc = 76; continue; }
-        __pc = 75;
-        continue;
         }
         case 75 /* L_OP_RETURN1: */: {
         if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
@@ -3071,14 +3059,10 @@ export function luaV_execute(L, ci) {
         }
         case 100: {
         return;
-        __pc = 99;
-        continue;
         }
         case 101: {
         ci = cptr.ldPtro(ci, $CallInfo_previous);
         { __pc = 2; continue; }
-        __pc = 99;
-        continue;
         }
         case 99: {
         __pc = 77;
@@ -3151,8 +3135,6 @@ export function luaV_execute(L, ci) {
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         (void 0);
         { __pc = 81; continue; }
-        __pc = 80;
-        continue;
         }
         case 80 /* L_OP_TFORCALL: */: {
         __pc = 81;
@@ -3171,8 +3153,6 @@ export function luaV_execute(L, ci) {
         i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
         (void 0);
         { __pc = 83; continue; }
-        __pc = 82;
-        continue;
         }
         case 82 /* L_OP_TFORLOOP: */: {
         __pc = 83;

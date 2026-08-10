@@ -1288,7 +1288,6 @@ export function recharge(obj, curse_bless) {
                 break;
                 default:
                 { __go_not_chargable = true; break __skip_not_chargable; }
-                break;
             }
         } else {
             __go_not_chargable = true; break __skip_not_chargable;

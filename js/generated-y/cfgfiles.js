@@ -387,7 +387,6 @@ function* get_uchars(bufp, list, modlist, size, name) {
                 (yield* Y.icall(wait_synch()()));
                 return count;
             }
-            break;
             default:
             (yield* raw_printf(__sl19, name));
             (yield* Y.icall(wait_synch()()));

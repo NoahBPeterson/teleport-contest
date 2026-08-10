@@ -179,7 +179,6 @@ function md_start(startp) {
             return 0;
         }
         return 1;
-        break __lbl_retry;
     }
 }
 

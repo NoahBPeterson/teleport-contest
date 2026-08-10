@@ -1733,7 +1733,6 @@ export function check_room(lowx, ddx, lowy, ddy, vault) {
         if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && (s_lowx != cptr.ldI16(lowx)) && (s_ddx != cptr.ldI16(ddx)) && (s_lowy != cptr.ldI16(lowy)) && (s_ddy != cptr.ldI16(ddy)))
             return 0;
         return 1;
-        break __lbl_chk;
     }
 }
 
@@ -5805,7 +5804,6 @@ export function lspo_map(L) {
         l_selection_push_copy(L, sel);
         selection_free(sel, 1);
         return 1;
-        break __lbl_redo_maploc;
     }
 }
 

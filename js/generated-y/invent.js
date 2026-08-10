@@ -1709,14 +1709,10 @@ export function* getobj(word, obj_ok, ctrlflags) {
         cnt = BigInt(cptr.ldI32o(cq, $_cmd_queue_intval));
         cntgiven = 1;
         { __pc = 1; continue; }
-        __pc = 14;
-        continue;
         }
         case 16: {
         cmdq_clear(NHC.CQ_CANNED);
         return null;
-        __pc = 14;
-        continue;
         }
         case 14: {
         __pc = 12;
@@ -1743,8 +1739,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (cnt < 1n || cptr.ldI64o(otmp, $obj_quan) <= cnt)
             cntgiven = 0;
         { __pc = 3; continue; }
-        __pc = 20;
-        continue;
         }
         case 20: {
         __pc = 17;
@@ -1752,8 +1746,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         }
         case 17: {
         return otmp;
-        __pc = 7;
-        continue;
         }
         case 7: {
         __pc = 4;
@@ -1864,8 +1856,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         case 29: {
         (yield* pline(__sl81));
         { __pc = 25; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         ilet = (yield* get_count(null, ilet, 32767n, tmpcnt, NHM.GC_SAVEHIST));
@@ -1914,8 +1904,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (oneloop)
             return null;
         { __pc = 25; continue; }
-        __pc = 32;
-        continue;
         }
         case 32: {
         if (ilet == 45)
@@ -1930,8 +1918,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         }
         case 35: {
         { __pc = 2; continue; }
-        __pc = 34;
-        continue;
         }
         case 34: {
         if (allowcnt && ctmp.v >= 0n) {
@@ -1972,8 +1958,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         else
             (yield* You(__sl89, cptr.decay(__static_getobj_only_one)));
         { __pc = 25; continue; }
-        __pc = 38;
-        continue;
         }
         case 38: {
         __pc = 36;
@@ -1994,8 +1978,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (cptr.ldI32(gi))
             return null;
         { __pc = 25; continue; }
-        __pc = 40;
-        continue;
         }
         case 42: {
         if (cnt < 0n || cptr.ldI64o(otmp, $obj_quan) < cnt) { __pc = 44; continue; }
@@ -2006,8 +1988,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (cptr.ldI32(gi))
             return null;
         { __pc = 25; continue; }
-        __pc = 43;
-        continue;
         }
         case 43: {
         __pc = 40;
@@ -2015,8 +1995,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
         }
         case 40: {
         { __pc = 22; continue; }
-        __pc = 25;
-        continue;
         }
         case 25: {
         __pc = 23;
@@ -2042,8 +2020,6 @@ export function* getobj(word, obj_ok, ctrlflags) {
             }
         }
         return otmp;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -2384,7 +2360,6 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
         unsortloot(sortedchn);
         clear_bypasses();
         return cnt;
-        break __lbl_nextclass;
     }
 }
 
@@ -2945,7 +2920,6 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
         } else
             ret = schar((!n ? 0 : 27));
         return ret;
-        break __lbl_nextclass;
     }
 }
 

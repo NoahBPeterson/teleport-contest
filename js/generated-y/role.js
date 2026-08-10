@@ -3088,7 +3088,6 @@ export function* genl_player_setup(screenheight) {
                     (cptr.stI32o(program_state, $sinfo_in_role_selection, cptr.ldI32o(program_state, $sinfo_in_role_selection) + -1)) - (-1);
                     return result;
                 }
-                break;
                 case 3:
                 {
                     let saveROLE;
@@ -3106,7 +3105,6 @@ export function* genl_player_setup(screenheight) {
                 pick4u = 110;
                 cptr.stI32o(flags, $flag_initrole, cptr.stI32o(flags, $flag_initrace, cptr.stI32o(flags, $flag_initgend, cptr.stI32o(flags, $flag_initalign, -1))));
                 continue __lbl_makepicks;
-                break;
                 case 1:
                 getconfirmation = 0;
                 break;
@@ -3115,7 +3113,6 @@ export function* genl_player_setup(screenheight) {
         result = 1;
         (cptr.stI32o(program_state, $sinfo_in_role_selection, cptr.ldI32o(program_state, $sinfo_in_role_selection) + -1)) - (-1);
         return result;
-        break __lbl_makepicks;
     }
 }
 

@@ -319,8 +319,6 @@ function getpos_help(force, goal) {
         }
         case 3: {
         { __pc = 1; continue; }
-        __pc = 2;
-        continue;
         }
         case 2: {
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
@@ -818,8 +816,6 @@ export function getpos(ccp, force, goal) {
         cmdq_clear(NHC.CQ_CANNED);
         result = -1;
         { __pc = 4; continue; }
-        __pc = 12;
-        continue;
         }
         case 12: {
         cptr.free(cmdq);
@@ -844,8 +840,6 @@ export function getpos(ccp, force, goal) {
         msg_given = 1;
         result = -1;
         { __pc = 5; continue; }
-        __pc = 15;
-        continue;
         }
         case 15: {
         if (c == cmd_from_func(do_run) || c == cmd_from_func(do_rush)) {
@@ -861,15 +855,11 @@ export function getpos(ccp, force, goal) {
         }
         case 20: {
         { __pc = 8; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         cx.v = tx.v;
         cy.v = ty.v;
         { __pc = 5; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         if ((cp = cptr.strchr(cptr.decay(pick_chars), c)) !== null) { __pc = 22; continue; }
@@ -878,8 +868,6 @@ export function getpos(ccp, force, goal) {
         case 22: {
         result = cptr.ldI32o2(__static_getpos_pick_chars_def, Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))), 8, 4);
         { __pc = 5; continue; }
-        __pc = 21;
-        continue;
         }
         case 23: {
         if (movecmd(schar(c), NHC.MV_WALK)) { __pc = 25; continue; }
@@ -891,16 +879,12 @@ export function getpos(ccp, force, goal) {
         }
         case 28: {
         { __pc = 1; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         dx = cptr.ldI32o(u, $you_dx);
         dy = cptr.ldI32o(u, $you_dy);
         truncate_to_map(cx, cy, schar(dx), schar(dy));
         { __pc = 3; continue; }
-        __pc = 24;
-        continue;
         }
         case 26: {
         if (movecmd(schar(c), NHC.MV_RUSH) || movecmd(schar(c), NHC.MV_RUN)) { __pc = 30; continue; }
@@ -925,8 +909,6 @@ export function getpos(ccp, force, goal) {
         }
         truncate_to_map(cx, cy, schar(dx), schar(dy));
         { __pc = 3; continue; }
-        __pc = 29;
-        continue;
         }
         case 29: {
         __pc = 24;
@@ -960,8 +942,6 @@ export function getpos(ccp, force, goal) {
         }
         show_goal_msg = 1;
         { __pc = 3; continue; }
-        __pc = 34;
-        continue;
         }
         case 36: {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 38; continue; }
@@ -974,8 +954,6 @@ export function getpos(ccp, force, goal) {
             show_goal_msg = 1;
         msg_given = 1;
         { __pc = 3; continue; }
-        __pc = 37;
-        continue;
         }
         case 39: {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 41; continue; }
@@ -993,8 +971,6 @@ export function getpos(ccp, force, goal) {
         pline(__sl93, cptr.ldPtro(__static_getpos_view_filters, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8));
         msg_given = 1;
         { __pc = 3; continue; }
-        __pc = 40;
-        continue;
         }
         case 42: {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 44; continue; }
@@ -1005,8 +981,6 @@ export function getpos(ccp, force, goal) {
         pline(__sl94, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __sl95 : __sl96, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __sl97 : __sl21);
         msg_given = 1;
         { __pc = 3; continue; }
-        __pc = 43;
-        continue;
         }
         case 45: {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 47; continue; }
@@ -1018,8 +992,6 @@ export function getpos(ccp, force, goal) {
         cx.v = cptr.ldI16(u);
         cy.v = cptr.ldI16o(u, $you_uy);
         { __pc = 3; continue; }
-        __pc = 46;
-        continue;
         }
         case 48: {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 50; continue; }
@@ -1030,8 +1002,6 @@ export function getpos(ccp, force, goal) {
         pline(__sl98, cptr.ld1so(iflags, $instance_flags_getloc_moveskip) ? __sl99 : __sl100);
         msg_given = 1;
         { __pc = 3; continue; }
-        __pc = 49;
-        continue;
         }
         case 51: {
         if ((cp = cptr.strchr(cptr.decay(mMoOdDxX), c)) !== null) { __pc = 53; continue; }
@@ -1050,8 +1020,6 @@ export function getpos(ccp, force, goal) {
             cy.v = cptr.ldI16o(tmpcrd, $nhcoord_y);
         }
         { __pc = 3; continue; }
-        __pc = 55;
-        continue;
         }
         case 55: {
         if (!cptr.ldPtro(garr, gloc, 8)) {
@@ -1067,8 +1035,6 @@ export function getpos(ccp, force, goal) {
         cx.v = cptr.ldI16o(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), 4);
         cy.v = cptr.ldI16o2(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), 4, $nhcoord_y);
         { __pc = 3; continue; }
-        __pc = 52;
-        continue;
         }
         case 54: {
         if (!cptr.strchr(cptr.decay(quitchars), c)) { __pc = 58; continue; }
@@ -1122,8 +1088,6 @@ export function getpos(ccp, force, goal) {
         }
         case 75: {
         { __pc = 2; continue; }
-        __pc = 74;
-        continue;
         }
         case 74: {
         if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 && !cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 77; continue; }
@@ -1136,8 +1100,6 @@ export function getpos(ccp, force, goal) {
         }
         case 79: {
         { __pc = 2; continue; }
-        __pc = 78;
-        continue;
         }
         case 78: {
         __pc = 76;
@@ -1149,8 +1111,6 @@ export function getpos(ccp, force, goal) {
         }
         case 81: {
         { __pc = 2; continue; }
-        __pc = 80;
-        continue;
         }
         case 80: {
         if (cptr.ld1uo3(svl, tx.v, 756, ty.v, 36, $instance_globals_saved_l_level + $rm_seenv)) { __pc = 83; continue; }
@@ -1163,8 +1123,6 @@ export function getpos(ccp, force, goal) {
         }
         case 85: {
         { __pc = 2; continue; }
-        __pc = 84;
-        continue;
         }
         case 84: {
         __pc = 82;
@@ -1172,8 +1130,6 @@ export function getpos(ccp, force, goal) {
         }
         case 82: {
         { __pc = 73; continue; }
-        __pc = 2;
-        continue;
         }
         case 2 /* foundc: */: {
         cx.v = tx.v, cy.v = ty.v;
@@ -1182,8 +1138,6 @@ export function getpos(ccp, force, goal) {
             msg_given = 0;
         }
         { __pc = 3; continue; }
-        __pc = 73;
-        continue;
         }
         case 73: {
         tx.v++;
@@ -1212,8 +1166,6 @@ export function getpos(ccp, force, goal) {
         pline(__sl101, c);
         msg_given = 1;
         { __pc = 3; continue; }
-        __pc = 59;
-        continue;
         }
         case 61: {
         note = new Uint8Array(128);
@@ -1236,8 +1188,6 @@ export function getpos(ccp, force, goal) {
         }
         case 87: {
         { __pc = 3; continue; }
-        __pc = 86;
-        continue;
         }
         case 86: {
         pline(__sl105);
@@ -1246,8 +1196,6 @@ export function getpos(ccp, force, goal) {
         cy.v = 0;
         result = 0;
         { __pc = 5; continue; }
-        __pc = 52;
-        continue;
         }
         case 52: {
         __pc = 49;
@@ -1310,8 +1258,6 @@ export function getpos(ccp, force, goal) {
         getpos_sethilite(null, null);
         cptr.stI32o(u, $you_dx, udx), cptr.stI32o(u, $you_dy, udy), cptr.stI32o(u, $you_dz, udz);
         return result;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

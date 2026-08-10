@@ -4097,8 +4097,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         }
         case 7: {
         { __pc = 2; continue; }
-        __pc = 6;
-        continue;
         }
         case 6: {
         mon = (cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
@@ -4126,8 +4124,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         }
         case 12: {
         { __pc = 3; continue; }
-        __pc = 11;
-        continue;
         }
         case 11: {
         if (type >= 0)
@@ -4171,8 +4167,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         }
         cptr.stI32o(mon, $monst_mhp, cptr.ldI32o(mon, $monst_mhpmax));
         { __pc = 3; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_DEATH, 96)) && damgtype == 4) { __pc = 22; continue; }
@@ -4185,8 +4179,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
             pline(__sl253);
         }
         { __pc = 3; continue; }
-        __pc = 21;
-        continue;
         }
         case 21: {
         if (tmp == 1000) {
@@ -4244,8 +4236,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         case 26: {
         mon = cptr.ldPtro(u, $you_usteed);
         { __pc = 1; continue; }
-        __pc = 25;
-        continue;
         }
         case 27: {
         if (!forcemiss && zap_hit(cptr.ld1so(u, $you_uac), 0)) {
@@ -4309,8 +4299,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         if (fireball)
             type = 1;
         { __pc = 3; continue; }
-        __pc = 32;
-        continue;
         }
         case 34: {
         if (fireball) { __pc = 36; continue; }
@@ -4320,8 +4308,6 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         sx = lsx;
         sy = lsy;
         { __pc = 3; continue; }
-        __pc = 35;
-        continue;
         }
         case 37: {
         pline_The(__sl261, flash_str(fltyp, 0));

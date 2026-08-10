@@ -1926,8 +1926,6 @@ function* doloot_core() {
         }
         case 4: {
         { __pc = 2; continue; }
-        __pc = 3;
-        continue;
         }
         case 3: {
         __pc = 1;
@@ -2005,8 +2003,6 @@ function* doloot_core() {
         }
         case 9: {
         { __pc = 1; continue; }
-        __pc = 8;
-        continue;
         }
         case 8: {
         if (cptr.ldI32o(u, $you_dz) < 0) {
@@ -2046,8 +2042,6 @@ function* doloot_core() {
         }
         case 5: {
         return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

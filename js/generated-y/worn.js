@@ -583,8 +583,6 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
         }
         case 4: {
         { __pc = 2; continue; }
-        __pc = 3;
-        continue;
         }
         case 3: {
         __pc = 1;
@@ -669,8 +667,6 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
         case 6: {
         which = altwhich;
         { __pc = 1; continue; }
-        __pc = 5;
-        continue;
         }
         case 5: {
         __pc = 2;

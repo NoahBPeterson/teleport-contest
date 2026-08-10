@@ -1040,8 +1040,6 @@ export function gd_move(grd) {
         }
         case 6: {
         { __pc = 2; continue; }
-        __pc = 5;
-        continue;
         }
         case 5: {
         nx = i16(((x - 1) | 0));
@@ -1075,8 +1073,6 @@ export function gd_move(grd) {
         }
         case 20: {
         { __pc = 1; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         if (cptr.ld1s(in_rooms(nx, ny, NHC.VAULT))) { __pc = 22; continue; }
@@ -1084,8 +1080,6 @@ export function gd_move(grd) {
         }
         case 22: {
         { __pc = 14; continue; }
-        __pc = 21;
-        continue;
         }
         case 21: {
         cptr.stI32o(egrd, $egd_gddone, 1);
@@ -1094,8 +1088,6 @@ export function gd_move(grd) {
         }
         case 24: {
         { __pc = 4; continue; }
-        __pc = 23;
-        continue;
         }
         case 23: {
         cptr.st1o(crm, $rm_typ, schar(((typ == NHC.SCORR) ? NHC.CORR : NHC.DOOR)));
@@ -1105,8 +1097,6 @@ export function gd_move(grd) {
             cptr.stI32o(crm, $rm_flags, 0);
         del_engr_at(nx, ny);
         { __pc = 3; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         __pc = 15;
@@ -1167,8 +1157,6 @@ export function gd_move(grd) {
         cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
         del_engr_at(ex, ey);
         { __pc = 3; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         if (dy && nx != x) { __pc = 31; continue; }
@@ -1178,8 +1166,6 @@ export function gd_move(grd) {
         nx = x;
         ny = i16(((y + dy) | 0));
         { __pc = 26; continue; }
-        __pc = 30;
-        continue;
         }
         case 30: {
         if (dx && ny != y) { __pc = 33; continue; }
@@ -1190,8 +1176,6 @@ export function gd_move(grd) {
         nx = i16(((x + dx) | 0));
         dy = 0;
         { __pc = 26; continue; }
-        __pc = 32;
-        continue;
         }
         case 32: {
         if (((typ) >= NHC.ROOM)) { __pc = 35; continue; }
@@ -1202,13 +1186,9 @@ export function gd_move(grd) {
         cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
         del_engr_at(ex, ey);
         { __pc = 3; continue; }
-        __pc = 34;
-        continue;
         }
         case 34: {
         { __pc = 25; continue; }
-        __pc = 26;
-        continue;
         }
         case 25: {
         cptr.st1o(crm, $rm_typ, NHC.CORR);
@@ -1246,13 +1226,9 @@ export function gd_move(grd) {
         case 42: {
         pline(__sl71, Monnam(grd));
         return gd_move_cleanup(grd, semi_dead, 1);
-        __pc = 41;
-        continue;
         }
         case 43: {
         { __pc = 2; continue; }
-        __pc = 41;
-        continue;
         }
         case 41: {
         __pc = 39;
@@ -1282,8 +1258,6 @@ export function gd_move(grd) {
             newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my));
         restfakecorr(grd);
         return 1;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

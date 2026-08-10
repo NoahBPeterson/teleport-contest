@@ -8170,7 +8170,6 @@ function optfn_pettype(optidx, req, negated, opts, op) {
                 default:
                 config_error_add(__sl628, op);
                 return NHC.optn_err;
-                break;
             }
         } else if (negated)
             cptr.st1o(gp, $instance_globals_p_preferred_pet, 110);
@@ -10445,7 +10444,6 @@ function handler_autopickup_exception() {
                 continue __lbl_ape_again;
         }
         return NHC.optn_ok;
-        break __lbl_ape_again;
     }
 }
 
@@ -10528,7 +10526,6 @@ function handler_menu_colors() {
                 continue __lbl_menucolors_again;
         }
         return NHC.optn_ok;
-        break __lbl_menucolors_again;
     }
 }
 
@@ -10593,7 +10590,6 @@ function handler_msgtype() {
                 continue __lbl_msgtypes_again;
         }
         return NHC.optn_ok;
-        break __lbl_msgtypes_again;
     }
 }
 
@@ -11969,7 +11965,6 @@ function doset_simple_menu() {
             continue __lbl_redo_opt_help;
         }
         return pick_cnt;
-        break __lbl_redo_opt_help;
     }
 }
 
@@ -12169,7 +12164,6 @@ export function doset() {
         }
         reset_needed_visuals();
         return NHM.ECMD_OK;
-        break __lbl_rerun;
     }
 }
 

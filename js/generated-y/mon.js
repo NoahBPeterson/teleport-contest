@@ -1548,7 +1548,6 @@ export function* mon_give_prop(mtmp, prop) {
         break;
         default:
         return;
-        break;
     }
     intrinsic = u16(((NHC.FIRE_RES <= (prop) && (prop) <= NHC.STONE_RES) ? uchar((1 << (((prop) - 1) | 0))) : 0));
     if ((cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_mresists) | cptr.ldU16o(mtmp, $monst_mintrinsics)) & intrinsic)
@@ -1956,7 +1955,6 @@ export function* mfndpos(mon, data, flag) {
         }
         cptr.stI32(data, cnt);
         return cnt;
-        break __lbl_nexttry;
     }
 }
 

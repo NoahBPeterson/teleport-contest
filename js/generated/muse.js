@@ -2221,7 +2221,6 @@ export function use_misc(mtmp) {
             }
             return 1;
         }
-        return 0;
         case 0:
         return 0;
         default:

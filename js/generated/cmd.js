@@ -4378,8 +4378,6 @@ export function rhack(key) {
         }
         case 7: {
         { __pc = 2; continue; }
-        __pc = 6;
-        continue;
         }
         case 6: {
         key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, $_cmd_queue_key) : 0;
@@ -4397,8 +4395,6 @@ export function rhack(key) {
         }
         case 11: {
         { __pc = 1; continue; }
-        __pc = 10;
-        continue;
         }
         case 10: {
         __pc = 8;
@@ -4495,8 +4491,6 @@ export function rhack(key) {
         if (func === do_reqmenu)
             was_m_prefix = 1;
         { __pc = 1; continue; }
-        __pc = 20;
-        continue;
         }
         case 22: {
         if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) && cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
@@ -4548,8 +4542,6 @@ export function rhack(key) {
             }
         }
         return;
-        __pc = 12;
-        continue;
         }
         case 12: {
         bad_command = 1;
@@ -4562,8 +4554,6 @@ export function rhack(key) {
         cptr.st1o(svc, $context_info_move, 0);
         cptr.stI64o(gm, $instance_globals_m_multi, 0n);
         return;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -4675,8 +4665,6 @@ export function getdir(s) {
         }
         cptr.free(cmdq);
         { __pc = 2; continue; }
-        __pc = 3;
-        continue;
         }
         case 3: {
         __pc = 1;
@@ -4709,8 +4697,6 @@ export function getdir(s) {
         case 6: {
         docrt_flags(NHC.docrtRefresh);
         { __pc = 1; continue; }
-        __pc = 5;
-        continue;
         }
         case 5: {
         if (!cptr.ldI32(gi))
@@ -4767,8 +4753,6 @@ export function getdir(s) {
         if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
             cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
         return (pos >= 0);
-        __pc = 10;
-        continue;
         }
         case 12: {
         if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) && !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
@@ -4791,8 +4775,6 @@ export function getdir(s) {
         }
         case 21: {
         { __pc = 1; continue; }
-        __pc = 20;
-        continue;
         }
         case 20: {
         __pc = 18;
@@ -4806,8 +4788,6 @@ export function getdir(s) {
         }
         case 16: {
         return 0;
-        __pc = 13;
-        continue;
         }
         case 15: {
         if (is_mov && !dxdy_moveok()) {
@@ -4829,8 +4809,6 @@ export function getdir(s) {
         if (!cptr.ldI32o(u, $you_dz))
             confdir(0);
         return 1;
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

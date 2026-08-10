@@ -3163,8 +3163,6 @@ export function* mhitm_ad_pest(magr, mattk, mdef, mhm) {
         }
         case 3: {
         { __pc = 1; continue; }
-        __pc = 2;
-        continue;
         }
         case 4: {
         if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) { __pc = 6; continue; }
@@ -4462,8 +4460,6 @@ function* hmonas(mon) {
         }
         case 8: {
         { __pc = 6; continue; }
-        __pc = 7;
-        continue;
         }
         case 7: {
         mattk = (yield* getmattk(cptr.add(gy, $instance_globals_y_youmonst), mon, i, sum, alt_attk));
@@ -4472,8 +4468,6 @@ function* hmonas(mon) {
         }
         case 10: {
         { __pc = 6; continue; }
-        __pc = 9;
-        continue;
         }
         case 9: {
         weapon = null;
@@ -4508,8 +4502,6 @@ function* hmonas(mon) {
         }
         case 32: {
         { __pc = 6; continue; }
-        __pc = 31;
-        continue;
         }
         case 31: {
         weapon_used = 1;
@@ -4533,8 +4525,6 @@ function* hmonas(mon) {
         case 34: {
         cptr.stI32o(sum, i, NHM.M_ATTK_DEF_DIED, 4);
         { __pc = 11; continue; }
-        __pc = 33;
-        continue;
         }
         case 35: {
         cptr.stI32o(sum, i, dhit.v ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS, 4);
@@ -4548,15 +4538,11 @@ function* hmonas(mon) {
         case 37: {
         i = NHM.NATTK;
         { __pc = 2; continue; }
-        __pc = 36;
-        continue;
         }
         case 36: {
         if (dhit.v && cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_SPEL && cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_PHYS)
             cptr.stI32o(sum, i, (yield* damageum(mon, mattk, 0)), 4);
         { __pc = 11; continue; }
-        __pc = 14;
-        continue;
         }
         case 14: {
         if (uwep.v && !(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL)) && !weapon_used) { __pc = 39; continue; }
@@ -4564,8 +4550,6 @@ function* hmonas(mon) {
         }
         case 39: {
         { __pc = 1; continue; }
-        __pc = 38;
-        continue;
         }
         case 38: {
         // @FallThrough
@@ -4579,8 +4563,6 @@ function* hmonas(mon) {
         }
         case 41: {
         { __pc = 1; continue; }
-        __pc = 40;
-        continue;
         }
         case 40: {
         // @FallThrough
@@ -4594,8 +4576,6 @@ function* hmonas(mon) {
         }
         case 43: {
         { __pc = 6; continue; }
-        __pc = 42;
-        continue;
         }
         case 42: {
         // @FallThrough
@@ -4633,8 +4613,6 @@ function* hmonas(mon) {
         (yield* You(__sl400, ((cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n)) ? __sl401 : __sl402, (yield* mon_nam(mon)), (compat == 2) ? __sl403 : __sl404));
         cptr.stI32o(sum, i, (yield* damageum(mon, mattk, 0)), 4);
         { __pc = 11; continue; }
-        __pc = 47;
-        continue;
         }
         case 47: {
         (yield* wakeup(mon, 1));
@@ -4683,8 +4661,6 @@ function* hmonas(mon) {
         }
         case 53: {
         { __pc = 11; continue; }
-        __pc = 52;
-        continue;
         }
         case 52: {
         if (cptr.ld1u(mattk) == NHM.AT_TENT) {
@@ -4711,8 +4687,6 @@ function* hmonas(mon) {
         }
         case 44: {
         { __pc = 11; continue; }
-        __pc = 21;
-        continue;
         }
         case 21: {
         silverhit.v = 0n;
@@ -4725,8 +4699,6 @@ function* hmonas(mon) {
         if (byhand && uwep.v && cptr.ldPtro(u, $you_ustuck) && !(sticks(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0))
             (yield* uunstick());
         { __pc = 6; continue; }
-        __pc = 54;
-        continue;
         }
         case 54: {
         dhit.v = 1;
@@ -4755,8 +4727,6 @@ function* hmonas(mon) {
             (yield* Your(__sl416, verb, (yield* mon_nam(mon))));
         }
         { __pc = 11; continue; }
-        __pc = 56;
-        continue;
         }
         case 56: {
         if ((yield* failed_grab(cptr.add(gy, $instance_globals_y_youmonst), mon, mattk))) { __pc = 59; continue; }
@@ -4764,8 +4734,6 @@ function* hmonas(mon) {
         }
         case 59: {
         { __pc = 11; continue; }
-        __pc = 58;
-        continue;
         }
         case 58: {
         if (cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))) {
@@ -4783,8 +4751,6 @@ function* hmonas(mon) {
             cptr.stI32o(sum, i, (yield* damageum(mon, mattk, specialdmg)), 4);
         }
         { __pc = 11; continue; }
-        __pc = 22;
-        continue;
         }
         case 22: {
         dhit.v = -1;
@@ -4792,8 +4758,6 @@ function* hmonas(mon) {
         (yield* You(__sl421));
         cptr.stI32o(sum, i, (yield* explum(mon, mattk)), 4);
         { __pc = 11; continue; }
-        __pc = 23;
-        continue;
         }
         case 23: {
         tmp = (yield* find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty));
@@ -4815,8 +4779,6 @@ function* hmonas(mon) {
             (yield* missum(mon, mattk, 0));
         }
         { __pc = 11; continue; }
-        __pc = 24;
-        continue;
         }
         case 24: {
         if ((cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_KOBOLD || cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_ORC || cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_GNOME) && !weapon_used) { __pc = 61; continue; }
@@ -4824,8 +4786,6 @@ function* hmonas(mon) {
         }
         case 61: {
         { __pc = 1; continue; }
-        __pc = 60;
-        continue;
         }
         case 60: {
         // @FallThrough
@@ -4839,8 +4799,6 @@ function* hmonas(mon) {
         }
         case 26: {
         { __pc = 6; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         __pc = 28;
@@ -4853,8 +4811,6 @@ function* hmonas(mon) {
         case 29: {
         dhit.v = 0;
         { __pc = 11; continue; }
-        __pc = 30;
-        continue;
         }
         case 30: {
         (yield* impossible(__sl424, cptr.ld1u(mattk)));
@@ -4876,8 +4832,6 @@ function* hmonas(mon) {
         }
         case 63: {
         { __pc = 3; continue; }
-        __pc = 62;
-        continue;
         }
         case 62: {
         __pc = 2;
@@ -4890,8 +4844,6 @@ function* hmonas(mon) {
         case 65: {
         (yield* drop_uswapwep());
         { __pc = 3; continue; }
-        __pc = 64;
-        continue;
         }
         case 64: {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1)) { __pc = 67; continue; }
@@ -4899,8 +4851,6 @@ function* hmonas(mon) {
         }
         case 67: {
         { __pc = 3; continue; }
-        __pc = 66;
-        continue;
         }
         case 66: {
         if (!Upolyd()) { __pc = 69; continue; }
@@ -4908,8 +4858,6 @@ function* hmonas(mon) {
         }
         case 69: {
         { __pc = 3; continue; }
-        __pc = 68;
-        continue;
         }
         case 68: {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) { __pc = 71; continue; }
@@ -4917,8 +4865,6 @@ function* hmonas(mon) {
         }
         case 71: {
         { __pc = 3; continue; }
-        __pc = 70;
-        continue;
         }
         case 70: {
         __pc = 6;
@@ -4933,8 +4879,6 @@ function* hmonas(mon) {
         cptr.st1o(gv, $instance_globals_v_vis, 0);
         cptr.stI32o(gt, $instance_globals_t_twohits, 0);
         return schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)));
-        __pc = -1;
-        continue;
         }
         }
         if (__pc === -1) break __dispatch;

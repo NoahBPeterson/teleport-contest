@@ -1005,8 +1005,6 @@ export function* level_tele() {
         }
         case 12: {
         { __pc = 1; continue; }
-        __pc = 11;
-        continue;
         }
         case 11: {
         __pc = 9;
@@ -1026,8 +1024,6 @@ export function* level_tele() {
         }
         case 14: {
         { __pc = 2; continue; }
-        __pc = 13;
-        continue;
         }
         case 15: {
         if (HConfusion() && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1215, __sl48), rnl(5)) : rnl(5))) { __pc = 17; continue; }
@@ -1036,8 +1032,6 @@ export function* level_tele() {
         case 17: {
         (yield* pline(__sl54));
         { __pc = 2; continue; }
-        __pc = 16;
-        continue;
         }
         case 18: {
         if (!strcmp(cptr.decay(buf), __sl55)) {
@@ -1097,8 +1091,6 @@ export function* level_tele() {
         }
         case 25: {
         { __pc = 2; continue; }
-        __pc = 24;
-        continue;
         }
         case 24: {
         if ((yield* yn_function(__sl58, cptr.decay(ynqchars), 113, 1)) != 121)
@@ -1114,8 +1106,6 @@ export function* level_tele() {
         (yield* pline(__sl65));
         (yield* Your(__sl66, cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl67 : __sl68));
         return;
-        __pc = 22;
-        continue;
         }
         case 22: {
         if (single_level_branch(cptr.add(u, $you_uz)) && newlev > 0 && !force_dest) {
@@ -1164,8 +1154,6 @@ export function* level_tele() {
         }
         case 27: {
         { __pc = 2; continue; }
-        __pc = 26;
-        continue;
         }
         case 26: {
         if (newlev < 0 && !force_dest) {

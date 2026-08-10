@@ -1788,8 +1788,6 @@ export function potionhit(mon, obj, how) {
         }
         case 29: {
         { __pc = 2; continue; }
-        __pc = 28;
-        continue;
         }
         case 28: {
         // @FallThrough
@@ -1815,8 +1813,6 @@ export function potionhit(mon, obj, how) {
         if (cureblind)
             mcureblindness(mon, schar(canseemon(mon)));
         { __pc = 9; continue; }
-        __pc = 16;
-        continue;
         }
         case 16: {
         if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_PESTILENCE, 96))) { __pc = 31; continue; }
@@ -1824,8 +1820,6 @@ export function potionhit(mon, obj, how) {
         }
         case 31: {
         { __pc = 1; continue; }
-        __pc = 30;
-        continue;
         }
         case 30: {
         if (dmgtype(cptr.ldPtro(mon, $monst_data), NHM.AD_DISE) || dmgtype(cptr.ldPtro(mon, $monst_data), NHM.AD_PEST) || Resists_Elem(mon, NHC.POISON_RES)) { __pc = 33; continue; }
@@ -1835,8 +1829,6 @@ export function potionhit(mon, obj, how) {
         if (canseemon(mon))
             pline(__sl213, Monnam(mon));
         { __pc = 9; continue; }
-        __pc = 32;
-        continue;
         }
         case 32: {
         __pc = 2;
@@ -1849,8 +1841,6 @@ export function potionhit(mon, obj, how) {
                 pline(__sl214, Monnam(mon));
         }
         { __pc = 9; continue; }
-        __pc = 17;
-        continue;
         }
         case 17: {
         __pc = 18;
@@ -1860,8 +1850,6 @@ export function potionhit(mon, obj, how) {
         if (!resist(mon, NHC.POTION_CLASS, 0, NHM.NOTELL))
             cptr.stI32o(mon, $monst_mconf, 1);
         { __pc = 9; continue; }
-        __pc = 19;
-        continue;
         }
         case 19: {
         sawit = schar((canseemon(mon) || sensemon(mon) ? 1 : 0));
@@ -1877,8 +1865,6 @@ export function potionhit(mon, obj, how) {
             pline(__sl216, Monnam(mon));
         }
         { __pc = 9; continue; }
-        __pc = 20;
-        continue;
         }
         case 20: {
         if (sleep_monst(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1804, __sl199), rnd(12)) : rnd(12)), NHC.POTION_CLASS)) {
@@ -1886,23 +1872,17 @@ export function potionhit(mon, obj, how) {
             slept_monst(mon);
         }
         { __pc = 9; continue; }
-        __pc = 21;
-        continue;
         }
         case 21: {
         if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
             paralyze_monst(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1814, __sl199), rnd(25)) : rnd(25)));
         }
         { __pc = 9; continue; }
-        __pc = 22;
-        continue;
         }
         case 22: {
         angermon = 0;
         mon_adjust_speed(mon, 1, obj);
         { __pc = 9; continue; }
-        __pc = 23;
-        continue;
         }
         case 23: {
         if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && !(!(cptr.ldI32o(mon, $monst_mcansee) & 1) && !(cptr.ldI32o(mon, $monst_mblinded) & 127))) {
@@ -1912,8 +1892,6 @@ export function potionhit(mon, obj, how) {
             cptr.stI32o(mon, $monst_mcansee, 0);
         }
         { __pc = 9; continue; }
-        __pc = 24;
-        continue;
         }
         case 24: {
         if (mon_hates_blessings(mon) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) != 0n) || (cptr.ldI16o((mon), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((mon), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((mon), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) {
@@ -1945,15 +1923,11 @@ export function potionhit(mon, obj, how) {
                 killed(mon);
         }
         { __pc = 9; continue; }
-        __pc = 25;
-        continue;
         }
         case 25: {
         if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
             explode_oil(obj, i16(tx), i16(ty));
         { __pc = 9; continue; }
-        __pc = 26;
-        continue;
         }
         case 26: {
         if (!Resists_Elem(mon, NHC.ACID_RES) && !resist(mon, NHC.POTION_CLASS, 0, NHM.NOTELL)) {
@@ -1969,14 +1943,10 @@ export function potionhit(mon, obj, how) {
             }
         }
         { __pc = 9; continue; }
-        __pc = 27;
-        continue;
         }
         case 27: {
         void bhitm(mon, obj);
         { __pc = 9; continue; }
-        __pc = 9;
-        continue;
         }
         case 9: {
         if (!(cptr.ldI32o((mon), $monst_mhp) < 1)) {
