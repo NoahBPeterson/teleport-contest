@@ -32,13 +32,47 @@
 // evidence, and every pair must FAIL. A harness that cannot fail on a
 // deliberately broken reset is not evidence of anything.
 //
+// THROUGH THE REAL PATH. `--via runsegment` drives the test side through
+// js/jsmain.js's exported `runSegment` — the function the judge calls — instead
+// of through js/boot/reset-realm.mjs directly. That is a different claim and a
+// stronger one: not "a reset realm reproduces a fresh realm" but "the entry
+// point reproduces a fresh realm", which additionally covers how runSegment
+// acquires the realm, when it decides to reset, what it does with the result
+// object, and its fallback. The observable narrows to exactly what runSegment
+// exposes — screens, cursors, animation frames, the RNG log, and a thrown
+// error — because stdout and the exit code are not on that interface; both
+// sides are masked identically so the comparison stays honest about it.
+//
 // USAGE
 //   node tools/reset-diff.mjs                      # the default pair set
 //   node tools/reset-diff.mjs --pairs A:B,B:B      # explicit pairs (A then B)
 //   node tools/reset-diff.mjs --self A,B,C         # self-pairs A:A, B:B, ...
+//   node tools/reset-diff.mjs --via runsegment     # test side via js/jsmain.js
+//   node tools/reset-diff.mjs --build yield        # js/generated-y (see below)
 //   node tools/reset-diff.mjs --force-noop         # reset := no-op (red proof)
 //   node tools/reset-diff.mjs --json out.json      # machine-readable result
 //   node tools/reset-diff.mjs --quiet              # only the verdict table
+//
+// BOTH BUILDS. `--build yield` runs the whole thing against js/generated-y/ —
+// tools/c2js/yieldify.mjs's rewrite, which js/boot/main-thread-engine.mjs plays
+// interactively and which now serves a whole corpus out of one reset realm.
+// Its reset blocks come from the same pass over a differently shaped source
+// (4,666 of its functions are generators), so "the sync build's reset is exact"
+// is not evidence about it. Reference and test both use that build, so what is
+// being compared is still reset-vs-fork and not yield-vs-sync — the corpus
+// already certifies the transform itself, byte-exact, 69/69.
+//
+// RUN `--build yield` ONE PAIR PER PROCESS. The REFERENCE side forks a graph
+// per segment, and a yieldable graph is ~190 MB of unloadable module map
+// against the sync build's ~70 MB. The default twelve pairs need seventeen of
+// them, and the run stops making progress somewhere past the eighth — 380% CPU
+// in GC against a 1.5 GB live set, which is exactly the pathology this whole
+// page exists to remove, met here in the one place that cannot use the cure.
+// Per pair it is 10-20 s:
+//
+//   for p in seed0030:seed0030 seed8000:seed0030 seed0030:seed4500; do
+//     node --max-old-space-size=8192 tools/reset-diff.mjs --build yield --pairs $p
+//   done
 //
 // Session names are matched against sessions/ and sessions-extra/ by prefix,
 // so `seed0013` finds `seed0013-friday13-save-then-fullmoon-restore`.
@@ -188,6 +222,39 @@ async function runForked(segments, ctx) {
 }
 
 /**
+ * Test, through the entry point: every segment handed to js/jsmain.js's
+ * `runSegment` exactly as the judge hands it over, in one process, so that
+ * runSegment's own process-wide realm is what serves them.
+ *
+ * runSegment throws on a game error rather than returning one, and exposes no
+ * stdout or exit code, so what comes back here is the judge's own view of a
+ * segment and nothing more. maskJudgeView() below narrows the REFERENCE to the
+ * same view; if it did not, every pair would "fail" on a field neither side
+ * could see.
+ */
+async function runViaRunSegment(runSegment, segments) {
+    const storage = makeStorage();
+    const out = [];
+    for (const s of segments) {
+        let r;
+        try {
+            const g = await runSegment({ ...s, storage });
+            r = {
+                screens: g.getScreens(), cursors: g.getCursors(),
+                animFramesByStep: g.getAnimationFramesByStep(), rngLog: g.getRngLog(),
+            };
+        } catch (e) {
+            r = { error: e };
+        }
+        out.push(maskJudgeView(observe(r)));
+    }
+    return out;
+}
+
+/** Blank the two fields runSegment's interface does not carry. */
+function maskJudgeView(o) { return { ...o, stdout: '', exitCode: null }; }
+
+/**
  * Test: every segment in the SAME graph, reset in between — including between
  * the segments of one session, which is the part that replaces the fork.
  */
@@ -212,7 +279,7 @@ async function runInRealm(realm, segments, ctx) {
 // ------------------------------------------------------------------- main ---
 
 function parseArgs(argv) {
-    const o = { pairs: null, self: null, json: null, quiet: false, forceNoop: false, list: false };
+    const o = { pairs: null, self: null, json: null, quiet: false, forceNoop: false, list: false, via: 'realm', build: 'sync' };
     for (let i = 0; i < argv.length; i++) {
         const a = argv[i];
         if (a === '--quiet') o.quiet = true;
@@ -221,10 +288,25 @@ function parseArgs(argv) {
         else if (a === '--json') o.json = argv[++i];
         else if (a === '--pairs') o.pairs = argv[++i];
         else if (a === '--self') o.self = argv[++i];
+        else if (a === '--via') o.via = argv[++i];
+        else if (a === '--build') o.build = argv[++i];
+        else if (a.startsWith('--build=')) o.build = a.slice(8);
         else if (a.startsWith('--pairs=')) o.pairs = a.slice(8);
         else if (a.startsWith('--self=')) o.self = a.slice(7);
         else if (a.startsWith('--json=')) o.json = a.slice(7);
+        else if (a.startsWith('--via=')) o.via = a.slice(6);
         else throw new Error(`unknown argument: ${a}`);
+    }
+    if (o.via !== 'realm' && o.via !== 'runsegment') {
+        throw new Error(`--via must be "realm" or "runsegment", not "${o.via}"`);
+    }
+    if (o.build !== 'sync' && o.build !== 'yield') {
+        throw new Error(`--build must be "sync" or "yield", not "${o.build}"`);
+    }
+    if (o.build === 'yield' && o.via === 'runsegment') {
+        // runSegment is the scored path and the scored path is the sync build.
+        // Silently ignoring one of the two flags would be the wrong answer.
+        throw new Error('--via runsegment always uses the sync build; drop --build yield');
     }
     return o;
 }
@@ -279,11 +361,11 @@ async function main() {
     // adds. That makes a reference realm bit-for-bit the thing
     // js/jsmain.js:runSegment acquires today, so the reference cannot be
     // contaminated by the machinery under test.
-    const ctx = { forks: 0, resets: [], acquire: () => resetRealm.acquire({ arm: false }) };
+    const ctx = { forks: 0, resets: [], acquire: () => resetRealm.acquire({ arm: false, build: opts.build }) };
 
     // Is this build able to reset at all? Ask once, cheaply, before spending
     // minutes on reference runs.
-    const probe = await resetRealm.acquire();
+    const probe = await resetRealm.acquire({ build: opts.build });
     const resettable = probe.resettable;
     if (!resettable && !opts.forceNoop) {
         process.stdout.write(
@@ -305,12 +387,20 @@ async function main() {
         return segCache.get(name);
     };
 
+    // The entry point, in the mode that tests it. Imported by path so that it
+    // and this file resolve js/boot/reset-realm.mjs to the same module — which
+    // is what makes --force-noop's prototype patch reach runSegment's realm too.
+    const runSegment = opts.via === 'runsegment'
+        ? (await import(pathToFileURL(join(ROOT, 'js/jsmain.js')).href)).runSegment
+        : null;
+
     // Reference digests, computed once per session and reused across pairs.
     const refCache = new Map();
     const referenceFor = async (name) => {
         if (!refCache.has(name)) {
             const t0 = performance.now();
-            const obs = await runForked(await segsFor(name), ctx);
+            let obs = await runForked(await segsFor(name), ctx);
+            if (runSegment) obs = obs.map(maskJudgeView);
             if (!opts.quiet) {
                 const t = tally(obs);
                 process.stdout.write(`  reference ${name}: ${t.segments} seg, ${t.screens} screens, `
@@ -327,7 +417,7 @@ async function main() {
     // only after a failure, so pair k+1 is not judged on pair k's wreckage.
     const rows = [];
     let failures = 0;
-    let realm = probe.resettable || opts.forceNoop ? probe : await resetRealm.acquire();
+    let realm = probe.resettable || opts.forceNoop ? probe : await resetRealm.acquire({ build: opts.build });
     for (const [a, b] of pairs) {
         const label = `${short(a)} -> ${short(b)}`;
         if (!opts.quiet) process.stdout.write(`\n[pair] ${label}\n`);
@@ -337,8 +427,13 @@ async function main() {
         let got = null, err = null;
         const t0 = performance.now();
         try {
-            await runInRealm(realm, await segsFor(a), ctx);   // session A, discarded
-            got = await runInRealm(realm, await segsFor(b), ctx); // session B, compared
+            if (runSegment) {
+                await runViaRunSegment(runSegment, await segsFor(a));   // session A, discarded
+                got = await runViaRunSegment(runSegment, await segsFor(b)); // session B, compared
+            } else {
+                await runInRealm(realm, await segsFor(a), ctx);   // session A, discarded
+                got = await runInRealm(realm, await segsFor(b), ctx); // session B, compared
+            }
         } catch (e) {
             err = e;
         }
@@ -359,10 +454,16 @@ async function main() {
                       + `\n      reference: ${d.ref}\n      reset:     ${d.got}`;
             }
         }
-        if (verdict !== 'PASS') { failures++; realm = await resetRealm.acquire(); }
+        // A fresh realm after a failure, so pair k+1 is not judged on pair k's
+        // wreckage. Not in runsegment mode: the realm belongs to js/jsmain.js
+        // and replacing it here would be testing something else.
+        if (verdict !== 'PASS') { failures++; if (!runSegment) realm = await resetRealm.acquire({ build: opts.build }); }
         if (!opts.quiet) {
+            // In runsegment mode the resets happen inside js/jsmain.js and this
+            // tool never sees them, so it says so rather than printing a `0`
+            // that reads like "no reset happened".
             process.stdout.write(`  ${verdict}${detail ? ': ' + detail : ''}  (${ms} ms, `
-                + `${resetMs.length} resets)\n`);
+                + (runSegment ? 'resets internal to runSegment' : `${resetMs.length} resets`) + ')\n');
         }
         rows.push({ a, b, verdict, detail, ms, resets: resetMs });
     }
