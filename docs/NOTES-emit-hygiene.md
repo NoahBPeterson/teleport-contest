@@ -5,14 +5,17 @@ in the order they were made, which is also the order of how much could go
 wrong: a correctness/reproducibility fix, a local rewrite with one real
 hazard, and a tier that needed a new analysis before it was allowed to exist.
 
-Every one has an off switch, and with all three off the build reproduces
-`origin/main`'s `js/generated` byte-for-byte.
+Every one has a switch, and with all three in their "restore" position the
+build reproduces `origin/main`'s `js/generated` byte-for-byte.
 
-| flag | default | off restores |
+| flag | default | what the other setting does |
 |---|---|---|
-| `C2JS_FILEHYGIENE=0` | on | the raw clang spelling of `__FILE__` |
-| `C2JS_FLATTEN_DO=0` | on | the literal `do { ... } while (0)` transcription |
-| `C2JS_MACROFN=0` | on | function-like macro expansions, inline |
+| `C2JS_FILEHYGIENE=0` | **on** | restores the raw clang spelling of `__FILE__` |
+| `C2JS_FLATTEN_DO=0` | **on** | restores the literal `do { ... } while (0)` transcription |
+| `C2JS_MACROFN=1` | **off** | names function-like macro expansions (§3) — correct, gated, tested, and **+3.4% of slope**, so it does not ship on (§4) |
+
+Two of the three ship on. The third is the interesting one: it is finished
+work that the measurement declined, and §4 is the measurement.
 
 ---
 
@@ -204,7 +207,13 @@ anyway: it is what makes the next corpus safe.
 
 ---
 
-## 3. Function-like macros — tier 1.12
+## 3. Function-like macros — tier 1.12 (built, gated, **off**)
+
+> **Read §3.9 and §4 before turning this on.** Everything in §3 is true and
+> every safety argument in it holds; the tier is nonetheless `C2JS_MACROFN=1`
+> rather than the default, because six interleaved rounds priced it at +3.4%
+> of slope and the standing order is parity > speed > readability. §3.9 is the
+> narrowing that was supposed to make it free, and the reason it did not.
 
 `docs/NOTES-readability.md` §5 designed this and deferred it. The reason it
 deferred it is the whole problem:
@@ -316,21 +325,36 @@ cannot move an evaluation out of a loop condition.
 
 ### what it bought
 
-| | |
-|---|---|
-| helpers in `js/generated/nhmacrofn.js` | **339** |
-| call sites | **6,202** |
-| — case (a), every argument only loads memory | **6,162** |
-| — case (b), an argument calls a provably pure function | **40** |
-| sites where the macro repeated an argument | **2,557** |
-| — of those repeats, ones holding a call (now evaluated once) | **48** |
-| `js/generated` size | 15,965,231 → **15,599,340 bytes (−2.29%)**, including a 79 KB `nhmacrofn.js` |
+Three admission rules were built and all three measured. The first shipped
+nothing; the second and third are §3.9. `C2JS_MACROFN_REPEAT=0` restores the
+wide rule, so all three are still reachable from one checkout.
 
-The tier *shrinks* the tree: 339 named bodies replace more inline expansion
-than the module costs. That is the opposite of the readability leg before it,
-which paid +19.5% for its names.
+| | wide (first) | repeat-only | repeat-only, flat audit (§3.9) |
+|---|---|---|---|
+| helpers in `js/generated/nhmacrofn.js` | 339 | 177 | **212** |
+| call sites | 6,202 | 2,726 | **2,297** |
+| — case (a), every argument only loads memory | 6,162 | 2,700 | 2,290 |
+| — case (b), an argument calls a provably pure function | 40 | 26 | 7 |
+| sites where the macro repeated an argument | 2,557 | 2,726 (all) | **2,297 (all)** |
+| — of those, ones holding a call (now evaluated once) | 48 | 48 | 10 |
+| `js/generated` bytes (`origin/main` = 15,965,231) | 15,599,371 | 15,680,131 | 15,639,713 |
 
-The motivating line, `detect.js`:
+Every one of them *shrinks* the tree: named bodies replace more inline
+expansion than the module costs. That is the opposite of the readability leg
+before it, which paid +19.5% for its names.
+
+The motivating line from `docs/NOTES-readability.md` §5 — the one this tier
+was designed around — only works under the third rule, and §3.9 is why:
+
+```js
+// origin/main, detect.js:825 — glyph_at expanded twenty times in one condition
+if (!(((glyph_at(…)) == NHC.GLYPH_OBJ_OFF || …) || (…) || (…) || (…)))
+
+// C2JS_MACROFN=1
+if (!glyph_is_object(glyph_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
+```
+
+And the one §5 actually wrote down, which every rule names:
 
 ```js
 // before
@@ -343,8 +367,10 @@ if (!glyph_is_trap(glyph_at(x, y)))
 
 ### the RNG-safety argument for every case-(b) callee
 
-All 48 case-(b) hoists rest on exactly **five** functions. Each is pure by the
-C analysis *and* by the independent audit of its emitted body:
+The case-(b) hoists rest on exactly **five** functions — the same five under
+every admission rule, which is why narrowing did not need a new safety
+argument. Each is pure by the C analysis *and* by the independent audit of its
+emitted body:
 
 | callee | macros that hoisted it | emitted callees | effects |
 |---|---|---|---|
@@ -377,24 +403,30 @@ is a literal.
 
 ### refusals, and why
 
-Of **18,286** expansions the extent test matched:
+Under the shipping-candidate rule (repeat-only, flat audit), of **16,723**
+expansions the extent test matched:
 
 | refused | count | why |
 |---|---|---|
-| arity | 4,839 | a parameter the body never mentions, so the positional mapping from call-site order to parameter order is not one this can trust |
-| non-value expansion | 2,360 | the expansion is a pointer or a buffer, not a plain value |
-| impure body | 1,584 | the body writes, calls something not provably pure, or calls through a parameter |
-| back-substitution audit | 1,552 | putting the arguments back did not reproduce the inline emission |
+| arity | 4,786 | a parameter the body never mentions, so the positional mapping from call-site order to parameter order is not one this can trust |
+| **single use** | **4,243** | the body spells every parameter exactly once — §3.9, the narrowing |
+| non-value expansion | 2,108 | the expansion is a pointer or a buffer, not a plain value |
+| impure body | 1,890 | the body writes, calls something not provably pure, or calls through a parameter |
 | parameter name clash | 893 | a parameter name occurs in the body more often than the argument does |
 | **conditional-only argument** | **430** | every occurrence of a non-total argument sits behind a short circuit |
-| body mismatch | 379 | a second site emitted a different body for the same name |
+| body mismatch | 29 | a second site emitted a different body for the same name |
 | split arguments | 23 | two occurrences of one parameter did not emit the same text |
 | argument callee not provably pure | 22 | case (b), refused |
 | side-effecting argument | 2 | the argument assigns or steps |
+| back-substitution audit | **0** | see §3.9 — under the old yardstick this was 1,552, and every one of them was the yardstick |
 | alias body | 0 | (the guard that catches the `glyph_is_object` failure; nothing hits it now) |
 
 The default is refuse: anything the walker does not recognize, and any shape it
 cannot read, leaves the expansion inline.
+
+`C2JS_MFN_WHY=1` prints one line per (macro, verdict), which is how "why is
+`glyph_is_object` not in there?" became a question with an answer instead of a
+guess.
 
 ### the yieldable build agrees the bodies are pure
 
@@ -409,46 +441,131 @@ the yieldable build to colour") restated as a measurement rather than a rule.
 
 §3 said a helper body may hold "no calls but `cptr.*`". Here a body may also
 call a **provably pure** function — the same evidence the argument hoist runs
-on. That is what named `on_level`, `clear_path`, `canseemon`, `sensemon` and
-the `mondata` predicates; `nhmacrofn.js` imports 14 such functions.
+on. That is what named `clear_path`, `canseemon`, `sensemon`, `has_ceiling` and
+the `mondata` predicates; under the shipping-candidate rule `nhmacrofn.js`
+calls **15** such functions (and reads 6 module-scope storages besides).
 
 Doing it required splitting `cptr` into loads and effects, which the
 object-like tier never had to do because no object-like macro body writes. The
 existing `helperFreeVars` would have accepted a body containing
 `cptr.stI32o(...)`; it no longer would.
 
-`cmap_to_glyph` is the notable macro this still refuses. It repeats its
-argument up to **seven** times and would have been the largest single win, but
-its emitted body calls `sokoban_dnum()` — an `nhprop.js` helper, not a C
-function, so not something `collectPureFunctions` has a verdict for. Admitting
+`cmap_to_glyph` is the notable macro this still refuses, under every rule. It
+repeats its argument up to **seven** times and would have been the largest
+single win, but its body flattens through `cmap_walls_to_glyph`, whose
+`In_mines/In_hell/Is_knox/In_sokoban` arms emit `sokoban_dnum()` and friends —
+`nhprop.js` helpers, not C functions, so not something `collectPureFunctions`
+has a verdict for (28 sites refused on the body, 10 more on arity). Admitting
 `nhprop` helpers as callees would work (they are pure loads by construction)
 but makes capture order-dependent across incremental builds, which is a
-reproducibility risk not worth taking in this leg. It is the obvious next step.
+reproducibility risk not worth taking — and, after §4, not one with a payoff.
+
+---
+
+## 3.9. The narrowing, and the bug it uncovered
+
+The first A/B (three complete pairs, §4) put the wide rule at +1.9%..+3.8% of
+slope, and named its own fix: of 6,202 sites, 2,557 were macros that **repeat**
+a parameter. Those are the sites a helper is *for* — the call replaces N
+evaluations with one. Where a body spells each parameter once, the helper
+evaluates the argument exactly as often as C did and the only difference is a
+call, paid per move, to buy a name for an expansion that read fine inline.
+
+### the rule
+
+One clause, checked **last**, so every refusal count above it still describes
+the whole population: some parameter must occur in the body more than once.
+Nothing else moved — purity analysis, the conditionality guard, the
+back-substitution audit, the name-clash and arity checks, the per-site local
+re-check, `assertNamespaceExports()`. `repeats` is a count the audit has
+already pinned: it is exactly how many times the emitted body spells the
+parameter, so a site that reaches the clause with a repeat is one where the
+call *replaces* work.
+
+**6,202 → 2,726 sites, 339 → 177 helpers, 4,568 expansions refused as
+single-use.** `C2JS_MACROFN_REPEAT=0` restores the wide rule.
+
+### then: why was `glyph_is_object` never in the module?
+
+It is the macro this tier was designed around, and it was refused at all 17 of
+its sites — together with `glyph_is_normal_object`, `glyph_is_statue`,
+`glyph_is_body` and `glyph_is_generic_object`. Not for a safety reason. For an
+artifact of what the audit compared against.
+
+Helper bodies are captured **flat** — nested substitution suppressed — so that
+a helper is a leaf and a site costs one call rather than three (§1.12's own
+rule, `docs/NOTES-readability.md` §3). The yardstick that flat body was checked
+against was **not** flat: it was this site's tier-active emission, in which the
+four nested macros `glyph_is_object` expands to had already been named. Back
+substituting a flat body into a nested-and-named emission cannot reproduce it
+character for character, so the *outer* macro — the only one whose call
+collapses the twenty `glyph_at` evaluations into one — lost to its own leaves,
+at every site, and the site emitted a soup of five or six leaf calls instead.
+
+**1,552 of the tier's refusals were this and nothing else.**
+
+The fix is to compare like with like: emit the site's yardstick, its arguments
+and its body all with the tier suppressed underneath. That emission is exactly
+what a `C2JS_MACROFN=0` build produces at that node — a yardstick this tier
+cannot influence, which is a better proof than the one it replaced, because the
+old one was checking the tier's output against the tier's output.
+
+| | before | after |
+|---|---|---|
+| back-substitution refusals | 1,552 | **0** |
+| helpers | 177 | **212** |
+| call sites | 2,726 | **2,297** |
+| `glyph_is_object` sites named | 0 | **17** |
+| bodies that call another helper | 0 | **0** (still leaves) |
+
+Fewer sites, more names, and each site is now one call where it was several,
+with its argument evaluated once rather than once per leaf. Capture also stopped
+depending on which nested macro some earlier module happened to name first,
+which is one less order dependence in a build that has already been bitten by
+one (§4).
+
+### and it was still not free
+
+§4 measured all of it. The narrowing removed **63%** of the call sites and
+**none** of the cost; letting the outer macro win made the slope worse again.
+That is the useful finding, and it is a locating one: the cost was never "6,202
+calls". It lives in exactly the sites a macro repeats an argument at, because
+those are the hot ones — `glyph_is_*`, `IS_POOL`, `ACCESSIBLE` inside the
+vision and display loops — and the inline expansion there is what the JIT was
+specializing. Naming *more* of one expansion moves it the wrong way for the
+same reason.
 
 ---
 
 ## 4. Gates
 
-Run at `a4a7e78`, after `C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`.
+Re-run in full on the **shipping tree** (`5044950`: §1 and §2 on,
+`C2JS_MACROFN` off), after
+`C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`.
 
 | gate | result |
 |---|---|
 | batch build | 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures** |
-| `C2JS_FOLD_VERIFY=1` | **337,424 folds, 0 mismatched, 0 unevaluable** |
-| full rebuild reproduces the committed trees | **byte-identical** (`js/generated`, `js/generated-y`, both reset barrels) |
+| `C2JS_FOLD_VERIFY=1` | **301,692 folds, 0 mismatched, 0 unevaluable** |
+| full rebuild reproduces the committed trees | **byte-identical** (`js/generated`, `js/generated-y`, both reset barrels) — `git status` clean after `--force` |
 | all three flags off reproduces `origin/main` | **byte-identical** for every file that existed there; the one addition is `nhmacrofn.js`, which comes out with no helpers (same precedent as `nhfield.js`/`nhprop.js` in the readability leg) |
+| the shipping tree **is** A/B tree (ii) | `diff -rq` against the measured `C2JS_MACROFN=0` build: **identical**, so §4's numbers describe the committed bytes |
 | no-absolute-path assertion | **360 modules, 0 hits** |
-| `reset-census` | 179 modules, 45,951 declarations, plan 1,416, **0 unclassified** |
-| corpus (`sessions/` + `sessions-extra/`), twice | **69/69** and **69/69** |
-| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm |
-| `purity-audit.mjs` | 14 functions `nhmacrofn.js` calls, **0 disagree** with the AST analysis |
-| escape-analysis unit cases | **18/18** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `reset-census` | 179 modules, 45,847 declarations, plan 1,416, **every declaration classified** |
+| corpus (`sessions/` + `sessions-extra/`), twice | **69/69** and **69/69** — plus 6 more 69/69 runs of this same tree inside the A/B |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `purity-audit.mjs` | 0 functions `nhmacrofn.js` calls (tier off), **0 disagree**; under `C2JS_MACROFN=1` it audits the helper module's callees and also reports 0 |
 | `test-rnd` / `test-hacklib` / `test-setjmp` / `test-union` | PASS (2,983/2,983 RNG calls; 870 cases, 0 failures) |
 | `node --test test/*.test.mjs` | **6/6** |
-| `tools/strict-score.mjs` | 509 files reachable from 2 roots, **0 violations** |
+| `tools/strict-score.mjs` | 507 files reachable from 2 roots, **0 violations** |
 | `judge-sim/run.mjs` seed8000, seed0013 | **PASS**, 0 segment mismatches, 0 out-of-scope requests |
-| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 351 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 536 ms |
-| sandboxed `playability_runner.mjs` (`node --permission`) | 44 sessions, **0 failures**, 9,096 moves, **3.18 ms/move** (documented baseline 3.03–3.15) |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 350 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 487 ms |
+| sandboxed `playability_runner.mjs` (`node --permission`) | 44 sessions, **0 failures**, 9,096 moves, **3.147 ms/move** (documented baseline 3.03–3.15) |
+
+The escape-analysis unit cases (18/18) were run against §2's scanner when it
+landed; §2's code is untouched since, and every build still reports 421 seen /
+421 flattened / 0 disagreements.
 
 ### a bug this leg's own reproducibility check caught
 
@@ -472,33 +589,87 @@ set makes writer order load-bearing**, and every module added to `js/generated`
 after this point has to be written before the scans or be caught by the
 assertion.
 
-### the A/B
+### the first A/B — the wide rule, three pairs
 
 Interleaved ABBA on the scoring path over all 69 sessions, both `js/generated`
 and `js/generated-y` swapped every time. **Three complete pairs** (the run was
 cut short at 7 of 10 measurements; the fourth `new` run is unpaired and is
 excluded from the deltas below).
 
-| | base (`origin/main`) | new (this branch) | median Δ | min Δ |
+| | base (`origin/main`) | new (wide tier) | median Δ | min Δ |
 |---|---|---|---|---|
 | slope (ms/turn) | 0.53 / 0.53 / 0.54 | 0.55 / 0.54 / 0.55 | **+3.8%** | **+1.9%** |
 | startup (ms) | 763 / 765 / 771 | 757 / 759 / 763 | **−0.8%** | **−0.8%** |
 
-The direction is consistent in every pair, which is what makes a three-pair
-result worth reading at all: base never produced a slope above 0.54, new never
-produced one below 0.54. **Slope is worse and startup is better**, and both are
-explained by the same change — 6,202 inline expansions became function calls.
-Fewer source bytes to parse (−2.29%) is the startup win; a call where there was
-straight-line code is the per-move cost.
+The direction was consistent in every pair — base never produced a slope above
+0.54, new never one below 0.54. **Slope worse, startup better**, both explained
+by the same change: 6,202 inline expansions became calls, and there are fewer
+source bytes to parse. That is what §3.9 was written to fix.
 
-**Task 3(b) does not show up.** The 48 hoisted repeats are a rounding error
-against 6,162 case-(a) sites, and against a corpus where `glyph_at` is not hot.
-The call-collapsing is real and provable but it is inside the noise floor; the
-aggregate slope is dominated by case (a), and case (a) costs rather than pays.
+### the second A/B — four trees, six rounds, and the decision
 
-Provisional on the two missing pairs: the exact magnitude (+1.9% to +3.8%
-spans the min/median disagreement, and the previous readability leg used ±2% as
-its guard). The **sign** is not provisional — six of six measurements agree.
+Same methodology, one more tree and twice the rounds. Both `js/generated` and
+`js/generated-y` swapped every time; each round measures all four trees and the
+round's direction alternates (`A B C D` / `D C B A`) so a monotone drift
+cancels; median **and** min, because the box is shared and drifts.
+**24 runs, 69/69 passing in every one.**
+
+| tree | | slope median (min) | vs (ii) median (min) | startup median | corpus total median |
+|---|---|---|---|---|---|
+| (i) | `origin/main` | 0.5248 (0.5234) | −0.6% (+0.8%) | 795.0 ms | 87,480 ms |
+| (ii) | **tasks 1+2**, `C2JS_MACROFN=0` | 0.5280 (0.5192) | — | 811.3 ms | 88,469 ms |
+| (iii) | + narrowed tier, 2,726 sites | 0.5390 (0.5349) | **+2.1% (+3.0%)** | 797.4 ms | 88,995 ms |
+| (iv) | + narrowed tier, flat audit, 2,297 sites | 0.5457 (0.5377) | **+3.4% (+3.6%)** | **752.8 ms** | **85,659 ms** |
+
+Paired per round against (ii), which is the statistic that survives a drifting
+machine:
+
+```
+(i)    -0.8  +0.2  -0.1  +1.1  -0.0  -1.0   median -0.1%
+(iii)  +1.6  +2.4  +2.4  +3.6  +1.2  +13.6  median +2.4%
+(iv)   +3.7  +4.0  +2.0  +3.6  +2.7  +3.9   median +3.6%
+```
+
+(iii)'s sixth round is contaminated — 0.6020 is the only slope above 0.56 in
+all 24 runs — which is exactly why both statistics are reported and why the
+median is the one quoted. It does not change the verdict: (iii) is over the
+threshold on the median, the min and five of six clean rounds.
+
+**The decision rule, applied.** Within ±0.5% of (ii) → ship the tier on;
+0.5–1.5% → ship it and say so; **>1.5% → ship tasks 1+2 only, keep the tier
+behind the flag, document why**. (iii) is +2.1% and (iv) is +3.4%, so the tier
+ships **off**, and `5044950` makes `C2JS_MACROFN=1` opt-in.
+
+**Tasks 1 and 2 are free**: (ii) against (i) is −0.6% median and +0.8% min —
+i.e. nothing, in both directions, with the sign disagreeing between the two
+statistics.
+
+**The narrowing did not fail to work, it worked and told us something.** It
+removed 63% of the call sites and none of the cost; (iv) named fewer sites
+still and cost more. So the cost is not proportional to calls — it is
+concentrated in the repeat sites, which are the hot ones (§3.9).
+
+### the case for turning it on anyway, which is why it is a flag
+
+The same 24 runs say the tier is a **net win in wall time** on this corpus:
+
+| | (ii) tasks 1+2 | (iv) tier on | Δ |
+|---|---|---|---|
+| startup (median of 6) | 811.3 ms | 752.8 ms | **−7.2%** |
+| corpus total, 69 sessions / 61,892 moves (median) | 88,469 ms | 85,659 ms | **−3.2%** |
+| corpus total (min) | 85,262 ms | **85,013 ms** | lowest of the four trees |
+
+The arithmetic is exact: 69 sessions × 58 ms of parse saved = −4.0 s, against
+61,892 moves × 0.018 ms spent = +1.1 s. The scored path pays startup **once per
+session** and this corpus averages ~900 moves a session, so the intercept
+dominates the fit's own inputs.
+
+Slope is nonetheless the guard this project set for readability work
+(`docs/NOTES-readability.md` §4), for the good reason that a held-out session
+may be far longer than 900 moves — break-even is ~3,300 moves, and above that
+the tier loses. So the rule is applied as written and the flag defaults off.
+Both numbers are here so that turning it on is a decision someone takes on
+purpose, with the trade in front of them, rather than an accident.
 
 ---
 
@@ -510,21 +681,32 @@ its guard). The **sign** is not provisional — six of six measurements agree.
 * `98cf361` — a macro argument that only loads memory can still fault (the
   conditionality guard, widened from calls to anything non-total: 430 sites).
 * `a4a7e78` — a helper body may not call through a parameter (2 helpers).
-* `<this>` — write the helper modules before the scans that export to them,
+* `9dfac3b` — write the helper modules before the scans that export to them,
   and assert every namespace name a module reads is exported.
+* `1abc455` — name a macro only where it saves an evaluation (§3.9's narrowing:
+  6,202 → 2,726 sites, 339 → 177 helpers).
+* `2d19ead` — audit a macro body against the emission the tier does not touch
+  (§3.9's flat yardstick: `glyph_is_object` and its family, 1,552 → 0 audit
+  refusals, 2,726 → 2,297 sites over 212 helpers).
+* `5044950` — the tier ships off; the committed trees are the `C2JS_MACROFN=0`
+  build, verified byte-identical to A/B tree (ii).
 
 ## 6. Merge readiness
 
-Sections 1 and 2 are ready: §1 is a correctness fix with a proof from the C
-binary, §2 is 421/421 with no refusals and no measurable cost.
+**Ready.** What ships is §1 and §2: `__FILE__` relativization and
+`do{}while(0)` flattening, both on by default, both free.
 
-Section 3 is **correct but not free**, and the standing order is parity >
-speed > readability. It costs 2–4% of slope to buy a large readability win and
-a 2.29% smaller tree. That is a trade for Noah to make, not the emitter; it is
-one flag (`C2JS_MACROFN=0`) either way. If the cost is judged too high, the
-narrowing that keeps most of the value is to admit only macros that **repeat**
-an argument (2,557 of 6,202 sites) — those replace duplicated work rather than
-adding a call to a single use.
+* §1 is a correctness fix with a proof read out of the C binary's own string
+  table, and it is what makes the build reproducible in a clone at any path.
+* §2 is 421/421 with no refusals, no disagreements and no measurable cost.
+* §3 is finished, gated, audited and **off**. §4 priced it at +2.1%/+3.4% of
+  slope under the two narrowings and the rule said no. It is one flag —
+  `C2JS_MACROFN=1` — and §4's last table is the argument for taking that trade
+  on a startup-dominated corpus. Nothing in the shipping tree depends on it:
+  with the tier off, `nhmacrofn.js` is a header and one import.
+
+The committed `js/generated` differs from `origin/main` only by §1 and §2, and
+`C2JS_FILEHYGIENE=0 C2JS_FLATTEN_DO=0` reproduces `origin/main` byte-for-byte.
 
 On `emit-hygiene`, off `main` at `dcd42b6`. Nothing pushed, nothing merged.
 `js/generated` must be committed from a **normal** build, never a
