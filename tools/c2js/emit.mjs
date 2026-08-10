@@ -584,7 +584,7 @@ export const PROP_MODULE = './nhprop.js';
 const MACRO_FNS = process.env.C2JS_MACROFNS !== '0';
 /** name -> { code, free: [names] } for every helper any emitter has captured */
 export const MACRO_HELPERS = new Map();
-const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0 };
+const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refusedLocal: 0 };
 
 // A helper body may contain only pure loads off module-scope storage: no
 // calls but cptr.*, no assignment, no ++/--, no interned string literal (which
@@ -603,7 +603,8 @@ if (process.env.C2JS_READ_STATS) {
     `bool ctx:      ${BOOL_STATS.elided} logical results emitted bare, ${BOOL_STATS.kept} kept the \`? 1 : 0\`\n`
     + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
-    + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch\n`));
+    + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
+    + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`));
 }
 
 // spelling files we will trust: NetHack's own headers, as the compile
@@ -1381,12 +1382,21 @@ export class Emitter {
    */
   macroHelper(def, d) {
     if (d.rep !== 'val' || d.code.endsWith('()')) return null;
-    const prev = MACRO_HELPERS.get(def.name);
-    if (prev && prev.code !== d.code) { MACRO_FN_STATS.refusedMismatch++; return null; }
-    if (!prev) {
+    let h = MACRO_HELPERS.get(def.name);
+    if (h && h.code !== d.code) { MACRO_FN_STATS.refusedMismatch++; return null; }
+    if (!h) {
       const free = this.helperFreeVars(d.code);
       if (!free) { MACRO_FN_STATS.refusedImpure++; return null; }
-      MACRO_HELPERS.set(def.name, { code: d.code, free, header: def.header });
+      h = { code: d.code, free, header: def.header };
+      MACRO_HELPERS.set(def.name, h);
+    }
+    // Re-checked at EVERY site, not just where the body was captured: a local
+    // named like a global the body reads emits the very same string, so string
+    // equality alone would hand this site a helper that reads the global. The
+    // helper module resolves the name once, at its own scope, for everyone.
+    if (this.localNames && h.free.some((v) => this.localNames.has(v))) {
+      MACRO_FN_STATS.refusedLocal++;
+      return null;
     }
     MACRO_FN_STATS.named++;
     this.propRefs.add(def.name);
