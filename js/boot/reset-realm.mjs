@@ -39,8 +39,23 @@
 // in a `C2JS_RESET=1` build. Without them `acquire()` still works and `reset()`
 // reports `false` — callers must treat that as "this realm is spent", never as
 // "reset succeeded".
+//
+// BROWSERS. A page cannot fork a module graph — there is no registerHooks —
+// so the only graph it can own is its own, which is what `fork: false` takes
+// and why that is the default in a browser realm (see acquire()). That is not
+// a degradation: the page realm's graph is pristine until something runs a
+// game in it, and putting it back is exactly what this file does. What a page
+// *cannot* have is two of them, because both would sit on the one js/cptr.js
+// underneath; see `unforked` below.
 
 import { enableSegmentIsolation, segmentSpecifier } from './isolation.mjs';
+
+// Am I in a browser? Asked the way every other file in this tree asks it —
+// what the realm *is*, not what a page-supplied `process` claims. Same three
+// lines as js/jsmain.js, js/boot/interactive.mjs, js/boot/isolation.mjs and
+// js/boot/main-thread-engine.mjs; keep them in step.
+const IS_BROWSER = typeof globalThis.window !== 'undefined'
+    || typeof globalThis.WorkerGlobalScope !== 'undefined';
 
 /**
  * The two module graphs this tree can host a game in.
@@ -65,6 +80,25 @@ const BUILDS = {
 // collide with each other, nor with the tags js/jsmain.js hands out. Tags from
 // here are negative for exactly that reason — jsmain counts up from 1.
 let __tagCounter = 0;
+
+/**
+ * The realm that took THIS realm's own (unforked) module graph, if any.
+ *
+ * A forked realm is independent of every other one — it brings down its own
+ * copy of js/cptr.js with the rest of the graph — so a process may hold as many
+ * as it has heap for. An UNFORKED realm is different in kind: it is the one
+ * graph this realm has, and the two builds sit on ONE hand-written runtime, so
+ * a `sync` realm and a `yield` realm taken unforked in the same page would
+ * share js/cptr.js's pointer registry, buffer-id map and fd table. Whichever
+ * one reset first would truncate the registry under the other.
+ *
+ * That configuration does not arise today — a page either scores (js/jsmain.js)
+ * or plays (js/boot/main-thread-engine.mjs), never both — which is precisely
+ * why the day it does it must meet a refusal rather than a silent corruption.
+ * The second claimant then degrades the way it degrades when there is no reset
+ * at all: a throwaway Worker realm per game, or a refusal in words.
+ */
+let unforked = null;
 
 /**
  * One module graph plus the handle that puts it back.
@@ -182,21 +216,36 @@ function detach(r) {
  * boot never produces.
  *
  * @param {{fork?: boolean, arm?: boolean, build?: 'sync'|'yield'}} [opts]
- *        fork:false reuses the *shared* graph (only sane for the very first
- *        realm in a process, and only when nothing else has run a game in it —
- *        it is also the only option a browser has, which is what makes it worth
- *        keeping). arm:false skips the snapshot, for a realm that is knowingly
+ *        fork:false takes the realm's OWN graph rather than a copy — only sane
+ *        when nothing has run a game in it yet, and at most once per realm
+ *        (see `unforked`). It DEFAULTS to true in Node and to false in a
+ *        browser, because a browser has no other option: there is no
+ *        module.registerHooks in a page, and the page's own graph is pristine
+ *        until something plays in it. An explicit value always wins.
+ *        arm:false skips the snapshot, for a realm that is knowingly
  *        going to run exactly one game — it is then indistinguishable from what
  *        js/jsmain.js:runSegment forks, which is what makes such a realm usable
  *        as a differential *reference*. build selects which of the two module
  *        graphs to own; see BUILDS.
  */
 export async function acquire(opts) {
-    const fork = !(opts && opts.fork === false);
+    const fork = (opts && opts.fork !== undefined) ? !!opts.fork : !IS_BROWSER;
     const arm = !(opts && opts.arm === false);
     const build = (opts && opts.build) || 'sync';
     const spec = BUILDS[build];
     if (!spec) throw new Error('reset-realm: unknown build "' + build + '"');
+
+    if (!fork && unforked) {
+        throw new Error('reset-realm: this realm\'s own module graph is already '
+            + 'owned by a "' + unforked + '" realm; a second unforked realm would '
+            + 'share js/cptr.js with it and each reset would truncate the other\'s '
+            + 'pointer registry');
+    }
+    // Claimed BEFORE the first await, so two concurrent acquires cannot both
+    // pass the test above; and never released, because the graph this one is
+    // about to evaluate stays evaluated whether or not the rest of this
+    // function succeeds.
+    if (!fork) unforked = build;
 
     let tag = 0;
     let harnessUrl = new URL(spec.harness, import.meta.url).href;

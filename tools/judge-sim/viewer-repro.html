@@ -38,10 +38,19 @@ async function digestSegment(game) {
     };
 }
 
-const report = { sessions: [], error: null };
+// Session-switch cost is the number this page exists to report as well as the
+// digests. The judge's viewer changes the hash and runs the next session in the
+// SAME page: whatever a fresh realm costs, it costs there, per session, in
+// front of a human waiting for a screen. So each session is timed end to end
+// and each segment inside it separately — a multi-segment session pays the
+// realm cost more than once.
+const report = { sessions: [], error: null, importMs: 0, totalMs: 0 };
 try {
+    const tImport = performance.now();
     const { runSegment } = await import('/js/jsmain.js');
-    log('imported /js/jsmain.js ONCE for ' + names.length + ' sessions');
+    report.importMs = +(performance.now() - tImport).toFixed(1);
+    log('imported /js/jsmain.js ONCE for ' + names.length + ' sessions in ' + report.importMs + ' ms');
+    const tAll = performance.now();
     for (const name of names) {
         const sess = await (await fetch('/__sim/session/' + name)).json();
         const storage = new Map();
@@ -52,22 +61,28 @@ try {
             get length() { return storage.size; },
             key(i) { let n = 0; for (const k of storage.keys()) { if (n === i) return k; n++; } return null; },
         };
-        const entry = { session: name, segments: [], error: null };
+        const entry = { session: name, segments: [], error: null, ms: 0 };
+        const tSess = performance.now();
         try {
             for (const seg of sess.segments) {
+                const tSeg = performance.now();
                 const game = await runSegment({
                     seed: seg.seed, datetime: seg.datetime, nethackrc: seg.nethackrc,
                     moves: seg.moves, storage: h,
                 });
-                entry.segments.push(await digestSegment(game));
-                log(name + ' seg ' + entry.segments.length + ': screens=' + entry.segments.at(-1).screens);
+                const d = await digestSegment(game);
+                d.ms = +(performance.now() - tSeg).toFixed(1);
+                entry.segments.push(d);
+                log(name + ' seg ' + entry.segments.length + ': screens=' + d.screens + ' (' + d.ms + ' ms)');
             }
         } catch (e) {
             entry.error = String((e && e.stack) || e);
             log(name + ' THREW: ' + String(e && e.message || e));
         }
+        entry.ms = +(performance.now() - tSess).toFixed(1);
         report.sessions.push(entry);
     }
+    report.totalMs = +(performance.now() - tAll).toFixed(1);
 } catch (e) {
     report.error = String((e && e.stack) || e);
 }

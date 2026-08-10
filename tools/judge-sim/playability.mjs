@@ -938,8 +938,13 @@ if (viewer) {
     for (const s of sessions) {
         process.stderr.write(`  ${s.error ? 'FAIL' : 'ok  '} ${s.session}`
             + `  segments=${(s.segments || []).map(x => x.screens).join('+') || '-'}`
+            + `  ${s.ms ?? '?'} ms [${(s.segments || []).map(x => x.ms).join(', ')}]`
             + `${s.error ? '\n       ' + s.error.split('\n')[0] : ''}\n`);
     }
+    // The number a human in front of the Session Viewer feels: import once,
+    // then pay per session switch.
+    process.stderr.write(`  import ${report.importMs ?? '?'} ms, ${sessions.length} session(s) in `
+        + `${report.totalMs ?? '?'} ms\n`);
     process.stdout.write('__PLAYABILITY_BROWSER_JSON__\n');
     process.stdout.write(JSON.stringify({ ...report, viewer: true, judge_stub: judgeStub,
         console_entries: cdpEntries, out_of_scope: blocked.map(r => r.path) }, null, 2) + '\n');

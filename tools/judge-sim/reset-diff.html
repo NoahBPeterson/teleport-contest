@@ -1,0 +1,274 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>judge-sim reset differential</title>
+<pre id="out">starting…</pre>
+<script type="module">
+// reset-diff.html — the page side of the browser reset differential.
+//
+// THE CLAIM UNDER TEST is tools/reset-diff.mjs's, moved into the realm it was
+// deferred for: `run session A to completion, reset, run session B` in ONE page
+// realm produces output byte-identical to `run B in a fresh realm`.
+//
+// WHY A PAGE CAN HAVE THIS AFTER ALL. docs/NOTES-resettable-state.md §7.6
+// deferred the browser because the Node differential builds its REFERENCE with
+// module.registerHooks — a genuinely fresh graph per segment — and no page has
+// one. But a page has something that is the same thing by a different road: a
+// module Worker is a fresh realm with a fresh module map, so importing
+// js/boot/harness.mjs inside one instantiates all 176 generated modules with
+// their C globals at their static initialisers. That is not an approximation of
+// a fresh graph, it IS one, and js/boot/frame.mjs already implements it — it is
+// the very path js/jsmain.js used for every browser segment before this leg.
+// So the reference is buildable here, and it is built out of the code that used
+// to be the answer.
+//
+//   reference   session B, one throwaway js/boot/frame.mjs Worker PER SEGMENT
+//   test        session A then session B, both through js/jsmain.js's
+//               runSegment, in this page realm, which now owns one graph and
+//               resets it between segments
+//
+// THROUGH THE ENTRY POINT, like `reset-diff.mjs --via runsegment`. What is
+// being compared is not "a reset realm reproduces a fresh realm" but "the
+// function the judge calls reproduces a fresh realm", which additionally covers
+// how runSegment acquires the page realm, when it resets, and what it does with
+// the result object. The observable is therefore exactly what runSegment
+// exposes — screens, cursors, animation frames, the RNG log, and a thrown error
+// — so the reference is masked to the same view (frame.mjs also carries an exit
+// code; runSegment's interface does not).
+//
+// RED BEFORE GREEN. ?noop=1 patches Realm.prototype.reset to a no-op that
+// reports success, which is exactly what tools/reset-diff.mjs's --force-noop
+// does and for the same reason: a harness that cannot fail on a deliberately
+// broken reset is not evidence of anything. It reaches runSegment's realm
+// because this page imports js/boot/reset-realm.mjs at the same absolute URL
+// js/jsmain.js resolves, so it is the same module instance.
+//
+// AND THE HARNESS PROVES IT TESTED SOMETHING. If the page realm could not be
+// owned, runSegment falls back to a Worker per segment — and then both sides of
+// this differential would be the reference, and every pair would pass while
+// testing nothing. So every `new Worker` is counted and attributed: the test
+// side must build ZERO of them, and the driver fails the run if it did not.
+//
+//   ?pairs=a.session.json:b.session.json,...   &noop=1
+//
+// Driven by tools/judge-sim/reset-diff-browser.mjs, which resolves the session
+// names and reads the report back off /__sim/result.
+
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log('[resetdiff] ' + s); };
+
+const params = new URLSearchParams(location.search);
+const noop = params.get('noop') === '1';
+const pairs = (params.get('pairs') || '').split(',').filter(Boolean)
+    .map((p) => { const i = p.indexOf(':'); return [p.slice(0, i), p.slice(i + 1)]; });
+
+// -- who spawned which Worker ------------------------------------------------
+// Installed before js/jsmain.js is imported, so nothing it does can be missed.
+const NativeWorker = globalThis.Worker;
+let inReference = false;
+const workers = { reference: 0, test: 0 };
+class CountingWorker extends NativeWorker {
+    constructor(url, opts) {
+        workers[inReference ? 'reference' : 'test']++;
+        super(url, opts);
+    }
+}
+Object.defineProperty(globalThis, 'Worker', { value: CountingWorker, configurable: true, writable: true });
+
+// -- the red control ---------------------------------------------------------
+if (noop) {
+    const { Realm } = await import('/js/boot/reset-realm.mjs');
+    Realm.prototype.reset = function reset() { this.lastResetMs = 0; this._dirty = false; return true; };
+    log('--noop: Realm.prototype.reset is a no-op that reports success. Every pair MUST fail.');
+}
+
+const { runSegment } = await import('/js/jsmain.js');
+
+// -- the reference: one fresh Worker realm per segment -----------------------
+// A transcription of js/jsmain.js's own runInFreshRealm(), kept here rather
+// than imported because it has to stay what that function WAS even if that
+// function changes: the reference is the thing being compared against.
+const FRAME_URL = '/js/boot/frame.mjs';
+
+function runInFreshWorkerRealm(job) {
+    return new Promise((resolve, reject) => {
+        inReference = true;
+        let worker;
+        try { worker = new Worker(FRAME_URL, { type: 'module', name: 'c2js-ref' }); }
+        catch (e) { inReference = false; return reject(e); }
+        inReference = false;
+        const done = (fn, arg) => { try { worker.terminate(); } catch { /* gone */ } fn(arg); };
+        worker.onerror = (e) => done(reject, new Error('reference worker: ' + (e && (e.message || e.type))));
+        worker.onmessageerror = () => done(reject, new Error('reference worker: message not deserialisable'));
+        worker.onmessage = (ev) => {
+            const msg = ev.data;
+            if (!msg) return;
+            if (msg.type === 'ready') return void worker.postMessage({ type: 'run', job });
+            if (msg.type !== 'done') return;
+            done(resolve, msg);
+        };
+    });
+}
+
+/**
+ * Reference digests for one session: every segment in a realm of its own, with
+ * the storage overlay threaded between them exactly as js/jsmain.js threads it
+ * (frame.mjs takes a plain object in and hands one back out).
+ */
+async function reference(segments) {
+    let store = {};
+    const obs = [];
+    for (const seg of segments) {
+        const msg = await runInFreshWorkerRealm({ ...seg, storage: store });
+        store = msg.storage || {};
+        obs.push(msg.ok
+            ? observe(msg.result, null)
+            : observe({}, msg.error));
+    }
+    return obs;
+}
+
+/** Test: session through js/jsmain.js's runSegment, in this page realm. */
+async function viaRunSegment(segments) {
+    const map = new Map();
+    const handle = {
+        getItem(k) { return map.has(k) ? map.get(k) : null; },
+        setItem(k, v) { map.set(k, String(v)); },
+        removeItem(k) { map.delete(k); },
+        get length() { return map.size; },
+        key(i) { let n = 0; for (const k of map.keys()) { if (n === i) return k; n++; } return null; },
+    };
+    const obs = [];
+    for (const seg of segments) {
+        try {
+            const g = await runSegment({ ...seg, storage: handle });
+            obs.push(observe({
+                screens: g.getScreens(), cursors: g.getCursors(),
+                rngLog: g.getRngLog(), animFramesByStep: g.getAnimationFramesByStep(),
+            }, null));
+        } catch (e) {
+            obs.push(observe({}, e));
+        }
+    }
+    return obs;
+}
+
+// -- the observable ----------------------------------------------------------
+// Everything runSegment's interface carries, and nothing else. `error` is
+// folded in: a run that throws where the reference did not is a divergence, and
+// silently comparing two failed runs as equal would be the worst possible bug
+// in a tool whose whole job is to notice. The two sides report errors in
+// different shapes (a Worker can only send text), so both are narrowed to the
+// first line with the class name stripped — enough to tell "threw" from "did
+// not", and to tell two different throws apart.
+function observe(r, err) {
+    return {
+        screens: (r.screens || []).slice(),
+        cursors: (r.cursors || []).map((c) => (Array.isArray(c) ? c.slice() : c)),
+        anim: (r.animFramesByStep || []).map((a) => (Array.isArray(a) ? a.slice() : a)),
+        rng: (r.rngLog || []).slice(),
+        error: err == null ? null : String((err && err.message) || err).split('\n')[0].replace(/^\w*Error:\s*/, ''),
+    };
+}
+
+function firstDiff(a, b) {
+    if (a.error !== b.error) return { field: 'error', index: null, ref: str(a.error), got: str(b.error) };
+    for (const field of ['rng', 'screens', 'cursors', 'anim']) {
+        const x = a[field], y = b[field];
+        const n = Math.max(x.length, y.length);
+        for (let i = 0; i < n; i++) {
+            const xi = JSON.stringify(x[i]), yi = JSON.stringify(y[i]);
+            if (xi !== yi) {
+                return { field, index: i, counts: `ref ${x.length} / got ${y.length}`, ref: str(xi), got: str(yi) };
+            }
+        }
+    }
+    return null;
+}
+
+function diffSession(ref, got) {
+    if (ref.length !== got.length) {
+        return { segment: null, field: 'segment count', ref: String(ref.length), got: String(got.length) };
+    }
+    for (let i = 0; i < ref.length; i++) {
+        const d = firstDiff(ref[i], got[i]);
+        if (d) return { segment: i, ...d };
+    }
+    return null;
+}
+
+function str(v) { const s = String(v); return s.length > 160 ? s.slice(0, 157) + '…' : s; }
+
+function tally(obs) {
+    let screens = 0, rng = 0;
+    for (const o of obs) { screens += o.screens.length; rng += o.rng.length; }
+    return { segments: obs.length, screens, rng };
+}
+
+// -- run ---------------------------------------------------------------------
+
+const report = { noop, pairs: [], workers, error: null, ua: navigator.userAgent, referenceMs: {}, testMs: {} };
+const segCache = new Map();
+const segsFor = async (name) => {
+    if (!segCache.has(name)) {
+        segCache.set(name, (await (await fetch('/__sim/session/' + name)).json()).segments);
+    }
+    return segCache.get(name);
+};
+
+try {
+    // Reference digests, computed once per session and reused across pairs —
+    // and computed BEFORE any test run, so no reference can be contaminated by
+    // a page realm that a test has already played in. (It could not be anyway:
+    // each one is a realm of its own. But the order costs nothing and removes
+    // the question.)
+    const refs = new Map();
+    for (const name of new Set(pairs.map(([, b]) => b))) {
+        const t0 = performance.now();
+        const obs = await reference(await segsFor(name));
+        const ms = +(performance.now() - t0).toFixed(1);
+        report.referenceMs[name] = ms;
+        refs.set(name, obs);
+        const t = tally(obs);
+        log(`reference ${short(name)}: ${t.segments} seg, ${t.screens} screens, ${t.rng} rng  (${ms} ms, ${t.segments} fresh Worker realms)`);
+    }
+
+    for (const [a, b] of pairs) {
+        const label = short(a) + ' -> ' + short(b);
+        const t0 = performance.now();
+        let got = null, err = null;
+        try {
+            await viaRunSegment(await segsFor(a));      // session A, discarded
+            got = await viaRunSegment(await segsFor(b)); // session B, compared
+        } catch (e) {
+            err = String((e && e.stack) || e);
+        }
+        const ms = +(performance.now() - t0).toFixed(1);
+        report.testMs[label] = ms;
+        let verdict, detail = '';
+        if (err) { verdict = 'ERROR'; detail = err.split('\n')[0]; }
+        else {
+            const d = diffSession(refs.get(b), got);
+            if (d === null) verdict = 'PASS';
+            else {
+                verdict = 'FAIL';
+                detail = d.segment === null
+                    ? `${d.field}: reference ${d.ref}, reset ${d.got}`
+                    : `segment ${d.segment} ${d.field}[${d.index}]`
+                      + (d.counts ? ` (${d.counts})` : '')
+                      + ` | reference: ${d.ref} | reset: ${d.got}`;
+            }
+        }
+        report.pairs.push({ a, b, label, verdict, detail, ms });
+        log(`${label}: ${verdict}${detail ? ' — ' + detail : ''}  (${ms} ms)`);
+    }
+} catch (e) {
+    report.error = String((e && e.stack) || e);
+    log('FATAL ' + report.error);
+}
+
+function short(n) { return n.split('-')[0]; }
+
+document.title = report.error ? 'FAILED' : 'DONE';
+await fetch('/__sim/result', { method: 'POST', body: JSON.stringify(report, null, 2) });
+log('posted result');
+</script>

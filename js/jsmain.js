@@ -19,11 +19,16 @@
 //     it falls back to js/boot/isolation.mjs's per-segment fork, which is what
 //     this file did before and what the 69/69 corpus certifies. It never falls
 //     back to running a second game in a spent realm;
-//   - per-segment isolation in a browser comes from running segments 2..N in a
-//     module Worker (js/boot/frame.mjs) — a fresh realm has a fresh module map,
-//     so the generated corpus re-initialises. Segment 1 uses the page's own
-//     realm, which is pristine. If Workers are unavailable the segment falls
-//     back to the shared graph with a console warning;
+//   - per-segment isolation in a browser comes from the SAME reset, applied to
+//     the page's own graph: js/boot/reset-realm.mjs's `acquire({fork: false})`
+//     takes the page realm's pristine graph and puts it back between segments,
+//     so every segment and every session on a page costs a reset instead of a
+//     re-parse. When the page realm cannot be owned — a build without
+//     C2JS_RESET=1, or a page whose realm already ran a game — segments run in
+//     a throwaway module Worker instead (js/boot/frame.mjs): a fresh realm has
+//     a fresh module map, so the generated corpus re-initialises. That fallback
+//     is what this file did for every segment before, and it is still correct;
+//     it is just ~600 ms and a second 13 MB parse per segment;
 //   - browsers have no `process`, which two libc shims still reach for, so
 //     js/boot/browser-env.mjs installs a minimal one before the first
 //     generated module runs;
@@ -66,8 +71,8 @@ const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
 
 const HARNESS_URL = new URL('./boot/harness.mjs', import.meta.url).href;
 const FRAME_URL = new URL('./boot/frame.mjs', import.meta.url).href;
-// Dynamic, and only from the Node branch: a browser must never fetch it. It
-// needs module.registerHooks to own a graph, which no page has.
+// Dynamic on both branches, and imported only when a segment actually needs a
+// realm: it pulls the whole generated graph down behind it.
 const RESET_REALM_URL = new URL('./boot/reset-realm.mjs', import.meta.url).href;
 
 // Counts segments across the life of this module. Still needed with the reset
@@ -92,15 +97,24 @@ function wantSpawn() {
 }
 
 // -- browser per-segment isolation -------------------------------------------
-// Node forks the module graph in-process (js/boot/isolation.mjs). A browser has
-// no module.registerHooks, but it has something better: a module Worker is a
-// fresh realm with a fresh module map, so importing harness.mjs inside one
-// re-instantiates all 172 generated modules with their C globals at their
-// static initialisers. js/boot/frame.mjs is that worker.
+// A browser has no module.registerHooks, so for a long time the only fresh
+// realm it could get was a module Worker: a fresh realm with a fresh module
+// map, so importing harness.mjs inside one re-instantiates all 172 generated
+// modules with their C globals at their static initialisers. js/boot/frame.mjs
+// is that worker, and segment 1 ran in the page's own (pristine) realm because
+// forking for it would only have cost a second 15 MB parse.
 //
-// Segment 1 runs in *this* realm — it is pristine on first use, so forking for
-// it would only cost a second 15 MB parse (and 40 of 44 public sessions are
-// single-segment). Segments 2..N each get their own worker.
+// That is still what happens when there is no reset, and it is what makes the
+// reset *provable* in a page: a fresh Worker realm is a genuinely fresh graph,
+// so it is a reference. tools/judge-sim/reset-diff-browser.mjs runs session B
+// through per-segment Worker realms and through `A, reset, B` in the page
+// realm, and compares the digests — the browser answer to the Node
+// differential that leg 2 said a page could not have.
+//
+// With that reference in hand, the page realm's own graph is worth owning:
+// acquireBrowserRealm() below takes it once, and every segment after the first
+// costs a reset (measured in Node at 0.62 ms) instead of a Worker's ~600 ms
+// re-parse. The Worker path stays exactly where it was, as the fallback.
 
 function snapshotStorage(h) {
     const o = {};
@@ -277,6 +291,45 @@ async function acquireNodeRealm() {
     return nodeRealm;
 }
 
+// -- browser: the page's own graph, put back between segments ----------------
+//
+// Same mechanism as the Node realm above, one option short: a page cannot fork,
+// so the graph it owns is its own (`fork: false`). That is only sound while the
+// realm is pristine — arming snapshots the graph's top-level state, and a graph
+// that already played a game would be snapshotted dirty, which is the one way
+// this design can be wrong without saying so. `__c2jsEngineRealmUsed` is the
+// flag the whole tree keeps for exactly that question, so it is asked here
+// first and set here on success: from that moment the page realm is this
+// module's, and an interactive engine started later finds it taken and goes to
+// a worker transport of its own, exactly as it did before.
+let browserRealm = null;
+let browserRealmTried = false;
+
+async function acquireBrowserRealm() {
+    if (browserRealmTried) return browserRealm;
+    browserRealmTried = true;
+    // Something already ran transpiled C here (an interactive engine on the
+    // same page). Its state is in the graph and in js/cptr.js underneath it,
+    // and a snapshot taken now would record that as "pristine". Workers.
+    if (globalThis.__c2jsEngineRealmUsed === true) return null;
+    try {
+        installBrowserGlobals();
+        const { acquire } = await import(RESET_REALM_URL);
+        const realm = await acquire({ fork: false });
+        // A realm with no barrel is a build without C2JS_RESET=1. In Node that
+        // is still worth one segment (it is a private forked graph). Here it is
+        // not: it is the page's own graph, so taking it would spend the realm
+        // for one segment and send every later one to a Worker anyway — which
+        // is what the fallback does on its own, without the 13 MB parse.
+        if (!realm.resettable) return null;
+        globalThis.__c2jsEngineRealmUsed = true;
+        browserRealm = realm;
+    } catch {
+        browserRealm = null;
+    }
+    return browserRealm;
+}
+
 /** Thrown when the *realm* could not be created — never for a game error. */
 class RealmUnavailable extends Error {}
 
@@ -334,16 +387,37 @@ export async function runSegment(input) {
         return new TranspiledGame(await spawnFallback.runSegmentInChild(job));
     }
 
-    // Browser: any segment after the FIRST GAME THIS REALM EVER RAN must run
-    // in a throwaway Worker realm so the previous game's C globals cannot leak
-    // in. "First segment of this runSegment counter" is NOT the same thing:
-    // pages like the judge's Session Viewer import this module once and then
-    // run MANY sessions through it (and a cache-busted re-import of jsmain.js
-    // still shares the generated graph), so pristineness is tracked on
-    // globalThis, which survives both. Never in Node — a Node realm can be put
-    // back (reset-realm.mjs) or forked (isolation.mjs) in-process, and both are
-    // cheaper than a realm nobody can reuse.
+    // Browser: every segment runs in the page realm's own graph, reset between
+    // segments. The guard the fork path needed — "any segment after the FIRST
+    // GAME THIS REALM EVER RAN must go somewhere else" — has not been dropped;
+    // it has been answered. A spent realm is still never reused: it is put
+    // back first, and `Realm.run()` throws rather than run a game in a graph it
+    // could not reset.
+    //
+    // The counter is still not the question. Pages like the judge's Session
+    // Viewer import this module once and run MANY sessions through it (and a
+    // cache-busted re-import of jsmain.js still shares the generated graph), so
+    // what a segment can assume about the realm is tracked on globalThis, which
+    // survives both.
     if (!IS_NODE) {
+        const realm = await acquireBrowserRealm();
+        if (realm) {
+            // Not wrapped, exactly as the Node branch below is not: a game
+            // error comes back as `result.error`, so the only thing that can
+            // throw out of run() is the graph refusing to be put back — a bug
+            // in the reset, in the scored path, which has to be loud. "The
+            // reset is unavailable" is a different sentence and it was answered
+            // above, by acquireBrowserRealm() returning null.
+            const result = await realm.run(job);
+            if (result.error) throw result.error;
+            return new TranspiledGame(result);
+        }
+        // No realm: a fresh Worker realm is the only correct option. A failure
+        // to get one is a clean, explained error — NEVER a run in the spent
+        // realm, which produces "init_blstats called more than once" garbage
+        // that looks like a broken port. No sticky failure flag either: a
+        // transient worker failure must not poison every later session on the
+        // page.
         const pristine = globalThis.__c2jsEngineRealmUsed !== true;
         if (pristine && n === 1) {
             globalThis.__c2jsEngineRealmUsed = true;
@@ -353,11 +427,6 @@ export async function runSegment(input) {
             if (result.error) throw result.error;
             return new TranspiledGame(result);
         }
-        // Not pristine: a fresh realm is the only correct option. A failure to
-        // get one is a clean, explained error — NEVER a run in the spent realm,
-        // which produces "init_blstats called more than once" garbage that
-        // looks like a broken port. No sticky failure flag either: a transient
-        // worker failure must not poison every later session on the page.
         const before = snapshotStorage(job.storage);
         const msg = await runInFreshRealm({ ...job, storage: before }).catch((e) => {
             if (e instanceof RealmUnavailable) {
