@@ -11,10 +11,14 @@
 // filesystem writes, reads confined to the fork tree), and the same code has
 // to be able to run in a browser. So:
 //
-//   - per-segment isolation in Node comes from js/boot/isolation.mjs, which
-//     forks a fresh copy of the whole transpiled module graph per segment
-//     instead of a fresh process (see that file for why the naive `?seg=`
-//     trick isn't enough);
+//   - per-segment isolation in Node comes from js/boot/reset-realm.mjs, which
+//     keeps ONE copy of the transpiled module graph and puts its state back
+//     between segments (0.6 ms and 0.6 MB, against 440 ms and 70 MB to fork a
+//     second copy that can never be unloaded). When the graph cannot be reset —
+//     a build without C2JS_RESET=1, or a Node without module.registerHooks —
+//     it falls back to js/boot/isolation.mjs's per-segment fork, which is what
+//     this file did before and what the 69/69 corpus certifies. It never falls
+//     back to running a second game in a spent realm;
 //   - per-segment isolation in a browser comes from running segments 2..N in a
 //     module Worker (js/boot/frame.mjs) — a fresh realm has a fresh module map,
 //     so the generated corpus re-initialises. Segment 1 uses the page's own
@@ -62,7 +66,14 @@ const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
 
 const HARNESS_URL = new URL('./boot/harness.mjs', import.meta.url).href;
 const FRAME_URL = new URL('./boot/frame.mjs', import.meta.url).href;
+// Dynamic, and only from the Node branch: a browser must never fetch it. It
+// needs module.registerHooks to own a graph, which no page has.
+const RESET_REALM_URL = new URL('./boot/reset-realm.mjs', import.meta.url).href;
 
+// Counts segments across the life of this module. Still needed with the reset
+// realm in place, for two things that have nothing to do with forking: it tags
+// the FALLBACK fork path's URLs, and `n === 1` is half of the browser's
+// pristine-realm test below.
 let segmentCount = 0;
 let spawnFallback;
 
@@ -222,6 +233,50 @@ function atobText(b64) {
     return Buffer.from(b64, 'base64').toString('binary');
 }
 
+// -- Node per-segment isolation: one graph, put back between segments --------
+//
+// Forking gave every segment a private copy of all 176 generated modules.
+// It is correct and it is what the corpus certifies, but a distinct
+// `?c2jsseg=N` URL is a distinct script to V8, so fork 4 costs what fork 1 cost
+// (490/401/440/439 ms measured, docs/PROFILE-2026-08.md §5.1) and a forked
+// graph can never be unloaded — ~70 MB stranded per segment, ten of them inside
+// one ten-segment session. Resetting the graph instead costs 0.6 ms and 0.6 MB,
+// and is byte-identical to a fresh realm: that is the claim tools/reset-diff.mjs
+// exists to prove, and docs/NOTES-resettable-state.md is the argument.
+//
+// Acquired lazily and kept for the life of the process, because that is exactly
+// what it is for: the judge calls runSegment once per segment, many times.
+let nodeRealm = null;
+let nodeRealmTried = false;
+
+/**
+ * The process-wide resettable realm, or null when this build/runtime cannot
+ * have one.
+ *
+ * Asking is not free — it forks and evaluates a graph — so it happens once, and
+ * MUST happen after installBrowserGlobals(): arming snapshots the graph's
+ * top-level state, and that state is produced against whatever globals are
+ * installed when the modules evaluate.
+ *
+ * Two ways to get null, and both are answered by the fork path rather than by
+ * pretending: a Node without `module.registerHooks` (acquire() refuses to take
+ * the shared graph, which would be a lie about isolation), or any other failure
+ * to build the realm. A realm that came back UNRESETTABLE — a build without
+ * C2JS_RESET=1 — is not null: it is a perfectly good private graph, worth
+ * exactly one segment, and running that segment in it wastes nothing.
+ */
+async function acquireNodeRealm() {
+    if (nodeRealmTried) return nodeRealm;
+    nodeRealmTried = true;
+    try {
+        const { acquire } = await import(RESET_REALM_URL);
+        nodeRealm = await acquire();
+    } catch {
+        nodeRealm = null;
+    }
+    return nodeRealm;
+}
+
 /** Thrown when the *realm* could not be created — never for a game error. */
 class RealmUnavailable extends Error {}
 
@@ -285,8 +340,9 @@ export async function runSegment(input) {
     // pages like the judge's Session Viewer import this module once and then
     // run MANY sessions through it (and a cache-busted re-import of jsmain.js
     // still shares the generated graph), so pristineness is tracked on
-    // globalThis, which survives both. Never in Node — isolation.mjs forks the
-    // graph in-process there, cheaper and proven.
+    // globalThis, which survives both. Never in Node — a Node realm can be put
+    // back (reset-realm.mjs) or forked (isolation.mjs) in-process, and both are
+    // cheaper than a realm nobody can reuse.
     if (!IS_NODE) {
         const pristine = globalThis.__c2jsEngineRealmUsed !== true;
         if (pristine && n === 1) {
@@ -316,6 +372,25 @@ export async function runSegment(input) {
     }
 
     installBrowserGlobals();
+
+    const realm = await acquireNodeRealm();
+    // `generation === 0` is what lets an unresettable realm still be useful: it
+    // is a private forked graph that has never run anything, so it is worth one
+    // segment on exactly the terms the fork path offers. After that it is spent,
+    // and a spent realm that cannot be reset is dropped rather than reused —
+    // the failure isolation.mjs warns about is the one thing that must not
+    // happen quietly.
+    if (realm && (realm.resettable || realm.generation === 0)) {
+        const result = await realm.run(job);
+        if (result.error) throw result.error;
+        return new TranspiledGame(result);
+    }
+    nodeRealm = null;
+
+    // The honest fallback: a fresh forked graph per segment, tagged with the
+    // segment counter — this file's behaviour before the reset existed, still
+    // certified by the corpus, and still the thing that degrades loudly (via
+    // enableSegmentIsolation's notice) when even forking is unavailable.
     const isolated = await enableSegmentIsolation();
     const { runBootGame } = await import(segmentSpecifier(HARNESS_URL, n, isolated));
     const result = await runBootGame(job);

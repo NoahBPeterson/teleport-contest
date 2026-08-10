@@ -42,8 +42,24 @@
 
 import { enableSegmentIsolation, segmentSpecifier } from './isolation.mjs';
 
-const HARNESS_URL = new URL('./harness.mjs', import.meta.url).href;
-const BARREL_URL = new URL('../generated/__reset.js', import.meta.url).href;
+/**
+ * The two module graphs this tree can host a game in.
+ *
+ * `sync` is the scored build (js/generated/, js/boot/harness.mjs). `yield` is
+ * tools/c2js/yieldify.mjs's whole-program rewrite of it (js/generated-y/,
+ * js/boot/harness-y.mjs), which is what the interactive rungs run.
+ *
+ * The `tag` prefix is not cosmetic. The resolve hook copies whatever follows
+ * `?c2jsseg=` verbatim, so a tag is a namespace, and the two graphs sit on ONE
+ * hand-written runtime: `js/cptr.js?c2jsseg=-1` is a single module whichever
+ * graph asked for it, so a scored realm and an interactive realm with the same
+ * tag would share the pointer registry and the fd table. Same reasoning, and
+ * the same `y`, as js/boot/main-thread-engine.mjs's own fork tags.
+ */
+const BUILDS = {
+    sync: { harness: './harness.mjs', barrel: '../generated/__reset.js', tag: '' },
+    yield: { harness: './harness-y.mjs', barrel: '../generated-y/__reset.js', tag: 'y' },
+};
 
 // Fork tags are per *process*: two resettable realms in one process must not
 // collide with each other, nor with the tags js/jsmain.js hands out. Tags from
@@ -57,8 +73,10 @@ let __tagCounter = 0;
  * holds two realms cannot accidentally drive the wrong graph.
  */
 export class Realm {
-    constructor(tag, runBootGame, barrel) {
+    constructor(tag, runBootGame, barrel, build) {
         this.tag = tag;
+        /** 'sync' (the scored graph) or 'yield' (the interactive one). */
+        this.build = build || 'sync';
         this.runBootGame = runBootGame;
         this._barrel = barrel;
         /** ms spent in the most recent reset(), for the profile. */
@@ -79,7 +97,7 @@ export class Realm {
      * (a failing differential run wants exactly that), and it means a realm
      * that is never reused never pays for a reset at all.
      *
-     * @returns {Promise<object>} runBootGame's result, unmodified.
+     * @returns {Promise<object>} runBootGame's result, detached — see below.
      */
     async run(opts) {
         if (this._dirty) {
@@ -91,7 +109,7 @@ export class Realm {
         }
         this._dirty = true;
         this.generation++;
-        return this.runBootGame(opts);
+        return detach(await this.runBootGame(opts));
     }
 
     /**
@@ -109,6 +127,31 @@ export class Realm {
 }
 
 /**
+ * THE ONE THING A SHARED GRAPH BREAKS THAT A FORKED ONE DOES NOT.
+ *
+ * `runBootGame` returns `rngLog` as `rnd.getRngLog()`, which is `js/generated/
+ * rnd.js`'s own `__rngLog` array — not a copy. Under the fork path that is
+ * harmless: segment N's rnd.js is a module nothing else will ever run in, so
+ * the array it hands back is effectively the caller's. Under reset it is the
+ * SAME array the next game logs into, and worse, the reset restores it by
+ * refilling it in place (that is the whole point of the by-value snapshot: a
+ * binding another module captured must land on the same object). So a judge
+ * that holds segment 1's game object, runs segment 2, and only then calls
+ * `getRngLog()` would read an empty array — a scoring failure with no visible
+ * cause, in the one observable the scorer weighs most heavily.
+ *
+ * One `slice()` per game closes it. The other four fields are built by
+ * js/boot/harness.mjs out of its own locals (`inputFrames.map(...)`, a joined
+ * string) and alias nothing in the graph, which is checked at the source rather
+ * than assumed: js/boot/harness.mjs's return statement is the only place a
+ * result is constructed.
+ */
+function detach(r) {
+    if (!r || !r.rngLog) return r;
+    return { ...r, rngLog: r.rngLog.slice() };
+}
+
+/**
  * Acquire a realm: a private copy of the generated graph, armed for reset.
  *
  * MUST be called after installBrowserGlobals() — arming evaluates all 176
@@ -116,19 +159,26 @@ export class Realm {
  * installed at that moment. Arming before would snapshot a graph that a real
  * boot never produces.
  *
- * @param {{fork?: boolean, arm?: boolean}} [opts] fork:false reuses the *shared*
- *        graph (only sane for the very first realm in a process, and only when
- *        nothing else has run a game in it). arm:false skips the snapshot, for
- *        a realm that is knowingly going to run exactly one game — it is then
- *        indistinguishable from what js/jsmain.js:runSegment acquires today,
- *        which is what makes such a realm usable as a differential *reference*.
+ * @param {{fork?: boolean, arm?: boolean, build?: 'sync'|'yield'}} [opts]
+ *        fork:false reuses the *shared* graph (only sane for the very first
+ *        realm in a process, and only when nothing else has run a game in it —
+ *        it is also the only option a browser has, which is what makes it worth
+ *        keeping). arm:false skips the snapshot, for a realm that is knowingly
+ *        going to run exactly one game — it is then indistinguishable from what
+ *        js/jsmain.js:runSegment forks, which is what makes such a realm usable
+ *        as a differential *reference*. build selects which of the two module
+ *        graphs to own; see BUILDS.
  */
 export async function acquire(opts) {
     const fork = !(opts && opts.fork === false);
     const arm = !(opts && opts.arm === false);
+    const build = (opts && opts.build) || 'sync';
+    const spec = BUILDS[build];
+    if (!spec) throw new Error('reset-realm: unknown build "' + build + '"');
+
     let tag = 0;
-    let harnessUrl = HARNESS_URL;
-    let barrelUrl = BARREL_URL;
+    let harnessUrl = new URL(spec.harness, import.meta.url).href;
+    let barrelUrl = new URL(spec.barrel, import.meta.url).href;
     if (fork) {
         const isolated = await enableSegmentIsolation({ quiet: true });
         if (!isolated) {
@@ -136,9 +186,9 @@ export async function acquire(opts) {
                 + '(module.registerHooks unavailable), and taking the shared '
                 + 'one would be a lie about isolation');
         }
-        tag = --__tagCounter;
-        harnessUrl = segmentSpecifier(HARNESS_URL, tag, true);
-        barrelUrl = segmentSpecifier(BARREL_URL, tag, true);
+        tag = spec.tag + (--__tagCounter);
+        harnessUrl = segmentSpecifier(harnessUrl, tag, true);
+        barrelUrl = segmentSpecifier(barrelUrl, tag, true);
     }
 
     const { runBootGame } = await import(harnessUrl);
@@ -147,7 +197,7 @@ export async function acquire(opts) {
     // Its absence is a build without C2JS_RESET=1, which is a supported (if
     // degraded) configuration: the realm still runs exactly one game.
     let barrel = null;
-    if (!arm) return new Realm(tag, runBootGame, null);
+    if (!arm) return new Realm(tag, runBootGame, null, build);
     try {
         barrel = await import(barrelUrl);
         barrel.captureAll();
@@ -156,7 +206,7 @@ export async function acquire(opts) {
         barrel = null;
     }
 
-    return new Realm(tag, runBootGame, barrel);
+    return new Realm(tag, runBootGame, barrel, build);
 }
 
 function isModuleNotFound(e) {
