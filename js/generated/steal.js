@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { bimanual, canspotmon, min, touch_petrifies } from './nhmacrofn.js';
 import { Adornment, Blind, Conflict, Flying, Levitation, Punished } from './nhprop.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { carry_obj_effects, count_unpaid, freeinv, g_at, stackobj } from './invent.js';
@@ -224,7 +223,7 @@ export function stealgold(mtmp) {
     } else if (ygold) {
         let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, 120, $objclass_oc_cost);
         tmp = (BigInt.asIntN(64, BigInt.asIntN(64, somegold(money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) + BigInt(gold_price)) - 1n)) / BigInt(gold_price);
-        tmp = min(tmp, cptr.ldI64o(ygold, $obj_quan));
+        tmp = ((tmp) < (cptr.ldI64o(ygold, $obj_quan)) ? (tmp) : (cptr.ldI64o(ygold, $obj_quan)));
         if (tmp < cptr.ldI64o(ygold, $obj_quan))
             ygold = splitobj(ygold, tmp);
         else
@@ -407,7 +406,7 @@ export function steal(mtmp, objnambuf) {
         named = 0;
         retrycnt = 0;
         monkey_business = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n));
-        seen = schar(canspotmon(mtmp));
+        seen = schar((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0));
         was_punished = schar((uball.v !== null));
         if (objnambuf)
             cptr.st1(objnambuf, 0);
@@ -539,7 +538,7 @@ export function steal(mtmp, objnambuf) {
         else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap)))
             ostuck = 0;
         else
-            ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && cptr.ldI64o(otmp, $obj_owornmask)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uright.v : uleft.v)) && welded(uwep.v) && bimanual(uwep.v)) ? 1 : 0));
+            ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && cptr.ldI64o(otmp, $obj_owornmask)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uright.v : uleft.v)) && welded(uwep.v) && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0)) ? 1 : 0));
         if (ostuck || can_carry(mtmp, otmp) == 0) { __pc = 24; continue; }
         __pc = 23; continue;
         }
@@ -653,7 +652,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 32: {
-        if (!seen && canspotmon(mtmp))
+        if (!seen && (canseemon(mtmp) || sensemon(mtmp)))
             void cptr.strcpy(cptr.decay(Monnambuf), Monnam(mtmp));
         __pc = 29;
         continue;
@@ -682,7 +681,7 @@ export function steal(mtmp, objnambuf) {
             ++named;
         urgent_pline(__sl55, named ? __sl42 : cptr.decay(Monnambuf), doname(otmp));
         encumber_msg();
-        could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) ? 1 : 0);
+        could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) ? 1 : 0);
         cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
         void mpickobj(mtmp, otmp);
         if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
@@ -814,14 +813,14 @@ export function maybe_absorb_item(mon, obj, ochance, achance) {
             pline(__sl66, Some_Monnam(mon), yname(obj), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl67 : __sl68);
         } else {
             let hand_s = body_part(NHC.HAND);
-            if (bimanual(obj))
+            if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))
                 hand_s = makeplural(hand_s);
             pline(__sl69, upstart(yname(obj)), otense(obj, __sl70), hand_s);
         }
         freeinv(obj);
         encumber_msg();
     } else {
-        if (canspotmon(mon))
+        if ((canseemon(mon) || sensemon(mon)))
             pline(__sl71, Monnam(mon), yname(obj));
     }
     void mpickobj(mon, obj);
@@ -870,7 +869,7 @@ export function relobj(mtmp, show, is_pet) {
     let omx = cptr.ldI16o(mtmp, $monst_mx);
     let omy = cptr.ldI16o(mtmp, $monst_my);
     if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && (otmp = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
-        if (canspotmon(mtmp))
+        if ((canseemon(mtmp) || sensemon(mtmp)))
             pline(__sl74, s_suffix(Monnam(mtmp)), canseemon(mtmp) ? __sl75 : __sl76);
         obj_extract_self(otmp);
         obfree(otmp, null);

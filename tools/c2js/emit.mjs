@@ -848,8 +848,21 @@ const MFN_STATS = {
   refusedSingleUse: 0,   // the body uses every parameter exactly once: a helper only adds a call
 };
 
-// C2JS_MACROFN=0 disables the function-like tier (the A/B baseline).
-const MACRO_FN_TIER = process.env.C2JS_MACROFN !== '0';
+// OFF by default, and the default is a measurement, not a taste.
+//
+// Four trees, interleaved, six complete rounds, all 69 sessions each
+// (docs/NOTES-emit-hygiene.md §4): against the same tree with this tier off,
+// the wide rule cost +1.9%..+3.8% of slope, the narrowed rule +2.1% (median)
+// / +3.0% (min), and the narrowed rule with outer macros winning +3.4% / +3.6%
+// — worse, not better, as the names got bigger. Narrowing removed 63% of the
+// call sites and none of the cost, which locates it: the sites a macro repeats
+// an argument at are the hot ones, and an inline expansion is what the JIT was
+// specializing. Parity > speed > readability, so the tier does not ship on.
+//
+// C2JS_MACROFN=1 turns it on. Everything it does is still gated and still
+// tested, and §4's startup and total-time numbers are the argument for turning
+// it on — this flag is the one place that trade is taken.
+const MACRO_FN_TIER = process.env.C2JS_MACROFN === '1';
 // The admission rule, narrowed after the first A/B measured the wide one at
 // +1.9%..+3.8% of slope: a site takes the helper only when the macro body uses
 // some parameter MORE THAN ONCE.

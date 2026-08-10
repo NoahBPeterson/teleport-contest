@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_WALL, canspotmon, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_monster, glyph_is_object, glyph_to_mon, glyph_to_obj, has_mgivenname, nonliving } from './nhmacrofn.js';
 import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
@@ -548,17 +547,17 @@ export function* wiz_kill() {
         void (yield* unmap_invisible(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
         if (mtmp) {
             let tame = !!cptr.ld1so(mtmp, $monst_mtame);
-            let seen = (canspotmon(mtmp) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) ? 1 : 0);
-            let flgs = (5 | ((tame && has_mgivenname(mtmp)) ? NHM.SUPPRESS_SADDLE : 0));
+            let seen = ((canseemon(mtmp) || sensemon(mtmp)) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) ? 1 : 0);
+            let flgs = (5 | ((tame && (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) ? NHM.SUPPRESS_SADDLE : 0));
             let articl = tame ? NHM.ARTICLE_YOUR : (seen ? NHM.ARTICLE_THE : NHM.ARTICLE_A);
             let adjs = tame ? (!seen ? __sl11 : __sl12) : (!seen ? __sl13 : null);
             let Mn = (yield* x_monnam(mtmp, articl, adjs, flgs, 0));
             if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
-                (yield* You(__sl14, nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl15 : __sl16, Mn));
+                (yield* You(__sl14, (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl15 : __sl16, Mn));
                 (yield* xkilled(mtmp, NHM.XKILL_NOMSG));
             } else {
                 cptr.st1o(svc, $context_info_mon_moving, 1);
-                (yield* pline(__sl17, upstart(Mn), nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl18 : __sl19));
+                (yield* pline(__sl17, upstart(Mn), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl18 : __sl19));
                 (yield* monkilled(mtmp, null, NHM.AD_PHYS));
                 cptr.st1o(svc, $context_info_mon_moving, 0);
             }
@@ -692,12 +691,12 @@ export function* wiz_telekinesis() {
         ans = (yield* getpos(cc, 1, __sl5));
         if (ans < 0 || cptr.ldI16(cc) < 1)
             return NHM.ECMD_CANCEL;
-        if ((((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && canspotmon(mtmp)) || ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+        if ((((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && (canseemon(mtmp) || sensemon(mtmp))) || ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (!(yield* getdir(__sl32)))
                 return NHM.ECMD_CANCEL;
             if (mtmp) {
                 (yield* mhurtle(mtmp, cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), 6));
-                if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && canspotmon(mtmp)) {
+                if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && (canseemon(mtmp) || sensemon(mtmp))) {
                     cptr.stI16(cc, cptr.ldI16o(mtmp, $monst_mx));
                     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                 }
@@ -829,7 +828,7 @@ export function* wiz_show_wmodes() {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 cptr.st1o(cptr.decay(row), x, 64, 1);
-            else if (IS_WALL(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
+            else if (((cptr.ld1so(lev, $rm_typ)) && (cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
                 cptr.st1o(cptr.decay(row), x, schar(((48 + (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK)) | 0)), 1);
             else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                 cptr.st1o(cptr.decay(row), x, 35, 1);
@@ -1033,7 +1032,7 @@ export function* wiz_smell() {
                 (yield* You(__sl88, (yield* body_part(NHC.ARM))));
             if (!(yield* usmellmon(mptr)))
                 (yield* pline(__sl89, is_you ? __sl90 : __sl91));
-            if (!glyph_is_monster(glyph))
+            if (!((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)))))
                 (yield* map_invisible(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
         } else {
             (yield* You(__sl92));
@@ -1571,7 +1570,7 @@ function* list_migrating_mons(nextlevl) {
             for (n = 0; (mtmp = cptr.ldPtro(marray, n, 8)) !== null; ++n) {
                 void cptr.sprintf(cptr.decay(buf), __sl134, minimal_monnam(mtmp, 0));
                 void strsubst(cptr.decay(buf), __sl135, __sl41);
-                if (has_mgivenname(mtmp))
+                if ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))))
                     void cptr.sprintf(eos(cptr.decay(buf)), __sl136, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
                 if (c == 111 || c == 97)
                     void cptr.sprintf(eos(cptr.decay(buf)), __sl137, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy));
@@ -1668,7 +1667,7 @@ export function* wiz_display_macros() {
     let max_glyph = NHC.MAX_GLYPH;
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (glyph_is_cmap(glyph)) {
+        if (((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0))) {
             test = glyph_to_cmap(glyph);
             if (test == no_glyph) {
                 if (!trouble++)
@@ -1676,7 +1675,7 @@ export function* wiz_display_macros() {
                 void cptr.sprintf(cptr.decay(buf), __sl159, glyph, test);
                 (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             }
-            if (glyph_is_cmap_zap(glyph) && !(test >= NHC.S_vbeam && test <= NHC.S_rslant)) {
+            if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0)) && !(test >= NHC.S_vbeam && test <= NHC.S_rslant)) {
                 if (!trouble++)
                     (yield* Y.icall(putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues))));
                 void cptr.sprintf(cptr.decay(buf), __sl160, glyph, test);
@@ -1689,8 +1688,8 @@ export function* wiz_display_macros() {
                 (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             }
         }
-        if (glyph_is_monster(glyph)) {
-            test = glyph_to_mon(glyph);
+        if (((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0))))) {
+            test = (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS))))))));
             if (test < 0 || test >= NHC.NUMMONS) {
                 if (!trouble++)
                     (yield* Y.icall(putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues))));
@@ -1698,8 +1697,8 @@ export function* wiz_display_macros() {
                 (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             }
         }
-        if (glyph_is_object(glyph)) {
-            test = glyph_to_obj(glyph);
+        if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))))) {
+            test = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
             if (test < 0 || test > NHC.NUM_OBJECTS) {
                 if (!trouble++)
                     (yield* Y.icall(putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues))));

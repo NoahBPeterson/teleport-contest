@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { helpless } from './nhmacrofn.js';
 import { Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -159,7 +158,7 @@ export function* new_were(mon) {
     if (canseemon(mon) && !Hallucination())
         (yield* pline(__sl6, (yield* Monnam(mon)), ((cptr.ldU64o((cptr.add(mons, pm, 96)), $permonst_mflags2) & 8n) != 0n) ? __sl7 : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4)));
     set_mon_data(mon, cptr.add(mons, pm, 96));
-    if (helpless(mon)) {
+    if (((cptr.ldI32o((mon), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mon), $monst_mcanmove) & 1))) {
         cptr.stI32o(mon, $monst_msleeping, 0);
         cptr.stI32o(mon, $monst_mfrozen, 0);
         cptr.stI32o(mon, $monst_mcanmove, 1);

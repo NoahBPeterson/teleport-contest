@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, cant_drown, greatest_erosion, grounded, has_mgivenname, helpless, is_floater, is_metallic, is_pole, is_whirly, likes_lava, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Flying, Fumbling, Glib, HConfusion, HStun, HWounded_legs, Half_physical_damage, Hallucination, Lev_at_will, Levitation, Punished, Stealth, Stone_resistance, Underwater, Upolyd, Wounded_legs, wizard } from './nhprop.js';
 import { You, You_cant, Your, impossible, pline } from './pline.js';
 import { Mgender, Monnam, YMonnam, a_monnam, hliquid, minimal_monnam, mon_nam, monverbself, pmname, x_monnam, y_monnam } from './do_name.js';
@@ -182,7 +181,7 @@ export function rider_cant_reach() {
 /** C ref: steed.c:26 — @param {CPtr} mtmp @returns {CInt} */
 export function can_saddle(mtmp) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
-    return schar((cptr.strchr(cptr.decay(steeds), cptr.ld1so(ptr, $permonst_mlet)) && (cptr.ld1uo(ptr, $permonst_msize) >= NHM.MZ_MEDIUM) && (!((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 4n) != 0n) && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) && !is_whirly(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1048576n) != 0n) ? 1 : 0));
+    return schar((cptr.strchr(cptr.decay(steeds), cptr.ld1so(ptr, $permonst_mlet)) && (cptr.ld1uo(ptr, $permonst_msize) >= NHM.MZ_MEDIUM) && (!((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 4n) != 0n) && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((ptr), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1048576n) != 0n) ? 1 : 0));
 }
 
 /** C ref: steed.c:36 — @param {CPtr} otmp @returns {CInt} */
@@ -200,7 +199,7 @@ export function use_saddle(otmp) {
         pline(__sl2);
         return NHM.ECMD_OK;
     }
-    if (!isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))) || !(mtmp = (cptr.ldPtro3(svl, (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, 168, (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !canspotmon(mtmp)) {
+    if (!isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))) || !(mtmp = (cptr.ldPtro3(svl, (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, 168, (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !(canseemon(mtmp) || sensemon(mtmp))) {
         pline(__sl3);
         return NHM.ECMD_TIME;
     }
@@ -209,7 +208,7 @@ export function use_saddle(otmp) {
         return NHM.ECMD_TIME;
     }
     ptr = cptr.ldPtro(mtmp, $monst_data);
-    if (touch_petrifies(ptr) && !uarmg.v && !Stone_resistance()) {
+    if ((cptr.eq((ptr), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !uarmg.v && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
         You(__sl5, mon_nam(mtmp));
         if (!(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && polymon(NHC.PM_STONE_GOLEM))) {
@@ -364,7 +363,7 @@ export function mount_steed(mtmp, force) {
         return 0;
     }
     ptr = cptr.ldPtro(mtmp, $monst_data);
-    if (touch_petrifies(ptr) && !Stone_resistance()) {
+    if ((cptr.eq((ptr), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
         You(__sl5, mon_nam(mtmp));
         void cptr.sprintf(cptr.decay(kbuf), __sl31, an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))));
@@ -394,11 +393,11 @@ export function mount_steed(mtmp, force) {
         You_cant(__sl37);
         return 0;
     }
-    if (!force && !is_floater(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && Levitation() && !Lev_at_will()) {
+    if (!force && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && Levitation() && !Lev_at_will()) {
         You(__sl38, mon_nam(mtmp));
         return 0;
     }
-    if (!force && uarm.v && is_metallic(uarm.v) && greatest_erosion(uarm.v)) {
+    if (!force && uarm.v && (((cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL) && (((cptr.ldI32o((uarm.v), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((uarm.v), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((uarm.v), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((uarm.v), $obj_oeroded2) & 3) | 0)) {
         Your(__sl39, (cptr.ldI32o(uarm.v, $obj_oeroded) & 3) | 0 ? __sl40 : __sl41, mon_nam(mtmp));
         return 0;
     }
@@ -414,13 +413,13 @@ export function mount_steed(mtmp, force) {
     }
     maybewakesteed(mtmp);
     if (!force) {
-        if (Levitation() && !is_floater(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n))
+        if (Levitation() && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n))
             pline(__sl46, Monnam(mtmp));
         You(__sl47, mon_nam(mtmp));
         if (Flying())
             You(__sl48, mon_nam(mtmp));
     }
-    if (uwep.v && is_pole(uwep.v))
+    if (uwep.v && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_LANCE || is_art(uwep.v, NHC.ART_SNICKERSNEE))))
         cptr.st1o(gu, $instance_globals_u_unweapon, 0);
     cptr.stPtro(u, $you_usteed, mtmp);
     {
@@ -451,7 +450,7 @@ export function kick_steed() {
     let He = new Uint8Array(256);
     if (!cptr.ldPtro(u, $you_usteed))
         return;
-    if (helpless(cptr.ldPtro(u, $you_usteed))) {
+    if (((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_mcanmove) & 1))) {
         void cptr.strcpy(cptr.decay(He), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_usteed), NHM.PRONOUN_HALLU), 48, $Gender_he)));
         cptr.st1(cptr.decay(He), highc(cptr.ld1s(cptr.decay(He))));
         if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl12, 415, __sl50), rn2(2)) : rn2(2))) {
@@ -463,7 +462,7 @@ export function kick_steed() {
                 cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen, 0);
                 cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove, 1);
             }
-            if (helpless(cptr.ldPtro(u, $you_usteed)))
+            if (((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_mcanmove) & 1)))
                 pline(__sl51, cptr.decay(He));
             else
                 pline(__sl52, monverbself(cptr.ldPtro(u, $you_usteed), cptr.decay(He), __sl53, null));
@@ -628,7 +627,7 @@ export function dismount_steed(reason) {
             You(__sl67);
             return;
         }
-        if (!has_mgivenname(mtmp)) {
+        if (!(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) {
             pline(__sl68, an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))));
             if (Hallucination())
                 pline(__sl69);
@@ -666,17 +665,17 @@ export function dismount_steed(reason) {
         }
         if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !cptr.ldPtro(u, $you_ustuck) && have_spot) {
             let mdat = cptr.ldPtro(mtmp, $monst_data);
-            if (grounded(mdat)) {
+            if ((!((cptr.ldU64o((mdat), $permonst_mflags1) & 1n) != 0n) && !(cptr.ld1so((mdat), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((mdat), $permonst_mlet) == NHC.S_LIGHT) && (!((cptr.ldU64o((mdat), $permonst_mflags1) & 16n) != 0n) || !has_ceiling(cptr.add(u, $you_uz))))) {
                 if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     if (!Underwater())
                         pline(__sl72, Monnam(mtmp), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-                    if (!cant_drown(mdat)) {
+                    if (!(((cptr.ldU64o((mdat), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((mdat), $permonst_mflags1) & 512n) != 0n) || ((cptr.ldU64o((mdat), $permonst_mflags1) & 1024n) != 0n))) {
                         killed(mtmp);
                         adjalign(-1);
                     }
                 } else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     pline(__sl73, Monnam(mtmp), hliquid(__sl74));
-                    if (!likes_lava(mdat)) {
+                    if (!(cptr.eq(mdat, cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(mdat, cptr.add(mons, NHC.PM_SALAMANDER, 96)))) {
                         killed(mtmp);
                         adjalign(-1);
                     }
@@ -711,7 +710,7 @@ export function dismount_steed(reason) {
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     } else
         cptr.st1(disp, 1);
-    if (uwep.v && is_pole(uwep.v))
+    if (uwep.v && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_LANCE || is_art(uwep.v, NHC.ART_SNICKERSNEE))))
         cptr.st1o(gu, $instance_globals_u_unweapon, 1);
     return;
 }
@@ -719,7 +718,7 @@ export function dismount_steed(reason) {
 /** C ref: steed.c:827 — @param {CPtr} steed */
 function maybewakesteed(steed) {
     let frozen = (cptr.ldI32o(steed, $monst_mfrozen) & 127) | 0;
-    let wasimmobile = schar(helpless(steed));
+    let wasimmobile = schar(((cptr.ldI32o((steed), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((steed), $monst_mcanmove) & 1) ? 1 : 0));
     cptr.stI32o(steed, $monst_msleeping, 0);
     if (frozen) {
         frozen = (((frozen + 1) | 0) / 2) | 0;
@@ -730,7 +729,7 @@ function maybewakesteed(steed) {
             cptr.stI32o(steed, $monst_mfrozen, frozen >>> 0);
         }
     }
-    if (wasimmobile && !helpless(steed))
+    if (wasimmobile && !((cptr.ldI32o((steed), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((steed), $monst_mcanmove) & 1)))
         pline(__sl76, Monnam(steed));
     finish_meating(steed);
 }
@@ -753,7 +752,7 @@ export function poly_steed(steed, oldshape) {
 export function stucksteed(checkfeeding) {
     let steed = cptr.ldPtro(u, $you_usteed);
     if (steed) {
-        if (helpless(steed)) {
+        if (((cptr.ldI32o((steed), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((steed), $monst_mcanmove) & 1))) {
             pline(__sl80, YMonnam(steed));
             return 1;
         }

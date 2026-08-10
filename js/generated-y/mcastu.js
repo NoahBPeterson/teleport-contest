@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { BZ_VALID_ADTYP, canspotmon, eyecount, ismnum, max, nonliving } from './nhmacrofn.js';
 import { Antimagic, Blind, Blinded, Cold_resistance, Deaf, Detect_monsters, Displaced, Fire_resistance, Free_action, HConfusion, HStun, Half_physical_damage, Half_spell_damage, Hallucination, Invis, See_invisible, Shock_resistance, Upolyd } from './nhprop.js';
 import { canseemon, map_invisible, sensemon, shieldeff, tp_sensemon } from './display.js';
 import { c_common_strings, gb, gi, gm, gn, gt, gv, gy, iflags, svc, svk, svm, u } from './decl.js';
@@ -386,8 +385,8 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         }
         return NHM.M_ATTK_MISS;
     }
-    if (canspotmon(mtmp) || !is_undirected_spell(spellnum)) {
-        (yield* pline_mon(mtmp, __sl17, canspotmon(mtmp) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : ((Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl19 : ((Displaced() && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl20 : __sl21))));
+    if ((canseemon(mtmp) || sensemon(mtmp)) || !is_undirected_spell(spellnum)) {
+        (yield* pline_mon(mtmp, __sl17, (canseemon(mtmp) || sensemon(mtmp)) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : ((Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl19 : ((Displaced() && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl20 : __sl21))));
     }
     if (!foundyou) {
         dmg = 0;
@@ -481,7 +480,7 @@ export function* touch_of_death(mtmp) {
         let olduhp = cptr.ldI32o(u, $you_uhp);
         let uhpmin = minuhpmax(3);
         let newuhpmax = (cptr.ldI32o(u, $you_uhpmax) - drain) | 0;
-        setuhpmax(max(newuhpmax, uhpmin), 0);
+        setuhpmax(((newuhpmax) > (uhpmin) ? (newuhpmax) : (uhpmin)), 0);
         dmg = adjuhploss(dmg, olduhp);
         (yield* losehp(dmg, cptr.decay(kbuf), NHM.KILLED_BY));
     }
@@ -493,7 +492,7 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     void cptr.strcpy(outbuf, deathreason);
     if (mtmp) {
         let mptr = cptr.ldPtro(mtmp, $monst_data);
-        let champtr = (ismnum(cptr.ldI16o(mtmp, $monst_cham))) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
+        let champtr = (((cptr.ldI16o(mtmp, $monst_cham)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, $monst_cham)) < NHC.NUMMONS)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
         let realnm = pmname(champtr, Mgender(mtmp));
         let fakenm = pmname(mptr, Mgender(mtmp));
         if (!((cptr.ldU64o((champtr), $permonst_mflags2) & 524288n) != 0n) && !the_unique_pm(mptr))
@@ -508,7 +507,7 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
 /** C ref: mcastu.c:389 — @param {CPtr} mtmp */
 function* mcast_death_touch(mtmp) {
     (yield* pline(__sl36, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he))));
-    if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
+    if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
         (yield* You(__sl37));
     } else if (!Antimagic() && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 394, __sl38), rn2(cptr.ld1uo(mtmp, $monst_m_lev))) : rn2(cptr.ld1uo(mtmp, $monst_m_lev))) > 12) {
         if (Hallucination()) {
@@ -594,7 +593,7 @@ function* mcast_disappear(mtmp) {
         if (canseemon(mtmp))
             (yield* pline_mon(mtmp, __sl59, (yield* Monnam(mtmp)), !See_invisible() ? __sl60 : __sl61));
         (yield* mon_set_minvis(mtmp, 0));
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) && !canspotmon(mtmp))
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     } else
         (yield* impossible(__sl62));
@@ -788,7 +787,7 @@ function* mcast_insects(mtmp) {
 /** C ref: mcastu.c:729 */
 function* mcast_blind_you() {
     if (!Blinded()) {
-        let num_eyes = eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
+        let num_eyes = (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2));
         (yield* pline(__sl94, (num_eyes == 1) ? (yield* body_part(NHC.EYE)) : (yield* makeplural((yield* body_part(NHC.EYE))))));
         (yield* make_blinded(Half_spell_damage() ? 100n : 200n, 0));
         if (!Blind())
@@ -996,7 +995,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
 
 /** C ref: mcastu.c:989 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
 export function* buzzmu(mtmp, mattk) {
-    if (!BZ_VALID_ADTYP(cptr.ld1uo(mattk, $attack_adtyp)))
+    if (!((cptr.ld1uo(mattk, $attack_adtyp)) >= NHM.AD_MAGM && (cptr.ld1uo(mattk, $attack_adtyp)) <= NHM.AD_SPC2))
         return NHM.M_ATTK_MISS;
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 || (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp))))) {
         (yield* cursetxt(mtmp, 0));

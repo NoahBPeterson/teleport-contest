@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_box, canspotmon, greatest_erosion, is_blade, is_door_mappear, is_pick, is_weptool } from './nhmacrofn.js';
 import { BBlinded, Blind, Deaf, HBlinded, HConfusion, HStun, Levitation, Passes_walls, Protection_from_shape_changers, Underwater } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gu, gv, gx, gy, svc, svd, svl, svm, u, uwep, ynchars, ynqchars } from './decl.js';
 import { There, You, You_cant, You_hear, impossible, pline, pline_The, set_msg_xy, verbalize } from './pline.js';
@@ -417,7 +416,7 @@ function* forcelock() {
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 229, __sl24), rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) : rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
+        if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 229, __sl24), rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) : rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) > ((992 - Math.imul((((cptr.ldI32o((uwep.v), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((uwep.v), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((uwep.v), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((uwep.v), $obj_oeroded2) & 3) | 0), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
             (yield* pline(__sl25, (cptr.ldI64o(uwep.v, $obj_quan) > 1n) ? __sl26 : __sl27, (yield* xname(uwep.v))));
             (yield* useup(uwep.v));
             (yield* You(__sl23));
@@ -584,7 +583,7 @@ export function* pick_lock(pick, rx, ry, container) {
         for (otmp = cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
             if (autounlock && !cptr.eq(otmp, container))
                 continue;
-            if (Is_box(otmp)) {
+            if ((cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((otmp), $obj_otyp) == NHC.CHEST)) {
                 ++count;
                 if (!can_reach_floor(1)) {
                     (yield* You_cant(__sl47, (yield* the((yield* xname(otmp))))));
@@ -672,7 +671,7 @@ export function* pick_lock(pick, rx, ry, container) {
                 (yield* pline(__sl64, (yield* mon_nam(mtmp))));
             }
             return -1;
-        } else if (mtmp && is_door_mappear(mtmp)) {
+        } else if (mtmp && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_vcdoor))) {
             (yield* stumble_onto_mimic(mtmp));
             (yield* maybe_absorb_item(mtmp, pick, 50, 10));
             return -1;
@@ -745,7 +744,7 @@ export function* pick_lock(pick, rx, ry, container) {
 
 /** C ref: lock.c:660 @returns {CInt} */
 export function u_have_forceable_weapon() {
-    if (!uwep.v || ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) ? (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) < NHC.P_DAGGER || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_FLAIL || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) > NHC.P_LANCE ? 1 : 0) : cptr.ld1so(uwep.v, $obj_oclass) != NHC.ROCK_CLASS))
+    if (!uwep.v || ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE)) ? (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) < NHC.P_DAGGER || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_FLAIL || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) > NHC.P_LANCE ? 1 : 0) : cptr.ld1so(uwep.v, $obj_oclass) != NHC.ROCK_CLASS))
         return 0;
     return 1;
 }
@@ -762,14 +761,14 @@ export function* doforce() {
     }
     if (!u_have_forceable_weapon()) {
         let use_plural = schar((uwep.v && cptr.ldI64o(uwep.v, $obj_quan) > 1n ? 1 : 0));
-        (yield* You_cant(__sl76, !uwep.v ? __sl77 : ((cptr.ld1so(uwep.v, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(uwep.v)) ? (use_plural ? __sl78 : __sl79) : (use_plural ? __sl80 : __sl81)), use_plural ? __sl82 : __sl17));
+        (yield* You_cant(__sl76, !uwep.v ? __sl77 : ((cptr.ld1so(uwep.v, $obj_oclass) != NHC.WEAPON_CLASS && !(cptr.ld1so((uwep.v), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE)) ? (use_plural ? __sl78 : __sl79) : (use_plural ? __sl80 : __sl81)), use_plural ? __sl82 : __sl17));
         return NHM.ECMD_OK;
     }
     if (!can_reach_floor(1)) {
         (yield* cant_reach_floor(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 1, 0));
         return NHM.ECMD_OK;
     }
-    picktyp = is_blade(uwep.v) && !is_pick(uwep.v) ? 1 : 0;
+    picktyp = (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_DAGGER && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_SABER) && !((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE) ? 1 : 0;
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) && cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) && picktyp == cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
         (yield* You(__sl83));
         set_occupation(forcelock, __sl84, 0n);
@@ -777,7 +776,7 @@ export function* doforce() {
     }
     cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, null);
     for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
-        if (Is_box(otmp)) {
+        if ((cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((otmp), $obj_otyp) == NHC.CHEST)) {
             if ((cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 || !(cptr.ldI32o(otmp, $obj_olocked) & 1)) {
                 cptr.stI32o(otmp, $obj_lknown, 0);
                 (yield* There(__sl85, (yield* doname(otmp)), (cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 ? __sl86 : __sl87));
@@ -812,7 +811,7 @@ export function* doforce() {
 /** C ref: lock.c:759 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* stumble_on_door_mimic(x, y) {
     let mtmp;
-    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && is_door_mappear(mtmp) && !Protection_from_shape_changers()) {
+    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_vcdoor)) && !Protection_from_shape_changers()) {
         (yield* stumble_onto_mimic(mtmp));
         return 1;
     }
@@ -943,11 +942,11 @@ function* obstructed(x, y, quietly) {
             }
         if (!quietly) {
             let Mn = (yield* Some_Monnam(mtmp));
-            if ((cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y) && canspotmon(mtmp))
+            if ((cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y) && (canseemon(mtmp) || sensemon(mtmp)))
                 Mn = cptr.strcat((yield* s_suffix(Mn)), __sl110);
             (yield* pline(__sl111, Mn));
         }
-        if (!canspotmon(mtmp))
+        if (!(canseemon(mtmp) || sensemon(mtmp)))
             (yield* map_invisible(x, y));
         return 1;
     }

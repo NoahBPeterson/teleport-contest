@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min } from './nhmacrofn.js';
 import { Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr, raw_print, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg, gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uchain, urealtime, ynchars, ynqchars } from './decl.js';
 import { dump_close_log, dump_forward_putstr, dump_open_log, windowprocs } from './windows.js';
@@ -418,8 +417,8 @@ function done_hangup(sig) {
 export function* done_in_by(mtmp, how) {
     let buf = new Uint8Array(256);
     let mptr = cptr.ldPtro(mtmp, $monst_data);
-    let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
-    let distorted = schar((Hallucination() && canspotmon(mtmp) ? 1 : 0));
+    let champtr = ((cptr.ldI16o(mtmp, $monst_cham)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, $monst_cham)) < NHC.NUMMONS) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
+    let distorted = schar((Hallucination() && (canseemon(mtmp) || sensemon(mtmp)) ? 1 : 0));
     let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
     (yield* You((how == NHC.STONING) ? __sl30 : __sl31));
@@ -431,7 +430,7 @@ export function* done_in_by(mtmp, how) {
             void cptr.strcat(cptr.decay(buf), __sl32);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96)) && has_mgivenname(mtmp)) {
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96)) && (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) {
         void cptr.strcat(cptr.decay(buf), __sl32);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
@@ -444,7 +443,7 @@ export function* done_in_by(mtmp, how) {
         let shape = new Uint8Array(256);
         let realnm = pmname(champtr, Mgender(mtmp));
         let fakenm = pmname(mptr, Mgender(mtmp));
-        let alt = schar(is_vampshifter(mtmp));
+        let alt = schar((cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VLAD_THE_IMPALER ? 1 : 0));
         if (mimicker) {
             mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), 96);
             fakenm = pmname(mptr, Mgender(mtmp));
@@ -461,7 +460,7 @@ export function* done_in_by(mtmp, how) {
         mptr = cptr.ldPtro(mtmp, $monst_data);
     } else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96))) {
         void cptr.strcat(cptr.decay(buf), __sl42);
-        if (has_mgivenname(mtmp))
+        if ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))))
             void cptr.sprintf(eos(cptr.decay(buf)), __sl43, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
     } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         let shknm = (yield* shkname(mtmp));
@@ -472,8 +471,8 @@ export function* done_in_by(mtmp, how) {
         void cptr.strcat(cptr.decay(buf), (yield* m_monnam(mtmp)));
     } else {
         void cptr.strcat(cptr.decay(buf), pmname(mptr, Mgender(mtmp)));
-        if (has_mgivenname(mtmp)) {
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl48, has_ebones(mtmp) ? __sl49 : __sl50, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
+        if ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) {
+            void cptr.sprintf(eos(cptr.decay(buf)), __sl48, (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones))) ? __sl49 : __sl50, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
         }
     }
     void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(buf));
@@ -691,9 +690,9 @@ function* savelife(how) {
     uhpmin = minuhpmax(10);
     if (cptr.ldI32o(u, $you_uhpmax) < uhpmin)
         setuhpmax(uhpmin, 1);
-    cptr.stI32o(u, $you_uhp, min(cptr.ldI32o(u, $you_uhpmax), givehp));
+    cptr.stI32o(u, $you_uhp, ((cptr.ldI32o(u, $you_uhpmax)) < (givehp) ? (cptr.ldI32o(u, $you_uhpmax)) : (givehp)));
     if (Upolyd())
-        cptr.stI32o(u, $you_mh, min(cptr.ldI32o(u, $you_mhmax), givehp));
+        cptr.stI32o(u, $you_mh, ((cptr.ldI32o(u, $you_mhmax)) < (givehp) ? (cptr.ldI32o(u, $you_mhmax)) : (givehp)));
     if (cptr.ldI32o(u, $you_uhunger) < 500 || how == NHC.CHOKING) {
         (yield* init_uhunger());
     }
@@ -828,7 +827,7 @@ function* fuzzer_savelife(how) {
             let propidx;
             let proptim;
             let remedies = 0;
-            if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl81, 965, __sl82), rn2(3)) : rn2(3))) {
+            if (((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) && !(rng_log_enabled() ? (rng_log_set_caller(__sl81, 965, __sl82), rn2(3)) : rn2(3))) {
                 potion = (yield* mksobj(NHC.POT_WATER, 1, 0));
                 (yield* bless(potion));
                 void (yield* peffects(potion));
@@ -1017,10 +1016,10 @@ function* really_done(how) {
             (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
             cptr.stI32o(obj, $obj_known, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_rknown, 1))));
             set_cknown_lknown(obj);
-            if (SchroedingersBox(obj)) {
+            if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((obj), $obj_spe) == 1)) {
                 if (!Schroedingers_cat) {
                     (yield* observe_quantum_cat(obj, 0, 0));
-                    if (SchroedingersBox(obj))
+                    if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((obj), $obj_spe) == 1))
                         Schroedingers_cat = 1;
                 } else
                     cptr.st1o(obj, $obj_spe, 0);
@@ -1068,7 +1067,7 @@ function* really_done(how) {
             cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp))) : 9223372036854775807n));
         }
     }
-    if (ismnum(cptr.ldI32o(u, $you_ugrave_arise)) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
+    if (((cptr.ldI32o(u, $you_ugrave_arise)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ugrave_arise)) < NHC.NUMMONS) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
         (yield* Your(__sl101, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __sl102 : __sl103, (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), Ugender())))));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     }
@@ -1162,7 +1161,7 @@ function* really_done(how) {
                     (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
                     cptr.stI32o(otmp, $obj_dknown, 1);
                     cptr.stI32o(otmp, $obj_known, 1);
-                    if (has_oname(otmp))
+                    if ((cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra)))))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
                     void cptr.sprintf(cptr.decay(pbuf), __sl119, count, (yield* xname(otmp)), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, 120, $objclass_oc_cost))), (yield* currency(2n)));
@@ -1219,7 +1218,7 @@ export function* container_contents(list, identified, all_containers, reportempt
     let cat;
     let dumping = cptr.ld1so(iflags, $instance_flags_in_dumplog);
     for (box = list; box; box = cptr.ldPtr(box)) {
-        if (Is_container(box) || cptr.ldI16o(box, $obj_otyp) == NHC.STATUE) {
+        if ((cptr.ldI16o((box), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((box), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(box, $obj_otyp) == NHC.STATUE) {
             if (!(cptr.ldI32o(box, $obj_cknown) & 1) || (identified && !(cptr.ldI32o(box, $obj_lknown) & 1))) {
                 cptr.stI32o(box, $obj_cknown, 1);
                 if (identified)
@@ -1233,7 +1232,7 @@ export function* container_contents(list, identified, all_containers, reportempt
                 let sortedcobj = cptr.box(0);
                 let srtc;
                 let sortflags;
-                cat = schar(SchroedingersBox(box));
+                cat = schar((cptr.ldI16o((box), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((box), $obj_spe) == 1 ? 1 : 0));
                 void cptr.sprintf(cptr.decay(buf), __sl129, (yield* the((yield* xname(box)))));
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 if (!dumping)
@@ -1247,7 +1246,7 @@ export function* container_contents(list, identified, all_containers, reportempt
                             (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
                             cptr.stI32o(obj, $obj_dknown, 1);
                             cptr.stI32o(obj, $obj_known, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1)));
-                            if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
+                            if ((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
                                 cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
                         }
                         void cptr.strcpy(cptr.add(cptr.decay(buf), 2, 1), (yield* doname_with_price(obj)));

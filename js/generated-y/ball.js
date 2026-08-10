@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { is_hole, is_pit } from './nhmacrofn.js';
 import { Blind, Half_physical_damage, Levitation, Luck, Punished } from './nhprop.js';
 import { flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep } from './decl.js';
 import { setuqwep, setuswapwep, setuwep, welded } from './wield.js';
@@ -546,7 +545,7 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
         nomul(0);
         return 0;
     }
-    if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) && (cptr.ld1so3(svl, cptr.ldI16o(uchain.v, $obj_ox), 756, cptr.ldI16o(uchain.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) || cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), 756, cptr.ldI16o(uball.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL)) || ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
+    if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) && (cptr.ld1so3(svl, cptr.ldI16o(uchain.v, $obj_ox), 756, cptr.ldI16o(uchain.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) || cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), 756, cptr.ldI16o(uball.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL)) || ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) || ((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.HOLE || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.TRAPDOOR)))) {
         if (Levitation()) {
             (yield* You_feel(__sl18));
             if (t)
@@ -644,7 +643,7 @@ export function* drop_ball(x, y) {
         }
         cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
         cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
-        if (!Levitation() && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !cptr.ldI32o(u, $you_utrap) && (is_pool(x, y) || ((t = t_at(x, y)) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))))) {
+        if (!Levitation() && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !cptr.ldI32o(u, $you_utrap) && (is_pool(x, y) || ((t = t_at(x, y)) && (((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) || ((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.HOLE || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.TRAPDOOR))))) {
             cptr.stI16(u, x);
             cptr.stI16o(u, $you_uy, y);
         } else {

@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, has_oname, is_poisonable, timer_is_obj } from './nhmacrofn.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_setfuncs } from './lauxlib.js';
 import { nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error, nhl_get_timertype } from './nhlua.js';
 import { add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight } from './mkobj.js';
@@ -337,7 +336,7 @@ function* l_obj_to_table(L) {
         return 1;
     }
     (yield* nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtro((obj), $obj_cobj) !== null))));
-    (yield* nhl_add_table_entry_int(L, __sl31, BigInt(Is_container(obj))));
+    (yield* nhl_add_table_entry_int(L, __sl31, BigInt((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS ? 1 : 0))));
     (yield* nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32o(obj, $obj_o_id) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16o(obj, $obj_ox))));
     (yield* nhl_add_table_entry_int(L, __sl34, BigInt(cptr.ldI16o(obj, $obj_oy))));
@@ -375,7 +374,7 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32o(obj, $obj_oerodeproof) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32o(obj, $obj_olocked) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32o(obj, $obj_obroken) & 1) >>> 0)));
-    if (is_poisonable(obj))
+    if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -24 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || permapoisoned(obj)))
         (yield* nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)));
     else
         (yield* nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)));
@@ -396,8 +395,8 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32o(obj, $obj_oeaten) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl78, cptr.ldI64o(obj, $obj_age)));
     (yield* nhl_add_table_entry_int(L, __sl79, cptr.ldI64o(obj, $obj_owornmask)));
-    (yield* nhl_add_table_entry_int(L, __sl80, BigInt(has_oname(obj))));
-    if (has_oname(obj))
+    (yield* nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) ? 1 : 0))));
+    if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
         (yield* nhl_add_table_entry_str(L, __sl81, (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))));
     return 1;
 }
@@ -510,7 +509,7 @@ function* l_obj_timer_has(L) {
     if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if (timer_is_obj(timertype) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
             (yield* lua_pushboolean(L, obj_has_timer(cptr.ldPtro(lo, $_lua_obj_obj), timertype)));
             return 1;
         } else {
@@ -528,7 +527,7 @@ function* l_obj_timer_peek(L) {
     if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if (timer_is_obj(timertype) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
             (yield* lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj)))));
             return 1;
         } else {
@@ -551,7 +550,7 @@ function* l_obj_timer_stop(L) {
     } else if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if (timer_is_obj(timertype) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, $_lua_obj_obj)) {
             (yield* lua_pushinteger(L, (yield* stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))))));
             return 1;
         } else {
@@ -570,7 +569,7 @@ function* l_obj_timer_start(L) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
         let when = (yield* luaL_checkinteger(L, 3));
-        if (timer_is_obj(timertype) && lo && cptr.ldPtro(lo, $_lua_obj_obj) && when > 0n) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, $_lua_obj_obj) && when > 0n) {
             if (obj_has_timer(cptr.ldPtro(lo, $_lua_obj_obj), timertype))
                 (yield* stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))));
             (yield* start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))));

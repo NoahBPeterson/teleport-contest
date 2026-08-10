@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { nonliving } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Breathless, Half_gas_damage, Half_physical_damage, Poison_resistance, putstr, sokoban_dnum } from './nhprop.js';
 import { alloc } from './alloc.js';
 import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
@@ -984,7 +983,7 @@ export function region_danger() {
             continue;
         f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_inside_f);
         if (f_indx == 0) {
-            if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || Breathless())
+            if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || Breathless())
                 continue;
             if (Poison_resistance())
                 continue;

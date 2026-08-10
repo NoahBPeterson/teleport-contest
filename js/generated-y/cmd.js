@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_TREE, Is_container, canspotmon, glyph_is_cmap, has_mgivenname, is_mind_flayer, is_unicorn, is_vampshifter, webmaker } from './nhmacrofn.js';
 import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
@@ -1409,7 +1408,7 @@ export function* domonability() {
     let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
     let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
     let c = 0;
-    if (might_hide && webmaker(uptr)) {
+    if (might_hide && (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)))) {
         c = (yield* yn_function(__sl33, cptr.decay(hidespinchars), 113, 1));
         if (c == 113 || c == 27)
             return NHM.ECMD_OK;
@@ -1426,9 +1425,9 @@ export function* domonability() {
         return (yield* dosummon());
     else if (c ? c == 104 : might_hide)
         return (yield* dohide());
-    else if (c ? c == 115 : webmaker(uptr))
+    else if (c ? c == 115 : (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) ? 1 : 0))
         return (yield* dospinweb());
-    else if (is_mind_flayer(uptr))
+    else if ((cptr.eq((uptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96))))
         return (yield* domindblast());
     else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
         if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
@@ -1439,7 +1438,7 @@ export function* domonability() {
         } else {
             (yield* There(__sl34));
         }
-    } else if (is_unicorn(uptr)) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_UNICORN && ((cptr.ldU64o((uptr), $permonst_mflags2) & 536870912n) != 0n))) {
         (yield* use_unicorn_horn(null));
         return NHM.ECMD_TIME;
     } else if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK) {
@@ -1448,7 +1447,7 @@ export function* domonability() {
             (yield* pline(__sl36));
         else
             (yield* aggravate());
-    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || (cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) {
         return (yield* dopoly());
     } else if (cptr.ldPtro(u, $you_usteed) && attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), NHM.AT_BREA)) {
         void (yield* pet_ranged_attk(cptr.ldPtro(u, $you_usteed), 1));
@@ -1717,7 +1716,7 @@ function u_can_see_whole_selection(sel) {
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
     let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || IS_TREE(typ) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
+    if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || ((typ) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (typ) == NHC.STONE)) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
 }
@@ -1769,7 +1768,7 @@ export function* dolookaround() {
         for (x = 1; x < NHM.COLNO; x++) {
             let glyph;
             let mapsym;
-            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && glyph_is_cmap(glyph) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
+            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
             if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((yield* gather_locs_interesting(x, y, NHC.GLOC_INTERESTING)) || iscorr)) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
@@ -5064,7 +5063,7 @@ function* there_cmd_menu_self(win, x, y, act) {
         let otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
         void cptr.sprintf(cptr.decay(buf), __sl602, cptr.ldPtro(otmp, $obj_v) ? __sl603 : (yield* doname(otmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_PICKUP, cptr.decay(buf))), ++K;
-        if (Is_container(otmp)) {
+        if ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), $obj_otyp) <= NHC.BAG_OF_TRICKS)) {
             void cptr.sprintf(cptr.decay(buf), __sl604, (yield* doname(otmp)));
             (yield* mcmd_addmenu(win, NHC.MCMD_LOOT, cptr.decay(buf))), ++K;
             void cptr.sprintf(cptr.decay(buf), __sl605, (yield* doname(otmp)));
@@ -5129,7 +5128,7 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     if (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __sl623)), ++K;
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-    if (mtmp && !canspotmon(mtmp))
+    if (mtmp && !(canseemon(mtmp) || sensemon(mtmp)))
         mtmp = null;
     if (mtmp && (yield* which_armor(mtmp, 1048576n))) {
         let mnam = (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
@@ -5149,7 +5148,7 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
         (yield* mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf))), ++K;
         void cptr.sprintf(cptr.decay(buf), __sl628, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, cptr.decay(buf))), ++K;
-        void cptr.sprintf(cptr.decay(buf), __sl629, !has_mgivenname(mtmp) ? __sl630 : __sl631, (yield* mon_nam(mtmp)));
+        void cptr.sprintf(cptr.decay(buf), __sl629, !(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? __sl630 : __sl631, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_NAME, cptr.decay(buf))), ++K;
     }
     if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
@@ -5446,7 +5445,7 @@ function* domouseaction() {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dodown));
                 return NHM.ECMD_OK;
             } else if ((o = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null) {
-                (yield* cmdq_add_ec(NHC.CQ_CANNED, Is_container(o) ? doloot : dopickup));
+                (yield* cmdq_add_ec(NHC.CQ_CANNED, (cptr.ldI16o((o), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((o), $obj_otyp) <= NHC.BAG_OF_TRICKS) ? doloot : dopickup));
                 return NHM.ECMD_OK;
             } else {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));

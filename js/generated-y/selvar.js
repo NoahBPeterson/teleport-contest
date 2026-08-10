@@ -12,7 +12,6 @@ import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { max } from './nhmacrofn.js';
 import { alloc, dupstr } from './alloc.js';
 import { cg, gc, svl, svr } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -606,7 +605,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                     let d3 = line_dist_coord(x, y, x2, y2, x2, dy);
                     let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
                     let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    let d0 = ((d5) < (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))) ? (d5) : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
+                    let d0 = ((d5) < (((((d1) > (d2) ? (d1) : (d2))) < (((d3) > (d4) ? (d3) : (d4))) ? (((d1) > (d2) ? (d1) : (d2))) : (((d3) > (d4) ? (d3) : (d4))))) ? (d5) : (((((d1) > (d2) ? (d1) : (d2))) < (((d3) > (d4) ? (d3) : (d4))) ? (((d1) > (d2) ? (d1) : (d2))) : (((d3) > (d4) ? (d3) : (d4))))));
                     if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 616, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }

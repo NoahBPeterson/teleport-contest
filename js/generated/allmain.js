@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ismnum } from './nhmacrofn.js';
 import { BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast, Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy, Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning, cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
 import { crashreport_init } from './report.js';
@@ -419,7 +418,7 @@ export function moveloop_core() {
                         mvl_change = 0;
                     if (Polymorph() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 325, __sl8), rn2(100)) : rn2(100)))
                         mvl_change = 1;
-                    else if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 328, __sl8), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
+                    else if (((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 328, __sl8), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
                         mvl_change = 2;
                     if (mvl_change && !Unchanging()) {
                         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {

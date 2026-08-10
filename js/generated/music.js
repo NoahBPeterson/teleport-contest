@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ceiling_hider, has_mgivenname, is_pit } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Unchanging, Underwater, Upolyd, sokoban_dnum } from './nhprop.js';
 import { flash_str, resist, ubuzz, zapyourself } from './zap.js';
 import { monflee, onscary } from './monmove.js';
@@ -363,7 +362,7 @@ function do_pit(x, y, tu_pit) {
                     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
                         pline(__sl16);
                     } else {
-                        You(__sl17, cptr.ld1so(mtmp, $monst_mtame) ? x_monnam(mtmp, NHM.ARTICLE_THE, __sl18, has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0, 0) : mon_nam(mtmp));
+                        You(__sl17, cptr.ld1so(mtmp, $monst_mtame) ? x_monnam(mtmp, NHM.ARTICLE_THE, __sl18, (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? NHM.SUPPRESS_SADDLE : 0, 0) : mon_nam(mtmp));
                     }
                     xkilled(mtmp, NHM.XKILL_NOMSG);
                 }
@@ -415,7 +414,7 @@ function do_earthquake(force) {
     let algn;
     let tu_pit = 0;
     if (trap_at_u)
-        tu_pit = is_pit((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) >>> 0;
+        tu_pit = ((((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT ? 1 : 0) >>> 0;
     if (force > 13)
         force = 13;
     start_x = (cptr.ldI16(u) - (Math.imul(force, 2))) | 0;
@@ -433,7 +432,7 @@ function do_earthquake(force) {
                 if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1)) {
                     cptr.stI32o(mtmp, $monst_mundetected, 0);
                     newsym(x, y);
-                    if (ceiling_hider(cptr.ldPtro(mtmp, $monst_data))) {
+                    if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) && ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n) && cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) != NHC.S_MIMIC) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)))) {
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
                             pline(__sl29, Amonnam(mtmp));
                         } else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) {

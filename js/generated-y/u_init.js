@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
 import { Race_switch, Role_switch, discover } from './nhprop.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
@@ -1674,9 +1673,9 @@ function* knows_class(sym) {
             continue;
         if (sym == NHC.WEAPON_CLASS) {
             cptr.stI16o(odummy, $obj_otyp, i16(ct));
-            if ((!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) && is_pole(o))
+            if ((!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) && ((cptr.ld1so(o, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(o, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_LANCE || is_art(o, NHC.ART_SNICKERSNEE))))
                 continue;
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && (!is_launcher(o) && !is_ammo(o) && !is_spear(o)))
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && (!(cptr.ld1so(o, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_BOW && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_CROSSBOW) && !((cptr.ld1so(o, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(o, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) && !(cptr.ld1so(o, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_SPEAR)))
                 continue;
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) && (cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_DAGGER))
                 continue;
@@ -2090,7 +2089,7 @@ function* ini_inv_adjust_obj(trop, obj) {
         if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uses_known) & 1))
             cptr.stI32o(obj, $obj_known, 1);
         cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1)));
-        if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
+        if ((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
             cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
             cptr.stI32o(obj, $obj_otrapped, 0);
         }
@@ -2100,7 +2099,7 @@ function* ini_inv_adjust_obj(trop, obj) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             cptr.stI64o(obj, $obj_quan, trquan(trop));
             stop = 1;
-        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && is_graystone(obj) && cptr.ldI16o(obj, $obj_otyp) != NHC.FLINT) {
+        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && (cptr.ldI16o((obj), $obj_otyp) == NHC.LUCKSTONE || cptr.ldI16o((obj), $obj_otyp) == NHC.LOADSTONE || cptr.ldI16o((obj), $obj_otyp) == NHC.FLINT || cptr.ldI16o((obj), $obj_otyp) == NHC.TOUCHSTONE) && cptr.ldI16o(obj, $obj_otyp) != NHC.FLINT) {
             cptr.stI64o(obj, $obj_quan, 1n);
         }
         if (cptr.ld1so(trop, $trobj_trspe) != 127) {
@@ -2125,27 +2124,27 @@ function* ini_inv_use_obj(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         (yield* discover_object(NHC.POT_OIL, 1, 1, 0));
     if (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS) {
-        if (is_shield(obj) && !uarms.v && !(uwep.v && bimanual(uwep.v))) {
+        if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_SHIELD) && !uarms.v && !(uwep.v && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))) {
             set_twoweap(0);
             (yield* setworn(obj, 8n));
-        } else if (is_helmet(obj) && !uarmh.v)
+        } else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_HELM) && !uarmh.v)
             (yield* setworn(obj, 4n));
-        else if (is_gloves(obj) && !uarmg.v)
+        else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_GLOVES) && !uarmg.v)
             (yield* setworn(obj, 16n));
-        else if (is_shirt(obj) && !uarmu.v)
+        else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_SHIRT) && !uarmu.v)
             (yield* setworn(obj, 64n));
-        else if (is_cloak(obj) && !uarmc.v)
+        else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_CLOAK) && !uarmc.v)
             (yield* setworn(obj, 2n));
-        else if (is_boots(obj) && !uarmf.v)
+        else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS) && !uarmf.v)
             (yield* setworn(obj, 32n));
-        else if (is_suit(obj) && !uarm.v)
+        else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_SUIT) && !uarm.v)
             (yield* setworn(obj, 1n));
     }
-    if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT || cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK) {
-        if (is_ammo(obj) || is_missile(obj)) {
+    if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT || cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK) {
+        if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -23)) {
             if (!uquiver.v)
                 (yield* setuqwep(obj));
-        } else if (!uwep.v && (!uarms.v || !bimanual(obj))) {
+        } else if (!uwep.v && (!uarms.v || !((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))) {
             (yield* setuwep(obj));
         } else if (!uswapwep.v) {
             (yield* setuswapwep(obj));

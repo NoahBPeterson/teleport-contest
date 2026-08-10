@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_WALL, is_lightblocker_mappear, max, min } from './nhmacrofn.js';
 import { Blind, Detect_monsters, See_invisible, Warn_of_mon, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
@@ -296,7 +295,7 @@ export function does_block(x, y, lev) {
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v))
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
             return 1;
-    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && is_lightblocker_mappear(mon))
+    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && (((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), $monst_mappearance) == NHC.BOULDER) || ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mon), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mon), $monst_mappearance) == NHC.S_vcdoor || cptr.ldI32o((mon), $monst_mappearance) < NHC.S_ndoor || cptr.ldI32o((mon), $monst_mappearance) == NHC.S_tree))))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -455,8 +454,8 @@ export function vision_recalc(control) {
             cptr.stPtro(gv, $instance_globals_v_viz_array, next_array.v);
             for (row = 0; row < NHM.ROWNO; row++) {
                 old_row = cptr.ldPtro(temp_array, row, 8);
-                start = min(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), cptr.ldI16o(next_rmin.v, row, 2));
-                stop = max(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), cptr.ldI16o(next_rmax.v, row, 2));
+                start = ((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)) < (cptr.ldI16o(next_rmin.v, row, 2)) ? (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)) : (cptr.ldI16o(next_rmin.v, row, 2)));
+                stop = ((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) > (cptr.ldI16o(next_rmax.v, row, 2)) ? (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) : (cptr.ldI16o(next_rmax.v, row, 2)));
                 for (col = start; col <= stop; col++)
                     if (cptr.ld1uo(old_row, col) & NHM.IN_SIGHT)
                         newsym(i16(col), i16(row));
@@ -474,8 +473,8 @@ export function vision_recalc(control) {
                     for (col = lo_col; col <= ((cptr.ldI16(u) + 1) | 0); col++) {
                         if (!isok(i16(col), i16(row)) || !is_pool(i16(col), i16(row)))
                             continue;
-                        cptr.stI16o(next_rmin.v, row, i16(min(cptr.ldI16o(next_rmin.v, row, 2), col)), 2);
-                        cptr.stI16o(next_rmax.v, row, i16(max(cptr.ldI16o(next_rmax.v, row, 2), col)), 2);
+                        cptr.stI16o(next_rmin.v, row, i16(((cptr.ldI16o(next_rmin.v, row, 2)) < (col) ? (cptr.ldI16o(next_rmin.v, row, 2)) : (col))), 2);
+                        cptr.stI16o(next_rmax.v, row, i16(((cptr.ldI16o(next_rmax.v, row, 2)) > (col) ? (cptr.ldI16o(next_rmax.v, row, 2)) : (col))), 2);
                         cptr.st1o(cptr.ldPtro(next_array.v, row, 8), col, 3);
                     }
             } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
@@ -512,22 +511,22 @@ export function vision_recalc(control) {
                             if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255)
                                 newsym(i16(col), i16(row));
                         }
-                        cptr.stI16o(next_rmin.v, row, i16(min(start, cptr.ldI16o(next_rmin.v, row, 2))), 2);
-                        cptr.stI16o(next_rmax.v, row, i16(max(stop, cptr.ldI16o(next_rmax.v, row, 2))), 2);
+                        cptr.stI16o(next_rmin.v, row, i16(((start) < (cptr.ldI16o(next_rmin.v, row, 2)) ? (start) : (cptr.ldI16o(next_rmin.v, row, 2)))), 2);
+                        cptr.stI16o(next_rmax.v, row, i16(((stop) > (cptr.ldI16o(next_rmax.v, row, 2)) ? (stop) : (cptr.ldI16o(next_rmax.v, row, 2)))), 2);
                     }
                 } else {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
                     cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_seenv, 255);
-                    cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(min(cptr.ldI16(u), cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2))), 2);
-                    cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
+                    cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(((cptr.ldI16(u)) < (cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2)) ? (cptr.ldI16(u)) : (cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2)))), 2);
+                    cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(((cptr.ldI16(u)) > (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2)) ? (cptr.ldI16(u)) : (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2)))), 2);
                 }
             }
             if (has_night_vision && cptr.ldI32o(u, $you_xray_range) < cptr.ldI32o(u, $you_nv_range)) {
                 if (!cptr.ldI32o(u, $you_nv_range)) {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
                     cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_seenv, 255);
-                    cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(min(cptr.ldI16(u), cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2))), 2);
-                    cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
+                    cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(((cptr.ldI16(u)) < (cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2)) ? (cptr.ldI16(u)) : (cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2)))), 2);
+                    cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(((cptr.ldI16(u)) > (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2)) ? (cptr.ldI16(u)) : (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2)))), 2);
                 } else if (cptr.ldI32o(u, $you_nv_range) > 0) {
                     ranges = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI32o(u, $you_nv_range), 2), 2));
                     for (row = (cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_nv_range)) | 0; row <= ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_nv_range)) | 0); row++) {
@@ -542,8 +541,8 @@ export function vision_recalc(control) {
                         for (col = start; col <= stop; col++)
                             if (cptr.ld1uo(next_row, col))
                                 cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
-                        cptr.stI16o(next_rmin.v, row, i16(min(start, cptr.ldI16o(next_rmin.v, row, 2))), 2);
-                        cptr.stI16o(next_rmax.v, row, i16(max(stop, cptr.ldI16o(next_rmax.v, row, 2))), 2);
+                        cptr.stI16o(next_rmin.v, row, i16(((start) < (cptr.ldI16o(next_rmin.v, row, 2)) ? (start) : (cptr.ldI16o(next_rmin.v, row, 2)))), 2);
+                        cptr.stI16o(next_rmax.v, row, i16(((stop) > (cptr.ldI16o(next_rmax.v, row, 2)) ? (stop) : (cptr.ldI16o(next_rmax.v, row, 2)))), 2);
                     }
                 }
             }
@@ -557,8 +556,8 @@ export function vision_recalc(control) {
             dy = ((dy) < 0 ? -1 : ((dy) ? 1 : 0));
             next_row = cptr.ldPtro(next_array.v, row, 8);
             old_row = cptr.ldPtro(temp_array, row, 8);
-            start = min(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), cptr.ldI16o(next_rmin.v, row, 2));
-            stop = max(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), cptr.ldI16o(next_rmax.v, row, 2));
+            start = ((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)) < (cptr.ldI16o(next_rmin.v, row, 2)) ? (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)) : (cptr.ldI16o(next_rmin.v, row, 2)));
+            stop = ((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) > (cptr.ldI16o(next_rmax.v, row, 2)) ? (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) : (cptr.ldI16o(next_rmax.v, row, 2)));
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), start, 756), row, 36);
             sv = cptr.add(cptr.decay(seenv_matrix[(dy + 1) | 0]), start < cptr.ldI16(u) ? 0 : (start > cptr.ldI16(u) ? 2 : 1), 1);
             for (col = start; col <= stop; lev = cptr.add(lev, NHM.ROWNO, 36), sv = cptr.add(sv, cptr.ldI16o(__static_vision_recalc_colbump, ++col, 2))) {
@@ -570,7 +569,7 @@ export function vision_recalc(control) {
                         if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, $rm_seenv))
                             newsym(i16(col), i16(row));
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && ((cptr.ldI32o(lev, $rm_lit) & 1) | 0 || (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT))) {
-                        if ((((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ))) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
+                        if ((((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || ((cptr.ld1so(lev, $rm_typ)) && (cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL)) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
                             flev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (col + dx) | 0, 756), (row + dy) | 0, 36);

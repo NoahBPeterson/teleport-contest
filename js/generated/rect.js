@@ -6,7 +6,6 @@
 import { i16 } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { max, min } from './nhmacrofn.js';
 import { alloc } from './alloc.js';
 import { panic } from './end.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -112,10 +111,10 @@ function intersect(r1, r2, r3) {
 export function rect_bounds(r1, r2, r3) {
     r1 = cptr.dup(r1, 8); // by-value struct param
     r2 = cptr.dup(r2, 8); // by-value struct param
-    cptr.stI16(r3, i16(min(cptr.ldI16(r1), cptr.ldI16(r2))));
-    cptr.stI16o(r3, $NhRect_ly, i16(min(cptr.ldI16o(r1, $nhrect_ly), cptr.ldI16o(r2, $nhrect_ly))));
-    cptr.stI16o(r3, $NhRect_hx, i16(max(cptr.ldI16o(r1, $nhrect_hx), cptr.ldI16o(r2, $nhrect_hx))));
-    cptr.stI16o(r3, $NhRect_hy, i16(max(cptr.ldI16o(r1, $nhrect_hy), cptr.ldI16o(r2, $nhrect_hy))));
+    cptr.stI16(r3, i16(((cptr.ldI16(r1)) < (cptr.ldI16(r2)) ? (cptr.ldI16(r1)) : (cptr.ldI16(r2)))));
+    cptr.stI16o(r3, $NhRect_ly, i16(((cptr.ldI16o(r1, $nhrect_ly)) < (cptr.ldI16o(r2, $nhrect_ly)) ? (cptr.ldI16o(r1, $nhrect_ly)) : (cptr.ldI16o(r2, $nhrect_ly)))));
+    cptr.stI16o(r3, $NhRect_hx, i16(((cptr.ldI16o(r1, $nhrect_hx)) > (cptr.ldI16o(r2, $nhrect_hx)) ? (cptr.ldI16o(r1, $nhrect_hx)) : (cptr.ldI16o(r2, $nhrect_hx)))));
+    cptr.stI16o(r3, $NhRect_hy, i16(((cptr.ldI16o(r1, $nhrect_hy)) > (cptr.ldI16o(r2, $nhrect_hy)) ? (cptr.ldI16o(r1, $nhrect_hy)) : (cptr.ldI16o(r2, $nhrect_hy)))));
 }
 
 /** C ref: rect.c:147 — @param {CPtr} r */

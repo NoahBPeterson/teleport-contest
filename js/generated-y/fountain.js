@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, glyph_is_cmap, is_watch, min } from './nhmacrofn.js';
 import { Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance, Unchanging, display_nhwindow, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg, ynchars } from './decl.js';
 import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon.js';
@@ -325,7 +324,7 @@ function* dofindgem() {
 
 /** C ref: fountain.c:179 — @param {CPtr} mtmp @returns {CInt} */
 function* watchman_warn_fountain(mtmp) {
-    if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+    if ((cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WATCHMAN, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WATCH_CAPTAIN, 96))) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         if (!Deaf()) {
             (yield* pline(__sl22, (yield* Amonnam(mtmp))));
             (yield* verbalize(__sl23));
@@ -355,7 +354,7 @@ export function* dryup(x, y, isyou) {
         }
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
             let glyph = glyph_at(x, y);
-            if (!glyph_is_cmap(glyph) || glyph_to_cmap(glyph) != NHC.S_cloud)
+            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) || glyph_to_cmap(glyph) != NHC.S_cloud)
                 (yield* pline_The(__sl30));
         }
         (yield* set_levltyp(x, y, NHC.ROOM));
@@ -608,7 +607,7 @@ export function* dipfountain(obj) {
                     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
                         let denomination = cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost);
                         let coin_loss = (BigInt.asIntN(64, BigInt.asIntN(64, money + BigInt(denomination)) - 1n)) / BigInt(denomination);
-                        coin_loss = min(coin_loss, cptr.ldI64o(otmp, $obj_quan));
+                        coin_loss = ((coin_loss) < (cptr.ldI64o(otmp, $obj_quan)) ? (coin_loss) : (cptr.ldI64o(otmp, $obj_quan)));
                         cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) - coin_loss);
                         money -= BigInt.asIntN(64, coin_loss * BigInt(denomination));
                         if (!cptr.ldI64o(otmp, $obj_quan))
@@ -702,7 +701,7 @@ export function* drinksink() {
         else {
             mtmp = (yield* makemon(cptr.add(mons, NHC.PM_SEWER_RAT, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG));
             if (mtmp)
-                (yield* pline(__sl81, (Blind() || !canspotmon(mtmp)) ? __sl82 : (yield* a_monnam(mtmp))));
+                (yield* pline(__sl81, (Blind() || !(canseemon(mtmp) || sensemon(mtmp))) ? __sl82 : (yield* a_monnam(mtmp))));
         }
         break;
         case 4:

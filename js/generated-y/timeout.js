@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_candle, emits_light, touch_petrifies } from './nhmacrofn.js';
 import { Acid_resistance, BInvis, Blind, Breathless, Deaf, Displaced, EFumbling, ELevitation, EPasses_walls, Fast, Fire_resistance, Flying, Fumbling, HConfusion, HDeaf, HFlying, HFumbling, HLevitation, HMagical_breathing, HPasses_walls, HSleepy, HStun, Hallucination, Invis, Levitation, Passes_walls, Poison_resistance, Protection_from_shape_changers, See_invisible, Sick, Sleep_resistance, Sleepy, Slimed, Stone_resistance, Stoned, Strangled, Unchanging, Upolyd, Very_fast, Vomiting, Warn_of_mon, Wounded_legs, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gb, gm, gn, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svm, svq, svt, u, uamul, uarmf, uarmh, uswapwep, uwep } from './decl.js';
 import { eos, highc, ing_suffix, s_suffix, strstri, strsubst, upstart } from './hacklib.js';
@@ -884,7 +883,7 @@ function* slimed_to_death(kptr) {
         void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl125);
     }
     (yield* dealloc_killer(kptr));
-    if (emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+    if (((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_LIGHT || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SHOCKING_SPHERE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_BABY_GOLD_DRAGON, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96))) ? 1 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GOLD_DRAGON, 96))) ? 1 : 0)))
         (yield* del_light_source(NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))));
     save_mvflags = cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags);
     cptr.st1o2(svm, NHC.PM_GREEN_SLIME, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((save_mvflags & -3)));
@@ -1415,7 +1414,7 @@ function* slip_or_trip() {
         } else {
             (yield* You(__sl197, what));
         }
-        if (!uarmf.v && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) && !Stone_resistance()) {
+        if (!uarmf.v && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !Stone_resistance()) {
             void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl198, (yield* an(cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, NHC.NEUTRAL, 8, 0))));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
         }
@@ -1519,7 +1518,7 @@ export function* burn_object(arg, timeout) {
             if (menorah) {
                 cptr.st1o(obj, $obj_spe, 0);
                 cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
-            } else if (Is_candle(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL) {
+            } else if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE) || cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL) {
                 let mtmp = null;
                 if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR)
                     mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(obj, $obj_ox), 168, cptr.ldI16o(obj, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));

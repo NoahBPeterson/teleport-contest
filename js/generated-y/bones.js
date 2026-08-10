@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, ismnum } from './nhmacrofn.js';
 import { Punished, Role_switch, URIGHTY, discover, wizard } from './nhprop.js';
 import { In_hell, Is_botlevel, Is_branchlev, Is_special, assign_level, depth, dunlevs_in_dungeon, ledger_no, maxledgerno, on_level } from './dungeon.js';
 import { flags, gb, gf, gi, gs, gu, iflags, program_state, svc, svd, svl, svn, svp, svr, u, uball, ynchars } from './decl.js';
@@ -178,12 +177,12 @@ function* resetobjs(ochain, restore) {
             if (cptr.ld1so(otmp, $obj_oartifact)) {
                 if (exist_artifact(cptr.ldI16o(otmp, $obj_otyp), safe_oname(otmp)) || is_quest_artifact(otmp)) {
                     cptr.st1o(otmp, $obj_oartifact, 0);
-                    if (has_oname(otmp))
+                    if ((cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra)))))
                         free_oname(otmp);
                 } else {
                     (yield* artifact_exists(otmp, safe_oname(otmp), 1, NHM.ONAME_BONES));
                 }
-            } else if (has_oname(otmp)) {
+            } else if ((cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))) {
                 sanitize_name((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))));
             }
             if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(otmp, $obj_oeaten)) {
@@ -206,7 +205,7 @@ function* resetobjs(ochain, restore) {
             cptr.st1o(otmp, $obj_invlet, 0);
             cptr.stI32o(otmp, $obj_no_charge, 0);
             cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
-            if (has_oname(otmp) && !(cptr.ld1so(otmp, $obj_oartifact) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_NOVEL || (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.SPECIAL_PM))) {
+            if ((cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra)))) && !(cptr.ld1so(otmp, $obj_oartifact) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_NOVEL || (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.SPECIAL_PM))) {
                 free_oname(otmp);
             }
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD) {
@@ -217,11 +216,11 @@ function* resetobjs(ochain, restore) {
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
                 cptr.st1o(otmp, $obj_spe, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
-                if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), $permonst_geno) & NHM.G_UNIQ) != 0))
+                if (((cptr.ldI32o(otmp, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(otmp, $obj_corpsenm)) < NHC.NUMMONS) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), $permonst_geno) & NHM.G_UNIQ) != 0))
                     cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
                 let mnum = cptr.box(cptr.ldI32o(otmp, $obj_corpsenm));
-                if (has_omonst(otmp) && cant_revive(mnum, 0, null)) {
+                if ((cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst))) && cant_revive(mnum, 0, null)) {
                     free_omonst(otmp);
                     if (mnum.v == NHC.PM_DOPPELGANGER && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
                         (yield* set_corpsenm(otmp, mnum.v));
@@ -378,7 +377,7 @@ export function can_make_bones() {
 /** C ref: bones.c:390 — @param {CPtr} mtmp */
 function* remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, 96)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || is_Vlad(mtmp) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, 96)) && !(yield* fixuporacle(mtmp))))
+    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, 96)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || (cptr.eq(cptr.ldPtro((mtmp), $monst_data), cptr.add(mons, NHC.PM_VLAD_THE_IMPALER, 96)) || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VLAD_THE_IMPALER) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, 96)) && !(yield* fixuporacle(mtmp))))
         (yield* mongone(mtmp));
 }
 
@@ -422,7 +421,7 @@ export function* savebones(how, when, corpse) {
     for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf))
         cptr.stI32o(f, $fruit_fid, -cptr.ldI32o(f, $fruit_fid));
     set_ghostly_objlist(cptr.ldPtro(gi, $instance_globals_i_invent));
-    if (ismnum(cptr.ldI32o(u, $you_ugrave_arise))) {
+    if (((cptr.ldI32o(u, $you_ugrave_arise)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ugrave_arise)) < NHC.NUMMONS)) {
         cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
         mtmp = (yield* makemon(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT));
         cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
@@ -462,9 +461,9 @@ export function* savebones(how, when, corpse) {
         cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, cptr.ldI32o(u, $you_uhpmax)));
         cptr.stI32o(mtmp, $monst_female, cptr.ld1so(flags, $flag_female));
         cptr.stI32o(mtmp, $monst_msleeping, 1);
-        if (!has_ebones(mtmp))
+        if (!(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones))))
             (yield* newebones(mtmp));
-        if (has_ebones(mtmp)) {
+        if ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)))) {
             for (i = 0; i <= NHM.NUM_ROLES; ++i) {
                 if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urole), cptr.ldPtro(roles, i, 312))) {
                     cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_role, uchar(i));
@@ -615,7 +614,7 @@ export function* getbones() {
             let mtmp;
             (yield* getlev(nhfp, 0, 0));
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                if (has_mgivenname(mtmp))
+                if ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))))
                     sanitize_name((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
                 if (cptr.ldI32o(mtmp, $monst_mhpmax) == -100) {
                     if (wizard()) {

@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask } from './nhmacrofn.js';
 import { display_nhwindow, mines_dnum, nh_delay_output, tutorial_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { WIN_MESSAGE, flags, gc, gd, gi, gl, gm, gn, gs, gt, gu, gv, gx, gy, iflags, nhcb_counts, nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir } from './decl.js';
@@ -1922,7 +1921,7 @@ function* mkaltar(croom) {
     if (!(yield* set_levltyp(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHC.ALTAR)))
         return;
     al = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2348, __sl58), rn2(3)) : rn2(3)) - 1) | 0));
-    cptr.stI32o3(svl, cptr.ldI16(m), 756, cptr.ldI16o(m, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_flags, Align2amask(al));
+    cptr.stI32o3(svl, cptr.ldI16(m), 756, cptr.ldI16o(m, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_flags, ((((al) == -128) ? NHM.AM_NONE : (((al) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((al) + 2) | 0))) >>> 0));
 }
 
 /** C ref: mklev.c:2353 — @param {CPtr} croom */

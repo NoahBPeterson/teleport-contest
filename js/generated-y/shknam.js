@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { has_eshk, ismnum, vegetarian } from './nhmacrofn.js';
 import { Hallucination, display_nhwindow, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
@@ -1114,7 +1113,7 @@ function veggy_item(obj, otyp) {
         if (otyp == NHC.TIN && corpsenm == NHC.NON_PM)
             return schar((cptr.ld1so(obj, $obj_spe) == 1));
         if (otyp == NHC.TIN || otyp == NHC.CORPSE)
-            return schar((ismnum(corpsenm) && vegetarian(cptr.add(mons, corpsenm, 96)) ? 1 : 0));
+            return schar((((corpsenm) >= NHC.LOW_PM && (corpsenm) < NHC.NUMMONS) && ((cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 1 : 0));
     }
     return 0;
 }
@@ -1227,7 +1226,7 @@ function nameshk(shk, nlp) {
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
                     continue;
-                (__builtin_expect(BigInt((!(has_eshk(mtmp)))), 0n) ? __assert_rtn(__sl374, __sl369, 542, __sl378) : void 0);
+                (__builtin_expect(BigInt((!((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))))), 0n) ? __assert_rtn(__sl374, __sl369, 542, __sl378) : void 0);
                 if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname))
                     continue;
                 name_wanted = names_avail;
@@ -1465,7 +1464,7 @@ export function* shkname(mtmp) {
     cptr.stI32o(mtmp, $monst_isshk, save_isshk);
     if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         (yield* impossible(__sl387, nam));
-    } else if (!has_eshk(mtmp)) {
+    } else if (!(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))) {
         (yield* panic(__sl388, nam));
     } else {
         let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
