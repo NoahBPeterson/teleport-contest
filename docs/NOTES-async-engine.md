@@ -990,6 +990,20 @@ workerless row's game 2 and game 3 both answer
 with nothing on the console. Before this leg that page could not host game 1
 at all.
 
+> **The `--workerless` row is out of date, and in the good direction.** That
+> refusal was the best a page realm could do while a spent graph was
+> unrecoverable. It is recoverable now: `js/boot/main-thread-engine.mjs` owns
+> the page realm's graph through `js/boot/reset-realm.mjs` and puts it back at
+> game end, so the row reads **`main`, `main`, `main`** — three games, one page,
+> no `Worker` constructor at all, first frame 556 → 296 → 280 ms, 0 console.
+> Game 3 reproduces game 2's character exactly (same seed) and neither
+> reproduces game 1's. See `docs/NOTES-resettable-state.md` §10.
+>
+> `ReplayEngine`'s own in-page refusal, quoted above, is unchanged and still
+> correct — it is reached only where there is no yieldable build for the
+> main-thread rung to use, and a second unforked graph in one page is exactly
+> what §10.5's guard forbids.
+
 †  `--no-sw`'s pre-existing browser-emitted 404 on `js/sw.js`. Nothing in the
 repo could stage two *interactive* games in one page — `index.html` plays one
 and its "play again" is a `location.reload()` — so the game-2 contract was
@@ -1285,6 +1299,11 @@ The case against, honestly:
   the player plays once; not fine for the judge's Session Viewer, which runs
   many sessions through one page. `MainThreadEngine` enforces it and the second
   game falls back to `ReplayEngine`.
+  *(Lifted. The graph cannot be unloaded, but its state can be put back:
+  `docs/NOTES-resettable-state.md` §10. Both halves of this bullet are fixed —
+  the interactive rung plays game after game in the page realm, and the Session
+  Viewer's `runSegment` resets between sessions instead of forking a Worker per
+  segment.)*
 
 What the next leg must do, in order: (1) fix the boot-starvation interaction —
 longer head start, start-after-transports-fail, or a boot that yields; (2)

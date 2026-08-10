@@ -1057,6 +1057,13 @@ never runs at all.
 
 Stated in full because it is the one place two of these rules meet:
 
+> **Point 2 is superseded** by `docs/NOTES-resettable-state.md` §10: the page
+> realm's graph is now *reset* between games rather than spent by the first one,
+> so a constructing driver on a workerless page gets a real second game
+> (`mode=main`, first frame ~296 ms) instead of the refusal quoted below. The
+> refusal is still the answer where there is no reset barrel to do it with, and
+> `ReplayEngine`'s own in-page last resort still keeps it unconditionally.
+
 1. A page with **no `Worker` constructor at all** has no worker rung. The page's
    game therefore takes the main-thread rung and spends the page realm.
 2. A constructing driver on that page finds `claimed` set, so the main-thread
