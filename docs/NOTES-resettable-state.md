@@ -410,6 +410,11 @@ in the barrel, so making it live would mean resetting it by hand.
 
 ### 7.6 The browser — deferred to leg 3, and why
 
+> **SUPERSEDED by §10, and the reason below is the interesting part: it is
+> wrong.** A page cannot fork a graph, but it can *make* one — a module Worker
+> is a fresh realm — and the last paragraph of this section says so without
+> noticing that it dissolves the argument in the paragraph above it.
+
 Not switched. `reset-realm.mjs`'s `acquire({fork: false})` would work in a page
 (segment 1 in the page's own pristine graph, reset for 2..N, retiring the
 per-segment `frame.mjs` Worker), and the yield build's barrel would do the same
@@ -498,6 +503,8 @@ realm at 0.6 ms apiece, while the thing it replaced could not get through nine.
 ### 9.1 The browser
 
 §7.6. The prerequisite is a page-side reference, not a page-side reset.
+
+> **DONE — and §7.6's stated reason was wrong.** See §10.
 
 ### 9.2 Composition with the unmerged `lua-port` branch
 
@@ -600,3 +607,256 @@ What leg 3 had to do with the 19:
 - `strict-score.mjs` walks `js/generated-y/` but not either `__reset.js`: the
   barrels are reached by a computed URL, by design. They are machine-generated
   and contain no imports a walk would object to, but nothing checks that.
+
+---
+
+## 10. Leg 3 — the browser
+
+### 10.1 The reason for the deferral was wrong, and it was wrong in a way that
+### named its own fix
+
+§7.6 deferred the browser for one stated reason, and it was not difficulty:
+
+> `tools/reset-diff.mjs` is a Node tool: it needs `module.registerHooks` to
+> build the *reference* — a forked graph per segment — and a page has none.
+> Switching the browser now would mean shipping the one part of this design that
+> rests on measurement, without the measurement.
+
+A page has no `registerHooks`. It does have a **module Worker**, which is a
+fresh realm with a fresh module map, so importing `js/boot/harness.mjs` inside
+one instantiates all 176 generated modules with their C globals at their static
+initialisers. That is not an approximation of a fresh graph; it *is* one — and
+`js/boot/frame.mjs` already implemented it, because it was the mechanism the
+browser used for every segment after the first.
+
+So the reference a page needs is the thing the reset replaces. Two paragraphs
+above the deferral, §7.6 had already written the shape down ("a page-side `A,
+reset, B` driven through `driver.html` and compared to a per-segment-Worker
+reference is the same shape") without noticing that this made the reason for
+deferring untrue.
+
+### 10.2 The harness
+
+`tools/judge-sim/reset-diff.html` + `tools/judge-sim/reset-diff-browser.mjs`,
+sitting on the same mirror-shaped server as the rest of `tools/judge-sim/`
+(`js/**` and `frozen/**` only, every request logged, real headless Chrome).
+
+| | what runs |
+|---|---|
+| reference | session B, **one throwaway `js/boot/frame.mjs` Worker realm per segment**, storage threaded between them exactly as `js/jsmain.js` threads it |
+| test | session A to completion, then session B, **both through `js/jsmain.js`'s `runSegment`**, in the page realm — which now owns one graph and resets it between segments |
+
+It is `reset-diff.mjs --via runsegment`, in a page: the claim is not "a reset
+realm reproduces a fresh realm" but "the function the judge calls reproduces a
+fresh realm", which additionally covers how `runSegment` acquires the page
+realm, when it resets, and what it does with the result object. The observable
+is therefore exactly what `runSegment` exposes — screens, cursors, animation
+frames, the RNG log, and a thrown error — and the reference is masked to the
+same view, because `frame.mjs` also carries an exit code and that interface does
+not.
+
+**All ten pairs run in ONE page realm** — about 30 games through a single graph
+— for the same reason the Node tool runs twelve in one: "two games per graph" is
+not the claim.
+
+| pair | `--noop` | reset |
+|---|---|---|
+| seed8000 → seed8000 *(self)* | FAIL | **PASS** |
+| seed8000 → seed4500 | FAIL | **PASS** |
+| seed0002 → seed0006 | FAIL | **PASS** |
+| seed0006 → seed0002 | FAIL | **PASS** |
+| seed0004 → seed0007 | FAIL | **PASS** |
+| seed0007 → seed0013 *(acid 1)* | FAIL | **PASS** |
+| seed0013 → seed0013 *(acid 1, self)* | FAIL | **PASS** |
+| seed8000 → seed0030 *(acid 2)* | FAIL | **PASS** |
+| seed0030 → seed0030 *(acid 2, self)* | FAIL | **PASS** |
+| seed0013 → seed0030 *(both acid tests)* | FAIL | **PASS** |
+
+`--noop` patches `Realm.prototype.reset` to a no-op that reports success — the
+same patch `--force-noop` makes in Node, reaching the same module instance
+because the page imports `/js/boot/reset-realm.mjs` at the URL `js/jsmain.js`
+resolves. **0/10.** The first two pairs die in the port layer and in `abort()`;
+the rest diverge at `rng[0]`, in `randomize_gem_colors` — segment 0 of B, on the
+previous game's C globals, exactly as in Node.
+
+### 10.3 The second credential: proving the harness tested something
+
+A browser differential has a failure mode the Node one does not. If the page
+realm cannot be owned, `runSegment` falls back to a Worker per segment — and
+then **both sides of the comparison are the reference**, every pair passes, and
+the run proves nothing at all. Nothing about the digests can detect that.
+
+So the page wraps `globalThis.Worker` before it imports `js/jsmain.js`, counts
+every construction and attributes it to the reference or to the test side. **The
+test side must build zero.** It did:
+
+```
+reference: 7 session(s) in 12672 ms across 17 fresh Worker realms
+test:      10 pair(s) in 13413 ms in ONE page realm, 0 Worker(s)
+```
+
+That line is also the cost comparison, and it is worth reading twice: the
+reference needed 17 fresh realms to run 7 sessions **once**; the test ran 10
+pairs — about 30 games, including `seed0030` five times — in one realm, in the
+same wall clock.
+
+### 10.4 What was switched
+
+**`js/jsmain.js`'s browser path.** `acquire({fork: false})` takes the page
+realm's own graph and every segment runs in it, reset in between. `frame.mjs`
+stays exactly where it was as the fallback, on two conditions and no others:
+
+| | what runSegment does |
+|---|---|
+| no `js/generated/__reset.js` (build without `C2JS_RESET=1`) | `acquire()` returns an unresettable realm, `acquireBrowserRealm()` declines it — taking the page's own graph for **one** segment would spend the realm and send every later segment to a Worker anyway, without the 13 MB parse — and the Worker path runs, unchanged |
+| the page realm already ran transpiled C | arming would snapshot a *spent* graph as pristine, which is the one way this design can be wrong without saying so. Declined; Worker path |
+
+A reset that is present and *fails* is not a fallback condition. It throws, on
+the scored path, loudly — the same choice the Node branch already makes.
+
+**The spent-realm contract.** `__c2jsEngineRealmUsed` did not go away and did not
+change meaning: "transpiled C has run in this realm, so it is not yours". What
+changed is that `runSegment` is now the thing that *sets* it, at acquisition,
+and the guard it enforces is **"reset before reuse"** rather than "never reuse".
+`segmentCount` still tags the fallback's URLs and still answers `n === 1`.
+
+**`js/boot/main-thread-engine.mjs`.** The interactive rung hosts the engine in
+the page's own realm, so "one game per page" was never a policy in a browser —
+it was the only thing that could be true, and what a human met after their first
+death was a refusal in words and a reload. `acquireGraph()` now runs in a
+browser too and gets the page realm's yieldable graph, armed; `_finish()` puts
+it back at game end. Three interactive games in one page with no `Worker`
+constructor at all (`playability.mjs --multigame=3 --workerless`):
+
+```
+game 1  mode=main  first frame 680 ms   Bench the Stripling  St:18/01 Dx:15 Co:14 …
+game 2  mode=main  first frame 310 ms   Bench the Stripling  St:18/02 Dx:9  Co:18 …
+game 3  mode=main  first frame 281 ms   Bench the Stripling  St:18/02 Dx:9  Co:18 …
+```
+
+Game 3 reproduces game 2 exactly (same seed) and neither reproduces game 1
+(different seed), which is what a correct reset looks like from outside. 0
+console entries.
+
+### 10.5 Three guards, and the reason each exists
+
+- **One unforked graph per realm** (`unforked` in `reset-realm.mjs`). A forked
+  realm brings its own `js/cptr.js` down with it, so a process may hold as many
+  as it has heap for. An *unforked* realm is different in kind: the two builds
+  sit on ONE hand-written runtime, so a `sync` realm (`runSegment`) and a
+  `yield` realm (`main-thread-engine`) taken unforked in the same page would
+  share the pointer registry, the buffer-id map and the fd table, and whichever
+  reset first would truncate the registry under the other. That page does not
+  exist today — a page either scores or plays — which is exactly why the day it
+  does it must meet a refusal rather than a silent corruption. The second
+  claimant catches the throw and degrades to what it did before.
+- **`resettableGraph()` refuses a realm that already ran C.** Same reason as
+  `runSegment`'s: the snapshot is the whole design, and a snapshot of a spent
+  graph is a lie no differential can catch, because both sides of it would be
+  wrong in the same way.
+- **`start()`'s shared-graph rung now asks `__c2jsEngineRealmUsed`, not only its
+  own `claimed`.** That hole predates this leg: `claimed` is `main-thread-engine`'s
+  own flag and says nothing about transpiled C run through the *other* graph.
+  A page that scored a session and then played one would have booted game 1 on
+  top of the scorer's pointer registry.
+
+`start()` also gains a cancellation seam *in front of* the graph. Arming
+evaluates `js/generated-y/` where `harness-y.mjs` used to do it lazily inside the
+boot; without a seam there, entering `start()` would commit the page to ~600 ms
+that a winning transport could no longer call off. `prewarmMainThread()` was
+deliberately **not** made to arm: it runs on pages where the transports failed
+but Workers exist, and `ReplayEngine` wins those — 600 ms of main-thread module
+evaluation in front of its boot would be a regression bought for nothing.
+
+### 10.6 The number this was for
+
+The judge's Session Viewer imports `js/jsmain.js` once and runs many sessions
+through it, changing only the hash. `tools/judge-sim/viewer-repro.html` is that
+shape; it now reports its timings, and `server.mjs --latency=10` gives every one
+of the ~170 module fetches a round trip, which is the one thing loopback cannot
+stage and the real mirror charges for.
+
+Three sessions (595 screens, 409 screens, and a 2-segment save/restore), one
+page, `--latency=10`:
+
+| | fresh Worker realm per segment | page realm reset |
+|---|---|---|
+| session 1 | 1714.6 ms | 1724.5 ms |
+| session 2 | **1473.0 ms** | **499.5 ms** |
+| session 3 (2 segments) | **2713.6 ms** (1315.8 + 1396.8) | **343.4 ms** (224.9 + 118.2) |
+| three sessions | **5954.5 ms** | **2623.8 ms** |
+| HTTP requests | **1320** | **338** |
+
+Session 1 is unchanged to within noise — it pays for the graph either way, plus
+the arming — and every session after it stops paying for a graph at all. On
+loopback the same run is 2864.7 → 1936.7 ms and the second segment of the
+save/restore session is 464.9 → 128.7 ms. **Every digest is byte-identical
+before and after**, which is the only reason the timings are worth printing.
+
+And the capability that is not a timing at all: `run.mjs --noworker` deletes the
+`Worker` constructor, which is what a CSP with no `worker-src` looks like. That
+used to mean "segment 1 byte-exact, everything after it wrong but reported".
+Now:
+
+```
+node tools/judge-sim/run.mjs seed0013-… --noworker
+  seg 1: match  screens=49 rng=4802
+  seg 2: match  screens=50 rng=2
+  PASS — 0 segment mismatches
+```
+
+A save/restore session, scored byte-exact, in a browser with no second realm of
+any kind available to it.
+
+### 10.7 Is the frame Worker still needed? — kept, deliberately
+
+The question worth asking once the page realm can reset is whether
+`js/boot/frame.mjs` has anything left to do. It has, and on three counts:
+
+1. **It is the fallback**, and the two conditions in §10.4 are real: a build
+   without `C2JS_RESET=1` is a supported configuration this page has to keep
+   working, and a page that played a game before it scored one cannot have its
+   graph snapshotted.
+2. **It is the reference.** §10.2 rests entirely on a page being able to produce
+   a genuinely fresh graph on demand. Retiring `frame.mjs` would retire the only
+   evidence there is that the thing replacing it is exact — which is the mistake
+   §7.6 was right to refuse to make, in the other direction.
+3. `js/boot/interactive.mjs`'s `ReplayEngine` boots into it as well
+   (`replayInFreshRealm`), on a rung that is chosen precisely because a replay
+   realm can be *terminated* and a page realm cannot.
+
+What was **not** changed, and why: `ReplayEngine`'s last-resort in-page boot
+still refuses a second game in words. It is reached only when there is no
+`Worker` *and* no yieldable build, so in this tree the main-thread rung takes
+that slot first; giving it a reset realm of its own would put a second unforked
+graph in the page and meet the guard in §10.5. The refusal is now the correct
+answer rather than the only one.
+
+`FallbackEngine`'s auto-boot preference is also untouched. It prefers a
+`ReplayEngine` worker realm over the main-thread rung for the page's *own*
+speculative game, because a game nobody asked for should be able to stand down —
+and while a resettable page realm weakens that argument, changing the preference
+would change which rung wins on production loads. The transport race and the
+auto-boot/adopt contract were to be preserved, and they are.
+
+### 10.8 Gates, leg 3
+
+| gate | result |
+|---|---|
+| `reset-diff-browser.mjs`, 10 pairs incl. both acid tests and 3 self-pairs | **10/10** byte-identical to a fresh Worker realm |
+| ...and the same with `--noop` | **0/10** — every pair fails, as it must |
+| ...test side Worker count (the harness's own credential) | **0** — the reset really served every segment |
+| `judge-sim/run.mjs` seed8000 / seed0013 / seed0030, browser vs Node | **PASS**, 0 mismatches, 0 out-of-scope (seed0030: 10/10 segments) |
+| `judge-sim/run.mjs seed0013 --noworker` | **PASS** 2/2 — new; used to be 1/2 by design |
+| `viewer-repro` 3 sessions, one import | **3/3**, digests byte-identical to the pre-switch run, 0 console |
+| `playability.mjs` production / `--coi` / `--inert-sw` / `--hang-sw` / `--judge-stub` | `xhr` 631 ms / `sab` 615 ms / `replay` 621 ms / `replay` 1285 ms / `xhr` 618 ms — all 243 moves, **0 console** |
+| `playability.mjs --no-sw` | `replay`, 243 moves, 19.0 ms/move, **1 console** — the pre-existing browser-emitted 404 on the deliberately-missing `js/sw.js` |
+| `playability.mjs --their-page` × 3 seeds (4242, 8000, 1337) | **0 console**, 0 out-of-scope |
+| `playability.mjs --multigame` / `--multigame --workerless` / `--multigame=3 --workerless` | pass; the workerless runs are the new capability |
+| `frozen/ps_test_runner.mjs` seed0013 + seed0030 (Node) | **2/2**, RNG 110333/110333, screens 2052/2052 |
+| sandboxed `playability_runner.mjs`, 44 sessions | 0 failures, 9096 moves — **30.5 s on this branch against 31.7 s on the same tree with the three changed files reverted** |
+| `tools/strict-score.mjs` | 503 files reachable, **0 violations**, sandbox parity OK on 3 sessions |
+| `node --test` | 4/4 (`printf` 53/53, `libc-string`, `posix-ere`, `cmachine`). The two `lua-port-*` tests need `nethack-c/recorder/dat/`, which this worktree does not carry — pre-existing and unrelated |
+
+Nothing in `js/generated*` was rebuilt or edited: the reset machinery this leg
+switches on was already emitted in the committed trees.

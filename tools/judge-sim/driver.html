@@ -20,9 +20,15 @@ const params = new URLSearchParams(location.search);
 const sessionName = params.get('session') || 'seed8000-tourist-starter.session.json';
 
 // ?noworker=1 simulates a judge page whose CSP (or engine) denies module
-// Workers, to check that jsmain degrades to the shared graph instead of
-// throwing. Expected outcome: segment 1 still byte-exact, later segments wrong
-// but *reported*, never an exception.
+// Workers. It used to check that jsmain *degraded* — segment 1 byte-exact,
+// later segments wrong but reported, never an exception — because a page with
+// no Worker had no second realm to put a second segment in.
+//
+// It has a stronger expectation now, and this is the clearest single statement
+// of what the browser reset bought: with the page realm reset between segments,
+// a browser with no Worker constructor at all scores EVERY segment byte-exact.
+// Measured on seed0013 (save then restore), the session that used to be the
+// proof of the old behaviour: 2/2 segments match Node.
 if (params.get('noworker') === '1') {
     delete globalThis.Worker;
     Object.defineProperty(globalThis, 'Worker', { get() { throw new Error('blocked by test'); }, configurable: true });
