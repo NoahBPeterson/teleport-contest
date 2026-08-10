@@ -1218,13 +1218,13 @@ function* makelevel() {
             if ((cptr.ldI16o(gv, $instance_globals_v_vault_x) != -1)) {
                 let __go_fill_vault = false;
                 __skip_fill_vault: {
-                    do {
+                    {
                         if ((yield* debugcore(__sl1, 1))) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                             (yield* pline(__sl35));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
-                    } while (0);
+                    }
                     w.v = 1;
                     h.v = 1;
                     if ((yield* check_room(cptr.add(gv, $instance_globals_v_vault_x), w, cptr.add(gv, $instance_globals_v_vault_y), h, 1))) {
@@ -2127,13 +2127,13 @@ function* mk_knox_portal(x, y) {
         return;
     cptr.memcpy(source, cptr.add(u, $you_uz), 4);
     (yield* insert_branch(br, 1));
-    do {
+    {
         if ((yield* debugcore(__sl1, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl73));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     (yield* place_branch(br, x, y));
 }
 

@@ -1333,13 +1333,13 @@ function* hmon_hitmon_misc_obj(hmd, mon, obj) {
             if (((cptr.ldI32o(obj, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(obj, $obj_corpsenm)) < NHC.NUMMONS) && (cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))) {
                 (yield* pline(__sl55, (yield* mon_nam(mon)), (cptr.ldI32o(obj, $obj_known) & 1) | 0 ? __sl56 : (cnt > 1n ? __sl57 : __sl58), (cptr.ldI32o(obj, $obj_known) & 1) | 0 ? cptr.ldPtro3(mons, cptr.ldI32o(obj, $obj_corpsenm), 96, NHC.NEUTRAL, 8, 0) : __sl59, (((cnt) == 1n) ? __sl6 : __sl50)));
                 cptr.stI32o(obj, $obj_known, 1);
-                do {
+                {
                     if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
                         (yield* obfree(obj, null));
                     else
                         (yield* useupall(obj));
                     obj = null;
-                } while (0);
+                }
                 if (!(yield* munstone(mon, 1)))
                     (yield* minstapetrify(mon, 1));
                 if ((yield* Resists_Elem(mon, NHC.STONE_RES)))
@@ -1364,26 +1364,26 @@ function* hmon_hitmon_misc_obj(hmd, mon, obj) {
                     if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
                         (yield* place_object(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
                 } else if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK) {
-                    do {
+                    {
                         if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
                             (yield* obfree(obj, null));
                         else
                             (yield* useupall(obj));
                         obj = null;
-                    } while (0);
+                    }
                     (yield* explode(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), -11, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1246, __sl65), d(3, 6)) : d(3, 6)), 0, NHC.EXPL_FIERY));
                     cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
                     cptr.st1o(hmd, $_hitmon_data_retval, schar((!(cptr.ldI32o((mon), $monst_mhp) < 1))));
                     return;
                 } else {
                     (yield* pline(__sl66));
-                    do {
+                    {
                         if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
                             (yield* obfree(obj, null));
                         else
                             (yield* useupall(obj));
                         obj = null;
-                    } while (0);
+                    }
                     (yield* exercise(NHC.A_WIS, 0));
                 }
             }

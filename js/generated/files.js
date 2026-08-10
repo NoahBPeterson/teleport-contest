@@ -1535,13 +1535,13 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                 pline(__sl95, badtranslation, tribtitle);
             return grasped;
         }
-        do {
+        {
             if (debugcore(__sl92, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl96, tribsection, tribtitle, tribpassage);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         fp = fopen(__sl97, __sl21);
         if (!fp) {
             if (!nowin_buf)
@@ -1603,13 +1603,13 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                     if (scope)
                         --scope;
                 } else {
-                    do {
+                    {
                         if (debugcore(__sl92, 1)) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                             pline(__sl103, linect);
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
-                    } while (0);
+                    }
                 }
                 break;
                 case 35:

@@ -348,13 +348,13 @@ function e_at(x, y) {
     for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++)
         if (cptr.ldPtro2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_edata) && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ex) == x && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ey) == y)
             break;
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl2, entitycnt);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     return (entitycnt == NHM.ENTITIES) ? null : cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, 24);
 }
 
@@ -485,13 +485,13 @@ function automiss(etmp) {
 function e_missed(etmp, chunks) {
     let misses;
     if (chunks) {
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl12);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     if (automiss(etmp))
         return 1;
@@ -505,13 +505,13 @@ function e_missed(etmp, chunks) {
         misses = 0;
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         misses = (misses - 3) | 0;
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl13, misses);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     return schar(((misses >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 524, __sl14), rnd(8)) : rnd(8))) ? 1 : 0));
 }
 
@@ -526,13 +526,13 @@ function e_jumps(etmp) {
         tmp = (tmp - 3) | 0;
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         tmp = (tmp - 2) | 0;
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl15, E_phrase(etmp, __sl16), tmp);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     return schar(((tmp >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 550, __sl17), rnd(10)) : rnd(10))) ? 1 : 0));
 }
 
@@ -565,24 +565,24 @@ function do_entity(etmp) {
         if (at_portcullis) {
             pline_The(__sl21, e_nam(etmp));
         } else {
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl22, e_nam(etmp));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         }
         if (e_survives_at(etmp, oldx, oldy)) {
             return;
         } else {
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl23);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             if (at_portcullis)
                 must_jump = 1;
             else
@@ -604,13 +604,13 @@ function do_entity(etmp) {
         if (at_portcullis) {
             if (e_jumps(etmp)) {
                 relocates = 1;
-                do {
+                {
                     if (debugcore(__sl1, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl27);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
             } else {
                 if (e_inview) {
                     pline(__sl28, E_phrase(etmp, __sl26));
@@ -623,90 +623,90 @@ function do_entity(etmp) {
             }
         } else {
             relocates = schar((!e_jumps(etmp)));
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl30, (relocates) ? __sl31 : __sl32);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         }
     }
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl33);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     newx.v = oldx;
     newy.v = oldy;
     void find_drawbridge(newx, newy);
     if ((newx.v == oldx) && (newy.v == oldy))
         get_wall_for_db(newx, newy);
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl34);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (relocates && (e_at(newx.v, newy.v))) {
         let other;
         other = e_at(newx.v, newy.v);
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl35, e_nam(other));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (e_survives_at(other, newx.v, newy.v) && automiss(other)) {
             relocates = 0;
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl36, E_phrase(etmp, __sl37));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         } else {
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl38, e_nam(other));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             while ((e_at(newx.v, newy.v) !== null) && (!cptr.eq(e_at(newx.v, newy.v), etmp)))
                 do_entity(other);
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl39, e_nam(etmp));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             if (!cptr.eq(e_at(oldx, oldy), etmp)) {
-                do {
+                {
                     if (debugcore(__sl1, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl40, E_phrase(etmp, __sl41));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 return;
             }
         }
     }
     if (relocates && !e_at(newx.v, newy.v)) {
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl42, e_nam(etmp));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
             cptr.stPtro3(svl, cptr.ldI32o(etmp, $entity_ex), 168, cptr.ldI32o(etmp, $entity_ey), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
             place_monster(cptr.ldPtr(etmp), newx.v, newy.v);
@@ -719,21 +719,21 @@ function do_entity(etmp) {
         cptr.stI32o(etmp, $entity_ey, newy.v);
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp)) ? 1 : 0));
     }
-    do {
+    {
         if (debugcore(__sl1, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl43, e_nam(etmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl44, E_phrase(etmp, __sl26));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (e_inview) {
             if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
                 You(__sl45);
@@ -750,21 +750,21 @@ function do_entity(etmp) {
             e_died(etmp, NHM.XKILL_NOMSG, NHC.CRUSHING);
             return;
         }
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl51, E_phrase(etmp, __sl52));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     } else {
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl53, E_phrase(etmp, __sl26));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) && !e_inview)
             if (!Deaf()) {
                 ;
@@ -775,13 +775,13 @@ function do_entity(etmp) {
                 pline(__sl55, E_phrase(etmp, __sl56));
             return;
         }
-        do {
+        {
             if (debugcore(__sl1, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl57, E_phrase(etmp, null));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) || is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
             if (e_inview && !(cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
                 let lava = is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)));
@@ -991,13 +991,13 @@ export function destroy_drawbridge(x, y) {
     if (cptr.ldPtro(etmp1, $entity_edata)) {
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp1)) ? 1 : 0));
         if (e_missed(etmp1, 1)) {
-            do {
+            {
                 if (debugcore(__sl1, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl79, E_phrase(etmp1, __sl26));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             if ((cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))))
                 spoteffects(0);
             else
@@ -1013,13 +1013,13 @@ export function destroy_drawbridge(x, y) {
                     ;
                     You_hear(__sl29);
                 } else {
-                    do {
+                    {
                         if (debugcore(__sl1, 1)) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                             pline(__sl83, E_phrase(etmp1, __sl84));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
-                    } while (0);
+                    }
                 }
             }
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);

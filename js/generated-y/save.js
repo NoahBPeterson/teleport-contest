@@ -284,9 +284,9 @@ export function* dosave0() {
     let res = 0;
     __lbl_done: {
         (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) - (1);
-        do {
+        {
             (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-        } while (0);
+        }
         cptr.stI32o(u, $you_uinvulnerable, 0);
         if ((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1))
             cptr.stI32o(u, $you_uswallow, 1), cptr.stI32o(iflags, $instance_flags_save_uswallow, 0);
@@ -380,12 +380,12 @@ export function* dosave0() {
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
         res = 1;
     }
-    do {
+    {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
             (yield* impossible(__sl9));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
-    } while (0);
+    }
     (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
     return res;
 }
@@ -1026,13 +1026,13 @@ function* save_msghistory(nhfp) {
         }
         (yield* sfo_int(nhfp, minusone, __sl88));
     }
-    do {
+    {
         if ((yield* debugcore(__sl83, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl90, msgcount));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
 }
 
 /** C ref: save.c:1060 */

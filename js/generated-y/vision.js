@@ -1026,20 +1026,20 @@ function* right_side(row, left, right_mark, limits) {
                     (yield* Y.icall((vis_func)(i16(i), i16(row), varg)));
             } else {
                 for (i = left; i <= right_edge; i++)
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1735, __sl3) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
-                    } while (0);
-                do {
+                    }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1736, __sl4) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
-                } while (0);
-                do {
+                }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1737, __sl5) : void 0);
                     if (cptr.ldI16(row_max) < (right_edge))
                         cptr.stI16(row_max, i16((right_edge)));
-                } while (0);
+                }
             }
             left = (right_edge + 1) | 0;
             continue;
@@ -1148,15 +1148,15 @@ function* right_side(row, left, right_mark, limits) {
                 if (vis_func) {
                     (yield* Y.icall((vis_func)(i16(lim_max), i16(row), varg)));
                 } else {
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1773, __sl3) : void 0);
                         cptr.st1o(rowp, lim_max, NHM.COULD_SEE);
-                    } while (0);
-                    do {
+                    }
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1774, __sl5) : void 0);
                         if (cptr.ldI16(row_max) < (lim_max))
                             cptr.stI16(row_max, i16((lim_max)));
-                    } while (0);
+                    }
                 }
                 return;
             }
@@ -1276,20 +1276,20 @@ function* right_side(row, left, right_mark, limits) {
                     (yield* Y.icall((vis_func)(i16(i), i16(row), varg)));
             } else {
                 for (i = left; i <= right; i++)
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1840, __sl3) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
-                    } while (0);
-                do {
+                    }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1841, __sl4) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
-                } while (0);
-                do {
+                }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1842, __sl5) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
-                } while (0);
+                }
             }
             if (deeper)
                 (yield* right_side(nrow, left, right, limits));
@@ -1339,20 +1339,20 @@ function* left_side(row, left_mark, right, limits) {
                     (yield* Y.icall((vis_func)(i16(i), i16(row), varg)));
             } else {
                 for (i = left_edge; i <= right; i++)
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1905, __sl3) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
-                    } while (0);
-                do {
+                    }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1906, __sl4) : void 0);
                     if (cptr.ldI16(row_min) > (left_edge))
                         cptr.stI16(row_min, i16((left_edge)));
-                } while (0);
-                do {
+                }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1907, __sl5) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
-                } while (0);
+                }
             }
             right = (left_edge - 1) | 0;
             continue;
@@ -1461,15 +1461,15 @@ function* left_side(row, left_mark, right, limits) {
                 if (vis_func) {
                     (yield* Y.icall((vis_func)(i16(lim_min), i16(row), varg)));
                 } else {
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1933, __sl3) : void 0);
                         cptr.st1o(rowp, lim_min, NHM.COULD_SEE);
-                    } while (0);
-                    do {
+                    }
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1934, __sl4) : void 0);
                         if (cptr.ldI16(row_min) > (lim_min))
                             cptr.stI16(row_min, i16((lim_min)));
-                    } while (0);
+                    }
                 }
                 return;
             }
@@ -1589,20 +1589,20 @@ function* left_side(row, left_mark, right, limits) {
                     (yield* Y.icall((vis_func)(i16(i), i16(row), varg)));
             } else {
                 for (i = left; i <= right; i++)
-                    do {
+                    {
                         (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1974, __sl3) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
-                    } while (0);
-                do {
+                    }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1975, __sl4) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
-                } while (0);
-                do {
+                }
+                {
                     (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1976, __sl5) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
-                } while (0);
+                }
             }
             if (deeper)
                 (yield* left_side(nrow, left, right, limits));
@@ -1649,10 +1649,10 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
     } else {
         rowp = cptr.ldPtro(cs_rows, srow, 8);
         for (i = left; i <= right; i++)
-            do {
+            {
                 (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl8, __sl2, 2066, __sl3) : void 0);
                 cptr.st1o(rowp, i, NHM.COULD_SEE);
-            } while (0);
+            }
         cptr.stI16o(cs_left, srow, i16(left), 2);
         cptr.stI16o(cs_right, srow, i16(right), 2);
     }

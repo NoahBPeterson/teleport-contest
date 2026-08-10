@@ -1791,13 +1791,13 @@ function nhl_gamestate(L) {
     let argc = lua_gettop(L);
     let reststate = schar(((argc > 0) ? lua_toboolean(L, -1) : 0));
     let otyp;
-    do {
+    {
         if (debugcore(__sl141, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl142, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel), reststate ? 84 : 70, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? 116 : 102);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (reststate && cptr.ld1so(gg, $instance_globals_g_gmst_stored)) {
         let cur_uz = cptr.alloc(4); cptr.memcpy(cur_uz, cptr.add(u, $you_uz), 4);
         let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, $you_uz0), 4);

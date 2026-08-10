@@ -518,13 +518,13 @@ function landing_spot(spot, reason, forceit) {
         dirtocoord(cc, counterclk_j);
         cptr.stI16o(cptr.decay(try$), (2 - i) | 0, cptr.ldI16(cc), 4), cptr.stI16o2(cptr.decay(try$), (2 - i) | 0, 4, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
         n = 3;
-        do {
+        {
             if (debugcore(__sl12, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl57, directionname(best_j), directionname(clockwise_j), directionname(counterclk_j));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     } else {
         best_j = (clockwise_j = (counterclk_j = -1));
     }

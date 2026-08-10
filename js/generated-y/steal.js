@@ -360,13 +360,13 @@ export function* remove_worn_item(obj, unchain_ball) {
         (yield* setnotworn(obj));
     }
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_DELETED)
-        do {
+        {
             if ((yield* debugcore(__sl0, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl16, (yield* simpleonames(obj))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     cptr.stI32o(obj, $obj_in_use, oldinuse);
 }
 

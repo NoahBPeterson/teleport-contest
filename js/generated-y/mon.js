@@ -2979,22 +2979,22 @@ export function* mnexto(mtmp, rlocflags) {
 /** C ref: mon.c:3986 — @param {CPtr} mtmp */
 export function* deal_with_overcrowding(mtmp) {
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
-        do {
+        {
             if ((yield* debugcore(__sl52, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl198, (yield* m_monnam(mtmp))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         (yield* elemental_clog(mtmp));
     } else {
-        do {
+        {
             if ((yield* debugcore(__sl52, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl199, (yield* m_monnam(mtmp))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         (yield* m_into_limbo(mtmp));
     }
 }

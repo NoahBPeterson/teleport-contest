@@ -1110,13 +1110,13 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
     attr = cptr.box(attr);
     color = cptr.box(color);
     if (!str) {
-        do {
+        {
             if (debugcore(__sl41, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl42);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         return;
     }
     if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {

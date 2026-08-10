@@ -23,6 +23,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tokenize } from './jslex.mjs';
 
 const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -335,6 +336,66 @@ const BOOL_STATS = { elided: 0, kept: 0 };
 // C2JS_DEADCODE=0 restores the unconditional transitions (the A/B baseline).
 const DEAD_CODE = process.env.C2JS_DEADCODE !== '0';
 const DEAD_STATS = { sm: 0, labelBreak: 0, inlineTail: 0, switchTail: 0, blockTail: 0 };
+
+// C2JS_FLATTEN_DO=0 keeps the literal `do { ... } while (0)` transcription.
+const DO_FLATTEN = process.env.C2JS_FLATTEN_DO !== '0';
+const DO_FLAT_STATS = { seen: 0, flattened: 0, refusedJump: 0, refusedSplicedJump: 0, disagreed: 0 };
+
+/**
+ * Does a bare `break`/`continue` in this emitted block bind outside it?
+ *
+ * Token-level, over text the emitter has already produced, so it sees whatever
+ * the goto lowering spliced in as well as what the C body said. Sound by
+ * construction in the direction that matters: every way of being unsure
+ * answers "yes, it escapes", and the caller then refuses to flatten.
+ *
+ *   - a labelled `break L` / `continue L` binds to its label and is ignored;
+ *   - only a **braced** loop/switch body is credited with capturing, so
+ *     `while (c) break;` is (harmlessly) read as an escape;
+ *   - `switch` captures `break` but never `continue`, which is C's rule and
+ *     JS's alike;
+ *   - a pending header with no brace (`for (...) break;`) does capture, and the
+ *     pending state is cleared at the first `;` outside parens so a `break`
+ *     after a one-line loop body is not mistaken for one inside it.
+ *
+ * Depth 0 is the block itself, so a construct must be at depth >= 1 to capture.
+ */
+function jumpEscapesBlock(text) {
+  const { tokens } = tokenize(text);
+  const stack = [];        // one frame per open brace: { kind, isDoBody }
+  let pending = null;      // a loop/switch header whose body has not opened yet
+  let pendingDo = false;
+  let parens = 0;
+  let doTail = false;      // the next `while` closes a `do`, it does not open a loop
+  for (let k = 0; k < tokens.length; k++) {
+    const t = tokens[k];
+    if (t.t === 'punc') {
+      if (t.v === '(') parens++;
+      else if (t.v === ')') parens--;
+      else if (t.v === '{') { stack.push({ kind: pending || 'block', isDoBody: pendingDo }); pending = null; pendingDo = false; doTail = false; }
+      else if (t.v === '}') { doTail = stack.pop()?.isDoBody === true; }
+      else if (t.v === ';' && parens === 0) { pending = null; pendingDo = false; }
+      continue;
+    }
+    if (t.t !== 'id') continue;
+    if (t.v === 'while' && doTail) { doTail = false; continue; }
+    doTail = false;
+    if (t.v === 'for' || t.v === 'while') { if (parens === 0) pending = 'loop'; continue; }
+    if (t.v === 'switch') { if (parens === 0) pending = 'switch'; continue; }
+    if (t.v === 'do') { if (parens === 0) { pending = 'loop'; pendingDo = true; } continue; }
+    if (t.v !== 'break' && t.v !== 'continue') continue;
+    const next = tokens[k + 1];
+    if (next && next.t === 'id') continue; // labelled: binds to its own label
+    if (pending === 'loop' || (pending === 'switch' && t.v === 'break')) continue;
+    let captured = false;
+    for (let d = stack.length - 1; d >= 1; d--) {
+      const f = stack[d];
+      if (f.kind === 'loop' || (f.kind === 'switch' && t.v === 'break')) { captured = true; break; }
+    }
+    if (!captured) return true;
+  }
+  return false;
+}
 
 // ---------------------------------------------------- constant folding ----
 //
@@ -774,7 +835,10 @@ if (process.env.C2JS_READ_STATS) {
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
     + `dead scaffold: ${DEAD_STATS.sm} state-machine transitions, ${DEAD_STATS.labelBreak} labeled-region breaks, `
-    + `${DEAD_STATS.inlineTail} inline-label tail statements, ${DEAD_STATS.switchTail} switch-body and ${DEAD_STATS.blockTail} block tail statements suppressed\n`));
+    + `${DEAD_STATS.inlineTail} inline-label tail statements, ${DEAD_STATS.switchTail} switch-body and ${DEAD_STATS.blockTail} block tail statements suppressed\n`
+    + `do{}while(0):  ${DO_FLAT_STATS.seen} seen, ${DO_FLAT_STATS.flattened} flattened; refused `
+    + `${DO_FLAT_STATS.refusedJump} for a macro-local break/continue and ${DO_FLAT_STATS.refusedSplicedJump} for one the goto lowering spliced in `
+    + `(${DO_FLAT_STATS.disagreed} sites where the emitted text and the AST disagreed)\n`));
 }
 
 // spelling files we will trust: NetHack's own headers, as the compile
@@ -4236,9 +4300,50 @@ export class Emitter {
     const [body, cond] = kids;
     if (body.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(body, indent);
-      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.condExpr(cond).code});`];
+      // condExpr is NOT pure — it interns string literals and the file's string
+      // table must not depend on a decision taken after it. Emit first, decide
+      // second (same invariant emitSMLoop states at its do-condition).
+      const condCode = this.condExpr(cond).code;
+      if (condCode === '0') DO_FLAT_STATS.seen++;
+      const flat = DO_FLATTEN && condCode === '0' && this.canFlattenDoWhile(n, body, block);
+      if (flat) return [`${indent}${block[0].trimStart()}`, ...block.slice(1)];
+      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${condCode});`];
     }
     return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.condExpr(cond).code});`];
+  }
+
+  /**
+   * May this `do { ... } while (0)` become a plain block?
+   *
+   * The 421 of them are C macro hygiene — `do{}while(0)` is how a multi-statement
+   * macro is made safe to write `if (x) MACRO(); else ...` around — transpiled
+   * literally. A plain block runs the body exactly once too, so the rewrite is
+   * free UNLESS something in the body binds to the loop:
+   *
+   *   - a bare `break`, which C macros genuinely use as an early exit from the
+   *     macro. Flattening that turns a macro-local exit into a `break` aimed at
+   *     whatever loop or switch encloses the macro — silent, and only sometimes
+   *     a syntax error;
+   *   - a bare `continue`, same argument (a switch does NOT capture continue).
+   *
+   * The test runs over the **emitted text**, not the AST, and that is the point.
+   * The AST predicates `hasUnboundBreak`/`hasUnboundContinue` describe the C the
+   * body was written as; by the time a block reaches here the goto lowering may
+   * have spliced an `inline` label's region into it (emit.mjs analyzeGotos),
+   * and that region's statements are not children of this DoStmt. Reading what
+   * was actually emitted sees them. Both are checked and any disagreement is
+   * counted, because a disagreement means the splice happened.
+   *
+   * The braces stay: they are the scope for any `let`/`const` the body declares.
+   */
+  canFlattenDoWhile(n, body, block) {
+    const escapes = jumpEscapesBlock(block.join('\n'));
+    const astSays = this.hasUnboundBreak(body) || this.hasUnboundContinue(body);
+    if (escapes !== astSays) DO_FLAT_STATS.disagreed++;
+    if (escapes) { DO_FLAT_STATS[astSays ? 'refusedJump' : 'refusedSplicedJump']++; return false; }
+    if (astSays) { DO_FLAT_STATS.refusedJump++; return false; }
+    DO_FLAT_STATS.flattened++;
+    return true;
   }
 
   stmt_ReturnStmt(n, indent) {

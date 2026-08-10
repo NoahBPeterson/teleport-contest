@@ -952,13 +952,13 @@ export function propagate(mndx, tally, ghostly) {
         cptr.postinc1(cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), mndx, 12));
     if (cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals) >= lim && !(cptr.ldU16o2(mons, mndx, 96, $permonst_geno) & NHM.G_NOGEN) && !(cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_EXTINCT)) {
         if (wizard()) {
-            do {
+            {
                 if (debugcore(__sl0, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl12, makeplural(cptr.ldPtro3(mons, mndx, 96, NHC.NEUTRAL, 8, 0)));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         }
         cptr.st1o2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | NHM.G_EXTINCT);
     }
@@ -1138,25 +1138,25 @@ export function makemon(ptr, x, y, mmflags) {
         if (cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)
             return null;
         if (wizard() && (cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_EXTINCT)) {
-            do {
+            {
                 if (debugcore(__sl0, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl17, cptr.ldPtro3(mons, mndx, 96, NHC.NEUTRAL, 8, 0));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         }
     } else {
         let tryct = 0;
         do {
             if (!(ptr = rndmonst())) {
-                do {
+                {
                     if (debugcore(__sl0, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl18);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 return null;
             }
             cptr.stPtro(fakemon, $monst_data, ptr);
@@ -1521,13 +1521,13 @@ export function rndmonst_adj(minadj, maxadj) {
     }
     if (selected_mndx == NHC.NON_PM || uncommon(selected_mndx)) {
         if (selected_mndx != NHC.NON_PM)
-            do {
+            {
                 if (debugcore(__sl0, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl28, selected_mndx);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         return null;
     }
     return cptr.add(mons, selected_mndx, 96);

@@ -1929,187 +1929,187 @@ export function decl_globals_init() {
     cptr.stI32o2(gv, 1, 16, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (208n / 16n))));
     cptr.stPtro2(gv, 2, 16, $instance_globals_v_valuables, null);
     cptr.stI32o2(gv, 2, 16, $instance_globals_v_valuables + $val_list_size, 0);
-    do {
+    {
         if (cptr.ld1so((g_init_a), $instance_globals_a_havestate) != 1) {
             raw_printf(__sl70, __sl71);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_b), $instance_globals_b_havestate) != 1) {
             raw_printf(__sl70, __sl72);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_c), $instance_globals_c_havestate) != 1) {
             raw_printf(__sl70, __sl73);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_d), $instance_globals_d_havestate) != 1) {
             raw_printf(__sl70, __sl74);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_e), $instance_globals_e_havestate) != 1) {
             raw_printf(__sl70, __sl75);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_f), $instance_globals_f_havestate) != 1) {
             raw_printf(__sl70, __sl76);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_g), $instance_globals_g_havestate) != 1) {
             raw_printf(__sl70, __sl77);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_h), $instance_globals_h_havestate) != 1) {
             raw_printf(__sl70, __sl78);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_i), $instance_globals_i_havestate) != 1) {
             raw_printf(__sl70, __sl79);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_j), $instance_globals_j_havestate) != 1) {
             raw_printf(__sl70, __sl80);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_k), $instance_globals_k_havestate) != 1) {
             raw_printf(__sl70, __sl81);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_l), $instance_globals_l_havestate) != 1) {
             raw_printf(__sl70, __sl82);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_m), $instance_globals_m_havestate) != 1) {
             raw_printf(__sl70, __sl83);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_n), $instance_globals_n_havestate) != 1) {
             raw_printf(__sl70, __sl84);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_o), $instance_globals_o_havestate) != 1) {
             raw_printf(__sl70, __sl85);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_p), $instance_globals_p_havestate) != 1) {
             raw_printf(__sl70, __sl86);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1s((g_init_q)) != 1) {
             raw_printf(__sl70, __sl87);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_r), $instance_globals_r_havestate) != 1) {
             raw_printf(__sl70, __sl88);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_s), $instance_globals_s_havestate) != 1) {
             raw_printf(__sl70, __sl89);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_t), $instance_globals_t_havestate) != 1) {
             raw_printf(__sl70, __sl90);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_u), $instance_globals_u_havestate) != 1) {
             raw_printf(__sl70, __sl91);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_v), $instance_globals_v_havestate) != 1) {
             raw_printf(__sl70, __sl92);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_w), $instance_globals_w_havestate) != 1) {
             raw_printf(__sl70, __sl93);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_x), $instance_globals_x_havestate) != 1) {
             raw_printf(__sl70, __sl94);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_y), $instance_globals_y_havestate) != 1) {
             raw_printf(__sl70, __sl95);
             exit(1);
         }
-    } while (0);
+    }
     ;
-    do {
+    {
         if (cptr.ld1so((g_init_z), $instance_globals_z_havestate) != 1) {
             raw_printf(__sl70, __sl96);
             exit(1);
         }
-    } while (0);
+    }
     ;
     cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, 224));
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));

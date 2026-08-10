@@ -2066,13 +2066,13 @@ function* ini_inv_obj_substitution(trop, obj) {
         let i;
         for (i = 0; cptr.ldI16o(inv_subs, i, 6) != NHC.NON_PM; ++i)
             if (cptr.ldI16o(inv_subs, i, 6) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) && cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o2(inv_subs, i, 6, $inv_sub_item_otyp)) {
-                do {
+                {
                     if ((yield* debugcore(__sl0, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         (yield* pline(__sl6, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o2(inv_subs, i, 6, $inv_sub_subs_otyp), 120))), 16)), (cptr.ldI16(trop) == 0) ? __sl7 : __sl8, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16))));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 cptr.stI16o(obj, $obj_otyp, cptr.ldI16o2(inv_subs, i, 6, $inv_sub_subs_otyp));
                 break;
             }

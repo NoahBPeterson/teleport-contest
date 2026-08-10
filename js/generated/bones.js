@@ -585,13 +585,13 @@ export function getbones() {
             sfi_char(nhfp, cptr.decay(oldbonesid), __sl11, c.v);
         } else {
             if (wizard())
-                do {
+                {
                     if (debugcore(__sl0, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl15, c.v, 40);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
             close_nhfile(nhfp);
             compress_bonesfile();
             cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
@@ -614,13 +614,13 @@ export function getbones() {
                     sanitize_name((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
                 if (cptr.ldI32o(mtmp, $monst_mhpmax) == -100) {
                     if (wizard()) {
-                        do {
+                        {
                             if (debugcore(__sl0, 1)) {
                                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                                 pline(__sl17, cptr.ldPtro(cptr.ldPtro(mtmp, $monst_data), NHC.NEUTRAL, 8));
                                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                             }
-                        } while (0);
+                        }
                     }
                     mongone(mtmp);
                 } else

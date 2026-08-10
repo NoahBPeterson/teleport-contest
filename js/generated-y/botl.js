@@ -1973,7 +1973,7 @@ function* bot_via_windowport() {
     if (cptr.ld1so2(condtests, NHC.bl_woundedl, 24, $condtests_t_enabled))
         cptr.st1o2(condtests, NHC.bl_woundedl, 24, $condtests_t_test, schar(((Wounded_legs()) ? 1 : 0)));
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
-        do {
+        {
             let clear_cache = 0;
             let refresh_cache = 0;
             if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
@@ -2000,7 +2000,7 @@ function* bot_via_windowport() {
                 cptr.st1o(cptr.decay(cache_reslt), 0, cptr.st1o(cptr.decay(cache_avail), 0, 0, 1), 1);
                 cptr.st1o(cptr.decay(cache_reslt), 1, cptr.st1o(cptr.decay(cache_avail), 1, 0, 1), 1);
             }
-        } while (0);
+        }
         if (cptr.ld1so2(condtests, NHC.bl_unconsc, 24, $condtests_t_enabled) && cache_nomovemsg && !cptr.ld1so(cptr.decay(cache_avail), 0, 1)) {
             cptr.st1o(cptr.decay(cache_reslt), 0, schar((!cptr.ldI64o(u, $you_usleep) && unconscious() ? 1 : 0)), 1);
             cptr.st1o(cptr.decay(cache_avail), 0, 1, 1);

@@ -1258,13 +1258,13 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                 cptr.stI32((cptr.ldPtr(pick_list)), cptr.ld1so(curr, $obj_oclass));
                 n = 1;
             } else {
-                do {
+                {
                     if ((yield* debugcore(__sl34, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         (yield* pline(__sl35));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 n = 0;
             }
             return n;

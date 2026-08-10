@@ -439,9 +439,9 @@ export function wiz_map() {
         let ep;
         let save_Hconf = HConfusion();
         let save_Hhallu = HHallucination();
-        do {
+        {
             (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-        } while (0);
+        }
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic, 0n));
         for (t = cptr.ldPtr(gf); t !== null; t = cptr.ldPtr(t)) {
             cptr.stI32o(t, $trap_tseen, 1);
@@ -451,12 +451,12 @@ export function wiz_map() {
             map_engraving(ep, 1);
         }
         do_mapping();
-        do {
+        {
             if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
                 impossible(__sl1);
                 cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
             }
-        } while (0);
+        }
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, save_Hconf);
         cptr.stI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic, save_Hhallu);
     } else

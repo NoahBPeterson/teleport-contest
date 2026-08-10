@@ -793,40 +793,40 @@ function recalc_wt() {
         impossible(__sl36);
         return;
     }
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl37, cptr.ldI32o(piece, $obj_owt));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
-    do {
+    }
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl38, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime), cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI32o(piece, $obj_owt, weight(piece) >>> 0);
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl39, cptr.ldI32o(piece, $obj_owt));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
 }
 
 /** C ref: eat.c:309 */
 export function reset_eat() {
     if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 && !(cptr.ldI32o(svc, $context_info_victual + $victual_info_doreset) & 1)) {
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl40);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 1);
     }
     return;
@@ -863,13 +863,13 @@ function touchfood(otmp) {
             void splitobj(otmp, BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) - 1n));
         else
             otmp = splitobj(otmp, 1n);
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl43);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     if (!cptr.ldI32o(otmp, $obj_oeaten)) {
         costly_alteration(otmp, NHC.COST_BITE);
@@ -912,13 +912,13 @@ export function food_substitution(old_obj, new_obj) {
 
 /** C ref: eat.c:422 */
 function do_reset_eat() {
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl44);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (cptr.ldPtro(svc, $context_info_victual)) {
         let otmp;
         cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, 0);
@@ -1226,146 +1226,146 @@ export function intrinsic_possible(type, ptr) {
     switch (type) {
         case NHC.FIRE_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_FIRE) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl79);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.SLEEP_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_SLEEP) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl80);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.COLD_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_COLD) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl81);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.DISINT_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_DISINT) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl82);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.SHOCK_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_ELEC) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl83);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.POISON_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_POISON) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl84);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.ACID_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_ACID) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl85);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.STONE_RES:
         res = (cptr.ld1uo(ptr, $permonst_mconveys) & NHM.MR_STONE) != 0;
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl86);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.TELEPORT:
         res = ((cptr.ldU64o((ptr), $permonst_mflags1) & 33554432n) != 0n);
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl87);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.TELEPORT_CONTROL:
         res = ((cptr.ldU64o((ptr), $permonst_mflags1) & 67108864n) != 0n);
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl88);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         case NHC.TELEPAT:
         res = (cptr.eq((ptr), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96)) ? 1 : 0);
-        do {
+        {
             if (res)
-                do {
+                {
                     if (debugcore(__sl27, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl89);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
-        } while (0);
+                }
+        }
         break;
         default:
         break;
@@ -1407,76 +1407,76 @@ function temp_givit(type, ptr) {
 
 /** C ref: eat.c:1003 — @param {CInt} type @param {CPtr} ptr */
 function givit(type, ptr) {
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl92, type);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (!should_givit(type, ptr) && !temp_givit(type, ptr))
         return;
     switch (type) {
         case NHC.FIRE_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl93);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HFire_resistance() & 67108864n)) {
             You(Hallucination() ? __sl94 : __sl95);
             cptr.stI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.SLEEP_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl96);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HSleep_resistance() & 67108864n)) {
             You_feel(__sl97);
             cptr.stI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.COLD_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl98);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HCold_resistance() & 67108864n)) {
             You_feel(__sl99);
             cptr.stI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.DISINT_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl100);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HDisint_resistance() & 67108864n)) {
             You_feel(Hallucination() ? __sl101 : __sl102);
             cptr.stI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.SHOCK_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl103);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HShock_resistance() & 67108864n)) {
             if (Hallucination())
                 You_feel(__sl104);
@@ -1486,52 +1486,52 @@ function givit(type, ptr) {
         }
         break;
         case NHC.POISON_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl106);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HPoison_resistance() & 67108864n)) {
             You_feel(Poison_resistance() ? __sl107 : __sl108);
             cptr.stI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.TELEPORT:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl109);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HTeleportation() & 67108864n)) {
             You_feel(Hallucination() ? __sl110 : __sl111);
             cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.TELEPORT_CONTROL:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl112);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HTeleport_control() & 67108864n)) {
             You_feel(Hallucination() ? __sl113 : __sl114);
             cptr.stI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic) | 67108864n);
         }
         break;
         case NHC.TELEPAT:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl115);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!(HTelepat() & 67108864n)) {
             You_feel(Hallucination() ? __sl116 : __sl117);
             cptr.stI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic) | 67108864n);
@@ -1540,37 +1540,37 @@ function givit(type, ptr) {
         }
         break;
         case NHC.ACID_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl118);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!Acid_resistance())
             You_feel(__sl119, Hallucination() ? __sl120 : __sl121);
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1087, __sl122), d(3, 6)) : d(3, 6)));
         break;
         case NHC.STONE_RES:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl123);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (!Stone_resistance())
             You_feel(__sl119, Hallucination() ? __sl124 : __sl125);
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1094, __sl122), d(3, 6)) : d(3, 6)));
         break;
         default:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl126);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         break;
     }
 }
@@ -1715,13 +1715,13 @@ function cpostfx(pm) {
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DISPLACED, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1268, __sl129), d(6, 6)) : d(6, 6)));
         break;
         case NHC.PM_DISENCHANTER:
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl144);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         void attrcurse();
         break;
         case NHC.PM_DEATH:
@@ -1775,26 +1775,26 @@ export function corpse_intrinsic(ptr) {
     if (conveys_STR) {
         count = 1;
         prop = -1;
-        do {
+        {
             if (debugcore(__sl27, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl148, prop);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     for (i = 1; i <= NHC.LAST_PROP; i++) {
         if (!intrinsic_possible(i, ptr))
             continue;
         ++count;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1363, __sl149), rn2(count)) : rn2(count))) {
-            do {
+            {
                 if (debugcore(__sl27, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl150, i, prop);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             prop = i;
         }
     }
@@ -2297,41 +2297,41 @@ const __static_start_eating_msgbuf = new Uint8Array(256); /** C ref: eat.c:2025 
 function start_eating(otmp, already_partly_eaten) {
     let old_nomovemsg;
     let save_nomovemsg;
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl255, fmt_ptr(otmp), fmt_ptr(cptr.ldPtro(svc, $context_info_victual)));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
-    do {
+    }
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl256, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
-    do {
+    }
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl257, cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
-    do {
+    }
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl258, cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
-    do {
+    }
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl259, cptr.ldI32o(otmp, $obj_oeaten));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI32o(svc, $context_info_victual + $victual_info_fullwarn, cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0));
     cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 1);
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(otmp, $obj_globby) & 1) | 0) {
@@ -3057,21 +3057,21 @@ export function doeat() {
         }
     }
     basenutrit = obj_nutrition(otmp.v) | 0;
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl372, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime), cptr.ldI32o(otmp.v, $obj_oeaten), basenutrit);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, (basenutrit == 0) ? 0 : rounddiv(BigInt.asIntN(64, BigInt(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) * BigInt(cptr.ldI32o(otmp.v, $obj_oeaten) >>> 0)), basenutrit));
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl373, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) == 0 || cptr.ldI32o(otmp.v, $obj_oeaten) == 0)
         cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, 0);
     else if ((cptr.ldI32o(otmp.v, $obj_oeaten) | 0) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))
@@ -3197,13 +3197,13 @@ export function morehungry(num) {
 /** C ref: eat.c:3289 — @param {CInt} num */
 export function lesshungry(num) {
     let iseating = schar(((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood) || cptr.ld1so(gf, $instance_globals_f_force_save_hs) ? 1 : 0));
-    do {
+    {
         if (debugcore(__sl27, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl381, num);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + num) | 0);
     if (cptr.ldI32o(u, $you_uhunger) >= 2000) {
         if (!iseating || (cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0) {

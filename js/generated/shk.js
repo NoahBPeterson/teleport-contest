@@ -1853,13 +1853,13 @@ export function dopay() {
             shkp = mtmp;
         }
         if (!shkp) {
-            do {
+            {
                 if (debugcore(__sl47, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl123);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             return NHM.ECMD_OK;
         }
     }

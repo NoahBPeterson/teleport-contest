@@ -843,13 +843,13 @@ function* gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     (yield* parkguard(grd));
     (yield* wallify_vault(grd));
     (yield* restfakecorr(grd));
-    do {
+    {
         if ((yield* debugcore(__sl5, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl48, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __sl26 : __sl49, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __sl50 : __sl26));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (!semi_dead && (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))) {
         if (!disappear_msg_seen && see_guard)
             (yield* pline(__sl51, (yield* noit_mon_nam(grd))));
@@ -889,13 +889,13 @@ export function* gd_move(grd) {
             cptr.stI32o(egrd, $egd_gddone, 1);
             return (yield* gd_move_cleanup(grd, semi_dead, 0));
         }
-        do {
+        {
             if ((yield* debugcore(__sl5, 1))) {
                 save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl58, (cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 ? __sl59 : __sl60));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         u_in_vault = schar((vault_occupied(cptr.add(u, $you_urooms)) ? 1 : 0));
         grd_in_vault = schar((cptr.ld1s((yield* in_rooms(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), NHC.VAULT))) ? 1 : 0));
         if (!u_in_vault && !grd_in_vault)

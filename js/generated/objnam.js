@@ -1325,16 +1325,16 @@ function xname_flags(obj, cxn_flags) {
             if (typ == NHC.FIGURINE && omndx != NHC.NON_PM) {
                 let anbuf = new Uint8Array(10);
                 let pm_name = obj_pmname(obj);
-                do {
+                {
                     nh_snprintf(__sl46, 713, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl47, just_an(cptr.decay(anbuf), pm_name), pm_name);
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
             } else if ((cptr.ldI16o((obj), $obj_otyp) == NHC.TOWEL && cptr.ld1so((obj), $obj_spe) > 0)) {
                 if (wizard())
-                    do {
+                    {
                         nh_snprintf(__sl46, 716, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl48, cptr.ld1so(obj, $obj_spe));
                         buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                    } while (0);
+                    }
             }
             break;
             case NHC.ARMOR_CLASS:
@@ -1354,17 +1354,17 @@ function xname_flags(obj, cxn_flags) {
             }
             buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
             if (nn)
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), actualn, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
             else if (un)
                 xcalled(buf, 176, armor_simple_name(obj), un);
             else
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), dn, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
             break;
             case NHC.FOOD_CLASS:
             if (typ == NHC.SLIME_MOLD) {
@@ -1385,22 +1385,22 @@ function xname_flags(obj, cxn_flags) {
                 break;
             }
             if (cptr.ld1so(iflags, $instance_flags_partly_eaten_hack) && cptr.ldI32o(obj, $obj_oeaten)) {
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __sl54, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
             }
             if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
-                do {
+                {
                     nh_snprintf(__sl46, 788, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl55, (cptr.ldI32o(obj, $obj_owt) <= 100) ? __sl56 : ((cptr.ldI32o(obj, $obj_owt) <= 300) ? __sl57 : ((cptr.ldI32o(obj, $obj_owt) <= 500) ? __sl58 : __sl59)), actualn);
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
                 break;
             }
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), actualn, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                 buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-            } while (0);
+            }
             if (typ == NHC.TIN && known)
                 tin_details(obj, omndx, buf);
             break;
@@ -1535,10 +1535,10 @@ function xname_flags(obj, cxn_flags) {
             obufp = makeplural(buf);
             cptr.st1o(buf, 0, 0);
             buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), obufp, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                 buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-            } while (0);
+            }
             releaseobuf(obufp);
         }
         if (cptr.ldI32(program_state) && cptr.ldI32o(obj, $obj_o_id) && bufspaceleft > 0n) {
@@ -1547,43 +1547,43 @@ function xname_flags(obj, cxn_flags) {
             switch (cptr.ldI16o(obj, $obj_otyp)) {
                 case NHC.T_SHIRT:
                 case NHC.ALCHEMY_SMOCK:
-                do {
+                {
                     nh_snprintf(__sl46, 982, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl86, (cptr.ldI16o(obj, $obj_otyp) == NHC.T_SHIRT) ? tshirt_text(obj, cptr.decay(tmpbuf)) : apron_text(obj, cptr.decay(tmpbuf)));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
                 break;
                 case NHC.CANDY_BAR:
                 lbl = candy_wrapper_text(obj);
                 if (cptr.ld1s(lbl))
-                    do {
+                    {
                         nh_snprintf(__sl46, 987, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl87, lbl);
                         buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                    } while (0);
+                    }
                 break;
                 case NHC.HAWAIIAN_SHIRT:
-                do {
+                {
                     nh_snprintf(__sl46, 991, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl88, an(hawaiian_motif(obj, cptr.decay(tmpbuf))));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-                } while (0);
+                }
                 break;
                 default:
                 break;
             }
         }
         if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))) && dknown) {
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __sl89, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                 buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-            } while (0);
+            }
             __go_nameit = true; break __skip_nameit;
         }
     }
     if (__go_nameit) {
         obufp = eos(buf);
-        do {
+        {
             void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))), BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
             buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
-        } while (0);
+        }
         if (cptr.ld1so(obj, $obj_oartifact) && !cptr.strncmp(obufp, __sl90, 4n))
             cptr.st1(obufp, lowc(cptr.ld1s(obufp)));
     }
@@ -1790,10 +1790,10 @@ function doname_base(obj, doname_flags) {
             void cptr.strcat(cptr.decay(prefix), __sl119);
         if (cknown && (cptr.ldPtro((obj), $obj_cobj) !== null) && bpspaceleft > 0n) {
             itemcount = count_contents(obj, 0, 0, 1, 0);
-            do {
+            {
                 nh_snprintf(__sl106, 1379, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl120, itemcount, (((itemcount) == 1n) ? __sl13 : __sl121));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         }
         let __sw4 = (cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) ? NHC.WEAPON_CLASS : cptr.ld1so(obj, $obj_oclass);
         if (__sw4 === (NHC.AMULET_CLASS)) { __pc = 5; continue; }
@@ -1810,31 +1810,31 @@ function doname_base(obj, doname_flags) {
         }
         case 5: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 65536n)
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         { __pc = 3; continue; }
         }
         case 6: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), (cptr.eq(obj, uskin.v)) ? __sl123 : (doffing(obj) ? __sl124 : (donning(obj) ? __sl125 : __sl122)), BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
             if (cptr.ld1so(bp_eos.v, -1) == 41) {
                 if (cptr.eq(obj, uarmg.v) && Glib())
-                    do {
+                    {
                         void __builtin___strncat_chk(cptr.add(bp_eos.v, -(1)), __sl126, BigInt.asUintN(64, bpspaceleft + 1n), __builtin_object_size(cptr.add(bp_eos.v, -(1)), 1));
                         bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                    } while (0);
+                    }
             }
             if (cptr.ld1so(bp_eos.v, -1) == 41) {
                 if (!Blind() && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
-                    do {
+                    {
                         nh_snprintf(__sl106, 1413, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl127, arti_light_description(obj));
                         bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                    } while (0);
+                    }
             }
         }
         // @FallThrough
@@ -1856,10 +1856,10 @@ function doname_base(obj, doname_flags) {
         __pc = 15; continue;
         }
         case 16: {
-        do {
+        {
             void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-        } while (0);
+        }
         { __pc = 3; continue; }
         }
         case 15: {
@@ -1869,10 +1869,10 @@ function doname_base(obj, doname_flags) {
         case 18: {
         mlsh = find_mid(cptr.ldI32o(obj, $obj_corpsenm) >>> 0, NHM.FM_FMON);
         if (mlsh && !(cptr.ldI32o((mlsh), $monst_mhp) < 1)) {
-            do {
+            {
                 nh_snprintf(__sl106, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl129, noit_mon_nam(mlsh));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         } else {
             if (mlsh)
                 impossible(__sl130, mon_pmname(mlsh), cptr.ldI32o(obj, $obj_corpsenm) >>> 0);
@@ -1889,10 +1889,10 @@ function doname_base(obj, doname_flags) {
         case 20: {
         suffix = new Uint8Array(20);
         void cptr.sprintf(cptr.decay(suffix), __sl35, (((cptr.ld1so(obj, $obj_spe)) == 1) ? __sl13 : __sl121), !(cptr.ldI32o(obj, $obj_lamplit) & 1) ? __sl132 : __sl133);
-        do {
+        {
             nh_snprintf(__sl106, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl134, cptr.ld1so(obj, $obj_spe), cptr.decay(suffix));
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-        } while (0);
+        }
         { __pc = 3; continue; }
         }
         case 21: {
@@ -1913,10 +1913,10 @@ function doname_base(obj, doname_flags) {
                 void cptr.strcat(cptr.decay(prefix), __sl135);
         }
         if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         { __pc = 3; continue; }
         }
         case 22: {
@@ -1939,18 +1939,18 @@ function doname_base(obj, doname_flags) {
         }
         case 1 /* charges: */: {
         if (known)
-            do {
+            {
                 nh_snprintf(__sl106, 1486, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl137, (cptr.ldI32o(obj, $obj_recharged) & 7) | 0, cptr.ld1so(obj, $obj_spe));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         { __pc = 3; continue; }
         }
         case 10: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0)
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         { __pc = 3; continue; }
         }
         case 11: {
@@ -1959,20 +1959,20 @@ function doname_base(obj, doname_flags) {
         }
         case 2 /* ring: */: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 262144n)
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl138, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         if (cptr.ldI64o(obj, $obj_owornmask) & 131072n)
-            do {
+            {
                 void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl139, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         if (cptr.ldI64o(obj, $obj_owornmask) & 393216n)
-            do {
+            {
                 nh_snprintf(__sl106, 1499, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl140, body_part(NHC.HAND));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         if (known && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) | 0) {
             void cptr.sprintf(eos(cptr.decay(prefix)), __sl128, cptr.ld1so(obj, $obj_spe));
         }
@@ -2003,10 +2003,10 @@ function doname_base(obj, doname_flags) {
             void cptr.strcat(cptr.decay(prefix), cptr.ldPtro3(mons, omndx, 96, NHC.NEUTRAL, 8, 0));
             void cptr.strcat(cptr.decay(prefix), __sl142);
             if (cptr.ld1so(obj, $obj_spe) == 1)
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl143, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
         }
         __pc = 29;
         continue;
@@ -2036,29 +2036,29 @@ function doname_base(obj, doname_flags) {
         case 14: {
         add_erosion_words(obj, cptr.decay(prefix));
         if (cptr.ldI64o(obj, $obj_owornmask) & 6291456n)
-            do {
+            {
                 nh_snprintf(__sl106, 1545, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl144, (cptr.ldI64o(obj, $obj_owornmask) & 2097152n) ? __sl145 : __sl146);
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         { __pc = 3; continue; }
         }
         case 3: {
         if ((cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) && wizard() && cptr.ld1so(iflags, $instance_flags_wizmgender)) {
             cgend = (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_GENDER);
             mgend = ((cgend == NHM.CORPSTAT_MALE) ? NHC.MALE : ((cgend == NHM.CORPSTAT_FEMALE) ? NHC.FEMALE : NHC.NEUTRAL));
-            do {
+            {
                 nh_snprintf(__sl106, 1558, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl25, (cgend != NHM.CORPSTAT_RANDOM) ? cptr.ldPtro(genders, mgend, 48) : __sl147);
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         }
         if ((cptr.ldI64o(obj, $obj_owornmask) & 256n) && !cptr.ld1so(gm, $instance_globals_m_mrg_to_wielded)) {
             twoweap_primary = schar((cptr.eq(obj, uwep.v) && cptr.ld1so(u, $you_twoweap) ? 1 : 0));
             tethered = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.AKLYS));
             if ((cptr.ldI64o(obj, $obj_quan) != 1n || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -23) ? 1 : 0) : !(cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE))) && !twoweap_primary) {
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl148, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             } else {
                 hand_s = body_part(NHC.HAND);
                 handsbuf = new Uint8Array(40);
@@ -2069,35 +2069,35 @@ function doname_base(obj, doname_flags) {
                     void cptr.sprintf(cptr.decay(handsbuf), __sl55, URIGHTY() ? __sl149 : __sl150, hand_s);
                     hand_s = cptr.decay(handsbuf);
                 }
-                do {
+                {
                     nh_snprintf(__sl106, 1595, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl151, tethered ? __sl152 : (twoweap_primary ? __sl153 : __sl154), hand_s);
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
                 if (!Blind() && bpspaceleft && cptr.ld1so(bp_eos.v, -1) == 41) {
                     if (cptr.ldI32(gw) && cptr.eq(obj, uwep.v) && (EWarn_of_mon() & 256n) != 0n)
-                        do {
+                        {
                             nh_snprintf(__sl106, 1605, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl155, glow_verb(cptr.ldI32(gw), 1), glow_color(cptr.ld1so(obj, $obj_oartifact)));
                             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                        } while (0);
+                        }
                     else if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
-                        do {
+                        {
                             nh_snprintf(__sl106, 1609, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl127, arti_light_description(obj));
                             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                        } while (0);
+                        }
                 }
             }
         }
         if (cptr.ldI64o(obj, $obj_owornmask) & 1024n) {
             if (cptr.ld1so(u, $you_twoweap))
-                do {
+                {
                     nh_snprintf(__sl106, 1616, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl156, URIGHTY() ? __sl150 : __sl149, body_part(NHC.HAND));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             else
-                do {
+                {
                     nh_snprintf(__sl106, 1620, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl157, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl13 : __sl121));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
         }
         if (cptr.ldI64o(obj, $obj_owornmask) & 512n) {
             switch (cptr.ld1so(obj, $obj_oclass)) {
@@ -2115,10 +2115,10 @@ function doname_base(obj, doname_flags) {
                 Qtyp = 3;
                 break;
             }
-            do {
+            {
                 nh_snprintf(__sl106, 1645, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl25, (Qtyp == 1) ? __sl158 : ((Qtyp == 2) ? __sl159 : __sl160));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
         }
         if (cptr.ldI32o(iflags, $instance_flags_suppress_price) || cptr.ldI32o(program_state, $sinfo_restoring)) {
             ;
@@ -2126,10 +2126,10 @@ function doname_base(obj, doname_flags) {
             pricebuf = new Uint8Array(40);
             quotedprice = unpaid_cost(obj, NHC.COST_CONTENTS);
             void cptr.sprintf(cptr.decay(pricebuf), __sl161, quotedprice, currency(quotedprice));
-            do {
+            {
                 nh_snprintf(__sl106, 1661, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl162, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __sl163 : __sl164, cptr.decay(pricebuf));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-            } while (0);
+            }
             record_price_quote(cptr.ldI16o(obj, $obj_otyp), BigInt.asUintN(64, (quotedprice / cptr.ldI64o(obj, $obj_quan))), 1);
         } else if (with_price) {
             nochrg.v = 0;
@@ -2137,15 +2137,15 @@ function doname_base(obj, doname_flags) {
             if (price > 0n) {
                 pricebuf = new Uint8Array(40);
                 void cptr.sprintf(cptr.decay(pricebuf), __sl161, price, currency(price));
-                do {
+                {
                     nh_snprintf(__sl106, 1673, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl162, nochrg.v ? __sl164 : __sl165, cptr.decay(pricebuf));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             } else if (nochrg.v > 0) {
-                do {
+                {
                     void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl166, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             } else if (cptr.ld1so(iflags, $instance_flags_pricequotes) && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
                 append_price_quote(bp, bp_eos, cptr.ldI16o(obj, $obj_otyp));
             }
@@ -2161,15 +2161,15 @@ function doname_base(obj, doname_flags) {
         }
         if (wizard() && cptr.ld1so(iflags, $instance_flags_wizweight)) {
             if (with_price && cptr.ld1so(bp_eos.v, -1) == 41)
-                do {
+                {
                     nh_snprintf(__sl106, 1700, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl167, cptr.ldI32o(obj, $obj_owt));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             else
-                do {
+                {
                     nh_snprintf(__sl106, 1702, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl168, cptr.ldI32o(obj, $obj_owt));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
-                } while (0);
+                }
             (void (bp_eos.v));
             (void (bpspaceleft));
         }

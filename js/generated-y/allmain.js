@@ -697,9 +697,9 @@ export function* init_sound_disp_gamewindows() {
 /** C ref: allmain.c:766 */
 export function* newgame() {
     let i;
-    do {
+    {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-    } while (0);
+    }
     cptr.st1o(disp, $display_hints_botlx, 1);
     cptr.stI32(svc, 2);
     cptr.stI32o(svc, $context_info_warnlevel, 1);
@@ -748,12 +748,12 @@ export function* newgame() {
     (yield* save_currentstate());
     (cptr.stI32o(program_state, $sinfo_something_worth_saving, cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1)) - (1);
     (yield* welcome(1));
-    do {
+    {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
             (yield* impossible(__sl22));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
-    } while (0);
+    }
     if (cptr.ld1so(a11y, $accessibility_data_glyph_updates))
         void (yield* dolookaround());
     else

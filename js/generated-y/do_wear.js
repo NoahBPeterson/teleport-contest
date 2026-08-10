@@ -1635,78 +1635,78 @@ function count_worn_stuff(which, accessorizing) {
     let otmp;
     Narmorpieces = (Naccessories = 0);
     otmp = null;
-    do {
+    {
         if (uarmh.v) {
             Narmorpieces++;
             otmp = uarmh.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (uarms.v) {
             Narmorpieces++;
             otmp = uarms.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (uarmg.v) {
             Narmorpieces++;
             otmp = uarmg.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (uarmf.v) {
             Narmorpieces++;
             otmp = uarmf.v;
         }
-    } while (0);
+    }
     if (uarmc.v)
-        do {
+        {
             if (uarmc.v) {
                 Narmorpieces++;
                 otmp = uarmc.v;
             }
-        } while (0);
+        }
     else if (uarm.v)
-        do {
+        {
             if (uarm.v) {
                 Narmorpieces++;
                 otmp = uarm.v;
             }
-        } while (0);
+        }
     else if (uarmu.v)
-        do {
+        {
             if (uarmu.v) {
                 Narmorpieces++;
                 otmp = uarmu.v;
             }
-        } while (0);
+        }
     if (!accessorizing)
         cptr.stPtr(which, otmp);
     otmp = null;
-    do {
+    {
         if (uleft.v) {
             Naccessories++;
             otmp = uleft.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (uright.v) {
             Naccessories++;
             otmp = uright.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (uamul.v) {
             Naccessories++;
             otmp = uamul.v;
         }
-    } while (0);
-    do {
+    }
+    {
         if (ublindf.v) {
             Naccessories++;
             otmp = ublindf.v;
         }
-    } while (0);
+    }
     if (accessorizing)
         cptr.stPtr(which, otmp);
 }

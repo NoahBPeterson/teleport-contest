@@ -356,7 +356,7 @@ export function* wallification(x1, y1, x2, y2) {
 
 /** C ref: mkmaze.c:297 — @param {CInt} x @param {CInt} y @param {CInt} dir @returns {CInt} */
 function* okay(x, y, dir) {
-    do {
+    {
         switch (dir) {
             case 0:
             --(y);
@@ -373,8 +373,8 @@ function* okay(x, y, dir) {
             default:
             (yield* panic(__sl4, dir));
         }
-    } while (0);
-    do {
+    }
+    {
         switch (dir) {
             case 0:
             --(y);
@@ -391,7 +391,7 @@ function* okay(x, y, dir) {
             default:
             (yield* panic(__sl4, dir));
         }
-    } while (0);
+    }
     if (x < 3 || y < 3 || x > cptr.ldI32(gx) || y > cptr.ldI32(gy) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE)
         return 0;
     return 1;
@@ -832,7 +832,7 @@ function* maze_remove_deadends(typ) {
                 for (dir = 0; dir < 4; dir++) {
                     dx = (dx2 = x);
                     dy = (dy2 = y);
-                    do {
+                    {
                         switch (dir) {
                             case 0:
                             --(dy);
@@ -849,12 +849,12 @@ function* maze_remove_deadends(typ) {
                             default:
                             (yield* panic(__sl4, dir));
                         }
-                    } while (0);
+                    }
                     if (!maze_inbounds(dx, dy)) {
                         idx2++;
                         continue;
                     }
-                    do {
+                    {
                         switch (dir) {
                             case 0:
                             --(dy2);
@@ -871,8 +871,8 @@ function* maze_remove_deadends(typ) {
                             default:
                             (yield* panic(__sl4, dir));
                         }
-                    } while (0);
-                    do {
+                    }
+                    {
                         switch (dir) {
                             case 0:
                             --(dy2);
@@ -889,7 +889,7 @@ function* maze_remove_deadends(typ) {
                             default:
                             (yield* panic(__sl4, dir));
                         }
-                    } while (0);
+                    }
                     if (!maze_inbounds(dx2, dy2)) {
                         idx2++;
                         continue;
@@ -903,7 +903,7 @@ function* maze_remove_deadends(typ) {
                     dx = x;
                     dy = y;
                     dir = i16(cptr.ld1so(cptr.decay(dirok), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 939, __sl17), rn2(idx)) : rn2(idx)), 1));
-                    do {
+                    {
                         switch (dir) {
                             case 0:
                             --(dy);
@@ -920,7 +920,7 @@ function* maze_remove_deadends(typ) {
                             default:
                             (yield* panic(__sl4, dir));
                         }
-                    } while (0);
+                    }
                     cptr.st1o3(svl, dx, 756, dy, 36, $instance_globals_saved_l_level + $rm_typ, schar(typ));
                 }
             }
@@ -1009,13 +1009,13 @@ export function* pick_vibrasquare_location() {
     let x_range = (((((cptr.ldI32(gx) - 2) | 0) - 8) | 0) - 1) | 0;
     let y_range = (((((cptr.ldI32(gy) - 2) | 0) - 6) | 0) - 1) | 0;
     if (x_range <= 4 || y_range <= 3 || (Math.imul(x_range, y_range)) <= 121) {
-        do {
+        {
             if ((yield* debugcore(__sl0, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl19, cptr.ldI32(gx), cptr.ldI32(gy)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     cptr.stI16(svi, cptr.stI16o(svi, $nhcoord_y, 0));
     do {
@@ -1152,7 +1152,7 @@ export function* walkfrom(x, y, typ) {
         if (!q)
             return;
         dir = cptr.ldI32o(dirs, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1304, __sl30), rn2(q)) : rn2(q)), 4);
-        do {
+        {
             switch (dir) {
                 case 0:
                 --(y);
@@ -1169,9 +1169,9 @@ export function* walkfrom(x, y, typ) {
                 default:
                 (yield* panic(__sl4, dir));
             }
-        } while (0);
+        }
         cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, typ);
-        do {
+        {
             switch (dir) {
                 case 0:
                 --(y);
@@ -1188,7 +1188,7 @@ export function* walkfrom(x, y, typ) {
                 default:
                 (yield* panic(__sl4, dir));
             }
-        } while (0);
+        }
         (yield* walkfrom(x, y, typ));
     }
 }
@@ -1321,13 +1321,13 @@ export function* mkportal(x, y, todnum, todlevel) {
         (yield* impossible(__sl33));
         return;
     }
-    do {
+    {
         if ((yield* debugcore(__sl0, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl34, x, y, cptr.add(svd, todnum, 112), todlevel));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI16o(ttmp, $trap_dst, todnum);
     cptr.stI16o(ttmp, $trap_dst + $d_level_dlevel, todlevel);
     return;

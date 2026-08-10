@@ -593,20 +593,20 @@ export function* select_rwep(mtmp) {
     let i;
     let mlet = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet);
     cptr.stPtro(gp, $instance_globals_p_propellor, hands_obj);
-    do {
+    {
         if ((otmp = (yield* oselect(mtmp, NHC.EGG))) !== null)
             return otmp;
-    } while (0);
+    }
     if (mlet == NHC.S_KOP)
-        do {
+        {
             if ((otmp = (yield* oselect(mtmp, NHC.CREAM_PIE))) !== null)
                 return otmp;
-        } while (0);
+        }
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 134217728n) != 0n))
-        do {
+        {
             if ((otmp = (yield* oselect(mtmp, NHC.BOULDER))) !== null)
                 return otmp;
-        } while (0);
+        }
     mwep = (cptr.ldPtro((mtmp), $monst_mw));
     mweponly = schar((mwelded(mwep) && cptr.ldI16o(mtmp, $monst_weapon_check) == NHC.NO_WEAPON_WANTED ? 1 : 0));
     if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 13 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
@@ -747,23 +747,23 @@ export function* select_hwep(mtmp) {
             return otmp;
     }
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 8192n) != 0n))
-        do {
+        {
             if ((otmp = (yield* oselect(mtmp, NHC.CLUB))) !== null)
                 return otmp;
-        } while (0);
+        }
     else if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_BALROG, 96)) && uwep.v)
-        do {
+        {
             if ((otmp = (yield* oselect(mtmp, NHC.BULLWHIP))) !== null)
                 return otmp;
-        } while (0);
+        }
     for (i = 0; i < 45; i++) {
         if (cptr.ldI16o(hwep, i, 2) == NHC.CORPSE && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n) && !(yield* Resists_Elem(mtmp, NHC.STONE_RES)))
             continue;
         if (((strong && !wearing_shield) || !(cptr.ldI32o2(objects, cptr.ldI16o(hwep, i, 2), 120, $objclass_oc_big) & 1)) && (((cptr.ldI32o2(objects, cptr.ldI16o(hwep, i, 2), 120, $objclass_oc_material) & 31) | 0) != NHC.SILVER || !mon_hates_silver(mtmp)))
-            do {
+            {
                 if ((otmp = (yield* oselect(mtmp, cptr.ldI16o(hwep, i, 2)))) !== null)
                     return otmp;
-            } while (0);
+            }
     }
     return null;
 }

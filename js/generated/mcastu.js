@@ -358,13 +358,13 @@ export function castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         cursetxt(mtmp, is_undirected_spell(spellnum));
         return NHM.M_ATTK_MISS;
     }
-    do {
+    {
         if (debugcore(__sl5, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl10, noit_Monnam(mtmp), ml, spellnum);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SPEL || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_CLRC) {
         cptr.stI32o(mtmp, $monst_mspec_used, ((cptr.ld1uo(mtmp, $monst_m_lev) < 8) ? ((10 - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) : 2));
     }

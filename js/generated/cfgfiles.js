@@ -468,22 +468,22 @@ function handle_config_section(buf) {
         }
         if (cptr.ld1s(sect)) {
             cptr.stPtro(gc, $instance_globals_c_config_section_current, dupstr(sect));
-            do {
+            {
                 if (debugcore(__sl20, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl23, cptr.ldPtro(gc, $instance_globals_c_config_section_current));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         } else {
             free_config_sections();
-            do {
+            {
                 if (debugcore(__sl20, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl24);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
         }
         return 1;
     }

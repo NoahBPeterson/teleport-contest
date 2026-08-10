@@ -530,89 +530,89 @@ function inuse_classify(sort_item, obj) {
     let altclass = 0;
     __lbl_assign_rating: {
         ++altclass;
-        do {
+        {
             ++rating;
             if ((!w_mask && cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm) ? 1 : 0) != 0)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((!w_mask && cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? 1 : 0) != 0)
                 break __lbl_assign_rating;
-        } while (0);
+        }
         ++altclass;
-        do {
+        {
             ++rating;
             if ((w_mask & 64n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 32n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 16n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 4n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 8n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 2n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 1n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
+        }
         ++altclass;
-        do {
+        {
             ++rating;
             if ((w_mask & 512n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 1024n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 256n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
+        }
         ++altclass;
-        do {
+        {
             ++rating;
             if ((w_mask & 524288n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & (ULEFTY() ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & (URIGHTY() ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
-        do {
+        }
+        {
             ++rating;
             if ((w_mask & 65536n) != 0n)
                 break __lbl_assign_rating;
-        } while (0);
+        }
         rating = 0;
         altclass = -1;
     }

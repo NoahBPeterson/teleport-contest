@@ -2085,13 +2085,13 @@ export function* bhito(obj, otmp) {
         if (cptr.ld1so(svc, $context_info_bypasses)) {
             return 0;
         } else {
-            do {
+            {
                 if ((yield* debugcore(__sl21, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     (yield* pline(__sl94, (yield* Tobjnam(obj, __sl95))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             cptr.stI32o(obj, $obj_bypass, 0);
         }
     }
@@ -3757,13 +3757,13 @@ export function* zhitm(mon, type, nd, ootmp) {
         tmp = (tmp / 2) | 0;
     if (tmp < 0)
         tmp = 0;
-    do {
+    {
         if ((yield* debugcore(__sl21, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl218, (cptr.ldI32o(mon, $monst_mhp) - tmp) | 0, cptr.ldI32o(mon, $monst_mhp), tmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - tmp) | 0);
     return tmp;
 }

@@ -1834,13 +1834,13 @@ export function buried_ball_to_freedom() {
 export function bury_an_obj(otmp, dealloced) {
     let otmp2;
     let under_ice;
-    do {
+    {
         if (debugcore(__sl22, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl183, xname(otmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (dealloced)
         cptr.st1(dealloced, 0);
     if (cptr.eq(otmp, uball.v)) {
@@ -1881,13 +1881,13 @@ export function bury_objs(x, y) {
     let costly;
     costly = schar(((shkp = shop_keeper(cptr.ld1s(in_rooms(i16(x), i16(y), NHC.SHOPBASE)))) && costly_spot(i16(x), i16(y)) ? 1 : 0));
     if (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) {
-        do {
+        {
             if (debugcore(__sl22, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl186, x, y);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = otmp2) {
         if (costly && !cptr.ld1so(svc, $context_info_mon_moving)) {
@@ -1911,13 +1911,13 @@ export function unearth_objs(x, y) {
     let otmp2;
     let bball;
     let cc = cptr.alloc(4);
-    do {
+    {
         if (debugcore(__sl22, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__sl188, x, y);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     cptr.stI16(cc, i16(x));
     cptr.stI16o(cc, $nhcoord_y, i16(y));
     bball = buried_ball(cc);

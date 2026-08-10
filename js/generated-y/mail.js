@@ -114,13 +114,13 @@ export function* getmailstatus() {
         void cptr.strcpy(mailbox, __sl1);
         void cptr.strcat(mailbox, pw_name);
     }
-    do {
+    {
         if ((yield* debugcore(__sl2, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl3, mailbox ? 34 : 60, mailbox ? mailbox : __sl4, mailbox ? 34 : 62));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (mailbox && stat(mailbox, omstat)) {
         cptr.stI64o(omstat, $stat_st_mtimespec, 0n);
     }

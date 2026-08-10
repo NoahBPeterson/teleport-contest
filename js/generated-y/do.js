@@ -1746,9 +1746,9 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
         (yield* fumaroles());
     (yield* vision_reset());
     reset_glyphmap(NHC.gm_levelchange);
-    do {
+    {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-    } while (0);
+    }
     (yield* docrt());
     (yield* flush_screen(-1));
     if (cptr.ldPtro(gd, $instance_globals_d_dfr_post_msg))
@@ -1823,12 +1823,12 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
     }
     assign_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz));
     (yield* save_currentstate());
-    do {
+    {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
             (yield* impossible(__sl206));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
-    } while (0);
+    }
     (yield* notice_all_mons(1));
     (yield* print_level_annotation());
     (yield* check_special_room(0));

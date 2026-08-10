@@ -5920,13 +5920,13 @@ export function lava_effects() {
     let dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 6800, __sl644), d(6, 6)) : d(6, 6));
     __lbl_burn_stuff: {
         if (cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
-            do {
+            {
                 if (debugcore(__sl11, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     pline(__sl645);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             return 0;
         }
         feel_newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));

@@ -1184,13 +1184,13 @@ function* restore_msghistory(nhfp) {
     }
     if (msgcount)
         (yield* Y.icall(putmsghistory()(null, 1)));
-    do {
+    {
         if ((yield* debugcore(__sl14, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl95, msgcount));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
 }
 
 /** C ref: restore.c:1447 */

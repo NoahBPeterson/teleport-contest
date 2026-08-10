@@ -1323,13 +1323,13 @@ export function dealloc_killer(kptr) {
     } else {
         cptr.stPtr(prev, cptr.ldPtr(k));
         cptr.free(k);
-        do {
+        {
             if (debugcore(__sl81, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl133, cptr.ldI32o(kptr, $kinfo_id));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
 }
 

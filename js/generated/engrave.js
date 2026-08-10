@@ -511,23 +511,23 @@ export function u_wipe_engr(cnt) {
 export function wipe_engr_at(x, y, cnt, magical) {
     let ep = engr_at(x, y);
     if (ep && cptr.ld1so(ep, $engr_engr_type) != NHM.HEADSTONE && !(cptr.ldI32o(ep, $engr_nowipeout) & 1)) {
-        do {
+        {
             if (debugcore(__sl0, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl41, cnt);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if (cptr.ld1so(ep, $engr_engr_type) != NHM.BURN || is_ice(x, y) || (magical && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 278, __sl42), rn2(2)) : rn2(2)))) {
             if (cptr.ld1so(ep, $engr_engr_type) != NHM.DUST && cptr.ld1so(ep, $engr_engr_type) != NHM.ENGR_BLOOD) {
                 cnt = i16(((rng_log_enabled() ? (rng_log_set_caller(__sl0, 280, __sl42), rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) : rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) ? 0 : 1));
-                do {
+                {
                     if (debugcore(__sl0, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__sl43, cnt);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
             }
             wipeout_text(cptr.ldPtro2(ep, NHC.actual_text, 8, $engr_engr_txt), cnt, 0);
             while (cptr.ld1so(cptr.ldPtro2(ep, NHC.actual_text, 8, $engr_engr_txt), 0) == 32)

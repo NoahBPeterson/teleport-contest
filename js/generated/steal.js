@@ -356,13 +356,13 @@ export function remove_worn_item(obj, unchain_ball) {
         setnotworn(obj);
     }
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_DELETED)
-        do {
+        {
             if (debugcore(__sl0, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl16, simpleonames(obj));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     cptr.stI32o(obj, $obj_in_use, oldinuse);
 }
 

@@ -82,48 +82,48 @@ export function* populate_nomakedefs(version) {
     let timeresult;
     nh_snprintf(__sl16, 90, cptr.decay(tmpbuf1), 256n, __sl17, getenv(__sl18) ? __sl19 : __sl20);
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
-        do {
+        {
             for (i = 0; i < 4; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         cptr.stI32o(t, $tm_tm_year, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
-        do {
+        {
             for (i = 0; i < 3; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         for (i = 0; i < 12; ++i)
             if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtro(mth, i, 8))) {
                 cptr.stI32o(t, $tm_tm_mon, i);
                 break;
             }
-        do {
+        {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 4) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         strp = cptr.decay(tmpbuf2);
         if (cptr.ld1s(strp) == 32)
             strp = cptr.add(strp, 1);
         cptr.stI32o(t, $tm_tm_mday, atoi(strp));
-        do {
+        {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         cptr.stI32o(t, $tm_tm_hour, atoi(cptr.decay(tmpbuf2)));
-        do {
+        {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         cptr.stI32o(t, $tm_tm_min, atoi(cptr.decay(tmpbuf2)));
-        do {
+        {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
-        } while (0);
+        }
         cptr.stI32(t, atoi(cptr.decay(tmpbuf2)));
         timeresult = mktime(t);
         cptr.stU64o(nomakedefs, $nomakedefs_s_build_time, BigInt.asUintN(64, timeresult));

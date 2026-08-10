@@ -1106,13 +1106,13 @@ function postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock, 
                 if (cptr.ld1so(flags, $flag_verbose) && canseemon(mtmp))
                     pline_mon(mtmp, __sl60, YMonnam(mtmp), (cptr.eq(ptr, cptr.add(mons, NHC.PM_FOG_CLOUD, 96)) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_LIGHT) ? __sl61 : __sl62);
             } else if ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.D_LOCKED) != 0 && can_unlock) {
-                do {
+                {
                     cptr.stI32o((here), $rm_flags, (!btrapped ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
                     newsym(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     recalc_block_point(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     vision_recalc(0);
                     canseeit = schar((didseeit || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
-                } while (0);
+                }
                 if (btrapped) {
                     if (mb_trapped(mtmp, canseeit))
                         return NHM.MMOVE_DIED;
@@ -1129,13 +1129,13 @@ function postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock, 
                     }
                 }
             } else if (((cptr.ldI32o(here, $rm_flags) & 31) | 0) == NHM.D_CLOSED && can_open) {
-                do {
+                {
                     cptr.stI32o((here), $rm_flags, (!btrapped ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
                     newsym(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     recalc_block_point(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     vision_recalc(0);
                     canseeit = schar((didseeit || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
-                } while (0);
+                }
                 if (btrapped) {
                     if (mb_trapped(mtmp, canseeit))
                         return NHM.MMOVE_DIED;
@@ -1154,13 +1154,13 @@ function postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock, 
             } else if ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & 12) != 0) {
                 let mask;
                 mask = ((btrapped || ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.D_LOCKED) != 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 1598, __sl67), rn2(2)) : rn2(2)))) ? NHM.D_NODOOR : NHM.D_BROKEN) >>> 0;
-                do {
+                {
                     cptr.stI32o((here), $rm_flags, (mask));
                     newsym(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     recalc_block_point(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my));
                     vision_recalc(0);
                     canseeit = schar((didseeit || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
-                } while (0);
+                }
                 if (btrapped) {
                     if (mb_trapped(mtmp, canseeit))
                         return NHM.MMOVE_DIED;

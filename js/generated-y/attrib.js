@@ -808,26 +808,26 @@ export function* restore_attrib() {
 
 /** C ref: attrib.c:489 — @param {CInt} i @param {CInt} inc_or_dec */
 export function* exercise(i, inc_or_dec) {
-    do {
+    {
         if ((yield* debugcore(__sl38, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl74));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     if (i == NHC.A_INT || i == NHC.A_CHA)
         return;
     if (Upolyd() && i != NHC.A_WIS)
         return;
     if (Math.abs((cptr.ld1so2(u, i, 1, $you_aexe))) < 50) {
         cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 509, __sl75), rn2(19)) : rn2(19)) > (acurr(i))) : -(rng_log_enabled() ? (rng_log_set_caller(__sl38, 509, __sl75), rn2(2)) : rn2(2))));
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl76, (i == NHC.A_STR) ? __sl77 : ((i == NHC.A_WIS) ? __sl78 : ((i == NHC.A_DEX) ? __sl79 : __sl80)), (inc_or_dec) ? __sl81 : __sl82, (cptr.ld1so2(u, i, 1, $you_aexe))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > 0n && (i == NHC.A_STR || i == NHC.A_CON))
         (yield* encumber_msg());
@@ -837,13 +837,13 @@ export function* exercise(i, inc_or_dec) {
 function* exerper() {
     if (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 10n)) {
         let hs = (cptr.ldI32o(u, $you_uhunger) > 1000) ? NHC.SATIATED : ((cptr.ldI32o(u, $you_uhunger) > 150) ? NHC.NOT_HUNGRY : ((cptr.ldI32o(u, $you_uhunger) > 50) ? NHC.HUNGRY : ((cptr.ldI32o(u, $you_uhunger) > 0) ? NHC.WEAK : NHC.FAINTING)));
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl83));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         switch (hs) {
             case NHC.SATIATED:
             (yield* exercise(NHC.A_DEX, 0));
@@ -863,13 +863,13 @@ function* exerper() {
             (yield* exercise(NHC.A_CON, 0));
             break;
         }
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl84));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         switch (near_capacity()) {
             case NHC.MOD_ENCUMBER:
             (yield* exercise(NHC.A_STR, 1));
@@ -885,13 +885,13 @@ function* exerper() {
         }
     }
     if (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 5n)) {
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl85));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         if ((HClairvoyant() & 134217727n) && !BClairvoyant())
             (yield* exercise(NHC.A_WIS, 1));
         if (HRegeneration())
@@ -929,22 +929,22 @@ export function* exerchk() {
     let hilim;
     (yield* exerper());
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_next_attrib_check)) {
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl94, cptr.ldI64o(gm, $instance_globals_m_multi)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_next_attrib_check) && !cptr.ldI64o(gm, $instance_globals_m_multi)) {
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl95));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         for (i = 0; i < NHC.A_MAX; ++i) {
             __lbl_nextattrib: {
                 ax = (cptr.ld1so2(u, i, 1, $you_aexe));
@@ -959,30 +959,30 @@ export function* exerchk() {
                     break __lbl_nextattrib;
                 if (Upolyd() && i != NHC.A_WIS)
                     break __lbl_nextattrib;
-                do {
+                {
                     if ((yield* debugcore(__sl38, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         (yield* pline(__sl96, (i == NHC.A_STR) ? __sl77 : ((i == NHC.A_INT) ? __sl97 : ((i == NHC.A_WIS) ? __sl78 : ((i == NHC.A_DEX) ? __sl79 : ((i == NHC.A_CON) ? __sl80 : ((i == NHC.A_CHA) ? __sl98 : __sl99))))), ax));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 if ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 655, __sl100), rn2(50)) : rn2(50)) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
                     break __lbl_nextattrib;
-                do {
+                {
                     if ((yield* debugcore(__sl38, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         (yield* pline(__sl101, i));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
-                } while (0);
+                }
                 if ((yield* adjattrib(i, mod_val, -1))) {
-                    do {
+                    {
                         if ((yield* debugcore(__sl38, 1))) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                             (yield* pline(__sl102, i));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
-                    } while (0);
+                    }
                     cptr.st1o2(u, i, 1, $you_aexe, schar((ax = 0)));
                     (yield* You(__sl103, (mod_val > 0) ? __sl104 : __sl105, cptr.ldPtro(cptr.decay(exertext[i]), (mod_val > 0) ? 0 : 1, 8)));
                 }
@@ -990,13 +990,13 @@ export function* exerchk() {
             cptr.st1o2(u, i, 1, $you_aexe, schar(Math.imul(((Math.abs(ax) / 2) | 0), mod_val)));
         }
         cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 673, __sl100), rn2(200)) : rn2(200)) + 800) | 0)));
-        do {
+        {
             if ((yield* debugcore(__sl38, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl106, cptr.ldI64o(svc, $context_info_next_attrib_check)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
 }
 

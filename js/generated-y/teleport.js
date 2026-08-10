@@ -393,13 +393,13 @@ export function* enexto_core(cc, xx, yy, mdat, entflags) {
     let fakemon = cptr.alloc(320);
     let allow_xx_yy = schar(((BigInt(entflags >>> 0) & 2097152n) != 0n));
     if (!mdat) {
-        do {
+        {
             if ((yield* debugcore(__sl1, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl3));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonster), 96);
     }
     cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
@@ -419,13 +419,13 @@ export function* enexto_core(cc, xx, yy, mdat, entflags) {
     cptr.stI16(cc, xx), cptr.stI16o(cc, $coord_y, yy);
     if (allow_xx_yy && (yield* goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags)))
         return 1;
-    do {
+    {
         if ((yield* debugcore(__sl1, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl4, cptr.ldPtro(mdat, NHC.NEUTRAL, 8), xx, yy, BigInt(entflags >>> 0)));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     return 0;
 }
 
@@ -529,9 +529,9 @@ export function* teleds(nux, nuy, teleds_flags) {
     (yield* see_monsters());
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     nomul(0);
-    do {
+    {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-    } while (0);
+    }
     (yield* vision_recalc(0));
     if (is_teleport && cptr.ld1so(flags, $flag_verbose))
         (yield* You(__sl5, (nux == cptr.ldI16o(u, $you_ux0) && nuy == cptr.ldI16o(u, $you_uy0)) ? __sl6 : __sl7));
@@ -547,12 +547,12 @@ export function* teleds(nux, nuy, teleds_flags) {
     }
     (yield* spoteffects(1));
     (yield* invocation_message());
-    do {
+    {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
             (yield* impossible(__sl8));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
-    } while (0);
+    }
     (yield* notice_all_mons(1));
     return;
 }
@@ -631,13 +631,13 @@ export function* collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
             }
         }
     }
-    do {
+    {
         if ((yield* debugcore(__sl1, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__sl10, cx, cy, maxradius, result));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
-    } while (0);
+    }
     return result;
 }
 

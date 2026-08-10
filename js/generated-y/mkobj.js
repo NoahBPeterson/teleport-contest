@@ -2070,20 +2070,20 @@ export function* peek_at_iced_corpse_age(otmp) {
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && (cptr.ldI32o(otmp, $obj_recharged) & 7) | 0) {
         age = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp, $obj_age));
         retval += BigInt.asIntN(64, age * 1n) / 2n;
-        do {
+        {
             if ((yield* debugcore(__sl0, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl77, (yield* s_suffix((yield* doname(otmp)))), cptr.ldI64o(otmp, $obj_age), retval));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
-        do {
+        }
+        {
             if ((yield* debugcore(__sl0, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl78, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - retval)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
     }
     return retval;
 }
@@ -2104,13 +2104,13 @@ function* obj_timer_checks(otmp, x, y, force) {
         if (tleft != 0n) {
             let age;
             cptr.stI32o(otmp, $obj_recharged, 1);
-            do {
+            {
                 if ((yield* debugcore(__sl0, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     (yield* pline(__sl79, (yield* The((yield* xname(otmp)))), x, y));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             tleft *= 2n;
             restart_timer = 1;
             age = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp, $obj_age));
@@ -2125,13 +2125,13 @@ function* obj_timer_checks(otmp, x, y, force) {
         if (tleft != 0n) {
             let age;
             cptr.stI32o(otmp, $obj_recharged, 0);
-            do {
+            {
                 if ((yield* debugcore(__sl0, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                     (yield* pline(__sl80, (yield* The((yield* xname(otmp)))), x, y));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
-            } while (0);
+            }
             tleft /= 2n;
             restart_timer = 1;
             age = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp, $obj_age));

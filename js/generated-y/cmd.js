@@ -3897,13 +3897,13 @@ export function* cmdname_from_func(fn, outbuf, fullname) {
             }
         } while (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt));
         (yield* copynchars(outbuf, res, len | 0));
-        do {
+        {
             if ((yield* debugcore(__sl511, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__sl512, res, outbuf));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
-        } while (0);
+        }
         res = outbuf;
     }
     return res;

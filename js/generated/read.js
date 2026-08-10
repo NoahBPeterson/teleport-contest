@@ -2166,16 +2166,16 @@ function seffect_magic_mapping(sobjp) {
     cval = (scursed && !confused ? 1 : 0);
     if (cval)
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, 1n);
-    do {
+    {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
-    } while (0);
+    }
     do_mapping();
-    do {
+    {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
             impossible(__sl335);
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
-    } while (0);
+    }
     if (cval) {
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, 0n);
         pline(__sl336);

@@ -365,7 +365,7 @@ export function unmap_object(x, y) {
 
 /** C ref: display.c:475 — @param {CInt} x @param {CInt} y @param {CInt} show */
 export function map_location(x, y, show) {
-    do {
+    {
         let obj;
         let trap;
         let ml_ep;
@@ -382,7 +382,7 @@ export function map_location(x, y, show) {
         update_lastseentyp(x, y);
         if (show && !Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
             show_region(_ml_reg, x, y);
-    } while (0);
+    }
 }
 
 /** C ref: display.c:482 — @param {CInt} x @param {CInt} y @param {CInt} monglyph */
@@ -567,7 +567,7 @@ export function feel_location(x, y) {
     } else {
         if ((ep = engr_at(x, y)) !== null && engr_can_be_felt(ep))
             cptr.stI32o(ep, $engr_erevealed, 1);
-        do {
+        {
             let obj;
             let trap;
             let ml_ep;
@@ -584,7 +584,7 @@ export function feel_location(x, y) {
             update_lastseentyp(x, y);
             if (!Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                 show_region(_ml_reg, x, y);
-        } while (0);
+        }
         if (Punished()) {
             if (uchain.v && cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y && cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), uchain.v))
                 cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) | NHM.BC_CHAIN);
@@ -644,7 +644,7 @@ export function newsym(x, y) {
         }
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
             let see_self = ((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters()) ? 1 : 0);
-            do {
+            {
                 let obj;
                 let trap;
                 let ml_ep;
@@ -661,7 +661,7 @@ export function newsym(x, y) {
                 update_lastseentyp(x, y);
                 if (!see_self && !Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                     show_region(_ml_reg, x, y);
-            } while (0);
+            }
             if (see_self)
                 show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
         } else {
@@ -674,7 +674,7 @@ export function newsym(x, y) {
                     if (tt == NHC.BEAR_TRAP || ((tt) == NHC.PIT || (tt) == NHC.SPIKED_PIT) || tt == NHC.WEB)
                         cptr.stI32o(trap, $trap_tseen, 1);
                 }
-                do {
+                {
                     let obj;
                     let trap;
                     let ml_ep;
@@ -691,14 +691,14 @@ export function newsym(x, y) {
                     update_lastseentyp(x, y);
                     if (show && !Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                         show_region(_ml_reg, x, y);
-                } while (0);
+                }
                 display_monster(x, y, mon, see_it ? 1 : 2, worm_tail);
             } else if (mon && (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel))) && !worm_tail) {
                 display_warning(mon);
             } else if (((cptr.ldI32(lev)) == NHC.GLYPH_INVIS_OFF)) {
                 map_invisible(x, y);
             } else {
-                do {
+                {
                     let obj;
                     let trap;
                     let ml_ep;
@@ -715,7 +715,7 @@ export function newsym(x, y) {
                     update_lastseentyp(x, y);
                     if (!Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                         show_region(_ml_reg, x, y);
-                } while (0);
+                }
             }
         }
     } else {
